@@ -392,7 +392,8 @@ func _test_real_panel(chapter: RefCounted, spec: Dictionary) -> void:
 				panel.configure_layout(viewport,viewport.x<1100)
 				var bay:=Rect2(panel._dispense_center()+Vector2(-78,-148),Vector2(156,231))
 				check(panel.board.encloses(bay), "fixed dispenser bay stays fully inside each source device board")
-				check(panel.dispense_view.position+panel.dispense_view.size/2==panel._dispense_center(), "bottle and fixed source spout share one closeup anchor")
+				check((panel.dispense_view.position+panel.dispense_view.size/2).is_equal_approx(panel._dispense_center()+Vector2(panel.BOTTLE_WAIT_OFFSET,0)), "idle container waits beside the fixed source spout")
+				check(panel.paddle_pivot.position.is_equal_approx(panel._paddle_hinge()) and is_zero_approx(panel.paddle_pivot.rotation), "idle generated paddle stays registered below its fixed source outlet")
 			panel.configure_layout(Vector2(960,540),false)
 			panel._take()
 			check(source.d.items[spec.item] and playing_count() == 0, "real panel grants immediately while suppressing the world overlay")
@@ -403,9 +404,10 @@ func _test_real_panel(chapter: RefCounted, spec: Dictionary) -> void:
 				check(panel.active and panel.visible and panel.dispense_view.visible and panel.controls.take.disabled, "accepted closeup is visible and locks only repeat Take")
 				check(panel.dispenser_texture!=null and panel.dispenser_texture.get_size()==Vector2(1254,1254), "closeup retains original dispenser source texture")
 				check(panel.dispense_reduced == reduced and panel.dispense_region.region == DrinkMotion.frame_region(7 if reduced else 0), "real panel selects normal first frame or reduced stable pose")
+				if finish=="complete": _test_pickup_contact(panel,reduced)
 				var granted := source.d.duplicate(true)
 				panel._process(.08)
-				check(panel.dispense_region.region == DrinkMotion.frame_region(7 if reduced else 1), "panel advances authored frames without moving its sprite")
+				check(panel.dispense_region.region == DrinkMotion.frame_region(7 if reduced else 1), "panel advances original atlas frames after container contact")
 				match finish:
 					"complete":
 						if not reduced:
@@ -431,6 +433,33 @@ func _test_real_panel(chapter: RefCounted, spec: Dictionary) -> void:
 			performance._process(0)
 			check(not is_instance_valid(host.modal) and playing_count() == 0 and not performance.slots[spec.item].waiting, "real panel removal cannot replay a second world dispense")
 			performance.cancel()
+
+func _test_pickup_contact(panel: Control,reduced: bool) -> void:
+	var committed: Dictionary=source.d.duplicate(true)
+	var hinge: Vector2=panel.paddle_pivot.position
+	var button: Transform2D=panel.press_sprite.transform
+	var material: ShaderMaterial=panel.dispense_view.material
+	var previous: Vector2=panel.dispense_view.position
+	for t: float in [0.0,0.03,0.055,0.08,0.119,0.12,0.124,0.125,0.4,0.749,0.75,0.874,0.875,0.89,0.90,0.94,0.98,1.0]:
+		panel.dispense_elapsed_ms=t*DrinkMotion.duration_ms(reduced);panel._pose_dispense()
+		var center: Vector2=panel.dispense_view.position+panel.dispense_view.size/2
+		var contact: Vector2=hinge+panel.CupPaddle.CONTACT_LOCAL.rotated(panel.paddle_pivot.rotation)
+		var gap: float=center.x+panel.BOTTLE_LEFT-contact.x
+		var frame: int=DrinkMotion.frame_at(panel.dispense_elapsed_ms,reduced)
+		check(panel.paddle_pivot.position==hinge and panel.press_sprite.transform==button and panel.press_sprite.region_rect==panel.MachinePress.region(0), "outlet paddle hinge and top drink selector remain fixed during pickup at "+str(t))
+		check(gap>=-0.001, "container never moves through the paddle contact edge at "+str(t))
+		if reduced:
+			check(panel.dispense_view.position==previous and is_zero_approx(panel.paddle_pivot.rotation) and frame==7 and not material.get_shader_parameter("has_stream"), "reduced pickup remains one dry full-container pose without paddle travel")
+		else:
+			if t>=0.055 and t<=0.875: check(absf(gap)<0.001, "container wall drives the registered paddle edge at "+str(t))
+			if t<0.055: check(is_zero_approx(panel.paddle_pivot.rotation), "paddle cannot move before container contact")
+			if frame in [1,2,3,4,5,6]:
+				check(center.is_equal_approx(panel._dispense_center()) and is_equal_approx(panel.paddle_pivot.rotation,panel.PADDLE_PRESSED_ANGLE), "original stream pixels stay exactly under the fixed outlet while the container holds the paddle")
+			else: check(not material.get_shader_parameter("has_stream"), "approach and withdrawal use only dry original atlas cells")
+			if t>=0.90 and t<0.98: check(gap>0.0, "container leaves clearance before the paddle springs back")
+			if t>=0.98: check(is_zero_approx(panel.paddle_pivot.rotation), "paddle returns fully after withdrawal")
+		check(source.d==committed, "contact, liquid and return poses cannot rewrite the accepted inventory")
+	panel.dispense_elapsed_ms=0.0;panel._pose_dispense()
 
 func _test_art() -> void:
 	var art := Image.new()

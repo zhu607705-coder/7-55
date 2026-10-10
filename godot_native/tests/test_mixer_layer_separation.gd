@@ -2,6 +2,7 @@ extends "res://tests/test_c3_devices_controls.gd"
 ## Seeded C3 fixtures and real native controls, not an unseeded campaign or CUA.
 const Motion=preload("res://scripts/presentation/c3_mixer_motion.gd")
 const WorldMotion=preload("res://scripts/objects/canteen_mixer_performance.gd")
+const Paddle=preload("res://scripts/presentation/drink_cup_paddle.gd")
 const Press=preload("res://scripts/presentation/drink_machine_press.gd")
 var rows: Array=[]
 func check(ok: bool,label: String) -> void:
@@ -28,11 +29,18 @@ func run() -> void:
 	check(str(shelf_row.asset)=="drink_station_cabinet","original drinks shelf keeps its original object identity")
 	var node:=WorldMotion.new();root.add_child(node);node.set_process(false)
 	var initial_scale: Vector2=Vector2.ONE*.36
-	for outcome in ["success","bad",""]:
-		node.item_id="sparklingWater";node.playing=true;node.outcome=outcome;node.shown_sequence=["blackCoffee","sparklingWater","lemonTea"];node.duration_ms=600
-		for sample in [0,150,220,350,500,599]:
-			node.sample_pose(sample)
-			check(node.scale==initial_scale and node.glass_root.position==Vector2.ZERO and node.glass_root.scale==Vector2.ONE,"fixed world cup contact and scale: "+outcome+"/"+str(sample))
+	var fixed_hinge: Vector2=node.paddle_root.position
+	var fixed_nozzle: Transform2D=node.nozzle.transform
+	for reduced: bool in [false,true]:
+		for outcome in ["success","bad",""]:
+			node.reset();node.reduced=reduced;node.item_id="sparklingWater";node.playing=true;node.outcome=outcome;node.shown_sequence=["blackCoffee","sparklingWater","lemonTea"];node.duration_ms=1350
+			for progress: float in [0.0,0.08,0.16,0.22,0.30,0.50,0.65,0.76,0.88,0.96,1.0]:
+				node.sample_pose(node.duration_ms*progress)
+				check(node.scale==initial_scale and node.glass_root.scale==Vector2.ONE and node.paddle_root.position==fixed_hinge and node.nozzle.transform==fixed_nozzle,"world scale, nozzle and paddle hinge stay fixed: "+outcome+"/"+str(progress))
+				check(node.paddle.texture==Paddle.TEXTURE and node.paddle.region_rect==Paddle.REGION,"world animation uses the same registered generated paddle")
+				check(node.world_buttons.all(func(button):return button.region_rect==Press.region(0)),"world flavor selectors never impersonate the cup-actuated lever")
+				if reduced:check(node.glass_root.position==Vector2(68,0) and is_equal_approx(node.paddle_root.rotation,Motion.REST_ANGLE) and not node.stream.visible and not node.drip.visible,"reduced world presentation suppresses physical movement and flow")
+				elif progress>=0.16 and progress<=0.65:check(node.cup_contact_error()<0.0001,"world cup touches its rigid paddle through push and flow")
 	check(node.glass_mask.clip_children==CanvasItem.CLIP_CHILDREN_ONLY,"liquid is clipped by a native perspective mask")
 	check(node.liquid_parts.all(func(layer):return layer.get_parent()==node.glass_mask),"every drink layer belongs to the glass interior mask")
 	node.queue_free();await frames()
@@ -72,12 +80,12 @@ func run() -> void:
 		var old_order: Array=panel.session.button_order.duplicate()
 		await click(panel.slots[chosen]);motion.set_process(false)
 		check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"] and not state.d.items.blackCoffee,"physical coffee button submits exactly the original action")
-		motion.sample_pose(180)
+		motion.sample_pose(motion.duration_ms*0.4)
 		panel.surface._process(0)
-		check(motion.stream.visible and motion.nozzle.texture!=null and motion.press_frame()==2,"accepted first press holds its button and pours from an independent real nozzle")
-		check(motion.position==fixed_contact and motion.scale==fixed_scale,"pour leaves the worktop and cup contact fixed")
+		check(motion.stream.visible and motion.nozzle.texture!=null and motion.press_frame()==0 and motion.cup_contact_error()<0.0001 and is_equal_approx(motion.paddle_root.rotation,Motion.PRESSED_ANGLE),"accepted cup pushes the lever and pours from an independent fixed nozzle")
+		check(motion.position==fixed_contact and motion.scale==fixed_scale,"pour leaves the worktop and machine origin fixed")
 		check(panel.surface.press_buttons[chosen].visible and not motion.bottle.visible,"active button stays mounted and no free-floating bottle is shown")
-		check(panel.surface.press_buttons[chosen].scale.x==panel.surface.press_buttons[chosen].scale.y and panel.surface.press_buttons[chosen].region_rect==Press.region(2),"depressed machine button uses the real uniformly scaled hold frame")
+		check(panel.surface.press_buttons[chosen].scale.x==panel.surface.press_buttons[chosen].scale.y and panel.surface.press_buttons[chosen].region_rect==Press.region(0),"flavor selector preserves its original uniformly scaled idle raster")
 		var a:=Rect2(panel.slots[chosen].position,panel.slots[chosen].size)
 		var button: Sprite2D=panel.surface.press_buttons[chosen]
 		check(a.encloses(button.transform*button.get_rect()),"physical machine button remains inside its original slot target")
@@ -94,7 +102,7 @@ func run() -> void:
 		check(panel.model.layers.size()==1 and panel.surface.motion.shown_sequence==["blackCoffee"],"reloaded popup reconstructs one source layer without replaying pour")
 		for id in ["sparklingWater","lemonTea"]:await click(panel.slots[panel.session.button_order.find(id)])
 		check(state.d.items.dailySpecialSparklingWater and state.d.canteenHunt.drinkMixAttemptCount==1 and panel.finishing,"third ingredient commits original success immediately before optional presentation")
-		await create_timer(2.3).timeout;await frames()
+		await wait_for_mixer_close()
 		check(not is_instance_valid(shell.modal),"final native pour settles and returns to world automatically")
 		await teardown()
 	var path: String=OS.get_environment("MIXER_LAYER_REPORT")

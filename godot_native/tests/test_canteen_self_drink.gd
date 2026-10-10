@@ -55,13 +55,9 @@ func test_controller_oracle() -> void:
 		var once: Dictionary=s.duplicate(true);c.dispatch(s,"c3_bad_drink")
 		check(s==once,"repeated controller request has no second effect")
 func wait_for_mixer_close() -> void:
-	# Three immediate accepted inputs can queue 420 + 420 + 600 logical ms.
-	# The panel then settles, shows the result and fades. Only this local clock
-	# is slowed; allow one 250ms slow scheduling interval beyond the real tail.
-	var panel_source=preload("res://scripts/ui/c3_mixer_panel.gd")
-	var logical_ms: float=2.0*420.0+600.0+panel_source.SETTLE_MS+panel_source.RESULT_MS+panel_source.RETURN_MS
-	var rate: float=preload("res://scripts/presentation/c3_mixer_motion.gd").PLAYBACK_RATE
-	var deadline: int=Time.get_ticks_msec()+int(ceil(logical_ms/rate))+250
+	if not is_instance_valid(shell.c3_device_panel):return
+	var timing=preload("res://tests/mixer_timing.gd")
+	var deadline: int=Time.get_ticks_msec()+timing.remaining_real_ms(shell.c3_device_panel)
 	while is_instance_valid(shell.modal) and Time.get_ticks_msec()<deadline:
 		await frames(1)
 	await frames()

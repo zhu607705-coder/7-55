@@ -3,7 +3,13 @@ extends Control
 ## layout are local; inventory, payment and progression remain authoritative.
 signal closed(reason: String)
 const MachinePress=preload("res://scripts/presentation/drink_machine_press.gd")
+const CupPaddle=preload("res://scripts/presentation/drink_cup_paddle.gd")
+const PADDLE_PRESSED_ANGLE:=0.22
+const BOTTLE_LEFT:=-16.875 # Visible atlas wall x=52 at uniform 180/128 scale.
+const BOTTLE_WAIT_OFFSET:=34.0
 var press_sprite:Sprite2D
+var paddle_pivot:Node2D
+var paddle_sprite:Sprite2D
 const DrinkMotion=preload("res://scripts/objects/canteen_drink_performance.gd")
 const DISPENSER_ASSET="res://assets/native/canteen_objects/canteen_drink_dispenser.png"
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
@@ -68,9 +74,11 @@ func _build() -> void:
 	feedback_label=_label("feedback",14);feedback_label.hide()
 	if kind=="drink":
 		_button("take","",func(): _take())
-		controls.take.tooltip_text="按压取出"+str(DRINKS[item_id].name)
+		controls.take.tooltip_text="选择"+str(DRINKS[item_id].name)+"，容器推杆接取"
 		for style_name in ["normal","hover","pressed","disabled"]: controls.take.add_theme_stylebox_override(style_name,StyleBoxEmpty.new())
 		press_sprite=MachinePress.sprite(DRINKS[item_id].color);press_sprite.name="DrinkMachinePress";add_child(press_sprite)
+		paddle_pivot=Node2D.new();paddle_pivot.name="DrinkCupPaddlePivot";add_child(paddle_pivot)
+		paddle_sprite=CupPaddle.sprite();paddle_sprite.name="DrinkCupPaddle";paddle_pivot.add_child(paddle_sprite)
 		_button("cancel",str(content.drinks.cancelOption),func(): dismiss())
 		if ResourceLoader.exists(DISPENSER_ASSET): dispenser_texture=load(DISPENSER_ASSET)
 		if ResourceLoader.exists(DrinkMotion.ATLAS_PATH):
@@ -252,10 +260,10 @@ func refresh() -> void:
 	if kind=="drink":
 		if dark or not chapter.side_active(c) or c.promoDrinkPlaced or c.queueGapOpened: dismiss("context_changed");return
 		labels.title.text=DRINKS[item_id].name
-		labels.body.text=str(content.drinks.alreadyOwned) if s.items.get(item_id,false) else "按压机身按钮\n接取"+str(DRINKS[item_id].name)
+		labels.body.text=str(content.drinks.alreadyOwned) if s.items.get(item_id,false) else "选择饮料\n容器推压出液杆接取"
 		labels.hint.text="← / → 选择 · 空格 / 回车确认\nEsc 退出" if compact_layout else "← / → 选择 · 空格 / 回车确认 · Esc 退出"
 		if dispensing:
-			labels.body.text="按钮已压下\n正在接取饮料"
+			labels.body.text="已接取饮料" if dispense_reduced else "容器推压出液杆" if dispense_elapsed_ms<80.0 else "移开容器\n出液停止" if dispense_elapsed_ms>=560.0 else "容器抵住出液杆\n正在接取饮料"
 			labels.hint.text="Esc 或关闭可跳过动画"
 	elif kind=="menu":
 		if c.phase not in ["menu_order","pickup_search"] or int(c.orderAttemptCount)>initial_order_count: dismiss("order_complete");return
@@ -287,17 +295,41 @@ func _palette(dark: bool) -> void:
 func _pose_dispense() -> void:
 	var frame:int=DrinkMotion.frame_at(dispense_elapsed_ms,dispense_reduced)
 	if is_instance_valid(press_sprite):
-		# Existing bottle frames 1-5 flow; frame 6 is the final drop, 7 is dry.
-		var pressure:int=0
-		if dispensing:
-			pressure=2 if dispense_reduced else 1 if frame==0 else 2 if frame<6 else 3 if frame==6 else 0
-		press_sprite.region_rect=MachinePress.region(pressure)
+		# The colored control selects a drink. Only the container moves the
+		# separate paddle below the fixed outlet; it is never a pour button.
+		press_sprite.region_rect=MachinePress.region(0)
+	var angle:=0.0
+	var offset:=BOTTLE_WAIT_OFFSET
+	if dispensing and not dispense_reduced:
+		var t:float=clampf(dispense_elapsed_ms/DrinkMotion.NORMAL_MS,0.0,1.0)
+		if t<0.055:
+			offset=lerpf(BOTTLE_WAIT_OFFSET,_paddle_contact_offset(0.0),smoothstep(0.0,0.055,t))
+		elif t<0.12:
+			angle=PADDLE_PRESSED_ANGLE*smoothstep(0.055,0.12,t)
+			offset=_paddle_contact_offset(angle)
+		elif t<0.875:
+			angle=PADDLE_PRESSED_ANGLE;offset=0.0
+		else:
+			# Frame 7 is already dry before the container separates. Its
+			# retreat leaves clearance before the paddle springs back.
+			angle=PADDLE_PRESSED_ANGLE*(1.0-smoothstep(0.90,0.98,t))
+			offset=_paddle_contact_offset(angle)+(BOTTLE_WAIT_OFFSET-_paddle_contact_offset(0.0))*smoothstep(0.875,1.0,t)
+	if is_instance_valid(paddle_pivot):
+		paddle_pivot.position=_paddle_hinge();paddle_pivot.rotation=angle
 	if dispense_region!=null: dispense_region.region=DrinkMotion.frame_region(frame)
 	if is_instance_valid(dispense_view):
+		# Frames with flow never move: all original stream pixels stay under
+		# the source nozzle. Translation is confined to dry atlas frames 0/7.
+		dispense_view.position=_dispense_center()-dispense_view.size/2+Vector2(offset,0)
 		var material:ShaderMaterial=dispense_view.material
 		material.set_shader_parameter("atlas_cell",Vector2(frame%4,floori(frame/4.0)))
 		material.set_shader_parameter("fill_top",float([112,112,98,88,79,70,67,67][frame]))
 		material.set_shader_parameter("has_stream",frame in [1,2,3,4,5,6])
+func _paddle_hinge() -> Vector2:
+	var pressed_contact:Vector2=CupPaddle.CONTACT_LOCAL.rotated(PADDLE_PRESSED_ANGLE)
+	return _dispense_center()+Vector2(BOTTLE_LEFT-pressed_contact.x,36.0-pressed_contact.y)
+func _paddle_contact_offset(angle:float) -> float:
+	return _paddle_hinge().x+(CupPaddle.CONTACT_LOCAL.rotated(angle)).x-_dispense_center().x-BOTTLE_LEFT
 func _process(delta: float) -> void:
 	refresh()
 	if not active or not dispensing: return

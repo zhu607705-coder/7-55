@@ -1,5 +1,5 @@
 extends Control
-## Input-transparent machine assembly. Backdrop, press controls, nozzle, glass,
+## Input-transparent machine assembly. Backdrop, flavor controls, nozzle, glass,
 ## liquid and drip are independent. Only the source controller owns facts.
 const Press = preload("res://scripts/presentation/drink_machine_press.gd")
 const MACHINE = preload("res://assets/native/canteen_objects/canteen_drink_dispenser.png")
@@ -58,14 +58,17 @@ func _set_origin(_id: String) -> void:
 	pass
 func accept(action: String, before: Dictionary, next: Dictionary, result: Dictionary) -> void:
 	# Commit happened in State.act. Queue only its observed presentations so rapid
-	# input never cuts an earlier bottle off or delays controller transactions.
+	# input never cuts an earlier cup cycle off or delays controller transactions.
 	pending_pours.append({"action":action,"before":before.duplicate(true),"next":next.duplicate(true),"result":result.duplicate(true)})
 	if not motion.playing: _play_next_pour()
+	else: motion.stage_next_cup()
 func _play_next_pour() -> void:
 	while not pending_pours.is_empty():
 		var pour: Dictionary=pending_pours.pop_front()
 		_set_origin(str(pour.action).trim_prefix("c3_mix:"))
-		if motion.accept(pour.action,pour.before,pour.next,pour.result): break
+		if motion.accept(pour.action,pour.before,pour.next,pour.result):
+			if not pending_pours.is_empty():motion.stage_next_cup()
+			break
 	_sync_visibility()
 func is_pouring() -> bool:
 	return motion.playing or not pending_pours.is_empty()
@@ -81,7 +84,7 @@ func _sync_visibility() -> void:
 		var slot: Dictionary = source_slots[index]
 		var selected: bool = motion.playing and not motion.denied and str(slot.id)==motion.item_id
 		press_buttons[index].visible = true
-		press_buttons[index].region_rect = Press.region(motion.press_frame() if selected else 0)
+		press_buttons[index].region_rect = Press.region(0)
 		press_buttons[index].modulate.a = 1.0 if slot.owned or selected else 0.28
 	queue_redraw()
 func _process(_delta: float) -> void:

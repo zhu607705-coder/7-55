@@ -52,7 +52,7 @@ func setup(state_reader: Callable, action_sink: Callable, feedback_sink: Callabl
 	if slots.is_empty(): _build()
 	close_emitted = false
 	finishing=false;submitting=false;finish_state={};modulate.a=1.0
-	surface.cancel_presentation();_show_feedback("");prompt_label.text="按压饮料机，加入对应饮料"
+	surface.cancel_presentation();_show_feedback("");prompt_label.text="选择饮料，杯子推压杆接取"
 	visible = true
 	refresh()
 	return true
@@ -127,7 +127,7 @@ func configure_layout(viewport: Vector2, compact: bool) -> void:
 	var status_rect:=Rect2(start+Vector2(16,h-54),Vector2(w-32,46))
 	_place(status_strip,Rect2(start+Vector2(1,h-62),Vector2(w-2,61)))
 	_place(prompt_label,status_rect,14)
-	prompt_label.text="调配中…" if finishing else "按压饮料机，加入对应饮料"
+	prompt_label.text="调配中…" if finishing else "选择饮料，杯子推压杆接取"
 	prompt_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	_place(shelf_label,Rect2(start+Vector2(16,52),Vector2(w-32,40)),14)
 	shelf_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
@@ -191,7 +191,7 @@ func refresh() -> void:
 		var slot: Dictionary = model.slots[index]
 		# Missing ingredients remain visible and clickable for source feedback.
 		slots[index].disabled = false
-		slots[index].tooltip_text = "按压加入"+str(Session.NAMES[slot.id]) if slot.owned else slot.label
+		slots[index].tooltip_text = "推杯接取"+str(Session.NAMES[slot.id]) if slot.owned else slot.label
 		labels[index].text = str(Session.NAMES[slot.id])
 		labels[index].add_theme_color_override("font_color", Color("f4fbff") if slot.owned else Color("7f8d92"))
 	surface.synchronize(model,read_state.call())

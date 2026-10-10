@@ -1,4 +1,5 @@
 extends SceneTree
+const MixerTiming = preload("res://tests/mixer_timing.gd")
 const Session = preload("res://scripts/presentation/c3_mixer_session.gd")
 const MixerPanel = preload("res://scripts/ui/c3_mixer_panel.gd")
 const Chapter = preload("res://scripts/chapters/chapter3.gd")
@@ -132,7 +133,7 @@ func run() -> void:
 				var button_alpha: float=view.surface.press_buttons[slot_index].modulate.a
 				check(not view.slots[slot_index].disabled and view.slots[slot_index].tooltip_text.ends_with("·未持有") and (is_equal_approx(button_alpha,1.0) if active_press else button_alpha<0.3), "consumed slot retains its missing tooltip and keeps only the active physical press bright")
 		check(view.finishing and closes.is_empty(), "terminal transaction retains optional presentation tail")
-		for beat in range(3): view.surface.motion._process(1.0)
+		for beat in range(3): MixerTiming.finish_current(view.surface.motion)
 		view._process(1.0)
 		check(closes == ["attempt_complete"] and not view.blocks_world_input() and not view.visible, "third success or failure closes modal exactly once")
 		check(s.canteenHunt.drinkMixAttemptCount == 1 and s.canteenHunt.drinkMixSequence.is_empty(), "controller resets sequence and increments attempt exactly once")

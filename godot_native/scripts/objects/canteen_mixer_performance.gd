@@ -39,7 +39,7 @@ func _process(delta:float)->void:
 	super._process(delta)
 func _pose()->void:
 	super._pose()
-	# The counter and glass contact stay fixed. Machine pressure, liquid and
+	# The counter and hinge stay fixed. Cup contact, liquid and
 	# final drips observe the accepted controller action only.
 	for index in range(world_buttons.size()):
 		world_buttons[index].region_rect=Press.region(press_frame() if playing and item_id==WORLD_BUTTON_ORDER[index] else 0)
