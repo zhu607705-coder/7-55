@@ -54,13 +54,13 @@ func run() -> void:
 	check(JSON.stringify(state)==facts,"scanning presentation cannot award proof")
 	state.ui.libraryFinalsPuzzle.lostFoundStage="stamped";state.ui.libraryFinalsPuzzle.nonPersonProofStamped=true;layer.sync(state)
 	facts=JSON.stringify(state)
-	for i in range(81):layer.tick(.01,state)
-	check(JSON.stringify(state)==facts and layer.stamp_ms==-1,"810ms presentation never changes committed controller state")
+	for i in range(int(Motion.TOTAL_MS/10)):layer.tick(.01,state)
+	check(JSON.stringify(state)==facts and layer.stamp_ms==-1,"1480ms presentation never changes committed controller state")
 	check(not layer.stamp_pose().visible,"no duplicate paper after handoff")
 	layer.sync(state.duplicate(true));check(layer.stamp_ms==-1,"state replacement cannot replay earned proof")
 	state.native.scene="campus_bootstrap";layer.sync(state);state.native.scene="library_interior";layer.sync(state)
 	check(layer.stamp_ms==-1,"scene reentry cannot repeat stamp")
-	for interruption_ms: int in [180,550]:
+	for interruption_ms: int in [340,1060]:
 		for replace_state: bool in [false,true]:
 			state.ui.libraryFinalsPuzzle.nonPersonProofStamped=false;state.ui.libraryFinalsPuzzle.lostFoundStage="scanning";layer.sync(state,true)
 			state.ui.libraryFinalsPuzzle.nonPersonProofStamped=true;state.ui.libraryFinalsPuzzle.lostFoundStage="stamped";layer.sync(state)

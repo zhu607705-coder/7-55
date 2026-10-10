@@ -1,8 +1,8 @@
 extends RefCounted
 ## Pure, scene-local choreography. The Library controller still owns every fact.
-## Durations fit the retained 810 ms service window before its 900 ms dialogue.
-const TOTAL_MS: float=810.0
-const REDUCED_MS: float=270.0
+## The local presentation finishes before the already-issued proof dialogue attaches.
+const TOTAL_MS: float=1480.0
+const REDUCED_MS: float=420.0
 const RECEIVE_MS: float=300.0
 const PAPER_REST:=Vector2(-24,24)
 const PAPER_RETURN:=Vector2(-78,24)
@@ -10,11 +10,11 @@ const PAPER_SIZE:=Vector2(46,28)
 const STAMP_X: float=-35.0
 const STAMP_REST_Y: float=7.0
 const CONTACT_Y: float=26.0
-const CONTACT_MS: float=140.0
-const RELEASE_MS: float=230.0
-const CLEAR_MS: float=350.0
-const RETURN_MS: float=420.0
-const RETURN_END_MS: float=720.0
+const CONTACT_MS: float=260.0
+const RELEASE_MS: float=460.0
+const CLEAR_MS: float=700.0
+const RETURN_MS: float=820.0
+const RETURN_END_MS: float=1300.0
 const STAMP_SCALE: float=0.46
 # Original 64 x 88 PNG: visible alpha rows [3,84). The ink edge is row 83.
 const STAMP_SOURCE_CONTACT_Y: float=84.0
@@ -39,7 +39,7 @@ static func sample(stamp_ms: float,scan_ms: float,reduced: bool=false) -> Dictio
 		if time<CONTACT_MS:
 			phase="descending"; bottom=lerpf(STAMP_REST_Y,CONTACT_Y,smooth(time/CONTACT_MS))
 		elif time<RELEASE_MS:
-			phase="pressing"; pressure=smooth((time-CONTACT_MS)/40.0)
+			phase="pressing"; pressure=smooth((time-CONTACT_MS)/80.0)
 			bottom=CONTACT_Y+pressure*0.8; ink=pressure
 		elif time<CLEAR_MS:
 			phase="lifting"

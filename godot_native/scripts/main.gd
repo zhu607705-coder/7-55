@@ -1830,9 +1830,15 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		if event.keycode == KEY_D and event.ctrl_pressed and event.shift_pressed: _show_developer()
 		if event.keycode == KEY_G and event.ctrl_pressed and event.shift_pressed: _run_visual_gallery()
 
+func _library_stamp_presentation_active() -> bool:
+	# Only a live, visible local presentation may defer the proof dialogue.
+	# Phone/scene exit, capture mode, disabled processing or state replacement
+	# releases the wait; the controller retains its ordinary story authority.
+	return is_instance_valid(world) and is_instance_valid(world_frame) and world_frame.is_visible_in_tree() and world.is_visible_in_tree() and world.is_processing() and world.can_process() and not world.capture_mode and world.scene_id=="library_interior" and world.library_layers!=null and world.library_layers.stamp_animation_active(State.d)
+
 func _read_runtime_state() -> Dictionary:
 	var snapshot: Dictionary = State.d.duplicate(true)
-	snapshot.native["host"] = {"phone_modal_open":is_instance_valid(modal) or is_instance_valid(phone_document) or bool(State.d.ui.controlCenterOpen),"minigame_open":is_instance_valid(active_game),"focused":get_window().has_focus(),"world_visible":is_instance_valid(world) and world_frame.is_visible_in_tree(),"world_scene":str(world.scene_id) if is_instance_valid(world) else "","world_display_scale":world_frame.scale.x if is_instance_valid(world_frame) else 1.0}
+	snapshot.native["host"] = {"phone_modal_open":is_instance_valid(modal) or is_instance_valid(phone_document) or bool(State.d.ui.controlCenterOpen),"minigame_open":is_instance_valid(active_game),"focused":get_window().has_focus(),"world_visible":is_instance_valid(world) and world_frame.is_visible_in_tree(),"world_scene":str(world.scene_id) if is_instance_valid(world) else "","world_display_scale":world_frame.scale.x if is_instance_valid(world_frame) else 1.0,"library_stamp_active":_library_stamp_presentation_active()}
 	return snapshot
 
 func _setup_runtime_hosts() -> void:

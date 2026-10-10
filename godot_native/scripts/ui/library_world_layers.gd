@@ -124,6 +124,9 @@ func cancel_shelf_reveal(state: Dictionary,serial: int) -> void:
 	cue_queue=cue_queue.filter(func(event: Dictionary): return event.get("id","")!="library_archived_rule_reveal_completed")
 func bag_shake_ms() -> float: return float(source.backpackTimeline.shakeDurationMs)*2*(int(source.backpackTimeline.shakeRepeat)+1)
 func bag_total_ms() -> float: return bag_shake_ms()+float(source.backpackTimeline.waitMs)+float(source.backpackTimeline.transferMs)
+func stamp_animation_active(state: Dictionary) -> bool:
+	# A replaced save or another scene cannot retain an old presentation wait.
+	return active and initialized and is_same(state,bound_state) and str(state.get("native",{}).get("scene",""))=="library_interior" and stamp_ms>=0
 func blocks_movement() -> bool: return active and shelf_animating
 func backpack_eviction_active() -> bool: return active and bag_animating
 func take_cues() -> Array:
