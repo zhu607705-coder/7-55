@@ -2,6 +2,8 @@ extends RefCounted
 const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const TicketGateArt=preload("res://scripts/presentation/c3_ticket_gate_art.gd")
+var ticket_gate_art:RefCounted=TicketGateArt.new()
 const TicketGate=preload("res://scripts/presentation/c3_ticket_gate_view.gd")
 var ticket_gate:RefCounted=TicketGate.new()
 const AdmissionFeedback=preload("res://scripts/presentation/c3_admission_feedback.gd")
@@ -310,22 +312,7 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> vo
 	elif entry.kind=="tray":
 		canvas.draw_style_box(_rounded(Color("9eabad"),Color("59686d"),3),Rect2(-11,-7,22,13)); canvas.draw_style_box(_rounded(Color("e7ece9"),Color.TRANSPARENT,2),Rect2(-9,-5,18,9))
 	elif entry.kind=="ticket_gate_wings":
-		# Thin, softly tinted acrylic retracts horizontally into the two fixtures.
-		# Fixed lower depth never swings a pole up through the seat row.
-		for side:int in [-1,1]:
-			var outer:float=786 if side<0 else 883
-			var inner:float=entry.gate.left_inner if side<0 else entry.gate.right_inner
-			var blade:=PackedVector2Array([Vector2(outer,664),Vector2(inner,672),Vector2(inner,714),Vector2(outer,706)])
-			canvas.draw_colored_polygon(blade,Color("91bdc2",.30))
-			var edge:PackedVector2Array=blade.duplicate();edge.append(blade[0])
-			canvas.draw_polyline(edge,Color("d2e5df",.85),1.5)
-			canvas.draw_line(Vector2(inner,673),Vector2(inner,714),Color("3d686e",.9),3)
-			canvas.draw_line(Vector2(inner+side*2,674),Vector2(inner+side*2,712),Color("a9cecb",.82),1)
-			canvas.draw_line(Vector2(outer,668),Vector2(inner,676),Color("e4edda",.40),1)
-			var mount:float=778 if side<0 else 880
-			canvas.draw_rect(Rect2(mount,660,13,57),Color("283536"))
-			canvas.draw_rect(Rect2(mount+2,661,9,5),Color("beaa7e"))
-			canvas.draw_line(Vector2(mount+3,668),Vector2(mount+3,713),Color("849391"),2)
+		ticket_gate_art.draw(canvas,entry.gate)
 	elif entry.kind=="reader":
 		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-11,-13),Vector2(22,42)))
 		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-17,-30.5),Vector2(34,25)))
