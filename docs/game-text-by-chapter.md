@@ -2,7 +2,7 @@
 
 > 本文件由 `npm run text:export` 从当前 `src/` 自动生成。请修改源文件后重新导出，不要只修改本文件。
 
-- 文本条目：7324
+- 文本条目：7329
 - 来源文件：164
 - 收录范围：剧情对白、字幕、任务说明、交互提示、按钮、页面标题、帖子、物品说明、失败反馈与玩家可见状态文案。
 - 排除范围：开发者面板、测试断言、内部 ID、CSS 类名、资源路径、存档字段和运行时调试信息。
@@ -15,7 +15,7 @@
 | --- | ---: |
 | [第一章](#第一章) | 462 |
 | [第二章](#第二章) | 409 |
-| [第三章](#第三章) | 1254 |
+| [第三章](#第三章) | 1259 |
 | [3.5章过渡](#35章过渡) | 298 |
 | [第四章](#第四章) | 1822 |
 | [结局](#结局) | 140 |
@@ -1832,7 +1832,7 @@
 30. 回到校园
    来源：[src/components/ChapterThreeOpeningOverlay.tsx:444](../src/components/ChapterThreeOpeningOverlay.tsx#L444)；[src/components/ChapterThreeOpeningOverlay.tsx:446](../src/components/ChapterThreeOpeningOverlay.tsx#L446)
 31. 继续演出
-   来源：[src/components/ChapterThreeOpeningOverlay.tsx:444](../src/components/ChapterThreeOpeningOverlay.tsx#L444)；[src/scenes/rpg/TheaterImpossibleShow.ts:264](../src/scenes/rpg/TheaterImpossibleShow.ts#L264)
+   来源：[src/components/ChapterThreeOpeningOverlay.tsx:444](../src/components/ChapterThreeOpeningOverlay.tsx#L444)；[src/scenes/rpg/TheaterImpossibleShow.ts:274](../src/scenes/rpg/TheaterImpossibleShow.ts#L274)
 32. 快进此句
    来源：[src/components/ChapterThreeOpeningOverlay.tsx:444](../src/components/ChapterThreeOpeningOverlay.tsx#L444)
 33. 跳过演出
@@ -4092,193 +4092,203 @@
 1160. 第 {{round + 1}} 幕 / 3 · {{THEATER\_SHOW\_ACTS\[round\].title}}
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:64](../src/scenes/rpg/TheaterImpossibleShow.ts#L64)
 1161. 谢幕 · Space
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:68](../src/scenes/rpg/TheaterImpossibleShow.ts#L68)；[src/scenes/rpg/TheaterImpossibleShow.ts:248](../src/scenes/rpg/TheaterImpossibleShow.ts#L248)
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:68](../src/scenes/rpg/TheaterImpossibleShow.ts#L68)；[src/scenes/rpg/TheaterImpossibleShow.ts:258](../src/scenes/rpg/TheaterImpossibleShow.ts#L258)
 1162. 还差 {{act.count - s.collected.length}} 个标点
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:213](../src/scenes/rpg/TheaterImpossibleShow.ts#L213)
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:211](../src/scenes/rpg/TheaterImpossibleShow.ts#L211)
 1163. 请从嘴里退场
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:213](../src/scenes/rpg/TheaterImpossibleShow.ts#L213)
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:211](../src/scenes/rpg/TheaterImpossibleShow.ts#L211)
 1164. 谢幕冷却 {{Math.ceil(s.dashCooldown / 20)}}s
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:248](../src/scenes/rpg/TheaterImpossibleShow.ts#L248)
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:258](../src/scenes/rpg/TheaterImpossibleShow.ts#L258)
 1165. 标点 {{s.collected.length}}/{{act.count}} 灯芯 {{"●".repeat(s.lives)}}{{"○".repeat(3 - s.lives)}} {{Math.ceil((THEATER\_SHOW\_MAX\_TICKS - s.tick) / 20)}}s
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:249](../src/scenes/rpg/TheaterImpossibleShow.ts#L249)
-1166. 按住舞台拖动 / WASD 移动 · 集齐标点后从嘴里退场
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:250](../src/scenes/rpg/TheaterImpossibleShow.ts#L250)
-1167. 影子咬掉了一截光。谢幕可以冲过去。
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:250](../src/scenes/rpg/TheaterImpossibleShow.ts#L250)
-1168. {{act.subtitle}} / 按住舞台拖动，或用 WASD / 方向键移动。 / Space「谢幕」可以短暂穿过影子。
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:259](../src/scenes/rpg/TheaterImpossibleShow.ts#L259)
-1169. 让灯自己演
+1166. 接到另一枚同色问号 · {{(s.pairTicks\*.05).toFixed(1)}}s
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
-1170. 演出暂停，影子也停下了
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:262](../src/scenes/rpg/TheaterImpossibleShow.ts#L262)
-1171. 按继续后再演。计时和动作都从暂停处恢复。
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:263](../src/scenes/rpg/TheaterImpossibleShow.ts#L263)
-1172. 稍等一下
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:266](../src/scenes/rpg/TheaterImpossibleShow.ts#L266)
-1173. 正在收下这场演出
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:266](../src/scenes/rpg/TheaterImpossibleShow.ts#L266)
-1174. 全体观众，都被演出了
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:268](../src/scenes/rpg/TheaterImpossibleShow.ts#L268)
-1175. 影子把这场演出吃掉了
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:268](../src/scenes/rpg/TheaterImpossibleShow.ts#L268)
-1176. 这一幕已经无法撤回
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:268](../src/scenes/rpg/TheaterImpossibleShow.ts#L268)
-1177. 灯光谢幕。台上只剩下一张湿节目单。
+1167. 同色两枚接成一组 · 中央最后点亮
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
+1168. 先在一端留光，再赶另一端 · 青影晚3秒，替你接光
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
+1169. 椅子或观众碰断了光 · 已接好的光保留
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
+1170. 影子咬掉了一截光。谢幕可以冲过去。
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
+1171. 追上游走标点 · 集齐后从嘴里退场
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
+1172. {{act.subtitle}} / 按住舞台拖动，或用 WASD / 方向键移动。 / Space「谢幕」可以短暂穿过障碍。
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:269](../src/scenes/rpg/TheaterImpossibleShow.ts#L269)
-1178. 收下这一幕。下一幕的规则会变。
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:269](../src/scenes/rpg/TheaterImpossibleShow.ts#L269)
-1179. 已经完成的幕次保留。 / 再演一次，这一幕从头开始。
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:269](../src/scenes/rpg/TheaterImpossibleShow.ts#L269)
-1180. 拉开最后的幕布
+1173. 让灯自己演
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:270](../src/scenes/rpg/TheaterImpossibleShow.ts#L270)
-1181. 下一幕
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:270](../src/scenes/rpg/TheaterImpossibleShow.ts#L270)
-1182. 重演这一幕
-   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:270](../src/scenes/rpg/TheaterImpossibleShow.ts#L270)
-1183. 入口海报玻璃
+1174. 演出暂停，影子也停下了
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:272](../src/scenes/rpg/TheaterImpossibleShow.ts#L272)
+1175. 按继续后再演。计时和动作都从暂停处恢复。
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:273](../src/scenes/rpg/TheaterImpossibleShow.ts#L273)
+1176. 稍等一下
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:276](../src/scenes/rpg/TheaterImpossibleShow.ts#L276)
+1177. 正在收下这场演出
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:276](../src/scenes/rpg/TheaterImpossibleShow.ts#L276)
+1178. 光被舞台上的障碍碰散了
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:278](../src/scenes/rpg/TheaterImpossibleShow.ts#L278)
+1179. 全体观众，都被演出了
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:278](../src/scenes/rpg/TheaterImpossibleShow.ts#L278)
+1180. 影子把这场演出吃掉了
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:278](../src/scenes/rpg/TheaterImpossibleShow.ts#L278)
+1181. 这一幕已经无法撤回
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:278](../src/scenes/rpg/TheaterImpossibleShow.ts#L278)
+1182. 灯光谢幕。台上只剩下一张湿节目单。
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:279](../src/scenes/rpg/TheaterImpossibleShow.ts#L279)
+1183. 收下这一幕。下一幕的规则会变。
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:279](../src/scenes/rpg/TheaterImpossibleShow.ts#L279)
+1184. 已经完成的幕次保留。 / 再演一次，这一幕从头开始。
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:279](../src/scenes/rpg/TheaterImpossibleShow.ts#L279)
+1185. 拉开最后的幕布
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:280](../src/scenes/rpg/TheaterImpossibleShow.ts#L280)
+1186. 下一幕
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:280](../src/scenes/rpg/TheaterImpossibleShow.ts#L280)
+1187. 重演这一幕
+   来源：[src/scenes/rpg/TheaterImpossibleShow.ts:280](../src/scenes/rpg/TheaterImpossibleShow.ts#L280)
+1188. 入口海报玻璃
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:95](../src/scenes/rpg/TheaterInteriorModel.ts#L95)
-1184. 临时票打印机
+1189. 临时票打印机
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:113](../src/scenes/rpg/TheaterInteriorModel.ts#L113)
-1185. 检票闸机右侧读票器
+1190. 检票闸机右侧读票器
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:124](../src/scenes/rpg/TheaterInteriorModel.ts#L124)；[src/scenes/rpg/TheaterInteriorScene.ts:178](../src/scenes/rpg/TheaterInteriorScene.ts#L178)
-1186. 开场节目单残页
+1191. 开场节目单残页
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:137](../src/scenes/rpg/TheaterInteriorModel.ts#L137)
-1187. 追光节目单残页
+1192. 追光节目单残页
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:138](../src/scenes/rpg/TheaterInteriorModel.ts#L138)
-1188. 终场节目单残页
+1193. 终场节目单残页
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:139](../src/scenes/rpg/TheaterInteriorModel.ts#L139)
-1189. 剧院灯光控制台
+1194. 剧院灯光控制台
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:142](../src/scenes/rpg/TheaterInteriorModel.ts#L142)
-1190. 后台道具箱
+1195. 后台道具箱
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:157](../src/scenes/rpg/TheaterInteriorModel.ts#L157)
-1191. 道具箱旁票据扫描器
+1196. 道具箱旁票据扫描器
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:167](../src/scenes/rpg/TheaterInteriorModel.ts#L167)；[src/scenes/rpg/TheaterInteriorScene.ts:179](../src/scenes/rpg/TheaterInteriorScene.ts#L179)
-1192. 后台通风口
+1197. 后台通风口
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:182](../src/scenes/rpg/TheaterInteriorModel.ts#L182)；[src/scenes/rpg/TheaterInteriorScene.ts:180](../src/scenes/rpg/TheaterInteriorScene.ts#L180)
-1193. 剧院出口
+1198. 剧院出口
    来源：[src/scenes/rpg/TheaterInteriorModel.ts:195](../src/scenes/rpg/TheaterInteriorModel.ts#L195)；[src/scenes/rpg/TheaterInteriorScene.ts:185](../src/scenes/rpg/TheaterInteriorScene.ts#L185)
-1194. 灯控台
+1199. 灯控台
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)
-1195. 检票员
+1200. 检票员
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)
-1196. 取票机
+1201. 取票机
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)；[src/scenes/rpg/TheaterInteriorScene.ts:182](../src/scenes/rpg/TheaterInteriorScene.ts#L182)
-1197. 手机系统
+1202. 手机系统
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)
-1198. 手机充电服务站
+1203. 手机充电服务站
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:176](../src/scenes/rpg/TheaterInteriorScene.ts#L176)
-1199. 入口海报
+1204. 入口海报
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:177](../src/scenes/rpg/TheaterInteriorScene.ts#L177)
-1200. 灯光控制台
+1205. 灯光控制台
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:181](../src/scenes/rpg/TheaterInteriorScene.ts#L181)
-1201. 节目单
+1206. 节目单
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:183](../src/scenes/rpg/TheaterInteriorScene.ts#L183)
-1202. 道具箱
+1207. 道具箱
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:184](../src/scenes/rpg/TheaterInteriorScene.ts#L184)
-1203. 充电
+1208. 充电
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:634](../src/scenes/rpg/TheaterInteriorScene.ts#L634)
-1204. wrong\_mode
+1209. wrong\_mode
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:663](../src/scenes/rpg/TheaterInteriorScene.ts#L663)
-1205. 充电站配有两条接线。切到浅色操作后可以接入手机。
+1210. 充电站配有两条接线。切到浅色操作后可以接入手机。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:664](../src/scenes/rpg/TheaterInteriorScene.ts#L664)
-1206. 请走到充电服务站旁接线。
+1211. 请走到充电服务站旁接线。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:665](../src/scenes/rpg/TheaterInteriorScene.ts#L665)
-1207. 当前电量 {{state.phoneBattery.percent}}%，暂不需要补电。
+1212. 当前电量 {{state.phoneBattery.percent}}%，暂不需要补电。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:669](../src/scenes/rpg/TheaterInteriorScene.ts#L669)
-1208. 接线已断开，本次补电未完成。
+1213. 接线已断开，本次补电未完成。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:682](../src/scenes/rpg/TheaterInteriorScene.ts#L682)
-1209. 补电 {{Math.floor(progress \* 100)}}%
+1214. 补电 {{Math.floor(progress \* 100)}}%
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:705](../src/scenes/rpg/TheaterInteriorScene.ts#L705)
-1210. 电量 {{battery}}%
+1215. 电量 {{battery}}%
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:705](../src/scenes/rpg/TheaterInteriorScene.ts#L705)
-1211. 验票
+1216. 验票
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:768](../src/scenes/rpg/TheaterInteriorScene.ts#L768)
-1212. posted
+1217. posted
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1074](../src/scenes/rpg/TheaterInteriorScene.ts#L1074)；[src/scenes/rpg/TheaterInteriorScene.ts:1250](../src/scenes/rpg/TheaterInteriorScene.ts#L1250)
-1213. theater\_decoy\_inspect\_requested
+1218. theater\_decoy\_inspect\_requested
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1160](../src/scenes/rpg/TheaterInteriorScene.ts#L1160)
-1214. dark
+1219. dark
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1291](../src/scenes/rpg/TheaterInteriorScene.ts#L1291)；[src/scenes/rpg/TheaterInteriorScene.ts:1293](../src/scenes/rpg/TheaterInteriorScene.ts#L1293)
-1215. 查看充电服务站
+1220. 查看充电服务站
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1363](../src/scenes/rpg/TheaterInteriorScene.ts#L1363)
-1216. 接入手机充电线
+1221. 接入手机充电线
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1364](../src/scenes/rpg/TheaterInteriorScene.ts#L1364)
-1217. 正在补电，请在设备旁稍候
+1222. 正在补电，请在设备旁稍候
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1364](../src/scenes/rpg/TheaterInteriorScene.ts#L1364)
-1218. 查看海报栏
+1223. 查看海报栏
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1366](../src/scenes/rpg/TheaterInteriorScene.ts#L1366)
-1219. 油渍纸巾 → 入口海报
+1224. 油渍纸巾 → 入口海报
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1366](../src/scenes/rpg/TheaterInteriorScene.ts#L1366)
-1220. 查看取票机
+1225. 查看取票机
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1369](../src/scenes/rpg/TheaterInteriorScene.ts#L1369)；[src/scenes/rpg/TheaterInteriorScene.ts:1372](../src/scenes/rpg/TheaterInteriorScene.ts#L1372)
-1221. 输入取票码
+1226. 输入取票码
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1371](../src/scenes/rpg/TheaterInteriorScene.ts#L1371)
-1222. 临时观演票 → 右侧验票槽
+1227. 临时观演票 → 右侧验票槽
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1374](../src/scenes/rpg/TheaterInteriorScene.ts#L1374)
-1223. 与检票员对话
+1228. 与检票员对话
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1374](../src/scenes/rpg/TheaterInteriorScene.ts#L1374)
-1224. 查看残影
+1229. 查看残影
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1376](../src/scenes/rpg/TheaterInteriorScene.ts#L1376)
-1225. 取得节目单残页
+1230. 取得节目单残页
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1376](../src/scenes/rpg/TheaterInteriorScene.ts#L1376)
-1226. 操作灯控台
+1231. 操作灯控台
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1378](../src/scenes/rpg/TheaterInteriorScene.ts#L1378)
-1227. 追光灯遥控器 → 灯控台
+1232. 追光灯遥控器 → 灯控台
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1378](../src/scenes/rpg/TheaterInteriorScene.ts#L1378)
-1228. 查看道具箱
+1233. 查看道具箱
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1380](../src/scenes/rpg/TheaterInteriorScene.ts#L1380)
-1229. 检查票据扫描器
+1234. 检查票据扫描器
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1382](../src/scenes/rpg/TheaterInteriorScene.ts#L1382)
-1230. 临时观演票 → 票据扫描口
+1235. 临时观演票 → 票据扫描口
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1382](../src/scenes/rpg/TheaterInteriorScene.ts#L1382)
-1231. 离开剧院
+1236. 离开剧院
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1384](../src/scenes/rpg/TheaterInteriorScene.ts#L1384)
-1232. 检查后台通风口
+1237. 检查后台通风口
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1385](../src/scenes/rpg/TheaterInteriorScene.ts#L1385)
-1233. 荧光粉刷 → 后台通风口
+1238. 荧光粉刷 → 后台通风口
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1385](../src/scenes/rpg/TheaterInteriorScene.ts#L1385)
-1234. 票已退回：请拖到检票闸机右侧发蓝光的「验票」读票器框内。
+1239. 票已退回：请拖到检票闸机右侧发蓝光的「验票」读票器框内。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1455](../src/scenes/rpg/TheaterInteriorScene.ts#L1455)
-1235. 票已退回：请拖到道具箱旁发蓝光的票据扫描口框内。
+1240. 票已退回：请拖到道具箱旁发蓝光的票据扫描口框内。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1457](../src/scenes/rpg/TheaterInteriorScene.ts#L1457)
-1236. 票已退回：当前阶段没有临时观演票的使用点。
+1241. 票已退回：当前阶段没有临时观演票的使用点。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1458](../src/scenes/rpg/TheaterInteriorScene.ts#L1458)
-1237. 道具没有放到当前阶段对应的真实物体。
+1242. 道具没有放到当前阶段对应的真实物体。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1459](../src/scenes/rpg/TheaterInteriorScene.ts#L1459)
-1238. temporaryTheaterTicket
+1243. temporaryTheaterTicket
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1490](../src/scenes/rpg/TheaterInteriorScene.ts#L1490)
-1239. gate
+1244. gate
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1491](../src/scenes/rpg/TheaterInteriorScene.ts#L1491)
-1240. 票已退回；请靠近读票器。
+1245. 票已退回；请靠近读票器。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1492](../src/scenes/rpg/TheaterInteriorScene.ts#L1492)
-1241. 票已退回；请靠近扫描器。
+1246. 票已退回；请靠近扫描器。
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1493](../src/scenes/rpg/TheaterInteriorScene.ts#L1493)
-1242. 退格
+1247. 退格
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1528](../src/scenes/rpg/TheaterInteriorScene.ts#L1528)
-1243. 提交
+1248. 提交
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1532](../src/scenes/rpg/TheaterInteriorScene.ts#L1532)；[src/scenes/rpg/TheaterInteriorScene.ts:1578](../src/scenes/rpg/TheaterInteriorScene.ts#L1578)
-1244. 撤回
+1249. 撤回
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1571](../src/scenes/rpg/TheaterInteriorScene.ts#L1571)
-1245. 清空
+1250. 清空
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1575](../src/scenes/rpg/TheaterInteriorScene.ts#L1575)
-1246. 手机系统：
+1251. 手机系统：
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1943](../src/scenes/rpg/TheaterInteriorScene.ts#L1943)
-1247. {{name}}：
+1252. {{name}}：
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1949](../src/scenes/rpg/TheaterInteriorScene.ts#L1949)
-1248. 吃掉逗号。椅子会自己走路，别让它坐到你身上。
+1253. 椅子申请当月亮
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:6](../src/scenes/rpg/TheaterSpotlightModel.ts#L6)
-1249. 椅子申请当月亮
+1254. 追上游走的逗号。预判轨迹，绕开走动的椅子。
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:6](../src/scenes/rpg/TheaterSpotlightModel.ts#L6)
-1250. 吃掉问号。影子沿着你三秒前的路线追过来。
+1255. 两枚问号成一组。先点亮任一枚，及时把光接到另一枚。
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:7](../src/scenes/rpg/TheaterSpotlightModel.ts#L7)
-1251. 你的影子迟到了
+1256. 你的影子迟到了
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:7](../src/scenes/rpg/TheaterSpotlightModel.ts#L7)
-1252. 吃掉感叹号。掌声会把光推走；集齐后钻进谢幕的大嘴。
+1257. 观众席正在退潮
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:8](../src/scenes/rpg/TheaterSpotlightModel.ts#L8)
-1253. 观众席正在退潮
+1258. 先在一端留光，再赶到另一端。三秒前的光影会替你接光。
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:8](../src/scenes/rpg/TheaterSpotlightModel.ts#L8)
-1254. running
-   来源：[src/scenes/rpg/TheaterSpotlightModel.ts:43](../src/scenes/rpg/TheaterSpotlightModel.ts#L43)
+1259. running
+   来源：[src/scenes/rpg/TheaterSpotlightModel.ts:47](../src/scenes/rpg/TheaterSpotlightModel.ts#L47)
 
 ## 3.5章过渡
 
