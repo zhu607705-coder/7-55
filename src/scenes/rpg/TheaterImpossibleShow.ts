@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import {
-  createTheaterShow, getTheaterShowFood, getTheaterShowHazards, getTheaterShowMouth,
+  createTheaterShow, getTheaterPointerAxis, getTheaterShowFood, getTheaterShowHazards, getTheaterShowMouth,
   stepTheaterShow, THEATER_SHOW_ACTS, THEATER_SHOW_MAX_TICKS, THEATER_SHOW_STEP_MS,
   type TheaterShowInput, type TheaterShowPoint, type TheaterShowState, type TheaterSpotlightAttempt
 } from "./TheaterSpotlightModel";
@@ -127,9 +127,7 @@ export class TheaterImpossibleShow {
         this.accumulator -= THEATER_SHOW_STEP_MS;
         let { x, y } = keyboard;
         if (Math.hypot(x, y) < 0.01 && this.pointerTarget) {
-          const dx = this.pointerTarget.x - this.model.head.x, dy = this.pointerTarget.y - this.model.head.y;
-          const distance = Math.hypot(dx, dy);
-          if (distance > 9) { x = dx / distance; y = dy / distance; }
+          ({x,y}=getTheaterPointerAxis(this.model,this.pointerTarget,this.queuedDash));
         }
         const input: TheaterShowInput = { x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)), dash: this.queuedDash };
         this.queuedDash = false;

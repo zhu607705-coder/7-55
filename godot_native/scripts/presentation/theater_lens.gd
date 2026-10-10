@@ -1,6 +1,6 @@
 extends RefCounted
 ## Fixed S-glass funhouse lens, with a nearly undistorted center and strong
-## alternating edge magnification. The same display->source polynomial is used by the
+## alternating edge magnification. The same display->source sampling function is used by the
 ## shader and input. No time dependence, camera shake, or gameplay mutation.
 const CENTER:=Vector2(480,270)
 const EXTENT:=Vector2(480,270)

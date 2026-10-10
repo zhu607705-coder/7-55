@@ -65,6 +65,16 @@ export function getTheaterShowHazards(state: TheaterShowState): TheaterShowHazar
   return hazards;
 }
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+export function getTheaterPointerAxis(state: TheaterShowState,target: TheaterShowPoint,dash=false): TheaterShowPoint {
+  let nextDash=Math.max(0,state.dashTicks-1);
+  if(dash && !state.dashHeld && state.dashCooldown<=1)nextDash=9;
+  const distance=nextDash>0?16.5:8.3;
+  const wind=state.round===2 && nextDash===0;
+  const dx=(clamp(target.x,71,889)-state.head.x-(wind?Math.cos((state.tick+1)*0.019)*0.7:0))/distance;
+  const dy=(clamp(target.y,145,396)-state.head.y-(wind?Math.sin((state.tick+1)*0.028)*1.5:0))/distance;
+  const length=Math.max(1,Math.hypot(dx,dy));
+  return {x:dx/length,y:dy/length};
+}
 export function stepTheaterShow(state: TheaterShowState, input: TheaterShowInput): TheaterShowState {
   if (state.status !== "running") return state;
   const next: TheaterShowState = { ...state, tick: state.tick + 1, head: { ...state.head }, collected: [...state.collected],
@@ -72,7 +82,7 @@ export function stepTheaterShow(state: TheaterShowState, input: TheaterShowInput
     dashCooldown: Math.max(0, state.dashCooldown - 1), dashHeld: input.dash, lastEvent: "none" };
   let dx = clamp(input.x, -1, 1), dy = clamp(input.y, -1, 1);
   const length = Math.hypot(dx, dy);
-  if (length > 0.001) { dx /= length; dy /= length; next.lastDirection = { x: dx, y: dy }; }
+  if (length > 0.001) { next.lastDirection = { x: dx / length, y: dy / length }; if(length>1) { dx/=length; dy/=length; } }
   if (input.dash && !state.dashHeld && next.dashCooldown === 0) {
     next.dashTicks = 9; next.dashCooldown = 100; next.lastEvent = "dash";
   }

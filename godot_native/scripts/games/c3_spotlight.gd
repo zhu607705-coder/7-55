@@ -125,7 +125,7 @@ func _process(delta: float) -> void:
 		while accumulator>=.05 and state.status=="running":
 			accumulator-=.05
 			var axis:=Vector2(float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
-			if axis.length()<.01 and dragging and pointer_screen_distance()>3: axis=(pointer-state.head).normalized()
+			if axis.length()<.01 and dragging:axis=rules.pointer_axis(state,pointer,queued_dash)
 			var input: Dictionary={"x":axis.x,"y":axis.y,"dash":queued_dash}; queued_dash=false
 			trace.append(input); state=rules.step(state,input)
 			if state.status!="running":

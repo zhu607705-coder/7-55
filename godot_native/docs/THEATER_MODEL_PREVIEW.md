@@ -12,7 +12,7 @@ This replaces the native spotlight mini-game presentation only. It does not repl
 
 ## Lens and input
 
-A fixed S-glass function with alternating local magnification affects only the scene SubViewport. The CPU pointer transform is the same sampling function as the fragment shader. Labels, captions and buttons stay outside the lens. A Newton inverse projects source gameplay positions for tests and presentation. No time-varying camera wobble is introduced. Displacement exceeds 80 authored pixels and local horizontal scale varies by over 2× while the center keeps its horizontal scale. Opaque header/footer/dialog slabs are removed; text has a small glyph shadow. Steering stops within 3 physical display pixels, and the touch marker retains a constant display radius. Edge targets and display-space distances are tested at 1280×720, 1024×768, 390×844 and 844×390.
+A fixed S-glass function with alternating local magnification affects only the scene SubViewport. The CPU pointer transform is the same sampling function as the fragment shader. Labels, captions and buttons stay outside the lens. A Newton inverse projects source gameplay positions for tests and presentation. No time-varying camera wobble is introduced. Displacement exceeds 80 authored pixels and local horizontal scale varies by over 2× while the center keeps its horizontal scale. Opaque header/footer/dialog slabs are removed; text has a small glyph shadow. Pointer steering submits a bounded analog final step so it reaches a stationary target without oscillation; the touch marker retains a constant display radius. Edge targets and display-space distances are tested at 1280×720, 1024×768, 390×844 and 844×390.
 
 The source 960 × 540 logical frame, model bounds, 50ms ticks, hazard paths, collection rules and terminal proof remain unchanged. Pointer ownership records device/type/touch index; cancellation, pause, focus loss and reuse clear ownership. No presentation node writes save state.
 
@@ -26,7 +26,8 @@ The real game continues to mount the same `c3_spotlight.gd` through Main's origi
 
 - `test_theater_lens.gd`: 2,559 checks; inverse roundtrips, positive Jacobian, CPU/shader coefficients, model anchors, logical-to-physical scaling, real viewport event routing, device ownership, pause/reentry/reset and full 1,600-tick proof validation
 - `test_theater_show_ui.gd`: 30 checks; all three acts played through inverse-mapped pointer events, actual Main/State acceptance and explicit final acknowledgment
-- Original `c3_spotlight_model.gd` unchanged from base 913bd512
+- Shared source/native movement now preserves input magnitude up to 1 for overshoot-safe pointer arrival; full-speed keyboard vectors and the replay envelope are unchanged
+- `test_theater_pointer_arrival.gd`: 1,042 checks across four viewport sizes, lens extremes, wind, exact reviewer regression, and post-dash convergence
 - `test_theater_preview_storage.gd`: optional measurement failure never interrupts play; default files use writable user data, not the source project
 - `test_theater_stage_model.gd`: 75 checks; real independent lamp hierarchy, ray-projected floor anchors, source texture, shadow budget, batched geometry and pose-update isolation
 - `test_chapter3.gd`: 72 source controller checks

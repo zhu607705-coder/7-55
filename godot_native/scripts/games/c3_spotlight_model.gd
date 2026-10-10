@@ -20,6 +20,16 @@ func hazards(s: Dictionary) -> Array:
 	if s.round == 2: result.append({"kind":"eye","position":Vector2(495+cos(t*0.9)*125,255+sin(t*1.5)*88),"radius":23})
 	return result
 
+func pointer_axis(s:Dictionary,target:Vector2,dash:bool=false)->Vector2:
+	# Preserve analog magnitude so the last 50ms step cannot overrun its target.
+	var next_dash:int=maxi(0,s.dashTicks-1)
+	if dash and not s.dashHeld and s.dashCooldown<=1:next_dash=9
+	var distance:float=16.5 if next_dash>0 else 8.3
+	var bounded:=Vector2(clampf(target.x,71,889),clampf(target.y,145,396))
+	var drift:=Vector2.ZERO
+	if s.round==2 and next_dash==0:drift=Vector2(cos((s.tick+1)*.019)*.7,sin((s.tick+1)*.028)*1.5)
+	return ((bounded-s.head-drift)/distance).limit_length(1.0)
+
 func step(s: Dictionary, input: Dictionary) -> Dictionary:
 	if s.status != "running": return s
 	var n: Dictionary = s.duplicate(true)
@@ -32,8 +42,8 @@ func step(s: Dictionary, input: Dictionary) -> Dictionary:
 	var direction: Vector2 = Vector2(clampf(input.x,-1,1),clampf(input.y,-1,1))
 	var magnitude: float = direction.length()
 	if magnitude > 0.001:
-		direction /= magnitude
-		n.lastDirection = direction
+		n.lastDirection = direction/magnitude
+		if magnitude>1.0:direction/=magnitude
 	if input.dash and not s.dashHeld and n.dashCooldown == 0:
 		n.dashTicks = 9
 		n.dashCooldown = 100
