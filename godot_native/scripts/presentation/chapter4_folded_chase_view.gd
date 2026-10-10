@@ -1,0 +1,490 @@
+extends Control
+## Reconstructed standalone preview. No campaign state or save writes.
+signal finished(result: Dictionary)
+signal exited
+const Model = preload("res://scripts/games/chapter4_folded_chase_model.gd")
+const JUMP_PATH = "res://assets/native/chapter4_side_chase/player_jump_atlas.png"
+const JUMP_ROOTS = [Vector2(284,686),Vector2(252,657.25),Vector2(280,615.25),Vector2(242,681)]
+var model = Model.new()
+var surface: SubViewportContainer
+var viewport: SubViewport
+var world: Node3D
+var camera: Camera3D
+var actor: Sprite3D
+var pursuer: Sprite3D
+var torch: SpotLight3D
+var torch_case: MeshInstance3D
+var actor_fill: OmniLight3D
+var phone: Node3D
+var phone_screen: MeshInstance3D
+var torch_lens: MeshInstance3D
+var menu: PanelContainer
+var instruction: Label
+var start_button: Button
+var active := false
+var focus_paused := false
+var queued_jump := false
+var primary_touch := -99
+var touch_origin := Vector2.ZERO
+var touch_point := Vector2.ZERO
+var touch_started := 0
+var touch_axis := 0
+var swipe_used := false
+var held_screen_axis := 0
+var held_route_direction := 0
+var retained_heading := Vector3.RIGHT
+var guard_heading := Vector3.RIGHT
+var follow_center := Vector3(-6,3.4,-1.3)
+var player_frames: Dictionary = {}
+var guard_frames: Dictionary = {}
+var jump_frames: Array[AtlasTexture] = []
+var jump_ticks := 0
+var land_ticks := 0
+var groups: Array[Node3D] = []
+var materials: Dictionary = {}
+var build_group: Node3D
+var mesh_cache: Dictionary = {}
+var textures: Dictionary = {}
+var solid_count := 0
+var view_rect := Rect2()
+
+func _ready() -> void:
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_load_art()
+	_load_materials()
+	_build_stage()
+	_build_ui()
+	resized.connect(_fit)
+	get_window().focus_exited.connect(_lose_focus)
+	_fit()
+	_show_menu("北教楼梯间 · 恢复开发预览\nA/D 或 ←→ 移动，Space 跳跃\n触屏：按左右侧移动，上滑或第二指点跳\n按住会顺梯转角；松开即停，再按按画面选方向\n小阶可跑上，断阶和挡物需要跳\n原跳跃四姿态图暂缺，当前使用原角色全帧", "开始")
+	_present(0.0)
+
+func _texture(path: String) -> Texture2D:
+	# Raw source access also works before editor import; never edits the source image.
+	if FileAccess.file_exists(path):
+		var image := Image.load_from_file(path)
+		if image != null and not image.is_empty():
+			return ImageTexture.create_from_image(image)
+	return null
+
+func _load_art() -> void:
+	for direction in ["up","down","side"]:
+		var frames: Array[Texture2D] = []
+		for index in 8:
+			frames.append(_texture("res://assets/rpg/player/player_%s_%d.png" % [direction,index]))
+		player_frames[direction] = frames
+		var suffix: String = "" if direction == "side" else "_" + direction
+		guard_frames[direction] = _texture("res://assets/rpg/npcs/finale/guard_walk%s_8frame.png" % suffix)
+	player_frames["idle"] = _texture("res://assets/rpg/player/player_side_idle.png")
+	if FileAccess.file_exists(JUMP_PATH):
+		var image := Image.load_from_file(JUMP_PATH)
+		if image != null and image.get_size() == Vector2i(1086,1448):
+			var atlas := ImageTexture.create_from_image(image)
+			for index in 4:
+				var region := AtlasTexture.new()
+				region.atlas = atlas
+				region.region = Rect2((index % 2)*543,(index / 2)*724,543,724)
+				jump_frames.append(region)
+
+func _load_materials() -> void:
+	var files := {"plaster":"Plaster001_1K-JPG_Color.jpg","concrete":"Concrete010_1K-JPG_Color.jpg","metal":"Metal012_1K-JPG_Color.jpg"}
+	for family in files:
+		var texture := _texture("res://assets/rpg/chapter4-stair/materials/" + files[family])
+		if texture != null: textures[family] = texture
+	var palette := {"wall":"e7d9b9","skirt":"7d908e","stone":"cbd4cb","metal":"31444b","edge":"bfaf91","dark":"17252d","glass":"173c5a","warn":"d89262"}
+	for key in palette:
+		var material := StandardMaterial3D.new()
+		material.albedo_color = Color(palette[key])
+		material.roughness = .95
+		material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
+		var family: String = {"wall":"plaster","skirt":"plaster","stone":"concrete","metal":"metal"}.get(key, "")
+		if textures.has(family): material.albedo_texture = textures[family]
+		materials[key] = material
+
+func _build_stage() -> void:
+	surface = SubViewportContainer.new()
+	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	surface.stretch = true
+	add_child(surface)
+	viewport = SubViewport.new()
+	viewport.own_world_3d = true
+	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	viewport.positional_shadow_atlas_size = 1024
+	surface.add_child(viewport)
+	world = Node3D.new()
+	viewport.add_child(world)
+	var environment := WorldEnvironment.new()
+	var settings := Environment.new()
+	settings.background_mode = Environment.BG_COLOR
+	settings.background_color = Color.BLACK
+	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	settings.ambient_light_color = Color("a6b2b8")
+	settings.ambient_light_energy = .105
+	environment.environment = settings
+	world.add_child(environment)
+	camera = Camera3D.new()
+	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	camera.size = 13.0
+	camera.near = .05
+	camera.far = 90
+	world.add_child(camera)
+	camera.current = true
+	for section in model.geometry.routes:
+		build_group = Node3D.new()
+		build_group.name = str(section.id)
+		build_group.set_meta("center_y", (float(section.fromY)+float(section.toY))*.5)
+		build_group.set_meta("fade", -1.0)
+		build_group.set_meta("materials", {})
+		world.add_child(build_group)
+		groups.append(build_group)
+		for floor_box in model.geometry.floors:
+			var r: Array = floor_box.rect
+			var center: float = float(r[0])+float(r[2])*.5
+			if center < float(section.start) or center >= float(section.start)+float(section.length): continue
+			var position_3d: Vector3 = model.route_position(center,float(r[1])+float(r[3])*.5)
+			var tread := _box(position_3d,Vector3(float(r[2]),float(r[3]),2),"stone",true)
+			var heading: Vector3 = model.route_heading(center)
+			tread.rotation.y = -atan2(heading.z,heading.x)
+			var nosing := _box(model.route_position(float(r[0])+.015,float(r[1])+float(r[3])-.015),Vector3(.025,.025,2.02),"edge")
+			nosing.rotation.y = tread.rotation.y
+		for obstacle in model.geometry.obstacles:
+			var r: Array = obstacle.rect
+			var center: float = float(r[0])+float(r[2])*.5
+			if center < float(section.start) or center >= float(section.start)+float(section.length): continue
+			var barrier := _box(model.route_position(center,float(r[1])+float(r[3])*.5),Vector3(float(r[2]),float(r[3]),1.65),"metal",true)
+			var heading: Vector3 = model.route_heading(center)
+			barrier.rotation.y = -atan2(heading.z,heading.x)
+			var marker := _box(model.route_position(center,float(r[1])+float(r[3])+.015),Vector3(float(r[2])+.03,.035,1.68),"warn")
+			marker.rotation.y = barrier.rotation.y
+		var begin: float = float(section.start)
+		var end: float = begin+float(section.length)
+		var tangent: Vector3 = model.route_heading(begin+.01)
+		var lateral := Vector3(-tangent.z,0,tangent.x)
+		for side in [-1.0,1.0]:
+			var a: Vector3 = model.route_position(begin,float(section.fromY)) + lateral*side
+			var b: Vector3 = model.route_position(end,float(section.toY)) + lateral*side
+			_rail(a+Vector3.UP*.98,b+Vector3.UP*.98)
+			var count: int = ceili(float(section.length)/1.8)
+			for index in count+1:
+				var u: float = lerpf(begin+.02,end-.02,float(index)/count)
+				var floor_y: float = model.floor_height_at(u)
+				if not is_finite(floor_y): continue
+				var foot: Vector3 = model.route_position(u,floor_y)+lateral*side
+				_box(foot+Vector3.UP*.47,Vector3(.065,.94,.065),"metal")
+				_box(foot+Vector3.UP*.018,Vector3(.15,.035,.15),"metal")
+		if str(section.kind) == "flight":
+			var y: float = float(section.fromY)
+			_box(Vector3(0,y+1.65,-4.6),Vector3(16,3.3,.22),"wall",true)
+			_box(Vector3(0,y+.45,-4.46),Vector3(16,.9,.06),"skirt")
+			var window_x: float = -2.8 if int(round(y/3.3))%2 == 0 else 2.8
+			_box(Vector3(window_x,y+2.0,-4.4),Vector3(1.5,1.65,.12),"metal")
+			_box(Vector3(window_x,y+2.0,-4.32),Vector3(1.28,1.42,.05),"glass")
+			_box(Vector3(window_x,y+2.0,-4.27),Vector3(.055,1.42,.06),"metal")
+			var label := Label3D.new()
+			label.text = "%dF" % (int(round(y/3.3))+2)
+			label.position = Vector3(-5,y+2,-4.3)
+			label.font_size = 40
+			label.pixel_size = .009
+			label.modulate = Color("bec8c3")
+			build_group.add_child(label)
+	build_group = null
+	actor = _sprite(false)
+	pursuer = _sprite(true)
+	actor_fill = OmniLight3D.new()
+	actor_fill.light_cull_mask = 2
+	actor_fill.light_color = Color("8dabc5")
+	actor_fill.light_energy = .45
+	actor_fill.omni_range = .55
+	actor_fill.omni_attenuation = 1.6
+	actor_fill.name = "PhoneFaceLight"
+	world.add_child(actor_fill)
+	phone = Node3D.new()
+	phone.name = "PlayerPhone"
+	world.add_child(phone)
+	var phone_body := _box(Vector3.ZERO,Vector3(.10,.16,.025),"dark")
+	phone_body.reparent(phone)
+	phone_screen = _box(Vector3(0,0,.016),Vector3(.085,.135,.006),"glass")
+	phone_screen.reparent(phone)
+	phone_screen.name = "Screen"
+	var screen_material := StandardMaterial3D.new()
+	screen_material.albedo_color = Color("739eac")
+	screen_material.emission_enabled = true
+	screen_material.emission = Color("8dabc5")
+	screen_material.emission_energy_multiplier = .7
+	phone_screen.material_override = screen_material
+	phone_screen.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	torch = SpotLight3D.new()
+	torch.light_color = Color("f1e2b2")
+	torch.light_energy = 9
+	torch.spot_range = 6
+	torch.spot_angle = 11
+	torch.spot_attenuation = 1.2
+	torch.shadow_enabled = true
+	world.add_child(torch)
+	torch_case = _box(Vector3.ZERO,Vector3(.25,.10,.12),"dark")
+	torch_case.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	torch_lens = _box(Vector3.ZERO,Vector3(.008,.07,.08),"edge")
+	var lens_material := StandardMaterial3D.new()
+	lens_material.albedo_color = Color("f1e2b2")
+	lens_material.emission_enabled = true
+	lens_material.emission = Color("f1e2b2")
+	torch_lens.material_override = lens_material
+	torch_lens.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+func _box(at: Vector3, dimensions: Vector3, material_key: String, solid: bool=false) -> MeshInstance3D:
+	var node := MeshInstance3D.new()
+	var key := str(dimensions)
+	if not mesh_cache.has(key):
+		var mesh := BoxMesh.new()
+		mesh.size = dimensions
+		mesh_cache[key] = mesh
+	node.mesh = mesh_cache[key]
+	var material: StandardMaterial3D = materials[material_key]
+	if build_group != null:
+		var local_materials: Dictionary = build_group.get_meta("materials")
+		if not local_materials.has(material_key):
+			local_materials[material_key] = material.duplicate()
+			local_materials[material_key].set_meta("base_color",material.albedo_color)
+		material = local_materials[material_key]
+		node.material_override = material
+		build_group.add_child(node)
+	else:
+		node.material_override = material
+		world.add_child(node)
+	node.position = at
+	if solid:
+		var body := StaticBody3D.new()
+		var collision := CollisionShape3D.new()
+		var shape := BoxShape3D.new()
+		shape.size = dimensions
+		collision.shape = shape
+		node.add_child(body)
+		body.add_child(collision)
+		solid_count += 1
+	return node
+
+func _rail(a: Vector3,b: Vector3) -> void:
+	var node := _box((a+b)*.5,Vector3(.055,a.distance_to(b),.055),"metal")
+	node.quaternion = Quaternion(Vector3.UP,(b-a).normalized())
+
+func _sprite(guard: bool) -> Sprite3D:
+	var sprite := Sprite3D.new()
+	sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sprite.shaded = true
+	sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	sprite.pixel_size = 1.7/128.0
+	sprite.offset = Vector2(0,62)
+	sprite.layers = 2
+	sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if guard: sprite.hframes = 8
+	world.add_child(sprite)
+	return sprite
+
+func _build_ui() -> void:
+	menu = PanelContainer.new()
+	add_child(menu)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation",16)
+	menu.add_child(column)
+	instruction = Label.new()
+	instruction.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	instruction.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	instruction.add_theme_font_size_override("font_size",19)
+	column.add_child(instruction)
+	start_button = Button.new()
+	start_button.custom_minimum_size.y = 48
+	start_button.pressed.connect(_menu_action)
+	column.add_child(start_button)
+	var back := Button.new()
+	back.text = "离开预览"
+	back.custom_minimum_size.y = 42
+	back.pressed.connect(func(): active=false; _clear_input(); exited.emit())
+	column.add_child(back)
+
+func _fit() -> void:
+	if surface == null: return
+	view_rect = Rect2(Vector2.ZERO,size)
+	surface.position = Vector2.ZERO
+	surface.size = size
+	# Container owns its child viewport dimensions when stretching is enabled.
+	surface.stretch_shrink = maxi(1,ceili(maxf(size.x/960.0,size.y/660.0)))
+	camera.size = 16.0 if size.y>size.x else 13.0
+	menu.size = Vector2(minf(590,maxf(200,size.x-24)),0)
+	menu.position = (size-menu.size)*.5
+
+func _show_menu(text: String, button: String) -> void:
+	active = false
+	_clear_input()
+	instruction.text = text
+	start_button.text = button
+	menu.show()
+	_fit.call_deferred()
+
+func _start() -> void:
+	model.reset()
+	_clear_input()
+	jump_ticks = 0
+	land_ticks = 0
+	retained_heading = Vector3.RIGHT
+	guard_heading = Vector3.RIGHT
+	follow_center = Vector3(-6,3.4,-1.3)
+	focus_paused = false
+	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	active = true
+	menu.hide()
+
+func _menu_action() -> void:
+	if focus_paused and model.status == "running":
+		focus_paused = false
+		active = true
+		viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+		menu.hide()
+	else: _start()
+
+func _adjust_input_mask(mask: int) -> int:
+	var axis: int = int((mask&Model.RIGHT)!=0)-int((mask&Model.LEFT)!=0)
+	if axis == 0:
+		held_screen_axis = 0
+		held_route_direction = 0
+	elif held_screen_axis == 0:
+		held_route_direction = model.screen_direction(model.player.x,axis,camera.global_basis.x)
+	elif axis != held_screen_axis:
+		held_route_direction = -held_route_direction
+	held_screen_axis = axis
+	return (mask&Model.JUMP) | (Model.RIGHT if held_route_direction>0 else (Model.LEFT if held_route_direction<0 else 0))
+
+func _physics_process(_delta: float) -> void:
+	if not active: return
+	var left: bool = Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)
+	var right: bool = Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)
+	var mask: int = (Model.LEFT if left or touch_axis<0 else 0) | (Model.RIGHT if right or touch_axis>0 else 0)
+	if queued_jump or Input.is_physical_key_pressed(KEY_SPACE): mask |= Model.JUMP
+	queued_jump = false
+	var grounded: bool = model.player_grounded
+	model.step(_adjust_input_mask(mask))
+	if not model.player_grounded: jump_ticks += 1
+	elif not grounded: land_ticks=7; jump_ticks=0
+	elif land_ticks>0: land_ticks-=1
+	if model.status != "running":
+		if model.status == "finished":
+			_show_menu("本段已抵达上层\n开发切片，尚未接入剧情及下一层迷宫", "重新试玩")
+			finished.emit(model.proof())
+		else: _show_menu("被追上或失足\n观察踏步、挡物和前方短光后再试", "重试")
+
+func _process(delta: float) -> void:
+	if camera != null: _present(delta)
+
+func _present(delta: float) -> void:
+	var p: Vector3 = model.route_position(model.player.x,model.player.y)
+	var g: Vector3 = model.route_position(model.guard.x,model.guard.y)
+	var ground_y: float = model.route_surface_height(model.player.x)
+	var center := Vector3(clampf(p.x*.5,-6,3),ground_y+3,-1.3)
+	if size.y>size.x:
+		center = p+model.route_heading(model.player.x)*1.5
+		center.y = ground_y+3
+	follow_center = center if delta<=0 else follow_center.lerp(center,1-exp(-delta*3))
+	camera.position = follow_center+Vector3(-7,14.5,22.25)
+	camera.look_at(follow_center)
+	if absf(model.player_velocity.x)>.001: retained_heading=model.route_heading(model.player.x,signf(model.player_velocity.x))
+	if absf(model.guard_velocity.x)>.001: guard_heading=model.route_heading(model.guard.x,signf(model.guard_velocity.x))
+	actor.position = p
+	pursuer.position = g
+	# Phone is an actual hand-height prop. Its source only reveals nearby actor pixels.
+	# Lighting layer 2 excludes every wall, stair, rail and obstacle (layer 1).
+	phone.position = p+retained_heading*.20+Vector3(0,1.18,.12)
+	phone.rotation.y = atan2(retained_heading.x,retained_heading.z)
+	actor_fill.position = phone_screen.global_position
+	var pose: Dictionary = model.torch_pose()
+	torch.position = pose.position
+	torch.look_at(pose.target)
+	torch_case.position = pose.case_position
+	var guard_tangent: Vector3 = (Vector3(pose.position)-Vector3(pose.case_position)).normalized()
+	torch_case.rotation.y = -atan2(guard_tangent.z,guard_tangent.x)
+	torch_lens.position = torch.position-guard_tangent*.012
+	torch_lens.rotation.y = torch_case.rotation.y
+	var facing: Dictionary = model.visible_facing(retained_heading,camera.global_basis)
+	var direction: String = facing.facing
+	actor.flip_h = direction=="side" and bool(facing.left)
+	actor.pixel_size = 1.7/128.0
+	actor.offset = Vector2(0,62)
+	var frame: int = int(model.tick/7)%8
+	actor.texture = player_frames[direction][frame if absf(model.player_velocity.x)>.001 else 0]
+	if direction=="side" and absf(model.player_velocity.x)<.001: actor.texture=player_frames.idle
+	if direction=="side" and jump_frames.size()==4 and (not model.player_grounded or land_ticks>0):
+		var index: int = 3 if model.player_grounded else (0 if jump_ticks<=2 else (1 if jump_ticks<=7 else 2))
+		actor.texture = jump_frames[index]
+		actor.pixel_size = 1.7/724.0
+		var anchor: Vector2 = JUMP_ROOTS[index]
+		actor.offset = Vector2((271.5-anchor.x)*(-1 if actor.flip_h else 1),anchor.y-362)
+	var guard_facing: Dictionary = model.visible_facing(guard_heading,camera.global_basis)
+	pursuer.texture = guard_frames[guard_facing.facing]
+	pursuer.flip_h = guard_facing.facing=="side" and bool(guard_facing.left)
+	pursuer.frame = frame
+	for group in groups:
+		var y: float = group.get_meta("center_y")
+		group.visible = absf(y-ground_y)<8 or absf(y-model.guard.y)<4
+		var fade: float = clampf(1-absf(y-ground_y-1.65)/7,.05,1)
+		if absf(fade-float(group.get_meta("fade")))>.04:
+			for material in group.get_meta("materials").values():
+				var color: Color = material.get_meta("base_color")
+				material.albedo_color = Color(color.r*fade,color.g*fade,color.b*fade,color.a)
+			group.set_meta("fade",fade)
+
+func _input(event: InputEvent) -> void:
+	# Release is processed even over the menu; a lost release must never keep running.
+	if event is InputEventKey and not event.pressed and event.physical_keycode in [KEY_A,KEY_D,KEY_LEFT,KEY_RIGHT]:
+		if not (Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_RIGHT)):
+			held_screen_axis=0; held_route_direction=0
+	if event is InputEventScreenTouch and not event.pressed: _pointer_press(event.index,event.position,false)
+	if event is InputEventMouseButton and event.device != InputEvent.DEVICE_ID_EMULATION and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed: _pointer_press(-1,event.position,false)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:
+		if active:
+			focus_paused=true; _show_menu("已暂停", "继续")
+		elif focus_paused: _menu_action()
+		get_viewport().set_input_as_handled()
+		return
+	if not active: return
+	if event is InputEventKey and event.pressed and not event.echo and (event.physical_keycode==KEY_SPACE or event.keycode==KEY_SPACE):
+		queued_jump=true; get_viewport().set_input_as_handled()
+	elif event is InputEventScreenTouch and event.pressed: _pointer_press(event.index,event.position,true)
+	elif event is InputEventScreenDrag: _pointer_move(event.index,event.position)
+	elif event is InputEventMouseButton and event.device != InputEvent.DEVICE_ID_EMULATION and event.button_index==MOUSE_BUTTON_LEFT and event.pressed: _pointer_press(-1,event.position,true)
+	elif event is InputEventMouseMotion and event.device != InputEvent.DEVICE_ID_EMULATION: _pointer_move(-1,event.position)
+
+func _pointer_press(index: int, point: Vector2, pressed: bool) -> void:
+	point -= global_position
+	if pressed:
+		if not active or not view_rect.has_point(point): return
+		if primary_touch != -99 and primary_touch != index: queued_jump=true; return
+		primary_touch=index; touch_origin=point; touch_point=point
+		touch_started=Time.get_ticks_msec(); swipe_used=false
+		_steer_touch()
+	elif primary_touch==index:
+		if active and Time.get_ticks_msec()-touch_started<180 and point.distance_to(touch_origin)<22: queued_jump=true
+		primary_touch=-99; touch_axis=0; held_screen_axis=0; held_route_direction=0
+
+func _pointer_move(index: int, point: Vector2) -> void:
+	if primary_touch!=index: return
+	touch_point=point-global_position
+	_steer_touch()
+	if not swipe_used and touch_origin.y-touch_point.y>34: queued_jump=true; swipe_used=true
+
+func _steer_touch() -> void:
+	var point: Vector2 = camera.unproject_position(actor.position)
+	point *= size/Vector2(viewport.size)
+	var difference: float = touch_point.x-point.x
+	touch_axis = int(signf(difference)) if absf(difference)>24 else 0
+
+func _clear_input() -> void:
+	primary_touch=-99; touch_axis=0; queued_jump=false; swipe_used=false
+	held_screen_axis=0; held_route_direction=0
+
+func _lose_focus() -> void:
+	if not active: return
+	focus_paused=true
+	_show_menu("已暂停，点击继续", "继续")
+	viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
