@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+REFINED_IMPORT checks=94 failures=0 meshes=177 textured=13 colliders=0

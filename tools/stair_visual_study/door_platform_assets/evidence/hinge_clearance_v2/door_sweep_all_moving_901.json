@@ -1,0 +1,47 @@
+{
+  "angle_step_degrees": 0.1,
+  "sampled_angles": 901,
+  "direction": "positive Y, 0 through PI/2 only",
+  "all_moving_meshes_including_hinge_hardware": 58,
+  "obstacle_configurations": 217,
+  "epsilon_m": 0.0001,
+  "source_contract_checks": 497,
+  "source_contract_failures": [],
+  "conservative_OBB_false_positives": {
+    "Hinge moving barrel 0 / Door fixed jamb -1": {
+      "first": 7.6,
+      "last": 82.4,
+      "samples": 749
+    },
+    "Hinge moving barrel 1 / Door fixed jamb -1": {
+      "first": 7.6,
+      "last": 82.4,
+      "samples": 749
+    },
+    "Hinge moving barrel 2 / Door fixed jamb -1": {
+      "first": 7.6,
+      "last": 82.4,
+      "samples": 749
+    }
+  },
+  "explanation": "The square OBB around each 12-sided 9 mm hinge barrel rotates its empty corners into the jamb. Actual barrel vertices remain inside the proven radius; their 10 mm axis-to-jamb separation gives more than 0.9 mm true clearance at every angle.",
+  "exact_cylindrical_vertex_proof": [
+    {
+      "mesh": "Hinge moving barrel 0",
+      "actual_vertex_max_radius_m": 0.008999999685207581,
+      "minimum_jamb_clearance_at_all_Y_angles_m": 0.0010000003147924187
+    },
+    {
+      "mesh": "Hinge moving barrel 1",
+      "actual_vertex_max_radius_m": 0.008999999685207581,
+      "minimum_jamb_clearance_at_all_Y_angles_m": 0.0010000003147924187
+    },
+    {
+      "mesh": "Hinge moving barrel 2",
+      "actual_vertex_max_radius_m": 0.008999999685207581,
+      "minimum_jamb_clearance_at_all_Y_angles_m": 0.0010000003147924187
+    }
+  ],
+  "actual_penetrations": {},
+  "status": "PASS: 55 non-knuckle moving meshes pass 901-angle OBB sweep; 3 knuckles pass tighter actual-vertex radial envelope proof for all angles."
+}

@@ -1,0 +1,34 @@
+{
+  "sweep_degrees": 91,
+  "fixed_obstacle_configurations": 217,
+  "moving_leaf_and_joinery_meshes": 55,
+  "epsilon_m": 0.0001,
+  "penetrations_by_direction": {
+    "-1": {
+      "Door fixed jamb -1": {
+        "first_degree": 5,
+        "last_degree": 90,
+        "samples": 86
+      }
+    },
+    "1": {}
+  },
+  "positive_open_leaf_joinery_penetrations": {},
+  "round_barrels_exact_vertex_radius_proof": {
+    "Hinge moving barrel 0": {
+      "actual_max_radius_m": 0.008999999685207581,
+      "axis_to_jamb_gap_m": 0.010000362992286682,
+      "all_angle_min_x_clearance_m": 0.0010003633070791006
+    },
+    "Hinge moving barrel 1": {
+      "actual_max_radius_m": 0.008999999685207581,
+      "axis_to_jamb_gap_m": 0.010000362992286682,
+      "all_angle_min_x_clearance_m": 0.0010003633070791006
+    },
+    "Hinge moving barrel 2": {
+      "actual_max_radius_m": 0.008999999685207581,
+      "axis_to_jamb_gap_m": 0.010000362992286682,
+      "all_angle_min_x_clearance_m": 0.0010003633070791006
+    }
+  }
+}
