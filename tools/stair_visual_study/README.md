@@ -66,3 +66,61 @@ blender -b --factory-startup -t 1 --python tools/stair_visual_study/render_trans
 # Whole-rig oracle simulation; add --render only when actual frames are needed:
 blender -b --factory-startup -t 1 --python tools/stair_visual_study/render_source_alignment.py -- --output /tmp/755-source-alignment --trace tools/stair_visual_study/evidence/source_replay.json
 ```
+
+## Refined lower stair: first real asset, 2026-10-10
+
+`build_refined_lower_stair.py` builds the lower rotating stair in canonical
+mechanism state 0. It keeps all 12 original tread positions and dimensions,
+1.34 m width and the source pivot `(-2.15, 0.3, 1.35)`. The owner remains an
+identity transform; consumers must use the original pivot-relative mechanism
+matrix, not rotate the asset about world zero. It is not yet wired into the game.
+
+The new appearance follows the user-reviewed independent lower-stair artwork:
+grey terrazzo, three anti-slip lines, dark round rails, joint collars and small
+base fixings. The reference is appearance guidance only; it is not a projected
+image, texture or collision replacement. The side/underside is a single closed
+stepped prism. The original walking surfaces remain unchanged. Added side faces
+extend 2 mm cosmetically; no collision objects or navigation edges are generated.
+
+Material portability is explicit: the deterministic authored 128×128 terrazzo
+PNG is embedded in the GLB as a standard PBR base-colour texture. Metallic and
+roughness values use standard glTF factors. There are no required Blender-only
+procedural shader nodes. All stone faces use nearest filtering.
+
+```
+blender -b --factory-startup -t 1 \
+  --python tools/stair_visual_study/build_refined_lower_stair.py -- \
+  --output /tmp/755-refined-lower --render --turntable
+```
+
+This produces an editable `.blend`, `lower_rotating_stair.glb`, the authored
+texture, 1024² RGBA three-quarter/reverse/bottom views and 32 turntable frames.
+The three-quarter direction follows the earlier source constraint view, with
+an explicit 5.1 m orthographic framing; it is not a pixel-aligned overlay.
+Encode the same-model orbit at 8 fps for a 4-second inspection movie.
+The PNGs have genuine transparent backgrounds; the MP4 has an opaque backdrop.
+The small `sample_asset/` GLB and PNG are the exact tested export, not caches.
+
+### Verified on the final asset
+
+- Blender: 12 source-tread transform/dimension assertions and identity owner;
+  closed-body edge incidence 2 and non-coplanar riser construction assertions
+- Godot 4.6.3: 94 checks, 0 failures; 177 imported meshes, 13 textured surfaces,
+  0 collision bodies; all 12 original tread world positions and dimensions
+  survive the Blender→glTF→Godot coordinate conversion
+- All 13 stone surfaces retain the 128×128 PNG base pixels exactly, nearest
+  sampling and original roughness. Mipmaps are excluded only from the byte
+  comparison of the base image, not from the runtime material
+- All 3 PNGs are RGBA with nonempty fully transparent and fully opaque areas;
+  three-quarter alpha bbox `(145,86,879,940)` is inside the 1024² frame
+- Turntable: 32 actual rendered frames, 480², 8 fps, 4.000 seconds; same model
+
+For the isolated Godot import check, put the GLB, PNG and snapshot in a temporary
+Godot project, import the GLB, then run `check_refined_import.gd`. Exact evidence
+and hashes are under `evidence/refined_*`.
+
+These checks establish geometry and material-data portability. Godot rendered
+appearance, lighting equivalence, live mechanism motion and game integration
+remain untested for this asset. The delivered images/movie are Blender renders.
+The original formal puzzle, PR106 chase and HTML are unchanged. This Draft PR
+still requires user preview approval before any merge or integration.
