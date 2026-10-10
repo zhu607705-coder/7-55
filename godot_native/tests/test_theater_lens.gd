@@ -79,8 +79,8 @@ func screen_touch(index: int, pressed: bool, source_point: Vector2, canceled: bo
 func geometry() -> void:
 	var shader := FileAccess.get_file_as_string("res://scripts/presentation/theater_lens.gdshader")
 	var compact_shader := shader.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "")
-	check(compact_shader.contains("p.x*(1.0+0.075*p.y*p.y)+0.026*p.y*p.y+0.014*p.x*p.x"), "GPU x sampling polynomial stays synchronized with tested CPU inverse")
-	check(compact_shader.contains("p.y+0.16*p.x*p.x*(0.34+p.y)+0.033*p.x*p.x*p.x"), "GPU y sampling polynomial stays synchronized with tested CPU inverse")
+	check(compact_shader.contains("p.x+0.08*sin(6.28318530718*p.x)-0.16*sin(3.14159265359*p.x)+0.06*sin(3.14159265359*p.y)*p.x*p.x"), "GPU x S-glass sampling stays synchronized with tested CPU inverse")
+	check(compact_shader.contains("p.y+0.16*sin(3.14159265359*p.x)*(0.45+0.55*p.y*p.y)+0.08*sin(6.28318530718*p.x)*p.y"), "GPU y S-glass sampling stays synchronized with tested CPU inverse")
 	check(not compact_shader.contains("TIME"), "lens remains fixed while presentation animates")
 	var largest_displacement := 0.0
 	for iy in range(19):
@@ -88,8 +88,8 @@ func geometry() -> void:
 			var display := Vector2(ix * 30.0, iy * 30.0)
 			var sample: Vector2 = Lens.sample_point(display)
 			var p: Vector2 = (display-Vector2(480,270))/Vector2(480,270)
-			var reference := Vector2(480,270)+Vector2(p.x*(1.0+0.075*p.y*p.y)+0.026*p.y*p.y+0.014*p.x*p.x,p.y+0.16*p.x*p.x*(0.34+p.y)+0.033*p.x*p.x*p.x)*Vector2(480,270)
-			check(near(sample,reference), "CPU samples same polynomial as scene shader at " + str(display))
+			var reference := Vector2(480,270)+Vector2(p.x+0.08*sin(6.28318530718*p.x)-0.16*sin(3.14159265359*p.x)+0.06*sin(3.14159265359*p.y)*p.x*p.x,p.y+0.16*sin(3.14159265359*p.x)*(0.45+0.55*p.y*p.y)+0.08*sin(6.28318530718*p.x)*p.y)*Vector2(480,270)
+			check(near(sample,reference), "CPU samples same S-glass function as scene shader at " + str(display))
 			var recovered: Vector2 = Lens.display_point(sample)
 			check(near(recovered, display), "display/source/display grid roundtrip at " + str(display))
 			var source := display
@@ -100,7 +100,11 @@ func geometry() -> void:
 				var dx: Vector2 = Lens.sample_point(display + Vector2(0.5, 0)) - Lens.sample_point(display - Vector2(0.5, 0))
 				var dy: Vector2 = Lens.sample_point(display + Vector2(0, 0.5)) - Lens.sample_point(display - Vector2(0, 0.5))
 				check(dx.cross(dy) > 0.05, "local lens does not fold or collapse at " + str(display))
-	check(largest_displacement > 2.0, "scene lens is visibly non-identity")
+	check(largest_displacement > 80.0, "funhouse displacement exceeds 80 authored display pixels")
+	var center_width: float = Lens.sample_point(Vector2(490,270)).x-Lens.sample_point(Vector2(470,270)).x
+	var bulge_width: float = Lens.sample_point(Vector2(682,270)).x-Lens.sample_point(Vector2(662,270)).x
+	check(center_width/bulge_width > 2.0, "glass visibly changes local width by more than 2x")
+	check(absf(center_width-20.0)<0.1, "central horizontal scale remains readable")
 	for source: Vector2 in [Vector2(71,145), Vector2(889,145), Vector2(71,396), Vector2(889,396), Vector2(156,280), Vector2(839,230), Vector2(839,302)]:
 		check(near(Lens.sample_point(Lens.display_point(source)), source), "authored stage edge/exit remains reachable at " + str(source))
 	for source: Vector2 in Model.FOOD:
@@ -208,6 +212,16 @@ func scaled_input() -> void:
 		game.scale=Vector2.ONE*fit
 		game.position=(available-Vector2(960,540)*fit)/2.0
 		await frames()
+		for anchor:Vector2 in [Vector2(71,145),Vector2(889,145),Vector2(71,396),Vector2(889,396),Vector2(480,270)]:
+			game.state.head=anchor
+			for screen_offset:float in [2.0,4.0]:
+				var displayed:Vector2=game.model_to_pointer(anchor)+Vector2(screen_offset/fit,0)
+				game.pointer=game.pointer_to_model(displayed)
+				check(absf(game.pointer_screen_distance()-screen_offset)<0.1, "fixed display-pixel steering tolerance across lens and resize " + str(dimensions))
+			await screen_touch(13,true,anchor)
+			check(game.dragging and near(game.pointer,anchor), "visible warped edge target can be touched at " + str(anchor)+" / "+str(dimensions))
+			await screen_touch(13,false,anchor,true)
+		game.state.head=Vector2(156,280)
 		var target:=Vector2(300,193)
 		await screen_mouse(true,target)
 		check(game.dragging and near(game.pointer,target), "root-routed mouse maps correctly at " + str(dimensions))

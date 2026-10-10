@@ -44,6 +44,7 @@ func setup(parameters: Dictionary) -> void:
 func _label(text: String,rect: Rect2,font_size: int,color: Color=CREAM,center: bool=false) -> Label:
 	var node:=Label.new(); node.text=text; node.position=rect.position; node.size=rect.size
 	node.add_theme_font_override("font",font); node.add_theme_font_size_override("font_size",font_size); node.add_theme_color_override("font_color",color)
+	node.add_theme_color_override("font_shadow_color",Color(.035,.025,.045,.85));node.add_theme_constant_override("shadow_offset_x",1);node.add_theme_constant_override("shadow_offset_y",2)
 	node.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; node.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	if center: node.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; node.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	add_child(node); return node
@@ -67,7 +68,7 @@ func _ready() -> void:
 	dash_button=_button("谢幕 · Space",Rect2(718,460,178,44),func(): queued_dash=true)
 	pause_button=_button("Ⅱ",Rect2(638,460,64,44),_pause)
 	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]: pause_button.add_theme_color_override(role,CREAM)
-	var pause_style:=StyleBoxFlat.new(); pause_style.bg_color=INK; pause_style.border_color=Color("595a77"); pause_style.set_border_width_all(1)
+	var pause_style:=StyleBoxEmpty.new()
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]: pause_button.add_theme_stylebox_override(mode,pause_style)
 	var pause_focus:=StyleBoxFlat.new(); pause_focus.bg_color=Color.TRANSPARENT; pause_focus.border_color=CREAM; pause_focus.set_border_width_all(2)
 	pause_button.add_theme_stylebox_override("focus",pause_focus)
@@ -93,6 +94,11 @@ func _notification(what: int) -> void:
 	if what==NOTIFICATION_APPLICATION_FOCUS_OUT and running: _pause()
 func pointer_to_model(point:Vector2)->Vector2:return Lens.sample_point(point)
 func model_to_pointer(point:Vector2)->Vector2:return Lens.display_point(point)
+func pointer_screen_distance()->float:
+	# The steering stop zone is measured after the lens and display transform.
+	# A fixed source-space circle would grow/shrink under the funhouse glass.
+	var transform:=get_global_transform_with_canvas()
+	return (transform*model_to_pointer(pointer)).distance_to(transform*model_to_pointer(state.head))
 func _release_pointer()->void:
 	dragging=false;pointer_device="";pointer_touch=-1;pointer_source_device=-999
 func _accept_pointer(point:Vector2)->bool:
@@ -119,7 +125,7 @@ func _process(delta: float) -> void:
 		while accumulator>=.05 and state.status=="running":
 			accumulator-=.05
 			var axis:=Vector2(float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
-			if axis.length()<.01 and dragging and pointer.distance_to(state.head)>9: axis=(pointer-state.head).normalized()
+			if axis.length()<.01 and dragging and pointer_screen_distance()>3: axis=(pointer-state.head).normalized()
 			var input: Dictionary={"x":axis.x,"y":axis.y,"dash":queued_dash}; queued_dash=false
 			trace.append(input); state=rules.step(state,input)
 			if state.status!="running":
@@ -148,12 +154,14 @@ func refresh() -> void:
 	if is_instance_valid(stage_view):stage_view.sync(self)
 	if is_instance_valid(ui_ink):ui_ink.queue_redraw()
 func draw_ui(canvas:CanvasItem)->void:
-	# UI and text deliberately sit outside the optical surface.
-	canvas.draw_rect(Rect2(58,43,844,70),Color(.045,.045,.076,.95))
-	canvas.draw_line(Vector2(67,114),Vector2(893,114),Color("8a6350"),1)
-	canvas.draw_rect(Rect2(47,424,867,89),Color(.045,.045,.076,.98))
+	# No opaque header, footer or dialog slabs. Copy stays in clear screen space
+	# on the curtain/footlight edges, with only a one-pixel glyph shadow.
+	if dragging and screen=="running":
+		var p:Vector2=model_to_pointer(pointer)
+		var display_scale:float=maxf(.1,get_global_transform_with_canvas().get_scale().x)
+		canvas.draw_arc(p,7.0/display_scale,0,TAU,24,Color(.02,.02,.04,.85),3.0/display_scale)
+		canvas.draw_arc(p,7.0/display_scale,0,TAU,24,Color(CREAM,.8),1.0/display_scale)
 	if is_instance_valid(font):
-		canvas.draw_string(font,Vector2(68,491),"影子咬掉了一截光。谢幕可以冲过去。" if state.get("lastEvent","")=="hurt" else "按住舞台拖动 / WASD 移动 · 集齐标点后从嘴里退场",HORIZONTAL_ALIGNMENT_LEFT,540,14,Color("b7bdd6"))
-	if screen!="running":
-		canvas.draw_rect(Rect2(186,165,588,244),Color(.06,.055,.095,.94))
-		canvas.draw_rect(Rect2(186,165,588,244),Color(COLORS[state.round],.65),false,1)
+		var hint:String="影子咬掉了一截光。谢幕可以冲过去。" if state.get("lastEvent","")=="hurt" else "按住舞台拖动 / WASD 移动 · 集齐标点后从嘴里退场"
+		canvas.draw_string(font,Vector2(69,493),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color(.035,.025,.045,.85))
+		canvas.draw_string(font,Vector2(68,491),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color("d9c6c1"))

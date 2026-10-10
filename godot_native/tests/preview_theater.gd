@@ -86,9 +86,9 @@ func _capture_replay()->void:
 					if state.dashCooldown<=1:game.queued_dash=true
 					elif state.dashTicks==0 and state.head.distance_to(hazard.position)<65:direction=(direction+(state.head-hazard.position).normalized()*1.6).normalized()
 			if not game.dragging:
-				var press:=InputEventMouseButton.new();press.button_index=MOUSE_BUTTON_LEFT;press.pressed=true;press.position=game.model_to_pointer(state.head+direction*11);game._gui_input(press)
+				var press:=InputEventMouseButton.new();press.button_index=MOUSE_BUTTON_LEFT;press.pressed=true;press.position=game.model_to_pointer(state.head+direction*35);game._gui_input(press)
 			else:
-				var motion:=InputEventMouseMotion.new();motion.position=game.model_to_pointer(state.head+direction*11);game._gui_input(motion)
+				var motion:=InputEventMouseMotion.new();motion.position=game.model_to_pointer(state.head+direction*35);game._gui_input(motion)
 			game._process(1.0/30.0)
 			await RenderingServer.frame_post_draw
 			get_viewport().get_texture().get_image().save_png(directory+"/%04d.png"%frame);frame+=1

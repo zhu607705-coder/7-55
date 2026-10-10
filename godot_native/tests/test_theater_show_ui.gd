@@ -7,6 +7,8 @@ func check(value: bool,message: String) -> void:
 	if not value: failures+=1; push_error("TEST FAILED: "+message)
 func _initialize() -> void: _run.call_deferred()
 func _run() -> void:
+	root.size=Vector2i(1440,900)
+	await process_frame
 	var state=root.get_node("State"); state.developer_mode=true; state.d=state.initial(); state.d.native.chapter=3; state.d.native.scene="theater_interior"; state.d.native.page="c3_theater"
 	state.d.runtimeMode="rpg"; state.d.rpgScene="theater_interior"; state.d.theaterHunt.active=true; state.d.theaterHunt.phase="spotlight_hunt"
 	var shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await process_frame
@@ -38,7 +40,7 @@ func _run() -> void:
 			event.button_mask=MOUSE_BUTTON_MASK_LEFT
 			if not game.dragging:
 				var press:=InputEventMouseButton.new();press.button_index=MOUSE_BUTTON_LEFT;press.pressed=true;event=press
-			event.position=game.model_to_pointer(s.head+direction*10)
+			event.position=game.model_to_pointer(s.head+direction*35)
 			game._gui_input(event); game._process(.05)
 		check(game.state.status=="won","actual native pointer/queued dash flow completes act "+str(round_id))
 		check(state.d.theaterHunt.spotlightRound==round_id+1,"submitted actual trace advances controller before result screen")
