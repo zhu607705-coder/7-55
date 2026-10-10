@@ -1,0 +1,1485 @@
+{
+  "checks": 986,
+  "failed": false,
+  "level": "stair_b",
+  "source": "original chapter4_stair_model.gd",
+  "trace": [
+    {
+      "action": {
+        "type": "initial"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000033378601,
+          2.70000004768372,
+          -2.15000009536743
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          1.70000004768372,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_START",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 1,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_east"
+      }
+    },
+    {
+      "action": {
+        "delta": -1,
+        "id": "b_lower_stair",
+        "type": "step"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          1.34999990463257,
+          2.70000004768372,
+          1.35000002384186
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          1.70000004768372,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_START",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 0,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_east"
+      }
+    },
+    {
+      "action": {
+        "delta": -1,
+        "id": "b_lower_stair",
+        "type": "step"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          1.70000004768372,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_START",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_east"
+      }
+    },
+    {
+      "action": {
+        "type": "view",
+        "value": "south_west"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_HIGH",
+          "b": "B_MID_LIFT_LOW",
+          "distance": 0.00694326870143414,
+          "id": "b_link_lower_stair_lift",
+          "kind": "perspective",
+          "valid": true
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          1.70000004768372,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_START",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_west"
+      }
+    },
+    {
+      "action": {
+        "node": "B_MID_LIFT_LOW",
+        "type": "walk"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_HIGH",
+          "b": "B_MID_LIFT_LOW",
+          "distance": 0.00694326870143414,
+          "id": "b_link_lower_stair_lift",
+          "kind": "perspective",
+          "valid": true
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          1.70000004768372,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [
+        "B_LOWER_LOW",
+        "B_LOWER_HIGH",
+        "B_MID_LIFT_LOW"
+      ],
+      "state": {
+        "node": "B_MID_LIFT_LOW",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_west"
+      }
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_mid_lift",
+        "type": "step"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          2.80000019073486,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_MID_LIFT_LOW",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 1,
+          "b_upper_stair": 0
+        },
+        "view": "south_west"
+      }
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_mid_lift",
+        "type": "step"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_MID_LIFT_LOW",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 0
+        },
+        "view": "south_west"
+      }
+    },
+    {
+      "action": {
+        "node": "B_UPPER_HIGH",
+        "type": "walk"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          0.30430006980896,
+          5.59999990463257,
+          3.51379990577698
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [
+        "B_MID_LIFT_HIGH",
+        "B_UPPER_LOW",
+        "B_UPPER_HIGH"
+      ],
+      "state": {
+        "node": "B_UPPER_HIGH",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 0
+        },
+        "view": "south_west"
+      }
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_upper_stair",
+        "type": "step"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          4.71379995346069,
+          5.59999990463257,
+          2.49569988250732
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_UPPER_HIGH",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "south_west"
+      }
+    },
+    {
+      "action": {
+        "type": "view",
+        "value": "top_oblique"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_UPPER_HIGH",
+          "b": "B_HIGH_ISLAND",
+          "distance": 0.001739501953125,
+          "id": "b_link_upper_stair_island",
+          "kind": "perspective",
+          "valid": true
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          4.71379995346069,
+          5.59999990463257,
+          2.49569988250732
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_UPPER_HIGH",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      }
+    },
+    {
+      "action": {
+        "node": "B_HIGH_ISLAND",
+        "type": "walk"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_UPPER_HIGH",
+          "b": "B_HIGH_ISLAND",
+          "distance": 0.001739501953125,
+          "id": "b_link_upper_stair_island",
+          "kind": "perspective",
+          "valid": true
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          8.11380004882812,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          4.71379995346069,
+          5.59999990463257,
+          2.49569988250732
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [
+        "B_HIGH_ISLAND"
+      ],
+      "state": {
+        "node": "B_HIGH_ISLAND",
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      }
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_exit_slide",
+        "type": "step"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_UPPER_HIGH",
+          "b": "B_HIGH_ISLAND",
+          "distance": 0.001739501953125,
+          "id": "b_link_upper_stair_island",
+          "kind": "perspective",
+          "valid": true
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          6.41380023956299,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          4.71379995346069,
+          5.59999990463257,
+          2.49569988250732
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_HIGH_ISLAND",
+        "values": {
+          "b_exit_slide": 1,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      }
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_exit_slide",
+        "type": "step"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_HIGH_ISLAND",
+          "b": "B_EXIT_SLIDE",
+          "id": "b_edge_island_slide",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_EXIT_SLIDE",
+          "b": "B_EXIT",
+          "id": "b_edge_slide_exit",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_UPPER_HIGH",
+          "b": "B_HIGH_ISLAND",
+          "distance": 0.001739501953125,
+          "id": "b_link_upper_stair_island",
+          "kind": "perspective",
+          "valid": true
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          4.71379995346069,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          4.71379995346069,
+          5.59999990463257,
+          2.49569988250732
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [],
+      "state": {
+        "node": "B_HIGH_ISLAND",
+        "values": {
+          "b_exit_slide": 2,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      }
+    },
+    {
+      "action": {
+        "node": "B_EXIT",
+        "type": "walk"
+      },
+      "edges": [
+        {
+          "a": "B_START",
+          "b": "B_LOWER_LOW",
+          "id": "b_edge_start_lower",
+          "kind": "physical"
+        },
+        {
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH",
+          "id": "b_edge_lower_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW",
+          "id": "b_edge_landing_upper",
+          "kind": "physical"
+        },
+        {
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH",
+          "id": "b_edge_upper_span",
+          "kind": "physical"
+        },
+        {
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "id": "b_edge_lift_landing",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_HIGH_ISLAND",
+          "b": "B_EXIT_SLIDE",
+          "id": "b_edge_island_slide",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_EXIT_SLIDE",
+          "b": "B_EXIT",
+          "id": "b_edge_slide_exit",
+          "kind": "mechanism"
+        },
+        {
+          "a": "B_UPPER_HIGH",
+          "b": "B_HIGH_ISLAND",
+          "distance": 0.001739501953125,
+          "id": "b_link_upper_stair_island",
+          "kind": "perspective",
+          "valid": true
+        }
+      ],
+      "positions": {
+        "B_EXIT": [
+          4.71379995346069,
+          8.54370021820068,
+          7.90000009536743
+        ],
+        "B_EXIT_SLIDE": [
+          4.71379995346069,
+          8.54370021820068,
+          5.69999980926514
+        ],
+        "B_HIGH_ISLAND": [
+          4.71379995346069,
+          8.54370021820068,
+          5.2039999961853
+        ],
+        "B_LOWER_HIGH": [
+          -2.15000009536743,
+          2.70000004768372,
+          4.84999990463257
+        ],
+        "B_LOWER_LOW": [
+          -2.15000009536743,
+          0.899999976158142,
+          1.35000002384186
+        ],
+        "B_MID_LIFT_HIGH": [
+          0.850000023841858,
+          3.90000009536743,
+          1.75
+        ],
+        "B_MID_LIFT_LOW": [
+          -0.30349999666214,
+          3.90000009536743,
+          2.77309989929199
+        ],
+        "B_START": [
+          -5.19999980926514,
+          0.899999976158142,
+          1.79999995231628
+        ],
+        "B_UPPER_HIGH": [
+          4.71379995346069,
+          5.59999990463257,
+          2.49569988250732
+        ],
+        "B_UPPER_LOW": [
+          2.0,
+          3.90000009536743,
+          0.800000011920929
+        ]
+      },
+      "route": [
+        "B_EXIT_SLIDE",
+        "B_EXIT"
+      ],
+      "state": {
+        "node": "B_EXIT",
+        "values": {
+          "b_exit_slide": 2,
+          "b_lower_stair": 3,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      }
+    }
+  ]
+}

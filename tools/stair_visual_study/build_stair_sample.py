@@ -9,8 +9,10 @@ from mathutils import Vector, Matrix
 
 P = argparse.ArgumentParser()
 P.add_argument('--output', required=True)
-P.add_argument('--variant', choices=['source', 'structure'], default='structure')
+P.add_argument('--variant', choices=['source', 'structure', 'pixel'], default='structure')
 P.add_argument('--render', action='store_true')
+P.add_argument('--actor-image', type=pathlib.Path)
+P.add_argument('--width', type=int, default=640)
 A = P.parse_args(sys.argv[sys.argv.index('--') + 1:])
 ROOT = pathlib.Path(__file__).resolve().parent
 D = json.loads((ROOT / 'stair_b_snapshot.json').read_text())
@@ -20,7 +22,8 @@ bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=Fal
 S = bpy.context.scene
 S.render.engine='CYCLES'; S.cycles.device='CPU'; S.cycles.samples=32; S.cycles.use_denoising=False
 S.render.threads_mode='FIXED'; S.render.threads=1
-S.render.resolution_x=640; S.render.resolution_y=360; S.render.resolution_percentage=100
+assert A.width in (640,960), "Use a tested 16:9 frame width"
+S.render.resolution_x=A.width; S.render.resolution_y=A.width*9//16; S.render.resolution_percentage=100
 S.render.image_settings.file_format='PNG'; S.render.film_transparent=False
 S.view_settings.view_transform='Standard'; S.view_settings.look='Medium High Contrast'
 S.view_settings.exposure=0; S.view_settings.gamma=1
@@ -45,6 +48,10 @@ M={
  'glass':material('Night window placeholder',(.055,.14,.20)),
  'nosing':material('Step nosing placeholder',(.63,.66,.63)),
 }
+if A.variant=='pixel':
+    sys.path.insert(0,str(ROOT))
+    from pixel_materials import make_palette, metric_uv
+    M=make_palette(OUT/'textures')
 OWN={}
 for key in ['level']+[m['id'] for m in L['mechanisms']]:
     o=bpy.data.objects.new(key,None); S.collection.objects.link(o); OWN[key]=o
@@ -63,6 +70,7 @@ def box(name, center, size, mat, owner='level', rotation=None):
     if rotation is not None: o.rotation_euler[2]=rotation
     o.data.materials.append(M[mat]); o.parent=OWN[owner]
     o['source_owner_id']=owner; o['render_only']=True
+    if A.variant=='pixel': metric_uv(o)
     return o
 
 
@@ -73,13 +81,14 @@ def beam(name,a,b,thickness,depth,mat,owner):
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     o.rotation_mode='QUATERNION'; o.rotation_quaternion=(b-a).to_track_quat('X','Z')
     o.data.materials.append(M[mat]); o.parent=OWN[owner]; o['render_only']=True
+    if A.variant=='pixel': metric_uv(o)
     return o
 
 
 for p in L['geometry']['platforms']:
     box(p['id'],p['center'],p['size'],p['material'],p['ownerId'])
     REPORT['platforms'].append({k:p[k] for k in ('id','ownerId','center','size','walkable')})
-    if A.variant=='structure' and p['walkable']:
+    if A.variant!='source' and p['walkable']:
         c=Vector(p['center']); sz=Vector(p['size'])
         # Render-only fascia entirely below the source top plane.
         box(p['id']+'_fascia',c-Vector((0,.105,0)),(sz.x+.025,.1,sz.z+.025),'stone_back',p['ownerId'])
@@ -104,7 +113,7 @@ for stair in L['geometry']['stairs']:
     for side in (-1,1):
         off=sideways*side*(width/2-.04)
         beam(stair['id']+'_stringer_'+str(side),a+off-Vector((0,.24,0)),b+off-Vector((0,.24,0)),
-             .09,.14 if A.variant=='source' else .24,'structure',owner)
+             .09,.14 if A.variant=='source' else .24,'structure' if A.variant!='pixel' else 'stone_back',owner)
         fractions=[.12,.37,.62,.87] if A.variant=='source' else [i/n for i in range(0,n+1,2)]+[1.0]
         for j,t in enumerate(sorted(set(fractions))):
             # Bases touch the same actual tread height. No hovering post feet.
@@ -115,10 +124,12 @@ for stair in L['geometry']['stairs']:
         f0,f1=(.105,.885) if A.variant=='source' else (0,1)
         beam(stair['id']+'_handrail_'+str(side),a.lerp(b,f0)+off+Vector((0,.72,0)),
              a.lerp(b,f1)+off+Vector((0,.72,0)),.065,.065,'structure',owner)
-        if A.variant=='structure':
+        if A.variant!='source':
             beam(stair['id']+'_lower_guard_'+str(side),a+off+Vector((0,.30,0)),b+off+Vector((0,.30,0)),.03,.035,'structure',owner)
+    if A.variant=='pixel':
+        beam(stair['id']+'_closed_underside',a-Vector((0,.30,0)),b-Vector((0,.30,0)),width,.17,'stone_back',owner)
     REPORT['stairs'].append({'id':stair['id'],'ownerId':owner,'from':list(a),'to':list(b),
-        'steps':n,'source_width':width,'tread_top_heights':heights,'continuous_rail':A.variant=='structure'})
+        'steps':n,'source_width':width,'tread_top_heights':heights,'continuous_rail':A.variant!='source'})
 
 # Source-faithful school anchors, kept deliberately simple until the web concept review.
 for d in L['geometry']['decorations']:
@@ -137,9 +148,56 @@ for d in L['geometry']['decorations']:
         box(name+'_leaf',(0,1.12,.02),(1.28,2.2,.12),'door',key)
         rig.location=v(p); rig.rotation_euler[2]=float(d.get('rotationY',0))
     elif kind=='potted_plant':
-        box(name+'_pot',p+Vector((0,.18,0)),(.4,.36,.4),'door')
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=.34,location=v(p+Vector((0,.65,0))))
-        o=bpy.context.object; o.name=name+'_foliage'; o.data.materials.append(M['stone_back']);o.parent=OWN['level']
+        box(name+'_pot',p+Vector((0,.18,0)),(.4,.36,.4),'stone_back' if A.variant=='pixel' else 'door')
+        if A.variant=='pixel':
+            box(name+'_pot_lip',p+Vector((0,.33,0)),(.44,.055,.44),'nosing')
+            box(name+'_soil',p+Vector((0,.36,0)),(.34,.025,.34),'door')
+            leaf_materials=[material('School plant leaf '+str(i),c) for i,c in enumerate(((.085,.16,.055),(.12,.23,.075),(.19,.30,.10)))]
+            for k in range(14):
+                angle=k*2.4; height=.43+(k%5)*.105; radius=.08+(k%3)*.06
+                leaf=p+Vector((math.cos(angle)*radius,height,math.sin(angle)*radius))
+                bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=1,location=v(leaf))
+                o=bpy.context.object;o.name=name+'_leaf_'+str(k);o.scale=(.115,.065,.035);o.rotation_euler=(.2,k*.7,angle);o.data.materials.append(leaf_materials[k%3]);o.parent=OWN['level']
+            box(name+'_stem',p+Vector((0,.57,0)),(.025,.45,.025),'door')
+        else:
+            bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=.34,location=v(p+Vector((0,.65,0))))
+            o=bpy.context.object; o.name=name+'_foliage'; o.data.materials.append(M['stone_back']);o.parent=OWN['level']
+
+if A.variant=='pixel':
+    # Surface dressings stay attached to the existing source back wall, not to routes.
+    wall=next(p for p in L['geometry']['platforms'] if not p['walkable'])
+    wc=Vector(wall['center']); ws=Vector(wall['size']); front=wc.z+ws.z/2
+    for j,height in enumerate((.9,3.9)):
+        box('wall_paint_band_'+str(j),(wc.x,height+.53,front+.012),(ws.x,1.06,.022),'wainscot')
+        box('wall_band_cap_'+str(j),(wc.x,height+1.07,front+.025),(ws.x,.045,.04),'stone_back')
+        box('wall_skirt_'+str(j),(wc.x,height-.05,front+.03),(ws.x,.15,.065),'outline')
+    for i,x in enumerate((-8,-3,2,7,11)):
+        box('wall_pier_'+str(i),(x,wc.y,front+.07),(.18,ws.y,.14),'stone_back')
+        box('wall_pier_face_'+str(i),(x,wc.y,front+.15),(.12,ws.y,.025),'nosing')
+    box('surface_conduit',(wc.x,7.5,front+.09),(ws.x,.037,.05),'structure')
+    glow=bpy.data.materials.new('Small warm lamp glass');glow.use_nodes=True
+    g=glow.node_tree.nodes.get('Principled BSDF');g.inputs['Base Color'].default_value=(1,.64,.23,1)
+    g.inputs['Emission Color'].default_value=(1,.52,.12,1);g.inputs['Emission Strength'].default_value=.65
+    M['lamp']=glow
+    for d in L['geometry']['decorations']:
+        if d['kind']!='wall_lamp':continue
+        p=Vector(d['position'])
+        box(d['id']+'_frame',p,(.19,.35,.20),'structure')
+        box(d['id']+'_glass',p+Vector((0,0,.115)),(.13,.25,.045),'lamp')
+        ld=bpy.data.lights.new(d['id']+'_warm','POINT');ld.energy=13;ld.color=(1,.65,.27);ld.shadow_soft_size=.1
+        ld.use_custom_distance=True;ld.cutoff_distance=1.1
+        light=bpy.data.objects.new(d['id']+'_warm',ld);S.collection.objects.link(light);light.location=v(p+Vector((0,0,.3)))
+    for d in L['geometry']['decorations']:
+        if d['kind']=='fire_door':
+            owner=d['id']+'_rig'
+            # All joinery remains beside/above the existing clear doorway.
+            for face in (-1,1):
+                for side in (-1,1):
+                    box(d['id']+'_wood_panel_%s_%s'%(face,side),(side*.33,1.1,face*.10),(.53,1.86,.04),'door',owner)
+                box(d['id']+'_vision_'+str(face),(.32,1.60,face*.135),(.20,.45,.016),'glass',owner)
+            box(d['id']+'_vision_panel',(.32,1.60,.135),(.20,.45,.016),'glass',owner)
+            box(d['id']+'_handle',(.46,1,.155),(.12,.035,.03),'nosing',owner)
+            box(d['id']+'_floor_sign',(1.02,1.65,0),(.29,.4,.055),'structure',owner)
 
 for m in L['mechanisms']:
     o=OWN[m['id']]; state=m['initialState']
@@ -159,9 +217,29 @@ cam_data.type='ORTHO'
 cam_data.ortho_scale=C['halfHeight']*2*S.render.resolution_x/S.render.resolution_y
 cam_data.clip_start=C['near']; cam_data.clip_end=C['far']; S.camera=cam
 
+# Optional original whole-body sprite for scale, with the same billboard camera.
+if A.actor_image:
+    assert A.actor_image.is_file(), A.actor_image
+    image=bpy.data.images.load(str(A.actor_image.resolve()));image.pack()
+    actor_mat=bpy.data.materials.new('Original player sprite scale reference');actor_mat.use_nodes=True
+    nd=actor_mat.node_tree.nodes;nd.clear();tx=nd.new('ShaderNodeTexImage');tx.image=image;tx.interpolation='Closest'
+    emit=nd.new('ShaderNodeEmission');trans=nd.new('ShaderNodeBsdfTransparent');mix=nd.new('ShaderNodeMixShader');out=nd.new('ShaderNodeOutputMaterial')
+    link=actor_mat.node_tree.links;link.new(tx.outputs['Color'],emit.inputs['Color']);link.new(tx.outputs['Alpha'],mix.inputs[0]);link.new(trans.outputs[0],mix.inputs[1]);link.new(emit.outputs[0],mix.inputs[2]);link.new(mix.outputs[0],out.inputs['Surface'])
+    start=next(n for n in L['nodes'] if n['id']==L['startNodeId'])
+    bpy.ops.mesh.primitive_plane_add(size=1,location=v(Vector(start['position'])+Vector((0,.875,0))))
+    actor=bpy.context.object;actor.name='Original player visual scale only';actor.dimensions=(1.75*image.size[0]/image.size[1],1.75,0)
+    bpy.ops.object.transform_apply(location=False,rotation=False,scale=True);actor.rotation_euler=cam.rotation_euler
+    actor.data.materials.append(actor_mat);actor.visible_shadow=False
+    REPORT['actor_reference_sha256']=hashlib.sha256(A.actor_image.read_bytes()).hexdigest()
+    REPORT['actor_animation']='static original whole sprite, no new pose claimed'
+
 sun_data=bpy.data.lights.new('Geometry reading key','AREA');sun=bpy.data.objects.new('Geometry reading key',sun_data)
-S.collection.objects.link(sun);sun.location=(-5,-3,15);sun_data.energy=2100;sun_data.shape='DISK';sun_data.size=8
+S.collection.objects.link(sun);sun.location=(-5,-3,15);sun_data.energy=2100 if A.variant!='pixel' else 1800;sun_data.shape='DISK';sun_data.size=8
 sun.rotation_euler=(v(C['center'])-sun.location).to_track_quat('-Z','Y').to_euler()
+if A.variant=='pixel':
+    fill_data=bpy.data.lights.new('Cool architectural ambient fill','AREA'); fill=bpy.data.objects.new('Cool architectural ambient fill',fill_data)
+    S.collection.objects.link(fill); fill.location=(8,-13,10);fill_data.energy=750;fill_data.color=(.84,.91,1);fill_data.shape='DISK';fill_data.size=10
+    fill.rotation_euler=(v(C['center'])-fill.location).to_track_quat('-Z','Y').to_euler()
 # Geometry and camera checks run on the actual Blender object transforms.
 bpy.context.view_layer.update()
 checks=0
@@ -192,9 +270,12 @@ for point in [Vector(n['position']) for n in L['nodes']]+[center]:
     assert abs(actual.x-expect_x)<1e-5 and abs(actual.y-expect_y)<1e-5, ('camera',actual,expect_x,expect_y)
     checks+=1
 REPORT['checks_passed']=checks
-REPORT['object_count']=len(S.objects); REPORT['render_resolution']=[640,360]
-REPORT['status']='Unapproved architectural geometry study; no gameplay and no final materials'
+REPORT['object_count']=len(S.objects); REPORT['render_resolution']=[S.render.resolution_x,S.render.resolution_y]
+REPORT['status']='Architectural appearance study based on reviewed web concept; no gameplay integration' if A.variant=='pixel' else 'Unapproved architectural geometry study; no gameplay and no final materials'
 (OUT/(A.variant+'-manifest.json')).write_text(json.dumps(REPORT,indent=2)+'\n')
+if A.variant=='pixel':
+    S.cycles.samples=96
+    S.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.65
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/(A.variant+'.blend')))
 S.render.filepath=str(OUT/(A.variant+'.png'))
 if A.render: bpy.ops.render.render(write_still=True)
