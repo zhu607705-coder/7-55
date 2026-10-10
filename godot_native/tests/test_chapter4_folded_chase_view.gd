@@ -5,6 +5,11 @@ extends SceneTree
 const View = preload("res://scripts/presentation/chapter4_folded_chase_view.gd")
 const Model = preload("res://scripts/games/chapter4_folded_chase_model.gd")
 const VIEW_SOURCE := "res://scripts/presentation/chapter4_folded_chase_view.gd"
+class CancelRoutingObserver extends Node:
+	var received := 0
+	func _unhandled_input(event: InputEvent) -> void:
+		if event is InputEventScreenTouch and event.canceled:
+			received += 1
 var checks := 0
 var failures := 0
 var verified_jump_poses := 0
@@ -40,11 +45,12 @@ func key(code: Key, pressed: bool, echo: bool = false) -> InputEventKey:
 	event.echo = echo
 	return event
 
-func touch(index: int, point: Vector2, pressed: bool) -> InputEventScreenTouch:
+func touch(index: int, point: Vector2, pressed: bool, canceled: bool = false) -> InputEventScreenTouch:
 	var event := InputEventScreenTouch.new()
 	event.index = index
 	event.position = point
 	event.pressed = pressed
+	event.canceled = canceled
 	return event
 
 func drag(index: int, point: Vector2) -> InputEventScreenDrag:
@@ -88,11 +94,13 @@ func run() -> void:
 	_test_source_art(game)
 	_test_keys(game)
 	_test_touch_and_pause(game)
+	_test_canceled_touches(game)
 	_test_fold_input(game)
 	await _test_fit(game)
 	_test_facing(game)
 	_test_lights(game)
 	_test_beam_path(game)
+	await _test_embedded_exit()
 	release_keys()
 	game.queue_free()
 	await frames()
@@ -427,6 +435,80 @@ func _test_touch_and_pause(game) -> void:
 	tick(game)
 	check(game.model.tick == int(before.tick) + 1 and int(game.model.input_log.back()) == 0,
 		"resume continues exactly once with neutral input")
+
+func _test_canceled_touches(game) -> void:
+	var observer := CancelRoutingObserver.new()
+	root.add_child(observer)
+	fresh(game)
+	dispatch(touch(90, Vector2(5,5), false, true))
+	check(observer.received == 1, "unowned canceled touch remains available to host input routing")
+	game._show_menu("paused routing fixture", "continue")
+	dispatch(touch(91, Vector2(5,5), true, true))
+	check(observer.received == 2 and game.primary_touch == -99,
+		"inactive preview neither consumes cancellation nor acquires a canceled pressed finger")
+	fresh(game)
+	var owned_origin: Vector2 = _actor_screen(game) + Vector2(110,30)
+	dispatch(touch(92, owned_origin, true))
+	dispatch(touch(92, owned_origin, false, true))
+	check(observer.received == 2 and game.primary_touch == -99,
+		"owned primary cancellation is consumed after its steering is cleared")
+	observer.free()
+	for canceled_pressed: bool in [false, true]:
+		fresh(game)
+		var origin: Vector2 = _actor_screen(game) + Vector2(110, 30)
+		dispatch(touch(21, origin, true))
+		check(game.primary_touch == 21 and game.touch_axis != 0, "cancel fixture acquires primary steering")
+		dispatch(touch(21, origin, canceled_pressed, true))
+		check(game.primary_touch == -99 and game.touch_axis == 0 and not game.queued_jump
+			and game.held_screen_axis == 0 and game.held_route_direction == 0,
+			"canceled primary clears every pending input without a short-tap jump")
+		tick(game)
+		check(int(game.model.input_log.back()) == 0 and game.model.player_grounded,
+			"primary cancellation creates neither movement nor jump on the next physics tick")
+		dispatch(touch(21, origin, false))
+		check(not game.queued_jump and game.primary_touch == -99, "release after cancellation cannot resurrect a tap")
+		game._unhandled_input(touch(22, origin, true, true))
+		check(game.primary_touch == -99 and not game.queued_jump,
+			"direct canceled-and-pressed event cannot acquire a finger or queue a jump")
+	fresh(game)
+	var origin: Vector2 = _actor_screen(game) + Vector2(110, 30)
+	dispatch(touch(23, origin, true))
+	dispatch(touch(24, origin, true, true))
+	check(game.primary_touch == 23 and game.touch_axis == 1 and not game.queued_jump,
+		"canceled secondary finger neither steals primary input nor queues its second-finger jump")
+	dispatch(touch(23, origin, false, true))
+	fresh(game)
+	dispatch(touch(25, origin, true))
+	dispatch(touch(25, origin, false))
+	check(game.queued_jump, "ordinary short tap still queues a jump after cancellation fixes")
+
+func _test_embedded_exit() -> void:
+	var previous_scene: Node = current_scene
+	var host := Node.new()
+	root.add_child(host)
+	current_scene = host
+	var preview = load("res://scenes/chapter4_folded_chase_preview.tscn").instantiate()
+	host.add_child(preview)
+	preview.set_process(false)
+	preview.set_physics_process(false)
+	await frames()
+	var exits := [0]
+	preview.exited.connect(func(): exits[0] += 1)
+	preview._start()
+	preview.queued_jump = true
+	preview.touch_axis = 1
+	check(preview.exited.is_connected(preview._exit_standalone_preview),
+		"canonical scene wires its standalone close listener")
+	var exit_button: Button = preview.menu.get_child(0).get_child(2)
+	exit_button.pressed.emit()
+	await frames()
+	check(exits[0] == 1 and not preview.active and not preview.queued_jump and preview.touch_axis == 0,
+		"embedded exit notifies host exactly once and clears the local attempt input")
+	check(current_scene == host and is_instance_valid(preview),
+		"embedded canonical preview does not quit the host or free its scene")
+	current_scene = previous_scene
+	host.queue_free()
+	await frames()
 
 func _test_fold_input(game) -> void:
 	fresh(game)

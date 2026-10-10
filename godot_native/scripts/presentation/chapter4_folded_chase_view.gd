@@ -417,8 +417,19 @@ func _build_ui() -> void:
 	var back := Button.new()
 	back.text = "离开预览"
 	back.custom_minimum_size.y = 42
-	back.pressed.connect(func(): active=false; _clear_input(); exited.emit())
+	back.pressed.connect(_request_exit)
 	column.add_child(back)
+
+func _request_exit() -> void:
+	active = false
+	_clear_input()
+	exited.emit()
+
+func _exit_standalone_preview() -> void:
+	# The canonical preview scene connects this signal. Embedded hosts keep
+	# ownership of their application and handle `exited` themselves.
+	if get_tree().current_scene == self:
+		get_tree().quit()
 
 func _fit() -> void:
 	if surface == null: return
@@ -575,6 +586,12 @@ func _hand_pixel(guard: bool, direction: String, frame: int) -> Vector2:
 	return anchors[direction][frame%8]
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and event.canceled:
+		var owned_primary: bool = primary_touch == event.index
+		_cancel_touch(event.index)
+		if owned_primary:
+			get_viewport().set_input_as_handled()
+		return
 	# Release is processed even over the menu; a lost release must never keep running.
 	if event is InputEventKey and not event.pressed and event.physical_keycode in [KEY_A,KEY_D,KEY_LEFT,KEY_RIGHT]:
 		if not (Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_RIGHT)):
@@ -583,6 +600,10 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.device != InputEvent.DEVICE_ID_EMULATION and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed: _pointer_press(-1,event.position,false)
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Also guard direct dispatch and unusual canceled+pressed platform events.
+	if event is InputEventScreenTouch and event.canceled:
+		_cancel_touch(event.index)
+		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:
 		if active:
 			focus_paused=true; _show_menu("已暂停", "继续")
@@ -608,6 +629,10 @@ func _pointer_press(index: int, point: Vector2, pressed: bool) -> void:
 	elif primary_touch==index:
 		if active and Time.get_ticks_msec()-touch_started<180 and point.distance_to(touch_origin)<22: queued_jump=true
 		primary_touch=-99; touch_axis=0; held_screen_axis=0; held_route_direction=0
+
+func _cancel_touch(index: int) -> void:
+	if primary_touch == index:
+		_clear_input()
 
 func _pointer_move(index: int, point: Vector2) -> void:
 	if primary_touch!=index: return

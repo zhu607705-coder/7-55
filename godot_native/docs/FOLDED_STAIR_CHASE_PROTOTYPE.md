@@ -148,3 +148,19 @@ Fresh light-path verification: **125 model + 826 view checks, zero failures**.
 The added view checks verify existing physical occluders, translucent/depth-tested
 mesh, exact lamp origin, bounded rays, wall/floor/rotated-box clipping, range misses,
 and zero path inside a solid. The automated model route remains unchanged.
+
+### Compatibility review corrections
+
+Independent read-only review found two preview input/lifecycle defects, now fixed:
+- A canceled primary touch clears steering and pending jump without becoming a
+  short tap. Canceled-and-pressed events cannot acquire a finger. Unowned or
+  inactive cancellations remain available to the host's input routing.
+- The canonical scene connects its exit signal to close only when it is the
+  SceneTree's current scene. Embedded hosts receive the exit signal and retain
+  control of their application; the preview never quits an embedding host.
+
+Fresh targeted verification: **125 model + 844 view checks, zero failures**,
+plus a separate-process canonical exit-button check. That process exits normally
+through the real button handler; a 2-second watchdog would fail if it stayed open.
+No GUI was used for these input-only changes, and the previous light-path images
+remain fixed-pose visual evidence rather than a manual full-route completion.
