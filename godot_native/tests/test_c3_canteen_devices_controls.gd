@@ -45,6 +45,9 @@ func check_readability(panel: Control) -> void:
 		if not label.visible or label.text.is_empty(): continue
 		check(label.get_line_count()<=label.get_visible_line_count(),"compact label fits all authored lines: "+label.name+" "+label.text)
 	for button in enabled_buttons(panel):
+		if button.text.is_empty() and panel.kind=="drink":
+			check(button.tooltip_text.begins_with("按压取出") and panel.press_sprite.texture!=null,"physical press target has matching raster art and accessible drink label")
+			continue
 		var fg: float=button.get_theme_color("font_hover_color").get_luminance()
 		var bg: float=button.get_theme_stylebox("hover").bg_color.get_luminance()
 		check(absf(fg-bg)>.4,"hover text retains readable contrast")

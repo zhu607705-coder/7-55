@@ -4,6 +4,11 @@ signal presentation_finished
 var hold_terminal_result:=false
 # Local presentation clock. Does not change Engine.time_scale or controller input.
 const PLAYBACK_RATE: float = 0.75
+const Press=preload("res://scripts/presentation/drink_machine_press.gd")
+const DISPENSER=preload("res://assets/native/canteen_objects/canteen_drink_dispenser.png")
+const NOZZLE_OUTLET:=Vector2(0,-178)
+var nozzle:Sprite2D
+var drip:Polygon2D
 const Source=preload("res://scripts/presentation/c3_mixer_session.gd")
 var base_sequence:Array=[]
 var shown_sequence:Array=[]
@@ -59,6 +64,10 @@ func _build()->void:
 	for i in range(5):foam.append(_poly(glass_root,"Foam"+str(i),[Vector2(-9,-4),Vector2(-9,-10),Vector2(-4,-10),Vector2(-4,-14),Vector2(4,-14),Vector2(4,-10),Vector2(9,-10),Vector2(9,-4)],Color("d8ded1")))
 	for i in range(10):motes.append(_poly(self,"Bubble"+str(i),[Vector2(-2,-2),Vector2(2,-2),Vector2(2,2),Vector2(-2,2)],Color("e7f5db")))
 	_install_rgba_art()
+	nozzle=_sprite(self,"FixedMachineNozzle")
+	nozzle.texture=DISPENSER;nozzle.region_rect=Rect2(586,790,84,100)
+	nozzle.scale=Vector2.ONE*.38;nozzle.position=NOZZLE_OUTLET-Vector2(84*.38/2,100*.38)
+	drip=_poly(self,"OutletLastDrop",[Vector2(0,-3),Vector2(2,0),Vector2(0,3),Vector2(-2,0)],Color.WHITE)
 func _sprite(parent:Node,part:String)->Sprite2D:
 	var node:=Sprite2D.new();node.name=part;node.centered=false;node.region_enabled=true;node.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST;parent.add_child(node);return node
 func _region_data(id:String)->Rect2:
@@ -134,7 +143,7 @@ func _color(id:String)->Color:
 func _pose()->void:
 	if glass_root==null:return
 	var t:=clampf(elapsed_ms/maxf(1,duration_ms),0,1)
-	var poured:=smoothstep(.25,.68,t) if playing and not denied else 1.0
+	var poured:=smoothstep(.18,.68,t) if playing and not denied else 1.0
 	var reaction:=sin(clampf((t-.33)/.67,0,1)*PI) if playing and not outcome.is_empty() else 0.0
 	var lift:float=0.0
 	glass_root.position=Vector2.ZERO;glass_root.scale=Vector2.ONE
@@ -146,19 +155,18 @@ func _pose()->void:
 		var wave:float=0 if reduced or not playing or denied else sin(t*TAU*2+i)*4*(1-t)
 		layer.polygon=PackedVector2Array([Vector2(-40,bottom),Vector2(-40,bottom-height+wave),Vector2(-14,bottom-height-wave*.55),Vector2(14,bottom-height+wave*.55),Vector2(40,bottom-height-wave),Vector2(40,bottom)])
 		layer.color=_color(str(shown_sequence[i]))
-	bottle.visible=playing and (denied or t<.96)
-	if bottle.visible:
-		var entry:=smoothstep(0,.25,t);var leave:=smoothstep(.68,.96,t)
-		bottle.position=pour_origin.lerp(Vector2(-9,-164),entry).lerp(pour_origin,leave) if not reduced else Vector2(-9,-164)
-		bottle.rotation=lerp_angle(PI,-PI/2,entry*(1-leave)) if not reduced else -PI/2
-		if denied:bottle.rotation=PI+.18*sin(t*PI)*(0 if reduced else 1);bottle.position=pour_origin
-		bottle.modulate.a=(1-smoothstep(.78,.96,t)) if not denied else .42
-		bottle_body.color=_color(item_id);bottle_cap.visible=denied;_sync_bottle_art()
-	stream.visible=playing and not denied and t>.25 and t<.68
+	# The cup and outlet never move. No free-floating bottle performs a pour.
+	bottle.hide()
+	stream.visible=playing and not denied and not reduced and t>=.18 and t<.68
 	if stream.visible:
 		var end_y:float=-7-(shown_sequence.size()-1)*43-40*poured
-		stream.polygon=PackedVector2Array([Vector2(-12,-164),Vector2(-6,-164),Vector2(3,end_y),Vector2(-3,end_y)])
+		stream.polygon=PackedVector2Array([NOZZLE_OUTLET+Vector2(-3,0),NOZZLE_OUTLET+Vector2(3,0),Vector2(3,end_y),Vector2(-3,end_y)])
 		stream.color=_color(item_id)
+	drip.visible=playing and not denied and not reduced and t>=.68 and t<.88
+	if drip.visible:
+		var surface_y:float=-7-(shown_sequence.size()-1)*43-40
+		drip.position=NOZZLE_OUTLET.lerp(Vector2(0,surface_y),clampf((t-.68)/.20,0,1))
+		drip.color=_color(item_id)
 	for i in range(foam.size()):
 		var part:=foam[i];part.visible=playing and outcome=="bad" and t>.34 and t<.95
 		part.position=Vector2(-36+i*18,-145+reaction*4)
@@ -172,3 +180,7 @@ func _pose()->void:
 		else:part.color=Color("e3f8e5")
 		part.scale=Vector2.ONE*(1+reaction if outcome=="success" else 1)
 		part.modulate.a=(.65 if reduced else .8)*(1-smoothstep(.7,.9,t));part.visible=part.visible and (not reduced or i<3)
+
+func press_frame() -> int:
+	if not playing or denied: return 0
+	return Press.frame_at(clampf(elapsed_ms/maxf(1.0,duration_ms),0.0,1.0),reduced)

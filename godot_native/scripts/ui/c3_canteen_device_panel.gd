@@ -2,6 +2,8 @@ extends Control
 ## Canteen devices use the existing chapter controller. Draft selection and
 ## layout are local; inventory, payment and progression remain authoritative.
 signal closed(reason: String)
+const MachinePress=preload("res://scripts/presentation/drink_machine_press.gd")
+var press_sprite:Sprite2D
 const DrinkMotion=preload("res://scripts/objects/canteen_drink_performance.gd")
 const DISPENSER_ASSET="res://assets/native/canteen_objects/canteen_drink_dispenser.png"
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
@@ -65,7 +67,10 @@ func _build() -> void:
 	_label("hint",14)
 	feedback_label=_label("feedback",14);feedback_label.hide()
 	if kind=="drink":
-		_button("take",str(content.drinks.takeOption),func(): _take())
+		_button("take","",func(): _take())
+		controls.take.tooltip_text="按压取出"+str(DRINKS[item_id].name)
+		for style_name in ["normal","hover","pressed","disabled"]: controls.take.add_theme_stylebox_override(style_name,StyleBoxEmpty.new())
+		press_sprite=MachinePress.sprite(DRINKS[item_id].color);press_sprite.name="DrinkMachinePress";add_child(press_sprite)
 		_button("cancel",str(content.drinks.cancelOption),func(): dismiss())
 		if ResourceLoader.exists(DISPENSER_ASSET): dispenser_texture=load(DISPENSER_ASSET)
 		if ResourceLoader.exists(DrinkMotion.ATLAS_PATH):
@@ -93,7 +98,7 @@ void fragment() {
 }"""
 			var material:=ShaderMaterial.new();material.shader=shader
 			material.set_shader_parameter("liquid_color",DRINKS[item_id].color)
-			dispense_view.material=material;dispense_view.hide();add_child(dispense_view)
+			dispense_view.material=material;dispense_view.show();add_child(dispense_view)
 	elif kind=="menu":
 		for option in content.menu.options:
 			var id: String=option.id
@@ -134,7 +139,7 @@ func configure_layout(viewport: Vector2,compact: bool) -> void:
 	compact_layout=compact;custom_minimum_size=Vector2.ZERO;size=viewport if compact else Vector2(960,540)
 	var portrait: bool=compact and viewport.y>viewport.x
 	var extent: Vector2
-	if not compact: extent=Vector2(470,278) if kind=="drink" else Vector2(570,376)
+	if not compact: extent=Vector2(500,370) if kind=="drink" else Vector2(570,376)
 	elif kind=="drink": extent=Vector2(minf(viewport.x-24,560),minf(viewport.y-24,380))
 	elif kind=="menu": extent=Vector2(minf(viewport.x-24,680),minf(viewport.y-24,660 if portrait else 366))
 	else: extent=Vector2(minf(viewport.x-24,680),minf(viewport.y-24,640 if portrait else 366))
@@ -144,18 +149,14 @@ func configure_layout(viewport: Vector2,compact: bool) -> void:
 	for label in labels.values(): label.add_theme_color_override("font_color",text_color)
 	if kind=="drink":
 		_place(labels.title,Rect2(p+Vector2(16,8),Vector2(w-32,38)))
-		illustration=Rect2(p+Vector2(36,66),Vector2(68,110))
-		_place(labels.body,Rect2(p+Vector2(118,64),Vector2(w-138,104)))
-		var by: float=h-124 if compact else 197
-		var bw: float=(w-48)/2
-		_place(controls.take,Rect2(p+Vector2(16,by),Vector2(bw,48)))
-		_place(controls.cancel,Rect2(p+Vector2(32+bw,by),Vector2(bw,48)))
-		_place(labels.hint,Rect2(p+Vector2(12,by+52),Vector2(w-24,48 if compact else 28)))
-		if not compact:
-			_place(controls.take,Rect2(303,328,164,48));_place(controls.cancel,Rect2(493,328,164,48))
-			_place(labels.hint,Rect2(245,378,470,28))
-			illustration=Rect2(343,188,68,110)
-			_place(labels.body,Rect2(420,185,220,104))
+		var center:=(p+Vector2(w*.27, h*.57)).round()
+		illustration=Rect2(center-Vector2(34,55),Vector2(68,110))
+		_place(labels.body,Rect2(p+Vector2(w*.51,112),Vector2(w*.45,116)))
+		_place(controls.take,Rect2(center+Vector2(-30,-136),Vector2(60,60)))
+		press_sprite.position=controls.take.position
+		press_sprite.scale=Vector2.ONE*(60.0/MachinePress.REGION_SIZE.y)
+		_place(controls.cancel,Rect2(p+Vector2(w-138,h-66),Vector2(120,44)))
+		_place(labels.hint,Rect2(p+Vector2(12,h-64),Vector2(w-162,50)))
 	elif kind=="menu":
 		labels.title.add_theme_font_size_override("font_size",17 if compact else 20)
 		_place(labels.title,Rect2(p+Vector2(16,8),Vector2(w-32,64 if portrait else 52)))
@@ -209,6 +210,7 @@ func configure_layout(viewport: Vector2,compact: bool) -> void:
 	feedback_label.visible=kind!="drink" and not feedback_label.text.is_empty()
 	if is_instance_valid(dispense_view):
 		_place(dispense_view,Rect2(_dispense_center()-Vector2(90,90),Vector2(180,180)))
+		_pose_dispense()
 	painted_dark=null
 	if active: _palette(bool(read_state.call().native.mode=="dark"))
 	queue_redraw()
@@ -228,7 +230,7 @@ func _take() -> void:
 	if active and is_same(after,bound_state) and result is Dictionary and DrinkMotion.accepted_item(action,before,after,result)==item_id and is_instance_valid(dispense_view):
 		dispensing=true;dispense_elapsed_ms=0
 		dispense_reduced=bool(after.native.settings.get("reduced_motion",false))
-		controls.take.disabled=true;controls.take.text="已领取"
+		controls.take.disabled=true
 		controls.cancel.text="关闭";controls.cancel.grab_focus()
 		dispense_view.show();_pose_dispense();refresh()
 	else:
@@ -250,10 +252,10 @@ func refresh() -> void:
 	if kind=="drink":
 		if dark or not chapter.side_active(c) or c.promoDrinkPlaced or c.queueGapOpened: dismiss("context_changed");return
 		labels.title.text=DRINKS[item_id].name
-		labels.body.text=str(content.drinks.alreadyOwned if s.items.get(item_id,false) else content.drinks.machinePrompt)
+		labels.body.text=str(content.drinks.alreadyOwned) if s.items.get(item_id,false) else "按压机身按钮\n接取"+str(DRINKS[item_id].name)
 		labels.hint.text="← / → 选择 · 空格 / 回车确认\nEsc 退出" if compact_layout else "← / → 选择 · 空格 / 回车确认 · Esc 退出"
 		if dispensing:
-			labels.body.text="已领取\n正在出杯"
+			labels.body.text="按钮已压下\n正在接取饮料"
 			labels.hint.text="Esc 或关闭可跳过动画"
 	elif kind=="menu":
 		if c.phase not in ["menu_order","pickup_search"] or int(c.orderAttemptCount)>initial_order_count: dismiss("order_complete");return
@@ -284,6 +286,12 @@ func _palette(dark: bool) -> void:
 			style.border_color=Color("75e4ff") if dark else Color("5a4932")
 func _pose_dispense() -> void:
 	var frame:int=DrinkMotion.frame_at(dispense_elapsed_ms,dispense_reduced)
+	if is_instance_valid(press_sprite):
+		# Existing bottle frames 1-5 flow; frame 6 is the final drop, 7 is dry.
+		var pressure:int=0
+		if dispensing:
+			pressure=2 if dispense_reduced else 1 if frame==0 else 2 if frame<6 else 3 if frame==6 else 0
+		press_sprite.region_rect=MachinePress.region(pressure)
 	if dispense_region!=null: dispense_region.region=DrinkMotion.frame_region(frame)
 	if is_instance_valid(dispense_view):
 		var material:ShaderMaterial=dispense_view.material
@@ -326,17 +334,17 @@ func _input(event: InputEvent) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouse or event is InputEventScreenTouch or event is InputEventScreenDrag: accept_event()
 func _dispense_center() -> Vector2:
-	return illustration.get_center()+Vector2(20 if compact_layout else 0,0)
+	return illustration.get_center()
 func _draw_dispense_bay() -> void:
 	if dispenser_texture==null: return
 	# Fixed parts from the same original machine used by all three world props.
 	# Only the blank backplate is fitted to the closeup; nozzle and grille remain
 	# separate source-image pieces. The generated bottle is an independent child.
 	var center:Vector2=_dispense_center()
-	var back:=Rect2(center+Vector2(-67,-63),Vector2(134,131))
+	var back:=Rect2(center+Vector2(-67,-143),Vector2(134,211))
 	draw_texture_rect_region(dispenser_texture,back,Rect2(490,891,274,59))
-	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(-78,-68),Vector2(14,151)),Rect2(459,795,28,252))
-	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(64,-68),Vector2(14,151)),Rect2(787,795,28,252))
+	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(-78,-148),Vector2(14,231)),Rect2(459,795,28,252))
+	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(64,-148),Vector2(14,231)),Rect2(787,795,28,252))
 	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(-67,68),Vector2(134,15)),Rect2(491,953,274,70))
 	# Atlas outlet is (64,38) in a 128px cell; the 180px closeup places it
 	# exactly 36.5625px above the illustration center.
@@ -347,13 +355,7 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO,size),Color(0.01,0.025,0.04,.82))
 	var light_menu: bool=kind=="menu" and read_state.call().native.mode=="light"
 	draw_rect(board,Color("f7f4ea") if light_menu else Color("07131d"));draw_rect(board,Color("5a4932") if light_menu else Color("63d4ef"),false,3)
-	if kind=="drink" and dispensing: _draw_dispense_bay()
-	if kind=="drink" and not dispensing:
-		var p: Vector2=illustration.position
-		draw_rect(Rect2(p+Vector2(9,16),Vector2(50,92)),DRINKS[item_id].accent)
-		draw_rect(Rect2(p+Vector2(17,32),Vector2(34,66)),DRINKS[item_id].color)
-		draw_rect(Rect2(p+Vector2(25,4),Vector2(18,12)),Color("f0cb59"))
-		draw_rect(Rect2(p+Vector2(9,16),Vector2(50,92)),Color("142c3b"),false,4)
+	if kind=="drink": _draw_dispense_bay()
 	elif kind=="bike":
 		var c: Dictionary=read_state.call().canteenHunt;var dark: bool=read_state.call().native.mode=="dark"
 		var p: Vector2=illustration.position

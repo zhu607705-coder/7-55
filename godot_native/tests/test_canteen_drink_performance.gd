@@ -390,7 +390,7 @@ func _test_real_panel(chapter: RefCounted, spec: Dictionary) -> void:
 			panel.set_process(false)
 			for viewport:Vector2 in [Vector2(1280,720),Vector2(960,540),Vector2(390,844),Vector2(430,860),Vector2(844,390)]:
 				panel.configure_layout(viewport,viewport.x<1100)
-				var bay:=Rect2(panel._dispense_center()+Vector2(-78,-68),Vector2(156,151))
+				var bay:=Rect2(panel._dispense_center()+Vector2(-78,-148),Vector2(156,231))
 				check(panel.board.encloses(bay), "fixed dispenser bay stays fully inside each source device board")
 				check(panel.dispense_view.position+panel.dispense_view.size/2==panel._dispense_center(), "bottle and fixed source spout share one closeup anchor")
 			panel.configure_layout(Vector2(960,540),false)

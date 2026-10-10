@@ -119,8 +119,8 @@ func run() -> void:
 		check(view.blocks_world_input() and view.size == Vector2(960,540), "modal publishes input block and fixed logical world extent")
 		for index in range(3):
 			var target:=Rect2(view.slots[index].position,view.slots[index].size)
-			var bottle: Sprite2D=view.surface.bottles[index]
-			check(target.encloses(Rect2(bottle.position,bottle.region_rect.size*bottle.scale)) and target.size.x>=44 and target.size.y>=44,"source ingredient slot targets its independently registered physical bottle")
+			var button: Sprite2D=view.surface.press_buttons[index]
+			check(target.encloses(button.transform*button.get_rect()) and target.size.x>=44 and target.size.y>=44,"source ingredient slot targets its independently registered physical machine button")
 		for index in range(3):
 			var id: String = recipe[index]
 			press(view, id)
@@ -128,7 +128,9 @@ func run() -> void:
 			if index < 2:
 				check(view.visible and view.session.button_order == slot_order and view.model.layers.size() == index+1, "accepted partial pour updates glass without shuffling or closing")
 				var slot_index: int = slot_order.find(id)
-				check(not view.slots[slot_index].disabled and view.slots[slot_index].tooltip_text.ends_with("·未持有") and view.surface.bottles[slot_index].modulate.a<0.3, "consumed slot stays in place with dim bottle and original missing tooltip")
+				var active_press: bool=view.surface.motion.playing and view.surface.motion.item_id==id
+				var button_alpha: float=view.surface.press_buttons[slot_index].modulate.a
+				check(not view.slots[slot_index].disabled and view.slots[slot_index].tooltip_text.ends_with("·未持有") and (is_equal_approx(button_alpha,1.0) if active_press else button_alpha<0.3), "consumed slot retains its missing tooltip and keeps only the active physical press bright")
 		check(view.finishing and closes.is_empty(), "terminal transaction retains optional presentation tail")
 		for beat in range(3): view.surface.motion._process(1.0)
 		view._process(1.0)

@@ -2,6 +2,7 @@ extends "res://tests/test_c3_devices_controls.gd"
 ## Seeded C3 fixtures and real native controls, not an unseeded campaign or CUA.
 const Motion=preload("res://scripts/presentation/c3_mixer_motion.gd")
 const WorldMotion=preload("res://scripts/objects/canteen_mixer_performance.gd")
+const Press=preload("res://scripts/presentation/drink_machine_press.gd")
 var rows: Array=[]
 func check(ok: bool,label: String) -> void:
 	super.check(ok,label);rows.append({"check":label,"passed":ok})
@@ -41,6 +42,7 @@ func run() -> void:
 		await open_world("canteen-mixer")
 		var panel: Control=shell.c3_device_panel
 		var motion: Node2D=panel.surface.motion
+		check(panel.art_board.encloses(panel.surface.machine_bounds),"physical machine frame remains inside every desktop/compact board")
 		check(motion.glass_sprite.region_rect.size*motion.glass_sprite.scale==Vector2(346,557)*(150.0/557.0),"glass uses uniform original aspect")
 		var fixed_contact: Vector2=motion.position;var fixed_scale: Vector2=motion.scale
 		var prompt_rect:=Rect2(panel.prompt_label.position,panel.prompt_label.size)
@@ -57,25 +59,28 @@ func run() -> void:
 		check(panel.prompt_label.visible and not panel.feedback_label.visible,"cleared feedback restores the same single operation row")
 		for label: Label in panel.labels:
 			check(not Rect2(label.position,label.size).intersects(prompt_rect),"ingredient caption does not collide with instruction text")
-			check(label.text in panel.session.NAMES.values(),"bottle caption contains only the drink name")
+			check(label.text in panel.session.NAMES.values(),"machine button caption contains only the drink name")
 			check(label.get_minimum_size().y<=label.size.y,"drink name fits its reserved caption")
 		if panel.compact_portrait:
-			for foot: Vector2 in panel.surface.bottle_feet:
-				check(foot.y<panel.art_board.position.y+panel.art_board.size.y*(800.0/1024.0),"portrait bottle contact stays on wood, above the original metal front edge")
+			for button: Sprite2D in panel.surface.press_buttons:
+				var bounds: Rect2=button.transform*button.get_rect()
+				check(bounds.end.y<panel.art_board.position.y+panel.art_board.size.y*(800.0/1024.0),"portrait machine button stays above the original metal front edge")
 		var snapshot: Dictionary=state.d.duplicate(true)
 		panel.refresh();panel.configure_layout(panel.size,panel.compact_layout)
 		check(state.d==snapshot,"refresh and resize cannot write a recipe or inventory")
 		var chosen: int=panel.session.button_order.find("blackCoffee")
 		var old_order: Array=panel.session.button_order.duplicate()
 		await click(panel.slots[chosen]);motion.set_process(false)
-		check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"] and not state.d.items.blackCoffee,"physical coffee bottle submits exactly the original action")
+		check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"] and not state.d.items.blackCoffee,"physical coffee button submits exactly the original action")
 		motion.sample_pose(180)
-		check(motion.stream.visible and motion.bottle_sprite.texture!=null,"accepted first pour has independent real bottle and liquid stream")
+		panel.surface._process(0)
+		check(motion.stream.visible and motion.nozzle.texture!=null and motion.press_frame()==2,"accepted first press holds its button and pours from an independent real nozzle")
 		check(motion.position==fixed_contact and motion.scale==fixed_scale,"pour leaves the worktop and cup contact fixed")
-		check(not panel.surface.bottles[chosen].visible,"active bottle has no duplicated stationary copy")
-		check(motion.bottle_sprite.scale.x==motion.bottle_sprite.scale.y,"active bottle retains original uniform proportions")
+		check(panel.surface.press_buttons[chosen].visible and not motion.bottle.visible,"active button stays mounted and no free-floating bottle is shown")
+		check(panel.surface.press_buttons[chosen].scale.x==panel.surface.press_buttons[chosen].scale.y and panel.surface.press_buttons[chosen].region_rect==Press.region(2),"depressed machine button uses the real uniformly scaled hold frame")
 		var a:=Rect2(panel.slots[chosen].position,panel.slots[chosen].size)
-		check(a.encloses(Rect2(panel.surface.bottles[chosen].position,panel.surface.bottles[chosen].region_rect.size*panel.surface.bottles[chosen].scale)),"physical bottle remains the original slot target")
+		var button: Sprite2D=panel.surface.press_buttons[chosen]
+		check(a.encloses(button.transform*button.get_rect()),"physical machine button remains inside its original slot target")
 		var count: int=motion.observed_accepts
 		await click(panel.slots[chosen])
 		check(motion.observed_accepts==count and state.d.canteenHunt.drinkMixSequence==["blackCoffee"],"missing repeat feedback cannot consume or repeat an accepted pour")
