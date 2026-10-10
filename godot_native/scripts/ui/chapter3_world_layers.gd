@@ -160,6 +160,7 @@ func entries(s: Dictionary) -> Array:
 		var bob: float=0 if reduced(s) or admission_elapsed(s)<9000 else _yoyo(clock_ms,1350)
 		result.append({"id":"ticket_inspector","kind":"sprite","asset":admission.asset,"point":Vector2(753,681+offset-16-bob)+admission.offset,"angle":admission.angle,"scale":.75,"depth":832+offset})
 		result.append({"id":"ticket_reader","kind":"reader","point":Vector2(907,690+offset),"admitted":admission.accepted,"check_progress":admission.check_progress,"pulse":admission.pulse,"depth":839+offset})
+		result.append({"id":"ticket_gate_arm","kind":"ticket_gate_arm","point":AdmissionFeedback.GATE_HINGE,"open_ratio":admission.gate_open,"depth":794})
 		for target: Dictionary in worlds.theater_interior.interactionTargets:
 			if target.kind=="program" and t.phase=="program_search" and not t.collectedProgramIds.has(target.programId):
 				result.append({"id":"program_"+str(target.programId),"kind":"sprite","asset":asset("program"+str(target.programId).capitalize()+"Url"),"point":Vector2(target.x,target.y),"size":Vector2(48,48),"depth":target.y+40,"glow":dark})
@@ -197,6 +198,11 @@ func canteen_occlusion(cover: Dictionary, player: Vector2, is_reduced: bool) -> 
 
 func draw_landmarks(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
 	bike_view.draw_hint(canvas,context,s)
+	# The raised entry arm is in front of the lower seat crop. That crop is
+	# emitted after the sorted actors when the player walks into the passage.
+	if scene_id=="theater_interior" and float(context.player.y)<651:
+		for entry:Dictionary in entries(s):
+			if entry.id=="ticket_gate_arm":_draw_entry(canvas,context,entry)
 	# Small presentation repair for an existing authored mixer hotspot that was
 	# otherwise indistinguishable from the five ordering kiosks in the base plate.
 	# No recipe/color clue, collision, availability, or transaction change.
@@ -305,6 +311,17 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> vo
 		canvas.draw_rect(Rect2(-entry.size/2,entry.size),Color("9af4ff",entry.alpha))
 	elif entry.kind=="tray":
 		canvas.draw_style_box(_rounded(Color("9eabad"),Color("59686d"),3),Rect2(-11,-7,22,13)); canvas.draw_style_box(_rounded(Color("e7ece9"),Color.TRANSPARENT,2),Rect2(-9,-5,18,9))
+	elif entry.kind=="ticket_gate_arm":
+		var tip:Vector2=(AdmissionFeedback.gate_tip(float(entry.open_ratio))-AdmissionFeedback.GATE_HINGE).round()
+		# Pixel-straight warm metal, with a fixed hinge at the actual ticket gap.
+		canvas.draw_line(Vector2.ZERO,tip,Color("281f1b"),9)
+		canvas.draw_line(Vector2.ZERO,tip,Color("c7a970"),5)
+		canvas.draw_line(Vector2.ZERO,tip,Color("f0dfb2"),2)
+		for band in [0.28,0.58,0.84]:
+			var p:Vector2=tip*band;var normal:=Vector2(-tip.y,tip.x).normalized()*3
+			canvas.draw_line(p-normal,p+normal,Color("78513b"),4)
+		canvas.draw_rect(Rect2(-5,-6,10,12),Color("281f1b"))
+		canvas.draw_rect(Rect2(-3,-4,6,8),Color("c7a970"))
 	elif entry.kind=="reader":
 		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-11,-13),Vector2(22,42)))
 		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-17,-30.5),Vector2(34,25)))

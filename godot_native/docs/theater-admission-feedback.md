@@ -15,3 +15,11 @@ The controller remains unchanged: a valid combined ticket in light mode at the g
 - Existing world layers, narrative model/shell, portrait narrative contract, chapter 3 progression and audio wiring regressions run separately
 
 Review recording uses a prepared pre-admission checkpoint with the already-combined ticket. A physical click on the rendered reader issues the real interaction. It must retain the original dialogue timing and terminal handoff; it is not footage of earning the ticket from a new game.
+
+## Ticket-passage correction
+
+The first review clip began inside the exterior door's existing proximity sensor. That unrelated double door therefore opened before the reader was clicked. Neither its rotation nor the original admission destination was incorrect. The corrected capture starts at (842,740), inside the reader radius and outside both exterior-door sensor bands, and frames the actual ticket passage above the exterior entrance.
+
+A small warm-metal pixel arm now makes the existing `THEATER_GATE_BLOCKER` visible. Its fixed hinge is (883,700); the closed tip is (786,700). The same accepted-ticket event which already removes the blocker starts a 520ms lift (120ms reduced) and the reader's green check. The arm raises beside the reader to (883,603), leaving the central passage clear. Ground sorting uses the blocker south edge and the player's actual foot bottom, and the raised arm stays in front of the lower seat foreground crop. This is presentation only: the controller, collision removal time, dialogue, inventory and final auditorium destination are unchanged.
+
+`test_theater_gate_passage.gd` adds 194 checks: safe reader position, exterior sensor closure, original pre-admission blocking, exactly one removed collision, no changed remaining collision, accepted-edge feedback, arm geometry/sorting, pause, collision-safe ordinary northward movement, retained ticket, once-only original handoff, bounded normal/reduced opening and restored-save pose. The full admission test and existing narrative/world/portrait/audio regressions remain green locally.

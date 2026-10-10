@@ -28,7 +28,7 @@ func run()->void:
 			check(ResourceLoader.exists(pose.asset),"all poses reuse existing source actor art")
 			check(pose.offset.length()<=4.01 and absf(pose.angle)<=3.01,"bounded original-scale gesture")
 			if reduced:check(pose.offset==Vector2.ZERO and pose.angle==0 and pose.pulse==0,"reduced motion has no nod or pulse")
-	check(not Feedback.sample(899,true).accepted and Feedback.sample(900,true).accepted,"success follows completed scan")
+	check(Feedback.sample(0,true).accepted and Feedback.sample(260,true).check_progress==1,"reader acknowledges the same accepted event as gate release")
 	check(Feedback.sample(1020,true).offset.y>0 and Feedback.sample(1420,true).asset.ends_with("idle_right.png"),"nod resolves to direction-facing pose")
 	check(Feedback.sample(INF,true).check_progress==1 and Feedback.sample(INF,true).offset==Vector2.ZERO,"loaded admitted state has settled check without replay")
 	for denied in ["missing","dark","far"]:
