@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import {
-  createTheaterShow, getTheaterShowFood, getTheaterShowHazards, getTheaterShowMouth,
+  createTheaterShow, getTheaterPointerAxis, getTheaterFocusTicks, getTheaterActiveFood, getTheaterPairs, getTheaterEcho, getTheaterLightRadius, isTheaterFoodBlocked, getTheaterShowFood, getTheaterShowHazards, getTheaterShowMouth,
   stepTheaterShow, THEATER_SHOW_ACTS, THEATER_SHOW_MAX_TICKS, THEATER_SHOW_STEP_MS,
   type TheaterShowInput, type TheaterShowPoint, type TheaterShowState, type TheaterSpotlightAttempt
 } from "./TheaterSpotlightModel";
@@ -127,9 +127,7 @@ export class TheaterImpossibleShow {
         this.accumulator -= THEATER_SHOW_STEP_MS;
         let { x, y } = keyboard;
         if (Math.hypot(x, y) < 0.01 && this.pointerTarget) {
-          const dx = this.pointerTarget.x - this.model.head.x, dy = this.pointerTarget.y - this.model.head.y;
-          const distance = Math.hypot(dx, dy);
-          if (distance > 9) { x = dx / distance; y = dy / distance; }
+          ({x,y}=getTheaterPointerAxis(this.model,this.pointerTarget,this.queuedDash));
         }
         const input: TheaterShowInput = { x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)), dash: this.queuedDash };
         this.queuedDash = false;
@@ -211,12 +209,24 @@ export class TheaterImpossibleShow {
       if (exitOpen) g.fillRect(mouth.x - 30 + i * 13, mouth.y + 19, 9, 10);
     }
     this.mouthLabel.setPosition(mouth.x, mouth.y + (exitOpen ? 57 : 35)).setText(exitOpen ? "请从嘴里退场" : `还差 ${act.count - s.collected.length} 个标点`);
-    const foods = getTheaterShowFood(s);
+    const foods = getTheaterShowFood(s), active=getTheaterActiveFood(s), ghost=getTheaterEcho(s);
+    if(ghost){g.lineStyle(2,0x78eeed,.6).strokeCircle(ghost.x,ghost.y,18);g.fillStyle(0x78eeed,.65).fillCircle(ghost.x,ghost.y,13);g.fillStyle(0x477d96,.8).fillRect(ghost.x-15,ghost.y-19,30,5).fillRect(ghost.x-8,ghost.y-32,16,15);}
+
     this.foodLabels.forEach(label => label.setVisible(false));
     for (const food of foods) {
       g.fillStyle(act.color, 0.08).fillCircle(food.x, food.y, 28 + Math.sin(t * 3 + food.id) * 3);
       g.lineStyle(1, act.color, 0.25).strokeCircle(food.x, food.y, 24);
-      this.foodLabels[food.id].setPosition(food.x, food.y - 9 + Math.sin(t * 3 + food.id) * 2).setVisible(true);
+      const enabled=active.includes(food.id)||s.primed===food.id;
+      const ownLit=enabled&&Math.hypot(food.x-s.head.x,food.y-s.head.y)<getTheaterLightRadius(s)&&!isTheaterFoodBlocked(s,food.id);
+      const echoLit=enabled&&ghost&&Math.hypot(food.x-ghost.x,food.y-ghost.y)<getTheaterLightRadius(s)&&!isTheaterFoodBlocked(s,food.id,ghost);
+      if(ownLit)g.lineStyle(2,0xffd76f,.45).lineBetween(s.head.x,s.head.y,food.x,food.y);
+      if(echoLit&&ghost)g.lineStyle(2,0x78eeed,.7).lineBetween(ghost.x,ghost.y,food.x,food.y);
+      const group=getTheaterPairs(s).findIndex(pair=>pair.includes(food.id));
+      g.lineStyle(2,[0xffcf68,0x94f3d0,0xff94bc][Math.max(0,group)],enabled ? .75 : .15).strokeCircle(food.x,food.y,23);
+      const blocked=enabled&&!ownLit&&!echoLit&&Math.hypot(food.x-s.head.x,food.y-s.head.y)<getTheaterLightRadius(s)&&isTheaterFoodBlocked(s,food.id), progress=s.focus[food.id]/getTheaterFocusTicks(s);
+      if(progress>0)g.lineStyle(3,COLORS.cream,1).beginPath().arc(food.x,food.y,25,-Math.PI/2,-Math.PI/2+Math.PI*2*progress,false).strokePath();
+      if(blocked){g.lineStyle(2,0xb77a86,1).lineBetween(food.x-10,food.y-10,food.x+10,food.y+10).lineBetween(food.x+10,food.y-10,food.x-10,food.y+10);}
+      this.foodLabels[food.id].setPosition(food.x, food.y - 9 + Math.sin(t * 3 + food.id) * 2).setVisible(!blocked).setAlpha(enabled?1:.35);
     }
     for (const hazard of getTheaterShowHazards(s)) {
       if (hazard.kind === "chair") this.chair(hazard.x, hazard.y, t * 6 + hazard.x);
@@ -247,7 +257,7 @@ export class TheaterImpossibleShow {
     g.fillStyle(s.dashCooldown === 0 ? act.color : 0x4a4c65).fillRect(DASH.x, DASH.y, DASH.width, DASH.height);
     this.dashLabel.setText(s.dashCooldown > 0 ? `谢幕冷却 ${Math.ceil(s.dashCooldown / 20)}s` : "谢幕 · Space");
     this.hud.setText(`标点 ${s.collected.length}/${act.count}     灯芯 ${"●".repeat(s.lives)}${"○".repeat(3 - s.lives)}     ${Math.ceil((THEATER_SHOW_MAX_TICKS - s.tick) / 20)}s`);
-    this.status.setText(s.lastEvent === "hurt" ? "影子咬掉了一截光。谢幕可以冲过去。" : "按住舞台拖动 / WASD 移动 · 集齐标点后从嘴里退场");
+    this.status.setText(s.lastEvent === "hurt" ? (s.round===2?"椅子或观众碰断了光 · 已接好的光保留":"影子咬掉了一截光。谢幕可以冲过去。") : (s.round===2?"同色成对 · 避开椅子和观众":s.round===1?(s.primed>=0?`接到另一枚同色问号 · ${(s.pairTicks*.05).toFixed(1)}s`:"同色两枚接成一组 · 中央最后点亮"):"追上游走标点 · 集齐后从嘴里退场"));
     for (const label of [this.overlayTitle, this.overlayBody, this.primaryLabel]) label.setVisible(overlay);
     if (overlay) {
       g.fillStyle(0x0a0f23, 0.84).fillRect(48, 128, 864, 296);
@@ -256,7 +266,7 @@ export class TheaterImpossibleShow {
       g.fillStyle(act.color).fillRect(PRIMARY.x, PRIMARY.y, PRIMARY.width, PRIMARY.height);
       if (this.screen === "intro") {
         this.overlayTitle.setText(act.title);
-        this.overlayBody.setText(`${act.subtitle}\n按住舞台拖动，或用 WASD / 方向键移动。\nSpace「谢幕」可以短暂穿过影子。`);
+        this.overlayBody.setText(`${act.subtitle}\n按住舞台拖动，或用 WASD / 方向键移动。\nSpace「谢幕」可以短暂穿过障碍。`);
         this.primaryLabel.setText("让灯自己演");
       } else if (this.screen === "paused") {
         this.overlayTitle.setText("演出暂停，影子也停下了");
@@ -265,7 +275,7 @@ export class TheaterImpossibleShow {
       } else if (this.screen === "awaiting") {
         this.overlayTitle.setText("正在收下这场演出"); this.overlayBody.setText(""); this.primaryLabel.setText("稍等一下");
       } else {
-        this.overlayTitle.setText(this.approved ? this.finalAct ? "全体观众，都被演出了" : "这一幕已经无法撤回" : "影子把这场演出吃掉了");
+        this.overlayTitle.setText(this.approved ? this.finalAct ? "全体观众，都被演出了" : "这一幕已经无法撤回" : (s.round===2?"光被舞台上的障碍碰散了":"影子把这场演出吃掉了"));
         this.overlayBody.setText(this.approved ? this.finalAct ? "灯光谢幕。台上只剩下一张湿节目单。" : "收下这一幕。下一幕的规则会变。" : "已经完成的幕次保留。\n再演一次，这一幕从头开始。");
         this.primaryLabel.setText(this.approved ? this.finalAct ? "拉开最后的幕布" : "下一幕" : "重演这一幕");
       }

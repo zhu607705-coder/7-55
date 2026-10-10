@@ -27,6 +27,22 @@ func assert_palette(button: Button,fill: Color,ink: Color,border: Color,width: i
 	check(focus!=null,label+" has a focus indicator")
 	if focus is StyleBoxFlat:
 		check(contrast(focus.border_color,fill)>=3.0,label+" focus outline contrast at least3:1")
+func assert_transparent_pause(button: Button,ink: Color,label: String) -> void:
+	# This control deliberately has no painted slab; opaque controls keep assert_palette.
+	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
+		check(button.has_theme_stylebox_override(mode),label+" "+mode+" has an explicit local style")
+		check(button.get_theme_stylebox(mode) is StyleBoxEmpty,label+" "+mode+" stays transparent")
+	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]:
+		check(button.get_theme_color(role).is_equal_approx(ink),label+" "+role+" keeps local ink")
+	check(button.focus_mode==Control.FOCUS_ALL,label+" remains keyboard focusable")
+	check(button.has_theme_stylebox_override("focus"),label+" has an explicit focus indicator")
+	var focus: StyleBox=button.get_theme_stylebox("focus")
+	check(focus is StyleBoxFlat,label+" focus uses an outline rather than an empty style")
+	if not focus is StyleBoxFlat:return
+	var outline: StyleBoxFlat=focus as StyleBoxFlat
+	check(is_zero_approx(outline.bg_color.a),label+" focus keeps its background transparent")
+	check(outline.border_color.is_equal_approx(ink) and is_equal_approx(outline.border_color.a,1.0),label+" focus keeps its visible local outline")
+	check(outline.border_width_left==2 and outline.border_width_top==2 and outline.border_width_right==2 and outline.border_width_bottom==2,label+" focus retains a two-pixel outline on every side")
 func frames(count: int=2) -> void:
 	for i in count:await process_frame
 func run() -> void:
@@ -49,7 +65,8 @@ func run() -> void:
 	var spotlight=load("res://scripts/games/c3_spotlight.gd").new();main.add_child(spotlight);spotlight.set_process(false)
 	for round_index in 3:
 		spotlight.setup({"round":round_index,"attempt":0})
-		assert_palette(spotlight.pause_button,Color("11152d"),Color("fff0cb"),Color("595a77"),1,"spotlight pause round"+str(round_index))
+		# Pause freezing/input release are covered by test_theater_show_ui and test_theater_lens.
+		assert_transparent_pause(spotlight.pause_button,Color("fff0cb"),"spotlight pause round"+str(round_index))
 		for button: Button in [spotlight.start_button,spotlight.dash_button]:
 			assert_palette(button,[Color("ffcf68"),Color("94f3d0"),Color("ff94bc")][round_index],Color("11152d"),Color.TRANSPARENT,0,"spotlight action round"+str(round_index))
 		check(spotlight.state.round==round_index and spotlight.state.tick==0,"style refresh does not advance spotlight model")

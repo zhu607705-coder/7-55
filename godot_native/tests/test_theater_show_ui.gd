@@ -7,6 +7,8 @@ func check(value: bool,message: String) -> void:
 	if not value: failures+=1; push_error("TEST FAILED: "+message)
 func _initialize() -> void: _run.call_deferred()
 func _run() -> void:
+	root.size=Vector2i(1440,900)
+	await process_frame
 	var state=root.get_node("State"); state.developer_mode=true; state.d=state.initial(); state.d.native.chapter=3; state.d.native.scene="theater_interior"; state.d.native.page="c3_theater"
 	state.d.runtimeMode="rpg"; state.d.rpgScene="theater_interior"; state.d.theaterHunt.active=true; state.d.theaterHunt.phase="spotlight_hunt"
 	var shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await process_frame
@@ -22,20 +24,9 @@ func _run() -> void:
 		game.pause_button.pressed.emit(); var paused_tick: int=game.state.tick; game._process(.1)
 		check(game.screen=="paused" and game.state.tick==paused_tick,"pause halts model")
 		game.start_button.pressed.emit()
-		var rules:=Model.new()
-		var loops:=0
-		while game.state.status=="running" and loops<1601:
-			loops+=1
-			var s: Dictionary=game.state; var aim: Vector2=rules.mouth(s); var closest:=INF
-			for i in int(Model.ACTS[round_id].count):
-				if not s.collected.has(i) and s.head.distance_to(Model.FOOD[i])<closest: closest=s.head.distance_to(Model.FOOD[i]); aim=Model.FOOD[i]
-			var direction: Vector2=(aim-s.head).normalized()
-			for hazard: Dictionary in rules.hazards(s):
-				if s.head.distance_to(hazard.position)<100 and s.invulnerable==0:
-					if s.dashCooldown<=1: game.dash_button.pressed.emit()
-					elif s.dashTicks==0 and s.head.distance_to(hazard.position)<65: direction=(direction+(s.head-hazard.position).normalized()*1.6).normalized()
-			var event:=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.pressed=true; event.position=s.head+direction*10
-			game._gui_input(event); game._process(.05)
+		var proof:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/spotlight_%d.json"%round_id))
+		for input:Dictionary in proof.inputs:
+			preload("res://tests/theater_trace_pointer.gd").feed(game,input);game._process(.05)
 		check(game.state.status=="won","actual native pointer/queued dash flow completes act "+str(round_id))
 		check(state.d.theaterHunt.spotlightRound==round_id+1,"submitted actual trace advances controller before result screen")
 		check(game.screen=="result" and game.approved and game.start_button.visible,"approved source result retained for user acknowledgement")
