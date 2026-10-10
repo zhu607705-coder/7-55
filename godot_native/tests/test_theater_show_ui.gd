@@ -24,24 +24,9 @@ func _run() -> void:
 		game.pause_button.pressed.emit(); var paused_tick: int=game.state.tick; game._process(.1)
 		check(game.screen=="paused" and game.state.tick==paused_tick,"pause halts model")
 		game.start_button.pressed.emit()
-		var rules:=Model.new()
-		var loops:=0
-		while game.state.status=="running" and loops<1601:
-			loops+=1
-			var s: Dictionary=game.state; var aim: Vector2=rules.mouth(s); var closest:=INF
-			for i in int(Model.ACTS[round_id].count):
-				if not s.collected.has(i) and s.head.distance_to(Model.FOOD[i])<closest: closest=s.head.distance_to(Model.FOOD[i]); aim=Model.FOOD[i]
-			var direction: Vector2=(aim-s.head).normalized()
-			for hazard: Dictionary in rules.hazards(s):
-				if s.head.distance_to(hazard.position)<100 and s.invulnerable==0:
-					if s.dashCooldown<=1: game.dash_button.pressed.emit()
-					elif s.dashTicks==0 and s.head.distance_to(hazard.position)<65: direction=(direction+(s.head-hazard.position).normalized()*1.6).normalized()
-			var event: InputEventMouse=InputEventMouseMotion.new()
-			event.button_mask=MOUSE_BUTTON_MASK_LEFT
-			if not game.dragging:
-				var press:=InputEventMouseButton.new();press.button_index=MOUSE_BUTTON_LEFT;press.pressed=true;event=press
-			event.position=game.model_to_pointer(s.head+direction*35)
-			game._gui_input(event); game._process(.05)
+		var proof:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/spotlight_%d.json"%round_id))
+		for input:Dictionary in proof.inputs:
+			preload("res://tests/theater_trace_pointer.gd").feed(game,input);game._process(.05)
 		check(game.state.status=="won","actual native pointer/queued dash flow completes act "+str(round_id))
 		check(state.d.theaterHunt.spotlightRound==round_id+1,"submitted actual trace advances controller before result screen")
 		check(game.screen=="result" and game.approved and game.start_button.visible,"approved source result retained for user acknowledgement")

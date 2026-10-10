@@ -20,6 +20,7 @@ var state: Dictionary={}
 var trace: Array=[]
 var accumulator:=0.0
 var visual_time:=0.0
+var hurt_feedback:=0.0
 var running:=false
 var paused:=false
 var dragging:=false
@@ -31,6 +32,7 @@ var final_act:=false
 var font: Font
 var label: Label
 var badge: Label
+var relay_status:Label
 var start_button: Button
 var dash_button: Button
 var pause_button: Button
@@ -39,10 +41,11 @@ var overlay_title: Label
 var overlay_body: Label
 func setup(parameters: Dictionary) -> void:
 	config=parameters; state=rules.create(int(config.get("round",0)),int(config.get("attempt",0)))
-	trace.clear();accumulator=0;visual_time=0;running=false;paused=false;screen="intro";approved=false;final_act=false;_release_pointer();queued_dash=false
+	trace.clear();accumulator=0;visual_time=0;hurt_feedback=0;running=false;paused=false;screen="intro";approved=false;final_act=false;_release_pointer();queued_dash=false
 	if is_node_ready(): refresh()
 func _label(text: String,rect: Rect2,font_size: int,color: Color=CREAM,center: bool=false) -> Label:
 	var node:=Label.new(); node.text=text; node.position=rect.position; node.size=rect.size
+	node.add_theme_color_override("font_outline_color",Color(.035,.025,.045,.85));node.add_theme_constant_override("outline_size",1)
 	node.add_theme_font_override("font",font); node.add_theme_font_size_override("font_size",font_size); node.add_theme_color_override("font_color",color)
 	node.add_theme_color_override("font_shadow_color",Color(.035,.025,.045,.85));node.add_theme_constant_override("shadow_offset_x",1);node.add_theme_constant_override("shadow_offset_y",2)
 	node.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; node.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -64,6 +67,7 @@ func _ready() -> void:
 	_label("追光灯辞职以后",Rect2(67,55,780,34),23)
 	badge=_label("第 %d 幕 / 3 · %s" % [state.round+1,Model.ACTS[state.round].title],Rect2(67,90,780,26),15,Color("ff94bc"))
 	label=_label("",Rect2(68,427,550,25),16)
+	relay_status=_label("",Rect2(563,92,335,25),13,Color("a9f5ed"))
 	start_button=_button("让灯自己演",Rect2(330,351,300,49),_primary)
 	dash_button=_button("谢幕 · Space",Rect2(718,460,178,44),func(): queued_dash=true)
 	pause_button=_button("Ⅱ",Rect2(638,460,64,44),_pause)
@@ -119,7 +123,8 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and pointer_device=="mouse" and event.device==pointer_source_device and event.device!=InputEvent.DEVICE_ID_EMULATION:
 		pointer=pointer_to_model(event.position)
 func _process(delta: float) -> void:
-	if screen!="paused": visual_time+=minf(delta,.1)
+	if screen!="paused":
+		visual_time+=minf(delta,.1);hurt_feedback=maxf(0,hurt_feedback-delta)
 	if screen=="running":
 		accumulator+=minf(delta,.15)
 		while accumulator>=.05 and state.status=="running":
@@ -128,6 +133,7 @@ func _process(delta: float) -> void:
 			if axis.length()<.01 and dragging:axis=rules.pointer_axis(state,pointer,queued_dash)
 			var input: Dictionary={"x":axis.x,"y":axis.y,"dash":queued_dash}; queued_dash=false
 			trace.append(input); state=rules.step(state,input)
+			if state.lastEvent=="hurt":hurt_feedback=1.3
 			if state.status!="running":
 				screen="awaiting"; running=false; _release_pointer()
 				attempt_submitted.emit({"version":2,"round":state.round,"attempt":state.attempt,"inputs":trace.duplicate(true)})
@@ -136,6 +142,9 @@ func refresh() -> void:
 	if not is_instance_valid(label): return
 	var act: Dictionary=Model.ACTS[state.round]
 	badge.text="第 %d 幕 / 3 · %s" % [state.round+1,act.title]
+	relay_status.text=""
+	if state.round==1:relay_status.text=("接到另一枚同色问号 · %.1fs"%(state.pairTicks*.05)) if state.primed>=0 else "同色两枚接成一组 · 中央最后点亮"
+	elif state.round==2:relay_status.text="青影将在 %.1fs 后出现"%maxf(0,3.0-state.tick*.05) if state.tick<60 else "暖光本人 + 青色旧光 · 同时接亮两端"
 	for button: Button in [start_button,dash_button]:
 		var box: StyleBoxFlat=button.get_theme_stylebox("normal").duplicate(); box.bg_color=COLORS[state.round]
 		for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]: button.add_theme_stylebox_override(mode,box)
@@ -144,11 +153,11 @@ func refresh() -> void:
 	dash_button.visible=screen=="running"; pause_button.visible=screen=="running"
 	start_button.visible=screen!="running"; start_button.disabled=screen=="awaiting"; overlay_title.visible=screen!="running"; overlay_body.visible=screen!="running"
 	match screen:
-		"intro": overlay_title.text=act.title; overlay_body.text=act.subtitle+"\n按住舞台拖动，或用 WASD / 方向键移动。\nSpace「谢幕」可以短暂穿过影子。"; start_button.text="让灯自己演"
+		"intro": overlay_title.text=act.title; overlay_body.text=act.subtitle+"\n按住舞台拖动，或用 WASD / 方向键移动。\nSpace「谢幕」可以短暂穿过障碍。"; start_button.text="让灯自己演"
 		"paused": overlay_title.text="演出暂停，影子也停下了"; overlay_body.text="按继续后再演。计时和动作都从暂停处恢复。"; start_button.text="继续演出"
 		"awaiting": overlay_title.text="正在收下这场演出"; overlay_body.text=""; start_button.text="稍等一下"
 		"result":
-			overlay_title.text=("全体观众，都被演出了" if final_act else "这一幕已经无法撤回") if approved else "影子把这场演出吃掉了"
+			overlay_title.text=("全体观众，都被演出了" if final_act else "这一幕已经无法撤回") if approved else ("光被舞台上的障碍碰散了" if state.round==2 else "影子把这场演出吃掉了")
 			overlay_body.text=("灯光谢幕。台上只剩下一张湿节目单。" if final_act else "收下这一幕。下一幕的规则会变。") if approved else "已经完成的幕次保留。\n再演一次，这一幕从头开始。"
 			start_button.text=("拉开最后的幕布" if final_act else "下一幕") if approved else "重演这一幕"
 	if is_instance_valid(stage_view):stage_view.sync(self)
@@ -162,6 +171,6 @@ func draw_ui(canvas:CanvasItem)->void:
 		canvas.draw_arc(p,7.0/display_scale,0,TAU,24,Color(.02,.02,.04,.85),3.0/display_scale)
 		canvas.draw_arc(p,7.0/display_scale,0,TAU,24,Color(CREAM,.8),1.0/display_scale)
 	if is_instance_valid(font):
-		var hint:String="影子咬掉了一截光。谢幕可以冲过去。" if state.get("lastEvent","")=="hurt" else "按住舞台拖动 / WASD 移动 · 集齐标点后从嘴里退场"
+		var hint:String=("椅子或观众碰断了光 · 已接好的光保留" if state.round==2 else "影子咬掉了一截光。谢幕可以冲过去。") if hurt_feedback>0 else ("追上游走的标点 · 集齐后从嘴里退场" if state.round==0 else ("同色两枚及时接亮 · 换站位避开椅子遮光" if state.round==1 else "先在一端留光，再赶另一端 · 青影会替你接光"))
 		canvas.draw_string(font,Vector2(69,493),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color(.035,.025,.045,.85))
 		canvas.draw_string(font,Vector2(68,491),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color("d9c6c1"))

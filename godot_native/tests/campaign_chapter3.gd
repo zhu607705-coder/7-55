@@ -105,26 +105,15 @@ func interact(id: String) -> Dictionary:
 	return await r.step("c3_target:"+id)
 
 func solve_spotlight(round_id: int,attempt: int) -> Dictionary:
-	var rules: RefCounted=Spotlight.new()
-	var model: Dictionary=rules.create(round_id,attempt)
-	var inputs: Array=[]
-	for frame in range(10000):
-		if model.status!="running": break
-		var aim: Vector2=rules.mouth(model)
-		var nearest: float=INF
-		for index in range(int(Spotlight.ACTS[round_id].count)):
-			if not model.collected.has(index) and model.head.distance_to(Spotlight.FOOD[index])<nearest:
-				nearest=model.head.distance_to(Spotlight.FOOD[index]); aim=Spotlight.FOOD[index]
-		var direction: Vector2=(aim-model.head).normalized()
-		var dash:=false
-		for hazard in rules.hazards(model):
-			if model.head.distance_to(hazard.position)<100 and model.invulnerable==0:
-				if model.dashCooldown<=1: dash=true
-				elif model.dashTicks==0 and model.head.distance_to(hazard.position)<65: direction=(direction+(model.head-hazard.position).normalized()*1.6).normalized()
-		var input: Dictionary={"x":direction.x,"y":direction.y,"dash":dash}
-		inputs.append(input); model=rules.step(model,input)
-	r.check(model.status=="won","physical spotlight solver act"+str(round_id+1))
-	return {"version":2,"round":round_id,"attempt":attempt,"inputs":inputs}
+	var rules:RefCounted=Spotlight.new()
+	var cases:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/spotlight_balance_samples.json"))
+	for route:Dictionary in cases.cases:
+		if int(route.proof.round)==round_id and int(route.proof.attempt)==attempt:
+			var result:Dictionary=rules.validate(route.proof,round_id,attempt)
+			r.check(result.get("status","")=="won","shared source physical trace completes spotlight act "+str(round_id))
+			return route.proof
+	r.check(false,"missing authored QA trace for requested attempt")
+	return {}
 
 func lake() -> void:
 	await interact("theater_exit")

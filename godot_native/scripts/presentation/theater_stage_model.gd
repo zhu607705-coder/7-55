@@ -6,6 +6,7 @@ var camera:Camera3D
 var lamp:Node3D
 var lamp_head:Node3D
 var key_light:SpotLight3D
+var echo_light:OmniLight3D
 var beam:MeshInstance3D
 var chairs:Array[Node3D]=[]
 var materials:Dictionary={}
@@ -78,6 +79,7 @@ func _ready()->void:
 	environment.environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR;add_child(environment)
 	var fill:=DirectionalLight3D.new();fill.rotation_degrees=Vector3(-56,-32,0);fill.light_color=Color("f2cda3");fill.light_energy=.68;fill.shadow_enabled=false;add_child(fill)
 	_build_stage();_finish_static_surfaces();_merge_static_geometry();_build_lamp()
+	echo_light=OmniLight3D.new();echo_light.name="DelayedEchoLight";echo_light.light_color=Color("78eeed");echo_light.light_energy=.55;echo_light.omni_range=1.8;echo_light.shadow_enabled=false;echo_light.visible=false;add_child(echo_light)
 	for i in 2:
 		var chair:=_build_chair();chairs.append(chair)
 	update_pose(preload("res://scripts/games/c3_spotlight_model.gd").new().create(0),0)
@@ -168,6 +170,9 @@ func _build_chair()->Node3D:
 	return n
 func update_pose(s:Dictionary,t:float)->void:
 	if not is_instance_valid(lamp_head):return
+	var delayed:Dictionary=source_rules.echo(s)
+	echo_light.visible=not delayed.is_empty()
+	if echo_light.visible:echo_light.position=world_point(delayed.position,.35)
 	target_world=world_point(s.head,.01)
 	var direction:Vector3=target_world-lamp.global_position
 	lamp.rotation.y=atan2(-direction.x,-direction.z)
