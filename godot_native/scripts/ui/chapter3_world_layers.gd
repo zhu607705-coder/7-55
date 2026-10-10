@@ -2,6 +2,7 @@ extends RefCounted
 const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const AdmissionFeedback=preload("res://scripts/presentation/c3_admission_feedback.gd")
 const ModeFibers=preload("res://scripts/presentation/c3_mode_fibers.gd")
 var mode_fibers: RefCounted=ModeFibers.new()
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
@@ -83,6 +84,15 @@ func _npc(id: String,key: String,p: Vector2,pair: int,depth: float,fps: float,de
 func promo_pose(s: Dictionary) -> Dictionary:
 	if narrative_session==null or narrative_session.sequence_id!="canteen_promo" or narrative_session.status not in ["issued","playing","complete"]: return {}
 	return PromoTimeline.snapshot(maxf(0,narrative_session.elapsed_ms-float(narrative_session.spec.get("timelineStartMs",0))),reduced(s))
+func admission_elapsed(s: Dictionary) -> float:
+	var elapsed: float=admission_ms
+	# The active narrative clock freezes on focus loss and cannot be advanced by
+	# redraws. A restored admitted save has no edge, and shows only the settled lamp.
+	if narrative_session!=null:
+		elapsed=narrative_session.elapsed_ms if narrative_session.sequence_id=="theater_admission" and narrative_session.valid(s) and narrative_session.status in ["issued","playing","complete"] else INF
+	return elapsed
+func admission_pose(s: Dictionary) -> Dictionary:
+	return AdmissionFeedback.sample(admission_elapsed(s),bool(s.theaterHunt.admitted),reduced(s))
 func entries(s: Dictionary) -> Array:
 	var result: Array=[]
 	if scene_id=="qizhen_lake" and s.qizhenLake.active and s.qizhenLake.zone=="dock" and s.qizhenLake.vehicle=="on_foot":
@@ -146,10 +156,10 @@ func entries(s: Dictionary) -> Array:
 	elif scene_id=="theater_interior":
 		var t: Dictionary=s.theaterHunt; var dark: bool=s.native.mode=="dark"
 		var offset: float=worlds.theater_interior.constants.THEATER_TICKET_FIXTURE_OFFSET_Y
-		var scan: bool=admission_ms<(160 if reduced(s) else 900)
-		var bob: float=0 if reduced(s) else _yoyo(clock_ms,1350)
-		result.append({"id":"ticket_inspector","kind":"sprite","asset":asset("ticketInspectorScanUrl" if scan else "ticketInspectorIdleUrl"),"point":Vector2(753,681+offset-16-bob),"scale":.75,"depth":832+offset})
-		result.append({"id":"ticket_reader","kind":"reader","point":Vector2(907,690+offset),"admitted":t.admitted,"depth":839+offset})
+		var admission: Dictionary=admission_pose(s)
+		var bob: float=0 if reduced(s) or admission_elapsed(s)<9000 else _yoyo(clock_ms,1350)
+		result.append({"id":"ticket_inspector","kind":"sprite","asset":admission.asset,"point":Vector2(753,681+offset-16-bob)+admission.offset,"angle":admission.angle,"scale":.75,"depth":832+offset})
+		result.append({"id":"ticket_reader","kind":"reader","point":Vector2(907,690+offset),"admitted":admission.accepted,"check_progress":admission.check_progress,"pulse":admission.pulse,"depth":839+offset})
 		for target: Dictionary in worlds.theater_interior.interactionTargets:
 			if target.kind=="program" and t.phase=="program_search" and not t.collectedProgramIds.has(target.programId):
 				result.append({"id":"program_"+str(target.programId),"kind":"sprite","asset":asset("program"+str(target.programId).capitalize()+"Url"),"point":Vector2(target.x,target.y),"size":Vector2(48,48),"depth":target.y+40,"glow":dark})
@@ -300,7 +310,16 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> vo
 		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-17,-30.5),Vector2(34,25)))
 		canvas.draw_rect(Rect2(-11,-13,22,42),Color("263443")); canvas.draw_rect(Rect2(-11,-13,22,42),Color("101820"),false,3)
 		canvas.draw_rect(Rect2(-17,-30.5,34,25),Color("182431")); canvas.draw_rect(Rect2(-17,-30.5,34,25),Color("090f18"),false,3)
-		canvas.draw_rect(Rect2(-10,-24,20,8),Color("64e58d") if entry.admitted else Color("58d7f2",lerpf(.55,1,_yoyo(clock_ms,760))))
+		if entry.admitted:
+			canvas.draw_rect(Rect2(-12,-27,24,19),Color("183d32"))
+			var progress: float=clampf(float(entry.get("check_progress",1)),0,1)
+			var a:=Vector2(-8,-18); var b:=Vector2(-2,-12); var c:=Vector2(9,-25)
+			if progress>0: canvas.draw_line(a,a.lerp(b,minf(1,progress*2.5)),Color("8bffb0"),3)
+			if progress>.4: canvas.draw_line(b,b.lerp(c,(progress-.4)/.6),Color("8bffb0"),3)
+			var pulse: float=float(entry.get("pulse",0))
+			if pulse>0:
+				for side: int in [-1,1]: canvas.draw_line(Vector2(side*20,-25),Vector2(side*(20+5*pulse),-29),Color("8bffb0",pulse),2)
+		else: canvas.draw_rect(Rect2(-10,-24,20,8),Color("58d7f2",lerpf(.55,1,_yoyo(clock_ms,760))))
 		canvas.draw_rect(Rect2(-11,-11.5,22,3),Color("d8bd72",.92)); canvas.draw_string(font,Vector2(-9,12),"验票",HORIZONTAL_ALIGNMENT_LEFT,-1,9,Color("e8d9b9"))
 	elif entry.kind=="poster":
 		canvas.draw_rect(Rect2(-20,-12,40,24),Color("88e8ff",.15)); canvas.draw_rect(Rect2(-20,-12,40,24),Color("88e8ff",.95),false,3); canvas.draw_string(font,Vector2(-5,6),"A",HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("c8f7ff"))
