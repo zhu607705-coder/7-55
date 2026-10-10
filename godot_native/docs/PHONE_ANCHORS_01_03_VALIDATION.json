@@ -1,0 +1,413 @@
+{
+  "catalogue": "7-55-animation-design-book.pdf v1, anchors01–03; P01 is separate and is not counted",
+  "runtime_commit": "7f6c7bf3389ca040180b552f15d4b4e33fd88a1e",
+  "runtime_layer_sha256": "f37c7295a4a6e7531efbd62f553bff4b954ff316da7f8759d05fc816098ee711",
+  "scope": "Three independent original controller transactions; native read-only presentation and original source assets",
+  "anchors": [
+    {
+      "anchor": "01",
+      "automated_checks": 298,
+      "actual_cloud_linux_sizes": [
+        "1180x812",
+        "430x860",
+        "390x844"
+      ],
+      "actual_action_records": [
+        {
+          "action": "c1_absence",
+          "at_ms": 23284,
+          "case": "anchor01-1180x812",
+          "digit0": "0",
+          "digit7": null,
+          "flag0": true,
+          "flag7": false,
+          "kind": "actual_action",
+          "water": false
+        },
+        {
+          "action": "c1_absence",
+          "at_ms": 78331,
+          "case": "anchor01-430x860",
+          "digit0": "0",
+          "digit7": null,
+          "flag0": true,
+          "flag7": false,
+          "kind": "actual_action",
+          "water": false
+        },
+        {
+          "action": "c1_absence",
+          "at_ms": 141184,
+          "case": "anchor01-390x844",
+          "digit0": "0",
+          "digit7": null,
+          "flag0": true,
+          "flag7": false,
+          "kind": "actual_action",
+          "water": false
+        }
+      ],
+      "capture_directory": "native-depth-fixed",
+      "physical_mobile_verified": false,
+      "hearing_verified": false
+    },
+    {
+      "anchor": "02",
+      "automated_checks": 325,
+      "actual_cloud_linux_sizes": [
+        "1180x812",
+        "430x860",
+        "390x844"
+      ],
+      "actual_action_records": [
+        {
+          "action": "c1_tiyi_digit",
+          "at_ms": 50498,
+          "case": "anchor02-1180x812",
+          "digit0": null,
+          "digit7": "7",
+          "flag0": false,
+          "flag7": true,
+          "kind": "actual_action",
+          "water": false
+        },
+        {
+          "action": "c1_tiyi_digit",
+          "at_ms": 114293,
+          "case": "anchor02-430x860",
+          "digit0": null,
+          "digit7": "7",
+          "flag0": false,
+          "flag7": true,
+          "kind": "actual_action",
+          "water": false
+        },
+        {
+          "action": "c1_tiyi_digit",
+          "at_ms": 169378,
+          "case": "anchor02-390x844",
+          "digit0": null,
+          "digit7": "7",
+          "flag0": false,
+          "flag7": true,
+          "kind": "actual_action",
+          "water": false
+        }
+      ],
+      "capture_directory": "native-depth-fixed",
+      "physical_mobile_verified": false,
+      "hearing_verified": false
+    },
+    {
+      "anchor": "03",
+      "automated_checks": 379,
+      "actual_cloud_linux_sizes": [
+        "1180x812",
+        "430x860",
+        "390x844"
+      ],
+      "actual_action_records": [
+        {
+          "action": "c1_rain_drop",
+          "at_ms": 83932,
+          "case": "anchor03-1180x812",
+          "digit0": null,
+          "digit7": null,
+          "flag0": false,
+          "flag7": false,
+          "kind": "actual_action",
+          "water": true
+        },
+        {
+          "action": "c1_rain_drop",
+          "at_ms": 164749,
+          "case": "anchor03-430x860",
+          "digit0": null,
+          "digit7": null,
+          "flag0": false,
+          "flag7": false,
+          "kind": "actual_action",
+          "water": true
+        },
+        {
+          "action": "c1_rain_drop",
+          "at_ms": 248666,
+          "case": "anchor03-390x844",
+          "digit0": null,
+          "digit7": null,
+          "flag0": false,
+          "flag7": false,
+          "kind": "actual_action",
+          "water": true
+        }
+      ],
+      "capture_directory": "native",
+      "physical_mobile_verified": false,
+      "hearing_verified": false
+    }
+  ],
+  "regression": [
+    {
+      "test": "test_phone_anchor01_absence.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "PHONE_ANCHOR01: 298 checks; 0 failures; one design anchor"
+    },
+    {
+      "test": "test_phone_anchor02_tiyi.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "PHONE_ANCHOR02: 325 checks; 0 failures; one design anchor"
+    },
+    {
+      "test": "test_phone_anchor03_water.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "PHONE_ANCHOR03: 379 checks; 0 failures; one design anchor"
+    },
+    {
+      "test": "test_phone_entry_lifecycle.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "Phone entry lifecycle: 208 checks, 0 failures"
+    },
+    {
+      "test": "test_phone_app_identity.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "APP_IDENTITY_PROBE: 179 checks; 0 failures"
+    },
+    {
+      "test": "test_phone_mechanism_feedback.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "PHONE_MECHANISM_FEEDBACK: 6806 checks; 0 failures; 117 source checkpoints; desktop mouse/key/drag emulation only"
+    },
+    {
+      "test": "test_phone_effects.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "PHONE_EFFECT_TESTS: 4 timelines checked; 0 failures"
+    },
+    {
+      "test": "test_phone_pages.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "PHONE_PAGE_TESTS: 30 layouts checked; 0 failures"
+    },
+    {
+      "test": "test_phone_navigation.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "PHONE_NAVIGATION_TESTS: 197 checks; 0 failures"
+    },
+    {
+      "test": "test_phone_chrome.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "Native phone chrome tests: PASS (60 checks; 0 failures)"
+    },
+    {
+      "test": "test_native_opening_source_ui.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "Opening source UI: 544 checks, 0 failures"
+    },
+    {
+      "test": "test_wake_flash_source.gd",
+      "passed": true,
+      "status": 0,
+      "summary": "WAKE_FLASH_SOURCE: 329 checks; 0 failures"
+    }
+  ],
+  "save_profile_guards": [
+    {
+      "script": "test_wake_flash_source.gd",
+      "blocked": true,
+      "exit": 2,
+      "sentinel_unchanged": true
+    },
+    {
+      "script": "test_phone_anchor01_absence.gd",
+      "blocked": true,
+      "exit": 2,
+      "sentinel_unchanged": true
+    },
+    {
+      "script": "test_phone_anchor02_tiyi.gd",
+      "blocked": true,
+      "exit": 2,
+      "sentinel_unchanged": true
+    },
+    {
+      "script": "test_phone_anchor03_water.gd",
+      "blocked": true,
+      "exit": 2,
+      "sentinel_unchanged": true
+    },
+    {
+      "script": "capture_wake_actual.gd",
+      "blocked": true,
+      "exit": 2,
+      "sentinel_unchanged": true
+    },
+    {
+      "script": "capture_phone_anchors_actual.gd",
+      "blocked": true,
+      "exit": 2,
+      "sentinel_unchanged": true
+    }
+  ],
+  "initial_digit_capture": "Initial01/02 captures exposed toast masking and are historical diagnosis only; fixed six-case captures supersede them",
+  "timing_evidence": "Exact keyframe values are deterministic tests. Actual frame metadata records wall_ms and observed host clock after frame_post_draw; no exact render-phase claim",
+  "clip_evidence": "Nine per-size H264 clips fully decode, each actual capture wall-ms gap is preserved with zero measured PTS deviation; initial/final idle still holds are350ms; no interpolation",
+  "geometry_adaptation": "Anchor03 uses a real nearby open slot only within60px; normal closed/distant cases use local fall and the existing true backpack receipt. No auto-open",
+  "limits": [
+    "Original c1-code-hunt checkpoint fixtures, not a fresh earned campaign",
+    "Physical Android/iPhone and Windows execution not verified",
+    "Audio events and source mappings tested; actual captures use Dummy audio and are not listening approval",
+    "Full repository aggregate suite not run in this isolated batch",
+    "Near-slot/reduced-motion/interruption/save-reload branches have automated native-input coverage; CUA recordings cover ordinary acquisition at three window sizes"
+  ],
+  "runtime_commit_scope": "Original local audit commit; integrated production files remain byte-identical",
+  "integration": {
+    "base": "b1177e10dd4dc45f2cf32926eaa09a684a02029e",
+    "tested_local_head": "d383a45ca0993a8c8ae8088c07c9cee495e39fe1",
+    "tests": [
+      {
+        "test": "test_chapter4_lamp_3d.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_3D: 171 checks; 0 failures"
+      },
+      {
+        "test": "test_chapter4_lamp_font.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_FONT 739 checks; 0 failures"
+      },
+      {
+        "test": "test_chapter4_lamp_lifecycle.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_LIFECYCLE_TESTS 9 checks; 0 failures"
+      },
+      {
+        "test": "test_chapter4_lamp_sequence.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_SEQUENCE_TESTS 888 checks; 0 failures; max_error=0.00000047067072"
+      },
+      {
+        "test": "test_chapter4_lamp_source.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_SOURCE_TESTS 103 checks; 0 failures"
+      },
+      {
+        "test": "test_lake_fishing_water.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "LAKE_FISHING_WATER: 97 checks; 0 failures"
+      },
+      {
+        "test": "test_phone_anchor01_absence.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "PHONE_ANCHOR01: 298 checks; 0 failures; one design anchor"
+      },
+      {
+        "test": "test_phone_anchor02_tiyi.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "PHONE_ANCHOR02: 325 checks; 0 failures; one design anchor"
+      },
+      {
+        "test": "test_phone_anchor03_water.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "PHONE_ANCHOR03: 379 checks; 0 failures; one design anchor"
+      },
+      {
+        "test": "test_phone_entry_lifecycle.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "Phone entry lifecycle: 208 checks, 0 failures"
+      },
+      {
+        "test": "test_phone_app_identity.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "APP_IDENTITY_PROBE: 179 checks; 0 failures"
+      },
+      {
+        "test": "test_phone_mechanism_feedback.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "PHONE_MECHANISM_FEEDBACK: 6806 checks; 0 failures; 117 source checkpoints; desktop mouse/key/drag emulation only"
+      },
+      {
+        "test": "test_phone_effects.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "PHONE_EFFECT_TESTS: 4 timelines checked; 0 failures"
+      },
+      {
+        "test": "test_phone_pages.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "PHONE_PAGE_TESTS: 30 layouts checked; 0 failures"
+      },
+      {
+        "test": "test_phone_navigation.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "PHONE_NAVIGATION_TESTS: 197 checks; 0 failures"
+      },
+      {
+        "test": "test_phone_chrome.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "Native phone chrome tests: PASS (60 checks; 0 failures)"
+      },
+      {
+        "test": "test_native_opening_source_ui.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "Opening source UI: 544 checks, 0 failures"
+      },
+      {
+        "test": "test_wake_flash_source.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "WAKE_FLASH_SOURCE: 329 checks; 0 failures"
+      },
+      {
+        "test": "test_lake_fishing_depth.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "LAKE_FISHING_DEPTH: 201 checks; 0 failures"
+      },
+      {
+        "test": "test_lake_fishing_view.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "LAKE_FISHING_VIEW: 202 checks; 0 failures"
+      },
+      {
+        "test": "test_full_campaign.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CONTINUOUS CAMPAIGN chapters=[1, 2, 3, 4] failures=0",
+        "warnings": [
+          "WARNING: Nodes with non-equal opposite anchors will have their size overridden after _ready(). "
+        ]
+      }
+    ],
+    "all_exit_zero_and_no_errors": true,
+    "campaign_harness_warning": "An existing Chapter4 return_to_hall fixture sets size on unequal anchors. Godot warns, but the automated campaign completes chapters1–4 with failures=0. This warning is not a new phone runtime error.",
+    "manual_campaign_verified": false,
+    "note": "The continuous fresh-state controller campaign is automated and uses explicit spatial setup. The real mouse recordings remain nine independent original checkpoint cases. Neither is a manual campaign playthrough.",
+    "scope": "P01 wake presentation plus original design anchors01–03 only. P01 is outside the54-anchor count. Preserve merged PR82, PR83, PR85 and PR84; no stamp21 or archive50 changes; no additional lamp54 changes beyond the merged baseline."
+  }
+}

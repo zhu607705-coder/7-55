@@ -1,6 +1,6 @@
 extends Node
-## P00 CSS art and motion only. No controller events, audio or progression.
-## Source: scenes/p00-alarm.css and base.css frame-shake/--ease-* tokens.
+## P00/P01 CSS art and motion only. No controller events, audio or progression.
+## Source: scenes/p00-alarm.css, p01-desktop.css and base.css --ease-* tokens.
 const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 const INK=Color("222322")
 const YELLOW=Color("f5c542")
@@ -40,6 +40,13 @@ static func create_bell(parent: Control,center: Vector2,scale: float) -> Control
 	parent.add_child(artwork)
 	return artwork
 
+static func create_wake_flash(parent: Control,rect: Rect2,scale: float,reduced_motion: bool=false) -> Control:
+	var flash:=WakeFlash.new(); flash.name="WakeFlash"; flash.position=rect.position; flash.size=rect.size
+	flash.art_scale=scale; flash.reduced_motion=reduced_motion
+	flash.mouse_filter=Control.MOUSE_FILTER_IGNORE; flash.tooltip_text="起床蠢货！！！"
+	parent.add_child(flash)
+	return flash
+
 static func animate(parent: Control,artwork: Control,scale: float) -> Node:
 	var motion: Node=load("res://scripts/ui/native_opening_presentation.gd").new()
 	motion.name="AlarmSceneMotion"; motion.scene=parent; motion.bell=artwork; motion.art_scale=scale; motion.origin=parent.position
@@ -51,6 +58,64 @@ func _process(delta: float) -> void:
 	scene.position=origin+shake_at(elapsed)/art_scale
 	bell.wave_alpha=wave_alpha_at(elapsed)
 	bell.queue_redraw()
+
+class WakeFlash extends Control:
+	## One runtime-only owner for both text lines. CSS steps(2,end) applies
+	## separately to the two keyframe segments of the original420ms cycle.
+	const CYCLE_SECONDS:=0.42
+	const RED=Color("c85454")
+	const SHADOW_OFFSET=Vector2(4,4)
+	const MARK_SPACING:=8.0
+	const MARK_SHIFT:=10.0
+	var art_scale:=1.0
+	var elapsed:=0.0
+	var reduced_motion:=false
+	var logical_font_size:=59.8
+	var text: String="起床蠢货\n！！！"
+	static func font_size_at(viewport_width: float) -> float:
+		return clampf(viewport_width*.15,2.8*13,4.6*13)
+	static func sample_at(seconds: float) -> Vector2:
+		var quarter:=mini(3,int(floor(fposmod(maxf(0,seconds),CYCLE_SECONDS)/(CYCLE_SECONDS/4))))
+		var weight: float=[0.0,.5,1.0,.5][quarter]
+		return Vector2(lerpf(1,.24,weight),lerpf(1,1.06,weight))
+	func _ready() -> void:
+		get_viewport().size_changed.connect(_resize_text)
+		_resize_text()
+		_apply_motion()
+	func _resize_text() -> void:
+		logical_font_size=font_size_at(get_viewport_rect().size.x)
+		pivot_offset=size/2
+		queue_redraw()
+	func _process(delta: float) -> void:
+		elapsed=0 if reduced_motion else fposmod(elapsed+maxf(0,delta),CYCLE_SECONDS)
+		_apply_motion()
+	func _apply_motion() -> void:
+		var sample:=Vector2.ONE if reduced_motion else sample_at(elapsed)
+		modulate.a=sample.x
+		scale=Vector2.ONE*sample.y
+	func line_width(line: String,spacing: float=0.0) -> float:
+		var pixels:=ceili(logical_font_size)
+		var ratio:=logical_font_size/pixels
+		return FONT.get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,pixels).x*ratio+line.length()*spacing
+	func _draw_line(line: String,top: float,spacing: float,shift: float) -> void:
+		var pixels:=ceili(logical_font_size)
+		var ratio:=logical_font_size/pixels
+		var line_height:=logical_font_size*1.15
+		var cursor:=Vector2((size.x*art_scale-line_width(line,spacing))/2+shift,top+(line_height-FONT.get_height(pixels)*ratio)/2+FONT.get_ascent(pixels)*ratio)
+		# Draw one shared shadow pass before the red glyph pass. Letter spacing
+		# and shadow stay in logical pixels, independent of the phone scale.
+		for shadow: bool in [true,false]:
+			var pen:=cursor
+			for character: String in line:
+				draw_set_transform((pen+(SHADOW_OFFSET if shadow else Vector2.ZERO))/art_scale,0,Vector2.ONE*ratio/art_scale)
+				draw_string(FONT,Vector2.ZERO,character,HORIZONTAL_ALIGNMENT_LEFT,-1,pixels,INK if shadow else RED)
+				pen.x+=FONT.get_string_size(character,HORIZONTAL_ALIGNMENT_LEFT,-1,pixels).x*ratio+spacing
+		draw_set_transform(Vector2.ZERO)
+	func _draw() -> void:
+		var line_height:=logical_font_size*1.15
+		var top: float=(size.y*art_scale-line_height*2)/2
+		_draw_line("起床蠢货",top,0,0)
+		_draw_line("！！！",top+line_height,MARK_SPACING,MARK_SHIFT)
 
 class AlarmClock extends Control:
 	var text: String="07:55"

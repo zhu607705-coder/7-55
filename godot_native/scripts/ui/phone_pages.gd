@@ -11,6 +11,7 @@ const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const PhotoEvidence = preload("res://scripts/ui/photo_evidence_surface.gd")
 const WeatherIcon = preload("res://scripts/ui/native_weather_icon.gd")
 const TiyiIdentity = preload("res://scripts/ui/native_tiyi_identity.gd")
+const TiyiSevenArt = preload("res://scripts/ui/tiyi_seven_art.gd")
 const TiyiPresence = preload("res://scripts/ui/native_tiyi_presence.gd")
 var tiyi_presence = TiyiPresence.new()
 const EndingResume = preload("res://scripts/ui/native_ending_resume.gd")
@@ -315,8 +316,7 @@ func _wake() -> Control:
 		narration.name="WakeNarration"; narration.position=Vector2(16,52)/PHONE_SCALE; narration.scale=Vector2.ONE/PHONE_SCALE
 		root.add_child(narration); PhoneNotice.layout(narration,392)
 	else:
-		var flash = _label(root,"起床蠢货\n！！！",Rect2(15,245,348,180),53,Color("c85454"),HORIZONTAL_ALIGNMENT_CENTER)
-		_animate_flash(root,flash)
+		OpeningPresentation.create_wake_flash(root,Rect2(15,245,348,180),PHONE_SCALE,bool(s.native.get("settings",{}).get("reduced_motion",false)))
 		_opening_button(root,"进入手机主界面",Rect2(64,450,250,68),"c1_enter_home","primary")
 	handled.append("c1_wake")
 	return root
@@ -356,7 +356,7 @@ func _home() -> Control:
 		for mode in ["normal","hover","pressed"]: weather_target.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	elif rain and s.flags.codeScattered and not s.flags.waterDropTaken:
 		var drop=_act(root,"",_home_rect(60,116,28,30),"c1_rain_drop",null,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
-		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")); drop.name="HomeLiveWaterDrop"; drop.tooltip_text="收集水滴"
+		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")).name="HomeCollectibleDropGlyph"; drop.name="HomeLiveWaterDrop"; drop.tooltip_text="收集水滴"
 	var chapter=int(s.native.get("chapter",1))
 	_build_home_apps(root)
 	if s.flags.gearFallen and not s.flags.gearNineTaken: _home_gear_pickup(root)
@@ -1612,13 +1612,16 @@ func _tiyi(view: Dictionary) -> Control:
 	var source_height=854.0/PHONE_SCALE
 	var source_width=source_height*852.0/1846.0
 	var source_left=(378-source_width)/2
-	_image(root,"ui/tiyi_main.png",Rect2(source_left,-40/PHONE_SCALE,source_width,source_height)).name="TiyiSourcePlate"
+	var tiyi_plate:=_image(root,"ui/tiyi_main.png",Rect2(source_left,-40/PHONE_SCALE,source_width,source_height)); tiyi_plate.name="TiyiSourcePlate"
 	var exit_button=_nav(root,"exit","退出浙大体艺，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(9,7,40,44),PAPER)
 	TiyiIdentity.style_exit(exit_button)
+	if bool(s.flags.tiyiCountTaken): TiyiSevenArt.apply_taken(tiyi_plate)
 	if s.actOne.phase=="prologue":
+		if not bool(s.flags.tiyiCountTaken): TiyiSevenArt.bind_source(root,tiyi_plate)
 		var hotspot=Rect2(source_left+source_width*(.141-.254/2),source_height*(.274-.088/2)-40/PHONE_SCALE,source_width*.254,source_height*.088)
 		var count=_act(root,"",hotspot,"c1_tiyi_digit",null,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 		count.name="TiyiCount47"; count.tooltip_text="运动打卡次数 47"
+		if bool(s.flags.tiyiCountTaken): count.tooltip_text="原记录47次，数字7已记下"
 		for mode in ["normal","hover","pressed"]: count.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	if s.actOne.phase in ["movement_required","reservation_briefing_required","reservation_required","movement_ready"] and s.ui.libraryFinalsPhase=="idle":
 		var exercise=_act(root,"",Rect2((378-318/PHONE_SCALE)/2,APP_HEIGHT-(106+76)/PHONE_SCALE,318/PHONE_SCALE,76/PHONE_SCALE),"c2_exercise",null,Color("2f86dd") if not s.actOne.exerciseStarted else Color("4bad70"),Color.WHITE,10,Color("194f8d"))
@@ -1904,13 +1907,6 @@ func _brightness_slider(root: Control, rect: Rect2, maximum: float, id: String, 
 	root.add_child(slider)
 	handled.append(id)
 	return slider
-
-func _animate_flash(root: Control, label: Label) -> void:
-	root.ready.connect(func():
-		var tween = label.create_tween().set_loops()
-		tween.tween_property(label,"modulate:a",.24,.21)
-		tween.tween_property(label,"modulate:a",1.0,.21)
-	)
 
 func _animate_rotation(root: Control, visual: Control, kind: String, landing_center: Vector2=Vector2.INF) -> void:
 	root.ready.connect(func():

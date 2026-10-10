@@ -398,6 +398,43 @@ func _refresh_task() -> void:
 	if not objective.is_empty() and not _last_objective.is_empty() and objective!=_last_objective: _task_update_started=Time.get_ticks_msec()/1000.0
 	_last_objective=objective
 
+func digit_clue_geometry(slot: String) -> Dictionary:
+	# Return the currently rendered acquired digit, never a guessed screen point.
+	var keys: Array=["d1","d2","d3","d4"]
+	var index: int=keys.find(slot)
+	var digits: Dictionary=state.get("digits",{})
+	if index<0 or not digit_hint.is_visible_in_tree() or digits.get(slot)==null or str(digits.get(slot,""))=="": return {}
+	var prefix: String="签到码 "
+	for i in range(index): prefix+=(str(digits[keys[i]]) if digits.get(keys[i])!=null and str(digits.get(keys[i],""))!="" else "?")+" "
+	var fs: int=digit_hint.get_theme_font_size("font_size")
+	var font: Font=digit_hint.get_theme_font("font")
+	var complete_width: float=font.get_string_size(digit_hint.text,HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x
+	var offset: float=(digit_hint.size.x-complete_width)/2+font.get_string_size(prefix,HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x
+	var extent:=Vector2(font.get_string_size(str(digits[slot]),HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x,font.get_height(fs))
+	var local:=Vector2(offset,(digit_hint.size.y-extent.y)/2)
+	var transform:=get_global_transform_with_canvas().affine_inverse()*digit_hint.get_global_transform_with_canvas()
+	return {"rect":Rect2(transform*local,extent*transform.get_scale()),"font_size":fs*transform.get_scale().x,"ink":digit_hint.get_theme_color("font_color")}
+
+func item_receipt_geometry(id: String) -> Dictionary:
+	if not inventory.is_visible_in_tree() or not owned.has(id): return {}
+	if inventory_open:
+		var slot: Control=inventory_slots.get_node_or_null("Item_"+id)
+		if slot!=null and slot.is_visible_in_tree():
+			var view:=Rect2(inventory_scroll.get_global_transform_with_canvas().origin,inventory_scroll.size*inventory_scroll.get_global_transform_with_canvas().get_scale())
+			var icon: Control=slot.artwork
+			var actual:=Rect2(icon.get_global_transform_with_canvas().origin,icon.size*icon.get_global_transform_with_canvas().get_scale())
+			if view.encloses(actual):
+				var transform:=get_global_transform_with_canvas().affine_inverse()*icon.get_global_transform_with_canvas()
+				return {"kind":"visible-slot","rect":Rect2(transform.origin,icon.size*transform.get_scale())}
+	var transform:=get_global_transform_with_canvas().affine_inverse()*inventory_handle.get_global_transform_with_canvas()
+	return {"kind":"backpack-receipt","rect":Rect2(transform.origin,inventory_handle.size*transform.get_scale())}
+
+func settle_item_acquisition(id: String) -> void:
+	# A source-bound object transfer replaces only its own generic receipt VFX.
+	# The already-committed item, count, open state and inventory geometry stay.
+	if recent_item!=id: return
+	_acquisition_started=-1; recent_item=""; acquisition.visible=false
+
 func _refresh_inventory() -> void:
 	inventory_body.visible=inventory_open
 	inventory_count.visible=not inventory_open
