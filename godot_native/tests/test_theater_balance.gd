@@ -73,4 +73,14 @@ func _initialize()->void:
 	s=rules.step(s,{"x":0,"y":0,"dash":false})
 	check(s.collected.is_empty() and s.focus[0]==0 and s.focus[2]==0,"both actors at one end cannot fake simultaneous cooperation")
 	check(rules.create(2).history.size()==1 and rules.echo(rules.create(2)).is_empty(),"retry clears historical light and all temporary exposure")
+	# The same optical geometry can finish while protected, but hurt wins at tick 18.
+	s=rules.create(2);s.tick=17;s.head=Vector2(581.187304,340.863655);s.collected=[0,2,4,3];s.focus[5]=15;s.focus[1]=15;s.history=[]
+	for i in 61:s.history.append(Model.FOOD[5])
+	var axis:Vector2=rules.pointer_axis(s,s.head);var input:Dictionary={"x":axis.x,"y":axis.y,"dash":false}
+	var protected:Dictionary=s.duplicate(true);protected.invulnerable=2
+	protected=rules.step(protected,input)
+	check(protected.collected.size()==6,"same-tick optical witness would otherwise complete the final cooperative pair")
+	s=rules.step(s,input)
+	check(s.lastEvent=="hurt" and s.collected==[0,2,4,3] and s.focus==[0,0,0,0,0,0],"third-act damage cancels joint completion before submission")
+	check(s.history.size()==62 and not rules.echo(s).is_empty(),"third-act injury retains the exact cooperative history")
 	print("THEATER_BALANCE: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)
