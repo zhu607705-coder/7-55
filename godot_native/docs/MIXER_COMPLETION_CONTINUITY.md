@@ -15,7 +15,7 @@ identified movement correction below was found by the full CI suite.
   feedback without replacing the accepted motion.
 - The original mixer session closes on the terminal attempt. Its panel retains
   the existing independent glass/bottle assembly only for an optional tail.
-- Normal motion finishes the existing 600 ms final pour, retains the full
+- Normal motion finishes the 1350 ms cup-paddle final cycle (see MACHINE_PRESS_INTERACTION.md), retains the full
   three-layer glass, settles for 100 ms, displays the controller result for
   340 ms and fades the native panel back to the retained world over 220 ms.
   The original world subtitle remains readable after the panel disappears.

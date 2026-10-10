@@ -9,7 +9,7 @@ func fresh(reduced: bool=false) -> Control:
 func complete(view: Control,recipe: Array=Session.RECIPE) -> void:
 	for id: String in recipe: press(view,id)
 func drain_pours(view: Control) -> void:
-	for beat in range(3): view.surface.motion._process(1.0)
+	for beat in range(3): MixerTiming.finish_current(view.surface.motion)
 func run() -> void:
 	for reduced in [false,true]:
 		for recipe: Array in [Session.RECIPE,["lemonTea","blackCoffee","sparklingWater"]]:
@@ -20,19 +20,19 @@ func run() -> void:
 			var committed: Dictionary=s.duplicate(true)
 			check(dispatched.size()==3 and s.canteenHunt.drinkMixAttemptCount==1 and s.canteenHunt.drinkMixSequence.is_empty(),"rapid third input commits exactly one original transaction before visual completion")
 			check(s.items.dailySpecialSparklingWater==(recipe==Session.RECIPE) and s.items.badDrink!=(recipe==Session.RECIPE),"original good/bad reward already available")
-			check(view.slots.all(func(slot):return slot.disabled and slot.get_theme_stylebox("disabled") is StyleBoxEmpty),"terminal input lock remains visually transparent over original bottles")
+			check(view.slots.all(func(slot):return slot.disabled and slot.get_theme_stylebox("disabled") is StyleBoxEmpty),"terminal input lock remains visually transparent over original selectors")
 			check(view.finishing and not view.session.active and view.visible and closes.is_empty(),"source session closed; only cancellable presentation remains")
-			check(view.surface.motion.item_id==recipe[0] and view.surface.pending_pours.size()==2,"rapid input queues accepted bottle motion rather than hard-cutting it")
+			check(view.surface.motion.item_id==recipe[0] and view.surface.pending_pours.size()==2,"rapid input queues accepted cup pushes rather than hard-cutting it")
 			view.slots[0].pressed.emit();view.refresh()
 			check(dispatched.size()==3 and s==committed,"stale or repeated terminal input cannot spend or grant twice")
 			view._process(10)
 			check(view.visible and view.modulate.a==1 and view.finish_elapsed_ms==0,"return waits for queued physical pours without changing committed state")
 			for index in range(3):
 				check(view.surface.motion.item_id==recipe[index],"accepted pours preserve actual input order")
-				check(view.surface.motion.position==contact,"cup contact remains fixed throughout every pour")
-				view.surface.motion._process(1)
-			check(not view.surface.is_pouring() and view.surface.motion.shown_sequence==recipe,"full three-layer glass remains after final bottle returns")
-			check(view.surface.source_slots.map(func(slot):return slot.id)==order,"retained bottle order never changes during completion")
+				check(view.surface.motion.position==contact,"machine origin remains fixed throughout every cup push")
+				MixerTiming.finish_current(view.surface.motion)
+			check(not view.surface.is_pouring() and view.surface.motion.shown_sequence==recipe,"full three-layer glass remains after the final cup return")
+			check(view.surface.source_slots.map(func(slot):return slot.id)==order,"retained selector order never changes during completion")
 			view.configure_layout(Vector2(390,844),true)
 			check(view.prompt_label.text=="调配中…","layout refresh keeps finishing instruction instead of asking for another ingredient")
 			check(view.surface.motion.shown_sequence==recipe and s==committed,"resize retains completed cup and cannot replay transaction")
@@ -86,7 +86,7 @@ func run() -> void:
 		check(not dispatch_view.visible and not dispatch_view.surface.is_pouring(),"dispatch-time "+change+" cannot revive stale presentation")
 		check(dispatched.size()==1 and s.canteenHunt.drinkMixSequence==["blackCoffee"] and not s.items.blackCoffee,"dispatch-time "+change+" preserves sole accepted transaction")
 		dispatch_view.free()
-	# Missing click must not restart or replace a valid in-flight bottle.
+	# Missing click must not restart or replace a valid in-flight cup push.
 	var view: Control=fresh();press(view,"blackCoffee")
 	view.surface.motion._process(.1);var elapsed: float=view.surface.motion.elapsed_ms
 	press(view,"blackCoffee")

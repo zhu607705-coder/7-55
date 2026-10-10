@@ -2,6 +2,8 @@ extends "res://tests/test_c3_devices_controls.gd"
 ## Seeded C3 fixtures and real native controls, not an unseeded campaign or CUA.
 const Motion=preload("res://scripts/presentation/c3_mixer_motion.gd")
 const WorldMotion=preload("res://scripts/objects/canteen_mixer_performance.gd")
+const Rig=preload("res://scripts/presentation/drink_fountain_rig.gd")
+const Press=preload("res://scripts/presentation/drink_machine_press.gd")
 var rows: Array=[]
 func check(ok: bool,label: String) -> void:
 	super.check(ok,label);rows.append({"check":label,"passed":ok})
@@ -27,11 +29,18 @@ func run() -> void:
 	check(str(shelf_row.asset)=="drink_station_cabinet","original drinks shelf keeps its original object identity")
 	var node:=WorldMotion.new();root.add_child(node);node.set_process(false)
 	var initial_scale: Vector2=Vector2.ONE*.36
-	for outcome in ["success","bad",""]:
-		node.item_id="sparklingWater";node.playing=true;node.outcome=outcome;node.shown_sequence=["blackCoffee","sparklingWater","lemonTea"];node.duration_ms=600
-		for sample in [0,150,220,350,500,599]:
-			node.sample_pose(sample)
-			check(node.scale==initial_scale and node.glass_root.position==Vector2.ZERO and node.glass_root.scale==Vector2.ONE,"fixed world cup contact and scale: "+outcome+"/"+str(sample))
+	var fixed_hinges: Array=node.rig.pivots.map(func(pivot):return pivot.transform)
+	var fixed_nozzles: Array=node.rig.nozzles.map(func(nozzle):return nozzle.transform)
+	for reduced: bool in [false,true]:
+		for outcome in ["success","bad",""]:
+			node.reset();node.reduced=reduced;node.item_id="sparklingWater";node.selected_slot=0;node.nozzle=node.rig.nozzles[0];node.playing=true;node.outcome=outcome;node.shown_sequence=["blackCoffee","sparklingWater","lemonTea"];node.duration_ms=1350
+			for progress: float in [0.0,0.07,0.14,0.20,0.26,0.31,0.36,0.38,0.50,0.66,0.76,0.82,0.88,0.96,1.0]:
+				node.sample_pose(node.duration_ms*progress)
+				check(node.scale==initial_scale and node.glass_root.scale==Vector2.ONE*Rig.cup_scale(node.cup_depth) and node.rig.pivots.map(func(pivot):return pivot.transform)==fixed_hinges and node.rig.nozzles.map(func(nozzle):return nozzle.transform)==fixed_nozzles,"world scale, all nozzle anchors and all paddle hinges stay fixed: "+outcome+"/"+str(progress))
+				check(node.rig.paddles.size()==3 and node.rig.paddles.all(func(paddle):return paddle.texture==Rig.PADDLE and paddle.rotation==0),"world animation uses three registered genuine paddles without 2D side swing")
+				for slot in range(3):check(node.world_buttons[slot].region_rect==Rig.SELECTOR_REGIONS[slot],"world flavor selectors retain their original fixed source regions")
+				if reduced:check(is_equal_approx(node.cup_depth,Rig.HOME_DEPTH) and node.rig.angles.all(func(angle):return is_equal_approx(angle,Rig.REST_ANGLE)) and not node.stream.visible and not node.drip.visible,"reduced world presentation suppresses physical movement and flow")
+				elif progress>=0.26 and progress<=0.66:check(node.depth_contact_error()<0.0001,"world cup touches selected depth paddle through push and flow")
 	check(node.glass_mask.clip_children==CanvasItem.CLIP_CHILDREN_ONLY,"liquid is clipped by a native perspective mask")
 	check(node.liquid_parts.all(func(layer):return layer.get_parent()==node.glass_mask),"every drink layer belongs to the glass interior mask")
 	node.queue_free();await frames()
@@ -41,6 +50,7 @@ func run() -> void:
 		await open_world("canteen-mixer")
 		var panel: Control=shell.c3_device_panel
 		var motion: Node2D=panel.surface.motion
+		check(panel.art_board.encloses(panel.surface.machine_bounds),"physical machine frame remains inside every desktop/compact board")
 		check(motion.glass_sprite.region_rect.size*motion.glass_sprite.scale==Vector2(346,557)*(150.0/557.0),"glass uses uniform original aspect")
 		var fixed_contact: Vector2=motion.position;var fixed_scale: Vector2=motion.scale
 		var prompt_rect:=Rect2(panel.prompt_label.position,panel.prompt_label.size)
@@ -57,25 +67,28 @@ func run() -> void:
 		check(panel.prompt_label.visible and not panel.feedback_label.visible,"cleared feedback restores the same single operation row")
 		for label: Label in panel.labels:
 			check(not Rect2(label.position,label.size).intersects(prompt_rect),"ingredient caption does not collide with instruction text")
-			check(label.text in panel.session.NAMES.values(),"bottle caption contains only the drink name")
+			check(label.text in panel.session.NAMES.values(),"machine button caption contains only the drink name")
 			check(label.get_minimum_size().y<=label.size.y,"drink name fits its reserved caption")
 		if panel.compact_portrait:
-			for foot: Vector2 in panel.surface.bottle_feet:
-				check(foot.y<panel.art_board.position.y+panel.art_board.size.y*(800.0/1024.0),"portrait bottle contact stays on wood, above the original metal front edge")
+			for button: Sprite2D in panel.surface.press_buttons:
+				var bounds: Rect2=panel.get_global_transform().affine_inverse()*button.get_global_transform()*button.get_rect()
+				check(bounds.end.y<panel.art_board.position.y+panel.art_board.size.y*(800.0/1024.0),"portrait machine button stays above the original metal front edge")
 		var snapshot: Dictionary=state.d.duplicate(true)
 		panel.refresh();panel.configure_layout(panel.size,panel.compact_layout)
 		check(state.d==snapshot,"refresh and resize cannot write a recipe or inventory")
 		var chosen: int=panel.session.button_order.find("blackCoffee")
 		var old_order: Array=panel.session.button_order.duplicate()
 		await click(panel.slots[chosen]);motion.set_process(false)
-		check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"] and not state.d.items.blackCoffee,"physical coffee bottle submits exactly the original action")
-		motion.sample_pose(180)
-		check(motion.stream.visible and motion.bottle_sprite.texture!=null,"accepted first pour has independent real bottle and liquid stream")
-		check(motion.position==fixed_contact and motion.scale==fixed_scale,"pour leaves the worktop and cup contact fixed")
-		check(not panel.surface.bottles[chosen].visible,"active bottle has no duplicated stationary copy")
-		check(motion.bottle_sprite.scale.x==motion.bottle_sprite.scale.y,"active bottle retains original uniform proportions")
+		check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"] and not state.d.items.blackCoffee,"physical coffee button submits exactly the original action")
+		motion.sample_pose(motion.duration_ms*0.4)
+		panel.surface._process(0)
+		check(motion.stream.visible and motion.nozzle==motion.rig.nozzles[chosen] and motion.rig.body.texture==Rig.BODY and motion.press_frame()==0 and motion.depth_contact_error()<0.0001 and is_equal_approx(motion.rig.angles[chosen],Rig.PRESSED_ANGLE),"accepted cup pushes the lever and pours from an independent fixed nozzle")
+		check(motion.position==fixed_contact and motion.scale==fixed_scale,"pour leaves the worktop and machine origin fixed")
+		check(panel.surface.press_buttons[chosen].visible and not motion.bottle.visible,"active button stays mounted and no free-floating bottle is shown")
+		check(panel.surface.press_buttons[chosen].scale.x==panel.surface.press_buttons[chosen].scale.y and panel.surface.press_buttons[chosen].region_rect==Rig.SELECTOR_REGIONS[chosen],"flavor selector preserves its original uniformly scaled idle raster")
 		var a:=Rect2(panel.slots[chosen].position,panel.slots[chosen].size)
-		check(a.encloses(Rect2(panel.surface.bottles[chosen].position,panel.surface.bottles[chosen].region_rect.size*panel.surface.bottles[chosen].scale)),"physical bottle remains the original slot target")
+		var button: Sprite2D=panel.surface.press_buttons[chosen]
+		check(a.encloses(panel.get_global_transform().affine_inverse()*button.get_global_transform()*button.get_rect()),"physical machine button remains inside its original slot target")
 		var count: int=motion.observed_accepts
 		await click(panel.slots[chosen])
 		check(motion.observed_accepts==count and state.d.canteenHunt.drinkMixSequence==["blackCoffee"],"missing repeat feedback cannot consume or repeat an accepted pour")
@@ -89,7 +102,7 @@ func run() -> void:
 		check(panel.model.layers.size()==1 and panel.surface.motion.shown_sequence==["blackCoffee"],"reloaded popup reconstructs one source layer without replaying pour")
 		for id in ["sparklingWater","lemonTea"]:await click(panel.slots[panel.session.button_order.find(id)])
 		check(state.d.items.dailySpecialSparklingWater and state.d.canteenHunt.drinkMixAttemptCount==1 and panel.finishing,"third ingredient commits original success immediately before optional presentation")
-		await create_timer(2.3).timeout;await frames()
+		await wait_for_mixer_close()
 		check(not is_instance_valid(shell.modal),"final native pour settles and returns to world automatically")
 		await teardown()
 	var path: String=OS.get_environment("MIXER_LAYER_REPORT")

@@ -1,11 +1,11 @@
 # Native mixer local 0.75 playback
 
-Base: 1c7e200b. Only c3_mixer_motion and c3_mixer_panel presentation clocks change. Engine.time_scale, source transactions, inventory, recipe validation and reward commits are unchanged.
+The 0.75 rate originated at base 1c7e200b. Cup-paddle presentation durations were revised on 2026-10-10; see MACHINE_PRESS_INTERACTION.md. Only c3_mixer_motion and c3_mixer_panel presentation clocks change. Engine.time_scale, source transactions, inventory, recipe validation and reward commits are unchanged.
 
-| Beat | Old wall time | New wall time |
+| Beat | Local logical time | Wall time at 0.75 |
 |---|---:|---:|
-| Ordinary accepted pour | 420ms | 560ms |
-| Terminal accepted pour | 600ms | 800ms |
+| Ordinary cup-paddle cycle | 1050ms | 1400ms |
+| Terminal cup-paddle cycle | 1350ms | 1800ms |
 | Settle + result + return | 660ms | 880ms |
 | Reduced ordinary pour | 140ms | 186.67ms |
 | Reduced terminal pour | 220ms | 293.33ms |
