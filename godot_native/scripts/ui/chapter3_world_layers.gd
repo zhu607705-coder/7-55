@@ -2,6 +2,8 @@ extends RefCounted
 const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const TicketGate=preload("res://scripts/presentation/c3_ticket_gate_view.gd")
+var ticket_gate:RefCounted=TicketGate.new()
 const AdmissionFeedback=preload("res://scripts/presentation/c3_admission_feedback.gd")
 const ModeFibers=preload("res://scripts/presentation/c3_mode_fibers.gd")
 var mode_fibers: RefCounted=ModeFibers.new()
@@ -41,7 +43,7 @@ func sync(s: Dictionary,scene_changed: bool=false) -> void:
 	mode_fibers.sync(s,scene_changed)
 	var current: String=str(s.native.get("scene",""))
 	if scene_changed or current!=scene_id or previous_state.is_empty():
-		scene_id=current; occlusion_alphas.clear(); clock_ms=0; admission_ms=INF; pickup_ms=INF; program_flights=[]
+		scene_id=current; ticket_gate.reset(s); occlusion_alphas.clear(); clock_ms=0; admission_ms=INF; pickup_ms=INF; program_flights=[]
 		last_carried=s.canteenHunt.carriedTrayIds.duplicate(); collected_programs=s.theaterHunt.collectedProgramIds.duplicate()
 		previous_state=s.duplicate(true)
 		fade_to=Vector2(1,0) if s.native.mode=="light" else Vector2(0,1)
@@ -75,6 +77,7 @@ func tick(delta: float,s: Dictionary) -> void:
 	for flight: Dictionary in program_flights: flight.elapsed+=dt
 	program_flights=program_flights.filter(func(f:Dictionary)->bool:return float(f.elapsed)<(120 if reduced(s) else 420))
 	doors.tick(delta,s,narrative_session)
+	if scene_id=="theater_interior":ticket_gate.tick(dt,s,narrative_session)
 func _npc_frame(pair: int,fps: float,delay: float,s: Dictionary) -> int:
 	if reduced(s) or clock_ms<fmod(delay,540): return pair*2
 	var t: float=fmod(clock_ms-fmod(delay,540),2000/fps+delay)
@@ -160,7 +163,7 @@ func entries(s: Dictionary) -> Array:
 		var bob: float=0 if reduced(s) or admission_elapsed(s)<9000 else _yoyo(clock_ms,1350)
 		result.append({"id":"ticket_inspector","kind":"sprite","asset":admission.asset,"point":Vector2(753,681+offset-16-bob)+admission.offset,"angle":admission.angle,"scale":.75,"depth":832+offset})
 		result.append({"id":"ticket_reader","kind":"reader","point":Vector2(907,690+offset),"admitted":admission.accepted,"check_progress":admission.check_progress,"pulse":admission.pulse,"depth":839+offset})
-		result.append({"id":"ticket_gate_arm","kind":"ticket_gate_arm","point":AdmissionFeedback.GATE_HINGE,"open_ratio":admission.gate_open,"depth":794})
+		result.append({"id":"ticket_gate_wings","kind":"ticket_gate_wings","point":Vector2.ZERO,"gate":ticket_gate.pose(),"depth":794})
 		for target: Dictionary in worlds.theater_interior.interactionTargets:
 			if target.kind=="program" and t.phase=="program_search" and not t.collectedProgramIds.has(target.programId):
 				result.append({"id":"program_"+str(target.programId),"kind":"sprite","asset":asset("program"+str(target.programId).capitalize()+"Url"),"point":Vector2(target.x,target.y),"size":Vector2(48,48),"depth":target.y+40,"glow":dark})
@@ -198,11 +201,6 @@ func canteen_occlusion(cover: Dictionary, player: Vector2, is_reduced: bool) -> 
 
 func draw_landmarks(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
 	bike_view.draw_hint(canvas,context,s)
-	# The raised entry arm is in front of the lower seat crop. That crop is
-	# emitted after the sorted actors when the player walks into the passage.
-	if scene_id=="theater_interior" and float(context.player.y)<651:
-		for entry:Dictionary in entries(s):
-			if entry.id=="ticket_gate_arm":_draw_entry(canvas,context,entry)
 	# Small presentation repair for an existing authored mixer hotspot that was
 	# otherwise indistinguishable from the five ordering kiosks in the base plate.
 	# No recipe/color clue, collision, availability, or transaction change.
@@ -311,17 +309,23 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> vo
 		canvas.draw_rect(Rect2(-entry.size/2,entry.size),Color("9af4ff",entry.alpha))
 	elif entry.kind=="tray":
 		canvas.draw_style_box(_rounded(Color("9eabad"),Color("59686d"),3),Rect2(-11,-7,22,13)); canvas.draw_style_box(_rounded(Color("e7ece9"),Color.TRANSPARENT,2),Rect2(-9,-5,18,9))
-	elif entry.kind=="ticket_gate_arm":
-		var tip:Vector2=(AdmissionFeedback.gate_tip(float(entry.open_ratio))-AdmissionFeedback.GATE_HINGE).round()
-		# Pixel-straight warm metal, with a fixed hinge at the actual ticket gap.
-		canvas.draw_line(Vector2.ZERO,tip,Color("281f1b"),9)
-		canvas.draw_line(Vector2.ZERO,tip,Color("c7a970"),5)
-		canvas.draw_line(Vector2.ZERO,tip,Color("f0dfb2"),2)
-		for band in [0.28,0.58,0.84]:
-			var p:Vector2=tip*band;var normal:=Vector2(-tip.y,tip.x).normalized()*3
-			canvas.draw_line(p-normal,p+normal,Color("78513b"),4)
-		canvas.draw_rect(Rect2(-5,-6,10,12),Color("281f1b"))
-		canvas.draw_rect(Rect2(-3,-4,6,8),Color("c7a970"))
+	elif entry.kind=="ticket_gate_wings":
+		# Thin, softly tinted acrylic retracts horizontally into the two fixtures.
+		# Fixed lower depth never swings a pole up through the seat row.
+		for side:int in [-1,1]:
+			var outer:float=786 if side<0 else 883
+			var inner:float=entry.gate.left_inner if side<0 else entry.gate.right_inner
+			var blade:=PackedVector2Array([Vector2(outer,664),Vector2(inner,672),Vector2(inner,714),Vector2(outer,706)])
+			canvas.draw_colored_polygon(blade,Color("91bdc2",.30))
+			var edge:PackedVector2Array=blade.duplicate();edge.append(blade[0])
+			canvas.draw_polyline(edge,Color("d2e5df",.85),1.5)
+			canvas.draw_line(Vector2(inner,673),Vector2(inner,714),Color("3d686e",.9),3)
+			canvas.draw_line(Vector2(inner+side*2,674),Vector2(inner+side*2,712),Color("a9cecb",.82),1)
+			canvas.draw_line(Vector2(outer,668),Vector2(inner,676),Color("e4edda",.40),1)
+			var mount:float=778 if side<0 else 880
+			canvas.draw_rect(Rect2(mount,660,13,57),Color("283536"))
+			canvas.draw_rect(Rect2(mount+2,661,9,5),Color("beaa7e"))
+			canvas.draw_line(Vector2(mount+3,668),Vector2(mount+3,713),Color("849391"),2)
 	elif entry.kind=="reader":
 		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-11,-13),Vector2(22,42)))
 		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-17,-30.5),Vector2(34,25)))
