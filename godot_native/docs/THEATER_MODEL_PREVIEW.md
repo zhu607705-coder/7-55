@@ -65,7 +65,7 @@ Targets use group colors, focus rings and muted locked states. Acts 1 and 2 show
 
 Import the normal native project and run `tests/preview_theater.tscn` with F6. It mounts the same `c3_spotlight.gd` used by Main, validates submitted proof, and allows continuation or retry without writing story saves. F9 saves the viewport PNG and input proof under `user://theater_review`.
 
-R/F10 replays the three source QA routes. F11 records a 15-second act-3 excerpt (ticks 155–455) from saved physical mouse/Space inputs. It shows one pair completed, ends at 2/6 with the act still running, and does not claim full completion. The prefix is replayed from a fresh state rather than teleported. Rendering samples the 20 Hz model at 30 fps without speeding up time. These are QA capture controls, not player controls. The editable baked scene is `scenes/theater/funhouse_stage_editable.scn`; `tests/export_theater_model.gd` regenerates it.
+R/F10 replays the three source QA routes. F11 records an 18.75-second act-3 sequence from the fresh start (ticks 0–375) from saved physical mouse/Space inputs and their per-tick held destinations. It shows one pair completed, ends at 2/6 with the act still running, and does not claim full completion. There is no skipped prefix or state teleport. The review-only destination marker reads those actual recorded positions; the shipped Main game neither records these diagnostics nor displays the enlarged review marker. Rendering samples the 20 Hz model at 30 fps without speeding up time. These are QA capture controls, not player controls. The editable baked scene is `scenes/theater/funhouse_stage_editable.scn`; `tests/export_theater_model.gd` regenerates it.
 
 ## Verification scope
 

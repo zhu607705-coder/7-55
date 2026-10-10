@@ -16,11 +16,21 @@ func run()->void:
 	check(preview.game.state==snapshot,"pause freezes all history and charge ticks")
 	preview.game._primary()
 	var seen_pair:=false
-	for frame in 450:
+	check(not preview.show_review_cursor,"demonstration cursor defaults off outside capture")
+	var destination_ahead:=false
+	for frame in roundi(float(proof.durationTicks)*1.5):
+		var prior_tick:int=preview.game.state.tick
 		preview._review_step(proof,0.0 if frame%3==0 else .05)
+		if proof.has("pointer_visuals") and prior_tick<proof.inputs.size():
+			var visual:Dictionary=proof.pointer_visuals[prior_tick]
+			check(preview.game.dragging==visual.held,"held marker follows the captured physical press/release")
+			if visual.held:
+				check(preview.game.pointer.distance_to(Vector2(visual.x,visual.y))<.001,"shown destination is the recorded pointer, not the next model step")
+				if preview.game.pointer.distance_to(preview.game.state.head)>100:destination_ahead=true
 		if preview.game.state.collected==[0,2]:seen_pair=true
+	if proof.has("pointer_visuals"):check(destination_ahead,"actual distant aiming destination is visible before arrival")
 	var state:Dictionary=preview.game.state
-	check(state.tick==proof.ticks and state.status=="running","15 native seconds end at the recorded partial-act tick")
+	check(state.tick==proof.startTick+proof.durationTicks and state.status=="running","native duration ends at the recorded excerpt tick")
 	check(state.collected==[0,2] and seen_pair and state.lives==proof.lives,"physical recording replays one completed pair and preserves real damage")
 	check(state.head.distance_to(Vector2(proof.expectedHead.x,proof.expectedHead.y))<.01,"source/native/pointer replay converge at the recorded endpoint")
 	check(preview.game.rules.validate(proof,2,0).is_empty(),"partial video input cannot claim a completed attempt")

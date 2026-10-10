@@ -18,6 +18,9 @@ var rules: RefCounted=Model.new()
 var config: Dictionary={}
 var state: Dictionary={}
 var trace: Array=[]
+# Optional standalone-review diagnostics; never part of submitted authority proof.
+var review_record_pointer:=false
+var review_pointer_trace:Array=[]
 var accumulator:=0.0
 var visual_time:=0.0
 var hurt_feedback:=0.0
@@ -45,7 +48,7 @@ var overlay_title: Label
 var overlay_body: Label
 func setup(parameters: Dictionary) -> void:
 	config=parameters; state=rules.create(int(config.get("round",0)),int(config.get("attempt",0)))
-	trace.clear();accumulator=0;visual_time=0;hurt_feedback=0;hit_remaining=0;hit_origin=Vector2.ZERO;hit_life=-1;hit_count=0;running=false;paused=false;screen="intro";approved=false;final_act=false;_release_pointer();queued_dash=false
+	trace.clear();review_pointer_trace.clear();accumulator=0;visual_time=0;hurt_feedback=0;hit_remaining=0;hit_origin=Vector2.ZERO;hit_life=-1;hit_count=0;running=false;paused=false;screen="intro";approved=false;final_act=false;_release_pointer();queued_dash=false
 	if is_node_ready(): refresh()
 func _label(text: String,rect: Rect2,font_size: int,color: Color=CREAM,center: bool=false) -> Label:
 	var node:=Label.new(); node.text=text; node.position=rect.position; node.size=rect.size
@@ -136,6 +139,7 @@ func _process(delta: float) -> void:
 			var axis:=Vector2(float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
 			if axis.length()<.01 and dragging:axis=rules.pointer_axis(state,pointer,queued_dash)
 			var input: Dictionary={"x":axis.x,"y":axis.y,"dash":queued_dash}; queued_dash=false
+			if review_record_pointer:review_pointer_trace.append({"x":pointer.x,"y":pointer.y,"held":dragging})
 			trace.append(input); state=rules.step(state,input)
 			if state.lastEvent=="hurt":
 				hurt_feedback=1.3;hit_remaining=.65;hit_origin=state.head;hit_life=state.lives;hit_count+=1

@@ -6,17 +6,20 @@ var round_id:=0
 var attempt:=0
 var sampling:=false
 var evidence_directory_override:=""
+var review_cursor:Node2D
+var show_review_cursor:=false
 var sample_frames:=0
 var sample_seconds:=0.0
 var sample_fps:Array[float]=[]
 func _ready()->void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);resized.connect(_layout);_new_act()
+	review_cursor=Node2D.new();review_cursor.draw.connect(_draw_review_cursor);add_child(review_cursor)
 	if FileAccess.file_exists("res://capture.request"):
 		if FileAccess.get_file_as_string("res://capture.request").strip_edges()=="single":_capture_single_act.call_deferred()
 		else:_capture_replay.call_deferred()
 func _new_act()->void:
 	if is_instance_valid(game):remove_child(game);game.queue_free()
-	game=preload("res://scripts/games/c3_spotlight.gd").new();game.setup({"round":round_id,"attempt":attempt});add_child(game)
+	game=preload("res://scripts/games/c3_spotlight.gd").new();game.setup({"round":round_id,"attempt":attempt});game.review_record_pointer=true;add_child(game)
 	game.attempt_submitted.connect(func(proof:Dictionary):
 		var accepted:Dictionary=game.rules.validate(proof,round_id,attempt)
 		game.resolve(accepted.get("status","")=="won",round_id==2))
@@ -43,7 +46,7 @@ func _unhandled_key_input(event:InputEvent)->void:
 		var dir:String=_evidence_directory()
 		if not dir.is_empty():
 			get_viewport().get_texture().get_image().save_png(dir+"/theater-live-"+str(Time.get_ticks_msec())+".png")
-			_write_report("live-input-proof.json",{"version":2,"round":game.state.round,"attempt":game.state.attempt,"inputs":game.trace,"ticks":game.state.tick,"collected":game.state.collected,"lives":game.state.lives,"status":game.state.status})
+			_write_report("live-input-proof.json",{"version":2,"round":game.state.round,"attempt":game.state.attempt,"inputs":game.trace,"pointer_visuals":game.review_pointer_trace,"ticks":game.state.tick,"collected":game.state.collected,"lives":game.state.lives,"status":game.state.status})
 
 func _evidence_directory()->String:
 	var directory:String=evidence_directory_override if not evidence_directory_override.is_empty() else "user://theater_review"
@@ -64,8 +67,18 @@ func _write_report(name:String,data:Dictionary)->bool:
 	return file.get_error()==OK
 func _review_step(proof:Dictionary,delta:float)->void:
 	if game.state.tick>=proof.inputs.size():return
-	preload("res://tests/theater_trace_pointer.gd").feed(game,proof.inputs[game.state.tick])
+	var visual:Dictionary=proof.pointer_visuals[game.state.tick] if proof.has("pointer_visuals") else {}
+	preload("res://tests/theater_trace_pointer.gd").feed(game,proof.inputs[game.state.tick],visual)
 	game._process(delta)
+	if is_instance_valid(review_cursor):review_cursor.queue_redraw()
+
+func _draw_review_cursor()->void:
+	if not show_review_cursor or not is_instance_valid(game) or not game.dragging:return
+	var p:Vector2=game.model_to_pointer(game.pointer)*game.scale+game.position
+	# This reflects the saved real pointer destination, never an invented click.
+	review_cursor.draw_arc(p,15,0,TAU,32,Color(.025,.02,.035,.9),5)
+	review_cursor.draw_arc(p,15,0,TAU,32,Color(1,.95,.78,.95),2)
+	review_cursor.draw_circle(p,3,Color(1,.95,.78,.9))
 
 func _capture_replay()->void:
 	var evidence:String=_evidence_directory()
@@ -95,14 +108,16 @@ func _capture_single_act()->void:
 	sampling=true;get_window().size=Vector2i(1152,648)
 	await get_tree().process_frame
 	_layout();round_id=2;attempt=0;_new_act();game.set_process(false);game._primary()
+	show_review_cursor=proof.has("pointer_visuals");review_cursor.move_to_front()
 	# Warm up by replaying the exact preceding physical inputs, never teleport state.
 	for tick in int(proof.startTick):_review_step(proof,.05)
 	var events:Array=[]
-	for frame in 450:
+	var frame_count:int=roundi(float(proof.durationTicks)*1.5)
+	for frame in frame_count:
 		var before:int=game.state.tick
 		_review_step(proof,0.0 if frame%3==0 else .05)
 		if game.state.tick!=before and game.state.lastEvent!="none":events.append({"frame":frame,"tick":game.state.tick,"event":game.state.lastEvent,"collected":game.state.collected.duplicate(),"lives":game.state.lives})
 		await RenderingServer.frame_post_draw
 		get_viewport().get_texture().get_image().save_png(directory+"/%04d.png"%frame)
-	_write_report("single-act/complete.json",{"frames":450,"rate":30,"act":3,"start_tick":proof.startTick,"end_tick":game.state.tick,"lives":game.state.lives,"collected":game.state.collected,"final_status":game.state.status,"events":events,"source":"native-rate replay of physical mouse/Space input; 15-second excerpt, not whole-stage completion"})
-	sampling=false;round_id=2;attempt=0;_new_act()
+	_write_report("single-act/complete.json",{"frames":frame_count,"rate":30,"act":3,"start_tick":proof.startTick,"end_tick":game.state.tick,"lives":game.state.lives,"collected":game.state.collected,"final_status":game.state.status,"events":events,"source":"native-rate replay of physical mouse/Space input; complete first-pair excerpt, not whole-stage completion"})
+	show_review_cursor=false;review_cursor.queue_redraw();sampling=false;round_id=2;attempt=0;_new_act()
