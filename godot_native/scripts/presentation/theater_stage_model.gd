@@ -9,6 +9,8 @@ var key_light:SpotLight3D
 var beam:MeshInstance3D
 var chairs:Array[Node3D]=[]
 var materials:Dictionary={}
+var floor_atlas:Texture2D=preload("res://assets/rpg/interiors/theater_interior.png")
+var source_rules=preload("res://scripts/games/c3_spotlight_model.gd").new()
 var static_surfaces:Dictionary={}
 var beam_material:StandardMaterial3D
 var target_world:=Vector3.ZERO
@@ -38,12 +40,35 @@ func polygon(points:PackedVector3Array,hex:String)->void:
 	if not static_surfaces.has(hex):
 		var surface:=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES);static_surfaces[hex]=surface
 	var st:SurfaceTool=static_surfaces[hex]
+	var source0:Vector2=camera.unproject_position(points[0])
+	var source2:Vector2=camera.unproject_position(points[2])
 	for i in range(1,points.size()-1):
-		for p:Vector3 in [points[0],points[i+1],points[i]]:st.add_vertex(p)
+		for p:Vector3 in [points[0],points[i+1],points[i]]:
+			var screen:Vector2=camera.unproject_position(p)
+			var u:float=clampf((screen.x-source0.x)/maxf(.1,source2.x-source0.x),0,1)
+			var v:float=clampf((screen.y-source0.y)/maxf(.1,source2.y-source0.y),0,1)
+			st.set_uv(Vector2((916+u*64)/1672.0,(227+v*24)/941.0))
+			st.add_vertex(p)
 func _finish_static_surfaces()->void:
 	for hex:String in static_surfaces:
-		var st:SurfaceTool=static_surfaces[hex];st.generate_normals();mesh_node(st.commit(),matte(hex))
+		var st:SurfaceTool=static_surfaces[hex];st.generate_normals()
+		var material:StandardMaterial3D=matte(hex)
+		if hex in ["493239","553738","624039","593b37","6c473b","533939"]:
+			material=material.duplicate();material.albedo_texture=floor_atlas;material.albedo_color=Color("9397bd").lightened(float(["493239","553738","624039","593b37","6c473b","533939"].find(hex))*.018);material.texture_filter=BaseMaterial3D.TEXTURE_FILTER_NEAREST
+		mesh_node(st.commit(),material)
 	static_surfaces.clear()
+func _merge_static_geometry()->void:
+	# Batch static scenery by material. Only the two chairs and lamp are articulated.
+	var batches:Dictionary={}
+	for child:Node in get_children():
+		if not child is MeshInstance3D:continue
+		var material:Material=child.material_override
+		if not batches.has(material):
+			var surface:=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES);batches[material]=surface
+		batches[material].append_from(child.mesh,0,child.transform)
+		remove_child(child);child.free()
+	for material:Material in batches:
+		mesh_node(batches[material].commit(),material)
 func _ready()->void:
 	camera=Camera3D.new();add_child(camera);camera.projection=Camera3D.PROJECTION_ORTHOGONAL;camera.size=10.0
 	camera.position=Vector3(0,12,14);camera.look_at(Vector3.ZERO);camera.current=true
@@ -51,8 +76,8 @@ func _ready()->void:
 	environment.environment.background_mode=Environment.BG_COLOR;environment.environment.background_color=Color("070810")
 	environment.environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;environment.environment.ambient_light_color=Color("8680a7");environment.environment.ambient_light_energy=.65
 	environment.environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR;add_child(environment)
-	var fill:=DirectionalLight3D.new();fill.rotation_degrees=Vector3(-56,-32,0);fill.light_color=Color("f2cda3");fill.light_energy=.68;fill.shadow_enabled=true;add_child(fill)
-	_build_stage();_finish_static_surfaces();_build_lamp()
+	var fill:=DirectionalLight3D.new();fill.rotation_degrees=Vector3(-56,-32,0);fill.light_color=Color("f2cda3");fill.light_energy=.68;fill.shadow_enabled=false;add_child(fill)
+	_build_stage();_finish_static_surfaces();_merge_static_geometry();_build_lamp()
 	for i in 2:
 		var chair:=_build_chair();chairs.append(chair)
 	update_pose(preload("res://scripts/games/c3_spotlight_model.gd").new().create(0),0)
@@ -61,15 +86,15 @@ func _build_stage()->void:
 	# staggered boards, grain strips and a crooked rear seam, unlike a flat plate.
 	var floor_color:Array[String]=["493239","553738","624039","593b37","6c473b","533939"]
 	for row in 19:
-		var y0:float=137+row*14.6;var y1:float=y0+14.0
+		var y0:float=137+row*14.6;var y1:float=y0+14.35
 		for col in 8:
 			var x0:float=-22+col*137+(68 if row%2 else 0);var x1:float=x0+135
 			var bend0:float=3*sin(x0*.007)+row*.12;var bend1:float=3*sin(x1*.007)+row*.12
 			var pts:=PackedVector3Array([world_point(Vector2(x0,y0+bend0)),world_point(Vector2(x1,y0+bend1)),world_point(Vector2(x1,y1+bend1)),world_point(Vector2(x0,y1+bend0))])
 			polygon(pts,floor_color[(row*3+col*7)%floor_color.size()])
-			for grain in 3:
+			for grain in 1:
 				var gy:float=y0+3.0+grain*3.3;var gx:float=x0+14+fmod(row*17+grain*23,34)
-				polygon(PackedVector3Array([world_point(Vector2(gx,gy),.002),world_point(Vector2(minf(x1-12,gx+63+col*3),gy+.35),.002),world_point(Vector2(minf(x1-12,gx+63+col*3),gy+.9),.002),world_point(Vector2(gx,gy+.6),.002)]),"765047" if grain%2 else "392931")
+				polygon(PackedVector3Array([world_point(Vector2(gx,gy),.002),world_point(Vector2(minf(x1-12,gx+63+col*3),gy+.35),.002),world_point(Vector2(minf(x1-12,gx+63+col*3),gy+.9),.002),world_point(Vector2(gx,gy+.6),.002)]),"3e3035")
 	# Dark exposed apron face, three thin brass strips, physical footlights.
 	for i in 24:
 		var x0:float=i*40;var x1:float=(i+1)*40
@@ -78,7 +103,7 @@ func _build_stage()->void:
 		for edge in [0,4,18]:rod(world_point(Vector2(x0,y0+edge),-.01*edge),world_point(Vector2(x1,y1+edge),-.01*edge),.014,"846349")
 		if i%2==0:
 			var p:Vector3=world_point(Vector2(x0+20,y0-3),.08)
-			var bulb:=SphereMesh.new();bulb.radius=.035;bulb.height=.07;mesh_node(bulb,matte("efbd77",true)).position=p
+			var bulb:=SphereMesh.new();bulb.radial_segments=8;bulb.rings=4;bulb.radius=.035;bulb.height=.07;mesh_node(bulb,matte("efbd77",true)).position=p
 	# Pleated legs and several rear wings. Geometry narrows toward the stage.
 	for side in [-1,1]:
 		for layer in 3:_curtain(side,layer)
@@ -99,7 +124,7 @@ func _curtain(side:int,layer:int)->void:
 			var vertices:Array[Vector3]=[]
 			for corner:Vector2 in [Vector2(x,y),Vector2(x+1,y),Vector2(x+1,y+1),Vector2(x,y+1)]:
 				var u:float=corner.x/cols;var v:float=corner.y/rows
-				var width:float=86-35*sin(v*PI)+layer*5
+				var width:float=80-31*sin(v*PI)-25*v+layer*5
 				var sx:float=u*width-layer*21+sin(v*3+layer)*8
 				if side==1:sx=960-sx
 				var sy:float=72+v*(351-layer*27)+sin(u*7)*5*v
@@ -144,6 +169,8 @@ func _build_chair()->Node3D:
 func update_pose(s:Dictionary,t:float)->void:
 	if not is_instance_valid(lamp_head):return
 	target_world=world_point(s.head,.01)
+	var direction:Vector3=target_world-lamp.global_position
+	lamp.rotation.y=atan2(-direction.x,-direction.z)
 	lamp_head.look_at(target_world,Vector3.UP)
 	var start:Vector3=lamp_head.to_global(Vector3(0,0,-.39))
 	var st:=SurfaceTool.new();st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -151,7 +178,7 @@ func update_pose(s:Dictionary,t:float)->void:
 		var a:float=i*TAU/32;var b:float=(i+1)*TAU/32
 		st.add_vertex(start);st.add_vertex(target_world+Vector3(cos(a)*.62,.016,sin(a)*.62));st.add_vertex(target_world+Vector3(cos(b)*.62,.016,sin(b)*.62))
 	beam.mesh=st.commit()
-	var rules=preload("res://scripts/games/c3_spotlight_model.gd").new();var hazards:Array=rules.hazards(s)
+	var hazards:Array=source_rules.hazards(s)
 	for index in chairs.size():
-		chairs[index].position=world_point(hazards[index].position)-Vector3(0,.05,0)
+		chairs[index].position=world_point(hazards[index].position+Vector2(0,18))-Vector3(0,.05,0)
 		chairs[index].rotation=Vector3(0,.10*sin(t*3+index),.04*sin(t*6+index))

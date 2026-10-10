@@ -12,7 +12,7 @@ func eye(point:Vector2,width:float,head:Vector2,awake:bool=true)->void:
 	draw_circle(point+offset,width*.27,Color("171936"));draw_rect(Rect2(point+offset-Vector2.ONE,Vector2(2,2)),Color("e85881"))
 func _draw()->void:
 	if not is_instance_valid(game) or game.state.is_empty():return
-	var s:Dictionary=game.state;var t:float=game.visual_time;var color:Color=game.COLORS[s.round];var cream:Color=game.CREAM
+	var s:Dictionary=game.state;var color:Color=game.COLORS[s.round];var cream:Color=game.CREAM
 	var act:Dictionary=game.Model.ACTS[s.round]
 	# Audience is a sparse near-black silhouette, not another gameplay boundary.
 	for i in 16:
