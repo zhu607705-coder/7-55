@@ -1,4 +1,5 @@
 extends RefCounted
+const StampMotion=preload("res://scripts/presentation/library_stamp_motion.gd")
 const Picker=preload("res://scripts/world_object_picker.gd")
 ## LibraryInteriorScene's source-pixel replacement layers and timed prop motion.
 ## Runtime-only presentation; reads persisted facts but never creates them.
@@ -74,7 +75,7 @@ func tick(delta: float,state: Dictionary) -> void:
 	if scanning_ms>=0: scanning_ms+=ms
 	if stamp_ms>=0:
 		stamp_ms+=ms
-		if stamp_ms>=(3 if reduced else 810): stamp_ms=-1; clock_ms=0
+		if stamp_ms>=(StampMotion.REDUCED_MS if reduced else StampMotion.TOTAL_MS): stamp_ms=-1; clock_ms=0
 	if receipt_ms>=0:
 		receipt_ms+=ms
 		if receipt_ms>=1020: receipt_ms=-1
@@ -171,7 +172,7 @@ func paper_pose() -> Dictionary:
 		if elapsed>reveal+hold: glow_position.y=(152 if reduced else 158)-16; glow_alpha=0
 	return {"position":position,"alpha":alpha,"glowAlpha":glow_alpha,"glowPosition":glow_position,"visible":shelf_animating}
 func debug_snapshot() -> Dictionary:
-	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":collision_rect(),"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":receipt_ms,"staff":staff_pose(),"stampMs":stamp_ms}
+	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":collision_rect(),"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":receipt_ms,"staff":staff_pose(),"stampMs":stamp_ms,"stamp":stamp_pose()}
 
 func owns_pick_target(id: String) -> bool:
 	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note"]
@@ -279,9 +280,10 @@ func staff_pose() -> Dictionary:
 		frame=int(source.frontDesk.idleFrames[mini(5,int(idle_ms/(1000.0/1.8)))])
 	if not reduced:
 		if scanning_ms>=0 and scanning_ms<480:
-			var step: float=fposmod(scanning_ms,240)/120; y+=3*_stepped(step if step<=1 else 2-step)
-		if stamp_ms>=110 and stamp_ms<330:
-			var step: float=fposmod(stamp_ms-110,110)/55; y+=4*_stepped(step if step<=1 else 2-step)
+			var step: float=fposmod(scanning_ms,240)/120; y+=3*StampMotion.smooth(step if step<=1 else 2-step)
+		if stamp_ms>=0:
+			# The whole authored frame leans once with load; no sprite stretching.
+			y+=1.2*float(stamp_pose().pressure)
 	return {"frame":frame,"position":Vector2(334,y),"scale":float(source.frontDesk.scale),"depth":float(source.frontDesk.staffDepth)}
 func _draw_front_desk(canvas: CanvasItem,context: Dictionary,front: bool) -> void:
 	_context(canvas,context)
@@ -314,16 +316,44 @@ func _draw_stamp_service(canvas: CanvasItem) -> void:
 		var x: float=28+i*22; var color: Color=Color("5ed68d") if lost_stage=="stamped" else Color("e1b953") if lost_stage=="ready" or (lost_stage=="scanning" and i<2) else Color("c96a5e")
 		if lost_stage=="missing_report": color.a=0.72
 		canvas.draw_circle(at+Vector2(x,-21),3,color); canvas.draw_string(font,at+Vector2(x-3.5,-9),labels[i],HORIZONTAL_ALIGNMENT_LEFT,-1,7,Color("c6d1ca"))
-	var press: bool=stamp_ms>=0 and (reduced or (stamp_ms>0 and stamp_ms<=250))
-	var stamp_y: float=28 if press else 14
-	canvas.draw_texture_rect(stamp_art,Rect2(at+Vector2(-49,stamp_y-20),Vector2(28,40)),false)
-	if lost_stage=="scanning" or stamp_ms>=0:
-		var x: float=-20 if reduced or scanning_ms>0 or stamp_ms>=0 else -78
-		var alpha: float=0 if stamp_ms>(2 if reduced else 390) else 1
-		var paper:=Rect2(at+Vector2(x-23,10),Vector2(46,28))
-		canvas.draw_rect(paper,Color("f2ead5",alpha)); canvas.draw_rect(paper,Color("5a625d",alpha),false,2)
-		canvas.draw_rect(Rect2(at+Vector2(x-17.5,16),Vector2(25,2)),Color("87928c",0.9*alpha)); canvas.draw_rect(Rect2(at+Vector2(x-17.5,22),Vector2(19,2)),Color("87928c",0.7*alpha))
-		if stamp_ms>=(0 if reduced else 110): canvas.draw_string(font,at+Vector2(x-10,32),"非本人",HORIZONTAL_ALIGNMENT_LEFT,-1,9,Color("b43f3f",alpha))
-		if not reduced and lost_stage=="scanning" and scanning_ms>=240 and scanning_ms<1240:
-			var forward: bool=int((scanning_ms-240)/250)%2==0
-			canvas.draw_rect(Rect2(at+Vector2(-43,34.5 if forward else 9.5),Vector2(46,3)),Color("e1b953",0.28 if forward else 0.95))
+	var pose: Dictionary=stamp_pose()
+	# Quiet physical guides use the existing desk's brass / timber palette.
+	canvas.draw_line(at+Vector2(-101,8),at+Vector2(3,8),Color("a38e60"),1)
+	canvas.draw_line(at+Vector2(-101,40),at+Vector2(3,40),Color("6c593b"),2)
+	canvas.draw_line(at+Vector2(-101,41),at+Vector2(3,41),Color("ba9d63"),1)
+	if pose.visible:
+		_draw_service_paper(canvas,at,pose)
+		if not reduced and lost_stage=="scanning" and scanning_ms>=StampMotion.RECEIVE_MS and scanning_ms<1240:
+			var scan: float=StampMotion.smooth(fposmod(scanning_ms-StampMotion.RECEIVE_MS,500)/500)
+			canvas.draw_line(at+Vector2(pose.paper.x-20,12+scan*24),at+Vector2(pose.paper.x+20,12+scan*24),Color("e1b953",0.55),1)
+	# Foot shadow tightens toward contact. Draw the original uniformly scaled
+	# stamp AFTER the paper, so the foot visibly presses and occludes its mark.
+	var gap: float=maxf(0,float(pose.contact.y)-float(pose.stampBottom.y))
+	var shadow: float=(1-clampf(gap/24.0,0,1))*0.35
+	canvas.draw_line(at+Vector2(-44,27),at+Vector2(-26,27),Color(0.17,0.11,0.06,shadow),2)
+	canvas.draw_texture_rect(stamp_art,Rect2(at+pose.stampRect.position,pose.stampRect.size),false)
+
+func stamp_pose() -> Dictionary:
+	return StampMotion.sample(stamp_ms,scanning_ms if lost_stage=="scanning" else -1,reduced)
+
+func _draw_service_paper(canvas: CanvasItem,at: Vector2,pose: Dictionary) -> void:
+	var alpha: float=pose.alpha
+	var corners:=PackedVector2Array()
+	for local: Vector2 in [Vector2(-23,-14),Vector2(0,-14),Vector2(23,-14),Vector2(23,14),Vector2(0,14),Vector2(-23,14)]:
+		corners.append(at+StampMotion.paper_point(local,pose))
+	var shadow:=PackedVector2Array()
+	for point: Vector2 in corners: shadow.append(point+Vector2(0,1.2))
+	canvas.draw_colored_polygon(shadow,Color("493c28",0.3*alpha))
+	canvas.draw_colored_polygon(corners,Color("f2ead5",alpha))
+	var outline:=corners.duplicate(); outline.append(outline[0])
+	canvas.draw_polyline(outline,Color("6b685b",alpha),1)
+	# Fine ruled strokes follow the same local paper deformation as its edge.
+	for row: int in range(2):
+		var points:=PackedVector2Array()
+		for col: int in range(7): points.append(at+StampMotion.paper_point(Vector2(-17+col*4,-8+row*5),pose))
+		canvas.draw_polyline(points,Color("87928c",(0.8-row*0.15)*alpha),1)
+	if pose.ink>0:
+		var mark: Vector2=at+Vector2(pose.mark)+Vector2(0,pose.pressure*0.8)
+		var ink:=Color("ae4037",alpha*pose.ink)
+		canvas.draw_rect(Rect2(mark-Vector2(10,5),Vector2(20,10)),ink,false,0.8)
+		canvas.draw_string(font,mark+Vector2(-9,2.8),"非本人",HORIZONTAL_ALIGNMENT_LEFT,-1,6,ink)
