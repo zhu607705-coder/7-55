@@ -84,3 +84,33 @@ contract also samples both source jambs and lintel through 91 opening angles.
 A separate actual Godot final-state capture confirmed the corrected door opening
 and handoff into stair_c. The delivered clip identifies this short repeated
 segment; its earlier mechanism section is the original native automated capture.
+
+## Low-noise native stone finish
+
+The original embedded GLB stone albedo is retained as authoring history. The
+native adapter replaces only materials named `Campus grey terrazzo` with the
+shared `terrazzo_clean_pixel_albedo.png`: 32 surfaces, four colours, about 15%
+clustered aggregate and no per-pixel random base grain. All other surfaces,
+lighting, UVs, PBR values, nearest+mipmap filtering and geometry are unchanged.
+Each material is duplicated before applying the shared texture; the source
+PackedScene and its reusable materials are not modified in place. The tiny
+shared texture is a required member of the same atomic asset set.
+
+Rebuild the deterministic texture with Python (Pillow and NumPy installed):
+`python3 tools/stair_visual_study/generate_clean_terrazzo.py --output /tmp/755-clean-stone`.
+The resulting PNG bytes match this committed asset in the validated environment.
+
+`tests/preview_stair_b_presentation.tscn` is an automatic pure-scene presentation:
+no text, buttons, validation labels or navigation dots are displayed. It uses
+the real source mechanism actions, door traversal and dismantle/reveal timing.
+Its optional `capture_directory` is empty by default, so normal preview writes
+no image files. The separate interactive preview and production touch controls
+remain available. The yellow wall's original mild texture is unchanged.
+
+The final clean-material/presentation regression passed 7,388 checks. It also
+rebuilds the next level after `_process` and fires `frame_pre_draw`, verifying
+navigation dots are hidden before the first new-level draw. Actual captures of
+that first frame and subsequent frames confirm no marker flash. The final native
+capture records all 15 actions and the unchanged dismantle/reveal transition,
+reaching stair_c in 19.504 seconds of recorded frames. The test exits with an
+ObjectDB cleanup warning; no script or parse failure was reported.

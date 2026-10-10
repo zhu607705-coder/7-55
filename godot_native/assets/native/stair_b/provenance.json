@@ -70,5 +70,15 @@
       "mesh_count": 172,
       "embedded_pngs": 1
     }
+  },
+  "native_shared_stone": {
+    "file": "terrazzo_clean_pixel_albedo.png",
+    "sha256": "d6a96b7306512791085eb2c45a494de4f814dde1d9c003996a55be0b8ab0e4ad",
+    "material_name": "Campus grey terrazzo",
+    "surface_count": 32,
+    "other_surfaces_unchanged": 612,
+    "coordinates_uvs_and_pbr_unchanged": true,
+    "filter": 2,
+    "generated_mipmaps": true
   }
 }

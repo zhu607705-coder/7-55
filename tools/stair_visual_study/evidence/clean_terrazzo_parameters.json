@@ -1,0 +1,68 @@
+{
+  "purpose": "single-variable albedo comparison, no geometry or filter changes",
+  "file": "terrazzo_clean_pixel_albedo.png",
+  "seed": 755,
+  "size": 128,
+  "palette_srgb_hex": [
+    "b7b6aa",
+    "aeb0a6",
+    "bdbcae",
+    "b1b3aa"
+  ],
+  "target_nonbase_coverage": 0.15,
+  "actual_nonbase_coverage": 0.15032958984375,
+  "aggregate_count": 135,
+  "aggregate_radius_x_px": [
+    2,
+    3,
+    4
+  ],
+  "aggregate_radius_y_px": [
+    2,
+    3
+  ],
+  "random_per_pixel_base_noise": false,
+  "candidate": {
+    "size": [
+      128,
+      128
+    ],
+    "palette_colors": 4,
+    "largest_flat_color_fraction": 0.84967041015625,
+    "luminance_mean_255": 181.41749022216794,
+    "luminance_std_255": 2.03722302063682,
+    "luminance_min_255": 174.85279999999997,
+    "luminance_max_255": 187.2018,
+    "luminance_range_255": 12.349000000000018,
+    "neighbor_luminance_difference_mean_255": 0.5002442138671881,
+    "color_counts": {
+      "#b7b6aa": 13921,
+      "#bdbcae": 1173,
+      "#b1b3aa": 871,
+      "#aeb0a6": 419
+    }
+  },
+  "sha256": "d6a96b7306512791085eb2c45a494de4f814dde1d9c003996a55be0b8ab0e4ad",
+  "original": {
+    "size": [
+      128,
+      128
+    ],
+    "palette_colors": 6,
+    "largest_flat_color_fraction": 0.58233642578125,
+    "luminance_mean_255": 180.8857310668945,
+    "luminance_std_255": 13.892474229233207,
+    "luminance_min_255": 136.6036,
+    "luminance_max_255": 206.7634,
+    "luminance_range_255": 70.15979999999999,
+    "neighbor_luminance_difference_mean_255": 9.04301827392578,
+    "color_counts": {
+      "#b8b7aa": 9541,
+      "#798d8b": 712,
+      "#abaea5": 2816,
+      "#cbc8b8": 2019,
+      "#d4cfbd": 718,
+      "#929e9b": 578
+    }
+  }
+}
