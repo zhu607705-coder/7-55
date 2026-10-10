@@ -31,7 +31,7 @@ func test_geometry() -> void:
 	check(d.obstacles.size() == 2 and near(d.obstacles[0].rect[0], 17.45) and near(d.obstacles[1].rect[0], 58.3), "authored barriers retained")
 	check(d.spawn.player == [1.0, 0.0] and d.spawn.guard == [-3.4, 0.0], "canonical spawn retained")
 	check(near(d.routes.back().start, 61.9) and near(d.exit.x, 65.5), "four-flight finish lies on final landing")
-	check(near(d.lighting.ambient, 0.105) and d.lighting.torchRange == 6 and d.lighting.torchAngle == 11, "lighting manifest constants")
+	check(near(d.lighting.ambient, 0.105) and near(d.lighting.torchRange,3.2) and d.lighting.torchAngle == 7, "lighting manifest constants")
 	var m = Folded.new()
 	for i: int in range(d.routes.size() - 1):
 		var a: Dictionary = d.routes[i]
@@ -183,9 +183,9 @@ func test_facing_and_torch() -> void:
 	m.player = Vector2(11, 1.98)
 	var pose: Dictionary = m.torch_pose()
 	var actor: Vector3 = m.route_position(m.guard.x, m.guard.y)
-	check(pose.position.distance_to(actor + Vector3(0.65, 1.1, 0)) < 0.0001, "torch is in front at authored hand height")
-	check(pose.target.distance_to(pose.position + Vector3(5, 0.375, 0)) < 0.0001, "torch follows stair rise")
-	check(pose.case_position.distance_to(pose.position - Vector3(0.16, 0, 0)) < 0.0001, "torch case stays behind light source")
+	check(pose.position.distance_to(actor + Vector3(0.24, 0.65, 0)) < 0.0001, "torch is in front at authored hand height")
+	check(pose.target.distance_to(pose.position + Vector3(3.2, 0.23, 0)) < 0.0001, "torch follows stair rise")
+	check(pose.case_position.distance_to(pose.position - Vector3(0.09, 0, 0)) < 0.0001, "torch case stays behind light source")
 	m.player.x = 9
 	pose = m.torch_pose()
 	check(pose.target.x < pose.position.x and pose.target.y < pose.position.y, "torch points downhill when guard chases backwards")

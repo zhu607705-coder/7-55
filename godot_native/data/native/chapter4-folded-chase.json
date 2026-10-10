@@ -881,8 +881,8 @@
   },
   "lighting": {
     "ambient": 0.105,
-    "torchRange": 6,
-    "torchAngle": 11,
-    "torchHeight": 1.1
+    "torchRange": 3.2,
+    "torchAngle": 7,
+    "torchHeight": 0.65
   }
 }

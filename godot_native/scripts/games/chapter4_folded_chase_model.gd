@@ -63,17 +63,21 @@ static func visible_facing(heading: Vector3, camera_basis: Basis) -> Dictionary:
 		return {"facing": "side", "left": side_amount < 0}
 	return {"facing": "up" if away_amount > 0 else "down", "left": false}
 
-func torch_pose() -> Dictionary:
+func torch_pose(hand_anchor: Vector3 = Vector3.INF) -> Dictionary:
 	var direction := signf(player.x - guard.x)
-	if is_zero_approx(direction):
-		direction = 1.0
+	if is_zero_approx(direction): direction = 1.0
 	var heading := route_heading(guard.x, direction)
 	var section := route_section(guard.x)
-	var rise := (float(section.toY) - float(section.fromY)) / float(section.length) * direction
-	var source := route_position(guard.x, guard.y) + heading * 0.65 \
-	+ Vector3(0, float(geometry.lighting.torchHeight), 0)
-	return {"position": source, "target": source + heading * 5.0 + Vector3(0, rise * 5.0 - 1.0, 0),
-		"case_position": source - heading * 0.16}
+	var rise := (float(section.toY)-float(section.fromY))/float(section.length)*direction
+	var actor := route_position(guard.x,guard.y)
+	var hand := hand_anchor
+	if not hand.is_finite():
+		hand = actor+heading*.12+Vector3(0,float(geometry.lighting.torchHeight),0)
+	var source := hand+heading*.12
+	var reach := float(geometry.lighting.torchRange)
+	var height := maxf(.2,source.y-actor.y)
+	return {"position":source,"target":source+heading*reach+Vector3(0,rise*reach-height,0),
+		"case_position":source-heading*.09,"hand_position":hand}
 
 func _contact() -> bool:
 	if super._contact():

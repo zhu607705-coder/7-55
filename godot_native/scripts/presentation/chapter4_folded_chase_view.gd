@@ -14,7 +14,10 @@ var actor: Sprite3D
 var pursuer: Sprite3D
 var torch: SpotLight3D
 var torch_case: MeshInstance3D
-var actor_fill: OmniLight3D
+var actor_fill: SpotLight3D
+var phone_hand_fill: OmniLight3D
+var guard_hand_world := Vector3.ZERO
+var player_hand_world := Vector3.ZERO
 var phone: Node3D
 var phone_screen: MeshInstance3D
 var torch_lens: MeshInstance3D
@@ -62,7 +65,10 @@ func _ready() -> void:
 	_present(0.0)
 
 func _texture(path: String) -> Texture2D:
-	# Raw source access also works before editor import; never edits the source image.
+	# Normal imported/exported assets must use ResourceLoader, not raw PNG bytes.
+	if ResourceLoader.exists(path) and (FileAccess.file_exists(path+".import") or not OS.has_feature("editor")):
+		return load(path) as Texture2D
+	# The lightweight diagnostic harness can run before the first editor import.
 	if FileAccess.file_exists(path):
 		var image := Image.load_from_file(path)
 		if image != null and not image.is_empty():
@@ -78,15 +84,13 @@ func _load_art() -> void:
 		var suffix: String = "" if direction == "side" else "_" + direction
 		guard_frames[direction] = _texture("res://assets/rpg/npcs/finale/guard_walk%s_8frame.png" % suffix)
 	player_frames["idle"] = _texture("res://assets/rpg/player/player_side_idle.png")
-	if FileAccess.file_exists(JUMP_PATH):
-		var image := Image.load_from_file(JUMP_PATH)
-		if image != null and image.get_size() == Vector2i(1086,1448):
-			var atlas := ImageTexture.create_from_image(image)
-			for index in 4:
-				var region := AtlasTexture.new()
-				region.atlas = atlas
-				region.region = Rect2((index % 2)*543,(index / 2)*724,543,724)
-				jump_frames.append(region)
+	var atlas := _texture(JUMP_PATH)
+	if atlas != null and atlas.get_size() == Vector2(1086,1448):
+		for index in 4:
+			var region := AtlasTexture.new()
+			region.atlas = atlas
+			region.region = Rect2((index % 2)*543,(index >> 1)*724,543,724)
+			jump_frames.append(region)
 
 func _load_materials() -> void:
 	var files := {"plaster":"Plaster001_1K-JPG_Color.jpg","concrete":"Concrete010_1K-JPG_Color.jpg","metal":"Metal012_1K-JPG_Color.jpg"}
@@ -95,13 +99,13 @@ func _load_materials() -> void:
 		if texture != null: textures[family] = texture
 	var palette := {"wall":"e7d9b9","skirt":"7d908e","stone":"cbd4cb","metal":"31444b","edge":"bfaf91","dark":"17252d","glass":"173c5a","warn":"d89262"}
 	for key in palette:
-		var material := StandardMaterial3D.new()
-		material.albedo_color = Color(palette[key])
-		material.roughness = .95
-		material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
+		var surface_material := StandardMaterial3D.new()
+		surface_material.albedo_color = Color(palette[key])
+		surface_material.roughness = .95
+		surface_material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
 		var family: String = {"wall":"plaster","skirt":"plaster","stone":"concrete","metal":"metal"}.get(key, "")
-		if textures.has(family): material.albedo_texture = textures[family]
-		materials[key] = material
+		if textures.has(family): surface_material.albedo_texture = textures[family]
+		materials[key] = surface_material
 
 func _build_stage() -> void:
 	surface = SubViewportContainer.new()
@@ -192,14 +196,21 @@ func _build_stage() -> void:
 	build_group = null
 	actor = _sprite(false)
 	pursuer = _sprite(true)
-	actor_fill = OmniLight3D.new()
+	actor_fill = SpotLight3D.new()
 	actor_fill.light_cull_mask = 2
-	actor_fill.light_color = Color("8dabc5")
-	actor_fill.light_energy = .45
-	actor_fill.omni_range = .55
-	actor_fill.omni_attenuation = 1.6
+	actor_fill.light_color = Color("286bff")
+	actor_fill.light_energy = 4.0
+	actor_fill.spot_range = 1.05
+	actor_fill.spot_angle = 18
+	actor_fill.spot_attenuation = 1.0
 	actor_fill.name = "PhoneFaceLight"
 	world.add_child(actor_fill)
+	phone_hand_fill = OmniLight3D.new()
+	phone_hand_fill.light_cull_mask = 2
+	phone_hand_fill.light_color = Color("286bff")
+	phone_hand_fill.light_energy = .8
+	phone_hand_fill.omni_range = .16
+	world.add_child(phone_hand_fill)
 	phone = Node3D.new()
 	phone.name = "PlayerPhone"
 	world.add_child(phone)
@@ -209,21 +220,21 @@ func _build_stage() -> void:
 	phone_screen.reparent(phone)
 	phone_screen.name = "Screen"
 	var screen_material := StandardMaterial3D.new()
-	screen_material.albedo_color = Color("739eac")
+	screen_material.albedo_color = Color("286bff")
 	screen_material.emission_enabled = true
-	screen_material.emission = Color("8dabc5")
-	screen_material.emission_energy_multiplier = .7
+	screen_material.emission = Color("286bff")
+	screen_material.emission_energy_multiplier = 1.6
 	phone_screen.material_override = screen_material
 	phone_screen.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	torch = SpotLight3D.new()
 	torch.light_color = Color("f1e2b2")
-	torch.light_energy = 9
-	torch.spot_range = 6
-	torch.spot_angle = 11
+	torch.light_energy = 7
+	torch.spot_range = 3.2
+	torch.spot_angle = 7
 	torch.spot_attenuation = 1.2
 	torch.shadow_enabled = true
 	world.add_child(torch)
-	torch_case = _box(Vector3.ZERO,Vector3(.25,.10,.12),"dark")
+	torch_case = _box(Vector3.ZERO,Vector3(.18,.085,.085),"dark")
 	torch_case.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	torch_lens = _box(Vector3.ZERO,Vector3(.008,.07,.08),"edge")
 	var lens_material := StandardMaterial3D.new()
@@ -241,17 +252,17 @@ func _box(at: Vector3, dimensions: Vector3, material_key: String, solid: bool=fa
 		mesh.size = dimensions
 		mesh_cache[key] = mesh
 	node.mesh = mesh_cache[key]
-	var material: StandardMaterial3D = materials[material_key]
+	var surface_material: StandardMaterial3D = materials[material_key]
 	if build_group != null:
 		var local_materials: Dictionary = build_group.get_meta("materials")
 		if not local_materials.has(material_key):
-			local_materials[material_key] = material.duplicate()
-			local_materials[material_key].set_meta("base_color",material.albedo_color)
-		material = local_materials[material_key]
-		node.material_override = material
+			local_materials[material_key] = surface_material.duplicate()
+			local_materials[material_key].set_meta("base_color",surface_material.albedo_color)
+		surface_material = local_materials[material_key]
+		node.material_override = surface_material
 		build_group.add_child(node)
 	else:
-		node.material_override = material
+		node.material_override = surface_material
 		world.add_child(node)
 	node.position = at
 	if solid:
@@ -349,7 +360,7 @@ func _adjust_input_mask(mask: int) -> int:
 		held_screen_axis = 0
 		held_route_direction = 0
 	elif held_screen_axis == 0:
-		held_route_direction = model.screen_direction(model.player.x,axis,camera.global_basis.x)
+		held_route_direction = int(model.screen_direction(model.player.x,axis,camera.global_basis.x))
 	elif axis != held_screen_axis:
 		held_route_direction = -held_route_direction
 	held_screen_axis = axis
@@ -391,25 +402,12 @@ func _present(delta: float) -> void:
 	if absf(model.guard_velocity.x)>.001: guard_heading=model.route_heading(model.guard.x,signf(model.guard_velocity.x))
 	actor.position = p
 	pursuer.position = g
-	# Phone is an actual hand-height prop. Its source only reveals nearby actor pixels.
-	# Lighting layer 2 excludes every wall, stair, rail and obstacle (layer 1).
-	phone.position = p+retained_heading*.20+Vector3(0,1.18,.12)
-	phone.rotation.y = atan2(retained_heading.x,retained_heading.z)
-	actor_fill.position = phone_screen.global_position
-	var pose: Dictionary = model.torch_pose()
-	torch.position = pose.position
-	torch.look_at(pose.target)
-	torch_case.position = pose.case_position
-	var guard_tangent: Vector3 = (Vector3(pose.position)-Vector3(pose.case_position)).normalized()
-	torch_case.rotation.y = -atan2(guard_tangent.z,guard_tangent.x)
-	torch_lens.position = torch.position-guard_tangent*.012
-	torch_lens.rotation.y = torch_case.rotation.y
-	var facing: Dictionary = model.visible_facing(retained_heading,camera.global_basis)
+	var facing: Dictionary = Model.visible_facing(retained_heading,camera.global_basis)
 	var direction: String = facing.facing
 	actor.flip_h = direction=="side" and bool(facing.left)
 	actor.pixel_size = 1.7/128.0
 	actor.offset = Vector2(0,62)
-	var frame: int = int(model.tick/7)%8
+	var frame: int = floori(model.tick/7.0)%8
 	actor.texture = player_frames[direction][frame if absf(model.player_velocity.x)>.001 else 0]
 	if direction=="side" and absf(model.player_velocity.x)<.001: actor.texture=player_frames.idle
 	if direction=="side" and jump_frames.size()==4 and (not model.player_grounded or land_ticks>0):
@@ -418,19 +416,56 @@ func _present(delta: float) -> void:
 		actor.pixel_size = 1.7/724.0
 		var anchor: Vector2 = JUMP_ROOTS[index]
 		actor.offset = Vector2((271.5-anchor.x)*(-1 if actor.flip_h else 1),anchor.y-362)
-	var guard_facing: Dictionary = model.visible_facing(guard_heading,camera.global_basis)
+	var guard_facing: Dictionary = Model.visible_facing(guard_heading,camera.global_basis)
 	pursuer.texture = guard_frames[guard_facing.facing]
 	pursuer.flip_h = guard_facing.facing=="side" and bool(guard_facing.left)
 	pursuer.frame = frame
+	# Pixel anchors follow each whole-body source frame, including the billboard basis.
+	guard_hand_world = _sprite_socket(pursuer,_hand_pixel(true,guard_facing.facing,frame))
+	var hand_pixel: Vector2 = Vector2(45,89) if direction=="side" and absf(model.player_velocity.x)<.001 else _hand_pixel(false,direction,frame if absf(model.player_velocity.x)>.001 else 0)
+	player_hand_world = _sprite_socket(actor,hand_pixel)
+	phone.position = player_hand_world+camera.global_basis.z*.07
+	phone.global_basis = camera.global_basis
+	actor_fill.position = phone_screen.global_position
+	phone_hand_fill.position = phone_screen.global_position
+	var face_pixel := Vector2(57,43) if direction=="side" else Vector2(48,43)
+	actor_fill.look_at(_sprite_socket(actor,face_pixel))
+	var pose: Dictionary = model.torch_pose(guard_hand_world)
+	var guard_tangent: Vector3 = (Vector3(pose.position)-Vector3(pose.case_position)).normalized()
+	torch.position = pose.position
+	torch.look_at(pose.target)
+	torch_case.position = pose.case_position
+	torch_case.rotation.y = -atan2(guard_tangent.z,guard_tangent.x)
+	torch_lens.position = torch.position-guard_tangent*.012
+	torch_lens.rotation.y = torch_case.rotation.y
 	for group in groups:
 		var y: float = group.get_meta("center_y")
 		group.visible = absf(y-ground_y)<8 or absf(y-model.guard.y)<4
 		var fade: float = clampf(1-absf(y-ground_y-1.65)/7,.05,1)
 		if absf(fade-float(group.get_meta("fade")))>.04:
-			for material in group.get_meta("materials").values():
-				var color: Color = material.get_meta("base_color")
-				material.albedo_color = Color(color.r*fade,color.g*fade,color.b*fade,color.a)
+			for surface_material in group.get_meta("materials").values():
+				var color: Color = surface_material.get_meta("base_color")
+				surface_material.albedo_color = Color(color.r*fade,color.g*fade,color.b*fade,color.a)
 			group.set_meta("fade",fade)
+
+func _sprite_socket(sprite: Sprite3D, pixel: Vector2) -> Vector3:
+	var x: float = (pixel.x-48)*(-1 if sprite.flip_h else 1)+sprite.offset.x
+	var y: float = 64-pixel.y+sprite.offset.y
+	return sprite.position+(camera.global_basis.x*x+camera.global_basis.y*y)*sprite.pixel_size
+
+func _hand_pixel(guard: bool, direction: String, frame: int) -> Vector2:
+	# Authored from the visible hand/wrist of unchanged 96×128 source cells.
+	# Back-view frame 4 has a covered left wrist: use its cuff, never switch hands.
+	var anchors: Dictionary
+	if guard:
+		anchors = {"side":[Vector2(57,84),Vector2(60,84),Vector2(64,82),Vector2(62,81),Vector2(56,84),Vector2(59,90),Vector2(61,84),Vector2(66,87)],
+		"up":[Vector2(67,83),Vector2(66,85),Vector2(66,84),Vector2(68,87),Vector2(66,89),Vector2(66,88),Vector2(67,90),Vector2(66,88)],
+		"down":[Vector2(69,84),Vector2(69,87),Vector2(69,84),Vector2(67,83),Vector2(67,84),Vector2(68,86),Vector2(69,81),Vector2(69,87)]}
+	else:
+		anchors = {"side":[Vector2(63,84),Vector2(45,91),Vector2(45,91),Vector2(60,85),Vector2(62,79),Vector2(47,90),Vector2(47,90),Vector2(47,90)],
+		"up":[Vector2(28,89),Vector2(27,90),Vector2(27,86),Vector2(28,88),Vector2(33,84),Vector2(28,89),Vector2(27,92),Vector2(28,87)],
+		"down":[Vector2(67,83),Vector2(67,91),Vector2(66,90),Vector2(65,89),Vector2(65,90),Vector2(67,91),Vector2(68,81),Vector2(68,83)]}
+	return anchors[direction][frame%8]
 
 func _input(event: InputEvent) -> void:
 	# Release is processed even over the menu; a lost release must never keep running.

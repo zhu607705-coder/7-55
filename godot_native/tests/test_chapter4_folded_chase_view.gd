@@ -9,6 +9,11 @@ var checks := 0
 var failures := 0
 var verified_jump_poses := 0
 var previous_accumulation := true
+var source_hashes: Dictionary = {}
+var source_manifest_available := false
+var transparent_rgb_differences := 0
+var low_alpha_rgb_differences := 0
+var verified_import_transforms := 0
 
 func _initialize() -> void:
 	run.call_deferred()
@@ -204,18 +209,85 @@ func _test_geometry(game) -> void:
 			"world background is black")
 		check(environment.ambient_light_energy <= .11, "ambient remains dark rather than flooding the room")
 
+func _read_source_png(path: String) -> Image:
+	if not FileAccess.file_exists(path):
+		return null
+	var source := Image.new()
+	if source.load_png_from_buffer(FileAccess.get_file_as_bytes(path)) != OK:
+		return null
+	return source
+
+func _load_source_hashes() -> void:
+	var path := "res://data/asset_manifest.json"
+	source_manifest_available = FileAccess.file_exists(path)
+	if not source_manifest_available:
+		print("SOURCE_HASH_MANIFEST_UNAVAILABLE: visible RGBA fidelity is checked; historical file identity cannot be checked")
+		return
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	check(parsed is Dictionary and parsed.get("assets") is Array, "source provenance manifest is readable")
+	if not parsed is Dictionary or not parsed.get("assets") is Array:
+		return
+	for row: Dictionary in parsed.assets:
+		source_hashes["res://" + str(row.path)] = str(row.sha256)
+
 func _same_source(texture: Texture2D, path: String) -> bool:
 	if texture == null or not FileAccess.file_exists(path):
 		return false
-	var source := Image.load_from_file(path)
+	if source_manifest_available:
+		check(source_hashes.has(path) and FileAccess.get_sha256(path) == str(source_hashes.get(path, "")),
+			"original PNG file SHA-256 matches source manifest: " + path)
+	var source := _read_source_png(path)
 	var actual := texture.get_image()
 	if source == null or actual == null or source.get_size() != actual.get_size():
 		return false
+	if actual.is_compressed() and actual.decompress() != OK:
+		return false
 	source.convert(Image.FORMAT_RGBA8)
 	actual.convert(Image.FORMAT_RGBA8)
-	return source.get_data() == actual.get_data()
+	var expected: Image = source.duplicate()
+	if texture is CompressedTexture2D:
+		var settings := ConfigFile.new()
+		if settings.load(path + ".import") != OK:
+			print("SOURCE_IMPORT_SETTINGS_MISSING: ", path)
+			return false
+		if bool(settings.get_value("params", "process/fix_alpha_border", false)):
+			# Verified Godot 4.6 transform: only RGB with alpha<20 can change.
+			# https://github.com/godotengine/godot/blob/4.6/core/io/image.cpp#L3999-L4060
+			expected.fix_alpha_edges()
+			verified_import_transforms += 1
+	var source_bytes := source.get_data()
+	var expected_bytes := expected.get_data()
+	var actual_bytes := actual.get_data()
+	if expected_bytes.size() != actual_bytes.size():
+		return false
+	for offset in range(0, expected_bytes.size(), 4):
+		var pixel := offset >> 2
+		var coordinates := Vector2i(pixel % source.get_width(), int(pixel / source.get_width()))
+		if source_bytes[offset + 3] != actual_bytes[offset + 3]:
+			print("SOURCE_ALPHA_MISMATCH: ", path, " pixel=", coordinates,
+				" source=", source_bytes[offset + 3], " actual=", actual_bytes[offset + 3])
+			return false
+		var same_raw_rgb := source_bytes[offset] == actual_bytes[offset] \
+			and source_bytes[offset + 1] == actual_bytes[offset + 1] \
+			and source_bytes[offset + 2] == actual_bytes[offset + 2]
+		if source_bytes[offset + 3] >= 20 and not same_raw_rgb:
+			print("SOURCE_VISIBLE_RGB_MISMATCH: ", path, " pixel=", coordinates,
+				" source=", source_bytes.slice(offset, offset + 4),
+				" actual=", actual_bytes.slice(offset, offset + 4))
+			return false
+		if expected_bytes.slice(offset, offset + 4) != actual_bytes.slice(offset, offset + 4):
+			print("SOURCE_IMPORT_RGBA_MISMATCH: ", path, " pixel=", coordinates,
+				" expected=", expected_bytes.slice(offset, offset + 4),
+				" actual=", actual_bytes.slice(offset, offset + 4))
+			return false
+		if source_bytes[offset + 3] == 0 and not same_raw_rgb:
+			transparent_rgb_differences += 1
+		elif source_bytes[offset + 3] < 20 and not same_raw_rgb:
+			low_alpha_rgb_differences += 1
+	return true
 
 func _test_source_art(game) -> void:
+	_load_source_hashes()
 	for direction: String in ["up", "down", "side"]:
 		check(game.player_frames[direction].size() == 8, direction + " has eight original full-body player frames")
 		for index in 8:
@@ -228,7 +300,7 @@ func _test_source_art(game) -> void:
 	check(_same_source(game.player_frames.idle, "res://assets/rpg/player/player_side_idle.png"),
 		"original side idle image is preserved")
 	if FileAccess.file_exists(View.JUMP_PATH):
-		var atlas := Image.load_from_file(View.JUMP_PATH)
+		var atlas := _read_source_png(View.JUMP_PATH)
 		check(atlas != null and atlas.get_size() == Vector2i(1086, 1448), "available jump atlas has its authored size")
 		check(game.jump_frames.size() == 4, "available jump atlas yields four actual regions")
 		for index in game.jump_frames.size():
@@ -238,6 +310,9 @@ func _test_source_art(game) -> void:
 	else:
 		check(game.jump_frames.is_empty(), "missing original jump atlas has zero fabricated poses")
 		print("JUMP_ATLAS_UNAVAILABLE: source PNG is absent; zero atlas poses verified; original direction frames are tested")
+	print("SOURCE_RGBA_FIDELITY: raw alpha exact everywhere; raw RGB exact at alpha>=20; full imported RGBA exact against configured transform; ",
+		verified_import_transforms, " import transforms; ", transparent_rgb_differences,
+		" transparent and ", low_alpha_rgb_differences, " low-alpha RGB changes explained exactly")
 
 func _test_keys(game) -> void:
 	fresh(game)
@@ -458,9 +533,9 @@ func _test_facing(game) -> void:
 
 func _test_lights(game) -> void:
 	fresh(game)
-	check(game.torch is SpotLight3D and is_equal_approx(game.torch.spot_range, 6.0)
-		and is_equal_approx(game.torch.spot_angle, 11.0) and game.torch.shadow_enabled,
-		"guard beam is a shadow-casting 6m, 11-degree spotlight")
+	check(game.torch is SpotLight3D and is_equal_approx(game.torch.spot_range, 3.2)
+		and is_equal_approx(game.torch.spot_angle, 7.0) and game.torch.shadow_enabled,
+		"guard beam is the revised short shadow-casting 3.2m, 7-degree spotlight")
 	check(game.phone is Node3D and game.phone_screen is MeshInstance3D
 		and game.phone_screen.get_parent() == game.phone and game.phone.get_child_count() >= 2,
 		"player carries an actual handset mesh with a separate screen")
@@ -470,19 +545,25 @@ func _test_lights(game) -> void:
 			handset_small = handset_small and node.mesh.size.length() < .25
 	check(handset_small, "phone is a small hand prop rather than a world-sized emissive proxy")
 	check(game.phone_screen.material_override is StandardMaterial3D
-		and game.phone_screen.material_override.emission_enabled, "actual phone screen emits a visible local glow")
-	check(game.actor_fill is OmniLight3D and game.actor_fill.omni_range > 0
-		and game.actor_fill.omni_range <= .6 and game.actor_fill.light_energy > 0
-		and game.actor_fill.light_energy <= .6 and game.actor_fill.light_cull_mask == 2,
-		"phone has a tiny always-on actor-only face light")
+		and game.phone_screen.material_override.emission_enabled
+		and _dominantly_blue(game.phone_screen.material_override.emission), "actual phone screen emits blue light")
+	check(game.actor_fill is SpotLight3D and is_equal_approx(game.actor_fill.spot_range, 1.05)
+		and is_equal_approx(game.actor_fill.spot_angle, 18.0) and game.actor_fill.light_energy > 0
+		and game.actor_fill.light_cull_mask == 2 and _dominantly_blue(game.actor_fill.light_color),
+		"phone uses a narrow blue actor-only hand-to-face beam")
+	check(game.phone_hand_fill is OmniLight3D and game.phone_hand_fill.omni_range > 0
+		and game.phone_hand_fill.omni_range <= .16 and game.phone_hand_fill.light_energy > 0
+		and game.phone_hand_fill.light_cull_mask == 2 and _dominantly_blue(game.phone_hand_fill.light_color),
+		"phone hand glow remains a tiny blue actor-only light")
 	check((game.actor.layers & game.actor_fill.light_cull_mask) != 0, "phone light can reveal the player's own sprite")
 	var architecture: Array[Node] = []
 	for group: Node in game.groups:
 		_collect(group, "GeometryInstance3D", architecture)
 	var no_world_flood := true
 	for node: Node in architecture:
-		no_world_flood = no_world_flood and (node.layers & game.actor_fill.light_cull_mask) == 0
-	check(architecture.size() > 83 and no_world_flood, "phone light mask excludes every stair, wall, barrier, rail and world label")
+		no_world_flood = no_world_flood and (node.layers & game.actor_fill.light_cull_mask) == 0 \
+			and (node.layers & game.phone_hand_fill.light_cull_mask) == 0
+	check(architecture.size() > 83 and no_world_flood, "both blue light masks exclude every floor, stair, wall, barrier, rail and world label")
 	for sample: Array in [[10.0, 1.0], [17.0, 1.0], [22.0, 1.0], [32.0, 1.0], [22.0, -1.0]]:
 		var progress := float(sample[0])
 		var direction := float(sample[1])
@@ -496,17 +577,80 @@ func _test_lights(game) -> void:
 		var beam_horizontal := Vector3(beam_heading.x, 0, beam_heading.z).normalized()
 		check(beam_horizontal.dot(guard_heading) > .999,
 			"guard hand beam follows heading at route %.1f direction %.0f" % [progress, direction])
-		var hand_offset: Vector3 = game.torch.global_position - game.pursuer.global_position
-		check(hand_offset.y > .8 and hand_offset.y < 1.5
-			and Vector2(hand_offset.x, hand_offset.z).length() <= .75,
-			"guard light source stays attached at hand height")
-		check((game.torch_case.global_position - game.torch.global_position).dot(guard_heading) < -.05,
-			"torch casing stays behind its light source rather than blocking its own beam")
-		check(game.torch_lens.global_position.distance_to(game.torch.global_position) < .04,
-			"visible torch lens and actual light source coincide")
-		var phone_offset: Vector3 = game.phone.global_position - game.actor.global_position
-		var expected_phone: Vector3 = game.retained_heading * .20 + Vector3(0, 1.18, .12)
-		check(phone_offset.is_equal_approx(expected_phone), "handset follows this frame's player heading at chest/hand height")
+		check(game.torch.global_position.is_equal_approx(game.guard_hand_world + guard_heading * .12),
+			"guard light starts at the actual sprite hand and short barrel")
+		check(game.torch_case.global_position.is_equal_approx(game.torch.global_position - guard_heading * .09)
+			and game.torch_case.global_position.distance_to(game.guard_hand_world) <= .031,
+			"torch casing stays attached to the sprite hand and behind its beam source")
+		check(game.torch_lens.global_position.is_equal_approx(game.torch.global_position - guard_heading * .012),
+			"visible torch lens ends immediately behind the actual source")
+		var expected_phone: Vector3 = game.player_hand_world + game.camera.global_basis.z * .07
+		check(game.phone.global_position.is_equal_approx(expected_phone), "handset is attached to this frame's actual sprite hand")
 		check(game.actor_fill.global_position.is_equal_approx(game.phone_screen.global_position)
-			and game.actor_fill.visible and game.actor_fill.light_energy > 0,
-			"always-on face light originates at the actual moving phone screen")
+			and game.phone_hand_fill.global_position.is_equal_approx(game.phone_screen.global_position)
+			and game.actor_fill.visible and game.phone_hand_fill.visible
+			and game.actor_fill.light_energy > 0 and game.phone_hand_fill.light_energy > 0,
+			"always-on face and hand lights both originate at the actual moving phone screen")
+	_test_pixel_sockets(game)
+
+func _dominantly_blue(color: Color) -> bool:
+	return color.b > color.g + .2 and color.b > color.r + .5
+
+func _expected_socket(game, sprite: Sprite3D, pixel: Vector2) -> Vector3:
+	# Independent 96x128 full-frame pixel-to-billboard transform, including flip.
+	var horizontal := pixel.x - 48.0
+	if sprite.flip_h:
+		horizontal = -horizontal
+	return sprite.global_position + game.camera.global_basis.x * (horizontal + sprite.offset.x) * sprite.pixel_size \
+		+ game.camera.global_basis.y * (64.0 - pixel.y + sprite.offset.y) * sprite.pixel_size
+
+func _visible_hand_pixel(source: Image, pixel: Vector2, frame: int = 0) -> bool:
+	if source == null or pixel.x < 20 or pixel.x > 75 or pixel.y < 70 or pixel.y > 100:
+		return false
+	var coordinate := Vector2i(int(pixel.x) + frame * 96, int(pixel.y))
+	return source.get_pixelv(coordinate).a >= .75
+
+func _test_pixel_sockets(game) -> void:
+	for sample: Array in [[10.0, 1.0, "side"], [10.0, -1.0, "side"],
+		[17.0, 1.0, "up"], [17.0, -1.0, "down"], [32.0, 1.0, "down"], [32.0, -1.0, "up"]]:
+		var progress := float(sample[0])
+		var direction := float(sample[1])
+		var facing := str(sample[2])
+		var suffix := "" if facing == "side" else "_" + facing
+		var guard_source := _read_source_png("res://assets/rpg/npcs/finale/guard_walk%s_8frame.png" % suffix)
+		for frame in 8:
+			game.model.guard = Vector2(progress, game.model.floor_height_at(progress))
+			game.model.player = Vector2(progress + direction * .35, game.model.floor_height_at(progress + direction * .35))
+			game.model.player_velocity = Vector2(direction * Model.PLAYER_SPEED, 0)
+			game.model.guard_velocity = Vector2(direction * Model.GUARD_SPEED, 0)
+			game.model.player_grounded = true
+			game.model.tick = frame * 7
+			game._present(0.0)
+			var player_pixel: Vector2 = game._hand_pixel(false, facing, frame)
+			var guard_pixel: Vector2 = game._hand_pixel(true, facing, frame)
+			var player_source := _read_source_png("res://assets/rpg/player/player_%s_%d.png" % [facing, frame])
+			var label := "%s frame %d route-direction %.0f" % [facing, frame, direction]
+			check(game.actor.texture == game.player_frames[facing][frame]
+				and game.pursuer.texture == game.guard_frames[facing] and game.pursuer.frame == frame,
+				"socket follows the actual selected player/guard animation cell: " + label)
+			check(_visible_hand_pixel(player_source, player_pixel), "player hand anchor is visible in original PNG: " + label)
+			check(_visible_hand_pixel(guard_source, guard_pixel, frame), "guard hand anchor is visible in original PNG: " + label)
+			check(game.player_hand_world.is_equal_approx(_expected_socket(game, game.actor, player_pixel))
+				and game.guard_hand_world.is_equal_approx(_expected_socket(game, game.pursuer, guard_pixel)),
+				"source-pixel sockets map through camera billboard and sprite flip: " + label)
+			check(game.phone.global_position.is_equal_approx(game.player_hand_world + game.camera.global_basis.z * .07),
+				"handset tracks the moving pixel hand without frame lag: " + label)
+			var face_pixel := Vector2(57, 43) if facing == "side" else Vector2(48, 43)
+			var face: Vector3 = _expected_socket(game, game.actor, face_pixel)
+			var source_to_face: Vector3 = face - game.phone_screen.global_position
+			check((-game.actor_fill.global_basis.z).dot(source_to_face.normalized()) > .999
+				and source_to_face.length() < game.actor_fill.spot_range,
+				"blue phone cone aims at and reaches the actual face pixel: " + label)
+	game.model.player.x = 10.0
+	game.model.player_velocity = Vector2.ZERO
+	game.retained_heading = Vector3.RIGHT
+	game._present(0.0)
+	var idle_pixel := Vector2(45, 89)
+	check(_visible_hand_pixel(_read_source_png("res://assets/rpg/player/player_side_idle.png"), idle_pixel)
+		and game.player_hand_world.is_equal_approx(_expected_socket(game, game.actor, idle_pixel)),
+		"stopped side frame keeps phone attached to the actual idle hand")

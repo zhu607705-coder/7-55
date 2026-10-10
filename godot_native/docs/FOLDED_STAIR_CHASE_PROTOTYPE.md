@@ -87,3 +87,34 @@ socket returns `EPERM`, so its installed Xorg dummy server cannot create a priva
 display. Godot's headless display supports the dummy renderer only. No actual
 rendered image or manual run is claimed for this increment. The existing cloud
 login desktop was left untouched; no permissions or network settings were changed.
+
+### Hand-aligned short light / blue phone increment
+
+The user reviewed the first real native screenshot and requested a smaller guard
+pool, corrected physical light origin, and visibly blue phone illumination.
+The guard cone is now **3.2 m / 7 degrees**, with barrel/lens attached to per-frame
+hand/wrist pixels transformed through the actual billboard camera basis. The
+previous abstract 0.65 m forward / 1.1 m high offset did not align with the source
+hand and is superseded. The phone uses the same per-frame hand/wrist approach;
+back-view frame 4 uses its covered cuff without switching hands. These remain
+walking frames, not newly authored phone-holding or jump poses.
+
+Phone screen color is cool blue `286bff`. Its small face-directed spot reaches
+from the hand to the face (1.05 m range, 18-degree cone), plus a 0.16 m hand-only
+point fill. Both exclude all architecture. Camera, ambient darkness, movement,
+gravity, capture speeds, and winning conditions are unchanged for comparison.
+
+Imported and exported art now uses ResourceLoader. A raw-image fallback is only
+for the pre-import diagnostic setup. Fresh tests: **125 model checks + 790 view
+checks, zero failures**. The 28 source PNG hashes are unchanged; imported RGBA
+matches the exact configured Godot alpha-border transform, with raw alpha exact
+everywhere and raw RGB exact for alpha >= 20. All 48 directional socket samples
+are checked. No jump atlas poses are claimed.
+
+The original executor's socket restriction remains, but official cloud desktop
+Godot successfully opened this shared project and rendered it. The first screenshot
+is an actual native run. The UI debugger badge was inspected: audio/VSync backend
+messages, GDScript warnings, and imported-image loading warnings were present.
+The source loader and source-code warnings are corrected in this increment;
+audio/VSync availability is environment-specific. Visual lighting comparisons
+are separate fixed-pose rendered fixtures, not manual-route completion evidence.
