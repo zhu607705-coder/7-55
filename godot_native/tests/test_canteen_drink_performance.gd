@@ -390,10 +390,16 @@ func _test_real_panel(chapter: RefCounted, spec: Dictionary) -> void:
 			panel.set_process(false)
 			for viewport:Vector2 in [Vector2(1280,720),Vector2(960,540),Vector2(390,844),Vector2(430,860),Vector2(844,390)]:
 				panel.configure_layout(viewport,viewport.x<1100)
-				var bay:=Rect2(panel._dispense_center()+Vector2(-78,-148),Vector2(156,231))
-				check(panel.board.encloses(bay), "fixed dispenser bay stays fully inside each source device board")
-				check((panel.dispense_view.position+panel.dispense_view.size/2).is_equal_approx(panel._dispense_center()+Vector2(panel.BOTTLE_WAIT_OFFSET,0)), "idle container waits beside the fixed source spout")
-				check(panel.paddle_pivot.position.is_equal_approx(panel._paddle_hinge()) and is_zero_approx(panel.paddle_pivot.rotation), "idle generated paddle stays registered below its fixed source outlet")
+				var rig:Node2D=panel.fountain
+				var bay:=Rect2(rig.position+panel.FountainRig.BOUNDS.position*rig.scale.x,panel.FountainRig.BOUNDS.size*rig.scale.x)
+				check(panel.board.encloses(bay), "complete three-outlet fountain stays fully inside each source device board")
+				check(is_equal_approx(rig.scale.x,rig.scale.y) and is_equal_approx(panel.dispense_view.size.x,panel.dispense_view.size.y), "machine and original thin-bottle atlas keep uniform scale at every viewport")
+				check((panel.dispense_view.position+panel.dispense_view.size/2).is_equal_approx(panel._bottle_screen(panel.BOTTLE_HOME_DEPTH)), "idle bottle waits toward the viewer on the shared depth axis")
+				var selector:Vector2=rig.position+panel.FountainRig.selector_center(panel.outlet_index)*rig.scale.x
+				check((panel.controls.take.position+panel.controls.take.size/2).is_equal_approx(selector) and panel.controls.take.size.x>=44.0 and panel.controls.take.size.y>=44.0, "44px pickup hit area remains centered on its actual flavor selector")
+				check(panel.OUTLET_ITEMS[panel.outlet_index]==spec.item, "pickup maps blue, white and black drinks to their matching physical outlet")
+				for i in range(3):
+					check(is_equal_approx(rig.angles[i],panel.FountainRig.REST_ANGLE) and is_zero_approx(rig.pivots[i].rotation), "all three idle paddles retain fixed horizontal depth hinges")
 			panel.configure_layout(Vector2(960,540),false)
 			panel._take()
 			check(source.d.items[spec.item] and playing_count() == 0, "real panel grants immediately while suppressing the world overlay")
@@ -402,7 +408,7 @@ func _test_real_panel(chapter: RefCounted, spec: Dictionary) -> void:
 			check(calls.count == 1, "repeat Take input cannot redispatch during accepted frames or dismissed panel")
 			if not already_owned:
 				check(panel.active and panel.visible and panel.dispense_view.visible and panel.controls.take.disabled, "accepted closeup is visible and locks only repeat Take")
-				check(panel.dispenser_texture!=null and panel.dispenser_texture.get_size()==Vector2(1254,1254), "closeup retains original dispenser source texture")
+				check(panel.fountain.body.texture==panel.FountainRig.BODY and panel.fountain.nozzles.size()==3 and panel.fountain.paddles.size()==3, "pickup reuses the complete generated three-outlet machine with one paddle per outlet")
 				check(panel.dispense_reduced == reduced and panel.dispense_region.region == DrinkMotion.frame_region(7 if reduced else 0), "real panel selects normal first frame or reduced stable pose")
 				if finish=="complete": _test_pickup_contact(panel,reduced)
 				var granted := source.d.duplicate(true)
@@ -436,29 +442,72 @@ func _test_real_panel(chapter: RefCounted, spec: Dictionary) -> void:
 
 func _test_pickup_contact(panel: Control,reduced: bool) -> void:
 	var committed: Dictionary=source.d.duplicate(true)
-	var hinge: Vector2=panel.paddle_pivot.position
-	var button: Transform2D=panel.press_sprite.transform
-	var material: ShaderMaterial=panel.dispense_view.material
-	var previous: Vector2=panel.dispense_view.position
+	var rig:Node2D=panel.fountain
+	var assembly:Transform2D=rig.transform
+	var body:Transform2D=rig.body.transform
+	var nozzles:Array[Transform2D]=[]
+	var selectors:Array[Transform2D]=[]
+	var hinges:Array[Transform2D]=[]
+	for i in range(3):
+		nozzles.append(rig.nozzles[i].transform)
+		selectors.append(rig.selectors[i].transform)
+		hinges.append(rig.pivots[i].transform)
+	var material:ShaderMaterial=panel.dispense_view.material
+	var home:Vector2=panel.dispense_view.position
+	var fixed_cell_size:Vector2=panel.dispense_view.size
+	var held_center:Vector2=panel._dispense_center()
+	# Independently inspect the original atlas's solid base pixels and the
+	# generated body's measured tray polygon, not the motion/contact solver.
+	var original_atlas:=Image.new()
+	original_atlas.load_png_from_buffer(FileAccess.get_file_as_bytes(DrinkMotion.ATLAS_PATH))
+	var base_y:Array[float]=[]
+	for cell in range(8):
+		var bottom:=0.0
+		for y in range(80,128):
+			for x in range(52,77):
+				if original_atlas.get_pixel((cell%4)*128+x,floori(cell/4.0)*128+y).a>=0.7: bottom=maxf(bottom,float(y+1))
+		base_y.append(bottom)
+	var tray:=PackedVector2Array()
+	for source_point:Vector2 in panel.FountainRig.TRAY_SOURCE_POLYGON:
+		tray.append(rig.position+(source_point-panel.FountainRig.SOURCE_ORIGIN)*panel.FountainRig.BODY_SCALE*rig.scale.x)
 	for t: float in [0.0,0.03,0.055,0.08,0.119,0.12,0.124,0.125,0.4,0.749,0.75,0.874,0.875,0.89,0.90,0.94,0.98,1.0]:
 		panel.dispense_elapsed_ms=t*DrinkMotion.duration_ms(reduced);panel._pose_dispense()
-		var center: Vector2=panel.dispense_view.position+panel.dispense_view.size/2
-		var contact: Vector2=hinge+panel.CupPaddle.CONTACT_LOCAL.rotated(panel.paddle_pivot.rotation)
-		var gap: float=center.x+panel.BOTTLE_LEFT-contact.x
-		var frame: int=DrinkMotion.frame_at(panel.dispense_elapsed_ms,reduced)
-		check(panel.paddle_pivot.position==hinge and panel.press_sprite.transform==button and panel.press_sprite.region_rect==panel.MachinePress.region(0), "outlet paddle hinge and top drink selector remain fixed during pickup at "+str(t))
-		check(gap>=-0.001, "container never moves through the paddle contact edge at "+str(t))
+		var center:Vector2=panel.dispense_view.position+panel.dispense_view.size/2
+		var gap:float=panel.bottle_contact_gap()
+		var angle:float=rig.angles[panel.outlet_index]
+		var frame:int=DrinkMotion.frame_at(panel.dispense_elapsed_ms,reduced)
+		check(rig.transform==assembly and rig.body.transform==body and panel.dispense_view.size.distance_to(fixed_cell_size)<0.001, "whole machine and original bottle scale stay fixed throughout pickup at "+str(t))
+		check(absf((center-held_center).cross(panel.FountainRig.DEPTH_AXIS))<0.001, "bottle travels only forward/back on the machine depth axis, never laterally across outlets")
+		for base_x:float in [52.0,64.0,76.0]:
+			var base_point:Vector2=panel.dispense_view.position+Vector2(base_x,base_y[frame])*(panel.dispense_view.size/DrinkMotion.CELL)
+			check(Geometry2D.is_point_in_polygon(base_point,tray), "original bottle base is supported by the measured tray throughout forward pickup at "+str(t))
+		for i in range(3):
+			check(rig.nozzles[i].transform==nozzles[i] and rig.selectors[i].transform==selectors[i] and rig.pivots[i].transform==hinges[i] and is_zero_approx(rig.pivots[i].rotation), "all three nozzles, selectors and horizontal hinges remain fixed")
+			for vertex in range(4):
+				check(rig.paddles[i].polygon[vertex].is_equal_approx(panel.FountainRig.project_lever(rig.paddles[i].uv[vertex],rig.angles[i])), "paddle texture uses the shared rigid depth projection")
+			if i!=panel.outlet_index: check(is_equal_approx(rig.angles[i],panel.FountainRig.REST_ANGLE), "pickup never actuates either unselected outlet")
+		check(gap>=-0.001, "bottle never penetrates the lever in physical depth at "+str(t))
 		if reduced:
-			check(panel.dispense_view.position==previous and is_zero_approx(panel.paddle_pivot.rotation) and frame==7 and not material.get_shader_parameter("has_stream"), "reduced pickup remains one dry full-container pose without paddle travel")
+			check(panel.dispense_view.position.distance_to(home)<0.001 and is_equal_approx(angle,panel.FountainRig.REST_ANGLE) and frame==7 and not material.get_shader_parameter("has_stream"), "reduced pickup remains one dry full-container pose with all paddles at rest")
 		else:
-			if t>=0.055 and t<=0.875: check(absf(gap)<0.001, "container wall drives the registered paddle edge at "+str(t))
-			if t<0.055: check(is_zero_approx(panel.paddle_pivot.rotation), "paddle cannot move before container contact")
+			if t>=0.055 and t<=0.875: check(absf(gap)<0.001, "the narrow bottle's back wall drives only its matching lever through forward contact at "+str(t))
+			if t<0.055: check(is_equal_approx(angle,panel.FountainRig.REST_ANGLE), "lever cannot move before forward bottle contact")
+			if t>0.0 and t<0.12: check(center.x>home.x+fixed_cell_size.x/2 and center.y<home.y+fixed_cell_size.y/2, "approach moves away from the viewer with the shared depth projection")
 			if frame in [1,2,3,4,5,6]:
-				check(center.is_equal_approx(panel._dispense_center()) and is_equal_approx(panel.paddle_pivot.rotation,panel.PADDLE_PRESSED_ANGLE), "original stream pixels stay exactly under the fixed outlet while the container holds the paddle")
+				var source_pixel:Vector2=panel.dispense_view.position+panel.ATLAS_OUTLET*(panel.dispense_view.size/DrinkMotion.CELL)
+				var outlet:Vector2=rig.position+rig.nozzles[panel.outlet_index].position*rig.scale.x
+				check(center.is_equal_approx(held_center) and source_pixel.is_equal_approx(outlet) and is_equal_approx(angle,panel.FountainRig.PRESSED_ANGLE), "all original flowing cells stay exactly under their fixed matching outlet while the bottle holds its lever forward")
 			else: check(not material.get_shader_parameter("has_stream"), "approach and withdrawal use only dry original atlas cells")
-			if t>=0.90 and t<0.98: check(gap>0.0, "container leaves clearance before the paddle springs back")
-			if t>=0.98: check(is_zero_approx(panel.paddle_pivot.rotation), "paddle returns fully after withdrawal")
+			if t>0.875: check(center.y>held_center.y and center.x<held_center.x and gap>0.0, "dry bottle withdraws toward the viewer with clearance before spring return")
+			if t>=0.98: check(is_equal_approx(angle,panel.FountainRig.REST_ANGLE), "lever returns to its exact rest projection after withdrawal")
 		check(source.d==committed, "contact, liquid and return poses cannot rewrite the accepted inventory")
+	if not reduced:
+		for boundary:float in [0.055,0.12,0.875,0.90,0.98]:
+			panel.dispense_elapsed_ms=(boundary-0.000001)*DrinkMotion.NORMAL_MS;panel._pose_dispense()
+			var before:Vector2=panel.dispense_view.position
+			var before_angle:float=rig.angles[panel.outlet_index]
+			panel.dispense_elapsed_ms=(boundary+0.000001)*DrinkMotion.NORMAL_MS;panel._pose_dispense()
+			check(before.distance_to(panel.dispense_view.position)<0.01 and absf(before_angle-rig.angles[panel.outlet_index])<0.0001, "forward bottle and hinged lever remain continuous at phase "+str(boundary))
 	panel.dispense_elapsed_ms=0.0;panel._pose_dispense()
 
 func _test_art() -> void:

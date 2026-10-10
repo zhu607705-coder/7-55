@@ -1,42 +1,49 @@
-# Cup-actuated drink machine
+# Three-outlet, cup-actuated drink machine
 
-The three shuffled controls select existing ingredients. They do not physically dispense liquid. After an accepted `c3_mix:<item>` action, the original glass slides along the tray, contacts a paddle below the nozzle, and pushes it about its fixed hinge. Only that contact opens the visual valve. No hold-duration or timing puzzle is added.
+Three independent nozzles each have a fixed horizontal hinge and a rear cup paddle. The shuffled ingredient controls retain their existing controller identities. A selected cup first aligns at the front of the tray, then pushes forward into the machine. Its rear wall pushes only that outlet’s paddle backward. There is no hold-duration or timing challenge.
 
 ## Continuous local phases
 
-| Normalized time | Cup and machine | Liquid |
+| Normalized time | Cup and selected paddle | Liquid |
 | --- | --- | --- |
-| 0–0.16 | Cup approaches the released paddle | Off |
-| 0.16–0.28 | Cup wall pushes paddle about its fixed hinge | Off |
-| 0.28–0.30 | Contact settles at full pressure | Off |
-| 0.30–0.65 | Cup remains in physical contact | Matching stream and fill |
-| 0.65–0.76 | Cup separates slowly but stays under the last drop | Stream off, final drop falls |
-| 0.76–0.88 | Paddle springs back; cup continues out | Off |
-| 0.88–0.96 | Cup reaches its waiting position | Off |
-| 0.96–1.00 | Settled cup; next accepted presentation or result | Off |
+| 0–0.14 | Transfer laterally at full front clearance | Off |
+| 0.14–0.26 | Move forward toward the resting paddle | Off |
+| 0.26–0.36 | Rear cup wall pushes paddle back about its horizontal hinge | Off |
+| 0.36–0.38 | Settle in contact | Off |
+| 0.38–0.66 | Hold forward contact | Selected outlet streams; original glass fills |
+| 0.66–0.76 | Withdraw slightly while catching the final drop | Stream stops; one final drop |
+| 0.76–0.88 | Withdraw as the paddle springs forward | Off |
+| 0.88–0.96 | Return to the front edge of the tray | Off |
+| 0.96–1.00 | Settle before the next transfer or result | Off |
 
-The cup position during push is solved from the registered right edge of the paddle and the original glass's left wall. The nozzle and hinge never translate. Rest is -0.42 radians and pressed is +0.22 radians, making their different physical poses legible. Contact uses the visible metal and bright glass rims rather than their dark alpha fringes. A queued next ingredient returns only to the nearby waiting position; its next approach starts at the actual current cup position. Late queued input still starts continuously from the completed return position.
+The next accepted ingredient starts from the cup’s actual current lane. Every cycle finishes at front clearance before lateral transfer. The three nozzle positions and hinge nodes remain fixed. Only the active textured paddle is projected through depth; no paddle node rotates in the image plane. Other paddles stay at rest.
 
-Ordinary/terminal normal-motion clocks are 1050/1350 local milliseconds, or 1.4/1.8 real seconds at the existing local 0.75 rate. This longer presentation makes contact and transfer legible. The 140/220 ms reduced-motion clocks retain a stationary cup and resting lever, accepted layer fill, and no continuous stream or falling drops. Engine time scale is unchanged.
+Normal ordinary/terminal clocks are 1050/1350 local milliseconds, or 1.4/1.8 seconds at the existing local 0.75 rate. Reduced-motion clocks remain 140/220 ms and keep the cup and paddles still, show accepted fill, and omit streams and drops. Engine time scale is unchanged.
 
-## Controller and interruption
+## Authority and interruption
 
-- Original Chapter 3 proximity, light-mode, ownership, recipe and reward authority remain unchanged
-- Clicking a slot commits its original controller transaction immediately; presentation observes accepted before/after facts
-- Rapid valid choices queue visual cycles in actual input order. Repeated missing ingredients cannot interrupt a valid flow
+- Original Chapter 3 proximity, light-mode, ownership, recipe and reward authority are unchanged
+- Selecting a slot immediately commits its original controller transaction; presentation observes accepted before/after facts
+- Rapid accepted choices queue their visual cycles in actual input order. Missing ingredients do not interrupt valid flow
 - Escape, reload, scene change and teardown stop the visual tail without rolling back or replaying inventory
-- The completed glass settles, displays the controller's result, then the existing panel return transition releases world input
+- The completed glass settles, shows the controller’s result, then the existing panel return transition releases world input
 
-## Original art and independent layers
+## Authored raster art and registration
 
-The original canteen backdrop, transparent glass, dispenser frame, nozzle and tray are retained. Liquid layers remain clipped to the moving glass. The old generated color modules now use only their idle frame as selectors; they never depress to impersonate the mechanical valve.
+The original canteen background and transparent glass are retained byte-for-byte. The generated machine close-up uses the original gray-black canteen dispenser as its visual reference, adds visible tray depth, and separates three outlets from three independently moving paddles. Liquid remains clipped inside the original glass.
 
-`assets/native/canteen_animation/drink_cup_paddle.png` is newly generated transparent raster artwork, guided by the actual original dispenser. The built-in image-generation prompt requested one gray-black steel/plastic soda-fountain cup-actuated paddle: round upper hinge, slender stem, lower push pad, vertical rigid rest pose, matching coarse pixel clusters, and no nozzle, machine housing, liquid, cup, hands or text. The engine rotates that same rigid artwork continuously to produce rest/pressed/rebound poses. This avoids frame-to-frame pivot drift.
+The built-in image-generation tool made `drink_fountain_body.png` and `drink_fountain_paddle.png`. Its prompts requested coarse gray-black pixel-metal art matching the supplied original machine, three distinct nozzle assemblies above a deep tray, neutral selector inserts, fixed hinges, and a separately isolated rear cup paddle. They excluded cups, liquid, hands, text and baked scene backgrounds. Generated PNG bytes remain unchanged; provenance and SHA-256 are saved beside each asset.
 
-Generated PNG bytes are preserved unchanged (1254×1254 RGBA). The used region is `(488,150,280,960)`, hinge `(627,240)`, visible metal pad contact `(733,950)`, and uniform scale `66/710`. Provenance and SHA-256 are saved beside the asset. Sparse transparent-canvas noise outside the registered region is excluded by the sprite region, not raster modification.
+`drink_fountain_rig.gd` registers the 1536×1024 machine source at origin `(768,800)` with uniform scale `0.4`, source region `(240,60,1040,900)`, and source outlets `(531,394)`, `(755,394)`, `(1003,394)`. Its shader discards alpha below 0.70 to suppress the generator’s exterior glow. Neutral selector inserts are tinted with the existing source ingredient colors.
 
-The ingredient pickup view uses the same paddle and preserves its original thin-bottle eight-frame atlas and 640/160 ms clocks. Only dry frames translate. Every flowing frame remains registered under the fixed nozzle; withdrawal precedes spring return. The pickup bottle does not replace the mixer's original glass.
+The separate 1536×1024 paddle uses source region `(484,250,568,714)`, hinge `(768,260)`, contact point `(768,704)`, and scale `0.1`. Region cropping excludes an unwanted upper cylinder without rewriting pixels. The same rigid paddle artwork is projected continuously about its fixed hinge: rest angle `0.55`, pressed angle `-0.12`, screen depth axis `(-0.22,0.4)`. This conveys forward/back motion rather than lateral lever rotation.
+
+The cup remains uniformly scaled from the original 346×557 crop. Its nominal height is 120, radius is derived from that same aspect, and perspective scale changes uniformly with depth. Its foot follows the tray plane with back-floor origin `-60`; independent tests compare that foot with the visible source grille polygon `(446,660), (1135,678), (1113,788), (271,767)`. Contact is the rear cup wall meeting the opaque paddle face. The nozzle remains within the cup opening during every flowing or dripping phase.
+
+The ingredient pickup view reuses the three-outlet rig, its original thin-bottle eight-frame atlas, and its original 640/160 ms clocks. Blue/white/black map to separate fixed outlets. Only dry frames translate in depth; flowing atlas frames stay registered to the selected nozzle. The pickup bottle does not replace the mixer’s glass.
 
 ## Verification and preview scope
 
-Tests cover generated RGBA registration, fixed hinge/nozzle, contact throughout push and flow, every phase boundary, flow shutoff, queued and late-queued continuity, reduced motion, cancellation/reopen, source recipe/reward parity, responsive controls, and phase-derived integration wait budgets. The native preview fixture renders the real panel with the real controller at 1100×800, 390×844 and 844×390 and writes deterministic 30 fps native frames for a motion preview. This is not a fresh campaign traversal or a physical mobile-device test; its standalone background is not the live return scene.
+Tests cover three independent assemblies, shuffled source mapping, original raster identity, fixed hinges/nozzles, depth projection, tray support, contact and nozzle containment, all phase boundaries, front-only queued transfer, cancellation/reopen, reduced motion, recipe/reward parity, responsive controls and phase-derived wait budgets. The native fixture renders the real panel with its real controller at 1100×800, 390×844 and 844×390. A deterministic 30 fps capture runs the actual presentation clock and queue, not unrelated hand-selected poses.
+
+The preview is an isolated native panel fixture, not a fresh campaign traversal or a physical mobile-device test. Its standalone blank background is not the live return scene. The inherited compact/inset panel layout remains unchanged in scope.

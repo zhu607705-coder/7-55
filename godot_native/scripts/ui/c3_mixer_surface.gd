@@ -21,30 +21,21 @@ var pending_pours: Array[Dictionary] = []
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	for index in range(3):
-		var sprite := Press.sprite(Color.WHITE)
-		sprite.name = "MachinePressButton"+str(index)
-		add_child(sprite); press_buttons.append(sprite); bottles.append(sprite)
 	motion = Motion.new(); motion.name = "IndependentMachineParts"; add_child(motion)
+	press_buttons.assign(motion.rig.selectors);bottles.assign(press_buttons)
 	motion.hold_terminal_result=true
 	motion.presentation_finished.connect(_play_next_pour)
 func configure(area: Rect2, contact: Vector2, glass_height: float, contacts: Array[Vector2], ingredient_height: float) -> void:
 	board = area; cup_foot = contact; bottle_feet = contacts; bottle_height = ingredient_height
 	motion_scale = glass_height / 150.0
-	var face_width: float=minf(maxf(286*motion_scale,306),board.size.x-24)
-	machine_bounds=Rect2(cup_foot+Vector2(-face_width/2,-340*motion_scale),Vector2(face_width,356*motion_scale))
+	machine_bounds=Rect2(cup_foot+Motion.Rig.BOUNDS.position*motion_scale,Motion.Rig.BOUNDS.size*motion_scale)
 	motion.position = cup_foot; motion.scale = Vector2.ONE * motion_scale
 	_layout_bottles(); queue_redraw()
 func _layout_bottles() -> void:
+	motion.slot_ids=source_slots.map(func(slot):return str(slot.id))
 	for index in range(mini(press_buttons.size(),source_slots.size())):
-		var id: String = str(source_slots[index].id)
-		var sprite: Sprite2D = press_buttons[index]
-		var value: int = Motion.Source.COLORS[id]
-		var color := Color((value>>16&255)/255.0,(value>>8&255)/255.0,(value&255)/255.0)
-		(sprite.material as ShaderMaterial).set_shader_parameter("drink_color",color)
-		var factor: float = bottle_height / Press.REGION_SIZE.y
-		sprite.scale = Vector2.ONE * factor
-		if index < bottle_feet.size(): sprite.position = bottle_feet[index] - Vector2(Press.REGION_SIZE.x*factor/2,bottle_height)
+		var value:int=Motion.Source.COLORS[str(source_slots[index].id)]
+		motion.rig.set_color(index,Color((value>>16&255)/255.0,(value>>8&255)/255.0,(value&255)/255.0))
 func synchronize(model: Dictionary, state: Dictionary) -> void:
 	if model.is_empty(): return
 	source_slots = model.slots.duplicate(true)
@@ -84,7 +75,6 @@ func _sync_visibility() -> void:
 		var slot: Dictionary = source_slots[index]
 		var selected: bool = motion.playing and not motion.denied and str(slot.id)==motion.item_id
 		press_buttons[index].visible = true
-		press_buttons[index].region_rect = Press.region(0)
 		press_buttons[index].modulate.a = 1.0 if slot.owned or selected else 0.28
 	queue_redraw()
 func _process(_delta: float) -> void:
@@ -98,12 +88,4 @@ func _draw() -> void:
 	var source_extent: Vector2 = board.size/zoom
 	var source_rect := Rect2((source_size-source_extent)/2,source_extent)
 	draw_texture_rect_region(BACKDROP,board,source_rect)
-	# The original dispenser provides a fixed backplate, frame and drain tray.
-	# The blank backplate is fitted like the existing dispenser closeup; moving
-	# controls and the glass are separate nodes and retain uniform aspect ratios.
-	var face:Rect2=machine_bounds
-	draw_texture_rect_region(MACHINE,face,Rect2(490,891,274,59))
-	draw_texture_rect_region(MACHINE,Rect2(face.position,Vector2(12,face.size.y)),Rect2(459,795,28,252))
-	draw_texture_rect_region(MACHINE,Rect2(Vector2(face.end.x-12,face.position.y),Vector2(12,face.size.y)),Rect2(787,795,28,252))
-	draw_texture_rect_region(MACHINE,Rect2(face.position,Vector2(face.size.x,10)),Rect2(470,304,316,22))
-	draw_texture_rect_region(MACHINE,Rect2(Vector2(face.position.x+12,face.end.y-12),Vector2(face.size.x-24,12)),Rect2(491,953,274,70))
+	# The three-outlet fixed body is owned by the independent rig child.

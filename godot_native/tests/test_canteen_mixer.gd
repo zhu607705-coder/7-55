@@ -121,7 +121,7 @@ func run() -> void:
 		for index in range(3):
 			var target:=Rect2(view.slots[index].position,view.slots[index].size)
 			var button: Sprite2D=view.surface.press_buttons[index]
-			check(target.encloses(button.transform*button.get_rect()) and target.size.x>=44 and target.size.y>=44,"source ingredient slot targets its independently registered physical machine button")
+			check(target.encloses(view.get_global_transform().affine_inverse()*button.get_global_transform()*button.get_rect()) and target.size.x>=44 and target.size.y>=44,"source ingredient slot targets its independently registered physical machine button")
 		for index in range(3):
 			var id: String = recipe[index]
 			press(view, id)

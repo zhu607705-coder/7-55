@@ -35,13 +35,14 @@ func _capture()->void:
 		await RenderingServer.frame_post_draw
 		_save("mixer-machine-idle")
 		panel._pour(panel.session.button_order.find("sparklingWater"))
-		panel.surface.motion.sample_pose(panel.surface.motion.duration_ms*.4);panel.surface._process(0)
+		panel.surface.motion.sample_pose(panel.surface.motion.duration_ms*.54);panel.surface._process(0)
 		await RenderingServer.frame_post_draw
 		_save("mixer-machine-flow")
 		panel.surface.motion.sample_pose(panel.surface.motion.duration_ms*.78);panel.surface._process(0)
 		await RenderingServer.frame_post_draw
 		_save("mixer-machine-rebound")
 	await _capture_motion()
+	await _capture_pickup()
 	get_window().size=Vector2i(1100,800)
 	await get_tree().process_frame
 	_layout()
@@ -74,3 +75,38 @@ func _capture_motion()->void:
 		get_viewport().get_texture().get_image().save_png(dir+"/%04d.png"%frame)
 		if not panel.visible:break
 	print("Cup paddle native motion capture complete")
+
+func _capture_pickup()->void:
+	# These are seeded render fixtures. The ordinary selected-device action
+	# still grants each drink through Chapter.dispatch before its visual tail.
+	panel.hide();panel.queue_free();panel=null
+	await get_tree().process_frame
+	var targets:Array[Dictionary]=[
+		{"target":"drink-machine-sparkling","item":"sparklingWater","label":"blue"},
+		{"target":"drink-machine-lemon","item":"lemonTea","label":"white"},
+		{"target":"drink-machine-coffee","item":"blackCoffee","label":"black"},
+	]
+	for dims:Vector2i in [Vector2i(1100,800),Vector2i(390,844)]:
+		get_window().size=dims
+		await get_tree().process_frame
+		for target:Dictionary in targets:
+			d.items[target.item]=false
+			var source:Dictionary=chapter.get_definition("canteen_interior",target.target,d)
+			var stand:Dictionary=source.get("stand",{"x":source.x,"y":source.y})
+			d.native.player={"x":stand.x,"y":stand.y}
+			panel=preload("res://scripts/ui/c3_canteen_device_panel.gd").new();add_child(panel)
+			panel.setup("drink:"+str(target.target),func()->Dictionary:return d,func(action:String,value:Variant)->Dictionary:return chapter.dispatch(d,action,value))
+			panel.set_process(false);_layout()
+			panel.controls.take.pressed.emit()
+			if target.label=="blue":
+				panel.dispense_elapsed_ms=panel.DrinkMotion.NORMAL_MS*.03
+				panel._pose_dispense();panel.refresh()
+				await RenderingServer.frame_post_draw
+				_save("pickup-blue-forward-approach")
+			panel.dispense_elapsed_ms=panel.DrinkMotion.NORMAL_MS*.4
+			panel._pose_dispense();panel.refresh()
+			await RenderingServer.frame_post_draw
+			_save("pickup-"+str(target.label)+"-flow")
+			panel.hide();panel.queue_free();panel=null
+			await get_tree().process_frame
+	print("Three-outlet pickup native captures complete")

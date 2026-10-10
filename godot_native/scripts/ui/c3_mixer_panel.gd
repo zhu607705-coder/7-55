@@ -52,7 +52,7 @@ func setup(state_reader: Callable, action_sink: Callable, feedback_sink: Callabl
 	if slots.is_empty(): _build()
 	close_emitted = false
 	finishing=false;submitting=false;finish_state={};modulate.a=1.0
-	surface.cancel_presentation();_show_feedback("");prompt_label.text="选择饮料，杯子推压杆接取"
+	surface.cancel_presentation();_show_feedback("");prompt_label.text="选择对应出口，向前推杯接取"
 	visible = true
 	refresh()
 	return true
@@ -102,24 +102,25 @@ func configure_layout(viewport: Vector2, compact: bool) -> void:
 	_place(title_label,Rect2(start+Vector2(14,10),Vector2(w-94,32)),20)
 	_place(exit_button,Rect2(start+Vector2(w-74,8),Vector2(62,44)),16)
 	_place(exit_label,Rect2(exit_button.position,exit_button.size),16);exit_label.text="退出"
-	# One physical machine: colored push controls above a fixed central outlet.
-	# The whole assembly shrinks uniformly; portrait keeps a comfortably large cup.
-	var machine_height: float = minf(h-164,480)
-	var cup_height: float = minf(machine_height*(150.0/356.0),(w-24)*(150.0/286.0))
-	var k: float = cup_height/150.0
-	var cup: Vector2=start+Vector2(w/2,h-72-16*k)
-	var ingredient_height: float=66*k
-	var button_spacing: float=maxf(86*k,90)
-	var contacts: Array[Vector2]=[]
+	# Three registered outlets share a depth-aware tray. Hit targets use the
+	# actual corresponding selector positions, not an unrelated floating row.
+	var rig_type=preload("res://scripts/presentation/drink_fountain_rig.gd")
+	var short_landscape:bool=compact and not compact_portrait and h<360.0
+	var machine_top:float=64.0 if short_landscape else 96.0
+	var machine_height:float=h-machine_top-68.0
+	var k:float=minf((w-32.0)/rig_type.BOUNDS.size.x,machine_height/rig_type.BOUNDS.size.y)
+	var free_height:float=machine_height-rig_type.BOUNDS.size.y*k
+	var cup:Vector2=start+Vector2(w/2,machine_top+free_height/2.0-rig_type.BOUNDS.position.y*k)
+	var cup_height:float=150*k
+	var ingredient_height:float=36*k
+	var contacts:Array[Vector2]=[]
 	for index in range(3):
-		var foot: Vector2=cup+Vector2((index-1)*button_spacing,-264*k)
+		var center:Vector2=cup+rig_type.selector_center(index)*k
+		var foot:Vector2=center+Vector2(0,ingredient_height/2)
 		contacts.append(foot)
-		var sprite_width: float=ingredient_height*(466.0/470.0)
-		var target_width: float=maxf(44,sprite_width+6)
-		var target_height: float=maxf(44,ingredient_height+4)
-		var rect:=Rect2(foot-Vector2(target_width/2,ingredient_height+2),Vector2(target_width,target_height))
-		_place(slots[index],rect,16)
-		_place(labels[index],Rect2(Vector2(foot.x-42,foot.y+2),Vector2(84,20)),14)
+		var target_size:Vector2=Vector2.ONE*maxf(44,ingredient_height+4)
+		_place(slots[index],Rect2(center-target_size/2,target_size),16)
+		_place(labels[index],Rect2(center+Vector2(-42,-50*k-8),Vector2(84,20)),14)
 		labels[index].autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	_place(glass_label,Rect2(cup+Vector2(-90,-165)*k,Vector2(180,24)),14)
 	# Keep bottle names on their own row. One quiet footer owns either the
@@ -127,9 +128,9 @@ func configure_layout(viewport: Vector2, compact: bool) -> void:
 	var status_rect:=Rect2(start+Vector2(16,h-54),Vector2(w-32,46))
 	_place(status_strip,Rect2(start+Vector2(1,h-62),Vector2(w-2,61)))
 	_place(prompt_label,status_rect,14)
-	prompt_label.text="调配中…" if finishing else "选择饮料，杯子推压杆接取"
+	prompt_label.text="调配中…" if finishing else "选择对应出口，向前推杯接取"
 	prompt_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	_place(shelf_label,Rect2(start+Vector2(16,52),Vector2(w-32,40)),14)
+	_place(shelf_label,Rect2(start+Vector2(218,8),Vector2(w-304,36)) if short_landscape else Rect2(start+Vector2(16,52),Vector2(w-32,40)),14)
 	shelf_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	_place(feedback_label,status_rect,14)
 	feedback_label.visible=not feedback_label.text.is_empty()

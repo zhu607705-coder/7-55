@@ -2,16 +2,16 @@ extends Control
 ## Canteen devices use the existing chapter controller. Draft selection and
 ## layout are local; inventory, payment and progression remain authoritative.
 signal closed(reason: String)
-const MachinePress=preload("res://scripts/presentation/drink_machine_press.gd")
-const CupPaddle=preload("res://scripts/presentation/drink_cup_paddle.gd")
-const PADDLE_PRESSED_ANGLE:=0.22
-const BOTTLE_LEFT:=-16.875 # Visible atlas wall x=52 at uniform 180/128 scale.
-const BOTTLE_WAIT_OFFSET:=34.0
-var press_sprite:Sprite2D
-var paddle_pivot:Node2D
-var paddle_sprite:Sprite2D
+const FountainRig=preload("res://scripts/presentation/drink_fountain_rig.gd")
+const OUTLET_ITEMS: Array[String]=["sparklingWater","lemonTea","blackCoffee"]
+const BOTTLE_CELL_SIZE:=200.0
+const BOTTLE_RADIUS:=18.75 # Original x=52..76 bottle, uniformly scaled 200/128.
+const BOTTLE_HOME_DEPTH:=100.0
+const ATLAS_OUTLET:=Vector2(64,38)
+var fountain:Node2D
+var outlet_index:=0
+var bottle_depth:=BOTTLE_HOME_DEPTH
 const DrinkMotion=preload("res://scripts/objects/canteen_drink_performance.gd")
-const DISPENSER_ASSET="res://assets/native/canteen_objects/canteen_drink_dispenser.png"
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
 const DRINKS={"sparklingWater":{"name":"气泡水（蓝色）","color":Color("43bce9"),"accent":Color("e9fbff")},"lemonTea":{"name":"柠檬茶（白色）","color":Color("f2f0dc"),"accent":Color("d0a636")},"blackCoffee":{"name":"黑咖啡（黑色）","color":Color("1b1d20"),"accent":Color("8b6846")}}
 var kind: String=""
@@ -43,7 +43,6 @@ var dispense_reduced:=false
 var dispense_view: TextureRect
 var dispense_region: AtlasTexture
 var taking:=false
-var dispenser_texture:Texture2D
 
 func setup(device: String,reader: Callable,sink: Callable,feedback_sink: Callable=Callable(),mode_sink: Callable=Callable()) -> bool:
 	kind="drink" if device.begins_with("drink:") else device
@@ -56,6 +55,7 @@ func setup(device: String,reader: Callable,sink: Callable,feedback_sink: Callabl
 	if kind=="drink":
 		item_id=str(entry.get("value",""))
 		if not DRINKS.has(item_id): return false
+		outlet_index=OUTLET_ITEMS.find(item_id)
 	active=true;last_dark=bound_state.native.mode=="dark";initial_order_count=int(bound_state.canteenHunt.orderAttemptCount)
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	_build();configure_layout(Vector2(960,540),false);refresh();_opened.call_deferred();return active
@@ -74,13 +74,14 @@ func _build() -> void:
 	feedback_label=_label("feedback",14);feedback_label.hide()
 	if kind=="drink":
 		_button("take","",func(): _take())
-		controls.take.tooltip_text="选择"+str(DRINKS[item_id].name)+"，容器推杆接取"
+		controls.take.tooltip_text="选择"+str(DRINKS[item_id].name)+"，容器推杆向前接取"
+		controls.take.z_index=3
 		for style_name in ["normal","hover","pressed","disabled"]: controls.take.add_theme_stylebox_override(style_name,StyleBoxEmpty.new())
-		press_sprite=MachinePress.sprite(DRINKS[item_id].color);press_sprite.name="DrinkMachinePress";add_child(press_sprite)
-		paddle_pivot=Node2D.new();paddle_pivot.name="DrinkCupPaddlePivot";add_child(paddle_pivot)
-		paddle_sprite=CupPaddle.sprite();paddle_sprite.name="DrinkCupPaddle";paddle_pivot.add_child(paddle_sprite)
+		var selector_focus:StyleBoxFlat=controls.take.get_theme_stylebox("focus")
+		selector_focus.draw_center=false
+		fountain=FountainRig.new();fountain.name="ThreeOutletPickupFountain";add_child(fountain)
+		for i in range(OUTLET_ITEMS.size()): fountain.set_color(i,DRINKS[OUTLET_ITEMS[i]].color)
 		_button("cancel",str(content.drinks.cancelOption),func(): dismiss())
-		if ResourceLoader.exists(DISPENSER_ASSET): dispenser_texture=load(DISPENSER_ASSET)
 		if ResourceLoader.exists(DrinkMotion.ATLAS_PATH):
 			dispense_region=AtlasTexture.new();dispense_region.atlas=load(DrinkMotion.ATLAS_PATH)
 			dispense_region.region=DrinkMotion.frame_region(0)
@@ -147,8 +148,8 @@ func configure_layout(viewport: Vector2,compact: bool) -> void:
 	compact_layout=compact;custom_minimum_size=Vector2.ZERO;size=viewport if compact else Vector2(960,540)
 	var portrait: bool=compact and viewport.y>viewport.x
 	var extent: Vector2
-	if not compact: extent=Vector2(500,370) if kind=="drink" else Vector2(570,376)
-	elif kind=="drink": extent=Vector2(minf(viewport.x-24,560),minf(viewport.y-24,380))
+	if not compact: extent=Vector2(500,452) if kind=="drink" else Vector2(570,376)
+	elif kind=="drink": extent=Vector2(minf(viewport.x-24,560),minf(viewport.y-24,480))
 	elif kind=="menu": extent=Vector2(minf(viewport.x-24,680),minf(viewport.y-24,660 if portrait else 366))
 	else: extent=Vector2(minf(viewport.x-24,680),minf(viewport.y-24,640 if portrait else 366))
 	board=Rect2((size-extent)/2,extent)
@@ -157,12 +158,16 @@ func configure_layout(viewport: Vector2,compact: bool) -> void:
 	for label in labels.values(): label.add_theme_color_override("font_color",text_color)
 	if kind=="drink":
 		_place(labels.title,Rect2(p+Vector2(16,8),Vector2(w-32,38)))
-		var center:=(p+Vector2(w*.27, h*.57)).round()
-		illustration=Rect2(center-Vector2(34,55),Vector2(68,110))
-		_place(labels.body,Rect2(p+Vector2(w*.51,112),Vector2(w*.45,116)))
-		_place(controls.take,Rect2(center+Vector2(-30,-136),Vector2(60,60)))
-		press_sprite.position=controls.take.position
-		press_sprite.scale=Vector2.ONE*(60.0/MachinePress.REGION_SIZE.y)
+		# One uniformly scaled complete machine, including its three real outlets.
+		# Keep selector hit areas attached to the corresponding source pixels.
+		var machine_area:=Rect2(p+Vector2(18,50),Vector2(w-36,h-150))
+		var factor:float=minf(machine_area.size.x/FountainRig.BOUNDS.size.x,machine_area.size.y/FountainRig.BOUNDS.size.y)
+		fountain.scale=Vector2.ONE*factor
+		fountain.position=machine_area.get_center()-FountainRig.BOUNDS.get_center()*factor
+		illustration=Rect2(fountain.position+FountainRig.BOUNDS.position*factor,FountainRig.BOUNDS.size*factor)
+		_place(labels.body,Rect2(p+Vector2(16,h-98),Vector2(w-32,32)))
+		var selector_center:Vector2=fountain.position+FountainRig.selector_center(outlet_index)*factor
+		_place(controls.take,Rect2(selector_center-Vector2(24,24),Vector2(48,48)))
 		_place(controls.cancel,Rect2(p+Vector2(w-138,h-66),Vector2(120,44)))
 		_place(labels.hint,Rect2(p+Vector2(12,h-64),Vector2(w-162,50)))
 	elif kind=="menu":
@@ -217,7 +222,8 @@ func configure_layout(viewport: Vector2,compact: bool) -> void:
 	# Drink hints already fill their footer; action feedback displays after close.
 	feedback_label.visible=kind!="drink" and not feedback_label.text.is_empty()
 	if is_instance_valid(dispense_view):
-		_place(dispense_view,Rect2(_dispense_center()-Vector2(90,90),Vector2(180,180)))
+		var cell_size:Vector2=Vector2.ONE*BOTTLE_CELL_SIZE*fountain.scale.x
+		_place(dispense_view,Rect2(_dispense_center()-cell_size/2,cell_size))
 		_pose_dispense()
 	painted_dark=null
 	if active: _palette(bool(read_state.call().native.mode=="dark"))
@@ -260,10 +266,10 @@ func refresh() -> void:
 	if kind=="drink":
 		if dark or not chapter.side_active(c) or c.promoDrinkPlaced or c.queueGapOpened: dismiss("context_changed");return
 		labels.title.text=DRINKS[item_id].name
-		labels.body.text=str(content.drinks.alreadyOwned) if s.items.get(item_id,false) else "选择饮料\n容器推压出液杆接取"
+		labels.body.text=str(content.drinks.alreadyOwned) if s.items.get(item_id,false) else "向前推瓶，压住对应出液杆"
 		labels.hint.text="← / → 选择 · 空格 / 回车确认\nEsc 退出" if compact_layout else "← / → 选择 · 空格 / 回车确认 · Esc 退出"
 		if dispensing:
-			labels.body.text="已接取饮料" if dispense_reduced else "容器推压出液杆" if dispense_elapsed_ms<80.0 else "移开容器\n出液停止" if dispense_elapsed_ms>=560.0 else "容器抵住出液杆\n正在接取饮料"
+			labels.body.text="已接取饮料" if dispense_reduced else "向前推瓶，压住出液杆" if dispense_elapsed_ms<80.0 else "向后取瓶，出液停止" if dispense_elapsed_ms>=560.0 else "瓶身抵住出液杆，正在接取"
 			labels.hint.text="Esc 或关闭可跳过动画"
 	elif kind=="menu":
 		if c.phase not in ["menu_order","pickup_search"] or int(c.orderAttemptCount)>initial_order_count: dismiss("order_complete");return
@@ -294,42 +300,40 @@ func _palette(dark: bool) -> void:
 			style.border_color=Color("75e4ff") if dark else Color("5a4932")
 func _pose_dispense() -> void:
 	var frame:int=DrinkMotion.frame_at(dispense_elapsed_ms,dispense_reduced)
-	if is_instance_valid(press_sprite):
-		# The colored control selects a drink. Only the container moves the
-		# separate paddle below the fixed outlet; it is never a pour button.
-		press_sprite.region_rect=MachinePress.region(0)
-	var angle:=0.0
-	var offset:=BOTTLE_WAIT_OFFSET
+	var angle:float=FountainRig.REST_ANGLE
+	bottle_depth=BOTTLE_HOME_DEPTH
 	if dispensing and not dispense_reduced:
 		var t:float=clampf(dispense_elapsed_ms/DrinkMotion.NORMAL_MS,0.0,1.0)
 		if t<0.055:
-			offset=lerpf(BOTTLE_WAIT_OFFSET,_paddle_contact_offset(0.0),smoothstep(0.0,0.055,t))
+			bottle_depth=lerpf(BOTTLE_HOME_DEPTH,_bottle_contact_depth(FountainRig.REST_ANGLE),smoothstep(0.0,0.055,t))
 		elif t<0.12:
-			angle=PADDLE_PRESSED_ANGLE*smoothstep(0.055,0.12,t)
-			offset=_paddle_contact_offset(angle)
+			angle=lerpf(FountainRig.REST_ANGLE,FountainRig.PRESSED_ANGLE,smoothstep(0.055,0.12,t))
+			bottle_depth=_bottle_contact_depth(angle)
 		elif t<0.875:
-			angle=PADDLE_PRESSED_ANGLE;offset=0.0
+			angle=FountainRig.PRESSED_ANGLE;bottle_depth=_bottle_contact_depth(angle)
 		else:
-			# Frame 7 is already dry before the container separates. Its
-			# retreat leaves clearance before the paddle springs back.
-			angle=PADDLE_PRESSED_ANGLE*(1.0-smoothstep(0.90,0.98,t))
-			offset=_paddle_contact_offset(angle)+(BOTTLE_WAIT_OFFSET-_paddle_contact_offset(0.0))*smoothstep(0.875,1.0,t)
-	if is_instance_valid(paddle_pivot):
-		paddle_pivot.position=_paddle_hinge();paddle_pivot.rotation=angle
+			# Frame 7 is dry before withdrawal. The bottle retreats toward the
+			# viewer on the same depth axis before the lever returns behind it.
+			angle=lerpf(FountainRig.PRESSED_ANGLE,FountainRig.REST_ANGLE,smoothstep(0.90,0.98,t))
+			bottle_depth=_bottle_contact_depth(angle)+(BOTTLE_HOME_DEPTH-_bottle_contact_depth(FountainRig.REST_ANGLE))*smoothstep(0.875,1.0,t)
+	if is_instance_valid(fountain):
+		for i in range(OUTLET_ITEMS.size()): fountain.set_angle(i,angle if i==outlet_index else FountainRig.REST_ANGLE)
 	if dispense_region!=null: dispense_region.region=DrinkMotion.frame_region(frame)
 	if is_instance_valid(dispense_view):
-		# Frames with flow never move: all original stream pixels stay under
-		# the source nozzle. Translation is confined to dry atlas frames 0/7.
-		dispense_view.position=_dispense_center()-dispense_view.size/2+Vector2(offset,0)
+		# The original atlas combines bottle and stream. Its six flowing cells
+		# stay exactly below the selected fixed outlet. Only dry cells travel.
+		dispense_view.position=_bottle_screen(bottle_depth)-dispense_view.size/2
 		var material:ShaderMaterial=dispense_view.material
 		material.set_shader_parameter("atlas_cell",Vector2(frame%4,floori(frame/4.0)))
 		material.set_shader_parameter("fill_top",float([112,112,98,88,79,70,67,67][frame]))
 		material.set_shader_parameter("has_stream",frame in [1,2,3,4,5,6])
-func _paddle_hinge() -> Vector2:
-	var pressed_contact:Vector2=CupPaddle.CONTACT_LOCAL.rotated(PADDLE_PRESSED_ANGLE)
-	return _dispense_center()+Vector2(BOTTLE_LEFT-pressed_contact.x,36.0-pressed_contact.y)
-func _paddle_contact_offset(angle:float) -> float:
-	return _paddle_hinge().x+(CupPaddle.CONTACT_LOCAL.rotated(angle)).x-_dispense_center().x-BOTTLE_LEFT
+func _bottle_contact_depth(angle:float) -> float:
+	# Use the original narrow bottle's own radius, never the mixer's wide cup.
+	return FountainRig.LEVER_LENGTH*sin(angle)+BOTTLE_RADIUS
+func _bottle_screen(depth:float) -> Vector2:
+	return _dispense_center()+FountainRig.DEPTH_AXIS*(depth-_bottle_contact_depth(FountainRig.PRESSED_ANGLE))*fountain.scale.x
+func bottle_contact_gap() -> float:
+	return bottle_depth-_bottle_contact_depth(fountain.angles[outlet_index])
 func _process(delta: float) -> void:
 	refresh()
 	if not active or not dispensing: return
@@ -366,29 +370,17 @@ func _input(event: InputEvent) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouse or event is InputEventScreenTouch or event is InputEventScreenDrag: accept_event()
 func _dispense_center() -> Vector2:
-	return illustration.get_center()
-func _draw_dispense_bay() -> void:
-	if dispenser_texture==null: return
-	# Fixed parts from the same original machine used by all three world props.
-	# Only the blank backplate is fitted to the closeup; nozzle and grille remain
-	# separate source-image pieces. The generated bottle is an independent child.
-	var center:Vector2=_dispense_center()
-	var back:=Rect2(center+Vector2(-67,-143),Vector2(134,211))
-	draw_texture_rect_region(dispenser_texture,back,Rect2(490,891,274,59))
-	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(-78,-148),Vector2(14,231)),Rect2(459,795,28,252))
-	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(64,-148),Vector2(14,231)),Rect2(787,795,28,252))
-	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(-67,68),Vector2(134,15)),Rect2(491,953,274,70))
-	# Atlas outlet is (64,38) in a 128px cell; the 180px closeup places it
-	# exactly 36.5625px above the illustration center.
-	var nozzle_bottom:float=center.y-36.5625
-	draw_texture_rect_region(dispenser_texture,Rect2(center.x-13,nozzle_bottom-31,26,31),Rect2(586,790,84,100))
+	# Atlas stream starts at (64,38). Pin this authored pixel to the selected
+	# source nozzle; preserve the complete 128x128 cell and its aspect ratio.
+	var nozzle:Vector2=Vector2(FountainRig.OUTLET_X[outlet_index],FountainRig.OUTLET_Y)
+	var atlas_center_offset:Vector2=(DrinkMotion.CELL/2-ATLAS_OUTLET)*(BOTTLE_CELL_SIZE/DrinkMotion.CELL.x)
+	return fountain.position+(nozzle+atlas_center_offset)*fountain.scale.x
 func _draw() -> void:
 	if not active: return
 	draw_rect(Rect2(Vector2.ZERO,size),Color(0.01,0.025,0.04,.82))
 	var light_menu: bool=kind=="menu" and read_state.call().native.mode=="light"
 	draw_rect(board,Color("f7f4ea") if light_menu else Color("07131d"));draw_rect(board,Color("5a4932") if light_menu else Color("63d4ef"),false,3)
-	if kind=="drink": _draw_dispense_bay()
-	elif kind=="bike":
+	if kind=="bike":
 		var c: Dictionary=read_state.call().canteenHunt;var dark: bool=read_state.call().native.mode=="dark"
 		var p: Vector2=illustration.position
 		draw_arc(p+Vector2(48,30),25,PI,TAU,24,Color("9db1ba"),8)
