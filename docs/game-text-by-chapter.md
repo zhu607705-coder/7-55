@@ -951,13 +951,13 @@
 ## 第二章
 
 1. CHAPTER 02
-   来源：[src/App.tsx:393](../src/App.tsx#L393)
+   来源：[src/App.tsx:417](../src/App.tsx#L417)
 2. 第 2 章
-   来源：[src/App.tsx:394](../src/App.tsx#L394)
+   来源：[src/App.tsx:418](../src/App.tsx#L418)
 3. 找到移动的办法
-   来源：[src/App.tsx:395](../src/App.tsx#L395)；[src/core/QuestModel.ts:239](../src/core/QuestModel.ts#L239)
+   来源：[src/App.tsx:419](../src/App.tsx#L419)；[src/core/QuestModel.ts:239](../src/core/QuestModel.ts#L239)
 4. 进入第二章
-   来源：[src/App.tsx:396](../src/App.tsx#L396)
+   来源：[src/App.tsx:420](../src/App.tsx#L420)
 5. 旁白
    来源：[src/components/LibraryStoryOverlay.tsx:89](../src/components/LibraryStoryOverlay.tsx#L89)；[src/data/library-finals.content.json:25](../src/data/library-finals.content.json#L25)；[src/data/library-finals.content.json:35](../src/data/library-finals.content.json#L35)；[src/data/library-finals.content.json:72](../src/data/library-finals.content.json#L72)
 6. 玩家
@@ -8812,15 +8812,15 @@
 ## 跨章节与共用系统
 
 1. 当前剧情条件已变化，请返回任务目标后重试。
-   来源：[src/App.tsx:195](../src/App.tsx#L195)
+   来源：[src/App.tsx:199](../src/App.tsx#L199)
 2. 手机交互区
-   来源：[src/App.tsx:435](../src/App.tsx#L435)
+   来源：[src/App.tsx:459](../src/App.tsx#L459)
 3. 加载中…
-   来源：[src/App.tsx:450](../src/App.tsx#L450)；[src/App.tsx:521](../src/App.tsx#L521)
+   来源：[src/App.tsx:474](../src/App.tsx#L474)；[src/App.tsx:545](../src/App.tsx#L545)
 4. 地图交互区
-   来源：[src/App.tsx:457](../src/App.tsx#L457)
+   来源：[src/App.tsx:481](../src/App.tsx#L481)
 5. Loading RPG runtime
-   来源：[src/App.tsx:462](../src/App.tsx#L462)；[src/App.tsx:494](../src/App.tsx#L494)
+   来源：[src/App.tsx:486](../src/App.tsx#L486)；[src/App.tsx:518](../src/App.tsx#L518)
 6. 安中大楼
    来源：[src/assets/rpg/campus/source/zijingang_official_hotspots_reference.json:1](../src/assets/rpg/campus/source/zijingang_official_hotspots_reference.json#L1)
 7. 白沙二幢

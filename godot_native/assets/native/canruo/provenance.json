@@ -1,0 +1,62 @@
+{
+  "item": 54,
+  "title": "灿若星辰灯",
+  "design_book_library_id": "libfile_d43f28f086c08191bea643826c3d3bf8",
+  "design_book_page": 58,
+  "model_delivery_library_id": "libfile_e8a0aaf14f9081918deb31324ed73313",
+  "model_delivery_version": 2,
+  "source_file": "canruo_star_lamp_lowglow_LOD1.glb",
+  "sha256": "f6b48857f10ab41f9026bf9cc2541a60e052b0273b68c98c9cb5626bfc0c7bfe",
+  "bytes": 600344,
+  "blender_version": "4.3.2",
+  "meshes": 14,
+  "triangles": 30318,
+  "external_textures": false,
+  "geometry_modified_during_integration": false,
+  "reference_image_library_id": "libfile_7834ad9fc4448191980cdc4a9f1c18e3",
+  "camera_position_start_godot": [
+    0.5,
+    0.5,
+    7.9
+  ],
+  "camera_position_end_godot": [
+    0.5,
+    1.7,
+    6.4
+  ],
+  "camera_target_start_godot": [
+    0,
+    6.12,
+    0
+  ],
+  "camera_target_end_godot": [
+    0,
+    7.12,
+    0
+  ],
+  "camera_fov_vertical_16x9_degrees": 29.839371711,
+  "led_emission_peak": 6.0,
+  "core_emission_peak": 5.0,
+  "render_method": "gl_compatibility",
+  "glow": "disabled in native Compatibility; brighter source emission with bounded warm metal-reflection material",
+  "performance_variant": "full-resolution, no MSAA, no local point lights; opaque backface-culling retained; warm reflection facing evaluated per vertex and radius per fragment in the existing metal draw passes",
+  "source_timing": "existing chapter4_lamp_sequence.gd, unchanged",
+  "authority": "existing ChapterFourStarLampClosure and chapter4 controller",
+  "lit_body_revision": {
+    "date": "2026-10-09",
+    "request": "Make the lamp body visibly lit without washing out its structure or dark background",
+    "glb_changed": false,
+    "core_emission_linear_rgb": [
+      1.0,
+      0.85,
+      0.56
+    ],
+    "led_emission_linear_rgb": [
+      1.0,
+      0.91,
+      0.72
+    ],
+    "metal_reflection_cutoff_m": 2.1,
+    "metal_reflection_method": "bounded material-side approximation, not a physical additional point light or a claim of Cycles equivalence"
+  }
+}

@@ -1,0 +1,365 @@
+[
+  {
+    "name": "pre-capture and baseline return",
+    "steps": [
+      {
+        "label": "initial",
+        "brightness": 75,
+        "captured": false,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "dim before capture",
+        "brightness": 20,
+        "captured": false,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "capture",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "unchanged",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "up",
+        "brightness": 30,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "capture baseline",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "new low value",
+        "brightness": 19,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": true
+      },
+      {
+        "label": "source flag",
+        "brightness": 19,
+        "captured": true,
+        "dimmed": true,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "raise after unlock",
+        "brightness": 75,
+        "captured": true,
+        "dimmed": true,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "lower after unlock",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": true,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      }
+    ]
+  },
+  {
+    "name": "captured mount high",
+    "steps": [
+      {
+        "label": "mount",
+        "brightness": 75,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "unrelated refresh",
+        "brightness": 75,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "threshold above",
+        "brightness": 20.001,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "exact threshold",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": true
+      },
+      {
+        "label": "repeated before commit",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "source flag committed",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": true,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      }
+    ]
+  },
+  {
+    "name": "mount and reentry low",
+    "steps": [
+      {
+        "label": "mount at20",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "up",
+        "brightness": 30,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "back to baseline",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "away",
+        "brightness": 75,
+        "captured": true,
+        "dimmed": false,
+        "page": "phone_home",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "change away",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "phone_home",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "reentry at20",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "up again",
+        "brightness": 30,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "back to new baseline",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "different low",
+        "brightness": 19,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": true
+      }
+    ]
+  },
+  {
+    "name": "session reset",
+    "steps": [
+      {
+        "label": "mount at75",
+        "brightness": 75,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "up",
+        "brightness": 80,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "developer reset at20",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": true,
+        "expected": false
+      },
+      {
+        "label": "still20",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "different low",
+        "brightness": 0,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": true
+      }
+    ]
+  },
+  {
+    "name": "captured later while mounted",
+    "steps": [
+      {
+        "label": "mount empty",
+        "brightness": 75,
+        "captured": false,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "unrelated refresh",
+        "brightness": 50,
+        "captured": false,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "capture",
+        "brightness": 50,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "exact20",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": false,
+        "page": "photos",
+        "reset": false,
+        "expected": true
+      }
+    ]
+  },
+  {
+    "name": "already dimmed",
+    "steps": [
+      {
+        "label": "mount",
+        "brightness": 20,
+        "captured": true,
+        "dimmed": true,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "up",
+        "brightness": 100,
+        "captured": true,
+        "dimmed": true,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      },
+      {
+        "label": "down",
+        "brightness": 0,
+        "captured": true,
+        "dimmed": true,
+        "page": "photos",
+        "reset": false,
+        "expected": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,3868 @@
+{
+  "guard": {
+    "maintenanceRules": {
+      "confirmationMs": 400,
+      "sightLossMs": 900,
+      "coneRange": 220,
+      "coneHalfAngleDegrees": 36,
+      "closeRadius": 56,
+      "patrolSpeed": 84,
+      "pursuitSpeed": 140,
+      "returnSpeed": 96,
+      "pauseMinMs": 1000,
+      "pauseMaxMs": 2000,
+      "maxStepMs": 50,
+      "footBox": {
+        "width": 20,
+        "height": 16
+      }
+    },
+    "patrol": {
+      "stair_north": {
+        "id": "stair_north",
+        "x": 1001,
+        "y": 240,
+        "neighborIds": [
+          "west_north",
+          "east_north"
+        ]
+      },
+      "west_north": {
+        "id": "west_north",
+        "x": 588,
+        "y": 220,
+        "neighborIds": [
+          "stair_north",
+          "west_south"
+        ]
+      },
+      "east_north": {
+        "id": "east_north",
+        "x": 1105,
+        "y": 240,
+        "neighborIds": [
+          "stair_north",
+          "east_south"
+        ]
+      },
+      "east_south": {
+        "id": "east_south",
+        "x": 1105,
+        "y": 560,
+        "neighborIds": [
+          "east_north",
+          "west_south"
+        ]
+      },
+      "west_south": {
+        "id": "west_south",
+        "x": 588,
+        "y": 560,
+        "neighborIds": [
+          "east_south",
+          "west_north"
+        ]
+      }
+    },
+    "chaseRules": {
+      "stableFramesToArm": 4,
+      "startGraceMs": 2000,
+      "playerSpeed": 208,
+      "guardSpeed": 174,
+      "catchDistance": 22,
+      "maxStepMs": 50,
+      "finishBeforeContact": true,
+      "transportId": "main_stair",
+      "restartCheckpoint": "c4_a1_lobby"
+    },
+    "chasePoints": {
+      "playerStart": {
+        "x": 590,
+        "y": 612
+      },
+      "guardSpawn": {
+        "x": 590,
+        "y": 724
+      },
+      "a1LowerHall": {
+        "x": 836,
+        "y": 540
+      },
+      "a1Central": {
+        "x": 836,
+        "y": 228
+      },
+      "a1Stair": {
+        "x": 1001,
+        "y": 214
+      },
+      "a2Arrival": {
+        "x": 966,
+        "y": 214
+      },
+      "a2CoreEast": {
+        "x": 1100,
+        "y": 232
+      },
+      "a2EastSouth": {
+        "x": 1100,
+        "y": 400
+      },
+      "room202Outer": {
+        "x": 1353,
+        "y": 400
+      },
+      "finishThreshold": {
+        "x": 1353,
+        "y": 356.5
+      },
+      "finalMinuteSpawn": {
+        "x": 1353,
+        "y": 320
+      },
+      "bakeryDeadEnd": {
+        "x": 318,
+        "y": 648
+      },
+      "room203DeadEnd": {
+        "x": 1353,
+        "y": 524
+      }
+    },
+    "chaseWaypoints": [
+      {
+        "id": "a1_guard_spawn",
+        "floor": "A1",
+        "x": 590,
+        "y": 724,
+        "neighborIds": [
+          "a1_chase_start"
+        ],
+        "role": "spawn"
+      },
+      {
+        "id": "a1_chase_start",
+        "floor": "A1",
+        "x": 590,
+        "y": 612,
+        "neighborIds": [
+          "a1_guard_spawn",
+          "a1_bakery_dead_end",
+          "a1_lower_hall"
+        ],
+        "role": "route"
+      },
+      {
+        "id": "a1_bakery_dead_end",
+        "floor": "A1",
+        "x": 318,
+        "y": 648,
+        "neighborIds": [
+          "a1_chase_start"
+        ],
+        "role": "decoy"
+      },
+      {
+        "id": "a1_lower_hall",
+        "floor": "A1",
+        "x": 836,
+        "y": 540,
+        "neighborIds": [
+          "a1_chase_start",
+          "a1_central"
+        ],
+        "role": "route"
+      },
+      {
+        "id": "a1_central",
+        "floor": "A1",
+        "x": 836,
+        "y": 228,
+        "neighborIds": [
+          "a1_lower_hall",
+          "a1_main_stair"
+        ],
+        "role": "route"
+      },
+      {
+        "id": "a1_main_stair",
+        "floor": "A1",
+        "x": 1001,
+        "y": 214,
+        "neighborIds": [
+          "a1_central"
+        ],
+        "role": "portal"
+      },
+      {
+        "id": "a2_main_stair_arrival",
+        "floor": "A2",
+        "x": 966,
+        "y": 214,
+        "neighborIds": [
+          "a2_core_east"
+        ],
+        "role": "portal"
+      },
+      {
+        "id": "a2_core_east",
+        "floor": "A2",
+        "x": 1100,
+        "y": 232,
+        "neighborIds": [
+          "a2_main_stair_arrival",
+          "a2_east_south"
+        ],
+        "role": "route"
+      },
+      {
+        "id": "a2_east_south",
+        "floor": "A2",
+        "x": 1100,
+        "y": 400,
+        "neighborIds": [
+          "a2_core_east",
+          "a2_room202_outer",
+          "a2_room203_dead_end"
+        ],
+        "role": "route"
+      },
+      {
+        "id": "a2_room202_outer",
+        "floor": "A2",
+        "x": 1353,
+        "y": 400,
+        "neighborIds": [
+          "a2_east_south",
+          "a2_room202_finish"
+        ],
+        "role": "route"
+      },
+      {
+        "id": "a2_room202_finish",
+        "floor": "A2",
+        "x": 1353,
+        "y": 356.5,
+        "neighborIds": [
+          "a2_room202_outer"
+        ],
+        "role": "finish"
+      },
+      {
+        "id": "a2_room203_dead_end",
+        "floor": "A2",
+        "x": 1353,
+        "y": 524,
+        "neighborIds": [
+          "a2_east_south"
+        ],
+        "role": "decoy"
+      }
+    ]
+  },
+  "prologue": {
+    "beats": [
+      {
+        "at": 0,
+        "cueEvent": "chapter4_prologue_started"
+      },
+      {
+        "at": 200,
+        "cueEvent": "chapter4_prologue_magnet_tension"
+      },
+      {
+        "at": 2100,
+        "cueEvent": "chapter4_prologue_magnet_snap"
+      },
+      {
+        "at": 2600,
+        "cueEvent": "chapter4_prologue_line_recoil"
+      },
+      {
+        "at": 3200,
+        "cueEvent": "chapter4_prologue_water_ripple"
+      },
+      {
+        "at": 6708,
+        "cueEvent": "chapter4_prologue_lake_exit"
+      },
+      {
+        "at": 8200,
+        "cueEvent": "chapter4_prologue_railing_hit"
+      },
+      {
+        "at": 9600,
+        "cueEvent": "chapter4_prologue_paper_flip"
+      },
+      {
+        "at": 10800,
+        "cueEvent": "chapter4_prologue_stone_land"
+      },
+      {
+        "at": 11800,
+        "cueEvent": "chapter4_prologue_gust_skim"
+      },
+      {
+        "at": 13667,
+        "cueEvent": "chapter4_prologue_arcade"
+      },
+      {
+        "at": 18500,
+        "cueEvent": "chapter4_prologue_step_fold"
+      },
+      {
+        "at": 21500,
+        "cueEvent": "chapter4_prologue_arcade_push"
+      },
+      {
+        "at": 26000,
+        "cueEvent": "chapter4_prologue_glass_door"
+      },
+      {
+        "at": 27400,
+        "cueEvent": "chapter4_prologue_pressure_suction"
+      },
+      {
+        "at": 28400,
+        "cueEvent": "chapter4_prologue_clock_chime"
+      },
+      {
+        "at": 29100,
+        "cueEvent": "chapter4_prologue_wet_floor"
+      },
+      {
+        "at": 29450,
+        "cueEvent": "chapter4_prologue_cleaner_line"
+      },
+      {
+        "at": 36000,
+        "cueEvent": "chapter4_prologue_guard_line"
+      },
+      {
+        "at": 41042,
+        "cueEvent": "chapter4_prologue_broadcast_static"
+      },
+      {
+        "at": 41200,
+        "cueEvent": "chapter4_prologue_lights_out"
+      },
+      {
+        "at": 43834,
+        "cueEvent": "chapter4_prologue_task_card"
+      }
+    ],
+    "subtitles": [
+      {
+        "id": "player",
+        "at": 2950,
+        "durationMs": 1800,
+        "text": "又断了。",
+        "speaker": "我",
+        "tone": "player"
+      },
+      {
+        "id": "narrator",
+        "at": 13800,
+        "durationMs": 6400,
+        "text": "湖面没有留下它。夜风把它送进了仍然亮着灯的教学楼。",
+        "speaker": "旁白",
+        "tone": "narrator"
+      },
+      {
+        "id": "cleaner",
+        "at": 29450,
+        "durationMs": 3400,
+        "text": "小心，刚拖过。那张纸往里去了。",
+        "speaker": "保洁员",
+        "tone": "player"
+      },
+      {
+        "id": "guard",
+        "at": 36000,
+        "durationMs": 3000,
+        "text": "同学，北教要清楼了，请收好东西。",
+        "speaker": "保安",
+        "tone": "broadcast"
+      }
+    ]
+  },
+  "levels": [
+    {
+      "id": "stair_a",
+      "title": "折返楼梯间",
+      "startNodeId": "A_START",
+      "exitNodeId": "A_EXIT",
+      "nodes": [
+        {
+          "id": "A_START",
+          "ownerId": "level",
+          "position": [
+            -5.2,
+            0.9,
+            0
+          ],
+          "safe": true
+        },
+        {
+          "id": "A_SLIDE",
+          "ownerId": "a_slide",
+          "position": [
+            -2.9,
+            0.9,
+            -1.2
+          ],
+          "safe": false
+        },
+        {
+          "id": "A_STAIR_LOW",
+          "ownerId": "a_stair",
+          "position": [
+            -0.7,
+            0.9,
+            0
+          ],
+          "safe": false
+        },
+        {
+          "id": "A_STAIR_HIGH",
+          "ownerId": "a_stair",
+          "position": [
+            3.85,
+            3,
+            0
+          ],
+          "safe": false
+        },
+        {
+          "id": "A_MID_ISLAND",
+          "ownerId": "level",
+          "position": [
+            5.88,
+            1.4,
+            -2.36
+          ],
+          "safe": true
+        },
+        {
+          "id": "A_LIFT",
+          "ownerId": "a_lift",
+          "position": [
+            7.28,
+            0.2,
+            -2.36
+          ],
+          "safe": false
+        },
+        {
+          "id": "A_EXIT",
+          "ownerId": "level",
+          "position": [
+            9,
+            1.4,
+            -2.36
+          ],
+          "safe": true
+        }
+      ],
+      "physicalEdges": [
+        {
+          "id": "a_edge_stair_span",
+          "a": "A_STAIR_LOW",
+          "b": "A_STAIR_HIGH"
+        }
+      ],
+      "mechanisms": [
+        {
+          "id": "a_slide",
+          "kind": "horizontal",
+          "stateCount": 3,
+          "initialState": 0,
+          "pivot": [
+            -2.9,
+            0.72,
+            -1.2
+          ],
+          "axis": "z",
+          "stepSize": 1.2,
+          "label": "入口横移台"
+        },
+        {
+          "id": "a_stair",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 1,
+          "pivot": [
+            -0.7,
+            0.3,
+            0
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "中央旋转梯"
+        },
+        {
+          "id": "a_lift",
+          "kind": "vertical",
+          "stateCount": 3,
+          "initialState": 0,
+          "pivot": [
+            7.28,
+            0.02,
+            -2.36
+          ],
+          "axis": "y",
+          "stepSize": 1.2,
+          "label": "出口升降台"
+        }
+      ],
+      "mechanismEdges": [
+        {
+          "id": "a_edge_start_slide",
+          "a": "A_START",
+          "b": "A_SLIDE",
+          "mechanismId": "a_slide",
+          "requiredState": 1
+        },
+        {
+          "id": "a_edge_slide_stair",
+          "a": "A_SLIDE",
+          "b": "A_STAIR_LOW",
+          "mechanismId": "a_slide",
+          "requiredState": 1
+        },
+        {
+          "id": "a_edge_island_lift",
+          "a": "A_MID_ISLAND",
+          "b": "A_LIFT",
+          "mechanismId": "a_lift",
+          "requiredState": 1
+        },
+        {
+          "id": "a_edge_lift_exit",
+          "a": "A_LIFT",
+          "b": "A_EXIT",
+          "mechanismId": "a_lift",
+          "requiredState": 1
+        }
+      ],
+      "connectors": [
+        {
+          "id": "a_seam_stair_high",
+          "ownerId": "a_stair",
+          "worldPosition": {
+            "x": 3.85,
+            "y": 3,
+            "z": 0
+          },
+          "worldTangent": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "A_STAIR_HIGH",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "A_LINK",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "a_seam_island",
+          "ownerId": "level",
+          "worldPosition": {
+            "x": 5.88,
+            "y": 1.4,
+            "z": -2.36
+          },
+          "worldTangent": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "A_MID_ISLAND",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "A_LINK",
+          "projectionMode": "perspective"
+        }
+      ],
+      "perspectiveLinks": [
+        {
+          "id": "a_link_stair_island",
+          "linkGroup": "A_LINK",
+          "connectorA": "a_seam_stair_high",
+          "connectorB": "a_seam_island"
+        }
+      ],
+      "ascentViewSequence": [
+        "south_west"
+      ],
+      "geometry": {
+        "platforms": [
+          {
+            "id": "a_platform_start",
+            "ownerId": "level",
+            "center": [
+              -5.2,
+              0.72,
+              0
+            ],
+            "size": [
+              3.6,
+              0.36,
+              3.2
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "a_platform_slide",
+            "ownerId": "a_slide",
+            "center": [
+              -2.9,
+              0.72,
+              -1.2
+            ],
+            "size": [
+              2.7,
+              0.36,
+              1.4
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "a_platform_stair_base",
+            "ownerId": "level",
+            "center": [
+              -0.7,
+              0.72,
+              0
+            ],
+            "size": [
+              1.2,
+              0.36,
+              1.6
+            ],
+            "material": "stone_back",
+            "walkable": true
+          },
+          {
+            "id": "a_platform_island",
+            "ownerId": "level",
+            "center": [
+              6.28,
+              1.22,
+              -2.36
+            ],
+            "size": [
+              2.4,
+              0.36,
+              2
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "a_platform_lift",
+            "ownerId": "a_lift",
+            "center": [
+              7.28,
+              0.02,
+              -2.36
+            ],
+            "size": [
+              2.4,
+              0.36,
+              2.2
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "a_platform_exit",
+            "ownerId": "level",
+            "center": [
+              9,
+              1.22,
+              -2.36
+            ],
+            "size": [
+              1.6,
+              0.36,
+              1.8
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "a_backdrop_wall",
+            "ownerId": "level",
+            "center": [
+              2,
+              2,
+              -5.6
+            ],
+            "size": [
+              20,
+              5.6,
+              0.4
+            ],
+            "material": "wall_lit",
+            "walkable": false
+          }
+        ],
+        "stairs": [
+          {
+            "id": "a_stair_span",
+            "ownerId": "a_stair",
+            "from": [
+              -0.7,
+              0.9,
+              0
+            ],
+            "to": [
+              3.85,
+              3,
+              0
+            ],
+            "width": 1.42,
+            "steps": 13,
+            "material": "stone_lit"
+          }
+        ],
+        "decorations": [
+          {
+            "id": "a_deco_fire_door",
+            "kind": "fire_door",
+            "position": [
+              9.62,
+              1.4,
+              -2.36
+            ],
+            "rotationY": 1.5707963267948966
+          },
+          {
+            "id": "a_deco_floor_plate",
+            "kind": "floor_plate",
+            "position": [
+              -4,
+              2.6,
+              -5.38
+            ]
+          },
+          {
+            "id": "a_deco_lamp_1",
+            "kind": "wall_lamp",
+            "position": [
+              -1.5,
+              3.4,
+              -5.38
+            ]
+          },
+          {
+            "id": "a_deco_lamp_2",
+            "kind": "wall_lamp",
+            "position": [
+              6.5,
+              2.8,
+              -5.38
+            ]
+          },
+          {
+            "id": "a_deco_window_1",
+            "kind": "window_frame",
+            "position": [
+              1.5,
+              2.4,
+              -5.39
+            ]
+          },
+          {
+            "id": "a_deco_window_2",
+            "kind": "window_frame",
+            "position": [
+              8.6,
+              2.2,
+              -5.39
+            ]
+          },
+          {
+            "id": "a_deco_plant_1",
+            "kind": "potted_plant",
+            "position": [
+              -6.6,
+              0.9,
+              1.2
+            ]
+          },
+          {
+            "id": "a_deco_plant_2",
+            "kind": "potted_plant",
+            "position": [
+              7.35,
+              1.4,
+              -3.1
+            ]
+          }
+        ]
+      },
+      "feedback": {
+        "objective": "让入口、中央梯段和出口在合适视角中连续。",
+        "firstSeam": "这个视角下，两端连在一起。",
+        "blocked": "通路在这里中断。调整机关或切换视角。",
+        "wrongDirection": "端点位置接近，行进方向没有接上。"
+      }
+    },
+    {
+      "id": "stair_b",
+      "title": "环形错层楼梯井",
+      "startNodeId": "B_START",
+      "exitNodeId": "B_EXIT",
+      "nodes": [
+        {
+          "id": "B_START",
+          "ownerId": "level",
+          "position": [
+            -5.2,
+            0.9,
+            1.8
+          ],
+          "safe": true
+        },
+        {
+          "id": "B_LOWER_LOW",
+          "ownerId": "b_lower_stair",
+          "position": [
+            -2.15,
+            0.9,
+            1.35
+          ],
+          "safe": false
+        },
+        {
+          "id": "B_LOWER_HIGH",
+          "ownerId": "b_lower_stair",
+          "position": [
+            1.35,
+            2.7,
+            1.35
+          ],
+          "safe": false
+        },
+        {
+          "id": "B_MID_LIFT_LOW",
+          "ownerId": "b_mid_lift",
+          "position": [
+            -0.3035,
+            1.7,
+            2.7731
+          ],
+          "safe": false
+        },
+        {
+          "id": "B_MID_LIFT_HIGH",
+          "ownerId": "level",
+          "position": [
+            0.85,
+            3.9,
+            1.75
+          ],
+          "safe": true
+        },
+        {
+          "id": "B_UPPER_LOW",
+          "ownerId": "b_upper_stair",
+          "position": [
+            2,
+            3.9,
+            0.8
+          ],
+          "safe": false
+        },
+        {
+          "id": "B_UPPER_HIGH",
+          "ownerId": "b_upper_stair",
+          "position": [
+            0.3043,
+            5.6,
+            3.5138
+          ],
+          "safe": false
+        },
+        {
+          "id": "B_HIGH_ISLAND",
+          "ownerId": "level",
+          "position": [
+            4.7138,
+            8.5437,
+            5.204
+          ],
+          "safe": true
+        },
+        {
+          "id": "B_EXIT_SLIDE",
+          "ownerId": "b_exit_slide",
+          "position": [
+            8.1138,
+            8.5437,
+            5.7
+          ],
+          "safe": false
+        },
+        {
+          "id": "B_EXIT",
+          "ownerId": "level",
+          "position": [
+            4.7138,
+            8.5437,
+            7.9
+          ],
+          "safe": true
+        }
+      ],
+      "physicalEdges": [
+        {
+          "id": "b_edge_start_lower",
+          "a": "B_START",
+          "b": "B_LOWER_LOW"
+        },
+        {
+          "id": "b_edge_lower_span",
+          "a": "B_LOWER_LOW",
+          "b": "B_LOWER_HIGH"
+        },
+        {
+          "id": "b_edge_landing_upper",
+          "a": "B_MID_LIFT_HIGH",
+          "b": "B_UPPER_LOW"
+        },
+        {
+          "id": "b_edge_upper_span",
+          "a": "B_UPPER_LOW",
+          "b": "B_UPPER_HIGH"
+        }
+      ],
+      "mechanisms": [
+        {
+          "id": "b_lower_stair",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 1,
+          "pivot": [
+            -2.15,
+            0.3,
+            1.35
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "下层旋转梯"
+        },
+        {
+          "id": "b_mid_lift",
+          "kind": "vertical",
+          "stateCount": 3,
+          "initialState": 0,
+          "pivot": [
+            -0.3035,
+            1.52,
+            2.7731
+          ],
+          "axis": "y",
+          "stepSize": 1.1,
+          "label": "中层升降台"
+        },
+        {
+          "id": "b_upper_stair",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 0,
+          "pivot": [
+            2,
+            3.3,
+            0.8
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "上层旋转梯"
+        },
+        {
+          "id": "b_exit_slide",
+          "kind": "horizontal",
+          "stateCount": 3,
+          "initialState": 0,
+          "pivot": [
+            8.1138,
+            8.3637,
+            5.7
+          ],
+          "axis": "x",
+          "stepSize": -1.7,
+          "label": "出口横移台"
+        }
+      ],
+      "mechanismEdges": [
+        {
+          "id": "b_edge_lift_landing",
+          "a": "B_MID_LIFT_LOW",
+          "b": "B_MID_LIFT_HIGH",
+          "mechanismId": "b_mid_lift",
+          "requiredState": 2
+        },
+        {
+          "id": "b_edge_island_slide",
+          "a": "B_HIGH_ISLAND",
+          "b": "B_EXIT_SLIDE",
+          "mechanismId": "b_exit_slide",
+          "requiredState": 2
+        },
+        {
+          "id": "b_edge_slide_exit",
+          "a": "B_EXIT_SLIDE",
+          "b": "B_EXIT",
+          "mechanismId": "b_exit_slide",
+          "requiredState": 2
+        }
+      ],
+      "connectors": [
+        {
+          "id": "b_seam_lower_high",
+          "ownerId": "b_lower_stair",
+          "worldPosition": {
+            "x": 1.35,
+            "y": 2.7,
+            "z": 1.35
+          },
+          "worldTangent": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "B_LOWER_HIGH",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "B_LOWER_LINK",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "b_seam_lift_low",
+          "ownerId": "b_mid_lift",
+          "worldPosition": {
+            "x": -0.3035,
+            "y": 1.7,
+            "z": 2.7731
+          },
+          "worldTangent": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          },
+          "nodeId": "B_MID_LIFT_LOW",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "B_LOWER_LINK",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "b_seam_upper_high",
+          "ownerId": "b_upper_stair",
+          "worldPosition": {
+            "x": 0.3043,
+            "y": 5.6,
+            "z": 3.5138
+          },
+          "worldTangent": {
+            "x": -0.529919,
+            "y": 0,
+            "z": 0.848048
+          },
+          "nodeId": "B_UPPER_HIGH",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "B_UPPER_LINK",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "b_seam_high_island",
+          "ownerId": "level",
+          "worldPosition": {
+            "x": 4.7138,
+            "y": 8.5437,
+            "z": 5.204
+          },
+          "worldTangent": {
+            "x": -0.848048,
+            "y": 0,
+            "z": -0.529919
+          },
+          "nodeId": "B_HIGH_ISLAND",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "B_UPPER_LINK",
+          "projectionMode": "perspective"
+        }
+      ],
+      "perspectiveLinks": [
+        {
+          "id": "b_link_lower_stair_lift",
+          "linkGroup": "B_LOWER_LINK",
+          "connectorA": "b_seam_lower_high",
+          "connectorB": "b_seam_lift_low"
+        },
+        {
+          "id": "b_link_upper_stair_island",
+          "linkGroup": "B_UPPER_LINK",
+          "connectorA": "b_seam_upper_high",
+          "connectorB": "b_seam_high_island"
+        }
+      ],
+      "ascentViewSequence": [
+        "south_west",
+        "top_oblique"
+      ],
+      "geometry": {
+        "platforms": [
+          {
+            "id": "b_platform_start",
+            "ownerId": "level",
+            "center": [
+              -4.8,
+              0.72,
+              1.6
+            ],
+            "size": [
+              4.8,
+              0.36,
+              2.4
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "b_platform_lower_base",
+            "ownerId": "level",
+            "center": [
+              -2.15,
+              0.72,
+              1.35
+            ],
+            "size": [
+              1.3,
+              0.36,
+              1.5
+            ],
+            "material": "stone_back",
+            "walkable": true
+          },
+          {
+            "id": "b_platform_lift",
+            "ownerId": "b_mid_lift",
+            "center": [
+              -0.3035,
+              1.52,
+              2.7731
+            ],
+            "size": [
+              2,
+              0.36,
+              2
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "b_platform_landing",
+            "ownerId": "level",
+            "center": [
+              0.85,
+              3.72,
+              1.75
+            ],
+            "size": [
+              3.4,
+              0.36,
+              3.2
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "b_platform_island",
+            "ownerId": "level",
+            "center": [
+              4.7138,
+              8.3637,
+              6.404
+            ],
+            "size": [
+              2.2,
+              0.36,
+              2.4
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "b_platform_exit_slide",
+            "ownerId": "b_exit_slide",
+            "center": [
+              8.1138,
+              8.3637,
+              5.7
+            ],
+            "size": [
+              2,
+              0.36,
+              2.6
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "b_platform_exit",
+            "ownerId": "level",
+            "center": [
+              4.7138,
+              8.3637,
+              7.9
+            ],
+            "size": [
+              2,
+              0.36,
+              2
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "b_backdrop_wall",
+            "ownerId": "level",
+            "center": [
+              1,
+              3.5,
+              -5.8
+            ],
+            "size": [
+              22,
+              9,
+              0.4
+            ],
+            "material": "wall_lit",
+            "walkable": false
+          }
+        ],
+        "stairs": [
+          {
+            "id": "b_lower_stair_span",
+            "ownerId": "b_lower_stair",
+            "from": [
+              -2.15,
+              0.9,
+              1.35
+            ],
+            "to": [
+              1.35,
+              2.7,
+              1.35
+            ],
+            "width": 1.34,
+            "steps": 12,
+            "material": "stone_lit"
+          },
+          {
+            "id": "b_upper_stair_span",
+            "ownerId": "b_upper_stair",
+            "from": [
+              2,
+              3.9,
+              0.8
+            ],
+            "to": [
+              0.3043,
+              5.6,
+              3.5138
+            ],
+            "width": 1.34,
+            "steps": 11,
+            "material": "stone_lit"
+          }
+        ],
+        "decorations": [
+          {
+            "id": "b_deco_fire_door",
+            "kind": "fire_door",
+            "position": [
+              4.7138,
+              8.5437,
+              8.75
+            ],
+            "rotationY": 3.141592653589793
+          },
+          {
+            "id": "b_deco_floor_plate",
+            "kind": "floor_plate",
+            "position": [
+              -3.5,
+              3.2,
+              -5.58
+            ]
+          },
+          {
+            "id": "b_deco_lamp_1",
+            "kind": "wall_lamp",
+            "position": [
+              0.5,
+              4.6,
+              -5.58
+            ]
+          },
+          {
+            "id": "b_deco_lamp_2",
+            "kind": "wall_lamp",
+            "position": [
+              5.5,
+              5.4,
+              -5.58
+            ]
+          },
+          {
+            "id": "b_deco_window_1",
+            "kind": "window_frame",
+            "position": [
+              -6,
+              2.6,
+              -5.59
+            ]
+          },
+          {
+            "id": "b_deco_window_2",
+            "kind": "window_frame",
+            "position": [
+              2.5,
+              5.8,
+              -5.59
+            ]
+          },
+          {
+            "id": "b_deco_plant_1",
+            "kind": "potted_plant",
+            "position": [
+              -6.9,
+              0.9,
+              2.6
+            ]
+          },
+          {
+            "id": "b_deco_plant_2",
+            "kind": "potted_plant",
+            "position": [
+              2.3,
+              3.9,
+              3.1
+            ]
+          }
+        ]
+      },
+      "feedback": {
+        "objective": "每升高一段都切换视角，让入口、两段梯段和出口逐层连续。",
+        "firstSeam": "这个视角下，两端连在一起。",
+        "blocked": "通路在这里中断。调整机关或切换视角。",
+        "wrongDirection": "端点位置接近，行进方向没有接上。"
+      }
+    },
+    {
+      "id": "stair_c",
+      "title": "双向换乘回廊",
+      "startNodeId": "stair_c_start",
+      "exitNodeId": "stair_c_exit",
+      "nodes": [
+        {
+          "id": "stair_c_start",
+          "ownerId": "level",
+          "position": [
+            -6,
+            0.9,
+            -2.4
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_c_1_low",
+          "ownerId": "stair_c_1_rotate",
+          "position": [
+            -4.5,
+            0.9,
+            -2.4
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_c_1_high",
+          "ownerId": "stair_c_1_rotate",
+          "position": [
+            -1.2999999999999998,
+            2.4,
+            -2.4
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_c_1_island",
+          "ownerId": "level",
+          "position": [
+            -2.1799999999999997,
+            3.2249999999999996,
+            -1.2999999999999998
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_c_1_car",
+          "ownerId": "stair_c_1_transfer",
+          "position": [
+            -2.1799999999999997,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_c_1_transfer_exit",
+          "ownerId": "level",
+          "position": [
+            1.7200000000000002,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_c_2_low",
+          "ownerId": "stair_c_2_rotate",
+          "position": [
+            1.7200000000000002,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_c_2_high",
+          "ownerId": "stair_c_2_rotate",
+          "position": [
+            -1.48,
+            4.725,
+            0.20000000000000018
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_c_2_island",
+          "ownerId": "level",
+          "position": [
+            -1.48,
+            5.935,
+            0.8600000000000002
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_c_2_car",
+          "ownerId": "stair_c_2_transfer",
+          "position": [
+            -1.48,
+            5.935,
+            2.3600000000000003
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_c_exit",
+          "ownerId": "level",
+          "position": [
+            0.020000000000000018,
+            7.535,
+            2.3600000000000003
+          ],
+          "safe": true
+        }
+      ],
+      "physicalEdges": [
+        {
+          "id": "stair_c_1_approach",
+          "a": "stair_c_start",
+          "b": "stair_c_1_low"
+        },
+        {
+          "id": "stair_c_1_flight",
+          "a": "stair_c_1_low",
+          "b": "stair_c_1_high"
+        },
+        {
+          "id": "stair_c_2_approach",
+          "a": "stair_c_1_transfer_exit",
+          "b": "stair_c_2_low"
+        },
+        {
+          "id": "stair_c_2_flight",
+          "a": "stair_c_2_low",
+          "b": "stair_c_2_high"
+        }
+      ],
+      "mechanisms": [
+        {
+          "id": "stair_c_1_rotate",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 1,
+          "pivot": [
+            -4.5,
+            0.9,
+            -2.4
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "第1段旋转梯"
+        },
+        {
+          "id": "stair_c_1_transfer",
+          "kind": "horizontal",
+          "stateCount": 3,
+          "initialState": 2,
+          "pivot": [
+            -2.1799999999999997,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "axis": "x",
+          "stepSize": 1.2,
+          "label": "回廊横渡台"
+        },
+        {
+          "id": "stair_c_2_rotate",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 3,
+          "pivot": [
+            1.7200000000000002,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "第2段旋转梯"
+        },
+        {
+          "id": "stair_c_2_transfer",
+          "kind": "vertical",
+          "stateCount": 3,
+          "initialState": 2,
+          "pivot": [
+            -1.48,
+            5.935,
+            2.3600000000000003
+          ],
+          "axis": "y",
+          "stepSize": 0.8,
+          "label": "终点升降台"
+        }
+      ],
+      "mechanismEdges": [
+        {
+          "id": "stair_c_1_board",
+          "a": "stair_c_1_island",
+          "b": "stair_c_1_car",
+          "mechanismId": "stair_c_1_transfer",
+          "requiredState": 0
+        },
+        {
+          "id": "stair_c_1_leave",
+          "a": "stair_c_1_car",
+          "b": "stair_c_1_transfer_exit",
+          "mechanismId": "stair_c_1_transfer",
+          "requiredState": 2
+        },
+        {
+          "id": "stair_c_2_board",
+          "a": "stair_c_2_island",
+          "b": "stair_c_2_car",
+          "mechanismId": "stair_c_2_transfer",
+          "requiredState": 0
+        },
+        {
+          "id": "stair_c_2_leave",
+          "a": "stair_c_2_car",
+          "b": "stair_c_exit",
+          "mechanismId": "stair_c_2_transfer",
+          "requiredState": 2
+        }
+      ],
+      "connectors": [
+        {
+          "id": "stair_c_1_out",
+          "ownerId": "stair_c_1_rotate",
+          "worldPosition": {
+            "x": -1.2999999999999998,
+            "y": 2.4,
+            "z": -2.4
+          },
+          "worldTangent": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_c_1_high",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_c_1_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_c_1_in",
+          "ownerId": "level",
+          "worldPosition": {
+            "x": -2.1799999999999997,
+            "y": 3.2249999999999996,
+            "z": -1.2999999999999998
+          },
+          "worldTangent": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_c_1_island",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_c_1_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_c_2_out",
+          "ownerId": "stair_c_2_rotate",
+          "worldPosition": {
+            "x": -1.48,
+            "y": 4.725,
+            "z": 0.20000000000000018
+          },
+          "worldTangent": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_c_2_high",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_c_2_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_c_2_in",
+          "ownerId": "level",
+          "worldPosition": {
+            "x": -1.48,
+            "y": 5.935,
+            "z": 0.8600000000000002
+          },
+          "worldTangent": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_c_2_island",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_c_2_seam",
+          "projectionMode": "perspective"
+        }
+      ],
+      "perspectiveLinks": [
+        {
+          "id": "stair_c_1_link",
+          "linkGroup": "stair_c_1_seam",
+          "connectorA": "stair_c_1_out",
+          "connectorB": "stair_c_1_in"
+        },
+        {
+          "id": "stair_c_2_link",
+          "linkGroup": "stair_c_2_seam",
+          "connectorA": "stair_c_2_out",
+          "connectorB": "stair_c_2_in"
+        }
+      ],
+      "ascentViewSequence": [
+        "south_west",
+        "top_oblique"
+      ],
+      "geometry": {
+        "platforms": [
+          {
+            "id": "stair_c_entry",
+            "ownerId": "level",
+            "center": [
+              -6,
+              0.72,
+              -2.4
+            ],
+            "size": [
+              2.2,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_1_base",
+            "ownerId": "level",
+            "center": [
+              -4.5,
+              0.72,
+              -2.4
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_1_landing",
+            "ownerId": "level",
+            "center": [
+              -2.1799999999999997,
+              3.0449999999999995,
+              -1.2999999999999998
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_1_car_platform",
+            "ownerId": "stair_c_1_transfer",
+            "center": [
+              -2.1799999999999997,
+              3.0449999999999995,
+              0.20000000000000018
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_1_transfer_landing",
+            "ownerId": "level",
+            "center": [
+              1.7200000000000002,
+              3.0449999999999995,
+              0.20000000000000018
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_2_base",
+            "ownerId": "level",
+            "center": [
+              1.7200000000000002,
+              3.0449999999999995,
+              0.20000000000000018
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_2_landing",
+            "ownerId": "level",
+            "center": [
+              -1.48,
+              5.755,
+              0.8600000000000002
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_2_car_platform",
+            "ownerId": "stair_c_2_transfer",
+            "center": [
+              -1.48,
+              5.755,
+              2.3600000000000003
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_2_transfer_landing",
+            "ownerId": "level",
+            "center": [
+              0.020000000000000018,
+              7.355,
+              2.3600000000000003
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_c_wall",
+            "ownerId": "level",
+            "center": [
+              0,
+              5,
+              -5.5
+            ],
+            "size": [
+              23,
+              14,
+              0.35
+            ],
+            "material": "wall_lit",
+            "walkable": false
+          }
+        ],
+        "stairs": [
+          {
+            "id": "stair_c_1_steps",
+            "ownerId": "stair_c_1_rotate",
+            "from": [
+              -4.5,
+              0.9,
+              -2.4
+            ],
+            "to": [
+              -1.2999999999999998,
+              2.4,
+              -2.4
+            ],
+            "width": 1.3,
+            "steps": 14,
+            "material": "stone_lit"
+          },
+          {
+            "id": "stair_c_2_steps",
+            "ownerId": "stair_c_2_rotate",
+            "from": [
+              1.7200000000000002,
+              3.2249999999999996,
+              0.20000000000000018
+            ],
+            "to": [
+              -1.48,
+              4.725,
+              0.20000000000000018
+            ],
+            "width": 1.3,
+            "steps": 14,
+            "material": "stone_lit"
+          }
+        ],
+        "decorations": [
+          {
+            "id": "stair_c_door",
+            "kind": "fire_door",
+            "position": [
+              0.52,
+              7.535,
+              2.3600000000000003
+            ],
+            "rotationY": 1.5707963267948966
+          },
+          {
+            "id": "stair_c_window_0",
+            "kind": "window_frame",
+            "position": [
+              -6,
+              2.4,
+              -5.28
+            ]
+          },
+          {
+            "id": "stair_c_window_1",
+            "kind": "window_frame",
+            "position": [
+              -2,
+              4,
+              -5.28
+            ]
+          },
+          {
+            "id": "stair_c_window_2",
+            "kind": "window_frame",
+            "position": [
+              2,
+              5.6,
+              -5.28
+            ]
+          },
+          {
+            "id": "stair_c_window_3",
+            "kind": "window_frame",
+            "position": [
+              6,
+              7.200000000000001,
+              -5.28
+            ]
+          }
+        ]
+      },
+      "feedback": {
+        "objective": "乘台到达另一端，再从新的视角接通回廊。",
+        "firstSeam": "两端在这个视角下接通了。",
+        "blocked": "通路中断。检查台面位置或切换视角。",
+        "wrongDirection": "端点重合，方向还没有接上。"
+      }
+    },
+    {
+      "id": "stair_d",
+      "title": "三重折叠天井",
+      "startNodeId": "stair_d_start",
+      "exitNodeId": "stair_d_exit",
+      "nodes": [
+        {
+          "id": "stair_d_start",
+          "ownerId": "level",
+          "position": [
+            -6,
+            0.9,
+            -2.4
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_d_1_low",
+          "ownerId": "stair_d_1_rotate",
+          "position": [
+            -4.5,
+            0.9,
+            -2.4
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_1_high",
+          "ownerId": "stair_d_1_rotate",
+          "position": [
+            -1.2999999999999998,
+            2.4,
+            -2.4
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_1_island",
+          "ownerId": "level",
+          "position": [
+            -2.1799999999999997,
+            3.2249999999999996,
+            -1.2999999999999998
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_d_1_car",
+          "ownerId": "stair_d_1_transfer",
+          "position": [
+            -2.1799999999999997,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_1_transfer_exit",
+          "ownerId": "level",
+          "position": [
+            1.7200000000000002,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_d_2_low",
+          "ownerId": "stair_d_2_rotate",
+          "position": [
+            1.7200000000000002,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_2_high",
+          "ownerId": "stair_d_2_rotate",
+          "position": [
+            -1.48,
+            4.725,
+            0.20000000000000018
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_2_island",
+          "ownerId": "level",
+          "position": [
+            -1.48,
+            5.935,
+            0.8600000000000002
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_d_2_car",
+          "ownerId": "stair_d_2_transfer",
+          "position": [
+            -1.48,
+            5.935,
+            2.3600000000000003
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_2_transfer_exit",
+          "ownerId": "level",
+          "position": [
+            0.020000000000000018,
+            7.535,
+            2.3600000000000003
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_d_3_low",
+          "ownerId": "stair_d_3_rotate",
+          "position": [
+            0.020000000000000018,
+            7.535,
+            2.3600000000000003
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_3_high",
+          "ownerId": "stair_d_3_rotate",
+          "position": [
+            3.22,
+            9.035,
+            2.3600000000000003
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_3_island",
+          "ownerId": "level",
+          "position": [
+            4.1000000000000005,
+            9.86,
+            3.4600000000000004
+          ],
+          "safe": true
+        },
+        {
+          "id": "stair_d_3_car",
+          "ownerId": "stair_d_3_transfer",
+          "position": [
+            4.1000000000000005,
+            9.86,
+            4.960000000000001
+          ],
+          "safe": false
+        },
+        {
+          "id": "stair_d_exit",
+          "ownerId": "level",
+          "position": [
+            5.6000000000000005,
+            11.459999999999999,
+            4.960000000000001
+          ],
+          "safe": true
+        }
+      ],
+      "physicalEdges": [
+        {
+          "id": "stair_d_1_approach",
+          "a": "stair_d_start",
+          "b": "stair_d_1_low"
+        },
+        {
+          "id": "stair_d_1_flight",
+          "a": "stair_d_1_low",
+          "b": "stair_d_1_high"
+        },
+        {
+          "id": "stair_d_2_approach",
+          "a": "stair_d_1_transfer_exit",
+          "b": "stair_d_2_low"
+        },
+        {
+          "id": "stair_d_2_flight",
+          "a": "stair_d_2_low",
+          "b": "stair_d_2_high"
+        },
+        {
+          "id": "stair_d_3_approach",
+          "a": "stair_d_2_transfer_exit",
+          "b": "stair_d_3_low"
+        },
+        {
+          "id": "stair_d_3_flight",
+          "a": "stair_d_3_low",
+          "b": "stair_d_3_high"
+        }
+      ],
+      "mechanisms": [
+        {
+          "id": "stair_d_1_rotate",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 1,
+          "pivot": [
+            -4.5,
+            0.9,
+            -2.4
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "第1段旋转梯"
+        },
+        {
+          "id": "stair_d_1_transfer",
+          "kind": "horizontal",
+          "stateCount": 3,
+          "initialState": 2,
+          "pivot": [
+            -2.1799999999999997,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "axis": "x",
+          "stepSize": 1.2,
+          "label": "回廊横渡台"
+        },
+        {
+          "id": "stair_d_2_rotate",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 3,
+          "pivot": [
+            1.7200000000000002,
+            3.2249999999999996,
+            0.20000000000000018
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "第2段旋转梯"
+        },
+        {
+          "id": "stair_d_2_transfer",
+          "kind": "vertical",
+          "stateCount": 3,
+          "initialState": 2,
+          "pivot": [
+            -1.48,
+            5.935,
+            2.3600000000000003
+          ],
+          "axis": "y",
+          "stepSize": 0.8,
+          "label": "中继升降台"
+        },
+        {
+          "id": "stair_d_3_rotate",
+          "kind": "rotate",
+          "stateCount": 4,
+          "initialState": 1,
+          "pivot": [
+            0.020000000000000018,
+            7.535,
+            2.3600000000000003
+          ],
+          "axis": "y",
+          "stepSize": 0,
+          "label": "第3段旋转梯"
+        },
+        {
+          "id": "stair_d_3_transfer",
+          "kind": "vertical",
+          "stateCount": 3,
+          "initialState": 2,
+          "pivot": [
+            4.1000000000000005,
+            9.86,
+            4.960000000000001
+          ],
+          "axis": "y",
+          "stepSize": 0.8,
+          "label": "终点升降台"
+        }
+      ],
+      "mechanismEdges": [
+        {
+          "id": "stair_d_1_board",
+          "a": "stair_d_1_island",
+          "b": "stair_d_1_car",
+          "mechanismId": "stair_d_1_transfer",
+          "requiredState": 0
+        },
+        {
+          "id": "stair_d_1_leave",
+          "a": "stair_d_1_car",
+          "b": "stair_d_1_transfer_exit",
+          "mechanismId": "stair_d_1_transfer",
+          "requiredState": 2
+        },
+        {
+          "id": "stair_d_2_board",
+          "a": "stair_d_2_island",
+          "b": "stair_d_2_car",
+          "mechanismId": "stair_d_2_transfer",
+          "requiredState": 0
+        },
+        {
+          "id": "stair_d_2_leave",
+          "a": "stair_d_2_car",
+          "b": "stair_d_2_transfer_exit",
+          "mechanismId": "stair_d_2_transfer",
+          "requiredState": 2
+        },
+        {
+          "id": "stair_d_3_board",
+          "a": "stair_d_3_island",
+          "b": "stair_d_3_car",
+          "mechanismId": "stair_d_3_transfer",
+          "requiredState": 0
+        },
+        {
+          "id": "stair_d_3_leave",
+          "a": "stair_d_3_car",
+          "b": "stair_d_exit",
+          "mechanismId": "stair_d_3_transfer",
+          "requiredState": 2
+        }
+      ],
+      "connectors": [
+        {
+          "id": "stair_d_1_out",
+          "ownerId": "stair_d_1_rotate",
+          "worldPosition": {
+            "x": -1.2999999999999998,
+            "y": 2.4,
+            "z": -2.4
+          },
+          "worldTangent": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_d_1_high",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_d_1_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_d_1_in",
+          "ownerId": "level",
+          "worldPosition": {
+            "x": -2.1799999999999997,
+            "y": 3.2249999999999996,
+            "z": -1.2999999999999998
+          },
+          "worldTangent": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_d_1_island",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_d_1_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_d_2_out",
+          "ownerId": "stair_d_2_rotate",
+          "worldPosition": {
+            "x": -1.48,
+            "y": 4.725,
+            "z": 0.20000000000000018
+          },
+          "worldTangent": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_d_2_high",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_d_2_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_d_2_in",
+          "ownerId": "level",
+          "worldPosition": {
+            "x": -1.48,
+            "y": 5.935,
+            "z": 0.8600000000000002
+          },
+          "worldTangent": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_d_2_island",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_d_2_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_d_3_out",
+          "ownerId": "stair_d_3_rotate",
+          "worldPosition": {
+            "x": 3.22,
+            "y": 9.035,
+            "z": 2.3600000000000003
+          },
+          "worldTangent": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_d_3_high",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_d_3_seam",
+          "projectionMode": "perspective"
+        },
+        {
+          "id": "stair_d_3_in",
+          "ownerId": "level",
+          "worldPosition": {
+            "x": 4.1000000000000005,
+            "y": 9.86,
+            "z": 3.4600000000000004
+          },
+          "worldTangent": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "nodeId": "stair_d_3_island",
+          "views": [
+            "south_east",
+            "south_west",
+            "top_oblique"
+          ],
+          "linkGroup": "stair_d_3_seam",
+          "projectionMode": "perspective"
+        }
+      ],
+      "perspectiveLinks": [
+        {
+          "id": "stair_d_1_link",
+          "linkGroup": "stair_d_1_seam",
+          "connectorA": "stair_d_1_out",
+          "connectorB": "stair_d_1_in"
+        },
+        {
+          "id": "stair_d_2_link",
+          "linkGroup": "stair_d_2_seam",
+          "connectorA": "stair_d_2_out",
+          "connectorB": "stair_d_2_in"
+        },
+        {
+          "id": "stair_d_3_link",
+          "linkGroup": "stair_d_3_seam",
+          "connectorA": "stair_d_3_out",
+          "connectorB": "stair_d_3_in"
+        }
+      ],
+      "ascentViewSequence": [
+        "south_west",
+        "top_oblique",
+        "south_east"
+      ],
+      "geometry": {
+        "platforms": [
+          {
+            "id": "stair_d_entry",
+            "ownerId": "level",
+            "center": [
+              -6,
+              0.72,
+              -2.4
+            ],
+            "size": [
+              2.2,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_1_base",
+            "ownerId": "level",
+            "center": [
+              -4.5,
+              0.72,
+              -2.4
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_1_landing",
+            "ownerId": "level",
+            "center": [
+              -2.1799999999999997,
+              3.0449999999999995,
+              -1.2999999999999998
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_1_car_platform",
+            "ownerId": "stair_d_1_transfer",
+            "center": [
+              -2.1799999999999997,
+              3.0449999999999995,
+              0.20000000000000018
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_1_transfer_landing",
+            "ownerId": "level",
+            "center": [
+              1.7200000000000002,
+              3.0449999999999995,
+              0.20000000000000018
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_2_base",
+            "ownerId": "level",
+            "center": [
+              1.7200000000000002,
+              3.0449999999999995,
+              0.20000000000000018
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_2_landing",
+            "ownerId": "level",
+            "center": [
+              -1.48,
+              5.755,
+              0.8600000000000002
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_2_car_platform",
+            "ownerId": "stair_d_2_transfer",
+            "center": [
+              -1.48,
+              5.755,
+              2.3600000000000003
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_2_transfer_landing",
+            "ownerId": "level",
+            "center": [
+              0.020000000000000018,
+              7.355,
+              2.3600000000000003
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_3_base",
+            "ownerId": "level",
+            "center": [
+              0.020000000000000018,
+              7.355,
+              2.3600000000000003
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_3_landing",
+            "ownerId": "level",
+            "center": [
+              4.1000000000000005,
+              9.68,
+              3.4600000000000004
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_3_car_platform",
+            "ownerId": "stair_d_3_transfer",
+            "center": [
+              4.1000000000000005,
+              9.68,
+              4.960000000000001
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "structure",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_3_transfer_landing",
+            "ownerId": "level",
+            "center": [
+              5.6000000000000005,
+              11.28,
+              4.960000000000001
+            ],
+            "size": [
+              1.5,
+              0.36,
+              1.5
+            ],
+            "material": "stone_lit",
+            "walkable": true
+          },
+          {
+            "id": "stair_d_wall",
+            "ownerId": "level",
+            "center": [
+              0,
+              5,
+              -5.5
+            ],
+            "size": [
+              23,
+              14,
+              0.35
+            ],
+            "material": "wall_lit",
+            "walkable": false
+          }
+        ],
+        "stairs": [
+          {
+            "id": "stair_d_1_steps",
+            "ownerId": "stair_d_1_rotate",
+            "from": [
+              -4.5,
+              0.9,
+              -2.4
+            ],
+            "to": [
+              -1.2999999999999998,
+              2.4,
+              -2.4
+            ],
+            "width": 1.3,
+            "steps": 14,
+            "material": "stone_lit"
+          },
+          {
+            "id": "stair_d_2_steps",
+            "ownerId": "stair_d_2_rotate",
+            "from": [
+              1.7200000000000002,
+              3.2249999999999996,
+              0.20000000000000018
+            ],
+            "to": [
+              -1.48,
+              4.725,
+              0.20000000000000018
+            ],
+            "width": 1.3,
+            "steps": 14,
+            "material": "stone_lit"
+          },
+          {
+            "id": "stair_d_3_steps",
+            "ownerId": "stair_d_3_rotate",
+            "from": [
+              0.020000000000000018,
+              7.535,
+              2.3600000000000003
+            ],
+            "to": [
+              3.22,
+              9.035,
+              2.3600000000000003
+            ],
+            "width": 1.3,
+            "steps": 14,
+            "material": "stone_lit"
+          }
+        ],
+        "decorations": [
+          {
+            "id": "stair_d_door",
+            "kind": "fire_door",
+            "position": [
+              6.1000000000000005,
+              11.459999999999999,
+              4.960000000000001
+            ],
+            "rotationY": 1.5707963267948966
+          },
+          {
+            "id": "stair_d_window_0",
+            "kind": "window_frame",
+            "position": [
+              -6,
+              2.4,
+              -5.28
+            ]
+          },
+          {
+            "id": "stair_d_window_1",
+            "kind": "window_frame",
+            "position": [
+              -2,
+              4,
+              -5.28
+            ]
+          },
+          {
+            "id": "stair_d_window_2",
+            "kind": "window_frame",
+            "position": [
+              2,
+              5.6,
+              -5.28
+            ]
+          },
+          {
+            "id": "stair_d_window_3",
+            "kind": "window_frame",
+            "position": [
+              6,
+              7.200000000000001,
+              -5.28
+            ]
+          }
+        ]
+      },
+      "feedback": {
+        "objective": "穿过三段错层，在移动平台上换乘，接通天井出口。",
+        "firstSeam": "两端在这个视角下接通了。",
+        "blocked": "通路中断。检查台面位置或切换视角。",
+        "wrongDirection": "端点重合，方向还没有接上。"
+      }
+    }
+  ],
+  "cameras": {
+    "stair_c": {
+      "center": [
+        0,
+        4.5,
+        0.5
+      ],
+      "halfWidth": 9.8,
+      "halfHeight": 5.5125,
+      "near": 0.1,
+      "far": 100,
+      "views": {
+        "south_east": {
+          "position": [
+            16,
+            19.5,
+            20.5
+          ]
+        },
+        "south_west": {
+          "position": [
+            -16,
+            19.5,
+            20.5
+          ]
+        },
+        "top_oblique": {
+          "position": [
+            0,
+            26.5,
+            12.5
+          ]
+        }
+      }
+    },
+    "stair_d": {
+      "center": [
+        0,
+        6.7,
+        0.5
+      ],
+      "halfWidth": 11.6,
+      "halfHeight": 6.525,
+      "near": 0.1,
+      "far": 100,
+      "views": {
+        "south_east": {
+          "position": [
+            16,
+            21.7,
+            20.5
+          ]
+        },
+        "south_west": {
+          "position": [
+            -16,
+            21.7,
+            20.5
+          ]
+        },
+        "top_oblique": {
+          "position": [
+            0,
+            28.7,
+            12.5
+          ]
+        }
+      }
+    },
+    "stair_a": {
+      "center": [
+        0,
+        1.55,
+        0
+      ],
+      "halfWidth": 9.8,
+      "halfHeight": 5.5,
+      "near": 0.1,
+      "far": 80,
+      "views": {
+        "south_east": {
+          "position": [
+            12,
+            11,
+            14
+          ]
+        },
+        "south_west": {
+          "position": [
+            -12,
+            11,
+            14
+          ]
+        },
+        "top_oblique": {
+          "position": [
+            0,
+            17,
+            12
+          ]
+        }
+      }
+    },
+    "stair_b": {
+      "center": [
+        0,
+        4.5,
+        0.5
+      ],
+      "halfWidth": 9.8,
+      "halfHeight": 5.5,
+      "near": 0.1,
+      "far": 80,
+      "views": {
+        "south_east": {
+          "position": [
+            12,
+            11,
+            14
+          ]
+        },
+        "south_west": {
+          "position": [
+            -12,
+            11,
+            14
+          ]
+        },
+        "top_oblique": {
+          "position": [
+            0,
+            17,
+            12
+          ]
+        }
+      }
+    }
+  },
+  "alumni": [
+    {
+      "id": "su_buqing",
+      "targetId": "a3_alumni_su_buqing",
+      "name": "苏步青",
+      "years": "1902—2003",
+      "role": "数学家、教育家",
+      "biography": [
+        "1931年回国后任浙江大学数学系副教授、教授及系主任。",
+        "与陈建功共同形成有影响力的“陈苏学派”，培养了一批数学人才。",
+        "抗战时期随浙江大学西迁，在艰苦条件下继续教学与研究。"
+      ],
+      "sourceLabel": "浙江大学·求是大家",
+      "sourceUrl": "https://www.zju.edu.cn/2021/0611/c41533a2386590/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-su-buqing",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/su_buqing_v01.png",
+      "floor": 3,
+      "frameBounds": {
+        "x": 748,
+        "y": 583,
+        "width": 43,
+        "height": 62
+      },
+      "imageBounds": {
+        "x": 755,
+        "y": 589,
+        "width": 29,
+        "height": 48
+      }
+    },
+    {
+      "id": "zhu_kezhen",
+      "targetId": "a3_alumni_zhu_kezhen",
+      "name": "竺可桢",
+      "years": "1890—1974",
+      "role": "气象学家、地理学家、教育家",
+      "biography": [
+        "1936—1949年任浙江大学校长，领导学校完成西迁并坚持办学。",
+        "任内学校由 3 个学院、16 个系发展为 7 个学院、27 个系。",
+        "他在新生入学时提出两个问题，要求学生思考求学目的与成人方向。"
+      ],
+      "sourceLabel": "浙江大学国际联合学院·竺老两问",
+      "sourceUrl": "https://www.intl.zju.edu.cn/zh-hans/news/17289",
+      "portraitTextureKey": "chapter4-alumni-zhu-kezhen",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/zhu_kezhen_v01.png",
+      "floor": 3,
+      "frameBounds": {
+        "x": 812,
+        "y": 583,
+        "width": 43,
+        "height": 62
+      },
+      "imageBounds": {
+        "x": 819,
+        "y": 589,
+        "width": 29,
+        "height": 48
+      }
+    },
+    {
+      "id": "lu_yongxiang",
+      "targetId": "a3_alumni_lu_yongxiang",
+      "name": "路甬祥",
+      "years": "1942—",
+      "role": "流体传动与控制学家、教育家",
+      "biography": [
+        "1964年毕业于浙江大学机械系，后留校任教并长期从事流体传动与控制研究。",
+        "1988—1995年任浙江大学校长，推动学校教育、科研与管理改革。",
+        "1991年当选中国科学院学部委员，1994年当选中国工程院院士。"
+      ],
+      "sourceLabel": "浙江大学·历任校长",
+      "sourceUrl": "https://www.zju.edu.cn/2016/0728/c32708a1512243/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-lu-yongxiang",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/lu_yongxiang_v01.png",
+      "floor": 3,
+      "frameBounds": {
+        "x": 877,
+        "y": 583,
+        "width": 43,
+        "height": 62
+      },
+      "imageBounds": {
+        "x": 884,
+        "y": 589,
+        "width": 29,
+        "height": 48
+      }
+    },
+    {
+      "id": "chen_jiangong",
+      "targetId": "a3_alumni_chen_jiangong",
+      "name": "陈建功",
+      "years": "1893—1971",
+      "role": "数学家、教育家",
+      "biography": [
+        "1929年起在浙江大学任教，主持数学系建设与人才培养。",
+        "与苏步青共同培育了中国现代数学的重要学术群体。",
+        "西迁时期坚持教学和研究，奠定了浙大数学学科的早期基础。"
+      ],
+      "sourceLabel": "浙江大学档案馆·俊彩星驰长廊",
+      "sourceUrl": "https://acv.zju.edu.cn/site/wszt_jcxc.html",
+      "portraitTextureKey": "chapter4-alumni-chen-jiangong",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/chen_jiangong_v01.png",
+      "floor": 3,
+      "frameBounds": {
+        "x": 574,
+        "y": 108,
+        "width": 38,
+        "height": 60
+      },
+      "imageBounds": {
+        "x": 580,
+        "y": 114,
+        "width": 26,
+        "height": 46
+      },
+      "drawRuntimeFrame": true
+    },
+    {
+      "id": "tan_jiazhen",
+      "targetId": "a3_alumni_tan_jiazhen",
+      "name": "谈家桢",
+      "years": "1909—2008",
+      "role": "遗传学家、教育家",
+      "biography": [
+        "曾任浙江大学生物系教授，在西迁途中继续组织遗传学教学与实验。",
+        "在缺少自来水、电灯和专业设备的条件下，带领学生用简易器材坚持研究。",
+        "后长期推动中国现代遗传学的学科建设与人才培养。"
+      ],
+      "sourceLabel": "浙江大学·求是精神薪火相传",
+      "sourceUrl": "https://www.zju.edu.cn/2021/0611/c59196a2386352/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-tan-jiazhen",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/tan_jiazhen_v01.png",
+      "floor": 3,
+      "frameBounds": {
+        "x": 616,
+        "y": 108,
+        "width": 38,
+        "height": 60
+      },
+      "imageBounds": {
+        "x": 622,
+        "y": 114,
+        "width": 26,
+        "height": 46
+      },
+      "drawRuntimeFrame": true
+    },
+    {
+      "id": "cheng_kaijia",
+      "targetId": "a3_alumni_cheng_kaijia",
+      "name": "程开甲",
+      "years": "1918—2018",
+      "role": "核物理学家、人民科学家",
+      "biography": [
+        "1937级浙江大学物理系校友，1941年毕业。",
+        "是我国核武器研究的领导者之一，也是核试验事业的开拓者。",
+        "获两弹一星功勋奖章、国家最高科学技术奖、八一勋章与人民科学家国家荣誉称号。"
+      ],
+      "sourceLabel": "浙江大学·程开甲先生诞辰 105 周年纪念会",
+      "sourceUrl": "https://www.zju.edu.cn/2023/0804/c32862a2787683/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-cheng-kaijia",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/cheng_kaijia_v01.png",
+      "floor": 3,
+      "frameBounds": {
+        "x": 658,
+        "y": 108,
+        "width": 38,
+        "height": 60
+      },
+      "imageBounds": {
+        "x": 664,
+        "y": 114,
+        "width": 26,
+        "height": 46
+      },
+      "drawRuntimeFrame": true
+    },
+    {
+      "id": "wang_ganchang",
+      "targetId": "a1_alumni_wang_ganchang",
+      "name": "王淦昌",
+      "years": "1907—1998",
+      "role": "核物理学家、两弹一星功勋科学家",
+      "biography": [
+        "1936年起任浙江大学物理系教授，并随学校西迁坚持教学与研究。",
+        "长期从事核物理研究，是我国核科学与核武器研制的重要开拓者之一。",
+        "1999年获追授两弹一星功勋奖章。"
+      ],
+      "sourceLabel": "浙江大学·求是大家",
+      "sourceUrl": "https://www.zju.edu.cn/2021/0511/c41533a2359881/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-wang-ganchang",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/wang_ganchang_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 104,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 110,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "bei_shizhang",
+      "targetId": "a1_alumni_bei_shizhang",
+      "name": "贝时璋",
+      "years": "1903—2009",
+      "role": "生物学家、生物物理学奠基人",
+      "biography": [
+        "1930年在浙江大学创建生物学系，并在西迁时期持续组织教学与研究。",
+        "1958年参与创建中国科学院生物物理研究所并任首任所长。",
+        "长期推动我国细胞学、实验生物学与生物物理学发展。"
+      ],
+      "sourceLabel": "浙江大学·求是大家",
+      "sourceUrl": "https://www.zju.edu.cn/2021/0618/c61624a2396272/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-bei-shizhang",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/bei_shizhang_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 181,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 187,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "gu_chaohao",
+      "targetId": "a1_alumni_gu_chaohao",
+      "name": "谷超豪",
+      "years": "1926—2012",
+      "role": "数学家、教育家",
+      "biography": [
+        "1943年进入浙江大学龙泉分校，后在数学系学习并任教。",
+        "在偏微分方程、微分几何和数学物理等领域取得系统成果。",
+        "2009年获国家最高科学技术奖。"
+      ],
+      "sourceLabel": "浙江大学·求是大家",
+      "sourceUrl": "https://www.zju.edu.cn/2022/0105/c41533a2469070/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-gu-chaohao",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/gu_chaohao_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 259,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 265,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "li_zhengdao",
+      "targetId": "a1_alumni_li_zhengdao",
+      "name": "李政道",
+      "years": "1926—2024",
+      "role": "物理学家、诺贝尔物理学奖获得者",
+      "biography": [
+        "1943年进入迁至湄潭的浙江大学物理系学习。",
+        "求学期间受到束星北、王淦昌等先生指导，奠定理论物理基础。",
+        "长期支持中国基础科学研究与青年人才培养。"
+      ],
+      "sourceLabel": "浙江大学·李政道纪念",
+      "sourceUrl": "https://www.zju.edu.cn/2025/0805/c79822a3073114/page.htm",
+      "portraitTextureKey": "chapter4-alumni-li-zhengdao",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/li_zhengdao_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 340,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 346,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "pan_yunhe",
+      "targetId": "a1_alumni_pan_yunhe",
+      "name": "潘云鹤",
+      "years": "1946—",
+      "role": "计算机应用专家、教育家",
+      "biography": [
+        "1981年在浙江大学获得硕士学位后留校任教。",
+        "1995—2006年任浙江大学校长，参与推动四校合并后的学科建设。",
+        "长期研究人工智能、计算机美术与智能城市。"
+      ],
+      "sourceLabel": "浙江大学·历任校长",
+      "sourceUrl": "https://www.zju.edu.cn/2016/0728/c32708a1512167/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-pan-yunhe",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/pan_yunhe_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 427,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 433,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "han_zhenxiang",
+      "targetId": "a1_alumni_han_zhenxiang",
+      "name": "韩祯祥",
+      "years": "1930—2024",
+      "role": "电力系统专家、教育家",
+      "biography": [
+        "1951年毕业于浙江大学电机系并留校任教。",
+        "1984—1988年任浙江大学校长，推动教学、科研与国际交流。",
+        "长期从事电力系统稳定、控制与人才培养。"
+      ],
+      "sourceLabel": "浙江大学·韩祯祥院士纪念",
+      "sourceUrl": "https://www.zju.edu.cn/2020/0509/c50658a2094505/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-han-zhenxiang",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/han_zhenxiang_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 512,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 518,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "xia_daoxing",
+      "targetId": "a1_alumni_xia_daoxing",
+      "name": "夏道行",
+      "years": "1930—",
+      "role": "数学家",
+      "biography": [
+        "1952年进入浙江大学数学系攻读研究生，师从陈建功先生。",
+        "在泛函分析、广义函数和数学物理等领域作出重要贡献。",
+        "1980年当选中国科学院学部委员。"
+      ],
+      "sourceLabel": "浙江大学·求是大家",
+      "sourceUrl": "https://www.zju.edu.cn/2018/1026/c33007a1511678/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-xia-daoxing",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/xia_daoxing_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 596,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 602,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "pan_jingfu",
+      "targetId": "a1_alumni_pan_jingfu",
+      "name": "潘镜芙",
+      "years": "1930—2023",
+      "role": "船舶设计专家",
+      "biography": [
+        "1952年毕业于浙江大学电机系。",
+        "长期主持我国导弹驱逐舰研制，推动舰船总体设计与系统集成发展。",
+        "1995年当选中国工程院院士。"
+      ],
+      "sourceLabel": "浙江大学档案馆·潘镜芙",
+      "sourceUrl": "https://acv.zju.edu.cn/site/bgxw_view.html?id=2707",
+      "portraitTextureKey": "chapter4-alumni-pan-jingfu",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/pan_jingfu_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 1170,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 1176,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "wang_yuan",
+      "targetId": "a1_alumni_wang_yuan",
+      "name": "王元",
+      "years": "1930—2021",
+      "role": "数学家",
+      "biography": [
+        "1952年毕业于浙江大学数学系。",
+        "在数论、数值分析与组合设计等领域取得重要成果。",
+        "与华罗庚共同发展的数论方法被称为华—王方法。"
+      ],
+      "sourceLabel": "浙江大学·求是大家",
+      "sourceUrl": "https://www.zju.edu.cn/2018/1026/c33007a1511685/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-wang-yuan",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/wang_yuan_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 1245,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 1251,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "chen_yizhang",
+      "targetId": "a1_alumni_chen_yizhang",
+      "name": "陈宜张",
+      "years": "1927—",
+      "role": "神经生理学家、医学教育家",
+      "biography": [
+        "1952年毕业于浙江大学医学院，是学院首届毕业生之一。",
+        "长期研究神经生理学与神经内分泌调控。",
+        "曾任浙江医科大学校长并推动医学教育发展。"
+      ],
+      "sourceLabel": "浙江大学·陈宜张",
+      "sourceUrl": "https://www.zju.edu.cn/2016/0505/c32861a1520708/page.htm",
+      "portraitTextureKey": "chapter4-alumni-chen-yizhang",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/chen_yizhang_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 1320,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 1326,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "lin_junde",
+      "targetId": "a1_alumni_lin_junde",
+      "name": "林俊德",
+      "years": "1938—2012",
+      "role": "爆炸力学与核试验工程专家",
+      "biography": [
+        "1960年毕业于浙江大学机械系。",
+        "扎根大漠五十余年，参加我国全部核试验并负责关键测试技术。",
+        "1993年当选中国工程院院士，2018年被列入全军挂像英模。"
+      ],
+      "sourceLabel": "浙江大学·林俊德院士纪念",
+      "sourceUrl": "https://www.zju.edu.cn/2021/0525/c58319a2377991/pagem.htm",
+      "portraitTextureKey": "chapter4-alumni-lin-junde",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/lin_junde_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 1396,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 1402,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "tan_qixiang",
+      "targetId": "a1_alumni_tan_qixiang",
+      "name": "谭其骧",
+      "years": "1911—1992",
+      "role": "历史地理学家",
+      "biography": [
+        "1940—1950年在浙江大学史地系任教。",
+        "在历史地理、疆域沿革与人口迁移研究方面影响深远。",
+        "主持编绘《中国历史地图集》，推动现代历史地理学科建设。"
+      ],
+      "sourceLabel": "浙江大学档案馆·俊彩星驰长廊",
+      "sourceUrl": "https://acv.zju.edu.cn/site/wszt_jcxc.html",
+      "portraitTextureKey": "chapter4-alumni-tan-qixiang",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/tan_qixiang_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 1472,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 1478,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "zheng_shusen",
+      "targetId": "a1_alumni_zheng_shusen",
+      "name": "郑树森",
+      "years": "1950—",
+      "role": "器官移植专家",
+      "biography": [
+        "长期在浙江大学从事肝胆胰外科与器官移植临床、科研和教学。",
+        "推动我国肝移植、多器官联合移植与相关技术体系发展。",
+        "2001年当选中国工程院院士。"
+      ],
+      "sourceLabel": "浙江大学个人主页·郑树森",
+      "sourceUrl": "https://person.zju.edu.cn/zhengshusen",
+      "portraitTextureKey": "chapter4-alumni-zheng-shusen",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/zheng_shusen_v01.png",
+      "floor": 1,
+      "frameBounds": {
+        "x": 1549,
+        "y": 65,
+        "width": 40,
+        "height": 56
+      },
+      "imageBounds": {
+        "x": 1555,
+        "y": 71,
+        "width": 28,
+        "height": 44
+      }
+    },
+    {
+      "id": "yang_wei",
+      "targetId": "a3_alumni_yang_wei",
+      "name": "杨卫",
+      "years": "1954—",
+      "role": "固体力学专家、教育家",
+      "biography": [
+        "长期在浙江大学从事固体力学、微纳米力学与交叉力学研究。",
+        "2006—2013年任浙江大学校长，推动学科交叉与工程教育发展。",
+        "2003年当选中国科学院院士。"
+      ],
+      "sourceLabel": "浙江大学个人主页·杨卫",
+      "sourceUrl": "https://person.zju.edu.cn/yangwei",
+      "portraitTextureKey": "chapter4-alumni-yang-wei",
+      "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/yang_wei_v01.png",
+      "floor": 3,
+      "frameBounds": {
+        "x": 526,
+        "y": 627,
+        "width": 73,
+        "height": 99
+      },
+      "imageBounds": {
+        "x": 536,
+        "y": 637,
+        "width": 53,
+        "height": 79
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "purpose",
+      "prompt": "第一问：到浙大来做什么？",
+      "options": [
+        {
+          "id": "seek_truth",
+          "label": "追问事实与方法"
+        },
+        {
+          "id": "solve_real_problems",
+          "label": "用所学解决真实问题"
+        },
+        {
+          "id": "serve_public",
+          "label": "为公共需要承担责任"
+        }
+      ]
+    },
+    {
+      "id": "person",
+      "prompt": "第二问：将来毕业后要做什么样的人？",
+      "options": [
+        {
+          "id": "responsible",
+          "label": "对工作和他人负责"
+        },
+        {
+          "id": "clear_minded",
+          "label": "保持独立判断与证据诚实"
+        },
+        {
+          "id": "public_service",
+          "label": "把能力放到社会需要上"
+        }
+      ]
+    }
+  ],
+  "puzzles": {
+    "duty_board": {
+      "id": "duty_board",
+      "factId": "a1_duty_board_reconstructed",
+      "targetId": "a1_front_desk_duty_board_context",
+      "title": "值班牌重建",
+      "locationLabel": "A1 前台",
+      "darkPrompt": "三段痕迹分别停在 104、105 与主电梯；夹痕由左向右逐渐变新。",
+      "lightPrompt": "把三张值班牌按痕迹先后放回签到板。",
+      "successText": "A1 的三处调查已汇成一条值班记录。"
+    },
+    "archive_index": {
+      "id": "archive_index",
+      "factId": "a3_archive_film_retrieved",
+      "targetId": "a3_archive_exhibition_301_context",
+      "title": "胶片索引",
+      "locationLabel": "A3 · 301 校史档案展",
+      "darkPrompt": "残留索引指向九十年代末、A3 层，并标记为入口导视用途。",
+      "lightPrompt": "用年份、楼层和用途缩小抽屉范围，取出唯一胶片。",
+      "successText": "旧导视胶片已从索引抽屉取出。"
+    },
+    "media_alignment": {
+      "id": "media_alignment",
+      "factId": "a3_media_alignment_completed",
+      "targetId": "a3_media_studio_302_context",
+      "title": "新旧影像对齐",
+      "locationLabel": "A3 · 302 媒体工作室",
+      "darkPrompt": "旧影像的入口轮廓向右偏两格、向上一格，并顺时针转过四分之一圈。",
+      "lightPrompt": "平移并旋转胶片，让入口、楼梯与荣誉墙三个轮廓同时重合。",
+      "successText": "旧导视影像已与当前楼层坐标重合。"
+    },
+    "positioning_calibration": {
+      "id": "positioning_calibration",
+      "factId": "a2_positioning_plate_calibrated",
+      "targetId": "a2_maker_workshop_201_context",
+      "title": "定位板校准",
+      "locationLabel": "A2 · 201 创客工坊",
+      "darkPrompt": "压力痕迹显示横向回退两格、纵向前推一格，第三档压力留下完整压印。",
+      "lightPrompt": "调整横向、纵向与压力，让三处触点同时落入旧痕。",
+      "successText": "定位板已完成三轴校准。"
+    },
+    "power_topology": {
+      "id": "power_topology",
+      "factId": "a2_power_topology_recovered",
+      "targetId": "a2_computer_room_203_context",
+      "title": "五区拓扑恢复",
+      "locationLabel": "A2 · 203 计算机教室",
+      "darkPrompt": "五区形成一个闭合环：大厅连两侧走廊，两侧分别接后区与教室区，末端再相连。",
+      "lightPrompt": "只保留停电前存在的五条相邻连线。",
+      "successText": "五区供电拓扑已恢复到停电前状态。"
+    },
+    "evacuation_route": {
+      "id": "evacuation_route",
+      "factId": "a2_evacuation_route_confirmed",
+      "targetId": "a2_open_study_evacuation_context",
+      "title": "202 夜间疏散图",
+      "locationLabel": "A2 · 开放自习区路线板",
+      "darkPrompt": "图面没有完整箭头。比较四处鞋印的朝向、连续纹路和收束位置。",
+      "lightPrompt": "从 202 门口开始，把四块磁贴排成连续通路；终点必须落在主楼梯下行口。",
+      "successText": "202 到主楼梯的夜间疏散路线已记录。"
+    }
+  },
+  "registration": {
+    "media": {
+      "xOffset": 2,
+      "yOffset": -1,
+      "rotationQuarterTurns": 1
+    },
+    "calibration": {
+      "horizontal": -2,
+      "vertical": 1,
+      "pressure": 3
+    }
+  },
+  "stair": {
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ]
+    ],
+    "walkable": [
+      {
+        "x": 755,
+        "y": 878,
+        "width": 157,
+        "height": 63
+      },
+      {
+        "x": 526,
+        "y": 760,
+        "width": 552,
+        "height": 124
+      },
+      {
+        "x": 908,
+        "y": 385,
+        "width": 161,
+        "height": 380
+      },
+      {
+        "x": 741,
+        "y": 385,
+        "width": 328,
+        "height": 82
+      },
+      {
+        "x": 741,
+        "y": 165,
+        "width": 125,
+        "height": 302
+      },
+      {
+        "x": 467,
+        "y": 166,
+        "width": 399,
+        "height": 69
+      },
+      {
+        "x": 641,
+        "y": 0,
+        "width": 160,
+        "height": 172
+      },
+      {
+        "x": 529,
+        "y": 228,
+        "width": 183,
+        "height": 82
+      },
+      {
+        "x": 538,
+        "y": 304,
+        "width": 161,
+        "height": 216
+      },
+      {
+        "x": 539,
+        "y": 498,
+        "width": 326,
+        "height": 28
+      }
+    ],
+    "landings": [
+      {
+        "spawn": {
+          "x": 833,
+          "y": 826
+        },
+        "guard": {
+          "x": 833,
+          "y": 922
+        }
+      },
+      {
+        "spawn": {
+          "x": 989,
+          "y": 426
+        },
+        "guard": {
+          "x": 989,
+          "y": 568
+        }
+      },
+      {
+        "spawn": {
+          "x": 784,
+          "y": 207
+        },
+        "guard": {
+          "x": 784,
+          "y": 348
+        }
+      }
+    ],
+    "gates": [
+      {
+        "x": 922,
+        "y": 389,
+        "width": 134,
+        "height": 74
+      },
+      {
+        "x": 743,
+        "y": 176,
+        "width": 115,
+        "height": 75
+      }
+    ],
+    "exit": {
+      "x": 649,
+      "y": 22,
+      "width": 144,
+      "height": 68
+    },
+    "route": [
+      {
+        "x": 833,
+        "y": 922
+      },
+      {
+        "x": 833,
+        "y": 826
+      },
+      {
+        "x": 989,
+        "y": 826
+      },
+      {
+        "x": 989,
+        "y": 700
+      },
+      {
+        "x": 989,
+        "y": 426
+      },
+      {
+        "x": 784,
+        "y": 426
+      },
+      {
+        "x": 784,
+        "y": 207
+      },
+      {
+        "x": 715,
+        "y": 207
+      },
+      {
+        "x": 715,
+        "y": 57
+      },
+      {
+        "x": 610,
+        "y": 207
+      },
+      {
+        "x": 610,
+        "y": 269
+      },
+      {
+        "x": 610,
+        "y": 481
+      },
+      {
+        "x": 610,
+        "y": 512
+      },
+      {
+        "x": 807,
+        "y": 512
+      }
+    ]
+  }
+}

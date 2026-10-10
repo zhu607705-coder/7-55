@@ -1,0 +1,6036 @@
+{
+  "schemaVersion": 1,
+  "execution": "Extracted original TypeScript methods and constants; recording scene, store and event ports",
+  "sources": {
+    "src/scenes/rpg/CanteenInteriorScene.ts": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb",
+    "src/scenes/rpg/BootScene.ts": "6535c74791a7441e24cb17d6856e9a085ddad2a81e2d8999c41d0156d8a8770d",
+    "src/modules/ChapterThreeCanteenController.ts": "d1fae47e5ca152bb806929ec92819961e099a07dba4b254ad17bb428251cf277",
+    "src/data/chapter3-canteen.content.json": "7275d5f68000b59a14844d991288024e375f5fe95173eb615a46263f5792c55e",
+    "src/data/maps/zijingang-campus-runtime.json": "f27ecc3f98a057ac9c16d914f58013db2c0308da9c96cd7ee48ffceac90f7abe"
+  },
+  "extracted": {
+    "src/scenes/rpg/CanteenInteriorScene.ts": {
+      "hasModalPanel": {
+        "line": 3003,
+        "sha256": "0a4816ea1a47d4d5ddb6de2831d4a3e8e19f29d42ff7893f2d31b735eaa71bf4"
+      },
+      "isMovementAllowed": {
+        "line": 3007,
+        "sha256": "0332197607c71c081a156d7024f256957c7ba73dbc8f038d88873e1cd5ef4823"
+      },
+      "handleModalKeyboard": {
+        "line": 3015,
+        "sha256": "4254a6ec0cac399ec875cd11deff0e843e3a80d5bc87cf0b2607c550b310e825"
+      },
+      "openDrinkChoicePanel": {
+        "line": 3046,
+        "sha256": "7f6540620e2766f01606550dd3f76e2d9e4263c63f292daed4912c3d8a771035"
+      },
+      "handleDrinkChoicePointer": {
+        "line": 3135,
+        "sha256": "55189a5dd60b7a10ac5975348d0dbb838fa1f14b34b4b080310837fb17b7892d"
+      },
+      "refreshDrinkChoiceSelection": {
+        "line": 3150,
+        "sha256": "630adaaca8b4235fcac9d3afb548862b76de7682ce7961c8b15ac8d83a593353"
+      },
+      "confirmDrinkChoiceSelection": {
+        "line": 3167,
+        "sha256": "c86a7677a19b879f49aaae9a5001cba8df6c991360cfd16fb7c66b2824f0a932"
+      },
+      "closeDrinkChoicePanel": {
+        "line": 3176,
+        "sha256": "c1190ee64fd256afadc3d540a4fcdc5e1c793c12f5467a268e8d90cc13ff8fc2"
+      },
+      "openMenuPanel": {
+        "line": 3313,
+        "sha256": "dbe3de70b6312c23a05cd3b50095920cb31404b5f490008b42799c314e58b617"
+      },
+      "handleMenuPointer": {
+        "line": 3360,
+        "sha256": "281c10fc531179683ad1b69de5b764acef2a6cfcbb14570076a73962359ea667"
+      },
+      "closeMenuPanel": {
+        "line": 3381,
+        "sha256": "44c1fb5578b8c78a08068bf6bfb095f0478149c467fde6046ea406f7746da6c9"
+      },
+      "refreshMenuPanel": {
+        "line": 3386,
+        "sha256": "f912611e856b9a71e95d0f1be4a568714a7803664fc227379ce07190921513fa"
+      }
+    },
+    "src/modules/ChapterThreeCanteenController.ts": {
+      "collectDrink": {
+        "line": 271,
+        "sha256": "682bf4cf5260390c58dea48a6cccf81eb3ea60be2199725f5f2b0ae4ce2c11c4"
+      },
+      "inspectMenuClue": {
+        "line": 386,
+        "sha256": "1ffb4ea87a486f3bbb319a76ac0437de479ae6268f06e5db0bef2bebd0847c73"
+      },
+      "selectMenuOption": {
+        "line": 403,
+        "sha256": "b08e4a56a37c439f2cb8eff6a2f8e59d80c58bf232ec3eb3865f11611d9f3d7c"
+      },
+      "inspectBikeLock": {
+        "line": 607,
+        "sha256": "830ab2cfd9f0e64aa31e1483e591a8347c83b9fd79805b66b020a3cde18a286d"
+      },
+      "cleanBikeLock": {
+        "line": 630,
+        "sha256": "2c4e5f312767f53fc8dd5a6b473380ba079a1e7c72d023444f7a5f599ff69cf1"
+      },
+      "payForBike": {
+        "line": 648,
+        "sha256": "9738d7bd116c2de8fc0d97c94e03adb8ac9b3bd68a52b403829a3bc6d720e7e3"
+      },
+      "startChase": {
+        "line": 677,
+        "sha256": "c423864e3c0e226abf55cb4c834768c337402faae32ac14441479c291f5fc9b3"
+      },
+      "CANTEEN_BIKE_FARE_CENTS": {
+        "line": 21,
+        "sha256": "ce487ac815472485e2c5b364c8e28aab9f50866bc995fd089d5c0440de79876a"
+      },
+      "CANTEEN_DRINK_RECIPE": {
+        "line": 24,
+        "sha256": "01dcac3b18d9646641a9468e99fba316b1beb164a303939ec6a3d91dcd9168b1"
+      },
+      "CANTEEN_MENU_OPTIONS": {
+        "line": 27,
+        "sha256": "4fd47f40d923e37dad3211b232ddb12d03bb97329cb1472c87a04320bb1777d4"
+      },
+      "CANTEEN_SIDE_GAME_PHASES": {
+        "line": 41,
+        "sha256": "9a879d6719f3e87f8c732251c86c4bd0d2c8ee737a1d09264a5a18c448ac57de"
+      },
+      "CANTEEN_MENU_OBSERVATION_PHASES": {
+        "line": 44,
+        "sha256": "75653147e64a434b51833ca9acff3cd9aabe65bc2ea7f4abf3d94175039aac7b"
+      },
+      "canPlayCanteenSideGames": {
+        "line": 57,
+        "sha256": "5e1266feb66a66492ae586d3fab9c5e67ee2525e2a1021ca19a2ce55b3c778d4"
+      },
+      "canPlayDrinkPuzzle": {
+        "line": 61,
+        "sha256": "245d8ac7dde48c1bacce2e22d974516515dcd9df8bc063bb3216a20765be6659"
+      }
+    },
+    "src/scenes/rpg/BootScene.ts": {
+      "createCanteenBike": {
+        "line": 505,
+        "sha256": "c00b33f0c444a85e40f51807c3206ad05a1436b16cff420b658971c56dfd7214"
+      },
+      "createCanteenBikeModeLayer": {
+        "line": 520,
+        "sha256": "108296c318fbe52c1cb4e6d9db01dcd57b699985b005ab9a6d79aff8c54af48f"
+      },
+      "getCanteenBikeWalletHint": {
+        "line": 556,
+        "sha256": "314c993bfefeca8dd980c8c76109870a00eba79363941212484df150b468c0d9"
+      },
+      "requestCanteenBikeIfNearby": {
+        "line": 561,
+        "sha256": "6c5e970ea5aa0f386d894b947ad8e82daffc25f939b8d50db3f2fa238f8ab261"
+      },
+      "handleCanteenInventoryDrop": {
+        "line": 567,
+        "sha256": "d06918bf6b6b6427b316f43326fc272580bae85eab3d766f632a97296a5620c3"
+      },
+      "applyCanteenBikeMode": {
+        "line": 606,
+        "sha256": "bad73eb3fe75a0556761e87f5df69a70aa75a1a9912651cd719f1521552241a4"
+      },
+      "animateCanteenBikeCodeRead": {
+        "line": 618,
+        "sha256": "09024627a4a9b734a07ac7f6fe3c2c0afa406d977b9163876b64de991a05a917"
+      },
+      "animateCanteenBikeCleaned": {
+        "line": 625,
+        "sha256": "e5ebf50860b7baa90c47c8b5dbc1085a3c67fdb6e3be11f4f007fbc85ad5f267"
+      },
+      "showCanteenFeedback": {
+        "line": 638,
+        "sha256": "00bbf160a0c52fbfcd36b7a2a376c41a85e18b3065c7ecc8133768d7cc6373ac"
+      },
+      "CANTEEN_BIKE": {
+        "line": 43,
+        "sha256": "bcb8c9bfd73c6920283ea77cf442bc009f8688e8e8c1e897c4a384880a6c86f2"
+      },
+      "CANTEEN_BIKE_RADIUS": {
+        "line": 48,
+        "sha256": "3085dd27e6a02d312ac060763b0453e75457a1fb67a728813eea6d945568bb66"
+      },
+      "CANTEEN_DARK_OVERLAY_COLOR": {
+        "line": 49,
+        "sha256": "d9e7671e6ba4ef0f212c73b68401ae926000a71bad48f3b3f82519d9a5bf3f7d"
+      },
+      "CANTEEN_DARK_OVERLAY_ALPHA": {
+        "line": 50,
+        "sha256": "5cf2d37e5b951696444d59446ea7529b9a2f010970946151751e7b98336c8d74"
+      },
+      "CANTEEN_PLAYER_LIGHT_ALPHA": {
+        "line": 51,
+        "sha256": "e2c873898bd9b0621d55af09df64109e102ad0463ee4e1d5ed74d47666e4c6b2"
+      },
+      "CANTEEN_PLAYER_LIGHT_SCALE": {
+        "line": 52,
+        "sha256": "d3fbe50a4d5665f6f16b2e9df49b8b6fdec982cd0e05ac7736adc05dd02c9c77"
+      }
+    }
+  },
+  "logicalViewport": {
+    "width": 960,
+    "height": 540
+  },
+  "drinkChoice": {
+    "presentations": {
+      "sparklingWater": {
+        "opened": {
+          "open": true,
+          "itemId": "sparklingWater",
+          "selection": 0,
+          "movementAllowed": false,
+          "events": [],
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "suppressWorldPointerUntil": 0,
+          "labels": {
+            "take": "▶ 拿饮料",
+            "cancel": "算了"
+          }
+        },
+        "panel": {
+          "type": "container",
+          "args": [
+            480,
+            270
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setScrollFactor",
+              "args": [
+                0
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                6100
+              ]
+            }
+          ],
+          "data": {},
+          "children": [
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                0,
+                470,
+                278,
+                463645,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    4,
+                    6542575,
+                    0.96
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                -116,
+                458,
+                34,
+                1195092,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                -205,
+                -125,
+                "气泡水（蓝色）",
+                {
+                  "color": "#f4fbff",
+                  "fontFamily": "monospace",
+                  "fontSize": "20px",
+                  "fontStyle": "bold"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "graphics",
+              "args": [],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    15334399
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -128,
+                    -66,
+                    50,
+                    92
+                  ]
+                },
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    4439273
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -120,
+                    -50,
+                    34,
+                    66
+                  ]
+                },
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    15780697
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -112,
+                    -78,
+                    18,
+                    12
+                  ]
+                },
+                {
+                  "method": "lineStyle",
+                  "args": [
+                    4,
+                    1322043
+                  ]
+                },
+                {
+                  "method": "strokeRect",
+                  "args": [
+                    -128,
+                    -66,
+                    50,
+                    92
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                18,
+                -45,
+                "想拿哪一瓶？",
+                {
+                  "color": "#d9f6ff",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                -95,
+                82,
+                164,
+                48,
+                1532794,
+                1
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    7726335,
+                    1
+                  ]
+                },
+                {
+                  "method": "setFillStyle",
+                  "args": [
+                    1532794,
+                    1
+                  ]
+                },
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    7726335,
+                    1
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                -95,
+                82,
+                "拿饮料",
+                {
+                  "color": "#ffffff",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                },
+                {
+                  "method": "setText",
+                  "args": [
+                    "▶ 拿饮料"
+                  ]
+                },
+                {
+                  "method": "setColor",
+                  "args": [
+                    "#ffffff"
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                95,
+                82,
+                164,
+                48,
+                2699321,
+                1
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    8556955,
+                    1
+                  ]
+                },
+                {
+                  "method": "setFillStyle",
+                  "args": [
+                    2699321,
+                    1
+                  ]
+                },
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    8556955,
+                    1
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                95,
+                82,
+                "算了",
+                {
+                  "color": "#dce2e3",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                },
+                {
+                  "method": "setText",
+                  "args": [
+                    "算了"
+                  ]
+                },
+                {
+                  "method": "setColor",
+                  "args": [
+                    "#b7c1c5"
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                121,
+                "← / → 选择 · 空格 / 回车确认 · Esc 退出",
+                {
+                  "color": "#8fb5c3",
+                  "fontFamily": "monospace",
+                  "fontSize": "11px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            }
+          ]
+        }
+      },
+      "lemonTea": {
+        "opened": {
+          "open": true,
+          "itemId": "lemonTea",
+          "selection": 0,
+          "movementAllowed": false,
+          "events": [],
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "suppressWorldPointerUntil": 0,
+          "labels": {
+            "take": "▶ 拿饮料",
+            "cancel": "算了"
+          }
+        },
+        "panel": {
+          "type": "container",
+          "args": [
+            480,
+            270
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setScrollFactor",
+              "args": [
+                0
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                6100
+              ]
+            }
+          ],
+          "data": {},
+          "children": [
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                0,
+                470,
+                278,
+                463645,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    4,
+                    6542575,
+                    0.96
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                -116,
+                458,
+                34,
+                1195092,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                -205,
+                -125,
+                "柠檬茶（白色）",
+                {
+                  "color": "#f4fbff",
+                  "fontFamily": "monospace",
+                  "fontSize": "20px",
+                  "fontStyle": "bold"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "graphics",
+              "args": [],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    13674038
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -128,
+                    -66,
+                    50,
+                    92
+                  ]
+                },
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    15921372
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -120,
+                    -50,
+                    34,
+                    66
+                  ]
+                },
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    15780697
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -112,
+                    -78,
+                    18,
+                    12
+                  ]
+                },
+                {
+                  "method": "lineStyle",
+                  "args": [
+                    4,
+                    1322043
+                  ]
+                },
+                {
+                  "method": "strokeRect",
+                  "args": [
+                    -128,
+                    -66,
+                    50,
+                    92
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                18,
+                -45,
+                "想拿哪一瓶？",
+                {
+                  "color": "#d9f6ff",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                -95,
+                82,
+                164,
+                48,
+                1532794,
+                1
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    7726335,
+                    1
+                  ]
+                },
+                {
+                  "method": "setFillStyle",
+                  "args": [
+                    1532794,
+                    1
+                  ]
+                },
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    7726335,
+                    1
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                -95,
+                82,
+                "拿饮料",
+                {
+                  "color": "#ffffff",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                },
+                {
+                  "method": "setText",
+                  "args": [
+                    "▶ 拿饮料"
+                  ]
+                },
+                {
+                  "method": "setColor",
+                  "args": [
+                    "#ffffff"
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                95,
+                82,
+                164,
+                48,
+                2699321,
+                1
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    8556955,
+                    1
+                  ]
+                },
+                {
+                  "method": "setFillStyle",
+                  "args": [
+                    2699321,
+                    1
+                  ]
+                },
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    8556955,
+                    1
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                95,
+                82,
+                "算了",
+                {
+                  "color": "#dce2e3",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                },
+                {
+                  "method": "setText",
+                  "args": [
+                    "算了"
+                  ]
+                },
+                {
+                  "method": "setColor",
+                  "args": [
+                    "#b7c1c5"
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                121,
+                "← / → 选择 · 空格 / 回车确认 · Esc 退出",
+                {
+                  "color": "#8fb5c3",
+                  "fontFamily": "monospace",
+                  "fontSize": "11px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            }
+          ]
+        }
+      },
+      "blackCoffee": {
+        "opened": {
+          "open": true,
+          "itemId": "blackCoffee",
+          "selection": 0,
+          "movementAllowed": false,
+          "events": [],
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "suppressWorldPointerUntil": 0,
+          "labels": {
+            "take": "▶ 拿饮料",
+            "cancel": "算了"
+          }
+        },
+        "panel": {
+          "type": "container",
+          "args": [
+            480,
+            270
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setScrollFactor",
+              "args": [
+                0
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                6100
+              ]
+            }
+          ],
+          "data": {},
+          "children": [
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                0,
+                470,
+                278,
+                463645,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    4,
+                    6542575,
+                    0.96
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                -116,
+                458,
+                34,
+                1195092,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                -205,
+                -125,
+                "黑咖啡（黑色）",
+                {
+                  "color": "#f4fbff",
+                  "fontFamily": "monospace",
+                  "fontSize": "20px",
+                  "fontStyle": "bold"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "graphics",
+              "args": [],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    9136198
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -128,
+                    -66,
+                    50,
+                    92
+                  ]
+                },
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    1776928
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -120,
+                    -50,
+                    34,
+                    66
+                  ]
+                },
+                {
+                  "method": "fillStyle",
+                  "args": [
+                    15780697
+                  ]
+                },
+                {
+                  "method": "fillRect",
+                  "args": [
+                    -112,
+                    -78,
+                    18,
+                    12
+                  ]
+                },
+                {
+                  "method": "lineStyle",
+                  "args": [
+                    4,
+                    1322043
+                  ]
+                },
+                {
+                  "method": "strokeRect",
+                  "args": [
+                    -128,
+                    -66,
+                    50,
+                    92
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                18,
+                -45,
+                "想拿哪一瓶？",
+                {
+                  "color": "#d9f6ff",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                -95,
+                82,
+                164,
+                48,
+                1532794,
+                1
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    7726335,
+                    1
+                  ]
+                },
+                {
+                  "method": "setFillStyle",
+                  "args": [
+                    1532794,
+                    1
+                  ]
+                },
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    7726335,
+                    1
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                -95,
+                82,
+                "拿饮料",
+                {
+                  "color": "#ffffff",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                },
+                {
+                  "method": "setText",
+                  "args": [
+                    "▶ 拿饮料"
+                  ]
+                },
+                {
+                  "method": "setColor",
+                  "args": [
+                    "#ffffff"
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                95,
+                82,
+                164,
+                48,
+                2699321,
+                1
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    8556955,
+                    1
+                  ]
+                },
+                {
+                  "method": "setFillStyle",
+                  "args": [
+                    2699321,
+                    1
+                  ]
+                },
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    3,
+                    8556955,
+                    1
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                95,
+                82,
+                "算了",
+                {
+                  "color": "#dce2e3",
+                  "fontFamily": "monospace",
+                  "fontSize": "17px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                },
+                {
+                  "method": "setText",
+                  "args": [
+                    "算了"
+                  ]
+                },
+                {
+                  "method": "setColor",
+                  "args": [
+                    "#b7c1c5"
+                  ]
+                },
+                {
+                  "method": "setInteractive",
+                  "args": [
+                    {
+                      "useHandCursor": true
+                    }
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                121,
+                "← / → 选择 · 空格 / 回车确认 · Esc 退出",
+                {
+                  "color": "#8fb5c3",
+                  "fontFamily": "monospace",
+                  "fontSize": "11px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            }
+          ]
+        }
+      }
+    },
+    "keyboardCases": [
+      {
+        "name": "cancel_by_right_enter",
+        "steps": [
+          {
+            "key": "ArrowRight",
+            "code": "ArrowRight",
+            "repeat": false,
+            "prevented": true,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 1,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "拿饮料",
+              "cancel": "▶ 算了"
+            }
+          },
+          {
+            "key": "Enter",
+            "code": "Enter",
+            "repeat": false,
+            "prevented": true,
+            "open": false,
+            "itemId": null,
+            "selection": 1,
+            "movementAllowed": true,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": null
+          }
+        ]
+      },
+      {
+        "name": "cancel_by_d_space",
+        "steps": [
+          {
+            "key": "d",
+            "code": "KeyD",
+            "repeat": false,
+            "prevented": true,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 1,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "拿饮料",
+              "cancel": "▶ 算了"
+            }
+          },
+          {
+            "key": " ",
+            "code": "Space",
+            "repeat": false,
+            "prevented": true,
+            "open": false,
+            "itemId": null,
+            "selection": 1,
+            "movementAllowed": true,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": null
+          }
+        ]
+      },
+      {
+        "name": "escape",
+        "steps": [
+          {
+            "key": "Escape",
+            "code": "Escape",
+            "repeat": false,
+            "prevented": true,
+            "open": false,
+            "itemId": null,
+            "selection": 0,
+            "movementAllowed": true,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": null
+          }
+        ]
+      },
+      {
+        "name": "take_by_left_enter",
+        "steps": [
+          {
+            "key": "ArrowRight",
+            "code": "ArrowRight",
+            "repeat": false,
+            "prevented": true,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 1,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "拿饮料",
+              "cancel": "▶ 算了"
+            }
+          },
+          {
+            "key": "ArrowLeft",
+            "code": "ArrowLeft",
+            "repeat": false,
+            "prevented": true,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 0,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "▶ 拿饮料",
+              "cancel": "算了"
+            }
+          },
+          {
+            "key": "Enter",
+            "code": "Enter",
+            "repeat": false,
+            "prevented": true,
+            "open": false,
+            "itemId": null,
+            "selection": 0,
+            "movementAllowed": true,
+            "events": [
+              {
+                "id": "rpg_canteen_drink_requested",
+                "payload": {
+                  "itemId": "sparklingWater"
+                }
+              }
+            ],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": null
+          }
+        ]
+      },
+      {
+        "name": "take_by_a_space",
+        "steps": [
+          {
+            "key": "d",
+            "code": "KeyD",
+            "repeat": false,
+            "prevented": true,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 1,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "拿饮料",
+              "cancel": "▶ 算了"
+            }
+          },
+          {
+            "key": "a",
+            "code": "KeyA",
+            "repeat": false,
+            "prevented": true,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 0,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "▶ 拿饮料",
+              "cancel": "算了"
+            }
+          },
+          {
+            "key": " ",
+            "code": "Space",
+            "repeat": false,
+            "prevented": true,
+            "open": false,
+            "itemId": null,
+            "selection": 0,
+            "movementAllowed": true,
+            "events": [
+              {
+                "id": "rpg_canteen_drink_requested",
+                "payload": {
+                  "itemId": "sparklingWater"
+                }
+              }
+            ],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": null
+          }
+        ]
+      },
+      {
+        "name": "repeated_confirm_and_escape_ignored",
+        "steps": [
+          {
+            "key": "Enter",
+            "code": "Enter",
+            "repeat": true,
+            "prevented": false,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 0,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "▶ 拿饮料",
+              "cancel": "算了"
+            }
+          },
+          {
+            "key": "Escape",
+            "code": "Escape",
+            "repeat": true,
+            "prevented": false,
+            "open": true,
+            "itemId": "sparklingWater",
+            "selection": 0,
+            "movementAllowed": false,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": {
+              "take": "▶ 拿饮料",
+              "cancel": "算了"
+            }
+          },
+          {
+            "key": "Escape",
+            "code": "Escape",
+            "repeat": false,
+            "prevented": true,
+            "open": false,
+            "itemId": null,
+            "selection": 0,
+            "movementAllowed": true,
+            "events": [],
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "suppressWorldPointerUntil": 0,
+            "labels": null
+          }
+        ]
+      }
+    ],
+    "pointerCases": [
+      {
+        "name": "take",
+        "x": 385,
+        "y": 352,
+        "open": false,
+        "itemId": null,
+        "selection": 0,
+        "movementAllowed": true,
+        "events": [
+          {
+            "id": "rpg_canteen_drink_requested",
+            "payload": {
+              "itemId": "lemonTea"
+            }
+          }
+        ],
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "suppressWorldPointerUntil": 1734,
+        "labels": null
+      },
+      {
+        "name": "cancel",
+        "x": 575,
+        "y": 352,
+        "open": false,
+        "itemId": null,
+        "selection": 1,
+        "movementAllowed": true,
+        "events": [],
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "suppressWorldPointerUntil": 1734,
+        "labels": null
+      },
+      {
+        "name": "outside",
+        "x": 480,
+        "y": 420,
+        "open": true,
+        "itemId": "lemonTea",
+        "selection": 0,
+        "movementAllowed": false,
+        "events": [],
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "suppressWorldPointerUntil": 0,
+        "labels": {
+          "take": "▶ 拿饮料",
+          "cancel": "算了"
+        }
+      }
+    ],
+    "directPointerCases": [
+      {
+        "control": "takeButton",
+        "stopped": 2,
+        "open": false,
+        "itemId": null,
+        "selection": 0,
+        "movementAllowed": true,
+        "events": [
+          {
+            "id": "rpg_canteen_drink_requested",
+            "payload": {
+              "itemId": "blackCoffee"
+            }
+          }
+        ],
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "suppressWorldPointerUntil": 1734,
+        "labels": null
+      },
+      {
+        "control": "takeLabel",
+        "stopped": 2,
+        "open": false,
+        "itemId": null,
+        "selection": 0,
+        "movementAllowed": true,
+        "events": [
+          {
+            "id": "rpg_canteen_drink_requested",
+            "payload": {
+              "itemId": "blackCoffee"
+            }
+          }
+        ],
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "suppressWorldPointerUntil": 1734,
+        "labels": null
+      },
+      {
+        "control": "cancelButton",
+        "stopped": 2,
+        "open": false,
+        "itemId": null,
+        "selection": 1,
+        "movementAllowed": true,
+        "events": [],
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "suppressWorldPointerUntil": 1734,
+        "labels": null
+      },
+      {
+        "control": "cancelLabel",
+        "stopped": 2,
+        "open": false,
+        "itemId": null,
+        "selection": 1,
+        "movementAllowed": true,
+        "events": [],
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "suppressWorldPointerUntil": 1734,
+        "labels": null
+      }
+    ],
+    "blockedOpenCases": [
+      {
+        "blocker": "menuPanel",
+        "nodesCreated": 0,
+        "events": []
+      },
+      {
+        "blocker": "mixerPanel",
+        "nodesCreated": 0,
+        "events": []
+      },
+      {
+        "blocker": "drinkChoicePanel",
+        "nodesCreated": 0,
+        "events": []
+      }
+    ],
+    "reopened": {
+      "open": true,
+      "itemId": "blackCoffee",
+      "selection": 0,
+      "movementAllowed": false,
+      "events": [],
+      "items": {
+        "greaseTissue": true,
+        "cafeteriaWages": true
+      },
+      "suppressWorldPointerUntil": 0,
+      "labels": {
+        "take": "▶ 拿饮料",
+        "cancel": "算了"
+      }
+    }
+  },
+  "menu": {
+    "presentations": {
+      "light": {
+        "panel": {
+          "type": "container",
+          "args": [
+            480,
+            270
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setScrollFactor",
+              "args": [
+                0
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                6000
+              ]
+            }
+          ],
+          "data": {},
+          "children": [
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                0,
+                570,
+                376,
+                16250090,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    4,
+                    5916978,
+                    0.95
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                -148,
+                "菜单上都是常见菜名。刚才看见的字，似乎有几个不一样。",
+                {
+                  "color": "#241f19",
+                  "fontFamily": "monospace",
+                  "fontSize": "20px",
+                  "align": "center"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                -94,
+                430,
+                42,
+                16777215,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    9074523,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "A"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                -94,
+                "A  包子",
+                {
+                  "color": "#201d19",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                -39,
+                430,
+                42,
+                16777215,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    9074523,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "B"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                -39,
+                "B  豆浆",
+                {
+                  "color": "#201d19",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                16,
+                430,
+                42,
+                16777215,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    9074523,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "C"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                16,
+                "C  鸡蛋",
+                {
+                  "color": "#201d19",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                71,
+                430,
+                42,
+                16777215,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    9074523,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "D"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                71,
+                "D  纸包鸡",
+                {
+                  "color": "#201d19",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                126,
+                430,
+                42,
+                16777215,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    9074523,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "E"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                126,
+                "E  白粥",
+                {
+                  "color": "#201d19",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                255,
+                -168,
+                "×",
+                {
+                  "color": "#3b3025",
+                  "fontFamily": "monospace",
+                  "fontSize": "28px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                166,
+                "选择一份餐品 · 取餐前不能重复下单",
+                {
+                  "color": "#6c5236",
+                  "fontFamily": "monospace",
+                  "fontSize": "13px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            }
+          ]
+        },
+        "optionRows": [
+          {
+            "id": "A",
+            "x": 0,
+            "y": -94,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "B",
+            "x": 0,
+            "y": -39,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "C",
+            "x": 0,
+            "y": 16,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "D",
+            "x": 0,
+            "y": 71,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "E",
+            "x": 0,
+            "y": 126,
+            "width": 430,
+            "height": 42
+          }
+        ],
+        "onOpen": [],
+        "selections": [
+          {
+            "optionId": "A",
+            "events": [
+              {
+                "id": "rpg_canteen_menu_selected",
+                "payload": {
+                  "optionId": "A"
+                }
+              }
+            ],
+            "feedback": []
+          },
+          {
+            "optionId": "B",
+            "events": [
+              {
+                "id": "rpg_canteen_menu_selected",
+                "payload": {
+                  "optionId": "B"
+                }
+              }
+            ],
+            "feedback": []
+          },
+          {
+            "optionId": "C",
+            "events": [
+              {
+                "id": "rpg_canteen_menu_selected",
+                "payload": {
+                  "optionId": "C"
+                }
+              }
+            ],
+            "feedback": []
+          },
+          {
+            "optionId": "D",
+            "events": [
+              {
+                "id": "rpg_canteen_menu_selected",
+                "payload": {
+                  "optionId": "D"
+                }
+              }
+            ],
+            "feedback": []
+          },
+          {
+            "optionId": "E",
+            "events": [
+              {
+                "id": "rpg_canteen_menu_selected",
+                "payload": {
+                  "optionId": "E"
+                }
+              }
+            ],
+            "feedback": []
+          }
+        ],
+        "closed": true,
+        "closeEvents": [],
+        "closeFeedback": []
+      },
+      "dark": {
+        "panel": {
+          "type": "container",
+          "args": [
+            480,
+            270
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setScrollFactor",
+              "args": [
+                0
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                6000
+              ]
+            }
+          ],
+          "data": {},
+          "children": [
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                0,
+                570,
+                376,
+                526861,
+                0.98
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    4,
+                    7177104,
+                    0.95
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                -148,
+                "暗色菜单换成了另一套字。",
+                {
+                  "color": "#e8f7ff",
+                  "fontFamily": "monospace",
+                  "fontSize": "20px",
+                  "align": "center"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                -94,
+                430,
+                42,
+                1777958,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    7700874,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "A"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                -94,
+                "A  包过",
+                {
+                  "color": "#86dcff",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                -39,
+                430,
+                42,
+                1777958,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    7700874,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "B"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                -39,
+                "B  豆过",
+                {
+                  "color": "#86dcff",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                16,
+                430,
+                42,
+                1777958,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    7700874,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "C"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                16,
+                "C  鸡过",
+                {
+                  "color": "#86dcff",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                71,
+                430,
+                42,
+                1777958,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    7700874,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "D"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                71,
+                "D  纸包过",
+                {
+                  "color": "#86dcff",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "rectangle",
+              "args": [
+                0,
+                126,
+                430,
+                42,
+                1777958,
+                0.96
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setStrokeStyle",
+                  "args": [
+                    2,
+                    7700874,
+                    0.9
+                  ]
+                }
+              ],
+              "data": {
+                "optionId": "E"
+              },
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                126,
+                "E  白过",
+                {
+                  "color": "#86dcff",
+                  "fontFamily": "monospace",
+                  "fontSize": "18px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                255,
+                -168,
+                "×",
+                {
+                  "color": "#fff7df",
+                  "fontFamily": "monospace",
+                  "fontSize": "28px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            },
+            {
+              "type": "text",
+              "args": [
+                0,
+                166,
+                "观察模式 · 菜名留下了另一层字",
+                {
+                  "color": "#91d8f5",
+                  "fontFamily": "monospace",
+                  "fontSize": "13px"
+                }
+              ],
+              "visible": true,
+              "alpha": 1,
+              "calls": [
+                {
+                  "method": "setOrigin",
+                  "args": [
+                    0.5
+                  ]
+                }
+              ],
+              "data": {},
+              "children": []
+            }
+          ]
+        },
+        "optionRows": [
+          {
+            "id": "A",
+            "x": 0,
+            "y": -94,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "B",
+            "x": 0,
+            "y": -39,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "C",
+            "x": 0,
+            "y": 16,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "D",
+            "x": 0,
+            "y": 71,
+            "width": 430,
+            "height": 42
+          },
+          {
+            "id": "E",
+            "x": 0,
+            "y": 126,
+            "width": 430,
+            "height": 42
+          }
+        ],
+        "onOpen": [
+          {
+            "id": "rpg_canteen_menu_clue_requested"
+          }
+        ],
+        "selections": [
+          {
+            "optionId": "A",
+            "events": [],
+            "feedback": [
+              {
+                "text": "当前为深色观察，只能查看菜单；下单需要浅色操作。",
+                "tone": "system"
+              }
+            ]
+          },
+          {
+            "optionId": "B",
+            "events": [],
+            "feedback": [
+              {
+                "text": "当前为深色观察，只能查看菜单；下单需要浅色操作。",
+                "tone": "system"
+              }
+            ]
+          },
+          {
+            "optionId": "C",
+            "events": [],
+            "feedback": [
+              {
+                "text": "当前为深色观察，只能查看菜单；下单需要浅色操作。",
+                "tone": "system"
+              }
+            ]
+          },
+          {
+            "optionId": "D",
+            "events": [],
+            "feedback": [
+              {
+                "text": "当前为深色观察，只能查看菜单；下单需要浅色操作。",
+                "tone": "system"
+              }
+            ]
+          },
+          {
+            "optionId": "E",
+            "events": [],
+            "feedback": [
+              {
+                "text": "当前为深色观察，只能查看菜单；下单需要浅色操作。",
+                "tone": "system"
+              }
+            ]
+          }
+        ],
+        "closed": true,
+        "closeEvents": [],
+        "closeFeedback": []
+      }
+    },
+    "controllerScenarios": [
+      {
+        "name": "light_option_A",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "A"
+            ],
+            "result": "wrong",
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_order_wrong",
+                "payload": {
+                  "optionId": "A"
+                }
+              },
+              {
+                "id": "get_item",
+                "payload": {
+                  "itemId": "pickupTicket0755",
+                  "sourceScene": "canteen_interior"
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "A",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "A"
+            ],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "A",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "light_option_B",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "B"
+            ],
+            "result": "wrong",
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_order_wrong",
+                "payload": {
+                  "optionId": "B"
+                }
+              },
+              {
+                "id": "get_item",
+                "payload": {
+                  "itemId": "pickupTicket0755",
+                  "sourceScene": "canteen_interior"
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "B",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "B"
+            ],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "B",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "light_option_C",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "C"
+            ],
+            "result": "wrong",
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_order_wrong",
+                "payload": {
+                  "optionId": "C"
+                }
+              },
+              {
+                "id": "get_item",
+                "payload": {
+                  "itemId": "pickupTicket0755",
+                  "sourceScene": "canteen_interior"
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "C",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "C"
+            ],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "C",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "light_option_D",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "D"
+            ],
+            "result": "correct",
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_order_solved",
+                "payload": {
+                  "optionId": "D"
+                }
+              },
+              {
+                "id": "get_item",
+                "payload": {
+                  "itemId": "pickupTicket0755",
+                  "sourceScene": "canteen_interior"
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "D",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "D"
+            ],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "D",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "light_option_E",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "E"
+            ],
+            "result": "wrong",
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_order_wrong",
+                "payload": {
+                  "optionId": "E"
+                }
+              },
+              {
+                "id": "get_item",
+                "payload": {
+                  "itemId": "pickupTicket0755",
+                  "sourceScene": "canteen_interior"
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "E",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "E"
+            ],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "pickup_search",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "E",
+                "orderAttemptCount": 1,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "dark_refuses_selection",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "dark",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "inspectMenuClue",
+            "args": [],
+            "result": true,
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_menu_dark_clue_read"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "dark",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": true,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "D"
+            ],
+            "result": "locked",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_menu_order_locked",
+                "payload": {
+                  "mode": "dark",
+                  "clueRead": true
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "dark",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": true,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "active_order_refuses_selection",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": "A",
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "D"
+            ],
+            "result": "locked",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_order_already_active"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": "A",
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "existing_ticket_refuses_selection",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true,
+            "pickupTicket0755": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "D"
+            ],
+            "result": "locked",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_order_already_active"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true,
+                "pickupTicket0755": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "invalid_option",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "selectMenuOption",
+            "args": [
+              "Z"
+            ],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "bike": {
+    "presentations": [
+      {
+        "mode": "light",
+        "bikeLockCleaned": false,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "walletHint": "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                true
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        }
+      },
+      {
+        "mode": "light",
+        "bikeLockCleaned": true,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "walletHint": "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        }
+      },
+      {
+        "mode": "dark",
+        "bikeLockCleaned": false,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "walletHint": "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                true
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        }
+      },
+      {
+        "mode": "dark",
+        "bikeLockCleaned": true,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "walletHint": "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                true
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "data": {},
+          "children": []
+        }
+      }
+    ],
+    "modeTransitions": [
+      {
+        "mode": "dark",
+        "cleaned": false,
+        "codeGlowVisible": true,
+        "glareVisible": false,
+        "tweens": [
+          {
+            "targetType": "rectangle",
+            "alpha": 0.7,
+            "duration": 420
+          },
+          {
+            "targetType": "image",
+            "alpha": 0.78,
+            "duration": 420
+          }
+        ],
+        "events": []
+      },
+      {
+        "mode": "light",
+        "cleaned": false,
+        "codeGlowVisible": false,
+        "glareVisible": true,
+        "tweens": [
+          {
+            "targetType": "rectangle",
+            "alpha": 0,
+            "duration": 420
+          },
+          {
+            "targetType": "image",
+            "alpha": 0,
+            "duration": 420
+          }
+        ],
+        "events": []
+      },
+      {
+        "mode": "light",
+        "cleaned": true,
+        "codeGlowVisible": false,
+        "glareVisible": false,
+        "tweens": [
+          {
+            "targetType": "rectangle",
+            "alpha": 0,
+            "duration": 420
+          },
+          {
+            "targetType": "image",
+            "alpha": 0,
+            "duration": 420
+          }
+        ],
+        "events": []
+      }
+    ],
+    "animations": [
+      {
+        "method": "animateCanteenBikeCodeRead",
+        "tweens": [
+          {
+            "targetType": "circle",
+            "scale": 1.34,
+            "duration": 170,
+            "yoyo": true,
+            "repeat": 1,
+            "hasCompletionCallback": false
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_subtitle",
+            "payload": {
+              "text": "显示完整编号与二维码边缘压痕",
+              "tone": "system",
+              "durationMs": 3200
+            }
+          }
+        ],
+        "glareVisibleAfterCompletion": true,
+        "stateUnchanged": true
+      },
+      {
+        "method": "animateCanteenBikeCleaned",
+        "tweens": [
+          {
+            "targetType": "rectangle",
+            "x": 3248,
+            "alpha": 0,
+            "duration": 360,
+            "hasCompletionCallback": true
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_subtitle",
+            "payload": {
+              "text": "反光消失，二维码可读",
+              "tone": "success",
+              "durationMs": 3200
+            }
+          }
+        ],
+        "glareVisibleAfterCompletion": false,
+        "stateUnchanged": true
+      }
+    ],
+    "inspectRequests": [
+      {
+        "name": "nearby",
+        "offset": 0,
+        "events": [
+          {
+            "id": "rpg_canteen_bike_inspect_requested"
+          }
+        ]
+      },
+      {
+        "name": "boundary",
+        "offset": 170,
+        "events": [
+          {
+            "id": "rpg_canteen_bike_inspect_requested"
+          }
+        ]
+      },
+      {
+        "name": "too_far",
+        "offset": 171,
+        "events": []
+      },
+      {
+        "name": "wrong_phase",
+        "offset": 0,
+        "events": []
+      }
+    ],
+    "inventoryDrops": [
+      {
+        "name": "tissue",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ]
+      },
+      {
+        "name": "cash",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "events": [
+          {
+            "id": "rpg_canteen_bike_requested"
+          }
+        ]
+      },
+      {
+        "name": "boundary",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3320,
+          "canvasY": 650
+        },
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ]
+      },
+      {
+        "name": "outside",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3321,
+          "canvasY": 650
+        },
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "greaseTissue",
+              "reason": "missed_target",
+              "targetLabel": "共享单车",
+              "detail": "松手点没有进入共享单车车身的高亮范围。"
+            }
+          }
+        ]
+      },
+      {
+        "name": "wrong_item",
+        "payload": {
+          "itemId": "blackCoffee",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "blackCoffee",
+              "reason": "wrong_item",
+              "targetLabel": "共享单车",
+              "detail": "共享单车当前只接收纸巾或 2 元现金。"
+            }
+          }
+        ]
+      },
+      {
+        "name": "missing_coordinates",
+        "payload": {
+          "itemId": "greaseTissue"
+        },
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "greaseTissue",
+              "reason": "missed_target",
+              "targetLabel": "共享单车"
+            }
+          }
+        ]
+      },
+      {
+        "name": "wrong_phase",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "greaseTissue",
+              "reason": "locked",
+              "targetLabel": "共享单车",
+              "detail": "共享单车交互尚未开放，请先完成食堂内部流程。"
+            }
+          }
+        ]
+      }
+    ],
+    "controllerScenarios": [
+      {
+        "name": "dark_inspect_repeat_and_clean_refusal",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "dark",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "inspectBikeLock",
+            "args": [],
+            "result": "code_read",
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_bike_code_read"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "dark",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": true,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "inspectBikeLock",
+            "args": [],
+            "result": "dark_rejected",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_dark_payment_rejected"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "dark",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": true,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "cleanBikeLock",
+            "args": [],
+            "result": "rule",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_scan_rule"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "dark",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": true,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "rule",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_scan_rule"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "dark",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": true,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "light_clean_pay_idempotence_without_code",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "inspectBikeLock",
+            "args": [],
+            "result": "glare",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_glare_failed"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "rule",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_scan_rule"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "cleanBikeLock",
+            "args": [],
+            "result": "cleaned",
+            "writes": 1,
+            "events": [
+              {
+                "id": "use_item",
+                "payload": {
+                  "itemId": "greaseTissue",
+                  "targetId": "canteen-bike-lock",
+                  "result": "retain"
+                }
+              },
+              {
+                "id": "canteen_bike_lock_cleaned"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "cleanBikeLock",
+            "args": [],
+            "result": "cleaned",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_lock_cleaned"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "inspectBikeLock",
+            "args": [],
+            "result": "payment_ready",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_payment_ready"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "paid",
+            "writes": 1,
+            "events": [
+              {
+                "id": "use_item",
+                "payload": {
+                  "itemId": "cafeteriaWages",
+                  "targetId": "canteen_bike"
+                }
+              },
+              {
+                "id": "canteen_bike_paid",
+                "payload": {
+                  "fareCents": 200
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 0
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": false
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": true,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "paid",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 0
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": false
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": true,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "startChase",
+            "args": [],
+            "result": true,
+            "writes": 1,
+            "events": [
+              {
+                "id": "canteen_chase_started"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 0
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": false
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chasing",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": true,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "startChase",
+            "args": [],
+            "result": true,
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 0
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": false
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chasing",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": true,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "wrong_phase",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "menu_order",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "inspectBikeLock",
+            "args": [],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "cleanBikeLock",
+            "args": [],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "startChase",
+            "args": [],
+            "result": false,
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "menu_order",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "no_tissue",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": false,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "cleanBikeLock",
+            "args": [],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": false,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "no_wages",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": false
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": true,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": false
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "insufficient_cash",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 199
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": true,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "inactive",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 199
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "dark_cleaned",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "dark",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": true,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "rule",
+            "writes": 0,
+            "events": [
+              {
+                "id": "canteen_bike_scan_rule"
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "dark",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "excess_cash_deducts_exact_fare",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 325
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": true,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "paid",
+            "writes": 1,
+            "events": [
+              {
+                "id": "use_item",
+                "payload": {
+                  "itemId": "cafeteriaWages",
+                  "targetId": "canteen_bike"
+                }
+              },
+              {
+                "id": "canteen_bike_paid",
+                "payload": {
+                  "fareCents": 200
+                }
+              }
+            ],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 125
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": false
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": true,
+                "chaseCompleted": false
+              }
+            }
+          },
+          {
+            "method": "payForBike",
+            "args": [],
+            "result": "paid",
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 125
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": false
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": true,
+                "bikePaid": true,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "unpaid_cannot_start",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": false,
+            "chaseCompleted": false
+          }
+        },
+        "steps": [
+          {
+            "method": "startChase",
+            "args": [],
+            "result": false,
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": false,
+                "chaseCompleted": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "completed_cannot_restart",
+        "initial": {
+          "actOne": {
+            "movementEnabled": true
+          },
+          "wallet": {
+            "cashCents": 200
+          },
+          "items": {
+            "greaseTissue": true,
+            "cafeteriaWages": true
+          },
+          "canteenHunt": {
+            "active": true,
+            "phase": "chase_ready",
+            "mode": "light",
+            "promoDrinkPlaced": false,
+            "queueGapOpened": false,
+            "menuDarkClueRead": false,
+            "orderedMenuOption": null,
+            "orderAttemptCount": 0,
+            "bikeCodeRead": false,
+            "bikeLockCleaned": false,
+            "bikePaid": true,
+            "chaseCompleted": true
+          }
+        },
+        "steps": [
+          {
+            "method": "startChase",
+            "args": [],
+            "result": false,
+            "writes": 0,
+            "events": [],
+            "state": {
+              "actOne": {
+                "movementEnabled": true
+              },
+              "wallet": {
+                "cashCents": 200
+              },
+              "items": {
+                "greaseTissue": true,
+                "cafeteriaWages": true
+              },
+              "canteenHunt": {
+                "active": true,
+                "phase": "chase_ready",
+                "mode": "light",
+                "promoDrinkPlaced": false,
+                "queueGapOpened": false,
+                "menuDarkClueRead": false,
+                "orderedMenuOption": null,
+                "orderAttemptCount": 0,
+                "bikeCodeRead": false,
+                "bikeLockCleaned": false,
+                "bikePaid": true,
+                "chaseCompleted": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "drinkControllerScenarios": [
+    {
+      "name": "collect_and_repeat",
+      "initial": {
+        "actOne": {
+          "movementEnabled": true
+        },
+        "wallet": {
+          "cashCents": 200
+        },
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "canteenHunt": {
+          "active": true,
+          "phase": "menu_order",
+          "mode": "light",
+          "promoDrinkPlaced": false,
+          "queueGapOpened": false,
+          "menuDarkClueRead": false,
+          "orderedMenuOption": null,
+          "orderAttemptCount": 0,
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        }
+      },
+      "steps": [
+        {
+          "method": "collectDrink",
+          "args": [
+            "sparklingWater"
+          ],
+          "result": true,
+          "writes": 1,
+          "events": [
+            {
+              "id": "get_item",
+              "payload": {
+                "itemId": "sparklingWater",
+                "sourceScene": "canteen_interior"
+              }
+            },
+            {
+              "id": "canteen_drink_collected",
+              "payload": {
+                "itemId": "sparklingWater"
+              }
+            }
+          ],
+          "state": {
+            "actOne": {
+              "movementEnabled": true
+            },
+            "wallet": {
+              "cashCents": 200
+            },
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true,
+              "sparklingWater": true
+            },
+            "canteenHunt": {
+              "active": true,
+              "phase": "menu_order",
+              "mode": "light",
+              "promoDrinkPlaced": false,
+              "queueGapOpened": false,
+              "menuDarkClueRead": false,
+              "orderedMenuOption": null,
+              "orderAttemptCount": 0,
+              "bikeCodeRead": false,
+              "bikeLockCleaned": false,
+              "bikePaid": false,
+              "chaseCompleted": false
+            }
+          }
+        },
+        {
+          "method": "collectDrink",
+          "args": [
+            "sparklingWater"
+          ],
+          "result": true,
+          "writes": 0,
+          "events": [
+            {
+              "id": "canteen_drink_already_owned",
+              "payload": {
+                "itemId": "sparklingWater"
+              }
+            }
+          ],
+          "state": {
+            "actOne": {
+              "movementEnabled": true
+            },
+            "wallet": {
+              "cashCents": 200
+            },
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true,
+              "sparklingWater": true
+            },
+            "canteenHunt": {
+              "active": true,
+              "phase": "menu_order",
+              "mode": "light",
+              "promoDrinkPlaced": false,
+              "queueGapOpened": false,
+              "menuDarkClueRead": false,
+              "orderedMenuOption": null,
+              "orderAttemptCount": 0,
+              "bikeCodeRead": false,
+              "bikeLockCleaned": false,
+              "bikePaid": false,
+              "chaseCompleted": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "promo_placed_refuses_collect",
+      "initial": {
+        "actOne": {
+          "movementEnabled": true
+        },
+        "wallet": {
+          "cashCents": 200
+        },
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "canteenHunt": {
+          "active": true,
+          "phase": "menu_order",
+          "mode": "light",
+          "promoDrinkPlaced": true,
+          "queueGapOpened": false,
+          "menuDarkClueRead": false,
+          "orderedMenuOption": null,
+          "orderAttemptCount": 0,
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        }
+      },
+      "steps": [
+        {
+          "method": "collectDrink",
+          "args": [
+            "lemonTea"
+          ],
+          "result": false,
+          "writes": 0,
+          "events": [],
+          "state": {
+            "actOne": {
+              "movementEnabled": true
+            },
+            "wallet": {
+              "cashCents": 200
+            },
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "canteenHunt": {
+              "active": true,
+              "phase": "menu_order",
+              "mode": "light",
+              "promoDrinkPlaced": true,
+              "queueGapOpened": false,
+              "menuDarkClueRead": false,
+              "orderedMenuOption": null,
+              "orderAttemptCount": 0,
+              "bikeCodeRead": false,
+              "bikeLockCleaned": false,
+              "bikePaid": false,
+              "chaseCompleted": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "queue_gap_refuses_collect",
+      "initial": {
+        "actOne": {
+          "movementEnabled": true
+        },
+        "wallet": {
+          "cashCents": 200
+        },
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "canteenHunt": {
+          "active": true,
+          "phase": "menu_order",
+          "mode": "light",
+          "promoDrinkPlaced": false,
+          "queueGapOpened": true,
+          "menuDarkClueRead": false,
+          "orderedMenuOption": null,
+          "orderAttemptCount": 0,
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        }
+      },
+      "steps": [
+        {
+          "method": "collectDrink",
+          "args": [
+            "lemonTea"
+          ],
+          "result": false,
+          "writes": 0,
+          "events": [],
+          "state": {
+            "actOne": {
+              "movementEnabled": true
+            },
+            "wallet": {
+              "cashCents": 200
+            },
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "canteenHunt": {
+              "active": true,
+              "phase": "menu_order",
+              "mode": "light",
+              "promoDrinkPlaced": false,
+              "queueGapOpened": true,
+              "menuDarkClueRead": false,
+              "orderedMenuOption": null,
+              "orderAttemptCount": 0,
+              "bikeCodeRead": false,
+              "bikeLockCleaned": false,
+              "bikePaid": false,
+              "chaseCompleted": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "wrong_phase_refuses_collect",
+      "initial": {
+        "actOne": {
+          "movementEnabled": true
+        },
+        "wallet": {
+          "cashCents": 200
+        },
+        "items": {
+          "greaseTissue": true,
+          "cafeteriaWages": true
+        },
+        "canteenHunt": {
+          "active": true,
+          "phase": "chasing",
+          "mode": "light",
+          "promoDrinkPlaced": false,
+          "queueGapOpened": false,
+          "menuDarkClueRead": false,
+          "orderedMenuOption": null,
+          "orderAttemptCount": 0,
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        }
+      },
+      "steps": [
+        {
+          "method": "collectDrink",
+          "args": [
+            "lemonTea"
+          ],
+          "result": false,
+          "writes": 0,
+          "events": [],
+          "state": {
+            "actOne": {
+              "movementEnabled": true
+            },
+            "wallet": {
+              "cashCents": 200
+            },
+            "items": {
+              "greaseTissue": true,
+              "cafeteriaWages": true
+            },
+            "canteenHunt": {
+              "active": true,
+              "phase": "chasing",
+              "mode": "light",
+              "promoDrinkPlaced": false,
+              "queueGapOpened": false,
+              "menuDarkClueRead": false,
+              "orderedMenuOption": null,
+              "orderAttemptCount": 0,
+              "bikeCodeRead": false,
+              "bikeLockCleaned": false,
+              "bikePaid": false,
+              "chaseCompleted": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

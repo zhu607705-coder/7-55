@@ -1,0 +1,2078 @@
+{
+  "fixturePurpose": "Isolated Room201 cross-floor acceptance fixture. Not a fresh campaign or human navigation claim.",
+  "source": "Prior native earned-projection save, SHA256 b0f98fa334617be630015691d4279adcf7c340a2000b7a3cfdb0018d61ac6a4e",
+  "adaptation": "Removed the old pre-plate a2_positioning_plate_calibrated fact; retained actual native stair replay proof, transport, 204 projection and unrelated source evidence. No new press checkpoint or plate item seeded.",
+  "state": {
+    "actOne": {
+      "balanceShifted": true,
+      "canLeaveDorm": true,
+      "cc98Login": {
+        "authenticated": true,
+        "failureCount": 3.0,
+        "lockUntilMs": null,
+        "revealedHintCount": 3.0,
+        "studentIdDiscovered": true
+      },
+      "characterNamed": true,
+      "characterPromptSeen": true,
+      "controlsInstalled": true,
+      "dormHubUnlocked": true,
+      "exerciseStarted": true,
+      "gameMenuUnlocked": false,
+      "gamepadPurchased": true,
+      "identityVerified": true,
+      "inventoryRecovered": true,
+      "manualControlTested": true,
+      "mentorLineReleased": true,
+      "movementEnabled": true,
+      "phase": "complete",
+      "phoneLinked": false,
+      "pushTriangleTaken": true,
+      "pushTriangleTapCount": 3.0,
+      "requiredItemCollected": false,
+      "rightArrowAssembled": true,
+      "visitedAreaIds": [],
+      "weatherWaterTaken": true
+    },
+    "canteenHunt": {
+      "active": true,
+      "bikeCodeRead": false,
+      "bikeLockCleaned": true,
+      "bikePaid": true,
+      "blockHits": 3.0,
+      "carriedTrayIds": [],
+      "chaseAttemptCount": 1.0,
+      "chaseBestDistance": 755.0,
+      "chaseBestLives": 1.0,
+      "chaseCollisions": 3.0,
+      "chaseCompleted": true,
+      "defenseDrinkUsed": false,
+      "drinkMixAttemptCount": 1.0,
+      "drinkMixSequence": [],
+      "drinkShelfRead": true,
+      "entryPaperEscaped": true,
+      "identifiedExitIds": [],
+      "identifiedTrayIds": [
+        "tray_blue_01",
+        "tray_blue_02",
+        "tray_blue_03"
+      ],
+      "menuDarkClueRead": true,
+      "mode": "light",
+      "orderAttemptCount": 5.0,
+      "orderedMenuOption": null,
+      "phase": "theater_reached",
+      "pickupAttemptCount": 5.0,
+      "pickupDarkClueRead": true,
+      "pickupTimeErrorSeen": false,
+      "promoDrinkPlaced": true,
+      "queueChallengeSeen": true,
+      "queueGapOpened": true,
+      "returnedTrayIds": [
+        "tray_plain_03",
+        "tray_blue_02",
+        "tray_blue_01",
+        "tray_blue_03"
+      ],
+      "trayTaskStarted": true
+    },
+    "chapter4": {
+      "airflowObserved": false,
+      "anchor": null,
+      "building": "A",
+      "buildingTimeSeconds": 67800.0,
+      "chaseAttempt": 0.0,
+      "chaseRestartCheckpoint": null,
+      "chaseStairwellLanding": 0.0,
+      "chaseStairwellStage": "pending",
+      "checkinCardAccepted": false,
+      "checkinPaperAccepted": false,
+      "clueIds": [],
+      "completed": false,
+      "cycle": 1.0,
+      "echoRecorded": false,
+      "elevatorHistoryObserved": false,
+      "elevatorPlayerBoarded": true,
+      "elevatorReplayAttempts": 1.0,
+      "elevatorSelectedStartSeconds": 81811.0,
+      "elevatorTrackAligned": true,
+      "exteriorClosureAcknowledged": false,
+      "factIds": [
+        "opening_paper_at_noticeboard",
+        "opening_paper_caught",
+        "external_time_rejected",
+        "hall_clock_inspected",
+        "bakery_conveyor_lamp_inspected",
+        "bakery_conveyor_direction_observed",
+        "bakery_tool_location_observed",
+        "bakery_hour_hand_exposed",
+        "bakery_hour_hand_collected",
+        "hour_hand_installed",
+        "classroom_104_chalk_residual_observed",
+        "classroom_105_terminal_replay_checked",
+        "elevator_history_calibrated",
+        "elevator_history_observed",
+        "a1_time_route_compared",
+        "elevator_a3_arrival_record_observed",
+        "a3_reference_observed",
+        "a3_identity_context_observed",
+        "misaligned_stair_solved",
+        "room204_residual_observed",
+        "room204_restored",
+        "a2_power_topology_recovered",
+        "a2_evacuation_route_confirmed",
+        "elevator_a2_call_record_observed",
+        "elevator_stop_chain_reconstructed",
+        "a1_duty_board_reconstructed",
+        "room204_projection_completed",
+        "room204_projection_composite_completed",
+        "room202_endpoint_inferred",
+        "maintenance_incident_linked"
+      ],
+      "finalCode": null,
+      "floor": "A2",
+      "guardMode": "absent",
+      "lightGrid": {
+        "locked": false,
+        "mask": 6.0
+      },
+      "mode": "light",
+      "paperGuidedToElevator": false,
+      "phase": "room204_restore",
+      "phoneStatusTimeSeconds": 67800.0,
+      "phoneStatusTimeTrusted": true,
+      "prologueSeen": true,
+      "resetCount": 0.0,
+      "room204Placements": [
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_01",
+          "slotId": "morning_slot_01"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_02",
+          "slotId": "morning_slot_02"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_03",
+          "slotId": "morning_slot_03"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_04",
+          "slotId": "morning_slot_04"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_05",
+          "slotId": "morning_slot_05"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_06",
+          "slotId": "morning_slot_06"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_07",
+          "slotId": "morning_slot_07"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_08",
+          "slotId": "morning_slot_08"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_09",
+          "slotId": "morning_slot_09"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_10",
+          "slotId": "morning_slot_10"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_11",
+          "slotId": "morning_slot_11"
+        },
+        {
+          "orientation": "up",
+          "pieceId": "desk_pair_12",
+          "slotId": "morning_slot_12"
+        }
+      ],
+      "roomId": "a2_corridor",
+      "solvedPuzzleIds": [],
+      "stairAlignmentSolved": true,
+      "stairEchoObserved": false,
+      "stairRotationQuarterTurns": 0.0,
+      "timeAuthority": "hall_clock",
+      "timeState": "1850_evening",
+      "worldTimeSeconds": 67800.0,
+      "zhuQuestionAnswers": {
+        "person": null,
+        "purpose": null
+      }
+    },
+    "chapterThreeInterlude": {
+      "completed": true,
+      "destinationId": "duan_yongping_a1",
+      "evidenceIds": [
+        "journal_start",
+        "photo_direction",
+        "network_destination",
+        "broadcast_end"
+      ],
+      "networkRecordId": "record_0755",
+      "networkRecordRead": true,
+      "officialNoticeSaved": true,
+      "phase": "complete",
+      "photoFrameIds": [
+        "paper_left",
+        "paper_middle",
+        "paper_right"
+      ],
+      "photoSequenceSolved": true,
+      "rebootSeen": true,
+      "recoveryOpened": true,
+      "rejectedDecoyIds": [
+        "canteen_0755",
+        "theater_0832",
+        "status_clock_075523"
+      ],
+      "replayUnlocked": true,
+      "routeScreenshotSaved": true,
+      "statusClockMarkedUntrusted": true,
+      "timelineOrder": [
+        "journal_start",
+        "photo_direction",
+        "network_destination",
+        "broadcast_end"
+      ],
+      "voiceClipOrder": [
+        "lake",
+        "stone",
+        "lobby",
+        "broadcast"
+      ],
+      "voiceSequenceSolved": true,
+      "windowEndSeconds": 81900.0,
+      "windowStartSeconds": 81425.0
+    },
+    "clockCalibration": {
+      "adjustCount": 0.0,
+      "archiveClueIds": [],
+      "coarseLockIds": [],
+      "displayedSeconds": 28523.0,
+      "driftAttempts": 0.0,
+      "driftCorrectedChannelIds": [],
+      "phase": "tampered",
+      "phaseLockAttempts": 0.0,
+      "phaseLockHits": 0.0,
+      "selectedTargetSeconds": null,
+      "step": "target_selection",
+      "targetSeconds": 28800.0
+    },
+    "currentScene": "phone_home",
+    "digits": {
+      "d1": "0",
+      "d2": "7",
+      "d3": "9",
+      "d4": "8"
+    },
+    "flags": {
+      "bonsaiHintShown": false,
+      "cardZeroTaken": true,
+      "checkinDone": true,
+      "codeScattered": true,
+      "flowerBloomed": true,
+      "flowerEightTaken": true,
+      "gearFallen": true,
+      "gearNineTaken": true,
+      "headphoneFallen": true,
+      "plantFertilized": true,
+      "plantLit": true,
+      "plantWatered": true,
+      "slashHalfDropped": true,
+      "slashTaken": true,
+      "slashTapCount": 3.0,
+      "tiyiCountTaken": true,
+      "tiyiCrashCount": 4.0,
+      "towerOpened": true,
+      "waterDropTaken": true
+    },
+    "items": {
+      "archivedLeaveRule": false,
+      "attendanceRecordPaper": true,
+      "badDrink": false,
+      "bagNonPersonProof": false,
+      "blackCoffee": false,
+      "bridgeKeyword": false,
+      "brokenNetFrame": false,
+      "cafeteriaWages": false,
+      "callNumber755": false,
+      "campusCard": true,
+      "canteenCluelessSoyMilk": true,
+      "canteenEdgeEgg": true,
+      "canteenRealBun": true,
+      "canteenUselessCongee": true,
+      "clockPositioningPlate": false,
+      "dailySpecialSparklingWater": false,
+      "decoyPaper": false,
+      "fertilizer": false,
+      "finalMinute": false,
+      "fishFeedPellets": false,
+      "fishingRod": false,
+      "fluorescentBrush": false,
+      "gamepad": false,
+      "greaseTissue": false,
+      "hairDryer": false,
+      "headphone": false,
+      "improvisedDipNet": false,
+      "itemRecognitionReport": false,
+      "lakeKeyword": false,
+      "lemonTea": false,
+      "libraryPresenceProof": false,
+      "magneticFishingRod": false,
+      "mentorLine": false,
+      "nylonCord": false,
+      "occupancyNote": false,
+      "oldClockHourHand": false,
+      "pickupTicket0755": false,
+      "pushTriangle": false,
+      "reflectionCoordinate": false,
+      "reflectionKeyword": false,
+      "reverseGear": false,
+      "rightArrow": false,
+      "rustedLockerKey": false,
+      "sealedFeedTin": false,
+      "seat022Receipt": false,
+      "seatReleasePass": false,
+      "shortPryBar": false,
+      "slashLine": false,
+      "smallCarp": false,
+      "sparklingWater": false,
+      "spotlightRemote": false,
+      "swanMagnet": false,
+      "temporaryTheaterTicket": false,
+      "theaterProgramFinale": false,
+      "theaterProgramOpening": false,
+      "theaterProgramSpotlight": false,
+      "theaterTicketHalfA": false,
+      "theaterTicketHalfB": false,
+      "towerKey": false,
+      "universalLubricatingOil": false,
+      "waterDrop": false,
+      "wateredHeadphone": false,
+      "weatherWater": false,
+      "wetProgram": false
+    },
+    "native": {
+      "alarm_ringing": true,
+      "c35_listened": [
+        "decoy_theater",
+        "lake",
+        "decoy_library",
+        "stone",
+        "decoy_canteen",
+        "lobby",
+        "broadcast"
+      ],
+      "c35_network_filters": {
+        "area": "all",
+        "session": "all",
+        "time": "all"
+      },
+      "c35_photo_selection": [],
+      "c35_route_selection": [
+        "east_closed",
+        "west_cleaner"
+      ],
+      "c35_summary_choice": "details_withheld",
+      "c35_voice_selection": [
+        "lake",
+        "stone",
+        "lobby",
+        "broadcast"
+      ],
+      "c35_voice_stage": "ordering",
+      "c3_reversal_pending": false,
+      "c3_tray_slots": [
+        {
+          "stand": {
+            "x": 603.0,
+            "y": 437.0
+          },
+          "tableId": "table_2_4",
+          "x": 662.0,
+          "y": 437.0
+        },
+        {
+          "stand": {
+            "x": 603.0,
+            "y": 328.0
+          },
+          "tableId": "table_1_4",
+          "x": 662.0,
+          "y": 328.0
+        },
+        {
+          "stand": {
+            "x": 448.0,
+            "y": 481.0
+          },
+          "tableId": "table_2_2",
+          "x": 389.0,
+          "y": 481.0
+        },
+        {
+          "stand": {
+            "x": 1074.0,
+            "y": 437.0
+          },
+          "tableId": "table_2_7",
+          "x": 1133.0,
+          "y": 437.0
+        },
+        {
+          "stand": {
+            "x": 1073.0,
+            "y": 372.0
+          },
+          "tableId": "table_1_7",
+          "x": 1132.0,
+          "y": 372.0
+        },
+        {
+          "stand": {
+            "x": 1217.0,
+            "y": 328.0
+          },
+          "tableId": "table_1_7",
+          "x": 1158.0,
+          "y": 328.0
+        },
+        {
+          "stand": {
+            "x": 1073.0,
+            "y": 328.0
+          },
+          "tableId": "table_1_7",
+          "x": 1132.0,
+          "y": 328.0
+        },
+        {
+          "stand": {
+            "x": 907.0,
+            "y": 590.0
+          },
+          "tableId": "table_3_5",
+          "x": 848.0,
+          "y": 590.0
+        },
+        {
+          "stand": {
+            "x": 759.0,
+            "y": 437.0
+          },
+          "tableId": "table_2_5",
+          "x": 818.0,
+          "y": 437.0
+        },
+        {
+          "stand": {
+            "x": 299.0,
+            "y": 328.0
+          },
+          "tableId": "table_1_1",
+          "x": 240.0,
+          "y": 328.0
+        },
+        {
+          "stand": {
+            "x": 597.0,
+            "y": 328.0
+          },
+          "tableId": "table_1_3",
+          "x": 538.0,
+          "y": 328.0
+        },
+        {
+          "stand": {
+            "x": 157.0,
+            "y": 590.0
+          },
+          "tableId": "table_3_1",
+          "x": 216.0,
+          "y": 590.0
+        }
+      ],
+      "c4_elevator_transport": true,
+      "c4_native_elevator_completed": true,
+      "c4_stair_proof": {
+        "doorTraversed": true,
+        "kind": "chapter4_stair_campaign",
+        "levels": [
+          {
+            "actions": [
+              {
+                "delta": 1.0,
+                "id": "a_slide",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "top_oblique"
+              },
+              {
+                "delta": 1.0,
+                "id": "a_stair",
+                "type": "step"
+              },
+              {
+                "node": "A_SLIDE",
+                "type": "walk"
+              },
+              {
+                "node": "A_STAIR_LOW",
+                "type": "walk"
+              },
+              {
+                "node": "A_STAIR_HIGH",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "a_stair",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "a_stair",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "south_east"
+              },
+              {
+                "type": "view",
+                "value": "south_west"
+              },
+              {
+                "delta": 1.0,
+                "id": "a_lift",
+                "type": "step"
+              },
+              {
+                "node": "A_MID_ISLAND",
+                "type": "walk"
+              },
+              {
+                "node": "A_LIFT",
+                "type": "walk"
+              },
+              {
+                "node": "A_EXIT",
+                "type": "walk"
+              }
+            ],
+            "id": "stair_a"
+          },
+          {
+            "actions": [
+              {
+                "type": "view",
+                "value": "south_west"
+              },
+              {
+                "node": "B_LOWER_LOW",
+                "type": "walk"
+              },
+              {
+                "node": "B_LOWER_HIGH",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_lower_stair",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_lower_stair",
+                "type": "step"
+              },
+              {
+                "node": "B_MID_LIFT_LOW",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_mid_lift",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_mid_lift",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_mid_lift",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_mid_lift",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_mid_lift",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "south_east"
+              },
+              {
+                "node": "B_MID_LIFT_HIGH",
+                "type": "walk"
+              },
+              {
+                "node": "B_UPPER_HIGH",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "b_upper_stair",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "top_oblique"
+              },
+              {
+                "delta": -1.0,
+                "id": "b_exit_slide",
+                "type": "step"
+              },
+              {
+                "node": "B_EXIT_SLIDE",
+                "type": "walk"
+              },
+              {
+                "type": "view",
+                "value": "south_east"
+              },
+              {
+                "node": "B_HIGH_ISLAND",
+                "type": "walk"
+              },
+              {
+                "node": "B_EXIT",
+                "type": "walk"
+              }
+            ],
+            "id": "stair_b"
+          },
+          {
+            "actions": [
+              {
+                "node": "stair_c_1_low",
+                "type": "walk"
+              },
+              {
+                "node": "stair_c_1_high",
+                "type": "walk"
+              },
+              {
+                "type": "view",
+                "value": "south_west"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_c_1_rotate",
+                "type": "step"
+              },
+              {
+                "node": "stair_c_1_island",
+                "type": "walk"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_c_1_transfer",
+                "type": "step"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_c_1_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_c_1_car",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_c_1_transfer",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_c_1_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_c_1_transfer_exit",
+                "type": "walk"
+              },
+              {
+                "node": "stair_c_2_high",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_c_2_rotate",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "south_east"
+              },
+              {
+                "type": "view",
+                "value": "top_oblique"
+              },
+              {
+                "node": "stair_c_2_island",
+                "type": "walk"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_c_2_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_c_2_high",
+                "type": "walk"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_c_2_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_c_2_island",
+                "type": "walk"
+              },
+              {
+                "node": "stair_c_2_car",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_c_2_transfer",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_c_2_transfer",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "south_east"
+              },
+              {
+                "node": "stair_c_exit",
+                "type": "walk"
+              }
+            ],
+            "id": "stair_c"
+          },
+          {
+            "actions": [
+              {
+                "node": "stair_d_1_low",
+                "type": "walk"
+              },
+              {
+                "node": "stair_d_1_high",
+                "type": "walk"
+              },
+              {
+                "type": "view",
+                "value": "south_west"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_1_rotate",
+                "type": "step"
+              },
+              {
+                "node": "stair_d_1_island",
+                "type": "walk"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_1_transfer",
+                "type": "step"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_1_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_d_1_car",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_d_1_transfer",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_d_1_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_d_1_transfer_exit",
+                "type": "walk"
+              },
+              {
+                "node": "stair_d_2_high",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_d_2_rotate",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "top_oblique"
+              },
+              {
+                "node": "stair_d_2_island",
+                "type": "walk"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_2_transfer",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "south_west"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_2_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_d_2_car",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_d_2_transfer",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_d_2_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_d_2_transfer_exit",
+                "type": "walk"
+              },
+              {
+                "node": "stair_d_3_high",
+                "type": "walk"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_3_rotate",
+                "type": "step"
+              },
+              {
+                "type": "view",
+                "value": "south_east"
+              },
+              {
+                "node": "stair_d_3_island",
+                "type": "walk"
+              },
+              {
+                "type": "view",
+                "value": "top_oblique"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_3_transfer",
+                "type": "step"
+              },
+              {
+                "delta": -1.0,
+                "id": "stair_d_3_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_d_3_car",
+                "type": "walk"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_d_3_transfer",
+                "type": "step"
+              },
+              {
+                "delta": 1.0,
+                "id": "stair_d_3_transfer",
+                "type": "step"
+              },
+              {
+                "node": "stair_d_exit",
+                "type": "walk"
+              }
+            ],
+            "id": "stair_d"
+          }
+        ],
+        "session": "c4-294284-1"
+      },
+      "chapter": 4.0,
+      "completed": [],
+      "friend_scatter_pending": false,
+      "lib_catalog_result_ids": [
+        "three-minute-leave-method",
+        "three-minute-seat-thinking",
+        "three-minute-pause",
+        "three-minute-stand-up",
+        "three-minute-empty-seat"
+      ],
+      "lib_catalog_results": true,
+      "lib_dialogue_index": 0.0,
+      "lib_selected_photo": "seat_022_clue",
+      "log": [
+        {
+          "text": "已拿起餐盘。把它交给右侧收餐口的阿姨。",
+          "time": "2026-10-03T07:22:47"
+        },
+        {
+          "text": "你手上已经有一个餐盘。先把它交给阿姨。",
+          "time": "2026-10-03T07:23:02"
+        },
+        {
+          "text": "油渍和蓝光都在。",
+          "time": "2026-10-03T07:27:42"
+        },
+        {
+          "text": "已拿起餐盘。把它交给右侧收餐口的阿姨。",
+          "time": "2026-10-03T07:28:00"
+        },
+        {
+          "text": "获得气泡水（蓝色）。",
+          "time": "2026-10-03T08:24:53"
+        },
+        {
+          "text": "获得柠檬茶（白色）。",
+          "time": "2026-10-03T08:30:20"
+        },
+        {
+          "text": "获得黑咖啡（黑色）。",
+          "time": "2026-10-03T08:30:57"
+        },
+        {
+          "text": "饮料已经倒入大玻璃杯。",
+          "time": "2026-10-03T09:01:11"
+        },
+        {
+          "text": "饮料已经倒入大玻璃杯。",
+          "time": "2026-10-03T09:04:36"
+        },
+        {
+          "text": "配方正确，得到今日新品气泡水。",
+          "time": "2026-10-03T09:04:43"
+        },
+        {
+          "text": "暗色菜单已记录。浅色操作可在点餐机下单。",
+          "time": "2026-10-03T09:28:03"
+        },
+        {
+          "text": "当前为深色观察，只能查看菜单；下单需要浅色操作。",
+          "time": "2026-10-03T09:28:19"
+        },
+        {
+          "text": "这张票不归这个窗口。",
+          "time": "2026-10-03T10:04:01"
+        },
+        {
+          "text": "领到窗口包子。",
+          "time": "2026-10-03T10:07:20"
+        },
+        {
+          "text": "这个窗口没动静，别处还有叫号声。",
+          "time": "2026-10-03T10:15:01"
+        },
+        {
+          "text": "领到窗口豆浆。",
+          "time": "2026-10-03T10:15:42"
+        },
+        {
+          "text": "领到水煮蛋。",
+          "time": "2026-10-03T10:31:38"
+        },
+        {
+          "text": "领到烫手的白粥。",
+          "time": "2026-10-03T10:44:23"
+        },
+        {
+          "text": "这张票不归这个窗口。",
+          "time": "2026-10-03T10:51:55"
+        },
+        {
+          "text": "3号窗口：0755 号，请取纸。纸条从蒸汽里弹出。",
+          "time": "2026-10-03T10:52:59"
+        },
+        {
+          "text": "反光过强，识别失败",
+          "time": "2026-10-03T12:34:32"
+        },
+        {
+          "text": "浅色操作可清洁车锁并扫码付款；深色观察可补充查看编号压痕。",
+          "time": "2026-10-03T12:34:41"
+        },
+        {
+          "text": "浅色操作可清洁车锁并扫码付款；深色观察可补充查看编号压痕。",
+          "time": "2026-10-03T12:34:55"
+        },
+        {
+          "text": "反光消失，二维码可读",
+          "time": "2026-10-03T12:34:56"
+        },
+        {
+          "text": "餐盘回收费已到账。用 2.00 元支付一次骑行。",
+          "time": "2026-10-03T12:35:07"
+        },
+        {
+          "text": "反光消失，二维码可读",
+          "time": "2026-10-03T12:38:24"
+        },
+        {
+          "text": "755 米骑行完成，纸条钻进剧院。",
+          "time": "2026-10-03T12:47:29"
+        },
+        {
+          "text": "先沿校园地图走到剧院入口。",
+          "time": "2026-10-03T12:52:23"
+        },
+        {
+          "text": "已接入手机充电服务站，电量恢复至 45%。",
+          "time": "2026-10-03T13:12:52"
+        },
+        {
+          "text": "当前电量 45%，暂不需要补电。",
+          "time": "2026-10-03T13:13:23"
+        },
+        {
+          "text": "玻璃反光严重，你只能看见一个很需要睡觉的人。",
+          "time": "2026-10-03T13:14:38"
+        },
+        {
+          "text": "擦去油膜，玻璃下露出半张旧票根。场次和票号还在，验票区域缺了一半。",
+          "time": "2026-10-03T13:15:52"
+        },
+        {
+          "text": "这里暂时没有要处理的事。",
+          "time": "2026-10-03T13:16:22"
+        },
+        {
+          "text": "这里暂时没有要处理的事。",
+          "time": "2026-10-03T13:16:43"
+        },
+        {
+          "text": "0832 号，两波释放，当前未取票。",
+          "time": "2026-10-03T13:43:53"
+        },
+        {
+          "text": "取票机：本场常规票已售完。屏幕边贴着一张留言：临时退票事宜，见校园论坛今日留言。",
+          "time": "2026-10-03T13:44:34"
+        },
+        {
+          "text": "接单成功，等本页放票。人已经在大厅，票还得在手机上抢。",
+          "time": "2026-10-03T14:06:10"
+        },
+        {
+          "text": "未抢到：当前网速过慢。",
+          "time": "2026-10-03T14:06:25"
+        },
+        {
+          "text": "已切换网络。",
+          "time": "2026-10-03T14:06:53"
+        },
+        {
+          "text": "手机票务回执：第二波抢票成功，取票码 0832 已生成。请到大厅取票机打印票根。",
+          "time": "2026-10-03T14:06:53"
+        },
+        {
+          "text": "取票机：查无此票。请核对回执，本机不接受到场证明。",
+          "time": "2026-10-03T14:36:02"
+        },
+        {
+          "text": "印好的节目单，简介里有几笔颜色偏淡。排练怎么改，印好的纸也没来得及换。",
+          "time": "2026-10-03T15:13:51"
+        },
+        {
+          "text": "谢幕 · 荧光编号 3",
+          "time": "2026-10-03T15:17:16"
+        },
+        {
+          "text": "印好的节目单，简介里有几笔颜色偏淡。排练怎么改，印好的纸也没来得及换。",
+          "time": "2026-10-03T15:17:37"
+        },
+        {
+          "text": "开场 · 荧光编号 2",
+          "time": "2026-10-03T15:29:18"
+        },
+        {
+          "text": "印好的节目单，简介里有几笔颜色偏淡。排练怎么改，印好的纸也没来得及换。",
+          "time": "2026-10-03T15:29:54"
+        },
+        {
+          "text": "追光灯解锁。",
+          "time": "2026-10-03T17:04:32"
+        },
+        {
+          "text": "票码通过，箱锁松开。看演出和取道具，用的居然是同一张票。",
+          "time": "2026-10-03T17:10:36"
+        },
+        {
+          "text": "荧光粉吹上舞台，粘在了移动的纸面上。",
+          "time": "2026-10-03T17:16:29"
+        },
+        {
+          "text": "这一幕已经演完。",
+          "time": "2026-10-03T17:19:59"
+        },
+        {
+          "text": "影子吃掉了演出，已完成的幕次保留。",
+          "time": "2026-10-03T17:20:55"
+        },
+        {
+          "text": "这一幕已经演完。",
+          "time": "2026-10-03T17:22:02"
+        },
+        {
+          "text": "影子吃掉了演出，已完成的幕次保留。",
+          "time": "2026-10-03T17:22:52"
+        },
+        {
+          "text": "影子吃掉了演出，已完成的幕次保留。",
+          "time": "2026-10-03T17:24:27"
+        },
+        {
+          "text": "这一幕已经演完。",
+          "time": "2026-10-03T17:26:00"
+        },
+        {
+          "text": "网络已切换。",
+          "time": "2026-10-03T20:56:37"
+        },
+        {
+          "text": "来源记录已保存。",
+          "time": "2026-10-03T21:21:00"
+        },
+        {
+          "text": "来源记录已保存。",
+          "time": "2026-10-03T21:26:28"
+        },
+        {
+          "text": "已接入 1 条记录，来源还不足以确认地点。",
+          "time": "2026-10-03T21:31:06"
+        },
+        {
+          "text": "已接入 2 条记录，还缺一个独立来源。",
+          "time": "2026-10-03T21:31:28"
+        },
+        {
+          "text": "来源记录已保存。",
+          "time": "2026-10-03T21:33:38"
+        },
+        {
+          "text": "三条记录已对齐。核对交点后才会在校园地图上标记入口。",
+          "time": "2026-10-03T21:34:41"
+        },
+        {
+          "text": "手机地图：已确认启真湖。",
+          "time": "2026-10-03T21:35:03"
+        },
+        {
+          "text": "皮划艇已确认。两支桨没有放在器材架上，继续沿码头寻找。",
+          "time": "2026-10-03T22:18:17"
+        },
+        {
+          "text": "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。",
+          "time": "2026-10-03T22:18:44"
+        },
+        {
+          "text": "任务：先确认皮划艇，再在码头周围寻找两件可以划水的东西。",
+          "time": "2026-10-03T22:19:03"
+        },
+        {
+          "text": "这里暂时没有要处理的事。",
+          "time": "2026-10-03T22:19:41"
+        },
+        {
+          "text": "皮划艇和两支临时桨都已收齐。",
+          "time": "2026-10-03T22:20:18"
+        },
+        {
+          "text": "值班老师：现在天气不能下水。你要坚持，可以继续靠近码头试试。",
+          "time": "2026-10-03T22:20:54"
+        },
+        {
+          "text": "值班老师和安全员把你救上岸。",
+          "time": "2026-10-03T22:22:10"
+        },
+        {
+          "text": "获得吹风机。",
+          "time": "2026-10-03T22:23:55"
+        },
+        {
+          "text": "值班老师：现在可以下水。",
+          "time": "2026-10-03T22:27:36"
+        },
+        {
+          "text": "值班老师：现在可以下水。",
+          "time": "2026-10-03T22:40:49"
+        },
+        {
+          "text": "键盘用 A/左方向键划左桨、D/右方向键划右桨，按住 S 或下方向键再划可后退。触屏在左右桨按钮上向上划为前进、向下划为后退，轻触默认前进。上船时先连续交替前划四次。",
+          "time": "2026-10-03T22:41:09"
+        },
+        {
+          "text": "船的位置已失效，请回到安全检查点。",
+          "time": "2026-10-03T22:42:06"
+        },
+        {
+          "text": "连续划同一侧导致翻船，左右交替可以稳住船身。",
+          "time": "2026-10-03T23:00:22"
+        },
+        {
+          "text": "深色观察：记录纸条倒影和物品位置。",
+          "time": "2026-10-03T23:40:43"
+        },
+        {
+          "text": "深色观察：记录纸条倒影和物品位置。",
+          "time": "2026-10-03T23:41:34"
+        },
+        {
+          "text": "系统：已在浮排边找到钓鱼竿。",
+          "time": "2026-10-03T23:41:50"
+        },
+        {
+          "text": "假纸条已固定在鱼钩上。",
+          "time": "2026-10-03T23:42:59"
+        },
+        {
+          "text": "深色观察：记录纸条倒影和物品位置。",
+          "time": "2026-10-03T23:43:22"
+        },
+        {
+          "text": "位置已记录；浅色操作可在对应水纹抛竿。",
+          "time": "2026-10-03T23:43:39"
+        },
+        {
+          "text": "深色观察：记录纸条倒影和物品位置。",
+          "time": "2026-10-03T23:49:50"
+        },
+        {
+          "text": "位置已记录；浅色操作可在对应水纹抛竿。",
+          "time": "2026-10-03T23:50:07"
+        },
+        {
+          "text": "钓获成功。",
+          "time": "2026-10-04T00:37:50"
+        },
+        {
+          "text": "储物柜打开，获得尼龙绳。",
+          "time": "2026-10-04T00:41:33"
+        },
+        {
+          "text": "键盘用 A/左方向键划左桨、D/右方向键划右桨，按住 S 或下方向键再划可后退。触屏在左右桨按钮上向上划为前进、向下划为后退，轻触默认前进。上船时先连续交替前划四次。",
+          "time": "2026-10-04T01:24:11"
+        },
+        {
+          "text": "位置已记录；浅色操作可在对应水纹抛竿。",
+          "time": "2026-10-04T01:37:01"
+        },
+        {
+          "text": "水纹围成一圈，可以朝那里抛竿。",
+          "time": "2026-10-04T01:37:28"
+        },
+        {
+          "text": "水纹围成一圈，可以朝那里抛竿。",
+          "time": "2026-10-04T01:37:41"
+        },
+        {
+          "text": "船的位置已失效，请回到安全检查点。",
+          "time": "2026-10-04T01:41:34"
+        },
+        {
+          "text": "船的位置已失效，请回到安全检查点。",
+          "time": "2026-10-04T01:42:28"
+        },
+        {
+          "text": "钓获成功。",
+          "time": "2026-10-04T02:48:51"
+        },
+        {
+          "text": "四件材料尚未集齐。",
+          "time": "2026-10-04T02:51:01"
+        },
+        {
+          "text": "浮排边的旧饲料盒被捞起并撬开。\n饲料撒入围栏，黑天鹅把一枚磁性扣推到船边。",
+          "time": "2026-10-04T03:11:12"
+        },
+        {
+          "text": "尼龙绳、破损网框和磁性扣已装到钓鱼竿上，可以捕纸了。",
+          "time": "2026-10-04T03:12:13"
+        },
+        {
+          "text": "磁性钓鱼竿已固定纸条。\n纸条触发围栏机关，黑天鹅进入直河道。",
+          "time": "2026-10-04T04:43:48"
+        },
+        {
+          "text": "围栏开了。朝左岸划。",
+          "time": "2026-10-04T04:43:48"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:43:51"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:43:53"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:43:56"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:43:58"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:44:02"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:44:03"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:44:07"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:44:08"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:44:12"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:44:14"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:44:33"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:44:35"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:44:39"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:44:40"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:44:44"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:44:45"
+        },
+        {
+          "text": "围栏开了。朝左岸划。",
+          "time": "2026-10-04T04:50:50"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:50:53"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:50:54"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:50:58"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:50:59"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:51:03"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:51:05"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:51:09"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:51:10"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:51:59"
+        },
+        {
+          "text": "左岸快到了。稳住节奏。",
+          "time": "2026-10-04T04:51:59"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:52:01"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:52:44"
+        },
+        {
+          "text": "左岸快到了。稳住节奏。",
+          "time": "2026-10-04T04:52:46"
+        },
+        {
+          "text": "黑天鹅撞上船尾，追逐失败。已回到直河道追逐检查点。",
+          "time": "2026-10-04T04:52:47"
+        },
+        {
+          "text": "左岸快到了。稳住节奏。",
+          "time": "2026-10-04T04:52:52"
+        },
+        {
+          "text": "它正在船尾对准航线。继续交替划桨。",
+          "time": "2026-10-04T04:52:53"
+        },
+        {
+          "text": "已返回小码头。磁性扣损坏，纸条再次逃离。",
+          "time": "2026-10-04T04:52:53"
+        },
+        {
+          "text": "恢复工具已打开。",
+          "time": "2026-10-04T05:11:32"
+        },
+        {
+          "text": "已保存离湖回复：22:37:05。",
+          "time": "2026-10-04T05:12:22"
+        },
+        {
+          "text": "选择已满，先移除其中一项。",
+          "time": "2026-10-04T05:14:40"
+        },
+        {
+          "text": "照片中的移动不连续。再核对纸条位置、岸边参照和镜像方向。",
+          "time": "2026-10-04T05:14:41"
+        },
+        {
+          "text": "连续帧已恢复。",
+          "time": "2026-10-04T05:29:23"
+        },
+        {
+          "text": "低电量模式已开启：打开应用仅消耗 1%，亮度上限 45%，音乐已暂停。",
+          "time": "2026-10-04T06:09:48"
+        },
+        {
+          "text": "公众号通知已保存。",
+          "time": "2026-10-04T06:10:36"
+        },
+        {
+          "text": "选择已满，先移除其中一项。",
+          "time": "2026-10-04T06:11:38"
+        },
+        {
+          "text": "这两条消息还不能拼出可通行入口。需要同时确认封闭方向和可进入方向。",
+          "time": "2026-10-04T06:12:02"
+        },
+        {
+          "text": "入口变化已截图：东侧关闭，西侧主入口可通行。",
+          "time": "2026-10-04T06:13:00"
+        },
+        {
+          "text": "候选接入记录已保存。",
+          "time": "2026-10-04T06:14:58"
+        },
+        {
+          "text": "候选接入记录已保存。",
+          "time": "2026-10-04T06:15:11"
+        },
+        {
+          "text": "候选接入记录已保存。",
+          "time": "2026-10-04T06:15:46"
+        },
+        {
+          "text": "候选接入记录已保存。",
+          "time": "2026-10-04T06:17:33"
+        },
+        {
+          "text": "录音播放回执已失效。",
+          "time": "2026-10-04T07:09:43"
+        },
+        {
+          "text": "录音播放回执已失效。",
+          "time": "2026-10-04T07:10:20"
+        },
+        {
+          "text": "录音播放回执已失效。",
+          "time": "2026-10-04T07:10:42"
+        },
+        {
+          "text": "录音播放回执已失效。",
+          "time": "2026-10-04T07:16:34"
+        },
+        {
+          "text": "录音播放回执已失效。",
+          "time": "2026-10-04T07:17:06"
+        },
+        {
+          "text": "选择已满，先移除其中一项。",
+          "time": "2026-10-04T08:05:40"
+        },
+        {
+          "text": "选择已满，先移除其中一项。",
+          "time": "2026-10-04T08:06:07"
+        },
+        {
+          "text": "录音未形成连续路径。核对水声、硬岸、室内环境与末段广播。",
+          "time": "2026-10-04T08:06:33"
+        },
+        {
+          "text": "录音未形成连续路径。核对水声、硬岸、室内环境与末段广播。",
+          "time": "2026-10-04T08:08:51"
+        },
+        {
+          "text": "录音已恢复，记录终点：22:45:00。",
+          "time": "2026-10-04T08:09:24"
+        },
+        {
+          "text": "这条理由与记录来源不匹配。",
+          "time": "2026-10-04T08:11:20"
+        },
+        {
+          "text": "0755 是取餐编号，不能作为夜间时间。",
+          "time": "2026-10-04T08:11:36"
+        },
+        {
+          "text": "08:32 来自更早的独立抢票记录。",
+          "time": "2026-10-04T08:11:57"
+        },
+        {
+          "text": "07:55:23 是未同步的本机时钟值。",
+          "time": "2026-10-04T08:14:03"
+        },
+        {
+          "text": "录音末段出现室内广播和断电声，湖面环境无法解释这组声音。",
+          "time": "2026-10-04T08:14:45"
+        },
+        {
+          "text": "末段短会话的接入点编号与剧场网络记录不一致。",
+          "time": "2026-10-04T08:15:02"
+        },
+        {
+          "text": "闭楼通知和入口截图指向另一组楼宇入口规则。",
+          "time": "2026-10-04T08:15:14"
+        },
+        {
+          "text": "地点与四项证据一致，恢复结果已确认。",
+          "time": "2026-10-04T08:16:17"
+        },
+        {
+          "text": "时间与地点已经完成交叉核验。",
+          "time": "2026-10-04T10:41:26"
+        },
+        {
+          "text": "现场画面已同步。异常签到纸正在飞向公告栏。",
+          "time": "2026-10-04T10:44:33"
+        },
+        {
+          "text": "这个刻度没有停住。",
+          "time": "2026-10-04T10:58:38"
+        },
+        {
+          "text": "时间源已切换：大厅旧钟。",
+          "time": "2026-10-04T12:47:22"
+        },
+        {
+          "text": "那块金属你认识？我正要报异物。\n大厅钟上的时针。\n那装回去吧。别算进我们这班的损耗。",
+          "time": "2026-10-05T10:45:19"
+        },
+        {
+          "text": "金属时针装回后，钟面出现了一处新的稳定刻度。",
+          "time": "2026-10-05T11:59:37"
+        },
+        {
+          "text": "当前楼层仍停留在上一段时间。",
+          "time": "2026-10-05T12:35:38"
+        },
+        {
+          "text": "当前楼层仍停留在上一段时间。",
+          "time": "2026-10-05T12:37:14"
+        },
+        {
+          "text": "时间源已切换：大厅旧钟。",
+          "time": "2026-10-05T12:44:03"
+        },
+        {
+          "text": "黑板已经擦净，残留笔画仍按书写顺序逐段出现。首尾相差 7 分 55 秒。\n人都下课了，这里还没写完。",
+          "time": "2026-10-05T12:53:40"
+        },
+        {
+          "text": "讲台回放停在 07:47:05，教室记录显示 07:55:00。本地画面延迟 7 分 55 秒。\n该终端只能证明回放延迟，不能用于校准现场时间。",
+          "time": "2026-10-05T12:55:01"
+        },
+        {
+          "text": "两间都齐了。电梯那边还有记录，今天的表格够用。",
+          "time": "2026-10-05T12:55:39"
+        },
+        {
+          "text": "乘客轨迹已对齐。",
+          "time": "2026-10-05T13:33:23"
+        },
+        {
+          "text": "一楼门体持续开放八秒，完整覆盖六秒进入窗口。\n门体闭合后，轿厢指示立即由 1F 转为上行。",
+          "time": "2026-10-05T13:34:18"
+        },
+        {
+          "text": "一楼门体持续开放八秒，完整覆盖六秒进入窗口。\n门体闭合后，轿厢指示立即由 1F 转为上行。\n\n三楼到站铃在 18:50:12 响起，随后门机完整开启。\n轿厢内没有第二次起步记录，这里是离开一楼后的实际到站层。",
+          "time": "2026-10-05T13:39:38"
+        },
+        {
+          "text": "这间教室保留标准布局。用深色观察记录讲台、桌椅和入口边界，完成后回二楼 204。",
+          "time": "2026-10-05T13:41:08"
+        },
+        {
+          "text": "三楼晨间教室的讲台、桌椅和入口边界已经记录。",
+          "time": "2026-10-05T13:41:35"
+        },
+        {
+          "text": "每组桌椅原来的位置已经记下来了。",
+          "time": "2026-10-05T14:45:09"
+        },
+        {
+          "text": "窗沿粉尘断线与前三处桌面亮边位于同一水平带。",
+          "time": "2026-10-05T15:13:10"
+        },
+        {
+          "text": "中央地面的三段平行拖痕具有相同间距。",
+          "time": "2026-10-05T15:33:44"
+        },
+        {
+          "text": "讲台投影边缘经过三处桌脚留下的浅色缺口。",
+          "time": "2026-10-05T15:35:35"
+        },
+        {
+          "text": "门侧纸屑压痕在三处桌脚位置连续出现。",
+          "time": "2026-10-05T15:36:07"
+        },
+        {
+          "text": "每组桌椅原来的位置已经记下来了。",
+          "time": "2026-10-05T15:37:27"
+        },
+        {
+          "text": "A1 的三段值班记录还没有汇合。",
+          "time": "2026-10-05T16:29:19"
+        },
+        {
+          "text": "A1 的三段值班记录还没有汇合。",
+          "time": "2026-10-05T16:29:54"
+        },
+        {
+          "text": "设置与现场留下的痕迹不符。",
+          "time": "2026-10-05T16:32:03"
+        },
+        {
+          "text": "定位板已完成三轴校准。",
+          "time": "2026-10-05T16:32:41"
+        },
+        {
+          "text": "五区供电拓扑已恢复到停电前状态。",
+          "time": "2026-10-05T16:36:06"
+        },
+        {
+          "text": "202 到主楼梯的夜间疏散路线已记录。",
+          "time": "2026-10-05T16:40:09"
+        },
+        {
+          "text": "三楼参照已登记。现在可以进 204，按残影恢复讲台和桌椅位置。",
+          "time": "2026-10-05T16:45:48"
+        },
+        {
+          "text": "一楼门体持续开放八秒，完整覆盖六秒进入窗口。\n门体闭合后，轿厢指示立即由 1F 转为上行。\n\n二楼下行外呼在 18:50:04 被按下，按钮持续亮到 18:50:12。\n同一时间段没有二楼门机开启记录，层显由 1F 直接跳到 3F。\n\n三楼到站铃在 18:50:12 响起，随后门机完整开启。\n轿厢内没有第二次起步记录，这里是离开一楼后的实际到站层。",
+          "time": "2026-10-05T16:47:19"
+        },
+        {
+          "text": "三楼参照已登记。现在可以进 204，按残影恢复讲台和桌椅位置。",
+          "time": "2026-10-05T16:48:01"
+        },
+        {
+          "text": "停站判断与门机记录不符。",
+          "time": "2026-10-05T16:48:45"
+        },
+        {
+          "text": "停站记录已核对。",
+          "time": "2026-10-05T16:49:32"
+        },
+        {
+          "text": "A1 的三处调查已汇成一条值班记录。",
+          "time": "2026-10-05T16:54:05"
+        },
+        {
+          "text": "门框局部 / 楼层差 1",
+          "time": "2026-10-05T17:39:40"
+        }
+      ],
+      "mode": "light",
+      "page": "c4_notes",
+      "player": {
+        "scene": "duan_yongping_temporal_maze",
+        "world_x": 228.250442504883,
+        "world_y": 542.982238769531,
+        "x": 228.250442504883,
+        "y": 542.982238769531
+      },
+      "positions": {
+        "campus_bootstrap:": {
+          "x": 3371.83203125,
+          "y": 1371.46459960938
+        },
+        "campus_qizhen_loop:": {
+          "x": 9429.9755859375,
+          "y": 966.28173828125
+        },
+        "canteen_interior:": {
+          "x": 1349.0,
+          "y": 892.0
+        },
+        "dorm_hub:": {
+          "x": 575.059448242188,
+          "y": 179.274719238281
+        },
+        "duan_yongping_temporal_maze:A1:1225_bakery:bakery_hour_hand": {
+          "x": 933.249755859375,
+          "y": 160.872024536133
+        },
+        "duan_yongping_temporal_maze:A1:1225_bakery:room204_restore": {
+          "x": 933.249755859375,
+          "y": 160.872024536133
+        },
+        "duan_yongping_temporal_maze:A1:1850_evening:room204_restore": {
+          "x": 772.5,
+          "y": 200.314376831055
+        },
+        "duan_yongping_temporal_maze:A1:2245_opening:hall_clock_inspection": {
+          "x": 1061.00061035156,
+          "y": 163.307022094727
+        },
+        "duan_yongping_temporal_maze:A1:2245_opening:opening_handoff": {
+          "x": 1089.59350585938,
+          "y": 716.0
+        },
+        "duan_yongping_temporal_maze:A1:2245_opening:opening_paper_caught": {
+          "x": 1061.00061035156,
+          "y": 163.307022094727
+        },
+        "duan_yongping_temporal_maze:A2:1850_evening:room204_restore": {
+          "x": 228.250442504883,
+          "y": 542.982238769531
+        },
+        "duan_yongping_temporal_maze:A3:1850_evening:room204_restore": {
+          "x": 1012.20001220703,
+          "y": 264.245849609375
+        },
+        "library_interior:": {
+          "x": 1303.52941894531,
+          "y": 478.900726318359
+        },
+        "theater_interior:": {
+          "x": 871.974548339844,
+          "y": 847.245178222656
+        }
+      },
+      "scene": "duan_yongping_temporal_maze",
+      "selected_item": "",
+      "settings": {
+        "effects": true,
+        "music": true,
+        "reduced_motion": false,
+        "text_scale": 1.0,
+        "volume": 0.6
+      },
+      "tower_key_pending": false,
+      "wake_warned": true
+    },
+    "networkMode": "campus_wifi",
+    "phoneBattery": {
+      "lowPowerMode": true,
+      "percent": 1.0,
+      "rechargeCount": 1.0
+    },
+    "qizhenLake": {
+      "active": true,
+      "boardingLastSide": "right",
+      "boardingStrokeCount": 4.0,
+      "boardingTutorialCompleted": true,
+      "bridgeClueFound": true,
+      "capsizeCount": 2.0,
+      "chaseAttempts": 15.0,
+      "chaseBestDistance": 1000.0,
+      "chaseDistance": 1000.0,
+      "decoyAttempts": 0.0,
+      "decoyBaitAttached": true,
+      "decoyPlacedAt": null,
+      "directPaperCastFailures": 0.0,
+      "dockCollisionCount": 0.0,
+      "feedTinOpened": true,
+      "feedTinRetrieved": true,
+      "fishCaught": true,
+      "introSeen": false,
+      "journal": {
+        "fishingAssistConsumed": false,
+        "fishingAssistUnlocked": false,
+        "mainPhoto": null,
+        "mainStatusId": null,
+        "mainTitleId": null,
+        "memoryCardUnlocked": true,
+        "optionalPhotos": {},
+        "pendingDraft": null,
+        "publishedSpotIds": [],
+        "status": "archived",
+        "summaryChoice": "details_withheld",
+        "summaryPublished": true,
+        "threadId": "",
+        "threadSeed": 0.0
+      },
+      "kayakEquipped": true,
+      "lakeClueFound": true,
+      "leftPaddleEquipped": true,
+      "locationBriefingSeen": true,
+      "lockerOpened": true,
+      "magneticAttachmentBroken": true,
+      "magneticRodCombined": true,
+      "mapClueIds": [
+        "bridge",
+        "lake",
+        "reflection"
+      ],
+      "mistAttempts": 0.0,
+      "mistRhythmRead": false,
+      "mode": "light",
+      "netCombined": true,
+      "observedFishingSpotIds": [
+        "fish",
+        "locker_key",
+        "net_frame"
+      ],
+      "paperCaptured": true,
+      "paperReleased": false,
+      "phase": "complete",
+      "rainRescueCompleted": true,
+      "rainSafetyCleared": true,
+      "rainWarningSeen": true,
+      "reflectionClueFound": true,
+      "reflectionLocationObserved": false,
+      "reflectionMistakes": 0.0,
+      "reflectionRound": 0.0,
+      "rightPaddleEquipped": true,
+      "rodFound": true,
+      "safeSpawnId": "dock_entry",
+      "signRotations": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "signsSolved": false,
+      "swanAlertLevel": 0.0,
+      "swanFed": true,
+      "swanReleased": true,
+      "transitionReady": true,
+      "vehicle": "on_foot",
+      "weatherAdjustmentRequested": true,
+      "weatherControlAttempts": 1.0,
+      "weatherControlBestMoves": 24.0,
+      "zone": "dock"
+    },
+    "rpgCheckpoint": "c4_a2_corridor",
+    "rpgScene": "duan_yongping_temporal_maze",
+    "runtimeMode": "rpg",
+    "theaterHunt": {
+      "active": true,
+      "admitted": true,
+      "cc98TicketClaimedWave": 2.0,
+      "cc98TicketCommissionPhase": "delivered",
+      "collectedProgramIds": [
+        "spotlight",
+        "finale",
+        "opening"
+      ],
+      "decoyRevealed": true,
+      "managerHintRead": true,
+      "mode": "light",
+      "paperDusted": true,
+      "phase": "complete",
+      "posterCleaned": true,
+      "programOrder": [
+        "spotlight",
+        "opening",
+        "finale"
+      ],
+      "programWrongAttempts": 2.0,
+      "propBoxOpened": true,
+      "propGhostRead": true,
+      "spotlightMistakes": 3.0,
+      "spotlightRound": 3.0,
+      "ticketCodeAttempts": 3.0,
+      "ticketCodeRead": true
+    },
+    "themeMode": "normal",
+    "ui": {
+      "autoRotate": false,
+      "brightness": 19.0,
+      "controlCenterOpen": false,
+      "hiddenHomeAppIds": [],
+      "homeAppOrder": [
+        "wechat",
+        "tiyi",
+        "zjuding",
+        "settings",
+        "photos",
+        "timeline_recovery",
+        "voice_memos",
+        "cc98",
+        "control_center",
+        "clock"
+      ],
+      "inventoryOpen": false,
+      "libraryFinalsPhase": "friend_contacted",
+      "libraryFinalsPuzzle": {
+        "appliedBdReplyIds": [
+          "reply-seat-ticket",
+          "reply-visit-proof",
+          "reply-bag-nonperson"
+        ],
+        "archivedRuleBriefingSeen": true,
+        "archivedRuleCollected": true,
+        "archivedRuleRead": true,
+        "auditArrivalMinutes": 7.0,
+        "auditAttemptCount": 4.0,
+        "auditProofCount": 3.0,
+        "auditPublicNoticeFloor": 47.0,
+        "backpackEvicted": true,
+        "backpackInspected": true,
+        "bdCount": 3.0,
+        "bdPasswordAttemptCount": 1.0,
+        "bdSelectedPostIds": [
+          "bd-rule-count",
+          "bd-identity-zero",
+          "bd-seat-tail",
+          "bd-arrival-minutes"
+        ],
+        "callNumberCollected": true,
+        "catalogSearchCompleted": true,
+        "catalogUnlocked": true,
+        "cc98UploadedEvidenceIds": [
+          "archived_leave_rule",
+          "bag_non_person_proof",
+          "seat_022_receipt",
+          "library_presence_proof"
+        ],
+        "clueIds": [
+          "arrival_7_minutes",
+          "occupancy_note",
+          "public_notice_floor_47",
+          "call_number_755",
+          "archived_leave_rule",
+          "three_proof_requirements",
+          "borrowed_attendance_record"
+        ],
+        "entranceRecordRead": true,
+        "evictionPassGenerated": true,
+        "frontDeskProofRequestSeen": true,
+        "investigationOpened": true,
+        "itemReportGenerated": true,
+        "libraryVisitedPoints": [
+          "entrance",
+          "seat_022",
+          "catalog_terminal",
+          "shelf_755",
+          "front_desk",
+          "lost_found"
+        ],
+        "lostFoundStage": "stamped",
+        "nextQuestId": "chapter_three_canteen_hunt",
+        "nonPersonProofStamped": true,
+        "occupancyNoteCollected": true,
+        "optionalAc01Floors": [],
+        "passBriefingSeen": true,
+        "photoCaptured": true,
+        "photoDimmed": true,
+        "playerSeated": true,
+        "preBdBriefingSeen": true,
+        "presenceProofCollected": true,
+        "recoverySubmittedEvidenceIds": [
+          "bag_non_person_proof",
+          "seat_022_receipt",
+          "library_presence_proof"
+        ],
+        "seatReceiptCollected": true
+      },
+      "librarySeatReserved": true,
+      "librarySelectedSeat": "022",
+      "musicMuted": false,
+      "musicPlaying": false,
+      "seenChapterIntros": [
+        "chapter_three"
+      ],
+      "selectedItem": null,
+      "zjudingPage": "hub"
+    },
+    "wallet": {
+      "campusCardCents": 0.0,
+      "cashCents": 0.0
+    }
+  }
+}

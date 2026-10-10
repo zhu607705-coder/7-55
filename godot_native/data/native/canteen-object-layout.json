@@ -1,0 +1,4419 @@
+{
+  "world_size": [
+    1672,
+    941
+  ],
+  "background": {
+    "texture": "res://assets/native/canteen_objects/canteen_empty_floor.png",
+    "scale": 1,
+    "region": [
+      11,
+      1,
+      1659,
+      940
+    ]
+  },
+  "assets": {
+    "empty_floor": {
+      "texture": "res://assets/native/canteen_objects/canteen_empty_floor.png",
+      "canvas": [
+        1672,
+        941
+      ],
+      "alpha_bounds": [
+        11,
+        1,
+        1670,
+        941
+      ],
+      "sha256": "64e4fa405ab83883acc924aec9f385f22a64055f3dace4285b533c0b4bb8d547"
+    },
+    "bench_left": {
+      "texture": "res://assets/native/canteen_objects/canteen_bench_left.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        524,
+        289,
+        730,
+        980
+      ],
+      "sha256": "856420916c94236458ae6acfc7586f5da3d1c7c767476fc9c75a1c72bf58f125",
+      "long_surface_end": 550
+    },
+    "bench_right": {
+      "texture": "res://assets/native/canteen_objects/canteen_bench_right.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        539,
+        324,
+        715,
+        932
+      ],
+      "sha256": "2de1a563a06d21462ac085d055929969d859a0052167c40087f6cf0dc05e30d1",
+      "long_surface_end": 482
+    },
+    "dining_table": {
+      "texture": "res://assets/native/canteen_objects/canteen_dining_table.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        439,
+        286,
+        814,
+        968
+      ],
+      "sha256": "8ceb655c3ac3617ab144ce4aefbbda3e767fe2e5932c20a16fb3d949ad811d45",
+      "long_surface_end": 540
+    },
+    "dish_return_counter": {
+      "texture": "res://assets/native/canteen_objects/canteen_dish_return_counter.png",
+      "canvas": [
+        1774,
+        887
+      ],
+      "alpha_bounds": [
+        178,
+        170,
+        1598,
+        734
+      ],
+      "sha256": "726db3e5602a0e1f6ac905dc6de47aea0a7df70011a181157ffdb897d10ddbfa"
+    },
+    "double_door": {
+      "texture": "res://assets/native/canteen_objects/canteen_double_door.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        244,
+        232,
+        1010,
+        1023
+      ],
+      "sha256": "d2f5df50b71e106a84335807b703ae6b3385cc2fb5f96c805c9a09dc799cf36d"
+    },
+    "drink_dispenser": {
+      "texture": "res://assets/native/canteen_objects/canteen_drink_dispenser.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        436,
+        131,
+        820,
+        1124
+      ],
+      "sha256": "1844c0811de19523ea806786ee396dbc88b4a68ba43f3d96a925f37d4af9e650"
+    },
+    "drink_station_cabinet": {
+      "texture": "res://assets/native/canteen_objects/canteen_drink_station_cabinet.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        263,
+        315,
+        992,
+        946
+      ],
+      "sha256": "5babe6ca1dd72bb5503f866c856d704ec84fd2a32bbe5d4e627ff29ba1c38ed9"
+    },
+    "exit_floor_mat": {
+      "texture": "res://assets/native/canteen_objects/canteen_exit_floor_mat.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        296,
+        458,
+        959,
+        794
+      ],
+      "sha256": "e2ae6a821c8ab491e3e0a9527fe2c9734bc98ffbe8a6e703a43edfd142e19c50"
+    },
+    "green_menu_sign": {
+      "texture": "res://assets/native/canteen_objects/canteen_green_menu_sign.png",
+      "canvas": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        229,
+        292,
+        1943,
+        432
+      ],
+      "sha256": "b2872d79034c578b2c9590de24cef826a05cee573c0fc7f54aa6335578f68490"
+    },
+    "handcart": {
+      "texture": "res://assets/native/canteen_objects/canteen_handcart.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        227,
+        188,
+        1068,
+        1127
+      ],
+      "sha256": "2c47c29e76046aa0699bc18bd6c013a72c1e0daed79b451e03bd308798f90a40"
+    },
+    "handcart_front": {
+      "texture": "res://assets/native/canteen_objects/canteen_handcart_front.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        375,
+        257,
+        880,
+        996
+      ],
+      "sha256": "86df72023129bb1b7af8c30b3c77652f4b86d2e7ec0f1e979f07ff02b01f91e2"
+    },
+    "hanging_service_lamp": {
+      "texture": "res://assets/native/canteen_objects/canteen_hanging_service_lamp.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        431,
+        324,
+        824,
+        931
+      ],
+      "sha256": "170b0a42af72d2f6764a24d0f5611aa7551ee2eaaaefce75a8418b17a2101e1b"
+    },
+    "large_corner_tree": {
+      "texture": "res://assets/native/canteen_objects/canteen_large_corner_tree.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        197,
+        153,
+        1059,
+        1126
+      ],
+      "sha256": "ab99d91d426a3cb53e1dd3a67a4c916ea568299ecabb6ac0954005768fdb2e48"
+    },
+    "menu_board_bowls": {
+      "texture": "res://assets/native/canteen_objects/canteen_menu_board_bowls.png",
+      "canvas": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        445,
+        208,
+        1728,
+        538
+      ],
+      "sha256": "85520ba9a2dfe1336fd510f15a988fc9ddc29250acd8c4425e478a604d1d2ab4"
+    },
+    "menu_board_fried_food": {
+      "texture": "res://assets/native/canteen_objects/canteen_menu_board_fried_food.png",
+      "canvas": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        310,
+        173,
+        1863,
+        551
+      ],
+      "sha256": "3f9ace0fa64c6d3c642e326932d9e706f1c1f767a662db0244175b67388f494e"
+    },
+    "menu_board_plated_food": {
+      "texture": "res://assets/native/canteen_objects/canteen_menu_board_plated_food.png",
+      "canvas": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        342,
+        183,
+        1830,
+        545
+      ],
+      "sha256": "5a853069b034fb30d19f61fd25534597c3e2b076b8e9389799b2d20dfcc51231"
+    },
+    "menu_board_salad": {
+      "texture": "res://assets/native/canteen_objects/canteen_menu_board_salad.png",
+      "canvas": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        406,
+        181,
+        1766,
+        550
+      ],
+      "sha256": "456f7b45fecb70542ae1bafd0b87eddef21677487d962b8e80b018eb95dcda6d"
+    },
+    "menu_board_steam_food": {
+      "texture": "res://assets/native/canteen_objects/canteen_menu_board_steam_food.png",
+      "canvas": [
+        1774,
+        887
+      ],
+      "alpha_bounds": [
+        384,
+        265,
+        1390,
+        628
+      ],
+      "sha256": "8bd102168dc2688e017993a361dace4b25e2cc140b35602320babf7b3c394bff"
+    },
+    "payment_terminal": {
+      "texture": "res://assets/native/canteen_objects/canteen_payment_terminal.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        432,
+        377,
+        823,
+        919
+      ],
+      "sha256": "c2bb44311cf046ed7682e4ae93b1a655473e1feea46634f71ed471249eea8899"
+    },
+    "red_bin": {
+      "texture": "res://assets/native/canteen_objects/canteen_red_bin.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        410,
+        281,
+        844,
+        981
+      ],
+      "sha256": "fbe132d3b1582d6c14e5462a306db4405f08f76a5b27faa02ba965554c8591c6"
+    },
+    "refrigerated_drink_machine": {
+      "texture": "res://assets/native/canteen_objects/canteen_refrigerated_drink_machine.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        440,
+        241,
+        814,
+        998
+      ],
+      "sha256": "b5416b264c714e790177e3038c3c582f6b2b8c3c75f739fbe534d6b1e11a9ce6"
+    },
+    "serving_counter": {
+      "texture": "res://assets/native/canteen_objects/canteen_serving_counter.png",
+      "canvas": [
+        1774,
+        887
+      ],
+      "alpha_bounds": [
+        349,
+        225,
+        1425,
+        654
+      ],
+      "sha256": "b2ebba795809c288556e4f812099ce71b6f68f3c296560a757b32bef4f1798da",
+      "wall_back": true
+    },
+    "serving_counter_south": {
+      "texture": "res://assets/native/canteen_objects/canteen_serving_counter_south.png",
+      "canvas": [
+        1983,
+        793
+      ],
+      "alpha_bounds": [
+        211,
+        177,
+        1774,
+        609
+      ],
+      "sha256": "b7ffc7ebef0eabac0bd346d7f5a0bcd2c2f9c91c1f3237ad29a26e839f9227d6"
+    },
+    "side_service_cabinet": {
+      "texture": "res://assets/native/canteen_objects/canteen_side_service_cabinet.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        314,
+        490,
+        940,
+        824
+      ],
+      "sha256": "78c8d6094aebcf7d17ad471d34fbb404325422b67bf49232f4935cf7d33a7296"
+    },
+    "single_food_tray": {
+      "texture": "res://assets/native/canteen_objects/canteen_single_food_tray.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        255,
+        486,
+        999,
+        814
+      ],
+      "sha256": "92071a936fba35b797230bed3febe231bd4524c5910d9efcef464913ccc0aad0"
+    },
+    "single_tray_stack": {
+      "texture": "res://assets/native/canteen_objects/canteen_single_tray_stack.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        226,
+        269,
+        1027,
+        1011
+      ],
+      "sha256": "d995537b8f27b3b9ee467b9147d7e76f95c81a62ccaae63e87cc87b595c28346"
+    },
+    "small_green_sign": {
+      "texture": "res://assets/native/canteen_objects/canteen_small_green_sign.png",
+      "canvas": [
+        2172,
+        724
+      ],
+      "alpha_bounds": [
+        560,
+        253,
+        1612,
+        471
+      ],
+      "sha256": "16c690aa91c05c2e1d6ee864da3d175f4bb8de28183d937d9041ae9bb4ecc904"
+    },
+    "small_tabletop_plant": {
+      "texture": "res://assets/native/canteen_objects/canteen_small_tabletop_plant.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        482,
+        397,
+        778,
+        884
+      ],
+      "sha256": "969337f6b73fe2fb6fadc7e7d2cd37ed5e58227e012dcdd367295a386d31987c"
+    },
+    "square_plant_wood_pot": {
+      "texture": "res://assets/native/canteen_objects/canteen_square_plant_wood_pot.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        315,
+        243,
+        942,
+        1011
+      ],
+      "sha256": "3f5b86f0ffd37dd850e6cd8023050722a1fca3541633fd4f785adf839f90eaaf"
+    },
+    "steam_serving_counter": {
+      "texture": "res://assets/native/canteen_objects/canteen_steam_serving_counter.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        265,
+        310,
+        989,
+        936
+      ],
+      "sha256": "8f2e32fdc469b48022728f12681a8b7ceb0300440ade2d73b016d1d6527e9047"
+    },
+    "tray_stack_station": {
+      "texture": "res://assets/native/canteen_objects/canteen_tray_stack_station.png",
+      "canvas": [
+        1891,
+        831
+      ],
+      "alpha_bounds": [
+        185,
+        190,
+        1707,
+        640
+      ],
+      "sha256": "a57b27df9142e8b1f74779631e41dd55608098338d71ea77c503b9e5a52f64ca"
+    },
+    "vending_machine_blue_screen": {
+      "texture": "res://assets/native/canteen_objects/canteen_vending_machine_blue_screen.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        475,
+        265,
+        779,
+        971
+      ],
+      "sha256": "be506fc41f61db9f4a86dd18d455b65ceb62ae9ad1a275e8ecc485d1622737a7"
+    },
+    "wall_vent_grille": {
+      "texture": "res://assets/native/canteen_objects/canteen_wall_vent_grille.png",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        300,
+        322,
+        954,
+        933
+      ],
+      "sha256": "99c50a3fee2342e5e1f7e6380fa9714456125db2037ce6e0cbd5e131c312ba95"
+    },
+    "mixer_clean_worktop": {
+      "texture": "res://assets/native/mixer/canteen_tasting_counter_clean_background.png",
+      "canvas": [
+        1536,
+        1024
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "source_bounds": [
+        465,
+        460,
+        1035,
+        955
+      ],
+      "sha256": "1c11116324f137a9795025ae069320424a96abf01cda4e2b13baa739b6244e85"
+    }
+  },
+  "objects": [
+    {
+      "id": "menu_board_1",
+      "asset": "menu_board_fried_food",
+      "position": [
+        301.0,
+        117
+      ],
+      "scale": 0.1596909207984546,
+      "depth": 117,
+      "targets": [],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "serving_window_1",
+      "asset": "serving_counter",
+      "position": [
+        301.0,
+        241
+      ],
+      "scale": 0.23048327137546468,
+      "depth": 241,
+      "targets": [
+        "pickup_window_1"
+      ],
+      "footprint": [
+        [
+          -121.0,
+          -33.618
+        ],
+        [
+          121.0,
+          -33.618
+        ],
+        [
+          124.0,
+          -2
+        ],
+        [
+          -124.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "menu_board_2",
+      "asset": "menu_board_salad",
+      "position": [
+        550.0,
+        117
+      ],
+      "scale": 0.17615176151761516,
+      "depth": 117,
+      "targets": [],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "serving_window_2",
+      "asset": "serving_counter",
+      "position": [
+        550.0,
+        241
+      ],
+      "scale": 0.2258364312267658,
+      "depth": 241,
+      "targets": [
+        "pickup_window_2"
+      ],
+      "footprint": [
+        [
+          -118.5,
+          -32.941
+        ],
+        [
+          118.5,
+          -32.941
+        ],
+        [
+          121.5,
+          -2
+        ],
+        [
+          -121.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "menu_board_3",
+      "asset": "menu_board_bowls",
+      "position": [
+        790.0,
+        117
+      ],
+      "scale": 0.18550272798129383,
+      "depth": 117,
+      "targets": [],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "serving_window_3",
+      "asset": "serving_counter",
+      "position": [
+        790.0,
+        241
+      ],
+      "scale": 0.2211895910780669,
+      "depth": 241,
+      "targets": [
+        "pickup_window_3"
+      ],
+      "footprint": [
+        [
+          -116.0,
+          -32.263
+        ],
+        [
+          116.0,
+          -32.263
+        ],
+        [
+          119.0,
+          -2
+        ],
+        [
+          -119.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "menu_board_4",
+      "asset": "menu_board_plated_food",
+      "position": [
+        1035.0,
+        117
+      ],
+      "scale": 0.1586021505376344,
+      "depth": 117,
+      "targets": [],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "serving_window_4",
+      "asset": "serving_counter",
+      "position": [
+        1035.0,
+        241
+      ],
+      "scale": 0.21933085501858737,
+      "depth": 241,
+      "targets": [
+        "pickup_window_4"
+      ],
+      "footprint": [
+        [
+          -115.0,
+          -31.992
+        ],
+        [
+          115.0,
+          -31.992
+        ],
+        [
+          118.0,
+          -2
+        ],
+        [
+          -118.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "menu_board_5",
+      "asset": "menu_board_steam_food",
+      "position": [
+        1235.0,
+        117
+      ],
+      "scale": 0.13518886679920478,
+      "depth": 117,
+      "targets": [],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "serving_window_5",
+      "asset": "steam_serving_counter",
+      "position": [
+        1235.0,
+        241
+      ],
+      "scale": 0.1878453038674033,
+      "depth": 241,
+      "targets": [
+        "pickup_window_5"
+      ],
+      "footprint": [
+        [
+          -65.0,
+          -39.981
+        ],
+        [
+          65.0,
+          -39.981
+        ],
+        [
+          68.0,
+          -2
+        ],
+        [
+          -68.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "ordering_terminal",
+      "asset": "payment_terminal",
+      "position": [
+        790.0,
+        226
+      ],
+      "scale": 0.07749077490774908,
+      "depth": 246,
+      "targets": [
+        "ordering_kiosk"
+      ],
+      "terminal_screen": true
+    },
+    {
+      "id": "dining_1_1_table",
+      "asset": "dining_table",
+      "position": [
+        227.0,
+        403
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 403,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_1_1"
+    },
+    {
+      "id": "dining_1_1_bench_left",
+      "asset": "bench_left",
+      "position": [
+        194.0,
+        408
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_1"
+    },
+    {
+      "id": "dining_1_1_bench_right",
+      "asset": "bench_right",
+      "position": [
+        264.5,
+        408
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_1"
+    },
+    {
+      "id": "dining_1_1_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        227.0,
+        359
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 359,
+      "targets": [],
+      "supported_by": "dining_1_1_table"
+    },
+    {
+      "id": "dining_1_2_table",
+      "asset": "dining_table",
+      "position": [
+        376.0,
+        403
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 403,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_1_2"
+    },
+    {
+      "id": "dining_1_2_bench_left",
+      "asset": "bench_left",
+      "position": [
+        343.0,
+        408
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_2"
+    },
+    {
+      "id": "dining_1_2_bench_right",
+      "asset": "bench_right",
+      "position": [
+        413.5,
+        408
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_2"
+    },
+    {
+      "id": "dining_1_2_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        376.0,
+        359
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 359,
+      "targets": [],
+      "supported_by": "dining_1_2_table"
+    },
+    {
+      "id": "dining_1_3_table",
+      "asset": "dining_table",
+      "position": [
+        525.0,
+        403
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 403,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_1_3"
+    },
+    {
+      "id": "dining_1_3_bench_left",
+      "asset": "bench_left",
+      "position": [
+        492.0,
+        408
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_3"
+    },
+    {
+      "id": "dining_1_3_bench_right",
+      "asset": "bench_right",
+      "position": [
+        562.5,
+        408
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_3"
+    },
+    {
+      "id": "dining_1_3_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        525.0,
+        359
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 359,
+      "targets": [],
+      "supported_by": "dining_1_3_table"
+    },
+    {
+      "id": "dining_1_4_table",
+      "asset": "dining_table",
+      "position": [
+        675.0,
+        403
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 403,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_1_4"
+    },
+    {
+      "id": "dining_1_4_bench_left",
+      "asset": "bench_left",
+      "position": [
+        642.0,
+        408
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_4"
+    },
+    {
+      "id": "dining_1_4_bench_right",
+      "asset": "bench_right",
+      "position": [
+        712.5,
+        408
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_4"
+    },
+    {
+      "id": "dining_1_4_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        675.0,
+        359
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 359,
+      "targets": [],
+      "supported_by": "dining_1_4_table"
+    },
+    {
+      "id": "dining_1_5_table",
+      "asset": "dining_table",
+      "position": [
+        831.0,
+        403
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 403,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_1_5"
+    },
+    {
+      "id": "dining_1_5_bench_left",
+      "asset": "bench_left",
+      "position": [
+        798.0,
+        408
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_5"
+    },
+    {
+      "id": "dining_1_5_bench_right",
+      "asset": "bench_right",
+      "position": [
+        868.5,
+        408
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_5"
+    },
+    {
+      "id": "dining_1_5_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        831.0,
+        359
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 359,
+      "targets": [],
+      "supported_by": "dining_1_5_table"
+    },
+    {
+      "id": "dining_1_6_table",
+      "asset": "dining_table",
+      "position": [
+        985.0,
+        403
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 403,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_1_6"
+    },
+    {
+      "id": "dining_1_6_bench_left",
+      "asset": "bench_left",
+      "position": [
+        952.0,
+        408
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_6"
+    },
+    {
+      "id": "dining_1_6_bench_right",
+      "asset": "bench_right",
+      "position": [
+        1022.5,
+        408
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_6"
+    },
+    {
+      "id": "dining_1_6_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        985.0,
+        359
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 359,
+      "targets": [],
+      "supported_by": "dining_1_6_table"
+    },
+    {
+      "id": "dining_1_7_table",
+      "asset": "dining_table",
+      "position": [
+        1144.0,
+        403
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 403,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_1_7"
+    },
+    {
+      "id": "dining_1_7_bench_left",
+      "asset": "bench_left",
+      "position": [
+        1111.0,
+        408
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_7"
+    },
+    {
+      "id": "dining_1_7_bench_right",
+      "asset": "bench_right",
+      "position": [
+        1181.5,
+        408
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 408,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_1_7"
+    },
+    {
+      "id": "dining_1_7_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        1144.0,
+        359
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 359,
+      "targets": [],
+      "supported_by": "dining_1_7_table"
+    },
+    {
+      "id": "dining_2_1_table",
+      "asset": "dining_table",
+      "position": [
+        227.0,
+        512
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 512,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_2_1"
+    },
+    {
+      "id": "dining_2_1_bench_left",
+      "asset": "bench_left",
+      "position": [
+        194.0,
+        517
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_1"
+    },
+    {
+      "id": "dining_2_1_bench_right",
+      "asset": "bench_right",
+      "position": [
+        264.5,
+        517
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_1"
+    },
+    {
+      "id": "dining_2_1_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        227.0,
+        468
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 468,
+      "targets": [],
+      "supported_by": "dining_2_1_table"
+    },
+    {
+      "id": "dining_2_2_table",
+      "asset": "dining_table",
+      "position": [
+        376.0,
+        512
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 512,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_2_2"
+    },
+    {
+      "id": "dining_2_2_bench_left",
+      "asset": "bench_left",
+      "position": [
+        343.0,
+        517
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_2"
+    },
+    {
+      "id": "dining_2_2_bench_right",
+      "asset": "bench_right",
+      "position": [
+        413.5,
+        517
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_2"
+    },
+    {
+      "id": "dining_2_2_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        376.0,
+        468
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 468,
+      "targets": [],
+      "supported_by": "dining_2_2_table"
+    },
+    {
+      "id": "dining_2_3_table",
+      "asset": "dining_table",
+      "position": [
+        525.0,
+        512
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 512,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_2_3"
+    },
+    {
+      "id": "dining_2_3_bench_left",
+      "asset": "bench_left",
+      "position": [
+        492.0,
+        517
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_3"
+    },
+    {
+      "id": "dining_2_3_bench_right",
+      "asset": "bench_right",
+      "position": [
+        562.5,
+        517
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_3"
+    },
+    {
+      "id": "dining_2_3_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        525.0,
+        468
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 468,
+      "targets": [],
+      "supported_by": "dining_2_3_table"
+    },
+    {
+      "id": "dining_2_4_table",
+      "asset": "dining_table",
+      "position": [
+        675.0,
+        512
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 512,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_2_4"
+    },
+    {
+      "id": "dining_2_4_bench_left",
+      "asset": "bench_left",
+      "position": [
+        642.0,
+        517
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_4"
+    },
+    {
+      "id": "dining_2_4_bench_right",
+      "asset": "bench_right",
+      "position": [
+        712.5,
+        517
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_4"
+    },
+    {
+      "id": "dining_2_4_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        675.0,
+        468
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 468,
+      "targets": [],
+      "supported_by": "dining_2_4_table"
+    },
+    {
+      "id": "dining_2_5_table",
+      "asset": "dining_table",
+      "position": [
+        831.0,
+        512
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 512,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_2_5"
+    },
+    {
+      "id": "dining_2_5_bench_left",
+      "asset": "bench_left",
+      "position": [
+        798.0,
+        517
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_5"
+    },
+    {
+      "id": "dining_2_5_bench_right",
+      "asset": "bench_right",
+      "position": [
+        868.5,
+        517
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_5"
+    },
+    {
+      "id": "dining_2_5_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        831.0,
+        468
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 468,
+      "targets": [],
+      "supported_by": "dining_2_5_table"
+    },
+    {
+      "id": "dining_2_6_table",
+      "asset": "dining_table",
+      "position": [
+        985.0,
+        512
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 512,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_2_6"
+    },
+    {
+      "id": "dining_2_6_bench_left",
+      "asset": "bench_left",
+      "position": [
+        952.0,
+        517
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_6"
+    },
+    {
+      "id": "dining_2_6_bench_right",
+      "asset": "bench_right",
+      "position": [
+        1022.5,
+        517
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_6"
+    },
+    {
+      "id": "dining_2_6_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        985.0,
+        468
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 468,
+      "targets": [],
+      "supported_by": "dining_2_6_table"
+    },
+    {
+      "id": "dining_2_7_table",
+      "asset": "dining_table",
+      "position": [
+        1144.0,
+        512
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 512,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_2_7"
+    },
+    {
+      "id": "dining_2_7_bench_left",
+      "asset": "bench_left",
+      "position": [
+        1111.0,
+        517
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_7"
+    },
+    {
+      "id": "dining_2_7_bench_right",
+      "asset": "bench_right",
+      "position": [
+        1181.5,
+        517
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 517,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_2_7"
+    },
+    {
+      "id": "dining_2_7_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        1144.0,
+        468
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 468,
+      "targets": [],
+      "supported_by": "dining_2_7_table"
+    },
+    {
+      "id": "dining_3_1_table",
+      "asset": "dining_table",
+      "position": [
+        227.0,
+        621
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 621,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_3_1"
+    },
+    {
+      "id": "dining_3_1_bench_left",
+      "asset": "bench_left",
+      "position": [
+        194.0,
+        626
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_1"
+    },
+    {
+      "id": "dining_3_1_bench_right",
+      "asset": "bench_right",
+      "position": [
+        264.5,
+        626
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_1"
+    },
+    {
+      "id": "dining_3_1_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        227.0,
+        577
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 577,
+      "targets": [],
+      "supported_by": "dining_3_1_table"
+    },
+    {
+      "id": "dining_3_2_table",
+      "asset": "dining_table",
+      "position": [
+        376.0,
+        621
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 621,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_3_2"
+    },
+    {
+      "id": "dining_3_2_bench_left",
+      "asset": "bench_left",
+      "position": [
+        343.0,
+        626
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_2"
+    },
+    {
+      "id": "dining_3_2_bench_right",
+      "asset": "bench_right",
+      "position": [
+        413.5,
+        626
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_2"
+    },
+    {
+      "id": "dining_3_2_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        376.0,
+        577
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 577,
+      "targets": [],
+      "supported_by": "dining_3_2_table"
+    },
+    {
+      "id": "dining_3_3_table",
+      "asset": "dining_table",
+      "position": [
+        525.0,
+        621
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 621,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_3_3"
+    },
+    {
+      "id": "dining_3_3_bench_left",
+      "asset": "bench_left",
+      "position": [
+        492.0,
+        626
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_3"
+    },
+    {
+      "id": "dining_3_3_bench_right",
+      "asset": "bench_right",
+      "position": [
+        562.5,
+        626
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_3"
+    },
+    {
+      "id": "dining_3_3_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        525.0,
+        577
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 577,
+      "targets": [],
+      "supported_by": "dining_3_3_table"
+    },
+    {
+      "id": "dining_3_4_table",
+      "asset": "dining_table",
+      "position": [
+        675.0,
+        621
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 621,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_3_4"
+    },
+    {
+      "id": "dining_3_4_bench_left",
+      "asset": "bench_left",
+      "position": [
+        642.0,
+        626
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_4"
+    },
+    {
+      "id": "dining_3_4_bench_right",
+      "asset": "bench_right",
+      "position": [
+        712.5,
+        626
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_4"
+    },
+    {
+      "id": "dining_3_4_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        675.0,
+        577
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 577,
+      "targets": [],
+      "supported_by": "dining_3_4_table"
+    },
+    {
+      "id": "dining_3_5_table",
+      "asset": "dining_table",
+      "position": [
+        831.0,
+        621
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 621,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_3_5"
+    },
+    {
+      "id": "dining_3_5_bench_left",
+      "asset": "bench_left",
+      "position": [
+        798.0,
+        626
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_5"
+    },
+    {
+      "id": "dining_3_5_bench_right",
+      "asset": "bench_right",
+      "position": [
+        868.5,
+        626
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_5"
+    },
+    {
+      "id": "dining_3_5_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        831.0,
+        577
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 577,
+      "targets": [],
+      "supported_by": "dining_3_5_table"
+    },
+    {
+      "id": "dining_3_6_table",
+      "asset": "dining_table",
+      "position": [
+        985.0,
+        621
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 621,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_3_6"
+    },
+    {
+      "id": "dining_3_6_bench_left",
+      "asset": "bench_left",
+      "position": [
+        952.0,
+        626
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_6"
+    },
+    {
+      "id": "dining_3_6_bench_right",
+      "asset": "bench_right",
+      "position": [
+        1022.5,
+        626
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_6"
+    },
+    {
+      "id": "dining_3_6_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        985.0,
+        577
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 577,
+      "targets": [],
+      "supported_by": "dining_3_6_table"
+    },
+    {
+      "id": "dining_3_7_table",
+      "asset": "dining_table",
+      "position": [
+        1144.0,
+        621
+      ],
+      "scale": 0.12903225806451613,
+      "depth": 621,
+      "targets": [],
+      "footprint": [
+        [
+          -23.193548387096772,
+          -77.44
+        ],
+        [
+          23.193548387096772,
+          -77.44
+        ],
+        [
+          24.193548387096772,
+          -2
+        ],
+        [
+          -24.193548387096772,
+          -2
+        ]
+      ],
+      "front_slice": 0.67,
+      "back_depth": 1,
+      "navigation_group": "dining_3_7"
+    },
+    {
+      "id": "dining_3_7_bench_left",
+      "asset": "bench_left",
+      "position": [
+        1111.0,
+        626
+      ],
+      "scale": 0.11650485436893204,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -11.0,
+          -68.42912621359224
+        ],
+        [
+          11.0,
+          -68.42912621359224
+        ],
+        [
+          12.0,
+          -2
+        ],
+        [
+          -12.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_7"
+    },
+    {
+      "id": "dining_3_7_bench_right",
+      "asset": "bench_right",
+      "position": [
+        1181.5,
+        626
+      ],
+      "scale": 0.13068181818181818,
+      "depth": 626,
+      "targets": [],
+      "footprint": [
+        [
+          -10.5,
+          -67.53636363636363
+        ],
+        [
+          10.5,
+          -67.53636363636363
+        ],
+        [
+          11.5,
+          -2
+        ],
+        [
+          -11.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dining_3_7"
+    },
+    {
+      "id": "dining_3_7_plant",
+      "asset": "small_tabletop_plant",
+      "position": [
+        1144.0,
+        577
+      ],
+      "scale": 0.0513347022587269,
+      "depth": 577,
+      "targets": [],
+      "supported_by": "dining_3_7_table"
+    },
+    {
+      "id": "drink_machine_sparkling",
+      "asset": "drink_dispenser",
+      "position": [
+        1421.0,
+        196
+      ],
+      "scale": 0.10070493454179255,
+      "depth": 196,
+      "targets": [
+        "drink-machine-sparkling"
+      ],
+      "footprint": [
+        [
+          -18.335,
+          -20.0
+        ],
+        [
+          18.335,
+          -20.0
+        ],
+        [
+          19.335,
+          -2
+        ],
+        [
+          -19.335,
+          -2
+        ]
+      ],
+      "navigation_group": "north_drinks",
+      "screen_role": "sparkling"
+    },
+    {
+      "id": "drink_machine_lemon",
+      "asset": "drink_dispenser",
+      "position": [
+        1473.0,
+        196
+      ],
+      "scale": 0.10070493454179255,
+      "depth": 196,
+      "targets": [
+        "drink-machine-lemon"
+      ],
+      "footprint": [
+        [
+          -18.335,
+          -20.0
+        ],
+        [
+          18.335,
+          -20.0
+        ],
+        [
+          19.335,
+          -2
+        ],
+        [
+          -19.335,
+          -2
+        ]
+      ],
+      "navigation_group": "north_drinks",
+      "screen_role": "lemon"
+    },
+    {
+      "id": "drink_machine_coffee",
+      "asset": "drink_dispenser",
+      "position": [
+        1525.0,
+        196
+      ],
+      "scale": 0.10070493454179255,
+      "depth": 196,
+      "targets": [
+        "drink-machine-coffee"
+      ],
+      "footprint": [
+        [
+          -18.335,
+          -20.0
+        ],
+        [
+          18.335,
+          -20.0
+        ],
+        [
+          19.335,
+          -2
+        ],
+        [
+          -19.335,
+          -2
+        ]
+      ],
+      "navigation_group": "north_drinks",
+      "screen_role": "coffee"
+    },
+    {
+      "id": "drink_machine_spare",
+      "asset": "vending_machine_blue_screen",
+      "position": [
+        1378.0,
+        196
+      ],
+      "scale": 0.13815789473684212,
+      "depth": 196,
+      "targets": [],
+      "footprint": [
+        [
+          -20.0,
+          -19.508
+        ],
+        [
+          20.0,
+          -19.508
+        ],
+        [
+          21.0,
+          -2
+        ],
+        [
+          -21.0,
+          -2
+        ]
+      ],
+      "navigation_group": "north_drinks"
+    },
+    {
+      "id": "drink_fridge",
+      "asset": "refrigerated_drink_machine",
+      "position": [
+        1568.5,
+        224
+      ],
+      "scale": 0.17040951122853368,
+      "depth": 224,
+      "targets": [],
+      "footprint": [
+        [
+          -29.867,
+          -21.93
+        ],
+        [
+          29.867,
+          -21.93
+        ],
+        [
+          31.867,
+          -2
+        ],
+        [
+          -31.867,
+          -2
+        ]
+      ],
+      "navigation_group": "north_drinks"
+    },
+    {
+      "id": "drink_shelf",
+      "asset": "drink_station_cabinet",
+      "position": [
+        1422.5,
+        355
+      ],
+      "scale": 0.14421553090332806,
+      "depth": 355,
+      "targets": [
+        "drink-bottle-shelf"
+      ],
+      "footprint": [
+        [
+          -49.567,
+          -34.58
+        ],
+        [
+          49.567,
+          -34.58
+        ],
+        [
+          52.567,
+          -2
+        ],
+        [
+          -52.567,
+          -2
+        ]
+      ],
+      "front_slice": 0.75,
+      "back_depth": 1,
+      "navigation_group": "east_shelf"
+    },
+    {
+      "id": "side_cabinet",
+      "asset": "side_service_cabinet",
+      "position": [
+        1542.0,
+        384
+      ],
+      "scale": 0.18849840255591055,
+      "depth": 384,
+      "targets": [],
+      "footprint": [
+        [
+          -57.0,
+          -30.22
+        ],
+        [
+          57.0,
+          -30.22
+        ],
+        [
+          59.0,
+          -2
+        ],
+        [
+          -59.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.8,
+      "back_depth": 1,
+      "navigation_group": "east_shelf"
+    },
+    {
+      "id": "shelf_sign",
+      "asset": "small_green_sign",
+      "position": [
+        1420.5,
+        270
+      ],
+      "scale": 0.10741444866920152,
+      "depth": 270,
+      "targets": [],
+      "supported_by": "drink_shelf"
+    },
+    {
+      "id": "dish_return",
+      "asset": "dish_return_counter",
+      "position": [
+        1443.5,
+        588
+      ],
+      "scale": 0.24113475177304963,
+      "depth": 588,
+      "targets": [],
+      "footprint": [
+        [
+          -168.206,
+          -43.52
+        ],
+        [
+          168.206,
+          -43.52
+        ],
+        [
+          171.206,
+          -2
+        ],
+        [
+          -171.206,
+          -2
+        ]
+      ],
+      "front_slice": 0.7,
+      "back_depth": 1,
+      "navigation_group": "dish_return"
+    },
+    {
+      "id": "tray_station",
+      "asset": "tray_stack_station",
+      "position": [
+        1456.5,
+        730
+      ],
+      "scale": 0.221419185282523,
+      "depth": 730,
+      "targets": [],
+      "footprint": [
+        [
+          -165.5,
+          -39.855
+        ],
+        [
+          165.5,
+          -39.855
+        ],
+        [
+          168.5,
+          -2
+        ],
+        [
+          -168.5,
+          -2
+        ]
+      ],
+      "front_slice": 0.78,
+      "back_depth": 1,
+      "navigation_group": "tray_station"
+    },
+    {
+      "id": "southwest_kiosk_0",
+      "asset": "vending_machine_blue_screen",
+      "position": [
+        172.0,
+        818
+      ],
+      "scale": 0.141643059490085,
+      "depth": 818,
+      "targets": [],
+      "footprint": [
+        [
+          -20.53,
+          -20.0
+        ],
+        [
+          20.53,
+          -20.0
+        ],
+        [
+          21.53,
+          -2
+        ],
+        [
+          -21.53,
+          -2
+        ]
+      ],
+      "navigation_group": "mix_kiosks"
+    },
+    {
+      "id": "southwest_kiosk_1",
+      "asset": "vending_machine_blue_screen",
+      "position": [
+        340.0,
+        818
+      ],
+      "scale": 0.141643059490085,
+      "depth": 818,
+      "targets": [],
+      "footprint": [
+        [
+          -20.53,
+          -20.0
+        ],
+        [
+          20.53,
+          -20.0
+        ],
+        [
+          21.53,
+          -2
+        ],
+        [
+          -21.53,
+          -2
+        ]
+      ],
+      "navigation_group": "mix_kiosks"
+    },
+    {
+      "id": "southwest_kiosk_2",
+      "asset": "vending_machine_blue_screen",
+      "position": [
+        396.0,
+        818
+      ],
+      "scale": 0.141643059490085,
+      "depth": 818,
+      "targets": [],
+      "footprint": [
+        [
+          -20.53,
+          -20.0
+        ],
+        [
+          20.53,
+          -20.0
+        ],
+        [
+          21.53,
+          -2
+        ],
+        [
+          -21.53,
+          -2
+        ]
+      ],
+      "navigation_group": "mix_kiosks"
+    },
+    {
+      "id": "mixer_counter",
+      "asset": "mixer_clean_worktop",
+      "position": [
+        260.0,
+        817
+      ],
+      "scale": 0.2,
+      "depth": 817,
+      "targets": [
+        "canteen-mixer"
+      ],
+      "footprint": [
+        [
+          -54.0,
+          -31.576
+        ],
+        [
+          54.0,
+          -31.576
+        ],
+        [
+          57.0,
+          -2
+        ],
+        [
+          -57.0,
+          -2
+        ]
+      ],
+      "front_slice": 0.77,
+      "back_depth": 1,
+      "navigation_group": "mix_kiosks",
+      "mixer": true
+    },
+    {
+      "id": "south_counter",
+      "asset": "serving_counter_south",
+      "position": [
+        816.5,
+        850
+      ],
+      "scale": 0.3055555555555556,
+      "depth": 850,
+      "targets": [],
+      "footprint": [
+        [
+          -235.792,
+          -42.24
+        ],
+        [
+          235.792,
+          -42.24
+        ],
+        [
+          238.792,
+          -2
+        ],
+        [
+          -238.792,
+          -2
+        ]
+      ],
+      "front_slice": 0.73,
+      "back_depth": 1,
+      "navigation_group": "south_counter"
+    },
+    {
+      "id": "south_menu",
+      "asset": "green_menu_sign",
+      "position": [
+        823.0,
+        721
+      ],
+      "scale": 0.20714285714285716,
+      "depth": 721,
+      "targets": [],
+      "supported_by": "south_counter"
+    },
+    {
+      "id": "west_door",
+      "asset": "double_door",
+      "position": [
+        88.0,
+        297
+      ],
+      "scale": 0.10182767624020887,
+      "depth": 297,
+      "targets": [],
+      "door": "west"
+    },
+    {
+      "id": "west_mat",
+      "asset": "exit_floor_mat",
+      "position": [
+        89.0,
+        333
+      ],
+      "scale": 0.09653092006033183,
+      "depth": 333,
+      "targets": [],
+      "ground_plane": true
+    },
+    {
+      "id": "southeast_door",
+      "asset": "double_door",
+      "position": [
+        1349.0,
+        900
+      ],
+      "scale": 0.11488250652741515,
+      "depth": 900,
+      "targets": [
+        "southeast_exit"
+      ],
+      "door": "southeast"
+    },
+    {
+      "id": "southeast_mat",
+      "asset": "exit_floor_mat",
+      "position": [
+        1352.0,
+        935
+      ],
+      "scale": 0.10416666666666667,
+      "depth": 935,
+      "targets": [],
+      "ground_plane": true
+    },
+    {
+      "id": "decorative_cart_0",
+      "asset": "handcart",
+      "position": [
+        175.5,
+        308
+      ],
+      "scale": 0.07028753993610223,
+      "depth": 308,
+      "targets": [],
+      "footprint": [
+        [
+          -23.714,
+          -20.46
+        ],
+        [
+          23.714,
+          -20.46
+        ],
+        [
+          25.714,
+          -2
+        ],
+        [
+          -25.714,
+          -2
+        ]
+      ],
+      "decorative_cart": true
+    },
+    {
+      "id": "decorative_cart_1",
+      "asset": "handcart_front",
+      "position": [
+        1467.5,
+        415
+      ],
+      "scale": 0.08389715832205684,
+      "depth": 415,
+      "targets": [],
+      "footprint": [
+        [
+          -16.43,
+          -19.22
+        ],
+        [
+          16.43,
+          -19.22
+        ],
+        [
+          18.43,
+          -2
+        ],
+        [
+          -18.43,
+          -2
+        ]
+      ],
+      "decorative_cart": true
+    },
+    {
+      "id": "decorative_cart_2",
+      "asset": "handcart_front",
+      "position": [
+        1176.5,
+        707
+      ],
+      "scale": 0.08389715832205684,
+      "depth": 707,
+      "targets": [],
+      "footprint": [
+        [
+          -16.43,
+          -19.22
+        ],
+        [
+          16.43,
+          -19.22
+        ],
+        [
+          18.43,
+          -2
+        ],
+        [
+          -18.43,
+          -2
+        ]
+      ],
+      "decorative_cart": true
+    },
+    {
+      "id": "decorative_cart_3",
+      "asset": "handcart_front",
+      "position": [
+        1082.5,
+        908
+      ],
+      "scale": 0.08389715832205684,
+      "depth": 908,
+      "targets": [],
+      "footprint": [
+        [
+          -16.43,
+          -19.22
+        ],
+        [
+          16.43,
+          -19.22
+        ],
+        [
+          18.43,
+          -2
+        ],
+        [
+          -18.43,
+          -2
+        ]
+      ],
+      "decorative_cart": true
+    },
+    {
+      "id": "plant_0",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        151.0,
+        244
+      ],
+      "scale": 0.07974481658692185,
+      "depth": 244,
+      "targets": [],
+      "footprint": [
+        [
+          -10.0,
+          -8.574
+        ],
+        [
+          10.0,
+          -8.574
+        ],
+        [
+          11.0,
+          -2
+        ],
+        [
+          -11.0,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_0"
+    },
+    {
+      "id": "plant_1",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        1325.0,
+        228
+      ],
+      "scale": 0.06379585326953748,
+      "depth": 228,
+      "targets": [],
+      "footprint": [
+        [
+          -7.8,
+          -6.859
+        ],
+        [
+          7.8,
+          -6.859
+        ],
+        [
+          8.8,
+          -2
+        ],
+        [
+          -8.8,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_1"
+    },
+    {
+      "id": "plant_2",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        1585.0,
+        361
+      ],
+      "scale": 0.04784688995215311,
+      "depth": 361,
+      "targets": [],
+      "footprint": [
+        [
+          -5.6,
+          -5.144
+        ],
+        [
+          5.6,
+          -5.144
+        ],
+        [
+          6.6,
+          -2
+        ],
+        [
+          -6.6,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_2"
+    },
+    {
+      "id": "plant_3",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        114.5,
+        817
+      ],
+      "scale": 0.09090909090909091,
+      "depth": 817,
+      "targets": [],
+      "footprint": [
+        [
+          -11.54,
+          -9.775
+        ],
+        [
+          11.54,
+          -9.775
+        ],
+        [
+          12.54,
+          -2
+        ],
+        [
+          -12.54,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_3"
+    },
+    {
+      "id": "plant_4",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        458.0,
+        818
+      ],
+      "scale": 0.0861244019138756,
+      "depth": 818,
+      "targets": [],
+      "footprint": [
+        [
+          -10.88,
+          -9.26
+        ],
+        [
+          10.88,
+          -9.26
+        ],
+        [
+          11.88,
+          -2
+        ],
+        [
+          -11.88,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_4"
+    },
+    {
+      "id": "plant_5",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        1115.5,
+        853
+      ],
+      "scale": 0.07177033492822966,
+      "depth": 853,
+      "targets": [],
+      "footprint": [
+        [
+          -8.9,
+          -7.717
+        ],
+        [
+          8.9,
+          -7.717
+        ],
+        [
+          9.9,
+          -2
+        ],
+        [
+          -9.9,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_5"
+    },
+    {
+      "id": "plant_6",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        46.5,
+        438
+      ],
+      "scale": 0.06220095693779904,
+      "depth": 438,
+      "targets": [],
+      "footprint": [
+        [
+          -7.58,
+          -6.688
+        ],
+        [
+          7.58,
+          -6.688
+        ],
+        [
+          8.58,
+          -2
+        ],
+        [
+          -8.58,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_6"
+    },
+    {
+      "id": "plant_7",
+      "asset": "square_plant_wood_pot",
+      "position": [
+        46.5,
+        526
+      ],
+      "scale": 0.0685805422647528,
+      "depth": 526,
+      "targets": [],
+      "footprint": [
+        [
+          -8.46,
+          -7.374
+        ],
+        [
+          8.46,
+          -7.374
+        ],
+        [
+          9.46,
+          -2
+        ],
+        [
+          -9.46,
+          -2
+        ]
+      ],
+      "navigation_group": "plant_7"
+    },
+    {
+      "id": "corner_tree",
+      "asset": "large_corner_tree",
+      "position": [
+        1627.0,
+        941
+      ],
+      "scale": 0.10672853828306264,
+      "depth": 941,
+      "targets": [],
+      "footprint": [
+        [
+          -17.4,
+          -12.462
+        ],
+        [
+          17.4,
+          -12.462
+        ],
+        [
+          18.4,
+          -2
+        ],
+        [
+          -18.4,
+          -2
+        ]
+      ],
+      "navigation_group": "southeast_frame"
+    },
+    {
+      "id": "red_bin",
+      "asset": "red_bin",
+      "position": [
+        1434.5,
+        919
+      ],
+      "scale": 0.08986175115207373,
+      "depth": 919,
+      "targets": [],
+      "footprint": [
+        [
+          -16.16,
+          -12.581
+        ],
+        [
+          16.16,
+          -12.581
+        ],
+        [
+          17.16,
+          -2
+        ],
+        [
+          -17.16,
+          -2
+        ]
+      ],
+      "navigation_group": "southeast_frame"
+    },
+    {
+      "id": "vent_0",
+      "asset": "wall_vent_grille",
+      "position": [
+        1159.5,
+        53
+      ],
+      "scale": 0.06574923547400612,
+      "depth": 53,
+      "targets": []
+    },
+    {
+      "id": "vent_1",
+      "asset": "wall_vent_grille",
+      "position": [
+        95.0,
+        48
+      ],
+      "scale": 0.0581039755351682,
+      "depth": 48,
+      "targets": []
+    },
+    {
+      "id": "return_stack",
+      "asset": "single_tray_stack",
+      "position": [
+        1497,
+        555
+      ],
+      "scale": 0.03870162297128589,
+      "depth": 555,
+      "targets": [],
+      "return_stack": true,
+      "supported_by": "dish_return"
+    }
+  ],
+  "structures": [
+    {
+      "id": "north_wall",
+      "polygon": [
+        [
+          121,
+          13
+        ],
+        [
+          1644,
+          13
+        ],
+        [
+          1644,
+          51
+        ],
+        [
+          121,
+          51
+        ]
+      ],
+      "navigation_group": "north_wall"
+    },
+    {
+      "id": "northwest_column",
+      "polygon": [
+        [
+          74,
+          1
+        ],
+        [
+          119,
+          1
+        ],
+        [
+          119,
+          118
+        ],
+        [
+          29,
+          147
+        ],
+        [
+          16,
+          128
+        ],
+        [
+          76,
+          111
+        ]
+      ],
+      "navigation_group": "west_boundary"
+    },
+    {
+      "id": "west_wall_upper",
+      "polygon": [
+        [
+          14,
+          135
+        ],
+        [
+          33,
+          144
+        ],
+        [
+          35,
+          665
+        ],
+        [
+          12,
+          665
+        ]
+      ],
+      "navigation_group": "west_boundary"
+    },
+    {
+      "id": "west_wall_lower",
+      "polygon": [
+        [
+          32,
+          671
+        ],
+        [
+          75,
+          671
+        ],
+        [
+          75,
+          940
+        ],
+        [
+          32,
+          940
+        ]
+      ],
+      "navigation_group": "west_boundary_lower"
+    },
+    {
+      "id": "north_service_left_pillar",
+      "polygon": [
+        [
+          113,
+          25
+        ],
+        [
+          177,
+          25
+        ],
+        [
+          177,
+          225
+        ],
+        [
+          112,
+          225
+        ]
+      ],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "north_service_right_pillar",
+      "polygon": [
+        [
+          1310,
+          13
+        ],
+        [
+          1357,
+          13
+        ],
+        [
+          1357,
+          233
+        ],
+        [
+          1310,
+          233
+        ]
+      ],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "north_thin_pillar",
+      "polygon": [
+        [
+          1138,
+          0
+        ],
+        [
+          1184,
+          0
+        ],
+        [
+          1184,
+          226
+        ],
+        [
+          1138,
+          226
+        ]
+      ],
+      "navigation_group": "north_service"
+    },
+    {
+      "id": "east_upper",
+      "polygon": [
+        [
+          1613,
+          14
+        ],
+        [
+          1656,
+          14
+        ],
+        [
+          1656,
+          580
+        ],
+        [
+          1613,
+          580
+        ]
+      ],
+      "navigation_group": "east_boundary"
+    },
+    {
+      "id": "east_shelf_frame",
+      "polygon": [
+        [
+          1340,
+          252
+        ],
+        [
+          1627,
+          252
+        ],
+        [
+          1627,
+          258
+        ],
+        [
+          1360,
+          258
+        ],
+        [
+          1360,
+          367
+        ],
+        [
+          1340,
+          367
+        ]
+      ],
+      "navigation_group": "east_shelf"
+    },
+    {
+      "id": "dish_return_back",
+      "polygon": [
+        [
+          1267,
+          425
+        ],
+        [
+          1305,
+          425
+        ],
+        [
+          1305,
+          444
+        ],
+        [
+          1628,
+          444
+        ],
+        [
+          1628,
+          473
+        ],
+        [
+          1267,
+          473
+        ]
+      ],
+      "navigation_group": "dish_return"
+    },
+    {
+      "id": "tray_station_frame",
+      "polygon": [
+        [
+          1262,
+          610
+        ],
+        [
+          1297,
+          610
+        ],
+        [
+          1297,
+          623
+        ],
+        [
+          1644,
+          623
+        ],
+        [
+          1644,
+          646
+        ],
+        [
+          1292,
+          646
+        ],
+        [
+          1292,
+          738
+        ],
+        [
+          1256,
+          738
+        ]
+      ],
+      "navigation_group": "tray_station"
+    },
+    {
+      "id": "south_counter_left_pillar",
+      "polygon": [
+        [
+          542,
+          663
+        ],
+        [
+          578,
+          663
+        ],
+        [
+          578,
+          856
+        ],
+        [
+          541,
+          856
+        ]
+      ],
+      "navigation_group": "south_counter"
+    },
+    {
+      "id": "south_counter_right_pillar",
+      "polygon": [
+        [
+          1061,
+          662
+        ],
+        [
+          1098,
+          662
+        ],
+        [
+          1098,
+          857
+        ],
+        [
+          1062,
+          857
+        ]
+      ],
+      "navigation_group": "south_counter"
+    },
+    {
+      "id": "southeast_frame",
+      "polygon": [
+        [
+          1423,
+          744
+        ],
+        [
+          1671,
+          744
+        ],
+        [
+          1671,
+          770
+        ],
+        [
+          1460,
+          770
+        ],
+        [
+          1460,
+          880
+        ],
+        [
+          1671,
+          880
+        ],
+        [
+          1671,
+          922
+        ],
+        [
+          1423,
+          922
+        ]
+      ],
+      "navigation_group": "southeast_frame"
+    },
+    {
+      "id": "tray_station_lower_leg",
+      "polygon": [
+        [
+          1256,
+          818
+        ],
+        [
+          1292,
+          818
+        ],
+        [
+          1292,
+          921
+        ],
+        [
+          1256,
+          921
+        ]
+      ],
+      "navigation_group": "tray_station_lower_leg"
+    }
+  ],
+  "notes": [
+    "Exact user PNG bytes; generated art re-registered against alpha bounds and original source world anchors",
+    "All task actions/gates remain in original Chapter3 controller",
+    "Front strips are independent native sprites; no old baked plate crops",
+    "Navigation groups merge only inseparable furniture clusters; actual foot collision stays per-object"
+  ],
+  "floor_openings": [
+    {
+      "id": "southeast_passage",
+      "source": [
+        1196,
+        738,
+        56,
+        80
+      ],
+      "destination": [
+        1256,
+        738,
+        56,
+        80
+      ],
+      "reason": "Supplied empty floor closes the unchanged southeast story exit; visible same-tile passage and matching feet aperture restore access without moving the original exit."
+    }
+  ]
+}

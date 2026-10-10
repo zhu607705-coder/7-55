@@ -1,0 +1,75 @@
+extends SceneTree
+const Session = preload("res://scripts/presentation/observation_comparison_session.gd")
+var checks := 0
+var failures := 0
+func _initialize() -> void: run.call_deferred()
+func check(ok: bool, detail: String) -> void:
+	checks += 1
+	if not ok: failures += 1; push_error("OBSERVATION MODEL: "+detail)
+func run() -> void:
+	var state: Node = root.get_node("State")
+	state.developer_mode = true
+	var s: Dictionary = state.initial()
+	var catalog: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/source/items.config.json"))
+	var documents: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/native/item_catalog.json"))
+	var source_copy := JSON.stringify(catalog)+JSON.stringify(documents)
+	var m = Session.new()
+	m.refresh(s,catalog,documents)
+	check(m.cards.is_empty(),"fresh state shows no unseen clues or unowned items")
+	check(not m.available() and not m.compare(),"fewer than two earned cards cannot enter comparison")
+	check(not m.choose("item:towerKey"),"future key ID cannot be selected")
+	s.items.waterDrop = true; s.items.headphone = true
+	var before := JSON.stringify(s)
+	m.refresh(s,catalog,documents)
+	check(m.cards.size()==2 and m.available(),"two genuinely held objects expose optional comparison")
+	check(m.card("item:waterDrop").body==catalog.filter(func(e): return e.id=="waterDrop")[0].desc,"original item description retained exactly")
+	check(not m.card("item:waterDrop").has("target") and not m.card("item:waterDrop").has("uses"),"machine target/recipe data never reaches card")
+	check(m.choose("item:headphone"),"player selects first material")
+	check(m.active_slot==1 and not m.can_compare(),"next slot awaits a separate choice")
+	check(not m.choose("item:headphone"),"same card cannot fill both slots")
+	check(m.choose("item:waterDrop") and m.compare(),"two chosen earned cards open comparison")
+	check(m.stage=="comparison","comparison is an explicit player action")
+	check(m.swap() and m.selected==["item:waterDrop","item:headphone"],"swap only changes presentation order")
+	var card: Dictionary = m.card("item:headphone"); card.body="tamper"
+	check(m.card("item:headphone").body!="tamper","returned card cannot mutate catalog/session")
+	check(JSON.stringify(s)==before,"choosing/comparing/swapping never mutates gameplay state")
+	check(JSON.stringify(catalog)+JSON.stringify(documents)==source_copy,"source catalog/documents remain immutable")
+	m.clear(); check(m.selected==["",""] and m.stage=="selection","clear resets only ephemeral selection")
+	# A display digit without its earned acquisition fact is not sufficient.
+	s.digits.d1="0";m.refresh(s,catalog,documents)
+	check(m.card("observation:cardZeroTaken").is_empty(),"unearned digit does not leak")
+	s.flags.cardZeroTaken=true;m.refresh(s,catalog,documents)
+	check(m.card("observation:cardZeroTaken").body.contains("0"),"earned zero is not treated as empty/false")
+	for definition: Array in [["tiyiCountTaken","d2","7"],["gearNineTaken","d3","9"],["flowerEightTaken","d4","8"]]:
+		s.flags[definition[0]]=true;s.digits[definition[1]]=null;m.refresh(s,catalog,documents)
+		check(m.card("observation:"+definition[0]).is_empty(),"flag without matching digit cannot leak "+definition[0])
+		s.digits[definition[1]]=definition[2];m.refresh(s,catalog,documents)
+		check(not m.card("observation:"+definition[0]).is_empty(),"earned matching digit exposed "+definition[0])
+	for flag: String in ["plantWatered","plantLit","plantFertilized"]:
+		check(m.card("observation:"+flag).is_empty(),"unearned plant condition hidden "+flag)
+		s.flags[flag]=true;m.refresh(s,catalog,documents)
+		check(not m.card("observation:"+flag).is_empty(),"earned plant condition exposed "+flag)
+	s.native.chapter=2;s.actOne.inventoryRecovered=true
+	m.refresh(s,catalog,documents);check(m.card("observation:card_identity").is_empty(),"recovered card alone does not disclose unreviewed identity")
+	s.actOne.cc98Login.studentIdDiscovered=true;m.refresh(s,catalog,documents)
+	check(m.card("observation:card_identity").body.contains("3250100755"),"read identity can be revisited")
+	for pair: Array in [["archivedRuleRead","archivedLeaveRule"],["nonPersonProofStamped","bagNonPersonProof"],["seatReceiptCollected","seat022Receipt"],["presenceProofCollected","libraryPresenceProof"]]:
+		check(m.card("archive:"+pair[1]).is_empty(),"unearned proof hidden "+pair[1])
+		s.ui.libraryFinalsPuzzle[pair[0]]=true;m.refresh(s,catalog,documents)
+		check(not m.card("archive:"+pair[1]).is_empty(),"earned consumed proof remains readable "+pair[1])
+		s.items[pair[1]]=true;m.refresh(s,catalog,documents)
+		check(m.card("archive:"+pair[1]).is_empty() and not m.card("item:"+pair[1]).is_empty(),"held proof is not duplicated "+pair[1])
+	s.ui.libraryFinalsPuzzle.photoDimmed=true;m.refresh(s,catalog,documents)
+	check(m.card("observation:bag_label").is_empty(),"stale dim flag alone does not disclose the unread photo")
+	s.ui.libraryFinalsPuzzle.backpackInspected=true;s.ui.libraryFinalsPuzzle.photoCaptured=true;m.refresh(s,catalog,documents)
+	check(m.card("observation:bag_label").body=="高数教材 x1\n水杯 x1　充电器 x1\n半包纸 x1\n姓名：未检测到\n学号：未检测到\n人格：加载失败","comparison preserves observed label, not a future report conclusion")
+	var earned_reload: Dictionary = JSON.parse_string(JSON.stringify(s));m.refresh(earned_reload,catalog,documents)
+	check(not m.card("observation:card_identity").is_empty(),"persisted earned flags still gate correctly after snapshot roundtrip")
+	m.clear();m.choose("item:waterDrop");m.choose("item:headphone");m.compare()
+	s.items.headphone=false;m.refresh(s,catalog,documents)
+	check(not m.can_compare() and m.stage=="selection","consumed/unavailable card invalidates stale comparison")
+	check(not m.select_slot(-1) and not m.select_slot(2),"out-of-range slot rejected")
+	s.native.chapter=3;m.refresh(s,catalog,documents)
+	check(m.cards.is_empty() and not m.available(),"bounded C1/C2 scope does not leak later material")
+	print("OBSERVATION_COMPARISON_MODEL: ",checks," checks, ",failures," failures")
+	quit(1 if failures else 0)

@@ -1,0 +1,229 @@
+{
+  "sourceFiles": {
+    "model": "src/modules/ChapterFourInsertedPuzzleModel.ts",
+    "game": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "preview": "src/components/temporal-maze/ChapterFourPuzzlePreview.tsx",
+    "assets": "src/scenes/rpg/ChapterFourInsertedPuzzleAssets.ts"
+  },
+  "cases": [
+    {
+      "id": "duty_board",
+      "wrong": {
+        "puzzleId": "duty_board",
+        "order": [
+          "main_elevator",
+          "classroom_104",
+          "classroom_105"
+        ]
+      },
+      "correct": {
+        "puzzleId": "duty_board",
+        "order": [
+          "classroom_104",
+          "classroom_105",
+          "main_elevator"
+        ]
+      },
+      "previewWrong": {
+        "caption": "1 主电梯 → 2 104 教室 → 3 105 教室",
+        "order": [
+          "main_elevator",
+          "classroom_104",
+          "classroom_105"
+        ]
+      },
+      "previewCorrect": {
+        "caption": "1 104 教室 → 2 105 教室 → 3 主电梯",
+        "order": [
+          "classroom_104",
+          "classroom_105",
+          "main_elevator"
+        ]
+      },
+      "factId": "a1_duty_board_reconstructed"
+    },
+    {
+      "id": "archive_index",
+      "wrong": {
+        "puzzleId": "archive_index",
+        "yearBand": "1977_1984",
+        "floor": "A1",
+        "purpose": "attendance"
+      },
+      "correct": {
+        "puzzleId": "archive_index",
+        "yearBand": "1991_1998",
+        "floor": "A3",
+        "purpose": "wayfinding"
+      },
+      "previewWrong": {
+        "caption": "索引卡已填写 3 / 3 项",
+        "rows": [
+          "1977–1984",
+          "A1",
+          "考勤"
+        ]
+      },
+      "previewCorrect": {
+        "caption": "索引卡已填写 3 / 3 项",
+        "rows": [
+          "1991–1998",
+          "A3",
+          "入口导视"
+        ]
+      },
+      "factId": "a3_archive_film_retrieved"
+    },
+    {
+      "id": "media_alignment",
+      "wrong": {
+        "puzzleId": "media_alignment",
+        "xOffset": 0,
+        "yOffset": 0,
+        "rotationQuarterTurns": 0
+      },
+      "correct": {
+        "puzzleId": "media_alignment",
+        "xOffset": 2,
+        "yOffset": -1,
+        "rotationQuarterTurns": 1
+      },
+      "previewWrong": {
+        "caption": "横向 0 格 · 纵向 0 格 · 顺时针 0°",
+        "position": [
+          150,
+          140
+        ],
+        "rotation": 0
+      },
+      "previewCorrect": {
+        "caption": "横向 +2 格 · 纵向 -1 格 · 顺时针 90°",
+        "position": [
+          190,
+          120
+        ],
+        "rotation": 90
+      },
+      "factId": "a3_media_alignment_completed"
+    },
+    {
+      "id": "positioning_calibration",
+      "wrong": {
+        "puzzleId": "positioning_calibration",
+        "horizontal": 0,
+        "vertical": 0,
+        "pressure": 0
+      },
+      "correct": {
+        "puzzleId": "positioning_calibration",
+        "horizontal": -2,
+        "vertical": 1,
+        "pressure": 3
+      },
+      "previewWrong": {
+        "caption": "滑台 X 0 · Y 0 · 压头 0 / 4 档",
+        "position": [
+          110,
+          137
+        ],
+        "pressY": 65,
+        "pressure": 0
+      },
+      "previewCorrect": {
+        "caption": "滑台 X -2 · Y +1 · 压头 3 / 4 档",
+        "position": [
+          78,
+          153
+        ],
+        "pressY": 134,
+        "pressure": 3
+      },
+      "factId": "a2_positioning_plate_calibrated"
+    },
+    {
+      "id": "power_topology",
+      "wrong": {
+        "puzzleId": "power_topology",
+        "edgeIds": [
+          "west_corridor__bakery_back_area",
+          "east_corridor__classroom_zone",
+          "bakery_back_area__classroom_zone",
+          "west_corridor__east_corridor",
+          "hall__classroom_zone"
+        ]
+      },
+      "correct": {
+        "puzzleId": "power_topology",
+        "edgeIds": [
+          "hall__west_corridor",
+          "hall__east_corridor",
+          "west_corridor__bakery_back_area",
+          "east_corridor__classroom_zone",
+          "bakery_back_area__classroom_zone"
+        ]
+      },
+      "previewWrong": {
+        "caption": "已接 5 / 5 条 · 实线为当前接线，虚线为未接",
+        "edges": [
+          "west_corridor__bakery_back_area",
+          "east_corridor__classroom_zone",
+          "bakery_back_area__classroom_zone",
+          "west_corridor__east_corridor",
+          "hall__classroom_zone"
+        ]
+      },
+      "previewCorrect": {
+        "caption": "已接 5 / 5 条 · 实线为当前接线，虚线为未接",
+        "edges": [
+          "hall__west_corridor",
+          "hall__east_corridor",
+          "west_corridor__bakery_back_area",
+          "east_corridor__classroom_zone",
+          "bakery_back_area__classroom_zone"
+        ]
+      },
+      "factId": "a2_power_topology_recovered"
+    },
+    {
+      "id": "evacuation_route",
+      "wrong": {
+        "puzzleId": "evacuation_route",
+        "order": [
+          "transport_core",
+          "lecture_202_door",
+          "main_stair_down",
+          "east_corridor"
+        ]
+      },
+      "correct": {
+        "puzzleId": "evacuation_route",
+        "order": [
+          "lecture_202_door",
+          "east_corridor",
+          "transport_core",
+          "main_stair_down"
+        ]
+      },
+      "previewWrong": {
+        "caption": "1 交通核心 → 2 202 教室门口 → 3 主楼梯下行口 → 4 东侧走廊",
+        "order": [
+          "transport_core",
+          "lecture_202_door",
+          "main_stair_down",
+          "east_corridor"
+        ]
+      },
+      "previewCorrect": {
+        "caption": "1 202 教室门口 → 2 东侧走廊 → 3 交通核心 → 4 主楼梯下行口",
+        "order": [
+          "lecture_202_door",
+          "east_corridor",
+          "transport_core",
+          "main_stair_down"
+        ]
+      },
+      "factId": "a2_evacuation_route_confirmed"
+    }
+  ],
+  "sourceControlChecks": 170
+}

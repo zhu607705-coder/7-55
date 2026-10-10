@@ -1,0 +1,375 @@
+{
+  "source": "src/scenes/rpg/CanteenInteriorScene.ts",
+  "sourceSha256": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb",
+  "orders": [
+    {
+      "input": [
+        "blackCoffee",
+        "sparklingWater",
+        "lemonTea"
+      ],
+      "order": [
+        "sparklingWater",
+        "lemonTea",
+        "blackCoffee"
+      ],
+      "refreshOrder": [
+        "sparklingWater",
+        "lemonTea",
+        "blackCoffee"
+      ],
+      "closedOrder": [],
+      "partialAfterClose": [
+        "sparklingWater"
+      ]
+    },
+    {
+      "input": [
+        "blackCoffee",
+        "lemonTea",
+        "sparklingWater"
+      ],
+      "order": [
+        "blackCoffee",
+        "lemonTea",
+        "sparklingWater"
+      ],
+      "refreshOrder": [
+        "blackCoffee",
+        "lemonTea",
+        "sparklingWater"
+      ],
+      "closedOrder": [],
+      "partialAfterClose": [
+        "blackCoffee"
+      ]
+    },
+    {
+      "input": [
+        "sparklingWater",
+        "blackCoffee",
+        "lemonTea"
+      ],
+      "order": [
+        "sparklingWater",
+        "blackCoffee",
+        "lemonTea"
+      ],
+      "refreshOrder": [
+        "sparklingWater",
+        "blackCoffee",
+        "lemonTea"
+      ],
+      "closedOrder": [],
+      "partialAfterClose": [
+        "sparklingWater"
+      ]
+    },
+    {
+      "input": [
+        "sparklingWater",
+        "lemonTea",
+        "blackCoffee"
+      ],
+      "order": [
+        "sparklingWater",
+        "lemonTea",
+        "blackCoffee"
+      ],
+      "refreshOrder": [
+        "sparklingWater",
+        "lemonTea",
+        "blackCoffee"
+      ],
+      "closedOrder": [],
+      "partialAfterClose": [
+        "sparklingWater"
+      ]
+    },
+    {
+      "input": [
+        "lemonTea",
+        "blackCoffee",
+        "sparklingWater"
+      ],
+      "order": [
+        "lemonTea",
+        "blackCoffee",
+        "sparklingWater"
+      ],
+      "refreshOrder": [
+        "lemonTea",
+        "blackCoffee",
+        "sparklingWater"
+      ],
+      "closedOrder": [],
+      "partialAfterClose": [
+        "lemonTea"
+      ]
+    },
+    {
+      "input": [
+        "lemonTea",
+        "sparklingWater",
+        "blackCoffee"
+      ],
+      "order": [
+        "lemonTea",
+        "sparklingWater",
+        "blackCoffee"
+      ],
+      "refreshOrder": [
+        "lemonTea",
+        "sparklingWater",
+        "blackCoffee"
+      ],
+      "closedOrder": [],
+      "partialAfterClose": [
+        "lemonTea"
+      ]
+    }
+  ],
+  "unread": {
+    "order": [
+      "lemonTea",
+      "blackCoffee",
+      "sparklingWater"
+    ],
+    "texts": [
+      {
+        "x": -318,
+        "y": -182,
+        "text": "食堂新品混合台",
+        "style": {
+          "color": "#fff3c4",
+          "fontFamily": "monospace",
+          "fontSize": "22px",
+          "fontStyle": "bold"
+        }
+      },
+      {
+        "x": 274,
+        "y": -170,
+        "text": "退出  Esc",
+        "style": {
+          "color": "#fff3c4",
+          "fontFamily": "monospace",
+          "fontSize": "14px"
+        }
+      },
+      {
+        "x": 0,
+        "y": -118,
+        "text": "大玻璃杯",
+        "style": {
+          "color": "#c8f3ff",
+          "fontFamily": "monospace",
+          "fontSize": "14px"
+        }
+      },
+      {
+        "x": 0,
+        "y": 98,
+        "text": "请按货架提示调配今日新品。",
+        "style": {
+          "color": "#fff2c4",
+          "fontFamily": "monospace",
+          "fontSize": "15px"
+        }
+      },
+      {
+        "x": 0,
+        "y": 122,
+        "text": "货架提示：尚未查看",
+        "style": {
+          "color": "#e3b878",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      },
+      {
+        "x": -200,
+        "y": 160,
+        "text": "倒入柠檬茶",
+        "style": {
+          "color": "#f4fbff",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      },
+      {
+        "x": 10,
+        "y": 160,
+        "text": "倒入黑咖啡",
+        "style": {
+          "color": "#f4fbff",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      },
+      {
+        "x": 220,
+        "y": 160,
+        "text": "气泡水·未持有",
+        "style": {
+          "color": "#7f8d92",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      }
+    ],
+    "layers": [
+      {
+        "color": 15789519,
+        "alpha": 0.92,
+        "rect": [
+          -49,
+          37,
+          98,
+          36
+        ]
+      },
+      {
+        "color": 2368038,
+        "alpha": 0.92,
+        "rect": [
+          -49,
+          -1,
+          98,
+          36
+        ]
+      }
+    ]
+  },
+  "read": {
+    "order": [
+      "lemonTea",
+      "blackCoffee",
+      "sparklingWater"
+    ],
+    "texts": [
+      {
+        "x": -318,
+        "y": -182,
+        "text": "食堂新品混合台",
+        "style": {
+          "color": "#fff3c4",
+          "fontFamily": "monospace",
+          "fontSize": "22px",
+          "fontStyle": "bold"
+        }
+      },
+      {
+        "x": 274,
+        "y": -170,
+        "text": "退出  Esc",
+        "style": {
+          "color": "#fff3c4",
+          "fontFamily": "monospace",
+          "fontSize": "14px"
+        }
+      },
+      {
+        "x": 0,
+        "y": -118,
+        "text": "大玻璃杯",
+        "style": {
+          "color": "#c8f3ff",
+          "fontFamily": "monospace",
+          "fontSize": "14px"
+        }
+      },
+      {
+        "x": 0,
+        "y": 98,
+        "text": "请按货架提示调配今日新品。",
+        "style": {
+          "color": "#fff2c4",
+          "fontFamily": "monospace",
+          "fontSize": "15px"
+        }
+      },
+      {
+        "x": 0,
+        "y": 122,
+        "text": "货架提示已记录：黑色 → 蓝色 → 白色",
+        "style": {
+          "color": "#91e4ba",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      },
+      {
+        "x": -200,
+        "y": 160,
+        "text": "倒入柠檬茶",
+        "style": {
+          "color": "#f4fbff",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      },
+      {
+        "x": 10,
+        "y": 160,
+        "text": "倒入黑咖啡",
+        "style": {
+          "color": "#f4fbff",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      },
+      {
+        "x": 220,
+        "y": 160,
+        "text": "气泡水·未持有",
+        "style": {
+          "color": "#7f8d92",
+          "fontFamily": "monospace",
+          "fontSize": "13px"
+        }
+      }
+    ],
+    "layers": [
+      {
+        "color": 15789519,
+        "alpha": 0.92,
+        "rect": [
+          -49,
+          37,
+          98,
+          36
+        ]
+      },
+      {
+        "color": 2368038,
+        "alpha": 0.92,
+        "rect": [
+          -49,
+          -1,
+          98,
+          36
+        ]
+      }
+    ]
+  },
+  "missing": {
+    "events": [],
+    "feedback": [
+      [
+        "这瓶饮料不在道具栏里。",
+        "system"
+      ]
+    ]
+  },
+  "pour": [
+    {
+      "id": "rpg_canteen_mix_ingredient_requested",
+      "payload": {
+        "itemId": "lemonTea"
+      }
+    }
+  ],
+  "outsideKeepsOpen": true,
+  "exitCloses": true
+}

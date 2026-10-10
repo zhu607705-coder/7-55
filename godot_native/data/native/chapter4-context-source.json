@@ -1,0 +1,132 @@
+{
+  "contexts": [
+    {
+      "targetId": "a2_lecture_room_202_context",
+      "label": "查看 202 阶梯教室",
+      "floor": "A2",
+      "roomId": "a2_room_202",
+      "anchorId": "lecture_room_202",
+      "activePhases": [
+        "room204_restore"
+      ],
+      "roomAliases": [
+        "a2_corridor",
+        "a2_room204",
+        "a2_room_204"
+      ],
+      "purpose": "state_feedback",
+      "repeatPolicy": "repeatable",
+      "textByTimeState": {
+        "2245_opening": {
+          "light": "202 幕布收了，座椅全折着。刚才坐过多少人，得去别的表上查。",
+          "dark": "最后一排到门口有一段连贯离场残影，讲台附近没有停留。"
+        },
+        "1225_bakery": {
+          "light": "讲座还没开始，前排资料已经放好，翻开全是空白页。内容等主讲人来。",
+          "dark": "座位间只有短暂经过的残影，没有形成完整听课轨迹。"
+        },
+        "1850_evening": {
+          "light": "202 人走光了，投影机风扇刚停。门槛上还留着散场脚印。",
+          "dark": "座位残影从前排向出口逐段消失，散场时间集中在 18:50 前后。"
+        },
+        "2245_maintenance": {
+          "light": "维修许可牌挂在门外，室内设备保持关机。",
+          "dark": "讲台投影区保留一段独立画面残留，与普通授课记录不连续。"
+        },
+        "0754_blackout": {
+          "light": "停电后安全出口灯正常，阶梯通道没有障碍物。",
+          "dark": "投影区残影仍在，亮度不随停电状态变化。"
+        },
+        "0755_morning": {
+          "light": "202 已完成晨检，投影和座椅等待第一节课。",
+          "dark": "夜间残留停止更新，教室回到正常的晨间时间轨。"
+        }
+      }
+    },
+    {
+      "targetId": "a3_report_hall_304_context",
+      "label": "查看 304 报告厅",
+      "floor": "A3",
+      "roomId": "a3_room_304",
+      "anchorId": "report_hall_304",
+      "activePhases": [
+        "room204_restore"
+      ],
+      "roomAliases": [
+        "a3_wayfinding",
+        "a3_reference_classroom"
+      ],
+      "purpose": "theme",
+      "repeatPolicy": "repeatable",
+      "textByTimeState": {
+        "2245_opening": {
+          "light": "304 的报告题目仍留在侧屏：判断需要来源、时间和可复核记录。",
+          "dark": "观众残影在提问环节集中出现，讲台记录保留了每次修改。"
+        },
+        "1225_bakery": {
+          "light": "水杯和翻页器摆好了，主讲人还没到。设备已检查完，听众还在等。",
+          "dark": "前排只有布场人员的短时残影，座位区尚未形成观众轨迹。"
+        },
+        "1850_evening": {
+          "light": "报告结束了，侧屏停在末页，底下还有一行小字“修改记录请勿删除”。",
+          "dark": "散场残影从后排开始，讲台人员最后离开。"
+        },
+        "2245_maintenance": {
+          "light": "报告厅完成设备巡检，扩声与投影均处于关机状态。",
+          "dark": "设备周围没有异常操作残影，巡检记录连续。"
+        },
+        "0754_blackout": {
+          "light": "应急广播接管报告厅，所有出口指示正常。",
+          "dark": "广播启用与停电同时发生，没有额外控制动作。"
+        },
+        "0755_morning": {
+          "light": "报告厅开始晨间准备，侧屏切换为当日安排。",
+          "dark": "当前只有布场人员的残影，昨夜报告已经归档。"
+        }
+      }
+    }
+  ],
+  "door": {
+    "storyFloor": "A1",
+    "plateId": "a1_0755_morning",
+    "doorwayBounds": {
+      "x": 767,
+      "y": 779,
+      "width": 141,
+      "height": 94
+    },
+    "leaves": [
+      {
+        "frameName": "a1-exterior-door-left",
+        "hinge": "left",
+        "bounds": {
+          "x": 767,
+          "y": 779,
+          "width": 72,
+          "height": 94
+        }
+      },
+      {
+        "frameName": "a1-exterior-door-right",
+        "hinge": "right",
+        "bounds": {
+          "x": 839,
+          "y": 779,
+          "width": 69,
+          "height": 94
+        }
+      }
+    ],
+    "startDelayMs": 240,
+    "openingDurationMs": 880,
+    "openHoldMs": 380,
+    "finalLeafScaleX": 0.12,
+    "openedEventName": "rpg_chapter4_exterior_door_opened"
+  },
+  "presentationMs": 1500,
+  "sourceHashes": {
+    "context": "6a827f8a96707455f0042d65376c2164b29df874592f2e63b784072521d1586d",
+    "exterior": "ca19ad51c7a1d3c6f57239ff5697ca99185bcfc326c1a6cfe5889dd649885d55"
+  },
+  "executedSourceChecks": 48
+}

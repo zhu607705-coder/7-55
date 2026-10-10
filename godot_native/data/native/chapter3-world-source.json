@@ -1,0 +1,233 @@
+{
+  "format": "7-55-chapter3-world-source",
+  "constants": {
+    "CANTEEN_NPC_FRAME_WIDTH": 96,
+    "CANTEEN_NPC_FRAME_HEIGHT": 128,
+    "CANTEEN_NPC_DISPLAY_SCALE": 0.65,
+    "CANTEEN_COUNTER_NPC_Y": 214,
+    "CANTEEN_COUNTER_NPC_X": [
+      301,
+      550,
+      790,
+      1035
+    ],
+    "CANTEEN_QUEUE_NPC_Y": [
+      246,
+      266,
+      286
+    ],
+    "CANTEEN_COUNTER_FRONT_CROP": {
+      "left": 126,
+      "top": 176,
+      "right": 1314,
+      "bottom": 241,
+      "depth": 340
+    },
+    "CANTEEN_SIDE_GAME_PHASES": [
+      "tray_search",
+      "drink_mix",
+      "menu_order",
+      "pickup_search",
+      "chase_ready"
+    ],
+    "CANTEEN_SEATED_NPC_PLACEMENTS": [
+      {
+        "framePair": 0,
+        "x": 344,
+        "y": 377
+      },
+      {
+        "framePair": 4,
+        "x": 408,
+        "y": 389
+      },
+      {
+        "framePair": 1,
+        "x": 799,
+        "y": 383
+      },
+      {
+        "framePair": 5,
+        "x": 863,
+        "y": 383
+      },
+      {
+        "framePair": 2,
+        "x": 493,
+        "y": 486
+      },
+      {
+        "framePair": 6,
+        "x": 557,
+        "y": 498
+      },
+      {
+        "framePair": 3,
+        "x": 953,
+        "y": 601
+      },
+      {
+        "framePair": 7,
+        "x": 1017,
+        "y": 601
+      }
+    ],
+    "CANTEEN_SEATED_EXTRA_NPC_PLACEMENTS": [
+      {
+        "framePair": 0,
+        "x": 195,
+        "y": 486
+      },
+      {
+        "framePair": 3,
+        "x": 259,
+        "y": 498
+      },
+      {
+        "framePair": 1,
+        "x": 953,
+        "y": 486
+      },
+      {
+        "framePair": 4,
+        "x": 1017,
+        "y": 498
+      },
+      {
+        "framePair": 2,
+        "x": 493,
+        "y": 595
+      },
+      {
+        "framePair": 5,
+        "x": 557,
+        "y": 607
+      }
+    ],
+    "CANTEEN_SEATED_TABLE_CROPS": [
+      {
+        "left": 329,
+        "top": 374,
+        "right": 423,
+        "bottom": 402
+      },
+      {
+        "left": 786,
+        "top": 374,
+        "right": 880,
+        "bottom": 402
+      },
+      {
+        "left": 478,
+        "top": 483,
+        "right": 572,
+        "bottom": 512
+      },
+      {
+        "left": 941,
+        "top": 592,
+        "right": 1035,
+        "bottom": 622
+      },
+      {
+        "left": 180,
+        "top": 483,
+        "right": 274,
+        "bottom": 512
+      },
+      {
+        "left": 941,
+        "top": 483,
+        "right": 1035,
+        "bottom": 510
+      },
+      {
+        "left": 478,
+        "top": 592,
+        "right": 572,
+        "bottom": 623
+      }
+    ],
+    "CANTEEN_RETURN_NPC_POSITION": {
+      "x": 1515,
+      "y": 610
+    },
+    "CANTEEN_QUEUE_NPC_DIALOGUE": [
+      "前面没动，我也没动。大家都很稳定。",
+      "你说的对。虽然不知道你说了什么。",
+      "是啊，吃什么。",
+      "今天有气泡水喝吗？",
+      "早十不慌，先来个西红柿鸡蛋。",
+      "为什么早上吃西红柿鸡蛋。"
+    ],
+    "CANTEEN_SEATED_NPC_DIALOGUE": [
+      "刚才有张纸过去了。它没拿餐盘。",
+      "看手机。",
+      "依旧看手机。",
+      "不用问了可以坐这里。"
+    ],
+    "CANTEEN_COUNTER_NPC_DIALOGUE": "要什么？快点，后面排着呢。",
+    "THEATER_TICKET_FIXTURE_COLLISION_RECTS": [
+      {
+        "id": "ticket_inspector_fixture",
+        "left": 720,
+        "top": 633,
+        "right": 786,
+        "bottom": 786
+      },
+      {
+        "id": "ticket_reader_fixture",
+        "left": 883,
+        "top": 650,
+        "right": 931,
+        "bottom": 786
+      }
+    ]
+  },
+  "assets": {
+    "canteenInteriorMapUrl": "res://assets/rpg/interiors/canteen_interior.png",
+    "canteenCounterAuntiesSheetUrl": "res://assets/rpg/npcs/canteen/counter_aunties_2frame.png",
+    "canteenQueueStudentsSheetUrl": "res://assets/rpg/npcs/canteen/queue_students_2frame.png",
+    "canteenReturnAuntieSheetUrl": "res://assets/rpg/npcs/canteen/return_auntie_2frame.png",
+    "canteenSeatedStudentsExtraSheetUrl": "res://assets/rpg/npcs/canteen/seated_students_extra_2frame.png",
+    "canteenSeatedStudentsSheetUrl": "res://assets/rpg/npcs/canteen/seated_students_2frame.png",
+    "canteenShadowAuntieSheetUrl": "res://assets/rpg/npcs/canteen/shadow_auntie_3frame.png",
+    "canteenPromoBoardActiveUrl": "res://assets/rpg/canteen/promo/canteen_promo_board_active.png",
+    "canteenPromoBoardEmptyUrl": "res://assets/rpg/canteen/promo/canteen_promo_board_empty.png",
+    "canteenPromoDrinkInsertSheetUrl": "res://assets/rpg/canteen/promo/canteen_promo_drink_insert_4frame.png",
+    "canteenPromoFxSheetUrl": "res://assets/rpg/canteen/promo/canteen_promo_fx_3x2.png",
+    "canteenQueueStudentTurnUrl": "res://assets/rpg/canteen/promo/canteen_queue_student_turn.png",
+    "canteenPaperChickenBurstSheetUrl": "res://assets/rpg/canteen/pickup-cutscene/paper_chicken_burst_8frame.png",
+    "canteenPaperChickenShakeSheetUrl": "res://assets/rpg/canteen/pickup-cutscene/paper_chicken_shake_5frame.png",
+    "canteenShadowAuntiePushSheetUrl": "res://assets/rpg/canteen/pickup-cutscene/shadow_auntie_push_5frame.png",
+    "playerPushCartSheetUrl": "res://assets/rpg/player/player_push_cart_sheet.png",
+    "theaterInteriorMapUrl": "res://assets/rpg/interiors/theater_interior.png",
+    "theaterCenterExitClosedUrl": "res://assets/rpg/interiors/theater_center_exit_closed_v03.png",
+    "ticketInspectorIdleUrl": "res://assets/rpg/theater/generated/actors/ticket_inspector_idle_front.png",
+    "ticketInspectorScanUrl": "res://assets/rpg/theater/generated/actors/ticket_inspector_scan_front.png",
+    "stageManagerGhostIdleUrl": "res://assets/rpg/theater/generated/actors/stage_manager_ghost_idle.png",
+    "stageManagerGhostPointUrl": "res://assets/rpg/theater/generated/actors/stage_manager_ghost_point.png",
+    "propBoxGhostUrl": "res://assets/rpg/theater/generated/effects/clue_prop_box_ghost.png",
+    "paperFuturePathUrl": "res://assets/rpg/theater/generated/effects/clue_paper_future_path.png",
+    "programOpeningUrl": "res://assets/rpg/theater/generated/icons/item_theater_program_opening.png",
+    "programSpotlightUrl": "res://assets/rpg/theater/generated/icons/item_theater_program_spotlight.png",
+    "programFinaleUrl": "res://assets/rpg/theater/generated/icons/item_theater_program_finale.png",
+    "paperFlightUrl": "res://assets/rpg/theater/generated/paper/paper_flight_0.png",
+    "paperResidualUrl": "res://assets/rpg/theater/generated/paper/paper_residual.png",
+    "paperFluorescentUrl": "res://assets/rpg/theater/generated/paper/paper_fluorescent.png",
+    "paperLockedUrl": "res://assets/rpg/theater/generated/effects/paper_reversal_locked.png",
+    "paperCrackedUrl": "res://assets/rpg/theater/generated/effects/paper_reversal_cracked.png",
+    "paperEscapeUrl": "res://assets/rpg/theater/generated/effects/paper_reversal_escape.png",
+    "paperFragmentsUrl": "res://assets/rpg/theater/generated/effects/paper_reversal_fragments.png"
+  },
+  "sources": [
+    {
+      "path": "src/scenes/rpg/CanteenInteriorScene.ts",
+      "sha256": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb"
+    },
+    {
+      "path": "src/scenes/rpg/TheaterInteriorScene.ts",
+      "sha256": "2b041bb08127f781be95457c30de3fa0d95aaed28756588214dcf0f64c20c7a1"
+    }
+  ]
+}

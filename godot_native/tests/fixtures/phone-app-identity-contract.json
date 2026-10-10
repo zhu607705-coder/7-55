@@ -1,0 +1,663 @@
+{
+  "origin": "Original source-equivalent native page contract, independently compared before presentation-only Weather/Tiyi adapters on2026-10-02; original source references in docs/PHONE_APP_IDENTITY.md",
+  "cases": [
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "小雨",
+        "18°C",
+        "体感温度 17°C",
+        "湿度",
+        "88%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "正在发生",
+        "建议",
+        "处理黏着物",
+        "还没有开始外出打卡",
+        "你都还没有开始外出打卡，一滴雨都不会落到你身上。"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": true,
+          "name": "WeatherWaterCard",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_weather_drop"
+      ],
+      "emissions": []
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "小雨",
+        "18°C",
+        "体感温度 17°C",
+        "湿度",
+        "88%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "正在发生",
+        "建议",
+        "处理黏着物",
+        "接住一滴水",
+        "这滴水看起来比天气预报更有用"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "WeatherWaterCard",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_weather_drop"
+      ],
+      "emissions": [
+        [
+          "c2_weather_drop",
+          null
+        ]
+      ]
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "小雨",
+        "18°C",
+        "体感温度 17°C",
+        "湿度",
+        "88%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "正在发生",
+        "建议",
+        "处理黏着物",
+        "水滴已收集",
+        "它正在道具栏里等着被使用"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "WeatherWaterCard",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_weather_drop"
+      ],
+      "emissions": [
+        [
+          "c2_weather_drop",
+          null
+        ]
+      ]
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "多云",
+        "19°C",
+        "体感温度 19°C",
+        "湿度",
+        "76%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "已经停止",
+        "建议",
+        "处理黏着物",
+        "还没有开始外出打卡",
+        "你都还没有开始外出打卡，一滴雨都不会落到你身上。"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": true,
+          "name": "WeatherWaterCard",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_weather_drop"
+      ],
+      "emissions": []
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "多云",
+        "19°C",
+        "体感温度 19°C",
+        "湿度",
+        "76%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "已经停止",
+        "建议",
+        "处理黏着物",
+        "接住一滴水",
+        "这滴水看起来比天气预报更有用"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "WeatherWaterCard",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_weather_drop"
+      ],
+      "emissions": [
+        [
+          "c2_weather_drop",
+          null
+        ]
+      ]
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "多云",
+        "19°C",
+        "体感温度 19°C",
+        "湿度",
+        "76%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "已经停止",
+        "建议",
+        "处理黏着物",
+        "水滴已收集",
+        "它正在道具栏里等着被使用"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "WeatherWaterCard",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_weather_drop"
+      ],
+      "emissions": [
+        [
+          "c2_weather_drop",
+          null
+        ]
+      ]
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "小雨",
+        "18°C",
+        "体感温度 17°C",
+        "湿度",
+        "88%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "正在发生",
+        "建议",
+        "暂不适合下水",
+        "+",
+        "暂无湖区记录",
+        "完成码头检查后再查看"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": true,
+          "name": "QizhenWeatherDevice",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [],
+      "emissions": []
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "多云",
+        "19°C",
+        "体感温度 19°C",
+        "湿度",
+        "76%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "已经停止",
+        "建议",
+        "返回码头确认",
+        "✓",
+        "湖区状态已更新",
+        "返回码头确认"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": true,
+          "name": "QizhenWeatherDevice",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [],
+      "emissions": []
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "小雨",
+        "18°C",
+        "体感温度 17°C",
+        "湿度",
+        "88%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "正在发生",
+        "建议",
+        "处理湖区云图",
+        "+",
+        "接入寝室吹风机",
+        "从左侧道具栏拖到此接口"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "QizhenWeatherDevice",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [],
+      "emissions": []
+    },
+    {
+      "kind": "weather",
+      "labels": [
+        "杭州 · 紫金港",
+        "07:55",
+        "多云",
+        "19°C",
+        "体感温度 19°C",
+        "湿度",
+        "76%",
+        "风向",
+        "西南风 2级",
+        "降水",
+        "已经停止",
+        "建议",
+        "返回码头确认",
+        "✓",
+        "湖区状态已更新",
+        "返回码头确认"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出天气，返回手机主页"
+        },
+        {
+          "disabled": true,
+          "name": "QizhenWeatherDevice",
+          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [],
+      "emissions": []
+    },
+    {
+      "kind": "tiyi",
+      "labels": [],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (9.0, 7.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出浙大体艺，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiCount47",
+          "rect": "[P: (18.22355, 139.4499), S: (89.25353, 66.99872)]",
+          "text": "",
+          "tooltip": "运动打卡次数 47"
+        }
+      ],
+      "actions": [
+        "c1_tiyi_digit"
+      ],
+      "emissions": [
+        [
+          "c1_tiyi_digit",
+          null
+        ]
+      ]
+    },
+    {
+      "kind": "tiyi",
+      "labels": [],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (9.0, 7.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出浙大体艺，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiCount47",
+          "rect": "[P: (18.22355, 139.4499), S: (89.25353, 66.99872)]",
+          "text": "",
+          "tooltip": "运动打卡次数 47"
+        }
+      ],
+      "actions": [
+        "c1_tiyi_digit"
+      ],
+      "emissions": [
+        [
+          "c1_tiyi_digit",
+          null
+        ]
+      ]
+    },
+    {
+      "kind": "tiyi",
+      "labels": [
+        "开始虚拟定位",
+        "请先在部门黄页确认参加者"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (9.0, 7.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出浙大体艺，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiExercise",
+          "rect": "[P: (47.25, 563.434), S: (283.5, 67.7547)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_exercise"
+      ],
+      "emissions": [
+        [
+          "c2_exercise",
+          null
+        ]
+      ]
+    },
+    {
+      "kind": "tiyi",
+      "labels": [
+        "课外锻炼进行中"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (9.0, 7.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出浙大体艺，返回手机主页"
+        },
+        {
+          "disabled": true,
+          "name": "TiyiExercise",
+          "rect": "[P: (47.25, 563.434), S: (283.5, 67.7547)]",
+          "text": "",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "c2_exercise"
+      ],
+      "emissions": []
+    },
+    {
+      "kind": "tiyi",
+      "labels": [
+        "浙大体艺",
+        "···",
+        "本人来过证明补录单",
+        "待补录 · 先核对三项调查材料",
+        "表单 022",
+        "检测到室内异常锻炼路线",
+        "寝室 → 图书馆入口 → 022",
+        "到座耗时",
+        "来源 01 · 入口小屏 · 计算时间差",
+        "公示编号",
+        "来源 02 · CC98 楼主编辑 · 读取编号",
+        "证明数量",
+        "来源 03 · 旧版规则 · 统计类别",
+        "三项字段分别对应三份已保存的证据。",
+        "三项材料从哪里取得",
+        "01 图书馆入口小屏 · 填写到座耗时",
+        "07:55 基础馆入口 → 08:02 一层书库 022\n填写两次记录的分钟差",
+        "02 CC98 调查帖楼主编辑 · 填写公示编号",
+        "楼主编辑原文：旧申请统一挂在公示编号 47\n23 是回复楼层；填写原文中的公示编号",
+        "03 旧版规则 · 填写证明数量",
+        "本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写规则列出的证明类别数量"
+      ],
+      "buttons": [
+        {
+          "disabled": false,
+          "name": "PhoneNav_exit",
+          "rect": "[P: (7.0, 5.0), S: (40.0, 45.0)]",
+          "text": "×",
+          "tooltip": "退出浙大体艺，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiMinus_arrival",
+          "rect": "[P: (181.0, 299.0), S: (39.0, 32.0)]",
+          "text": "−",
+          "tooltip": "到座耗时减一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPlus_arrival",
+          "rect": "[P: (308.0, 299.0), S: (39.0, 32.0)]",
+          "text": "+",
+          "tooltip": "到座耗时加一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiMinus_notice",
+          "rect": "[P: (181.0, 382.0), S: (39.0, 32.0)]",
+          "text": "−",
+          "tooltip": "公示编号减一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPlus_notice",
+          "rect": "[P: (308.0, 382.0), S: (39.0, 32.0)]",
+          "text": "+",
+          "tooltip": "公示编号加一"
+        },
+        {
+          "disabled": true,
+          "name": "TiyiMinus_proofs",
+          "rect": "[P: (181.0, 465.0), S: (39.0, 32.0)]",
+          "text": "−",
+          "tooltip": "证明数量减一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPlus_proofs",
+          "rect": "[P: (308.0, 465.0), S: (39.0, 32.0)]",
+          "text": "+",
+          "tooltip": "证明数量加一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPresenceSubmit",
+          "rect": "[P: (14.0, 549.0), S: (350.0, 44.0)]",
+          "text": "提交补录",
+          "tooltip": ""
+        }
+      ],
+      "actions": [
+        "lib_audit"
+      ],
+      "emissions": [
+        [
+          "lib_audit",
+          {
+            "arrival": "5",
+            "notice": "45",
+            "proofs": "1"
+          }
+        ],
+        [
+          "lib_audit_value",
+          {
+            "field": "arrival",
+            "value": 6
+          }
+        ],
+        [
+          "lib_audit_value",
+          {
+            "field": "notice",
+            "value": 46
+          }
+        ],
+        [
+          "lib_audit_value",
+          {
+            "field": "proofs",
+            "value": 2
+          }
+        ],
+        [
+          "lib_audit",
+          {
+            "arrival": "6",
+            "notice": "46",
+            "proofs": "2"
+          }
+        ]
+      ]
+    }
+  ]
+}

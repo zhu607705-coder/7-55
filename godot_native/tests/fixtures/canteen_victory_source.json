@@ -1,0 +1,2025 @@
+{
+  "sourceMethods": [
+    "CanteenDefenseRuntime.update",
+    "CanteenDefenseRuntime.destroy",
+    "CanteenInteriorScene.animateDefenseVictory",
+    "CanteenInteriorScene.finishDefense",
+    "CanteenInteriorScene.queueDialogue",
+    "CanteenInteriorScene.startDefense",
+    "CanteenInteriorScene.beginCanteenExit"
+  ],
+  "camera": {
+    "viewport": [
+      960,
+      540
+    ],
+    "world": [
+      1672,
+      941
+    ],
+    "center": [
+      836,
+      470.5
+    ],
+    "zoom": 0.565249734325186,
+    "follow": false,
+    "deadzone": [
+      0,
+      0
+    ]
+  },
+  "cases": [
+    {
+      "reduced": false,
+      "initial": {
+        "point": [
+          816,
+          506
+        ],
+        "frame": 0,
+        "flip": false,
+        "angle": -9
+      },
+      "durationMs": 760,
+      "holdMs": 260,
+      "hideAtMs": 1020,
+      "lines": [
+        {
+          "atMs": 1020,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2220,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 3420,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 4620,
+      "leaveAtMs": 5095,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            816,
+            506
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": -9,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            816.0009764542937,
+            506.00059903047094
+          ],
+          "scale": [
+            1.1599984764542937,
+            1.1599994459833793
+          ],
+          "angle": -8.99983552631579,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 190,
+          "point": [
+            851.25,
+            527.625
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": -3.0625,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 380,
+          "point": [
+            957,
+            592.5
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 14.75,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 570,
+          "point": [
+            1133.25,
+            700.625
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 44.4375,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 759,
+          "point": [
+            1378.5167659279778,
+            851.0900727146815
+          ],
+          "scale": [
+            0.2823142659279777,
+            0.8408415512465373
+          ],
+          "angle": 85.75016447368422,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 760,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 761,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1019,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1020,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1021,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 4620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "reduced": false,
+      "initial": {
+        "point": [
+          833,
+          497
+        ],
+        "frame": 1,
+        "flip": true,
+        "angle": 6
+      },
+      "durationMs": 760,
+      "holdMs": 260,
+      "hideAtMs": 1020,
+      "lines": [
+        {
+          "atMs": 1020,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2220,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 3420,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 4620,
+      "leaveAtMs": 5095,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            833,
+            497
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": 6,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            833.0009470221606,
+            497.0006146121884
+          ],
+          "scale": [
+            1.1599984764542937,
+            1.1599994459833793
+          ],
+          "angle": 6.0001385041551245,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 190,
+          "point": [
+            867.1875,
+            519.1875
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": 11,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 380,
+          "point": [
+            969.75,
+            585.75
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 26,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 570,
+          "point": [
+            1140.6875,
+            696.6875
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 51,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 759,
+          "point": [
+            1378.5614733379502,
+            851.0664040858726
+          ],
+          "scale": [
+            0.2823142659279777,
+            0.8408415512465373
+          ],
+          "angle": 85.78961218836565,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 760,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 761,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1019,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1020,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1021,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 4620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "reduced": false,
+      "initial": {
+        "point": [
+          850,
+          488
+        ],
+        "frame": 2,
+        "flip": false,
+        "angle": -3
+      },
+      "durationMs": 760,
+      "holdMs": 260,
+      "hideAtMs": 1020,
+      "lines": [
+        {
+          "atMs": 1020,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2220,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 3420,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 4620,
+      "leaveAtMs": 5095,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            850,
+            488
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": -3,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            850.0009175900277,
+            488.0006301939058
+          ],
+          "scale": [
+            1.1599984764542937,
+            1.1599994459833793
+          ],
+          "angle": -2.9998459141274236,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 190,
+          "point": [
+            883.125,
+            510.75
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": 2.5625,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 380,
+          "point": [
+            982.5,
+            579
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 19.25,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 570,
+          "point": [
+            1148.125,
+            692.75
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 47.0625,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 759,
+          "point": [
+            1378.6061807479225,
+            851.0427354570638
+          ],
+          "scale": [
+            0.2823142659279777,
+            0.8408415512465373
+          ],
+          "angle": 85.76594355955679,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 760,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 761,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1019,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1020,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1021,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 4620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "reduced": false,
+      "initial": {
+        "point": [
+          867,
+          479
+        ],
+        "frame": 3,
+        "flip": true,
+        "angle": 9
+      },
+      "durationMs": 760,
+      "holdMs": 260,
+      "hideAtMs": 1020,
+      "lines": [
+        {
+          "atMs": 1020,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2220,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 3420,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 4620,
+      "leaveAtMs": 5095,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            867,
+            479
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": 9,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            867.0008881578948,
+            479.00064577562324
+          ],
+          "scale": [
+            1.1599984764542937,
+            1.1599994459833793
+          ],
+          "angle": 9.000133310249307,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 190,
+          "point": [
+            899.0625,
+            502.3125
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": 13.8125,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 380,
+          "point": [
+            995.25,
+            572.25
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 28.25,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 570,
+          "point": [
+            1155.5625,
+            688.8125
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 52.3125,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 759,
+          "point": [
+            1378.6508881578948,
+            851.0190668282548
+          ],
+          "scale": [
+            0.2823142659279777,
+            0.8408415512465373
+          ],
+          "angle": 85.79750173130195,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 760,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 761,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1019,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1020,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1021,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 4620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "reduced": true,
+      "initial": {
+        "point": [
+          816,
+          506
+        ],
+        "frame": 0,
+        "flip": false,
+        "angle": -9
+      },
+      "durationMs": 160,
+      "holdMs": 60,
+      "hideAtMs": 220,
+      "lines": [
+        {
+          "atMs": 220,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 1420,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2620,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 3820,
+      "leaveAtMs": 3986,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            816,
+            506
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": -9,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            816.02203125,
+            506.013515625
+          ],
+          "scale": [
+            1.159965625,
+            1.1599875
+          ],
+          "angle": -8.9962890625,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 40,
+          "point": [
+            851.25,
+            527.625
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": -3.0625,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 80,
+          "point": [
+            957,
+            592.5
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 14.75,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 120,
+          "point": [
+            1133.25,
+            700.625
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 44.4375,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 159,
+          "point": [
+            1372.9720312499999,
+            847.688515625
+          ],
+          "scale": [
+            0.290965625,
+            0.8439874999999999
+          ],
+          "angle": 84.8162109375,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 160,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 161,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 219,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 0,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 221,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3820,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "reduced": true,
+      "initial": {
+        "point": [
+          833,
+          497
+        ],
+        "frame": 1,
+        "flip": true,
+        "angle": 6
+      },
+      "durationMs": 160,
+      "holdMs": 60,
+      "hideAtMs": 220,
+      "lines": [
+        {
+          "atMs": 220,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 1420,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2620,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 3820,
+      "leaveAtMs": 3986,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            833,
+            497
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": 6,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            833.0213671875,
+            497.0138671875
+          ],
+          "scale": [
+            1.159965625,
+            1.1599875
+          ],
+          "angle": 6.003125,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 40,
+          "point": [
+            867.1875,
+            519.1875
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": 11,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 80,
+          "point": [
+            969.75,
+            585.75
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 26,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 120,
+          "point": [
+            1140.6875,
+            696.6875
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 51,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 159,
+          "point": [
+            1373.1838671875,
+            847.5763671875
+          ],
+          "scale": [
+            0.290965625,
+            0.8439874999999999
+          ],
+          "angle": 85.003125,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 160,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 161,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 219,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 1,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 221,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3820,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "reduced": true,
+      "initial": {
+        "point": [
+          850,
+          488
+        ],
+        "frame": 2,
+        "flip": false,
+        "angle": -3
+      },
+      "durationMs": 160,
+      "holdMs": 60,
+      "hideAtMs": 220,
+      "lines": [
+        {
+          "atMs": 220,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 1420,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2620,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 3820,
+      "leaveAtMs": 3986,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            850,
+            488
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": -3,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            850.020703125,
+            488.01421875
+          ],
+          "scale": [
+            1.159965625,
+            1.1599875
+          ],
+          "angle": -2.9965234375,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 40,
+          "point": [
+            883.125,
+            510.75
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": 2.5625,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 80,
+          "point": [
+            982.5,
+            579
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 19.25,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 120,
+          "point": [
+            1148.125,
+            692.75
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 47.0625,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 159,
+          "point": [
+            1373.3957031250002,
+            847.4642187500001
+          ],
+          "scale": [
+            0.290965625,
+            0.8439874999999999
+          ],
+          "angle": 84.89097656250001,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 160,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 161,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 219,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 2,
+          "flip": false,
+          "alpha": 1
+        },
+        {
+          "atMs": 220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 221,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3820,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "reduced": true,
+      "initial": {
+        "point": [
+          867,
+          479
+        ],
+        "frame": 3,
+        "flip": true,
+        "angle": 9
+      },
+      "durationMs": 160,
+      "holdMs": 60,
+      "hideAtMs": 220,
+      "lines": [
+        {
+          "atMs": 220,
+          "text": "阿姨：纸不能打包带走。",
+          "tone": "narrator",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 1420,
+          "text": "玩家：它自己跑出去的。",
+          "tone": "player",
+          "durationMs": 1080
+        },
+        {
+          "atMs": 2620,
+          "text": "系统：出门，继续追。",
+          "tone": "system",
+          "durationMs": 1080
+        }
+      ],
+      "exitAtMs": 3820,
+      "leaveAtMs": 3986,
+      "samples": [
+        {
+          "atMs": 0,
+          "point": [
+            867,
+            479
+          ],
+          "scale": [
+            1.16,
+            1.16
+          ],
+          "angle": 9,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 1,
+          "point": [
+            867.0200390625,
+            479.0145703125
+          ],
+          "scale": [
+            1.159965625,
+            1.1599875
+          ],
+          "angle": 9.0030078125,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 40,
+          "point": [
+            899.0625,
+            502.3125
+          ],
+          "scale": [
+            1.105,
+            1.14
+          ],
+          "angle": 13.8125,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 80,
+          "point": [
+            995.25,
+            572.25
+          ],
+          "scale": [
+            0.94,
+            1.0799999999999998
+          ],
+          "angle": 28.25,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 120,
+          "point": [
+            1155.5625,
+            688.8125
+          ],
+          "scale": [
+            0.665,
+            0.98
+          ],
+          "angle": 52.3125,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 159,
+          "point": [
+            1373.6075390625,
+            847.3520703125
+          ],
+          "scale": [
+            0.290965625,
+            0.8439874999999999
+          ],
+          "angle": 85.0405078125,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 160,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 161,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 219,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            0.28,
+            0.84
+          ],
+          "angle": 86,
+          "frame": 3,
+          "flip": true,
+          "alpha": 1
+        },
+        {
+          "atMs": 220,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 221,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 1420,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 2620,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        },
+        {
+          "atMs": 3820,
+          "point": [
+            1380,
+            852
+          ],
+          "scale": [
+            1,
+            1
+          ],
+          "angle": 0,
+          "frame": -1,
+          "flip": false,
+          "alpha": 0
+        }
+      ]
+    }
+  ]
+}

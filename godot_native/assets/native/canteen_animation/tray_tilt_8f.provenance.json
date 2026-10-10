@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "asset": "tray_tilt_8f.png",
+  "method": "Original tray reference guided ChatGPT web image generation; separately authored poses registered by uniform scale and centre translation. No image shear or runtime squash. Frame zero retains source SVG raster; runtime idle uses the unchanged original SVG.",
+  "date": "2026-10-09",
+  "source_references": [
+    "godot_native/assets/native/chapter3/tray_clean.svg",
+    "godot_native/assets/native/canteen_objects/canteen_single_tray_stack.png"
+  ],
+  "generated_source_sha256": "e0adb8f6fbb1241bd2d8f8301a9a2d350a5b1a96c6b361539e155de42ab2e51f",
+  "atlas_size": [
+    512,
+    256
+  ],
+  "frame_size": [
+    128,
+    128
+  ],
+  "grid": [
+    4,
+    2
+  ],
+  "frames": [
+    {
+      "index": 0,
+      "source": "godot_native/assets/native/chapter3/tray_clean.svg",
+      "method": "Original SVG raster at112×112, nearest-neighbor resized to128×128; generated cell0 is unused. Runtime frame0 reads unchanged SVG directly.",
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "7d953a9e35ff9d2d4f193d75d7b7a947c131fd1f069619b1c7e8ae36a106e6d0"
+    },
+    {
+      "index": 1,
+      "source_cell": [
+        444,
+        0,
+        887,
+        444
+      ],
+      "source_alpha_crop": [
+        121,
+        75,
+        330,
+        395
+      ],
+      "uniform_scale": 0.2513489547027819,
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "6bf18163cc1f5e7bf6ad53c4c601122743815c57e09c7c7c3b2c3bc2c2e3e356"
+    },
+    {
+      "index": 2,
+      "source_cell": [
+        887,
+        0,
+        1330,
+        444
+      ],
+      "source_alpha_crop": [
+        120,
+        78,
+        337,
+        405
+      ],
+      "uniform_scale": 0.23832282712675007,
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "4e5608070b3ae38445faa3458aca289e0f10d358cfd799beabd996583a33e347"
+    },
+    {
+      "index": 3,
+      "source_cell": [
+        1330,
+        0,
+        1774,
+        444
+      ],
+      "source_alpha_crop": [
+        101,
+        98,
+        358,
+        405
+      ],
+      "uniform_scale": 0.232558429024933,
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "677087ef03491a4658da019e11754e6929c03446fd365c6774397f64ae24b3a4"
+    },
+    {
+      "index": 4,
+      "source_cell": [
+        0,
+        444,
+        444,
+        887
+      ],
+      "source_alpha_crop": [
+        84,
+        95,
+        377,
+        372
+      ],
+      "uniform_scale": 0.23256590762410084,
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "ad9413746000935e26c2895c9e895a91a2308e8c66c1c594e79bfe3dcd31063e"
+    },
+    {
+      "index": 5,
+      "source_cell": [
+        444,
+        444,
+        887,
+        887
+      ],
+      "source_alpha_crop": [
+        69,
+        118,
+        385,
+        335
+      ],
+      "uniform_scale": 0.24183367243754447,
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "1bad5cbd8d3830644c6439c5ce8ea46e307e1717b0afeb9bbcbd4301214a6712"
+    },
+    {
+      "index": 6,
+      "source_cell": [
+        887,
+        444,
+        1330,
+        887
+      ],
+      "source_alpha_crop": [
+        58,
+        138,
+        386,
+        307
+      ],
+      "uniform_scale": 0.2515606465576203,
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "9745589b62f0362503a4ed1a6ef617335123a7182ee5676396e4597066adfec2"
+    },
+    {
+      "index": 7,
+      "source_cell": [
+        1330,
+        444,
+        1774,
+        887
+      ],
+      "source_alpha_crop": [
+        70,
+        134,
+        375,
+        312
+      ],
+      "uniform_scale": 0.2711131403878876,
+      "registered_centre": [
+        64,
+        64
+      ],
+      "sha256": "f0b3a04374710b73d377479960bf11e70bbed488bbdc973636f9998fc757b0d9"
+    }
+  ],
+  "atlas_sha256": "8d434ff05fa24797dab632727a42ec5c9d8bbf94535beb224fdae901bcf2cf9d"
+}

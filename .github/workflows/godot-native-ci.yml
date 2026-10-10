@@ -1,0 +1,52 @@
+name: Godot native migration
+on:
+  pull_request:
+    paths: ['godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml']
+  workflow_dispatch:
+jobs:
+  native-parse-and-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned official Godot
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Install locked source-test dependencies
+        run: npm ci --ignore-scripts
+      - name: Synchronize original assets and state
+        run: node godot_native/tools/sync_source.mjs
+      - name: Verify deterministic source catalogs
+        run: |
+          node godot_native/tools/build-save-normalizer.mjs
+          node godot_native/tools/export-audio-director.mjs
+          node godot_native/tools/export-save-domains.mjs --check
+          node godot_native/tests/export_chapter3_scene_source.mjs --check
+          node godot_native/tests/export_library_story_source.mjs --check
+          node godot_native/tests/export_lake_live_source_fixtures.mjs --check
+          node godot_native/tests/export_chapter3_narrative_source.mjs --check
+          node godot_native/tests/export_library_world_source.mjs --check
+          node godot_native/tools/export-c3-world-source.mjs --check
+          git diff --exit-code -- godot_native/data/native/save_normalizer.json godot_native/data/native/audio-director-source.json
+      - name: Convert source movies for native playback
+        run: |
+          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          bash godot_native/tools/convert_media.sh
+      - name: Import, parse, and test native runtime
+        env:
+          GODOT_TEST_REPORT: native-test-report.json
+        run: node godot_native/tools/validate_native.mjs
+      - name: Compare native replay traces with original TypeScript models
+        run: |
+          node godot_native/tests/verify_source_model_parity.mjs
+          node godot_native/tests/verify_canteen_defense_source.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-test-report
+          path: native-test-report.json

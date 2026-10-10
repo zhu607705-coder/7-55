@@ -1,0 +1,124 @@
+{
+  "dateUTC": "2026-10-03",
+  "baseCommit": "96e7c5a60cb2f865c9901d47725d9c4107acc455",
+  "runtimeSha256": "608a7bdd22feba16a9454d939697cba57e847993574603ace6c3f64b8bd04951",
+  "runtimeFiles": 1054,
+  "finalCleanAggregate": {
+    "stages": 169,
+    "passed": 169,
+    "failed": 0,
+    "exitCode": 0
+  },
+  "history": {
+    "initialAggregate": {
+      "stages": 166,
+      "passed": 165,
+      "failed": 1
+    },
+    "failure": "Chapter 3 first cinematic frame retained portrait display scale after synchronous canonical layout. Fixed by resampling scale before the first paper draw; original failure retained.",
+    "additionalTestRepair": "Tiyi source exporter --check now compares freshly executed source without writing; the prior accidental output matched the checked fixture. Nine CLI checks added."
+  },
+  "exports": {
+    "kind": "fresh exported native runtime",
+    "artifacts": [
+      {
+        "path": "7-55-native.exe",
+        "bytes": 638858472,
+        "sha256": "11c490a26bb4c45639874eaf681b4127464a449e50b630b019afd2ea63555b2c"
+      },
+      {
+        "path": "7-55-native.pck",
+        "bytes": 534199000,
+        "sha256": "196910be120a409b4fdd5481d54aebf662e8a01dd8939d7e8977b5b7c1bed936"
+      },
+      {
+        "path": "7-55-native.x86_64",
+        "bytes": 71075864,
+        "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+      }
+    ],
+    "results": [
+      {
+        "stage": "export-linux",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 5.261915922164917
+      },
+      {
+        "stage": "export-windows-build-only",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 6.220751523971558
+      },
+      {
+        "stage": "packed-campaign",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 113.81303453445435
+      },
+      {
+        "stage": "native-only-first",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 2.253324031829834
+      },
+      {
+        "stage": "native-only-reload",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 1.8466112613677979
+      }
+    ],
+    "limits": [
+      "Campaign is automated, not manual playthrough",
+      "Windows export is build-only; no Windows execution or physical phone acceptance",
+      "Graphical acceptance tracked separately"
+    ]
+  },
+  "packedCampaign": {
+    "checks": 795,
+    "failures": 0,
+    "chapters": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "notManualPlaythrough": true
+  },
+  "nativeOnly": {
+    "firstChecks": 25,
+    "reloadChecks": 21,
+    "allPassed": true,
+    "browserRuntimeFiles": []
+  },
+  "actualLinuxRelease": {
+    "viewport": [
+      390,
+      844
+    ],
+    "ordinaryEarnedSaveCopies": true,
+    "recovery": [
+      "wrong receipt dropped onto presence card shows persistent readable rejection",
+      "1/3 accepted progress remains",
+      "collapsed inventory clears condition text"
+    ],
+    "bd": [
+      "numeric-reply reading shortcut reaches floor24",
+      "selected ordinal and local order visible",
+      "local Undo restores empty order without jumping away"
+    ],
+    "mainEarnedProfileUntouched": true,
+    "warnings": [
+      "Unsupported V-Sync driver warning",
+      "ObjectDB exit warning also present in previous release; isolated diagnosis pending"
+    ],
+    "scriptErrors": false
+  },
+  "limits": [
+    "Windows export is build-only",
+    "Physical-phone and subjective hearing acceptance remain unverified",
+    "Full manual chapter traversal remains unfinished",
+    "Current source goal refinement and structural Library modeling are separate, unintegrated work"
+  ]
+}

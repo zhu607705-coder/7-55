@@ -1,0 +1,636 @@
+{
+  "format": "7-55-save-domains",
+  "version": 1,
+  "source": "src/core/SaveStore.ts",
+  "sourceSha256": "87aa3c7a7dcfcc2f4d871f2a0fd49061163edcc8d730083dd8dddefbc01868ab",
+  "sets": {
+    "VALID_RUNTIME_MODES": [
+      "phone",
+      "rpg"
+    ],
+    "VALID_RPG_SCENES": [
+      "campus_bootstrap",
+      "campus_qizhen_loop",
+      "dorm_hub",
+      "library_interior",
+      "canteen_interior",
+      "theater_interior",
+      "qizhen_lake",
+      "duan_yongping_temporal_maze"
+    ],
+    "VALID_RPG_CHECKPOINTS": [
+      "campus_spawn",
+      "campus_library_gate",
+      "campus_canteen_gate",
+      "campus_theater_junction",
+      "campus_qizhen_transition_stop",
+      "campus_qizhen_gate",
+      "dorm_spawn",
+      "canteen_entrance",
+      "theater_lobby",
+      "theater_auditorium",
+      "theater_stage",
+      "qizhen_reflection",
+      "qizhen_signs",
+      "qizhen_decoy",
+      "qizhen_mist",
+      "qizhen_dock",
+      "qizhen_open_water",
+      "qizhen_channel",
+      "qizhen_swan_cove",
+      "qizhen_chase",
+      "qizhen_complete",
+      "library_entrance",
+      "library_seat_022",
+      "library_front_desk",
+      "library_shelf_755",
+      "c4_a1_lobby",
+      "c4_a1_main_elevator",
+      "c4_a2_corridor",
+      "c4_a2_room202",
+      "c4_a3_wayfinding",
+      "c4_a3_skybridge",
+      "c4_b3_landing",
+      "c4_b2_activity",
+      "c4_b2_final_room"
+    ],
+    "VALID_ACT_ONE_PHASES": [
+      "prologue",
+      "friend_message_required",
+      "system_required",
+      "inventory_required",
+      "system_return_required",
+      "reservation_briefing_required",
+      "reservation_required",
+      "movement_ready",
+      "identity_required",
+      "phone_link_required",
+      "controls_required",
+      "movement_required",
+      "item_required",
+      "map_required",
+      "chapter_two_ready",
+      "complete"
+    ],
+    "VALID_ACT_ONE_AREA_IDS": [
+      "north_gate",
+      "bridge",
+      "library",
+      "game_kiosk"
+    ],
+    "VALID_SCENES": [
+      "alarm",
+      "desktop",
+      "phone_home",
+      "settings",
+      "wechat",
+      "cc98",
+      "zjuding",
+      "tiyi",
+      "weather",
+      "photos",
+      "timeline_recovery",
+      "voice_memos",
+      "campus_card",
+      "checkin",
+      "bonsai",
+      "clock",
+      "ending"
+    ],
+    "VALID_NETWORK_MODES": [
+      "campus_wifi",
+      "cellular",
+      "offline"
+    ],
+    "VALID_THEME_MODES": [
+      "normal",
+      "dark",
+      "backside"
+    ],
+    "VALID_CANTEEN_HUNT_PHASES": [
+      "tracking",
+      "canteen_reached",
+      "entered",
+      "tray_search",
+      "drink_mix",
+      "menu_order",
+      "pickup_search",
+      "exit_blocking",
+      "chase_ready",
+      "chasing",
+      "theater_reached"
+    ],
+    "VALID_CANTEEN_MODES": [
+      "light",
+      "dark"
+    ],
+    "VALID_CANTEEN_TRAY_IDS": [
+      "tray_blue_01",
+      "tray_blue_02",
+      "tray_blue_03",
+      "tray_plain_01",
+      "tray_plain_02",
+      "tray_plain_03",
+      "tray_plain_04",
+      "tray_plain_05",
+      "tray_plain_06",
+      "tray_plain_07",
+      "tray_plain_08",
+      "tray_plain_09"
+    ],
+    "VALID_CANTEEN_EXIT_IDS": [
+      "west",
+      "southeast",
+      "steam"
+    ],
+    "VALID_CANTEEN_DRINK_IDS": [
+      "sparklingWater",
+      "lemonTea",
+      "blackCoffee"
+    ],
+    "VALID_CANTEEN_MENU_OPTIONS": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "VALID_THEATER_HUNT_PHASES": [
+      "entry_ticket",
+      "program_search",
+      "prop_setup",
+      "spotlight_ready",
+      "spotlight_hunt",
+      "reversal",
+      "complete"
+    ],
+    "VALID_THEATER_MODES": [
+      "light",
+      "dark"
+    ],
+    "VALID_THEATER_TICKET_COMMISSION_PHASES": [
+      "locked",
+      "posted",
+      "accepted",
+      "first_wave_failed",
+      "delivered"
+    ],
+    "VALID_THEATER_PROGRAM_IDS": [
+      "opening",
+      "spotlight",
+      "finale"
+    ],
+    "VALID_QIZHEN_PHASES": [
+      "inactive",
+      "location_search",
+      "lake_unlocked",
+      "dock_outfitting",
+      "boarding_tutorial",
+      "rain_recovery",
+      "lake_exploration",
+      "tool_chain",
+      "swan_exchange",
+      "paper_capture",
+      "swan_chase",
+      "complete"
+    ],
+    "LEGACY_QIZHEN_INTERIOR_PHASES": [
+      "reflection_hunt",
+      "sign_alignment",
+      "decoy_setup",
+      "mist_timing",
+      "chase_ready"
+    ],
+    "VALID_QIZHEN_MODES": [
+      "light",
+      "dark"
+    ],
+    "VALID_QIZHEN_ZONES": [
+      "dock",
+      "open_water",
+      "channel",
+      "swan_cove"
+    ],
+    "VALID_QIZHEN_VEHICLES": [
+      "on_foot",
+      "kayak"
+    ],
+    "VALID_CHAPTER_THREE_INTERLUDE_PHASES": [
+      "inactive",
+      "reboot",
+      "journal_closeout",
+      "evidence_collection",
+      "timeline_assembly",
+      "destination_verified",
+      "replay_ready",
+      "complete"
+    ],
+    "VALID_CHAPTER_THREE_INTERLUDE_PHOTOS": [
+      "paper_left",
+      "paper_middle",
+      "paper_right"
+    ],
+    "VALID_CHAPTER_THREE_INTERLUDE_VOICES": [
+      "lake",
+      "stone",
+      "lobby",
+      "broadcast"
+    ],
+    "VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE": [
+      "journal_start",
+      "photo_direction",
+      "network_destination",
+      "broadcast_end"
+    ],
+    "VALID_CHAPTER_THREE_INTERLUDE_NETWORK_RECORDS": [
+      "record_qizhen_dock",
+      "record_theater_hall",
+      "record_library_south",
+      "record_0755"
+    ],
+    "VALID_CHAPTER_THREE_INTERLUDE_DECOYS": [
+      "canteen_0755",
+      "theater_0832",
+      "status_clock_075523"
+    ],
+    "VALID_QIZHEN_SAFE_SPAWNS": [
+      "dock_entry",
+      "dock_kayak",
+      "open_water_entry",
+      "channel_entry",
+      "swan_cove_entry",
+      "channel_chase"
+    ],
+    "VALID_QIZHEN_PADDLE_SIDES": [
+      "left",
+      "right"
+    ],
+    "VALID_QIZHEN_FISHING_SPOTS": [
+      "locker_key",
+      "net_frame",
+      "paper",
+      "fish"
+    ],
+    "VALID_QIZHEN_MAP_CLUES": [
+      "bridge",
+      "reflection",
+      "lake"
+    ],
+    "VALID_QIZHEN_DECOY_TARGETS": [
+      "notice",
+      "bridge",
+      "lamp"
+    ],
+    "VALID_QIZHEN_JOURNAL_STATUSES": [
+      "locked",
+      "capture_ready",
+      "main_draft",
+      "open",
+      "summary_ready",
+      "archived"
+    ],
+    "VALID_QIZHEN_PHOTO_SPOTS": [
+      "lake_center",
+      "dock",
+      "reflection",
+      "swan_cove"
+    ],
+    "VALID_QIZHEN_PHOTO_TAGS": [
+      "composition_ok",
+      "tilted",
+      "high_speed",
+      "ripple_clear",
+      "ripple_broken",
+      "swan_near",
+      "swan_far",
+      "swan_aftermath"
+    ],
+    "VALID_QIZHEN_SWAN_BUCKETS": [
+      "near",
+      "mid",
+      "far",
+      "gone"
+    ],
+    "VALID_QIZHEN_RIPPLE_BUCKETS": [
+      "clear",
+      "partial",
+      "lost"
+    ],
+    "VALID_QIZHEN_SUMMARY_CHOICES": [
+      "safe_return",
+      "details_withheld"
+    ],
+    "VALID_CHAPTER_FOUR_PHASES": [
+      "opening_handoff",
+      "opening_paper_caught",
+      "hall_clock_inspection",
+      "bakery_hour_hand",
+      "room204_restore",
+      "maintenance_repair",
+      "blackout_light_grid",
+      "final_chase",
+      "final_minute_recovery",
+      "return_to_clock",
+      "morning_checkin",
+      "exterior_closure",
+      "complete"
+    ],
+    "LEGACY_CHAPTER_FOUR_PHASES": [
+      "inactive",
+      "arrival",
+      "airflow_overlay",
+      "elevator_track_sync",
+      "npc_schedule_route",
+      "corridor_bay_reconstruction",
+      "wayfinding_fragment_board",
+      "bridge_floor_discrimination",
+      "stair_echo_direction",
+      "multicam_video_edit",
+      "echo_action_record",
+      "dual_lift_logistics",
+      "warm_air_balance",
+      "first_cycle_reset",
+      "route_schedule",
+      "clock_phase_lock",
+      "complete"
+    ],
+    "LEGACY_CHAPTER_FOUR_PUZZLE_IDS": [
+      "airflow_overlay",
+      "elevator_track_sync",
+      "npc_schedule_route",
+      "corridor_bay_reconstruction",
+      "wayfinding_fragment_board",
+      "bridge_floor_discrimination",
+      "stair_echo_direction",
+      "multicam_video_edit",
+      "echo_action_record",
+      "dual_lift_logistics",
+      "warm_air_balance",
+      "route_schedule",
+      "clock_phase_lock"
+    ],
+    "VALID_CHAPTER_FOUR_FACT_IDS": [
+      "elevator_a2_call_record_observed",
+      "elevator_a3_arrival_record_observed",
+      "elevator_stop_chain_reconstructed",
+      "a1_duty_board_reconstructed",
+      "a3_archive_film_retrieved",
+      "a3_media_alignment_completed",
+      "a2_positioning_plate_calibrated",
+      "a2_power_topology_recovered",
+      "a2_evacuation_route_confirmed",
+      "opening_paper_at_noticeboard",
+      "opening_paper_caught",
+      "external_time_rejected",
+      "hall_clock_inspected",
+      "bakery_conveyor_lamp_inspected",
+      "bakery_hour_hand_exposed",
+      "bakery_conveyor_direction_observed",
+      "bakery_tool_location_observed",
+      "bakery_hour_hand_collected",
+      "hour_hand_installed",
+      "classroom_104_chalk_residual_observed",
+      "classroom_105_terminal_replay_checked",
+      "elevator_history_observed",
+      "elevator_history_calibrated",
+      "a1_time_route_compared",
+      "a3_reference_observed",
+      "a3_identity_context_observed",
+      "zhu_two_questions_answered",
+      "misaligned_stair_solved",
+      "room204_residual_observed",
+      "room204_restored",
+      "room204_projection_completed",
+      "room204_projection_composite_completed",
+      "room202_endpoint_inferred",
+      "maintenance_incident_linked",
+      "positioning_plate_collected",
+      "positioning_plate_installed",
+      "cart_wheel_inspected",
+      "cart_wheel_cover_opened",
+      "cart_wheel_repaired",
+      "clock_gear_repaired",
+      "paper_temporarily_out_of_inventory",
+      "light_grid_locked",
+      "powered_route_confirmed",
+      "canruo_star_lamp_primed",
+      "room202_route_reached",
+      "final_minute_recovered",
+      "attendance_record_recovered",
+      "final_minute_installed",
+      "checkin_card_accepted",
+      "checkin_paper_accepted",
+      "checkin_identity_verified",
+      "exterior_closure_acknowledged"
+    ],
+    "VALID_CHAPTER_FOUR_MODES": [
+      "light",
+      "dark"
+    ],
+    "VALID_CHAPTER_FOUR_FLOORS": [
+      "A1",
+      "A2",
+      "A3"
+    ],
+    "VALID_CHAPTER_FOUR_TIME_STATES": [
+      "2245_opening",
+      "1225_bakery",
+      "1850_evening",
+      "2245_maintenance",
+      "0754_blackout",
+      "0755_morning"
+    ],
+    "VALID_CHAPTER_FOUR_ZHU_PURPOSE_ANSWERS": [
+      "seek_truth",
+      "solve_real_problems",
+      "serve_public"
+    ],
+    "VALID_CHAPTER_FOUR_ZHU_PERSON_ANSWERS": [
+      "responsible",
+      "clear_minded",
+      "public_service"
+    ],
+    "VALID_DIGIT_VALUES": [
+      "0",
+      "7",
+      "9",
+      "8"
+    ],
+    "VALID_ITEM_IDS": [
+      "waterDrop",
+      "headphone",
+      "wateredHeadphone",
+      "reverseGear",
+      "slashLine",
+      "towerKey",
+      "fertilizer",
+      "campusCard",
+      "pushTriangle",
+      "weatherWater",
+      "mentorLine",
+      "rightArrow",
+      "gamepad",
+      "occupancyNote",
+      "callNumber755",
+      "archivedLeaveRule",
+      "itemRecognitionReport",
+      "bagNonPersonProof",
+      "seat022Receipt",
+      "libraryPresenceProof",
+      "seatReleasePass",
+      "cafeteriaWages",
+      "greaseTissue",
+      "pickupTicket0755",
+      "canteenRealBun",
+      "canteenCluelessSoyMilk",
+      "canteenEdgeEgg",
+      "canteenUselessCongee",
+      "theaterTicketHalfA",
+      "sparklingWater",
+      "lemonTea",
+      "blackCoffee",
+      "badDrink",
+      "dailySpecialSparklingWater",
+      "theaterTicketHalfB",
+      "temporaryTheaterTicket",
+      "theaterProgramOpening",
+      "theaterProgramSpotlight",
+      "theaterProgramFinale",
+      "spotlightRemote",
+      "fluorescentBrush",
+      "decoyPaper",
+      "wetProgram",
+      "bridgeKeyword",
+      "reflectionKeyword",
+      "lakeKeyword",
+      "reflectionCoordinate",
+      "hairDryer",
+      "fishingRod",
+      "rustedLockerKey",
+      "nylonCord",
+      "brokenNetFrame",
+      "improvisedDipNet",
+      "sealedFeedTin",
+      "fishFeedPellets",
+      "smallCarp",
+      "swanMagnet",
+      "magneticFishingRod"
+    ],
+    "VALID_ZJUDING_PAGES": [
+      "hub",
+      "login",
+      "directory",
+      "learn",
+      "campus_map",
+      "library",
+      "library_spaces",
+      "library_seat",
+      "library_catalog",
+      "library_recovery"
+    ],
+    "VALID_LIBRARY_FINALS_PHASES": [
+      "idle",
+      "library_route_unlocked",
+      "library_entered",
+      "occupied_seat_found",
+      "evidence_gathering",
+      "bd_briefing",
+      "top_ten_rising",
+      "top_ten_reached",
+      "recovery_application",
+      "pass_ready",
+      "backpack_removed",
+      "seat_recovered",
+      "friend_contacted"
+    ],
+    "LEGACY_LIBRARY_PHASES": [
+      "seat_reserved",
+      "seat_lost",
+      "cc98_filtering",
+      "floor_47_found",
+      "route_order_found",
+      "route_active",
+      "route_evidence_ready",
+      "top_ten_rising",
+      "top_ten_reached",
+      "recovery_code_found",
+      "route_audit_pending",
+      "route_audit_passed",
+      "seat_recovered"
+    ],
+    "VALID_LIBRARY_LOCATION_IDS": [
+      "entrance",
+      "seat_022",
+      "front_desk",
+      "lost_found",
+      "catalog_terminal",
+      "printer",
+      "shelf_755"
+    ],
+    "VALID_LIBRARY_EVIDENCE_IDS": [
+      "archived_leave_rule",
+      "bag_non_person_proof",
+      "seat_022_receipt",
+      "library_presence_proof"
+    ],
+    "VALID_LIBRARY_RECOVERY_EVIDENCE_IDS": [
+      "bag_non_person_proof",
+      "seat_022_receipt",
+      "library_presence_proof"
+    ],
+    "VALID_BD_REPLY_IDS": [
+      "reply-seat-ticket",
+      "reply-visit-proof",
+      "reply-bag-nonperson"
+    ],
+    "VALID_BD_POST_IDS": [
+      "bd-notice-tens",
+      "bd-rule-count",
+      "bd-rank-first",
+      "bd-identity-zero",
+      "bd-call-number-tail",
+      "bd-seat-tail",
+      "bd-reply-count",
+      "bd-arrival-minutes"
+    ],
+    "VALID_LOST_FOUND_STAGES": [
+      "missing_report",
+      "ready",
+      "scanning",
+      "stamped"
+    ],
+    "VALID_CHAPTER_IDS": [
+      "chapter_one",
+      "chapter_two",
+      "chapter_three",
+      "chapter_four"
+    ],
+    "VALID_CLOCK_CALIBRATION_PHASES": [
+      "tampered",
+      "calibrating",
+      "release_ready",
+      "aligned"
+    ],
+    "VALID_CLOCK_CALIBRATION_STEPS": [
+      "target_selection",
+      "coarse_time",
+      "seconds_trim",
+      "phase_lock",
+      "complete"
+    ],
+    "VALID_CLOCK_ARCHIVE_CLUE_IDS": [
+      "room_b2_04",
+      "schedule_0800",
+      "attendance_open"
+    ],
+    "VALID_CLOCK_COARSE_LOCK_IDS": [
+      "hour",
+      "minute"
+    ],
+    "VALID_CLOCK_DRIFT_CHANNEL_IDS": [
+      "gate",
+      "elevator",
+      "room"
+    ]
+  }
+}

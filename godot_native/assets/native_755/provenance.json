@@ -1,0 +1,699 @@
+{
+  "kind": "original TypeScript geometry, original GLB, source IK and camera extraction for native Godot rendering",
+  "sourceFiles": [
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionDebug.ts",
+      "bytes": 10481,
+      "sha256": "ef468c8f53e9d5e1fefbd754a740ec032520db73d9bbb920619cf8ffc4ed04d6"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionRenderer.ts",
+      "bytes": 25179,
+      "sha256": "581dd4685f49f1727de8625d8ccafc5efc44cc36673bdee68cc9b68f792dbe68"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionTimeline.ts",
+      "bytes": 13066,
+      "sha256": "4aae6d57e96c09b681d87f4f74680378d1acafaf358eefd0fe86354e51cb8ea2"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseCampusEnvironment.ts",
+      "bytes": 23165,
+      "sha256": "77ff289ac5084a632cb85bef8cf8f2cbab92e21be838dd825b9e012cc5e7a86c"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseGeometry.ts",
+      "bytes": 5569,
+      "sha256": "6dbe8611c79c7b6b1e07decd70ea5f7ac81ee7c72c26b866ca0b9c8b1b31a271"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseHumanAsset.ts",
+      "bytes": 4304,
+      "sha256": "c68ce0d018f21d7fa0b62b25409e939ee5f149d40a2506e3cb068b69adada7e7"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseHumanPose.ts",
+      "bytes": 7650,
+      "sha256": "028d2a80f3df5ce380aa7422beb0faa53c9c2194bc91ea73d738f152ab8ec1a9"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChasePeople.ts",
+      "bytes": 2893,
+      "sha256": "bad134ed23030ccd0764bbd9592db75fb0fab0ed0255c02897111357acfbf633"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRenderContract.ts",
+      "bytes": 555,
+      "sha256": "907eee6404523f65036d7f2498bccbc9584b9e7eef88df35d732d3832ec5333a"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRenderer.ts",
+      "bytes": 57145,
+      "sha256": "f1ff73c83ee04ec724601066e73ab3eadf3c6b00eddc7bb7228334cd4a8c634a"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRiderRig.ts",
+      "bytes": 57095,
+      "sha256": "6fff299479bb4639d3590d25770a0a88848c5d8eb6880c56334cf44b9cfb15c3"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRoute.ts",
+      "bytes": 650,
+      "sha256": "176f4276783d6c4487fd34ab685c21ac74b770ac590b8080d10b0666ba3a9d47"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseSprites.ts",
+      "bytes": 20413,
+      "sha256": "d7fe42bc166daf419323b5dece61bfda31a4ea43ced741780b60e2daa4ddaa8d"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseStuntModel.ts",
+      "bytes": 12515,
+      "sha256": "b7f6d18bb5d5a72c9d9a6320a3fd849dd2f343118c9aa435d0f9b9a6110965b8"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseThreeRenderer.ts",
+      "bytes": 38260,
+      "sha256": "748e3996fd5adb0c66f059a3dcdb60bc22b507276d592e91c386915abfc5cec1"
+    },
+    {
+      "path": "src/scenes/rpg/ThreePrimitiveCache.ts",
+      "bytes": 5332,
+      "sha256": "5e91f58612d9e6677e54f432eb45561da987ea62a51a01878bcec4e3f2323fe9"
+    },
+    {
+      "path": "src/assets/rpg/canteen-characters/quaternius_casual.glb",
+      "bytes": 1430660,
+      "sha256": "fea7e71271203e7073f1a073fa1208de7402df276f87f80e149bf7589b5d46b4"
+    }
+  ],
+  "nativeFiles": [
+    {
+      "path": "assets/derived/chase_transition_3d/provenance.json",
+      "bytes": 2192,
+      "sha256": "d5b51df36fd67c4685379e8207b0c6e0dcde4990db2bf542492f05090905dce4"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_geometry.scn",
+      "bytes": 4655007,
+      "sha256": "e0994b150fba2c36041db3ad7b7bdc5bc1122152d70c1fcaf4f50c8e133d25c4"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_pose_frames.json",
+      "bytes": 2428694,
+      "sha256": "164c6a4e3caaee1a5d5c3a5d1a45675dd17ef78da71ad6725901ac01645bdf51"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_runtime.json",
+      "bytes": 61342,
+      "sha256": "03ab01c014ce1803b8f2f6cf4e097d3f7fb8ff6ed7504bb475d7b7ef4c473aae"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_transition.json",
+      "bytes": 3030726,
+      "sha256": "d085d476761c686de3440de979490410e962c4ec1316f33616df92b724e9021b"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_transition_0.png",
+      "bytes": 17584,
+      "sha256": "98e7108d8718aebed9ee2159fbf9f082240702c5e6f2f9e41cff93deefd6c437"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_transition_1.png",
+      "bytes": 6584,
+      "sha256": "3f5ea733c67eb00a9e7f2e9c31debcc2d44e8f37c630db5f7a4b8fc507761ad3"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_transition_2.png",
+      "bytes": 4500,
+      "sha256": "588136a5dfe8c5db4a2aaff9402e8c1075c23c626b1c72993fc37c7fafb0a063"
+    },
+    {
+      "path": "assets/derived/chase_transition_3d/source_transition_3.png",
+      "bytes": 660,
+      "sha256": "6859318b2685c0fa0965165dbb7d364a4ca83ad147e557eaedb1dcf5eec7e215"
+    },
+    {
+      "path": "assets/native_755/ride/fx_bellRing.scn",
+      "bytes": 2733,
+      "sha256": "ab377692922bc3299dff7ab1003a1ab29eca1b0dc8d168dd55585283a10e58de"
+    },
+    {
+      "path": "assets/native_755/ride/fx_trayShield.scn",
+      "bytes": 7903,
+      "sha256": "22ed38b9e7bbf434d8357e76bba6e9c5ee6f7772f5e6207f7cb1f2a5e9123957"
+    },
+    {
+      "path": "assets/native_755/ride/hazard_barrier.scn",
+      "bytes": 2680,
+      "sha256": "5d65ffee1510a3ea54ae16566011aafbbeda0d36c863b91b74aa461960bd5897"
+    },
+    {
+      "path": "assets/native_755/ride/hazard_bicycle.scn",
+      "bytes": 324271,
+      "sha256": "ae0c4cdd321fc44c33990d88cbe071b74a80a255f04b4bb08784267d37b7f0b3"
+    },
+    {
+      "path": "assets/native_755/ride/hazard_car.scn",
+      "bytes": 15104,
+      "sha256": "c6a7dd6c3f566bb108ee142a2e817181ea549cc094c356ac90a53fc7359f2131"
+    },
+    {
+      "path": "assets/native_755/ride/hazard_cone.scn",
+      "bytes": 4742,
+      "sha256": "f605f1f8a51b7ed5da0b91c0280bb78c6bd5d9d8db75fa5c04e5d734298d4aed"
+    },
+    {
+      "path": "assets/native_755/ride/hazard_crowd.scn",
+      "bytes": 514595,
+      "sha256": "6241ce4c68fed890b9af5776337ecd36306e037e84b00a48891d5ffc49d12011"
+    },
+    {
+      "path": "assets/native_755/ride/hazard_runner.scn",
+      "bytes": 179488,
+      "sha256": "78a5bdf4bed033d3d6e2b19058bc45903f52421108902393b2115bbcebc35fa6"
+    },
+    {
+      "path": "assets/native_755/ride/paper.scn",
+      "bytes": 2334,
+      "sha256": "5aeea96ed9f49871193769d04f8d77dafe2dcc0c45b370ba710dbca2bdabfd51"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_0_bone_poses.bin",
+      "bytes": 396800,
+      "sha256": "b4c13d2f6deab319270e290d407fc845bc1ed6324941a4553014be5bbe558b1b"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_0_geometry.scn",
+      "bytes": 345220,
+      "sha256": "bbfdb7bb42bbd866203744785f5559feac79e39f86b0053e50095f70fab43d56"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_0_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_0_pose_manifest.json",
+      "bytes": 22887,
+      "sha256": "3e02622b6dabb2b8372723e4c393e0e989038503c4dd02927bd3785d70ea786b"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_10_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "7e7577caa05f4de4ff6b58949c2ed26383fa019e036352f7089c68d1d25836eb"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_10_geometry.scn",
+      "bytes": 502081,
+      "sha256": "a66d5021c074aa2b2c0db00cfad320a5d56d34d6178262bd0291c3bfefde8bf9"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_10_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_10_pose_manifest.json",
+      "bytes": 15109,
+      "sha256": "d0405af9276aa32d57254acf989f7bca273bf70905b220c7aac0387b154b63a3"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_11_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "6a6c758a2c73f9d74066a361c5997a26e1842711a96bfcf3e88c52c20f899336"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_11_geometry.scn",
+      "bytes": 502077,
+      "sha256": "641ebc4287587a5537d6c1d6dd42e0e8e5e90ff02fd8e5889b0512788347104d"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_11_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_11_pose_manifest.json",
+      "bytes": 15109,
+      "sha256": "738420cf25ae1fa930742ac9bf9e2744bd06b7d1f0933eceea76b7c280829112"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_13_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "7e7577caa05f4de4ff6b58949c2ed26383fa019e036352f7089c68d1d25836eb"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_13_geometry.scn",
+      "bytes": 180107,
+      "sha256": "ab99d96c5263f94b94ecca5554bd7c8d49e308dda4a25d2d1329529af7c79b6c"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_13_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_13_pose_manifest.json",
+      "bytes": 11725,
+      "sha256": "7283210d6ed55feac9b1878c31c3bcf588a2bb2be01162c3849c8f52280b2cb7"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_14_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "6a6c758a2c73f9d74066a361c5997a26e1842711a96bfcf3e88c52c20f899336"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_14_geometry.scn",
+      "bytes": 502088,
+      "sha256": "ffa82e743e0a2eb4a562ad941cbe0245b7b42fc6b75e5fad57495d83ed18e8fa"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_14_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_14_pose_manifest.json",
+      "bytes": 15109,
+      "sha256": "928b4a5bee774b81d788c03c2b88a7daaca9d3cd972d57a04b599eef798ce40a"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_16_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "7e7577caa05f4de4ff6b58949c2ed26383fa019e036352f7089c68d1d25836eb"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_16_geometry.scn",
+      "bytes": 502084,
+      "sha256": "b6f5dd32eae4bb515e35c5186dbf7adf855ee61452649c859985729bc35d597a"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_16_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_16_pose_manifest.json",
+      "bytes": 15109,
+      "sha256": "62ddc95989a8db183a6e050ad85dc41d5073cd4ca7a0d17f117d55294903a635"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_17_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "6a6c758a2c73f9d74066a361c5997a26e1842711a96bfcf3e88c52c20f899336"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_17_geometry.scn",
+      "bytes": 502087,
+      "sha256": "85d8994dc7b97eb3a32054131d483bb38af04685d38052003e585fdf6d2fa5a3"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_17_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_17_pose_manifest.json",
+      "bytes": 15109,
+      "sha256": "d93c5a07c62f66e0ba1497ce24b7e7a358162ea34bd022a91cda6d73e26781bd"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_1_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "6a6c758a2c73f9d74066a361c5997a26e1842711a96bfcf3e88c52c20f899336"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_1_geometry.scn",
+      "bytes": 179512,
+      "sha256": "3b439a356379cf464c3157bf7196d7433847e8b9fd5c8ffca9e3ba81ff3718f4"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_1_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_1_pose_manifest.json",
+      "bytes": 11633,
+      "sha256": "2ba514f9578e005e206caf65f9eaa9c415df9b1a32e860827e7bbc847760e919"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_2_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "6a6c758a2c73f9d74066a361c5997a26e1842711a96bfcf3e88c52c20f899336"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_2_geometry.scn",
+      "bytes": 180107,
+      "sha256": "fbd465cb56e278fd2a99031fc4c0247ac1f9ba82f124e1c566fcfda9be1a40ef"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_2_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_2_pose_manifest.json",
+      "bytes": 11564,
+      "sha256": "28f2b2a400c6f83adcb25e94b393998eba85b2256e8b45dde144159f4229d80c"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_3_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "7e7577caa05f4de4ff6b58949c2ed26383fa019e036352f7089c68d1d25836eb"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_3_geometry.scn",
+      "bytes": 179505,
+      "sha256": "c0c3531aee99e220d7f4cb68199f3445807e7e24b41300fc9a82524f20eb6f26"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_3_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_3_pose_manifest.json",
+      "bytes": 11633,
+      "sha256": "ea8eaca0623ecb45ada94af36c78c1b57a6be9ecba3ba53a5a7a7de104cf1a2d"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_4_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "7e7577caa05f4de4ff6b58949c2ed26383fa019e036352f7089c68d1d25836eb"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_4_geometry.scn",
+      "bytes": 180106,
+      "sha256": "05bab2702940ce266d0ed0801ce1a52a3bc23bf5c93d746b0f898d58b0f1d32a"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_4_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_4_pose_manifest.json",
+      "bytes": 11564,
+      "sha256": "b656c550874c78c26f848ffb257aed2297542f294210785ca5c29255bca4f3ee"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_5_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "607cbff7e6f350ccdd04f21af871403dcc8e4b617627f76c860bfdc50d0a89e5"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_5_geometry.scn",
+      "bytes": 179516,
+      "sha256": "ae483683673b372fe951e3c42cb480d895f092b8fb312202962af239c11f530f"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_5_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_5_pose_manifest.json",
+      "bytes": 11633,
+      "sha256": "af222c97e3aad272f4b6f3b2edb3423562ad93f18c3fd80d55eff152148f6cb3"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_7_bone_poses.bin",
+      "bytes": 396800,
+      "sha256": "d750d3db2a4591fb5611466e8a0c0e9d45aa8e2d7857fbe98f817125188f2ee6"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_7_geometry.scn",
+      "bytes": 345213,
+      "sha256": "c89d38c2eb09253cc16c746b6dfa688979721afec6932e1f699d5ee96068de66"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_7_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_7_pose_manifest.json",
+      "bytes": 22887,
+      "sha256": "24279a12e3b06085ced018d06c25566f337eca51e597c11bd7073b65a9e146c0"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_8_bone_poses.bin",
+      "bytes": 198400,
+      "sha256": "7e7577caa05f4de4ff6b58949c2ed26383fa019e036352f7089c68d1d25836eb"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_8_geometry.scn",
+      "bytes": 502038,
+      "sha256": "722d4430eb3e12182517f0ee4c4f566281625f64bae7b1858449257ebaaf4754"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_8_local_poses.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "assets/native_755/ride/ped_ped_8_pose_manifest.json",
+      "bytes": 14910,
+      "sha256": "6bdbc631209be21f07ac961c845e38718af7e925830c9ccb7bae11662a26857e"
+    },
+    {
+      "path": "assets/native_755/ride/rider_bone_poses.bin",
+      "bytes": 8082816,
+      "sha256": "df8b533fb59b523ef3f9b862ff48759b9c2a4f810bcb858ae4637c81383674c1"
+    },
+    {
+      "path": "assets/native_755/ride/rider_geometry.scn",
+      "bytes": 501657,
+      "sha256": "1f79ad0d67ba5b2fd968ec01a28a68a95065148241e730fa260f6006164ce7a3"
+    },
+    {
+      "path": "assets/native_755/ride/rider_local_poses.bin",
+      "bytes": 1140720,
+      "sha256": "d66fe6d4a79ebef3cd56e54ad20e04e36e48111cbac17d3672cff7d23d617f7f"
+    },
+    {
+      "path": "assets/native_755/ride/rider_pose_manifest.json",
+      "bytes": 99910,
+      "sha256": "fcffdbba7d8da0e36f6f65b8116a1c68563aef9f082b63dbb73091f9d3df73dc"
+    },
+    {
+      "path": "assets/native_755/ride/source_manifest.json",
+      "bytes": 343597,
+      "sha256": "c41a34b29a1ab05d65ad19979d0e71c8d0351ba812f7164ea6c2dc2f27061dff"
+    },
+    {
+      "path": "assets/native_755/ride/stunt_gust.scn",
+      "bytes": 5485,
+      "sha256": "404597451f55b690661985412a74481ffee17b902dbb9e9185f12606ba131929"
+    },
+    {
+      "path": "assets/native_755/ride/stunt_ramp.scn",
+      "bytes": 2354,
+      "sha256": "7e46e063a28a4cad0589ef1cf39b215ebaf8cc09ed03e33554dfafba72a5818f"
+    },
+    {
+      "path": "assets/native_755/ride/stunt_tray.scn",
+      "bytes": 5456,
+      "sha256": "3ab33d0f6641b9578485d0007398753b240e26fbb479ca9cc5f65285ba180f54"
+    },
+    {
+      "path": "assets/native_755/ride/world_n1.scn",
+      "bytes": 1434100,
+      "sha256": "5f15d1230324e7c0264b886212eca3d808aa557348c65ffe9d8caaf8c6dac537"
+    },
+    {
+      "path": "assets/native_755/ride/world_n10.scn",
+      "bytes": 339397,
+      "sha256": "c16195f873c4fef7639bc4e082434dd13fc065a056b1e40213c61a1eae25a66d"
+    },
+    {
+      "path": "assets/native_755/ride/world_n11.scn",
+      "bytes": 599882,
+      "sha256": "bf52d7a9564192a663d67bd08ec397cf19110087383505f339f7d9c688276f16"
+    },
+    {
+      "path": "assets/native_755/ride/world_n12.scn",
+      "bytes": 455118,
+      "sha256": "9e6d7ba6d52a292ef0201c0f45323936d68b64fc03860442c04ea56ac9509b54"
+    },
+    {
+      "path": "assets/native_755/ride/world_n13.scn",
+      "bytes": 424046,
+      "sha256": "61815e88c4edea1296b0f88fabdfc6139b0db03ec4a6251017981a6a46e75d5d"
+    },
+    {
+      "path": "assets/native_755/ride/world_n14.scn",
+      "bytes": 511996,
+      "sha256": "c7122fc720f51198adda793a9ecfeb4781421cc49b89868f9690a349924cf900"
+    },
+    {
+      "path": "assets/native_755/ride/world_n15.scn",
+      "bytes": 455228,
+      "sha256": "4ae4c4780ec8663ffde1bd9035f87dfceefcb06bea64ca602d37f4b5fe3a787f"
+    },
+    {
+      "path": "assets/native_755/ride/world_n16.scn",
+      "bytes": 423323,
+      "sha256": "2b0fe00e5b422eadcb2c3dbb397370222f68c1c675c870695e4c0c6c248e3ff0"
+    },
+    {
+      "path": "assets/native_755/ride/world_n17.scn",
+      "bytes": 374186,
+      "sha256": "816fe3c25f9134df401e0b62687f06ab9718760801dbe657dd56ed660db4d736"
+    },
+    {
+      "path": "assets/native_755/ride/world_n18.scn",
+      "bytes": 248333,
+      "sha256": "aa1302d48cef92e891206fac86869f7a59af5cf5bf2101c1b19246ce20074e93"
+    },
+    {
+      "path": "assets/native_755/ride/world_n19.scn",
+      "bytes": 148539,
+      "sha256": "e6679215afc5df290190a664c00e24733b67cedf7f02523c78935b2b9561eb4f"
+    },
+    {
+      "path": "assets/native_755/ride/world_n2.scn",
+      "bytes": 510441,
+      "sha256": "ff98776a9a8edc1cfed7d425feb407c2bee69e63935eaf5362af9340990262ea"
+    },
+    {
+      "path": "assets/native_755/ride/world_n20.scn",
+      "bytes": 398061,
+      "sha256": "9a349df0f3cb1ba6e61a582f75cefb53fcccbcf269645c3015f7cbbb9b152f3d"
+    },
+    {
+      "path": "assets/native_755/ride/world_n21.scn",
+      "bytes": 248043,
+      "sha256": "6afdad20424e8c38341e3bfe91ae1b6c663275eaa6f9d07845dd35aa4975d4be"
+    },
+    {
+      "path": "assets/native_755/ride/world_n22.scn",
+      "bytes": 307643,
+      "sha256": "bcc31d8c68421aca63fec799adf14fec03ed9ffd17cc968d543c3eaee6c6edc8"
+    },
+    {
+      "path": "assets/native_755/ride/world_n23.scn",
+      "bytes": 238973,
+      "sha256": "2179f07d6259d6503b23a40fec061bf44c69f9e2aad3591f37492332f471be24"
+    },
+    {
+      "path": "assets/native_755/ride/world_n24.scn",
+      "bytes": 245275,
+      "sha256": "191b03d9398c630b0e00310fb15f6e672a339e00ce25f467d0314a301b954e9c"
+    },
+    {
+      "path": "assets/native_755/ride/world_n25.scn",
+      "bytes": 311541,
+      "sha256": "ac81bf0d7f31a735bf1e3493d43b490fd4c65f825557e4fa9a9c089215834f7e"
+    },
+    {
+      "path": "assets/native_755/ride/world_n26.scn",
+      "bytes": 663873,
+      "sha256": "1d832c3aaf9dc26e7d7a9396281e3e83bb27b60140d8b6acbfd402a20f3c2e07"
+    },
+    {
+      "path": "assets/native_755/ride/world_n27.scn",
+      "bytes": 729634,
+      "sha256": "e8407b082e034589c7b93df5865d68795b09ee7f4b05379498b60b43bead3c4e"
+    },
+    {
+      "path": "assets/native_755/ride/world_n28.scn",
+      "bytes": 1552666,
+      "sha256": "81ac41405f549b3a4daa114acbc0ed0234e1b774b7cca6cc09cc53ef0bc883e8"
+    },
+    {
+      "path": "assets/native_755/ride/world_n29.scn",
+      "bytes": 720653,
+      "sha256": "e572727d1e77811c24ea7c17c9e25f222796aaed3a449c49b034f79da518b71c"
+    },
+    {
+      "path": "assets/native_755/ride/world_n3.scn",
+      "bytes": 455009,
+      "sha256": "df36b8571f84a2a460f29820eef069168854a7cd9bd417d0a354f9d783c5892c"
+    },
+    {
+      "path": "assets/native_755/ride/world_n30.scn",
+      "bytes": 676903,
+      "sha256": "c19a97e61827f01838b9670dc673c231b69341d5ff43d2dd7cf6a2a2925745e0"
+    },
+    {
+      "path": "assets/native_755/ride/world_n31.scn",
+      "bytes": 537799,
+      "sha256": "72dbe8041bcfefb6b42f37e976701fba704f80180e057e8d16110d55a6490192"
+    },
+    {
+      "path": "assets/native_755/ride/world_n32.scn",
+      "bytes": 663429,
+      "sha256": "38fb44c7466bcf93a1733a75d99b269514f7a7c324ce0804c00188b23d1afc0f"
+    },
+    {
+      "path": "assets/native_755/ride/world_n33.scn",
+      "bytes": 677427,
+      "sha256": "bcab42cc869017e68459c9e1741d5a6b8641d34cdb70141c9eac2865fbe88ae0"
+    },
+    {
+      "path": "assets/native_755/ride/world_n34.scn",
+      "bytes": 755062,
+      "sha256": "9b72483b3d91edddfb24939e05c384722129a265be9218ebcd330fb1e3eb12cd"
+    },
+    {
+      "path": "assets/native_755/ride/world_n35.scn",
+      "bytes": 317528,
+      "sha256": "d88a0951dfea726d5cddf58f28857bf82097280dcfa2a36e4035a124d81ed868"
+    },
+    {
+      "path": "assets/native_755/ride/world_n4.scn",
+      "bytes": 340186,
+      "sha256": "41cd77ed9517a311c3d3f0b2c8f9a6eb02734ebc0646b3ec49b5d767228878fd"
+    },
+    {
+      "path": "assets/native_755/ride/world_n5.scn",
+      "bytes": 582634,
+      "sha256": "449a7a575d29171d2dba00c5f5c18367dd8398752ef0396601edf58979bc8918"
+    },
+    {
+      "path": "assets/native_755/ride/world_n6.scn",
+      "bytes": 455604,
+      "sha256": "55e71b1f724a923309f31d6a8cc1a02102e3615fcd2f05b3e7a80e9caf0e4663"
+    },
+    {
+      "path": "assets/native_755/ride/world_n7.scn",
+      "bytes": 514254,
+      "sha256": "d134addf8100f1b43714346d6a00d7cd1473b62585d067b32d680d6ec4a77841"
+    },
+    {
+      "path": "assets/native_755/ride/world_n8.scn",
+      "bytes": 1451601,
+      "sha256": "faec53767e65ee6385ede87aa67323be23ec96601e45a99c77629dd181cae0da"
+    },
+    {
+      "path": "assets/native_755/ride/world_n9.scn",
+      "bytes": 468010,
+      "sha256": "54b0c326a47fac0089c6d5fed331270e2d5d3f6897884cf16fdada30c152a049"
+    },
+    {
+      "path": "assets/native_755/ride/world_p0.scn",
+      "bytes": 463129,
+      "sha256": "8e8af666ceb193c2513928143c0844e7428e5e90cc1dd02217185ec6651135d6"
+    },
+    {
+      "path": "assets/native_755/ride/world_p1.scn",
+      "bytes": 2447,
+      "sha256": "9463c8df440bfb97f14a185d7e13ba846290dea6f60e01ac8a904d1984db4801"
+    },
+    {
+      "path": "assets/native_755/ride/world_shared.scn",
+      "bytes": 48494,
+      "sha256": "35edafa120882c1c6e6300a89a633cc3fa4a4db9ccb48a1c5eaa0ccc774e8659"
+    }
+  ],
+  "geometryPolicy": "Original source geometry and textures; source batching in bounded chunks. No mesh or texture simplification. Scene-local Skeleton/Skin/bind ownership retained.",
+  "pixelLimit": "Actual source WebGL pixels unavailable; no claim of whole-scene pixel equality.",
+  "sourceModelSha256": "0050a676b6683bb566fa6176f4a8a6ff8613128ab545949a3fb3485daec64db1",
+  "reproduction": [
+    "tools/chase_source_export/README.md",
+    "tools/chase_transition_export/README.md"
+  ]
+}

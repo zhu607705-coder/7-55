@@ -1,0 +1,503 @@
+{
+  "scope": "required ordinary lake app routes, compact Weather view, incoming collection isolation",
+  "baseMilestone": "0b40e45e91239e3b1916025354e86172294663b7",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "nativeAggregateStages": 81,
+  "nativeTestScripts": 66,
+  "aggregateFailures": 0,
+  "warnings": [],
+  "runtimeTreeSha256": "72c581af9bf2119209e419fd2d8b180cb0c181d00de106ae5e2e1d503c93750e",
+  "runtimeFileCount": 889,
+  "runtimeFrozenThroughValidation": true,
+  "freshCampaign": {
+    "checks": 768,
+    "failures": 0,
+    "traceEntries": 1268,
+    "chapters": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "actualCompactAppInputAndDrags": true,
+    "spatialStandPointSetupExplicit": true,
+    "notManualFullPlaythrough": true
+  },
+  "ordinaryAppInputChecks": 623,
+  "compactDeviceInputChecks": 694,
+  "weatherReadabilityChecks": 140,
+  "checkpointIsolationChecks": 362,
+  "testedWidths": [
+    390,
+    430,
+    1280
+  ],
+  "appGraphicalCaptures": 33,
+  "originalSaveStoreDifferential": {
+    "focusedCases": 569,
+    "exhaustiveCases": 4223,
+    "differences": 0
+  },
+  "exportedPack": {
+    "campaignChecks": 768,
+    "ordinaryAppChecks": 623,
+    "freshSmokeChecks": 21,
+    "reloadSmokeChecks": 16,
+    "failures": 0,
+    "outsideSourceCheckout": true,
+    "externalHarnessFiles": 8,
+    "runtimeDataReferencesUnmodified": true,
+    "harnessManifestSha256": "ba0939c6194494eed417b398176df1455ee84c9c7fce1f248b8b5bf64d8ba6be"
+  },
+  "builds": {
+    "linuxExecutable": {
+      "bytes": 71075864,
+      "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+    },
+    "linuxPck": {
+      "bytes": 533867564,
+      "sha256": "7d51bd66dfa738f6327ee1133dddf5fcb31027ba0348f03ef53b8660b6e49bc8"
+    },
+    "windowsExecutable": {
+      "bytes": 638527032,
+      "sha256": "eb3f050049c0f45cf3d79b2ce7b867cf299c139a892dd519ce5e4ade71138123"
+    }
+  },
+  "linuxGui": {
+    "realStandaloneLinuxExecutable": true,
+    "guiActions": [
+      "start alarm",
+      "dismiss alarm",
+      "wake warning",
+      "enter home",
+      "close process",
+      "restart",
+      "observe restored home"
+    ],
+    "stateExactlyPreserved": true,
+    "formalSavePreservedDuringDevSceneSmoke": true,
+    "savedPage": "phone_home",
+    "savedWakeWarned": true,
+    "captureNames": [
+      "lake-exported-c2-library-gate.png",
+      "lake-exported-c3-qizhen-open-water.png",
+      "lake-exported-c4-755-maintenance-2245.png",
+      "lake-exported-phone-home-after-restart.png",
+      "lake-exported-phone-home-before-restart.png"
+    ],
+    "onlyGuiWarning": "unsupported VSync in cloud graphics driver",
+    "audioDriver": "Dummy; visual/input scope only"
+  },
+  "windowsRuntimeTested": false,
+  "physicalPhoneRuntimeTested": false,
+  "sourceBrowserPixelDiffVerified": false,
+  "portableSourceArchiveVerification": "See distribution manifest; final archive is extracted and imported independently after local commit.",
+  "remainingParity": "REMAINING_PRESENTATION.md; includes behavioral phone lifecycle/eligibility/option-order differences as well as presentation",
+  "stages": [
+    {
+      "label": "Godot asset import and editor parse",
+      "status": 0,
+      "outputSha256": "e1ee2ae0917e41fe7b720bb40c0db2faa4b73b7992108d24390d2cd49d4431ae"
+    },
+    {
+      "label": "Native startup",
+      "status": 0,
+      "outputSha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+    },
+    {
+      "label": "smoke_canteen_defense_ui.gd",
+      "status": 0,
+      "outputSha256": "a01bff9f24527caf1874c1471e1e40623c2c65d1d7b53613fe6a32a193089c86"
+    },
+    {
+      "label": "smoke_chapter4_ui.gd",
+      "status": 0,
+      "outputSha256": "f0855515d11067e3d36cf52e24528597e0376120833fca2898a1ab63fdfb48d4"
+    },
+    {
+      "label": "smoke_minigame_ui.gd",
+      "status": 0,
+      "outputSha256": "722a3ca22577d1b00540c5371094afabe8ffb1a6629f057898dc03600d75bea7"
+    },
+    {
+      "label": "test_all_scripts_parse.gd",
+      "status": 0,
+      "outputSha256": "d9fa00ebeca1abeea920c3d3f3148704fba125ddde335489825c79cf9fa99f9c"
+    },
+    {
+      "label": "test_audio_director.gd",
+      "status": 0,
+      "outputSha256": "69e4437cdc416e79c484717db1344392e6eacd4d1517118721017628822a9949"
+    },
+    {
+      "label": "test_c3_promo_timeline.gd",
+      "status": 0,
+      "outputSha256": "f459dac43dfb74005d19584349f81d883bf1bd3c753749f555b1aa0b3c6195cd"
+    },
+    {
+      "label": "test_canteen_defense.gd",
+      "status": 0,
+      "outputSha256": "eee77ea195d243ac72ba4080296ed12a2a2750796cdea690f8dad77160dc8642"
+    },
+    {
+      "label": "test_chapter1_2.gd",
+      "status": 0,
+      "outputSha256": "033901ae2dc80c1c1c21c36a1c235b97913fef62a2aa8693474228bd247c94e2"
+    },
+    {
+      "label": "test_chapter3.gd",
+      "status": 0,
+      "outputSha256": "d0b1b294d92ef04efe04e27b0276ae54c761a9251df1359f7292e35fcedee52c"
+    },
+    {
+      "label": "test_chapter3_media.gd",
+      "status": 0,
+      "outputSha256": "d498481d4cff68f204af4b1447ef479ce1d4e371dbae2be4e08ef9c3f23cd59b"
+    },
+    {
+      "label": "test_chapter3_narrative.gd",
+      "status": 0,
+      "outputSha256": "16fed5b44996ca6dd4fd80ae6fcd918dca168cd1eeb7c46daf056971c6ffc2ad"
+    },
+    {
+      "label": "test_chapter3_narrative_shell.gd",
+      "status": 0,
+      "outputSha256": "ac82cc24df1ab482aa9b3641f353ae9454fb70f16a81e85446b4d302ad93c184"
+    },
+    {
+      "label": "test_chapter3_phone_ui.gd",
+      "status": 0,
+      "outputSha256": "544a5223ad8633f7222b36ac78a8e700ee3383f7422c66fb1b719f244fb2b635"
+    },
+    {
+      "label": "test_chapter3_promo_integration.gd",
+      "status": 0,
+      "outputSha256": "1a77634dbe1728c8beb26a8467deab39e3c2c02252261ac012b722e838a6d705"
+    },
+    {
+      "label": "test_chapter3_reversal.gd",
+      "status": 0,
+      "outputSha256": "f36ec3317f742b229e4615bf58b19cc92aa830eaa2102a3af91ab558605ab92c"
+    },
+    {
+      "label": "test_chapter3_scene_readability.gd",
+      "status": 0,
+      "outputSha256": "cf621d975c9086afa201bc40b7f90e58b3e9059c31a355d6049e44a3c79ef967"
+    },
+    {
+      "label": "test_chapter3_scene_timelines.gd",
+      "status": 0,
+      "outputSha256": "acd0970c087e21682d5f445b8381702e5b91b14d55ddd51b50bf55740e0654a9"
+    },
+    {
+      "label": "test_chapter3_world_layers.gd",
+      "status": 0,
+      "outputSha256": "10fe2e5cd2e5a91257046a906d344bc4b361e9819310752dac5e6f63c6fe5a36"
+    },
+    {
+      "label": "test_chapter4.gd",
+      "status": 0,
+      "outputSha256": "e25f9be3ca5c77c69632586f85da7ca374454ca3b07367fab8175d3cdfac9a47"
+    },
+    {
+      "label": "test_chapter4_audio_ownership.gd",
+      "status": 0,
+      "outputSha256": "0428df5646fc144d3bde3506ad85d4fbdafff0ae2f09c9c605ea804a827cab01"
+    },
+    {
+      "label": "test_chapter4_clock_handoff.gd",
+      "status": 0,
+      "outputSha256": "c2c111568c3602477e2649851177a89f6a9b207ee16a83eaa2d499ed42cf19a6"
+    },
+    {
+      "label": "test_chapter4_guard.gd",
+      "status": 0,
+      "outputSha256": "485c4dcd0c5a8ab6f75e51e8e180ae9a9f9d53e5c693cdc602ebf8335a067ac2"
+    },
+    {
+      "label": "test_chapter4_lamp_lifecycle.gd",
+      "status": 0,
+      "outputSha256": "e320fe7de196e2580db34faf55bcff4b0520d380ec749ec8eb5ba82b10bd8cc7"
+    },
+    {
+      "label": "test_chapter4_phase_world.gd",
+      "status": 0,
+      "outputSha256": "eaa0df3e83cba11999235eecedc2b7b670125e845b5b5fa6a03b8c558aa2291a"
+    },
+    {
+      "label": "test_chapter4_prologue_media.gd",
+      "status": 0,
+      "outputSha256": "3f32c5dfadc885a9503999b60d537b8909897e71f7c3177626be14838aedabdb"
+    },
+    {
+      "label": "test_chapter4_world.gd",
+      "status": 0,
+      "outputSha256": "a5c7456e402108a3a506b62e5097535b9b0fed64d899fa2d81cfc0de28dc547c"
+    },
+    {
+      "label": "test_checkpoint_isolation.gd",
+      "status": 0,
+      "outputSha256": "e35e6f7a6734f917fdcce60d3298e74d053718e7b1cc2a3439b5fd5da1f83834"
+    },
+    {
+      "label": "test_compact_device_navigation.gd",
+      "status": 0,
+      "outputSha256": "78e02466d0e83a14137fe7070668543186fe9ed8abc87488bf6feff1051bc62e"
+    },
+    {
+      "label": "test_early_games.gd",
+      "status": 0,
+      "outputSha256": "b09a7b826fb243b0c95d027eff48ab75fa72851ec2d2d283b7878359990e3863"
+    },
+    {
+      "label": "test_full_campaign.gd",
+      "status": 0,
+      "outputSha256": "aed9473a36a15538cc9cca0cab29261de92d1350a5f947417b4c6a2195b07c03"
+    },
+    {
+      "label": "test_gameplay_audio_wiring.gd",
+      "status": 0,
+      "outputSha256": "eb1a7f89ebd22e42cb86272ec3dc12464c26066920f7192e32d38a083d9be507"
+    },
+    {
+      "label": "test_interior_door_layer.gd",
+      "status": 0,
+      "outputSha256": "d957a058d836d8d096693c682618fe56f1e09f6cf915b873da7bd36c132c17f3"
+    },
+    {
+      "label": "test_journal_portability.gd",
+      "status": 0,
+      "outputSha256": "c76cef9dedaebf690ec29f1c7dd25d0d060061e32af5107a9ae81080bbafe51a"
+    },
+    {
+      "label": "test_lake_app_routes.gd",
+      "status": 0,
+      "outputSha256": "dcc63c47dc6e1074a9a890d4e410e2d8e9f110dbd176f0d92b1a0ad7c7ceea14"
+    },
+    {
+      "label": "test_lake_live_world.gd",
+      "status": 0,
+      "outputSha256": "5e2cc1794a1373125e222de770e8125ee181490819ec62899ec15faf76da8073"
+    },
+    {
+      "label": "test_lake_reload_boundary.gd",
+      "status": 0,
+      "outputSha256": "04bcfa34cc44d60c3f9edbf953c3792a3ea8c5398a624bea9851aab71089507b"
+    },
+    {
+      "label": "test_lake_shell_input.gd",
+      "status": 0,
+      "outputSha256": "ef712a0f08fc14c1a6d72a15f3fe594a56c74b9e1f0888e74333532854efb11c"
+    },
+    {
+      "label": "test_lake_world_geometry.gd",
+      "status": 0,
+      "outputSha256": "f81f6be1b98ade083834f7ec413ef51987316100282abbe39e44b047c27e3ea7"
+    },
+    {
+      "label": "test_library_story_sequences.gd",
+      "status": 0,
+      "outputSha256": "9bb8aba3d3e4a1a4b41b82a00d3997ebe07dbea4960c600685a7b8d0bf32393d"
+    },
+    {
+      "label": "test_library_world_layers.gd",
+      "status": 0,
+      "outputSha256": "eb2920ee4c156020757985b35426a4b8aab788cfeb471ae96e75e74accdf063b"
+    },
+    {
+      "label": "test_minigame_models.gd",
+      "status": 0,
+      "outputSha256": "c6e1e4f0fd79891e841c346bdcd7fa0d453c793af4165841e03ea8f1861ac715"
+    },
+    {
+      "label": "test_narrative_readability.gd",
+      "status": 0,
+      "outputSha256": "08e944759f9270216185c24936e8cfb3932fa5cc7c5cedcc9bd893456e26110c"
+    },
+    {
+      "label": "test_native_state.gd",
+      "status": 0,
+      "outputSha256": "f3f2a9d05b873a62d541afb192de4c49eecb06670839ae7325769f69dcc41cfb"
+    },
+    {
+      "label": "test_phone_chrome.gd",
+      "status": 0,
+      "outputSha256": "c35d44c0d41bace40f11d85335c717fa212dc0c2ac9abfa8e8a1d8f19c446aaa"
+    },
+    {
+      "label": "test_phone_document_shell.gd",
+      "status": 0,
+      "outputSha256": "c89fc1db7e051598f233d29f35563388dab73df89930013e845e82c6280a7840"
+    },
+    {
+      "label": "test_phone_effects.gd",
+      "status": 0,
+      "outputSha256": "de5791bc809abaed71ca51d94cfc53c897e8d65fd59a30640898e75ccab4a986"
+    },
+    {
+      "label": "test_phone_library_login.gd",
+      "status": 0,
+      "outputSha256": "b749a9215419ae6e3cfa651e759d234cef09ceaf52983385530f2ff5d19f48a5"
+    },
+    {
+      "label": "test_phone_navigation.gd",
+      "status": 0,
+      "outputSha256": "30ff964affeae30d4b3c12be080e3625cb33fe56e6bceafee1201990afeaa902"
+    },
+    {
+      "label": "test_phone_pages.gd",
+      "status": 0,
+      "outputSha256": "79ff18b96fdeb9813d0841bc4457d5218fc7c802583a78267e6ffc5e23128a95"
+    },
+    {
+      "label": "test_phone_utilities.gd",
+      "status": 0,
+      "outputSha256": "e9c20a8a7cdea0c5586a250f276ff2a54475abdb3ef2f1a9cb23440c6b9e4163"
+    },
+    {
+      "label": "test_player_metrics.gd",
+      "status": 0,
+      "outputSha256": "897a785a497d180a27f377614f68da55dddc9246d30187fc7209fe755e00d148"
+    },
+    {
+      "label": "test_prologue_audio.gd",
+      "status": 0,
+      "outputSha256": "96e18ffede7fb46439a126e334335c6ca1be9676b796deb9c02c5351317154b1"
+    },
+    {
+      "label": "test_qizhen_branches.gd",
+      "status": 0,
+      "outputSha256": "9d2a545d1aedbceaaacf2112413ec961121460063dadf52617a792199e00e6c3"
+    },
+    {
+      "label": "test_qizhen_journal.gd",
+      "status": 0,
+      "outputSha256": "d5459baf3194407e987639cbb1f4bce127516715b7fa0b9da5f193d92f5192d6"
+    },
+    {
+      "label": "test_qizhen_journal_save.gd",
+      "status": 0,
+      "outputSha256": "46b6eab0b7e18df7fb11fae95ad5e833325aff88364f7ef1306f84785f4b6fee"
+    },
+    {
+      "label": "test_rain_rescue.gd",
+      "status": 0,
+      "outputSha256": "4c53a0f7dca0dec99b49905ba1b637b716f08bbfd7c563ab15ebb8795877310a"
+    },
+    {
+      "label": "test_save_domain_guard.gd",
+      "status": 0,
+      "outputSha256": "a95e4635f76aff347b0ecc49ea07c777cc66abc728f1648f75c029991d3d2273"
+    },
+    {
+      "label": "test_save_integration.gd",
+      "status": 0,
+      "outputSha256": "063d26b54418d86a5c554854a63232351a43a75d79fae19fc2d309515f9eba57"
+    },
+    {
+      "label": "test_shell_input.gd",
+      "status": 0,
+      "outputSha256": "7dd96890c815ccf5bd728ee92c8263b160ef3e04ec459dbc4754c13e608dec9d"
+    },
+    {
+      "label": "test_shell_layout.gd",
+      "status": 0,
+      "outputSha256": "919007a9f9a6c216c922230ff1c2122a80e4ad8f83f21ceb97c62992503dd2cb"
+    },
+    {
+      "label": "test_stair_presentation.gd",
+      "status": 0,
+      "outputSha256": "9ef9e4e1141841e689ff8987f2225967f80cef86d37c2c7e8a46e4f94d3b89da"
+    },
+    {
+      "label": "test_theater_show_ui.gd",
+      "status": 0,
+      "outputSha256": "3603d249c8609cf12ae102c4e05e26945b72579152d7943d2b11858a796f01b4"
+    },
+    {
+      "label": "test_weather_readability.gd",
+      "status": 0,
+      "outputSha256": "f5c1fe1dab62795403a4e28ebd7b5e5c64601b5f469ab060168c7678157b3e0f"
+    },
+    {
+      "label": "test_world.gd",
+      "status": 0,
+      "outputSha256": "b0f97f0ee3aae20241ac6f6bf00fb294a27f54eb82e935dbbb84dd1be36a7a04"
+    },
+    {
+      "label": "test_world_guard.gd",
+      "status": 0,
+      "outputSha256": "1eff929b96def59669c7cd810c272612d413a00e9d4353a5e3a5077f0a9c648b"
+    },
+    {
+      "label": "test_world_presentation_lifecycle.gd",
+      "status": 0,
+      "outputSha256": "5ea7957284f30559d7fc4bb699f611703df70a7f843dc2d2fe8ac08b1bb6ecc2"
+    },
+    {
+      "label": "Source catalog tools/export-save-domains.mjs",
+      "status": 0,
+      "outputSha256": "e50341d18a8e5efd4c2d0f6c76bc9f3712071ef50bcf37e2687b0e2fea99b7c2"
+    },
+    {
+      "label": "Source catalog tools/export-audio-director.mjs",
+      "status": 0,
+      "outputSha256": "4a3a7b81d5385972c08dddbd843bfdf7244f271a22f4a5b38bf647c4cfe35a58"
+    },
+    {
+      "label": "Source catalog tools/export-c3-world-source.mjs",
+      "status": 0,
+      "outputSha256": "583e9c9820af29a4efb87130ff51cd7f02a27391b3646dee52b5f1cf0eadd16f"
+    },
+    {
+      "label": "Source catalog tests/export_audio_state_fixtures.mjs",
+      "status": 0,
+      "outputSha256": "7afcd02fe1a18849234cb646c8d72aa0702c5231097f2369178c67c2798c1215"
+    },
+    {
+      "label": "Source catalog tests/export_chapter3_scene_source.mjs",
+      "status": 0,
+      "outputSha256": "fc8bd5c3a417fd5d5a694a93580df0d99a9383b480eafc37e719f436a7af4613"
+    },
+    {
+      "label": "Source catalog tests/export_library_story_source.mjs",
+      "status": 0,
+      "outputSha256": "75691612890008805b7755a1cf0b50c3521d80343d2e5ad1b94377bf5c12a578"
+    },
+    {
+      "label": "Source catalog tests/export_lake_live_source_fixtures.mjs",
+      "status": 0,
+      "outputSha256": "2c36701c4b0653c3fbb03ff6bff33f69f2b32ccd56d361e96c66e4d0499f026a"
+    },
+    {
+      "label": "Source catalog tests/export_chapter3_narrative_source.mjs",
+      "status": 0,
+      "outputSha256": "006b955db32842151a1c163f998b1293f2969424e33bce354c5ed1290ab841b7"
+    },
+    {
+      "label": "Source catalog tests/export_library_world_source.mjs",
+      "status": 0,
+      "outputSha256": "a1dab77c3ce450b9e2f683f3bfac15dd468d0292fc7b8e69a23bca0036d3c614"
+    },
+    {
+      "label": "Source oracle tests/verify_source_model_parity.mjs",
+      "status": 0,
+      "outputSha256": "0ffc795ca8b23ed5d460647ba91ea7f3d2e99cbbadd3e1fd87d6d4e33adb8d67"
+    },
+    {
+      "label": "Source oracle tests/verify_canteen_defense_source.mjs",
+      "status": 0,
+      "outputSha256": "3e82403fea53dc23c03f14c2cb0d71a9f1c3c13629cdf3cda67e702aa28b16e0"
+    },
+    {
+      "label": "Source oracle tests/verify_lake_branch_source.mjs",
+      "status": 0,
+      "outputSha256": "2ef938af54c0d37e6f6067e5db480c3985a6b8ea633bffe6ea84dd9b6d50ea09"
+    },
+    {
+      "label": "Original SaveStore differential",
+      "status": 0,
+      "outputSha256": "44b9101862de15d67a9546aa92585b58af68f209049e5bb11328a7717d7b0fa2"
+    }
+  ]
+}
