@@ -2,6 +2,8 @@ extends Node2D
 ## Presentation only. Accepted controller facts choose the layers and outcome.
 signal presentation_finished
 var hold_terminal_result:=false
+# Local presentation clock. Does not change Engine.time_scale or controller input.
+const PLAYBACK_RATE: float = 0.75
 const Source=preload("res://scripts/presentation/c3_mixer_session.gd")
 var base_sequence:Array=[]
 var shown_sequence:Array=[]
@@ -116,7 +118,7 @@ func reject(ingredient:String,reduced_value:bool)->void:
 	item_id=ingredient;reduced=reduced_value;denied=true;outcome="";shown_sequence=base_sequence.duplicate();duration_ms=100 if reduced else 260;elapsed_ms=0;playing=true;_pose()
 func _process(delta:float)->void:
 	if not playing:return
-	elapsed_ms=minf(duration_ms,elapsed_ms+maxf(delta,0)*1000)
+	elapsed_ms=minf(duration_ms,elapsed_ms+maxf(delta,0)*1000*PLAYBACK_RATE)
 	if elapsed_ms>=duration_ms:
 		playing=false;denied=false
 		if not hold_terminal_result or outcome.is_empty():

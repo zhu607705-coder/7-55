@@ -628,7 +628,10 @@ func exploration_safe_rect(reserve_controls:bool=false) -> Rect2:
 	var hud:=hud_metrics(_hud_line())
 	var bottom:float=hud.body_rect.position.y
 	if reserve_controls and mobile_exploration and not kayak:
-		bottom=minf(bottom,mobile_control_metrics().stick_rect.position.y-8)
+		var controls_top:float=mobile_control_metrics().stick_rect.position.y-8
+		# On short landscapes the controls occupy corners, not a full-width
+		# row. Keep enough clear height for both the actor and a nearby target.
+		if controls_top-float(hud.header_height)>=size.y*.5:bottom=minf(bottom,controls_top)
 	if reserve_controls and is_instance_valid(host_node):
 		var narrative:Variant=host_node.get("c3_narrative_host")
 		var view:Variant=narrative.get("view") if is_instance_valid(narrative) else null

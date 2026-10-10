@@ -35,6 +35,17 @@ func run()->void:
 		check(round_trip.is_equal_approx(before),"inverse pointer mapping retains source position")
 	var interior:=Vector2(1200,700)
 	check(Layout.camera_for_safe_rect(interior,Vector2.ZERO,Vector2(528,314),Vector2(2400,1800),1.1,Rect2(0,44,528,100)).is_equal_approx(interior),"interior camera stays player-centered despite a narrow control-safe frame")
+	var narrow_extent:=Vector2(824,314)
+	var narrow_safe:=Rect2(0,44,824,221)
+	var edge_camera:=Layout.camera_for_safe_rect(Vector2(1380,852),Vector2.ZERO,narrow_extent,room,1.6,narrow_safe)
+	var edge_door:Vector2=(Vector2(1352,935)-edge_camera)*1.6+narrow_extent/2
+	var edge_player:Vector2=(Vector2(1380,852)-edge_camera)*1.6+narrow_extent/2
+	check(narrow_safe.has_point(edge_door),"landscape1.6x door mat stays above the actual footer")
+	check(narrow_safe.has_point(edge_player),"edge assist does not hide the actor under the header")
+	var bound:float=room.y-narrow_extent.y/(2*1.6)
+	var last:=Layout.camera_for_safe_rect(Vector2(1380,bound-.1),Vector2.ZERO,narrow_extent,room,1.6,narrow_safe)
+	var next:=Layout.camera_for_safe_rect(Vector2(1380,bound+.1),Vector2.ZERO,narrow_extent,room,1.6,narrow_safe)
+	check(last.distance_to(next)<1.0,"safe offset is continuous at the original map boundary")
 	var old_camera:=Vector2(1380,room.y-extent.y/(2*.85))
 	var old_y:float=(935-old_camera.y)*.85+extent.y/2
 	check(old_y>safe.end.y,"baseline reproduces bottom HUD occlusion")

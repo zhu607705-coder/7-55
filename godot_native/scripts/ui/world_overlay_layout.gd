@@ -63,11 +63,20 @@ static func dialogue(font:Font,extent:Rect2,display_scale:float,speaker:String,t
 
 static func camera_for_safe_rect(player:Vector2,pan:Vector2,extent:Vector2,world_size:Vector2,zoom:float,safe:Rect2)->Vector2:
 	var z:=maxf(.01,zoom)
-	var offset:Vector2=(extent/2-safe.get_center())/z
-	var half:Vector2=safe.size/(2*z)
-	# Retain ordinary player-centered follow inside the map. Only boundary
-	# clamping may move the camera to expose content inside the clear frame.
-	var center:=player+pan-offset
+	var target:=player+pan
+	var camera:=target
 	for axis:int in range(2):
-		center[axis]=world_size[axis]/2 if world_size[axis]<=half[axis]*2 else clampf(center[axis],half[axis],world_size[axis]-half[axis])
-	return center+offset
+		var full_half:float=extent[axis]/(2*z)
+		if world_size[axis]<=full_half*2:
+			var half:float=safe.size[axis]/(2*z)
+			var offset:float=(extent[axis]/2-safe.get_center()[axis])/z
+			camera[axis]=(world_size[axis]/2 if world_size[axis]<=half*2 else clampf(target[axis]-offset,half,world_size[axis]-half))+offset
+			continue
+		var far:float=world_size[axis]-full_half
+		# Keep original follow in the interior. Ease in the HUD offset before
+		# reaching either original map bound, rather than jumping at that bound.
+		var fade:float=maxf(.0001,minf(full_half,(far-full_half)/2))
+		var near_weight:float=clampf((full_half+fade-target[axis])/fade,0,1)
+		var far_weight:float=clampf((target[axis]-(far-fade))/fade,0,1)
+		camera[axis]=clampf(target[axis],full_half,far)-safe.position[axis]/z*near_weight+(extent[axis]-safe.end[axis])/z*far_weight
+	return camera

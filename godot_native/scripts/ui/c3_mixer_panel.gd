@@ -4,6 +4,7 @@ extends Control
 ## Only callbacks request actions; neither this panel nor its session mutates s.
 signal closed(reason: String)
 const Session = preload("res://scripts/presentation/c3_mixer_session.gd")
+const MixerMotion = preload("res://scripts/presentation/c3_mixer_motion.gd")
 const CENTER := Vector2(480, 245)
 var session: RefCounted = Session.new()
 var read_state: Callable
@@ -265,7 +266,7 @@ func blocks_world_input() -> bool:
 func _process(delta: float) -> void:
 	if finishing:
 		if not _validate_finish() or surface.is_pouring(): return
-		finish_elapsed_ms+=maxf(delta,0)*1000.0
+		finish_elapsed_ms+=maxf(delta,0)*1000.0*MixerMotion.PLAYBACK_RATE
 		var settle: float=0.0 if finish_reduced else SETTLE_MS
 		var hold: float=160.0 if finish_reduced else RESULT_MS
 		var fade: float=100.0 if finish_reduced else RETURN_MS

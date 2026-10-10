@@ -40,11 +40,11 @@ func run() -> void:
 			var settle: float=0 if reduced else view.SETTLE_MS
 			var hold: float=160 if reduced else view.RESULT_MS
 			var fade: float=100 if reduced else view.RETURN_MS
-			view._process((settle+1)/1000)
+			view._process((settle+1)/1000/view.MixerMotion.PLAYBACK_RATE)
 			check(view.feedback_label.text==view.finish_message and not view.finish_message.is_empty(),"controller result appears only after pour and settling")
-			view._process((hold+fade/2-1)/1000)
+			view._process((hold+fade/2-1)/1000/view.MixerMotion.PLAYBACK_RATE)
 			check(view.modulate.a>0 and view.modulate.a<1 and view.visible,"native panel returns continuously to retained world")
-			view._process((fade/2+1)/1000)
+			view._process((fade/2+1)/1000/view.MixerMotion.PLAYBACK_RATE)
 			check(closes==["attempt_complete"] and not view.visible and not view.blocks_world_input(),"completion emits one close and releases input automatically")
 			view._process(1);view.dismiss();view.refresh()
 			check(s==committed and closes.size()==1,"settle, fade and late callbacks never modify reward or emit a second close")
@@ -54,8 +54,8 @@ func run() -> void:
 	for phase in ["pour","settle","result","fade"]:
 		var view: Control=fresh();complete(view);var committed: Dictionary=s.duplicate(true)
 		if phase!="pour":drain_pours(view)
-		if phase=="result":view._process(.15)
-		if phase=="fade":view._process(.55)
+		if phase=="result":view._process(.15/view.MixerMotion.PLAYBACK_RATE)
+		if phase=="fade":view._process(.55/view.MixerMotion.PLAYBACK_RATE)
 		var escape:=InputEventKey.new();escape.keycode=KEY_ESCAPE;escape.pressed=true;view._input(escape)
 		check(not view.visible and closes==["dismissed"] and view.surface.pending_pours.is_empty() and not view.surface.motion.playing,"Escape cancels optional "+phase+" immediately")
 		check(s==committed,"Escape preserves committed "+phase+" inventory and attempt")
