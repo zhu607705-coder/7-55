@@ -60,6 +60,15 @@ func run() -> void:
 		check(needed.y+16<=hud.body_height and needed.x<=hud.body_width+.01,"full original reverse instructions fit compact footer")
 		for rectangle: Rect2 in host.kayak_paddle_rects().values():
 			check(not rectangle.intersects(footer),"expanded original hint leaves visible paddle targets clear")
+		s.native.settings.text_scale=3.0
+		var enlarged:Dictionary=host.hud_metrics(original)
+		for rectangle:Rect2 in host.kayak_paddle_rects().values():
+			check(not rectangle.intersects(enlarged.body_rect) and rectangle.position.y>=enlarged.header_height,"enlarged hint preserves visible paddle targets below header")
+			var down:=InputEventScreenTouch.new();down.index=7;down.position=rectangle.get_center();down.pressed=true
+			host._mobile_exploration_input(down)
+			check(host.mobile_touch_roles.get(7,{}).get("role","")=="paddle","relocated visible paddle retains its touch input owner")
+			down.pressed=false;down.canceled=true;host._mobile_exploration_input(down)
+		s.native.settings.text_scale=1.0
 	host.free();await process_frame
 	print("KAYAK_BOUNDARY_FEEDBACK: ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

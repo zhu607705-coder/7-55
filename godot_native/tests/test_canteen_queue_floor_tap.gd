@@ -8,6 +8,9 @@ const Tap=preload("res://scripts/canteen_floor_tap.gd")
 const START=Vector2(1440,574.368041992188)
 const BOARD=Vector2(1200.888888888889,234.368055555556)
 const QUEUE_START=Vector2(867.555555555556,258.8125)
+# World request reconstructed from the original (79,321) root tap. The HUD
+# can reframe the map; replay the same source intent through its live camera.
+const NEAR_WALL=Vector2(609.777777777778,246.055555555556)
 var baseline: Dictionary={}
 var records: Array=[]
 var ordinary_save:=false
@@ -73,14 +76,14 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	records.append({"root":str(at),"input":"touch" if using_touch else "mouse","start":str(start),"raw":str(raw),"resolved":str(expected),"snapPixels":raw.distance_to(expected)*w.zoom,"waypoints":waypoints,"final":str(w.player),"frames":count,"planningUs":planning_us,"edges":w._floor_planner.edge_checks,"candidates":w._canteen_floor_tap.candidate_count})
 func replay_approach() -> void:
 	await reset_route()
-	await arrive(Vector2(168,330),BOARD+Metrics.FOOT_CENTER_OFFSET)
-	root_tap(Vector2(329,695));await frames(2)
+	await arrive(source_screen(BOARD+Metrics.FOOT_CENTER_OFFSET),BOARD+Metrics.FOOT_CENTER_OFFSET)
+	root_tap(world_screen(shell.world.mobile_control_metrics().interact.get_center()));await frames(2)
 	check(shell.world.subtitle=="请先从物品栏选择对应物品。","recorded board interaction retains source item requirement")
 	# Fix only the unsaved animation phase for a repeatable empty-floor approach.
 	shell.world.set_process(false);shell.world.chapter3_layers.clock_ms=0;shell.world.queue_redraw();await frames(2)
-	check(shell.world._pick_target(source_at(Vector2(45,341))).is_empty(),"fixture approach floor has no transient NPC pick")
+	check(shell.world._pick_target(QUEUE_START+Metrics.FOOT_CENTER_OFFSET).is_empty(),"fixture approach floor has no transient NPC pick")
 	shell.world.set_process(true)
-	await arrive(Vector2(45,341),QUEUE_START+Metrics.FOOT_CENTER_OFFSET)
+	await arrive(source_screen(QUEUE_START+Metrics.FOOT_CENTER_OFFSET),QUEUE_START+Metrics.FOOT_CENTER_OFFSET)
 	check(shell.world.player.distance_to(QUEUE_START)<.002,"first queue-area tap reproduces reported actor without teleport")
 func rejection(at: Vector2,label: String) -> void:
 	var w=shell.world;var position: Vector2=w.player;var before:=story();var count:=actions.size()
@@ -118,14 +121,16 @@ func run() -> void:
 	state.feedback.connect(func(line):feedback.append(line))
 	for using_touch in [false,true]:
 		await replay_approach()
-		var raw:=source_at(Vector2(79,321));var goal:=raw-Metrics.FOOT_CENTER_OFFSET
+		var request:=source_screen(NEAR_WALL)
+		var raw:=source_at(request);var goal:=raw-Metrics.FOOT_CENTER_OFFSET
+		check(raw.distance_to(NEAR_WALL)<.002,"live root projection retains original source request")
 		check(not shell.world.can_stand(goal),"recorded second tap's original full-foot position overlaps source wall")
 		var hits: Array=[]
 		for box: Dictionary in shell.world.collisions:
 			if Metrics.foot_rect(goal).intersects(shell.world._rect(box)):hits.append(box.id)
 		check(hits==["north_service_wall"],"exact endpoint rejection is the static service-wall foot overlap")
 		check(shell.world._pick_target(raw).is_empty() and shell.world._floor_empty_destination(raw),"recorded near miss is empty floor with no object/actor/HUD veto")
-		await arrive(Vector2(79,321),Vector2(raw.x,246.3125),using_touch)
+		await arrive(request,Vector2(raw.x,246.3125),using_touch)
 	# Reuse current legal start for negative requests through the same root path.
 	var w=shell.world
 	await rejection(source_screen(Vector2(620,239)),"solid wall center")

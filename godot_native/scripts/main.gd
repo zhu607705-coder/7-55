@@ -651,6 +651,15 @@ func _layout_toast() -> void:
 			modal_notice_slot.custom_minimum_size.y=toast.size.y
 			toast.global_position=modal_notice_slot.global_position
 		return
+	# A minigame may publish its result before releasing its surface. Once
+	# the world returns, hand that same notice to its single feedback owner.
+	# Keep the remaining duration; do not replay or rewrite the earned result.
+	if _feedback_world_active() and not toast.text.is_empty():
+		if toast_time>0:
+			world._receive_feedback(toast.text)
+			world.subtitle_left=toast_time
+		toast.text=""; toast_time=0; toast.hide(); world.queue_redraw()
+		return
 	if is_instance_valid(phone) and phone.visible and not is_instance_valid(active_game):
 		toast.scale=phone.scale
 		PhoneNotice.layout(toast,392)

@@ -81,13 +81,48 @@ func tick(delta_ms: float,focused: bool=true) -> void:
 		_restore_camera(finished.sequence_id)
 		current=null; view.session=null; view.tick(); effects.session=null; effects.queue_redraw()
 func _sync_view_layout() -> void:
-	if runtime_reader.is_valid(): view.display_scale=float(runtime_reader.call().get("native",{}).get("host",{}).get("world_display_scale",1.0))
-	view.exploration_rect=Rect2()
+	var runtime:Dictionary=runtime_reader.call().get("native",{}).get("host",{}) if runtime_reader.is_valid() else {}
+	view.display_scale=float(runtime.get("world_display_scale",1.0))
+	view.text_scale=float(read_state.call().native.settings.get("text_scale",1.0)) if read_state.is_valid() else 1.0
+	# CanvasItem visibility stops at the SubViewport boundary. The shell is
+	# the authority when this subtitle is reparented into the root viewport.
+	view.surface_visible=bool(runtime.get("world_visible",world.is_visible_in_tree()))
+	view.exploration_rect=Rect2(); view.screen_rect=Rect2();view.align_left=false
+	var parent:Node=world
+	var shell:Variant=world.get("host_node")
+	# Portrait films keep their authored 16:9 camera. Put readable dialogue
+	# in the unused screen space instead of inflating it over the small film.
+	if is_instance_valid(shell) and owns_world_contract() and shell.size.y>shell.size.x:
+		var film:Rect2=shell.world_view.get_global_rect()
+		var bottom:float=shell.size.y-12
+		if shell.inventory_handle.visible:bottom=minf(bottom,shell.inventory_handle.position.y-8)
+		if shell.inventory_dock.visible:bottom=minf(bottom,shell.inventory_dock.position.y-8)
+		if bottom-film.end.y>=100:
+			parent=self
+			view.screen_rect=Rect2(12,film.end.y+8,shell.size.x-24,bottom-film.end.y-8)
+	if is_instance_valid(shell) and owns_world_contract() and parent==world:
+		var film:Rect2=shell.world_view.get_global_rect()
+		var right:float=shell.size.x-film.end.x-20
+		var left:float=film.position.x-20
+		# Short landscape windows have useful side letterboxes. Preserve the
+		# full source room and its exit instead of covering the lower doorway.
+		if maxf(left,right)>=120:
+			parent=self
+			view.screen_rect=Rect2(film.end.x+8 if right>=left else 12,maxf(64,film.position.y),right if right>=left else left,film.size.y)
+		else:
+			# Wide desktop films have no letterbox. A bounded left-hand caption
+			# leaves the source southeast exit and its arrival point unobscured.
+			view.align_left=true
+	if view.get_parent()!=parent:
+		view.reparent(parent,false); view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	if world.get("mobile_exploration")==true:
 		var controls: Dictionary=world.mobile_control_metrics()
 		var top: float=float(world.hud_metrics("").header_height)+8
 		var bottom: float=minf(controls.stick_rect.position.y,controls.interact.position.y)-8
 		view.exploration_rect=Rect2(8,top,world.size.x-16,maxf(0,bottom-top))
+	elif parent==world and not owns_world_contract() and world.has_method("exploration_safe_rect"):
+		var safe:Rect2=world.exploration_safe_rect()
+		view.exploration_rect=Rect2(safe.position+Vector2(8,8),safe.size-Vector2(16,16))
 
 func inspector_closed(id: String) -> bool:
 	if current==null or id!="decoyPaper" or not current.mark_inspector_closed(read_state.call(),self): return false

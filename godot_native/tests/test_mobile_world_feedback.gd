@@ -27,7 +27,10 @@ func run() -> void:
 			var needed:float=world.font.get_multiline_string_size(line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font).y+hud.body_inset*2
 			var controls:Dictionary=world.mobile_control_metrics()
 			var bar:=Rect2(hud.body_gap,world.size.y-hud.body_gap-hud.body_height,world.size.x-hud.body_gap*2,hud.body_height)
-			check(world.subtitle==line and hud.body_height>=needed,"complete feedback fits measured bar: "+str(id))
+			check(world.subtitle==line and (hud.body_height>=needed or hud.body_overflow),"complete feedback is retained in measured or scrollable bar: "+str(id))
+			if hud.body_overflow:
+				check(world.overflow_feedback.visible and world.overflow_feedback.label.text==line,"overflow owns complete source text")
+				check(world.overflow_feedback.label.size.y>=needed-hud.body_inset*2,"overflow scroll content retains full glyph height")
 			check(hud.body_font*world.hud_display_scale()>=14,"physical feedback font floor")
 			check(Rect2(Vector2.ZERO,world.size).encloses(bar),"full feedback bar is inside viewport")
 			check(Rect2(0,hud.header_height,world.size.x,world.size.y-hud.header_height).encloses(controls.stick_rect),"movement hit area stays beneath header after growth")
@@ -41,6 +44,6 @@ func run() -> void:
 				check(world.touch_axis==Vector2.ZERO,"same touch releases after paragraph growth")
 			check(world.player==player and JSON.stringify(state.d)==before,"feedback metrics/input cannot change world or save state")
 			largest=maxf(largest,hud.body_height)
-		print("FEEDBACK ",dimensions," source_cases=",cases.size()," largest_bar=",largest," control_size=100x100; font=14px")
+		print("FEEDBACK ",dimensions," source_cases=",cases.size()," largest_bar=",largest," control_size=100x100; font=",world.hud_metrics("").body_font,"px")
 	await shell.shutdown();shell.queue_free();await frames()
 	print("MOBILE_WORLD_FEEDBACK: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)
