@@ -92,6 +92,7 @@ func run() -> void:
 	await _test_fit(game)
 	_test_facing(game)
 	_test_lights(game)
+	_test_beam_path(game)
 	release_keys()
 	game.queue_free()
 	await frames()
@@ -533,9 +534,17 @@ func _test_facing(game) -> void:
 
 func _test_lights(game) -> void:
 	fresh(game)
-	check(game.torch is SpotLight3D and is_equal_approx(game.torch.spot_range, 3.2)
-		and is_equal_approx(game.torch.spot_angle, 7.0) and game.torch.shadow_enabled,
-		"guard beam is the revised short shadow-casting 3.2m, 7-degree spotlight")
+	check(game.torch is SpotLight3D and is_equal_approx(game.torch.spot_range, 4.4)
+		and is_equal_approx(game.torch.spot_angle, 9.0) and game.torch.shadow_enabled,
+		"guard beam is the revised shadow-casting 4.4m, 9-degree spotlight")
+	check(is_equal_approx(game.torch.light_energy, 10.0), "guard light is moderately brighter at energy 10 without expanding range")
+	check(game.torch.light_color.is_equal_approx(Color("ffd166"))
+		and game.torch.light_color.r > game.torch.light_color.g
+		and game.torch.light_color.g > game.torch.light_color.b + .3,
+		"guard flashlight is explicitly warm yellow ffd166")
+	check(not _dominantly_blue(game.torch.light_color)
+		and _dominantly_blue(game.actor_fill.light_color) and _dominantly_blue(game.phone_hand_fill.light_color),
+		"warm yellow guard beam remains distinct from both blue phone lights")
 	check(game.phone is Node3D and game.phone_screen is MeshInstance3D
 		and game.phone_screen.get_parent() == game.phone and game.phone.get_child_count() >= 2,
 		"player carries an actual handset mesh with a separate screen")
@@ -577,6 +586,12 @@ func _test_lights(game) -> void:
 		var beam_horizontal := Vector3(beam_heading.x, 0, beam_heading.z).normalized()
 		check(beam_horizontal.dot(guard_heading) > .999,
 			"guard hand beam follows heading at route %.1f direction %.0f" % [progress, direction])
+		var section: Dictionary = game.model.route_section(progress)
+		var rise: float = (float(section.toY) - float(section.fromY)) / float(section.length) * direction
+		var height: float = maxf(.2, game.torch.global_position.y - game.pursuer.global_position.y)
+		var expected_beam: Vector3 = (guard_heading * 4.4 + Vector3(0, rise * 4.4 - height, 0)).normalized()
+		check(beam_heading.dot(expected_beam) > .999,
+			"yellow beam aim follows the 4.4m stair-rise target from the actual hand source")
 		check(game.torch.global_position.is_equal_approx(game.guard_hand_world + guard_heading * .12),
 			"guard light starts at the actual sprite hand and short barrel")
 		check(game.torch_case.global_position.is_equal_approx(game.torch.global_position - guard_heading * .09)
@@ -654,3 +669,124 @@ func _test_pixel_sockets(game) -> void:
 	check(_visible_hand_pixel(_read_source_png("res://assets/rpg/player/player_side_idle.png"), idle_pixel)
 		and game.player_hand_world.is_equal_approx(_expected_socket(game, game.actor, idle_pixel)),
 		"stopped side frame keeps phone attached to the actual idle hand")
+
+func _test_beam_path(game) -> void:
+	fresh(game)
+	check(game.torch_path is MeshInstance3D and game.torch_path.mesh is ImmediateMesh,
+		"visible guard-light path is a dedicated triangle mesh")
+	check(game.torch_path.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,
+		"scattering approximation does not cast its own shadow")
+	var path_material: StandardMaterial3D = game.torch_path.material_override
+	check(path_material != null and path_material.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA
+		and path_material.vertex_color_use_as_albedo and not path_material.no_depth_test
+		and path_material.depth_draw_mode == BaseMaterial3D.DEPTH_DRAW_DISABLED
+		and path_material.cull_mode == BaseMaterial3D.CULL_DISABLED,
+		"light-path material is vertex-colored, alpha-transparent and depth-tested")
+	check(path_material != null and path_material.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED,
+		"visible path is a controlled scattering approximation rather than a second world light")
+	var environments: Array[Node] = []
+	_collect(game.world, "WorldEnvironment", environments)
+	check(environments.size() == 1 and not environments[0].environment.glow_enabled,
+		"obvious light path does not enable broad environmental bloom")
+	var solids: Array[Node] = []
+	_collect(game.world, "StaticBody3D", solids)
+	var exact_solids: bool = game.light_occluders.size() == 89 and solids.size() == 89
+	for body: Node in solids:
+		exact_solids = exact_solids and game.light_occluders.has(body.get_parent())
+	check(exact_solids, "beam occluders contain exactly all 89 physical floor, wall and barrier meshes")
+	check(game.beam_origin.is_equal_approx(game.torch.global_position),
+		"visible light path originates at the exact physical flashlight source")
+	check(game.beam_ray_lengths.size() == 13, "visible beam samples thirteen angular clipping rays")
+	var bounded_rays := true
+	for length: float in game.beam_ray_lengths:
+		# The engine's light range property is float32; compare its actual bound.
+		bounded_rays = bounded_rays and is_finite(length) and length >= 0 and length <= game.torch.spot_range
+	check(bounded_rays, "all visible beam rays stay within the unchanged 4.4m reach")
+	_check_beam_mesh(game, "live entry pose")
+
+	# Test the production ray method against simple independent exact intersections.
+	var saved_occluders: Array[MeshInstance3D] = game.light_occluders.duplicate()
+	game.light_occluders.clear()
+	var fixture := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = Vector3(.2, 4, 4)
+	fixture.mesh = box
+	fixture.position = Vector3(3, 1, 0)
+	game.world.add_child(fixture)
+	game.light_occluders.append(fixture)
+	var origin := Vector3(0, 1, 0)
+	var wall_distance: float = game._beam_ray_distance(origin, Vector3.RIGHT, 4.4)
+	check(_conservative_hit(wall_distance, 2.9), "beam ray clips at the front face of a solid wall")
+	check(is_equal_approx(game._beam_ray_distance(origin, Vector3.UP, 4.4), 4.4),
+		"a ray that misses the wall preserves its maximum reach")
+	check(is_equal_approx(game._beam_ray_distance(origin, Vector3.RIGHT, 2.0), 2.0),
+		"an obstruction beyond maximum range does not shorten the beam")
+	check(is_zero_approx(game._beam_ray_distance(fixture.global_position, Vector3.RIGHT, 4.4)),
+		"a light source inside an opaque solid has zero free beam length")
+	game.torch.global_position = origin
+	game.torch.look_at(origin + Vector3.RIGHT)
+	game._update_beam_path()
+	check(game.beam_origin.is_equal_approx(origin), "beam-path rebuild uses the new flashlight source immediately")
+	var all_wall_clipped: bool = game.beam_ray_lengths.size() == 13
+	for length: float in game.beam_ray_lengths:
+		all_wall_clipped = all_wall_clipped and length > 0 and length < 3.0
+	check(all_wall_clipped, "all thirteen wide-wall beam rays are conservatively clipped")
+	_check_beam_mesh(game, "opaque-wall fixture")
+	game.torch.global_position = fixture.global_position
+	game._update_beam_path()
+	var source_inside_blocked: bool = game.torch_path_vertex_count == 0 and game.torch_path.mesh.get_surface_count() == 0
+	for length: float in game.beam_ray_lengths:
+		source_inside_blocked = source_inside_blocked and is_zero_approx(length)
+	check(source_inside_blocked, "light starting inside a solid emits no visible path triangles")
+	box.size = Vector3(.4, 2, 2)
+	fixture.rotation.y = PI / 4
+	var rotated_hit := 3.0 - .2 / cos(PI / 4)
+	check(_conservative_hit(game._beam_ray_distance(origin, Vector3.RIGHT, 4.4), rotated_hit),
+		"ray clipping transforms into a rotated solid's local box coordinates")
+	fixture.rotation = Vector3.ZERO
+	fixture.position = Vector3(0, -.1, 0)
+	box.size = Vector3(8, .2, 8)
+	check(_conservative_hit(game._beam_ray_distance(origin, Vector3.DOWN, 4.4), 1.0),
+		"downward beam clips at the actual top surface of a floor")
+	check(is_equal_approx(game._beam_ray_distance(origin, Vector3.RIGHT, 4.4), 4.4),
+		"ray parallel to and above the floor remains unobstructed")
+	game.light_occluders.clear()
+	game.light_occluders.append_array(saved_occluders)
+	fixture.free()
+	game._present(0.0)
+	check(game.light_occluders.size() == 89, "ray fixtures restore the actual production occluder list")
+
+func _conservative_hit(actual: float, geometric_hit: float) -> bool:
+	# Production clipping uses a specific 12mm safety inset, not a loose tolerance.
+	return absf(actual - maxf(0, geometric_hit - .012)) <= .00001
+
+func _check_beam_mesh(game, label: String) -> void:
+	var count := 0
+	var source_present := false
+	var transparent_yellow := true
+	var visible_alpha := false
+	var vertices_clipped := true
+	for surface in game.torch_path.mesh.get_surface_count():
+		var arrays: Array = game.torch_path.mesh.surface_get_arrays(surface)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var colors: PackedColorArray = arrays[Mesh.ARRAY_COLOR]
+		count += vertices.size()
+		transparent_yellow = transparent_yellow and colors.size() == vertices.size()
+		for index in vertices.size():
+			var world_vertex: Vector3 = game.torch_path.to_global(vertices[index])
+			var ray: Vector3 = world_vertex - game.beam_origin
+			if ray.length() <= .0001:
+				source_present = true
+			else:
+				var limit: float = game._beam_ray_distance(game.beam_origin, ray.normalized(), 4.4)
+				vertices_clipped = vertices_clipped and ray.length() <= limit + .0001
+			if index < colors.size():
+				var color := colors[index]
+				visible_alpha = visible_alpha or color.a > .02
+				transparent_yellow = transparent_yellow and color.a >= 0 and color.a <= .165 \
+					and color.r > color.b and color.g > color.b
+	check(count == game.torch_path_vertex_count and count > 0 and count % 3 == 0,
+		"reported path vertices match actual nonempty triangles: " + label)
+	check(source_present, "visible path triangles are anchored at the flashlight source: " + label)
+	check(transparent_yellow and visible_alpha, "light-path vertices contain visible translucent yellow with bounded opacity: " + label)
+	check(vertices_clipped, "visible light-path endpoints do not pass their first solid obstruction: " + label)

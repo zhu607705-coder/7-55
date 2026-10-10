@@ -21,6 +21,11 @@ var player_hand_world := Vector3.ZERO
 var phone: Node3D
 var phone_screen: MeshInstance3D
 var torch_lens: MeshInstance3D
+var torch_path: MeshInstance3D
+var light_occluders: Array[MeshInstance3D] = []
+var beam_ray_lengths: Array[float] = []
+var beam_origin := Vector3.ZERO
+var torch_path_vertex_count := 0
 var menu: PanelContainer
 var instruction: Label
 var start_button: Button
@@ -227,10 +232,10 @@ func _build_stage() -> void:
 	phone_screen.material_override = screen_material
 	phone_screen.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	torch = SpotLight3D.new()
-	torch.light_color = Color("f1e2b2")
-	torch.light_energy = 7
-	torch.spot_range = 3.2
-	torch.spot_angle = 7
+	torch.light_color = Color("ffd166")
+	torch.light_energy = 10
+	torch.spot_range = float(model.geometry.lighting.torchRange)
+	torch.spot_angle = float(model.geometry.lighting.torchAngle)
 	torch.spot_attenuation = 1.2
 	torch.shadow_enabled = true
 	world.add_child(torch)
@@ -238,11 +243,26 @@ func _build_stage() -> void:
 	torch_case.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	torch_lens = _box(Vector3.ZERO,Vector3(.008,.07,.08),"edge")
 	var lens_material := StandardMaterial3D.new()
-	lens_material.albedo_color = Color("f1e2b2")
+	lens_material.albedo_color = torch.light_color
 	lens_material.emission_enabled = true
-	lens_material.emission = Color("f1e2b2")
+	lens_material.emission = torch.light_color
 	torch_lens.material_override = lens_material
 	torch_lens.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# Compatibility rendering has no volumetric fog. This subtle depth-tested
+	# scattering ribbon approximates the narrow air path, not a world light.
+	torch_path = MeshInstance3D.new()
+	torch_path.name = "GuardLightAirPath"
+	torch_path.mesh = ImmediateMesh.new()
+	var air_material := StandardMaterial3D.new()
+	air_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	air_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	air_material.vertex_color_use_as_albedo = true
+	air_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	air_material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+	air_material.no_depth_test = false
+	torch_path.material_override = air_material
+	torch_path.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	world.add_child(torch_path)
 
 func _box(at: Vector3, dimensions: Vector3, material_key: String, solid: bool=false) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
@@ -274,7 +294,93 @@ func _box(at: Vector3, dimensions: Vector3, material_key: String, solid: bool=fa
 		node.add_child(body)
 		body.add_child(collision)
 		solid_count += 1
+		light_occluders.append(node)
 	return node
+
+func _beam_ray_distance(origin: Vector3, direction: Vector3, maximum: float) -> float:
+	# Analytic ray/OBB slabs use the exact meshes of the existing solid boxes.
+	# No extra collider or movement rule is introduced for this visual effect.
+	if maximum <= 0 or direction.length_squared() < .000001: return 0.0
+	var ray := direction.normalized()
+	var limit := maximum
+	for occluder in light_occluders:
+		if not is_instance_valid(occluder): continue
+		var box := occluder.mesh as BoxMesh
+		if box == null: continue
+		var inverse := occluder.global_transform.affine_inverse()
+		var local_origin := inverse*origin
+		var local_ray := inverse.basis*ray
+		var half := box.size*.5
+		var entry := 0.0
+		var leave := limit
+		var hit := true
+		for axis in 3:
+			if absf(local_ray[axis]) < .000001:
+				if absf(local_origin[axis]) > half[axis]:
+					hit = false
+					break
+			else:
+				var a: float = (-half[axis]-local_origin[axis])/local_ray[axis]
+				var b: float = (half[axis]-local_origin[axis])/local_ray[axis]
+				entry = maxf(entry,minf(a,b))
+				leave = minf(leave,maxf(a,b))
+				if leave < entry:
+					hit = false
+					break
+		if hit: limit = minf(limit,maxf(0.0,entry-.012))
+	return limit
+
+func _beam_vertex(mesh: ImmediateMesh, ray: Vector3, distance: float, cross_fraction: float, length_fraction: float) -> void:
+	var edge_fade: float = pow(maxf(0.0,1.0-absf(cross_fraction)),.7)
+	var tail_fade: float = pow(maxf(0.0,1.0-length_fraction),.65)
+	var source_fade: float = minf(1.0,.45+distance*5.0)
+	var color := torch.light_color
+	color.a = .16*edge_fade*tail_fade*source_fade
+	mesh.surface_set_color(color)
+	mesh.surface_add_vertex(beam_origin+ray*distance)
+	torch_path_vertex_count += 1
+
+func _update_beam_path() -> void:
+	var mesh := torch_path.mesh as ImmediateMesh
+	mesh.clear_surfaces()
+	torch_path_vertex_count = 0
+	beam_origin = torch.global_position
+	beam_ray_lengths.clear()
+	var forward := -torch.global_basis.z.normalized()
+	var across := forward.cross(camera.global_basis.z).normalized()
+	if across.length_squared() < .000001: across = torch.global_basis.x
+	var rays: Array[Vector3] = []
+	const RAYS := 13
+	const STEPS := 8
+	for index in RAYS:
+		var cross_fraction := float(index)/(RAYS-1)*2.0-1.0
+		var angle := deg_to_rad(torch.spot_angle)*cross_fraction
+		var ray: Vector3 = forward*cos(angle)+across*sin(angle)
+		rays.append(ray)
+		beam_ray_lengths.append(_beam_ray_distance(beam_origin,ray,torch.spot_range))
+	var any_visible := false
+	for index in RAYS-1:
+		if minf(beam_ray_lengths[index],beam_ray_lengths[index+1]) > .02:
+			any_visible = true
+			break
+	if not any_visible: return
+	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+	for index in RAYS-1:
+		# Conservatively stop each wedge at its nearer edge-ray obstruction.
+		var reach := minf(beam_ray_lengths[index],beam_ray_lengths[index+1])
+		if reach <= .02: continue
+		var c0 := float(index)/(RAYS-1)*2.0-1.0
+		var c1 := float(index+1)/(RAYS-1)*2.0-1.0
+		for step in STEPS:
+			var t0 := float(step)/STEPS
+			var t1 := float(step+1)/STEPS
+			_beam_vertex(mesh,rays[index],reach*t0,c0,t0)
+			_beam_vertex(mesh,rays[index+1],reach*t0,c1,t0)
+			_beam_vertex(mesh,rays[index+1],reach*t1,c1,t1)
+			_beam_vertex(mesh,rays[index],reach*t0,c0,t0)
+			_beam_vertex(mesh,rays[index+1],reach*t1,c1,t1)
+			_beam_vertex(mesh,rays[index],reach*t1,c0,t1)
+	mesh.surface_end()
 
 func _rail(a: Vector3,b: Vector3) -> void:
 	var node := _box((a+b)*.5,Vector3(.055,a.distance_to(b),.055),"metal")
@@ -438,6 +544,7 @@ func _present(delta: float) -> void:
 	torch_case.rotation.y = -atan2(guard_tangent.z,guard_tangent.x)
 	torch_lens.position = torch.position-guard_tangent*.012
 	torch_lens.rotation.y = torch_case.rotation.y
+	_update_beam_path()
 	for group in groups:
 		var y: float = group.get_meta("center_y")
 		group.visible = absf(y-ground_y)<8 or absf(y-model.guard.y)<4

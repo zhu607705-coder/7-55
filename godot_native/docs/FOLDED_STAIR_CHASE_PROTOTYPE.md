@@ -46,10 +46,11 @@ fixed 60 Hz raw inputs and bounded run-length records, never claimed positions.
 The oblique orthographic camera follows ascent with a forward view and fades
 remote levels into a black surround. There is no distance/debug meter.
 The guard carries a visible flashlight case and lens. Its real SpotLight3D origin
-is ahead of the case at hand height, follows guard facing and has a 6 m range,
-11 degree cone and geometry shadows. Architecture remains on lighting layer 1.
-The player carries a small emissive phone screen. Its 0.55 m point light originates
-at that screen and affects character layer 2 only, so it cannot reveal the route.
+is ahead of the case at a per-frame hand/wrist socket, follows guard facing and
+has a 4.4 m range, 9 degree warm-yellow cone and geometry shadows. Architecture remains on lighting layer 1.
+The player carries a cool-blue emissive phone screen. A narrow face-directed
+spot and a 0.16 m hand fill originate at that screen and affect character layer 2
+only, so they cannot reveal the route.
 This intentionally keeps the too-far darkness / too-close capture tradeoff.
 
 Real source player front/back/side frames are selected from world heading projected
@@ -118,3 +119,32 @@ messages, GDScript warnings, and imported-image loading warnings were present.
 The source loader and source-code warnings are corrected in this increment;
 audio/VSync availability is environment-specific. Visual lighting comparisons
 are separate fixed-pose rendered fixtures, not manual-route completion evidence.
+
+### Moderate yellow flashlight revision
+
+The next user review found 3.2 m / 7 degrees too small and requested yellow light.
+This revision uses **4.4 m / 9 degrees**, between that very small pool and the
+original over-large 6 m / 11 degree pool. The source is still the exact same
+per-frame guard hand/lamp-head position. Lamp lens and beam are warm yellow
+`ffd166`, distinct from the unchanged cool-blue phone. Shadows, ambient level,
+camera, route and physical rules are unchanged. Fresh serial model and view suites pass **125 + 797 checks, zero failures** on
+this exact revision. The automated route remains 1192 ticks / 19.8667 seconds.
+Same-camera graphical comparisons follow separately; no manual win is claimed.
+
+### Readable light-path revision
+
+A further user review requested more brightness and a visible path from the lamp.
+The range/angle remain 4.4 m / 9 degrees and color remains warm yellow. Spot energy
+increases moderately from 7 to 10. A low-opacity, camera-facing 3D scattering ribbon
+starts at the exact lamp-head source. This is a Compatibility-renderer approximation,
+not Forward+ volumetric fog or a full physical participating-media simulation.
+Thirteen rays are clipped against the existing 89 transformed solid box meshes;
+each wedge stops at the nearer adjacent obstruction with a 0.012 m safety inset.
+The ribbon depth-tests against scene geometry, fades at its sides/end, emits no
+additional world light, casts no shadow, and adds no bloom or movement colliders.
+The phone, camera, ambient level and physical pursuit rules are unchanged.
+
+Fresh light-path verification: **125 model + 826 view checks, zero failures**.
+The added view checks verify existing physical occluders, translucent/depth-tested
+mesh, exact lamp origin, bounded rays, wall/floor/rotated-box clipping, range misses,
+and zero path inside a solid. The automated model route remains unchanged.
