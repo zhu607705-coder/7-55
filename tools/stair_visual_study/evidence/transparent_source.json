@@ -1,0 +1,59 @@
+{
+  "module": "b_lower_stair",
+  "source_state": 0,
+  "source_pivot_godot": [
+    -2.15,
+    0.3,
+    1.35
+  ],
+  "source_units": "metres",
+  "source_geometry_unchanged": true,
+  "output": "lower_stair_threequarter_whitebox_rgba.png",
+  "camera_blender_world": [
+    [
+      0.7893521189689636,
+      0.32121655344963074,
+      -0.5232046842575073,
+      -7.400000095367432
+    ],
+    [
+      -0.6139407753944397,
+      0.4129925072193146,
+      -0.6726915836334229,
+      -10.350000381469727
+    ],
+    [
+      -3.9261305317950246e-08,
+      0.8522071838378906,
+      0.5232044458389282,
+      9.00664234161377
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "ortho_scale": 4.96927547454834,
+  "resolution": [
+    1024,
+    1024
+  ],
+  "film_transparent": true,
+  "color_mode": "RGBA",
+  "rendered_meshes": 44,
+  "purpose": "geometry source only; pending web art generation",
+  "alpha_validation": {
+    "mode": "RGBA",
+    "bbox": [
+      132,
+      83,
+      891,
+      937
+    ],
+    "transparent_pixels": 805991,
+    "opaque_pixels": 236964,
+    "partial_alpha_pixels": 5621
+  }
+}

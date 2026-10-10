@@ -1,0 +1,83 @@
+{
+  "level": "stair_b",
+  "frames": 96,
+  "fps": 12,
+  "kind": "Blender visual replay of source-rule witnesses",
+  "collision_test": false,
+  "new_gameplay_camera": false,
+  "source_trace_sha256": "198a7aec07683139dd8ee3b608bd7819600e679174958e8179cb9bfd9c7e01f9",
+  "keyframes": {
+    "0": {
+      "phase": "INSPECTION - original rotating stair",
+      "values": {
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0,
+        "b_exit_slide": 0
+      },
+      "view_join": null
+    },
+    "24": {
+      "phase": "SOUTH-WEST - source view join active",
+      "values": {
+        "b_lower_stair": -1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0,
+        "b_exit_slide": 0
+      },
+      "view_join": "south_west"
+    },
+    "31": {
+      "phase": "SOUTH-WEST - source view join active",
+      "values": {
+        "b_lower_stair": -1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0,
+        "b_exit_slide": 0
+      },
+      "view_join": "south_west"
+    },
+    "48": {
+      "phase": "INSPECTION - upper stair and camera turn",
+      "values": {
+        "b_lower_stair": -1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0.5000000000000001,
+        "b_exit_slide": 0
+      },
+      "view_join": null
+    },
+    "66": {
+      "phase": "TOP OBLIQUE - source view join active",
+      "values": {
+        "b_lower_stair": -1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1,
+        "b_exit_slide": 0
+      },
+      "view_join": "top_oblique"
+    },
+    "76": {
+      "phase": "TOP OBLIQUE - source view join active",
+      "values": {
+        "b_lower_stair": -1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1,
+        "b_exit_slide": 0
+      },
+      "view_join": "top_oblique"
+    },
+    "95": {
+      "phase": "EXIT SLIDE - original mechanism state 2",
+      "values": {
+        "b_lower_stair": -1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1,
+        "b_exit_slide": 2
+      },
+      "view_join": null
+    }
+  },
+  "source_checks": 986,
+  "checks": 24
+}

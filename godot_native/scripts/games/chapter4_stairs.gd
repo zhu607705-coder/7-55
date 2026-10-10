@@ -2,6 +2,7 @@ extends Control
 signal completed(result: Dictionary)
 signal cancelled
 const Model = preload("res://scripts/games/chapter4_stair_model.gd")
+const Assets = preload("res://scripts/games/chapter4_stair_assets.gd")
 const PANEL_BACKGROUND := Color("121b29")
 const PANEL_FOREGROUND := Color("e7f0ff")
 var config: Dictionary = {}
@@ -34,6 +35,8 @@ var door_group: Node3D
 var seam_overlay: Control
 var reveal_done: bool=false
 var door_panel: MeshInstance3D
+var door_hinge: Node3D
+var refined_assets: bool=false
 func setup(value: Dictionary) -> void:
 	config=value
 	if is_inside_tree(): _build()
@@ -67,6 +70,8 @@ func _load_level() -> void:
 	for child in view3d.get_children(): child.queue_free()
 	for child in toolbar.get_children(): child.queue_free()
 	mechanism_nodes={}
+	door_group=null; door_panel=null; door_hinge=null
+	refined_assets=level.id=="stair_b" and Assets.available()
 	root3d=Node3D.new(); view3d.add_child(root3d)
 	var env: WorldEnvironment=WorldEnvironment.new(); var environment: Environment=Environment.new(); environment.background_mode=Environment.BG_COLOR; environment.background_color=Color("121b29"); environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR; environment.ambient_light_color=Color("a6bcdb"); environment.ambient_light_energy=0.75; env.environment=environment; root3d.add_child(env)
 	var sun: DirectionalLight3D=DirectionalLight3D.new(); sun.rotation_degrees=Vector3(-40,-30,0); sun.light_energy=1.25; root3d.add_child(sun)
@@ -78,8 +83,13 @@ func _load_level() -> void:
 		for delta in [-1,1]:
 			var b: Button=Button.new(); b.text=("逆转" if delta<0 else "顺转") if m.kind=="rotate" else (("下移" if delta<0 else "上移") if m.kind=="vertical" else ("左移" if delta<0 else "右移")); b.pressed.connect(_step.bind(m.id,delta)); row.add_child(b)
 	for p in level.geometry.platforms:
+		var asset_id: String=str(p.id) if p.ownerId=="level" else str(p.ownerId)
+		if refined_assets and Assets.FILES.has(asset_id):
+			_owner(p.ownerId).add_child(Assets.instantiate(asset_id)); continue
 		_box(p.ownerId,Model.v3(p.center),Model.v3(p.size),p.material)
 	for stairs in level.geometry.stairs:
+		if refined_assets and Assets.FILES.has(stairs.ownerId):
+			_owner(stairs.ownerId).add_child(Assets.instantiate(stairs.ownerId)); continue
 		var start: Vector3=Model.v3(stairs.from); var finish: Vector3=Model.v3(stairs.to); var direction: Vector3=(finish-start); direction.y=0
 		var count: int=int(stairs.steps)
 		for i in range(count):
@@ -123,6 +133,11 @@ func _box_uv(box: BoxMesh,dimensions: Vector3) -> ArrayMesh:
 		uvs[i]*=dimensions_uv/2.4
 	arrays[Mesh.ARRAY_TEX_UV]=uvs; var mesh: ArrayMesh=ArrayMesh.new(); mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays); return mesh
 func _decoration(spec: Dictionary) -> void:
+	if refined_assets and spec.kind=="fire_door":
+		var asset: Node3D=Assets.instantiate(spec.id); root3d.add_child(asset)
+		door_group=asset.find_child("b_deco_fire_door_base",true,false)
+		door_hinge=asset.find_child("b_deco_fire_door_hinge",true,false)
+		return
 	var group: Node3D=Node3D.new(); group.position=Model.v3(spec.position); group.rotation.y=float(spec.get("rotationY",0)); root3d.add_child(group); mechanism_nodes[spec.id]=group
 	match spec.kind:
 		"fire_door":
@@ -196,12 +211,8 @@ func _sync_actor_facing() -> void:
 func _update() -> void:
 	var spec: Dictionary=source.cameras[level.id]; camera.position=Model.v3(spec.views[state.view].position); camera.look_at(Model.v3(spec.center))
 	for m in level.mechanisms:
-		var node: Node3D=mechanism_nodes[m.id]; node.transform=Transform3D.IDENTITY
-		var value: int=int(state.values[m.id])
-		if m.kind=="rotate":
-			var pivot: Vector3=Model.v3(m.pivot); var basis: Basis=Basis(Vector3.UP,value*PI/2.0); node.transform=Transform3D(basis,pivot-basis*pivot)
-		else:
-			var offset: Vector3=Vector3.ZERO; offset[{"x":0,"y":1,"z":2}[m.axis]]=float(m.stepSize)*value; node.position=offset
+		var node: Node3D=mechanism_nodes[m.id]
+		node.transform=Assets.mechanism_transform(m,float(state.values[m.id]))
 	actor.position=Model.position(level,state,state.node)+Vector3(0,0.875,0)
 	caption.text="%d / 4 · %s\n%s"%[level_index+1,level.title,level.feedback.objective]
 func _draw_seams() -> void:
@@ -228,22 +239,32 @@ func _change_view(view: String) -> void:
 		tween.tween_method(func(t): camera.position=before.lerp(after,t); camera.look_at(Model.v3(source.cameras[level.id].center)),0.0,1.0,0.48)
 		await tween.finished
 		busy=false
+func _apply_mechanism_frame(id: String,start_value: int,delta: int,t: float) -> void:
+	for spec in level.mechanisms:
+		if spec.id!=id: continue
+		var value: float=float(start_value)+delta*t
+		# Linear mechanisms wrap between legal endpoints, never past their bounds.
+		if spec.kind!="rotate": value=lerpf(float(start_value),float(posmod(start_value+delta,int(spec.stateCount))),t)
+		var transform_at: Transform3D=Assets.mechanism_transform(spec,value)
+		mechanism_nodes[id].transform=transform_at
+		# Keep the rider at its source-local station throughout the real pivot arc.
+		for n in level.nodes:
+			if n.id==state.node and n.ownerId==id:
+				actor.position=transform_at*Model.v3(n.position)+Vector3(0,0.875,0)
+		return
 func _step(id: String,delta: int) -> void:
 	if busy: return
+	var start_value: int=int(state.values.get(id,0))
 	var action: Dictionary={"type":"step","id":id,"delta":delta}
 	if Model.apply(level,state,source.cameras[level.id],action):
 		actions_log.append(action)
-		var mechanism: Node3D=mechanism_nodes[id]
-		var before: Transform3D=mechanism.transform
-		var actor_before: Vector3=actor.position
-		_update()
-		var after: Transform3D=mechanism.transform
-		var actor_after: Vector3=actor.position
-		mechanism.transform=before; actor.position=actor_before; busy=true
-		var tween: Tween=create_tween(); tween.set_parallel(true)
-		tween.tween_method(func(t): mechanism.transform=before.interpolate_with(after,t),0.0,1.0,0.48)
-		tween.tween_property(actor,"position",actor_after,0.48)
+		busy=true
+		var tween: Tween=create_tween()
+		# Use the requested signed quarter-turn, including 3→0 and 0→3 wraps.
+		# Interpolating matrix origins would move the external pivot off its axis.
+		tween.tween_method(func(t): _apply_mechanism_frame(id,start_value,delta,t),0.0,1.0,0.48)
 		await tween.finished
+		_update()
 		busy=false
 func _click_surface(event: InputEvent) -> void:
 	if busy or not event is InputEventMouseButton or not event.pressed or event.button_index!=MOUSE_BUTTON_LEFT: return
@@ -273,11 +294,15 @@ func _walk(target: String) -> void:
 	if target==level.exitNodeId:
 		busy=true
 		caption.text="通路已接通。"
-		var door_tween: Tween=create_tween(); door_tween.tween_property(door_panel,"position:x",1.32,0.36); await door_tween.finished
-		var direction: Vector3=(door_group.position-Model.position(level,state,level.exitNodeId)); direction.y=0
+		var door_tween: Tween=create_tween()
+		if is_instance_valid(door_hinge): door_tween.tween_property(door_hinge,"rotation:y",-PI/2,0.36)
+		else: door_tween.tween_property(door_panel,"position:x",1.32,0.36)
+		await door_tween.finished
+		var door_origin: Vector3=root3d.to_local(door_group.global_position)
+		var direction: Vector3=(door_origin-Model.position(level,state,level.exitNodeId)); direction.y=0
 		if direction.length_squared()>.00001:facing_world=direction.normalized()
 		_sync_actor_facing()
-		var exit_tween: Tween=create_tween(); exit_tween.tween_property(actor,"position",door_group.position+direction.normalized()*0.6+Vector3(0,0.875,0),0.6); await exit_tween.finished
+		var exit_tween: Tween=create_tween(); exit_tween.tween_property(actor,"position",door_origin+direction.normalized()*0.6+Vector3(0,0.875,0),0.6); await exit_tween.finished
 		campaign.append({"id":level.id,"actions":actions_log.duplicate(true)})
 		if level_index==3: completed.emit({"kind":"chapter4_stair_campaign","session":config.get("session",""),"levels":campaign,"doorTraversed":true}); return
 		await _break_level()

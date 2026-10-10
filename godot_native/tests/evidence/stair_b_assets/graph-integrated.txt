@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+GRAPH_EQUIVALENCE {"checks":4777,"failures":0,"report":{"perspective_witnesses":{"b_link_lower_stair_lift":12,"b_link_upper_stair_island":36},"states":432}}
