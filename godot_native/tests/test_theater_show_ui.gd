@@ -34,7 +34,11 @@ func _run() -> void:
 				if s.head.distance_to(hazard.position)<100 and s.invulnerable==0:
 					if s.dashCooldown<=1: game.dash_button.pressed.emit()
 					elif s.dashTicks==0 and s.head.distance_to(hazard.position)<65: direction=(direction+(s.head-hazard.position).normalized()*1.6).normalized()
-			var event:=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.pressed=true; event.position=s.head+direction*10
+			var event: InputEventMouse=InputEventMouseMotion.new()
+			event.button_mask=MOUSE_BUTTON_MASK_LEFT
+			if not game.dragging:
+				var press:=InputEventMouseButton.new();press.button_index=MOUSE_BUTTON_LEFT;press.pressed=true;event=press
+			event.position=game.model_to_pointer(s.head+direction*10)
 			game._gui_input(event); game._process(.05)
 		check(game.state.status=="won","actual native pointer/queued dash flow completes act "+str(round_id))
 		check(state.d.theaterHunt.spotlightRound==round_id+1,"submitted actual trace advances controller before result screen")
