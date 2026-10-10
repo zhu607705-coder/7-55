@@ -70,3 +70,20 @@ shadow quality, phone-face readability, manual completion, or campaign integrati
 - Standalone scene startup: three headless frames, clean parse and no script errors
 - View/input regression, graphical review, actual human-input route completion,
   extended long chase and story integration are still pending at this snapshot
+
+### Input/layout verification increment, 2026-10-10
+
+The fresh standalone view suite passes **474 checks, zero failures**, including
+native-dispatched key/touch events, short-tap queuing, held-key non-repeat, focus
+pause/resume, folded controls, all 89 physical bodies, source sprite pixels,
+three viewport sizes and seven route positions, handset/light attachment and
+architecture-excluding phone lighting. The same test supports optional State
+and verifies campaign dictionaries and save files remain unchanged when present.
+The full-project execution of this added test is left to CI; only the isolated
+standalone execution has been run locally. Verified jump atlas poses: **zero**.
+
+Graphical capture is blocked in the current executor: allocation of an AF_UNIX
+socket returns `EPERM`, so its installed Xorg dummy server cannot create a private
+display. Godot's headless display supports the dummy renderer only. No actual
+rendered image or manual run is claimed for this increment. The existing cloud
+login desktop was left untouched; no permissions or network settings were changed.
