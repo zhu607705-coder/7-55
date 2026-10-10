@@ -4,7 +4,25 @@ The repository uses dependency-light executable contract validators rather than 
 
 Assertion counts are diagnostic output only. They do not represent line, branch, interaction, or user-journey coverage.
 
-## Canonical entry points
+## Native migration validation (2026-10-10)
+
+The sections below describe Web validation. On `godot-version`,
+`.github/workflows/godot-native-ci.yml` separately pins Godot 4.6.3, synchronizes
+source assets/state, checks deterministic catalogs, converts media, runs
+`node godot_native/tools/validate_native.mjs` and compares native replay traces
+with selected original TypeScript models. Follow `godot_native/README.md` on that
+branch for local prerequisites. Shared source/controller changes require relevant
+checks in both runtimes; native-only presentation work does not require a Web port.
+
+Web CI ignores Markdown/docs-only changes; native CI triggers on its listed native
+and shared-source paths, or manual dispatch. Pages still builds `dist` from `main`.
+This documentation correction changes no CI triggers or required checks. Native
+Linux headless tests, cross-exported Windows artifacts and emulated touch checks do
+not establish Windows execution, physical phone acceptance or full visual/manual
+chapter parity. Preserve the native audit's remaining gaps; assertion totals are
+not acceptance evidence by themselves.
+
+## Canonical Web entry points
 
 | Command | Use it when | Scope |
 | --- | --- | --- |
@@ -17,7 +35,7 @@ The suite catalog and execution order live in `scripts/run-validation-suite.mjs`
 
 ## Blocking validation layers
 
-Every pull request and every non-documentation push to `main` runs `npm run validate:release`, which contains the following layers.
+Every non-documentation pull request and every non-documentation push to `main` runs `npm run validate:release`, which contains the following layers.
 
 ### Critical gameplay behavior
 
