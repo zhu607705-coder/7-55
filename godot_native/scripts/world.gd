@@ -752,7 +752,7 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		if _target_point(target).y <= player.y: _draw_target(target,origin,canvas)
 	if not presentation_actor_hidden and kayak and kayak_texture:
 		var presentation: Dictionary=lake_session.actor_presentation() if lake_session!=null else {"offset":Vector2.ZERO,"scale":1.0,"alpha":1.0}
-		kayak_visual.draw(canvas,origin+(player+presentation.offset)*zoom,zoom*float(presentation.scale),{"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,"side":kayak.last_side,"strokeAgeMs":(kayak.elapsed-kayak.last_stroke)*1000,"alpha":presentation.alpha},Time.get_ticks_msec())
+		kayak_visual.draw(canvas,origin+(player+presentation.offset)*zoom,zoom*float(presentation.scale),{"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,"strokeEvents":kayak.inputs,"tick":kayak.tick,"side":kayak.last_side,"strokeAgeMs":(kayak.elapsed-kayak.last_stroke)*1000,"alpha":presentation.alpha},Time.get_ticks_msec())
 	elif not presentation_actor_hidden and not frame_set.is_empty():
 		var frame: Texture2D = player_side_idle if facing == "side" and walk_clock <= 0 else frame_set[PlayerMetrics.frame_at(walk_clock*1000)]
 		var visual: Rect2 = PlayerMetrics.visual_rect(player,display_scale_at(player))

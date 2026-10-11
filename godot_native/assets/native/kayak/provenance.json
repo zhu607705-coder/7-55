@@ -1,0 +1,15 @@
+{
+  "source": "src/assets/rpg/qizhen/source/kayak_overhead_frame_a.svg",
+  "sourceSha256": "ddb765363d5450722d7460edd2673e92b553c93b480aebe535030c576e9ddf84",
+  "method": "Literal original SVG layer extraction. Hull includes boat and seat; player includes legs, torso and head. Arms and paddles are articulated native geometry with the same original palette and identities. No generated raster or replacement boat design.",
+  "viewBox": [
+    0,
+    0,
+    128,
+    160
+  ],
+  "layers": {
+    "hull.svg": "77986b130ce954be1507bb14f6bedb05092aefde25c61e1989a7d6e0c8a53456",
+    "seated_player.svg": "3a0139f8db7b54f9e6d50bb6209f5919bcb5fe0d3ff8db1ddc1033e53b4bb025"
+  }
+}
