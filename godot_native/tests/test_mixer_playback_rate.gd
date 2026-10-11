@@ -8,7 +8,7 @@ func run() -> void:
 		var view: Control=fresh(reduced)
 		press(view,"blackCoffee")
 		var committed: Dictionary=s.duplicate(true)
-		var duration: float=140 if reduced else 420
+		var duration: float=MixerTiming.REDUCED_ORDINARY_MS if reduced else MixerTiming.ORDINARY_MS
 		var real_seconds: float=duration/1000.0/RateMotion.PLAYBACK_RATE
 		view.surface.motion._process(real_seconds-0.001)
 		check(view.surface.motion.playing,"ordinary pour remains live just before local slowed boundary")
@@ -17,9 +17,9 @@ func run() -> void:
 		check(s==committed and dispatched.size()==1,"slow presentation never delays, replays or changes accepted input")
 		view.free()
 		view=fresh(reduced);complete(view);committed=s.duplicate(true)
-		for index in range(2):view.surface.motion._process(1)
+		for index in range(2):MixerTiming.finish_current(view.surface.motion)
 		check(view.surface.motion.item_id=="lemonTea" and view.surface.motion.playing,"rapid queue reaches original third input")
-		duration=220 if reduced else 600;real_seconds=duration/1000.0/RateMotion.PLAYBACK_RATE
+		duration=MixerTiming.REDUCED_TERMINAL_MS if reduced else MixerTiming.TERMINAL_MS;real_seconds=duration/1000.0/RateMotion.PLAYBACK_RATE
 		view.surface.motion._process(real_seconds-0.001)
 		check(view.surface.is_pouring() and view.finishing,"terminal pour remains live to slowed boundary")
 		view.surface.motion._process(0.002)

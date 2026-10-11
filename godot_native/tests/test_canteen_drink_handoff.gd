@@ -108,7 +108,12 @@ func pour(id: String) -> void:
 	var index: int=panel.session.button_order.find(id)
 	check(index>=0,"original shuffled mixer exposes ingredient")
 	if index>=0:await click(panel.slots[index])
-	if is_instance_valid(panel) and panel.finishing: await create_timer(2.3).timeout;await frames()
+	if is_instance_valid(panel) and panel.finishing:
+		var timing=preload("res://tests/mixer_timing.gd")
+		var deadline: int=Time.get_ticks_msec()+timing.remaining_real_ms(panel)
+		while is_instance_valid(shell.modal) and Time.get_ticks_msec()<deadline:await frames(1)
+		await frames()
+		check(not is_instance_valid(shell.modal),"queued cup pushes and result return finish within their phase-derived budget")
 
 func live_handoff(dimensions: Vector2i) -> void:
 	await restore(earned,dimensions)

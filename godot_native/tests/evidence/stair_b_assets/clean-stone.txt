@@ -1,0 +1,5 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+CLEAN_STONE_REPORT {"checks":7388,"failures":0,"material_counts":{"Blue grey painted iron":86,"Campus grey terrazzo":32,"Fine exposed wood edge":16,"Iron joint collars":137,"Joinery shadow":2,"Recessed anti slip channels":71,"Recessed edge reveals":20,"Recessed steel fixings":246,"School oak veneer":1,"Stone worn edges":23,"Worn end grain and door joinery":10},"stone_surfaces":32,"surfaces":644,"texture_sha256":"d6a96b7306512791085eb2c45a494de4f814dde1d9c003996a55be0b8ab0e4ad","untouched_surfaces":612}
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2663)

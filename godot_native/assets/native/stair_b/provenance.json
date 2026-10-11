@@ -1,0 +1,84 @@
+{
+  "level": "stair_b",
+  "source_base": "913bd512c19c70e842461e0357091dca3635d389",
+  "coordinates": "Godot world-space metres, +Y up; identity asset root; external mechanism transforms",
+  "collision_authority": "original chapter4_stair_model navigation graph; no new collision bodies",
+  "files": {
+    "b_platform_exit.glb": {
+      "bytes": 106016,
+      "sha256": "05bc52750edfa3dfa7cf25f5feae03a659c85c91eaf8babab1bf87a526e95bdc",
+      "mesh_count": 37,
+      "embedded_pngs": 1
+    },
+    "b_platform_island.glb": {
+      "bytes": 82184,
+      "sha256": "7b05d486d44b89782d757ff6151853b7e05e35ee57fe9180da9ce6692445713a",
+      "mesh_count": 28,
+      "embedded_pngs": 1
+    },
+    "b_platform_landing.glb": {
+      "bytes": 159120,
+      "sha256": "e88e903b6530d1fa82f4be0b6af1331be8334dc38db4373b9ef5b4cda98781e5",
+      "mesh_count": 58,
+      "embedded_pngs": 1
+    },
+    "b_platform_lower_base.glb": {
+      "bytes": 21608,
+      "sha256": "3ea0605a5f10d36a4ae76986e9ab40299963aadb7185d2ab140c03ee80173702",
+      "mesh_count": 5,
+      "embedded_pngs": 1
+    },
+    "b_platform_start.glb": {
+      "bytes": 212108,
+      "sha256": "d99d09d0e82de695eb345a17cbcd0729413ee7c7bb50006f07e5644853bcffbd",
+      "mesh_count": 79,
+      "embedded_pngs": 1
+    },
+    "exit_slide_platform.glb": {
+      "bytes": 25356,
+      "sha256": "84f10e985c0fb6ebd0274afe50291dcb5d9daa669a1bc6773e222c55af7a641a",
+      "mesh_count": 1,
+      "embedded_pngs": 1
+    },
+    "lower_rotating_stair.glb": {
+      "bytes": 417548,
+      "sha256": "f437c092ecc10fbcd31a6f977c7e313f48908380c5c9934e5c978c8910d33c6d",
+      "mesh_count": 177,
+      "embedded_pngs": 1
+    },
+    "mid_lift_platform.glb": {
+      "bytes": 25388,
+      "sha256": "1ca31bd62a518c41a5d490882bb55f103ff17dcb13a6f6f65617d1f6bf7b1494",
+      "mesh_count": 1,
+      "embedded_pngs": 1
+    },
+    "school_door.glb": {
+      "bytes": 178788,
+      "sha256": "c3c6710df58592844e74b57461f73a00fa94e94b58d1e18f38d493b18e325179",
+      "mesh_count": 82,
+      "embedded_pngs": 1,
+      "hinge_local": [
+        -0.62,
+        0,
+        -0.072
+      ],
+      "opening_radians": 1.5707963267948966
+    },
+    "upper_rotating_stair.glb": {
+      "bytes": 412312,
+      "sha256": "d9c2f39f1cb4d90e4a89690566dc2132961b4ab30c3aa87af465fd33506c052f",
+      "mesh_count": 172,
+      "embedded_pngs": 1
+    }
+  },
+  "native_shared_stone": {
+    "file": "terrazzo_clean_pixel_albedo.png",
+    "sha256": "d6a96b7306512791085eb2c45a494de4f814dde1d9c003996a55be0b8ab0e4ad",
+    "material_name": "Campus grey terrazzo",
+    "surface_count": 32,
+    "other_surfaces_unchanged": 612,
+    "coordinates_uvs_and_pbr_unchanged": true,
+    "filter": 2,
+    "generated_mipmaps": true
+  }
+}

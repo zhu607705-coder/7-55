@@ -1,0 +1,154 @@
+{
+  "lower_stair_reverse_rgba.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_zero": 903811,
+    "alpha_opaque": 134135,
+    "alpha_partial": 10630,
+    "bbox": [
+      145,
+      312,
+      879,
+      710
+    ],
+    "sha256": "8dfb3034fabb5cb14ca426d9090eedcb73fccba221c1f9924f49bdae13ea8df4"
+  },
+  "lower_stair_threequarter_rgba.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_zero": 812235,
+    "alpha_opaque": 223963,
+    "alpha_partial": 12378,
+    "bbox": [
+      145,
+      86,
+      879,
+      940
+    ],
+    "sha256": "a56c201b6924bb1c7992074053ffa68041b1e3452bca4faf75583c9c7ead819c"
+  },
+  "lower_stair_bottom_rgba.png": {
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_zero": 852848,
+    "alpha_opaque": 191914,
+    "alpha_partial": 3814,
+    "bbox": [
+      149,
+      376,
+      875,
+      648
+    ],
+    "sha256": "b2bc332b19296aa315560abc6ae96ef472d8689d46cfc594f0e0ee79a5765261"
+  },
+  "glb": {
+    "bytes": 417548,
+    "meshes": 177,
+    "images": [
+      {
+        "bufferView": 112,
+        "mimeType": "image/png",
+        "name": "terrazzo_pixel_albedo"
+      }
+    ],
+    "samplers": [
+      {
+        "magFilter": 9728,
+        "minFilter": 9984
+      }
+    ],
+    "materials": [
+      {
+        "doubleSided": true,
+        "name": "Recessed anti slip channels",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.12477181851863861,
+            0.18447498977184296,
+            0.18116424977779388,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.9399999976158142
+        }
+      },
+      {
+        "doubleSided": true,
+        "name": "Campus grey terrazzo",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicFactor": 0,
+          "roughnessFactor": 0.9200000166893005
+        }
+      },
+      {
+        "doubleSided": true,
+        "name": "Recessed steel fixings",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.15292614698410034,
+            0.21223075687885284,
+            0.22696587443351746,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.47999998927116394
+        }
+      },
+      {
+        "doubleSided": true,
+        "name": "Blue grey painted iron",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.016807375475764275,
+            0.0423114113509655,
+            0.05780543014407158,
+            1
+          ],
+          "metallicFactor": 0.47999998927116394,
+          "roughnessFactor": 0.47999998927116394
+        }
+      },
+      {
+        "doubleSided": true,
+        "name": "Iron joint collars",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.03071344457566738,
+            0.07036009430885315,
+            0.09305896610021591,
+            1
+          ],
+          "metallicFactor": 0.5799999833106995,
+          "roughnessFactor": 0.46000000834465027
+        }
+      },
+      {
+        "doubleSided": true,
+        "name": "Stone worn edges",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.6038273572921753,
+            0.577580451965332,
+            0.47353148460388184,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        }
+      }
+    ],
+    "sha256": "f437c092ecc10fbcd31a6f977c7e313f48908380c5c9934e5c978c8910d33c6d"
+  }
+}
