@@ -38,22 +38,24 @@ static func cleared(point: Vector2,ms: float)->bool:
 
 static func dust(ms: float)->Dictionary:
 	var arrive:=smooth(ms/180.0)
-	var flick:=sin(clampf((ms-180)/240.0,0,1)*PI)
-	var retreat:=smooth((ms-500)/220.0)
-	var recoil:=smooth((ms-430)/150.0)*(1-smooth((ms-850)/420.0))
-	var crease:=smooth((ms-560)/150.0)*(1-smooth((ms-830)/380.0))
-	var settle:=smooth((ms-1270)/310.0)
-	return {"brush_contact":Vector2(982,163).lerp(VENT_LIP,arrive)+Vector2(34,39)*retreat,"brush_angle":-8*flick,"brush_alpha":1-retreat,"paper":PAPER+Vector2(-22*recoil,-6*recoil),"paper_angle":-10*recoil,"fold":crease*.98,"edge":smooth((ms-540)/600.0),"settle":settle,"phase":"contact" if ms<180 else "hesitate" if ms<430 else "recoil" if ms<560 else "fold" if ms<830 else "unfurl" if ms<1270 else "settle"}
+	var sweep:=sin(clampf((ms-180)/380.0,0,1)*TAU)*5.0
+	var retreat:=smooth((ms-580)/200.0)
+	var flutter:=sin(clampf((ms-630)/610.0,0,1)*TAU*1.5)*1.7*smooth((ms-630)/90.0)*(1-smooth((ms-1030)/210.0))
+	return {"brush_contact":Vector2(958,158).lerp(VENT_LIP,arrive)+Vector2(sweep,0)+Vector2(22,26)*retreat,
+		"brush_angle":120+sweep*.55,"brush_alpha":smooth(ms/90.0)*(1-retreat),"paper":PAPER,
+		"flutter":flutter,"paper_alpha":smooth(ms/120.0),"edge":smooth((ms-650)/650.0),
+		"phase":"contact" if ms<180 else "sweep" if ms<560 else "airflow" if ms<650 else "edge_flutter" if ms<1240 else "settle"}
 
 static func grains(ms: float)->Array:
 	var out: Array=[]
-	# Twelve bounded grains follow the authored vent-to-stage path. No random
-	# emission, room-wide cloud, glow, collision, or new route is introduced.
-	for i in 12:
-		var p: float=(ms-240-i*19)/460.0
-		if p<0 or p>1:continue
-		var start:=VENT_LIP+Vector2((i%3)*3-3,4)
-		var end:=PAPER+Vector2((i%4)*8-14,(i%3)*10-11)
-		var point:=start.lerp(end,p)+Vector2(0,sin(p*PI)*(8+i%3*3))
-		out.append({"point":point.round(),"alpha":minf(1,p*8)*(1-smooth((p-.8)/.2)),"size":2+i%2})
+	# A small, matte powder stream follows the original wind route. The first
+	# grain reaches the right paper edge at650ms, before its mark can appear.
+	for i in 6:
+		var p: float=(ms-260-i*38)/390.0
+		if p<0 or p>1.16:continue
+		var start:=VENT_LIP+Vector2((i%3)*2-2,4)
+		var end:=PAPER+Vector2(20+(i%2)*2,(i%3)*7-5)
+		var travel:=minf(1,p)
+		var point:=start.lerp(end,travel)+Vector2(0,sin(travel*PI)*4)
+		out.append({"point":point.round(),"alpha":smooth(p*5)*(1-smooth((p-1)/.16)),"size":1+i%2})
 	return out

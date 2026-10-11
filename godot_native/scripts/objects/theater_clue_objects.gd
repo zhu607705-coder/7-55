@@ -39,19 +39,26 @@ func configure(context:Dictionary,snapshot:Dictionary)->void:
 	if not paper_visible:return
 	var ms:float=snapshot.dust_ms
 	var pose:Dictionary=Motion.dust(ms)
-	brush.position=pose.brush_contact;brush.rotation_degrees=float(pose.brush_angle);brush.modulate.a=float(pose.brush_alpha)
+	brush.position=pose.brush_contact;brush.rotation_degrees=float(pose.brush_angle);brush.scale=Vector2.ONE*.62;brush.modulate=Color(.90,.88,.76,float(pose.brush_alpha))
 	powder.position=Motion.VENT_LIP;powder.present(ms)
 	var y:float=7*(1-cos(fmod(float(snapshot.clock_ms)/760.0,2)*PI))/2
-	paper.position=Vector2(pose.paper)+Vector2(0,y*float(pose.settle))
-	paper.rotation_degrees=lerpf(float(pose.paper_angle),lerpf(-4,4,y/7),float(pose.settle))
-	var fold:float=pose.fold
-	var left_points:=PackedVector2Array([Vector2(-32,-32),Vector2(0,-32),Vector2(0,32),Vector2(-32,32)])
-	var right_points:=PackedVector2Array([Vector2(0,-32),Vector2(32*cos(fold),-32-12*sin(fold)),Vector2(32*cos(fold),32-12*sin(fold)),Vector2(0,32)])
+	paper.position=Vector2(pose.paper)+Vector2(0,y)
+	paper.rotation_degrees=lerpf(-4,4,y/7)
+	paper.modulate.a=float(pose.paper_alpha)
+	# Only the outer paper strip yields to the wind; the body keeps the source
+	# idle trajectory and never folds like a book or jumps sideways.
+	var flutter:float=pose.flutter
+	var left_points:=PackedVector2Array([Vector2(-32,-32),Vector2(14,-32),Vector2(14,32),Vector2(-32,32)])
+	var right_points:=PackedVector2Array([Vector2(14,-32),Vector2(32+flutter*.25,-32+flutter),Vector2(32-flutter*.25,32-flutter*.6),Vector2(14,32)])
 	left.polygon=left_points;marked_left.polygon=left_points
 	right.polygon=right_points;marked_right.polygon=right_points
-	var edge:float=pose.edge
-	left.color=Color(1,1,1,1-edge);right.color=Color(1-fold*.16,1-fold*.16,1-fold*.16,1-edge)
-	marked_left.color=Color(1,1,1,edge);marked_right.color=Color(1-fold*.16,1-fold*.16,1-fold*.16,edge)
+	left.color=Color.WHITE;marked_left.color=Color.WHITE
+	var shade:float=1-absf(flutter)*.015
+	right.color=Color(shade,shade,shade);marked_right.color=right.color
+	# Each scene instance owns its two local materials. The mark spreads from
+	# the powder-contact edge; it is not a whole-sheet fluorescent crossfade.
+	left.material.set_shader_parameter("reveal",float(pose.edge))
+	marked_left.material.set_shader_parameter("reveal",float(pose.edge))
 
 func retire()->void:
 	hide()

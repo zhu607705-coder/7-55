@@ -27,7 +27,7 @@ func _draw()->void:
 		"tissue":_draw_tissue()
 		"ticket":_draw_ticket()
 		"powder":
-			for grain:Dictionary in Motion.grains(elapsed_ms):draw_rect(Rect2(grain.point-Motion.VENT_LIP,Vector2.ONE*float(grain.size)),Color("bee37e",float(grain.alpha)*.86))
+			for grain:Dictionary in Motion.grains(elapsed_ms):draw_rect(Rect2(grain.point-Motion.VENT_LIP,Vector2.ONE*float(grain.size)),Color("a6b979",float(grain.alpha)*.66))
 
 func _draw_oil()->void:
 	for y in range(0,62,4):
