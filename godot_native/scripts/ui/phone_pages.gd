@@ -30,6 +30,9 @@ const LakeApps = preload("res://scripts/ui/c3_lake_app_context.gd")
 var lake_apps = LakeApps.new()
 const Utilities = preload("res://scripts/chapters/phone_utilities.gd")
 const DropButton = preload("res://scripts/ui/phone_drop_button.gd")
+const BonsaiGrowthSession = preload("res://scripts/presentation/bonsai_growth_session.gd")
+const BonsaiGrowthView = preload("res://scripts/ui/bonsai_growth_view.gd")
+var bonsai_growth = BonsaiGrowthSession.new()
 const APP_HEIGHT = 814.0 * 378.0 / 424.0
 const PHONE_SCALE = 424.0 / 378.0
 # One shared destination for the falling glyph and its later accessible pickup.
@@ -76,10 +79,10 @@ var handled: Array = []
 var s: Dictionary = {}
 var previous_page = ""
 var displayed_balance_shifted = false
-var bonsai_stage_seen = -1
 
 func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 	s = state
+	bonsai_growth.route(page)
 	entry_session.route(s)
 	lake_apps.route(previous_page,page,s)
 	if page != previous_page and page != "control_center":
@@ -93,7 +96,6 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 			cc98_tab="hot"; cc98_board=""; cc98_post=""; cc98_query=""; cc98_recent=[]; cc98_followed=["校园生活","学习天地","交通出行","开怀一笑"]; cc98_drafts={}; cc98_editing=false; cc98_note_ready=false
 		if page != "phone_home": home_editing = false; home_focus_id = ""
 		if page != "wechat": friend_open = false
-		if page != "bonsai": bonsai_stage_seen = -1
 	if page=="control_center" and previous_page!="control_center":
 		control_center_return=previous_page if not previous_page.is_empty() else "phone_home"
 		control_reset_confirm=false
@@ -965,12 +967,16 @@ func _campus_card() -> Control:
 
 func _bonsai() -> Control:
 	var root = _base(Color("cfc3de"),APP_HEIGHT)
-	var plant = _image(root,"ui/bonsai_bloom.png" if s.flags.flowerBloomed else "ui/bonsai_bud.png",Rect2(0,-40/PHONE_SCALE,378,854/PHONE_SCALE))
+	# Prepare source crops before the rising edge, so asset work never eats the
+	# beginning of the bloom. The session observes only controller-owned facts.
+	BonsaiGrowthView.Art.ensure_ready()
+	bonsai_growth.observe(s)
+	var plant = BonsaiGrowthView.new()
+	plant.position=Vector2(0,-40/PHONE_SCALE); plant.size=Vector2(378,854/PHONE_SCALE)
+	plant.configure(s,bonsai_growth)
+	root.add_child(plant)
 	plant.name="BonsaiArtwork"
-	plant.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	var stage = int(s.flags.plantWatered)+int(s.flags.plantLit)+int(s.flags.plantFertilized)
-	plant.pivot_offset = Vector2(189,463)
-	plant.scale = Vector2.ONE*(1.0+stage*.045)
 	# Invisible semantic plant silhouette measured on the two 941x1672 assets.
 	# Inversion follows the actual cropped/scaled artwork, including growth.
 	var button=DropButton.new(); button.name="BonsaiPlant"
@@ -986,7 +992,7 @@ func _bonsai() -> Control:
 		])]
 	for mode in ["normal","hover","pressed","hover_pressed","disabled","focus"]: button.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	button.item_dropped.connect(func(item): action_requested.emit("c1_plant",item))
-	button.pressed.connect(func(): action_requested.emit("c1_flower",null))
+	button.pressed.connect(func(): plant.finish(); action_requested.emit("c1_flower",null))
 	button.tooltip_text="盛开的盆栽" if s.flags.flowerBloomed else "盆栽"
 	root.add_child(button)
 	var status="开花了？！" if s.flags.flowerBloomed else "它绝对不会开花" if stage==0 else "好像有点想开花"
@@ -998,13 +1004,6 @@ func _bonsai() -> Control:
 		box.name="BonsaiCondition_"+str(i)
 		var icon=_source_icon(box,["waterDrop","sun","fertilizer"][i],Rect2(8,8,30,30))
 		if not active: icon.modulate=Color(.65,.65,.65,.55)
-	var old_stage=stage if bonsai_stage_seen<0 else bonsai_stage_seen
-	bonsai_stage_seen=stage
-	if old_stage!=stage:
-		plant.scale=Vector2.ONE*(1.0+old_stage*.045)
-		root.ready.connect(func():
-			var growth=root.create_tween()
-			growth.tween_method(func(t:float): plant.scale=Vector2.ONE*(1.0+lerpf(old_stage,stage,floorf(t*4)/4.0)*.045),0.0,1.0,.6))
 	root.ready.connect(func(): _apply_bonsai_light.call_deferred(root))
 	if s.native.get("flower_eight_visible",false) and not s.flags.flowerEightTaken:
 		var eight = _act(root,"8",Rect2(147,174,84,90),"c1_collect_flower",null,Color.TRANSPARENT,Color("f4d562"),0,Color.TRANSPARENT)
