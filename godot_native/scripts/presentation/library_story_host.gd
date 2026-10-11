@@ -19,6 +19,9 @@ func blocks_input() -> bool:
 func _focused() -> bool:
 	if not runtime_reader.is_valid(): return true
 	return bool(runtime_reader.call().get("native",{}).get("host",{}).get("focused",true))
+func _awaiting_stamp(issued: RefCounted) -> bool:
+	if issued==null or issued.sequence_id!="library_bag_nonperson_proof_issued" or not runtime_reader.is_valid(): return false
+	return bool(runtime_reader.call().get("native",{}).get("host",{}).get("library_stamp_active",false))
 func _process(delta: float) -> void:
 	if is_visible_in_tree(): tick(delta*1000,_focused())
 func tick(delta_ms: float,focused: bool=true) -> void:
@@ -27,7 +30,7 @@ func tick(delta_ms: float,focused: bool=true) -> void:
 	view.text_scale=float(s.get("native",{}).get("settings",{}).get("text_scale",1.0))
 	if current!=null and (not current.valid(s) or current.status=="cancelled"): reset()
 	var issued: RefCounted=provider.call(minf(delta_ms,100) if focused else 0)
-	if current==null and issued!=null and issued.attach(s,self):
+	if current==null and issued!=null and not _awaiting_stamp(issued) and issued.attach(s,self):
 		current=issued; completion_sent=false; view.session=current; view.move_to_front(); move_to_front()
 	if current==null: view.session=null; view.tick(); return
 	current.frame(s,delta_ms,self,focused); view.tick(); _flush_cues()

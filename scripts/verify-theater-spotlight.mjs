@@ -1,21 +1,10 @@
+import {playTheaterRoute} from '../godot_native/tools/theater-review-route.mjs';
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 
 const result = await build({ stdin: { contents: `export * from './src/scenes/rpg/TheaterSpotlightModel.ts'; export * from './src/modules/ChapterThreeTheaterController.ts'; export * from './src/core/GameState.ts'; export * from './src/core/EventBus.ts';`, resolveDir: process.cwd() }, bundle: true, platform: 'node', format: 'esm', write: false });
 const api = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);
-function play(round, attempt = 0) {
-  let state = api.createTheaterShow(round, attempt);
-  const inputs = [];
-  while (state.status === 'running') {
-    const foods = api.getTheaterShowFood(state);
-    const target = [...foods].sort((a,b)=>Math.hypot(a.x-state.head.x,a.y-state.head.y)-Math.hypot(b.x-state.head.x,b.y-state.head.y))[0] ?? api.getTheaterShowMouth(state);
-    const dx = target.x-state.head.x, dy = target.y-state.head.y, length = Math.hypot(dx,dy);
-    const danger = api.getTheaterShowHazards(state).some(h=>Math.hypot(h.x-state.head.x,h.y-state.head.y)<85);
-    const input = { x: dx/(length||1), y: dy/(length||1), dash: danger && state.dashCooldown===0 };
-    inputs.push(input); state = api.stepTheaterShow(state,input);
-  }
-  return { state, trace: { version: 2, round, attempt, inputs } };
-}
+function play(round,attempt=0){const r=playTheaterRoute(api,round,attempt);return {state:r.state,trace:r.proof};}
 const wins = [];
 for (let round=0;round<3;round++) {
   const {state,trace} = play(round);

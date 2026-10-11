@@ -1,0 +1,353 @@
+{
+  "variant": "structure",
+  "source_sha256": "b22fbf7a8796bb0b0f646a433a2d482e5bd959ded485b7be805f1e8d56312362",
+  "level_id": "stair_b",
+  "camera_source": {
+    "center": [
+      0,
+      4.5,
+      0.5
+    ],
+    "halfWidth": 9.8,
+    "halfHeight": 5.5,
+    "near": 0.1,
+    "far": 80,
+    "views": {
+      "south_east": {
+        "position": [
+          12,
+          11,
+          14
+        ]
+      },
+      "south_west": {
+        "position": [
+          -12,
+          11,
+          14
+        ]
+      },
+      "top_oblique": {
+        "position": [
+          0,
+          17,
+          12
+        ]
+      }
+    }
+  },
+  "coordinate_map": "Godot (x,y,z) -> Blender (x,-z,y)",
+  "navigation_modified": false,
+  "collision_generated": false,
+  "appearance_approved": false,
+  "platforms": [
+    {
+      "id": "b_platform_start",
+      "ownerId": "level",
+      "center": [
+        -4.8,
+        0.72,
+        1.6
+      ],
+      "size": [
+        4.8,
+        0.36,
+        2.4
+      ],
+      "walkable": true
+    },
+    {
+      "id": "b_platform_lower_base",
+      "ownerId": "level",
+      "center": [
+        -2.15,
+        0.72,
+        1.35
+      ],
+      "size": [
+        1.3,
+        0.36,
+        1.5
+      ],
+      "walkable": true
+    },
+    {
+      "id": "b_platform_lift",
+      "ownerId": "b_mid_lift",
+      "center": [
+        -0.3035,
+        1.52,
+        2.7731
+      ],
+      "size": [
+        2,
+        0.36,
+        2
+      ],
+      "walkable": true
+    },
+    {
+      "id": "b_platform_landing",
+      "ownerId": "level",
+      "center": [
+        0.85,
+        3.72,
+        1.75
+      ],
+      "size": [
+        3.4,
+        0.36,
+        3.2
+      ],
+      "walkable": true
+    },
+    {
+      "id": "b_platform_island",
+      "ownerId": "level",
+      "center": [
+        4.7138,
+        8.3637,
+        6.404
+      ],
+      "size": [
+        2.2,
+        0.36,
+        2.4
+      ],
+      "walkable": true
+    },
+    {
+      "id": "b_platform_exit_slide",
+      "ownerId": "b_exit_slide",
+      "center": [
+        8.1138,
+        8.3637,
+        5.7
+      ],
+      "size": [
+        2,
+        0.36,
+        2.6
+      ],
+      "walkable": true
+    },
+    {
+      "id": "b_platform_exit",
+      "ownerId": "level",
+      "center": [
+        4.7138,
+        8.3637,
+        7.9
+      ],
+      "size": [
+        2,
+        0.36,
+        2
+      ],
+      "walkable": true
+    },
+    {
+      "id": "b_backdrop_wall",
+      "ownerId": "level",
+      "center": [
+        1,
+        3.5,
+        -5.8
+      ],
+      "size": [
+        22,
+        9,
+        0.4
+      ],
+      "walkable": false
+    }
+  ],
+  "stairs": [
+    {
+      "id": "b_lower_stair_span",
+      "ownerId": "b_lower_stair",
+      "from": [
+        -2.1500000953674316,
+        0.8999999761581421,
+        1.350000023841858
+      ],
+      "to": [
+        1.350000023841858,
+        2.700000047683716,
+        1.350000023841858
+      ],
+      "steps": 12,
+      "source_width": 1.34,
+      "tread_top_heights": [
+        0.9750000238418579,
+        1.125,
+        1.2749998569488525,
+        1.4249999523162842,
+        1.5750000476837158,
+        1.725000023841858,
+        1.875,
+        2.0250000953674316,
+        2.174999952316284,
+        2.325000047683716,
+        2.4749999046325684,
+        2.625
+      ],
+      "continuous_rail": true
+    },
+    {
+      "id": "b_upper_stair_span",
+      "ownerId": "b_upper_stair",
+      "from": [
+        2.0,
+        3.9000000953674316,
+        0.800000011920929
+      ],
+      "to": [
+        0.3043000102043152,
+        5.599999904632568,
+        3.5137999057769775
+      ],
+      "steps": 11,
+      "source_width": 1.34,
+      "tread_top_heights": [
+        3.9772727489471436,
+        4.1318182945251465,
+        4.28636360168457,
+        4.440909385681152,
+        4.595454216003418,
+        4.75,
+        4.904545307159424,
+        5.059090614318848,
+        5.21363639831543,
+        5.368182182312012,
+        5.522727012634277
+      ],
+      "continuous_rail": true
+    }
+  ],
+  "owners": {
+    "b_lower_stair": {
+      "initial_state": 1,
+      "transform": [
+        [
+          7.549790126404332e-08,
+          -1.0,
+          0.0,
+          -3.5
+        ],
+        [
+          1.0,
+          7.549790126404332e-08,
+          0.0,
+          0.8000001907348633
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "b_mid_lift": {
+      "initial_state": 0,
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "b_upper_stair": {
+      "initial_state": 0,
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "b_exit_slide": {
+      "initial_state": 0,
+      "transform": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    }
+  },
+  "checks_passed": 37,
+  "object_count": 139,
+  "render_resolution": [
+    640,
+    360
+  ],
+  "status": "Unapproved architectural geometry study; no gameplay and no final materials"
+}

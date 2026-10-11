@@ -1,0 +1,13 @@
+{
+  "generator": "built-in image_gen",
+  "generated_at": "2026-10-10",
+  "original_reference": "res://assets/native/canteen_objects/canteen_drink_dispenser.png",
+  "concept_source": "exec-a9e1be23-6c89-4e7f-9962-0c82cc1f8ce1.png",
+  "dimensions": [
+    1536,
+    1024
+  ],
+  "sha256": "36510ba22d6baf53fc76683e62d8e35fa19dd1f308c51d5d89a5ec7dbb9592ca",
+  "role": "independent broad cup-push paddle, projected about horizontal hinge in depth; top housing excluded by region",
+  "alpha": "Original bytes preserved; canvas-item alpha cutoff removes exterior low-opacity glow."
+}

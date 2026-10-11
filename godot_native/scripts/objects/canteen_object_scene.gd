@@ -209,10 +209,9 @@ func configure_view(origin:Vector2,zoom:float,player:Vector2)->void:
 	_lease_story_layers();_origin=origin;_zoom=zoom;_player=player;source_space.position=origin;source_space.scale=Vector2.ONE*zoom
 	var tint:=Color.WHITE.lerp(Color(.03,.15,.26),float(world.mode_mix)*.3);floor_sprite.modulate=tint
 	for patch:Sprite2D in floor_patches:patch.modulate=tint
-	var frames:Array=world.player_frames.get(world.facing,[])
-	if not frames.is_empty():
-		player_sprite.texture=world.player_side_idle if world.facing=="side" and world.walk_clock<=0 else frames[Metrics.frame_at(world.walk_clock*1000)]
-	var visual:=Metrics.visual_rect(player,world.display_scale_at(player));player_sprite.position=visual.position;player_sprite.scale=visual.size/Metrics.FRAME;player_sprite.flip_h=world.player_flip and world.facing=="side";player_sprite.set_meta("source_depth",Metrics.foot_rect(player).end.y);player_sprite.z_index=Prop.draw_layer(Metrics.foot_rect(player).end.y);player_sprite.visible=not world.presentation_actor_hidden
+	var actor:Dictionary=world.player_visual()
+	player_sprite.texture=actor.texture
+	var visual:=Metrics.visual_rect(player,world.display_scale_at(player));player_sprite.position=player;player_sprite.scale=visual.size/Metrics.FRAME;player_sprite.offset=(visual.position-player)/player_sprite.scale;player_sprite.rotation=deg_to_rad(float(actor.angle));player_sprite.flip_h=actor.flip_h;player_sprite.set_meta("source_depth",Metrics.foot_rect(player).end.y);player_sprite.z_index=Prop.draw_layer(Metrics.foot_rect(player).end.y);player_sprite.visible=not world.presentation_actor_hidden
 	player_shadow.position=player+Vector2(0,39);player_shadow.z_index=Prop.draw_layer(Metrics.foot_rect(player).end.y-1);player_shadow.visible=player_sprite.visible
 	_update_entities()
 	var actors:Array=[]
@@ -360,7 +359,7 @@ func record_surfaces()->void:
 	var actor_ids:Array=[]
 	for t:Dictionary in world.targets:
 		if t.get("follow_player",false):actor_ids.append(str(t.id))
-	if player_sprite.visible:ordered.append({"depth":float(player_sprite.get_meta("source_depth",0)),"canvas_z":player_sprite.z_index,"root_order":player_sprite.get_index(),"ids":actor_ids,"geometry":{"rect":Metrics.visual_rect(_player,world.display_scale_at(_player)),"texture":player_sprite.texture,"flip_h":player_sprite.flip_h}})
+	if player_sprite.visible:ordered.append({"depth":float(player_sprite.get_meta("source_depth",0)),"canvas_z":player_sprite.z_index,"root_order":player_sprite.get_index(),"ids":actor_ids,"geometry":world.player_geometry()})
 	ordered.sort_custom(_sort_painted)
 	for surface:Dictionary in ordered:
 		world.object_picker.add(surface.ids,surface.geometry)

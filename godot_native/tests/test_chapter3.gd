@@ -147,27 +147,17 @@ func run() -> void:
 	quit(0 if errors==0 else 1)
 func fixture(name: String) -> Dictionary:
 	return JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/"+name+".json"))
-func solve_spotlight(round_id: int, attempt: int) -> Dictionary:
-	var rules: RefCounted=Spotlight.new()
-	var show: Dictionary=rules.create(round_id,attempt)
-	var trace: Array=[]
-	while show.status=="running":
-		var aim: Vector2=rules.mouth(show)
-		var distance: float=100000.0
-		for i: int in range(int(Spotlight.ACTS[round_id].count)):
-			if not show.collected.has(i) and show.head.distance_to(Spotlight.FOOD[i])<distance:
-				distance=show.head.distance_to(Spotlight.FOOD[i]); aim=Spotlight.FOOD[i]
-		var direction: Vector2=(aim-show.head).normalized()
-		var dash: bool=false
-		for hazard: Dictionary in rules.hazards(show):
-			if show.head.distance_to(hazard.position)<100 and show.invulnerable==0:
-				if show.dashCooldown<=1: dash=true
-				elif show.dashTicks==0 and show.head.distance_to(hazard.position)<65: direction=(direction+(show.head-hazard.position).normalized()*1.6).normalized()
-		var input: Dictionary={"x":direction.x,"y":direction.y,"dash":dash}
-		trace.append(input)
-		show=rules.step(show,input)
-	check(show.status=="won","spotlight physical simulation reaches mouth")
-	return {"version":2,"round":round_id,"attempt":attempt,"inputs":trace}
+func solve_spotlight(round_id: int,attempt: int) -> Dictionary:
+	var rules:RefCounted=Spotlight.new()
+	var cases:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/spotlight_balance_samples.json"))
+	for route:Dictionary in cases.cases:
+		if int(route.proof.round)==round_id and int(route.proof.attempt)==attempt:
+			var result:Dictionary=rules.validate(route.proof,round_id,attempt)
+			check(result.get("status","")=="won","shared source physical trace completes spotlight act "+str(round_id))
+			return route.proof
+	check(false,"missing authored QA trace for requested attempt")
+	return {}
+
 func lake_at(s: Dictionary,id: String) -> Dictionary:
 	for entry: Dictionary in controller.lake.definitions():
 		if entry.id!=id: continue

@@ -4533,3 +4533,10 @@ Proposed source/test/document union: 75 paths. The 35 import-generated UID compa
 - Restored the validated terminal running frame, mirror and angle through the victory presentation; all position, independent X/Y scale and angle channels use the original quadratic 760/160 ms tween, 260/60 ms hold and hidden idle reset before dialogue.
 - Shared paper rendering retains existing defaults and adds optional independent scale axes and source RGB tint. Controller facts, replay proof, rewards and saves are unchanged.
 - The offline original-method oracle passed eight cases and 112 timing samples. Native controller spoof-resistance, transform/tint and actual-view tests are included but remain unrun while the shared host is reserved for generation. No Godot/browser process, asset import, publication or GUI acceptance is claimed. See `godot_native/docs/CANTEEN_VICTORY_PAPER_POSE.md` for exact scope and pending checks.
+
+## 2026-10-11 — Combined native animation review candidate
+
+- Combined exact reviewed heads #107, #108, #109/#110, #113 and #114 on `godot-version` `913bd512`, preserving stack ancestry once. Included the repaired #104 character-facing source port; the independent #106 side-chase remains outside this batch.
+- Fixed the actual arrival-frame cause of the blocked-wall tap regression without changing its assertion or collision/picking tolerances. Resolved Library scanner rejected/successful facing semantics and theater inspector idle versus accepted scan/nod ownership.
+- Added same-Main lifecycle coverage for queued drink cancellation, proof/stamp load settling, stale scanner callbacks and interrupted admission. Focused combined checks pass: facing 209, Library facing 20, lifecycle 35, admission 123, gate 204 and queue floor tap 97.
+- Complete aggregate/CI and real graphical review are tracked separately. Local web production compilation and 32 release checks passed; offline single-file build was resource-killed (137), so its dependent file/browser checks remain blocked locally. See `godot_native/docs/NATIVE_ANIMATION_INTEGRATION.md` for provenance, exact scope and honest evidence limits.

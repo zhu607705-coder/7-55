@@ -1,0 +1,469 @@
+{
+  "source_sha256": "b22fbf7a8796bb0b0f646a433a2d482e5bd959ded485b7be805f1e8d56312362",
+  "coordinate_map": "Godot (x,y,z) -> Blender (x,-z,y)",
+  "world_metres": true,
+  "root_transforms": "identity, source world coordinates retained",
+  "navigation_modified": false,
+  "colliders_generated": false,
+  "gameplay_open_rule_added": false,
+  "platforms": [
+    {
+      "id": "b_platform_start",
+      "center": [
+        -4.8,
+        0.72,
+        1.6
+      ],
+      "size": [
+        4.8,
+        0.36,
+        2.4
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 0.9000000357627869,
+      "file": "b_platform_start.glb",
+      "node": "b_platform_start",
+      "fixed_root": "b_platform_start_fixed",
+      "rails_node": "b_platform_start_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            -7.1,
+            0.9000000357627869,
+            0.51
+          ],
+          [
+            -7.1,
+            0.9000000357627869,
+            2.69
+          ]
+        ],
+        [
+          [
+            -7.1,
+            0.9000000357627869,
+            0.51
+          ],
+          [
+            -3.1,
+            0.9000000357627869,
+            0.51
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_lower_base",
+      "center": [
+        -2.15,
+        0.72,
+        1.35
+      ],
+      "size": [
+        1.3,
+        0.36,
+        1.5
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 0.9000000357627869,
+      "file": "b_platform_lower_base.glb",
+      "node": "b_platform_lower_base",
+      "fixed_root": "b_platform_lower_base_fixed",
+      "rails_node": "b_platform_lower_base_fixed_rails",
+      "rail_segments_godot": [],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_landing",
+      "center": [
+        0.85,
+        3.72,
+        1.75
+      ],
+      "size": [
+        3.4,
+        0.36,
+        3.2
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 3.900000035762787,
+      "file": "b_platform_landing.glb",
+      "node": "b_platform_landing",
+      "fixed_root": "b_platform_landing_fixed",
+      "rails_node": "b_platform_landing_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            0.35,
+            3.900000035762787,
+            3.24
+          ],
+          [
+            2.43,
+            3.900000035762787,
+            3.24
+          ]
+        ],
+        [
+          [
+            2.43,
+            3.900000035762787,
+            2.4
+          ],
+          [
+            2.43,
+            3.900000035762787,
+            3.24
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_island",
+      "center": [
+        4.7138,
+        8.3637,
+        6.404
+      ],
+      "size": [
+        2.2,
+        0.36,
+        2.4
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 8.54369992017746,
+      "file": "b_platform_island.glb",
+      "node": "b_platform_island",
+      "fixed_root": "b_platform_island_fixed",
+      "rails_node": "b_platform_island_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            3.72,
+            8.54369992017746,
+            5.48
+          ],
+          [
+            3.72,
+            8.54369992017746,
+            6.65
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_exit",
+      "center": [
+        4.7138,
+        8.3637,
+        7.9
+      ],
+      "size": [
+        2,
+        0.36,
+        2
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 8.54369992017746,
+      "file": "b_platform_exit.glb",
+      "node": "b_platform_exit",
+      "fixed_root": "b_platform_exit_fixed",
+      "rails_node": "b_platform_exit_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            3.83,
+            8.54369992017746,
+            7.74
+          ],
+          [
+            3.83,
+            8.54369992017746,
+            8.42
+          ]
+        ],
+        [
+          [
+            5.6,
+            8.54369992017746,
+            7.74
+          ],
+          [
+            5.6,
+            8.54369992017746,
+            8.42
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    }
+  ],
+  "render_views": {
+    "b_platform_start/threequarter": {
+      "camera_blender": [
+        [
+          0.7893522381782532,
+          0.32121655344963074,
+          -0.5232045650482178,
+          -11.800000190734863
+        ],
+        [
+          -0.6139405965805054,
+          0.4129926562309265,
+          -0.6726915836334229,
+          -10.600000381469727
+        ],
+        [
+          -2.9705315540695665e-08,
+          0.8522071242332458,
+          0.5232045650482178,
+          8.104999542236328
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 6.314817905426025
+    },
+    "b_platform_start/reverse": {
+      "camera_blender": [
+        [
+          -0.7893521189689636,
+          -0.3212165832519531,
+          0.5232046842575073,
+          2.1999998092651367
+        ],
+        [
+          0.6139407157897949,
+          -0.4129924774169922,
+          0.6726915836334229,
+          7.400000095367432
+        ],
+        [
+          -9.87147004138933e-08,
+          0.8522071838378906,
+          0.5232044458389282,
+          8.104999542236328
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 6.314817905426025
+    },
+    "b_platform_start/bottom": {
+      "camera_blender": [
+        [
+          -1.0,
+          0.0,
+          -8.742277657347586e-08,
+          -4.800000190734863
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -1.600000023841858
+        ],
+        [
+          8.742277657347586e-08,
+          0.0,
+          -1.0,
+          -13.895000457763672
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 5.764800071716309
+    },
+    "school_door/threequarter": {
+      "camera_blender": [
+        [
+          0.7893521189689636,
+          0.32121655344963074,
+          -0.5232046842575073,
+          -2.2862000465393066
+        ],
+        [
+          -0.6139407753944397,
+          0.4129925072193146,
+          -0.6726915836334229,
+          -17.729999542236328
+        ],
+        [
+          -3.9261305317950246e-08,
+          0.8522071838378906,
+          0.5232044458389282,
+          16.73870086669922
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 3.185314416885376
+    },
+    "school_door/reverse": {
+      "camera_blender": [
+        [
+          -0.789352297782898,
+          -0.3212164640426636,
+          0.523204505443573,
+          11.713800430297852
+        ],
+        [
+          0.6139405369758606,
+          -0.41299256682395935,
+          0.6726917028427124,
+          0.2700004577636719
+        ],
+        [
+          -7.68983596799444e-08,
+          0.8522071838378906,
+          0.5232044458389282,
+          16.73870086669922
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 3.185314655303955
+    },
+    "school_door/bottom": {
+      "camera_blender": [
+        [
+          -1.0,
+          0.0,
+          -8.742277657347586e-08,
+          4.713799953460693
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -8.729999542236328
+        ],
+        [
+          8.742277657347586e-08,
+          0.0,
+          -1.0,
+          -5.261299133300781
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 1.9680002927780151
+    },
+    "school_door/open65": {
+      "camera_blender": [
+        [
+          0.7893521189689636,
+          0.32121655344963074,
+          -0.5232046842575073,
+          -2.2862000465393066
+        ],
+        [
+          -0.6139407753944397,
+          0.4129925072193146,
+          -0.6726915836334229,
+          -17.729999542236328
+        ],
+        [
+          -3.9261305317950246e-08,
+          0.8522071838378906,
+          0.5232044458389282,
+          16.73870086669922
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 3.312326669692993
+    }
+  },
+  "geometry_checks": 302,
+  "rail_ownership": "fixed rails are independent children of the fixed platform, never a mechanism child",
+  "guard_placement": "short peripheral segments, no rail on lower pivot base or across source navigation endpoints",
+  "door": {
+    "file": "school_door.glb",
+    "assembly_node": "school_door_assembly",
+    "base_node": "b_deco_fire_door_base",
+    "frame_node": "b_deco_fire_door_frame_fixed",
+    "hinge_node": "b_deco_fire_door_hinge",
+    "leaf_node": "b_deco_fire_door_leaf",
+    "source_base_godot": [
+      4.7138,
+      8.5437,
+      8.75
+    ],
+    "source_rotation_y": 3.141592653589793,
+    "hinge_local_godot": [
+      -0.6399999856948853,
+      0.0,
+      0.019999999552965164
+    ],
+    "hinge_world_godot": [
+      5.353799819946289,
+      8.543700218200684,
+      8.729999542236328
+    ],
+    "hinge_axis_godot": [
+      0,
+      1,
+      0
+    ],
+    "clear_opening_width_m": 1.28,
+    "clear_opening_height_m": 2.21,
+    "leaf_size_m": [
+      1.264,
+      2.176,
+      0.12
+    ],
+    "leaf_closed_center_godot": [
+      4.713799953460693,
+      9.663700103759766,
+      8.729999542236328
+    ],
+    "frame_remains_fixed": true,
+    "handles_both_faces": true,
+    "closed_body_edge_incidence": 2,
+    "native_closed_y_rotation": 0,
+    "open_pose": "hinge.rotation.y = desired_angle; never rotate the assembly/base/frame"
+  },
+  "all_meshes_closed": true,
+  "mesh_count": 283,
+  "texture_sha256": {
+    "school_wood_pixel_albedo.png": "0416e0c1b62c348d941ddd394398ccbbf4590b37068a715be23ef236c582a543",
+    "terrazzo_pixel_albedo.png": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+  }
+}
