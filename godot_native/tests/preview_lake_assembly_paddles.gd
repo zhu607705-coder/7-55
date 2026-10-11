@@ -20,6 +20,14 @@ func run() -> void:
 	state.act("c3_lake_combine")
 class PreviewControls extends Node:
 	var session: SceneTree
+	var observed_inputs:=0
+	func _process(_delta: float) -> void:
+		if session.shell.world.kayak==null:return
+		var inputs: Array=session.shell.world.kayak.inputs
+		if inputs.size()<observed_inputs:observed_inputs=0
+		if inputs.size()>observed_inputs:
+			for i in range(observed_inputs,inputs.size()):print("NATIVE MANUAL STROKE: ",JSON.stringify(inputs[i]))
+			observed_inputs=inputs.size()
 	func _unhandled_input(input: InputEvent) -> void:
 		if input is InputEventKey and input.pressed and input.keycode==KEY_F6:
 			session.shell._cancel_world_effect();session.reset();session.state.act("c3_lake_combine");get_viewport().set_input_as_handled()
@@ -29,8 +37,8 @@ func snap(name: String) -> void:
 func capture() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(capture_dir))
 	state.act("c3_lake_combine");await frames();shell.world_effect.set_process(false)
-	for key: Array in [[650,"assembly-frame"],[1450,"assembly-rope"],[2500,"assembly-clasp"],[2920,"assembly-tug"],[3890,"assembly-stow"]]:
-		shell.world_effect.elapsed_ms=key[0];shell.world_effect.queue_redraw();await snap(key[1])
+	for key: Array in [[1350,"assembly-frame"],[2850,"assembly-rope"],[4900,"assembly-clasp"],[5520,"assembly-tug"],[6800,"assembly-stow"]]:
+		shell.world_effect.render_pose(key[0]);await snap(key[1])
 	shell._cancel_world_effect();await frames();shell.world.set_process(false)
 	for key: Array in [["left",false,240,"paddle-left-pull"],["right",false,240,"paddle-right-pull"],["left",true,240,"paddle-left-reverse"],["right",false,430,"paddle-right-exit"]]:
 		var model: RefCounted=shell.world.kayak;model.inputs.clear();model.tick=0;model.elapsed=0;model.status="running";model.stroke(key[0],key[1]);model.tick=int(float(key[2])*120/1000);model.elapsed=model.tick/120.0;shell.world.queue_redraw();await snap(key[3])

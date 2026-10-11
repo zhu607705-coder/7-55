@@ -1,104 +1,103 @@
 extends Control
-## This overlay cannot grant, consume, or persist items. Cancellation simply closes it.
+## Native object close-up. Inventory is committed before this view is constructed.
 signal event(action: String,value: Variant)
 const Motion=preload("res://scripts/presentation/lake_rod_assembly.gd")
-const Chrome=preload("res://scripts/ui/phone_chrome.gd")
+const PARTS_PATH: String="res://scenes/objects/lake_assembly_parts.tscn"
 var elapsed_ms: float=0
 var closed: bool=false
 var read_state: Callable
 var reduced_motion: bool=false
 var source_font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var viewport3d: SubViewport
+var parts: Node3D
+var camera3d: Camera3D
+var surface: TextureRect
+var heading_label: Label
+var detail_label: Label
+var captions: Dictionary={"frame":"网框套上竿端","rope":"绕绳 · 收紧","clasp":"磁性扣贴合框沿","tug":"拉紧检查","stow":"磁吸钓竿已收好"}
 func setup(config: Dictionary) -> void:
 	read_state=config.get("read_state",Callable())
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	mouse_filter=Control.MOUSE_FILTER_STOP
-	focus_mode=Control.FOCUS_ALL
-	grab_focus()
-	z_index=100
-	if read_state.is_valid(): reduced_motion=bool(read_state.call().get("native",{}).get("settings",{}).get("reduced_motion",false))
-func uses_responsive_exploration() -> bool: return true
+	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;grab_focus();z_index=100
+	if read_state.is_valid():reduced_motion=bool(read_state.call().get("native",{}).get("settings",{}).get("reduced_motion",false))
+	_build_stage()
+	resized.connect(_layout_stage)
+	_layout_stage();render_pose(6350 if reduced_motion else elapsed_ms)
+func uses_responsive_exploration() -> bool:return true
+func _material(hex: String,roughness: float=1) -> StandardMaterial3D:
+	var material:=StandardMaterial3D.new();material.albedo_color=Color(hex);material.roughness=roughness;return material
+func _build_stage() -> void:
+	viewport3d=SubViewport.new();viewport3d.name="AssemblyObjectViewport";viewport3d.size=Vector2i(900,590);viewport3d.own_world_3d=true;viewport3d.msaa_3d=Viewport.MSAA_DISABLED;viewport3d.render_target_update_mode=SubViewport.UPDATE_ONCE;add_child(viewport3d)
+	var environment:=WorldEnvironment.new();environment.environment=Environment.new();environment.environment.background_mode=Environment.BG_COLOR;environment.environment.background_color=Color("11272c");environment.environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;environment.environment.ambient_light_color=Color("b8c7c5");environment.environment.ambient_light_energy=.62;viewport3d.add_child(environment)
+	camera3d=Camera3D.new();camera3d.name="AssemblyCloseCamera";camera3d.projection=Camera3D.PROJECTION_ORTHOGONAL;camera3d.size=2.55;camera3d.near=.05;camera3d.far=30;viewport3d.add_child(camera3d);camera3d.position=Vector3(.0,3.35,4.8);camera3d.look_at(Vector3(0,0,0),Vector3.UP);camera3d.current=true
+	var key:=DirectionalLight3D.new();key.name="WarmContactLight";key.light_color=Color("fff0d8");key.light_energy=.88;key.shadow_enabled=true;key.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL;viewport3d.add_child(key);key.rotation_degrees=Vector3(-48,-30,-15)
+	var fill:=DirectionalLight3D.new();fill.name="LakeFill";fill.light_color=Color("9fc4cf");fill.light_energy=.42;viewport3d.add_child(fill);fill.rotation_degrees=Vector3(-30,140,0)
+	var table:=Node3D.new();table.name="StaticWorkbench";viewport3d.add_child(table)
+	for i in 7:
+		var plank:=MeshInstance3D.new();plank.name="Plank_%d"%i;var box:=BoxMesh.new();box.size=Vector3(5.3,.055,.47);plank.mesh=box;plank.material_override=_material(["3e3b32","464034","403b30"][i%3]);plank.position=Vector3(0,-.315,-1.43+i*.48);table.add_child(plank)
+		for j in 3:
+			var grain:=MeshInstance3D.new();var strip:=BoxMesh.new();strip.size=Vector3(1.15+j*.25,.001,.008);grain.mesh=strip;grain.material_override=_material("565044");grain.position=Vector3(-1.75+j*1.42,-.284,-1.57+i*.48+j*.045);table.add_child(grain)
+	var scene: PackedScene=load(PARTS_PATH)
+	if scene!=null:parts=scene.instantiate();viewport3d.add_child(parts)
+	surface=TextureRect.new();surface.name="NativeAssemblySurface";surface.texture=viewport3d.get_texture();surface.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;surface.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;surface.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST;surface.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(surface)
+	heading_label=_label(24);heading_label.name="AssemblyPhaseCaption";add_child(heading_label)
+	detail_label=_label(15);detail_label.name="AssemblyMaterialsCaption";detail_label.text="原钓竿  ·  断裂网框  ·  尼龙绳  ·  磁性扣";add_child(detail_label)
+func _label(font_size: int) -> Label:
+	var label:=Label.new();label.add_theme_font_override("font",source_font);label.add_theme_font_size_override("font_size",font_size);label.add_theme_color_override("font_color",Color("efe4cb"));label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;label.mouse_filter=Control.MOUSE_FILTER_IGNORE;return label
+func _layout_stage() -> void:
+	if not is_instance_valid(surface):return
+	var width:=minf(size.x-24,1040);var height:=minf(size.y-126,width*590/900)
+	surface.size=Vector2(width,height);surface.position=(size-surface.size)/2
+	heading_label.position=Vector2(12,maxf(14,surface.position.y-46));heading_label.size=Vector2(size.x-24,36)
+	detail_label.position=Vector2(12,minf(size.y-40,surface.position.y+surface.size.y+10));detail_label.size=Vector2(size.x-24,28)
+	queue_redraw()
+func _hand_at(name: String,point: Vector3,grip: float,angle: float=0) -> void:
+	var hand: Node3D=parts.get_node(name);hand.rotation=Vector3(0,angle,0)
+	parts.set_hand_grip("left" if name=="LeftHand" else "right",grip)
+	var anchor: Node3D=hand.get_node_or_null("GripAnchor")
+	hand.position=point-hand.basis*(anchor.position if anchor!=null else Vector3.ZERO)
+func render_pose(at_ms: float) -> void:
+	var pose:=Motion.sample(at_ms)
+	if heading_label!=null:heading_label.text=captions[pose.phase]
+	if parts==null:return
+	parts.set_rod_flex(float(pose.tug)/.12)
+	parts.get_node("Frame").position=pose.frame;parts.get_node("Frame").rotation=pose.frame_rotation
+	parts.get_node("Rope").position=pose.rod_tip;parts.set_rope_progress(pose.wrap,pose.tension)
+	parts.get_node("MagneticClasp").position=pose.clasp;parts.get_node("MagneticClasp").rotation=Vector3(0,2.627+float(pose.detent)*2,.056)
+	_hand_at("LeftHand",parts.get_anchor("rod_grip").position,.9,-.18)
+	var frame_grip: Vector3=parts.to_local(parts.get_anchor("frame_grip").global_position)
+	var rope_end: Vector3=parts.to_local(parts.get_anchor("rope_tip").global_position)
+	var clasp_grip: Vector3=parts.to_local(parts.get_anchor("clasp_grip").global_position)
+	var right_target: Vector3=frame_grip
+	if pose.phase=="rope":right_target=frame_grip.lerp(rope_end,Motion._ease((at_ms-2000)/250))
+	elif pose.phase=="clasp":right_target=rope_end.lerp(clasp_grip,Motion._ease((at_ms-3800)/250))
+	elif pose.phase in ["tug","stow"]:right_target=clasp_grip.lerp(pose.rod_tip,Motion._ease((at_ms-5000)/250))
+	var clasp_hand: float=Motion._ease((at_ms-3800)/250)*(1-Motion._ease((at_ms-4950)/300))
+	_hand_at("RightHand",right_target,.75,lerpf(-.28,1.15,clasp_hand))
+	parts.get_node("MagneticClasp/DetentPivot").rotation.y=clampf((at_ms-4650)/180,0,1)*-.35
+	var close: float=Motion._ease((at_ms-1700)/600)*(1-Motion._ease((at_ms-5150)/450))
+	var focus:=Vector3(.62,0,0)*close
+	camera3d.size=lerpf(2.55,1.35,close);camera3d.position=focus+Vector3(0,3.35,4.8);camera3d.look_at(focus,Vector3.UP)
+	var stow: float=pose.stow
+	parts.position=Vector3(.95,-.06,.8)*stow;parts.rotation.y=.28*stow;parts.scale=Vector3.ONE*lerpf(1,.24,stow)
+	parts.get_node("LeftHand").visible=stow<.12;parts.get_node("RightHand").visible=stow<.12
+	viewport3d.render_target_update_mode=SubViewport.UPDATE_ONCE
 func cancel() -> void:
 	if closed:return
 	closed=true
+	if viewport3d!=null:viewport3d.render_target_update_mode=SubViewport.UPDATE_DISABLED
 	queue_free()
 func _notification(what: int) -> void:
-	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT: cancel()
+	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT:cancel()
 func _process(delta: float) -> void:
 	if closed:return
 	if read_state.is_valid():
 		var current: Dictionary=read_state.call()
-		if not current.get("qizhenLake",{}).get("magneticRodCombined",false) or not current.get("items",{}).get("magneticFishingRod",false): cancel();return
+		if not current.get("qizhenLake",{}).get("magneticRodCombined",false) or not current.get("items",{}).get("magneticFishingRod",false):cancel();return
 	elapsed_ms+=minf(delta,.05)*1000
 	if elapsed_ms>=(1100.0 if reduced_motion else Motion.DURATION_MS):cancel();return
-	queue_redraw()
+	render_pose(6350 if reduced_motion else elapsed_ms)
 func _gui_input(input: InputEvent) -> void:
-	if input is InputEventKey and input.pressed and input.keycode==KEY_ESCAPE: cancel();accept_event()
-func _text(p: Vector2,value: String,font_size: int=19,color: Color=Color("e8e3d5")) -> void:
-	var width:=source_font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x
-	draw_string(source_font,p-Vector2(width/2,0),value,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size,color)
-func _icon(id: String,center: Vector2,cell: float,alpha: float=1) -> void:
-	var data: Dictionary=Chrome.PIXEL_ICONS[id]
-	var rows: Array=data.rows
-	for y in rows.size():
-		for x in str(rows[y]).length():
-			var key: String=str(rows[y])[x]
-			if data.palette.has(key):draw_rect(Rect2(center+Vector2(x-4.5,y-5)*cell,Vector2.ONE*cell),Color(str(data.palette[key]),alpha))
+	if input is InputEventKey and input.pressed and input.keycode==KEY_ESCAPE:cancel();accept_event()
 func _draw() -> void:
-	if closed:return
-	draw_rect(Rect2(Vector2.ZERO,size),Color("061920",.86))
-	var scale_value:=maxf(.1,minf((size.x-24)/510.0,(size.y-100)/410.0))
-	var origin:=size/2
-	draw_set_transform(origin,0,Vector2.ONE*scale_value)
-	draw_style_box(_panel(),Rect2(-249,-201,498,402))
-	var pose:=Motion.sample(3400 if reduced_motion else elapsed_ms)
-	var captions: Dictionary={"frame":"网框套上竿端","rope":"绕绳 · 收紧","clasp":"磁性扣固定到框沿","tug":"拉紧检查","stow":"磁吸钓竿已收好"}
-	_text(Vector2(0,-164),captions[pose.phase],23)
-	# Original inventory identities stay visible during the physical join.
-	var ids: Array=["fishingRod","brokenNetFrame","nylonCord","swanMagnet"]
-	for i in ids.size():
-		_icon(ids[i],Vector2(-132+i*88,155),2.3,.75)
-	var stow: float=pose.stow
-	var assembly_origin:=origin+Vector2(lerpf(0,157,stow),lerpf(0,150,stow))*scale_value
-	var unit:=scale_value*lerpf(1,.16,stow)
-	draw_set_transform(assembly_origin,lerpf(0,-.2,stow),Vector2.ONE*unit)
-	var tug:=Vector2(float(pose.tug),0)
-	var tip: Vector2=Motion.TIP+tug
-	var grip:=Vector2(-130,70)
-	# Tapered rod keeps the source brown shaft and grey reel, with true tip contact.
-	var rod:=PackedVector2Array([grip+Vector2(-3,-5),Vector2(-28,-14)+tug*.3,tip-Vector2(1,2),tip+Vector2(2,1),Vector2(-25,-9)+tug*.3,grip+Vector2(4,5)])
-	draw_colored_polygon(rod,Color("755234"))
-	draw_line(grip,grip+Vector2(21,-16),Color("463a2a"),10)
-	draw_arc(grip+Vector2(24,0),9,0,TAU,18,Color("52636a"),4)
-	var frame: Vector2=pose.frame+tug
-	_icon("brokenNetFrame",frame,6)
-	# The original icon's bottom two cells are the socket; extend it exactly to the tip.
-	draw_line(frame+Vector2(0,24),frame+Vector2(0,33),Color("536165"),7)
-	var wrap: float=pose.wrap
-	if wrap<1:
-		_icon("nylonCord",Vector2(-140,-91),4,1-wrap*.4)
-		if wrap>0:
-			var moving_end:=tip+Vector2(cos(wrap*TAU*3)*13,sin(wrap*TAU*3)*7)
-			draw_polyline(PackedVector2Array([Vector2(-120,-74),Vector2(-36,-109+wrap*40),moving_end]),Color("d8d2bd"),3,false)
-	for i in 4:
-		var at:=clampf(wrap*4-i,0,1)
-		if at>0:draw_arc(tip+Vector2(-i*3,i*2),8,PI*.1,PI*.1+TAU*at,16,Color("d8d2bd"),3,false)
-	if wrap>=1:
-		draw_line(tip+Vector2(-7,4),tip+Vector2(-14,12),Color("d8d2bd"),3)
-		draw_line(tip+Vector2(-7,4),tip+Vector2(-4,13),Color("d8d2bd"),3)
-	_icon("swanMagnet",Vector2(pose.clasp)+tug,3.3)
-	# Hands are attached to the shaft and joining component, not a floating UI cursor.
-	if stow<.8:
-		var work_hand: Vector2=tip+Vector2(2,4)
-		if pose.phase=="frame":work_hand=frame+Vector2(29,12)
-		elif pose.phase=="clasp":work_hand=Vector2(pose.clasp)+Vector2(22,10)
-		elif pose.phase=="tug":work_hand=tip+Vector2(2,4)
-		_hand(grip+Vector2(0,5),Vector2(-180,125))
-		_hand(work_hand,Vector2(172,90))
-	draw_set_transform(Vector2.ZERO)
-func _hand(point: Vector2,wrist: Vector2) -> void:
-	draw_line(wrist,point,Color("244f75"),17)
-	draw_line(point+(wrist-point).normalized()*18,point,Color("e5b891"),12)
-	draw_rect(Rect2(point-Vector2(7,5),Vector2(14,10)),Color("e5b891"))
-func _panel() -> StyleBoxFlat:
-	var result:=StyleBoxFlat.new();result.bg_color=Color("112c36");result.border_color=Color("71999b");result.set_border_width_all(2)
-	return result
+	if not closed:draw_rect(Rect2(Vector2.ZERO,size),Color("071a21",.93))

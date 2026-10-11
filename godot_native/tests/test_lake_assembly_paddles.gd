@@ -28,14 +28,14 @@ func run() -> void:
 	check(not lake.combine_items(s,lake.FINAL_PARTS).has("world_effect") and JSON.stringify(s)==before,"duplicate transaction cannot reanimate or reward")
 	var loaded: Dictionary=JSON.parse_string(before)
 	check(loaded.items.magneticFishingRod and not lake.can_assemble(loaded),"reload settles to committed rod")
-	for ms: float in [0,250,899,900,1250,1899,1900,2300,2700,3025,3550,4100,4200]:
+	for ms: float in [0,250,1900,2000,2500,3300,3700,4380,4730,5280,6100,6600,7200]:
 		var p:=Motion.sample(ms)
-		if ms>=900:check(Vector2(p.frame_socket).is_equal_approx(p.rod_tip),"frame socket meets rod tip "+str(ms))
-		if ms>=2600:check(Vector2(p.clasp).is_equal_approx(Motion.CLASP),"clasp stops at frame rim "+str(ms))
+		if ms>=2000:check(Vector3(p.frame_socket).is_equal_approx(p.rod_tip),"frame socket meets rod tip "+str(ms))
+		if ms>=4850:check(Vector3(p.clasp).is_equal_approx(Vector3(p.frame)+Motion.CLASP_LOCAL),"clasp stops at frame rim "+str(ms))
 		check(float(p.wrap)>=0 and float(p.wrap)<=1,"bounded rope wrap")
-	check(Motion.sample(1300).wrap>0 and Motion.sample(1300).wrap<1,"rope actually winds before tightening")
-	check(Motion.sample(2800).tug!=0 and Motion.sample(3400).tug==0,"tug deflects then settles")
-	check(Motion.sample(3900).stow>0 and Motion.sample(4200).done,"stow reaches terminal presentation")
+	check(Motion.sample(2600).wrap>0 and Motion.sample(2600).wrap<1,"rope actually winds before tightening")
+	check(Motion.sample(5520).tug!=0 and Motion.sample(6350).tug==0,"tug deflects then settles")
+	check(Motion.sample(6800).stow>0 and Motion.sample(7200).done,"stow reaches terminal presentation")
 	var view:=AssemblyView.new();root.add_child(view);view.setup({"read_state":func():return s});view.set_process(false)
 	var events: Array=[];view.event.connect(func(a,_v):events.append(a))
 	view.cancel();await process_frame
@@ -61,6 +61,6 @@ func run() -> void:
 	var idle:=Visual.paddle_poses({"strokeEvents":[],"tick":0})
 	check(idle.left.phase=="rest" and idle.right.phase=="rest","new/reloaded session has no ghost strokes")
 	check(Visual.stroke_pose("left",240,false,.8).elbow!=Visual.stroke_pose("left",240,false,0).elbow,"imbalance has a local arm reaction")
-	var art:=Visual.new();art._load();check(art.layers.hull.get_width()==128 and art.layers.seated_player.get_height()==160,"original uniform source bounds retained")
+	var hull: Texture2D=load("res://assets/native/kayak/hull.svg");var player: Texture2D=load("res://assets/native/kayak/seated_player.svg");check(hull.get_width()==128 and player.get_height()==160,"original uniform source bounds retained")
 	print("LAKE_ASSEMBLY_PADDLES: ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

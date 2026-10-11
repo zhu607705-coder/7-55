@@ -2,7 +2,7 @@ extends SceneTree
 ## Native renderer presentation reel, separate from the actual-shell input acceptance test.
 const Assembly=preload("res://scripts/ui/lake_rod_assembly_view.gd")
 const Kayak=preload("res://scripts/games/kayak_model.gd")
-const Visual=preload("res://scripts/ui/kayak_visual.gd")
+const Rig=preload("res://scenes/objects/kayak_rig.tscn")
 const SCHEDULE: Array=[[.25,"left",false],[1.0,"right",false],[1.75,"left",false],[1.94,"right",false],[2.65,"left",true],[3.4,"right",true],[4.2,"left",false],[4.85,"left",false],[5.5,"left",false],[6.2,"right",false]]
 var frame_index:=0
 var stage: Control
@@ -11,7 +11,11 @@ var paddle: Control
 var output: String="res://.screenshots/lake_reel"
 func _initialize() -> void: run.call_deferred()
 class PaddlePane extends Control:
-	var visual: RefCounted=Visual.new()
+	var rig: Node2D
+	func _ready() -> void:
+		rig=Rig.instantiate();add_child(rig)
+	func update_rig() -> void:
+		rig.configure_view(Vector2(size.x/2,280),2.8,{"heading":-PI/2+model.heading,"roll":model.roll,"speed":model.speed,"strokeEvents":model.inputs,"tick":model.tick})
 	var model: RefCounted=Kayak.new()
 	var font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 	var caption: String="各自入水，各自回桨"
@@ -19,7 +23,6 @@ class PaddlePane extends Control:
 		draw_rect(Rect2(Vector2.ZERO,size),Color("244f60"))
 		for y in range(60,540,38):
 			for x in range(22,560,54):draw_line(Vector2(x,y),Vector2(x+19,y),Color("356476"),2)
-		visual.draw(self,Vector2(size.x/2,280),2.8,{"heading":-PI/2+model.heading,"roll":model.roll,"speed":model.speed,"strokeEvents":model.inputs,"tick":model.tick},model.elapsed*1000)
 		text_at(Vector2(size.x/2,38),"左右独立划桨",24)
 		text_at(Vector2(size.x/2,526),caption,19)
 		text_at(Vector2(size.x/2,558),"柳枝桨弯曲受力  ·  警示牌桨保持刚性",15)
@@ -59,5 +62,5 @@ func update_at(seconds: float) -> void:
 	if seconds>=1.94 and seconds<2.4:paddle.caption="两侧动作重叠，各自完成一桨"
 	if seconds>=4.85 and seconds<6.2:paddle.caption="连续左桨，船身与手臂响应侧倾"
 	if seconds>=6.2:paddle.caption="换右桨，原有平衡模型恢复船身"
-	assembly.elapsed_ms=minf(seconds*1000,4199)
-	assembly.queue_redraw();paddle.queue_redraw()
+	if is_instance_valid(assembly):assembly.render_pose(minf(seconds*1000,7199))
+	paddle.update_rig();paddle.queue_redraw()
