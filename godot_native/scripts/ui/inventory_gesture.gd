@@ -59,3 +59,21 @@ static func _finish_drag_cancel(viewport: Viewport, epoch: int) -> void:
 	# Visibility/exit notifications cannot safely remove the preview immediately.
 	# A replacement drag started before idle must not be canceled by this cleanup.
 	if epoch==_drag_epoch and is_instance_valid(viewport) and viewport.gui_is_dragging(): viewport.gui_cancel_drag()
+
+# Native Godot drag dispatch may poll the system pointer when it finishes a
+# cross-viewport drop. Preserve the actual release event instead (also needed
+# for touch-emulated mouse input and window-bound accessibility pointers).
+static func capture_release(viewport:Viewport,point:Vector2,item:String)->void:
+	if not point.is_finite() or not viewport.gui_is_dragging():return
+	var data:Variant=viewport.gui_get_drag_data()
+	if not data is Dictionary or data.get("kind")!="inventory_item" or data.get("item")!=item:return
+	data["_inventory_release"]={"point":point,"viewport":weakref(viewport),"frame":Engine.get_process_frames()}
+
+static func release_position(data:Variant,viewport:Viewport)->Variant:
+	if not data is Dictionary or data.get("kind")!="inventory_item":return null
+	var release:Variant=data.get("_inventory_release")
+	if not release is Dictionary or release.get("frame",-1)!=Engine.get_process_frames():return null
+	var source:Variant=release.get("viewport")
+	var point:Variant=release.get("point")
+	if not source is WeakRef or source.get_ref()!=viewport or not point is Vector2 or not point.is_finite():return null
+	return point

@@ -984,6 +984,9 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 func _drop_data(at_position: Vector2, data: Variant) -> void:
 	if not _can_drop_data(at_position,data): return
+	if data.get("kind")=="inventory_item" and is_instance_valid(host_node) and is_instance_valid(host_node.get("world_view")):
+		at_position=host_node.world_view.release_source_position(at_position,data)
+	if not at_position.is_finite():return
 	var point := (at_position-size/2)/zoom+camera
 	if data.get("kind") == "chapter4_room204_group":
 		var result: Dictionary = chapter4_layers.resolve_drag(data,point,State.d) if chapter4_layers != null else {}
