@@ -8,7 +8,7 @@ const ACTIONS := ["buct_pilot_walk_left", "buct_pilot_walk_right", "buct_pilot_w
 const ACCEPTED_SHA256 := {
 	"promenade-ground.png": "cf8162bb50f2e83e41eb26ff2f74eeae16272008a75547e8ba6e09868b1ab6b6",
 	"promenade-crowns.png": "f7bf9dc9ce5e6ce5858851b94f24276a46f8bb1b726654b818f68d6aac90f425",
-	"promenade-trunks.png": "fc2f38ae65b07e42911c59b99f13b2961b63527831d2ddd70a651a699e3ccfca",
+	"promenade-trunks.png": "c5b6442f7667d889fae040f931aff4fecb84d8af6b01430100bf9a04ae14d10d",
 	"promenade-shadows.png": "3e202a27829b5868b069ac3a7d0f72baa5d6105c14018bde2e573062547be53f",
 }
 
@@ -65,6 +65,7 @@ func run() -> void:
 		await _check_tree(app, app.trees[index], config.objects[index])
 	_check_walkability(app)
 	await _check_native_collision(app)
+	await _check_arrow_key_events(app)
 	await _check_manual_and_route(app, config)
 	var shadow_refs := _shadow_refs(app)
 	check(shadow_refs.size() == 2, "both ground shadows are included in lifetime checks")
@@ -93,6 +94,13 @@ func _check_assets() -> Dictionary:
 	check(provenance.limitations.size() >= 4, "provenance retains the reconstruction and two-tree scope limitations")
 	check(config.objects.size() == 2, "manifest contains only the accepted two-tree pilot")
 	check(Vector2(config.world_size[0], config.world_size[1]) == Vector2(256, 160) and Vector2(config.spawn[0], config.spawn[1]) == Vector2(70, 127), "manifest keeps independent world and safe spawn coordinates")
+	var fixed_roots := [Vector2(87,124),Vector2(165,122)]
+	var fixed_joints := [Vector2(87,114),Vector2(165,112)]
+	for index in range(config.objects.size()):
+		var item:Dictionary=config.objects[index]
+		check(Vector2(item.anchor[0],item.anchor[1])==fixed_roots[index],"style revision preserves the original source root")
+		check(Vector2(item.crown_joint[0],item.crown_joint[1])==fixed_joints[index],"style revision preserves the original crown hinge")
+		check(is_equal_approx(float(item.trunk_radius),2.2),"style revision preserves the original trunk collider")
 	var seen: Array[String] = []
 	for output in provenance.outputs:
 		var filename := str(output.file).get_file()
@@ -262,6 +270,31 @@ func _check_native_collision(app: Node2D) -> void:
 		await physics_frame
 		check(not app.visitor.test_move(app.visitor.global_transform, Vector2(16, 0)), str(tree.name) + ": canopy has no hidden full-width collision wall")
 	app.visitor.set_physics_process(true)
+	app.reset_demo()
+
+func _check_arrow_key_events(app: Node2D) -> void:
+	# Exercise real key events, not action_press, including focused native UI.
+	var directions := {KEY_LEFT:Vector2.LEFT,KEY_RIGHT:Vector2.RIGHT,KEY_UP:Vector2.UP,KEY_DOWN:Vector2.DOWN}
+	for focused in [false,true]:
+		for key in directions:
+			for mode in ["logical","physical","both"]:
+				app.reset_demo()
+				if focused:app.ui_controls.reset.grab_focus()
+				else:app.get_viewport().gui_release_focus()
+				var initial:Vector2=app.visitor.position
+				var event:=InputEventKey.new();event.pressed=true
+				if mode!="physical":event.keycode=key
+				if mode!="logical":event.physical_keycode=key
+				Input.parse_input_event(event);Input.flush_buffered_events()
+				await _physics_frames(8)
+				var displacement:Vector2=app.visitor.position-initial
+				check(displacement.dot(directions[key])>0.5,"arrow %s %s focused=%s drives native movement"%[key,mode,focused])
+				event.pressed=false;Input.parse_input_event(event);Input.flush_buffered_events()
+				await _physics_frames(2)
+				var stopped:Vector2=app.visitor.position
+				await _physics_frames(4)
+				check(app.visitor.position.is_equal_approx(stopped),"arrow %s %s focused=%s stops after key release"%[key,mode,focused])
+	app.get_viewport().gui_release_focus()
 	app.reset_demo()
 
 func _check_manual_and_route(app: Node2D, config: Dictionary) -> void:
