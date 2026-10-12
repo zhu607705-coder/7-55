@@ -1,0 +1,245 @@
+{
+  "status": "two_tree_pilot_verified_native_gpu_and_manual",
+  "source_image": "res://campuses/buct/assets/approved-chaoyang.png",
+  "source_rect": [
+    625,
+    565,
+    256,
+    160
+  ],
+  "ground": "promenade-ground.png",
+  "objects": [
+    {
+      "id": "southwest_round_tree",
+      "anchor": [
+        87,
+        124
+      ],
+      "canopy": "promenade-crowns.png",
+      "trunk": "promenade-trunks.png",
+      "shadow": "promenade-shadows.png",
+      "trunk_radius": 2.2,
+      "phase": 0.0,
+      "sway_radians": 0.014,
+      "canopy_region": [
+        346,
+        391,
+        322,
+        326
+      ],
+      "canopy_world_rect": [
+        69,
+        90,
+        36,
+        32
+      ],
+      "crown_joint": [
+        87,
+        114
+      ],
+      "world_canvas_size": [
+        256,
+        160
+      ],
+      "trunk_region": [
+        426,
+        457,
+        190,
+        255
+      ],
+      "trunk_world_rect": [
+        76.9921568627451,
+        102.17254901960784,
+        16.392156862745097,
+        22.0
+      ],
+      "trunk_asset_foot": [
+        542,
+        710
+      ],
+      "shadow_region": [
+        485,
+        474,
+        231,
+        245
+      ],
+      "shadow_world_rect": [
+        86,
+        78,
+        28,
+        45
+      ]
+    },
+    {
+      "id": "southeast_round_tree",
+      "anchor": [
+        165,
+        122
+      ],
+      "canopy": "promenade-crowns.png",
+      "trunk": "promenade-trunks.png",
+      "shadow": "promenade-shadows.png",
+      "trunk_radius": 2.2,
+      "phase": 1.7,
+      "sway_radians": 0.012,
+      "canopy_region": [
+        905,
+        352,
+        443,
+        357
+      ],
+      "canopy_world_rect": [
+        147,
+        88,
+        38,
+        33
+      ],
+      "crown_joint": [
+        165,
+        112
+      ],
+      "world_canvas_size": [
+        256,
+        160
+      ],
+      "trunk_region": [
+        989,
+        429,
+        223,
+        273
+      ],
+      "trunk_world_rect": [
+        158.63369963369962,
+        100.16117216117216,
+        17.97069597069597,
+        22.0
+      ],
+      "trunk_asset_foot": [
+        1068,
+        700
+      ],
+      "shadow_region": [
+        956,
+        451,
+        297,
+        268
+      ],
+      "shadow_world_rect": [
+        163,
+        77,
+        29,
+        45
+      ]
+    }
+  ],
+  "requirements": [
+    "Full generated sheets retain requested aspect; individual cutouts use measured AtlasTexture regions and source-space world rectangles, because generator placement differs.",
+    "Ground must contain no original crown, trunk or attached shadow from either extracted tree",
+    "Ground paving, steps and lawn continue plausibly under the objects",
+    "Canopy and trunk have actual PNG alpha, not a checkerboard painted into RGB",
+    "Trunk must contain restored branch structure needed beneath a slightly moving crown",
+    "Ground shadow is a separately controllable alpha layer below the visitor",
+    "No claim of pixel identity with the original or measured physical geography",
+    "The first pair is not the completed whole region; side tree rows remain to be separated"
+  ],
+  "requested_asset_canvas_size": [
+    1024,
+    640
+  ],
+  "registration_note": "Generated crowns did not preserve full-frame position/size. Independent AtlasTexture regions are fitted to measured original crown bounds; actual PNG is unchanged. Runtime discards alpha below0.04 and clamps solid foliage above0.95.",
+  "title": "朝阳中央步道 · 两株分层试点",
+  "world_size": [
+    256,
+    160
+  ],
+  "spawn": [
+    70,
+    127
+  ],
+  "paving_rects": [
+    [
+      43,
+      115,
+      155,
+      14
+    ],
+    [
+      39,
+      32,
+      18,
+      108
+    ],
+    [
+      187,
+      27,
+      18,
+      114
+    ]
+  ],
+  "route": [
+    [
+      75,
+      127
+    ],
+    [
+      76,
+      119
+    ],
+    [
+      85,
+      116
+    ],
+    [
+      95,
+      117
+    ],
+    [
+      99,
+      124
+    ],
+    [
+      96,
+      127
+    ],
+    [
+      111,
+      127
+    ],
+    [
+      150,
+      127
+    ],
+    [
+      155,
+      125
+    ],
+    [
+      154,
+      117
+    ],
+    [
+      166,
+      115
+    ],
+    [
+      176,
+      117
+    ],
+    [
+      179,
+      125
+    ],
+    [
+      173,
+      127
+    ],
+    [
+      190,
+      127
+    ]
+  ],
+  "actual_asset_canvas_size": [
+    1586,
+    992
+  ]
+}

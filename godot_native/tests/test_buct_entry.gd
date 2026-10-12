@@ -111,6 +111,57 @@ func run() -> void:
 		check(current_scene.has_method("open_campus"),"Active route returns cleanly to chooser")
 		check(InputMap.get_actions()==initial_actions,"Leaving removes only BUCT-installed actions")
 		preserved()
+		# The two-tree reconstruction is a separate entry, not a replacement map.
+		await click(current_scene.pilot_button)
+		var pilot=current_scene
+		check(pilot.scene_file_path=="res://campuses/buct_pilots/chaoyang/scenes/promenade.tscn","Pilot opens through its independent real chooser button")
+		pilot.camera.force_update_scroll()
+		check(pilot.map_area.grow(1).has_point(pilot.get_canvas_transform()*Vector2.ZERO) and pilot.map_area.grow(1).has_point(pilot.get_canvas_transform()*pilot.world_size),"Whole pilot artwork fits unobstructed map area")
+		for key in ["back","guide","select","left_crown","right_crown","wind","reset","left","up","down","right"]:
+			var control: Control=pilot.ui_controls[key]
+			check(bounds.encloses(control.get_global_rect()),"Pilot control fits "+key+" "+str(viewport))
+			check(control.size.y>=44,"Pilot control preserves touch height")
+		var pilot_keys: Array[String]=["back","guide","select","left_crown","right_crown","wind","reset","left","up","down","right"]
+		for i in range(pilot_keys.size()):
+			for j in range(i+1,pilot_keys.size()):
+				check(not pilot.ui_controls[pilot_keys[i]].get_global_rect().intersects(pilot.ui_controls[pilot_keys[j]].get_global_rect()),"Pilot touch controls do not overlap: "+pilot_keys[i]+" / "+pilot_keys[j])
+		await click(pilot.ui_controls.select)
+		check(pilot.selected_tree==pilot.trees[0],"Touch-accessible selection can select the first real tree")
+		var trunk_transform: Transform2D=pilot.selected_tree.trunk.global_transform
+		await click(pilot.ui_controls.right_crown)
+		check(pilot.selected_tree.manual_crown_angle>0,"Pointer control rotates selected crown")
+		check(pilot.selected_tree.trunk.global_transform.is_equal_approx(trunk_transform),"Crown adjustment leaves trunk fixed")
+		var wind_before: bool=pilot.trees[0].wind_enabled
+		await click(pilot.ui_controls.wind)
+		check(pilot.trees[0].wind_enabled!=wind_before,"Pointer wind button works")
+		await click(pilot.ui_controls.reset)
+		check(pilot.selected_tree==null and pilot.visitor.position.is_equal_approx(pilot.spawn),"Pointer reset clears selection and restores safe spawn")
+		var start_position: Vector2=pilot.visitor.position
+		var direction_touch:=InputEventScreenTouch.new();direction_touch.index=3;direction_touch.pressed=true;direction_touch.position=pilot.ui_controls.right.get_global_rect().get_center()
+		root.push_input(direction_touch)
+		for i in range(12):await physics_frame
+		check(pilot.visitor.position.x>start_position.x+1,"Real touch direction button moves the visitor")
+		direction_touch=InputEventScreenTouch.new();direction_touch.index=3;direction_touch.pressed=false;direction_touch.position=Vector2(1,1);root.push_input(direction_touch)
+		await frames(3)
+		check(pilot.pointer_moves.is_empty(),"Touch release outside controls stops held movement")
+		await click(pilot.ui_controls.guide)
+		check(pilot.guide_active,"Pilot guide starts through visible button")
+		wind_before=pilot.trees[0].wind_enabled
+		for down in [true,false]:
+			var space:=InputEventKey.new();space.physical_keycode=KEY_SPACE;space.keycode=KEY_SPACE;space.pressed=down;root.push_input(space)
+		await frames(3)
+		check(pilot.trees[0].wind_enabled!=wind_before,"Space toggles wind even when a clicked guide button retains focus")
+		preserved()
+		var pilot_weak: WeakRef=weakref(pilot)
+		var pilot_shadows: Array[WeakRef]=[]
+		for tree in pilot.trees:pilot_shadows.append(weakref(tree.ground_shadow))
+		await click(pilot.ui_controls.back)
+		await frames(5)
+		check(pilot_weak.get_ref()==null,"Pilot releases on return during active route")
+		for shadow in pilot_shadows:check(shadow.get_ref()==null,"Pilot releases independent ground-shadow sibling")
+		check(current_scene.has_method("open_campus"),"Pilot returns to unchanged chooser")
+		check(InputMap.get_actions()==initial_actions,"Pilot removes only its installed inputs")
+		preserved()
 	# Escape unwinds child overlays first; final Escape returns to entry.
 	await click(current_scene.campus_button)
 	var campus=current_scene
