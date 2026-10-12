@@ -334,7 +334,7 @@ func toggle_overview() -> void:
 		camera.zoom=Vector2.ONE*_walking_zoom()
 		camera.position=_walking_camera_position()
 		camera.reset_smoothing()
-	status.text="全图浏览 · 仅南门—主楼—图书馆步道已开放" if overview else "返回步行视角"
+	status.text="全图浏览 · 导览步道、西侧运动区边路、图书馆西路已开放" if overview else "返回步行视角"
 
 func notify_boundary() -> void:
 	if not guide_active and visitor.manual_input.length_squared()>0:
