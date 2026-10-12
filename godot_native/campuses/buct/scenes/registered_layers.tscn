@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" path="res://campuses/buct/assets/library/library-clean-ground.png" id="6_library_ground"]
 [ext_resource type="Script" path="res://campuses/buct/scripts/library_ground.gd" id="7_library_ground_mask"]
 
+[ext_resource type="Script" path="res://campuses/buct/scripts/chaoyang_l_building.gd" id="8_l_building"]
+
 [sub_resource type="ViewportTexture" id="ViewportTexture_3aejw"]
 viewport_path = NodePath("GroundRepairTiles")
 
@@ -172,13 +174,6 @@ texture_filter = 1
 texture = SubResource("ViewportTexture_3aejw")
 polygon = PackedVector2Array(239, 690, 387, 689, 389, 719, 385, 740, 370, 748, 353, 743, 336, 749, 317, 744, 299, 749, 278, 744, 254, 750, 250, 764, 233, 773, 218, 759, 218, 708, 236, 708)
 uv = PackedVector2Array(239, 690, 387, 689, 389, 719, 385, 740, 370, 748, 353, 743, 336, 749, 317, 744, 299, 749, 278, 744, 254, 750, 250, 764, 233, 773, 218, 759, 218, 708, 236, 708)
-
-[node name="CleanUnderlay_west_inner_l_block" type="Polygon2D" parent="." unique_id=107580875]
-z_index = -20
-texture_filter = 1
-texture = SubResource("ViewportTexture_3aejw")
-polygon = PackedVector2Array(480, 621, 568, 621, 568, 600, 594, 600, 596, 671, 592, 692, 579, 699, 566, 694, 565, 677, 545, 682, 527, 676, 508, 680, 488, 675, 476, 678, 461, 675, 437, 674, 434, 663, 435, 635, 455, 635, 455, 640, 479, 640)
-uv = PackedVector2Array(480, 621, 568, 621, 568, 600, 594, 600, 596, 671, 592, 692, 579, 699, 566, 694, 565, 677, 545, 682, 527, 676, 508, 680, 488, 675, 476, 678, 461, 675, 437, 674, 434, 663, 435, 635, 455, 635, 455, 640, 479, 640)
 
 [node name="CleanUnderlay_west_courts_south_bar" type="Polygon2D" parent="." unique_id=436877918]
 z_index = -20
@@ -1241,30 +1236,7 @@ polygon = PackedVector2Array(-113, -36, -77, -36, -77, 8, -113, 8)
 
 [node name="west_inner_l_block" type="Node2D" parent="IndependentRegisteredObjects" unique_id=878315128]
 position = Vector2(517, 688)
-script = ExtResource("4_w1r10")
-source_position = Vector2(517, 688)
-footprint_polygons = Array[PackedVector2Array]([PackedVector2Array(-37, -38, 76, -38, 76, 4, -37, 4), PackedVector2Array(-80, -33, -36, -33, -36, -13, -80, -13), PackedVector2Array(51, -63, 77, -63, 77, 6, 51, 6)])
-
-[node name="SourcePixelSilhouette" type="Polygon2D" parent="IndependentRegisteredObjects/west_inner_l_block" unique_id=474119987]
-texture_filter = 1
-texture = ExtResource("1_1wkty")
-polygon = PackedVector2Array(-37, -67, 51, -67, 51, -88, 77, -88, 79, -17, 75, 4, 62, 11, 49, 6, 48, -11, 28, -6, 10, -12, -9, -8, -29, -13, -41, -10, -56, -13, -80, -14, -83, -25, -82, -53, -62, -53, -62, -48, -38, -48)
-uv = PackedVector2Array(480, 621, 568, 621, 568, 600, 594, 600, 596, 671, 592, 692, 579, 699, 566, 694, 565, 677, 545, 682, 527, 676, 508, 680, 488, 675, 476, 678, 461, 675, 437, 674, 434, 663, 435, 635, 455, 635, 455, 640, 479, 640)
-
-[node name="GroundFootprint0" type="StaticBody2D" parent="IndependentRegisteredObjects/west_inner_l_block" unique_id=558808060]
-
-[node name="@CollisionPolygon2D@86" type="CollisionPolygon2D" parent="IndependentRegisteredObjects/west_inner_l_block/GroundFootprint0" unique_id=1465631051]
-polygon = PackedVector2Array(-37, -38, 76, -38, 76, 4, -37, 4)
-
-[node name="GroundFootprint1" type="StaticBody2D" parent="IndependentRegisteredObjects/west_inner_l_block" unique_id=1546130563]
-
-[node name="@CollisionPolygon2D@87" type="CollisionPolygon2D" parent="IndependentRegisteredObjects/west_inner_l_block/GroundFootprint1" unique_id=75244119]
-polygon = PackedVector2Array(-80, -33, -36, -33, -36, -13, -80, -13)
-
-[node name="GroundFootprint2" type="StaticBody2D" parent="IndependentRegisteredObjects/west_inner_l_block" unique_id=1457544431]
-
-[node name="@CollisionPolygon2D@88" type="CollisionPolygon2D" parent="IndependentRegisteredObjects/west_inner_l_block/GroundFootprint2" unique_id=1183567652]
-polygon = PackedVector2Array(51, -63, 77, -63, 77, 6, 51, 6)
+script = ExtResource("8_l_building")
 
 [node name="southwest_inner_north_l" type="Node2D" parent="IndependentRegisteredObjects" unique_id=2107780378]
 position = Vector2(304, 747)
