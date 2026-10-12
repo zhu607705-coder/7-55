@@ -17,7 +17,7 @@ South gate → main-building forecourt → west-side garden/promenade → librar
 
 ## Rendering and isolation
 
-All runtime resources are under `res://campuses/buct/`. The approved 1448×1086 artwork remains source-sized. Forty-four independent native building groups, 91 authored building colliders, a 6,188-cell repair TileMapLayer and source-pixel polygon UVs are retained. The main facade has separate native depth baselines. All 11 authored ground shadows render below actors.
+All runtime resources are under `res://campuses/buct/`. The approved 1448×1086 artwork remains source-sized. The 44 object identities now contain **one genuine-alpha reconstructed library and 43 legacy source-campus UV groups**; the latter are not completed independent alpha assets. The 6,188-cell repair TileMapLayer and non-library source geometry remain. The library has its own continuous repaired ground, independent translucent shadow and six-polygon native physics body. Nine remaining original ground shadows and the new library shadow render below actors. The main facade retains its separate native depth baselines. See [BUCT_LIBRARY_BUILDING.md](BUCT_LIBRARY_BUILDING.md) for exact scope, registration and source limits.
 
 Tree crowns use the same source artwork. Their small trunk colliders are distinct from the overhanging leaves, allowing feet to pass under canopies. A small foot ring shows only when a crown covers the character's head; it does not fade trees or turn crowns into walls. The source plate and cleanplate PNGs are unchanged from the approved input.
 
