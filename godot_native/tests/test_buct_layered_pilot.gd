@@ -51,7 +51,7 @@ func run() -> void:
 	check(app.visitor is CharacterBody2D, "guide and manual movement use a real CharacterBody2D")
 	check(app.visitor.get_parent() == app.trees[0].get_parent(), "visitor and trees share the same depth-sorted parent")
 	check(app.visitor.get_node("FeetCollision").shape is CircleShape2D, "visitor collision is a foot circle")
-	check(app.visitor.get_node("FeetCollision").shape.radius == 3.0, "visitor collision excludes its tall drawn body")
+	check(is_equal_approx(app.visitor.get_node("FeetCollision").shape.radius, 1.65) and app.visitor.scale == Vector2.ONE, "visitor collision excludes its tall drawn body")
 	for action in ACTIONS:
 		check(InputMap.has_action(action), "namespaced movement is installed: " + action)
 	for action in InputMap.get_actions():

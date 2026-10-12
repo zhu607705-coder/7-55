@@ -7,6 +7,12 @@ var facing := Vector2.DOWN
 var speed := 88.0
 var manual_input := Vector2.ZERO
 var last_motion := Vector2.ZERO
+const STUDENT_ROOT := "res://campuses/buct_shared/student/"
+const STUDENT_VISUAL = preload(STUDENT_ROOT + "scripts/registered_character_visual.gd")
+var character_visual: Node2D
+@export var character_profile_path := STUDENT_ROOT + "data/student-movement-profile.json"
+@export var display_height := 10.0
+@export var show_registration_ring := false
 
 func _ready() -> void:
 	name = "CampusVisitor"
@@ -16,9 +22,19 @@ func _ready() -> void:
 	var shape := CollisionShape2D.new()
 	shape.name = "FeetCollision"
 	var circle := CircleShape2D.new()
-	circle.radius = 3.0
+	circle.radius = 1.65
 	shape.shape = circle
 	add_child(shape)
+	character_visual=Node2D.new();character_visual.name="StudentVisual"
+	character_visual.set_script(STUDENT_VISUAL);add_child(character_visual)
+	var profile: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(character_profile_path))
+	var artwork_root := character_profile_path.get_base_dir().get_base_dir()+"/assets/"
+	var extras: Dictionary={}
+	for key in profile.get("available_walk_atlases",{}):
+		extras[key]=load(artwork_root+str(profile.available_walk_atlases[key]))
+	if not character_visual.configure(profile,load(artwork_root+str(profile.atlas)),display_height,extras):
+		push_error("Cannot configure the registered BUCT student artwork")
+		if is_instance_valid(map):map.return_to_entry()
 
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(map): return
@@ -49,37 +65,22 @@ func _physics_process(delta: float) -> void:
 	if walking:
 		facing=last_motion.normalized()
 		phase += delta*11.0
+	character_visual.advance_motion(last_motion,delta)
+	queue_redraw()
+
+func stop_motion(reset_facing: bool = false) -> void:
+	velocity=Vector2.ZERO;manual_input=Vector2.ZERO;last_motion=Vector2.ZERO
+	walking=false;phase=0.0
+	if is_instance_valid(character_visual):
+		if reset_facing:
+			facing=Vector2.DOWN;character_visual.reset_pose()
+		else:character_visual.advance_motion(Vector2.ZERO,0.0)
 	queue_redraw()
 
 func _draw() -> void:
-	# Vector-built miniature, no generic replacement scenery or raster editing.
-	draw_set_transform(Vector2(0,-1),0,Vector2(1,0.40))
-	draw_circle(Vector2.ZERO,6.3,Color(0.12,0.17,0.14,0.22))
+	# Ground contact is separate from every transparent body frame.
+	draw_set_transform(Vector2.ZERO,0,Vector2(1,0.42))
+	draw_circle(Vector2.ZERO,2.3,Color(0.12,0.17,0.14,0.19))
 	draw_set_transform(Vector2.ZERO)
-	var step := sin(phase)*1.5 if walking else 0.0
-	var navy := Color("344e59")
-	draw_line(Vector2(-2,-5),Vector2(-2+step,0),navy,2.5,true)
-	draw_line(Vector2(2,-5),Vector2(2-step,0),navy,2.5,true)
-	draw_circle(Vector2(-2+step,0),1.6,Color("493d32"))
-	draw_circle(Vector2(2-step,0),1.6,Color("493d32"))
-	draw_style_box(_coat(),Rect2(-4,-12,8,9))
-	draw_line(Vector2(-4,-10),Vector2(-5,-6-step),Color("d9c49d"),2.0,true)
-	draw_line(Vector2(4,-10),Vector2(5,-6+step),Color("d9c49d"),2.0,true)
-	if facing.y<0.25: draw_style_box(_pack(),Rect2(-2.8,-10,5.6,6))
-	draw_circle(Vector2(0,-14),3.7,Color("6b5139"))
-	draw_circle(Vector2(0,-13.1),2.8,Color("d7bb8f"))
-	draw_arc(Vector2(0,-14.5),3.1,PI,TAU,12,Color("514433"),2.6,true)
-	draw_arc(Vector2(0,1),7.2,0.1,PI-0.1,20,Color(0.31,0.64,0.59,0.8),0.8,true)
-
-func _coat() -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color=Color("577b81")
-	s.corner_radius_top_left=3; s.corner_radius_top_right=3
-	s.corner_radius_bottom_left=2; s.corner_radius_bottom_right=2
-	return s
-func _pack() -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color=Color("bead83")
-	s.corner_radius_top_left=2; s.corner_radius_top_right=2
-	s.corner_radius_bottom_left=1; s.corner_radius_bottom_right=1
-	return s
+	if show_registration_ring:
+		draw_arc(Vector2(0,0.5),3.4,0.1,PI-0.1,20,Color(0.31,0.64,0.59,0.8),0.38,true)

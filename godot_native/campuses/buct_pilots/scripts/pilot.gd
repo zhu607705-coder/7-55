@@ -11,7 +11,7 @@ var camera: Camera2D
 var actors: Node2D
 var trees: Array[Node2D] = []
 var guide_active := false
-var tour_speed := 22.0
+var tour_speed := 8.0
 var route := PackedVector2Array()
 var route_index := 0
 var paused := false
@@ -49,7 +49,7 @@ func _ready() -> void:
 		var tree:=Node2D.new();tree.set_script(TREE_SCRIPT);actors.add_child(tree)
 		tree.configure(item,shadows,asset_root);trees.append(tree)
 	visitor=CharacterBody2D.new();visitor.set_script(VISITOR_SCRIPT);visitor.map=self
-	visitor.scale=Vector2.ONE*0.55;visitor.speed=26.0;visitor.position=spawn;actors.add_child(visitor)
+	visitor.scale=Vector2.ONE;visitor.speed=8.0;visitor.position=spawn;actors.add_child(visitor)
 	camera=Camera2D.new();camera.name="PilotCamera";camera.position=world_size*0.5;add_child(camera)
 	_build_ui();get_viewport().size_changed.connect(_fit_view);_fit_view()
 
@@ -176,12 +176,12 @@ func route_direction(point: Vector2) -> Vector2:
 
 func start_guide() -> void:
 	if leaving:return
-	_release_movement();visitor.position=spawn;route.clear()
+	_release_movement();visitor.stop_motion(true);visitor.position=spawn;route.clear()
 	for point in config.route:route.append(Vector2(point[0],point[1]))
 	route_index=0;guide_active=true
 
 func reset_demo() -> void:
-	_release_movement();visitor.position=spawn
+	_release_movement();visitor.stop_motion(true);visitor.position=spawn
 	for tree in trees:tree.reset_pose()
 	select_at(Vector2(-1,-1));ui_controls.wind.text="开启微风"
 
@@ -233,7 +233,7 @@ func _release_movement() -> void:
 	pointer_moves.clear();cancel_route_for_manual_input()
 	for action in WALK_ACTIONS:
 		if InputMap.has_action(action):Input.action_release(action)
-	if is_instance_valid(visitor):visitor.velocity=Vector2.ZERO
+	if is_instance_valid(visitor):visitor.stop_motion()
 
 func return_to_entry() -> void:
 	if leaving:return
