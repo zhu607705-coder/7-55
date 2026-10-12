@@ -1,0 +1,28 @@
+[
+  {
+    "actual_radius3_physics_contacts": 0,
+    "existing_is_walkable": true,
+    "feet": [
+      763.25,
+      881.0
+    ],
+    "first_outside": [
+      766.246398925781,
+      881.147216796875
+    ],
+    "radius3_circle_samples_outside_paving_union": 31
+  },
+  {
+    "actual_radius3_physics_contacts": 0,
+    "existing_is_walkable": true,
+    "feet": [
+      751.0,
+      868.5
+    ],
+    "first_outside": [
+      750.559814453125,
+      871.467529296875
+    ],
+    "radius3_circle_samples_outside_paving_union": 27
+  }
+]
