@@ -104,7 +104,7 @@ for(const method of ['return_to_entry','_exit_tree','_notification'])check(runti
 check(runtime.includes('owned_actions')&&runtime.includes('InputMap.erase_action'),'Haidian records and removes only owned actions');
 check(runtime.includes('res://scenes/entry.tscn'),'Haidian returns to the same existing chooser');
 
-const allowedResourceRoots=[prefix,'scenes/entry.tscn','assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf'];
+const allowedResourceRoots=[prefix,'campuses/buct_shared/student/scripts/landmark_pin_layout.gd','scenes/entry.tscn','assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf'];
 for(const file of walk(campus)){
  const relative=path.relative(campus,file).replaceAll(path.sep,'/');
  check(!/(^|\/)(?:delivery|evidence|exports|\.godot|cache)(\/|$)|\.zip$/.test(relative),`No old delivery/evidence/cache in campus: ${relative}`);
