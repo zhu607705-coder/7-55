@@ -1,0 +1,232 @@
+{
+  "base_commit": "88a4f2c45a70d3a7d052fd6f66bc30c27bba1d47",
+  "scope": "Focused native full-campus integration in minimal isolated stage; no full story artwork import",
+  "static_checks": {
+    "changping": 60,
+    "haidian_existing": 271,
+    "shared_student": 37
+  },
+  "runs": [
+    {
+      "log": "import-final.log",
+      "sha256": "e4bcab52e8e7dffb0dd3fef1c85d0ddfb34352877f9e071726724e99d1f414bf",
+      "error_lines": [],
+      "summary": [],
+      "exit_code": 0
+    },
+    {
+      "log": "test_buct_student_maps.log",
+      "sha256": "b70235c58502ba36492cdec0ab01dbb206f5ee1a6609d7b0da93d49dcba83b92",
+      "error_lines": [],
+      "summary": [
+        "CHANGPING_INTEGRATED_ROUTE ticks=759 animation_ticks=575 violations=0",
+        "BUCT_STUDENT_REAL_MAPS PASS checks=86 errors=[]"
+      ],
+      "exit_code": 0
+    },
+    {
+      "log": "test_buct_student_pin_layout.log",
+      "sha256": "1aa812fe8fa6a0bf84e2adebdfada7a4b945e7986c22c213784d9e851696a528",
+      "error_lines": [],
+      "summary": [
+        "BUCT_STUDENT_PIN_LAYOUT PASS checks=85 errors=[]"
+      ],
+      "exit_code": 0
+    },
+    {
+      "log": "test_buct_entry-final.log",
+      "sha256": "022c390a12dd40d9d3f4a0fec1e88897a59aa15769b834eddec75ca08738dafe",
+      "error_lines": [],
+      "summary": [
+        "BUCT_STORY_RESUME_NOT_RUN: focused campus-only stage; full story resume remains a separate CI gate",
+        "BUCT_ENTRY: 1234 checks; 0 failures"
+      ],
+      "exit_code": 0
+    },
+    {
+      "log": "capture-parse.log",
+      "sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da",
+      "error_lines": [],
+      "summary": [],
+      "exit_code": 0
+    }
+  ],
+  "headless_pass": true,
+  "actual_gpu": {
+    "status": "passed",
+    "exit_code": 0,
+    "checks": 854,
+    "failures": [],
+    "captures": [
+      {
+        "actual_viewport": [
+          1280,
+          720
+        ],
+        "file": "01-four-entry-chooser.png"
+      },
+      {
+        "actual_viewport": [
+          1280,
+          720
+        ],
+        "file": "02-south-gate-student.png"
+      },
+      {
+        "actual_viewport": [
+          1280,
+          720
+        ],
+        "file": "03-walk-right.png"
+      },
+      {
+        "actual_viewport": [
+          1280,
+          720
+        ],
+        "file": "03-walk-left.png"
+      },
+      {
+        "actual_viewport": [
+          1280,
+          720
+        ],
+        "file": "03-walk-down.png"
+      },
+      {
+        "actual_viewport": [
+          1280,
+          720
+        ],
+        "file": "03-walk-up.png"
+      },
+      {
+        "actual_viewport": [
+          390,
+          844
+        ],
+        "file": "04-portrait-complete-map.png"
+      },
+      {
+        "actual_viewport": [
+          390,
+          844
+        ],
+        "file": "05-portrait-first-teaching-info.png"
+      },
+      {
+        "actual_viewport": [
+          390,
+          844
+        ],
+        "file": "06-portrait-returned-chooser.png"
+      },
+      {
+        "actual_viewport": [
+          667,
+          375
+        ],
+        "file": "07-landscape-four-entry-chooser.png"
+      },
+      {
+        "actual_viewport": [
+          667,
+          375
+        ],
+        "file": "08-landscape-gate-info.png"
+      },
+      {
+        "actual_viewport": [
+          667,
+          375
+        ],
+        "file": "09-second-returned-chooser.png"
+      }
+    ],
+    "log_sha256": "d0a5dab67077447bfb1a032d8e8dc8ce4c0c54b68364c514e396bbc002bb2ca1",
+    "driver_trace": [
+      "right 10.2667px",
+      "left 10.2667px",
+      "down 10.2667px",
+      "up 10.2667px"
+    ],
+    "historical_round1": {
+      "checks": 854,
+      "failures": 4,
+      "cause": "Viewport dispatch did not populate the Input singleton polled by CampusVisitor; Input.parse_input_event corrected the test driver",
+      "log_sha256": "60401aa95ae728888ca530d994e5bf5d00d6f13fb680e6513c30bc7a61c05223"
+    },
+    "known_warning": "V-Sync mode unsupported by llvmpipe driver",
+    "errors": 0,
+    "rid_leak_warnings": 0
+  },
+  "manual_gui": {
+    "reviewed_at_utc": "2026-10-12T12:37:53Z",
+    "environment": "Existing dot cloud desktop, native Godot 4.6.3 llvmpipe; no new display",
+    "project": "buct-changping-entry-stage",
+    "manual": {
+      "changping_entry_return_cycles": 2,
+      "keyboard_W_250ms": "visible northward movement; release stops",
+      "keyboard_S_180ms": "visible southward movement then route boundary stop; release remains idle",
+      "nearby_E_and_Esc": "gate information opened, closed back to map",
+      "M_overview": "full north-to-south campus inside map band, no nonuniform stretch or clipping",
+      "desktop_direction_buttons": "not shown",
+      "new_student": "visible blue/cream student at south gate, label does not cover head",
+      "chaoyang_entry_return": 1,
+      "haidian_entry_return": 1,
+      "normal_window_close": true
+    },
+    "automated_render_proof": {
+      "checks": 854,
+      "failures": 0,
+      "four_direction_actual_displacement_px": 10.2667,
+      "actual_viewports": [
+        [
+          1280,
+          720
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          667,
+          375
+        ]
+      ],
+      "phone_layout_visual_review": "full map and all four menu entries visible; information card inside screen; shorter status avoids crowding"
+    },
+    "not_tested": [
+      "physical touchscreen device",
+      "full old 7:55 story visuals in this asset-light stage",
+      "full route manual walk",
+      "new First Teaching Building RGBA candidate, not yet integrated"
+    ],
+    "screenshot": "manual-full-campus.jpg",
+    "logs": [
+      "../manual-native.log",
+      "../gpu-proof.log"
+    ],
+    "log_review": {
+      "errors": 0,
+      "rid_leak_warnings": 0,
+      "known_warning": "V-Sync mode unsupported by llvmpipe driver"
+    },
+    "failed_initial_round": "../gpu-driver-round1 retains initial four movement failures; corrected driver uses Input.parse_input_event"
+  },
+  "full_story_visual_resume": "not_run_in_focused_stage",
+  "new_true_rgba_buildings": 0,
+  "original_campus_source_data": "unchanged; 53legacy UV groups,41route points,81walkable polygons",
+  "fixes_during_qa": [
+    "Directional Changping test fixtures use different existing narrow path segments instead of requiring an invented four-way 24px plaza",
+    "Four-entry chooser compact separation6px keeps44px buttons inside667x375",
+    "Shortened three long mobile status captions to avoid wrapping into the hint line; no geometry, camera or input changes"
+  ],
+  "historical_failures": [
+    "First stage lacked ignored source JSON and omitted tracked Haidian mipmap import settings; corrected stage inputs, no runtime source changes required",
+    "Initial entry check had10 chooser-height assertions failing at667x375; fixed and all1234passed"
+  ],
+  "manual_log_sha256": "ca6a6076d56c50cdb8141aa8fd840714831fbd8df31d377235fe4ba3b3147c8e",
+  "freeze_utc": "2026-10-12T12:39:00Z",
+  "remote_complete_CI": "pending publication on final commit; focused stage does not prove full story visual resume"
+}

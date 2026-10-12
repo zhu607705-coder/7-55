@@ -14,6 +14,7 @@ const saveNames=['save.json','save.previous.json','save.json.tmp'];
 if(!process.argv.includes('--guard-only')) {
  await import('../tests/verify_buct_haidian_source.mjs');
  await import('../tests/verify_buct_student_source.mjs');
+ await import('../tests/verify_buct_changping_source.mjs');
 }
 if(process.argv.includes('--source-only'))process.exit(0);
 function sandbox() {
