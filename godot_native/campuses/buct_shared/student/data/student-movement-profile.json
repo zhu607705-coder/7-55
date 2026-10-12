@@ -1,0 +1,632 @@
+{
+  "status": "four_direction_first_native_and_manual_verified",
+  "atlas": "student-four-directions.png",
+  "sha256": "41bb77696eee6a91e64e56c432aab35b31576565edd3330ac6ac21bcd0a63f82",
+  "reference_body_height": 568,
+  "alpha_cutoff": 0.04,
+  "solid_alpha_threshold": 0.95,
+  "directions": {
+    "down": {
+      "idle": [
+        {
+          "region": [
+            217,
+            14,
+            252,
+            571
+          ],
+          "foot": [
+            127,
+            562
+          ],
+          "absolute_foot": [
+            344,
+            576
+          ]
+        }
+      ],
+      "walk": [
+        {
+          "atlas": "walk_down",
+          "region": [
+            129,
+            9,
+            200,
+            431
+          ],
+          "foot": [
+            97,
+            394
+          ],
+          "phase": 0.0,
+          "source_frame": 0,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_down",
+          "region": [
+            568,
+            10,
+            197,
+            425
+          ],
+          "foot": [
+            93,
+            393
+          ],
+          "phase": 0.125,
+          "source_frame": 1,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_down",
+          "region": [
+            1007,
+            10,
+            202,
+            418
+          ],
+          "foot": [
+            100,
+            393
+          ],
+          "phase": 0.25,
+          "source_frame": 2,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_down",
+          "region": [
+            1451,
+            10,
+            199,
+            430
+          ],
+          "foot": [
+            100,
+            393
+          ],
+          "phase": 0.375,
+          "source_frame": 3,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_down",
+          "region": [
+            126,
+            455,
+            204,
+            422
+          ],
+          "foot": [
+            103,
+            388
+          ],
+          "phase": 0.5,
+          "source_frame": 4,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_down_phase5",
+          "region": [
+            341,
+            26,
+            568,
+            1180
+          ],
+          "foot": [
+            290,
+            1103
+          ],
+          "phase": 0.625,
+          "registration": "Common torso scale1160 versus base410; projected ground origin631,1129; no per-frame stretching",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_down",
+          "region": [
+            1005,
+            453,
+            202,
+            417
+          ],
+          "foot": [
+            100,
+            390
+          ],
+          "phase": 0.75,
+          "source_frame": 6,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_down",
+          "region": [
+            1455,
+            455,
+            200,
+            416
+          ],
+          "foot": [
+            94,
+            388
+          ],
+          "phase": 0.875,
+          "source_frame": 7,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        }
+      ]
+    },
+    "left": {
+      "idle": [
+        {
+          "region": [
+            838,
+            14,
+            196,
+            580
+          ],
+          "foot": [
+            53,
+            533
+          ],
+          "absolute_foot": [
+            891,
+            547
+          ]
+        }
+      ],
+      "walk": [
+        {
+          "atlas": "walk_left",
+          "region": [
+            100,
+            14,
+            235,
+            411
+          ],
+          "foot": [
+            120,
+            386
+          ],
+          "phase": 0.0,
+          "source_frame": 0,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_left",
+          "region": [
+            594,
+            14,
+            179,
+            413
+          ],
+          "foot": [
+            56,
+            386
+          ],
+          "phase": 0.125,
+          "source_frame": 1,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_left",
+          "region": [
+            1041,
+            14,
+            157,
+            408
+          ],
+          "foot": [
+            46,
+            386
+          ],
+          "phase": 0.25,
+          "source_frame": 2,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_left",
+          "region": [
+            1421,
+            14,
+            244,
+            401
+          ],
+          "foot": [
+            102,
+            386
+          ],
+          "phase": 0.375,
+          "source_frame": 3,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_left",
+          "region": [
+            105,
+            454,
+            253,
+            398
+          ],
+          "foot": [
+            114,
+            386
+          ],
+          "phase": 0.5,
+          "source_frame": 4,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_left_phase5",
+          "region": [
+            349,
+            33,
+            543,
+            1148
+          ],
+          "foot": [
+            252,
+            1083
+          ],
+          "phase": 0.625,
+          "registration": "Single-sheet torso/head normalization1120; projected ground origin601,1116; no per-frame stretching",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_left",
+          "region": [
+            1026,
+            454,
+            174,
+            408
+          ],
+          "foot": [
+            67,
+            386
+          ],
+          "phase": 0.75,
+          "source_frame": 6,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        },
+        {
+          "atlas": "walk_left",
+          "region": [
+            1415,
+            455,
+            249,
+            402
+          ],
+          "foot": [
+            116,
+            385
+          ],
+          "phase": 0.875,
+          "source_frame": 7,
+          "review": "first native loop visually reviewed; see direction-level limitations",
+          "registration": "projected pelvis-ground origin with common sheet scale, not airborne shoe median"
+        }
+      ]
+    },
+    "right": {
+      "idle": [
+        {
+          "region": [
+            225,
+            635,
+            195,
+            579
+          ],
+          "foot": [
+            144,
+            533
+          ],
+          "absolute_foot": [
+            369,
+            1168
+          ]
+        }
+      ],
+      "walk": [
+        {
+          "atlas": "walk_right",
+          "region": [
+            113,
+            16,
+            243,
+            405
+          ],
+          "foot": [
+            131,
+            384
+          ],
+          "phase": 0.0,
+          "source_frame": 0,
+          "registration": "projected body-ground origin, not average of airborne feet",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_right",
+          "region": [
+            577,
+            16,
+            191,
+            411
+          ],
+          "foot": [
+            112,
+            384
+          ],
+          "phase": 0.125,
+          "source_frame": 1,
+          "registration": "projected body-ground origin, not average of airborne feet",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_right",
+          "region": [
+            1021,
+            16,
+            198,
+            411
+          ],
+          "foot": [
+            113,
+            384
+          ],
+          "phase": 0.25,
+          "source_frame": 2,
+          "registration": "projected body-ground origin, not average of airborne feet",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_precontact_a",
+          "region": [
+            374,
+            70,
+            592,
+            1063
+          ],
+          "foot": [
+            294,
+            995
+          ],
+          "phase": 0.375,
+          "source_phase": "far_leg_precontact_near_leg_support",
+          "registration": "projected pelvis-ground point; common torso/head scale1040, absolute foot[668,1065]",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_right",
+          "region": [
+            115,
+            460,
+            246,
+            400
+          ],
+          "foot": [
+            133,
+            384
+          ],
+          "phase": 0.5,
+          "source_frame": 4,
+          "registration": "projected body-ground origin, not average of airborne feet",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_right",
+          "region": [
+            573,
+            460,
+            186,
+            395
+          ],
+          "foot": [
+            118,
+            384
+          ],
+          "phase": 0.625,
+          "source_frame": 5,
+          "registration": "projected body-ground origin, not average of airborne feet",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_right",
+          "region": [
+            1020,
+            460,
+            190,
+            400
+          ],
+          "foot": [
+            114,
+            384
+          ],
+          "phase": 0.75,
+          "source_frame": 6,
+          "registration": "projected body-ground origin, not average of airborne feet",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_precontact_b",
+          "region": [
+            851,
+            139,
+            487,
+            784
+          ],
+          "foot": [
+            245,
+            744
+          ],
+          "phase": 0.875,
+          "source_phase": "near_leg_precontact_far_leg_support",
+          "registration": "common torso/head scale780; absolute foot[1096,883]",
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        }
+      ]
+    },
+    "up": {
+      "idle": [
+        {
+          "region": [
+            787,
+            638,
+            249,
+            559
+          ],
+          "foot": [
+            123,
+            550
+          ],
+          "absolute_foot": [
+            910,
+            1188
+          ]
+        }
+      ],
+      "walk": [
+        {
+          "source_frame": 2,
+          "region": [
+            1025,
+            16,
+            174,
+            403
+          ],
+          "foot": [
+            82,
+            384
+          ],
+          "atlas": "walk_up",
+          "phase": 0.0,
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "source_frame": 0,
+          "region": [
+            134,
+            16,
+            181,
+            409
+          ],
+          "foot": [
+            87,
+            384
+          ],
+          "atlas": "walk_up",
+          "phase": 0.16666666666666666,
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "atlas": "walk_up_passing",
+          "region": [
+            377,
+            50,
+            498,
+            1116
+          ],
+          "foot": [
+            259,
+            1066
+          ],
+          "registration": "Common torso scale1110; projected ground origin636,1116; no per-frame stretching",
+          "phase": 0.3333333333333333,
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "source_frame": 6,
+          "region": [
+            1016,
+            460,
+            175,
+            398
+          ],
+          "foot": [
+            92,
+            382
+          ],
+          "atlas": "walk_up",
+          "phase": 0.5,
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "source_frame": 1,
+          "region": [
+            576,
+            16,
+            173,
+            404
+          ],
+          "foot": [
+            89,
+            384
+          ],
+          "atlas": "walk_up",
+          "phase": 0.6666666666666666,
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        },
+        {
+          "source_frame": 5,
+          "region": [
+            580,
+            459,
+            177,
+            401
+          ],
+          "foot": [
+            84,
+            383
+          ],
+          "atlas": "walk_up",
+          "phase": 0.8333333333333334,
+          "review": "first native loop visually reviewed; see direction-level limitations"
+        }
+      ]
+    }
+  },
+  "cycle_stride_body_heights": 0.65,
+  "atlas_reference_body_heights": {
+    "idle": 568,
+    "walk_right": 401,
+    "walk_precontact_a": 1040,
+    "walk_precontact_b": 780,
+    "walk_left": 401,
+    "walk_down": 410,
+    "walk_left_phase5": 1120,
+    "walk_down_phase5": 1160,
+    "walk_up": 401,
+    "walk_up_passing": 1110
+  },
+  "available_walk_atlases": {
+    "walk_right": "student-walk-right-v1.png",
+    "walk_precontact_a": "student-walk-precontact-a.png",
+    "walk_precontact_b": "student-walk-precontact-b-sheet.png",
+    "walk_left": "student-walk-left-v1.png",
+    "walk_down": "student-walk-down-v1.png",
+    "walk_left_phase5": "student-walk-left-phase5.png",
+    "walk_down_phase5": "student-walk-down-phase5.png",
+    "walk_up": "student-walk-up-v1.png",
+    "walk_up_passing": "student-walk-up-opposite-passing.png"
+  },
+  "foot_note": "Manually estimated center between visible sole contact areas, not lowest-alpha bounding-box median. Side views have forward/rear projected foot depth; preserve a single common scale rather than re-scale every frame.",
+  "stride_status": "Provisional world stride fitted to the first right-direction native cycle; not biomechanical measurement or zero-slip claim.",
+  "registered_pose_counts": {
+    "down": 8,
+    "left": 8,
+    "right": 8,
+    "up": 6
+  }
+}

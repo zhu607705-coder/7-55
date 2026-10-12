@@ -10,6 +10,8 @@ Each tree uses native AtlasTexture regions registered to its source footprint. I
 
 The accepted PNGs and SHA256s are recorded in `campuses/buct_pilots/chaoyang/data/provenance.json`. The original approved source remains in #119; the source rectangle and inferred registration are documented in `asset-contract.json`. These assets are reference-guided artistic reconstruction, not a source-pixel-identical copy or surveyed hidden geography. Tree branches, covered ground and shadows include plausible completions. This is not a reconstruction of the entire campus or forest.
 
+The pilot student is a separately registered visual child. See [BUCT student character](BUCT_STUDENT_CHARACTER.md) for its asset, movement and collision contract.
+
 ## Controls
 
 - WASD/arrows or hold the visible direction buttons: walk on the bounded paving

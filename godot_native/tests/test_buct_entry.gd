@@ -144,6 +144,8 @@ func run() -> void:
 		direction_touch=InputEventScreenTouch.new();direction_touch.index=3;direction_touch.pressed=false;direction_touch.position=Vector2(1,1);root.push_input(direction_touch)
 		await frames(3)
 		check(pilot.pointer_moves.is_empty(),"Touch release outside controls stops held movement")
+		check(not pilot.visitor.character_visual.walking,"Touch release also returns registered artwork to idle")
+		check(pilot.visitor.character_visual.current_foot_global().distance_to(pilot.visitor.global_position)<0.0001,"Touch input retains registered native feet")
 		await click(pilot.ui_controls.guide)
 		check(pilot.guide_active,"Pilot guide starts through visible button")
 		wind_before=pilot.trees[0].wind_enabled
@@ -153,11 +155,14 @@ func run() -> void:
 		check(pilot.trees[0].wind_enabled!=wind_before,"Space toggles wind even when a clicked guide button retains focus")
 		preserved()
 		var pilot_weak: WeakRef=weakref(pilot)
+		var student_weak: WeakRef=weakref(pilot.visitor.character_visual)
+		var student_sprite_weak: WeakRef=weakref(pilot.visitor.character_visual.sprite)
 		var pilot_shadows: Array[WeakRef]=[]
 		for tree in pilot.trees:pilot_shadows.append(weakref(tree.ground_shadow))
 		await click(pilot.ui_controls.back)
 		await frames(5)
 		check(pilot_weak.get_ref()==null,"Pilot releases on return during active route")
+		check(student_weak.get_ref()==null and student_sprite_weak.get_ref()==null,"Return frees registered character visual and sprite")
 		for shadow in pilot_shadows:check(shadow.get_ref()==null,"Pilot releases independent ground-shadow sibling")
 		check(current_scene.has_method("open_campus"),"Pilot returns to unchanged chooser")
 		check(InputMap.get_actions()==initial_actions,"Pilot removes only its installed inputs")
