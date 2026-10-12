@@ -207,6 +207,9 @@ func _add_tree_occluders() -> void:
 			var material:=ShaderMaterial.new();material.shader=shader;material.set_shader_parameter("foliage_mask",texture)
 			canopy.material=material
 		tree.add_child(canopy)
+		# Source leaves at a road edge can need depth without an evidenced solid stem.
+		if item.get("visual_only",false):
+			objects.add_child(tree);continue
 		var body:=StaticBody2D.new();body.name="TrunkFeetCollision";body.collision_layer=1
 		var shape:=CollisionShape2D.new();var circle:=CircleShape2D.new()
 		circle.radius=float(item.get("trunk_radius",2.0));shape.shape=circle
@@ -340,7 +343,7 @@ func close_info() -> void:
 func toggle_overview() -> void:
 	if not initialized or leaving:return
 	overview=not overview;close_info();building_controls.hide();_layout_ui()
-	status.text="全图浏览 · 仅北侧入口—教学楼—图书馆步道已开放" if overview else "返回步行视角"
+	status.text="全图浏览 · 北入口、教学楼—图书馆及东侧街道局部开放" if overview else "返回步行视角"
 
 func notify_boundary() -> void:
 	if not guide_active and visitor.manual_input.length_squared()>0:

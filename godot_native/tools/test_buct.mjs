@@ -13,6 +13,7 @@ const executable=process.env.GODOT_BIN||'godot';
 const saveNames=['save.json','save.previous.json','save.json.tmp'];
 if(!process.argv.includes('--guard-only')) {
  await import('../tests/verify_buct_haidian_source.mjs');
+ await import('../tests/verify_buct_haidian_east_roads_source.mjs');
  await import('../tests/verify_buct_student_source.mjs');
  await import('../tests/verify_buct_changping_source.mjs');
 }
@@ -72,7 +73,7 @@ for(const {kind,populated} of cases) {
  console.log(`PASS BUCT save guard ${kind} (${populated?'sentinel saves':'empty profile'}): fixture bytes unchanged`);
 }
 if(!process.argv.includes('--guard-only')) {
- for(const script of ['test_buct_source_layers.gd','test_buct_student_maps.gd','test_buct_student_pin_layout.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd']) {
+ for(const script of ['test_buct_source_layers.gd','test_buct_student_maps.gd','test_buct_student_pin_layout.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_haidian_east_roads.gd','test_buct_entry.gd']) {
   const fixture=sandbox();const result=invoke(fixture,script);
   process.stdout.write(result.text);
   assert.equal(result.status,0,`${script} failed; sandbox retained at ${fixture.root}`);
