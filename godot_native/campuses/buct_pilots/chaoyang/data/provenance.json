@@ -1,0 +1,65 @@
+{
+  "campus": "chaoyang",
+  "generation_date_utc": "2026-10-12",
+  "method": "Reference-guided image generation/editing; accepted PNG bytes preserved unmodified",
+  "source_image": "res://campuses/buct/assets/approved-chaoyang.png",
+  "source_rect": [
+    625,
+    565,
+    256,
+    160
+  ],
+  "outputs": [
+    {
+      "file": "assets/promenade-ground.png",
+      "role": "ground",
+      "selected_for_native_pilot": true,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "sha256": "cf8162bb50f2e83e41eb26ff2f74eeae16272008a75547e8ba6e09868b1ab6b6"
+    },
+    {
+      "file": "assets/promenade-crowns.png",
+      "role": "two-crown atlas",
+      "selected_for_native_pilot": true,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGBA",
+      "sha256": "f7bf9dc9ce5e6ce5858851b94f24276a46f8bb1b726654b818f68d6aac90f425"
+    },
+    {
+      "file": "assets/promenade-trunks.png",
+      "role": "two-trunk atlas",
+      "selected_for_native_pilot": true,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGBA",
+      "sha256": "fc2f38ae65b07e42911c59b99f13b2961b63527831d2ddd70a651a699e3ccfca"
+    },
+    {
+      "file": "assets/promenade-shadows.png",
+      "role": "two-shadow atlas",
+      "selected_for_native_pilot": true,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGBA",
+      "sha256": "3e202a27829b5868b069ac3a7d0f72baa5d6105c14018bde2e573062547be53f"
+    }
+  ],
+  "limitations": [
+    "Generated surfaces are inferred visual reconstructions, not surveyed hidden ground or tree structure",
+    "Generated atlas items drift in scale/location; each native AtlasTexture region is explicitly re-registered to the source world footprint",
+    "Raw RGBA has low-alpha background noise and approximately252/255 interior alpha. Native shader may discard low alpha and clamp solid crown/trunk interiors; raw PNGs are unchanged",
+    "Only two specified trees are complete movable layered groups; surrounding vegetation remains static context",
+    "No source-pixel-equality claim for this high-resolution reconstructed regional pilot"
+  ]
+}
