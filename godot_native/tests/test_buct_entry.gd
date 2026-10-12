@@ -78,6 +78,18 @@ func run() -> void:
 		check(bounds.encloses(campus.info_panel.get_global_rect()),"Landmark card fits viewport")
 		await click(campus.ui_controls.close)
 		check(campus.info_id.is_empty(),"Real close button returns to map")
+		campus.show_landmark("library")
+		check(bounds.encloses(campus.info_panel.get_global_rect()),"Library card fits "+str(viewport))
+		for tool in ["library_toggle","library_reset"]:
+			check(bounds.encloses(campus.ui_controls[tool].get_global_rect()),"Library control fits "+tool+" "+str(viewport))
+			check(campus.ui_controls[tool].size.y>=40,"Library control retains 40px touch target")
+		await click(campus.ui_controls.library_toggle)
+		check(not campus.library.body_enabled and campus.library.physics_body.collision_layer==0,"Actual hide control disables library body and collider")
+		check(campus.landmark_at(Vector2(750,500)).is_empty(),"Hidden library rejects alpha selection")
+		await click(campus.ui_controls.library_reset)
+		check(campus.library.body_enabled and campus.library.position==Vector2(749,570),"Actual library reset restores registered body")
+		await click(campus.ui_controls.close)
+		check(campus.info_id.is_empty(),"Library return button restores map")
 		var destination:=Vector2(746,973)
 		campus.camera.force_update_scroll()
 		var touch:=InputEventScreenTouch.new();touch.index=0;touch.pressed=true;touch.position=campus.get_canvas_transform()*destination

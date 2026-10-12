@@ -4,7 +4,7 @@
     1086
   ],
   "source": "assets/approved-chaoyang.png",
-  "scope": "已拆分44组可见楼体、门、附属构筑物；植被、道路及运动场等仍为静态参考。隐藏占地用原图配准修复或示意铺装TileMap，不作测绘事实。",
+  "scope": "原44组保留对象身份，其中图书馆已替换为一个真RGBA独栋及独立影/连续补底；其余43组仍为旧校园图UV分组，尚未完成逐栋重建。碰撞为源图推定，不作测绘事实。",
   "objects": [
     {
       "id": "main_building",
@@ -697,6 +697,74 @@
         ],
         [
           [
+            628,
+            530
+          ],
+          [
+            638,
+            522
+          ],
+          [
+            653,
+            522
+          ],
+          [
+            660,
+            536
+          ],
+          [
+            659,
+            546
+          ],
+          [
+            644,
+            544
+          ],
+          [
+            628,
+            538
+          ]
+        ],
+        [
+          [
+            659,
+            469
+          ],
+          [
+            845,
+            469
+          ],
+          [
+            845,
+            540
+          ],
+          [
+            822,
+            547
+          ],
+          [
+            786,
+            553
+          ],
+          [
+            752,
+            555
+          ],
+          [
+            718,
+            552
+          ],
+          [
+            679,
+            546
+          ],
+          [
+            659,
+            538
+          ]
+        ],
+        [
+          [
             660,
             537
           ],
@@ -750,45 +818,12 @@
           ]
         ]
       ],
-      "shadow_polygons": [
-        [
-          [
-            642,
-            416
-          ],
-          [
-            853,
-            416
-          ],
-          [
-            853,
-            437
-          ],
-          [
-            642,
-            437
-          ]
-        ],
-        [
-          [
-            629,
-            444
-          ],
-          [
-            641,
-            444
-          ],
-          [
-            641,
-            529
-          ],
-          [
-            629,
-            529
-          ]
-        ]
-      ],
-      "cleanplate": "assets/library-technology-cleanplate.png"
+      "shadow_polygons": [],
+      "cleanplate": "assets/library/library-clean-ground.png",
+      "representation": "genuine_rgba_building",
+      "profile": "data/library-profile.json",
+      "scope_note": "One same-style reconstructed true-alpha library; original source coordinates retained with approximately 1–3 source-pixel silhouette drift. Other 43 groups remain source-UV representations.",
+      "silhouette_role": "coarse original reference only; runtime selection uses regenerated body alpha"
     },
     {
       "id": "technology",
@@ -6577,5 +6612,7 @@
       ],
       "outside_depicted_campus": false
     }
-  ]
+  ],
+  "genuine_layered_buildings": 1,
+  "legacy_source_uv_groups": 43
 }

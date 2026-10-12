@@ -80,10 +80,42 @@ func run_steps(steps: Array,label: String) -> void:
 				if step.result!="accepted": check(state.d==before,label+" rejected assembly is zero-write")
 			"reload": reload_disk(label+" step "+str(index))
 		compare(step.expected,label+" "+str(index)+" "+step.op)
+func isolated_save_fixture() -> bool:
+	# The launcher declares a fresh mkdtemp profile. Its actual location must match;
+	# neither a /tmp prefix nor a general workspace path is permission to write saves.
+	var declared:=OS.get_environment("GODOT_TEST_USER_DATA_DIR").replace("\\", "/")
+	if declared.is_empty() or not declared.is_absolute_path():return false
+	declared=declared.simplify_path().trim_suffix("/")
+	var sandbox:=declared.get_base_dir().get_base_dir()
+	var name:=sandbox.get_file()
+	if not (name.begins_with("755-lake-source-parity-") or name.begins_with("755-native-check-")):return false
+	var temporary_root:=OS.get_environment("TMPDIR").replace("\\", "/")
+	if temporary_root.is_empty():temporary_root="/tmp"
+	if not temporary_root.is_absolute_path():return false
+	if sandbox.get_base_dir()!=temporary_root.simplify_path().trim_suffix("/"):return false
+	if declared!=sandbox.path_join("data/SevenFiftyFiveNative"):return false
+	if OS.get_user_data_dir().replace("\\", "/").simplify_path().trim_suffix("/")!=declared:return false
+	if ProjectSettings.globalize_path("user://").replace("\\", "/").simplify_path().trim_suffix("/")!=declared:return false
+	if not DirAccess.dir_exists_absolute(sandbox):return false
+	# The dedicated lake launcher supplies a one-use creation receipt as well.
+	# The standard aggregate runner retains its existing declared-fresh contract.
+	if name.begins_with("755-lake-source-parity-"):
+		var nonce:=OS.get_environment("GODOT_LAKE_TEST_NONCE")
+		if nonce.length()<16:return false
+		var receipt_path:=sandbox.path_join(".lake-test-fixture.json")
+		if not FileAccess.file_exists(receipt_path):return false
+		var receipt=JSON.parse_string(FileAccess.get_file_as_string(receipt_path))
+		if not receipt is Dictionary:return false
+		if receipt.get("schema")!="lake-test-fixture-v1" or receipt.get("nonce")!=nonce:return false
+		if str(receipt.get("user_data_dir", "")).replace("\\", "/").simplify_path().trim_suffix("/")!=declared:return false
+	for file in ["save.json","save.previous.json","save.json.tmp"]:
+		if FileAccess.file_exists(declared.path_join(file)) or DirAccess.dir_exists_absolute(declared.path_join(file)):return false
+	return true
+
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
-		push_error("Run with HOME/XDG_DATA_HOME under /tmp; this regression refuses to touch formal saves.")
-		quit(1)
+	if not isolated_save_fixture():
+		printerr("LAKE_TEST_ISOLATION_REQUIRED: use the isolated native runner; refusing writes outside a fresh declared test profile")
+		quit(2)
 		return
 	state=root.get_node("State")
 	state.developer_mode=false

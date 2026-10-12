@@ -42,6 +42,8 @@ var installed_actions: Array[String] = []
 var ui_controls := {}
 var map_area := Rect2()
 var compact := false
+var library: Node2D
+var library_blockers: Array[PackedVector2Array] = []
 
 func pts(values: Array, offset := Vector2.ZERO) -> PackedVector2Array:
 	var p := PackedVector2Array()
@@ -55,15 +57,21 @@ func _ready() -> void:
 	world=load("res://campuses/buct/scenes/registered_layers.tscn").instantiate()
 	world.name="RegisteredCampus"
 	add_child(world)
+	# This static 6188-cell repair texture only needs one render per scene lifetime.
+	# Preserve its cached ViewportTexture for legacy underlays and hidden objects.
+	world.get_node("GroundRepairTiles").render_target_update_mode=SubViewport.UPDATE_ONCE
 	objects=world.get_node("IndependentRegisteredObjects")
+	library=objects.get_node("library")
 	for poly in data.walkable_polygons: walk_polys.append(pts(poly))
 	var building_data: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct/data/layers.json"))
 	_prepare_depth_layers(building_data)
 	for item in building_data.objects:
-		if item.id in ["south_gate","main_building","library"]:
+		if item.id in ["south_gate","main_building"]:
 			landmark_hit_polys[item.id]=pts(item.silhouette)
 		for footprint in item.footprints:
-			for expanded in Geometry2D.offset_polygon(pts(footprint),3.2): blockers.append(expanded)
+			for expanded in Geometry2D.offset_polygon(pts(footprint),3.2):
+				if item.id=="library": library_blockers.append(_library_local_polygon(expanded))
+				else: blockers.append(expanded)
 	_add_tree_occluders()
 	_build_grid()
 	visitor=CharacterBody2D.new()
@@ -90,7 +98,7 @@ func _ready() -> void:
 func _prepare_depth_layers(building_data: Dictionary) -> void:
 	# Baked ground shadows must not cover a visitor. Preserve their exact source pixels,
 	# but place them between repaired ground and depth-sorted solid objects.
-	var shadows:=Node2D.new();shadows.name="StaticSourceGroundShadows"
+	var shadows:=Node2D.new();shadows.name="StaticSourceGroundShadows";shadows.z_index=-5
 	world.add_child(shadows);world.move_child(shadows,objects.get_index())
 	for item in building_data.objects:
 		var count: int=item.get("shadow_polygons",[]).size()
@@ -124,7 +132,13 @@ func _prepare_depth_layers(building_data: Dictionary) -> void:
 			depth.add_child(polygon)
 	original.hide()
 
+func _library_local_polygon(source: PackedVector2Array) -> PackedVector2Array:
+	var local := PackedVector2Array()
+	for point in source: local.append(point-library.source_anchor)
+	return local
+
 func landmark_at(point: Vector2) -> String:
+	if is_instance_valid(library) and library.hit_test_alpha(point):return "library"
 	for id in landmark_hit_polys:
 		if Geometry2D.is_point_in_polygon(point,landmark_hit_polys[id]):return id
 	return ""
@@ -164,11 +178,15 @@ func _in_paving(p: Vector2) -> bool:
 func is_walkable(p: Vector2) -> bool:
 	for offset in [Vector2.ZERO,Vector2(3,0),Vector2(-3,0),Vector2(0,3),Vector2(0,-3)]:
 		if not _in_paving(p+offset):return false
+	if is_instance_valid(library) and library.body_enabled and library.is_visible_in_tree():
+		for poly in library_blockers:
+			if Geometry2D.is_point_in_polygon(library.to_local(p),poly):return false
 	for poly in blockers:
 		if Geometry2D.is_point_in_polygon(p,poly):return false
 	return true
 
 func _build_grid() -> void:
+	walk_cells.clear()
 	var bounds:=Rect2(walk_polys[0][0],Vector2.ZERO)
 	for poly in walk_polys:
 		for p in poly:bounds=bounds.expand(p)
@@ -240,6 +258,7 @@ func start_guide() -> void:
 	status.text="自动导览中 · 点击步道或按方向键接管"
 
 func return_to_gate() -> void:
+	if is_instance_valid(library) and not library.body_enabled: reset_library()
 	guide_active=false;guide_pause=0;current_path.clear();close_info()
 	overview=false;_layout_ui();visitor.position=Vector2(data.spawn[0],data.spawn[1]);visitor.velocity=Vector2.ZERO
 	camera.position=_walking_camera_position();camera.zoom=Vector2.ONE*_walking_zoom();camera.reset_smoothing()
@@ -249,12 +268,44 @@ func show_landmark(id: String) -> void:
 	for item in data.landmarks:
 		if str(item.id)==id:
 			info_id=id;info_title.text=str(item.name);info_text.text=str(item.description)
+			library.set_selected(id=="library")
 			info_panel.show()
+			if id=="library":
+				info_text.text="同风格独立重建：楼体、投影、净底已分离。原坐标放回；轮廓约1–3源像素偏移。其余43组仍为原图UV。此处仅作校园导览，不代表已确认入口。"
+				info_text.add_theme_font_override("font",load("res://campuses/buct/assets/library/library-info-font.otf"))
+			else: info_text.add_theme_font_override("font",font)
+			_layout_library_tools()
 			if not visited.has(id):visited.append(id)
 			progress.text="已探访 %d / 3"%visited.size()
 			return
 
+func toggle_library() -> void:
+	if not is_instance_valid(library):return
+	guide_active=false;guide_pause=0;current_path.clear()
+	library.set_body_visible(not library.body_enabled)
+	_build_grid();_layout_library_tools()
+	status.text="图书馆楼体已显示" if library.body_enabled else "图书馆楼体已隐藏，固定地面保留"
+
+func reset_library() -> void:
+	if not is_instance_valid(library):return
+	library.reset_building();library.set_actor_foot(visitor.global_position)
+	status.text="图书馆楼体已复位"
+	guide_active=false;guide_pause=0;current_path.clear()
+	_build_grid();_layout_library_tools()
+
+func _layout_library_tools() -> void:
+	if not ui_controls.has("library_toggle"):return
+	var active:=info_id=="library"
+	ui_controls.library_toggle.visible=active;ui_controls.library_reset.visible=active
+	var width:=info_panel.size.x-32
+	var button_width: float=(width-12.0)/3.0 if active else width
+	ui_controls.close.position=Vector2(16,info_panel.size.y-49);ui_controls.close.size=Vector2(button_width,40)
+	ui_controls.library_toggle.position=Vector2(22+button_width,info_panel.size.y-49);ui_controls.library_toggle.size=Vector2(button_width,40)
+	ui_controls.library_reset.position=Vector2(28+button_width*2,info_panel.size.y-49);ui_controls.library_reset.size=Vector2(button_width,40)
+	ui_controls.library_toggle.text="隐藏楼体" if not is_instance_valid(library) or library.body_enabled else "显示楼体"
+
 func close_info() -> void:
+	if is_instance_valid(library):library.set_selected(false)
 	info_id=""
 	if is_instance_valid(info_panel):info_panel.hide()
 
@@ -336,6 +387,10 @@ func _make_ui() -> void:
 	var close:=Button.new();close.text="返回地图";close.name="CloseLandmark"
 	close.add_theme_font_override("font",font);close.add_theme_font_size_override("font_size",17)
 	close.pressed.connect(close_info);info_panel.add_child(close);ui_controls.close=close
+	for item in [["library_toggle","隐藏楼体",toggle_library],["library_reset","复位楼体",reset_library]]:
+		var tool:=Button.new();tool.text=item[1]
+		tool.add_theme_font_override("font",font);tool.add_theme_font_size_override("font_size",16)
+		tool.pressed.connect(item[2]);info_panel.add_child(tool);ui_controls[item[0]]=tool
 	info_panel.hide()
 
 func _layout_ui() -> void:
@@ -383,6 +438,7 @@ func _layout_ui() -> void:
 	info_text.add_theme_font_size_override("font_size",14 if view.y<500 else 17)
 	ui_controls.close.position=Vector2(16,panel_height-49)
 	ui_controls.close.size=Vector2(panel_width-32,40)
+	_layout_library_tools()
 	if overview:_fit_overview_camera()
 	elif is_instance_valid(camera):
 		camera.position=_walking_camera_position()
@@ -432,11 +488,11 @@ func _exit_tree() -> void:
 		InputMap.erase_action(action)
 
 func _pointer_pressed(position: Vector2) -> void:
-	if overview or not info_id.is_empty() or leaving:return
+	if not info_id.is_empty() or leaving:return
 	var target: Vector2=get_canvas_transform().affine_inverse()*position
 	var landmark:=landmark_at(target)
 	if not landmark.is_empty():show_landmark(landmark)
-	elif is_walkable(target):
+	elif not overview and is_walkable(target):
 		guide_active=false;guide_pause=0;path_to(target);status.text="沿开放步道前往点击位置"
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -486,6 +542,7 @@ func _process(delta: float) -> void:
 		guide_pause=maxf(0,guide_pause-delta)
 		if guide_pause<=0:close_info()
 	if is_instance_valid(visitor):
+		library.set_actor_foot(visitor.global_position)
 		visitor.get_node("CanopyFootLocator").visible=not overview and visitor_head_occluded()
 		if overview:
 			_fit_overview_camera()
