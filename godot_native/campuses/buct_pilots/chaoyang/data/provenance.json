@@ -41,7 +41,8 @@
         992
       ],
       "mode": "RGBA",
-      "sha256": "fc2f38ae65b07e42911c59b99f13b2961b63527831d2ddd70a651a699e3ccfca"
+      "sha256": "c5b6442f7667d889fae040f931aff4fecb84d8af6b01430100bf9a04ae14d10d",
+      "revision": "v3 warm brown painterly trunk/root correction"
     },
     {
       "file": "assets/promenade-shadows.png",
@@ -61,5 +62,34 @@
     "Raw RGBA has low-alpha background noise and approximately252/255 interior alpha. Native shader may discard low alpha and clamp solid crown/trunk interiors; raw PNGs are unchanged",
     "Only two specified trees are complete movable layered groups; surrounding vegetation remains static context",
     "No source-pixel-equality claim for this high-resolution reconstructed regional pilot"
-  ]
+  ],
+  "trunk_style_revision": {
+    "date_utc": "2026-10-12",
+    "replaces_sha256": "fc2f38ae65b07e42911c59b99f13b2961b63527831d2ddd70a651a699e3ccfca",
+    "reason": "Match surrounding warm brown painted tree masses; remove overly fine gray bark appearance",
+    "raw_png_unmodified": true,
+    "runtime_alpha_cutoff": 0.04,
+    "low_alpha_1_to_8_pixels": 6749,
+    "world_roots_unchanged": [
+      [
+        87,
+        124
+      ],
+      [
+        165,
+        122
+      ]
+    ],
+    "crown_joints_unchanged": [
+      [
+        87,
+        114
+      ],
+      [
+        165,
+        112
+      ]
+    ],
+    "collision_radius_unchanged": 2.2
+  }
 }

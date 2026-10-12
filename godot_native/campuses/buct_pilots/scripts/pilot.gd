@@ -60,6 +60,10 @@ func _install_inputs() -> void:
 		InputMap.add_action(action);installed_actions.append(action)
 		for key in keys[action]:
 			var event:=InputEventKey.new();event.physical_keycode=key;InputMap.action_add_event(action,event)
+			# Arrow keys have no keyboard-layout identity. Some native/web input
+			# sources report only keycode, so retain physical and logical forms.
+			if key in [KEY_LEFT,KEY_RIGHT,KEY_UP,KEY_DOWN]:
+				var logical:=InputEventKey.new();logical.keycode=key;InputMap.action_add_event(action,logical)
 
 func _button(key: String,text: String,action: Callable) -> Button:
 	var button:=Button.new();button.name=key;button.text=text
