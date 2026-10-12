@@ -64,3 +64,7 @@ See `docs/MILESTONE_VALIDATION.md` for historical milestone evidence and `docs/L
 ### Low-memory first import
 
 Open only one Godot editor and avoid simultaneous heavy builds for the initial718-asset import. If the host terminates parallel import for resource pressure, a temporary project-root `override.cfg` can set `[editor] import/use_multiple_threads=false` and `[threading] worker_pool/max_threads=2`. Do not overwrite an existing override. Remove the temporary override after import, before normal startup; this does not change source assets or runtime rules. See `打开说明.txt` for the exact file contents and [Godot's project-setting documentation](https://docs.godotengine.org/en/4.6/classes/class_projectsettings.html#class-projectsettings-property-editor-import-use-multiple-threads). Prebuilt executable packages do not need asset import.
+
+## Independent BUCT campus entry
+
+Default launch now offers **Continue 7:55** and **BUCT campus walk**. The original Zhejiang story and saves remain intact. The BUCT entry opens the approved source-layered Chaoyang campus with a playable south-gate–main-building–library corridor, keyboard/click/touch walking, landmark cards and guided exploration. Return to the entry from the map's top-right button. See [BUCT_CAMPUS_WALK.md](docs/BUCT_CAMPUS_WALK.md) for controls, geometry qualifications, isolation and tests.
