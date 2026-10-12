@@ -4576,3 +4576,15 @@ Proposed source/test/document union: 75 paths. The 35 import-generated UID compa
 - Added responsive three-campus/four-entry selection, touch/pointer walking, scrollable landmark information, uniform portrait overview and student-safe labels. Changping owns only its new `buct_changping_*` actions and removes/releases only those actions on exit/focus loss. Existing Chaoyang/Haidian/shared character/State/story implementations are unchanged.
 - Focused headless checks passed with exit0: 1,234 entry/state/save-byte/input/descendant-release assertions; 86 actual-student assertions including Changping's original three-landmark route in759 physics ticks with zero illegal feet; 85 label-layout assertions. Read-only source guards passed60 Changping,271 unchanged Haidian and37 shared-student checks. Full story artwork/resume was explicitly skipped in the minimal stage; complete remote CI remains required.
 - Actual desktop GPU passed854 assertions with zero failures; all four injected keyboard directions moved the real feet10.2667px each. The first854/4 failed driver report is retained; correction uses Input.parse_input_event without weakening movement assertions. Manual verification completed two Changping entry/return cycles, W/S movement and release/boundary stop, E/Esc information, M full-map view, plus one Chaoyang and one Haidian return. 1280×720,390×844 and667×375 render layouts passed. Exit had no ERROR/RID leakage, only the known llvmpipe VSync warning. No physical touchscreen or full-story visual claim. See `godot_native/docs/BUCT_CHANGPING_VALIDATION.json`.
+
+## 2026-10-12 昌平第一教学楼：原位透明对象与三面深度
+
+- 本改动基于昌平正式入口 Draft #126（远端 `3ce2b43ff9fe53c98958909fdd9d11f3b752924b`）。补丁只含昌平第一教学楼及对应测试，不包含其它校区建筑、室内或新道路。原950×1656地图、18源px四向学生、速度88、3px脚碰撞、State及原41点/3地标主线保持。
+- 一教采用一张1755×896真实RGBA，原文件SHA256 `92d71203ca4e9070651c772a27cef63ee9190f3a08bbbd8e83be846d06bc59f6`。统一比例 `0.14504525562156373`、原点 `[390.2105602416651,1083.9025528184943]`；不做非等比拉伸，两庭院六个内部探针alpha0。
+- 后横翼、中脊、前弧通过唯一surface ID与1755×3脚线表共享整PNG。当前2个互补深度pass，总预算≤8。左右庭院同列的前、后墙使用不同地脚，不能用整楼一条最下沿脚线代替。庭院中的验证脚点只作遮挡fixture，不开启院内路线。
+- 保留原两块物理碰撞和实际地面投影；旧本体、误命名为SourceShadowOrAnnex_1/_2的后翼/中脊及旧分片guard退役。实际alpha拾取可打开“第一教学楼”，透明庭院不误选。没有给普通楼提供移动/隐藏后完整净底承诺。
+- 修复只采已审核的144源px东弧、130源px门下白区，共274源像素。两张生成补片分别严格等比注册，原PNG保留；CPU证明许可白区外像素变化0。其余原树、庭院和道路不按整矩形重画。这些补片是风格匹配的地面恢复，不是原像素精确还原。
+- 生产本体PNG的.import明确启用mipmap并保留原alpha/RGB。所有原生body pass与单PNG对照复用同一个生产Texture，RGB走mip、alpha固定LOD0；surface二进制用.r8.bin复用既有导出白名单。
+- 验证：CPU/静态19项；统一stage增量导入exit0；原生904/0，涵盖实际mipmap、alpha拾取、两碰撞与两次整campus子孙WeakRef释放；三校原学生回归86/0，昌平主线实际759ticks、动画575ticks、非法脚点0；首轮真实GPU13/0、exit0，alpha支持0差、RGB最大1LSB，真实学生前/后遮挡四组通过。首轮截图driver的旧screen-space标签未刷新已保留为历史；只修fixture刷新后，第二轮真实GPU仍13/0且exit0，正常/选中截图地标位置正确，不遮学生。
+- 短实机手工完成两次正式入口进入/返回，屋顶真实alpha点选“第一教学楼”、Esc关闭、左庭院透明点不选，以及导览后方向键接管/释放。手工没有完整步行主线、庭院通行或实体手机测试；场景正常退出0，无ERROR/RID，环境仅有VSync不支持提示。
+- 本轮完成第一教学楼这一栋真实RGBA的原位接入验证；不能称全部53个旧分组都已成为逐栋RGBA，也不能把既有主线说成全校园道路可走。
