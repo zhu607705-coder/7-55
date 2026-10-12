@@ -9,6 +9,9 @@ var backup_bytes:=PackedByteArray()
 var initial_scale_size: Vector2i
 var initial_scale_mode: int
 var initial_actions: Array[StringName]
+var initial_input: Dictionary
+var initial_scale_factor: float
+var initial_scale_aspect: int
 func _initialize() -> void:run.call_deferred()
 func frames(count:=3) -> void:
 	for i in range(count):await process_frame
@@ -25,6 +28,134 @@ func preserved() -> void:
 	check(FileAccess.get_file_as_bytes(state.SAVE_PATH)==saved_bytes,"BUCT never rewrites primary save bytes")
 	check(FileAccess.get_file_as_bytes(state.BACKUP_PATH)==backup_bytes,"BUCT never rewrites backup save bytes")
 	check(root.content_scale_size==initial_scale_size and root.content_scale_mode==initial_scale_mode,"BUCT does not change global window scaling")
+	check(root.content_scale_factor==initial_scale_factor and root.content_scale_aspect==initial_scale_aspect,"BUCT preserves global scale factor and aspect")
+func input_snapshot() -> Dictionary:
+	var result: Dictionary={}
+	for action in InputMap.get_actions():
+		var events: Array=[]
+		for event: InputEvent in InputMap.action_get_events(action):
+			var fields: Dictionary={"class":event.get_class()}
+			for property in event.get_property_list():
+				if (int(property.usage)&PROPERTY_USAGE_STORAGE)!=0:
+					fields[str(property.name)]=event.get(str(property.name))
+			events.append(fields)
+		result[str(action)]={"deadzone":InputMap.action_get_deadzone(action),"events":events}
+	return result
+func input_preserved() -> void:
+	check(InputMap.get_actions()==initial_actions,"Chooser restores the exact original action list")
+	check(input_snapshot()==initial_input,"Chooser preserves all original input events and deadzones")
+func collect_refs(node: Node,refs: Array[WeakRef]) -> void:
+	refs.append(weakref(node))
+	for child in node.get_children():collect_refs(child,refs)
+func check_released(refs: Array[WeakRef],label: String) -> void:
+	var released:=true
+	for reference in refs:released=released and reference.get_ref()==null
+	check(released,label)
+func check_chooser(viewport: Vector2i) -> void:
+	var bounds:=Rect2(Vector2.ZERO,Vector2(viewport))
+	check(current_scene.has_method("open_campus") and current_scene.has_method("open_haidian"),"The same chooser provides both independent campuses")
+	check(bounds.encloses(current_scene.card.get_global_rect()),"Three-entry chooser fits "+str(viewport))
+	for button: Button in [current_scene.story_button,current_scene.campus_button,current_scene.haidian_button]:
+		check(bounds.encloses(button.get_global_rect()),"Chooser button fits: "+str(button.name))
+		check(button.size.y>=44,"Chooser button retains 44px minimum target: "+str(button.name))
+	check(current_scene.campus_button.name=="OpenBuctCampus" and current_scene.haidian_button.name=="OpenBuctHaidian","Original and new campus entry identities remain distinct")
+func haidian_round_trip(viewport: Vector2i,cycle: int) -> void:
+	root.size=viewport;await frames(4)
+	check_chooser(viewport)
+	var bounds:=Rect2(Vector2.ZERO,Vector2(viewport))
+	await click(current_scene.haidian_button)
+	var campus=current_scene
+	check(campus.scene_file_path=="res://campuses/buct_haidian/scenes/playable.tscn","Actual Haidian entry button reaches its independent scene")
+	if campus.scene_file_path!="res://campuses/buct_haidian/scenes/playable.tscn":return
+	check(root.size==viewport,"Haidian entry preserves requested window dimensions")
+	check(campus.initialized,"Haidian initializes approved registered assets")
+	if not campus.initialized:
+		await click(campus.return_button)
+		return
+	check(campus.real_buildings.size()==1 and campus.real_buildings.has("main_building"),"Haidian installs only one true-RGBA teaching building")
+	check(campus.landmark_hit_polys.has("library") and not campus.real_buildings.has("library"),"Haidian Rongmao library retains its legacy source identity")
+	check(campus.WORLD==Vector2(1448,1086) and campus.visitor.position==Vector2(963,297),"Original Haidian canvas and north entrance retained")
+	check(campus.pin_layer is CanvasLayer,"Haidian pins use screen-space controls")
+	campus.camera.force_update_scroll()
+	check(campus.map_area.has_point(campus.visitor.get_global_transform_with_canvas().origin),"Haidian spawn remains visible between bars: "+str(viewport))
+	for key in ["back","guide","reset","overview","nearby","zoom_out","zoom_in","building_debug"]:
+		var control: Control=campus.ui_controls[key]
+		check(bounds.encloses(control.get_global_rect()),"Haidian control fits "+key+" "+str(viewport))
+		check(control.size.y>=40,"Haidian control remains touch-sized: "+key)
+	await click(campus.ui_controls.nearby)
+	check(campus.info_id=="north_gate","Haidian nearby button opens north entrance")
+	check(bounds.encloses(campus.info_panel.get_global_rect()),"Haidian information panel fits "+str(viewport))
+	check(campus.info_scroll is ScrollContainer,"Haidian long information remains scrollable")
+	await click(campus.ui_controls.close)
+	check(campus.info_id.is_empty(),"Haidian information close returns to map")
+	campus.show_landmark("main_building");await frames(2)
+	check(bounds.encloses(campus.info_panel.get_global_rect()),"Teaching information fits both mobile orientations")
+	var escape:=InputEventKey.new();escape.physical_keycode=KEY_ESCAPE;escape.pressed=true
+	campus._unhandled_input(escape)
+	check(campus.info_id.is_empty() and not campus.leaving,"Haidian Escape closes information before exiting")
+	await click(campus.ui_controls.building_debug)
+	check(campus.building_panel.visible,"Haidian building inspection opens")
+	check(bounds.encloses(campus.building_panel.get_global_rect()),"Haidian building inspection fits "+str(viewport))
+	check(campus.movement_paused(),"Haidian building inspection pauses walking")
+	campus._unhandled_input(escape)
+	check(not campus.building_panel.visible and not campus.leaving,"Haidian Escape closes building inspection first")
+	await frames(2)
+	campus.camera.force_update_scroll()
+	var waypoint: Array=campus.data.route_waypoints[1]
+	var destination:=Vector2(waypoint[0],waypoint[1])
+	var touch:=InputEventScreenTouch.new();touch.index=0;touch.pressed=true;touch.position=campus.get_canvas_transform()*destination
+	check(campus.map_area.has_point(touch.position),"Haidian touch destination lies inside the playable screen area")
+	root.push_input(touch)
+	check(not campus.current_path.is_empty(),"Haidian actual touch creates a walkable route")
+	var start: Vector2=campus.visitor.position
+	for i in range(12):await physics_frame
+	check(campus.visitor.position.distance_to(start)>2,"Haidian touch moves the real visitor")
+	touch.pressed=false;root.push_input(touch)
+	await click(campus.ui_controls.overview)
+	check(campus.overview and campus.movement_paused(),"Haidian overview pauses walking")
+	campus.camera.force_update_scroll()
+	var transform: Transform2D=campus.world.get_global_transform_with_canvas()
+	check(campus.map_area.grow(1).has_point(transform*Vector2.ZERO) and campus.map_area.grow(1).has_point(transform*campus.WORLD),"Haidian overview fits the complete original canvas")
+	for pin: Control in campus.pins:
+		check(pin.size.y>=40 and pin.scale==Vector2.ONE,"Haidian overview pins keep readable screen-space targets")
+	campus._unhandled_input(escape)
+	check(not campus.overview and not campus.leaving,"Haidian Escape closes overview before exiting")
+	await click(campus.ui_controls.reset)
+	check(campus.visitor.position==Vector2(963,297) and campus.current_path.is_empty(),"Haidian reset returns to north entrance without leaving campus")
+	await click(campus.ui_controls.guide)
+	check(campus.guide_active,"Haidian guide button starts the original route")
+	Input.action_press("buct_haidian_walk_down")
+	campus._notification(NOTIFICATION_APPLICATION_FOCUS_OUT)
+	check(not Input.is_action_pressed("buct_haidian_walk_down"),"Haidian focus loss releases owned held action")
+	check(not campus.guide_active and campus.current_path.is_empty() and campus.visitor.velocity==Vector2.ZERO,"Haidian focus loss clears guide, path and visitor motion")
+	preserved()
+	var refs: Array[WeakRef]=[];collect_refs(campus,refs)
+	var held_action: String="buct_haidian_walk_right"
+	Input.action_press(held_action)
+	if cycle==0:
+		await click(campus.return_button)
+	else:
+		campus.return_to_entry();campus.return_to_entry();await frames(5)
+	check_released(refs,"Haidian exit frees all descendants, registered strips, shadows and repair viewport")
+	check(root.size==viewport,"Haidian exit preserves requested window dimensions")
+	check(not InputMap.has_action(held_action) or not Input.is_action_pressed(held_action),"Haidian held movement does not survive exit")
+	check_chooser(viewport)
+	input_preserved();preserved()
+func haidian_borrowed_input() -> void:
+	var action: StringName="buct_haidian_walk_left"
+	var created:=not InputMap.has_action(action)
+	if created:
+		InputMap.add_action(action,0.37)
+		var event:=InputEventKey.new();event.physical_keycode=KEY_J;InputMap.action_add_event(action,event)
+	var borrowed_snapshot:=input_snapshot()
+	await click(current_scene.haidian_button)
+	var campus=current_scene
+	check(input_snapshot()[str(action)]==borrowed_snapshot[str(action)],"Haidian does not mutate a pre-existing action's events or deadzone")
+	check(not campus.owned_actions.has(str(action)),"Haidian does not claim ownership of a borrowed action")
+	campus.return_to_entry();await frames(5)
+	check(input_snapshot()==borrowed_snapshot,"Haidian exit preserves a pre-existing input action exactly")
+	if created:InputMap.erase_action(action)
+	input_preserved();preserved()
 func isolated_save_fixture() -> bool:
 	# A direct --script launch must never overwrite a player's native saves.
 	# XDG alone is insufficient: verify the directory Godot actually resolved.
@@ -52,17 +183,19 @@ func run() -> void:
 	saved_bytes=FileAccess.get_file_as_bytes(state.SAVE_PATH)
 	backup_bytes=FileAccess.get_file_as_bytes(state.BACKUP_PATH)
 	initial_scale_size=root.content_scale_size;initial_scale_mode=root.content_scale_mode
-	initial_actions=InputMap.get_actions()
+	initial_actions=InputMap.get_actions();initial_input=input_snapshot()
+	initial_scale_factor=root.content_scale_factor;initial_scale_aspect=root.content_scale_aspect
 	root.set_meta("entry_arguments_consumed",true)
 	check(ProjectSettings.get_setting("application/run/main_scene")=="res://scenes/entry.tscn","Default launch points at separate campus chooser")
 	check(change_scene_to_file("res://scenes/entry.tscn")==OK,"Chooser loads")
 	await frames(5)
-	for viewport: Vector2i in [Vector2i(1440,900),Vector2i(390,844),Vector2i(844,390),Vector2i(667,375),Vector2i(1280,720)]:
+	for viewport: Vector2i in [Vector2i(1440,900),Vector2i(390,844),Vector2i(392,844),Vector2i(844,390),Vector2i(667,375),Vector2i(1280,720)]:
 		root.size=viewport;await frames(4)
 		var entry=current_scene
 		check(entry.has_method("open_campus"),"Return reaches chooser")
 		var bounds:=Rect2(Vector2.ZERO,Vector2(viewport))
 		check(bounds.encloses(entry.card.get_global_rect()),"Chooser fits "+str(viewport))
+		check_chooser(viewport)
 		await click(entry.campus_button)
 		var campus=current_scene
 		check(campus.scene_file_path=="res://campuses/buct/scenes/playable.tscn","Real campus button reaches independent native map")
@@ -122,7 +255,16 @@ func run() -> void:
 			check(shadow_refs[i].get_ref()==null,"Every reparented ground shadow is freed: %d"%i)
 		check(current_scene.has_method("open_campus"),"Active route returns cleanly to chooser")
 		check(InputMap.get_actions()==initial_actions,"Leaving removes only BUCT-installed actions")
+		input_preserved()
 		preserved()
+	# Each requested mobile orientation exercises two complete native Haidian returns.
+	for viewport: Vector2i in [Vector2i(392,844),Vector2i(667,375)]:
+		for cycle in range(2):await haidian_round_trip(viewport,cycle)
+	await haidian_borrowed_input()
+	# Cross-campus recovery: Haidian -> chooser -> original Chaoyang -> chooser.
+	await click(current_scene.haidian_button)
+	current_scene.return_to_entry();await frames(5)
+	input_preserved();preserved()
 	# Escape unwinds child overlays first; final Escape returns to entry.
 	await click(current_scene.campus_button)
 	var campus=current_scene
@@ -133,7 +275,11 @@ func run() -> void:
 	campus.toggle_overview();campus._unhandled_input(escape)
 	check(not campus.overview and not campus.leaving,"Escape exits overview first")
 	campus._unhandled_input(escape);await frames(4)
-	preserved()
+	preserved();input_preserved()
+	# Resume story immediately after a further Haidian visit, with no story reset.
+	await click(current_scene.haidian_button)
+	current_scene.return_to_entry();await frames(5)
+	preserved();input_preserved()
 	await click(current_scene.story_button)
 	check(current_scene.scene_file_path=="res://scenes/main.tscn","Continue retains existing story scene identity")
 	check(state.d.native.page=="phone_home","Continue resumes fixture page without a story reset")
