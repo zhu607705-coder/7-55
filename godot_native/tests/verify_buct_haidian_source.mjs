@@ -44,9 +44,9 @@ check(chooser.includes('entry_arguments_consumed')&&chooser.includes('"--fresh",
 check(read('project.godot').includes('run/main_scene="res://scenes/entry.tscn"'),'Default native entry remains the shared chooser');
 
 const manifest=json('data/buildings/scene-manifest.json');
-same(manifest.profiles,['data/buildings/teaching-profile.json'],'Exactly one genuine teaching-building profile');
+same(manifest.profiles,['data/buildings/teaching-profile.json'],'Teaching inspector retains its own single profile');
 const profile=json(manifest.profiles[0]);
-same(profile.legacy_id,'main_building','Only main_building is replaced with genuine RGBA');
+same(profile.legacy_id,'main_building','Teaching profile retains original identity');
 same(profile.render_backend,'sprite_regions','Default accepted Sprite-region renderer');
 same(profile.body_filter,'rgb_mipmap_alpha0','RGB mipmaps with alpha LOD0');
 const source=json('data/layers.json');
@@ -55,7 +55,7 @@ same(source.canvas_size,[1448,1086],'Original full-campus source dimensions');
 same(route.canvas_size,[1448,1086],'Route shares the original source coordinate frame');
 same(route.spawn,[963,297],'Original north entrance coordinate');
 same(route.landmarks.map(x=>x.id),['north_gate','main_building','library'],'Original three landmark identities');
-check(source.objects.some(x=>x.id==='library'),'Legacy library geometry remains registered');
+check(source.objects.some(x=>x.id==='library'),'Original library source geometry retained for retirement accounting');
 same(route.qa.manual_action,'buct_haidian_walk_down','QA action uses isolated Haidian namespace');
 same(source.source,route.source,'Route and legacy layers use the same original map');
 png(source.source,'b5a95f81d89819cc54a346c5ec8e22abd7cd2bc7814b7daf5b65d0145bf72c63');
@@ -127,3 +127,25 @@ for(const file of fs.readdirSync(path.join(campus,'assets/buildings'))){
 }
 for(const license of ['assets/FONT-LICENSE.txt','assets/NOTO-OFL-LICENSE.txt'])resource(license);
 console.log(`BUCT_HAIDIAN_SOURCE: ${checks} checks passed (read-only; no Godot, GPU, or art-acceptance claim)`);
+
+const rongmao=json('rongmao/data/library-profile.json');
+const lib=png('rongmao/'+rongmao.body_texture,rongmao.body_png_sha256);
+same([lib.width,lib.height,lib.colorType],[1115,1411,6],'Rongmao original true-RGBA body dimensions');
+same(rongmao.body_image_to_world.origin,[399,246],'Rongmao corrected original full-PNG origin');
+same(rongmao.body_image_to_world.scale,196/1115,'One Rongmao registration scalar');
+same(rongmao.interaction_policy,{alpha_select:true,information:true,hide:false,move:false},'Minimal ground does not expose unsupported hide/move UI');
+same(rongmao.static_overlap_foot_y,[462],'Only actually relevant nearby tree threshold retained');
+for(const [asset,hash] of Object.entries(rongmao.asset_sha256))png('rongmao/'+asset,hash);
+check(runtime.includes('_install_rongmao_library')&&runtime.includes('landmark_hit_polys.erase("library")'),'Real body installed and legacy click proxy retired');
+check(runtime.includes('CleanShadowUnderlay_library')&&runtime.includes('library_GroundShadow_'),'Old broad shadow and underlay retired together');
+check(!/assert\s*\([^\n]*configure/.test(read(prefix+'rongmao/scripts/rongmao_library.gd')),'Rongmao release configure call executes outside assert');
+console.log(`BUCT_HAIDIAN_RONGMAO_SOURCE: ${checks} cumulative read-only checks passed`);
+
+const textureGuard=read(prefix+'scripts/imported_texture_validator.gd');
+check(textureGuard.includes('ResourceLoader.exists')&&textureGuard.includes('ResourceLoader.load')&&textureGuard.includes('resource is Texture2D'),'Export-safe validator requires an actual imported Texture2D');
+check(textureGuard.includes('Vector2i(texture.get_size())!=expected_size'),'Imported texture dimensions checked against registration');
+check(textureGuard.includes('FileAccess.file_exists(path) and FileAccess.get_sha256(path)!=expected_sha256'),'Available raw source still requires unchanged SHA');
+check(!/FileAccess\.get_sha256/.test(runtime),'Both runtime loaders delegate source-or-import validation centrally');
+check((runtime.match(/TEXTURE_VALIDATOR\.validate/g)||[]).length===5,'Ground, masks, bodies, shadow clip and Rongmao assets use central validator');
+same(rongmao.asset_imported_size['assets/south-ground.png'],[238,256],'Limited-size imported ground is validated without changing raw registration');
+console.log(`BUCT_HAIDIAN_EXPORT_SOURCE: ${checks} cumulative read-only checks passed`);

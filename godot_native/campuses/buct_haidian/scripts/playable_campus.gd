@@ -4,6 +4,11 @@ const VISITOR = preload("res://campuses/buct_haidian/scripts/campus_visitor.gd")
 var SOURCE: Texture2D
 var WORLD: Vector2
 const CELL := 4.0
+const TEXTURE_VALIDATOR=preload("res://campuses/buct_haidian/scripts/imported_texture_validator.gd")
+const RONGMAO_LIBRARY=preload("res://campuses/buct_haidian/rongmao/scripts/rongmao_library.gd")
+var library_component: Node2D
+var library_profile: Dictionary={}
+var library_retired_refs: Array[WeakRef]=[]
 const GENUINE_BUILDING=preload("res://campuses/buct_haidian/scripts/native_layered_building.gd")
 var real_buildings: Dictionary={}
 var real_profiles: Dictionary={}
@@ -69,6 +74,8 @@ func pts(values: Array, offset := Vector2.ZERO) -> PackedVector2Array:
 func _ready() -> void:
 	if not _load_real_profiles():
 		_show_initialization_error("校园素材暂时无法加载，请返回入口");return
+	if not _load_rongmao_profile():
+		_show_initialization_error("荣茂馆素材暂时无法加载，请返回入口");return
 	data=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct_haidian/data/playable_route.json"))
 	SOURCE=load("res://campuses/buct_haidian/"+str(data.source))
 	WORLD=SOURCE.get_size()
@@ -87,7 +94,7 @@ func _ready() -> void:
 	var landmark_ids: Array=[]
 	for landmark in data.landmarks: landmark_ids.append(str(landmark.id))
 	for item in building_data.objects:
-		if real_profiles.has(str(item.id)):continue
+		if real_profiles.has(str(item.id)) or str(item.id)=="library":continue
 		if str(item.id) in landmark_ids:
 			landmark_hit_polys[item.id]=pts(item.silhouette)
 		for footprint in item.footprints:
@@ -165,6 +172,7 @@ func _prepare_depth_layers(building_data: Dictionary) -> void:
 			original.hide()
 
 func landmark_at(point: Vector2) -> String:
+	if is_instance_valid(library_component) and library_component.hit_test_alpha(point):return "library"
 	for id in ["library","main_building"]:
 		if real_buildings.has(id) and real_buildings[id].hit_test_alpha(point):return id
 	for id in landmark_hit_polys:
@@ -312,17 +320,19 @@ func return_to_gate() -> void:
 	_layout_ui();camera.reset_smoothing();status.text="已回到北侧入口"
 
 func show_landmark(id: String) -> void:
+	if is_instance_valid(library_component):library_component.set_selected(id=="library")
 	if real_buildings.has(id):active_building=id
 	for key in real_buildings:real_buildings[key].set_selected(key==id)
 	for item in data.landmarks:
 		if str(item.id)==id:
-			info_id=id;info_title.text=str(item.name);info_text.text=str(item.description)
+			info_id=id;info_title.text=str(item.name);info_text.text=str(library_profile.info_text) if id=="library" else str(item.description)
 			info_panel.show()
 			if not visited.has(id):visited.append(id)
 			progress.text="已探访 %d / 3"%visited.size()
 			return
 
 func close_info() -> void:
+	if is_instance_valid(library_component):library_component.set_selected(false)
 	for b in real_buildings.values():b.set_selected(false)
 	info_id=""
 	if is_instance_valid(info_panel):info_panel.hide()
@@ -461,6 +471,7 @@ func _fit_overview_camera() -> void:
 func _process(delta: float) -> void:
 	if not initialized or leaving:return
 	elapsed+=delta
+	if is_instance_valid(library_component) and is_instance_valid(visitor):library_component.update_actor_foot(visitor.position.y)
 	if boundary_message_until>0 and elapsed>=boundary_message_until:
 		boundary_message_until=0
 		if not guide_active:status.text="沿开放的铺装步道探索校园"
@@ -496,16 +507,19 @@ func _load_real_profiles() -> bool:
 	if str(real_manifest.get("status","")) not in ["review_real_assets","accepted_real_art"]:return false
 	for layer in real_manifest.get("ground_layers",[]):
 		var ground_path: String="res://campuses/buct_haidian/"+str(layer.texture)
-		if not FileAccess.file_exists(ground_path) or FileAccess.get_sha256(ground_path)!=layer.png_sha256:return false
+		if not TEXTURE_VALIDATOR.validate(ground_path,str(layer.png_sha256),Vector2i(layer.actual_size[0],layer.actual_size[1])):return false
 	for field in ["repair_mask","preserved_foliage_mask"]:
 		var mask_path: String="res://campuses/buct_haidian/"+str(real_manifest.get(field,""))
-		if not FileAccess.file_exists(mask_path) or FileAccess.get_sha256(mask_path)!=real_manifest.get(field+"_sha256",""):return false
+		if not TEXTURE_VALIDATOR.validate(mask_path,str(real_manifest.get(field+"_sha256","")),Vector2i(480,368)):return false
 	if real_manifest.get("ground_layers",[]).is_empty():return false
 	for path in real_manifest.profiles:
 		var p: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct_haidian/"+str(path)))
 		for field in ["body","shadow"]:
 			var asset: String="res://campuses/buct_haidian/"+str(p[field+"_texture"])
-			if not FileAccess.file_exists(asset) or FileAccess.get_sha256(asset)!=p[field+"_png_sha256"]:return false
+			var expected: Array=p[field+"_image_to_world"].raw_size
+			if not TEXTURE_VALIDATOR.validate(asset,str(p[field+"_png_sha256"]),Vector2i(expected[0],expected[1])):return false
+		var clip_path: String="res://campuses/buct_haidian/"+str(p.shadow_clip_texture)
+		if not TEXTURE_VALIDATOR.validate(clip_path,str(p.shadow_clip_sha256),Vector2i(p.body_texture_size[0],p.body_texture_size[1])):return false
 		real_profiles[str(p.legacy_id)]=p
 	return real_profiles.size()>0 and real_profiles.size()==real_manifest.profiles.size()
 
@@ -551,6 +565,7 @@ func _install_genuine_buildings(building_data: Dictionary) -> bool:
 		if not configured:
 			push_error("Genuine building registration failed: "+id);return false
 		real_buildings[id]=b
+	if not _install_rongmao_library():return false
 	_preserve_original_foliage()
 	refresh_static_paving()
 	return true
@@ -574,6 +589,11 @@ func _rebuild_real_navigation() -> void:
 		for shape in b.collision_shapes:
 			var polygon:=PackedVector2Array()
 			for point in shape.polygon:polygon.append(b.to_global(point))
+			for expanded in Geometry2D.offset_polygon(polygon,3.2):blockers.append(expanded)
+	if is_instance_valid(library_component):
+		for shape in library_component.collision_shapes:
+			var polygon:=PackedVector2Array()
+			for point in shape.polygon:polygon.append(library_component.to_global(point))
 			for expanded in Geometry2D.offset_polygon(polygon,3.2):blockers.append(expanded)
 	_build_grid()
 
@@ -601,7 +621,7 @@ func _make_building_controls() -> void:
 	for row in [["关闭建筑检查",open_debug],["教学楼介绍",func():building_controls.hide();show_landmark("main_building")],["隐藏 / 显示 H",toggle_real_visible],["移开 / 放回 T",toggle_real_moved],["教学楼复位 B",reset_real_buildings]]:
 		var control:=Button.new();control.text=row[0];control.custom_minimum_size.y=44;control.add_theme_font_override("font",font);control.add_theme_font_size_override("font_size",16);control.pressed.connect(row[1]);column.add_child(control)
 	real_status=Label.new();real_status.add_theme_font_override("font",font);real_status.add_theme_font_size_override("font_size",14);real_status.add_theme_color_override("font_color",Color("38574b"));real_status.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	real_status.text="教学楼为独立透明对象。图书馆仍为原登记层。隐藏地面为概念补全；开放原有步道。";column.add_child(real_status)
+	real_status.text="教学楼、荣茂馆为独立透明对象。H/T仅检查教学楼；馆沿原步道访问，未开放整栋搬移。补底为有限艺术推定。";column.add_child(real_status)
 	building_controls.hide()
 
 func refresh_static_paving() -> void:
@@ -725,3 +745,46 @@ func _show_initialization_error(message: String) -> void:
 	var panel:=VBoxContainer.new();panel.position=Vector2(16,16);ui.add_child(panel)
 	status=Label.new();status.text=message;status.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"));panel.add_child(status)
 	return_button=Button.new();return_button.name="HaidianReturnToEntry";return_button.text="返回入口";return_button.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"));return_button.custom_minimum_size=Vector2(160,48);return_button.pressed.connect(return_to_entry);panel.add_child(return_button)
+
+
+func _load_rongmao_profile() -> bool:
+	const PREFIX := "res://campuses/buct_haidian/rongmao/"
+	var path := PREFIX+"data/library-profile.json"
+	if not FileAccess.file_exists(path):return false
+	library_profile=JSON.parse_string(FileAccess.get_file_as_string(path))
+	if library_profile.is_empty():return false
+	for relative_path in library_profile.asset_sha256:
+		var expected: Array=library_profile.get("asset_imported_size",{}).get(relative_path,[])
+		if expected.size()!=2:return false
+		if not TEXTURE_VALIDATOR.validate(PREFIX+relative_path,str(library_profile.asset_sha256[relative_path]),Vector2i(expected[0],expected[1])):return false
+	return true
+
+func _retire_library_node(node: Node) -> void:
+	library_retired_refs.append(weakref(node))
+	for child in node.get_children():_collect_retired(child)
+	node.get_parent().remove_child(node);node.queue_free()
+
+func _install_rongmao_library() -> bool:
+	const PREFIX := "res://campuses/buct_haidian/rongmao/"
+	var old := objects.get_node_or_null("library")
+	if old==null:push_error("Missing original library object to replace");return false
+	_retire_library_node(old)
+	landmark_hit_polys.erase("library")
+	# The broad old 'library shadow' crosses the blue court. Retire BOTH copied
+	# source polygon and its paving underlay, returning the unchanged source court.
+	var shadows := world.get_node("StaticSourceGroundShadows")
+	for child in shadows.get_children():
+		if str(child.name).begins_with("library_GroundShadow_"):_retire_library_node(child)
+	for child in world.get_children():
+		if str(child.name).begins_with("CleanShadowUnderlay_library"):_retire_library_node(child)
+	# Hidden core stays approximate native ground. Source pixels outside the
+	# exact mask remain visible, including the left green wedge and original trees.
+	var underlay := world.get_node("CleanUnderlay_library") as Polygon2D
+	var material := ShaderMaterial.new();material.shader=preload("res://campuses/buct_haidian/rongmao/shaders/source_retirement_mask.gdshader")
+	material.set_shader_parameter("retirement_mask",load(PREFIX+str(library_profile.underlay_mask)))
+	underlay.material=material
+	library_component=RONGMAO_LIBRARY.new();library_component.name="library";objects.add_child(library_component)
+	var configured: bool=library_component.configure_library(library_profile)
+	if not configured:push_error("Cannot configure Rongmao real RGBA component");return false
+	var ground: Polygon2D=library_component.make_minimal_ground();generated_repair.add_child(ground)
+	return true
