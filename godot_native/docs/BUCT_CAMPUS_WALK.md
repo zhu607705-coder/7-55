@@ -28,13 +28,13 @@ BUCT does not reference State, write saves, install generic `walk_*` actions, ch
 Run from the repository root after `node godot_native/tools/sync_source.mjs` and the ordinary native import:
 
 ```sh
-godot --headless --path godot_native --script res://tests/test_buct_source_layers.gd
-godot --headless --path godot_native --script res://tests/test_buct_playable.gd
-godot --headless --path godot_native --script res://tests/test_buct_entry.gd
+node godot_native/tools/test_buct.mjs
 node godot_native/tools/validate_native.mjs
 ```
 
-The entry regression uses isolated test saves in the standard validator. It compares full State snapshots and primary/backup file bytes across repeated campus visits, and exercises the actual chooser and map controls at 1440×900, 1280×720, 390×844, 844×390 and 667×375. The playable regression traverses the actual route, tests paving and native collisions, interaction, guide interruption, canopy ordering and reset. The source-layer regression tests every building's UVs, independent move/hide/restore and colliders.
+Both commands create a fresh temporary save sandbox for each process. The entry regression refuses to run unless Godot's actual `user://` directory exactly matches the declared isolated test directory and no primary, backup or pending save already exists. Do not run that save-writing fixture directly with `godot --script`; `--fresh` alone does not isolate writes. The focused runner also checks eleven refused-launch cases, including empty profiles and existing sentinel saves, and verifies no save bytes are created or changed. The XDG-based runners target Linux; a platform that resolves `user://` elsewhere fails closed.
+
+The entry regression compares full State snapshots and primary/backup file bytes across repeated campus visits, and exercises the actual chooser and map controls at 1440×900, 1280×720, 390×844, 844×390 and 667×375. The playable regression traverses the actual route, tests paving and native collisions, interaction, guide interruption, canopy ordering and reset. The source-layer regression tests every building's UVs, independent move/hide/restore and colliders.
 
 Compact viewport and injected touch-event tests establish input/layout compatibility. They do not constitute a physical iPhone/Android run or a Web export; the repository currently supplies native Linux/Windows presets.
 
@@ -44,4 +44,4 @@ The focused source-layer, actual route and packed-resource checks pass. Actual d
 
 The original ground-shadow reparenting exposed a teardown leak in both Dummy and GLES3 rendering: serialized anonymous Polygon2D names collided with new automatic names. Each shadow now receives a stable, object-specific name before reparenting. Regression tests retain a WeakRef to every ground shadow and require all to release on exit. This preserves their transforms, polygons, UVs and textures. Final integrated headless checks pass: 277 entry/lifecycle assertions, 101 gameplay assertions and 269 source-layer assertions. Final GLES3 source-pixel/occlusion verification and two GUI entry/return cycles exit cleanly without those resource warnings. The PR remains Draft while CI and the incomplete local Web-release stage are reviewed.
 
-The unchanged root Web release suite passed 32 of 35 validators locally. Its large single-file build was killed with exit 137; the dependent single-file verifier and browser smoke then lacked the output. This is an incomplete local Web-release check, not a successful browser verification.
+The full native aggregate passed 309 stages at the initial published head `b60bca1`. The unchanged root Web release suite passed 32 of 35 validators locally; its large single-file build was killed with exit 137, leaving dependent checks without output. GitHub Web CI subsequently passed on that exact head. The focused save-fixture safety follow-up passes all eleven refused-launch checks plus the unchanged 269/101/277 positive assertions; its exact-head aggregate CI is a separate gate.

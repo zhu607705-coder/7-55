@@ -25,7 +25,25 @@ func preserved() -> void:
 	check(FileAccess.get_file_as_bytes(state.SAVE_PATH)==saved_bytes,"BUCT never rewrites primary save bytes")
 	check(FileAccess.get_file_as_bytes(state.BACKUP_PATH)==backup_bytes,"BUCT never rewrites backup save bytes")
 	check(root.content_scale_size==initial_scale_size and root.content_scale_mode==initial_scale_mode,"BUCT does not change global window scaling")
+func isolated_save_fixture() -> bool:
+	# A direct --script launch must never overwrite a player's native saves.
+	# XDG alone is insufficient: verify the directory Godot actually resolved.
+	var declared:=OS.get_environment("GODOT_TEST_USER_DATA_DIR").replace("\\", "/")
+	if declared.is_empty() or not declared.is_absolute_path():return false
+	declared=declared.simplify_path().trim_suffix("/")
+	var sandbox:=declared.get_base_dir().get_base_dir()
+	if not sandbox.get_file().begins_with("755-native-check-"):return false
+	if declared!=sandbox.path_join("data/SevenFiftyFiveNative"):return false
+	if OS.get_user_data_dir().replace("\\", "/").simplify_path().trim_suffix("/")!=declared:return false
+	if ProjectSettings.globalize_path("user://").replace("\\", "/").simplify_path().trim_suffix("/")!=declared:return false
+	for file in ["save.json","save.previous.json","save.json.tmp"]:
+		if FileAccess.file_exists(declared.path_join(file)) or DirAccess.dir_exists_absolute(declared.path_join(file)):return false
+	return true
 func run() -> void:
+	if not isolated_save_fixture():
+		printerr("BUCT_TEST_ISOLATION_REQUIRED: use node godot_native/tools/test_buct.mjs; refusing save-fixture writes outside a fresh declared sandbox")
+		quit(2)
+		return
 	state=root.get_node("State")
 	state.d=state.initial();state.d.native.page="phone_home";state.d.currentScene="phone_home"
 	check(state.save_game(),"Fixture creates valid primary save")
