@@ -72,8 +72,8 @@ func haidian_round_trip(viewport: Vector2i,cycle: int) -> void:
 	if not campus.initialized:
 		await click(campus.return_button)
 		return
-	check(campus.real_buildings.size()==1 and campus.real_buildings.has("main_building"),"Haidian installs only one true-RGBA teaching building")
-	check(campus.landmark_hit_polys.has("library") and not campus.real_buildings.has("library"),"Haidian Rongmao library retains its legacy source identity")
+	check(campus.real_buildings.size()==1 and campus.real_buildings.has("main_building"),"Haidian teaching-only inspector remains isolated")
+	check(is_instance_valid(campus.library_component) and not campus.landmark_hit_polys.has("library") and campus.library_component.hit_test_alpha(Vector2(520,400)),"Haidian Rongmao true-RGBA body replaces legacy click proxy")
 	check(campus.WORLD==Vector2(1448,1086) and campus.visitor.position==Vector2(963,297),"Original Haidian canvas and north entrance retained")
 	check(campus.pin_layer is CanvasLayer,"Haidian pins use screen-space controls")
 	campus.camera.force_update_scroll()

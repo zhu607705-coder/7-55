@@ -594,6 +594,82 @@
         531,
         480
       ]
+    ],
+    [
+      [
+        956.674,
+        291.17
+      ],
+      [
+        953.434,
+        317.093
+      ],
+      [
+        967.326,
+        318.83
+      ],
+      [
+        970.566,
+        292.907
+      ]
+    ],
+    [
+      [
+        957.176,
+        305.294
+      ],
+      [
+        950.9,
+        316.5
+      ],
+      [
+        944.471,
+        329.118
+      ],
+      [
+        956.824,
+        335.706
+      ],
+      [
+        969.529,
+        311.882
+      ]
+    ],
+    [
+      [
+        948.668,
+        320.568
+      ],
+      [
+        935.565,
+        349.687
+      ],
+      [
+        948.332,
+        355.432
+      ],
+      [
+        961.435,
+        326.313
+      ]
+    ],
+    [
+      [
+        939.668,
+        340.568
+      ],
+      [
+        926.565,
+        369.687
+      ],
+      [
+        939.332,
+        375.432
+      ],
+      [
+        952.435,
+        346.313
+      ]
     ]
   ],
   "landmarks": [
@@ -1163,6 +1239,67 @@
       "notes": "Hand-reviewed foliage envelope with source-color alpha matte. Paving, grey cast shadow and facade pixels are excluded; fine canopy edges remain approximate. Original RGB pixels are never repainted.",
       "alpha_mask": "assets/library_south_small_tree-foliage-mask.png",
       "mask_pixels": 103
+    },
+    {
+      "id": "east_road_south_east_crown",
+      "source": "assets/approved-haidian.png",
+      "anchor": [
+        950,
+        379
+      ],
+      "trunk_radius": 0,
+      "polygon": [
+        [
+          946,
+          363
+        ],
+        [
+          951,
+          361
+        ],
+        [
+          956,
+          362
+        ],
+        [
+          958,
+          365
+        ],
+        [
+          956,
+          370
+        ],
+        [
+          953,
+          373
+        ],
+        [
+          952,
+          377
+        ],
+        [
+          948,
+          378
+        ],
+        [
+          945,
+          375
+        ],
+        [
+          943,
+          372
+        ],
+        [
+          943,
+          369
+        ],
+        [
+          944,
+          366
+        ]
+      ],
+      "note": "Conservative exact-source foliage over the road shoulder. Sorting origin is its visible lower leaf boundary, not a surveyed stem. No physical trunk is invented.",
+      "visual_only": true
     }
   ],
   "geometry_notes": [
@@ -1266,5 +1403,212 @@
         "hidden": false
       }
     ]
-  }
+  },
+  "exploration_sectors": [
+    {
+      "id": "north_entry_east_street",
+      "width_px": 14,
+      "centreline": [
+        [
+          963,
+          297
+        ],
+        [
+          961,
+          313
+        ],
+        [
+          953,
+          328
+        ],
+        [
+          944,
+          348
+        ],
+        [
+          935,
+          368
+        ]
+      ],
+      "inferred_segment_indices": [],
+      "note": "Only the clearly depicted paved street is enabled. Stops at source (935,368); the foliage-obscured continuation toward (926,389) remains blocked.",
+      "polygons": [
+        [
+          [
+            956.674,
+            291.17
+          ],
+          [
+            953.434,
+            317.093
+          ],
+          [
+            967.326,
+            318.83
+          ],
+          [
+            970.566,
+            292.907
+          ]
+        ],
+        [
+          [
+            957.176,
+            305.294
+          ],
+          [
+            950.9,
+            316.5
+          ],
+          [
+            944.471,
+            329.118
+          ],
+          [
+            956.824,
+            335.706
+          ],
+          [
+            969.529,
+            311.882
+          ]
+        ],
+        [
+          [
+            948.668,
+            320.568
+          ],
+          [
+            935.565,
+            349.687
+          ],
+          [
+            948.332,
+            355.432
+          ],
+          [
+            961.435,
+            326.313
+          ]
+        ],
+        [
+          [
+            939.668,
+            340.568
+          ],
+          [
+            926.565,
+            369.687
+          ],
+          [
+            939.332,
+            375.432
+          ],
+          [
+            952.435,
+            346.313
+          ]
+        ]
+      ],
+      "paved_join_note": "The second segment has one source-reviewed west-edge join vertex (950.9,316.5), filling a subpixel paving notch beside the original approach without reducing the 3px foot clearance."
+    }
+  ],
+  "exploration_destinations": [
+    {
+      "id": "teaching_east_street_mid",
+      "label": "教学区东侧街道中段",
+      "position": [
+        944,
+        348
+      ]
+    },
+    {
+      "id": "east_street_south_stop",
+      "label": "东侧街道南向暂止点",
+      "position": [
+        935,
+        368
+      ]
+    }
+  ],
+  "excluded_probe_points": [
+    {
+      "id": "east_hall_roof",
+      "position": [
+        1100,
+        340
+      ]
+    },
+    {
+      "id": "hall_enclosed_south_apron",
+      "position": [
+        1070,
+        408
+      ]
+    },
+    {
+      "id": "east_hall_west_grass_strip",
+      "position": [
+        974,
+        344
+      ]
+    },
+    {
+      "id": "court_interior",
+      "position": [
+        647,
+        615
+      ]
+    },
+    {
+      "id": "central_planting",
+      "position": [
+        712,
+        451
+      ]
+    },
+    {
+      "id": "south_outside_waterway",
+      "position": [
+        460,
+        1028
+      ]
+    },
+    {
+      "id": "unreviewed_southern_street",
+      "position": [
+        908,
+        431
+      ]
+    },
+    {
+      "id": "deferred_foliage_obscured_continuation",
+      "position": [
+        926,
+        389
+      ]
+    },
+    {
+      "id": "parked_white_vehicle",
+      "position": [
+        1008,
+        300
+      ]
+    },
+    {
+      "id": "removed_hall_crossing",
+      "position": [
+        996,
+        316
+      ]
+    },
+    {
+      "id": "planted_hall_divider",
+      "position": [
+        981,
+        307
+      ]
+    }
+  ],
+  "exploration_limits": "Original-art clear north-entry street only, ending at (935,368). Hall crossing was excluded after closer source review exposed its planted divider. No court, roof, grass, fenced apron, waterway or interior opened. Original three-landmark guide unchanged."
 }

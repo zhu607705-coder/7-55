@@ -64,7 +64,7 @@ func run() -> void:
 	expect(outside_diff==0,"Outside shared generated region, full original-campus source pixels are unchanged")
 	for id in ["main_building"]:app.real_buildings[id].set_body_visible(false)
 	await frames();var hidden:=view.get_texture().get_image();hidden.save_png(evidence_root+"genuine-campus-hidden-ground.png")
-	expect(hidden.get_pixel(650,290)!=baseline.get_pixel(650,290),"Hiding whole teaching body reveals independent generated ground; library stays legacy")
+	expect(hidden.get_pixel(650,290)!=baseline.get_pixel(650,290),"Hiding whole teaching body reveals independent generated ground; independent fixed Rongmao remains visible")
 	for pair in [["genuine-campus-registered.png",baseline],["genuine-campus-hidden-ground.png",hidden]]:
 		var approved:=Image.load_from_file(reference_root.path_join(pair[0]))
 		var approved_diff: int=compare(pair[1],approved) if approved!=null and approved.get_size()==pair[1].get_size() else -1
@@ -175,6 +175,6 @@ func run() -> void:
 	results.status="PASS" if failures.is_empty() else "FAIL";results.errors=failures
 	results.root_actual_texture_size=[root.get_texture().get_image().get_width(),root.get_texture().get_image().get_height()]
 	results.fixed_proof_target=[1448,1086]
-	results.qualification="One independently generated connected teaching building; library stays legacy. Exact-pixel protection/reset and integrated-vs-accepted-source comparisons are separate from the explicit1LSB whole-PNG/strip interpolation tolerance. Mobile snapshots use fixed actual SubViewports."
+	results.qualification="Independent connected teaching building plus compact Rongmao; independent fixed Rongmao remains visible. Exact-pixel protection/reset and integrated-vs-accepted-source comparisons are separate from the explicit1LSB whole-PNG/strip interpolation tolerance. Mobile snapshots use fixed actual SubViewports."
 	var out:=FileAccess.open(evidence_root+"genuine-render-proof.json",FileAccess.WRITE);out.store_string(JSON.stringify(results,"\t"));out.close()
 	print("BUCT_HAIDIAN_RENDER ",results.status," failures=",failures);quit(0 if failures.is_empty() else 1)

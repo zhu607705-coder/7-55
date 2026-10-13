@@ -4662,3 +4662,28 @@ Validation: road source guard 1,320 assertions; student 31; unchanged Haidian so
 - Preserve the complete histories and records for both campus branches; resolve only shared progress and BUCT test-registration conflicts
 - Retain every source/native check from both runners and the existing isolated evidence-output environment
 - Production campus paths merge without overlapping edits; complete CI must verify this new combined tree before merge
+
+### 2026-10-12 — Haidian Rongmao fixed building
+
+Replaced Rongmao UV body/legacy collision and paired broad shadow/underlay with genuine RGBA body, three shared-texture exact-foot depth passes, narrow contact shadow and 141-source-pixel necessary ground repair. Fixed ordinary building supports visible-alpha selection, original information card and route access; full hide/move intentionally unavailable because the hidden core is approximate native paving. Existing teaching object, shared four-direction student, three-campus entry and story/save state preserved. Local focused headless72/72, actual513-tick legal route, real keys/clicks and six release cycles pass. Actual fixed1280×800 GL: baseline roundtrip and outside-library/protected tree/court pixels unchanged; full-map library/student occlusion reviewed. Net2draw/2nodes and17064732B texture; 16MiB budget exceeded287516B, newp9535.748ms versus baseline19.927–22.513ms, so no speedup/scalability claim. Complete remote aggregate and final exact-head CI remain separate publication gates.
+
+#### Export-safe texture validation correction
+
+Teaching and Rongmao loaders now share an imported Texture2D/type/dimension validator. Present original PNG bytes must match SHA-256; source-less .import→ctex export remains valid. Missing/unloadable/wrong-size resources fail closed. Actual6,696-byte PCK:9cases/20checks passed; deliberate absent/corrupt ctex emitted8expected loader errors. Production72checks,513ticks,0illegal feet and clean exit pass; source checks395+37+74. No export filter broadening or art changes. Combined entry test ran in a stage missing unrelated story resources; its47ERROR/2SCRIPT ERROR diagnostics are an environment limitation, not a clean full-story pass. Exact remote CI remains required.
+
+Public package regression is now reproducible via `python3 godot_native/tools/test_buct_texture_package.py --output-root <owned-workspace>`. The public runner/build/test scripts passed an actual cold-cache20/20run; only one54×58technical mask is imported into an isolated project. Each invocation creates a new output child without deleting existing data. Generated PCK/ctex/cache are excluded from the patch.
+
+
+## 2026-10-12 — Haidian clear east-street extension
+
+- Based only on accepted Rongmao PR #127 at `99c834f00fce7c57b9c7e8d971a133d8ffb1c15d`. Four narrow source-paving polygons connect the existing north spawn (963,297) through (961,313), (953,328), (944,348) to (935,368), adding 38 connected native-grid cells. The old 26 polygons, 25 guide points, three POIs and seven tree registrations are hash-identical.
+- The second new polygon has one source-reviewed west-edge vertex (950.9,316.5): it fills a 3.573597-source-pixel² paving notch that previously made the planned (954,314)→(954,318) edge fail full radius-3 clearance. The corrected edge now passes dense source and actual native checks. Foot radius, shared navigation, accepted student and teaching/Rongmao objects are unchanged.
+- Hall branch (996,316) stays closed because it crosses a planted divider; the foliage-obscured southern continuation (926,389) also stays closed. No interiors, court, roof, grass, water, new imagery, semantic TileMap or story/save changes. One small original-source leaf contour is visual-only, needed for full-student overlap at the south road shoulder; it invents no trunk collider.
+- Public source guard `node godot_native/tests/verify_buct_haidian_east_roads_source.mjs`: 228 PASS. Unchanged-base Haidian/Rongmao/export source checks: 379 PASS. Public native fixture `godot_native/tests/test_buct_haidian_east_roads.gd`: 48 PASS, 176 continuous new-road/manual-boundary physics ticks plus 515 old-guide ticks, 0 illegal feet, bad planned edges, teleports or overspeed. Teaching hide/move/reset, Rongmao alpha/real foundation collision, owned inputs and full scene release pass. Both new source/native checks are wired into existing `node godot_native/tools/test_buct.mjs`; use its existing isolated TMP/XDG workflow.
+- Actual desktop GL proof passed with 138 continuous ticks, including a real D-key event, middle/end screenshots and return to the original spawn. Zero illegal feet or jumps; default gameplay views and a separately labelled 4.6× inspection view were visually reviewed. The accepted original map/character remain intact. No video or full-world walkability claim. Full historical aggregate and exact-head remote CI remain publication checks, not implied by the focused results above.
+
+## 2026-10-13: Integrate Haidian Rongmao and street with the approved campus branches
+
+- Preserve both complete branch histories and every progress entry; union all seven source suites and thirteen focused native registrations
+- Keep existing save/evidence isolation and all nonconflicting production blobs byte-identical to their owning approved branches
+- Complete combined-tree Native and Web CI is required before merge
