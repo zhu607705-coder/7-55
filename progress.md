@@ -4620,3 +4620,13 @@ Proposed source/test/document union: 75 paths. The 35 import-generated UID compa
 - 1180×812 实际 GPU 视窗：静态及三次关闭动画与基线 0 像素差；四个波相水外/静止岸缘变化均 0。实际原导览 718 个物理帧、非法脚点 0、原 3 个 POI；105 张实际 GPU 帧供 7 秒/15fps 的原比例局部微动证据
 - 保留初始 JSON 数字类型、最小 stage 字体、64px headless 输入窗口和触屏双切换失败记录；首次 GPU wrapper 的 Python 命令缺失 exit127 如实保留，单独 python3 分析为 exit0。新 test 的可选证据输出兼容未设 env 独立调用，显式无效输出清楚失败
 - 详见 `docs/BUCT_CHANGPING_LIUHU.md` 与 `docs/BUCT_CHANGPING_LIUHU_VALIDATION.json`。无整仓 clone/import/PCK，独立 Draft 由父任务交接发布，不合并，不改浙大主线
+
+## 2026-10-13 — BUCT Changping bridge-south visible-water continuation
+
+- Exact base: Draft #135, head `27f872b199b85ff24c6d48ba16928bce395e627c`, tree `a431a3a5cbdd20fe26ad9c10a93dec059ed958a5`.
+- Added only one original-RGBA static segment at source crop `[395,867,24,21]`: 72 guarded water pixels, 1,420-byte PNG. Main bridge, uncertain bridge-bottom pixels, banks, tree foliage, next crossing and next water segment remain static. No new geographic proper name.
+- Retained the existing 7,140-pixel main pool, its animation/selection, source assets and implementation bytes. Both masks have independent alpha selection and atomic complementary background ownership; both teardown orders and external material replacement are safe.
+- Validation: CPU geometry 11/11; extended existing source checker 103/103; segment native 50/50; main native 59/59; existing east-road native 41/41. Real mouse/touch selection is automated; original route/shared student and road collisions retained.
+- GPU: 7 fixed-camera stills, actual 960×720 at 4×; 8/8 pixel checks. Static reconstruction and source restoration differ by 0 pixels. Hiding segment changes exactly 1,152 screen pixels, all inside its alpha. Main-pool wave phases still differ; segment and all main-exterior pixels remain unchanged. Independent visual review found bridge/banks/trees intact and no visible bright seam/black fringe.
+- Hide preserves a real cutout; free restores that component's source-ground ownership. Static presentation is deliberate: only 22 pixels beyond a two-pixel guard and no full eight-pixel feather core. No added routes, POIs, interior, formal TileMap replacement, new art, video or other-campus water.
+- Reuses existing public source/CI entrypoints. Local stage imported only the new 24×21 PNG; no whole-repository clone/import or PCK. Full aggregate/remote CI remains publisher verification. Details: `docs/BUCT_CHANGPING_SOUTH_BRIDGE_WATER.md` and accompanying validation JSON.
