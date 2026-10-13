@@ -4,6 +4,8 @@ const FIRST_TEACHING_PATCH = preload("res://campuses/buct_changping/scripts/firs
 var first_teaching_layer: Node2D
 const LIBRARY_PATCH = preload("res://campuses/buct_changping/scripts/library_patch.gd")
 var library_layer: Node2D
+const EAST_ROAD_EXTENSION = preload("res://campuses/buct_changping/scripts/east_road_extension.gd")
+var east_road_extension: Node2D
 const VISITOR = preload("res://campuses/buct_changping/scripts/campus_visitor.gd")
 var SOURCE: Texture2D
 var WORLD: Vector2
@@ -74,6 +76,7 @@ func _ready() -> void:
 	world.get_node("GroundRepairTiles").render_target_update_mode=SubViewport.UPDATE_ONCE
 	objects=world.get_node("IndependentRegisteredObjects")
 	for poly in data.walkable_polygons: walk_polys.append(pts(poly))
+	east_road_extension = EAST_ROAD_EXTENSION.install(self)
 	var building_data: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct_changping/data/layers.json"))
 	_prepare_depth_layers(building_data)
 	first_teaching_layer = FIRST_TEACHING_PATCH.install(world, objects, building_data)
@@ -222,6 +225,7 @@ func _in_paving(p: Vector2) -> bool:
 func is_walkable(p: Vector2) -> bool:
 	for offset in [Vector2.ZERO,Vector2(3,0),Vector2(-3,0),Vector2(0,3),Vector2(0,-3)]:
 		if not _in_paving(p+offset):return false
+	if is_instance_valid(east_road_extension) and not east_road_extension.allows_feet(p):return false
 	for poly in blockers:
 		if Geometry2D.is_point_in_polygon(p,poly):return false
 	return true
@@ -336,7 +340,7 @@ func close_info() -> void:
 func toggle_overview() -> void:
 	if not initialized or leaving:return
 	overview=not overview;close_info();_layout_ui()
-	status.text="全图 · 仅南门至图书馆主线可走" if overview else "返回步行视角"
+	status.text="全图 · 主线与已开放东侧步道可走" if overview else "返回步行视角"
 
 func notify_boundary() -> void:
 	if not guide_active and visitor.manual_input.length_squared()>0:
