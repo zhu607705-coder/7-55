@@ -6,6 +6,8 @@ const LIBRARY_PATCH = preload("res://campuses/buct_changping/scripts/library_pat
 var library_layer: Node2D
 const EAST_ROAD_EXTENSION = preload("res://campuses/buct_changping/scripts/east_road_extension.gd")
 var east_road_extension: Node2D
+const LIUHU_WATER = preload("res://campuses/buct_changping/scripts/liuhu_water_surface.gd")
+var lake_surface: Node2D
 const VISITOR = preload("res://campuses/buct_changping/scripts/campus_visitor.gd")
 var SOURCE: Texture2D
 var WORLD: Vector2
@@ -74,6 +76,7 @@ func _ready() -> void:
 	world.name="RegisteredCampus"
 	add_child(world)
 	world.get_node("GroundRepairTiles").render_target_update_mode=SubViewport.UPDATE_ONCE
+	lake_surface = LIUHU_WATER.install(world)
 	objects=world.get_node("IndependentRegisteredObjects")
 	for poly in data.walkable_polygons: walk_polys.append(pts(poly))
 	east_road_extension = EAST_ROAD_EXTENSION.install(self)
@@ -332,6 +335,7 @@ func show_landmark(id: String) -> void:
 			return
 
 func close_info() -> void:
+	if is_instance_valid(lake_surface):lake_surface.set_selected(false)
 	if is_instance_valid(library_layer):library_layer.set_selected(false)
 	if is_instance_valid(first_teaching_layer):first_teaching_layer.set_selected(false)
 	info_id=""
@@ -565,6 +569,14 @@ func show_nearby_landmark() -> void:
 func _pointer_pressed(screen_position: Vector2) -> void:
 	if not initialized or leaving or not info_id.is_empty() or not map_area.has_point(screen_position):return
 	var target: Vector2=get_canvas_transform().affine_inverse()*screen_position
+	if is_instance_valid(lake_surface):
+		if lake_surface.hit_test_alpha(target):
+			lake_surface.set_selected(true)
+			status.text = "柳湖 · 原画水面，暂不开放通行"
+			return
+		if lake_surface.selected:
+			lake_surface.set_selected(false)
+			status.text = "沿开放的铺装步道探索校园"
 	var landmark:=landmark_at(target)
 	if not landmark.is_empty():show_landmark(landmark)
 	elif not overview and is_walkable(target):

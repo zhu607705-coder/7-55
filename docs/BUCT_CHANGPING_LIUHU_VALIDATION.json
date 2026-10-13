@@ -1,0 +1,2075 @@
+{
+  "status": "PASSED_SOURCE_NATIVE_GPU_AND_FINAL_MANUAL",
+  "base_head": "bca86c2b10901c0c524968e4b79f2b45845cf729",
+  "base_tree": "8f135d0c44e0efc56a6e81522f644fcb00e4f67e",
+  "unchanged_source_contracts": [
+    {
+      "path": "godot_native/campuses/buct_changping/README.md",
+      "sha256": "1c2f3c48d32b3c0c0169a27b5a5e94f075c39dc408a65bd4f794dd9a31d616ee"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/FONT-LICENSE.txt",
+      "sha256": "5d77928392195875837082099b70b8f984f808074008507ffa18cce2f950d9bc"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/NOTO-OFL-LICENSE.txt",
+      "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/approved-changping.png",
+      "sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_east_crown_01-foliage-mask.png",
+      "sha256": "537e2011a4ddf06294c2be6a0f8339e88bd403b4f7973b67afef63ae7776c61b"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_east_crown_02-foliage-mask.png",
+      "sha256": "9ebe3075c4f674b43df864fcdb74e15494a8ef067dd8b380340141d01d1769c1"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_east_crown_03-foliage-mask.png",
+      "sha256": "cc34b59e4ca983d246f90cfdd246d6383d100f642334db9d4cf74d6f632e5727"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_east_crown_04-foliage-mask.png",
+      "sha256": "0ba77792bca5f106c7de346a99a42df7dc6c3fe88d5f0f9785a96e8d5d03d235"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_east_crown_05-foliage-mask.png",
+      "sha256": "587df8084822943b2599ac39af6d6da759b679810f36a5b5ed4a32e4896c56dd"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_east_crown_06-foliage-mask.png",
+      "sha256": "b65e2076799b026c04c52b674b53567e89e9fff8938c9c0439af859129682cd8"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_west_crown_01-foliage-mask.png",
+      "sha256": "b7508281dac43b43d96e61f0213fcabbd5edf714b24ad54deedbaaf228f1e49d"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_west_crown_02-foliage-mask.png",
+      "sha256": "0e11e8115ae76f7b8fd6c87079d45cb6f95eb18498835a78767b38a3597357b5"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/axis_west_crown_03-foliage-mask.png",
+      "sha256": "91cd8bd812d4106bef4aef2da350083826fc0fcc0ea76cedefeabdc70a20d3c5"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/east-arc-ground-v1.png",
+      "sha256": "100434eee2d03401fd0b15a958a12e9e31ede86550d3d3b646b04c163bd8c6e2"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/east_arc_permission.png",
+      "sha256": "8e346094ab7346038a4f9222621a0a7afc0b4f08c5af13d8f9657825173ab222"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/first_teaching_body.png",
+      "sha256": "92d71203ca4e9070651c772a27cef63ee9190f3a08bbbd8e83be846d06bc59f6"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/first_teaching_body.png.import",
+      "sha256": "4a8e1957fe4bfaaa69e461c389eee90dca80eec75a34be9e65d71e660240ed6d"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/font-characters.txt",
+      "sha256": "022308124de981e0d8257820a7c092a0cd22d8e142652dab8c0ae9e66c94ef9f"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/front_plaza_east_crown-foliage-mask.png",
+      "sha256": "b80b557ce764b70cf58409c3e59afca833a854d78220a986a0e42c0659eb6cda"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/library_body.png",
+      "sha256": "01a017d632f699907b1a56ba927373420b92062aa40a486e2564edef9171be16"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/library_body.png.import",
+      "sha256": "3a86b385b7577f40881c1221cb8d493459d57a705d13d94e1c683cdd9f220ee1"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/south-door-ground-v1.png",
+      "sha256": "e5d41688588aa5e6786307174ded59b234874333cc117ee87e1c86374aa7475c"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/south_door_permission.png",
+      "sha256": "af3c7819bf9a8585be42bd7958d1ee60555654e2eb63ac8472564ca21f62190a"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/assets/ui-font.otf",
+      "sha256": "59dae873f3110b0bdfb50d9b70fd9561a22624fc92589f9435ffe9cfc13277c4"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/east_road_extension.json",
+      "sha256": "5a68e34d0bc84d68bafc3a8a7fafa4b629fdd19e1a4433354704432eeb3e6254"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/first_teaching_registration.json",
+      "sha256": "8dc977ff455b8a6fd0c60cba1bf4c19086109d21f9c9693faaaa9803713d93ff"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/first_teaching_repairs.json",
+      "sha256": "7a54d06e0dedc4fbd9782151e98deae540a562fc71091b5ae760e36d411e7499"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/first_teaching_surfaces.r8.bin",
+      "sha256": "2694883b5f639321033ddb2ae2db5c70d99b513c80bb78933656469f340807ba"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/layers.json",
+      "sha256": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/library_registration.json",
+      "sha256": "09098e9c4f967868c13e6d95e8b4962a2db64b5e45c15d578005db79ea1d5055"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/library_surfaces.r8.bin",
+      "sha256": "a838232468b90492a4274ce694f1d7358114023879f5074c68a354056b0ead31"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/data/playable_route.json",
+      "sha256": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/provenance.json",
+      "sha256": "aa8b6c21c76739abcaaf2cb80b3f2a4be0d810969ea064411cedbc1598b02bcd"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scenes/playable.tscn",
+      "sha256": "75c5800d04f4ec385bbb61d0964e1568ac7ab1b1ccc5e6b76882414984890af1"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scenes/registered_layers.tscn",
+      "sha256": "3944f2d68130fd743943492b50c30350966af67262fff16d26aef1aee5aa460c"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scripts/campus_visitor.gd",
+      "sha256": "d175ff4eaa927e9adcaad8f9f265317efb0b2c55bef8dfd22399b6905d2997a4"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scripts/east_road_extension.gd",
+      "sha256": "0aa7f19e34abb9078fa39715105c88cae3fa0db94e1bdfcfbc2fc277edba140a"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scripts/first_teaching_building.gd",
+      "sha256": "4cf6b188ef800e93b56754e1f80a5dafa9ae0a8b3d9e3d0c577c4ee41212f474"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scripts/first_teaching_patch.gd",
+      "sha256": "9c9ccbd79428b53299c1086d745fb31026824f773e5a44c6c820e8b3e617f396"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scripts/library_building.gd",
+      "sha256": "58899d4eb17ecf56b14005469d2ba0d88879448377628bd2b54335c655286e87"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scripts/library_patch.gd",
+      "sha256": "25b5b09603bef70efd13bcad0266c71b272b4ca45893fb88119f50c1cbdd8455"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/scripts/registered_object.gd",
+      "sha256": "61d7ca4e5c50b9df320e3100c082684a98ddeec71d8a8112c55288a4b85dc561"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/shaders/first_teaching_depth.gdshader",
+      "sha256": "a6d016352c65249e472564c97c3bcedd2429c3f1cd6da033f41a0ecd95a7532d"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/shaders/first_teaching_repair.gdshader",
+      "sha256": "6477a7d81ff38d47ad8be76dce5ce2f6f121dca8813b7f5d534b6593f4cd26db"
+    },
+    {
+      "path": "godot_native/campuses/buct_changping/shaders/library_depth.gdshader",
+      "sha256": "14acfda15106727c08ba50aff9ad06a9e95dc43b2bd4071eb12cd2ed72d968da"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/README.md",
+      "sha256": "dd17c25768b447e9120f0ce95541e9919624828bc3b12aed14522d66776e2350"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-four-directions.png",
+      "sha256": "41bb77696eee6a91e64e56c432aab35b31576565edd3330ac6ac21bcd0a63f82"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-down-phase5.png",
+      "sha256": "bad68805f99376a15877fd45774e0f3164d024693619782e1817312010d2e1cb"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-down-v1.png",
+      "sha256": "0c80f6c55b99e73964f132505b813649c478a1c66f5ed98177eac594eaa03c0d"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-left-phase5.png",
+      "sha256": "220c91bf417715ffb47e3d9df13b885c71f881dbed2647591ed9c4677de35369"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-left-v1.png",
+      "sha256": "872b031ed5883a75d38c134a35c95987e965c51228de3bc6c569d4ed6e50dd92"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-precontact-a.png",
+      "sha256": "2c06116c5980b38ebfdf135e7aa574932b674c310037c1235d1016481576d986"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-precontact-b-sheet.png",
+      "sha256": "ab6c5152bcd685577f04e708c47b7cce07974e15d29badd619c87cca6ce4da99"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-right-v1.png",
+      "sha256": "0b8a792e8541d9008685420d507f49c650a4ddd5a84766037f1697d7303f2a09"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-up-opposite-passing.png",
+      "sha256": "a4d25785d6cad19aaa26a22d3b2afed0df2368fef43a5fba32a060b016ebacfe"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/assets/student-walk-up-v1.png",
+      "sha256": "fde2b48ef81a12027add9dbcf4bf24e0fddb0b43530504dcec605ce22bee7e26"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/data/provenance.json",
+      "sha256": "d41aed702360c78e15fb229e5d45b40b33579efcaa5e8efd8bb933e3e3530699"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/data/student-movement-profile.json",
+      "sha256": "6319bf1947664fcafe2a8fe8e8fbffc800a43abc3201265217eaf24ed9ef0eac"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/scripts/landmark_pin_layout.gd",
+      "sha256": "aadf684d2fce26898dd74b8774a8520172a7a2355729b34144d7bc9456b25478"
+    },
+    {
+      "path": "godot_native/campuses/buct_shared/student/scripts/registered_character_visual.gd",
+      "sha256": "7566af60fd9fb2e0b16d197e63c24705d1d3674ce843c6eeabc6d312b28e79fe"
+    },
+    {
+      "path": "godot_native/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+    }
+  ],
+  "source_mask": {
+    "phase": "source-mask-only; no Godot/browser/import/upload executed",
+    "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+    "registered_base_head": "bca86c2b10901c0c524968e4b79f2b45845cf729",
+    "registered_base_tree": "8f135d0c44e0efc56a6e81522f644fcb00e4f67e",
+    "crop_source_xywh": [
+      317,
+      750,
+      163,
+      108
+    ],
+    "alpha_bbox_local_xyxy_exclusive": [
+      9,
+      7,
+      155,
+      103
+    ],
+    "opaque_water_pixels": 7140,
+    "rectangle_pixels": 17604,
+    "restored_enclosed_water_reflection_pixels_before_guard": 82,
+    "static_mixed_edge_guard_pixels": 729,
+    "topological_interior_hole_count": 0,
+    "islet_exclusion_topology": "southwest neck touches the external static shore; no closed water channel invented",
+    "nearest_existing_paving_distance_source_pixels": 87.05314468759873,
+    "nearest_existing_paving_pair": {
+      "water_pixel_center_source_xy": [
+        466.5,
+        834.5
+      ],
+      "paving_boundary_source_xy": [
+        552.5,
+        848.0
+      ]
+    },
+    "distance_texture_source_px_per_byte": 0.125,
+    "samples": [
+      {
+        "source_xy": [
+          400,
+          800
+        ],
+        "expected_hit": true,
+        "actual_hit": true,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          430,
+          785
+        ],
+        "expected_hit": true,
+        "actual_hit": true,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          339,
+          822
+        ],
+        "expected_hit": true,
+        "actual_hit": true,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          393,
+          817
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          386,
+          806
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          374,
+          834
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          440,
+          748
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          438,
+          863
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          409,
+          880
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          472,
+          801
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          319,
+          752
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      }
+    ],
+    "checks": {
+      "source_size_is_950x1656": true,
+      "true_rgba_alpha_has_transparent_and_opaque_pixels": true,
+      "opaque_rgb_byte_identical_to_source": true,
+      "complement_partition_exactly_one_owner": true,
+      "recombined_crop_byte_identical_to_source": true,
+      "dry_exclusions_have_zero_water_alpha": true,
+      "one_source_pixel_border_is_static": true,
+      "no_water_pixel_center_overlaps_existing_paving": true,
+      "probe_contract_passes": true,
+      "distance_zero_outside_alpha": true
+    },
+    "frozen_readonly_input_sha256": {
+      "godot_native/campuses/buct_changping/scripts/playable_campus.gd": "5f9ef82e6aaba77728284296a322d41e2e7c82d80cbf28779fc2e03f8379a05d",
+      "godot_native/campuses/buct_changping/data/playable_route.json": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6",
+      "godot_native/campuses/buct_changping/data/layers.json": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88",
+      "godot_native/campuses/buct_changping/data/east_road_extension.json": "5a68e34d0bc84d68bafc3a8a7fafa4b629fdd19e1a4433354704432eeb3e6254",
+      "godot_native/campuses/buct_changping/scenes/registered_layers.tscn": "3944f2d68130fd743943492b50c30350966af67262fff16d26aef1aee5aa460c"
+    }
+  },
+  "new_asset_sha256": {
+    "liuhu-water-source-rgba.png": "ba69b719d944bec2c913ff5172562371af44449c07b7b3e31219a026936f96b2",
+    "liuhu-water-distance.png": "6df67286a98a6879b2c369eeabbfc731b27e601fc59d9c9409f5e3233a01a07c"
+  },
+  "native_lake": {
+    "checks": 59,
+    "failures": [],
+    "input_fixture": "Real InputEventMouseButton and InputEventScreenTouch; static actor/camera fixture only, not continuous travel. Existing east-road test supplies travel regression separately.",
+    "input_view": {
+      "canvas_transform": "[X: (2.1, 0.0), Y: (0.0, 2.1), O: (-161.9999, -1240.5)]",
+      "lake_screen": "(678.0, 439.4999)",
+      "map_area": "[P: (12.0, 82.0), S: (1416.0, 696.0)]",
+      "viewport": [
+        1440,
+        900
+      ]
+    },
+    "pixel_audit": {
+      "alpha_hit_errors": 0,
+      "rgb_errors": 0,
+      "walkable_water_pixels": 0,
+      "water_pixels": 7140
+    }
+  },
+  "source_checks": {
+    "passed": 89,
+    "total": 89
+  },
+  "initial_failures": [
+    {
+      "evidence": "native-first-failure.json",
+      "reason": "Minimal test stage initially missed the shared font mirrored from src; valid JSON numeric array was rejected by strict Array float/int equality. Fixed stage registration and numeric Vector4 comparison; imported decoded texture checksums matched."
+    },
+    {
+      "evidence": "native-input-fixture-failure.json",
+      "reason": "Headless dummy display defaults to 64x64; the input test now explicitly sets a 1440x900 logical viewport."
+    },
+    {
+      "evidence": "native-touch-toggle-failure.json",
+      "reason": "Touch also emits an emulated mouse event. Idempotent water selection prevents duplicate toggling; click outside actual alpha cancels. No original navigation/input handler changed."
+    }
+  ],
+  "existing_road_regression": {
+    "boundaries": [
+      {
+        "name": "east_road_edge",
+        "release_drift": 0.0,
+        "stop": [
+          771.933349609375,
+          807.0
+        ]
+      },
+      {
+        "name": "west_grass",
+        "release_drift": 0.0,
+        "stop": [
+          747.533325195312,
+          725.0
+        ]
+      },
+      {
+        "name": "bounded_north_end",
+        "release_drift": 0.0,
+        "stop": [
+          733.0,
+          674.199951171875
+        ]
+      },
+      {
+        "name": "toward_lake_unopened_ground",
+        "release_drift": 0.0,
+        "stop": [
+          556.066650390625,
+          848.0
+        ]
+      },
+      {
+        "name": "toward_wenli_building",
+        "release_drift": 0.0,
+        "stop": [
+          764.599975585938,
+          807.0
+        ]
+      }
+    ],
+    "checks": 41,
+    "continuous": {
+      "arrivals": [
+        {
+          "actual": [
+            759.707702636719,
+            879.319091796875
+          ],
+          "target": [
+            760.0,
+            877.0
+          ]
+        },
+        {
+          "actual": [
+            769.0,
+            809.166442871094
+          ],
+          "target": [
+            769.0,
+            807.0
+          ]
+        },
+        {
+          "actual": [
+            734.384643554688,
+            684.508972167969
+          ],
+          "target": [
+            733.0,
+            683.0
+          ]
+        },
+        {
+          "actual": [
+            761.000061035156,
+            875.361877441406
+          ],
+          "target": [
+            760.0,
+            877.0
+          ]
+        },
+        {
+          "actual": [
+            515.0,
+            1507.63317871094
+          ],
+          "target": [
+            515.0,
+            1510.0
+          ]
+        }
+      ],
+      "illegal_ticks": 0,
+      "max_actual_speed": 88.003785610199,
+      "new_radius_failures": 0,
+      "physics_ticks": 1263,
+      "position_writes_after_initial_spawn": 0,
+      "trace_every_4_ticks": [
+        [
+          518.991516113281,
+          1495.29602050781
+        ],
+        [
+          518.9990234375,
+          1489.42932128906
+        ],
+        [
+          518.999877929688,
+          1483.56262207031
+        ],
+        [
+          518.999938964844,
+          1477.69592285156
+        ],
+        [
+          519.0,
+          1471.82922363281
+        ],
+        [
+          519.0,
+          1465.96252441406
+        ],
+        [
+          519.0,
+          1460.09582519531
+        ],
+        [
+          519.0,
+          1454.22912597656
+        ],
+        [
+          519.0,
+          1448.36242675781
+        ],
+        [
+          521.262573242188,
+          1443.14624023438
+        ],
+        [
+          524.213562011719,
+          1438.16162109375
+        ],
+        [
+          526.738220214844,
+          1433.09545898438
+        ],
+        [
+          529.261474609375,
+          1427.84924316406
+        ],
+        [
+          530.819458007812,
+          1422.27709960938
+        ],
+        [
+          532.618286132812,
+          1416.80822753906
+        ],
+        [
+          532.956115722656,
+          1410.95361328125
+        ],
+        [
+          532.994384765625,
+          1405.08703613281
+        ],
+        [
+          532.99951171875,
+          1399.22033691406
+        ],
+        [
+          532.999938964844,
+          1393.35363769531
+        ],
+        [
+          533.0,
+          1387.48693847656
+        ],
+        [
+          533.0,
+          1381.62023925781
+        ],
+        [
+          533.0,
+          1375.75354003906
+        ],
+        [
+          533.0,
+          1369.88684082031
+        ],
+        [
+          533.0,
+          1364.02014160156
+        ],
+        [
+          533.0,
+          1358.15344238281
+        ],
+        [
+          533.0,
+          1352.28674316406
+        ],
+        [
+          533.0,
+          1346.42004394531
+        ],
+        [
+          533.0,
+          1340.55334472656
+        ],
+        [
+          533.0,
+          1334.68664550781
+        ],
+        [
+          533.0,
+          1328.81994628906
+        ],
+        [
+          533.0,
+          1322.95324707031
+        ],
+        [
+          533.0,
+          1317.08654785156
+        ],
+        [
+          533.0,
+          1311.21984863281
+        ],
+        [
+          533.0,
+          1305.35314941406
+        ],
+        [
+          533.0,
+          1299.48645019531
+        ],
+        [
+          534.438842773438,
+          1293.99694824219
+        ],
+        [
+          536.736389160156,
+          1288.72216796875
+        ],
+        [
+          536.972106933594,
+          1282.86145019531
+        ],
+        [
+          536.996704101562,
+          1276.99475097656
+        ],
+        [
+          536.999755859375,
+          1271.12805175781
+        ],
+        [
+          536.999938964844,
+          1265.26135253906
+        ],
+        [
+          537.0,
+          1259.39465332031
+        ],
+        [
+          539.971618652344,
+          1254.37536621094
+        ],
+        [
+          543.963745117188,
+          1250.07763671875
+        ],
+        [
+          549.353637695312,
+          1247.92150878906
+        ],
+        [
+          553.801940917969,
+          1244.10180664062
+        ],
+        [
+          557.992736816406,
+          1239.99658203125
+        ],
+        [
+          562.14599609375,
+          1235.85302734375
+        ],
+        [
+          566.587341308594,
+          1232.12316894531
+        ],
+        [
+          571.622131347656,
+          1229.32153320312
+        ],
+        [
+          576.693298339844,
+          1226.53015136719
+        ],
+        [
+          581.80029296875,
+          1223.78295898438
+        ],
+        [
+          587.111267089844,
+          1221.48205566406
+        ],
+        [
+          591.81884765625,
+          1218.00402832031
+        ],
+        [
+          596.752624511719,
+          1214.95483398438
+        ],
+        [
+          601.681701660156,
+          1211.8984375
+        ],
+        [
+          606.50244140625,
+          1208.70544433594
+        ],
+        [
+          610.980102539062,
+          1204.93200683594
+        ],
+        [
+          615.168151855469,
+          1200.82397460938
+        ],
+        [
+          619.320007324219,
+          1196.67907714844
+        ],
+        [
+          623.46875,
+          1192.53112792969
+        ],
+        [
+          628.09423828125,
+          1189.04357910156
+        ],
+        [
+          632.581909179688,
+          1185.27734375
+        ],
+        [
+          636.7900390625,
+          1181.19006347656
+        ],
+        [
+          640.947143554688,
+          1177.05041503906
+        ],
+        [
+          645.096618652344,
+          1172.90319824219
+        ],
+        [
+          649.2451171875,
+          1168.7548828125
+        ],
+        [
+          653.3935546875,
+          1164.6064453125
+        ],
+        [
+          657.5419921875,
+          1160.4580078125
+        ],
+        [
+          661.6904296875,
+          1156.3095703125
+        ],
+        [
+          665.8388671875,
+          1152.1611328125
+        ],
+        [
+          668.634704589844,
+          1147.25573730469
+        ],
+        [
+          669.626525878906,
+          1141.57336425781
+        ],
+        [
+          673.178466796875,
+          1136.93981933594
+        ],
+        [
+          677.271667480469,
+          1132.7373046875
+        ],
+        [
+          681.416320800781,
+          1128.58544921875
+        ],
+        [
+          684.913696289062,
+          1123.96411132812
+        ],
+        [
+          687.792419433594,
+          1118.89733886719
+        ],
+        [
+          690.0546875,
+          1113.55004882812
+        ],
+        [
+          690.906066894531,
+          1107.79223632812
+        ],
+        [
+          693.560974121094,
+          1102.79052734375
+        ],
+        [
+          694.876708984375,
+          1097.12951660156
+        ],
+        [
+          695.678771972656,
+          1091.44104003906
+        ],
+        [
+          699.262573242188,
+          1086.83251953125
+        ],
+        [
+          703.368469238281,
+          1082.642578125
+        ],
+        [
+          707.512268066406,
+          1078.48974609375
+        ],
+        [
+          710.2314453125,
+          1073.34753417969
+        ],
+        [
+          712.345458984375,
+          1068.00280761719
+        ],
+        [
+          714.183166503906,
+          1062.5244140625
+        ],
+        [
+          716.416748046875,
+          1057.17150878906
+        ],
+        [
+          718.104797363281,
+          1051.65612792969
+        ],
+        [
+          720.654968261719,
+          1046.48327636719
+        ],
+        [
+          722.535522460938,
+          1041.02062988281
+        ],
+        [
+          724.164855957031,
+          1035.50512695312
+        ],
+        [
+          726.313171386719,
+          1030.14306640625
+        ],
+        [
+          728.134338378906,
+          1024.65258789062
+        ],
+        [
+          729.6376953125,
+          1019.08660888672
+        ],
+        [
+          731.4951171875,
+          1013.58245849609
+        ],
+        [
+          733.397033691406,
+          1008.12384033203
+        ],
+        [
+          734.802062988281,
+          1002.48651123047
+        ],
+        [
+          736.563842773438,
+          996.9931640625
+        ],
+        [
+          738.176513671875,
+          991.477172851562
+        ],
+        [
+          739.550231933594,
+          985.856140136719
+        ],
+        [
+          740.863159179688,
+          980.201843261719
+        ],
+        [
+          742.644165039062,
+          974.735046386719
+        ],
+        [
+          742.961730957031,
+          968.879028320312
+        ],
+        [
+          742.995361328125,
+          963.012390136719
+        ],
+        [
+          742.999633789062,
+          957.145690917969
+        ],
+        [
+          742.999938964844,
+          951.278991699219
+        ],
+        [
+          743.672119140625,
+          945.575378417969
+        ],
+        [
+          747.195983886719,
+          940.92431640625
+        ],
+        [
+          750.636352539062,
+          936.344848632812
+        ],
+        [
+          752.14404296875,
+          930.778869628906
+        ],
+        [
+          752.899169921875,
+          924.972045898438
+        ],
+        [
+          754.231079101562,
+          919.421447753906
+        ],
+        [
+          754.936340332031,
+          913.634033203125
+        ],
+        [
+          755.619567871094,
+          907.909423828125
+        ],
+        [
+          756.866088867188,
+          902.232788085938
+        ],
+        [
+          756.985778808594,
+          896.367797851562
+        ],
+        [
+          758.625,
+          890.855346679688
+        ],
+        [
+          758.955139160156,
+          885.000061035156
+        ],
+        [
+          759.707702636719,
+          879.319091796875
+        ],
+        [
+          763.333679199219,
+          874.74169921875
+        ],
+        [
+          767.451354980469,
+          870.562866210938
+        ],
+        [
+          768.824584960938,
+          864.897705078125
+        ],
+        [
+          768.978454589844,
+          859.033386230469
+        ],
+        [
+          768.998168945312,
+          853.166687011719
+        ],
+        [
+          768.999816894531,
+          847.299987792969
+        ],
+        [
+          768.999938964844,
+          841.433288574219
+        ],
+        [
+          768.999938964844,
+          835.566589355469
+        ],
+        [
+          769.0,
+          829.699890136719
+        ],
+        [
+          769.0,
+          823.833190917969
+        ],
+        [
+          769.0,
+          817.966491699219
+        ],
+        [
+          769.0,
+          812.099792480469
+        ],
+        [
+          769.0,
+          806.233093261719
+        ],
+        [
+          769.0,
+          800.366394042969
+        ],
+        [
+          767.372314453125,
+          794.851745605469
+        ],
+        [
+          763.940795898438,
+          790.113525390625
+        ],
+        [
+          763.098327636719,
+          784.331481933594
+        ],
+        [
+          761.380737304688,
+          778.839172363281
+        ],
+        [
+          761.044982910156,
+          772.984252929688
+        ],
+        [
+          759.76416015625,
+          767.427734375
+        ],
+        [
+          758.431335449219,
+          761.799438476562
+        ],
+        [
+          757.127075195312,
+          756.145324707031
+        ],
+        [
+          755.204650878906,
+          750.690551757812
+        ],
+        [
+          753.234313964844,
+          745.281188964844
+        ],
+        [
+          751.858825683594,
+          739.706970214844
+        ],
+        [
+          749.76220703125,
+          734.315612792969
+        ],
+        [
+          749.091796875,
+          728.500732421875
+        ],
+        [
+          747.178588867188,
+          723.082336425781
+        ],
+        [
+          747.016235351562,
+          717.218688964844
+        ],
+        [
+          746.321533203125,
+          711.519775390625
+        ],
+        [
+          742.775085449219,
+          706.884643554688
+        ],
+        [
+          740.499877929688,
+          701.666320800781
+        ],
+        [
+          739.119079589844,
+          696.044372558594
+        ],
+        [
+          739.010437011719,
+          690.179138183594
+        ],
+        [
+          735.376281738281,
+          685.589599609375
+        ],
+        [
+          735.610046386719,
+          688.65576171875
+        ],
+        [
+          739.281066894531,
+          693.204162597656
+        ],
+        [
+          742.538146972656,
+          697.974182128906
+        ],
+        [
+          744.752197265625,
+          703.29150390625
+        ],
+        [
+          744.97412109375,
+          709.152954101562
+        ],
+        [
+          744.997009277344,
+          715.019592285156
+        ],
+        [
+          746.745178222656,
+          720.304016113281
+        ],
+        [
+          750.702697753906,
+          724.631896972656
+        ],
+        [
+          754.302001953125,
+          729.143981933594
+        ],
+        [
+          754.914184570312,
+          734.971618652344
+        ],
+        [
+          754.99267578125,
+          740.837524414062
+        ],
+        [
+          754.999267578125,
+          746.704223632812
+        ],
+        [
+          756.660461425781,
+          752.047607421875
+        ],
+        [
+          760.085021972656,
+          756.735595703125
+        ],
+        [
+          760.892822265625,
+          762.529907226562
+        ],
+        [
+          760.986206054688,
+          768.395690917969
+        ],
+        [
+          760.998718261719,
+          774.262390136719
+        ],
+        [
+          762.364807128906,
+          779.792053222656
+        ],
+        [
+          762.931274414062,
+          785.620849609375
+        ],
+        [
+          762.99169921875,
+          791.487182617188
+        ],
+        [
+          764.833862304688,
+          796.9375
+        ],
+        [
+          764.985229492188,
+          802.801513671875
+        ],
+        [
+          764.998474121094,
+          808.668212890625
+        ],
+        [
+          764.999816894531,
+          814.534912109375
+        ],
+        [
+          764.999938964844,
+          820.401611328125
+        ],
+        [
+          765.0,
+          826.268310546875
+        ],
+        [
+          763.633361816406,
+          831.797180175781
+        ],
+        [
+          763.068176269531,
+          837.626037597656
+        ],
+        [
+          763.008178710938,
+          843.492370605469
+        ],
+        [
+          763.000732421875,
+          849.359069824219
+        ],
+        [
+          761.186462402344,
+          854.831665039062
+        ],
+        [
+          761.018493652344,
+          860.695129394531
+        ],
+        [
+          761.002075195312,
+          866.561828613281
+        ],
+        [
+          761.000244140625,
+          872.428527832031
+        ],
+        [
+          758.799621582031,
+          877.298767089844
+        ],
+        [
+          754.611877441406,
+          881.407287597656
+        ],
+        [
+          753.190124511719,
+          887.058837890625
+        ],
+        [
+          752.309204101562,
+          892.726989746094
+        ],
+        [
+          751.11376953125,
+          898.364990234375
+        ],
+        [
+          751.010681152344,
+          904.230102539062
+        ],
+        [
+          749.382629394531,
+          909.754516601562
+        ],
+        [
+          749.041625976562,
+          915.607543945312
+        ],
+        [
+          747.807006835938,
+          921.213806152344
+        ],
+        [
+          747.095031738281,
+          927.027282714844
+        ],
+        [
+          746.293090820312,
+          932.704284667969
+        ],
+        [
+          745.114074707031,
+          938.349975585938
+        ],
+        [
+          743.623229980469,
+          943.857116699219
+        ],
+        [
+          743.063354492188,
+          949.686279296875
+        ],
+        [
+          741.37060546875,
+          955.1826171875
+        ],
+        [
+          741.042907714844,
+          961.038024902344
+        ],
+        [
+          739.250793457031,
+          966.540161132812
+        ],
+        [
+          739.032165527344,
+          972.401672363281
+        ],
+        [
+          739.002868652344,
+          978.268249511719
+        ],
+        [
+          739.000305175781,
+          984.134948730469
+        ],
+        [
+          738.400512695312,
+          989.873474121094
+        ],
+        [
+          735.624938964844,
+          994.972229003906
+        ],
+        [
+          735.055908203125,
+          1000.80145263672
+        ],
+        [
+          733.324401855469,
+          1006.12322998047
+        ],
+        [
+          729.411254882812,
+          1010.49035644531
+        ],
+        [
+          725.795593261719,
+          1015.001953125
+        ],
+        [
+          723.888305664062,
+          1020.45806884766
+        ],
+        [
+          721.710693359375,
+          1025.81372070312
+        ],
+        [
+          719.883483886719,
+          1031.30505371094
+        ],
+        [
+          718.376037597656,
+          1036.87292480469
+        ],
+        [
+          716.468872070312,
+          1042.29296875
+        ],
+        [
+          713.912780761719,
+          1047.51293945312
+        ],
+        [
+          712.328308105469,
+          1053.05139160156
+        ],
+        [
+          709.625061035156,
+          1058.17248535156
+        ],
+        [
+          707.75634765625,
+          1063.63220214844
+        ],
+        [
+          705.945983886719,
+          1069.13647460938
+        ],
+        [
+          703.877990722656,
+          1074.54248046875
+        ],
+        [
+          701.445556640625,
+          1079.82556152344
+        ],
+        [
+          698.502014160156,
+          1084.79138183594
+        ],
+        [
+          695.737670898438,
+          1089.88269042969
+        ],
+        [
+          693.868713378906,
+          1095.36010742188
+        ],
+        [
+          691.62939453125,
+          1100.7158203125
+        ],
+        [
+          688.919738769531,
+          1105.87438964844
+        ],
+        [
+          685.802734375,
+          1110.77905273438
+        ],
+        [
+          682.964050292969,
+          1115.86535644531
+        ],
+        [
+          680.446716308594,
+          1121.08459472656
+        ],
+        [
+          677.643310546875,
+          1126.16247558594
+        ],
+        [
+          675.347717285156,
+          1131.44897460938
+        ],
+        [
+          671.792724609375,
+          1136.0986328125
+        ],
+        [
+          668.763854980469,
+          1141.02233886719
+        ],
+        [
+          665.366516113281,
+          1145.64172363281
+        ],
+        [
+          665.043884277344,
+          1151.49645996094
+        ],
+        [
+          661.605590820312,
+          1156.21166992188
+        ],
+        [
+          657.532104492188,
+          1160.43310546875
+        ],
+        [
+          653.398193359375,
+          1164.59594726562
+        ],
+        [
+          649.252380371094,
+          1168.74670410156
+        ],
+        [
+          645.104431152344,
+          1172.8955078125
+        ],
+        [
+          640.9560546875,
+          1177.0439453125
+        ],
+        [
+          636.8076171875,
+          1181.1923828125
+        ],
+        [
+          632.6591796875,
+          1185.3408203125
+        ],
+        [
+          628.5107421875,
+          1189.4892578125
+        ],
+        [
+          624.3623046875,
+          1193.6376953125
+        ],
+        [
+          620.2138671875,
+          1197.7861328125
+        ],
+        [
+          616.0654296875,
+          1201.9345703125
+        ],
+        [
+          611.9169921875,
+          1206.0830078125
+        ],
+        [
+          607.7685546875,
+          1210.2314453125
+        ],
+        [
+          603.6201171875,
+          1214.3798828125
+        ],
+        [
+          599.4716796875,
+          1218.5283203125
+        ],
+        [
+          595.3232421875,
+          1222.6767578125
+        ],
+        [
+          590.519409179688,
+          1225.93359375
+        ],
+        [
+          585.238342285156,
+          1228.35131835938
+        ],
+        [
+          580.095153808594,
+          1231.08752441406
+        ],
+        [
+          574.86767578125,
+          1233.58044433594
+        ],
+        [
+          569.857238769531,
+          1236.46240234375
+        ],
+        [
+          565.582092285156,
+          1240.47863769531
+        ],
+        [
+          561.408630371094,
+          1244.60168457031
+        ],
+        [
+          557.255920410156,
+          1248.74560546875
+        ],
+        [
+          552.765747070312,
+          1252.35766601562
+        ],
+        [
+          547.501525878906,
+          1254.64819335938
+        ],
+        [
+          541.804321289062,
+          1255.60717773438
+        ],
+        [
+          536.541320800781,
+          1258.07421875
+        ],
+        [
+          533.436218261719,
+          1262.73559570312
+        ],
+        [
+          533.048156738281,
+          1268.58569335938
+        ],
+        [
+          533.005920410156,
+          1274.4521484375
+        ],
+        [
+          533.00048828125,
+          1280.31884765625
+        ],
+        [
+          533.000061035156,
+          1286.185546875
+        ],
+        [
+          533.0,
+          1292.05224609375
+        ],
+        [
+          533.0,
+          1297.9189453125
+        ],
+        [
+          533.0,
+          1303.78564453125
+        ],
+        [
+          533.0,
+          1309.65234375
+        ],
+        [
+          533.0,
+          1315.51904296875
+        ],
+        [
+          533.0,
+          1321.3857421875
+        ],
+        [
+          533.0,
+          1327.25244140625
+        ],
+        [
+          533.0,
+          1333.119140625
+        ],
+        [
+          533.0,
+          1338.98583984375
+        ],
+        [
+          533.0,
+          1344.8525390625
+        ],
+        [
+          533.0,
+          1350.71923828125
+        ],
+        [
+          533.0,
+          1356.5859375
+        ],
+        [
+          533.0,
+          1362.45263671875
+        ],
+        [
+          533.0,
+          1368.3193359375
+        ],
+        [
+          533.0,
+          1374.18603515625
+        ],
+        [
+          533.0,
+          1380.052734375
+        ],
+        [
+          533.0,
+          1385.91943359375
+        ],
+        [
+          533.0,
+          1391.7861328125
+        ],
+        [
+          533.0,
+          1397.65283203125
+        ],
+        [
+          533.0,
+          1403.51953125
+        ],
+        [
+          533.0,
+          1409.38623046875
+        ],
+        [
+          533.0,
+          1415.2529296875
+        ],
+        [
+          529.746765136719,
+          1420.09912109375
+        ],
+        [
+          526.091613769531,
+          1424.60815429688
+        ],
+        [
+          523.700073242188,
+          1429.87915039062
+        ],
+        [
+          520.568237304688,
+          1434.72180175781
+        ],
+        [
+          516.765319824219,
+          1439.17407226562
+        ],
+        [
+          515.128662109375,
+          1444.56750488281
+        ],
+        [
+          515.01611328125,
+          1450.43286132812
+        ],
+        [
+          515.001403808594,
+          1456.29956054688
+        ],
+        [
+          515.000183105469,
+          1462.16625976562
+        ],
+        [
+          515.000061035156,
+          1468.03295898438
+        ],
+        [
+          515.0,
+          1473.89965820312
+        ],
+        [
+          515.0,
+          1479.76635742188
+        ],
+        [
+          515.0,
+          1485.63305664062
+        ],
+        [
+          515.0,
+          1491.49975585938
+        ],
+        [
+          515.0,
+          1497.36645507812
+        ],
+        [
+          515.0,
+          1503.23315429688
+        ]
+      ]
+    },
+    "failures": [],
+    "geometry": {
+      "added_grid_cells": 485,
+      "added_reachable": 485,
+      "bad_samples": [],
+      "edge_samples": 35190,
+      "inherited_old_radius_crossing_samples_preserved": 86,
+      "local_grid_edges": 2070,
+      "new_illegal_samples": 0,
+      "original_grid_cells": 2218
+    },
+    "guide": {
+      "actual_feet": [
+        566.988159179688,
+        819.432067871094
+      ],
+      "guide_index": 41,
+      "visited": [
+        "south_gate",
+        "main_building",
+        "library"
+      ]
+    },
+    "scope": "Automated native physics, production script. Preserved legacy circular-clearance exceptions are counted separately; no surveyed campus claims."
+  },
+  "optional_evidence_output": {
+    "variable": "BUCT_LIUHU_OUTPUT",
+    "explicit_valid_directory": {
+      "checks": 57,
+      "failures": 0,
+      "exit": 0
+    },
+    "unset": {
+      "checks": 57,
+      "failures": 0,
+      "exit": 0,
+      "optional_file_write_attempted": false
+    },
+    "explicit_invalid_regular_file": {
+      "checks": 58,
+      "failures": 1,
+      "exit": 1,
+      "expected_failure": "Cannot write explicitly requested native evidence",
+      "null_method_error": false
+    }
+  },
+  "gpu_capture": {
+    "checks": 15,
+    "failures": [],
+    "local_video": {
+      "fps": 15,
+      "frames": 105,
+      "method": "Actual Godot GPU shader at deterministic 1/15-second phases. Fixed local camera, source art unchanged. No simulated/repainted water video.",
+      "screen_crop": [
+        110,
+        154,
+        792,
+        532
+      ],
+      "seconds": 7,
+      "source_roi": [
+        300,
+        742,
+        198,
+        133
+      ]
+    },
+    "normal_gameplay": {
+      "actual_feet": [
+        566.988159179688,
+        819.432067871094
+      ],
+      "illegal_feet_frames": 0,
+      "position_writes_during_guide": 0,
+      "travel_physics_frames": 718,
+      "visits": [
+        "south_gate",
+        "main_building",
+        "library"
+      ]
+    },
+    "source_to_screen": {
+      "origin": [
+        -1090.0,
+        -2814.0
+      ],
+      "x": [
+        4.0,
+        0.0
+      ],
+      "y": [
+        0.0,
+        4.0
+      ]
+    },
+    "viewport": [
+      1180,
+      812
+    ]
+  },
+  "gpu_pixel_analysis": {
+    "checks": {
+      "capture_script_has_no_failures": true,
+      "actual_guide_retains_three_visits_and_legal_feet": true,
+      "gpu-static-reconstructed.png_pixel_identical": true,
+      "gpu-static-toggle-0.png_pixel_identical": true,
+      "gpu-static-toggle-1.png_pixel_identical": true,
+      "gpu-static-toggle-2.png_pixel_identical": true,
+      "hidden_object_really_removes_every_water_pixel": true,
+      "hidden_object_preserves_islet_bank_bridge_and_all_nonwater": true,
+      "gpu-motion-0.0.png_moves_only_allowed_water": true,
+      "gpu-motion-0.0.png_subtle_rgb_change": true,
+      "gpu-motion-1.7.png_moves_only_allowed_water": true,
+      "gpu-motion-1.7.png_subtle_rgb_change": true,
+      "gpu-motion-4.2.png_moves_only_allowed_water": true,
+      "gpu-motion-4.2.png_subtle_rgb_change": true,
+      "gpu-motion-6.8.png_moves_only_allowed_water": true,
+      "gpu-motion-6.8.png_subtle_rgb_change": true,
+      "video_has_105_actual_gpu_frames": true,
+      "video_has_temporal_motion": true
+    },
+    "passed": 18,
+    "total": 18,
+    "results": {
+      "gpu-static-reconstructed.png": {
+        "changed_pixels": 0,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 0
+      },
+      "gpu-static-toggle-0.png": {
+        "changed_pixels": 0,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 0
+      },
+      "gpu-static-toggle-1.png": {
+        "changed_pixels": 0,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 0
+      },
+      "gpu-static-toggle-2.png": {
+        "changed_pixels": 0,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 0
+      },
+      "hidden": {
+        "changed_pixels": 114240,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 15664,
+        "maximum_channel_delta": 89
+      },
+      "gpu-motion-0.0.png": {
+        "changed_pixels": 16832,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 3
+      },
+      "gpu-motion-1.7.png": {
+        "changed_pixels": 15968,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 8
+      },
+      "gpu-motion-4.2.png": {
+        "changed_pixels": 14592,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 9
+      },
+      "gpu-motion-6.8.png": {
+        "changed_pixels": 15968,
+        "outside_water_changed": 0,
+        "static_shore_guard_changed": 0,
+        "maximum_channel_delta": 7
+      },
+      "video_first_last_changed_pixels": 26304
+    },
+    "screen_water_pixels": 114240,
+    "screen_mobile_pixels": 98576,
+    "method": "Compare actual engine PNG bytes using captured canvas transform and committed exact alpha. Local camera fixture distinct from normal game screenshot."
+  },
+  "execution_exit_codes": {
+    "two_small_texture_import": 0,
+    "final_public_script_parse": 0,
+    "final_native_lake": 0,
+    "existing_road_regression": 0,
+    "original_combined_gpu_wrapper": 127,
+    "standalone_python3_gpu_analysis": 0,
+    "final_manual_gui": 0,
+    "video_encode": 0
+  },
+  "graphics_evidence_final_code_relation": "GPU capture preceded only the final deselection status-text restoration. Water component, shaders, textures, mask, source coordinates, movement and camera unchanged. Final native59 validates the status-text change. The unused source provenance path was normalized to its public repository path; render parameters and decoded pixel checksums stayed identical.",
+  "graphics_input_sha256": {
+    "godot_native/campuses/buct_changping/scripts/liuhu_water_surface.gd": "2aef9583b1188fde05bfee1f8a94e1c8b26ada32ee102e819fb958ae243fda28",
+    "godot_native/campuses/buct_changping/data/liuhu_water_registration.json": "7e78d2d747742ee2a88df4aeb149f652df36422ef50eab8935ddc57749322cfe",
+    "godot_native/campuses/buct_changping/shaders/liuhu_water.gdshader": "1abeba77a215b08175b20ebcdf72d91c475cd2f874ade730e3dc92538b8bc9b4",
+    "godot_native/campuses/buct_changping/shaders/liuhu_static_cutout.gdshader": "ae0a290afd0f05d2522b33f6269357cd224460d82f505020fa5ee88efe42a8e8",
+    "godot_native/campuses/buct_changping/assets/liuhu-water-source-rgba.png": "ba69b719d944bec2c913ff5172562371af44449c07b7b3e31219a026936f96b2",
+    "godot_native/campuses/buct_changping/assets/liuhu-water-distance.png": "6df67286a98a6879b2c369eeabbfc731b27e601fc59d9c9409f5e3233a01a07c",
+    "godot_native/campuses/buct_changping/assets/liuhu-water-source-rgba.png.import": "e7c0862008568410ce0f53d5eb65d3f96e0d6e25c911a7eac52dbb27d0da4311",
+    "godot_native/campuses/buct_changping/assets/liuhu-water-distance.png.import": "43f1a9ed87b412813eab0694f7218e77b09a1ea349b8af448ab51a96f4cd81fa"
+  },
+  "manual_final_ui": {
+    "time_utc": "2026-10-13T01:27:28Z",
+    "actual_manual_input": true,
+    "guide": "original automatic route to library before manual interactions",
+    "water_click": [
+      267,
+      372
+    ],
+    "selected_status": "柳湖 · 原画水面，暂不开放通行",
+    "islet_click": [
+      253,
+      405
+    ],
+    "dry_corner_click": [
+      110,
+      279
+    ],
+    "cancel_status": "沿开放的铺装步道探索校园",
+    "reselection_passed": true,
+    "visits_stayed": "3/3",
+    "no_visible_movement_during_water_islet_blank_clicks": true,
+    "manual_motion": "S held150ms moves south on existing path; subsequent observation after release stopped",
+    "evidence": [
+      "manual-water-selected.jpg",
+      "manual-islet-cancel.jpg"
+    ],
+    "log": "manual-selection.log",
+    "exit_code": 0,
+    "errors_rid_objectdb": false,
+    "warnings": [
+      "VSync unsupported"
+    ],
+    "slot_released": true,
+    "manual_geometry_limit": "No per-input feet logger in this helper; position stability verified visually, not claimed as numerical assertion",
+    "native_screenshot_format": "JPEG, original bytes preserved"
+  },
+  "video": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 792,
+        "height": 532,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "15/1",
+        "nb_frames": "105"
+      }
+    ],
+    "format": {
+      "duration": "7.000000",
+      "size": "66755"
+    },
+    "filename": "liuhu-original-water-motion-7s.mp4",
+    "sha256": "c4507960651347943b102ba2bb032d1e6ad78351057febda8ef9ca6bb0224730"
+  }
+}

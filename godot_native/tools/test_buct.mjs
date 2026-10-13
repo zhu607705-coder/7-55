@@ -16,6 +16,7 @@ if(!process.argv.includes('--guard-only')) {
  await import('../tests/verify_buct_student_source.mjs');
  await import('../tests/verify_buct_changping_source.mjs');
  await import('../../scripts/check-buct-changping-east-road.mjs');
+ await import('../../scripts/check-buct-changping-liuhu.mjs');
 }
 if(process.argv.includes('--source-only'))process.exit(0);
 function sandbox() {
@@ -23,7 +24,7 @@ function sandbox() {
  for(const folder of ['data','config','cache','state','tmp','runtime','evidence'])fs.mkdirSync(path.join(root,folder));
  const userData=path.join(root,'data','SevenFiftyFiveNative');
  fs.mkdirSync(userData);
- return {root,userData,env:{...process.env,BUCT_EAST_ROAD_OUTPUT:path.join(root,'evidence'),TMPDIR:path.join(root,'tmp'),TEMP:path.join(root,'tmp'),TMP:path.join(root,'tmp'),XDG_RUNTIME_DIR:path.join(root,'runtime'),XDG_DATA_HOME:path.join(root,'data'),XDG_CONFIG_HOME:path.join(root,'config'),XDG_CACHE_HOME:path.join(root,'cache'),XDG_STATE_HOME:path.join(root,'state'),GODOT_TEST_USER_DATA_DIR:userData,GODOT_SILENCE_ROOT_WARNING:'1'}};
+ return {root,userData,env:{...process.env,BUCT_EAST_ROAD_OUTPUT:path.join(root,'evidence'),BUCT_LIUHU_OUTPUT:path.join(root,'evidence'),TMPDIR:path.join(root,'tmp'),TEMP:path.join(root,'tmp'),TMP:path.join(root,'tmp'),XDG_RUNTIME_DIR:path.join(root,'runtime'),XDG_DATA_HOME:path.join(root,'data'),XDG_CONFIG_HOME:path.join(root,'config'),XDG_CACHE_HOME:path.join(root,'cache'),XDG_STATE_HOME:path.join(root,'state'),GODOT_TEST_USER_DATA_DIR:userData,GODOT_SILENCE_ROOT_WARNING:'1'}};
 }
 function invoke(fixture,script) {
  const result=spawnSync(executable,['--headless','--path',project,'--script',`res://tests/${script}`,'--','--fresh'],{env:fixture.env,encoding:'utf8',timeout:5*60*1000,maxBuffer:8*1024*1024});
@@ -73,7 +74,7 @@ for(const {kind,populated} of cases) {
  console.log(`PASS BUCT save guard ${kind} (${populated?'sentinel saves':'empty profile'}): fixture bytes unchanged`);
 }
 if(!process.argv.includes('--guard-only')) {
- for(const script of ['test_buct_source_layers.gd','test_buct_student_maps.gd','test_buct_student_pin_layout.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd','test_buct_changping_east_road.gd']) {
+ for(const script of ['test_buct_source_layers.gd','test_buct_student_maps.gd','test_buct_student_pin_layout.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd','test_buct_changping_east_road.gd','test_buct_changping_liuhu.gd']) {
   const fixture=sandbox();const result=invoke(fixture,script);
   process.stdout.write(result.text);
   assert.equal(result.status,0,`${script} failed; sandbox retained at ${fixture.root}`);
