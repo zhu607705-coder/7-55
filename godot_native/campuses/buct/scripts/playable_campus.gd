@@ -1,4 +1,8 @@
 extends Node2D
+const COURT_NORTH_PATCH = preload("res://campuses/buct/scripts/court_north_patch.gd")
+const COURT_NORTH_INFO_FONT = preload("res://campuses/buct/assets/court_north/info-font.otf")
+const L_INFO_FONT = preload("res://campuses/buct/assets/west_inner_l/l-info-font.otf")
+const LIBRARY_INFO_FONT = preload("res://campuses/buct/assets/library/library-info-font.otf")
 const STUDENT_PIN_LAYOUT = preload("res://campuses/buct_shared/student/scripts/landmark_pin_layout.gd")
 const VISITOR = preload("res://campuses/buct/scripts/campus_visitor.gd")
 const SOURCE = preload("res://campuses/buct/assets/approved-chaoyang.png")
@@ -43,6 +47,8 @@ var installed_actions: Array[String] = []
 var ui_controls := {}
 var map_area := Rect2()
 var compact := false
+var l_building: Node2D
+var court_north: Node2D
 var library: Node2D
 var library_blockers: Array[PackedVector2Array] = []
 
@@ -63,13 +69,20 @@ func _ready() -> void:
 	world.get_node("GroundRepairTiles").render_target_update_mode=SubViewport.UPDATE_ONCE
 	objects=world.get_node("IndependentRegisteredObjects")
 	library=objects.get_node("library")
+	l_building=objects.get_node("west_inner_l_block")
 	for poly in data.walkable_polygons: walk_polys.append(pts(poly))
 	var building_data: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct/data/layers.json"))
+	court_north=COURT_NORTH_PATCH.install(world,objects,building_data)
+	if not is_instance_valid(court_north):
+		push_error("Court-north isolated replacement failed; preserving the old scene")
 	_prepare_depth_layers(building_data)
 	for item in building_data.objects:
 		if item.id in ["south_gate","main_building"]:
 			landmark_hit_polys[item.id]=pts(item.silhouette)
-		for footprint in item.footprints:
+		var footprints: Array = l_building.profile.collision_polygons_source_xy if item.id=="west_inner_l_block" else item.footprints
+		if item.id=="west_courts_north_bar" and is_instance_valid(court_north):
+			footprints=court_north.profile.collision_polygons_source_xy
+		for footprint in footprints:
 			for expanded in Geometry2D.offset_polygon(pts(footprint),3.2):
 				if item.id=="library": library_blockers.append(_library_local_polygon(expanded))
 				else: blockers.append(expanded)
@@ -139,6 +152,8 @@ func _library_local_polygon(source: PackedVector2Array) -> PackedVector2Array:
 	return local
 
 func landmark_at(point: Vector2) -> String:
+	if is_instance_valid(court_north) and court_north.hit_test_alpha(point):return "west_courts_north_bar"
+	if is_instance_valid(l_building) and l_building.hit_test_alpha(point):return "west_inner_l_block"
 	if is_instance_valid(library) and library.hit_test_alpha(point):return "library"
 	for id in landmark_hit_polys:
 		if Geometry2D.is_point_in_polygon(point,landmark_hit_polys[id]):return id
@@ -266,14 +281,31 @@ func return_to_gate() -> void:
 	status.text="已回到南门"
 
 func show_landmark(id: String) -> void:
+	if is_instance_valid(court_north):court_north.set_selected(false)
+	if id=="west_courts_north_bar" and is_instance_valid(court_north):
+		info_id=id;info_title.text="球场北侧短楼（场景对象）"
+		info_text.text="独立透明楼体保留连续屋顶与浅色立面。沿原有铺装步道可观察两端；南侧球场未开放。功能与入口尚未核实，不开放室内。"
+		info_title.add_theme_font_override("font",COURT_NORTH_INFO_FONT)
+		info_text.add_theme_font_override("font",COURT_NORTH_INFO_FONT)
+		library.set_selected(false);l_building.set_selected(false);court_north.set_selected(true)
+		info_panel.show();_layout_library_tools();return
+	if id=="west_inner_l_block":
+		info_id=id;info_title.text="西侧L形楼（场景对象）"
+		info_text.text="透明独立楼体保留主横楼、东侧长翼与西侧低附楼。脚碰撞沿真实立面下缘；此处不开放室内。原校园底图保留，因此暂不支持整楼移走或隐藏。"
+		info_text.add_theme_font_override("font",L_INFO_FONT)
+		info_title.add_theme_font_override("font",L_INFO_FONT)
+		library.set_selected(false);l_building.set_selected(true)
+		info_panel.show();_layout_library_tools();return
+	l_building.set_selected(false)
+	info_title.add_theme_font_override("font",font)
 	for item in data.landmarks:
 		if str(item.id)==id:
 			info_id=id;info_title.text=str(item.name);info_text.text=str(item.description)
 			library.set_selected(id=="library")
 			info_panel.show()
 			if id=="library":
-				info_text.text="同风格独立重建：楼体、投影、净底已分离。原坐标放回；轮廓约1–3源像素偏移。其余43组仍为原图UV。此处仅作校园导览，不代表已确认入口。"
-				info_text.add_theme_font_override("font",load("res://campuses/buct/assets/library/library-info-font.otf"))
+				info_text.text="同风格独立重建：楼体、投影、净底已分离。原坐标放回；轮廓约1–3源像素偏移。其余42组仍为原图UV。此处仅作校园导览，不代表已确认入口。"
+				info_text.add_theme_font_override("font",LIBRARY_INFO_FONT)
 			else: info_text.add_theme_font_override("font",font)
 			_layout_library_tools()
 			if not visited.has(id):visited.append(id)
@@ -306,6 +338,8 @@ func _layout_library_tools() -> void:
 	ui_controls.library_toggle.text="隐藏楼体" if not is_instance_valid(library) or library.body_enabled else "显示楼体"
 
 func close_info() -> void:
+	if is_instance_valid(court_north):court_north.set_selected(false)
+	if is_instance_valid(l_building):l_building.set_selected(false)
 	if is_instance_valid(library):library.set_selected(false)
 	info_id=""
 	if is_instance_valid(info_panel):info_panel.hide()
@@ -318,7 +352,7 @@ func toggle_overview() -> void:
 		camera.zoom=Vector2.ONE*_walking_zoom()
 		camera.position=_walking_camera_position()
 		camera.reset_smoothing()
-	status.text="全图浏览 · 仅南门—主楼—图书馆步道已开放" if overview else "返回步行视角"
+	status.text="全图浏览 · 导览步道、西侧运动区边路、图书馆西路已开放" if overview else "返回步行视角"
 
 func notify_boundary() -> void:
 	if not guide_active and visitor.manual_input.length_squared()>0:
@@ -544,6 +578,8 @@ func _process(delta: float) -> void:
 		if guide_pause<=0:close_info()
 	if is_instance_valid(visitor):
 		library.set_actor_foot(visitor.global_position)
+		l_building.update_actor_foot(visitor.global_position.y)
+		if is_instance_valid(court_north):court_north.update_actor_foot(visitor.global_position.y)
 		visitor.get_node("CanopyFootLocator").visible=not overview and visitor_head_occluded()
 		if overview:
 			_fit_overview_camera()

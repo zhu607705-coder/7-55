@@ -1,0 +1,107 @@
+{
+  "status": "chaoyang_component_map_and_manual_verified_combined_entry_limited_stage",
+  "baseline_remote_head": "3ce2b43ff9fe53c98958909fdd9d11f3b752924b",
+  "frozen_local_equivalent": "96d65eae1ee788b8b846c7045b32a9cab5b71006",
+  "source_body_sha256": "dd55688c01b62c15a05ca6a62b4d99ad78aa1b36cb8491af38e6399cd358d31d",
+  "body_transform": {
+    "raw_size": [
+      1558,
+      1010
+    ],
+    "uniform_scale": 0.11489088575096278,
+    "origin": [
+      426,
+      591.9801026957638
+    ]
+  },
+  "headless": {
+    "l_object_checks": 115,
+    "l_object_failures": 0,
+    "source_layers_checks": 284,
+    "source_layers_failures": 0,
+    "playable_checks": 115,
+    "playable_failures": 0,
+    "continuous_guide_physics_ticks": 743
+  },
+  "gpu": {
+    "body_whole_vs_compact": {
+      "changed_pixels": 63,
+      "max_channel": 1,
+      "over_1LSB": 0,
+      "alpha_support_diff": 0
+    },
+    "four_direction_depth_probes": 32,
+    "max_channel_error_lsb": 1,
+    "overlap_error_pixels_over_2lsb": 0,
+    "body_passes": 2,
+    "component_nodes": 7,
+    "component_texture_bytes": 8402492,
+    "budget_scope": "Component delta only, not full-scene net delta or timing benchmark",
+    "production_imported_texture": true,
+    "production_mipmaps": true,
+    "same_production_preload_texture_identity": true,
+    "explicit_import_policy": {
+      "mipmaps_generate": true,
+      "fix_alpha_border": false,
+      "premult_alpha": false,
+      "raw_png_unchanged": true
+    }
+  },
+  "source_protection": {
+    "ground_patch_roi": [
+      476,
+      675,
+      95,
+      22
+    ],
+    "ground_patch_pixels": 366,
+    "outside_ground_mask_source_changes": 0,
+    "exact_rgb_foliage_pixels": 2300,
+    "existing_canopy_overlap_pixels": 0,
+    "generated_ground_original_sha256": "eb6de49fa85feee5de2838b495e2b10423938defd05c0b6288e92a11129ec046",
+    "ground_provenance": "Web-generated bounded source-context repair, 2026-10-12; original SHA retained above."
+  },
+  "interaction": {
+    "neutral_label": "西侧L形楼（场景对象）",
+    "alpha_notch_rejects": true,
+    "tour_landmarks": 3,
+    "tour_route_waypoints": 29,
+    "visited_unchanged_on_object_inspection": true,
+    "original_story_state_unchanged": true,
+    "student_height_source_px": 18,
+    "student_radius_source_px": 3,
+    "student_speed": 88,
+    "arbitrary_movement_or_removal_enabled": false
+  },
+  "limitations": [
+    "Approved full-campus source remains beneath fixed building; whole-footprint clean erasure is not supplied.",
+    "Ground-contact rear lines and canopy anchors are inferred from projected art, not surveyed.",
+    "New building is slightly sharper than neighboring raster art; no additional body repaint was performed.",
+    "Combined entry assertions passed (1236/0), but missing original-story assets produced 47 ERROR and 2 SCRIPT ERROR lines; the limited stage is not a clean full-game verification.",
+    "No whole-scene performance median/p95 or exported PCK run claimed."
+  ],
+  "combined_entry": {
+    "checks": 1236,
+    "assertion_failures": 0,
+    "error_log_lines": 47,
+    "script_error_lines": 2,
+    "exit_code": 0,
+    "qualification": "Combined Rongmao+L small stage lacks original-story assets. Entry assertions passed but run is not clean and must not be reported as full-stage acceptance."
+  },
+  "previous_validation_issues": [
+    "Initial fixture generated mipmaps from raw PNG while production default import did not. Fixed by tracked production import metadata and exact production Texture2D identity/mipmap assertions; final proof rerun passed. Earlier captures are retained separately and are not final evidence.",
+    "Initial rapid card-font switching caused null font RID diagnostics. Fixed by persistent font resource references; final headless and graphical runs have no such errors.",
+    "Initial headless test weakref inference was rejected as a warning-as-error; explicit WeakRef typing fixed it."
+  ],
+  "manual_review": {
+    "status": "PASS",
+    "production_import_revision": true,
+    "neutral_card_via_roof": true,
+    "visited_counter_unchanged": "0/3",
+    "close_to_map": true,
+    "north_exterior_notch_rejects": true,
+    "return_to_chooser": true,
+    "error_log_lines": 0,
+    "rid_error_lines": 0
+  }
+}

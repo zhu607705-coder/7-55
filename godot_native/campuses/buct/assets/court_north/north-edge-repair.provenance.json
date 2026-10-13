@@ -1,0 +1,45 @@
+{
+  "method": "ChatGPT web minimal background correction v2; one uniform center crop and resampling; immutable 201-source-pixel mask",
+  "raw_sha256": "e469b0d80a238b71de682df12dd4791ccb40eb06b3924ba1361fba9f68d5390d",
+  "raw_dimensions": [
+    2210,
+    712
+  ],
+  "raw_mode": "RGB",
+  "raw_bytes_preserved": true,
+  "uniform_source_pixels_per_raw_pixel": 0.025339366515837104,
+  "raw_crop_xywh": [
+    0,
+    40.28571428571428,
+    2210,
+    631.4285714285714
+  ],
+  "raw_image_origin_world": [
+    447,
+    431.97918552036197
+  ],
+  "source_roi_xywh": [
+    447,
+    433,
+    56,
+    16
+  ],
+  "runtime_asset": "north-edge-repair.png",
+  "runtime_sha256": "138bd04d1fa83dfc013a64db87a0d4a87524fec8359c04f58b0cc039a0172761",
+  "runtime_mode": "RGBA",
+  "runtime_dimensions": [
+    56,
+    16
+  ],
+  "runtime_opaque_pixels": 201,
+  "runtime_outside_mask_alpha": 0,
+  "runtime_alpha_bytes_sha256": "42993fb428a3495f9a84fe35753cbe9db14445d4cb754cca5eede239266102e7",
+  "allowed_mask_png_sha256": "5443083b70e59612936bc6bf1cdd3d56755434db61b40728911365ec908ce05e",
+  "source_roi_sha256": "547fb811acce811481f3c3ba41fdddbb9f762c4b61065f193bb6e258954d87a0",
+  "source_asset_sha256": "b9d3c5ce191003bd30f959a51c16737c84dceb3f59985f703fe668ad274fc6e9",
+  "source_outside_mask_changed_pixels": 0,
+  "body_registration_and_pixels_unchanged": true,
+  "limits": "Generated local background texture, not evidence of exact hidden scenery reconstruction. Original full building footprint remains under the fixed object.",
+  "native_status": "Imported RGBA/alpha exact-match tests and normal/manual views passed on 2026-10-13; tiny dark old edge pixels outside mask remain documented",
+  "runtime_rgba_bytes_sha256": "c8a8d0a2039be5b02f8459c5c341a19ee6aa964d90ce82a41d7b65849ec912b0"
+}
