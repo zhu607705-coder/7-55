@@ -11,12 +11,14 @@ if(process.platform!=='linux')throw new Error('NATIVE_TEST_PLATFORM_REQUIRED: XD
 const project=path.resolve(import.meta.dirname,'..');
 const executable=process.env.GODOT_BIN||'godot';
 const saveNames=['save.json','save.previous.json','save.json.tmp'];
+if(!process.argv.includes('--guard-only'))await import('../tests/verify_buct_haidian_source.mjs');
+if(process.argv.includes('--source-only'))process.exit(0);
 function sandbox() {
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'755-native-check-'));
- for(const folder of ['data','config','cache','state'])fs.mkdirSync(path.join(root,folder));
+ for(const folder of ['data','config','cache','state','tmp','runtime'])fs.mkdirSync(path.join(root,folder));
  const userData=path.join(root,'data','SevenFiftyFiveNative');
  fs.mkdirSync(userData);
- return {root,userData,env:{...process.env,XDG_DATA_HOME:path.join(root,'data'),XDG_CONFIG_HOME:path.join(root,'config'),XDG_CACHE_HOME:path.join(root,'cache'),XDG_STATE_HOME:path.join(root,'state'),GODOT_TEST_USER_DATA_DIR:userData,GODOT_SILENCE_ROOT_WARNING:'1'}};
+ return {root,userData,env:{...process.env,TMPDIR:path.join(root,'tmp'),TEMP:path.join(root,'tmp'),TMP:path.join(root,'tmp'),XDG_RUNTIME_DIR:path.join(root,'runtime'),XDG_DATA_HOME:path.join(root,'data'),XDG_CONFIG_HOME:path.join(root,'config'),XDG_CACHE_HOME:path.join(root,'cache'),XDG_STATE_HOME:path.join(root,'state'),GODOT_TEST_USER_DATA_DIR:userData,GODOT_SILENCE_ROOT_WARNING:'1'}};
 }
 function invoke(fixture,script) {
  const result=spawnSync(executable,['--headless','--path',project,'--script',`res://tests/${script}`,'--','--fresh'],{env:fixture.env,encoding:'utf8',timeout:5*60*1000,maxBuffer:8*1024*1024});
@@ -66,7 +68,7 @@ for(const {kind,populated} of cases) {
  console.log(`PASS BUCT save guard ${kind} (${populated?'sentinel saves':'empty profile'}): fixture bytes unchanged`);
 }
 if(!process.argv.includes('--guard-only')) {
- for(const script of ['test_buct_source_layers.gd','test_buct_playable.gd','test_buct_entry.gd']) {
+ for(const script of ['test_buct_source_layers.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd']) {
   const fixture=sandbox();const result=invoke(fixture,script);
   process.stdout.write(result.text);
   assert.equal(result.status,0,`${script} failed; sandbox retained at ${fixture.root}`);

@@ -1,0 +1,5667 @@
+{
+  "canvas_size": [
+    1448,
+    1086
+  ],
+  "source": "assets/approved-haidian.png",
+  "source_sha256": "b5a95f81d89819cc54a346c5ec8e22abd7cd2bc7814b7daf5b65d0145bf72c63",
+  "campus": "北京化工大学海淀校区",
+  "scope": "67 visible building/context groups registered from the original image. Neighbouring and cropped roofs have neutral context labels. Trees, vehicles, roads, sports grounds and the outside south channel remain static except the bounded walking route canopy masks. Hidden ground is approximate native paving, not measured reconstruction.",
+  "paving_samples": [
+    [
+      888,
+      388
+    ],
+    [
+      909,
+      325
+    ]
+  ],
+  "objects": [
+    {
+      "id": "main_building",
+      "name": "教学楼",
+      "anchor": [
+        636,
+        404
+      ],
+      "silhouette": [
+        [
+          453,
+          166
+        ],
+        [
+          588,
+          216
+        ],
+        [
+          584,
+          237
+        ],
+        [
+          758,
+          302
+        ],
+        [
+          783,
+          255
+        ],
+        [
+          847,
+          280
+        ],
+        [
+          832,
+          343
+        ],
+        [
+          816,
+          390
+        ],
+        [
+          805,
+          404
+        ],
+        [
+          757,
+          383
+        ],
+        [
+          753,
+          371
+        ],
+        [
+          698,
+          351
+        ],
+        [
+          672,
+          340
+        ],
+        [
+          644,
+          331
+        ],
+        [
+          614,
+          320
+        ],
+        [
+          578,
+          310
+        ],
+        [
+          576,
+          288
+        ],
+        [
+          559,
+          282
+        ],
+        [
+          557,
+          293
+        ],
+        [
+          539,
+          286
+        ],
+        [
+          535,
+          275
+        ],
+        [
+          455,
+          247
+        ],
+        [
+          441,
+          239
+        ],
+        [
+          431,
+          212
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            438,
+            220
+          ],
+          [
+            552,
+            261
+          ],
+          [
+            547,
+            289
+          ],
+          [
+            445,
+            254
+          ]
+        ],
+        [
+          [
+            573,
+            285
+          ],
+          [
+            758,
+            348
+          ],
+          [
+            753,
+            377
+          ],
+          [
+            575,
+            316
+          ]
+        ],
+        [
+          [
+            778,
+            337
+          ],
+          [
+            833,
+            355
+          ],
+          [
+            815,
+            402
+          ],
+          [
+            753,
+            378
+          ]
+        ]
+      ],
+      "shadow_polygons": [
+        [
+          [
+            432,
+            232
+          ],
+          [
+            457,
+            247
+          ],
+          [
+            468,
+            260
+          ],
+          [
+            547,
+            287
+          ],
+          [
+            535,
+            309
+          ],
+          [
+            423,
+            269
+          ],
+          [
+            418,
+            255
+          ]
+        ]
+      ],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        431,
+        166,
+        847,
+        404
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. 教学楼 identity is source-backed; three projected facade bands follow this art, not the prior campus.",
+      "outside_depicted_campus": false,
+      "depth_regions": [
+        {
+          "name": "WestFacade",
+          "baseline": 287,
+          "clip": [
+            [
+              0,
+              0
+            ],
+            [
+              573,
+              0
+            ],
+            [
+              573,
+              1086
+            ],
+            [
+              0,
+              1086
+            ]
+          ]
+        },
+        {
+          "name": "LongFacade",
+          "baseline": 354,
+          "clip": [
+            [
+              573,
+              0
+            ],
+            [
+              756,
+              0
+            ],
+            [
+              756,
+              1086
+            ],
+            [
+              573,
+              1086
+            ]
+          ]
+        },
+        {
+          "name": "EastFacade",
+          "baseline": 403,
+          "clip": [
+            [
+              756,
+              0
+            ],
+            [
+              1448,
+              0
+            ],
+            [
+              1448,
+              1086
+            ],
+            [
+              756,
+              1086
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "library",
+      "name": "荣茂图书馆",
+      "anchor": [
+        517,
+        473
+      ],
+      "silhouette": [
+        [
+          525,
+          269
+        ],
+        [
+          581,
+          289
+        ],
+        [
+          577,
+          319
+        ],
+        [
+          565,
+          346
+        ],
+        [
+          554,
+          388
+        ],
+        [
+          541,
+          433
+        ],
+        [
+          531,
+          473
+        ],
+        [
+          515,
+          468
+        ],
+        [
+          507,
+          462
+        ],
+        [
+          493,
+          458
+        ],
+        [
+          478,
+          454
+        ],
+        [
+          465,
+          443
+        ],
+        [
+          462,
+          404
+        ],
+        [
+          478,
+          358
+        ],
+        [
+          497,
+          307
+        ],
+        [
+          509,
+          284
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            465,
+            410
+          ],
+          [
+            523,
+            430
+          ],
+          [
+            572,
+            304
+          ],
+          [
+            578,
+            320
+          ],
+          [
+            533,
+            474
+          ],
+          [
+            467,
+            446
+          ]
+        ]
+      ],
+      "shadow_polygons": [
+        [
+          [
+            476,
+            351
+          ],
+          [
+            458,
+            345
+          ],
+          [
+            438,
+            350
+          ],
+          [
+            424,
+            373
+          ],
+          [
+            441,
+            395
+          ],
+          [
+            452,
+            410
+          ],
+          [
+            464,
+            405
+          ]
+        ]
+      ],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        462,
+        269,
+        581,
+        473
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. Name follows official historic diagram; current room use is not asserted.",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_courtyard_block",
+      "name": "西侧折角楼",
+      "anchor": [
+        178,
+        530
+      ],
+      "silhouette": [
+        [
+          112,
+          345
+        ],
+        [
+          289,
+          406
+        ],
+        [
+          274,
+          449
+        ],
+        [
+          254,
+          503
+        ],
+        [
+          239,
+          530
+        ],
+        [
+          221,
+          523
+        ],
+        [
+          210,
+          513
+        ],
+        [
+          117,
+          481
+        ],
+        [
+          99,
+          462
+        ],
+        [
+          105,
+          419
+        ],
+        [
+          113,
+          398
+        ],
+        [
+          105,
+          392
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            109,
+            393
+          ],
+          [
+            247,
+            443
+          ],
+          [
+            257,
+            432
+          ],
+          [
+            286,
+            416
+          ],
+          [
+            255,
+            493
+          ],
+          [
+            236,
+            522
+          ],
+          [
+            106,
+            476
+          ],
+          [
+            98,
+            458
+          ]
+        ],
+        [
+          [
+            114,
+            393
+          ],
+          [
+            242,
+            436
+          ],
+          [
+            236,
+            453
+          ],
+          [
+            108,
+            409
+          ]
+        ]
+      ],
+      "shadow_polygons": [
+        [
+          [
+            99,
+            431
+          ],
+          [
+            93,
+            449
+          ],
+          [
+            98,
+            477
+          ],
+          [
+            227,
+            523
+          ],
+          [
+            235,
+            545
+          ],
+          [
+            209,
+            547
+          ],
+          [
+            89,
+            502
+          ],
+          [
+            79,
+            480
+          ]
+        ]
+      ],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        99,
+        345,
+        289,
+        530
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_south_block",
+      "name": "西侧南楼",
+      "anchor": [
+        169,
+        584
+      ],
+      "silhouette": [
+        [
+          118,
+          476
+        ],
+        [
+          223,
+          513
+        ],
+        [
+          230,
+          535
+        ],
+        [
+          220,
+          566
+        ],
+        [
+          207,
+          584
+        ],
+        [
+          189,
+          577
+        ],
+        [
+          178,
+          568
+        ],
+        [
+          115,
+          547
+        ],
+        [
+          104,
+          531
+        ],
+        [
+          106,
+          510
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            107,
+            525
+          ],
+          [
+            216,
+            562
+          ],
+          [
+            207,
+            582
+          ],
+          [
+            110,
+            548
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        104,
+        476,
+        230,
+        584
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "garden_west_pavilion",
+      "name": "花园西侧方楼",
+      "anchor": [
+        373,
+        517
+      ],
+      "silhouette": [
+        [
+          367,
+          442
+        ],
+        [
+          403,
+          455
+        ],
+        [
+          400,
+          480
+        ],
+        [
+          388,
+          517
+        ],
+        [
+          355,
+          505
+        ],
+        [
+          346,
+          479
+        ],
+        [
+          353,
+          458
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            350,
+            487
+          ],
+          [
+            387,
+            499
+          ],
+          [
+            387,
+            516
+          ],
+          [
+            351,
+            505
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        346,
+        442,
+        403,
+        517
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_low_row_1",
+      "name": "西侧低层一组",
+      "anchor": [
+        173,
+        675
+      ],
+      "silhouette": [
+        [
+          124,
+          600
+        ],
+        [
+          235,
+          637
+        ],
+        [
+          230,
+          654
+        ],
+        [
+          218,
+          675
+        ],
+        [
+          119,
+          640
+        ],
+        [
+          114,
+          626
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            116,
+            623
+          ],
+          [
+            226,
+            660
+          ],
+          [
+            218,
+            675
+          ],
+          [
+            116,
+            638
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        114,
+        600,
+        235,
+        675
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_low_row_2",
+      "name": "西侧低层二组",
+      "anchor": [
+        160,
+        710
+      ],
+      "silhouette": [
+        [
+          121,
+          646
+        ],
+        [
+          212,
+          677
+        ],
+        [
+          207,
+          695
+        ],
+        [
+          197,
+          710
+        ],
+        [
+          113,
+          680
+        ],
+        [
+          112,
+          665
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            112,
+            665
+          ],
+          [
+            204,
+            697
+          ],
+          [
+            197,
+            712
+          ],
+          [
+            112,
+            681
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        112,
+        646,
+        212,
+        710
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_low_row_3",
+      "name": "西侧低层三组",
+      "anchor": [
+        150,
+        750
+      ],
+      "silhouette": [
+        [
+          116,
+          685
+        ],
+        [
+          200,
+          715
+        ],
+        [
+          195,
+          738
+        ],
+        [
+          179,
+          750
+        ],
+        [
+          104,
+          721
+        ],
+        [
+          106,
+          708
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            105,
+            709
+          ],
+          [
+            190,
+            737
+          ],
+          [
+            178,
+            750
+          ],
+          [
+            104,
+            723
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        104,
+        685,
+        200,
+        750
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_low_row_4",
+      "name": "西侧低层四组",
+      "anchor": [
+        125,
+        789
+      ],
+      "silhouette": [
+        [
+          83,
+          736
+        ],
+        [
+          175,
+          750
+        ],
+        [
+          174,
+          777
+        ],
+        [
+          162,
+          789
+        ],
+        [
+          82,
+          768
+        ],
+        [
+          74,
+          757
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            79,
+            754
+          ],
+          [
+            170,
+            775
+          ],
+          [
+            159,
+            790
+          ],
+          [
+            80,
+            768
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        74,
+        736,
+        175,
+        789
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_low_shed",
+      "name": "西南角小附房",
+      "anchor": [
+        106,
+        818
+      ],
+      "silhouette": [
+        [
+          80,
+          775
+        ],
+        [
+          129,
+          787
+        ],
+        [
+          133,
+          813
+        ],
+        [
+          109,
+          818
+        ],
+        [
+          81,
+          808
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            83,
+            797
+          ],
+          [
+            132,
+            803
+          ],
+          [
+            127,
+            817
+          ],
+          [
+            82,
+            809
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        80,
+        775,
+        133,
+        818
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "field_northwest_annex",
+      "name": "球场西北附楼",
+      "anchor": [
+        292,
+        701
+      ],
+      "silhouette": [
+        [
+          271,
+          637
+        ],
+        [
+          327,
+          655
+        ],
+        [
+          322,
+          680
+        ],
+        [
+          311,
+          701
+        ],
+        [
+          259,
+          681
+        ],
+        [
+          259,
+          664
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            260,
+            668
+          ],
+          [
+            322,
+            690
+          ],
+          [
+            311,
+            704
+          ],
+          [
+            258,
+            683
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        259,
+        637,
+        327,
+        701
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "field_west_long_annex",
+      "name": "球场西侧长附楼",
+      "anchor": [
+        254,
+        798
+      ],
+      "silhouette": [
+        [
+          250,
+          697
+        ],
+        [
+          298,
+          712
+        ],
+        [
+          287,
+          746
+        ],
+        [
+          263,
+          798
+        ],
+        [
+          239,
+          794
+        ],
+        [
+          217,
+          783
+        ],
+        [
+          227,
+          751
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            220,
+            774
+          ],
+          [
+            261,
+            791
+          ],
+          [
+            286,
+            734
+          ],
+          [
+            291,
+            748
+          ],
+          [
+            264,
+            800
+          ],
+          [
+            217,
+            785
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        217,
+        697,
+        298,
+        798
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "court_east_l_block",
+      "name": "球场东侧折角楼",
+      "anchor": [
+        793,
+        714
+      ],
+      "silhouette": [
+        [
+          749,
+          477
+        ],
+        [
+          857,
+          472
+        ],
+        [
+          861,
+          509
+        ],
+        [
+          836,
+          518
+        ],
+        [
+          794,
+          522
+        ],
+        [
+          797,
+          554
+        ],
+        [
+          793,
+          611
+        ],
+        [
+          793,
+          670
+        ],
+        [
+          792,
+          707
+        ],
+        [
+          771,
+          714
+        ],
+        [
+          758,
+          706
+        ],
+        [
+          754,
+          638
+        ],
+        [
+          751,
+          573
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            753,
+            502
+          ],
+          [
+            858,
+            499
+          ],
+          [
+            858,
+            518
+          ],
+          [
+            776,
+            526
+          ]
+        ],
+        [
+          [
+            757,
+            518
+          ],
+          [
+            782,
+            519
+          ],
+          [
+            794,
+            706
+          ],
+          [
+            771,
+            714
+          ],
+          [
+            757,
+            699
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        749,
+        472,
+        861,
+        714
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "field_east_north_block",
+      "name": "球场东侧北楼",
+      "anchor": [
+        666,
+        777
+      ],
+      "silhouette": [
+        [
+          585,
+          647
+        ],
+        [
+          763,
+          711
+        ],
+        [
+          759,
+          741
+        ],
+        [
+          749,
+          777
+        ],
+        [
+          727,
+          768
+        ],
+        [
+          690,
+          755
+        ],
+        [
+          671,
+          748
+        ],
+        [
+          656,
+          744
+        ],
+        [
+          632,
+          735
+        ],
+        [
+          610,
+          729
+        ],
+        [
+          579,
+          719
+        ],
+        [
+          568,
+          692
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            574,
+            696
+          ],
+          [
+            753,
+            758
+          ],
+          [
+            746,
+            777
+          ],
+          [
+            569,
+            716
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        568,
+        647,
+        763,
+        777
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "field_east_canopy",
+      "name": "球场东侧长棚",
+      "anchor": [
+        646,
+        815
+      ],
+      "silhouette": [
+        [
+          560,
+          732
+        ],
+        [
+          701,
+          784
+        ],
+        [
+          711,
+          806
+        ],
+        [
+          702,
+          815
+        ],
+        [
+          554,
+          759
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            554,
+            750
+          ],
+          [
+            705,
+            805
+          ],
+          [
+            702,
+            814
+          ],
+          [
+            553,
+            760
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        554,
+        732,
+        711,
+        815
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "field_east_south_block",
+      "name": "球场东侧南楼",
+      "anchor": [
+        631,
+        877
+      ],
+      "silhouette": [
+        [
+          552,
+          762
+        ],
+        [
+          714,
+          821
+        ],
+        [
+          708,
+          846
+        ],
+        [
+          699,
+          877
+        ],
+        [
+          688,
+          875
+        ],
+        [
+          681,
+          867
+        ],
+        [
+          657,
+          859
+        ],
+        [
+          633,
+          851
+        ],
+        [
+          605,
+          840
+        ],
+        [
+          575,
+          830
+        ],
+        [
+          536,
+          815
+        ],
+        [
+          527,
+          798
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            531,
+            799
+          ],
+          [
+            705,
+            858
+          ],
+          [
+            698,
+            878
+          ],
+          [
+            533,
+            819
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        527,
+        762,
+        714,
+        877
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "southwest_boundary_block",
+      "name": "西南边界楼",
+      "anchor": [
+        190,
+        940
+      ],
+      "silhouette": [
+        [
+          112,
+          880
+        ],
+        [
+          158,
+          882
+        ],
+        [
+          159,
+          878
+        ],
+        [
+          191,
+          882
+        ],
+        [
+          192,
+          878
+        ],
+        [
+          229,
+          883
+        ],
+        [
+          230,
+          881
+        ],
+        [
+          273,
+          886
+        ],
+        [
+          281,
+          921
+        ],
+        [
+          270,
+          940
+        ],
+        [
+          242,
+          940
+        ],
+        [
+          232,
+          934
+        ],
+        [
+          191,
+          934
+        ],
+        [
+          168,
+          932
+        ],
+        [
+          109,
+          933
+        ],
+        [
+          96,
+          925
+        ],
+        [
+          98,
+          900
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            99,
+            915
+          ],
+          [
+            276,
+            921
+          ],
+          [
+            270,
+            940
+          ],
+          [
+            97,
+            932
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        96,
+        878,
+        281,
+        940
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "south_boundary_long_block",
+      "name": "南边界长楼",
+      "anchor": [
+        457,
+        971
+      ],
+      "silhouette": [
+        [
+          309,
+          890
+        ],
+        [
+          363,
+          894
+        ],
+        [
+          417,
+          901
+        ],
+        [
+          478,
+          907
+        ],
+        [
+          539,
+          916
+        ],
+        [
+          610,
+          925
+        ],
+        [
+          607,
+          951
+        ],
+        [
+          602,
+          971
+        ],
+        [
+          557,
+          965
+        ],
+        [
+          532,
+          962
+        ],
+        [
+          491,
+          959
+        ],
+        [
+          445,
+          951
+        ],
+        [
+          406,
+          947
+        ],
+        [
+          359,
+          945
+        ],
+        [
+          303,
+          937
+        ],
+        [
+          301,
+          918
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            303,
+            923
+          ],
+          [
+            607,
+            953
+          ],
+          [
+            601,
+            972
+          ],
+          [
+            301,
+            939
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        301,
+        890,
+        610,
+        971
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "south_blue_pavilion",
+      "name": "南侧蓝顶构筑物",
+      "anchor": [
+        678,
+        991
+      ],
+      "silhouette": [
+        [
+          639,
+          932
+        ],
+        [
+          663,
+          938
+        ],
+        [
+          674,
+          924
+        ],
+        [
+          680,
+          916
+        ],
+        [
+          690,
+          922
+        ],
+        [
+          697,
+          935
+        ],
+        [
+          716,
+          937
+        ],
+        [
+          713,
+          961
+        ],
+        [
+          709,
+          987
+        ],
+        [
+          696,
+          991
+        ],
+        [
+          682,
+          987
+        ],
+        [
+          665,
+          988
+        ],
+        [
+          632,
+          981
+        ],
+        [
+          631,
+          963
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            633,
+            969
+          ],
+          [
+            713,
+            967
+          ],
+          [
+            709,
+            990
+          ],
+          [
+            634,
+            985
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        631,
+        916,
+        716,
+        991
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_north_long_roof",
+      "name": "东北长屋顶楼",
+      "anchor": [
+        1136,
+        314
+      ],
+      "silhouette": [
+        [
+          1037,
+          212
+        ],
+        [
+          1175,
+          256
+        ],
+        [
+          1184,
+          241
+        ],
+        [
+          1223,
+          252
+        ],
+        [
+          1207,
+          288
+        ],
+        [
+          1197,
+          314
+        ],
+        [
+          1168,
+          308
+        ],
+        [
+          1134,
+          295
+        ],
+        [
+          1091,
+          282
+        ],
+        [
+          1060,
+          274
+        ],
+        [
+          1022,
+          261
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1027,
+            256
+          ],
+          [
+            1181,
+            304
+          ],
+          [
+            1189,
+            318
+          ],
+          [
+            1173,
+            318
+          ],
+          [
+            1023,
+            273
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1022,
+        212,
+        1223,
+        314
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_hall",
+      "name": "东侧长厅",
+      "anchor": [
+        1090,
+        403
+      ],
+      "silhouette": [
+        [
+          1019,
+          293
+        ],
+        [
+          1182,
+          345
+        ],
+        [
+          1177,
+          375
+        ],
+        [
+          1165,
+          403
+        ],
+        [
+          1135,
+          394
+        ],
+        [
+          1104,
+          385
+        ],
+        [
+          1072,
+          374
+        ],
+        [
+          1047,
+          366
+        ],
+        [
+          1004,
+          354
+        ],
+        [
+          1000,
+          344
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1003,
+            342
+          ],
+          [
+            1175,
+            390
+          ],
+          [
+            1164,
+            406
+          ],
+          [
+            1000,
+            357
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1000,
+        293,
+        1182,
+        403
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_mid_courtyard_sheds",
+      "name": "东侧庭院附房",
+      "anchor": [
+        1063,
+        477
+      ],
+      "silhouette": [
+        [
+          1016,
+          405
+        ],
+        [
+          1061,
+          420
+        ],
+        [
+          1064,
+          411
+        ],
+        [
+          1115,
+          428
+        ],
+        [
+          1111,
+          458
+        ],
+        [
+          1093,
+          477
+        ],
+        [
+          1065,
+          467
+        ],
+        [
+          1061,
+          459
+        ],
+        [
+          1038,
+          452
+        ],
+        [
+          1010,
+          445
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1011,
+            432
+          ],
+          [
+            1107,
+            461
+          ],
+          [
+            1096,
+            478
+          ],
+          [
+            1010,
+            450
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1010,
+        405,
+        1115,
+        477
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_mid_long_annex",
+      "name": "东侧沿街长附楼",
+      "anchor": [
+        1187,
+        501
+      ],
+      "silhouette": [
+        [
+          1182,
+          361
+        ],
+        [
+          1229,
+          377
+        ],
+        [
+          1218,
+          425
+        ],
+        [
+          1202,
+          471
+        ],
+        [
+          1183,
+          501
+        ],
+        [
+          1148,
+          489
+        ],
+        [
+          1162,
+          444
+        ],
+        [
+          1172,
+          405
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1151,
+            476
+          ],
+          [
+            1184,
+            489
+          ],
+          [
+            1219,
+            395
+          ],
+          [
+            1224,
+            407
+          ],
+          [
+            1190,
+            503
+          ],
+          [
+            1146,
+            491
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1148,
+        361,
+        1229,
+        501
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_mid_south_annex",
+      "name": "东侧内街附楼",
+      "anchor": [
+        1130,
+        550
+      ],
+      "silhouette": [
+        [
+          1127,
+          460
+        ],
+        [
+          1159,
+          470
+        ],
+        [
+          1145,
+          508
+        ],
+        [
+          1133,
+          550
+        ],
+        [
+          1107,
+          538
+        ],
+        [
+          1106,
+          522
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1107,
+            529
+          ],
+          [
+            1132,
+            540
+          ],
+          [
+            1149,
+            490
+          ],
+          [
+            1152,
+            501
+          ],
+          [
+            1136,
+            553
+          ],
+          [
+            1105,
+            542
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1106,
+        460,
+        1159,
+        550
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_blue_roof",
+      "name": "东侧蓝顶附楼",
+      "anchor": [
+        1177,
+        576
+      ],
+      "silhouette": [
+        [
+          1164,
+          515
+        ],
+        [
+          1207,
+          528
+        ],
+        [
+          1209,
+          552
+        ],
+        [
+          1197,
+          576
+        ],
+        [
+          1169,
+          565
+        ],
+        [
+          1145,
+          559
+        ],
+        [
+          1151,
+          537
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1149,
+            548
+          ],
+          [
+            1207,
+            565
+          ],
+          [
+            1198,
+            578
+          ],
+          [
+            1147,
+            565
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1145,
+        515,
+        1209,
+        576
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_white_roof_block",
+      "name": "东侧白顶横楼",
+      "anchor": [
+        985,
+        565
+      ],
+      "silhouette": [
+        [
+          920,
+          451
+        ],
+        [
+          952,
+          465
+        ],
+        [
+          975,
+          473
+        ],
+        [
+          986,
+          480
+        ],
+        [
+          1016,
+          489
+        ],
+        [
+          1038,
+          498
+        ],
+        [
+          1053,
+          508
+        ],
+        [
+          1047,
+          536
+        ],
+        [
+          1037,
+          565
+        ],
+        [
+          1020,
+          563
+        ],
+        [
+          993,
+          553
+        ],
+        [
+          968,
+          545
+        ],
+        [
+          943,
+          535
+        ],
+        [
+          916,
+          526
+        ],
+        [
+          905,
+          512
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            909,
+            511
+          ],
+          [
+            1048,
+            549
+          ],
+          [
+            1038,
+            568
+          ],
+          [
+            905,
+            526
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        905,
+        451,
+        1053,
+        565
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_middle_block",
+      "name": "东侧中部横楼",
+      "anchor": [
+        960,
+        678
+      ],
+      "silhouette": [
+        [
+          889,
+          551
+        ],
+        [
+          921,
+          563
+        ],
+        [
+          929,
+          565
+        ],
+        [
+          928,
+          572
+        ],
+        [
+          1060,
+          619
+        ],
+        [
+          1055,
+          648
+        ],
+        [
+          1046,
+          678
+        ],
+        [
+          1020,
+          670
+        ],
+        [
+          1002,
+          661
+        ],
+        [
+          974,
+          651
+        ],
+        [
+          946,
+          642
+        ],
+        [
+          914,
+          632
+        ],
+        [
+          883,
+          620
+        ],
+        [
+          871,
+          605
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            875,
+            602
+          ],
+          [
+            1053,
+            661
+          ],
+          [
+            1045,
+            679
+          ],
+          [
+            872,
+            619
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        871,
+        551,
+        1060,
+        678
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_middle_courtyard_annex",
+      "name": "东侧中庭小附房",
+      "anchor": [
+        1069,
+        605
+      ],
+      "silhouette": [
+        [
+          1030,
+          556
+        ],
+        [
+          1064,
+          565
+        ],
+        [
+          1075,
+          559
+        ],
+        [
+          1108,
+          573
+        ],
+        [
+          1100,
+          599
+        ],
+        [
+          1079,
+          595
+        ],
+        [
+          1075,
+          605
+        ],
+        [
+          1020,
+          585
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1023,
+            579
+          ],
+          [
+            1099,
+            593
+          ],
+          [
+            1095,
+            607
+          ],
+          [
+            1019,
+            590
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1020,
+        556,
+        1108,
+        605
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_vertical_block",
+      "name": "东侧纵向楼",
+      "anchor": [
+        1132,
+        713
+      ],
+      "silhouette": [
+        [
+          1123,
+          555
+        ],
+        [
+          1177,
+          573
+        ],
+        [
+          1173,
+          609
+        ],
+        [
+          1156,
+          648
+        ],
+        [
+          1146,
+          686
+        ],
+        [
+          1134,
+          713
+        ],
+        [
+          1116,
+          708
+        ],
+        [
+          1095,
+          693
+        ],
+        [
+          1097,
+          659
+        ],
+        [
+          1106,
+          620
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1096,
+            683
+          ],
+          [
+            1131,
+            698
+          ],
+          [
+            1163,
+            605
+          ],
+          [
+            1169,
+            620
+          ],
+          [
+            1137,
+            716
+          ],
+          [
+            1095,
+            700
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1095,
+        555,
+        1177,
+        713
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_south_middle_block",
+      "name": "东南中部横楼",
+      "anchor": [
+        920,
+        782
+      ],
+      "silhouette": [
+        [
+          843,
+          666
+        ],
+        [
+          1010,
+          724
+        ],
+        [
+          1004,
+          748
+        ],
+        [
+          993,
+          782
+        ],
+        [
+          980,
+          780
+        ],
+        [
+          961,
+          774
+        ],
+        [
+          945,
+          768
+        ],
+        [
+          915,
+          759
+        ],
+        [
+          884,
+          748
+        ],
+        [
+          851,
+          736
+        ],
+        [
+          830,
+          727
+        ],
+        [
+          824,
+          710
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            828,
+            709
+          ],
+          [
+            1003,
+            765
+          ],
+          [
+            994,
+            784
+          ],
+          [
+            825,
+            731
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        824,
+        666,
+        1010,
+        782
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "east_south_square",
+      "name": "东南方楼",
+      "anchor": [
+        1073,
+        805
+      ],
+      "silhouette": [
+        [
+          1046,
+          725
+        ],
+        [
+          1118,
+          746
+        ],
+        [
+          1115,
+          773
+        ],
+        [
+          1102,
+          805
+        ],
+        [
+          1082,
+          801
+        ],
+        [
+          1050,
+          789
+        ],
+        [
+          1035,
+          778
+        ],
+        [
+          1036,
+          759
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1036,
+            768
+          ],
+          [
+            1114,
+            790
+          ],
+          [
+            1103,
+            808
+          ],
+          [
+            1036,
+            784
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1035,
+        725,
+        1118,
+        805
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "southeast_long_block",
+      "name": "东南长楼",
+      "anchor": [
+        875,
+        880
+      ],
+      "silhouette": [
+        [
+          802,
+          768
+        ],
+        [
+          971,
+          826
+        ],
+        [
+          962,
+          854
+        ],
+        [
+          951,
+          880
+        ],
+        [
+          931,
+          877
+        ],
+        [
+          904,
+          867
+        ],
+        [
+          873,
+          856
+        ],
+        [
+          846,
+          847
+        ],
+        [
+          817,
+          837
+        ],
+        [
+          786,
+          825
+        ],
+        [
+          783,
+          807
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            786,
+            808
+          ],
+          [
+            962,
+            864
+          ],
+          [
+            952,
+            883
+          ],
+          [
+            783,
+            830
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        783,
+        768,
+        971,
+        880
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "southeast_small_annex",
+      "name": "东南中庭附房",
+      "anchor": [
+        900,
+        902
+      ],
+      "silhouette": [
+        [
+          841,
+          849
+        ],
+        [
+          915,
+          874
+        ],
+        [
+          949,
+          883
+        ],
+        [
+          947,
+          896
+        ],
+        [
+          933,
+          902
+        ],
+        [
+          899,
+          891
+        ],
+        [
+          880,
+          884
+        ],
+        [
+          838,
+          870
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            839,
+            861
+          ],
+          [
+            947,
+            889
+          ],
+          [
+            936,
+            904
+          ],
+          [
+            838,
+            874
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        838,
+        849,
+        949,
+        902
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "southeast_square_block",
+      "name": "东南独立方楼",
+      "anchor": [
+        1043,
+        927
+      ],
+      "silhouette": [
+        [
+          1020,
+          851
+        ],
+        [
+          1086,
+          873
+        ],
+        [
+          1082,
+          899
+        ],
+        [
+          1070,
+          927
+        ],
+        [
+          1050,
+          923
+        ],
+        [
+          1023,
+          914
+        ],
+        [
+          1007,
+          903
+        ],
+        [
+          1008,
+          881
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1007,
+            893
+          ],
+          [
+            1080,
+            916
+          ],
+          [
+            1072,
+            930
+          ],
+          [
+            1007,
+            908
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1007,
+        851,
+        1086,
+        927
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "southeast_low_pavilion",
+      "name": "东南小亭",
+      "anchor": [
+        1030,
+        962
+      ],
+      "silhouette": [
+        [
+          1016,
+          919
+        ],
+        [
+          1050,
+          931
+        ],
+        [
+          1056,
+          949
+        ],
+        [
+          1045,
+          962
+        ],
+        [
+          1008,
+          947
+        ],
+        [
+          1005,
+          934
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1007,
+            938
+          ],
+          [
+            1049,
+            951
+          ],
+          [
+            1045,
+            963
+          ],
+          [
+            1006,
+            948
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1005,
+        919,
+        1056,
+        962
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "south_inner_small_block",
+      "name": "南侧内街小楼",
+      "anchor": [
+        782,
+        951
+      ],
+      "silhouette": [
+        [
+          774,
+          896
+        ],
+        [
+          808,
+          907
+        ],
+        [
+          802,
+          933
+        ],
+        [
+          791,
+          951
+        ],
+        [
+          764,
+          941
+        ],
+        [
+          755,
+          929
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            758,
+            929
+          ],
+          [
+            798,
+            940
+          ],
+          [
+            793,
+            954
+          ],
+          [
+            755,
+            941
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        755,
+        896,
+        808,
+        951
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "southeast_boundary_l_block",
+      "name": "东南边界折角楼",
+      "anchor": [
+        946,
+        1062
+      ],
+      "silhouette": [
+        [
+          783,
+          946
+        ],
+        [
+          1007,
+          1011
+        ],
+        [
+          1010,
+          965
+        ],
+        [
+          1055,
+          976
+        ],
+        [
+          1047,
+          1011
+        ],
+        [
+          1033,
+          1058
+        ],
+        [
+          1018,
+          1062
+        ],
+        [
+          1002,
+          1049
+        ],
+        [
+          1000,
+          1039
+        ],
+        [
+          943,
+          1021
+        ],
+        [
+          897,
+          1008
+        ],
+        [
+          850,
+          993
+        ],
+        [
+          818,
+          984
+        ],
+        [
+          774,
+          972
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            774,
+            963
+          ],
+          [
+            1002,
+            1030
+          ],
+          [
+            1027,
+            1038
+          ],
+          [
+            1021,
+            1057
+          ],
+          [
+            774,
+            979
+          ]
+        ],
+        [
+          [
+            1005,
+            1000
+          ],
+          [
+            1045,
+            1008
+          ],
+          [
+            1033,
+            1057
+          ],
+          [
+            999,
+            1047
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        774,
+        946,
+        1055,
+        1062
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "context_northwest_hall",
+      "name": "西北邻接大厅（归属未核）",
+      "anchor": [
+        212,
+        209
+      ],
+      "silhouette": [
+        [
+          112,
+          104
+        ],
+        [
+          131,
+          79
+        ],
+        [
+          155,
+          61
+        ],
+        [
+          181,
+          55
+        ],
+        [
+          212,
+          57
+        ],
+        [
+          230,
+          65
+        ],
+        [
+          240,
+          85
+        ],
+        [
+          236,
+          96
+        ],
+        [
+          322,
+          120
+        ],
+        [
+          342,
+          139
+        ],
+        [
+          342,
+          165
+        ],
+        [
+          330,
+          187
+        ],
+        [
+          307,
+          204
+        ],
+        [
+          283,
+          209
+        ],
+        [
+          254,
+          199
+        ],
+        [
+          208,
+          187
+        ],
+        [
+          158,
+          173
+        ],
+        [
+          118,
+          160
+        ],
+        [
+          94,
+          145
+        ],
+        [
+          91,
+          133
+        ],
+        [
+          99,
+          115
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            94,
+            200
+          ],
+          [
+            339,
+            200
+          ],
+          [
+            339,
+            209
+          ],
+          [
+            94,
+            209
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        91,
+        55,
+        342,
+        209
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. Old diagram calls a northwest hall 军乐厅; current boundary attribution is uncertain, so no campus POI is assigned.",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_northwest_blue_roof",
+      "name": "西北邻接蓝顶楼",
+      "anchor": [
+        358,
+        121
+      ],
+      "silhouette": [
+        [
+          301,
+          9
+        ],
+        [
+          449,
+          69
+        ],
+        [
+          433,
+          116
+        ],
+        [
+          416,
+          121
+        ],
+        [
+          379,
+          103
+        ],
+        [
+          352,
+          93
+        ],
+        [
+          323,
+          82
+        ],
+        [
+          293,
+          69
+        ],
+        [
+          277,
+          53
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            280,
+            112
+          ],
+          [
+            446,
+            112
+          ],
+          [
+            446,
+            121
+          ],
+          [
+            280,
+            121
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        277,
+        9,
+        449,
+        121
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_northwest_partial",
+      "name": "北边界西侧残幅楼",
+      "anchor": [
+        226,
+        43
+      ],
+      "silhouette": [
+        [
+          183,
+          0
+        ],
+        [
+          274,
+          0
+        ],
+        [
+          263,
+          36
+        ],
+        [
+          255,
+          43
+        ],
+        [
+          207,
+          29
+        ],
+        [
+          177,
+          15
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            180,
+            34
+          ],
+          [
+            271,
+            34
+          ],
+          [
+            271,
+            43
+          ],
+          [
+            180,
+            43
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        177,
+        0,
+        274,
+        43
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_north_low_row",
+      "name": "北侧邻接低层连排",
+      "anchor": [
+        587,
+        201
+      ],
+      "silhouette": [
+        [
+          465,
+          48
+        ],
+        [
+          505,
+          63
+        ],
+        [
+          510,
+          71
+        ],
+        [
+          525,
+          69
+        ],
+        [
+          630,
+          110
+        ],
+        [
+          625,
+          127
+        ],
+        [
+          664,
+          140
+        ],
+        [
+          717,
+          157
+        ],
+        [
+          728,
+          174
+        ],
+        [
+          719,
+          201
+        ],
+        [
+          685,
+          191
+        ],
+        [
+          666,
+          180
+        ],
+        [
+          635,
+          170
+        ],
+        [
+          613,
+          161
+        ],
+        [
+          592,
+          146
+        ],
+        [
+          568,
+          138
+        ],
+        [
+          539,
+          128
+        ],
+        [
+          512,
+          117
+        ],
+        [
+          501,
+          105
+        ],
+        [
+          478,
+          97
+        ],
+        [
+          452,
+          82
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            455,
+            192
+          ],
+          [
+            725,
+            192
+          ],
+          [
+            725,
+            201
+          ],
+          [
+            455,
+            201
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        452,
+        48,
+        728,
+        201
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_north_partial_1",
+      "name": "北侧残幅楼一",
+      "anchor": [
+        492,
+        59
+      ],
+      "silhouette": [
+        [
+          471,
+          0
+        ],
+        [
+          530,
+          0
+        ],
+        [
+          520,
+          30
+        ],
+        [
+          503,
+          59
+        ],
+        [
+          476,
+          49
+        ],
+        [
+          455,
+          32
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            458,
+            50
+          ],
+          [
+            527,
+            50
+          ],
+          [
+            527,
+            59
+          ],
+          [
+            458,
+            59
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        455,
+        0,
+        530,
+        59
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_north_partial_2",
+      "name": "北侧残幅楼二",
+      "anchor": [
+        592,
+        76
+      ],
+      "silhouette": [
+        [
+          559,
+          0
+        ],
+        [
+          634,
+          0
+        ],
+        [
+          629,
+          41
+        ],
+        [
+          614,
+          76
+        ],
+        [
+          587,
+          67
+        ],
+        [
+          565,
+          43
+        ],
+        [
+          553,
+          22
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            556,
+            67
+          ],
+          [
+            631,
+            67
+          ],
+          [
+            631,
+            76
+          ],
+          [
+            556,
+            76
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        553,
+        0,
+        634,
+        76
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_north_partial_3",
+      "name": "北侧残幅楼三",
+      "anchor": [
+        710,
+        95
+      ],
+      "silhouette": [
+        [
+          695,
+          0
+        ],
+        [
+          746,
+          0
+        ],
+        [
+          741,
+          23
+        ],
+        [
+          733,
+          25
+        ],
+        [
+          741,
+          52
+        ],
+        [
+          729,
+          83
+        ],
+        [
+          712,
+          95
+        ],
+        [
+          675,
+          76
+        ],
+        [
+          660,
+          61
+        ],
+        [
+          669,
+          34
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            663,
+            86
+          ],
+          [
+            743,
+            86
+          ],
+          [
+            743,
+            95
+          ],
+          [
+            663,
+            95
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        660,
+        0,
+        746,
+        95
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_north_partial_4",
+      "name": "北侧残幅楼四",
+      "anchor": [
+        803,
+        72
+      ],
+      "silhouette": [
+        [
+          752,
+          0
+        ],
+        [
+          824,
+          0
+        ],
+        [
+          862,
+          17
+        ],
+        [
+          850,
+          46
+        ],
+        [
+          845,
+          69
+        ],
+        [
+          821,
+          72
+        ],
+        [
+          811,
+          63
+        ],
+        [
+          786,
+          65
+        ],
+        [
+          749,
+          50
+        ],
+        [
+          733,
+          35
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            736,
+            63
+          ],
+          [
+            859,
+            63
+          ],
+          [
+            859,
+            72
+          ],
+          [
+            736,
+            72
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        733,
+        0,
+        862,
+        72
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_north_partial_5",
+      "name": "北侧邻接灰楼",
+      "anchor": [
+        878,
+        102
+      ],
+      "silhouette": [
+        [
+          856,
+          25
+        ],
+        [
+          885,
+          33
+        ],
+        [
+          913,
+          44
+        ],
+        [
+          901,
+          75
+        ],
+        [
+          887,
+          102
+        ],
+        [
+          859,
+          90
+        ],
+        [
+          843,
+          73
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            846,
+            93
+          ],
+          [
+            910,
+            93
+          ],
+          [
+            910,
+            102
+          ],
+          [
+            846,
+            102
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        843,
+        25,
+        913,
+        102
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_north_square",
+      "name": "北侧邻接方院楼",
+      "anchor": [
+        936,
+        250
+      ],
+      "silhouette": [
+        [
+          903,
+          93
+        ],
+        [
+          944,
+          106
+        ],
+        [
+          952,
+          100
+        ],
+        [
+          1019,
+          126
+        ],
+        [
+          1015,
+          145
+        ],
+        [
+          995,
+          201
+        ],
+        [
+          983,
+          232
+        ],
+        [
+          972,
+          250
+        ],
+        [
+          956,
+          242
+        ],
+        [
+          943,
+          232
+        ],
+        [
+          918,
+          225
+        ],
+        [
+          894,
+          216
+        ],
+        [
+          872,
+          201
+        ],
+        [
+          858,
+          185
+        ],
+        [
+          864,
+          161
+        ],
+        [
+          884,
+          117
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            861,
+            241
+          ],
+          [
+            1016,
+            241
+          ],
+          [
+            1016,
+            250
+          ],
+          [
+            861,
+            250
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        858,
+        93,
+        1019,
+        250
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_northeast_row",
+      "name": "东北邻接横楼",
+      "anchor": [
+        1129,
+        177
+      ],
+      "silhouette": [
+        [
+          1094,
+          102
+        ],
+        [
+          1198,
+          141
+        ],
+        [
+          1193,
+          163
+        ],
+        [
+          1180,
+          177
+        ],
+        [
+          1143,
+          169
+        ],
+        [
+          1119,
+          158
+        ],
+        [
+          1084,
+          151
+        ],
+        [
+          1071,
+          139
+        ],
+        [
+          1075,
+          117
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1074,
+            168
+          ],
+          [
+            1195,
+            168
+          ],
+          [
+            1195,
+            177
+          ],
+          [
+            1074,
+            177
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1071,
+        102,
+        1198,
+        177
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_northeast_low_roof",
+      "name": "东北邻接低屋顶",
+      "anchor": [
+        1118,
+        234
+      ],
+      "silhouette": [
+        [
+          1076,
+          165
+        ],
+        [
+          1171,
+          196
+        ],
+        [
+          1164,
+          217
+        ],
+        [
+          1152,
+          234
+        ],
+        [
+          1093,
+          214
+        ],
+        [
+          1053,
+          201
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1056,
+            225
+          ],
+          [
+            1168,
+            225
+          ],
+          [
+            1168,
+            234
+          ],
+          [
+            1056,
+            234
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1053,
+        165,
+        1171,
+        234
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_northeast_corner",
+      "name": "东北转角楼",
+      "anchor": [
+        1219,
+        273
+      ],
+      "silhouette": [
+        [
+          1222,
+          184
+        ],
+        [
+          1245,
+          197
+        ],
+        [
+          1248,
+          219
+        ],
+        [
+          1232,
+          259
+        ],
+        [
+          1212,
+          273
+        ],
+        [
+          1188,
+          262
+        ],
+        [
+          1196,
+          236
+        ],
+        [
+          1206,
+          201
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1191,
+            264
+          ],
+          [
+            1245,
+            264
+          ],
+          [
+            1245,
+            273
+          ],
+          [
+            1191,
+            273
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1188,
+        184,
+        1248,
+        273
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_1",
+      "name": "西侧画框残楼一",
+      "anchor": [
+        27,
+        170
+      ],
+      "silhouette": [
+        [
+          0,
+          79
+        ],
+        [
+          35,
+          96
+        ],
+        [
+          53,
+          111
+        ],
+        [
+          40,
+          143
+        ],
+        [
+          30,
+          170
+        ],
+        [
+          2,
+          159
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            161
+          ],
+          [
+            50,
+            161
+          ],
+          [
+            50,
+            170
+          ],
+          [
+            3,
+            170
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        79,
+        53,
+        170
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_2",
+      "name": "西侧画框残楼二",
+      "anchor": [
+        24,
+        240
+      ],
+      "silhouette": [
+        [
+          0,
+          169
+        ],
+        [
+          40,
+          181
+        ],
+        [
+          49,
+          214
+        ],
+        [
+          40,
+          240
+        ],
+        [
+          14,
+          237
+        ],
+        [
+          0,
+          230
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            231
+          ],
+          [
+            46,
+            231
+          ],
+          [
+            46,
+            240
+          ],
+          [
+            3,
+            240
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        169,
+        49,
+        240
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_3",
+      "name": "西侧画框残楼三",
+      "anchor": [
+        23,
+        302
+      ],
+      "silhouette": [
+        [
+          0,
+          238
+        ],
+        [
+          35,
+          247
+        ],
+        [
+          37,
+          272
+        ],
+        [
+          45,
+          298
+        ],
+        [
+          0,
+          302
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            293
+          ],
+          [
+            42,
+            293
+          ],
+          [
+            42,
+            302
+          ],
+          [
+            3,
+            302
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        238,
+        45,
+        302
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_4",
+      "name": "西侧画框残楼四",
+      "anchor": [
+        33,
+        457
+      ],
+      "silhouette": [
+        [
+          0,
+          307
+        ],
+        [
+          45,
+          319
+        ],
+        [
+          51,
+          358
+        ],
+        [
+          55,
+          408
+        ],
+        [
+          45,
+          457
+        ],
+        [
+          0,
+          448
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            448
+          ],
+          [
+            52,
+            448
+          ],
+          [
+            52,
+            457
+          ],
+          [
+            3,
+            457
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        307,
+        55,
+        457
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_5",
+      "name": "西侧画框残楼五",
+      "anchor": [
+        19,
+        533
+      ],
+      "silhouette": [
+        [
+          0,
+          496
+        ],
+        [
+          36,
+          502
+        ],
+        [
+          40,
+          525
+        ],
+        [
+          0,
+          533
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            524
+          ],
+          [
+            37,
+            524
+          ],
+          [
+            37,
+            533
+          ],
+          [
+            3,
+            533
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        496,
+        40,
+        533
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_6",
+      "name": "西侧画框残楼六",
+      "anchor": [
+        17,
+        665
+      ],
+      "silhouette": [
+        [
+          0,
+          546
+        ],
+        [
+          23,
+          548
+        ],
+        [
+          30,
+          584
+        ],
+        [
+          27,
+          639
+        ],
+        [
+          23,
+          665
+        ],
+        [
+          0,
+          663
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            656
+          ],
+          [
+            27,
+            656
+          ],
+          [
+            27,
+            665
+          ],
+          [
+            3,
+            665
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        546,
+        30,
+        665
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_7",
+      "name": "西侧画框残楼七",
+      "anchor": [
+        18,
+        740
+      ],
+      "silhouette": [
+        [
+          0,
+          676
+        ],
+        [
+          31,
+          683
+        ],
+        [
+          30,
+          714
+        ],
+        [
+          28,
+          740
+        ],
+        [
+          0,
+          735
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            731
+          ],
+          [
+            28,
+            731
+          ],
+          [
+            28,
+            740
+          ],
+          [
+            3,
+            740
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        676,
+        31,
+        740
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_8",
+      "name": "西侧画框残楼八",
+      "anchor": [
+        13,
+        811
+      ],
+      "silhouette": [
+        [
+          0,
+          741
+        ],
+        [
+          20,
+          747
+        ],
+        [
+          28,
+          784
+        ],
+        [
+          19,
+          811
+        ],
+        [
+          0,
+          807
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            802
+          ],
+          [
+            25,
+            802
+          ],
+          [
+            25,
+            811
+          ],
+          [
+            3,
+            811
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        741,
+        28,
+        811
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_9",
+      "name": "西侧画框残楼九",
+      "anchor": [
+        12,
+        887
+      ],
+      "silhouette": [
+        [
+          0,
+          818
+        ],
+        [
+          20,
+          821
+        ],
+        [
+          24,
+          870
+        ],
+        [
+          14,
+          887
+        ],
+        [
+          0,
+          884
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            878
+          ],
+          [
+            21,
+            878
+          ],
+          [
+            21,
+            887
+          ],
+          [
+            3,
+            887
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        818,
+        24,
+        887
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_west_partial_10",
+      "name": "西侧画框残楼十",
+      "anchor": [
+        15,
+        954
+      ],
+      "silhouette": [
+        [
+          0,
+          890
+        ],
+        [
+          26,
+          892
+        ],
+        [
+          30,
+          940
+        ],
+        [
+          18,
+          954
+        ],
+        [
+          0,
+          953
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            3,
+            945
+          ],
+          [
+            27,
+            945
+          ],
+          [
+            27,
+            954
+          ],
+          [
+            3,
+            954
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        0,
+        890,
+        30,
+        954
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_top_partial",
+      "name": "东北画框邻楼",
+      "anchor": [
+        1407,
+        282
+      ],
+      "silhouette": [
+        [
+          1396,
+          213
+        ],
+        [
+          1448,
+          230
+        ],
+        [
+          1448,
+          282
+        ],
+        [
+          1391,
+          263
+        ],
+        [
+          1378,
+          249
+        ],
+        [
+          1381,
+          227
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1381,
+            273
+          ],
+          [
+            1445,
+            273
+          ],
+          [
+            1445,
+            282
+          ],
+          [
+            1381,
+            282
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1378,
+        213,
+        1448,
+        282
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_upper_partial",
+      "name": "东侧上部残楼",
+      "anchor": [
+        1403,
+        374
+      ],
+      "silhouette": [
+        [
+          1370,
+          307
+        ],
+        [
+          1448,
+          329
+        ],
+        [
+          1448,
+          374
+        ],
+        [
+          1414,
+          361
+        ],
+        [
+          1383,
+          354
+        ],
+        [
+          1357,
+          342
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1360,
+            365
+          ],
+          [
+            1445,
+            365
+          ],
+          [
+            1445,
+            374
+          ],
+          [
+            1360,
+            374
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1357,
+        307,
+        1448,
+        374
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_mid_partial",
+      "name": "东侧中部残楼",
+      "anchor": [
+        1391,
+        479
+      ],
+      "silhouette": [
+        [
+          1352,
+          406
+        ],
+        [
+          1448,
+          430
+        ],
+        [
+          1448,
+          479
+        ],
+        [
+          1417,
+          473
+        ],
+        [
+          1391,
+          462
+        ],
+        [
+          1351,
+          451
+        ],
+        [
+          1330,
+          439
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1333,
+            470
+          ],
+          [
+            1445,
+            470
+          ],
+          [
+            1445,
+            479
+          ],
+          [
+            1333,
+            479
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1330,
+        406,
+        1448,
+        479
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_tall_block",
+      "name": "东侧邻接纵楼",
+      "anchor": [
+        1356,
+        776
+      ],
+      "silhouette": [
+        [
+          1374,
+          541
+        ],
+        [
+          1405,
+          551
+        ],
+        [
+          1398,
+          581
+        ],
+        [
+          1387,
+          617
+        ],
+        [
+          1390,
+          636
+        ],
+        [
+          1378,
+          674
+        ],
+        [
+          1366,
+          708
+        ],
+        [
+          1368,
+          732
+        ],
+        [
+          1353,
+          776
+        ],
+        [
+          1325,
+          766
+        ],
+        [
+          1314,
+          744
+        ],
+        [
+          1320,
+          714
+        ],
+        [
+          1317,
+          680
+        ],
+        [
+          1325,
+          645
+        ],
+        [
+          1330,
+          612
+        ],
+        [
+          1345,
+          572
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1317,
+            767
+          ],
+          [
+            1402,
+            767
+          ],
+          [
+            1402,
+            776
+          ],
+          [
+            1317,
+            776
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1314,
+        541,
+        1405,
+        776
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_lower_annex",
+      "name": "东侧邻接附房",
+      "anchor": [
+        1418,
+        701
+      ],
+      "silhouette": [
+        [
+          1406,
+          637
+        ],
+        [
+          1448,
+          650
+        ],
+        [
+          1448,
+          701
+        ],
+        [
+          1401,
+          688
+        ],
+        [
+          1388,
+          676
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1391,
+            692
+          ],
+          [
+            1445,
+            692
+          ],
+          [
+            1445,
+            701
+          ],
+          [
+            1391,
+            701
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1388,
+        637,
+        1448,
+        701
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_lower_complex",
+      "name": "东南画框邻楼组",
+      "anchor": [
+        1398,
+        897
+      ],
+      "silhouette": [
+        [
+          1390,
+          759
+        ],
+        [
+          1420,
+          770
+        ],
+        [
+          1417,
+          805
+        ],
+        [
+          1448,
+          815
+        ],
+        [
+          1448,
+          897
+        ],
+        [
+          1419,
+          889
+        ],
+        [
+          1404,
+          878
+        ],
+        [
+          1373,
+          879
+        ],
+        [
+          1350,
+          864
+        ],
+        [
+          1347,
+          838
+        ],
+        [
+          1363,
+          814
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1350,
+            888
+          ],
+          [
+            1445,
+            888
+          ],
+          [
+            1445,
+            897
+          ],
+          [
+            1350,
+            897
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1347,
+        759,
+        1448,
+        897
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_southeast_large_block",
+      "name": "东南画框大楼",
+      "anchor": [
+        1330,
+        1086
+      ],
+      "silhouette": [
+        [
+          1294,
+          870
+        ],
+        [
+          1310,
+          878
+        ],
+        [
+          1306,
+          897
+        ],
+        [
+          1362,
+          911
+        ],
+        [
+          1378,
+          893
+        ],
+        [
+          1448,
+          916
+        ],
+        [
+          1448,
+          1086
+        ],
+        [
+          1401,
+          1086
+        ],
+        [
+          1371,
+          1074
+        ],
+        [
+          1319,
+          1057
+        ],
+        [
+          1280,
+          1043
+        ],
+        [
+          1260,
+          1027
+        ],
+        [
+          1245,
+          1005
+        ],
+        [
+          1253,
+          967
+        ],
+        [
+          1275,
+          925
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            1248,
+            1077
+          ],
+          [
+            1445,
+            1077
+          ],
+          [
+            1445,
+            1086
+          ],
+          [
+            1248,
+            1086
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        1245,
+        870,
+        1448,
+        1086
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Visible roof/facade outline traced in source pixels. Feet and hidden ground are inferred game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    }
+  ]
+}
