@@ -1,0 +1,76 @@
+{
+  "schema": "buct-ambient-squirrel-art-v1",
+  "provider": "OpenAI ChatGPT image generation",
+  "generated_at_utc": "2026-10-13T02:27:59Z",
+  "method": "Text-only generation of a new actor; no private reference image upload",
+  "source_file": "godot_native/campuses/buct/assets/ambient_squirrel/squirrel-sheet-v1.png",
+  "source_sha256": "28f075f93205087222450d8c257c32384253243efe708baf98cdc8cb158bacf9",
+  "source_bytes": 1642487,
+  "size": [
+    1536,
+    1024
+  ],
+  "format": "RGBA8 PNG",
+  "original_png_preserved": true,
+  "runtime_transparency": "Original alpha, shader discard below 0.04, one mipmapped atlas",
+  "transparent_pixel_count": 1198011,
+  "opaque_243_to_255_pixel_count": 278550,
+  "pose_inventory": {
+    "idle": 1,
+    "peek": 1,
+    "tail_flick": 2,
+    "run": 4
+  },
+  "run_pose_review": "Four source images have genuinely different limb configurations: extended, front-contact candidate, gathered, rear-push candidate. All four occurred during the native 24-source-pixel run. Rendering FPS is not a unique-pose count. Native small-scale review passed with documented viewpoint, sharpness and light-grounding limits.",
+  "registration": "Per-frame body/ground pivots; one 8/313 uniform scale; common y866 ground line in all four source run frames. Airborne feet do not redefine ground.",
+  "art_limits": [
+    "More side-on than the requested high-angle campus viewpoint",
+    "Four-pose timing and support sequence is an approximate small ambient gait, not a biomechanical simulation",
+    "Frame4 crosses the generated regular grid; explicit independently measured regions preserve its complete silhouette"
+  ],
+  "native_review": {
+    "source_capture_count": 233,
+    "duration_seconds": 18.025,
+    "four_run_pose_indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "route_distance_source_px": 24,
+    "blocked_samples": 0,
+    "normal_camera_zoom": 2.1,
+    "detail_camera_zoom": 6,
+    "registration": "Ground anchors remain exact; no runtime squash/stretch, foot teleport or animation-only movement"
+  },
+  "contact_shadow_revision": {
+    "version": "v2",
+    "source_png_changed": false,
+    "maximum_visible_source_extent_including_scaled_aa": [
+      4,
+      1
+    ],
+    "draw_transform_radii": [
+      [
+        1,
+        0.25
+      ],
+      [
+        0.7,
+        0.175
+      ],
+      [
+        0.4,
+        0.1
+      ]
+    ],
+    "layer_alpha": [
+      0.035,
+      0.045,
+      0.055
+    ],
+    "center_opacity_upper_bound": 0.12911162500000017,
+    "gpu_extent_checks": "pass at normal 2.1x and detail 6x, allowing one screen pixel of boundary coverage",
+    "original_motion_video": "Unshadowed v1 recording, unchanged; not re-recorded as v2"
+  }
+}

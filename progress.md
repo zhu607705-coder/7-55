@@ -4687,3 +4687,11 @@ Public package regression is now reproducible via `python3 godot_native/tools/te
 - Preserve both complete branch histories and every progress entry; union all seven source suites and thirteen focused native registrations
 - Keep existing save/evidence isolation and all nonconflicting production blobs byte-identical to their owning approved branches
 - Complete combined-tree Native and Web CI is required before merge
+
+
+## 2026-10-13 — Independent Chaoyang ambient squirrel, contact-shadow v2
+
+- Exact base: godot-version `f08bdc4ebbee5a5c112e35f93e1cee13ee5636f2`, tree `070f6fc4460550e7edaa7b3e15c5d2211fb41714`. Add only one true-RGBA eight-source-pixel squirrel on the existing 24px tree-adjacent paving segment. Four genuine run poses follow actual distance; idle/peek/tail and long varied rests stay visual-only. A small cached contact shadow is GPU-bounded to 4x1 source pixels plus one screen-pixel boundary coverage. Original PNG, map, shared student, navigation, collisions and story/save authority are unchanged.
+- The accepted v2 runtime files remain frozen. Existing code changes are three Chaoyang installation lines plus two entries in the existing isolated BUCT test runner. All original thirteen native/seven source registrations and save/evidence guards remain intact.
+- Exact-base local aggregate exits 0: 14 native scripts (2,354 assertions), 8 source groups (2,258 assertions), 11 save-isolation cases and 4 platform guards pass. This includes three-campus entry/return 1,234/0, squirrel 63/0, and unchanged road/student/building/lake/bridge-south behavior. Reuse of 73 matching source/import artifacts avoids a full import. The initial minimal-stage missing source JSONs were filled with 57 exact-base JSON blobs, then the complete aggregate reran cleanly.
+- Local focused entry coverage deliberately skips only its final Continue Story transition and phone_home assertion using the existing campus-only option. Full exact-published-head Native/Web CI remains required. Existing unshadowed 18.025s motion evidence and the separate accepted v2 contact-shadow comparisons are not replaced or conflated. Prepare an independent Draft; do not merge automatically or expand buildings/interiors/story work.

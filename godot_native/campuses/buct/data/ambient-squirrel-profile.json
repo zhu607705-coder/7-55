@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "atlas": "res://campuses/buct/assets/ambient_squirrel/squirrel-sheet-v1.png",
+  "display_height_source_px": 8.0,
+  "reference_height_pixels": 313,
+  "uniform_scale_contract": "One common 8/313 scale; reference max tail height, never per-frame bbox fitting",
+  "route_source_xy": [
+    [
+      722,
+      690
+    ],
+    [
+      746,
+      690
+    ]
+  ],
+  "tree_id": "promenade_west_round_canopy",
+  "speed_source_px_per_second": 18.0,
+  "stride_source_px": 7.5,
+  "phase_seconds": [
+    9,
+    0.7,
+    0.8,
+    0.48,
+    0.85
+  ],
+  "poses": {
+    "idle": [
+      0
+    ],
+    "peek": [
+      1
+    ],
+    "tail": [
+      2,
+      3,
+      2
+    ],
+    "run": [
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "frames": [
+    {
+      "pose": "idle",
+      "region": [
+        49,
+        187,
+        289,
+        277
+      ],
+      "foot": [
+        171,
+        273
+      ],
+      "body_ground_pivot_sheet_xy": [
+        220,
+        460
+      ]
+    },
+    {
+      "pose": "peek",
+      "region": [
+        426,
+        200,
+        330,
+        265
+      ],
+      "foot": [
+        184,
+        261
+      ],
+      "body_ground_pivot_sheet_xy": [
+        610,
+        461
+      ]
+    },
+    {
+      "pose": "tail_flick_a",
+      "region": [
+        814,
+        215,
+        295,
+        249
+      ],
+      "foot": [
+        176,
+        245
+      ],
+      "body_ground_pivot_sheet_xy": [
+        990,
+        460
+      ]
+    },
+    {
+      "pose": "tail_flick_b",
+      "region": [
+        1256,
+        145,
+        222,
+        319
+      ],
+      "foot": [
+        114,
+        315
+      ],
+      "body_ground_pivot_sheet_xy": [
+        1370,
+        460
+      ]
+    },
+    {
+      "pose": "run_extended_airborne",
+      "region": [
+        29,
+        602,
+        370,
+        268
+      ],
+      "foot": [
+        211,
+        264
+      ],
+      "body_ground_pivot_sheet_xy": [
+        240,
+        866
+      ]
+    },
+    {
+      "pose": "run_front_contact",
+      "region": [
+        442,
+        608,
+        315,
+        262
+      ],
+      "foot": [
+        183,
+        258
+      ],
+      "body_ground_pivot_sheet_xy": [
+        625,
+        866
+      ]
+    },
+    {
+      "pose": "run_gathered",
+      "region": [
+        806,
+        618,
+        312,
+        252
+      ],
+      "foot": [
+        184,
+        248
+      ],
+      "body_ground_pivot_sheet_xy": [
+        990,
+        866
+      ]
+    },
+    {
+      "pose": "run_hind_push",
+      "region": [
+        1155,
+        608,
+        355,
+        262
+      ],
+      "foot": [
+        215,
+        258
+      ],
+      "body_ground_pivot_sheet_xy": [
+        1370,
+        866
+      ]
+    }
+  ],
+  "registration_status": "native_foot_registration_reviewed_with_documented_style_limits",
+  "source_sha256": "28f075f93205087222450d8c257c32384253243efe708baf98cdc8cb158bacf9",
+  "rest_seconds_by_visit": [
+    9,
+    15,
+    21,
+    12
+  ]
+}
