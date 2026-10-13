@@ -19,7 +19,7 @@ for(const [direction,count] of Object.entries({right:8,left:8,down:8,up:6})){
  check(profile.directions[direction].walk.length===count,`Approved effective frame count: ${direction}`);
 }
 check(profile.cycle_stride_body_heights===0.65,'Original small-pilot profile is immutable');
-for(const campus of ['buct','buct_haidian']){
+for(const campus of ['buct','buct_haidian','buct_changping']){
  const code=read(path.join(project,`campuses/${campus}/scripts/campus_visitor.gd`));
  check(code.includes('character_visual.name="StudentVisual"'),'Actual visitor owns registered visual: '+campus);
  check(code.includes('character_visual.advance_motion(last_motion,delta)'),'Post-collision actual displacement drives visual: '+campus);

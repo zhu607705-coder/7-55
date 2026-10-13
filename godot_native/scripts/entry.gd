@@ -3,11 +3,13 @@ extends Control
 const STORY_SCENE := "res://scenes/main.tscn"
 const BUCT_SCENE := "res://campuses/buct/scenes/playable.tscn"
 const HAIDIAN_SCENE := "res://campuses/buct_haidian/scenes/playable.tscn"
+const CHANGPING_SCENE := "res://campuses/buct_changping/scenes/playable.tscn"
 var opening := false
 var card: PanelContainer
 var story_button: Button
 var campus_button: Button
 var haidian_button: Button
+var changping_button: Button
 var content: VBoxContainer
 var title: Label
 var detail: Label
@@ -33,7 +35,8 @@ func _ready() -> void:
 	story_button=_button("继续《7:55》",open_story);story_button.name="ContinueStory";content.add_child(story_button)
 	campus_button=_button("朝阳校园漫游",open_campus);campus_button.name="OpenBuctCampus";content.add_child(campus_button)
 	haidian_button=_button("海淀校园漫游",open_haidian);haidian_button.name="OpenBuctHaidian";content.add_child(haidian_button)
-	detail=Label.new();detail.text="两处校园均为独立漫游\n原有剧情与存档保持不变"
+	changping_button=_button("昌平校园漫游",open_changping);changping_button.name="OpenBuctChangping";content.add_child(changping_button)
+	detail=Label.new();detail.text="三处校园均为独立漫游\n原有剧情与存档保持不变"
 	detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("435f56"));content.add_child(detail)
 	resized.connect(_layout);card.minimum_size_changed.connect(_layout.call_deferred)
 	_layout.call_deferred();story_button.grab_focus()
@@ -48,12 +51,16 @@ func _layout() -> void:
 	var available:=get_viewport_rect().size
 	var width:=minf(500,available.x-32)
 	var short:=available.y<500
-	content.add_theme_constant_override("separation",8 if short else 18)
+	content.add_theme_constant_override("separation",6 if short else 18)
 	title.add_theme_font_size_override("font_size",28 if short else 42)
 	detail.add_theme_font_size_override("font_size",15 if short else 17)
 	story_button.custom_minimum_size.y=44 if short else 58
 	campus_button.custom_minimum_size.y=44 if short else 58
 	haidian_button.custom_minimum_size.y=44 if short else 58
+	changping_button.custom_minimum_size.y=44 if short else 58
+	var panel_style: StyleBoxFlat=card.get_theme_stylebox("panel")
+	panel_style.content_margin_top=12 if short else 28
+	panel_style.content_margin_bottom=12 if short else 28
 	card.size=Vector2(width,0)
 	card.position=Vector2((available.x-width)/2,maxf(12,(available.y-card.get_combined_minimum_size().y)/2))
 
@@ -65,6 +72,9 @@ func open_campus() -> void:
 
 func open_haidian() -> void:
 	_open(HAIDIAN_SCENE)
+
+func open_changping() -> void:
+	_open(CHANGPING_SCENE)
 
 func _open(path: String) -> void:
 	if opening:return

@@ -9,10 +9,10 @@ func expect(value: bool,label: String) -> void:
 	checks+=1;print("PASS " if value else "FAIL ",label)
 	if not value:failures.append(label)
 func run() -> void:
-	for campus in ["buct","buct_haidian"]:
+	for campus in ["buct","buct_haidian","buct_changping"]:
 		var app=load("res://campuses/"+campus+"/scenes/playable.tscn").instantiate();root.add_child(app);await frames(3)
 		app.visitor.set_physics_process(false)
-		var problem:=Vector2(752,815) if campus=="buct" else Vector2(762,402)
+		var problem:=Vector2(752,815) if campus=="buct" else (Vector2(515,1210) if campus=="buct_changping" else Vector2(762,402))
 		app.visitor.position=problem;app.current_path.clear();app.close_info()
 		for size in [Vector2i(1280,800),Vector2i(392,844),Vector2i(667,375)]:
 			root.size=size;await frames(3);app._layout_ui();app.camera.position=app._walking_camera_position();app.camera.reset_smoothing();app.camera.force_update_scroll();app._process(0)
