@@ -1,4 +1,5 @@
 extends Node2D
+const STUDENT_PIN_LAYOUT = preload("res://campuses/buct_shared/student/scripts/landmark_pin_layout.gd")
 const VISITOR = preload("res://campuses/buct/scripts/campus_visitor.gd")
 const SOURCE = preload("res://campuses/buct/assets/approved-chaoyang.png")
 const WORLD := Vector2(1448,1086)
@@ -562,4 +563,4 @@ func _process(delta: float) -> void:
 			else:
 				var screen: Vector2=get_canvas_transform()*p+Vector2(8,-52)
 				pins[i].size=Vector2(100,40)
-				pins[i].position=screen.clamp(map_area.position,map_area.end-pins[i].size)
+				pins[i].position=STUDENT_PIN_LAYOUT.place(screen,pins[i].size,STUDENT_PIN_LAYOUT.student_screen_bounds(visitor),map_area)

@@ -11,7 +11,10 @@ if(process.platform!=='linux')throw new Error('NATIVE_TEST_PLATFORM_REQUIRED: XD
 const project=path.resolve(import.meta.dirname,'..');
 const executable=process.env.GODOT_BIN||'godot';
 const saveNames=['save.json','save.previous.json','save.json.tmp'];
-if(!process.argv.includes('--guard-only'))await import('../tests/verify_buct_haidian_source.mjs');
+if(!process.argv.includes('--guard-only')) {
+ await import('../tests/verify_buct_haidian_source.mjs');
+ await import('../tests/verify_buct_student_source.mjs');
+}
 if(process.argv.includes('--source-only'))process.exit(0);
 function sandbox() {
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'755-native-check-'));
@@ -68,7 +71,7 @@ for(const {kind,populated} of cases) {
  console.log(`PASS BUCT save guard ${kind} (${populated?'sentinel saves':'empty profile'}): fixture bytes unchanged`);
 }
 if(!process.argv.includes('--guard-only')) {
- for(const script of ['test_buct_source_layers.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd']) {
+ for(const script of ['test_buct_source_layers.gd','test_buct_student_maps.gd','test_buct_student_pin_layout.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd']) {
   const fixture=sandbox();const result=invoke(fixture,script);
   process.stdout.write(result.text);
   assert.equal(result.status,0,`${script} failed; sandbox retained at ${fixture.root}`);
