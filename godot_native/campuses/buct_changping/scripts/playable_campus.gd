@@ -1,5 +1,7 @@
 extends Node2D
 const STUDENT_PIN_LAYOUT = preload("res://campuses/buct_shared/student/scripts/landmark_pin_layout.gd")
+const FIRST_TEACHING_PATCH = preload("res://campuses/buct_changping/scripts/first_teaching_patch.gd")
+var first_teaching_layer: Node2D
 const VISITOR = preload("res://campuses/buct_changping/scripts/campus_visitor.gd")
 var SOURCE: Texture2D
 var WORLD: Vector2
@@ -72,6 +74,7 @@ func _ready() -> void:
 	for poly in data.walkable_polygons: walk_polys.append(pts(poly))
 	var building_data: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct_changping/data/layers.json"))
 	_prepare_depth_layers(building_data)
+	first_teaching_layer = FIRST_TEACHING_PATCH.install(world, objects, building_data)
 	var landmark_ids: Array=[]
 	for landmark in data.landmarks: landmark_ids.append(str(landmark.id))
 	for item in building_data.objects:
@@ -159,7 +162,9 @@ func _prepare_depth_layers(building_data: Dictionary) -> void:
 			original.hide()
 
 func landmark_at(point: Vector2) -> String:
+	if is_instance_valid(first_teaching_layer) and first_teaching_layer.hit_test_alpha(point):return "main_building"
 	for id in landmark_hit_polys:
+		if id == "main_building" and is_instance_valid(first_teaching_layer):continue
 		for poly in landmark_hit_polys[id]:
 			if Geometry2D.is_point_in_polygon(point,poly):return id
 	return ""
@@ -304,6 +309,7 @@ func return_to_gate() -> void:
 	status.text="已回到南门"
 
 func show_landmark(id: String) -> void:
+	if is_instance_valid(first_teaching_layer):first_teaching_layer.set_selected(id == "main_building")
 	for item in data.landmarks:
 		if str(item.id)==id:
 			info_id=id;info_title.text=str(item.name);info_text.text=str(item.description)
@@ -313,6 +319,7 @@ func show_landmark(id: String) -> void:
 			return
 
 func close_info() -> void:
+	if is_instance_valid(first_teaching_layer):first_teaching_layer.set_selected(false)
 	info_id=""
 	if is_instance_valid(info_panel):info_panel.hide()
 
@@ -443,6 +450,7 @@ func _process(delta: float) -> void:
 		guide_pause=maxf(0,guide_pause-delta)
 		if guide_pause<=0:close_info()
 	if is_instance_valid(visitor):
+		if is_instance_valid(first_teaching_layer):first_teaching_layer.update_actor_foot(visitor.global_position.y)
 		canopy_locator.position=visitor.position+Vector2(0,1)
 		canopy_locator.visible=not overview and is_head_under_canopy(visitor.position)
 		if overview:
