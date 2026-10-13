@@ -1,0 +1,362 @@
+{
+  "schema": "buct-chaoyang-west-sector-validation-v1",
+  "base_commit": "88a4f2c45a70d3a7d052fd6f66bc30c27bba1d47",
+  "date_utc": "2026-10-12",
+  "source_checks": {
+    "schema": "buct-chaoyang-west-sector-source-check-v1",
+    "checks": 1320,
+    "source_size": [
+      1448,
+      1086
+    ],
+    "original_guide_waypoints": 29,
+    "original_landmarks": 3,
+    "paving_polygons": 57,
+    "additional_segments": 35,
+    "additional_crown_groups": 2,
+    "walkable_grid_cells": 1888,
+    "spawn_component_cells": 1817,
+    "added_sector_cells": 504,
+    "all_added_cells_connected": true,
+    "endpoints": [
+      {
+        "id": "sports_side_junction",
+        "path_nodes": 214,
+        "path_length_px": 873.54,
+        "endpoint": [
+          416,
+          436
+        ]
+      },
+      {
+        "id": "west_courts_south_junction",
+        "path_nodes": 174,
+        "path_length_px": 710.23,
+        "endpoint": [
+          424,
+          596
+        ]
+      },
+      {
+        "id": "library_west_north_junction",
+        "path_nodes": 258,
+        "path_length_px": 1056.17,
+        "endpoint": [
+          612,
+          416
+        ]
+      },
+      {
+        "id": "library_southwest_paving",
+        "path_nodes": 222,
+        "path_length_px": 912.17,
+        "endpoint": [
+          610,
+          557
+        ]
+      }
+    ],
+    "blocked_probes": [
+      "central_lawn",
+      "western_basketball_court",
+      "inner_basketball_court",
+      "west_inner_l_roof",
+      "library_roof",
+      "untraced_cross_court_planting",
+      "northern_unopened_lane"
+    ],
+    "native_engine_tested": false,
+    "limit": "Conservative source-only geometry check. Not Godot AStar, physics, rendering, campus-wide coverage or surveyed navigation."
+  },
+  "adjacent_source_regressions": {
+    "haidian_checks": 271,
+    "student_checks": 31,
+    "exit_code": 0
+  },
+  "native_engine": "Godot 4.6.3 stable",
+  "native_focus": {
+    "blocked": [
+      {
+        "blocked": true,
+        "id": "central_lawn"
+      },
+      {
+        "blocked": true,
+        "id": "western_basketball_court"
+      },
+      {
+        "blocked": true,
+        "id": "inner_basketball_court"
+      },
+      {
+        "blocked": true,
+        "id": "west_inner_l_roof"
+      },
+      {
+        "blocked": true,
+        "id": "library_roof"
+      },
+      {
+        "blocked": true,
+        "id": "untraced_cross_court_planting"
+      },
+      {
+        "blocked": true,
+        "id": "northern_unopened_lane"
+      }
+    ],
+    "checks": 41,
+    "depth": [
+      {
+        "behind": [
+          417.0,
+          618.0
+        ],
+        "front": [
+          419.0,
+          624.0
+        ],
+        "ground_depth": 620.0,
+        "id": "west_lane_yellow_curb_canopy",
+        "source_uv_exact": true
+      },
+      {
+        "behind": [
+          606.0,
+          505.0
+        ],
+        "front": [
+          608.0,
+          524.0
+        ],
+        "ground_depth": 521.0,
+        "id": "library_west_avenue_west_canopy",
+        "source_uv_exact": true
+      }
+    ],
+    "endpoints": [
+      {
+        "arrived": true,
+        "edge_samples_clear": true,
+        "final_feet": [
+          418.0,
+          440.363403320312
+        ],
+        "id": "sports_side_junction",
+        "path_points": 213,
+        "paving_violations": 0,
+        "physics_ticks": 599
+      },
+      {
+        "edge_samples_clear": true,
+        "id": "west_courts_south_junction",
+        "path_points": 173
+      },
+      {
+        "arrived": true,
+        "edge_samples_clear": true,
+        "final_feet": [
+          614.0,
+          420.886413574219
+        ],
+        "id": "library_west_north_junction",
+        "path_points": 257,
+        "paving_violations": 0,
+        "physics_ticks": 723
+      },
+      {
+        "edge_samples_clear": true,
+        "id": "library_southwest_paving",
+        "path_points": 222
+      }
+    ],
+    "failures": [],
+    "limit": "Authored outdoor branches only; no campus-wide or surveyed-navigation claim. Rendered depth pixels are reviewed separately.",
+    "schema": "buct-chaoyang-west-sector-native-v1",
+    "walking_samples": 1322
+  },
+  "native_regressions": {
+    "original_playable": {
+      "checks": 115,
+      "failures": 0,
+      "guide_physics_ticks": 741,
+      "exit_code": 0
+    },
+    "source_layers": {
+      "checks": 284,
+      "failures": 0,
+      "exit_code": 0
+    }
+  },
+  "fixture_corrections": {
+    "initial_parse_error": "The new fixture initially inferred a Variant boolean with :=. Explicit bool annotation corrected the test; production code unchanged.",
+    "first_native_run": {
+      "checks": 41,
+      "passed": 39,
+      "failures": 2,
+      "exit_code": 1,
+      "paving_violations": 0
+    },
+    "changes": [
+      "Arrival threshold changed from 4 to 6 source pixels to respect the unchanged 4-pixel grid and 2.5-pixel path-point stop rule. The first run already reached both endpoints without leaving paving.",
+      "One canopy probe moved one source pixel onto the measured crown overhang. No production route, physics, artwork, or canopy geometry was changed."
+    ]
+  },
+  "graphics": {
+    "status": "passed",
+    "check_only": {
+      "depth_exit_code": 0,
+      "capture_exit_code": 0
+    },
+    "road_depth": {
+      "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "engine": "4.6.3-stable (official)",
+      "failures": [],
+      "limit": "Fixed walkable renderer probes. Continuous movement is established separately; source crowns retain their explicitly inferred depth anchors.",
+      "results": [
+        {
+          "feet": [
+            417.0,
+            618.0
+          ],
+          "id": "west_lane_yellow_curb_canopy",
+          "mode": "behind",
+          "overlay_changes_background": false,
+          "pass": true,
+          "source_overlay_occluded_student_pixels": 58,
+          "visible_actor_pixels": 43,
+          "walkable": true
+        },
+        {
+          "feet": [
+            419.0,
+            624.0
+          ],
+          "id": "west_lane_yellow_curb_canopy",
+          "mode": "front",
+          "overlay_changes_background": false,
+          "pass": true,
+          "source_overlay_occluded_student_pixels": 0,
+          "visible_actor_pixels": 101,
+          "walkable": true
+        },
+        {
+          "feet": [
+            606.0,
+            505.0
+          ],
+          "id": "library_west_avenue_west_canopy",
+          "mode": "behind",
+          "overlay_changes_background": false,
+          "pass": true,
+          "source_overlay_occluded_student_pixels": 79,
+          "visible_actor_pixels": 22,
+          "walkable": true
+        },
+        {
+          "feet": [
+            608.0,
+            524.0
+          ],
+          "id": "library_west_avenue_west_canopy",
+          "mode": "front",
+          "overlay_changes_background": false,
+          "pass": true,
+          "source_overlay_occluded_student_pixels": 0,
+          "visible_actor_pixels": 101,
+          "walkable": true
+        }
+      ],
+      "schema": "buct-chaoyang-road-depth-v1"
+    },
+    "continuous_route": {
+      "actual_physics_frames": 763,
+      "arrivals": [
+        {
+          "actual_feet": [
+            418.0,
+            440.97705078125
+          ],
+          "physics_tick": 211,
+          "target": [
+            416.0,
+            436.0
+          ]
+        },
+        {
+          "actual_feet": [
+            422.0,
+            742.040649414062
+          ],
+          "physics_tick": 417,
+          "target": [
+            422.0,
+            748.0
+          ]
+        },
+        {
+          "actual_feet": [
+            607.338134765625,
+            710.0
+          ],
+          "physics_tick": 564,
+          "target": [
+            613.0,
+            711.0
+          ]
+        },
+        {
+          "actual_feet": [
+            614.0,
+            420.220397949219
+          ],
+          "physics_tick": 763,
+          "target": [
+            612.0,
+            416.0
+          ]
+        }
+      ],
+      "completed": true,
+      "elapsed_usec": 14695353,
+      "frame_format": "JPEG",
+      "frame_quality": 0.9,
+      "frames": 254,
+      "limit": "One initial placement at the already-open west-lane junction; thereafter continuous native movement. Only the authored two-branch road sector is shown.",
+      "paving_violations": 0,
+      "physics_ticks": 763,
+      "schema": "buct-chaoyang-continuous-walk-v1",
+      "speed": 88.0,
+      "sample_count": 254,
+      "wall_clock_seconds": 14.695353,
+      "simulation_seconds": 12.716666666666667,
+      "continuity_check": {
+        "max_sample_foot_delta_px": 4.400047593645507,
+        "sample_timestamps_monotonic": true,
+        "max_physics_frame_gap": 3,
+        "overspeed_or_teleport_samples": 0
+      },
+      "status_text": "西侧运动区边路 → 原连接步道 → 图书馆西路"
+    },
+    "original_capture_retained": {
+      "frames": 254,
+      "physics_ticks": 763,
+      "wall_clock_seconds": 15.405056,
+      "simulation_seconds": 12.716666666666667,
+      "paving_violations": 0,
+      "completed": true,
+      "qualification": "The first passing capture inherited a stale reset caption after its one initial junction placement. Only the capture driver caption was corrected, then the route was recorded once more in a separate folder. Production source, geometry, motion and the passing depth probes stayed unchanged."
+    },
+    "exit_codes": {
+      "road_depth": 0,
+      "continuous_original": 0,
+      "continuous_caption_fix": 0
+    }
+  },
+  "scope_limits": [
+    "Only the authored two-branch outdoor sector is expanded. No campus-wide traversability or coverage percentage.",
+    "Source illustration coordinates are not surveyed real-world navigation.",
+    "No building interiors, roof access, grass, water, courts or invented cross-planting shortcuts.",
+    "Focused native QA used byte-identical candidate campus and student resources in a small scene-only project. Full integration/CI is a separate gate. Native graphics used llvmpipe software OpenGL, not a physical-device or hardware-GPU performance test."
+  ]
+}

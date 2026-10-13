@@ -4577,6 +4577,92 @@ Proposed source/test/document union: 75 paths. The 35 import-generated UID compa
 - Focused headless checks passed with exit0: 1,234 entry/state/save-byte/input/descendant-release assertions; 86 actual-student assertions including Changping's original three-landmark route in759 physics ticks with zero illegal feet; 85 label-layout assertions. Read-only source guards passed60 Changping,271 unchanged Haidian and37 shared-student checks. Full story artwork/resume was explicitly skipped in the minimal stage; complete remote CI remains required.
 - Actual desktop GPU passed854 assertions with zero failures; all four injected keyboard directions moved the real feet10.2667px each. The first854/4 failed driver report is retained; correction uses Input.parse_input_event without weakening movement assertions. Manual verification completed two Changping entry/return cycles, W/S movement and release/boundary stop, E/Esc information, M full-map view, plus one Chaoyang and one Haidian return. 1280×720,390×844 and667×375 render layouts passed. Exit had no ERROR/RID leakage, only the known llvmpipe VSync warning. No physical touchscreen or full-story visual claim. See `godot_native/docs/BUCT_CHANGPING_VALIDATION.json`.
 
+## 2026-10-12 昌平第一教学楼：原位透明对象与三面深度
+
+- 本改动基于昌平正式入口 Draft #126（远端 `3ce2b43ff9fe53c98958909fdd9d11f3b752924b`）。补丁只含昌平第一教学楼及对应测试，不包含其它校区建筑、室内或新道路。原950×1656地图、18源px四向学生、速度88、3px脚碰撞、State及原41点/3地标主线保持。
+- 一教采用一张1755×896真实RGBA，原文件SHA256 `92d71203ca4e9070651c772a27cef63ee9190f3a08bbbd8e83be846d06bc59f6`。统一比例 `0.14504525562156373`、原点 `[390.2105602416651,1083.9025528184943]`；不做非等比拉伸，两庭院六个内部探针alpha0。
+- 后横翼、中脊、前弧通过唯一surface ID与1755×3脚线表共享整PNG。当前2个互补深度pass，总预算≤8。左右庭院同列的前、后墙使用不同地脚，不能用整楼一条最下沿脚线代替。庭院中的验证脚点只作遮挡fixture，不开启院内路线。
+- 保留原两块物理碰撞和实际地面投影；旧本体、误命名为SourceShadowOrAnnex_1/_2的后翼/中脊及旧分片guard退役。实际alpha拾取可打开“第一教学楼”，透明庭院不误选。没有给普通楼提供移动/隐藏后完整净底承诺。
+- 修复只采已审核的144源px东弧、130源px门下白区，共274源像素。两张生成补片分别严格等比注册，原PNG保留；CPU证明许可白区外像素变化0。其余原树、庭院和道路不按整矩形重画。这些补片是风格匹配的地面恢复，不是原像素精确还原。
+- 生产本体PNG的.import明确启用mipmap并保留原alpha/RGB。所有原生body pass与单PNG对照复用同一个生产Texture，RGB走mip、alpha固定LOD0；surface二进制用.r8.bin复用既有导出白名单。
+- 验证：CPU/静态19项；统一stage增量导入exit0；原生904/0，涵盖实际mipmap、alpha拾取、两碰撞与两次整campus子孙WeakRef释放；三校原学生回归86/0，昌平主线实际759ticks、动画575ticks、非法脚点0；首轮真实GPU13/0、exit0，alpha支持0差、RGB最大1LSB，真实学生前/后遮挡四组通过。首轮截图driver的旧screen-space标签未刷新已保留为历史；只修fixture刷新后，第二轮真实GPU仍13/0且exit0，正常/选中截图地标位置正确，不遮学生。
+- 短实机手工完成两次正式入口进入/返回，屋顶真实alpha点选“第一教学楼”、Esc关闭、左庭院透明点不选，以及导览后方向键接管/释放。手工没有完整步行主线、庭院通行或实体手机测试；场景正常退出0，无ERROR/RID，环境仅有VSync不支持提示。
+- 本轮完成第一教学楼这一栋真实RGBA的原位接入验证；不能称全部53个旧分组都已成为逐栋RGBA，也不能把既有主线说成全校园道路可走。
+
+## 2026-10-12 昌平图书馆：独立透明楼体、凹立面地脚与手工往返
+
+- 本补丁接续第一教学楼 Draft #129 的准确提交 `dabe1efa13ebf1a77dfab0326ae76f2351c4ee69`。只接入昌平图书馆这一栋；原950×1656地图、41点/3地标主线、10处路线树层及18源px四向学生（速度88、脚半径3）保持。没有新增室内、门口、湖边路线或全校园通行。
+- 1225×1284原RGBA整张保留，SHA256 `01a017d632f699907b1a56ba927373420b92062aa40a486e2564edef9171be16`。统一比例 `0.11036930895608213`、原点 `[501.6515664578408,683.7275776496026]`；中央三角玻璃是实心屋顶，东南外凹是真透明。人工核验的两面ID与两条地脚表共用一张导入纹理，RGB走mip、alpha与拾取取LOD0；不是整楼最下沿遮罩。
+- 仅退役library旧本体、raster guard和WestFacade/EastFacade深度片，保留原独立地影及邻近树、湖、道路。南GroundFootprint0原样保留；东GroundFootprint1改为实际凹立面接地线内侧4源px窄脚带，并同步现有导航blocked集合。旧东侧空气墙不再挡透明地面，但测试凹口可站不等于开放未建路线，屋顶仍不可走。
+- 实际GPU到馆、凹口与四个接地点截图未见明显旧墙重影或亮补片，因此本次不新增净地素材，也不为整楼移动/隐藏制造完整地底承诺。精确PNG.import随补丁保留，生产通过导入Texture2D加载，避免导出后读取原PNG字节的失效路径。
+- 验证：原生1016/0，接受学生回归86/0；原主线实际759ticks、动画575ticks、非法脚点0。半径3四向撞墙、凹口净空、屋顶/未建路封闭、alpha选择、信息关闭、入口返回与重复释放通过。斜足线接触误差≤0.083源px。真实OpenGL17/0，五深度alpha支持无差、RGB最大1LSB，四组学生前后遮挡通过。新增依赖无关Node源检查10/0及相对路径复现runner。
+- 短实机手工验证真实玻璃点选“图书馆”、Esc关闭、无遮挡东南空白点不误选、下/上移动后松键idle、返回入口和重新进入恢复原南门[515,1510]。另一个透明坐标落在屏幕馆牌Button上，按按钮正常开卡，不作为alpha失败。首个未交付手工logger在Alt+F4后出现ObjectDB退出警告，原日志保留；随后完全不带driver的正式项目完成入口→昌平→入口→昌平→退出，exit0且无ERROR/ObjectDB/RID，只有环境VSync提示。未改生产代码掩盖该历史警告。
+- `docs/BUCT_CHANGPING_LIBRARY.md`与`docs/BUCT_CHANGPING_LIBRARY_VALIDATION.json`记录范围和证据；没有新增导出包、实体手机性能或完整剧情验证的声明，也不能将本栋完成等同于全部旧建筑均已转换。
+
+## 2026-10-12 — 昌平原画东侧道路接通
+
+- 在 #131 精确树上增加一个原画可见铺装多边形，接通东侧直路和北侧路口前有限路段；不是 TileMap 或室内扩展
+- 保留原 41 点导览、3 个 POI、共享学生、全部真实楼体和图书馆实际东侧脚线；新增 485 个网格点全部连通
+- 新权限仅使用统一铺装并集的半径 3 圆形外边界检查；不侵蚀各个重叠多边形，不改变原先已开放脚点
+- headless 41/41，连续真实物理行走与返回 0 非法脚点；原导览、真实按键边界与松键检查通过
+- 原道路 86 个角部/旧缝问题采样如实单列，未把它们说成 86 个独立缺陷；初次测试的旧边分类失败保留
+- 源检查64/64、公共契约70/70、GPU正常/深度28/28、合法walking帧14/14；3组实际遮挡112/109/39px，人物均仍可见；实际1180×812视窗全新增叶区原渲染0差，非手工游玩
+- 正常游戏截图单独交付；受控前景测试见 docs/BUCT_CHANGPING_EAST_ROAD.md 和独立验证 JSON；只提取真实原叶像素，不把低草当高前景
+
+## 2026-10-13 昌平柳湖主池独立原画水面
+
+- 基于 Draft #133 精确 head `bca86c2b10901c0c524968e4b79f2b45845cf729`、tree `8f135d0c44e0efc56a6e81522f644fcb00e4f67e`；只处理图书馆西侧柳湖主池，南桥下水渠和荷塘不扩大范围
+- 新增一个固定地理位置的原生 Node2D + Sprite2D，原图裁框 `[317,750,163,108]` 的 7,140 个真实 alpha 水像素独立呈现；RGB 原像素不重画，底图只加同 mask 互补裁空，原大 PNG/岸线/桥岛树/共享学生/原路网不变
+- 正式导入纹理与距离纹理的实际解码像素通过 SHA 校验后才安装互补材质。缺资源或错误像素不会先挖空底图；隐藏水层是真挖空，不生成湖床
+- 岸缘内 2 源像素静止，8 像素渐变权重，最大 0.30 源像素低速微扰；alpha、地理位置与原相机保持固定，无海浪、发光或岸树抖动。岛西南原有连接使透明排除与外岸连通，不补不存在的环岛水道
+- 水面点击幂等选中，岛/透明区取消并恢复原状态提示；不创建 POI 或寻路目标，所有水像素仍不可行走。鼠标与触屏的真实输入均验收
+- 源检查 89/89；最终原生水组件 59/59；原东路连续行走/导览/碰撞回归 41/41；GPU 捕获 15/15、严格像素分析 18/18；最终人工选中/取消/再选中及原道路短按行走通过
+- 1180×812 实际 GPU 视窗：静态及三次关闭动画与基线 0 像素差；四个波相水外/静止岸缘变化均 0。实际原导览 718 个物理帧、非法脚点 0、原 3 个 POI；105 张实际 GPU 帧供 7 秒/15fps 的原比例局部微动证据
+- 保留初始 JSON 数字类型、最小 stage 字体、64px headless 输入窗口和触屏双切换失败记录；首次 GPU wrapper 的 Python 命令缺失 exit127 如实保留，单独 python3 分析为 exit0。新 test 的可选证据输出兼容未设 env 独立调用，显式无效输出清楚失败
+- 详见 `docs/BUCT_CHANGPING_LIUHU.md` 与 `docs/BUCT_CHANGPING_LIUHU_VALIDATION.json`。无整仓 clone/import/PCK，独立 Draft 由父任务交接发布，不合并，不改浙大主线
+
+## 2026-10-13 — BUCT Changping bridge-south visible-water continuation
+
+- Exact base: Draft #135, head `27f872b199b85ff24c6d48ba16928bce395e627c`, tree `a431a3a5cbdd20fe26ad9c10a93dec059ed958a5`.
+- Added only one original-RGBA static segment at source crop `[395,867,24,21]`: 72 guarded water pixels, 1,420-byte PNG. Main bridge, uncertain bridge-bottom pixels, banks, tree foliage, next crossing and next water segment remain static. No new geographic proper name.
+- Retained the existing 7,140-pixel main pool, its animation/selection, source assets and implementation bytes. Both masks have independent alpha selection and atomic complementary background ownership; both teardown orders and external material replacement are safe.
+- Validation: CPU geometry 11/11; extended existing source checker 103/103; segment native 50/50; main native 59/59; existing east-road native 41/41. Real mouse/touch selection is automated; original route/shared student and road collisions retained.
+- GPU: 7 fixed-camera stills, actual 960×720 at 4×; 8/8 pixel checks. Static reconstruction and source restoration differ by 0 pixels. Hiding segment changes exactly 1,152 screen pixels, all inside its alpha. Main-pool wave phases still differ; segment and all main-exterior pixels remain unchanged. Independent visual review found bridge/banks/trees intact and no visible bright seam/black fringe.
+- Hide preserves a real cutout; free restores that component's source-ground ownership. Static presentation is deliberate: only 22 pixels beyond a two-pixel guard and no full eight-pixel feather core. No added routes, POIs, interior, formal TileMap replacement, new art, video or other-campus water.
+- Reuses existing public source/CI entrypoints. Local stage imported only the new 24×21 PNG; no whole-repository clone/import or PCK. Full aggregate/remote CI remains publisher verification. Details: `docs/BUCT_CHANGPING_SOUTH_BRIDGE_WATER.md` and accompanying validation JSON.
+
+## 2026-10-12 — Independent Chaoyang west-inner L building
+
+- Replaced one legacy source-UV building with its generated genuine-RGBA body, registered at one uniform scale. Kept its connected main block, long eastern wing and low western annex together; restored four exact-source foreground leaf fragments and limited necessary ground repair to366 source pixels. Original campus artwork, shared student geometry, movement, three-stop route and story state remain unchanged. This fixed ordinary building supports transparent-alpha selection and neutral information, not whole-building moving/hiding or interiors.
+- Two whole-body rendering passes use per-column facade depth, three physical contact polygons and the same production-imported texture exercised by the graphics fixture. Explicit mipmap import metadata is included; body PNG bytes are unchanged.
+- Final focused verification passed115 object checks,284 source-layer checks,115 existing playable-route checks, and32 four-direction student depth samples. The actual production-texture composition has exact alpha coverage and only63 RGB pixels differing by one channel level from the whole-texture reference. Final desktop manual roof selection, transparent recess non-selection, unchanged0/3 progress and return passed; no runtime ERROR/RID leakage.
+- The combined minimal stage reported1,236 entry assertions with no assertion failures but lacked original story media and emitted loading errors, so it is not a clean full-game aggregate pass. Exact-head remote CI remains required. Component measurements were2passes,7component nodes and8,402,492 texture bytes; no whole-scene performance or completed-hidden-ground claim.
+
+## 2026-10-12 — BUCT Chaoyang connected west-road sector
+
+Expanded free walking from the existing route onto the west sports-side lane and library-west avenue. The original south gate spawn, 29 guide waypoints, three landmarks, shared student/physics, 44 building identities and genuine-alpha library remain unchanged. Added 35 conservative source-space road polygons and two bounded exact-source roadside crown groups with tiny inferred trunk feet. Kept courts, roofs, central lawn, untraced northern roads and the y≈590 planting strip blocked. No interiors or new artwork.
+
+Validation: road source guard 1,320 assertions; student 31; unchanged Haidian source 271; native new roads 41 with 1,322 real physics samples and no paving violations; existing guide 115; original source/building layers 284. Actual software-OpenGL depth checks pass four walkable poses with zero empty-background changes. Continuous road capture reaches four destinations in 763 physics ticks and 254 JPEG frames with no off-paving or sampled teleport motion. Final capture is 12.717 simulated seconds and 14.695 wall-clock seconds; one initial placement at the old west-lane junction is disclosed. Retained the initial fixture failures and original capture; final recording corrects only the capture status label. Full-repository CI remains separate. Details: `godot_native/docs/BUCT_CHAOYANG_WALKABILITY.md` and its validation JSON.
+
+
+## 2026-10-12 — Local west-road integration with accepted L and #126
+
+- Three-way merged the original-art west-road patch onto exact #126 plus the frozen accepted L building in a separate local worktree. Preserved the #126 Changping source import, all L alpha picking/card/contact/foliage behavior, original student, original campus pixels and road geometry. No semantic tiles, new road textures, frozen-patch edits or GitHub writes.
+- Checked all 2,300 nonzero-alpha L foliage pixels against both added road crown groups: zero duplicate ownership. Merged source checks pass1,322 road,271 Haidian,37 student and60 Changping assertions.
+- Focused native merge passes37 checks with1,152 continuous physics ticks from the original south-gate spawn through both branches, zero off-paving steps and no repositioning/overspeed. Separate reset/old guide reaches the original three landmarks in743 ticks. Existing road regression passes41 checks/1,322 walking samples. Both processes exit0 without script/load/leak errors. No broad repeat of already-accepted building tests and no new combined-scene video. Existing video remains labeled as pre-L evidence; full CI and whole-game state remain separate gates.
+
+## 2026-10-13 — Independent Chaoyang court-north short building
+
+- Replaced only `west_courts_north_bar` with one connected true-RGBA body at a fixed uniform scale and origin, two compact depth passes, visible-wall foot collision, alpha picking and a neutral information card. Original source map, accepted student, roads, southern courts/trees and three-POI progress remain unchanged; no interior or whole-building hide/move behavior.
+- Limited old north equipment/lip repair to exactly 201 source pixels in `[447,433,56,16]`, with zero changes outside the frozen mask. Runtime uses a 56×16 imported RGBA patch (3,584 decoded bytes), not the large generated source. Tiny dark original antialias edges remain outside the mask near `(472,437)`, `(471,439–440)` and `(497,439–440)`; the accepted body's vents are preserved.
+- Focused validation passed 50 source checks, 139 native checks and 41 original-road checks with 1,322 actual student samples. Actual normal/full-map views and real roof click, transparent rejection, card close, entry return/re-entry and clean exit passed. Optional evidence output passed normal/unset cases and correctly rejected an invalid explicit path. Prior unchanged-body GPU proof covers 24 student poses. No full-game CI or PCK export claim; independent Draft publication remains separate, and this work is not merged. See `docs/BUCT_COURT_NORTH_VALIDATION.json`.
+
+## 2026-10-13: Integrate the approved Chaoyang chain with the current campus base
+
+- Preserve the complete histories and records for both campus branches; resolve only shared progress and BUCT test-registration conflicts
+- Retain every source/native check from both runners and the existing isolated evidence-output environment
+- Production campus paths merge without overlapping edits; complete CI must verify this new combined tree before merge
+
 ### 2026-10-12 — Haidian Rongmao fixed building
 
 Replaced Rongmao UV body/legacy collision and paired broad shadow/underlay with genuine RGBA body, three shared-texture exact-foot depth passes, narrow contact shadow and 141-source-pixel necessary ground repair. Fixed ordinary building supports visible-alpha selection, original information card and route access; full hide/move intentionally unavailable because the hidden core is approximate native paving. Existing teaching object, shared four-direction student, three-campus entry and story/save state preserved. Local focused headless72/72, actual513-tick legal route, real keys/clicks and six release cycles pass. Actual fixed1280×800 GL: baseline roundtrip and outside-library/protected tree/court pixels unchanged; full-map library/student occlusion reviewed. Net2draw/2nodes and17064732B texture; 16MiB budget exceeded287516B, newp9535.748ms versus baseline19.927–22.513ms, so no speedup/scalability claim. Complete remote aggregate and final exact-head CI remain separate publication gates.
@@ -4595,3 +4681,9 @@ Public package regression is now reproducible via `python3 godot_native/tools/te
 - Hall branch (996,316) stays closed because it crosses a planted divider; the foliage-obscured southern continuation (926,389) also stays closed. No interiors, court, roof, grass, water, new imagery, semantic TileMap or story/save changes. One small original-source leaf contour is visual-only, needed for full-student overlap at the south road shoulder; it invents no trunk collider.
 - Public source guard `node godot_native/tests/verify_buct_haidian_east_roads_source.mjs`: 228 PASS. Unchanged-base Haidian/Rongmao/export source checks: 379 PASS. Public native fixture `godot_native/tests/test_buct_haidian_east_roads.gd`: 48 PASS, 176 continuous new-road/manual-boundary physics ticks plus 515 old-guide ticks, 0 illegal feet, bad planned edges, teleports or overspeed. Teaching hide/move/reset, Rongmao alpha/real foundation collision, owned inputs and full scene release pass. Both new source/native checks are wired into existing `node godot_native/tools/test_buct.mjs`; use its existing isolated TMP/XDG workflow.
 - Actual desktop GL proof passed with 138 continuous ticks, including a real D-key event, middle/end screenshots and return to the original spawn. Zero illegal feet or jumps; default gameplay views and a separately labelled 4.6× inspection view were visually reviewed. The accepted original map/character remain intact. No video or full-world walkability claim. Full historical aggregate and exact-head remote CI remain publication checks, not implied by the focused results above.
+
+## 2026-10-13: Integrate Haidian Rongmao and street with the approved campus branches
+
+- Preserve both complete branch histories and every progress entry; union all seven source suites and thirteen focused native registrations
+- Keep existing save/evidence isolation and all nonconflicting production blobs byte-identical to their owning approved branches
+- Complete combined-tree Native and Web CI is required before merge

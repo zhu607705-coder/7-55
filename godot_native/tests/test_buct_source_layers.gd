@@ -15,7 +15,7 @@ func run() -> void:
 	root.add_child(scene);await process_frame;await physics_frame
 	var data: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct/data/layers.json"))
 	var objects: Node2D=scene.get_node("IndependentRegisteredObjects")
-	check(data.objects.size()==44 and objects.get_child_count()==44,"44 native groups remain: one genuine-alpha building and 43 legacy UV groups")
+	check(data.objects.size()==44 and objects.get_child_count()==44,"44 native groups remain: two genuine-alpha buildings and 42 legacy UV groups")
 	check(scene.get_node("StaticUnseparatedCampus").texture.get_size()==Vector2(1448,1086),"Approved source dimensions remain unchanged")
 	check(scene.get_node("GroundRepairTiles/SourcePaving16px") is TileMapLayer,"Repair ground remains native TileMapLayer")
 	check(scene.get_node("GroundRepairTiles/SourcePaving16px").get_used_cells().size()==6188,"All 6188 repair cells are preserved")
@@ -60,6 +60,15 @@ func run() -> void:
 			check(not scene.has_node("CleanUnderlay_library") and not scene.has_node("CleanShadowUnderlay_library"),"Old library placeholder underlays retired")
 			bodies+=1
 			continue
+		if item.id=="west_inner_l_block":
+			genuine_count+=1
+			check(not object.has_node("SourcePixelSilhouette"),"L building retires old source-UV body")
+			check(object.body_texture.get_size()==Vector2(1558,1010),"L keeps unchanged full genuine RGBA texture")
+			check(object.body_passes.size()==2 and object.collision_shapes.size()==3,"L has two shared-texture passes and three foot fields")
+			check(not scene.has_node("CleanUnderlay_west_inner_l_block"),"L removes old whole-silhouette approximate paving")
+			check(object.hit_test_alpha(Vector2(520,640)) and not object.hit_test_alpha(Vector2(520,689)),"L body selects and south exterior notch does not")
+			bodies+=1
+			continue
 		legacy_count+=1
 		var silhouette: Polygon2D=object.get_node("SourcePixelSilhouette")
 		var pixels_match:=true
@@ -76,8 +85,8 @@ func run() -> void:
 		check(footprints.all(func(body: Node):return body.collision_layer==0),"Hidden object disables only its own physics: "+item.id)
 		object.position=Vector2(item.anchor[0],item.anchor[1]);object.show()
 		check(footprints.all(func(body: Node):return body.collision_layer==1),"Restored object recovers its physics: "+item.id)
-	check(bodies==88,"87 legacy collision bodies plus one six-polygon genuine library body")
-	check(genuine_count==1 and legacy_count==43,"No claim that remaining 43 source-UV groups are rebuilt")
+	check(bodies==86,"84 legacy collision bodies plus two genuine building bodies")
+	check(genuine_count==2 and legacy_count==42,"No claim that remaining 42 source-UV groups are rebuilt")
 	scene.queue_free();await process_frame
 	print("BUCT_SOURCE_LAYERS: %d checks; %d failures"%[checks,failures])
 	quit(0 if failures==0 else 1)

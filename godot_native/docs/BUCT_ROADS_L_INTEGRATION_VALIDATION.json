@@ -1,0 +1,348 @@
+{
+  "schema": "buct-roads-on-pr126-l-integration-v1",
+  "date_utc": "2026-10-12",
+  "repository_base": "3ce2b43ff9fe53c98958909fdd9d11f3b752924b",
+  "accepted_l_manifest_sha256": "b3967fc8ef0ad03d9f89021027d12196d04f7c87b2ec53ef1c56513a4568ef2e",
+  "accepted_l_base_tree": "d18e8d134c4f02f548aa8003eeefa68860423e83",
+  "original_road_commit": "6832c343267217a2411839fc6fb7df8f166b02d1",
+  "production_merge": "Frozen accepted L controller plus exactly the original road overview sentence. Original road data and all student/source art bytes retained.",
+  "source_checks": {
+    "road": {
+      "schema": "buct-chaoyang-west-sector-source-check-v1",
+      "checks": 1322,
+      "source_size": [
+        1448,
+        1086
+      ],
+      "original_guide_waypoints": 29,
+      "original_landmarks": 3,
+      "paving_polygons": 57,
+      "additional_segments": 35,
+      "additional_crown_groups": 2,
+      "walkable_grid_cells": 1888,
+      "spawn_component_cells": 1817,
+      "added_sector_cells": 504,
+      "all_added_cells_connected": true,
+      "endpoints": [
+        {
+          "id": "sports_side_junction",
+          "path_nodes": 214,
+          "path_length_px": 873.54,
+          "endpoint": [
+            416,
+            436
+          ]
+        },
+        {
+          "id": "west_courts_south_junction",
+          "path_nodes": 174,
+          "path_length_px": 710.23,
+          "endpoint": [
+            424,
+            596
+          ]
+        },
+        {
+          "id": "library_west_north_junction",
+          "path_nodes": 258,
+          "path_length_px": 1056.17,
+          "endpoint": [
+            612,
+            416
+          ]
+        },
+        {
+          "id": "library_southwest_paving",
+          "path_nodes": 222,
+          "path_length_px": 912.17,
+          "endpoint": [
+            610,
+            557
+          ]
+        }
+      ],
+      "blocked_probes": [
+        "central_lawn",
+        "western_basketball_court",
+        "inner_basketball_court",
+        "west_inner_l_roof",
+        "library_roof",
+        "untraced_cross_court_planting",
+        "northern_unopened_lane"
+      ],
+      "native_engine_tested": false,
+      "limit": "Conservative source-only geometry check. Not Godot AStar, physics, rendering, campus-wide coverage or surveyed navigation."
+    },
+    "haidian": 271,
+    "student": 37,
+    "changping": 60,
+    "exit_code": 0
+  },
+  "foliage_ownership": {
+    "schema": "buct-road-l-source-foliage-ownership-v1",
+    "method": "Actual nonzero-alpha source pixel centres of each frozen L leaf fragment tested against both added road source polygons.",
+    "results": [
+      {
+        "l_fragment": "annex",
+        "anchor": [
+          457,
+          703
+        ],
+        "source_pixels": 1023,
+        "road_ownership_overlap": {
+          "west_lane_yellow_curb_canopy": 0,
+          "library_west_avenue_west_canopy": 0
+        },
+        "trunk_collider": false
+      },
+      {
+        "l_fragment": "south_west",
+        "anchor": [
+          496,
+          707
+        ],
+        "source_pixels": 723,
+        "road_ownership_overlap": {
+          "west_lane_yellow_curb_canopy": 0,
+          "library_west_avenue_west_canopy": 0
+        },
+        "trunk_collider": false
+      },
+      {
+        "l_fragment": "south_middle",
+        "anchor": [
+          537,
+          713
+        ],
+        "source_pixels": 279,
+        "road_ownership_overlap": {
+          "west_lane_yellow_curb_canopy": 0,
+          "library_west_avenue_west_canopy": 0
+        },
+        "trunk_collider": false
+      },
+      {
+        "l_fragment": "inner_return",
+        "anchor": [
+          558,
+          711
+        ],
+        "source_pixels": 275,
+        "road_ownership_overlap": {
+          "west_lane_yellow_curb_canopy": 0,
+          "library_west_avenue_west_canopy": 0
+        },
+        "trunk_collider": false
+      }
+    ],
+    "duplicate_owned_pixels": 0,
+    "new_road_occluder_count": 2,
+    "l_fragment_count": 4,
+    "frozen_sources_unchanged": true
+  },
+  "native_merged_continuous": {
+    "arrivals": [
+      {
+        "arrived": true,
+        "feet": [
+          422.0,
+          753.202819824219
+        ],
+        "target": [
+          422.0,
+          748.0
+        ],
+        "tick": 385
+      },
+      {
+        "arrived": true,
+        "feet": [
+          418.0,
+          440.30078125
+        ],
+        "target": [
+          416.0,
+          436.0
+        ],
+        "tick": 599
+      },
+      {
+        "arrived": true,
+        "feet": [
+          422.0,
+          742.809387207031
+        ],
+        "target": [
+          422.0,
+          748.0
+        ],
+        "tick": 806
+      },
+      {
+        "arrived": true,
+        "feet": [
+          607.38134765625,
+          710.0
+        ],
+        "target": [
+          613.0,
+          711.0
+        ],
+        "tick": 953
+      },
+      {
+        "arrived": true,
+        "feet": [
+          614.0,
+          420.200744628906
+        ],
+        "target": [
+          612.0,
+          416.0
+        ],
+        "tick": 1152
+      }
+    ],
+    "checks": 37,
+    "continuous_paving_violations": 0,
+    "continuous_physics_ticks": 1152,
+    "continuous_teleport_or_overspeed": 0,
+    "failures": [],
+    "guide_ticks": 743,
+    "guide_violations": 0,
+    "limits": "Focused Chaoyang scene merge check. No new art, interiors, semantic tiles, whole-game save claim, water access or campus-wide road claim. Other accepted buildings are unchanged and not broadly re-tested here.",
+    "max_step_px": 1.46670067310333,
+    "schema": "buct-roads-l-integration-v1"
+  },
+  "continuous_trace": {
+    "physics_samples": 1152,
+    "sha256": "1befe4d811431d2b657a4d2d88b145a6214793d0ee3e90b9cf8bc874898babce",
+    "initial_position": [
+      744,
+      979
+    ],
+    "in_run_repositions": 0
+  },
+  "native_existing_road_regression": {
+    "blocked": [
+      {
+        "blocked": true,
+        "id": "central_lawn"
+      },
+      {
+        "blocked": true,
+        "id": "western_basketball_court"
+      },
+      {
+        "blocked": true,
+        "id": "inner_basketball_court"
+      },
+      {
+        "blocked": true,
+        "id": "west_inner_l_roof"
+      },
+      {
+        "blocked": true,
+        "id": "library_roof"
+      },
+      {
+        "blocked": true,
+        "id": "untraced_cross_court_planting"
+      },
+      {
+        "blocked": true,
+        "id": "northern_unopened_lane"
+      }
+    ],
+    "checks": 41,
+    "depth": [
+      {
+        "behind": [
+          417.0,
+          618.0
+        ],
+        "front": [
+          419.0,
+          624.0
+        ],
+        "ground_depth": 620.0,
+        "id": "west_lane_yellow_curb_canopy",
+        "source_uv_exact": true
+      },
+      {
+        "behind": [
+          606.0,
+          505.0
+        ],
+        "front": [
+          608.0,
+          524.0
+        ],
+        "ground_depth": 521.0,
+        "id": "library_west_avenue_west_canopy",
+        "source_uv_exact": true
+      }
+    ],
+    "endpoints": [
+      {
+        "arrived": true,
+        "edge_samples_clear": true,
+        "final_feet": [
+          418.0,
+          440.363403320312
+        ],
+        "id": "sports_side_junction",
+        "path_points": 213,
+        "paving_violations": 0,
+        "physics_ticks": 599
+      },
+      {
+        "edge_samples_clear": true,
+        "id": "west_courts_south_junction",
+        "path_points": 173
+      },
+      {
+        "arrived": true,
+        "edge_samples_clear": true,
+        "final_feet": [
+          614.0,
+          420.886413574219
+        ],
+        "id": "library_west_north_junction",
+        "path_points": 257,
+        "paving_violations": 0,
+        "physics_ticks": 723
+      },
+      {
+        "edge_samples_clear": true,
+        "id": "library_southwest_paving",
+        "path_points": 222
+      }
+    ],
+    "failures": [],
+    "limit": "Authored outdoor branches only; no campus-wide or surveyed-navigation claim. Rendered depth pixels are reviewed separately.",
+    "schema": "buct-chaoyang-west-sector-native-v1",
+    "walking_samples": 1322
+  },
+  "exit_codes": {
+    "merged_continuous_and_guide": 0,
+    "existing_road_regression": 0
+  },
+  "frozen_safety": {
+    "l_files_changed_except_approved_overview_sentence": 0,
+    "original_road_geometry_changed": false,
+    "original_student_changed": false,
+    "entry_or_state_changed": false,
+    "changping_source_wiring_retained": true,
+    "semantic_tiles_added": false,
+    "new_road_textures_added": false,
+    "remote_writes": false
+  },
+  "limits": [
+    "This is a focused local scene-integration check, not full-repository CI or a whole-game save/resume test.",
+    "Existing #126 entry/State and unrelated campus source remain unchanged; the two other completed building components were not broadly re-tested.",
+    "The prior road video predates the accepted L replacement and is retained only as pre-L evidence. No merged-scene GPU/video was recorded here.",
+    "Previously accepted L graphics and the original road graphics proofs remain separate evidence; no duplicate alpha-pixel ownership was found between their foliage.",
+    "No outdoor scope expansion beyond the original two authored road branches; roofs, courts, planting, unreviewed roads, water and interiors remain excluded."
+  ]
+}

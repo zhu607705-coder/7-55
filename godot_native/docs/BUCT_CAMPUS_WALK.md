@@ -6,7 +6,7 @@ The existing `--fresh`, `--story`, `--preview=`, `--checkpoint=`, `--page=` and 
 
 ## Open corridor
 
-South gate → main-building forecourt → west-side garden/promenade → library forecourt. This is a bounded playable corridor, not a claim that every campus path is open. Unopened lawns and building footprints block movement. Some short connections under foliage are inferred gameplay geometry; the JSON identifies them explicitly.
+South gate → main-building forecourt → west-side garden/promenade → library forecourt. This is a bounded playable corridor, not a claim that every campus path is open. Unopened lawns and building footprints block movement. Some short connections under foliage are inferred gameplay geometry; the JSON identifies them explicitly. Free walking now also follows the west sports-side lane and the library-west avenue north from their original-route junctions. The three-stop guide is unchanged. See [BUCT_CHAOYANG_WALKABILITY.md](BUCT_CHAOYANG_WALKABILITY.md) for source-space endpoints, exclusions and verification.
 
 - WASD/arrows: walk; Shift: faster walk
 - Click/tap open paving: navigate using the same native CharacterBody2D and collision model

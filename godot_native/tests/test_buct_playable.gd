@@ -24,7 +24,7 @@ func run_tests() -> void:
 	verify(app.library.shadow_sprite is Sprite2D and app.library.shadow_sprite.z_index<0,"Library shadow is independent alpha below native actors")
 	verify(app.world.has_node("StaticSourceGroundShadows"),"Ground shadows are kept behind the visitor, not treated as solid occluders")
 	verify(app.is_walkable(app.visitor.position),"South-gate spawn is inside the walkable paved corridor")
-	verify(app.data.occluders.size()==8,"Route has separately depth-sorted original tree canopies")
+	verify(app.data.occluders.size()==10,"Route has separately depth-sorted original tree canopies")
 	var tree_uv_ok:=true
 	for item in app.data.occluders:
 		var tree=app.objects.get_node(item.id)
@@ -40,7 +40,7 @@ func run_tests() -> void:
 	verify(app.is_head_under_canopy(Vector2(548.447265625,706.296447753906)),"Recorded west-garden foliage crossing covers the avatar head")
 	verify(app.is_head_under_canopy(Vector2(649.92578125,696.390686035156)),"Recorded rear-promenade crossing covers the avatar head")
 	verify(not app.is_head_under_canopy(Vector2(674.0,615.379089355469)),"Library route preserves the visible gap between real crowns")
-	verify(Geometry2D.is_point_in_polygon(Vector2(670,601),app.pts(app.data.occluders[-1].polygon)),"Library foliage covers only the original left hair/shoulder edge")
+	verify(Geometry2D.is_point_in_polygon(Vector2(670,601),app.pts(app.data.occluders[7].polygon)),"Library foliage covers only the original left hair/shoulder edge")
 	app.return_to_gate()
 	for i in range(app.data.route_waypoints.size()):
 		var p:=Vector2(app.data.route_waypoints[i][0],app.data.route_waypoints[i][1])

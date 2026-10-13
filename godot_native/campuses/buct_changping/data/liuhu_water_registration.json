@@ -1,0 +1,147 @@
+{
+  "id": "liuhu_main_surface",
+  "label_zh": "柳湖主池水面",
+  "source_path": "godot_native/campuses/buct_changping/assets/approved-changping.png",
+  "crop_source_xywh": [
+    317,
+    750,
+    163,
+    108
+  ],
+  "method": "Conservative original-pixel water segmentation. Hand-reviewed ROI, source RGB confidence, connected component, enclosed water reflection restoration, explicit feature exclusions, one-source-pixel inward guard.",
+  "rgb_confidence": {
+    "g_minus_r_min": 23,
+    "b_minus_r_min": 14,
+    "g_minus_b_range": [
+      4,
+      26
+    ],
+    "g_min": 78
+  },
+  "seed_source_xy": [
+    400,
+    800
+  ],
+  "explicit_static_exclusions": [
+    {
+      "id": "islet_and_possible_structure",
+      "note": "Tree and structure-like dark silhouette at north tip; conservatively preserve adjoining cast shadow. Islet has a visible southwest land/tree neck, so it is an exclusion bay, not an invented closed water ring.",
+      "polygon_source_xy": [
+        [
+          359,
+          838
+        ],
+        [
+          362,
+          829
+        ],
+        [
+          366,
+          821
+        ],
+        [
+          372,
+          815
+        ],
+        [
+          380,
+          811
+        ],
+        [
+          381,
+          805
+        ],
+        [
+          384,
+          802
+        ],
+        [
+          389,
+          803
+        ],
+        [
+          393,
+          807
+        ],
+        [
+          398,
+          807
+        ],
+        [
+          402,
+          810
+        ],
+        [
+          406,
+          814
+        ],
+        [
+          408,
+          819
+        ],
+        [
+          407,
+          824
+        ],
+        [
+          404,
+          828
+        ],
+        [
+          396,
+          832
+        ],
+        [
+          390,
+          836
+        ],
+        [
+          382,
+          840
+        ],
+        [
+          377,
+          844
+        ]
+      ]
+    },
+    {
+      "id": "south_bridge_and_channel",
+      "note": "Whole south bridge, bank vegetation and channel excluded in phase one.",
+      "polygon_source_xy": [
+        [
+          317,
+          854
+        ],
+        [
+          480,
+          854
+        ],
+        [
+          480,
+          858
+        ],
+        [
+          317,
+          858
+        ]
+      ]
+    }
+  ],
+  "inward_guard_source_pixels": 1,
+  "frozen_animation_border_source_pixels": 2,
+  "animation_feather_source_pixels": 8,
+  "wave_amplitude_source_pixels_max": 0.3,
+  "wave_speed_radians_per_second": 0.65,
+  "water_is_walkable": false,
+  "can_move_geographic_location": false,
+  "source_identity_note": "Official map labels Liu Lake west of library. ROI registration is to approved art, not surveying.",
+  "source_reference_url": "https://bq.buct.edu.cn/233/listm.htm",
+  "water_texture": "res://campuses/buct_changping/assets/liuhu-water-source-rgba.png",
+  "distance_texture": "res://campuses/buct_changping/assets/liuhu-water-distance.png",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "schema": "buct_original_pixel_water_v1",
+  "distance_r8_raw_sha256": "9d537535ae4b9c0df994a530a1c5dd82bad57d1817f14b374267041a19d7ec5b",
+  "water_visible_rgba_sha256": "dc93aeb35de061abb332499471937ad950f04182194602729f9b3ebc1ed2dca0",
+  "water_checksum_note": "RGBA8 with RGB zeroed only where alpha is exactly zero; import codecs may canonicalize invisible RGB, which no allowed water sample can use."
+}
