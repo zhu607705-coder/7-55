@@ -1,0 +1,290 @@
+{
+  "status": "PASSED_SOURCE_NATIVE_GPU",
+  "base_pr": 135,
+  "base_head": "27f872b199b85ff24c6d48ba16928bce395e627c",
+  "base_tree": "a431a3a5cbdd20fe26ad9c10a93dec059ed958a5",
+  "source": {
+    "base_head": "27f872b199b85ff24c6d48ba16928bce395e627c",
+    "base_tree": "a431a3a5cbdd20fe26ad9c10a93dec059ed958a5",
+    "phase": "CPU source geometry only; no engine run",
+    "crop_source_xywh": [
+      395,
+      867,
+      24,
+      21
+    ],
+    "water_confidence_pixels_before_guard": 116,
+    "static_edge_guard_pixels": 44,
+    "opaque_water_pixels": 72,
+    "alpha_bbox_source_xyxy_inclusive": [
+      400,
+      872,
+      408,
+      882
+    ],
+    "max_inner_distance_source_pixels": 4.0,
+    "pixels_beyond_2px_fixed_border": 22,
+    "full_8px_feather_core_pixels": 0,
+    "nearest_paving_distance_source_pixels": 144.7281935215112,
+    "nearest_paving_pair": {
+      "water_pixel_center_source_xy": [
+        408.5,
+        874.5
+      ],
+      "paving_boundary_source_xy": [
+        552.5,
+        860.0
+      ]
+    },
+    "main_pool_pixels_unchanged": 7140,
+    "combined_water_owner_pixels": 7212,
+    "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+    "samples": [
+      {
+        "source_xy": [
+          404,
+          878
+        ],
+        "expected_hit": true,
+        "actual_hit": true,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          406,
+          875
+        ],
+        "expected_hit": true,
+        "actual_hit": true,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          400,
+          880
+        ],
+        "expected_hit": true,
+        "actual_hit": true,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          403,
+          862
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          406,
+          869
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          398,
+          878
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          414,
+          882
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          405,
+          887
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          405,
+          896
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          400,
+          800
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      },
+      {
+        "source_xy": [
+          393,
+          817
+        ],
+        "expected_hit": false,
+        "actual_hit": false,
+        "passed": true
+      }
+    ],
+    "checks": {
+      "source_sha_and_size_exact": true,
+      "binary_alpha": true,
+      "visible_rgb_exact": true,
+      "guard_one_source_pixel": true,
+      "72_pixels_one_connected_component": true,
+      "main_pool_alpha_disjoint": true,
+      "combined_owner_partition": true,
+      "static_reconstruction_exact": true,
+      "no_water_pixel_on_paving": true,
+      "probe_contract": true,
+      "full_strength_animation_core_empty": true
+    }
+  },
+  "main_pool_contracts_unchanged": [
+    {
+      "path": "campuses/buct_changping/scripts/liuhu_water_surface.gd",
+      "sha256": "2aef9583b1188fde05bfee1f8a94e1c8b26ada32ee102e819fb958ae243fda28"
+    },
+    {
+      "path": "campuses/buct_changping/shaders/liuhu_water.gdshader",
+      "sha256": "1abeba77a215b08175b20ebcdf72d91c475cd2f874ade730e3dc92538b8bc9b4"
+    },
+    {
+      "path": "campuses/buct_changping/shaders/liuhu_static_cutout.gdshader",
+      "sha256": "ae0a290afd0f05d2522b33f6269357cd224460d82f505020fa5ee88efe42a8e8"
+    },
+    {
+      "path": "campuses/buct_changping/assets/liuhu-water-source-rgba.png",
+      "sha256": "ba69b719d944bec2c913ff5172562371af44449c07b7b3e31219a026936f96b2"
+    },
+    {
+      "path": "campuses/buct_changping/assets/liuhu-water-distance.png",
+      "sha256": "6df67286a98a6879b2c369eeabbfc731b27e601fc59d9c9409f5e3233a01a07c"
+    },
+    {
+      "path": "campuses/buct_changping/data/liuhu_water_registration.json",
+      "sha256": "7e78d2d747742ee2a88df4aeb149f652df36422ef50eab8935ddc57749322cfe"
+    }
+  ],
+  "native_segment": {
+    "checks": 50,
+    "failures": []
+  },
+  "native_main": {
+    "checks": 59,
+    "failures": [],
+    "pixel_audit": {
+      "alpha_hit_errors": 0,
+      "rgb_errors": 0,
+      "walkable_water_pixels": 0,
+      "water_pixels": 7140
+    },
+    "input_fixture": "Real InputEventMouseButton and InputEventScreenTouch; static actor/camera fixture only, not continuous travel. Existing east-road test supplies travel regression separately."
+  },
+  "native_east_road_summary": {
+    "checks": 41,
+    "failures": [],
+    "guide_visits": [
+      "south_gate",
+      "main_building",
+      "library"
+    ],
+    "new_illegal_samples": 0
+  },
+  "new_asset_sha256": "774bfee54a66b4c00c9203b68abc5368c5af6fc83d4191330ea64d7439d547bf",
+  "new_asset_bytes": 1420,
+  "source_public_checks": {
+    "checks": 103,
+    "failures": []
+  },
+  "gpu": {
+    "checks": {
+      "static_byte_identical_to_original": true,
+      "hidden_changes_exactly_segment_alpha": true,
+      "main-motion-0_preserves_south_and_everything_outside_main": true,
+      "main-motion-3.7_preserves_south_and_everything_outside_main": true,
+      "main-removed_byte_identical_to_original": true,
+      "all-removed_byte_identical_to_original": true,
+      "main_animation_still_changes_over_time": true,
+      "segment_72_pixels_at_4x": true
+    },
+    "counts": {
+      "static": {
+        "changed_pixels": 0,
+        "outside_south": 0,
+        "outside_main": 0
+      },
+      "segment-hidden": {
+        "changed_pixels": 1152,
+        "outside_south": 0,
+        "outside_main": 1152
+      },
+      "main-motion-0": {
+        "changed_pixels": 16832,
+        "outside_south": 16832,
+        "outside_main": 0
+      },
+      "main-motion-3.7": {
+        "changed_pixels": 14528,
+        "outside_south": 14528,
+        "outside_main": 0
+      },
+      "main-removed": {
+        "changed_pixels": 0,
+        "outside_south": 0,
+        "outside_main": 0
+      },
+      "all-removed": {
+        "changed_pixels": 0,
+        "outside_south": 0,
+        "outside_main": 0
+      }
+    },
+    "south_screen_pixels": 1152,
+    "main_screen_pixels": 114240,
+    "fixture": "Fixed camera diagnostic only; no position-based travel claim"
+  },
+  "gpu_capture": {
+    "exit_code": 0,
+    "frames": 7,
+    "viewport": [
+      960,
+      720
+    ],
+    "source_scale": 4,
+    "failures": [],
+    "warning": "Driver cannot change V-Sync mode; no ERROR/RID/ObjectDB output"
+  },
+  "visual_review": {
+    "completed": true,
+    "fixed_camera_only": true,
+    "findings": [
+      "Original/static identical",
+      "Hidden segment alone leaves the small gray cutout",
+      "Bridge, banks, trees, islet and main lake retained",
+      "No apparent black fringe or bright seam"
+    ],
+    "no_manual_input_or_travel_claim": true
+  },
+  "limitations": [
+    "Conservative 72-pixel visible segment only; mixed shoreline stays static.",
+    "No separate official name assigned to this art segment.",
+    "Static by design; no forced animation core.",
+    "Hide keeps real cutout, while free restores source-ground ownership.",
+    "Bounded local checks only; full repository aggregate and remote CI belong to publication."
+  ]
+}

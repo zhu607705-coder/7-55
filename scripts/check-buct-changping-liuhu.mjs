@@ -72,5 +72,27 @@ check(shader.includes('COLOR = vec4(rgb, original.a)'),'Water alpha is time-inva
 check(shader.includes('min(min(a.a, b.a), min(c.a, d.a)) > 0.5'),'All four perturbed RGB samples remain inside water');
 check(parent.includes('elif not overview and is_walkable(target):'),'Original click-to-navigation guard preserved');
 check(profile.frozen_animation_border_source_pixels===2&&profile.wave_amplitude_source_pixels_max===0.30,'Two-pixel frozen edge and bounded tiny motion');
-console.log(JSON.stringify({checks,failures,base_head:validation.base_head,base_tree:validation.base_tree},null,2));
+// Bridge-south continuation: reuse the same source decoder and invariant checks.
+const unchangedMain=[{"path":"campuses/buct_changping/scripts/liuhu_water_surface.gd","sha256":"2aef9583b1188fde05bfee1f8a94e1c8b26ada32ee102e819fb958ae243fda28"},{"path":"campuses/buct_changping/shaders/liuhu_water.gdshader","sha256":"1abeba77a215b08175b20ebcdf72d91c475cd2f874ade730e3dc92538b8bc9b4"},{"path":"campuses/buct_changping/shaders/liuhu_static_cutout.gdshader","sha256":"ae0a290afd0f05d2522b33f6269357cd224460d82f505020fa5ee88efe42a8e8"},{"path":"campuses/buct_changping/assets/liuhu-water-source-rgba.png","sha256":"ba69b719d944bec2c913ff5172562371af44449c07b7b3e31219a026936f96b2"},{"path":"campuses/buct_changping/assets/liuhu-water-distance.png","sha256":"6df67286a98a6879b2c369eeabbfc731b27e601fc59d9c9409f5e3233a01a07c"},{"path":"campuses/buct_changping/data/liuhu_water_registration.json","sha256":"7e78d2d747742ee2a88df4aeb149f652df36422ef50eab8935ddc57749322cfe"}];
+for(const entry of unchangedMain)check(sha(read(entry.path))===entry.sha256,'Unchanged main-pool asset/implementation: '+entry.path);
+const southProfile=JSON.parse(read(campus+'data/south_bridge_water_registration.json'));
+const south=png(read(campus+'assets/south-bridge-water-source-rgba.png'));
+check(south.width===24&&south.height===21&&south.channels===4,'South segment is one small RGBA texture');
+check(JSON.stringify(southProfile.crop_source_xywh)==='[395,867,24,21]','South source position stays fixed');
+const southVisible=Buffer.from(south.pixels);
+let southCount=0,southRGBErrors=0,southAlphaErrors=0;
+for(let y=0;y<21;y++)for(let x=0;x<24;x++) {
+  const i=(y*24+x)*4,a=south.pixels[i+3];
+  if(a!==0&&a!==255)southAlphaErrors++;
+  if(a===255){southCount++;const j=((867+y)*source.width+395+x)*source.channels;for(let c=0;c<3;c++)if(south.pixels[i+c]!==source.pixels[j+c])southRGBErrors++;}
+  else southVisible.fill(0,i,i+3);
+}
+check(southCount===72&&southAlphaErrors===0&&southRGBErrors===0,'72 reviewed original-RGB binary alpha pixels');
+check(sha(southVisible)===southProfile.water_visible_rgba_sha256,'South imported-visible checksum locked');
+check(southProfile.animation_enabled===false&&southProfile.water_is_walkable===false,'Narrow segment stays static and non-walkable');
+const southScript=read(campus+'scripts/south_bridge_water_surface.gd').toString();
+check(!/StaticBody2D|CollisionShape2D|NavigationRegion2D|func _process/.test(southScript),'South segment adds no physics or forced motion');
+check(southScript.includes('ground.material = segment.cutout_material')&&southScript.includes('main.tree_exiting.connect'),'Atomic compound ownership and main removal monitoring');
+check(southScript.includes('static_ground.material == cutout_material'),'Cleanup respects the current material owner');
+console.log(JSON.stringify({checks,failures,main_pool_baseline:{head:validation.base_head,tree:validation.base_tree},continuation_base:{head:'27f872b199b85ff24c6d48ba16928bce395e627c',tree:'a431a3a5cbdd20fe26ad9c10a93dec059ed958a5'}},null,2));
 if(failures.length)process.exit(1);

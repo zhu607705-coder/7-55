@@ -8,6 +8,8 @@ const EAST_ROAD_EXTENSION = preload("res://campuses/buct_changping/scripts/east_
 var east_road_extension: Node2D
 const LIUHU_WATER = preload("res://campuses/buct_changping/scripts/liuhu_water_surface.gd")
 var lake_surface: Node2D
+const SOUTH_BRIDGE_WATER = preload("res://campuses/buct_changping/scripts/south_bridge_water_surface.gd")
+var south_bridge_surface: Node2D
 const VISITOR = preload("res://campuses/buct_changping/scripts/campus_visitor.gd")
 var SOURCE: Texture2D
 var WORLD: Vector2
@@ -77,6 +79,7 @@ func _ready() -> void:
 	add_child(world)
 	world.get_node("GroundRepairTiles").render_target_update_mode=SubViewport.UPDATE_ONCE
 	lake_surface = LIUHU_WATER.install(world)
+	south_bridge_surface = SOUTH_BRIDGE_WATER.install(world, lake_surface)
 	objects=world.get_node("IndependentRegisteredObjects")
 	for poly in data.walkable_polygons: walk_polys.append(pts(poly))
 	east_road_extension = EAST_ROAD_EXTENSION.install(self)
@@ -336,6 +339,7 @@ func show_landmark(id: String) -> void:
 
 func close_info() -> void:
 	if is_instance_valid(lake_surface):lake_surface.set_selected(false)
+	if is_instance_valid(south_bridge_surface):south_bridge_surface.set_selected(false)
 	if is_instance_valid(library_layer):library_layer.set_selected(false)
 	if is_instance_valid(first_teaching_layer):first_teaching_layer.set_selected(false)
 	info_id=""
@@ -569,6 +573,15 @@ func show_nearby_landmark() -> void:
 func _pointer_pressed(screen_position: Vector2) -> void:
 	if not initialized or leaving or not info_id.is_empty() or not map_area.has_point(screen_position):return
 	var target: Vector2=get_canvas_transform().affine_inverse()*screen_position
+	if is_instance_valid(south_bridge_surface):
+		if south_bridge_surface.hit_test_alpha(target):
+			south_bridge_surface.set_selected(true)
+			if is_instance_valid(lake_surface):lake_surface.set_selected(false)
+			status.text = "柳湖南桥南侧 · 原画露水段，暂不开放通行"
+			return
+		if south_bridge_surface.selected:
+			south_bridge_surface.set_selected(false)
+			status.text = "沿开放的铺装步道探索校园"
 	if is_instance_valid(lake_surface):
 		if lake_surface.hit_test_alpha(target):
 			lake_surface.set_selected(true)

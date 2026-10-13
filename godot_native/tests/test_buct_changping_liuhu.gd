@@ -24,7 +24,7 @@ func run() -> void:
 	check(lake.get_child_count() == 1 and lake.water_sprite is Sprite2D, "One sprite, not per-pixel nodes")
 	check(lake.find_children("*", "CollisionObject2D", true, false).is_empty(), "Water creates no extra physics or permission")
 	check(lake.water_sprite.texture.get_size() == Vector2(163, 108), "Small independently owned water Texture2D")
-	check(lake.static_ground.material == lake.cutout_material, "Static background has complementary water cutout")
+	check(lake.static_ground.material == campus.south_bridge_surface.cutout_material, "Static background has complementary water cutout")
 	var invalid := Node2D.new()
 	invalid.set_script(load("res://campuses/buct_changping/scripts/liuhu_water_surface.gd"))
 	var original_material: Material = lake.static_ground.material
@@ -67,7 +67,7 @@ func run() -> void:
 		lake.set_animation_enabled(true); await tick()
 		check(lake.animation_enabled and lake.position == Vector2(317,750), "Motion resumes with no displacement " + str(i))
 	lake.hide()
-	check(not lake.hit_test_alpha(Vector2(400,800)) and lake.static_ground.material == lake.cutout_material, "Hidden independent node leaves real cutout and cannot be selected")
+	check(not lake.hit_test_alpha(Vector2(400,800)) and lake.static_ground.material == campus.south_bridge_surface.cutout_material, "Hidden independent node leaves real cutout and cannot be selected")
 	lake.show()
 	# Real mouse/touch input with the original canvas conversion and route state.
 	# Freeze actor only for this explicit input fixture; it is not travel evidence.

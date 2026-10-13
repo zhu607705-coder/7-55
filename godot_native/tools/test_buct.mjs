@@ -74,7 +74,7 @@ for(const {kind,populated} of cases) {
  console.log(`PASS BUCT save guard ${kind} (${populated?'sentinel saves':'empty profile'}): fixture bytes unchanged`);
 }
 if(!process.argv.includes('--guard-only')) {
- for(const script of ['test_buct_source_layers.gd','test_buct_student_maps.gd','test_buct_student_pin_layout.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd','test_buct_changping_east_road.gd','test_buct_changping_liuhu.gd']) {
+ for(const script of ['test_buct_source_layers.gd','test_buct_student_maps.gd','test_buct_student_pin_layout.gd','test_buct_playable.gd','test_buct_haidian.gd','test_buct_entry.gd','test_buct_changping_east_road.gd','test_buct_changping_liuhu.gd','test_buct_changping_south_bridge_water.gd']) {
   const fixture=sandbox();const result=invoke(fixture,script);
   process.stdout.write(result.text);
   assert.equal(result.status,0,`${script} failed; sandbox retained at ${fixture.root}`);
