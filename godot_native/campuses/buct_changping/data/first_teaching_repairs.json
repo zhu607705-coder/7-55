@@ -1,0 +1,60 @@
+{
+  "patches": [
+    {
+      "id": "east_arc",
+      "raw_asset": "east-arc-ground-v1.png",
+      "raw_size": [
+        1205,
+        1305
+      ],
+      "raw_sha256": "100434eee2d03401fd0b15a958a12e9e31ede86550d3d3b646b04c163bd8c6e2",
+      "source_context_rect": [
+        604,
+        1128,
+        48,
+        52
+      ],
+      "image_to_world": {
+        "scale": 0.03983402489626556,
+        "origin": [
+          604.0,
+          1128.0082987551866
+        ]
+      },
+      "permission_mask_asset": "east_arc_permission.png",
+      "permission_mask_source": "generation/east_arc-permission-mask.png",
+      "permission_white_px": 144,
+      "blend": "none; no outside-permission sampling contributes",
+      "status": "CPU candidate before native proof"
+    },
+    {
+      "id": "south_door",
+      "raw_asset": "south-door-ground-v1.png",
+      "raw_size": [
+        1757,
+        895
+      ],
+      "raw_sha256": "e5d41688588aa5e6786307174ded59b234874333cc117ee87e1c86374aa7475c",
+      "source_context_rect": [
+        494,
+        1184,
+        53,
+        27
+      ],
+      "image_to_world": {
+        "scale": 0.03016505406943654,
+        "origin": [
+          494.0,
+          1184.001138303927
+        ]
+      },
+      "permission_mask_asset": "south_door_permission.png",
+      "permission_mask_source": "generation/south_door-permission-mask.png",
+      "permission_white_px": 130,
+      "blend": "none; no outside-permission sampling contributes",
+      "status": "CPU candidate before native proof"
+    }
+  ],
+  "outside_permission_changed_subpixels": 0,
+  "candidate_state": "CPU reviewed; native not run"
+}

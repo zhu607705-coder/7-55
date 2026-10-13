@@ -1,0 +1,27 @@
+{
+  "added_grid_cells": 485,
+  "added_reachable": 485,
+  "bad_samples": [
+    {
+      "a": [
+        751.0,
+        865.0
+      ],
+      "a_old": true,
+      "b": [
+        751.0,
+        867.0
+      ],
+      "b_old": true,
+      "sample": [
+        751.0,
+        865.75
+      ]
+    }
+  ],
+  "edge_samples": 35190,
+  "inherited_old_radius_crossing_samples_preserved": 85,
+  "local_grid_edges": 2070,
+  "new_illegal_samples": 1,
+  "original_grid_cells": 2218
+}
