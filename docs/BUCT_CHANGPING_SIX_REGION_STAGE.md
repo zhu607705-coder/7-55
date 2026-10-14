@@ -11,3 +11,11 @@ One concentrated current regression passed 347 native checks: original north/eas
 Recovery requires applying the cumulative overlay to exact PR138 source commit72fcafd285dd388eed2735be71b60fa23f428548. Target branch is godot-version, whose read-only head is f08bdc4ebbee5a5c112e35f93e1cee13ee5636f2. PR138 remains unmerged. Source publication therefore includes its existing code, not all-new modifications.
 
 Publication uses the unique work/buct-campus-hd-resume-20261014 branch, a new Draft PR to godot-version, and no merge. Prior unknown write is not replayed or overwritten. Validation JSON publication flags describe their local acceptance snapshot before upload. Current remote publication status belongs to the PR, once created.
+
+## Clean-checkout publication repair, 2026-10-14
+
+PR #140's first full native CI run (38557513567) failed because the source overlay omitted the 15 new PNG `.import` configurations. Fresh Godot defaults lacked the required mipmaps and could alter transparent RGB, so strict asset registration correctly refused the HD layers. The fix commits lossless, mipmaps-enabled, no-alpha-border-rewrite import configuration as source; `.godot` caches remain excluded. Original PNG bytes, RGBA hashes and registrations are unchanged.
+
+The same run exposed a real cached-campus detach/reentry issue: the northern road retired its authored permission on exit without restoring it on reentry. Its lifecycle now restores only the same validated polygon/guard under its original owner, while explicit uninstall remains retired. Existing old water assertions now retain 81 original paving polygons plus the already accepted east/north additions (83 total); the preparation test checks all 59 exact repaired boundary segments instead of the pre-repair count60.
+
+A fresh empty-cache campus import and targeted reruns of the ten failed related scripts passed. No old test was disabled, no new GPU matrix was added, and the earlier local 347-check stage evidence remains a historical record. Complete-project CI is rerun on the correction commit; use the current PR check status for its result.

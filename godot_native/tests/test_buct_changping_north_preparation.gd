@@ -89,7 +89,9 @@ func run() -> void:
 	check(is_instance_valid(road),"Additive road installs")
 	campus.walk_cells.clear();campus._build_grid()
 	check(campus.walk_polys.size()==original_poly_count+1,"One bounded pavement polygon added")
-	check(campus.east_road_extension.exposed_edges.size()==60,"Joined union contains exact regenerated boundary")
+	var joined_edges: Array[PackedVector2Array] = []
+	for edge in road.profile.exposed_joined_union_boundary_segments:joined_edges.append(campus.pts(edge))
+	check(campus.east_road_extension.exposed_edges.size()==59 and campus.east_road_extension.exposed_edges==joined_edges,"Joined union retains exact accepted 59-edge profile boundary")
 	check(campus.is_walkable(Vector2(731,670)),"Old y670 north cap now opens with full radius3 clearance")
 	check(campus.is_walkable(Vector2(666,548)),"Conservative gray-road southwest stop is legal")
 	check(not campus.is_walkable(Vector2(699,536)),"Uncertain planted frontage remains closed")

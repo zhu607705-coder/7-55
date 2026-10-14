@@ -1,6 +1,7 @@
 extends SceneTree
 ## Minimal batch startup, physical authority and visual unload smoke. No new matrix.
 var fails:Array[String]=[]
+var checks:=0
 func _initialize()->void:run.call_deferred()
 func settle()->void:await process_frame;await physics_frame;await process_frame
 func snapshot(map:Node2D)->Dictionary:
@@ -21,6 +22,7 @@ func stable_path(map:Node,node:Node)->String:
 func sha(bytes:PackedByteArray)->String:
  var hash:=HashingContext.new();hash.start(HashingContext.HASH_SHA256);hash.update(bytes);return hash.finish().hex_encode()
 func check(ok:bool,label:String)->void:
+ checks+=1
  if not ok:fails.append(label);push_error(label)
 func run()->void:
  var scene:PackedScene=load("res://campuses/buct_changping/scenes/playable.tscn")
@@ -35,7 +37,7 @@ func run()->void:
   check(diagnostics.active and diagnostics.new_gpu_texture_bytes==6204069 and diagnostics.independent_bodies==1 and diagnostics.independent_body_gpu_bytes==9967612,"Default sixth layer is active with charged budget and one separately charged original registered body")
   check(map.set_north_west_upper_hd_resident(false) and snapshot(map)==original,"Unloading new visual preserves original physical authority")
   check(map.set_north_west_upper_hd_resident(true) and snapshot(map)==original,"Reentry restores new visual without changing original authority")
- var result:={"status":"passed" if fails.is_empty() else "failed","failures":fails,"authority":actual,"diagnostics":diagnostics,"scope":"Seven minimal startup/physics/body/residency checks; no GPU, full matrix or new playability claim"}
+ var result:={"status":"passed" if fails.is_empty() else "failed","checks":checks,"failures":fails,"authority":actual,"diagnostics":diagnostics,"scope":"Minimal startup/physics/body/residency smoke; no GPU, full matrix or new playability claim"}
  var out:=OS.get_environment("BUCT_NORTH_WEST_QA_DIR")
  if out.is_absolute_path():
   var file:=FileAccess.open(out.path_join("dorm-nw-02-native-smoke-result.json"),FileAccess.WRITE)

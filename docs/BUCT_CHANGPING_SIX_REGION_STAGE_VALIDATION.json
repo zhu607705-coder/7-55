@@ -181,5 +181,20 @@
     "current_percent": 19.748538011695906,
     "source_canvas_or_region_footprints_expanded": false,
     "building_texture_area_counted_as_ground": false
+  },
+  "clean_checkout_publication_repair": {
+    "initial_native_ci_run_id": 38557513567,
+    "initial_conclusion": "failure",
+    "cause": "Fifteen required PNG source import configurations omitted; default import lacks mipmaps and may alter transparent RGB",
+    "explicit_lossless_mipmaps_true_fix_alpha_border_false_configs": 15,
+    "png_bytes_rgba_hashes_registrations_unchanged": true,
+    "north_road_cached_reentry_same_geometry_restored": true,
+    "explicit_uninstall_stays_retired": true,
+    "old_water_paving_count_updated": "81+1east+1north=83",
+    "boundary_test_updated_to_59_exact_registered_segments": true,
+    "targeted_failed_related_scripts_retested": 10,
+    "native_assertions_in_those_existing_scripts": 1044,
+    "targeted_status": "passed",
+    "full_project_ci_rerun": "pending"
   }
 }

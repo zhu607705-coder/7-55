@@ -10,6 +10,7 @@ var prior_rect := Rect2()
 var added_polygon := PackedVector2Array()
 var prior_boundary_owner: Variant
 var _committed := false
+var _resume_on_enter := false
 
 static func install(map: Node2D, profile_path := PROFILE) -> Node2D:
 	if not FileAccess.file_exists(profile_path): return null
@@ -92,5 +93,22 @@ func _restore() -> void:
 		extension.guard_rect = prior_rect
 	if is_instance_valid(campus): campus.walk_polys.erase(added_polygon)
 
+func _enter_tree() -> void:
+	# A cached whole-campus detach retires the guard, but reentry must restore
+	# the same authored road rights. An explicit uninstall must stay retired.
+	if not _resume_on_enter: return
+	_resume_on_enter = false
+	if _committed or not is_instance_valid(campus) or not is_instance_valid(extension): return
+	var current_owner: Variant = extension.get_meta("joined_boundary_owner") if extension.has_meta("joined_boundary_owner") else null
+	if current_owner != prior_boundary_owner: return
+	var geometry := _validated_geometry(profile)
+	if geometry.is_empty() or geometry.polygon != added_polygon or campus.walk_polys.has(added_polygon): return
+	campus.walk_polys.append(added_polygon)
+	extension.exposed_edges = geometry.edges
+	extension.guard_rect = geometry.rect
+	extension.set_meta("joined_boundary_owner",self)
+	_committed = true
+
 func _exit_tree() -> void:
+	_resume_on_enter = _committed
 	_restore()
