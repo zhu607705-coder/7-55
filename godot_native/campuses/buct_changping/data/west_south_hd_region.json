@@ -1,0 +1,216 @@
+{
+  "schema": "buct_registered_hd_region_v3",
+  "id": "west_south",
+  "quality_approved": true,
+  "approval_scope": "Parent accepted source registration/body/court reuse and mask-only courtyard correction. Full-group native/GPU/manual gates tracked separately.",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "roi_xywh": [
+    398,
+    615,
+    256,
+    240
+  ],
+  "core_xywh": [
+    426,
+    627,
+    216,
+    216
+  ],
+  "runtime_size": [
+    1280,
+    1200
+  ],
+  "texels_per_source_pixel": 5,
+  "atomic_group_id": "west_adjacent_pair",
+  "atomic_region_ids": [
+    "west_north",
+    "west_south"
+  ],
+  "ground_asset": "res://campuses/buct_changping/assets/west_south_hd_ground.png",
+  "ground_rgba_sha256": "67203d1034115b39d737fbf714a750a944a3b678177584df05f20335c0326a27",
+  "ground_png_sha256": "41cb4d275ddf3fd12895d1428a2408dc0eb90da759097e15f7249faed31435d2",
+  "source_body_ownership": {
+    "asset": "res://campuses/buct_changping/data/west_south_body_ownership.r8.bin",
+    "sha256": "947c314096b0f288ebc3ddb9f9eddc5658fafd687b1f2c008dde4fd4cdd82522",
+    "size": [
+      256,
+      240
+    ]
+  },
+  "shared_edges": [
+    {
+      "edge": "east",
+      "neighbor_node": "WenliHighDetailRegion",
+      "rect": [
+        630,
+        615,
+        24,
+        240
+      ],
+      "sample_size": [
+        122,
+        1200
+      ],
+      "unfeathered_strip_asset": "res://campuses/buct_changping/assets/west_south_east_hd_strip.png",
+      "rgba_sha256": "728536e26183bc4724e130999a659882a350654502772193604caa7cd7f34a68"
+    },
+    {
+      "edge": "north",
+      "neighbor_node": "RegisteredHDRegion_west_north",
+      "owner_node": "RegisteredHDRegion_west_north",
+      "rect": [
+        398,
+        615,
+        256,
+        24
+      ]
+    }
+  ],
+  "independent_buildings": [],
+  "retire_world_visuals": [
+    "StaticSourceGroundShadows/library_GroundShadow_1"
+  ],
+  "shadow": null,
+  "foreground": [
+    {
+      "id": "west_library_approach_crown_01",
+      "rect": [
+        550,
+        814,
+        13,
+        13
+      ],
+      "baseline_y": 825,
+      "alpha_asset": "res://campuses/buct_changping/data/west_library_approach_crown_01.r8.bin",
+      "alpha_sha256": "c1cdb95b5b871a543ba9aef9acfe916454c5fb28d846ad4b6da32cc5834ce7c8",
+      "nonzero_alpha_texels": 2026,
+      "source_canopy_envelope": [
+        [
+          555,
+          815
+        ],
+        [
+          559,
+          816
+        ],
+        [
+          562,
+          820
+        ],
+        [
+          561,
+          824
+        ],
+        [
+          556,
+          826
+        ],
+        [
+          551,
+          823
+        ],
+        [
+          551,
+          819
+        ]
+      ],
+      "alpha_policy": "Same-HD visible leaf chroma within bounded existing source canopy. No source RGB foreground, new trunk, collider, route or traversal permission.",
+      "depth_basis": "Visible lower canopy edge; proof uses only pre-existing library approach feet."
+    },
+    {
+      "id": "west_library_approach_crown_02",
+      "rect": [
+        551,
+        826,
+        14,
+        14
+      ],
+      "baseline_y": 838,
+      "alpha_asset": "res://campuses/buct_changping/data/west_library_approach_crown_02.r8.bin",
+      "alpha_sha256": "7af7a131142295f1b094b699ebc578a04253fd51c4f7e596e7347c5cad3e9dfa",
+      "nonzero_alpha_texels": 2374,
+      "source_canopy_envelope": [
+        [
+          556,
+          827
+        ],
+        [
+          560,
+          828
+        ],
+        [
+          563,
+          833
+        ],
+        [
+          562,
+          837
+        ],
+        [
+          558,
+          839
+        ],
+        [
+          553,
+          836
+        ],
+        [
+          551,
+          831
+        ]
+      ],
+      "alpha_policy": "Same-HD visible leaf chroma within bounded existing source canopy. No source RGB foreground, new trunk, collider, route or traversal permission.",
+      "depth_basis": "Visible lower canopy edge; proof uses only pre-existing library approach feet."
+    },
+    {
+      "id": "west_library_approach_crown_03",
+      "rect": [
+        562,
+        826,
+        8,
+        9
+      ],
+      "baseline_y": 834,
+      "alpha_asset": "res://campuses/buct_changping/data/west_library_approach_crown_03.r8.bin",
+      "alpha_sha256": "e522ff2c3dab1e5a39a23d38f86b51b2648227753fb4afdac043f42c1ffac9a8",
+      "nonzero_alpha_texels": 711,
+      "source_canopy_envelope": [
+        [
+          565,
+          827
+        ],
+        [
+          568,
+          828
+        ],
+        [
+          569,
+          832
+        ],
+        [
+          567,
+          834
+        ],
+        [
+          563,
+          833
+        ],
+        [
+          563,
+          829
+        ]
+      ],
+      "alpha_policy": "Same-HD visible leaf chroma within bounded existing source canopy. No source RGB foreground, new trunk, collider, route or traversal permission.",
+      "depth_basis": "Visible lower canopy edge; proof uses only pre-existing library approach feet."
+    }
+  ],
+  "residency_policy": "Atomic pair visibility/loading interface; no new physics; route authority remains loaded independently. No automatic streaming claimed.",
+  "water_complement": {
+    "asset": "res://campuses/buct_changping/data/west_south_water_complement.r8.bin",
+    "sha256": "e05ec06c96bbcde0ee9bb0f3b5fdfa26651824a29afb6ca900c859db8774847f",
+    "size": [
+      256,
+      240
+    ]
+  }
+}

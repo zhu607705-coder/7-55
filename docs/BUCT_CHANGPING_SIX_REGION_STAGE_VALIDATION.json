@@ -1,0 +1,185 @@
+{
+  "status": "passed",
+  "scope": "One concentrated campus-related regression after default sixth region and new whole RGBA building; previous first V4 actual ownership proof reused, no repeated GPU matrix",
+  "native_checks": 347,
+  "native": {
+    "test_buct_changping_north_region": {
+      "checks": 86,
+      "failures": 0,
+      "log_sha256": "3f80f606612126d69b6a8858fcedddfe4845a2d080471b14b6c1bb1b1d5204a1"
+    },
+    "test_buct_changping_east_road": {
+      "checks": 41,
+      "failures": 0,
+      "log_sha256": "30ac632f1cc3ce5a0dd98996bf4db971ce3bdcc65803c36d872f39c50a7c42bc"
+    },
+    "test_buct_changping_library_connectivity": {
+      "checks": 64,
+      "failures": 0,
+      "log_sha256": "5691defac5a4925ab122d7f634faf0b07dfa575d7f9e9db3328a8b353337e2d0"
+    },
+    "test_buct_changping_west_regions": {
+      "checks": 54,
+      "failures": 0,
+      "log_sha256": "b5b96ddd80ac5f03be1f0f22f98025cf7fbf6cce4ac52b85a7ceb39237501f98"
+    },
+    "test_additional_v4": {
+      "checks": 91,
+      "failures": 0,
+      "log_sha256": "c14206a39a4572959c99e9b87742aa38d2352a5f35da1844aaba724c8293e6d4"
+    },
+    "opt_in_visible_residency": {
+      "checks": 4,
+      "failures": 0,
+      "scope": "Opt-in display camera release/reentry smoke only; no GPU/driver memory or gameplay claim; no seventh region fabricated",
+      "source_default_flag": false,
+      "result": {
+        "checks": 4,
+        "failures": [],
+        "original_authority": {
+          "digest": "2bec47b75bdb509a169581f9f8088fa7ac28519ff67b098771a0863e501932f2",
+          "paving_polygons": 83,
+          "physical_records": 150
+        },
+        "production_flag_default": false,
+        "records": [
+          {
+            "automatic_display_residency": true,
+            "hardware_vram_claim": false,
+            "independent_body_bytes": "unchanged separate accounting; released/restored with their own registered owner",
+            "legacy_wenli": "unmanaged resident; never unloaded here",
+            "max_region_layer_bytes": 57597600,
+            "max_regions": 6,
+            "physics_roads_save_changed": false,
+            "planned_groups": [],
+            "prefetch_source_pixels": 48.0,
+            "resident_groups": [],
+            "retention_source_pixels": 96.0,
+            "visible_groups_budget_fallback": []
+          },
+          {
+            "automatic_display_residency": true,
+            "hardware_vram_claim": false,
+            "independent_body_bytes": "unchanged separate accounting; released/restored with their own registered owner",
+            "legacy_wenli": "unmanaged resident; never unloaded here",
+            "max_region_layer_bytes": 57597600,
+            "max_regions": 6,
+            "physics_roads_save_changed": false,
+            "planned_groups": [
+              "west_pair",
+              "north_large",
+              "north_west_upper"
+            ],
+            "prefetch_source_pixels": 48.0,
+            "resident_groups": [
+              "west_pair",
+              "north_large",
+              "north_west_upper"
+            ],
+            "retention_source_pixels": 96.0,
+            "visible_groups_budget_fallback": []
+          },
+          {
+            "automatic_display_residency": true,
+            "hardware_vram_claim": false,
+            "independent_body_bytes": "unchanged separate accounting; released/restored with their own registered owner",
+            "legacy_wenli": "unmanaged resident; never unloaded here",
+            "max_region_layer_bytes": 57597600,
+            "max_regions": 6,
+            "physics_roads_save_changed": false,
+            "planned_groups": [
+              "west_pair",
+              "north_adjacent",
+              "north_large",
+              "north_west_upper"
+            ],
+            "prefetch_source_pixels": 48.0,
+            "resident_groups": [
+              "north_adjacent",
+              "west_pair",
+              "north_large",
+              "north_west_upper"
+            ],
+            "retention_source_pixels": 96.0,
+            "visible_groups_budget_fallback": []
+          }
+        ],
+        "scope": "Opt-in display camera release/reentry smoke only; no GPU/driver memory or gameplay claim; no seventh region fabricated",
+        "status": "passed"
+      }
+    },
+    "dorm_nw_02_minimal_native": {
+      "checks": 7,
+      "failures": 0,
+      "result": {
+        "authority": {
+          "blocker_sha": "a786d613f45bf048c82ebe16203f33c37d038bd7f6c0e4f0b2464b319102ca1f",
+          "physical_records": 150,
+          "physics_sha": "790f010de7614d6bb41ca817f379cb73d9a7585f5de31f2d5cacc2129e69527c",
+          "source_data_sha": "084806b58e5b29f7d16d08826f52cecb97fcae8e14a338ed4fbc327412096795",
+          "visitor_position": "(515.0, 1510.0)",
+          "visitor_scale": "(1.0, 1.0)",
+          "walk_sha": "9d028c413e664bbd6ca07e5f37919e2d7301dd63925ff45759e50d15fdd2576f"
+        },
+        "diagnostics": {
+          "active": true,
+          "automatic_camera_streaming": false,
+          "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+          "east_neighbor_active": true,
+          "independent_bodies": 1,
+          "independent_body_gpu_bytes": 9967612,
+          "native_original_detail_density": 4.88566627859472,
+          "new_collision_bodies": 0,
+          "new_foreground_owners": 0,
+          "new_gpu_texture_bytes": 6204069,
+          "owned_east_strip_gpu_bytes": 524284,
+          "region_ground_foreground_seam_ownership_gpu_bytes": 6204069,
+          "region_residency_limit": 6,
+          "runtime_grid_texels_per_source_pixel": 4,
+          "shared_hd_owner_active": true,
+          "stable_retained_new_cpu_rgba_bytes": 0,
+          "total_new_gpu_texture_bytes": 16171681,
+          "unverified_original_body_ids": [
+            "dorm_nw_01",
+            "dorm_nw_03",
+            "dorm_nw_04",
+            "dorm_north_low_annex",
+            "dorm_w_01",
+            "dorm_w_02",
+            "hill_south_block"
+          ],
+          "validation_rgba_buffer_bytes": 4194304,
+          "world_shadow_owner_count": 0,
+          "world_shadow_polygon_count": 0
+        },
+        "failures": [],
+        "scope": "Seven minimal startup/physics/body/residency checks; no GPU, full matrix or new playability claim",
+        "status": "passed"
+      }
+    }
+  },
+  "latest_library_route_physics_ticks": 2079,
+  "static": {
+    "registry_positive_assertions": 217,
+    "registry_existing_required_rejections": 10,
+    "accepted_regions": 6,
+    "west_actual_profiles_checked": 2,
+    "west_checks": 4695997,
+    "exit": 0
+  },
+  "earlier_harness_issue": "Optional policy initial native Window was headless dummy64x64; corrected test-only explicit1280x720 SubViewport and reran only its four transitions; production camera policy not changed for that issue",
+  "first_29_actual_gpu_proof_reused": true,
+  "manual_new_northern_gameplay": false,
+  "hardware_vram_measured": false,
+  "production_visible_policy_enabled": false,
+  "coverage_transition": {
+    "earlier_six_ground_only_pixels": 307728,
+    "earlier_percent": 19.560640732265448,
+    "accepted_dorm_nw_02_original_fallback_pixels_retired": 2956,
+    "current_hd_terrain_core_source_pixels": 310684,
+    "canvas_source_pixels": 1573200,
+    "current_percent": 19.748538011695906,
+    "source_canvas_or_region_footprints_expanded": false,
+    "building_texture_area_counted_as_ground": false
+  }
+}
