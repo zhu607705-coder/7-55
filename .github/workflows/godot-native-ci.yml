@@ -72,6 +72,17 @@ jobs:
           timeout 90 bash scripts/test-buct-changping-north-region.sh walk
           timeout 180 xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" bash scripts/test-buct-changping-north-region.sh proof
           timeout 120 python3 godot_native/tools/north_package_validation.py --output-root "$BUCT_NORTH_QA_DIR"
+      - name: Verify complete exported campus PCK
+        timeout-minutes: 5
+        run: |
+          export BUCT_EXPORTED_QA_DIR="$GITHUB_WORKSPACE/.buct-exported-ci"
+          mkdir -p "$BUCT_EXPORTED_QA_DIR"/{data,config,cache,state}
+          export XDG_DATA_HOME="$BUCT_EXPORTED_QA_DIR/data" XDG_CONFIG_HOME="$BUCT_EXPORTED_QA_DIR/config"
+          export XDG_CACHE_HOME="$BUCT_EXPORTED_QA_DIR/cache" XDG_STATE_HOME="$BUCT_EXPORTED_QA_DIR/state"
+          if test -f godot_native/campuses/buct/scripts/ambient_squirrel.gd; then export BUCT_REQUIRE_SQUIRREL=1; fi
+          godot --headless --audio-driver Dummy --path godot_native --export-pack 'Linux x86_64' "$BUCT_EXPORTED_QA_DIR/campuses.pck"
+          timeout 180 godot --headless --audio-driver Dummy --main-pack "$BUCT_EXPORTED_QA_DIR/campuses.pck" --script "$GITHUB_WORKSPACE/godot_native/tests/verify_exported_campuses.gd"
+          BUCT_EXPECT_SOURCELESS=1 timeout 60 godot --headless --audio-driver Dummy --main-pack "$BUCT_EXPORTED_QA_DIR/campuses.pck" --script "$GITHUB_WORKSPACE/godot_native/tests/test_buct_changping_source_texture.gd"
       - name: Compare native replay traces with original TypeScript models
         run: |
           node godot_native/tests/verify_source_model_parity.mjs
@@ -108,4 +119,10 @@ jobs:
             .buct-north-ci/*.json
             .buct-north-ci/north-package-*/summary.json
             .buct-north-ci/north-package-*/*/validation.log
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exported-campus-contract
+          path: .buct-exported-ci/result.json
           if-no-files-found: ignore

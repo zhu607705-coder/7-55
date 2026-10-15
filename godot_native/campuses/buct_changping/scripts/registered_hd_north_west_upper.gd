@@ -3,6 +3,7 @@ extends "res://campuses/buct_changping/scripts/registered_hd_region.gd"
 const REGION_SCRIPT := "res://campuses/buct_changping/scripts/registered_hd_north_west_upper.gd"
 const REGION_SHADER := preload("res://campuses/buct_changping/shaders/registered_hd_north_west_upper.gdshader")
 const SOURCE_ASSET := "res://campuses/buct_changping/assets/approved-changping.png"
+const SOURCE_VERIFIER := preload("res://campuses/buct_changping/scripts/verified_source_texture.gd")
 const REGION_ID := "north_west_upper"
 const ROI := [118,167,256,256]
 const CORE := [130,179,232,232]
@@ -31,8 +32,7 @@ static func install_region(map: Node2D, profile_path: String, options: Dictionar
 	var decoded: Variant=_read_json(profile_path)
 	if not decoded is Dictionary or not _valid_profile(decoded):return null
 	var source: Variant=map.get("SOURCE")
-	if not source is Texture2D or source.resource_path!=SOURCE_ASSET:return null
-	if FileAccess.get_sha256(SOURCE_ASSET)!=SOURCE_SHA:return null
+	if not SOURCE_VERIFIER.matches(source):return null
 	var old: Node=map.world.get_node_or_null("RegisteredHDRegion_"+REGION_ID)
 	if old!=null:
 		if not old is Node2D or old.get_script()==null or old.get_script().resource_path!=REGION_SCRIPT:return null

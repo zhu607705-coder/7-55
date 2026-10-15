@@ -4,6 +4,7 @@ extends "res://campuses/buct_changping/scripts/registered_hd_region.gd"
 const V4_SCRIPT := "res://campuses/buct_changping/scripts/registered_hd_north_large.gd"
 const V4_SHADER := preload("res://campuses/buct_changping/shaders/registered_hd_north_large.gdshader")
 const SOURCE_ASSET := "res://campuses/buct_changping/assets/approved-changping.png"
+const SOURCE_VERIFIER := preload("res://campuses/buct_changping/scripts/verified_source_texture.gd")
 const V4_ID := "north_large"
 const V4_ROI := [350,167,384,256]
 const V4_CORE := [362,179,360,232]
@@ -27,8 +28,7 @@ static func install_region(map: Node2D, profile_path: String, options: Dictionar
 	if not decoded is Dictionary or not _valid_v4_profile(decoded):return null
 	# The accepted source must be the actual immutable original, not just a claim.
 	var source: Variant=map.get("SOURCE")
-	if not source is Texture2D or source.resource_path!=SOURCE_ASSET:return null
-	if FileAccess.get_sha256(SOURCE_ASSET)!=SOURCE_SHA:return null
+	if not SOURCE_VERIFIER.matches(source):return null
 	var old: Node=map.world.get_node_or_null("RegisteredHDRegion_"+V4_ID)
 	if old!=null:
 		if not old is Node2D or old.get_script()==null or old.get_script().resource_path!=V4_SCRIPT:return null
