@@ -1,6 +1,7 @@
 extends SubViewportContainer
 ## Root-viewport input is already container-local. Invert the rendered viewport
 ## mapping once, then the world's actual canvas/local transform once.
+const Gesture=preload("res://scripts/ui/inventory_gesture.gd")
 var world_surface: Control
 func source_position(local: Vector2) -> Vector2:
 	if not is_instance_valid(world_surface) or not Rect2(Vector2.ZERO,size).has_point(local): return Vector2.INF
@@ -12,7 +13,15 @@ func source_position(local: Vector2) -> Vector2:
 	return world_surface.get_global_transform_with_canvas().affine_inverse()*pixel
 func _can_drop_data(at_position: Vector2,data: Variant) -> bool:
 	if not is_instance_valid(world_surface) or not data is Dictionary or data.get("kind") != "inventory_item": return false
-	var point:=source_position(at_position)
+	var point:=release_source_position(source_position(at_position),data)
 	return point.is_finite() and world_surface._can_drop_data(point,data)
 func _drop_data(at_position: Vector2,data: Variant) -> void:
-	if _can_drop_data(at_position,data): world_surface._drop_data(source_position(at_position),data)
+	if _can_drop_data(at_position,data):
+		world_surface._drop_data(release_source_position(source_position(at_position),data),data)
+
+func release_source_position(fallback:Vector2,data:Variant)->Vector2:
+	var release:Variant=Gesture.release_position(data,get_viewport())
+	if release==null:return fallback
+	# Convert the source inventory's root event through the real container and
+	# canvas once. An out-of-surface release stays invalid, never snaps to a prop.
+	return source_position(get_global_transform_with_canvas().affine_inverse()*Vector2(release))

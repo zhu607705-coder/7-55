@@ -86,6 +86,8 @@ func _find_scroll() -> ScrollContainer:
 	return null
 
 func _input(event: InputEvent) -> void:
+	if _drag_was_started and event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed:
+		Gesture.capture_release(get_viewport(),event.position,item_id)
 	if event is InputEventKey and event.pressed and event.keycode==KEY_ESCAPE and (_touch_index>=0 or _drag_was_started):
 		cancel_gesture(); get_viewport().set_input_as_handled(); return
 	if _touch_index<0: return
