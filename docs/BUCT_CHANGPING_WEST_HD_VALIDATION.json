@@ -1,0 +1,383 @@
+{
+  "status": "accepted_local_scope",
+  "scope": "Two new west Changping logical cores; original three teaching feet, installed library RGBA and all navigation unchanged. Existing east pair preserved.",
+  "remaining_gates": [],
+  "default_runtime_flag": "enable_west_hd_regions",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "tests": {
+    "headless": {
+      "checks": 54,
+      "failures": [],
+      "records": [
+        {
+          "allocation_nw": {
+            "active": true,
+            "automatic_camera_streaming": false,
+            "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+            "independent_bodies": 1,
+            "independent_body_gpu_bytes": 9984162,
+            "new_collision_bodies": 0,
+            "new_foreground_owners": 0,
+            "new_gpu_texture_bytes": 9053411,
+            "region_ground_foreground_seam_ownership_gpu_bytes": 9053411,
+            "region_residency_limit": 6,
+            "shared_hd_owner_active": true,
+            "stable_retained_new_cpu_rgba_bytes": 0,
+            "total_new_gpu_texture_bytes": 19037573,
+            "validation_rgba_buffer_bytes": 6144000,
+            "world_shadow_owner_count": 2,
+            "world_shadow_polygon_count": 2
+          },
+          "allocation_sw": {
+            "active": true,
+            "automatic_camera_streaming": false,
+            "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+            "independent_bodies": 0,
+            "independent_body_gpu_bytes": 0,
+            "new_collision_bodies": 0,
+            "new_foreground_owners": 3,
+            "new_gpu_texture_bytes": 9149791,
+            "region_ground_foreground_seam_ownership_gpu_bytes": 9149791,
+            "region_residency_limit": 6,
+            "shared_hd_owner_active": true,
+            "stable_retained_new_cpu_rgba_bytes": 0,
+            "total_new_gpu_texture_bytes": 9149791,
+            "validation_rgba_buffer_bytes": 6144000,
+            "world_shadow_owner_count": 0,
+            "world_shadow_polygon_count": 0
+          },
+          "authority_snapshot": {
+            "blockers": "a786d613f45bf048c82ebe16203f33c37d038bd7f6c0e4f0b2464b319102ca1f",
+            "layers_file": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88",
+            "physics": "ed7488a1eb8b7e1f56cd427525459158a2acd5b2b14cd41f408a3f454bab14c5",
+            "physics_records": 150,
+            "route_file": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6",
+            "source_data": "084806b58e5b29f7d16d08826f52cecb97fcae8e14a338ed4fbc327412096795",
+            "walk_polys": "9d028c413e664bbd6ca07e5f37919e2d7301dd63925ff45759e50d15fdd2576f"
+          },
+          "water": {
+            "active": true,
+            "additional_gpu_texture_bytes": 0,
+            "alpha_distance_unchanged": true,
+            "hd_guard_fallback": "same_coordinate_static_hd_rgb",
+            "hd_rgb_filter": "continuous_alpha_guarded_base_bilinear",
+            "independent_wave_clock": false,
+            "outer_fallback_source_collar_px": 2,
+            "outer_transition_source_px": 10,
+            "shared_region_texture": true,
+            "source_rect": "[P: (398.0, 615.0), S: (256.0, 240.0)]",
+            "stable_retained_cpu_rgba_bytes": 0,
+            "validation_base_rgba_bytes": 6144000,
+            "validation_full_mip_image_bytes": 8191820
+          }
+        }
+      ],
+      "scope": "Headless lifecycle/ownership/navigation only; no visual acceptance"
+    },
+    "gpu": {
+      "failures": [],
+      "initial_full_batch": {
+        "checks": 19,
+        "failures": [
+          "Canopy pose lies on existing legal paving: west_library_approach_crown_01 behind"
+        ],
+        "exit_code": 1
+      },
+      "first_short_unfrozen_water_failure": {
+        "behind_changed_pixels": 89,
+        "checks": 3,
+        "failures": [
+          "First crown occludes at legal rear foot and reveals front foot"
+        ],
+        "feet": [
+          "(563.0, 823.0)",
+          "(562.0, 827.0)"
+        ],
+        "front_changed_pixels": 4,
+        "replaces_only_invalid_first_pose_from_full_group_batch": true
+      },
+      "corrected_isolated_crown_batch": {
+        "behind_changed_pixels": 84,
+        "checks": 3,
+        "failures": [],
+        "feet": [
+          "(563.0, 823.0)",
+          "(562.0, 827.0)"
+        ],
+        "front_changed_pixels": 0,
+        "replaces_only_invalid_first_pose_from_full_group_batch": true
+      },
+      "interpretation": "Initial illegal test foot replaced with actual legal point; short fixture froze water to avoid time-varying full-screen interference. All original failures retained; this is not one all-green run."
+    },
+    "manual": {
+      "status": "passed_actual_human_input",
+      "natural_exit_code": 0,
+      "movement_samples": 36,
+      "all_samples_walkable": true,
+      "x_range": [
+        566.0,
+        566.0
+      ],
+      "y_range": [
+        812.533203125,
+        840.400024414062
+      ],
+      "verified_actions": [
+        "W/S outward and return, key release stops",
+        "Library roof opens normal card, Esc closes",
+        "Teaching roof opens neutral exterior card, Esc closes",
+        "Courtyard hole does not select solid body",
+        "Lake click stays forbidden and does not move student"
+      ],
+      "water_manual_toggle": "Not claimed: no such UI control; static/dynamic API verified by actual GPU test",
+      "failed_first_window_retained": true,
+      "successful_default_log": "VSync warning only; no ERROR; no enable flag override"
+    },
+    "old_north_regression": {
+      "checks": 83,
+      "failures": [],
+      "exit_code": 0
+    },
+    "source_less_PCK": {
+      "checks": 288,
+      "passed": true,
+      "cases": [
+        {
+          "case": "valid",
+          "checks": 79,
+          "failures": [],
+          "exit_code": 0
+        },
+        {
+          "case": "missing_ctex",
+          "checks": 69,
+          "failures": [],
+          "exit_code": 0
+        },
+        {
+          "case": "missing_surface",
+          "checks": 69,
+          "failures": [],
+          "exit_code": 0
+        },
+        {
+          "case": "corrupt_surface",
+          "checks": 71,
+          "failures": [],
+          "exit_code": 0
+        }
+      ]
+    }
+  },
+  "gpu_records": [
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "independent_legacy_library_ground_owner_poison"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire216x216_core_source_poison",
+      "id": "NW",
+      "neighbors": "NE-absent"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire216x216_core_source_poison",
+      "id": "SW",
+      "neighbors": "NE-absent"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "reversed_NE_install"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire216x216_core_source_poison",
+      "id": "NW",
+      "neighbors": "all-neighbors"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire216x216_core_source_poison",
+      "id": "SW",
+      "neighbors": "all-neighbors"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "no_actor_three_leaf_RGB"
+    },
+    {
+      "behind": 543,
+      "fixture": "legal_crown_depth",
+      "front": 0,
+      "id": "west_library_approach_crown_01"
+    },
+    {
+      "behind": 510,
+      "fixture": "legal_crown_depth",
+      "front": 0,
+      "id": "west_library_approach_crown_02"
+    },
+    {
+      "behind": 461,
+      "fixture": "legal_crown_depth",
+      "front": 0,
+      "id": "west_library_approach_crown_03"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 79862,
+        "max_channel_delta": 75
+      },
+      "diagnostics": {
+        "active": true,
+        "additional_gpu_texture_bytes": 0,
+        "alpha_distance_unchanged": true,
+        "hd_guard_fallback": "same_coordinate_static_hd_rgb",
+        "hd_rgb_filter": "continuous_alpha_guarded_base_bilinear",
+        "independent_wave_clock": false,
+        "outer_fallback_source_collar_px": 2,
+        "outer_transition_source_px": 10,
+        "shared_region_texture": true,
+        "source_rect": "[P: (398.0, 615.0), S: (256.0, 240.0)]",
+        "stable_retained_cpu_rgba_bytes": 0,
+        "validation_base_rgba_bytes": 6144000,
+        "validation_full_mip_image_bytes": 8191820
+      },
+      "fixture": "water_static_dynamic"
+    },
+    {
+      "changed_pixels": 0,
+      "fixture": "water_clock_outside_original_alpha"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "accepted_all_neighbors_NW_core_source_poison",
+      "id": "NW",
+      "neighbors": "all-neighbors"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "accepted_all_neighbors_SW_core_source_poison",
+      "id": "SW",
+      "neighbors": "all-neighbors"
+    }
+  ],
+  "allocation": {
+    "new_west_region_layers": 18203202,
+    "new_teaching_body_separate": 9984162,
+    "four_region_layers": 36390042,
+    "three_independent_bodies_owned_by_four_regions": 29918113,
+    "four_region_plus_owned_bodies": 66308155,
+    "water_additional_textures": 0,
+    "measurement_scope": "Logical uncompressed mip-allocation estimates, NOT measured whole-engine VRAM. Existing library/first teaching/actors/base map/framebuffers excluded."
+  },
+  "coverage": {
+    "accepted_core_pixels": 186624,
+    "full_source_pixels": 1573200,
+    "accepted_fraction": 0.11862700228832952,
+    "no_full_map_claim": true
+  },
+  "art_provenance": {
+    "teaching_body_v1_sha256": "271d26c67b9b6b563561690f6f56e8610c60a42afa24af91c36209cd4a5a284e",
+    "NW_v1_sha256": "b5f9b8eccff23736c7f4951de4750ab79162afc6d6362cfce66fa4501059aa65",
+    "SW_v1_sha256": "408e34c18ca6b70e96ac0b4331322694b0656de5c19d8c9882a37457be625916",
+    "courtyard_local_v2_sha256": "c3cd4a03dc896da3d28d05f47b32b00f726a887f5feece6df1fcfed311852e2f",
+    "all_originals_preserved": true,
+    "new_web_generations": 4,
+    "permitted_courtyard_changed_raw_pixels": 21233,
+    "outside_permitted_mask_changed_pixels": 0,
+    "library_body_regenerated": false
+  },
+  "known_limits": [
+    "7/8 SW held-out locations <=1px; north path [560,641] is1.21px with NCC.932 and approx1px source uncertainty. Parent accepted manual exception after actual2.1/4.8 view showed no double curb/kink; no threshold change.",
+    "Lake whole extent is NOT HD: SW intersection4043source-pixel-equivalent fullHD,660mixed transition,113originalcollar; source coordinates and alpha remain fixed. Western/southern future regions remain original.",
+    "Schematic14% opacity source-polygon shadows are not new RGBA shadow art.",
+    "No automatic camera streaming; explicit atomic pair residency hook only.",
+    "Current west sports/teaching grounds do not gain walk permission; only original library approach participates in manual movement.",
+    "Original library-west approach is locally legal but not connected from the south spawn: original guide leg [733,863]\u2192[700,863] fails AStar. West HD installation leaves navigation hashes unchanged. Manual local walk does not establish global reachability. Preview uses the previously verified reachable [731,676] route and camera-only survey; route repair is pending separately."
+  ],
+  "existing_route_diagnostic": {
+    "status": "existing_navigation_limitation_not_modified_by_HD_group",
+    "original_spawn": [
+      515,
+      1510
+    ],
+    "unreachable_requested_library_points": [
+      [
+        566,
+        836
+      ],
+      [
+        566,
+        816
+      ],
+      [
+        565,
+        833
+      ],
+      [
+        559,
+        848
+      ]
+    ],
+    "broken_original_guide_leg": [
+      [
+        733,
+        863
+      ],
+      [
+        700,
+        863
+      ]
+    ],
+    "reachable_preview_point": [
+      731,
+      676
+    ],
+    "reachable_path_nodes": 430,
+    "alternate_reachable_point": [
+      759,
+      861
+    ],
+    "alternate_path_nodes": 338,
+    "HD_install_before_after_authority_snapshot": {
+      "blockers": "a786d613f45bf048c82ebe16203f33c37d038bd7f6c0e4f0b2464b319102ca1f",
+      "layers_file": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88",
+      "physics": "ed7488a1eb8b7e1f56cd427525459158a2acd5b2b14cd41f408a3f454bab14c5",
+      "physics_records": 150,
+      "route_file": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6",
+      "source_data": "084806b58e5b29f7d16d08826f52cecb97fcae8e14a338ed4fbc327412096795",
+      "walk_polys": "9d028c413e664bbd6ca07e5f37919e2d7301dd63925ff45759e50d15fdd2576f"
+    },
+    "installation_changed_navigation": false,
+    "video_policy": "Real continuous approach to previously validated reachable road point; stationary actor during camera-only survey; no foot-position writes, no W/S claim at library, no navigation workaround"
+  }
+}

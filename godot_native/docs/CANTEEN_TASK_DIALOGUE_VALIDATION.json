@@ -1,0 +1,134 @@
+{
+  "dateUTC": "2026-10-03",
+  "baseCommit": "f340c47ca51fb56e880f103454a0bf2ae9bf6de7",
+  "runtimeSha256": "8b6fb1e48645d5f483ed46ab04a81a9015a4fe77d44e768c3176f2db6cb45f8f",
+  "runtimeFileCount": 1056,
+  "aggregate": {
+    "stages": 172,
+    "passed": 172,
+    "failed": 0,
+    "singleCleanRun": true,
+    "exitCode": 0
+  },
+  "focused": {
+    "earnedObjectiveJournal": 340,
+    "portraitNarrative": 1261,
+    "nativeWindowClose": 9,
+    "scriptParse": 293,
+    "failures": 0
+  },
+  "exports": {
+    "kind": "fresh exported native runtime",
+    "artifacts": [
+      {
+        "path": "7-55-native.exe",
+        "bytes": 638866240,
+        "sha256": "d77baafe7a9073264c00ee7c975bc9f780147aecd5e32421cf5ad69506bd1f81"
+      },
+      {
+        "path": "7-55-native.pck",
+        "bytes": 534206768,
+        "sha256": "1a3df115a8834e911b0483f16fbf04d2e66094406e4837ba579234238746f42a"
+      },
+      {
+        "path": "7-55-native.x86_64",
+        "bytes": 71075864,
+        "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+      }
+    ],
+    "results": [
+      {
+        "stage": "export-linux",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 6.286027908325195
+      },
+      {
+        "stage": "export-windows-build-only",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 5.002084970474243
+      },
+      {
+        "stage": "packed-campaign",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 111.96927785873413
+      },
+      {
+        "stage": "native-only-first",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 2.078732490539551
+      },
+      {
+        "stage": "native-only-reload",
+        "exitCode": 0,
+        "passed": true,
+        "seconds": 1.7400517463684082
+      }
+    ],
+    "limits": [
+      "Campaign is automated, not manual playthrough",
+      "Windows export is build-only; no Windows execution or physical phone acceptance",
+      "Graphical acceptance tracked separately"
+    ]
+  },
+  "packedCampaign": {
+    "checks": 795,
+    "failures": 0,
+    "notManualPlaythrough": true
+  },
+  "nativeOnly": {
+    "first": 25,
+    "reload": 21,
+    "browserRuntimeFiles": []
+  },
+  "actualEarnedCUA": {
+    "viewport": [
+      390,
+      844
+    ],
+    "noCheckpointOrStateSeeding": true,
+    "actions": [
+      "Read source-gated auntie goal and expanded/folded129 retained history entries",
+      "Walked counter aisle and completed three-line auntie introduction",
+      "Returned clean decoy, observed dirty trays, and handed back all3 correct trays",
+      "Verified empty-handed guidance and refusal of a second carried tray",
+      "Observed1/3 task update, then2.00cash+wages+greaseTissue after completion",
+      "Ordinary correct-return and post-reward dialogue retained tall portrait exploration above controls",
+      "Normal window close retired audio without ObjectDB warning"
+    ],
+    "limits": [
+      "First240s capture ended before tray returns",
+      "Second480s capture ended before third return and reward; those later outcomes have GUI/save evidence",
+      "Final reward multi-line text was not entirely captured",
+      "Physical-phone and subjective hearing acceptance remain unverified"
+    ]
+  },
+  "actualExportedGUI": {
+    "passed": true,
+    "kind": "ordinary earned-save copy in final Linux standalone executable",
+    "viewports": [
+      "1180x812",
+      "390x844"
+    ],
+    "actions": [
+      "Desktop restored2.00wages,greaseTissue and all3dirty returns",
+      "Portrait ordinary scene return and auntie repeat preserve tall world;16px subtitle clear of touch controls",
+      "Normal OS close exits without ObjectDB warning"
+    ],
+    "noBrowserRuntimeOrNodeOnPath": true,
+    "mainEarnedProfileUnchanged": true,
+    "warnings": [
+      "Cloud graphics driver does not support changing V-Sync"
+    ],
+    "errors": []
+  },
+  "excluded": [
+    "Library/canteen/campus modeling and tile prototypes",
+    "Post-tray queue/mixing objective refinement",
+    "Original stamp sound replacement",
+    "Optional floor-click tolerance change"
+  ]
+}

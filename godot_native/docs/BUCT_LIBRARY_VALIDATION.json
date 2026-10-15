@@ -1,0 +1,548 @@
+{
+  "date_utc": "2026-10-12",
+  "base_commit": "b6f3f260f682dfe26ef6cdbe9eac4fdbad74d77a",
+  "scope": "One genuine Chaoyang library; 43 legacy campus UV groups remain",
+  "graphics": {
+    "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "checks": [
+      {
+        "check": "All source pixels outside registered library repair remain unchanged",
+        "passed": true
+      },
+      {
+        "check": "Shared-UV native strips match full RGBA within one 8-bit rounding level, no alpha gaps",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=638.0 front=false",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=638.0 front=true",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=665.0 front=false",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=665.0 front=true",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=730.0 front=false",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=730.0 front=true",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=790.0 front=false",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=790.0 front=true",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=849.0 front=false",
+        "passed": true
+      },
+      {
+        "check": "Library native local facade depth x=849.0 front=true",
+        "passed": true
+      },
+      {
+        "check": "Old native tree ordering preserved promenade front=false",
+        "passed": true
+      },
+      {
+        "check": "Old native tree ordering preserved promenade front=true",
+        "passed": true
+      },
+      {
+        "check": "Old native tree ordering preserved nearest_library_tree front=false",
+        "passed": true
+      },
+      {
+        "check": "Old native tree ordering preserved nearest_library_tree front=true",
+        "passed": true
+      },
+      {
+        "check": "Full-campus hiding removes all new body and independent shadow pixels",
+        "passed": true
+      }
+    ],
+    "engine": "4.6.3-stable (official)",
+    "failures": [],
+    "hidden_vs_node_absent": {
+      "changed_pixels": 0,
+      "max_channel_error": 0,
+      "sum_max_error": 0
+    },
+    "library_depth_probes": [
+      {
+        "foot_y": 540.43359375,
+        "front": false,
+        "head_visible": false,
+        "x": 638.0
+      },
+      {
+        "foot_y": 550.43359375,
+        "front": true,
+        "head_visible": true,
+        "x": 638.0
+      },
+      {
+        "foot_y": 554.019958496094,
+        "front": false,
+        "head_visible": false,
+        "x": 665.0
+      },
+      {
+        "foot_y": 564.019958496094,
+        "front": true,
+        "head_visible": true,
+        "x": 665.0
+      },
+      {
+        "foot_y": 561.372619628906,
+        "front": false,
+        "head_visible": false,
+        "x": 730.0
+      },
+      {
+        "foot_y": 571.372619628906,
+        "front": true,
+        "head_visible": true,
+        "x": 730.0
+      },
+      {
+        "foot_y": 561.372619628906,
+        "front": false,
+        "head_visible": false,
+        "x": 790.0
+      },
+      {
+        "foot_y": 571.372619628906,
+        "front": true,
+        "head_visible": true,
+        "x": 790.0
+      },
+      {
+        "foot_y": 551.942077636719,
+        "front": false,
+        "head_visible": false,
+        "x": 849.0
+      },
+      {
+        "foot_y": 561.942077636719,
+        "front": true,
+        "head_visible": true,
+        "x": 849.0
+      }
+    ],
+    "outside_library_repair_vs_original": {
+      "changed_pixels": 0,
+      "max_channel_error": 0,
+      "sum_max_error": 0
+    },
+    "performance": {
+      "draw_calls": 319.0,
+      "frame_ms_median": 12.365,
+      "frame_ms_p95": 17.616,
+      "library_node_growth": 140,
+      "library_nodes": 152,
+      "live_nodes": 573.0,
+      "native_strips": 140,
+      "note": "Actual full-campus overview on reported adapter; not a hardware-performance guarantee.",
+      "old_library_nodes": 12,
+      "process_ms": 233.483
+    },
+    "strips_vs_same_rgba_full_reference": {
+      "changed_pixels": 52,
+      "max_channel_error": 1,
+      "sum_max_error": 52
+    },
+    "tree_depth_probes": [
+      {
+        "front": false,
+        "head_visible": false,
+        "tree": "promenade"
+      },
+      {
+        "front": true,
+        "head_visible": true,
+        "tree": "promenade"
+      },
+      {
+        "front": false,
+        "head_visible": false,
+        "tree": "nearest_library_tree"
+      },
+      {
+        "front": true,
+        "head_visible": true,
+        "tree": "nearest_library_tree"
+      }
+    ]
+  },
+  "performance_baseline": {
+    "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "always": {
+      "median_draw_calls": 5917.0,
+      "median_ms": 45.424,
+      "nodes": 432.0,
+      "p95_ms": 57.872
+    },
+    "always_vs_cached_changed_pixels": 0,
+    "cached_texture_not_empty": true,
+    "camera_position": [
+      724.0,
+      537.987670898438
+    ],
+    "camera_zoom": [
+      0.5985267162323,
+      0.5985267162323
+    ],
+    "cells": 6188,
+    "engine": "4.6.3-stable (official)",
+    "explicit_refresh_changed_pixels": 1572528,
+    "failures": [],
+    "hidden_always_vs_cached_changed_pixels": 0,
+    "once": {
+      "median_draw_calls": 178.0,
+      "median_ms": 13.457,
+      "nodes": 432.0,
+      "p95_ms": 26.589
+    },
+    "source_change_without_refresh_pixels": 0,
+    "update_mode_property_after_once": 1,
+    "viewport": [
+      1440,
+      900
+    ],
+    "vsync": "disabled"
+  },
+  "performance_integrated": {
+    "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "always": {
+      "median_draw_calls": 6053.0,
+      "median_ms": 53.42,
+      "nodes": 573.0,
+      "p95_ms": 77.154
+    },
+    "always_vs_cached_changed_pixels": 0,
+    "cached_texture_not_empty": true,
+    "camera_position": [
+      724.0,
+      537.987670898438
+    ],
+    "camera_zoom": [
+      0.5985267162323,
+      0.5985267162323
+    ],
+    "cells": 6188,
+    "engine": "4.6.3-stable (official)",
+    "explicit_refresh_changed_pixels": 1572528,
+    "failures": [],
+    "hidden_always_vs_cached_changed_pixels": 0,
+    "once": {
+      "median_draw_calls": 314.0,
+      "median_ms": 16.659,
+      "nodes": 573.0,
+      "p95_ms": 31.673
+    },
+    "source_change_without_refresh_pixels": 0,
+    "update_mode_property_after_once": 1,
+    "viewport": [
+      1440,
+      900
+    ],
+    "vsync": "disabled"
+  },
+  "focused_checks": {
+    "source_layers": 284,
+    "playable_route": 115,
+    "entry_mobile": 312,
+    "save_rejection_cases": 11,
+    "failures": 0,
+    "lake_source_parity": 416,
+    "lake_native_disk_saves": 25,
+    "lake_save_rejection_cases": 17
+  },
+  "aggregate_status": "Initial 310-stage run: 286 passed, 24 failed, exit 1. Final focused rerun of all 24 failed stages plus 6 affected/setup stages: 30 passed, 0 failed, exit 0. This is split-run evidence, not one clean 310-stage run.",
+  "manual_status": "Passed actual native desktop UI verification, including final reset-status recheck",
+  "release_initialization": {
+    "configure_executed_outside_assert": true,
+    "new_production_scripts_with_assert": 0,
+    "exported_pck_probe": "pass: binary coverage, body/ground/shadow/font, 140 strips, six colliders, alpha selection, hide/reset",
+    "probe_engine_debug_build": true,
+    "release_binary_tested": false,
+    "reason": "Release export templates are not installed in this environment"
+  },
+  "test_history": [
+    {
+      "run": "initial_full_native_aggregate",
+      "total": 310,
+      "passed": 286,
+      "failed": 24,
+      "exit_code": 1,
+      "failure_details": [
+        "22 source catalog/oracle stages lacked installed TypeScript/Vite dependencies",
+        "Chapter 4 prologue media fixture lacked converted OGV",
+        "Full campaign failed its rescue route/skip/fallback/monotonic-dock assertion"
+      ],
+      "failed_stage_labels": [
+        "test_chapter4_prologue_media.gd",
+        "test_full_campaign.gd",
+        "Source catalog tools/export-save-domains.mjs",
+        "Source catalog tools/export-audio-director.mjs",
+        "Source catalog tools/export-c3-world-source.mjs",
+        "Source catalog tools/export-chapter4-device-source.mjs",
+        "Source catalog tests/export_audio_state_fixtures.mjs",
+        "Source catalog tests/export_chapter3_scene_source.mjs",
+        "Source catalog tests/export_library_story_source.mjs",
+        "Source catalog tests/export_lake_live_source_fixtures.mjs",
+        "Source catalog tests/export_chapter3_narrative_source.mjs",
+        "Source catalog tests/export_library_world_source.mjs",
+        "Source catalog tests/export_canteen_mixer_source.mjs",
+        "Source catalog tests/export_c3_devices_source.mjs",
+        "Source catalog tests/export_c3_canteen_devices_source.mjs",
+        "Source catalog tests/export_c3_bike_world_source.mjs",
+        "Source oracle tests/verify_source_model_parity.mjs",
+        "Source oracle tests/verify_canteen_defense_source.mjs",
+        "Source oracle tests/verify_lake_branch_source.mjs",
+        "Photo brightness source lifecycle",
+        "Canteen objective source handoff",
+        "Canteen self-drink source contract",
+        "Canteen mode fibers source contract",
+        "Original SaveStore differential"
+      ]
+    },
+    {
+      "run": "interrupted_retry_before_environment_recovery",
+      "planned": 30,
+      "confirmed_passed": 14,
+      "confirmed_failed": 2,
+      "unconfirmed": 14,
+      "exit_code": 1,
+      "complete_json_report": false,
+      "failure_details": [
+        "Save-fixture ENOSPC",
+        "Vite module loading from incorrect working directory"
+      ]
+    },
+    {
+      "run": "first_complete_workspace_retry",
+      "total": 30,
+      "passed": 29,
+      "failed": 1,
+      "exit_code": 1,
+      "failure_details": [
+        "Lake source oracle refused workspace-backed isolated test profile because its legacy guard required a /tmp prefix"
+      ]
+    },
+    {
+      "run": "lake_guard_and_source_parity_after_two_file_safety_adaptation",
+      "rejection_cases": 17,
+      "positive_checks": 416,
+      "native_disk_saves": 25,
+      "failures": 0,
+      "exit_code": 0
+    },
+    {
+      "run": "final_complete_30_stage_rerun",
+      "total": 30,
+      "passed": 30,
+      "failed": 0,
+      "exit_code": 0,
+      "covers_all_initial_24_failed_stages": true,
+      "stage_results": [
+        {
+          "label": "Godot asset import and editor parse",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Native startup",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "test_buct_entry.gd",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "test_buct_playable.gd",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "test_buct_source_layers.gd",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "test_chapter4_prologue_media.gd",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "test_full_campaign.gd",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "BUCT save-fixture isolation",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tools/export-save-domains.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tools/export-audio-director.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tools/export-c3-world-source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tools/export-chapter4-device-source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_audio_state_fixtures.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_chapter3_scene_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_library_story_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_lake_live_source_fixtures.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_chapter3_narrative_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_library_world_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_canteen_mixer_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_c3_devices_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_c3_canteen_devices_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source catalog tests/export_c3_bike_world_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source oracle tests/verify_source_model_parity.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source oracle tests/verify_canteen_defense_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Source oracle tests/verify_lake_branch_source.mjs",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Photo brightness source lifecycle",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Canteen objective source handoff",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Canteen self-drink source contract",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Canteen mode fibers source contract",
+          "passed": true,
+          "exit_code": 0
+        },
+        {
+          "label": "Original SaveStore differential",
+          "passed": true,
+          "exit_code": 0
+        }
+      ]
+    }
+  ],
+  "manual": {
+    "renderer": "llvmpipe software OpenGL",
+    "checks": [
+      "Chooser to full campus and overview",
+      "Library information selection, body/shadow hide, fixed repaired ground, reset and return",
+      "Original automatic south-gate/main-building/library route reached 3/3 landmarks",
+      "393x846 portrait hide/reset controls operational",
+      "667x376 landscape information and controls fit",
+      "Two actual chooser/campus/return round trips",
+      "Final reset status exactly 图书馆楼体已复位 with body and shadow restored",
+      "Normal return and exit without ERROR or RID leak"
+    ],
+    "human_round_trips": 2,
+    "six_round_trips": "Native automated entry/lifetime coverage, not six manual rounds",
+    "physical_mobile_device_tested": false
+  },
+  "exact_head_ci_status": "Pending publication and checks for the final immutable commit",
+  "safety_test_adaptation": {
+    "files": [
+      "tests/test_qizhen_branches.gd",
+      "tests/verify_lake_branch_source.mjs"
+    ],
+    "production_logic_changed": false,
+    "constraints": [
+      "Absolute normalized temporary root and declared data path",
+      "Godot actual user data and user:// paths match the declaration",
+      "Only launcher-created test-profile prefixes under the selected temporary root",
+      "Dedicated lake launcher nonce/creation receipt checked",
+      "Existing primary, backup or pending save causes rejection",
+      "Seventeen empty/sentinel negative probes preserve every save byte"
+    ]
+  }
+}

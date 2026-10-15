@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/objects/room204_table.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_a2_room204_furniture_v02.png" id="2"]
+[sub_resource type="RectangleShape2D" id="Foot"]
+size=Vector2(103.75,17.75)
+[sub_resource type="RectangleShape2D" id="Interaction"]
+size=Vector2(109.75,44.5)
+[node name="Room204Table2" type="Node2D"]
+position=Vector2(188,710)
+rotation=1.570796326795
+script=ExtResource("1")
+object_id="group_table_2"
+[node name="OriginalAppearance" type="Sprite2D" parent="."]
+position=Vector2(0,0)
+offset=Vector2(-219,-175)
+scale=Vector2(0.25,0.25)
+texture=ExtResource("2")
+centered=false
+region_enabled=true
+region_filter_clip_enabled=true
+region_rect=Rect2(1056,231,438,177)
+[node name="Solid" type="StaticBody2D" parent="."]
+collision_layer=1
+collision_mask=2
+[node name="Foot" type="CollisionShape2D" parent="Solid"]
+position=Vector2(0.125,-9.375)
+shape=SubResource("Foot")
+[node name="Interaction" type="Area2D" parent="."]
+collision_layer=4
+collision_mask=0
+monitoring=false
+input_pickable=false
+[node name="Bounds" type="CollisionShape2D" parent="Interaction"]
+position=Vector2(0.125,-21.75)
+shape=SubResource("Interaction")

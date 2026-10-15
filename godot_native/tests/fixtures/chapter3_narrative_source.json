@@ -1,0 +1,445 @@
+{
+  "sources": [
+    {
+      "path": "src/scenes/rpg/CanteenInteriorScene.ts",
+      "sha256": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb"
+    },
+    {
+      "path": "src/scenes/rpg/TheaterInteriorScene.ts",
+      "sha256": "2b041bb08127f781be95457c30de3fa0d95aaed28756588214dcf0f64c20c7a1"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenLoopScene.ts",
+      "sha256": "3b9c8405e33034b4ef864d87b0461d152fac5a22c37c0cef5293ee2f401fedae"
+    },
+    {
+      "path": "src/modules/AudioDirector.ts",
+      "sha256": "50a6c082522b3f25031a37a5cdf9fcd82820f2cab275725710f36098520d62bc"
+    },
+    {
+      "path": "src/data/chapter3-canteen.content.json",
+      "sha256": "7275d5f68000b59a14844d991288024e375f5fe95173eb615a46263f5792c55e"
+    },
+    {
+      "path": "src/data/chapter3-theater.content.json",
+      "sha256": "64b39d68be3aabc604a9eb32fa99f3362ae9e884fe23f6c45ff902ac09350a50"
+    },
+    {
+      "path": "src/data/chapter3-qizhen-lake.content.json",
+      "sha256": "820966de831d6129c40579115823887a3f86ce638d28ebe7cc06a5c72f80cbf7"
+    },
+    {
+      "path": "src/data/maps/zijingang-campus-loop-runtime.json",
+      "sha256": "97f431857fa2cd48eee7154786afd5e9d1d249229a0aa145ed67f85312d69d3f"
+    }
+  ],
+  "groups": {
+    "canteen_tray_intro": {
+      "lines": [
+        {
+          "text": "阿姨：同学，桌上有三只脏盘，能不能帮我送回来？",
+          "atMs": 0,
+          "durationMs": 2380
+        },
+        {
+          "text": "玩家：我只是来找东西的。",
+          "atMs": 2500,
+          "durationMs": 2380
+        },
+        {
+          "text": "阿姨：那正好，找盘子也算找。送回来给你两块。",
+          "atMs": 5000,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 7500
+    },
+    "canteen_tray_complete": {
+      "lines": [
+        {
+          "text": "阿姨：这只对，油渍和蓝光都在。",
+          "atMs": 0,
+          "durationMs": 2380
+        },
+        {
+          "text": "阿姨：三只都回来了。两块钱和这张纸巾，拿着。",
+          "atMs": 2500,
+          "durationMs": 2380
+        },
+        {
+          "text": "玩家：收盘子还有工资？",
+          "atMs": 5000,
+          "durationMs": 2380
+        },
+        {
+          "text": "阿姨：今天有。明天看排班。",
+          "atMs": 7500,
+          "durationMs": 2380
+        },
+        {
+          "text": "系统：现金 2.00 元已入账。",
+          "atMs": 10000,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 12500
+    },
+    "canteen_tray_done": {
+      "lines": [
+        {
+          "text": "阿姨：盘子放履带，别站上去。",
+          "atMs": 0,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 2500
+    },
+    "canteen_tray_return": {
+      "lines": [
+        {
+          "text": "阿姨：这只对，油渍和蓝光都在。",
+          "atMs": 0,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 2500
+    },
+    "canteen_queue": {
+      "lines": [
+        {
+          "text": "玩家：我能站到前面吗？",
+          "atMs": 0,
+          "durationMs": 2380
+        },
+        {
+          "text": "同学：等着吧。前面说要先看新品，饭还没吃，广告已经看两轮了。",
+          "atMs": 2500,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 5000
+    },
+    "canteen_bad_drink": {
+      "lines": [
+        {
+          "text": "玩家：这也能卖？",
+          "atMs": 0,
+          "durationMs": 2380
+        },
+        {
+          "text": "系统：你已完成试饮。无退款项目。",
+          "atMs": 2500,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 5000
+    },
+    "canteen_queue_shift": {
+      "lines": [
+        {
+          "text": "玩家：他们怎么都退了？",
+          "atMs": 0,
+          "durationMs": 2380
+        },
+        {
+          "text": "系统：新品一摆出来就退了。至少试饮意见很一致。",
+          "atMs": 2500,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 5000
+    },
+    "canteen_order_correct": {
+      "lines": [
+        {
+          "text": "系统：纸包鸡已经下单。拿好 0755 取餐号。",
+          "atMs": 0,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 2500
+    },
+    "canteen_order_wrong": {
+      "lines": [
+        {
+          "text": "点餐机：已下单",
+          "atMs": 0,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 2500
+    },
+    "canteen_pickup_clue": {
+      "lines": [
+        {
+          "text": "残影阿姨：……票……",
+          "atMs": 0,
+          "durationMs": 2380
+        }
+      ],
+      "completeAtMs": 2500
+    },
+    "canteen_escape": {
+      "lines": [
+        {
+          "text": "阿姨：纸不能打包带走。",
+          "atMs": 0,
+          "durationMs": 1080
+        },
+        {
+          "text": "玩家：它自己跑出去的。",
+          "atMs": 1200,
+          "durationMs": 1080
+        },
+        {
+          "text": "系统：出门，继续追。",
+          "atMs": 2400,
+          "durationMs": 1080
+        }
+      ],
+      "completeAtMs": 3600
+    },
+    "theater_entry": {
+      "lines": [
+        {
+          "text": "检票员：请出示票。",
+          "atMs": 0,
+          "durationMs": 2400
+        },
+        {
+          "text": "玩家：刚才那张纸进去了，我想进去看看。",
+          "atMs": 2520,
+          "durationMs": 3520
+        },
+        {
+          "text": "检票员：纸进去我管不着，人进去要验票。今晚好像有同学临时来不了。",
+          "atMs": 6160,
+          "durationMs": 4960
+        }
+      ],
+      "completeAtMs": 11240
+    },
+    "theater_printed": {
+      "lines": [
+        {
+          "text": "取票机：回执已核验。补打的票根缺了左半边，场次和票号仍能辨认。",
+          "atMs": 0,
+          "durationMs": 4840
+        }
+      ],
+      "completeAtMs": 4960
+    },
+    "theater_combined": {
+      "lines": [
+        {
+          "text": "玩家：同一场，票号也一样。",
+          "atMs": 0,
+          "durationMs": 2800
+        },
+        {
+          "text": "玩家：接上了。买票还得自己装。",
+          "atMs": 2920,
+          "durationMs": 3040
+        }
+      ],
+      "completeAtMs": 6080
+    },
+    "theater_admission": {
+      "lines": [
+        {
+          "text": "检票员：你自己拼的？",
+          "atMs": 0,
+          "durationMs": 2400
+        },
+        {
+          "text": "玩家：两半都在，码也没缺。",
+          "atMs": 2520,
+          "durationMs": 2800
+        },
+        {
+          "text": "检票员：能扫。进去吧，票根先别扔。",
+          "atMs": 5440,
+          "durationMs": 3160
+        }
+      ],
+      "completeAtMs": 8720
+    },
+    "theater_wrong_order": {
+      "lines": [
+        {
+          "text": "灯控台：顺序不符，请核对节目单。",
+          "atMs": 0,
+          "durationMs": 3040
+        },
+        {
+          "text": "系统：台上的顺序改过，印刷版未必跟得上。",
+          "atMs": 3160,
+          "durationMs": 3640
+        }
+      ],
+      "completeAtMs": 6920
+    },
+    "theater_prop_ghost": {
+      "lines": [
+        {
+          "text": "箱内有荧光粉刷的残影，但你摸不到 7:55 的东西。",
+          "atMs": 0,
+          "durationMs": 4480
+        },
+        {
+          "text": "会谢幕的道具才能出箱。",
+          "atMs": 4600,
+          "durationMs": 2920
+        }
+      ],
+      "completeAtMs": 7640
+    },
+    "theater_console": {
+      "lines": [
+        {
+          "text": "灯控台：请输入节目顺序。",
+          "atMs": 0,
+          "durationMs": 2560
+        },
+        {
+          "text": "当前状态：追光灯锁定。",
+          "atMs": 2680,
+          "durationMs": 2400
+        }
+      ],
+      "completeAtMs": 5200
+    },
+    "theater_reversal_before": {
+      "lines": [
+        {
+          "text": "玩家：抓到了！",
+          "atMs": 0,
+          "durationMs": 2400
+        },
+        {
+          "text": "系统：先翻过来看。",
+          "atMs": 2520,
+          "durationMs": 2400
+        }
+      ],
+      "completeAtMs": 5040
+    },
+    "theater_reversal_after": {
+      "lines": [
+        {
+          "text": "玩家：道具编号？",
+          "atMs": 0,
+          "durationMs": 2400
+        },
+        {
+          "text": "玩家：我抢票进来，抓了个替身？",
+          "atMs": 2520,
+          "durationMs": 3040
+        },
+        {
+          "text": "系统：替身有编号。原件去向不在节目单里。",
+          "atMs": 5680,
+          "durationMs": 3640
+        }
+      ],
+      "completeAtMs": 9440
+    },
+    "qizhen_approach": {
+      "lines": [
+        {
+          "text": "湿纸从剧场门边飞出，贴着路面向东移动。",
+          "atMs": 0,
+          "durationMs": 2400
+        },
+        {
+          "text": "玩家：它去哪了？",
+          "atMs": 2520,
+          "durationMs": 2800
+        },
+        {
+          "text": "路边只留下几段不连续的水迹。",
+          "atMs": 5440,
+          "durationMs": 2400
+        },
+        {
+          "text": "系统：水迹断了，附近没人看清。",
+          "atMs": 7960,
+          "durationMs": 2800
+        },
+        {
+          "text": "水迹在湖畔一侧中断，无法直接确认地点。",
+          "atMs": 10880,
+          "durationMs": 2400
+        },
+        {
+          "text": "玩家：追了一路，还得发帖寻物。",
+          "atMs": 13400,
+          "durationMs": 2800
+        },
+        {
+          "text": "系统：论坛有人路过，馆藏里也留着借阅记录。",
+          "atMs": 16320,
+          "durationMs": 4200
+        }
+      ],
+      "completeAtMs": null
+    }
+  },
+  "approach": {
+    "label": "剧场外 · 湖畔方向",
+    "paperLeadMs": 420,
+    "trailFadeAtMs": 2700,
+    "completeAtMs": 20800,
+    "visualBeats": [
+      "湿纸从剧场门边飞出，贴着路面向东移动。",
+      "路边只留下几段不连续的水迹。",
+      "水迹在湖畔一侧中断，无法直接确认地点。"
+    ]
+  },
+  "route": {
+    "start": {
+      "x": 7730,
+      "y": 840
+    },
+    "stop": {
+      "x": 9040,
+      "y": 930
+    },
+    "waypoints": [
+      {
+        "x": 7820,
+        "y": 900,
+        "durationMs": 650
+      },
+      {
+        "x": 8150,
+        "y": 930,
+        "durationMs": 1250
+      },
+      {
+        "x": 8460,
+        "y": 930,
+        "durationMs": 1200
+      },
+      {
+        "x": 8780,
+        "y": 930,
+        "durationMs": 1400
+      },
+      {
+        "x": 9040,
+        "y": 930,
+        "durationMs": 1100
+      }
+    ],
+    "paperStart": {
+      "x": 7770,
+      "y": 910
+    },
+    "paperStop": {
+      "x": 9060,
+      "y": 914
+    },
+    "trailSpacing": 74
+  }
+}

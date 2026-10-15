@@ -1,0 +1,354 @@
+{
+  "schema": "buct_changping_north_west_upper_local_acceptance_v1",
+  "status": "accepted_local_scope",
+  "accepted_scope": "Default-enabled left northern HD terrain plus one whole original-anchor RGBA dorm_nw_02; seven original envelopes remain source fallback",
+  "remaining_gates": [],
+  "tests": {
+    "native_smoke": {
+      "authority": {
+        "blocker_sha": "a786d613f45bf048c82ebe16203f33c37d038bd7f6c0e4f0b2464b319102ca1f",
+        "physical_records": 150,
+        "physics_sha": "790f010de7614d6bb41ca817f379cb73d9a7585f5de31f2d5cacc2129e69527c",
+        "source_data_sha": "084806b58e5b29f7d16d08826f52cecb97fcae8e14a338ed4fbc327412096795",
+        "visitor_position": "(515.0, 1510.0)",
+        "visitor_scale": "(1.0, 1.0)",
+        "walk_sha": "9d028c413e664bbd6ca07e5f37919e2d7301dd63925ff45759e50d15fdd2576f"
+      },
+      "diagnostics": {
+        "active": true,
+        "automatic_camera_streaming": false,
+        "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+        "east_neighbor_active": true,
+        "independent_bodies": 0,
+        "independent_body_gpu_bytes": 0,
+        "native_original_detail_density": 4.88566627859472,
+        "new_collision_bodies": 0,
+        "new_foreground_owners": 0,
+        "new_gpu_texture_bytes": 6204069,
+        "owned_east_strip_gpu_bytes": 524284,
+        "region_ground_foreground_seam_ownership_gpu_bytes": 6204069,
+        "region_residency_limit": 6,
+        "runtime_grid_texels_per_source_pixel": 4,
+        "shared_hd_owner_active": true,
+        "stable_retained_new_cpu_rgba_bytes": 0,
+        "total_new_gpu_texture_bytes": 6204069,
+        "unverified_original_body_ids": [
+          "dorm_nw_01",
+          "dorm_nw_02",
+          "dorm_nw_03",
+          "dorm_nw_04",
+          "dorm_north_low_annex",
+          "dorm_w_01",
+          "dorm_w_02",
+          "hill_south_block"
+        ],
+        "validation_rgba_buffer_bytes": 4194304,
+        "world_shadow_owner_count": 0,
+        "world_shadow_polygon_count": 0
+      },
+      "failures": [],
+      "scope": "Five minimal startup/physics/residency checks; no GPU, full matrix or new playability claim",
+      "status": "passed"
+    },
+    "default_smoke": {
+      "captures": [
+        {
+          "file": "dorm-nw-02-default-normal-engine.png",
+          "native_size": [
+            1280,
+            720
+          ]
+        },
+        {
+          "file": "changping-six-regions-one-new-body-full-engine.png",
+          "native_size": [
+            950,
+            1656
+          ]
+        }
+      ],
+      "default_region_active": true,
+      "diagnostics": {
+        "active": true,
+        "automatic_camera_streaming": false,
+        "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+        "east_neighbor_active": true,
+        "independent_bodies": 1,
+        "independent_body_gpu_bytes": 9967612,
+        "native_original_detail_density": 4.88566627859472,
+        "new_collision_bodies": 0,
+        "new_foreground_owners": 0,
+        "new_gpu_texture_bytes": 6204069,
+        "owned_east_strip_gpu_bytes": 524284,
+        "region_ground_foreground_seam_ownership_gpu_bytes": 6204069,
+        "region_residency_limit": 6,
+        "runtime_grid_texels_per_source_pixel": 4,
+        "shared_hd_owner_active": true,
+        "stable_retained_new_cpu_rgba_bytes": 0,
+        "total_new_gpu_texture_bytes": 16171681,
+        "unverified_original_body_ids": [
+          "dorm_nw_01",
+          "dorm_nw_03",
+          "dorm_nw_04",
+          "dorm_north_low_annex",
+          "dorm_w_01",
+          "dorm_w_02",
+          "hill_south_block"
+        ],
+        "validation_rgba_buffer_bytes": 4194304,
+        "world_shadow_owner_count": 0,
+        "world_shadow_polygon_count": 0
+      },
+      "display_server": "X11",
+      "manual_gameplay": false,
+      "scope": "Actual default single-body startup and two normal rendered views; ambiguous central roof-step point reviewed visually, no ownership matrix or manual gameplay claim",
+      "status": "passed",
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)"
+    },
+    "previous_evidence_reused": {
+      "old_regions_and_roads": 245,
+      "v4_default_native": 91,
+      "v4_actual_gpu": 29
+    },
+    "previous_ground_default_smoke": {
+      "captures": [
+        {
+          "file": "north-west-six-regions-default-engine.png",
+          "native_size": [
+            2464,
+            1024
+          ]
+        },
+        {
+          "file": "changping-six-regions-default-full-engine.png",
+          "native_size": [
+            950,
+            1656
+          ]
+        }
+      ],
+      "default_region_active": true,
+      "diagnostics": {
+        "active": true,
+        "automatic_camera_streaming": false,
+        "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+        "east_neighbor_active": true,
+        "independent_bodies": 0,
+        "independent_body_gpu_bytes": 0,
+        "native_original_detail_density": 4.88566627859472,
+        "new_collision_bodies": 0,
+        "new_foreground_owners": 0,
+        "new_gpu_texture_bytes": 6204069,
+        "owned_east_strip_gpu_bytes": 524284,
+        "region_ground_foreground_seam_ownership_gpu_bytes": 6204069,
+        "region_residency_limit": 6,
+        "runtime_grid_texels_per_source_pixel": 4,
+        "shared_hd_owner_active": true,
+        "stable_retained_new_cpu_rgba_bytes": 0,
+        "total_new_gpu_texture_bytes": 6204069,
+        "unverified_original_body_ids": [
+          "dorm_nw_01",
+          "dorm_nw_02",
+          "dorm_nw_03",
+          "dorm_nw_04",
+          "dorm_north_low_annex",
+          "dorm_w_01",
+          "dorm_w_02",
+          "hill_south_block"
+        ],
+        "validation_rgba_buffer_bytes": 4194304,
+        "world_shadow_owner_count": 0,
+        "world_shadow_polygon_count": 0
+      },
+      "display_server": "X11",
+      "manual_gameplay": false,
+      "scope": "Actual default startup and two normal rendered views only; prior fifth-region 29-check GPU proof and sixth-region minimal physical smoke reused",
+      "status": "passed",
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)"
+    },
+    "new_body_native_smoke": {
+      "authority": {
+        "blocker_sha": "a786d613f45bf048c82ebe16203f33c37d038bd7f6c0e4f0b2464b319102ca1f",
+        "physical_records": 150,
+        "physics_sha": "790f010de7614d6bb41ca817f379cb73d9a7585f5de31f2d5cacc2129e69527c",
+        "source_data_sha": "084806b58e5b29f7d16d08826f52cecb97fcae8e14a338ed4fbc327412096795",
+        "visitor_position": "(515.0, 1510.0)",
+        "visitor_scale": "(1.0, 1.0)",
+        "walk_sha": "9d028c413e664bbd6ca07e5f37919e2d7301dd63925ff45759e50d15fdd2576f"
+      },
+      "diagnostics": {
+        "active": true,
+        "automatic_camera_streaming": false,
+        "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+        "east_neighbor_active": true,
+        "independent_bodies": 1,
+        "independent_body_gpu_bytes": 9967612,
+        "native_original_detail_density": 4.88566627859472,
+        "new_collision_bodies": 0,
+        "new_foreground_owners": 0,
+        "new_gpu_texture_bytes": 6204069,
+        "owned_east_strip_gpu_bytes": 524284,
+        "region_ground_foreground_seam_ownership_gpu_bytes": 6204069,
+        "region_residency_limit": 6,
+        "runtime_grid_texels_per_source_pixel": 4,
+        "shared_hd_owner_active": true,
+        "stable_retained_new_cpu_rgba_bytes": 0,
+        "total_new_gpu_texture_bytes": 16171681,
+        "unverified_original_body_ids": [
+          "dorm_nw_01",
+          "dorm_nw_03",
+          "dorm_nw_04",
+          "dorm_north_low_annex",
+          "dorm_w_01",
+          "dorm_w_02",
+          "hill_south_block"
+        ],
+        "validation_rgba_buffer_bytes": 4194304,
+        "world_shadow_owner_count": 0,
+        "world_shadow_polygon_count": 0
+      },
+      "failures": [],
+      "scope": "Seven minimal startup/physics/body/residency checks; no GPU, full matrix or new playability claim",
+      "status": "passed"
+    }
+  },
+  "visual_review": {
+    "reviewed_at_utc": "2026-10-14T09:18:12Z",
+    "body_visual_passed": true,
+    "central_roof_step_visually_consistent": true,
+    "manual_gameplay": false,
+    "exit_code": 0,
+    "window_closed": true,
+    "heavy_slot_released": true,
+    "evidence": [
+      "dorm-nw-02-default-normal-engine.png",
+      "changping-six-regions-one-new-body-full-engine.png",
+      "operator-terminal-exit.jpg",
+      "../../next-dorm-nw-02-contract/dorm-nw-02-inspection-coordinate-grid-NOT-GENERATION.png"
+    ],
+    "observations": [
+      "At the normal game maximum zoom 2.8, the complete connected dorm roof, full south facade and end walls are visible in the original location.",
+      "The central roof step is broadly consistent with the source topology. The low-resolution source does not establish exact rear parapet or equipment detail.",
+      "No visible pale alpha halo surrounds this object in the actual native rendered scene; the previously exposed transparent RGB is not visible.",
+      "The adjacent eastern road remains visibly continuous with no obvious building intrusion.",
+      "Neighboring original low-resolution fallback buildings remain noticeably softer, some with rectangular legacy ground collars."
+    ],
+    "limitations": [
+      "This review covers two automatically captured default scene views, not manual movement, clicking or gameplay.",
+      "Central rear roof detail remains a low-resolution source uncertainty; this is not proof of exact pixel-level roof reconstruction.",
+      "The whole campus is not fully high-definition; accepted terrain regions and the new dorm coexist with legacy buildings and unreplaced areas.",
+      "Native X11 rendering used Mesa llvmpipe. The log includes a V-Sync unsupported warning, not a runtime error."
+    ],
+    "additional_generation_or_engine_runs": false,
+    "seam_passed": true
+  },
+  "registration": {
+    "schema": "buct_north_west_uniform_ground_registration_v1",
+    "native_original_size": [
+      1254,
+      1254
+    ],
+    "runtime_grid_size": [
+      1024,
+      1024
+    ],
+    "runtime_grid_texels_per_source_pixel": 4,
+    "raw_original_native_density": 4.885666278594716,
+    "uniform_image_to_world_scale": 0.2046803737662643,
+    "raw_origin_world": [
+      117.48430124075107,
+      167.4574997238446
+    ],
+    "scale_is_uniform": true,
+    "road_or_source_geometry_transformed": false,
+    "no_upsampling_claim": true,
+    "diagnostic_landmarks": 6,
+    "rms_source_px": 0.46847758814055374,
+    "max_source_px": 0.6865919775394066,
+    "image_consistency_not_surveying": true,
+    "masked_hill_edge_fragment_not_hd_terrain": true,
+    "raw_sha256": "1dfb1a4977b5f4e33cba84bfb6cf4923bb4d5fbd95851cac0d3a592708871c8c",
+    "runtime_png_sha256": "f8c7c451c2445a042874e3dc713202109af0dc2ae9a2ac17f7f701d079bdcd30",
+    "runtime_rgba_sha256": "263d5c5562a6630eca59ac21e5e974a09ee6aa8f00a2cb995b013f4ec8a024b2",
+    "unmapped_border_policy": "Any unsampled edge is only in discarded outer collar, not core",
+    "status": "registered_candidate_not_engine_accepted"
+  },
+  "geometry_authority": {
+    "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+    "physics_records": 150,
+    "paving_polygons": 83,
+    "visitor_unchanged": true,
+    "no_new_traversal_rights": true
+  },
+  "coverage": {
+    "logical_new_core_source_pixels": 53824,
+    "retained_original_body_core_source_pixels": 8268,
+    "accepted_added_hd_terrain_core_source_pixels": 45556,
+    "campus_inclusion": "Visual source review places the region inside campus west road; no authoritative complete campus-boundary polygon is supplied",
+    "retired_by_accepted_dorm_nw_02_core_source_pixels": 2956
+  },
+  "allocation": {
+    "new_region_layer_gpu_bytes": 6204069,
+    "six_region_layers_gpu_bytes": 52283306,
+    "new_independent_body_gpu_bytes": 9967612,
+    "resident_regions": 6,
+    "hardware_vram_measured": false
+  },
+  "known_visual_followups": [
+    "Seven original left/northern body envelopes remain source fallback",
+    "Narrow generated Hill fragment at far right remains inside old body mask and is excluded from accepted ground",
+    "Outer low-resolution transitions and brighter northern terrain remain second-pass style items",
+    "Central dorm rooftop fifth source-pixel point remains uncertain; full original diagnostic retained, normal rendered structure accepted without hiding a reliable failed point"
+  ],
+  "manual_gameplay": false,
+  "hardware_performance_measured": false,
+  "whole_campus_complete": false,
+  "all_three_campuses_complete": false,
+  "publication": {
+    "target_branch": "godot-version",
+    "base_dependency": "72fcafd285dd388eed2735be71b60fa23f428548",
+    "merged": false,
+    "uploaded": false
+  },
+  "raw_evidence": {
+    "qa/north-west-default-smoke/default-smoke-result.json": {
+      "sha256": "e69156005ed34bdebb90d4279f7b44302244a00fd79c498de66e73c803268209",
+      "bytes": 1732
+    },
+    "qa/north-west-default-smoke/north-west-six-regions-default-engine.png": {
+      "sha256": "020155cfa33cfb2ed25695996761416b2e206f9732fd98b8b212400a659f7eb6",
+      "bytes": 5244801
+    },
+    "qa/north-west-default-smoke/changping-six-regions-default-full-engine.png": {
+      "sha256": "1f667588b08778fac4733c7d2ddca6ac643fff14005fc3c1c373aa9ffcc20b19",
+      "bytes": 3736140
+    },
+    "qa/north-west-native/north-west-native-smoke-result.json": {
+      "sha256": "6448f8f861ac7d78bbbcff422e403404ace89386c945640617937d64c2801b80",
+      "bytes": 1749
+    },
+    "qa/dorm-nw-02-default-smoke/default-smoke-result.json": "b14866a185c4dfe2bdb1c430d1c91b041199ae5e9af3834601e4ee42ece50b95",
+    "qa/dorm-nw-02-default-smoke/operator-independent-review.json": "9d1263ed0dacdc4062f37fe43dd81c50619c0d77f080c4d3d2d47f413074e00f",
+    "qa/dorm-nw-02-default-smoke/dorm-nw-02-default-normal-engine.png": "5ff0f0e38c428bd18218a7083767670a3cd59fbe5879e1b50d25eb5c005d08bb",
+    "qa/dorm-nw-02-default-smoke/changping-six-regions-one-new-body-full-engine.png": "03ff215b4c8c70c2efa551b30b7dd6107d2e4a1bb104225ffbe501f8e95d2499",
+    "qa/dorm-nw-02-native/dorm-nw-02-native-smoke-result.json": "3f0579174c7046f5736cde12d5181c5fbee815464341920e9c802ff5aa2b4d7f",
+    "generated/dorm-nw-02-body-v1-original.png": "d158aa040e081ddd98a3b05bc6ef9895cc5089a508da27add78c4a13a6235690"
+  },
+  "previous_ground_visual_review": {
+    "reviewed_at_utc": "2026-10-14T08:46:23.800723+00:00",
+    "seam_passed": true,
+    "seam_verdict_scope": "Visual continuity only at the rendered normal view; separate source-coordinate registration remains implementation evidence",
+    "manual_gameplay": false,
+    "terminal_exit": 0,
+    "actual_window_closed": true,
+    "visible_result": "Hillside paths and curved main road continue across the shared band without an obvious gap or abrupt edge. Ground and leaves form a continuous higher-detail strip. Original dormitories, Hill and shelter remain conspicuously low-resolution fallback objects and are not accepted HD bodies. Outer boundary still blends into original lower-detail terrain.",
+    "images": [
+      "north-west-six-regions-default-engine.png",
+      "changping-six-regions-default-full-engine.png"
+    ],
+    "terminal_evidence": "operator-terminal-exit.jpg",
+    "log_observation": "VSync unsupported warning only; no ERROR observed",
+    "additional_engine_runs": 0
+  },
+  "new_body_acceptance_report": "docs/BUCT_CHANGPING_DORM_NW_02_VALIDATION.json"
+}

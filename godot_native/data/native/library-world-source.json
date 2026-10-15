@@ -1,0 +1,815 @@
+{
+  "frontDesk": {
+    "counterBounds": {
+      "left": 148,
+      "top": 606,
+      "width": 341,
+      "height": 68
+    },
+    "position": {
+      "x": 334,
+      "y": 632
+    },
+    "scale": 0.72,
+    "stampPosition": {
+      "x": 334,
+      "y": 594
+    },
+    "stampHeadX": -35,
+    "stampRestY": 14,
+    "stampPressY": 28,
+    "idleFrames": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      0
+    ],
+    "frameRate": 1.8,
+    "repeatDelayMs": 900,
+    "staffDepth": 706,
+    "counterDepth": 728,
+    "serviceDepth": 742
+  },
+  "steppedSamples": [
+    {
+      "value": 0,
+      "result": 0
+    },
+    {
+      "value": 0.001,
+      "result": 1
+    },
+    {
+      "value": 0.25,
+      "result": 1
+    },
+    {
+      "value": 0.5,
+      "result": 1
+    },
+    {
+      "value": 0.999,
+      "result": 1
+    },
+    {
+      "value": 1,
+      "result": 1
+    }
+  ],
+  "sources": [
+    {
+      "path": "src/scenes/rpg/LibraryInteriorScene.ts",
+      "sha256": "cd8a6d543a67c83051d0664e5e4d3c68a71e5a9a36a8ece83c07fbd6114597cb"
+    },
+    {
+      "path": "src/scenes/rpg/LibraryInteriorModel.ts",
+      "sha256": "10a839a3a0840c6e2c3a70d737e222f0c4469e01a143bc069d0aa3e3f0d205cb"
+    },
+    {
+      "path": "src/scenes/rpg/LibraryShelfRevealMotion.ts",
+      "sha256": "831b7f6c5cd48b8b20bc07e435bd036fa45895b795d0a11bfb79006c378695e5"
+    }
+  ],
+  "shelf": {
+    "bounds": {
+      "left": 502,
+      "top": 110,
+      "width": 123,
+      "height": 123
+    },
+    "outline": [
+      [
+        514,
+        110
+      ],
+      [
+        617,
+        110
+      ],
+      [
+        617,
+        138
+      ],
+      [
+        613,
+        138
+      ],
+      [
+        613,
+        186
+      ],
+      [
+        620,
+        188
+      ],
+      [
+        625,
+        198
+      ],
+      [
+        623,
+        224
+      ],
+      [
+        609,
+        227
+      ],
+      [
+        605,
+        221
+      ],
+      [
+        605,
+        232
+      ],
+      [
+        590,
+        232
+      ],
+      [
+        590,
+        222
+      ],
+      [
+        540,
+        222
+      ],
+      [
+        540,
+        232
+      ],
+      [
+        525,
+        232
+      ],
+      [
+        525,
+        222
+      ],
+      [
+        520,
+        227
+      ],
+      [
+        506,
+        227
+      ],
+      [
+        502,
+        216
+      ],
+      [
+        502,
+        197
+      ],
+      [
+        507,
+        189
+      ],
+      [
+        512,
+        189
+      ],
+      [
+        512,
+        138
+      ],
+      [
+        514,
+        138
+      ]
+    ],
+    "frames": [
+      {
+        "offsetPx": 0,
+        "durationMs": 120,
+        "phase": "shaking"
+      },
+      {
+        "offsetPx": -2,
+        "durationMs": 135,
+        "phase": "shaking"
+      },
+      {
+        "offsetPx": 1,
+        "durationMs": 135,
+        "phase": "shaking"
+      },
+      {
+        "offsetPx": -1,
+        "durationMs": 135,
+        "phase": "shaking"
+      },
+      {
+        "offsetPx": 0,
+        "durationMs": 165,
+        "phase": "shaking"
+      },
+      {
+        "offsetPx": 2,
+        "durationMs": 175,
+        "phase": "sliding"
+      },
+      {
+        "offsetPx": 4,
+        "durationMs": 175,
+        "phase": "sliding"
+      },
+      {
+        "offsetPx": 6,
+        "durationMs": 175,
+        "phase": "sliding"
+      },
+      {
+        "offsetPx": 8,
+        "durationMs": 175,
+        "phase": "sliding"
+      },
+      {
+        "offsetPx": 10,
+        "durationMs": 175,
+        "phase": "sliding"
+      },
+      {
+        "offsetPx": 12,
+        "durationMs": 175,
+        "phase": "sliding"
+      },
+      {
+        "offsetPx": 14,
+        "durationMs": 175,
+        "phase": "sliding"
+      },
+      {
+        "offsetPx": 16,
+        "durationMs": 190,
+        "phase": "sliding"
+      }
+    ],
+    "shiftPx": 16,
+    "totalMs": 2105,
+    "collisionSamples": [
+      {
+        "offset": -2,
+        "id": "north_display_shelf",
+        "left": 500,
+        "top": 108,
+        "right": 625,
+        "bottom": 234
+      },
+      {
+        "offset": -1,
+        "id": "north_display_shelf",
+        "left": 501,
+        "top": 108,
+        "right": 625,
+        "bottom": 234
+      },
+      {
+        "offset": 0,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 625,
+        "bottom": 234
+      },
+      {
+        "offset": 1,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 626,
+        "bottom": 234
+      },
+      {
+        "offset": 2,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 627,
+        "bottom": 234
+      },
+      {
+        "offset": 4,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 629,
+        "bottom": 234
+      },
+      {
+        "offset": 6,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 631,
+        "bottom": 234
+      },
+      {
+        "offset": 8,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 633,
+        "bottom": 234
+      },
+      {
+        "offset": 10,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 635,
+        "bottom": 234
+      },
+      {
+        "offset": 12,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 637,
+        "bottom": 234
+      },
+      {
+        "offset": 14,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 639,
+        "bottom": 234
+      },
+      {
+        "offset": 16,
+        "id": "north_display_shelf",
+        "left": 502,
+        "top": 108,
+        "right": 641,
+        "bottom": 234
+      }
+    ]
+  },
+  "backpack": {
+    "x": 1255,
+    "y": 407,
+    "parts": [
+      {
+        "type": "ellipse",
+        "x": 2,
+        "y": 29,
+        "width": 54,
+        "height": 14,
+        "color": 1120021,
+        "alpha": 0.32,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -22,
+        "y": 4,
+        "width": 8,
+        "height": 44,
+        "color": 2571348,
+        "alpha": 1,
+        "angle": -10
+      },
+      {
+        "type": "rectangle",
+        "x": 22,
+        "y": 4,
+        "width": 8,
+        "height": 44,
+        "color": 2571348,
+        "alpha": 1,
+        "angle": 10
+      },
+      {
+        "type": "rectangle",
+        "x": -20,
+        "y": 25,
+        "width": 8,
+        "height": 7,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": -10
+      },
+      {
+        "type": "rectangle",
+        "x": 20,
+        "y": 25,
+        "width": 8,
+        "height": 7,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 10
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -38,
+        "width": 18,
+        "height": 5,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -7,
+        "y": -34,
+        "width": 4,
+        "height": 8,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 7,
+        "y": -34,
+        "width": 4,
+        "height": 8,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -37,
+        "width": 10,
+        "height": 2,
+        "color": 4157846,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -27,
+        "width": 30,
+        "height": 8,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -21,
+        "width": 44,
+        "height": 8,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -5,
+        "width": 54,
+        "height": 28,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 13,
+        "width": 50,
+        "height": 12,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 23,
+        "width": 40,
+        "height": 8,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -26,
+        "width": 24,
+        "height": 5,
+        "color": 4157846,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -20,
+        "width": 38,
+        "height": 6,
+        "color": 2378609,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -5,
+        "width": 46,
+        "height": 24,
+        "color": 2378609,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 13,
+        "width": 42,
+        "height": 9,
+        "color": 2378609,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 22,
+        "width": 32,
+        "height": 5,
+        "color": 1917283,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -21,
+        "y": -15,
+        "width": 3,
+        "height": 10,
+        "color": 13137986,
+        "alpha": 0.88,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -24,
+        "y": 1,
+        "width": 3,
+        "height": 21,
+        "color": 13137986,
+        "alpha": 0.88,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 22,
+        "y": 0,
+        "width": 3,
+        "height": 23,
+        "color": 1191753,
+        "alpha": 0.92,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -10,
+        "y": -17,
+        "width": 10,
+        "height": 3,
+        "color": 7840184,
+        "alpha": 0.7,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -10,
+        "width": 36,
+        "height": 3,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -12,
+        "y": -9,
+        "width": 2,
+        "height": 2,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -6,
+        "y": -9,
+        "width": 2,
+        "height": 2,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": -9,
+        "width": 2,
+        "height": 2,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 6,
+        "y": -9,
+        "width": 2,
+        "height": 2,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 12,
+        "y": -9,
+        "width": 2,
+        "height": 2,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 17,
+        "y": -7,
+        "width": 4,
+        "height": 7,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 0,
+        "stroke": {
+          "width": 1,
+          "color": 1120288,
+          "alpha": 1
+        }
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 5,
+        "width": 30,
+        "height": 5,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 12,
+        "width": 36,
+        "height": 12,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 20,
+        "width": 28,
+        "height": 6,
+        "color": 1120288,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 5,
+        "width": 24,
+        "height": 3,
+        "color": 3500939,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 12,
+        "width": 30,
+        "height": 9,
+        "color": 1587803,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 19,
+        "width": 22,
+        "height": 4,
+        "color": 1587803,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": 0,
+        "y": 8,
+        "width": 24,
+        "height": 2,
+        "color": 5210010,
+        "alpha": 1,
+        "angle": 0
+      },
+      {
+        "type": "rectangle",
+        "x": -21,
+        "y": 21,
+        "width": 5,
+        "height": 5,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": -10
+      },
+      {
+        "type": "rectangle",
+        "x": 21,
+        "y": 21,
+        "width": 5,
+        "height": 5,
+        "color": 13137986,
+        "alpha": 1,
+        "angle": 10
+      },
+      {
+        "type": "rectangle",
+        "x": 8,
+        "y": 9,
+        "width": 9,
+        "height": 7,
+        "color": 15194535,
+        "alpha": 1,
+        "angle": 0,
+        "stroke": {
+          "width": 2,
+          "color": 6247727,
+          "alpha": 1
+        }
+      },
+      {
+        "type": "rectangle",
+        "x": 8,
+        "y": 9,
+        "width": 4,
+        "height": 2,
+        "color": 5464410,
+        "alpha": 1,
+        "angle": 0
+      }
+    ],
+    "depth": 557,
+    "scale": 0.6,
+    "angle": -4
+  },
+  "backpackClearPatchSource": {
+    "left": 1080,
+    "top": 392,
+    "width": 34,
+    "height": 38
+  },
+  "playerDepthOffset": 120,
+  "shelfFloorSourceTop": 270,
+  "shelfDepth": 330,
+  "mechanismDepth": 418,
+  "paperDepth": 425,
+  "backpackTimeline": {
+    "shakeDurationMs": 70,
+    "shakeRepeat": 8,
+    "shakeYoyo": true,
+    "waitMs": 1900,
+    "transferMs": 1200,
+    "transferTo": {
+      "x": 334,
+      "y": 634
+    }
+  },
+  "shelfPaperTimeline": {
+    "waitMs": 110,
+    "revealMs": 240,
+    "holdMs": 220,
+    "transferMs": 220,
+    "reduced": {
+      "slideMs": 140,
+      "revealMs": 120,
+      "holdMs": 20,
+      "transferMs": 100
+    }
+  }
+}

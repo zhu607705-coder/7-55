@@ -1,0 +1,1094 @@
+{
+  "sources": [
+    {
+      "path": "src/scenes/rpg/CanteenInteriorScene.ts",
+      "sha256": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb"
+    },
+    {
+      "path": "src/modules/ChapterThreeCanteenController.ts",
+      "sha256": "d1fae47e5ca152bb806929ec92819961e099a07dba4b254ad17bb428251cf277"
+    },
+    {
+      "path": "src/data/itemCatalog.ts",
+      "sha256": "80f4cffbacc61b7d5a414e3e3e737de11f63fd899718a3751227bad2a5f1ae03"
+    },
+    {
+      "path": "src/data/chapter3-canteen.content.json",
+      "sha256": "7275d5f68000b59a14844d991288024e375f5fe95173eb615a46263f5792c55e"
+    }
+  ],
+  "geometry": [
+    {
+      "offset": [
+        0,
+        -24
+      ],
+      "accepted": true,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "accepted",
+        "targetLabel": "玩家自己"
+      }
+    },
+    {
+      "offset": [
+        58,
+        -24
+      ],
+      "accepted": true,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "accepted",
+        "targetLabel": "玩家自己"
+      }
+    },
+    {
+      "offset": [
+        -58,
+        -24
+      ],
+      "accepted": true,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "accepted",
+        "targetLabel": "玩家自己"
+      }
+    },
+    {
+      "offset": [
+        0,
+        34
+      ],
+      "accepted": true,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "accepted",
+        "targetLabel": "玩家自己"
+      }
+    },
+    {
+      "offset": [
+        0,
+        -82
+      ],
+      "accepted": true,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "accepted",
+        "targetLabel": "玩家自己"
+      }
+    },
+    {
+      "offset": [
+        58.01,
+        -24
+      ],
+      "accepted": false,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "missed_target",
+        "detail": "把难喝饮料拖到人物自己身上才能喝掉。"
+      }
+    },
+    {
+      "offset": [
+        0,
+        34.01
+      ],
+      "accepted": false,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "missed_target",
+        "detail": "把难喝饮料拖到人物自己身上才能喝掉。"
+      }
+    },
+    {
+      "offset": [
+        0,
+        -82.01
+      ],
+      "accepted": false,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "missed_target",
+        "detail": "把难喝饮料拖到人物自己身上才能喝掉。"
+      }
+    },
+    {
+      "offset": [
+        41,
+        -65
+      ],
+      "accepted": true,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "accepted",
+        "targetLabel": "玩家自己"
+      }
+    },
+    {
+      "offset": [
+        42,
+        -66
+      ],
+      "accepted": false,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "missed_target",
+        "detail": "把难喝饮料拖到人物自己身上才能喝掉。"
+      }
+    },
+    {
+      "offset": [
+        0,
+        0
+      ],
+      "accepted": true,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "accepted",
+        "targetLabel": "玩家自己"
+      }
+    },
+    {
+      "offset": [
+        0,
+        41.6
+      ],
+      "accepted": false,
+      "feedback": {
+        "itemId": "badDrink",
+        "reason": "missed_target",
+        "detail": "把难喝饮料拖到人物自己身上才能喝掉。"
+      }
+    }
+  ],
+  "eligibility": [
+    {
+      "phase": "tray_search",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "tray_search",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "tray_search",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "tray_search",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "tray_search",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "tray_search",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "tray_search",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "tray_search",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "drink_mix",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "drink_mix",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "drink_mix",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "drink_mix",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "drink_mix",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "drink_mix",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "drink_mix",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "drink_mix",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "menu_order",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "menu_order",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "menu_order",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "menu_order",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "menu_order",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "menu_order",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "menu_order",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "menu_order",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "pickup_search",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "pickup_search",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "pickup_search",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "pickup_search",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "pickup_search",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "pickup_search",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "pickup_search",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "pickup_search",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chase_ready",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "chase_ready",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chase_ready",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": true,
+      "repeated": false,
+      "remaining": false,
+      "events": [
+        {
+          "id": "use_item",
+          "payload": {
+            "itemId": "badDrink",
+            "targetId": "rpg-player"
+          }
+        },
+        {
+          "id": "canteen_bad_drink_consumed"
+        }
+      ]
+    },
+    {
+      "phase": "chase_ready",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chase_ready",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "chase_ready",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chase_ready",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "chase_ready",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "tracking",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "entered",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "exit_blocking",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "chasing",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": true,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": true,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": true,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": true,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": false,
+      "mode": "light",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": false,
+      "mode": "light",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": false,
+      "mode": "dark",
+      "owned": true,
+      "accepted": false,
+      "repeated": false,
+      "remaining": true,
+      "events": []
+    },
+    {
+      "phase": "theater_reached",
+      "active": false,
+      "mode": "dark",
+      "owned": false,
+      "accepted": false,
+      "repeated": false,
+      "remaining": false,
+      "events": []
+    }
+  ],
+  "dialogue": {
+    "lines": [
+      "玩家：这也能卖？",
+      "系统：你已完成试饮。无退款项目。"
+    ],
+    "atMs": [
+      0,
+      2500
+    ],
+    "completeAtMs": 5000,
+    "durationMs": [
+      2380,
+      2380
+    ],
+    "lockedAfterComplete": false
+  }
+}

@@ -1,0 +1,11 @@
+# Northwest dormitory-band 02
+
+One complete original-anchor building is now independently rendered from the unmodified native 1536×1024 RGBA original. Four clear outer roof/facade controls give uniform scale 0.04597417, RMS 1.105 and maximum 1.304 source pixels. The fifth central rear roof point is uncertain in the original low-resolution image; its original 5-point diagnostic (RMS 2.067/max 3.617) is preserved. It is not presented as a strict 5-point pass. Actual normal game zoom 2.8 shows the complete facade/roof and broadly consistent central stepping, with no obvious intrusion on the original eastern road.
+
+The apparent haze in an RGB-only preview is transparent-pixel RGB. Real alpha composition and actual engine rendering are clean. Original RGBA pixels are unmodified. Existing alpha cutoff .04 and solid threshold .97 handle the edge and alpha252/253 interiors.
+
+Source anchor [181,304] and original four-point CollisionPolygon2D are unchanged. The explicitly declared original_Vector2_float32 registration validates exact original engine vectors, not an epsilon: JSON display-tail rounding is handled only for this declaration. The prior registration path remains unchanged. Physical snapshots retain all original 150 records, 83 paving polygons, source data, blockers and visitor position/scale. Picking, neutral source-label card, actor-foot depth and unload/reentry pass the 7-item smoke. Two actual X11/Mesa normal views exit 0. No indoor gameplay, surveyed identity, manual walking or hardware VRAM measurement is claimed.
+
+The new independent building allocates 9,967,612 logical texture bytes, separate from six ground layers (52,283,306 bytes). Its acceptance retires 2,956 old-source owner-mask core cells. Remaining original-body fallback in the sixth region is 8,268 cells; left-region accepted HD terrain is 45,556, with total Changping terrain 310,684 / 1,573,200 = 19.75%. This is one newly accepted building, not completion of the other source envelopes or the other two campuses.
+
+No joint revision was needed. Hill and Shelter remain rejected/fallback originals. Central rooftop fine detail and existing old rectangular transition areas remain second-pass items. Full machine evidence: BUCT_CHANGPING_DORM_NW_02_VALIDATION.json.

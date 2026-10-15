@@ -1,0 +1,366 @@
+{
+  "version": 1,
+  "generation_method": "ChatGPT web image generation",
+  "generation_date": "2026-10-09",
+  "source_asset": "assets/native/canteen_objects/canteen_double_door.png",
+  "source_sha256": "d2f5df50b71e106a84335807b703ae6b3385cc2fb5f96c805c9a09dc799cf36d",
+  "generated_source_sha256": "905e7233a1e100b1c38ecf23ef94e66aa3b2cb3edcc79c34014e38c33ab5b24e",
+  "generated_source_size": [
+    1774,
+    887
+  ],
+  "source_crop": [
+    244,
+    232,
+    1010,
+    1023
+  ],
+  "stationary_aperture": [
+    72,
+    85,
+    695,
+    770
+  ],
+  "stationary_hinge_plates": [
+    [
+      59,
+      178,
+      91,
+      280
+    ],
+    [
+      59,
+      551,
+      91,
+      653
+    ],
+    [
+      677,
+      178,
+      709,
+      280
+    ],
+    [
+      677,
+      551,
+      709,
+      653
+    ]
+  ],
+  "atlas_size": [
+    2048,
+    1024
+  ],
+  "cell_size": [
+    512,
+    512
+  ],
+  "cell_source_origin": [
+    64,
+    40
+  ],
+  "cell_to_source_scale": 2,
+  "world_scale": 0.11488250652741515,
+  "registrations": [
+    {
+      "frame": 0,
+      "method": "uniform half-size original aperture reference; runtime uses full original source"
+    },
+    {
+      "frame": 1,
+      "raw_cell": [
+        444,
+        0,
+        443,
+        444
+      ],
+      "raw_hinges": [
+        79,
+        367,
+        82,
+        378
+      ],
+      "inner_silhouette_extents": [
+        208,
+        235
+      ],
+      "uniform_scale": 1.1570945945945945,
+      "target_hinges": [
+        100.0,
+        411.5,
+        82.5,
+        425.0
+      ]
+    },
+    {
+      "frame": 2,
+      "raw_cell": [
+        887,
+        0,
+        443,
+        444
+      ],
+      "raw_hinges": [
+        79,
+        368,
+        82,
+        378
+      ],
+      "inner_silhouette_extents": [
+        193,
+        251
+      ],
+      "uniform_scale": 1.1570945945945945,
+      "target_hinges": [
+        100.0,
+        411.5,
+        82.5,
+        425.0
+      ]
+    },
+    {
+      "frame": 3,
+      "raw_cell": [
+        1330,
+        0,
+        444,
+        444
+      ],
+      "raw_hinges": [
+        80,
+        367,
+        82,
+        378
+      ],
+      "inner_silhouette_extents": [
+        171,
+        272
+      ],
+      "uniform_scale": 1.1570945945945945,
+      "target_hinges": [
+        100.0,
+        411.5,
+        82.5,
+        425.0
+      ]
+    },
+    {
+      "frame": 4,
+      "raw_cell": [
+        0,
+        444,
+        444,
+        443
+      ],
+      "raw_hinges": [
+        80,
+        367,
+        83,
+        379
+      ],
+      "inner_silhouette_extents": [
+        149,
+        296
+      ],
+      "uniform_scale": 1.1570945945945945,
+      "target_hinges": [
+        100.0,
+        411.5,
+        82.5,
+        425.0
+      ]
+    },
+    {
+      "frame": 5,
+      "raw_cell": [
+        444,
+        444,
+        443,
+        443
+      ],
+      "raw_hinges": [
+        79,
+        367,
+        83,
+        379
+      ],
+      "inner_silhouette_extents": [
+        133,
+        310
+      ],
+      "uniform_scale": 1.1570945945945945,
+      "target_hinges": [
+        100.0,
+        411.5,
+        82.5,
+        425.0
+      ]
+    },
+    {
+      "frame": 6,
+      "raw_cell": [
+        887,
+        444,
+        443,
+        443
+      ],
+      "raw_hinges": [
+        80,
+        367,
+        82,
+        379
+      ],
+      "inner_silhouette_extents": [
+        124,
+        319
+      ],
+      "uniform_scale": 1.1531986531986531,
+      "target_hinges": [
+        100.0,
+        411.5,
+        82.5,
+        425.0
+      ]
+    },
+    {
+      "frame": 7,
+      "raw_cell": [
+        1330,
+        444,
+        444,
+        443
+      ],
+      "raw_hinges": [
+        80,
+        367,
+        83,
+        379
+      ],
+      "inner_silhouette_extents": [
+        120,
+        324
+      ],
+      "uniform_scale": 1.1570945945945945,
+      "target_hinges": [
+        100.0,
+        411.5,
+        82.5,
+        425.0
+      ]
+    }
+  ],
+  "angles": "Requested angles are a drawing brief; passage clearance is measured from actual alpha silhouettes.",
+  "clearance_measurements": [
+    {
+      "frame": 0,
+      "cell_corridor": [
+        256,
+        256
+      ],
+      "clear_width_cell_px": 0,
+      "clear_width_world_px": 0.0,
+      "centered_clear_width_world_px": 0.0,
+      "foot_passable": false,
+      "center_blocked_rows": 342
+    },
+    {
+      "frame": 1,
+      "cell_corridor": [
+        249,
+        259
+      ],
+      "clear_width_cell_px": 10,
+      "clear_width_world_px": 2.297650130548303,
+      "centered_clear_width_world_px": 1.608355091383812,
+      "foot_passable": false,
+      "center_blocked_rows": 0
+    },
+    {
+      "frame": 2,
+      "cell_corridor": [
+        232,
+        276
+      ],
+      "clear_width_cell_px": 44,
+      "clear_width_world_px": 10.109660574412533,
+      "centered_clear_width_world_px": 9.420365535248042,
+      "foot_passable": false,
+      "center_blocked_rows": 0
+    },
+    {
+      "frame": 3,
+      "cell_corridor": [
+        205,
+        302
+      ],
+      "clear_width_cell_px": 97,
+      "clear_width_world_px": 22.287206266318538,
+      "centered_clear_width_world_px": 21.368146214099216,
+      "foot_passable": true,
+      "center_blocked_rows": 0
+    },
+    {
+      "frame": 4,
+      "cell_corridor": [
+        180,
+        329
+      ],
+      "clear_width_cell_px": 149,
+      "clear_width_world_px": 34.234986945169716,
+      "centered_clear_width_world_px": 33.775456919060055,
+      "foot_passable": true,
+      "center_blocked_rows": 0
+    },
+    {
+      "frame": 5,
+      "cell_corridor": [
+        162,
+        346
+      ],
+      "clear_width_cell_px": 184,
+      "clear_width_world_px": 42.27676240208878,
+      "centered_clear_width_world_px": 41.587467362924286,
+      "foot_passable": true,
+      "center_blocked_rows": 0
+    },
+    {
+      "frame": 6,
+      "cell_corridor": [
+        151,
+        356
+      ],
+      "clear_width_cell_px": 205,
+      "clear_width_world_px": 47.10182767624021,
+      "centered_clear_width_world_px": 46.18276762402089,
+      "foot_passable": true,
+      "center_blocked_rows": 0
+    },
+    {
+      "frame": 7,
+      "cell_corridor": [
+        146,
+        362
+      ],
+      "clear_width_cell_px": 216,
+      "clear_width_world_px": 49.62924281984334,
+      "centered_clear_width_world_px": 48.93994778067886,
+      "foot_passable": true,
+      "center_blocked_rows": 0
+    }
+  ],
+  "first_passable_frame": 3,
+  "gate_visual_full_travel": 0.31593772365766093,
+  "measured_visual_cues": [
+    0.0,
+    0.023780258769931468,
+    0.1392843727953129,
+    0.31593772365766093,
+    0.6237657480117136,
+    0.8175833929753763,
+    0.931593772365766,
+    1.0
+  ],
+  "frame_sha256": "5cc8681e887f04fb84eb06374ca4b59ce1d24962226f579179bab244ae0a8cca",
+  "leaves_sha256": "c0b55406b5e5457c493375b38bcb131a5526cafad026da82810419bde9904101",
+  "closed_endpoint": "Runtime paints the unchanged full-resolution original source directly."
+}

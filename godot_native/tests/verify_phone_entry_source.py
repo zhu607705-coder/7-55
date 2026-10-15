@@ -1,0 +1,37 @@
+from pathlib import Path
+import json
+S=Path(__file__).resolve().parents[2]
+B=Path(__file__).resolve().parents[1]
+checks=[]
+def check(ok,label):
+    checks.append((label,bool(ok)))
+    if not ok: raise AssertionError(label)
+ti=(S/'src/scenes/phone/P06_Tiyi/index.tsx').read_text()
+wx=(S/'src/scenes/phone/P14_Wechat/index.tsx').read_text()
+zj=(S/'src/scenes/phone/P15_Zjuding/index.tsx').read_text()
+css=(S/'src/styles/scenes/p06-tiyi.css').read_text()
+common=(S/'src/styles/scenes/app-inner-common.css').read_text()
+wx_css=(S/'src/styles/scenes/p14-wechat.css').read_text()
+audio=json.loads((S/'godot_native/data/native/audio-director-source.json').read_text())
+model=(B/'scripts/chapters/phone_entry_session.gd').read_text()
+check('useState(() => kit.network.canOpenTiyi())' in ti,'Tiyi snapshots network at mount')
+check('CRASH_DELAY_MS = 3000' in ti and 'LOAD_DELAY_MS = 1400' in ti and '}, 620)' in ti,'Tiyi3000/1400/620 source boundaries')
+check(ti.index('bumpTiyiCrash()') < ti.index('exitTimer = window.setTimeout'),'source crash fact precedes return timer')
+check('window.clearTimeout(timer)' in ti and 'window.clearTimeout(exitTimer)' in ti,'unmount cancels both Tiyi callbacks')
+check('const [entryOnCampusWifi] = useState(() => kit.network.canOpenZjuding())' in zj,'Zjuding snapshots network at mount')
+check('LOAD_DELAY_MS = 1500' in zj and 'STUCK_HINT_MS = 3000' in zj,'Zjuding1500/3000 source boundaries')
+check('请连接校园网后重新进入浙大钉。' in zj,'blocked entry requires explicit reentry')
+check('const [systemDialogue,' in zj and 'setSystemDialogue("reservation")' in zj,'system dialogue belongs to same Zjuding component')
+check('}, 900)' in wx and '}, 2000)' in wx and '}, 4000)' in wx,'WeChat arrival/attack/skip source boundaries')
+check('if (!flags.codeScattered || flags.slashTaken)' in wx and 'setOpenedFriend(true)' in wx,'avatar opens conversation outside slash interaction')
+check('playSfx("07_")' in wx and 'sequenceVoRef.current?.cancel()' in wx,'arrival sound and unmount voice cancellation')
+check('animation: frame-shake 0.12s var(--ease-press) 7' in wx_css,'seven local stepped shakes')
+check(audio['assets']['vo_legacy_xy_attack']['durationMs']==11942 and audio['assets']['vo_legacy_xy_laugh']['durationMs']==5380,'current validated voice durations give13942/19322 timeline')
+check(audio['textDurationMsByKey']['sys_net_try']==3040,'first taunt duration is3040ms')
+check('animation: crash-glitch 0.6s steps(6, end) both' in css and 'filter: invert(0.9) hue-rotate(90deg)' in css and 'filter: contrast(3)' in css,'Tiyi full CSS crash filtering and600ms animation')
+check('transform: translateX(-8px) skewX(4deg)' in css and 'transform: translateX(10px) scaleY(0.92)' in css and 'transform: scaleY(0.02)' in css,'Tiyi authored transform keyframes')
+check('animation: dot-hop 0.9s var(--ease-pixel) infinite' in common and 'animation-delay: 0.15s' in common and 'animation-delay: 0.3s' in common,'source900ms loading dot stagger')
+check('transform: translateY(-10px)' in common and 'height: 12px' in common,'source12px square loading dots with10px hop')
+check('audio.volume = opts?.volume ?? 0.9' in (S/'src/modules/Sfx.ts').read_text(),'source unqualified arrival/crash SFX use0.9 gain')
+check('save_game' not in model and '.flags' not in model and '.digits' not in model,'transient session cannot persist or directly grant facts')
+print(f'Phone entry source oracles: {len(checks)} checks,0 failures')

@@ -1,0 +1,246 @@
+{
+  "status": "accepted_real_art",
+  "scope": "One connected teaching building with accepted true-RGBA body, separate contact shadow and independent inferred ground. Rongmao library and remaining campus/context registrations are still legacy source layers.",
+  "profiles": [
+    "data/buildings/teaching-profile.json"
+  ],
+  "true_buildings_completed": 1,
+  "ground_layers": [
+    {
+      "id": "WestCompleteCleanGround",
+      "texture": "assets/buildings/haidian-west-expanded-ground-quality-v1.png",
+      "png_sha256": "10d5766625ec830fb29d6ad8eb50e8a43d76be9502c18b663dfd5dadcb37e675",
+      "world_rect": [
+        424,
+        160,
+        226,
+        180
+      ],
+      "actual_size": [
+        1407,
+        1118
+      ],
+      "overlap_feather": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "image_to_world": {
+        "scale": 0.16100178890876565,
+        "origin": [
+          423.7352415026834,
+          160.0
+        ],
+        "raw_size": [
+          1407,
+          1118
+        ],
+        "clip_world_rect": [
+          424,
+          160,
+          226,
+          180
+        ],
+        "mode": "uniform_cover_center_crop",
+        "crop_raw_pixels_each_side": [
+          1.6444444444444304,
+          0.0
+        ]
+      }
+    },
+    {
+      "id": "EastCompleteCleanGround",
+      "texture": "assets/buildings/haidian-east-ground-quality-v1.png",
+      "png_sha256": "6a0174e6ae3413195b8e00e3f1fd741e8a62e9fc66de842f3796bbea86ea80dc",
+      "world_rect": [
+        754,
+        250,
+        106,
+        162
+      ],
+      "actual_size": [
+        1014,
+        1550
+      ],
+      "overlap_feather": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "image_to_world": {
+        "scale": 0.10453648915187377,
+        "origin": [
+          754.0,
+          249.9842209072978
+        ],
+        "raw_size": [
+          1014,
+          1550
+        ],
+        "clip_world_rect": [
+          754,
+          250,
+          106,
+          162
+        ],
+        "mode": "uniform_cover_center_crop",
+        "crop_raw_pixels_each_side": [
+          0.0,
+          0.15094339622646682
+        ]
+      }
+    },
+    {
+      "id": "LongFacadeCleanGround",
+      "texture": "assets/buildings/haidian-long-ground-quality-v1.png",
+      "png_sha256": "da629152fae2e9484effc2ff1bf2280ce2565510bc486ee4e2705edec4876efc",
+      "world_rect": [
+        588,
+        247,
+        185,
+        141
+      ],
+      "actual_size": [
+        1437,
+        1095
+      ],
+      "overlap_feather": [
+        14,
+        0,
+        14,
+        0
+      ],
+      "image_to_world": {
+        "scale": 0.12876712328767123,
+        "origin": [
+          587.9808219178083,
+          247.0
+        ],
+        "raw_size": [
+          1437,
+          1095
+        ],
+        "clip_world_rect": [
+          588,
+          247,
+          185,
+          141
+        ],
+        "mode": "uniform_cover_center_crop",
+        "crop_raw_pixels_each_side": [
+          0.14893617021280586,
+          0.0
+        ]
+      }
+    }
+  ],
+  "repair_mask": "assets/buildings/teaching-repair-mask.png",
+  "repair_mask_sha256": "481098190d8a3f30d5aed33c6eb579b300a96af9830944b0a8f57dfb39cf7832",
+  "preserved_foliage_mask": "assets/buildings/source-foliage-protection.png",
+  "preserved_foliage_mask_sha256": "a3050ace521920428504c3e50e48cc8d4800bdfc603f15fbedf7e0258dd43679",
+  "ground_world_rect": [
+    400,
+    144,
+    480,
+    368
+  ],
+  "preserved_source_rects": [
+    [
+      440,
+      361,
+      14,
+      20
+    ],
+    [
+      418,
+      255,
+      12,
+      12
+    ]
+  ],
+  "foliage_depth_groups": [
+    {
+      "id": "0",
+      "rect": [
+        570,
+        144,
+        45,
+        368
+      ],
+      "baseline": 332
+    },
+    {
+      "id": "1",
+      "rect": [
+        615,
+        144,
+        35,
+        368
+      ],
+      "baseline": 346
+    },
+    {
+      "id": "2",
+      "rect": [
+        650,
+        144,
+        35,
+        368
+      ],
+      "baseline": 362
+    },
+    {
+      "id": "3",
+      "rect": [
+        685,
+        144,
+        25,
+        368
+      ],
+      "baseline": 375
+    },
+    {
+      "id": "4",
+      "rect": [
+        710,
+        144,
+        50,
+        368
+      ],
+      "baseline": 388
+    },
+    {
+      "id": "5",
+      "rect": [
+        760,
+        144,
+        70,
+        368
+      ],
+      "baseline": 429
+    },
+    {
+      "id": "6",
+      "rect": [
+        830,
+        144,
+        50,
+        368
+      ],
+      "baseline": 429
+    }
+  ],
+  "original_route_contract": {
+    "spawn": [
+      963,
+      297
+    ],
+    "manual_speed": 88,
+    "tour_speed": 106,
+    "foot_radius": 3
+  },
+  "ground_qualification": "Conceptual hidden-ground reconstruction; raw generated PNGs unchanged, only masked registered regions are sampled. Unrelated courts/background retain source pixels.",
+  "registration_contract": "All generated images use one scalar image_to_world scale; ground uses explicit centered cover/crop. No per-axis texture stretching."
+}

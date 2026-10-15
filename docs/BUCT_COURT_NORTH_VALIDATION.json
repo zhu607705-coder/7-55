@@ -1,0 +1,236 @@
+{
+  "schema": "buct-court-north-acceptance-v2",
+  "status": "SCOPED_NATIVE_ACCEPTED_WITH_DOCUMENTED_MICROEDGE_LIMIT",
+  "base": {
+    "draft_pr": 130,
+    "commit": "dca266a2bffcc8b460718f84930a49f19f184d30",
+    "tree": "d96e6ff04e2b4810f2c46de51a37062f39611313"
+  },
+  "scope": {
+    "campus": "chaoyang",
+    "object_id": "west_courts_north_bar",
+    "only_outdoor_building": true,
+    "road_or_route_change": false,
+    "student_change": false,
+    "other_buildings_changed": false,
+    "new_interior": false,
+    "tilemap_replacement": false,
+    "whole_building_hide_or_move": false
+  },
+  "frozen_assets": {
+    "body_sha256": "553579fb870f4d5cfc7cfde3068271c9018e0096bf7db6dc6ecf5a6e2fde4d94",
+    "body_bytes_unchanged": true,
+    "body_image_to_world": {
+      "scale": 0.08011695906432749,
+      "origin": [
+        437.7450292397661,
+        430.92105263157896
+      ],
+      "raw_size": [
+        1961,
+        802
+      ],
+      "rotation_degrees": 0,
+      "padding_preserved": true
+    },
+    "cleanup_mask_sha256": "5443083b70e59612936bc6bf1cdd3d56755434db61b40728911365ec908ce05e",
+    "body_profile_before_cleanup_sha256": "89093d21a4cb7f5684c73992e4891f125e673fefef9b9c03375bd8ee6e55bad9",
+    "final_profile_sha256": "a9fc3741a9f6e7f66e49b15298d9dc86e7d5876855360a9ffef40e3a99a8a023",
+    "profile_only_change": "ground_repairs array; all body transform, contact, depth and picking fields unchanged"
+  },
+  "passed": {
+    "source": {
+      "checks": 50,
+      "failures": 0,
+      "date": "2026-10-13",
+      "evidence": "evidence/source-checks.json"
+    },
+    "native_body": {
+      "checks": 139,
+      "original_body_checks": 127,
+      "added_repair_checks": 12,
+      "failures": 0,
+      "exit_code": 0,
+      "date": "2026-10-13",
+      "evidence": "evidence/native/post-cleanup/headless-results.json"
+    },
+    "original_road_regression": {
+      "checks": 41,
+      "walking_samples": 1322,
+      "failures": 0,
+      "exit_code": 0,
+      "evidence": "evidence/native/post-cleanup/road-regression.log",
+      "date": "2026-10-13"
+    },
+    "gpu_body": {
+      "exit_code": 0,
+      "production_imported_texture": true,
+      "same_production_texture_identity": true,
+      "production_mipmaps": true,
+      "whole_vs_compact_changed_pixels": 0,
+      "alpha_support_difference": 0,
+      "actual_student_poses": 24,
+      "overlap_errors_above_2LSB": 0,
+      "maximum_channel_difference": 1,
+      "component_node_delta": 5,
+      "component_texture_delta_bytes": 8400868,
+      "cpu_alpha_bytes": 1572722,
+      "depth_texture_bytes": 7844,
+      "body_passes": 2,
+      "evidence": "evidence/native/gpu/independent-analysis.json",
+      "date": "2026-10-12",
+      "reused_unchanged_body_proof": true,
+      "not_rerun_on_20261013": true
+    },
+    "normal_scene_review": {
+      "exit_code": 0,
+      "actual_normal_road_views": 2,
+      "actual_overview": true,
+      "neutral_info_card_viewed": true,
+      "no_fatal_or_RID_or_ObjectDB_diagnostics": true,
+      "environment_warning": "VSync mode unsupported by this renderer",
+      "evidence": [
+        "evidence/native/post-cleanup/normal-first/normal-west-road.png",
+        "evidence/native/post-cleanup/normal-first/normal-east-road.png",
+        "evidence/native/post-cleanup/normal-first/full-map-overview.png",
+        "evidence/native/manual/manual_01.png"
+      ],
+      "date": "2026-10-13",
+      "post_cleanup": true
+    },
+    "minimal_cleanup": {
+      "source_roi_xywh": [
+        447,
+        433,
+        56,
+        16
+      ],
+      "allowed_source_pixels": 201,
+      "source_pixels_changed_outside_mask": 0,
+      "body_unchanged": true,
+      "runtime_dimensions": [
+        56,
+        16
+      ],
+      "runtime_rgba_bytes": 3584,
+      "runtime_png_bytes": 754,
+      "imported_ctex_file_bytes": 568,
+      "runtime_mipmaps": false,
+      "runtime_filter": "nearest",
+      "runtime_type": "CompressedTexture2D",
+      "raw_generated_texture_loaded_at_runtime": false,
+      "additional_nodes": 1,
+      "generated_raw_sha256": "e469b0d80a238b71de682df12dd4791ccb40eb06b3924ba1361fba9f68d5390d",
+      "uniform_raw_to_source_scale": 0.025339366515837104,
+      "uniform_center_crop_xywh": [
+        0,
+        40.28571428571428,
+        2210,
+        631.4285714285714
+      ],
+      "runtime_asset_sha256": "138bd04d1fa83dfc013a64db87a0d4a87524fec8359c04f58b0cc039a0172761",
+      "runtime_alpha_sha256": "42993fb428a3495f9a84fe35753cbe9db14445d4cb754cca5eede239266102e7",
+      "runtime_rgba_sha256": "c8a8d0a2039be5b02f8459c5c341a19ee6aa964d90ce82a41d7b65849ec912b0",
+      "major_old_north_lip_removed_in_normal_view": true
+    },
+    "manual_gui": {
+      "time_utc": "2026-10-13T01:12:38Z",
+      "normal_capture_exit": 0,
+      "manual_exit": 0,
+      "actual_manual_inputs": true,
+      "initial_fixture": "one-time placement on existing accepted road(612,478); no injected interaction",
+      "roof_click": {
+        "client": [
+          402,
+          365
+        ],
+        "world": [
+          514.8894,
+          454.7554
+        ],
+        "selected": "west_courts_north_bar",
+        "card": "球场北侧短楼（场景对象）",
+        "visited": []
+      },
+      "escape_closed": true,
+      "transparent_click": {
+        "client": [
+          553,
+          352
+        ],
+        "world": [
+          592.8878,
+          448.0403
+        ],
+        "selected": false,
+        "info_id": ""
+      },
+      "return_chooser": true,
+      "first_campus_released": true,
+      "reentered_original_spawn": [
+        744,
+        979
+      ],
+      "normal_close": true,
+      "errors_objectdb_rid": false,
+      "warnings": [
+        "VSync unsupported environment"
+      ],
+      "screenshot": "manual_01.png",
+      "visual_review": {
+        "bright_cleanup_block": false,
+        "visible_major_gray_roof_strip_removed": true,
+        "court_trees_preserved": true,
+        "minor_top_specks": "Two lower vent boxes/end post are genuine v2; tiny dark mask-exterior old edges remain at approximate source (472,437), (471,439–440), (497,439–440)."
+      },
+      "slot_released": true
+    },
+    "fixture_output_contract": {
+      "normal_explicit_workspace_directory": {
+        "checks": 139,
+        "exit_code": 0
+      },
+      "unset_optional_environment": {
+        "checks": 139,
+        "exit_code": 0
+      },
+      "explicit_invalid_relative_directory": {
+        "exit_code": 2,
+        "expected_diagnostic": "COURT_NORTH_EVIDENCE_WRITE_FAILED"
+      },
+      "included_in_focused_runner": true,
+      "auto_discovered_by_full_validator": true,
+      "null_store_error": false,
+      "evidence": "evidence/native/post-cleanup/output-{normal,empty,invalid}.log"
+    }
+  },
+  "incomplete": {},
+  "not_claimed": [
+    "whole-campus or full-game CI completed locally",
+    "PCK export",
+    "median/p95 timing benchmark",
+    "complete erased building footprint",
+    "elimination of every original microedge",
+    "publication or merge"
+  ],
+  "future_performance_note": "planning/FUTURE-TEXTURE-BUDGET.md is a read-only proposal; no LOD or residency implementation was applied.",
+  "validated_utc_date": "2026-10-13",
+  "limitations": [
+    "Small original dark antialias equipment edges outside the frozen mask remain near source (472,437), (471,439–440), (497,439–440). They appear as approximately 1–3-screen-pixel dark edges in the normal view; no further mask expansion was applied.",
+    "The original full building footprint remains under the fixed object. Arbitrary removal/movement is unsupported.",
+    "Generated background texture is a bounded visual repair, not evidence of exact hidden scenery reconstruction.",
+    "Only focused native checks ran locally. Publisher owns full CI for the exact published commit."
+  ],
+  "test_fixture_adjustments": [
+    {
+      "date": "2026-10-12",
+      "issue": "inferred WeakRef warning",
+      "resolved": "explicit type before passing127-run"
+    },
+    {
+      "date": "2026-10-13",
+      "issue": "test-only raw PNG read emitted export warning",
+      "resolved": "compare production imported RGBA digest instead; clean139-run and output-branch runs verified"
+    }
+  ]
+}

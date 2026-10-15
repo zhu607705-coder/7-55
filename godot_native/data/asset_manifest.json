@@ -1,0 +1,3597 @@
+{
+  "sourceCommit": "39ccde029b0cd25a6011739a4e4f98f8c898b2c3",
+  "assetCount": 718,
+  "totalBytes": 625907429,
+  "assets": [
+    {
+      "path": "assets/anim/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "assets/audio/act-one/music/music_act2_manual_control.mp3",
+      "bytes": 482315,
+      "sha256": "c2c1263b9382178f4332e9d66dbd2077374d80070155131a64728ded565779f5"
+    },
+    {
+      "path": "assets/audio/act-one/music/music_act2_movement_puzzle.mp3",
+      "bytes": 482315,
+      "sha256": "0eb8b6a89f103c25202b7c1977c8c0b0bd5ab4f6ab4f2e46dc9f0dd01ccaaebf"
+    },
+    {
+      "path": "assets/audio/act-one/music/music_act2_search.mp3",
+      "bytes": 482315,
+      "sha256": "0b01559af5bb7e91653047cda65672b8bd84ec9344883bb83061614ed52b0aed"
+    },
+    {
+      "path": "assets/audio/act-one/music/music_narrator_chase.mp3",
+      "bytes": 482315,
+      "sha256": "a718b4126698c048fff2703ff279f8423a13863148875feb1d5c3dd4d10ad84e"
+    },
+    {
+      "path": "assets/audio/act-one/music/music_prologue_blackout.mp3",
+      "bytes": 482315,
+      "sha256": "a440b1b89f5e8933c6020e038d1fe84a5501c8001e156f74b2718a2954269d07"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_act1_cartridge_pickup.mp3",
+      "bytes": 22560,
+      "sha256": "1a2f1c29da4c734eff580f99d6c21a22c63afb1b4a679c2b9576c6859ba958f7"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_act1_controls_install.mp3",
+      "bytes": 22560,
+      "sha256": "1a2f1c29da4c734eff580f99d6c21a22c63afb1b4a679c2b9576c6859ba958f7"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_act1_login_stamp.mp3",
+      "bytes": 20470,
+      "sha256": "f204a3f91faf3c92ed7ae80f68da22d0481edbd9ff65d054bd473307f8a65a9d"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_act1_map_complete.mp3",
+      "bytes": 29352,
+      "sha256": "be4422cc9ee4247fec4b80ae3246d925b8618c7a9116308bc8dd0550ae68fc6d"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_act1_movement_unlock.mp3",
+      "bytes": 24650,
+      "sha256": "f3e8ce64d4e714ec28acb172492c60783ee36d7e16cc3bb982c248165f732ce9"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_act1_phone_link.mp3",
+      "bytes": 23605,
+      "sha256": "97ed648a6b0b83afc11e826f16e5df253a14b7072b8d07f2ceb9ba83fc5a279c"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_act2_quest_update.mp3",
+      "bytes": 20470,
+      "sha256": "778a63d2dd43f9a43616085055507ec11455a8555b46129921219dc059b5abd4"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_adhesive_release.mp3",
+      "bytes": 24650,
+      "sha256": "7416040b5dfcb7bf1c7046357ebe3c91eb44a23cc0e3727fa696f3f9a6331a66"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_balance_decimal_shift.mp3",
+      "bytes": 27262,
+      "sha256": "d71af5824c6da2b594e279af923a5de47c4ae1dba24a9b0474685a923cf03f10"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_character_name_lock.mp3",
+      "bytes": 22560,
+      "sha256": "45208e88debc7c4a220402db5747bbe626cacd3966c5683ff9510ba0f7badc37"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_exercise_pacing_start.mp3",
+      "bytes": 26217,
+      "sha256": "cc5708df6dc1970dc458f26c00890fe60330f5ebc7b3e4a5167e58e29f328498"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_friend_reply_send.mp3",
+      "bytes": 15246,
+      "sha256": "6f445e1df3fd449249fd4c916d57419bb0fe43eb5992d16e953f22daebfdcefb"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_gamepad_purchase.mp3",
+      "bytes": 24650,
+      "sha256": "7416040b5dfcb7bf1c7046357ebe3c91eb44a23cc0e3727fa696f3f9a6331a66"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_inventory_chest_open.mp3",
+      "bytes": 27262,
+      "sha256": "128a79317faf881ea51a0a2255997812edf45a7992bde07fdef721626b1fc91a"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_manual_control_ready.mp3",
+      "bytes": 22560,
+      "sha256": "4eeb9dc6dd92d1cc8d670b340c529848c35b2ad1e21eb3bcabc294bf35ebee46"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_narrator_circle_appear.mp3",
+      "bytes": 25695,
+      "sha256": "951c62aadbe6dffe5127b23c512e4152b82cfb7f37bbbcdd700f3aa4febd575c"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_narrator_grab.mp3",
+      "bytes": 20470,
+      "sha256": "778a63d2dd43f9a43616085055507ec11455a8555b46129921219dc059b5abd4"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_narrator_white_burst.mp3",
+      "bytes": 24650,
+      "sha256": "f3e8ce64d4e714ec28acb172492c60783ee36d7e16cc3bb982c248165f732ce9"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_right_arrow_assemble.mp3",
+      "bytes": 22560,
+      "sha256": "4eeb9dc6dd92d1cc8d670b340c529848c35b2ad1e21eb3bcabc294bf35ebee46"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_system_emerge.mp3",
+      "bytes": 22560,
+      "sha256": "1a2f1c29da4c734eff580f99d6c21a22c63afb1b4a679c2b9576c6859ba958f7"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_triangle_pickup.mp3",
+      "bytes": 18380,
+      "sha256": "348935a5f62a71a02fbe9fc09aef969706f878b6997c0aee06f03e3134d24449"
+    },
+    {
+      "path": "assets/audio/act-one/sfx/fx_weather_drop_pickup.mp3",
+      "bytes": 20470,
+      "sha256": "73ee5fdc3565a8c67f519b559f3b72a4b51bb541fd26de0b73f608548c2ce51b"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_confession.mp3",
+      "bytes": 86964,
+      "sha256": "e7db33457bfcbd2f8ac493e347927acad719140d729fb5575ece03a8ce780cc8"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_departure.mp3",
+      "bytes": 68532,
+      "sha256": "e73757c9e40f787a955b00c46078edb35960072014db2df81718265d4338329c"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_found_intro.mp3",
+      "bytes": 45492,
+      "sha256": "904f34f789a3c5dad6747c7a2026c3bcd7548d2366a6bb376536e9d355cb6f72"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_friend.mp3",
+      "bytes": 32820,
+      "sha256": "ac7752eb38abde306415f9bce7611fe0b2e540c8c2617869c1df8fd8f34a2f98"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_inventory_demand.mp3",
+      "bytes": 40308,
+      "sha256": "e7e3feee5928d756af770640b673a4eb938f1ee51b5e7e9bc7f292c1d269bce8"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_inventory_missing.mp3",
+      "bytes": 96180,
+      "sha256": "a74ea947b8ab49ffffbeaa4a919868443de52ac87b0b66e3497c20f430496f48"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_just_find_it.mp3",
+      "bytes": 38580,
+      "sha256": "ace8d70b74b096d049cb8b1970cb412ba3805e40dc642a745745c1a2e98aa581"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_library.mp3",
+      "bytes": 82356,
+      "sha256": "5baabc205c8fc2ad3a6c459841ee37bd8c33f8d90d08c2a25c68dcdc3acf94ba"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_act2_system_move_now.mp3",
+      "bytes": 38580,
+      "sha256": "517b0fc62ee3fd3283d4fa1c80f1b95454f074ef59897e6175c5f683363dc5dc"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_prologue_narrator_bargain.mp3",
+      "bytes": 57012,
+      "sha256": "4689c0db99e3ade6eae855db2828c7d91f63e08e4dc848278bc517ef2a672f9c"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_prologue_narrator_caught.mp3",
+      "bytes": 49524,
+      "sha256": "e452b1ffb406e590d8647f572ddec46ed46959c6793757b3b8b9354aac5d7854"
+    },
+    {
+      "path": "assets/audio/act-one/vo/vo_prologue_narrator_intro.mp3",
+      "bytes": 154413,
+      "sha256": "bd5c82289591d3ce2c2f2556fdfa7b9929d7f630d184f3740a2843c0ff32fe00"
+    },
+    {
+      "path": "assets/audio/chapter3/interlude/music_ch35_night_wind_building.mp3",
+      "bytes": 4553114,
+      "sha256": "34dfc707a4b9450d2fa000fb52159e5015f0924e6441a42def12a68c09499904"
+    },
+    {
+      "path": "assets/audio/chapter3/interlude/music_ch35_qizhen_reflection.mp3",
+      "bytes": 6652846,
+      "sha256": "3e18a18e07a30c7dd551dcfef4118e07b2d3055e8dd9911646179f64bda5ede8"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_bike_escape_narrator.mp3",
+      "bytes": 33396,
+      "sha256": "e6f3b5d2aa827885f13fc62fe83fbbaace53101e2efa7bc8f4791a60b8bfcbd6"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_bike_gpa_system.mp3",
+      "bytes": 44916,
+      "sha256": "5af96c16e050c22f6007f1747dd043fac1823bc76ce1b08bfb1739fc5cdf1ed4"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_bike_human_speed_system.mp3",
+      "bytes": 63348,
+      "sha256": "b39def14e072e557e07a67e0c805fe8a13db8bfc6e633663e62abe0e53930730"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_bike_no_money_system.mp3",
+      "bytes": 63924,
+      "sha256": "599b59574daa93019c53ea929e21cd647d6b7f84ec62c7785cfc36ab22d97209"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_breakfast_system.mp3",
+      "bytes": 66804,
+      "sha256": "13922007ec9ad03aac27251f42827039902bc998bfc4eaeaefb581f0f0859439"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_bun_system.mp3",
+      "bytes": 120372,
+      "sha256": "7e2ead67a9daee3e93025fd97a17928f1ab0160c32f86e88da8e89373b18aa59"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_cold_clue_system.mp3",
+      "bytes": 61620,
+      "sha256": "42f17df5a7d1fc6e412859bf6c2cc98552e7f8e77cd7e06f5f964516f33012b9"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_labor_system.mp3",
+      "bytes": 62772,
+      "sha256": "b953ce32af52f315f035f92ce25ee11ac536d4d04155dfddfe3c76e83a41ac6a"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_packaging_system.mp3",
+      "bytes": 57012,
+      "sha256": "49b50d19669020b773c6c640e3d6bbcf18c74bc7ce539d2722e1c7087c482b39"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_paper_angry_narrator.mp3",
+      "bytes": 65076,
+      "sha256": "bb973ef0a9762da3111ce13e3918948cdcc1dd92677a7a9b70e0a2e08e0ac9a9"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_paper_chicken_system.mp3",
+      "bytes": 83508,
+      "sha256": "a32d58a26eb855e9e42e8f714bb32c1d709eeb7e8bc100c2c20719cce33a1ce8"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_paper_impact_narrator.mp3",
+      "bytes": 69684,
+      "sha256": "1693820d24014ada046a2497720b5d0d691540fdf60a8190bf9d42321cec4085"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_queue_system.mp3",
+      "bytes": 111732,
+      "sha256": "7f0e0eaa014ee64951adfd88204aefe197171a8b06231e389912f8822dbeeb20"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_self_service_system.mp3",
+      "bytes": 95604,
+      "sha256": "03235e7a2445931e0077cf00692dc49903e0890bc735c8bf6c24dc3e48eb14e4"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_canteen_worldview_system.mp3",
+      "bytes": 37428,
+      "sha256": "dcf6e55b672b6c083af2eff7fbe2f5a4f979a17bda466f35afce208d5105bf78"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_atmosphere_system.mp3",
+      "bytes": 51828,
+      "sha256": "719da3629b136aa2ad318ab3c65b13f8a90fb8ce01425fc8762bceb99bb30897"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_catalog_system.mp3",
+      "bytes": 73140,
+      "sha256": "e3d10a997651a3c217f6f22d4ac2cd3dc3b468aafa4d05df351604f4232fe459"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_cc98_system.mp3",
+      "bytes": 105972,
+      "sha256": "6a89a5970becc654b5466640a81bc9698ba44c4aeafd29d3b3e5d6843d38bee0"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_display_system.mp3",
+      "bytes": 56436,
+      "sha256": "f11c785e8dd0e23c836cbabeaee5f62b7c650c7aeca4ca705d63a8fdcff44be2"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_ego_system.mp3",
+      "bytes": 70836,
+      "sha256": "00b498360a0b2fea21990985eaa8ae191ee806364a2f9fb96ced6237d4cf8ddc"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_fake_system.mp3",
+      "bytes": 25908,
+      "sha256": "675612528bc3efa147e5f69663b28823308a209302f8f9a56515d4e8703296c8"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_forum_system.mp3",
+      "bytes": 64500,
+      "sha256": "8e78c783a86472db6c948d5169dfc9914014437c926e5325f6433f9a047ce134"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_gone_system.mp3",
+      "bytes": 23028,
+      "sha256": "b24f295564faa53e0e97fb7a26b21e207e15c9b78cb07e007ee10a9af0e635e2"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_grab_system.mp3",
+      "bytes": 23028,
+      "sha256": "28c2f273b69fb7293a1f33c0e30e91c8209017658ca0d375407071811776b9d6"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_hiding_system.mp3",
+      "bytes": 62772,
+      "sha256": "0f9969c1be7208b249c8148688176a385e8e1ca1f92d28d5cb4a75478743d6cc"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_map_system.mp3",
+      "bytes": 100788,
+      "sha256": "e1c067bfe1d87be3d668216f69ecf73d159951041add5067e5fdecb567a7ff4a"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_no_trail_system.mp3",
+      "bytes": 74292,
+      "sha256": "ce4845569416e77b99bdb604401270ad09477cb1c649fa2a8d45273714fe581c"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_now_system.mp3",
+      "bytes": 51828,
+      "sha256": "f9e79c1dd24658fa1080a8cd6999d7a9764ad7e5d9b646907aeceb38698fd758"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_reflection_system.mp3",
+      "bytes": 56436,
+      "sha256": "e5856de7629cb431e31e430745f0787533c724c0f69c0fee68d1b68e04e394fa"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_release_narrator.mp3",
+      "bytes": 56436,
+      "sha256": "2d76db1e48fb2d3ae662291d039b2ce6e8d0d8b8b01b9c4ddc0732cbca4ffb95"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_sign_system.mp3",
+      "bytes": 54132,
+      "sha256": "462efdc533989bb2d292aa56656680ad68559ddcf2a7c8e63c8b094601fe77fd"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_swimming_system.mp3",
+      "bytes": 69684,
+      "sha256": "3a940767f4e6744d9f1e61e5a34884535820f91efa5c41db5c3660227e9e3f7f"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_qizhen_taunt_system.mp3",
+      "bytes": 40308,
+      "sha256": "38dbb747a6dde344b536ea270c1c1a2c201b3217e89008beb34c14bf08497f98"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_theater_celebrate_system.mp3",
+      "bytes": 20724,
+      "sha256": "cdca55c35ce06f47d85d324405c5b4b41c4a0df72d64e946e707b16c98ce6073"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_theater_failure_narrator.mp3",
+      "bytes": 30516,
+      "sha256": "69c1ae33a52a27340619b4310ef83982e44260c71d7cb3ad96994ba44ac35f1d"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_theater_logic_system.mp3",
+      "bytes": 82932,
+      "sha256": "456021fd41cf253cea7b53c95a57a15f2a2839e3564fde7bfa77f44eac658803"
+    },
+    {
+      "path": "assets/audio/chapter3/vo/vo_c3_theater_substitute_system.mp3",
+      "bytes": 132468,
+      "sha256": "7ac38cce915f2612dc1f247a2df9a07d748a14fae561775efdbd0de634f8fc24"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/music/music_canteen_chase.mp3",
+      "bytes": 577295,
+      "sha256": "0f910e2db89ed21082dc4ee87aff91c2ca51fbb17d8f1392a724560b4fb726db"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/music/music_canteen_dark.mp3",
+      "bytes": 482628,
+      "sha256": "361989a6d4b7e07fcac68b3002d092c3f1c4fa38a4e556c84388760c014fe4b7"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/music/music_canteen_light.mp3",
+      "bytes": 391721,
+      "sha256": "be0b17abadd89cf45412c53f586bc47fe13720900ca7895a3cba8b16cb7df2db"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_cart_roll.mp3",
+      "bytes": 26217,
+      "sha256": "0f899cd103fa475ac1e85c19ce95f502046a933588ad685e85a1cc3c7c376780"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_chase_collision.mp3",
+      "bytes": 24127,
+      "sha256": "e19b435a734adafd4fb6e75f2d56230b38f8410f0e4048e13bfebadb62acd881"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_chase_lane.mp3",
+      "bytes": 16291,
+      "sha256": "dadb2ea153c527e4ec638643d45e21ec477c0739e423158fd49dd050bfde33b9"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_mode_switch.mp3",
+      "bytes": 16291,
+      "sha256": "62d51fdf214f6f9e0f20ca67246dd080800cecfd5ce40966b4379427d566dbd8"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_order_confirm.mp3",
+      "bytes": 18380,
+      "sha256": "348da4fac66788dcb9e60c1a59c0803365bae14ac254410f2a336ab6b5e17c54"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_paper_burst.mp3",
+      "bytes": 22560,
+      "sha256": "9acddc47eea5d18a67dd94fd837dcaee4d21a7b5525fad5f33317ea8775a5bfe"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_paper_impact.mp3",
+      "bytes": 21515,
+      "sha256": "61b3bc5e532f8eff32f30ca85e2f41f51a5af48a7b094340f005ebf661ccd890"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_ticket_print.mp3",
+      "bytes": 27262,
+      "sha256": "e24112b3925336ebc957e7f6c5549d9c11b84d45bdff816b0a2b1c4478c6cb3a"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_tray_return.mp3",
+      "bytes": 22560,
+      "sha256": "b4f555c14b4cd366d9adb7483120327356b5faabb1743f9f68d80fc3776c80a1"
+    },
+    {
+      "path": "assets/audio/chapter3-canteen/sfx/fx_canteen_tray_slide.mp3",
+      "bytes": 20470,
+      "sha256": "c0cf0871546be98f3dec4d96fa33e69ba4ffb743605b8d580b6f73883dd87605"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_canteen.mp3",
+      "bytes": 67392,
+      "sha256": "01722ce6c0b3ab212bc6f770fe43f8da867491d6c8540236bf1b11d776b0319e"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_library.mp3",
+      "bytes": 73152,
+      "sha256": "2287f84da16260d8fa4a8a782eb1fca8a64e6f32dffc5642bd18859ae8de8e6a"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_theater.mp3",
+      "bytes": 70272,
+      "sha256": "d8e09061895cca21a806036fe7202b4725892e4b9412ac2fbd99349fa03e0d48"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lake_player.mp3",
+      "bytes": 33408,
+      "sha256": "d69593d69d422a40e93fb228931ce02970cd349b340c82f1281aa9d895ca852c"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_broadcast.mp3",
+      "bytes": 84672,
+      "sha256": "2c3235c3425a5d413e509b9ab710321227c935f00173e9e8901936f2890b5acc"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_decoy_canteen.mp3",
+      "bytes": 84672,
+      "sha256": "537116f080a91fbb981a283f6c3c6a3fdb9ae0140bf473f026e1389b9a7c391d"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_decoy_library.mp3",
+      "bytes": 84672,
+      "sha256": "d28fb4b954fc019926f2ca8e88317e8f1197016dafdf29e3c252888d6b23e89e"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_decoy_theater.mp3",
+      "bytes": 84672,
+      "sha256": "ab69a57d0e3f0a3d934dda088f859687e1461591ce8332ad326928005766a57c"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_lake.mp3",
+      "bytes": 84672,
+      "sha256": "674b62d2a8b11f04f02217f56acd7da03ddd40299d77e0124b98b522a9deff58"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_lobby.mp3",
+      "bytes": 84672,
+      "sha256": "596aa3b5d6b9f05c49da197e7d4277e225a474e169b061fe15ebe84720f19742"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_stone.mp3",
+      "bytes": 84672,
+      "sha256": "7160eef47bacda92d1e42d6774306fc4264b2c0c16f2f8de95c0f5a71e506cf3"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/music/music_qizhen_fishing.mp3",
+      "bytes": 482628,
+      "sha256": "9cdbd42eef10c39d3b393b335a8458f29226aa1d74c0388adb026c31124de352"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/music/music_qizhen_lakeside.mp3",
+      "bytes": 530902,
+      "sha256": "788178e3915c3bc63a8a95dead2676913632648c09f67e4213e69587c81ca1fb"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/music/music_qizhen_mist.mp3",
+      "bytes": 482628,
+      "sha256": "8df45560d6aa14b1f5e69bbb5e602cfe87d1a0b28acb031d172440c2ac0e6796"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/music/music_qizhen_reflection.mp3",
+      "bytes": 530902,
+      "sha256": "9161019e3f19a8ac115b8a36152b62a67e11d9ea111fe02d2385fe9284f468da"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_decoy_clip.mp3",
+      "bytes": 22560,
+      "sha256": "2708074c14e49652812121bae42465fa8557cddeffa7e78a95282e4df6061d75"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_lake_exit.mp3",
+      "bytes": 20470,
+      "sha256": "331f73ea32539a9715531783b83582208f649a67e9b9c1e61fdc0367bfdf4401"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_mist_observe.mp3",
+      "bytes": 22560,
+      "sha256": "c5a78d4f48759846d29d156c1eb48ab875b492401269c1ed864f869f8aa3a9ca"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_mist_spray.mp3",
+      "bytes": 28307,
+      "sha256": "14bbe1e15a36d7310d28a8b30c065866ffd4445445b48c32ce6e2d289e7d7db5"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_mist_wrong.mp3",
+      "bytes": 18380,
+      "sha256": "0bb493e97e70d2891a3167a7738d82435aa2522781edee2aa40330a5abb8be2d"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_mode_switch.mp3",
+      "bytes": 18380,
+      "sha256": "116cc20e2f0709d028087db4e90c766ebc4c5fc77f7943923ff10bf24c19c709"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_paper_release.mp3",
+      "bytes": 26217,
+      "sha256": "bcfacb27e144327e4e1f8fd6f648500e9e78e0b6cc9ef9a4efcbe3d19bd54dae"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_reflection_miss.mp3",
+      "bytes": 18380,
+      "sha256": "6bc1120a0f9e60268445aa8ecb26034b8237bbd8e13c15c4bd5bad2d28320a27"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_reflection_shimmer.mp3",
+      "bytes": 22560,
+      "sha256": "1a4fd143c1b6d442ad856a31ac0174741ac8174bc7e81402eab8f09440720c1b"
+    },
+    {
+      "path": "assets/audio/chapter3-qizhen/sfx/fx_qizhen_sign_rotate.mp3",
+      "bytes": 20470,
+      "sha256": "3b9d61f16fa1c1425c9a80bb4c08fae0d644bdb35caa6c2886035cfc36ed2c5f"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/music/music_theater_dark.mp3",
+      "bytes": 482001,
+      "sha256": "581fcd18bbf25717deb7c9943368bd7f90f823f3ae5b1bb3518d4264d284688d"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/music/music_theater_lobby.mp3",
+      "bytes": 482628,
+      "sha256": "0381d26ac824ba7e962eb2148673ea7d202ead6028249a30cb28647104ce7c1d"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/music/music_theater_spotlight.mp3",
+      "bytes": 577922,
+      "sha256": "feef2c6d8c28c1e4a44a9b836e86c5087b00d2c4afc58a1b0783d476370658c4"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_decoy_break.mp3",
+      "bytes": 28307,
+      "sha256": "862de628ed03e0927c855b83528ce28056d9916bfcc157a65e3e93ae77599aa2"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_gate_scan.mp3",
+      "bytes": 22560,
+      "sha256": "53dfea10448cbdfc0adfcd0998c8b2a8c0798ff36dc28900a4912759a64e09db"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_glass_wipe.mp3",
+      "bytes": 20470,
+      "sha256": "e092eda194c5a37246f184a6270432dc64d3a1c0a22f0aace593296226a65ee1"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_mode_switch.mp3",
+      "bytes": 16291,
+      "sha256": "b51ca504af5653205bfc9ef2b5ba936504f4f53815c396f3e9b2f24ec03c2eaa"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_printer_fail.mp3",
+      "bytes": 26217,
+      "sha256": "c39d5b2c4fe508ca9c5f7412f03c739c54417ca5c6088011aa20fbbc66749285"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_program_pickup.mp3",
+      "bytes": 18380,
+      "sha256": "e4ac652bbfead8c63a868254da716662097e0a4b2ed8eb8a8a03588a7fdd555d"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_program_reject.mp3",
+      "bytes": 17336,
+      "sha256": "2a26ce3fe3b46ea0f2bec8ac4da68eb23340da5ae599a63ed3af795c93b6dde1"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_prop_box.mp3",
+      "bytes": 25695,
+      "sha256": "f7e21c78a7e761a683098b4d8d33ca653e7c48d48442867f05f0dd6c6052f28d"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_spotlight_hit.mp3",
+      "bytes": 18380,
+      "sha256": "b36c1d42049a36d40f50a8cd368eb00a9da955e9ab9c7040d169f294e38550a3"
+    },
+    {
+      "path": "assets/audio/chapter3-theater/sfx/fx_theater_ticket_join.mp3",
+      "bytes": 20470,
+      "sha256": "5150b271a0faa5f0c3c999daed9d41329022365a1f0750ea4884574515a469cb"
+    },
+    {
+      "path": "assets/audio/chapter4/details/sfx_ch4_cart_wheel_repaired.mp3",
+      "bytes": 11277,
+      "sha256": "5e56f66e51355237c4cbf0315bc56914ffd1364f381205c4e2a52ebe35677c98"
+    },
+    {
+      "path": "assets/audio/chapter4/details/sfx_ch4_cart_wheel_stuck.mp3",
+      "bytes": 11709,
+      "sha256": "d1f46e0a2e57d296d44fce5b7598e481ca6efd8f7a75f584cda562fccd7c9fbc"
+    },
+    {
+      "path": "assets/audio/chapter4/details/sfx_ch4_clock_stutter_loop.mp3",
+      "bytes": 23805,
+      "sha256": "e8d6a13fd349d9ae9c3896c2e0ffcf0675c6cb5f896d3056f02ef0786ebbe73e"
+    },
+    {
+      "path": "assets/audio/chapter4/details/sfx_ch4_clock_tick_loop.mp3",
+      "bytes": 13005,
+      "sha256": "69ef7eeebb165c87e4c687641f83ffc783b993da22450b7657139b75d96b0e14"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/music_ch4_prologue_h3_44s.mp3",
+      "bytes": 353687,
+      "sha256": "0b8e5a0eb47f431af5d96f13b9bbff07580419b1641de9e6637fa59d7c4685c6"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/music_ch4_prologue_night_pursuit.mp3",
+      "bytes": 1634941,
+      "sha256": "d4272a5e5f54dc4a119cc92c3c9b1a30aa33f767af128bdd42c760dda810a1ea"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_arcade_crosswind.mp3",
+      "bytes": 50250,
+      "sha256": "8898e2acfca59fd45a0e91e5af166ba38e0a470bdf4bff8cd447ad69dc09b294"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_broadcast_static.mp3",
+      "bytes": 18380,
+      "sha256": "eae1a1e46b99f6c5812779d3662ebec30a42da353c91fd5af6b71ba365cda630"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_clock_chime.mp3",
+      "bytes": 22560,
+      "sha256": "8ecdd2833d2dd7fad9ff1ac59e0834961021d277263d3fb0b74882488862f1af"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_glass_door_open.mp3",
+      "bytes": 32487,
+      "sha256": "d7edb83fa41775ec55efc1e27f2299fc1a6053f338ac29998f66eddbdafb8250"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_gust_skim.mp3",
+      "bytes": 46593,
+      "sha256": "df78b996ccd323aecdb8cf512511f7fa572f61379b04a6cda9acbeb6afb034a3"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_lights_powerdown.mp3",
+      "bytes": 22560,
+      "sha256": "8033c828bbae8223fa595052f5e85a181d70439f8bcc63f6e3ba940586aca97b"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_line_recoil.mp3",
+      "bytes": 22560,
+      "sha256": "88557f3d839e862a0ec49a91a5978b0dd5e42a7ffbbc4bdbe60727c4a0f81d13"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_magnet_snap.mp3",
+      "bytes": 16291,
+      "sha256": "75d5d0026e42fbfde65b8d6b5fe13e98e735a8d6eaa6b377e15355498636f482"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_magnet_tension.mp3",
+      "bytes": 26217,
+      "sha256": "37c8561a538d3c296205d877fda802d9de72fd6717f795bd052b35665b9f900f"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_paper_flip.mp3",
+      "bytes": 12633,
+      "sha256": "a62ddbc2e2056c4007589defe9ce38c3239cfbb96261c996dbcb333ba6232e76"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_paper_water_slide.mp3",
+      "bytes": 38233,
+      "sha256": "50af3358769f03891d839bb2eeadb97a5bb828f47171e8f66ff3ef164bf6a32e"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_phone_task_notify.mp3",
+      "bytes": 20470,
+      "sha256": "587e1f0c1dd128cd98a168a23ec0a66501e1483a1b1bf6e9635cc2ff1f4be987"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_pressure_suction.mp3",
+      "bytes": 26217,
+      "sha256": "cb75da576422c64732f6005c3da4dd327016956c3fc63e931603a2e0ca7922aa"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_railing_hit.mp3",
+      "bytes": 14201,
+      "sha256": "c8beaa486e7e1a327f2ecb05be0aff27665abc785cf5ced67263ef685846b5f9"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_step_fold.mp3",
+      "bytes": 14201,
+      "sha256": "e2667d21019ddd6043dcada7ccf38ec0127293dbc752d23b217aaee7620dca26"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_stone_land.mp3",
+      "bytes": 18380,
+      "sha256": "d00780146c2fce5760a56beb46ef644e2fd2045fa64002e9bd7b0fa1ec4fd029"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_water_ripple.mp3",
+      "bytes": 30397,
+      "sha256": "1ca309fc1d019565d4f3ac492079acc36514a11c0ed0d38f98c001a39937911c"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/sfx_ch4_wet_floor_slide.mp3",
+      "bytes": 42413,
+      "sha256": "44298f90a23be87bdc33dadda257ea18e22d587c8e4f932745881937999293be"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/vo_ch4_prologue_cleaner_01.mp3",
+      "bytes": 47796,
+      "sha256": "3a7d8182c146d98e326e3fef26ff05873b5a95b305bec17c20b27e374439c465"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/vo_ch4_prologue_guard_01.mp3",
+      "bytes": 41460,
+      "sha256": "b49d31593914e24bf459b4f36670afffbe6abf7efd1d96e5da33e53dd4c408b4"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/vo_ch4_prologue_narrator_01.mp3",
+      "bytes": 99060,
+      "sha256": "6ba626d2ba9ffa1d9341cf73df0007ffe149e588f13eeec88451ba579f23605d"
+    },
+    {
+      "path": "assets/audio/chapter4/prologue/vo_ch4_prologue_player_01.mp3",
+      "bytes": 11508,
+      "sha256": "a128d3efbe56bedbcf7ac201249696fabbd8dfa022a1763b1f047789e75230b3"
+    },
+    {
+      "path": "assets/audio/library-finals/music/music_cc98_publicity_v2.mp3",
+      "bytes": 578549,
+      "sha256": "a057fe98d3694b8f25ccaa1873d10b23d05d2a33906a73cd659f529da9200194"
+    },
+    {
+      "path": "assets/audio/library-finals/music/music_library_022_reveal_v2.mp3",
+      "bytes": 578549,
+      "sha256": "dc2eaa269198a8f9eb61e3670d85fb51a63618ba220d17d26d129cb5b22f718e"
+    },
+    {
+      "path": "assets/audio/library-finals/music/music_library_arrival_v2.mp3",
+      "bytes": 578549,
+      "sha256": "3d5cb6076ce1964b32a225cbd9d9dfcb7193b0695d5a23536a46e39dc54db715"
+    },
+    {
+      "path": "assets/audio/library-finals/music/music_library_enforcement_v2.mp3",
+      "bytes": 578549,
+      "sha256": "8152a33390646b2da8eacf8677a352484771b4e145e36e94145e763944e56d8e"
+    },
+    {
+      "path": "assets/audio/library-finals/music/music_library_evidence_v2.mp3",
+      "bytes": 578549,
+      "sha256": "37e36fec93fe67bdb6c312b4848ead9758b45e45185e046728df28c1365eb652"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_022_signal_v2.mp3",
+      "bytes": 28307,
+      "sha256": "35fe9530cd09008f0b2eb3e2d0275704704fc57711726debbb39fe5737f43863"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_arrival_record_v2.mp3",
+      "bytes": 20470,
+      "sha256": "b58f31a07cd37c5f324fdaeca76f801471bf42d051d84341835ced78346fedf8"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_backpack_alert_v2.mp3",
+      "bytes": 22560,
+      "sha256": "397f5f00ae92bc43cba020af214f1dad637ab42834e53f89a1595058811592bd"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_backpack_transfer_v2.mp3",
+      "bytes": 30397,
+      "sha256": "b8445253a28938fca5ddf2848829f748a10780d6482dc78f4bfb1a924507c5b2"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_catalog_correct_v2.mp3",
+      "bytes": 22560,
+      "sha256": "4bc31ff0bb3be107907a50c848a9980f11436b65ed903aa6af9d14b236f923a7"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_catalog_search_v2.mp3",
+      "bytes": 22560,
+      "sha256": "3d59a967323bb8327256bac2ff00d7c723c9e166b3a0417930e2f1af6c9bb460"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_catalog_wrong_v2.mp3",
+      "bytes": 18380,
+      "sha256": "3a6c12322ab79331a5e6aef3ddd1c29dc9d66749eefc9a3c2d517218dd85ae94"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_evidence_upload_v2.mp3",
+      "bytes": 20470,
+      "sha256": "4ec5e509335896d8ac744536105345bb54add60e857a43910145c055e625929a"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_library_gate_scan_v2.mp3",
+      "bytes": 20470,
+      "sha256": "1eb11f0f331b85cf5000cadd636e0d8dd73aa75fd4cbc41c9794a6218b3451c9"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_nonperson_stamp_v2.mp3",
+      "bytes": 22560,
+      "sha256": "8ee520e94f1f2f7d868d98bc87a7add1539c22e10b0a7bd8b6ad468c73025a43"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_note_pickup_v2.mp3",
+      "bytes": 18380,
+      "sha256": "b1eb2bc22d1875ce1957eae510f29615ba2ccd7af4d843d4e978a2f0fd674c1a"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_pass_stamp_v2.mp3",
+      "bytes": 24650,
+      "sha256": "2fef994a736cee0ebfc3ad70b41b019bba9d1120aaa60e0fdf5c918fe4c490cf"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_photo_glare_clear_v2.mp3",
+      "bytes": 22560,
+      "sha256": "ce691f44d74d5d8da7eb4cf4e78baef935254e285956a60a77fe9b87b18d51d6"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_receipt_slide_v2.mp3",
+      "bytes": 24650,
+      "sha256": "9cd287a077e926e382cebf8cda1e64b3bfa1e1ccb89a31c139a3b95556987903"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_report_print_v2.mp3",
+      "bytes": 28307,
+      "sha256": "a110fac66717aca89c9e0846be3f0c39826805f9d97aaa330ef8051bfc2282cd"
+    },
+    {
+      "path": "assets/audio/library-finals/sfx/fx_shelf_slide_v2.mp3",
+      "bytes": 32487,
+      "sha256": "43ae38437cff76b00101e821a38f527156d03cef6d2be09f734c25b5b1bf63b5"
+    },
+    {
+      "path": "assets/audio/pursuit/music/music_qizhen_swan_chase.mp3",
+      "bytes": 673376,
+      "sha256": "9a175968d993cbf5d089b40f76def721377951f86ecba46f9c330615f9321e35"
+    },
+    {
+      "path": "assets/audio/pursuit/voice/vo_pursuit_chapter4_guard_close.mp3",
+      "bytes": 22452,
+      "sha256": "ae1dae0abc810c52ee988a62d689de4994cd22ba4acd658f06ff52fa210fa453"
+    },
+    {
+      "path": "assets/audio/pursuit/voice/vo_pursuit_chapter4_guard_stair.mp3",
+      "bytes": 38580,
+      "sha256": "43f1470998f6f0aa58b763fe82ecf3c5d891a67b076e4dd33c1e415c6a93c4c6"
+    },
+    {
+      "path": "assets/audio/pursuit/voice/vo_pursuit_chapter4_guard_start.mp3",
+      "bytes": 35700,
+      "sha256": "90d54b388d150eba76da21960c216de10775755a9c4bf523c1fbdc007f3022ab"
+    },
+    {
+      "path": "assets/audio/pursuit/voice/vo_pursuit_qizhen_swan_final.mp3",
+      "bytes": 38004,
+      "sha256": "1855499dcbda202a1a865221786a9aae8bb0ceaf315ea7cb4d41ebdf42f87b2a"
+    },
+    {
+      "path": "assets/audio/pursuit/voice/vo_pursuit_qizhen_swan_start.mp3",
+      "bytes": 38580,
+      "sha256": "2d8dfecbd5dfc3ae5bdd3f07c69c6e0247acf7c453c7f784c042c3fa4ea630e6"
+    },
+    {
+      "path": "assets/audio/pursuit/voice/vo_pursuit_qizhen_swan_warning.mp3",
+      "bytes": 52404,
+      "sha256": "b8d5e1cdad42ed0f2776685143520a40db9153d596a37e99b3182fd673308ca8"
+    },
+    {
+      "path": "assets/audio/sfx/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "assets/audio/sfx/01_global_ui_button_tap_confirm.mp3",
+      "bytes": 5686,
+      "sha256": "d55b81bd33c95e8ec0718c29f65e204834ae04670b17d424f933f3e2ce602f97"
+    },
+    {
+      "path": "assets/audio/sfx/02_global_ui_button_tap_soft.mp3",
+      "bytes": 5686,
+      "sha256": "7c52975f982046db796aae11841eb7acd28f0e50c9196d9718d55b836235e557"
+    },
+    {
+      "path": "assets/audio/sfx/03_global_ui_wrong_button_taunt_nuh_uh.mp3",
+      "bytes": 24494,
+      "sha256": "39735f8469d3f997f11cfc0924ca882cafc57983945a0cd911c7c47d351c58ca"
+    },
+    {
+      "path": "assets/audio/sfx/04_global_ui_invalid_drag_reject.mp3",
+      "bytes": 12582,
+      "sha256": "c1ed42801eaa2309c788ff08e49fe2eb1fb434c6ec2cb5c98897511d83e15f8b"
+    },
+    {
+      "path": "assets/audio/sfx/05_p00_alarm_phone_vibrate_loop.mp3",
+      "bytes": 30137,
+      "sha256": "dddcf4e1caea2e1bf08e69273b18b051673a8c69d5b118b6d1f0264fff6b6ae9"
+    },
+    {
+      "path": "assets/audio/sfx/06_p01_wakeup_big_text_flash_hit.mp3",
+      "bytes": 13836,
+      "sha256": "fdfaad4ef6a4dbfff69ada04e4034d24dfd0ae7bba700b72aba53120e1e1ae2a"
+    },
+    {
+      "path": "assets/audio/sfx/07_p14_chat_message_notification_ping.mp3",
+      "bytes": 10702,
+      "sha256": "ad465b67d4988b6e2096970089bb34381f011172438c19edd728a2e29019febe"
+    },
+    {
+      "path": "assets/audio/sfx/08_p14_friend_chat_shadow_screen_knock.mp3",
+      "bytes": 11955,
+      "sha256": "429103fa6d996f552166d2e15109e4bd1582ced932b3bf5c666f5636818d1405"
+    },
+    {
+      "path": "assets/audio/sfx/09_p14_friend_chat_digits_scatter_noise.mp3",
+      "bytes": 18852,
+      "sha256": "198c069ed1dbb6b0203773d26953858b1eeb7acf1894967b1b5ad9f05c6d7284"
+    },
+    {
+      "path": "assets/audio/sfx/10_global_digit_collect_fly_to_slot.mp3",
+      "bytes": 15090,
+      "sha256": "8f8c817285fd4a5bffacb305b5e4291048cee05a76e0dde38f23d54f603bb0b8"
+    },
+    {
+      "path": "assets/audio/sfx/11_p04_campus_card_balance_zero_click.mp3",
+      "bytes": 11955,
+      "sha256": "2caf59cdaebd51b5abe3debdf9ff320b5eb7d45c819e6743f863067834c74a3b"
+    },
+    {
+      "path": "assets/audio/sfx/12_p06_tiyi_loading_app_crash_pop.mp3",
+      "bytes": 16344,
+      "sha256": "6eda9ae91063180adbafc022cc940b38c59230e0e5cd023266a42fb351a7c200"
+    },
+    {
+      "path": "assets/audio/sfx/13_p05_control_center_network_toggle_switch.mp3",
+      "bytes": 9448,
+      "sha256": "35890f710c1d9f677b34a8b3dea5281d36bc6974b954ea8d224eedb4e082b982"
+    },
+    {
+      "path": "assets/audio/sfx/14_p05_control_center_brightness_slider_sweep.mp3",
+      "bytes": 18852,
+      "sha256": "0ecda246bf13079ca87b97f854050d012615dde0e543ea6dff801a4e3b7c2ad4"
+    },
+    {
+      "path": "assets/audio/sfx/15_p05_control_center_earphone_icon_drop.mp3",
+      "bytes": 15717,
+      "sha256": "252295e553315d3b0b9fb7d37e2d1267c745ebfadcaf8ef438898c130e550f4a"
+    },
+    {
+      "path": "assets/audio/sfx/16_p08_settings_auto_rotate_whoosh.mp3",
+      "bytes": 21986,
+      "sha256": "ebcdc70bc21ccb2d4ed242103d7474388ce07f514af0bdd2a2af58fa244cf265"
+    },
+    {
+      "path": "assets/audio/sfx/17_p08_settings_gear_drop_flip.mp3",
+      "bytes": 20106,
+      "sha256": "027d7ed5e07740306d9c70bf1cbf6255e9aa4a8f6da45f0101a85690f7788264"
+    },
+    {
+      "path": "assets/audio/sfx/18_p07_weather_water_drop_collect.mp3",
+      "bytes": 11955,
+      "sha256": "4e2b410643a90f957fdccd1e333bcb5f3ec1022c06ebe7eefe44660214c15215"
+    },
+    {
+      "path": "assets/audio/sfx/19_p03_avatar_slash_metal_drop.mp3",
+      "bytes": 18225,
+      "sha256": "31845db6b06c9d0cce5680359067509577e6df321d9418de9023c7093df3620b"
+    },
+    {
+      "path": "assets/audio/sfx/20_p09_item_combine_key_forge_click_lock.mp3",
+      "bytes": 21986,
+      "sha256": "5af5180ea867488cdd783e8dc1956b7cf40aec78d32f390222854421849f111f"
+    },
+    {
+      "path": "assets/audio/sfx/21_p13_home_tower_key_turn_90deg.mp3",
+      "bytes": 23867,
+      "sha256": "045222694bc9b05c6176e5e7640ccc4505327d1561777520852dfcd0a81a7262"
+    },
+    {
+      "path": "assets/audio/sfx/22_p10_plant_water_growth_step.mp3",
+      "bytes": 21360,
+      "sha256": "856a6cee3d21421444402593c3c7b353b140cb15a3145f3651b902badf8fd77c"
+    },
+    {
+      "path": "assets/audio/sfx/23_p10_plant_light_growth_step.mp3",
+      "bytes": 21360,
+      "sha256": "c7b6c5d2dd0744aa87b181404ef51319fd5b6f55df2e80e0ff8b0f67497ef9e3"
+    },
+    {
+      "path": "assets/audio/sfx/24_p10_plant_fertilizer_growth_step.mp3",
+      "bytes": 21360,
+      "sha256": "480f70cc19ddb361436e62732ea52b1907bc8888f285a545902455d0a988c2fd"
+    },
+    {
+      "path": "assets/audio/sfx/25_p11_checkin_digit_input_tick.mp3",
+      "bytes": 5686,
+      "sha256": "b61524c51184ac6fe822409984f6a2cd85b657e6297ee890582dbe1ea26abfec"
+    },
+    {
+      "path": "assets/audio/sfx/26_p11_checkin_password_error_reject.mp3",
+      "bytes": 15717,
+      "sha256": "81382972ad80c43d745dc05d90bed5532c26742a20476f6fb80424758dfe006c"
+    },
+    {
+      "path": "assets/audio/sfx/27_p11_checkin_submit_button_press.mp3",
+      "bytes": 10075,
+      "sha256": "90ff3d94bfd11f8760737bc65c8df934c6344c064283c5d69964f5ba0f451b81"
+    },
+    {
+      "path": "assets/audio/sfx/28_p11_checkin_countdown_heartbeat_loop.mp3",
+      "bytes": 97846,
+      "sha256": "1fd8bfde21b8d5d1cdd9828b3390a0e296e52032e1366e9f02e00ddbb591f036"
+    },
+    {
+      "path": "assets/audio/sfx/29_p12_black_screen_low_impact.mp3",
+      "bytes": 28256,
+      "sha256": "58ba3624b8c38d1d73f396a1b18b153c0aafc0198979e694fefea42f8cd9d5c2"
+    },
+    {
+      "path": "assets/audio/sfx/30_p12_reality_room_electric_flicker.mp3",
+      "bytes": 32644,
+      "sha256": "b5af8e1d296366af0ab1c610c2749e0410d660b89371cf03e12e7c88d3227158"
+    },
+    {
+      "path": "assets/audio/vo/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "assets/audio/vo/all_shadow_vo_002.mp3",
+      "bytes": 73716,
+      "sha256": "b05e94ce0e0315a176b6321f26a034ec97d451f0ff336375c4b8ece872cb3abd"
+    },
+    {
+      "path": "assets/audio/vo/all_shadow_vo_003.mp3",
+      "bytes": 20148,
+      "sha256": "94ada9bb7779cf944a5a205c0cf558428a2e07cfdf6f510533d7ff80eaef929c"
+    },
+    {
+      "path": "assets/audio/vo/all_shadow_vo_004.mp3",
+      "bytes": 193524,
+      "sha256": "3d37de43a3e5bf923a266438d6c82f248aea7bd7ae80f1edf330b57a80460911"
+    },
+    {
+      "path": "assets/audio/vo/all_shadow_vo_005.mp3",
+      "bytes": 88692,
+      "sha256": "1498da6e341f8227b746f4e0e326b4b5f27367b5c5b2e0d41ea069c04eb1df9c"
+    },
+    {
+      "path": "assets/icons/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "assets/phone/library-search/runtime/three_minute_empty_seat.webp",
+      "bytes": 63858,
+      "sha256": "ab92741b94302b1c69076e8ea199e2bd3c5a4e1c239bfae97900b7d77a6399bd"
+    },
+    {
+      "path": "assets/phone/library-search/runtime/three_minute_leave_art.webp",
+      "bytes": 51088,
+      "sha256": "f1ba11d4a07de2f33d1cb74dad55238c8d12aa78fbb1c6ed1da68682b5968edf"
+    },
+    {
+      "path": "assets/phone/library-search/runtime/three_minute_leave_method.webp",
+      "bytes": 38754,
+      "sha256": "a1d042d1d8ee12fd2966197211531293a45f9022eea812256e8754d341e99eb9"
+    },
+    {
+      "path": "assets/phone/library-search/runtime/three_minute_pause_application.webp",
+      "bytes": 56034,
+      "sha256": "86e683f80d062e71662ae92177b0c2b06f7093cf8e46d298691ff0f7762a9c1c"
+    },
+    {
+      "path": "assets/phone/library-search/runtime/three_minute_rise_boundaries.webp",
+      "bytes": 42128,
+      "sha256": "cc9dfcaa8bf89ce60610d52cb533b4c2b8938e973c60c64fab22e58ca456ef17"
+    },
+    {
+      "path": "assets/phone/library-search/three_minute_empty_seat.png",
+      "bytes": 2550722,
+      "sha256": "37085209983c837aad7833b34de8c0737a80cf274e54de1ebabfb3df9732bbf0"
+    },
+    {
+      "path": "assets/phone/library-search/three_minute_leave_art.png",
+      "bytes": 1916736,
+      "sha256": "be3a3e1bce9f55d0810f125f5fc30e7cc6ded6fdd5460af9ab07deba9b2e592f"
+    },
+    {
+      "path": "assets/phone/library-search/three_minute_leave_method.png",
+      "bytes": 2141907,
+      "sha256": "860f9dd06980477cb986424b9c5860358918dd0a0297332cc9e3afa5641f0df6"
+    },
+    {
+      "path": "assets/phone/library-search/three_minute_pause_application.png",
+      "bytes": 2072520,
+      "sha256": "a6bfa038ca196ffa02f5eb254311b45ee8d14215dd9d1bf91250af503a511b9c"
+    },
+    {
+      "path": "assets/phone/library-search/three_minute_rise_boundaries.png",
+      "bytes": 1870999,
+      "sha256": "8204632aa73ae058ad1f2fc3eefb7c0d8b16f5b2d53d5eb920f25e41a79b90ee"
+    },
+    {
+      "path": "assets/rpg/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "assets/rpg/campus/README.md",
+      "bytes": 6214,
+      "sha256": "146b4c67339eb7b8050b25eb7ded45581a8e77062e9902c649da9d921fd4cdce"
+    },
+    {
+      "path": "assets/rpg/campus/sectors/manifest.json",
+      "bytes": 410,
+      "sha256": "408e7c67c00d7b91d60de82521d63b68e2c909122eb97efcfbc3ed95995e61f5"
+    },
+    {
+      "path": "assets/rpg/campus/sectors/sector_ne.png",
+      "bytes": 180651,
+      "sha256": "e96bf8468065349cd48ba843a928fb7dc87e721d9c0ca119ef9c64e37c9e74fe"
+    },
+    {
+      "path": "assets/rpg/campus/sectors/sector_nw.png",
+      "bytes": 192313,
+      "sha256": "99e4e44e1fe607191da0d87461647a75f4a64dd81b2e8fd55cf9fdac6dc36253"
+    },
+    {
+      "path": "assets/rpg/campus/sectors/sector_se.png",
+      "bytes": 136720,
+      "sha256": "fb9b252d53ec4501474d7e909c67914cfa7ecefcd23be83356c2bd190f0a5772"
+    },
+    {
+      "path": "assets/rpg/campus/sectors/sector_sw.png",
+      "bytes": 186691,
+      "sha256": "0cc9f02871a403ed3970848e5f6705ce2d54ab6cf4ba84d952793854fa24b790"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_01.png",
+      "bytes": 3105704,
+      "sha256": "79cc0d835a5ae2a319a5a00fe82b3382f56e176daa44fe3cb5dc925e1c3c18d6"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_02.png",
+      "bytes": 2837551,
+      "sha256": "1ad19c55293666a88f10033e0c724d56cdb0d657d6c474eed49a3886bcb6658a"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_03.png",
+      "bytes": 3302454,
+      "sha256": "a903c3edb7990074874d921462677a1687a66a7b1eb651028bcb3c14bca46805"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_04.png",
+      "bytes": 3237017,
+      "sha256": "b7df98e4aa85eb9ba8776bc1840bd15b4d77ce95fb4b7008dfdfeb88996834d0"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_05.png",
+      "bytes": 3369145,
+      "sha256": "4e9dc4ced49d44ec2616f88c1f13a36be5be444d2abd8c9705407f8d644f2a6c"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_06.png",
+      "bytes": 3063199,
+      "sha256": "08020e314a00d8d32b81caae79f262be314d0fb05cfc60a759aae1fe1ec34be9"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_07.png",
+      "bytes": 3181183,
+      "sha256": "7845160ca2afc5e5e07c150071c785af673445961f25e7f355f04d42dc7f1b3e"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_08.png",
+      "bytes": 3005092,
+      "sha256": "b4d3b3b1247f7d480ad50154e5ba7966f218a33ee0666d217f567a9358d4d9c7"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_09.png",
+      "bytes": 3192336,
+      "sha256": "1523abce542d24bd342051cbced970810d690628524768032f35d2845bd0be1f"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_10.png",
+      "bytes": 3111271,
+      "sha256": "d368198978c4a7947f1d7e9e4b8edfc9e83a12c8d578b8d2d0532e1eb9a16c75"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_11.png",
+      "bytes": 3141098,
+      "sha256": "d57d3c7a01d65eeb8fee36329727f49cc551c787e3650be6276fa3ef5c555dcb"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_12.png",
+      "bytes": 2820826,
+      "sha256": "08021ca28a4d609c5aa4260b2038f0675479b00ad52412865d1c81289d6aa116"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_13.png",
+      "bytes": 3246645,
+      "sha256": "a30631ffbbb4d84771d611a06079b51ed8fb6b785e2a3e1c658f131bda8fdd43"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_14.png",
+      "bytes": 3238257,
+      "sha256": "f89766755e1ebd2b124eabfa17fa08caa9b80bb19fb9d317a8a1bd34f98be74b"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_15.png",
+      "bytes": 3246065,
+      "sha256": "20d300d8c5870bc4a1233617a3c9a163f9f479207d000ad3822002ba87f554fa"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/tile_16.png",
+      "bytes": 3313831,
+      "sha256": "dc62b05032d0bc5cee53b3b200bb9a1e92c6a4580eaf028890239753f22d047c"
+    },
+    {
+      "path": "assets/rpg/campus/source/mosaic/zijingang_road_walkability_mask.png",
+      "bytes": 33827,
+      "sha256": "11975a1a3629514baa5af640ecd859d741111e64a77fb4e78ac9bdda902f8fa2"
+    },
+    {
+      "path": "assets/rpg/campus/source/panorama/zijingang_legacy_panorama.png",
+      "bytes": 20360062,
+      "sha256": "c049150bf9b5408756b8baf479b9a7ef38cc98d9ebb3d829e2080d73b5d8c021"
+    },
+    {
+      "path": "assets/rpg/campus/source/topdown/campus_buildings_source.png",
+      "bytes": 22253037,
+      "sha256": "c8c3a0c2b8820cf071f2273d007d1f0d1719b1d96286c22505042a2a43b981d4"
+    },
+    {
+      "path": "assets/rpg/campus/source/topdown/campus_roads_source.png",
+      "bytes": 87408,
+      "sha256": "96dacb6ce70864e15993e88ca69bf15cca76baa90af22b5fc5bb81ff2b74c641"
+    },
+    {
+      "path": "assets/rpg/campus/source/topdown/campus_water_mask_override.png",
+      "bytes": 225416,
+      "sha256": "54216f7e35ae4d7b03dc84be35de2ff7ef6e582bfa4bd4841107d619c652d54d"
+    },
+    {
+      "path": "assets/rpg/campus/source/topdown/campus_water_source.png",
+      "bytes": 9958603,
+      "sha256": "4e2005fc6121099ddba224d4449354cffad65a471862aab49818ec596e6b7e2b"
+    },
+    {
+      "path": "assets/rpg/campus/source/topdown/zijingang_schematic_reference.jpg",
+      "bytes": 195201,
+      "sha256": "c342d701eeefc5b4ddde0b1e0aa51e5398baa0f320bcfda3e29db3eff5fddfa0"
+    },
+    {
+      "path": "assets/rpg/campus/source/zijingang_official_hotspots_reference.json",
+      "bytes": 466623,
+      "sha256": "2ffbadcd52f66df9bca4882b23acc0c045dace6a78ad35e85acb2d1ccc103aec"
+    },
+    {
+      "path": "assets/rpg/campus/source/zijingang_official_map_reference.png",
+      "bytes": 3288870,
+      "sha256": "cae026d5d70bb0a30db941f244877a860d91e63e3fab699eb44a78367377645f"
+    },
+    {
+      "path": "assets/rpg/campus/source/zijingang_reference_ne.png",
+      "bytes": 969567,
+      "sha256": "03716f3b122702d4099428f6b037304e1eca7c73080c8610b6aab6c2c37e3670"
+    },
+    {
+      "path": "assets/rpg/campus/source/zijingang_reference_nw.png",
+      "bytes": 1109540,
+      "sha256": "9a621466ea99ed811084b106752907027d8d4675139228716727885405f7ad1c"
+    },
+    {
+      "path": "assets/rpg/campus/source/zijingang_reference_se.png",
+      "bytes": 879675,
+      "sha256": "1d108afc8e971edd237dc965e82c78b94670b9ee35677f4f84d2b20bcdb4ed3a"
+    },
+    {
+      "path": "assets/rpg/campus/source/zijingang_reference_sw.png",
+      "bytes": 1094294,
+      "sha256": "b4c32a838ee9c51f54c9e6f0f1a10d6c2f28adcb4a112d7b4f5b456894e0d356"
+    },
+    {
+      "path": "assets/rpg/campus/water/zijingang_water_frames.png",
+      "bytes": 82371,
+      "sha256": "49c077788d6be549cf67a128b03738c33759451046e5aaacdeb8634d7566c8bd"
+    },
+    {
+      "path": "assets/rpg/campus/water/zijingang_water_mask_atlas.png",
+      "bytes": 124390,
+      "sha256": "83e941882aa0bb4ecf4e1bdfb8272da38dad44aa6bb92d6c74a6616ec9c4810c"
+    },
+    {
+      "path": "assets/rpg/campus/weather/zijingang_weather_clear_0755_concept_v01.png",
+      "bytes": 3024897,
+      "sha256": "dce827c71eb3eee9984a6e2dedbcbfcf9d7e842329d43ff903e692bd901ac0ff"
+    },
+    {
+      "path": "assets/rpg/campus/weather/zijingang_weather_overcast_dry_concept_v01.png",
+      "bytes": 2827193,
+      "sha256": "e1ec61f7848eb9d8bb3d7f3cf7082fa78257b6c44ae541f9a71008644a87bf97"
+    },
+    {
+      "path": "assets/rpg/campus/weather/zijingang_weather_post_rain_1640_concept_v01.png",
+      "bytes": 2962892,
+      "sha256": "9a8e6bbdc8d740fc6de8ccb58b815c3e5ad432911135cfd06071d4b768ef2b49"
+    },
+    {
+      "path": "assets/rpg/campus/weather/zijingang_weather_rain_0755_concept_v01.png",
+      "bytes": 2875047,
+      "sha256": "2c3400b081a792cdf6f8ca3c04c1ca83809a347963e2f90e3e7269836b32efc2"
+    },
+    {
+      "path": "assets/rpg/campus/zijingang_campus_loop_panorama.png",
+      "bytes": 23083200,
+      "sha256": "504b0fdc6e846a2e5b4214b327a93c03b720b6ea7e48acbfa7804acbdd56cfb6"
+    },
+    {
+      "path": "assets/rpg/campus/zijingang_campus_plate.png",
+      "bytes": 24538006,
+      "sha256": "57e27997d0c24a77dd758869bcc1bab8665b10496a77ec0f802986461ceb116d"
+    },
+    {
+      "path": "assets/rpg/campus/zijingang_loop_walkability_mask.png",
+      "bytes": 16179,
+      "sha256": "9c76d1490e0684c81f8e94c660b00a1bc27837eabe0c872420d900aab711044b"
+    },
+    {
+      "path": "assets/rpg/campus/zijingang_road_walkability_mask.png",
+      "bytes": 22284,
+      "sha256": "04f45dfe97cd7eab30cc5a4a170c7e2778536ec7c0f84245145b6d2dbf74824d"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/paper_chicken_burst_8frame.png",
+      "bytes": 39018,
+      "sha256": "28496e6bfd4d89f29ff3950ee35367479bdbb1d70108be5cc074d5306126d972"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/paper_chicken_shake_5frame.png",
+      "bytes": 23712,
+      "sha256": "ce8f19ad7447c97f06d51ba00a0e83b372c1cccf1ff31de63f6da0f4c34cbe6d"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/shadow_auntie_push_5frame.png",
+      "bytes": 70978,
+      "sha256": "ee3a9cc9684eb036da55af9bf8722f059288e9a6470d4bcd35a38d862c3c8896"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/source/paper_chicken_burst_8frame_chromakey.png",
+      "bytes": 1279636,
+      "sha256": "80a9266798a2bd530832728429591898202d6e6e5dab1d85459d44437777fa6d"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/source/paper_chicken_burst_8frame_rgba.png",
+      "bytes": 498893,
+      "sha256": "8fd5627eb24ae3334870ba72634892bb6d71a8879f6afdfb9410febcb3942734"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/source/paper_chicken_shake_5frame_chromakey.png",
+      "bytes": 1056195,
+      "sha256": "b81d26d871aa514a9d377d9f381a5d5137a3e31578e3587b0072121b74638913"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/source/paper_chicken_shake_5frame_rgba.png",
+      "bytes": 273695,
+      "sha256": "0b1eeb368dba0fd9a0212f3fca12a6115de471c335ea6f6904833a51a42e6f2e"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/source/shadow_auntie_push_5frame_chromakey.png",
+      "bytes": 1282831,
+      "sha256": "9aefaa7942fdb48c444d597abbf6a399371148ce6c61d634138d27f09a1b3244"
+    },
+    {
+      "path": "assets/rpg/canteen/pickup-cutscene/source/shadow_auntie_push_5frame_rgba.png",
+      "bytes": 650153,
+      "sha256": "91d03b817012bda52a0462cd9de1a48a784d0c51540a19fc8d1d0bdca5754ede"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/canteen_promo_board_active.png",
+      "bytes": 77431,
+      "sha256": "89210a4b2bd6f032316761b8ee3b709b8dfe1eff9029838e11ded66b2b264909"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/canteen_promo_board_empty.png",
+      "bytes": 68403,
+      "sha256": "e06b5ffce36152393b471e4ab57eddc88cb3cd784260bec193c6d51b368a9d29"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/canteen_promo_drink_insert_4frame.png",
+      "bytes": 10067,
+      "sha256": "52666e5443b66dfd4beaf7c43296d6c0785075783b3c39753b35b118803713ee"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/canteen_promo_fx_3x2.png",
+      "bytes": 6998,
+      "sha256": "267572c1a78ed75499f4bda39a31b0eb0fd5fbbc3dced37904118fce8abf4dc2"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/canteen_queue_student_turn.png",
+      "bytes": 12630,
+      "sha256": "353f776f3298004bc41569845e202911b195b682f787c4f489bf643386a29ec0"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_board_active_chromakey.png",
+      "bytes": 1318062,
+      "sha256": "aca13b59fa4754e787f26ff96cc6f351b70dd62d3aeb4582660581f055080729"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_board_active_rgba.png",
+      "bytes": 793519,
+      "sha256": "dac52df5388a73ab356835a0ee8c0584cf113872cce6ac8b19eb5ccd43814b5c"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_board_empty_chromakey.png",
+      "bytes": 1229937,
+      "sha256": "06d20188893d39a68f90f97bfeef61f3f6a3c7f1de1709d88e4895303acefc6e"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_board_empty_rgba.png",
+      "bytes": 711884,
+      "sha256": "ff1154585791da638dc82b8724a104fabe747c410416c9da3b43459d66e637e1"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_drink_insert_4frame_chromakey.png",
+      "bytes": 1120359,
+      "sha256": "32f8026e0cb853a2ad6cdf356ed610f319146099557e2aa5667d9879ee78df7b"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_drink_insert_4frame_rgba.png",
+      "bytes": 402836,
+      "sha256": "3e661281ba97c6aaa9884b4c76609ec1e596e89e37db31f2eb451dabbc596309"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_fx_3x2_chromakey.png",
+      "bytes": 972496,
+      "sha256": "0a25b0ae6e3e76c5f176ff3357768932448e5fa957abbd818afa9f29a00fb752"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/promo_fx_3x2_rgba.png",
+      "bytes": 130531,
+      "sha256": "4a2d9f504cad744fcb0cbcb3fdd5fec8f59491860e4a4798db4453b809a8c7bf"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/queue_student_turn_chromakey.png",
+      "bytes": 1068261,
+      "sha256": "90c51cdd46933fe97bb0f9a7a29bd0775f5859c7d6abd5d6f86bc0eb85b33334"
+    },
+    {
+      "path": "assets/rpg/canteen/promo/source/queue_student_turn_rgba.png",
+      "bytes": 406499,
+      "sha256": "00d7fd2282bba8229270cb49035070f5d6cdb54efc96739fe905e70880f20264"
+    },
+    {
+      "path": "assets/rpg/canteen-characters/README.md",
+      "bytes": 2011,
+      "sha256": "662fb0f7f12501254a4e0da63cdca64f7a829e02fea6b77a8ffa8ddff298215a"
+    },
+    {
+      "path": "assets/rpg/canteen-characters/quaternius_casual.glb",
+      "bytes": 1430660,
+      "sha256": "fea7e71271203e7073f1a073fa1208de7402df276f87f80e149bf7589b5d46b4"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_047.png",
+      "bytes": 1819764,
+      "sha256": "e2b3266d64df0566b71d3198a0256a01ccc1e64df8a2a0b78a780d3063d46a5e"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_095.png",
+      "bytes": 1765343,
+      "sha256": "a5ab4996c9612244d9e1408ebfbaa2c7e7e15b0bd7c847c36dc0a28a4a24c3e2"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_143.png",
+      "bytes": 1952833,
+      "sha256": "0ef95984621dc618a252159fe14321418d6986c4bb7f145b954b377804a7c9f1"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_190.png",
+      "bytes": 1768071,
+      "sha256": "a02e489bda0145cd36e2ae230bed02350fa5e28816f740bb11b56c665a6726eb"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_238.png",
+      "bytes": 1787887,
+      "sha256": "b0a320c400ff40f49fde16a43b952b0f17d3df546fb4fadfabbef3822a90578a"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_285.png",
+      "bytes": 1714917,
+      "sha256": "c74900d7573854d26ee311d5caf86353f1d50093ad0d8c8ef9cfbebfc5476070"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_331.png",
+      "bytes": 1890986,
+      "sha256": "adb53240096a804f53a610f7d98778a696d8432a71a854d61a4524659afcd039"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_377.png",
+      "bytes": 1804970,
+      "sha256": "24b176828227eebc7cbe0775bdc8a0a8d377d8ff064aa547c5a54fc3eb6f704c"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_424.png",
+      "bytes": 1816731,
+      "sha256": "44216b311ff5edf61af2a67c1ced9df7672e056a0832713b2a187bdc52a70478"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_470.png",
+      "bytes": 1906933,
+      "sha256": "c70b1fc159e3d1b5581f29398996b3ed0b3f7c2aed170f1a1496a08a40580454"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_518.png",
+      "bytes": 1878343,
+      "sha256": "f868571b1ff86953944fc49b30d94be9db21d43e20e85b6e1cab8d4418fda807"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_566.png",
+      "bytes": 1791851,
+      "sha256": "76d2f8114b9bf8066f8aff139a60073c53003f6cbf0237978175f2ce7ec7926f"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_600.png",
+      "bytes": 1827541,
+      "sha256": "f92066e1faa844ddf7f8eb8615963d6e007c2bcf5633b8bed86054fa057e80ac"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_635.png",
+      "bytes": 1835414,
+      "sha256": "1c558d3e8b724c237428742d632739b6a761ccdb7cfb25f9fb34a5f8702a4449"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_668.png",
+      "bytes": 1770529,
+      "sha256": "792a486b50d16c3e2b7c0edc0d234adae449a31cd33b07dbb448cae32000ec68"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_700.png",
+      "bytes": 1643128,
+      "sha256": "dec71d61d7a811037485f6e12245e8fe0bbd13f507ffb717736b0f0bc03f0335"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_755.png",
+      "bytes": 1673471,
+      "sha256": "4f3800992ba7ec1e8b7e7a09581c66bcbb308216f8e1deb1877a4960480bab92"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_distance_atlas_273f.png",
+      "bytes": 6347897,
+      "sha256": "f547aff9085bb855d94ef5bea1f2005b236811a3e21e3b24f53007ff21ef2dd0"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_plate.png",
+      "bytes": 1708400,
+      "sha256": "b16e79eddd3ac878765a7f2c3ddd941060631b6c40486e0823e6fb81d1e76e5e"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_plate_frame_b.png",
+      "bytes": 1946216,
+      "sha256": "8461cd539fcb4960100fb9600d31b4045b20830af214da2009c8b64cb08ed645"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/campus_avenue_plate_frame_c.png",
+      "bytes": 1898546,
+      "sha256": "19ffacf9069c39caa0dcb53a04d14c6a148143584f4a8aa305bd171fa8217f78"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/front_walker_cycle_4f.png",
+      "bytes": 746009,
+      "sha256": "5f047b43bd6b27c6ddfeb9b5d04c29dd7b328f5ddde8f459cb2b247d731e5552"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/rider_cycle_6f.png",
+      "bytes": 375406,
+      "sha256": "31edc67f9e4bc9fd16996dc55a73e878ccef4e960301250afae4f7a4fe45858b"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/rider_turn_cycle_12f.png",
+      "bytes": 519141,
+      "sha256": "ea64758c832f7e479bc156f30dcde3d11632d6fdac1421f844b2b1d78562de74"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/roadside_actor_atlas_8f.png",
+      "bytes": 600526,
+      "sha256": "2f3d9663b36c0e9133809e996e0daec2bc19895773770c0e9238572cf2f5ab41"
+    },
+    {
+      "path": "assets/rpg/canteen_chase/runner_crowd_cycle_4f.png",
+      "bytes": 463725,
+      "sha256": "98e49c6e65f4524e8cafe7062e74cd76dc4b12f3fbb7b3f4efa8834b04dd3e0f"
+    },
+    {
+      "path": "assets/rpg/chapter4-stair/materials/Concrete010_1K-JPG_Color.jpg",
+      "bytes": 655999,
+      "sha256": "8d95dfe50aa66ddced1a89d47a16aad6a0affd36b00c06686b4fa982221c525c"
+    },
+    {
+      "path": "assets/rpg/chapter4-stair/materials/Metal012_1K-JPG_Color.jpg",
+      "bytes": 412556,
+      "sha256": "9d32b9bbcf071433a3ed69f0409cc11886bb3c554300acaf0da93a92a2059e5b"
+    },
+    {
+      "path": "assets/rpg/chapter4-stair/materials/Plaster001_1K-JPG_Color.jpg",
+      "bytes": 828790,
+      "sha256": "d3fe43282859ab7293ad41f2fa3c29f02df077e5bc326cf90a65cc588a4ac5a4"
+    },
+    {
+      "path": "assets/rpg/chapter4-stair/materials/README.md",
+      "bytes": 1421,
+      "sha256": "7301e4187beea4fc74552e95f9bd5e337d6b91b82d7561939170a496e1ed1897"
+    },
+    {
+      "path": "assets/rpg/chapter4-stair/materials/manifest.json",
+      "bytes": 2161,
+      "sha256": "62496fb00dde7878185d337493a469c3c539d716db333e8bade143fad2da0e89"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-755/canruo-star-lamp/README.md",
+      "bytes": 1394,
+      "sha256": "bd80802ede5867fb3c99da134223aeb93273d87521ff788b87d2180112151909"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_core.png",
+      "bytes": 27060,
+      "sha256": "24f629cdd3aac6d6ae37cf1ea59ddcc51e425e2b5c97d4fcab5f6ce63fd22c2c"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_dark.png",
+      "bytes": 318279,
+      "sha256": "d44f7e4d3a6b261b19345c0340289af99a69a6a5d51852d9c5eea918c72b75bd"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_glow.png",
+      "bytes": 73555,
+      "sha256": "e40985f91f179f583f0b87c01628b1ed72f72b4f05424d2377af5019e3550d6c"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_leds.png",
+      "bytes": 48061,
+      "sha256": "88eec957a051cf0553154718f32147a2daea34d9e23e16431a8a7dac2d52bbce"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_outline.png",
+      "bytes": 165240,
+      "sha256": "a04d8d0463c74a0096780a7f7e3a4cf0c45140115abd0e9141a2ba1ad78899e9"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/arcade_a.png",
+      "bytes": 2259255,
+      "sha256": "74cf7ad6ef2f849547a1cb46e5b6b77007ea50eb0542b60fb8b2e3e67988d587"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/arcade_b.png",
+      "bytes": 2303082,
+      "sha256": "a498a585e064c7a12b3a1a71b02ff7eb4c02966fc43d0cbed34ca5e7f313b435"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.mp4",
+      "bytes": 8282814,
+      "sha256": "d5cb9e9a91ef778337f5eeef74fad59643ca1f393607f993d7e5fc8196678aff"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/closing_a.png",
+      "bytes": 1885397,
+      "sha256": "1a8000bd59481705188839825e2497e701f9063e6d58d2db449e7971a28ff3f6"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/closing_b.png",
+      "bytes": 1811855,
+      "sha256": "f8743dce66c7a7a33c82e4a3a891e354f0a6eec60e53159db1c551dfa6416a3a"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/entrance_a.png",
+      "bytes": 1818445,
+      "sha256": "c07a8b7684127ce57cdf46690562584f3b4f22bf5823adc7eebe7bd96614c76c"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/entrance_b.png",
+      "bytes": 1798036,
+      "sha256": "98107f121c2e9874f5f7f03103fd75f5b913fc9e868b8191bba3395c6cb9a356"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/lake_exit_a.png",
+      "bytes": 2294395,
+      "sha256": "881e33ae0c5a90ecf89df047f676fc303cf9e6074dc942ed05bd3d0e8885b4b9"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/lake_exit_b.png",
+      "bytes": 2509198,
+      "sha256": "b86b86f26e8bd7b741ab949d25f62a0602f9ec9afdfbcb4a19604e242ee61e68"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/lobby_a.png",
+      "bytes": 2027925,
+      "sha256": "49fd411fd1797455d5fcdb84b32b58bd24b0c552fcf6ad59939bb873bc9e8018"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/lobby_b.png",
+      "bytes": 1997241,
+      "sha256": "89b77bc1e9bf6b59baebd4e3ce5c8e2ac44a991f66f87f522b8a5bce80af7af4"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/arcade_a.png",
+      "bytes": 83192,
+      "sha256": "794042cfd7ef8209f1f8015f5f576d3bb63aad4a2880815081025f6bfd9c13a9"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/arcade_b.png",
+      "bytes": 81883,
+      "sha256": "4503196832412e26e3b4c759d9e7ad8dd41e4b9ab7d37022847478e09f385ba7"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/closing_a.png",
+      "bytes": 65438,
+      "sha256": "d23e15b31001e8db2644f9d9346b759e41694d634117fc28bca89a678411f746"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/closing_b.png",
+      "bytes": 65001,
+      "sha256": "6bc95417ee9bc823ada09d7fad429c95ce3403c51c0e9336dc801a9da8400825"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/entrance_a.png",
+      "bytes": 61984,
+      "sha256": "c8d39e633f0a7f44da966080f5b6bbd7aef94b8948164abaf853b788be4ee27b"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/entrance_b.png",
+      "bytes": 61317,
+      "sha256": "e1ccd9e7898aadfc70a5b43cd96f575336eae1692aaa070d405c54d637d75d34"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/lake_exit_a.png",
+      "bytes": 82597,
+      "sha256": "373a47b34feca253613fae393b6f3713df67e7e9ce2e944cb6a5218930a420c9"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/lake_exit_b.png",
+      "bytes": 79492,
+      "sha256": "869b82414d8c2352a97794c9ed8fbbe335cf8db9aaff54099d81ac37b9245ffe"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/lobby_a.png",
+      "bytes": 69388,
+      "sha256": "221874b3bc12968b5289a5e8633ea7d4608f24957d3e7d5f0f1137fdc15ee54f"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/lobby_b.png",
+      "bytes": 63952,
+      "sha256": "1c460cf71f9cab909a81888981f9007181762a1068e25c4e6c1f7acd18e8e875"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/snap_a.png",
+      "bytes": 65373,
+      "sha256": "0da60ec3df78e040e63236de43cb67a917b8db3c2081b252e254f5bbf4e611cc"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/pixel/snap_b.png",
+      "bytes": 63168,
+      "sha256": "5447427dd0a4df628e510b2ba5227a23e68a8be499600cdf24978634e42ab21e"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/snap_a.png",
+      "bytes": 2036967,
+      "sha256": "5eb26f09aca590594b0a417e28b98e91291dac8c9c9523548799d810fe8afd57"
+    },
+    {
+      "path": "assets/rpg/cinematics/chapter4-prologue/snap_b.png",
+      "bytes": 2059393,
+      "sha256": "c390d8d7c73be58fccab58ab8fd2af504ff9e313725e3aeaad17c3b43102f4bf"
+    },
+    {
+      "path": "assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.manifest.json",
+      "bytes": 2206,
+      "sha256": "64bfd936ec2c7b55faa8fb89fe27010dfd9132e2c9b8aa1f2b366d6dd1bdb303"
+    },
+    {
+      "path": "assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.mp4",
+      "bytes": 2462885,
+      "sha256": "9232e480334a8e74eff8f0439151380ea62ca00ab7e44a66d04aaea6d4f66eb3"
+    },
+    {
+      "path": "assets/rpg/fonts/README.md",
+      "bytes": 655,
+      "sha256": "ffca522915fd8462210e4adad82b1f906fc715197b72fd0851031bebd762f9e3"
+    },
+    {
+      "path": "assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "bytes": 5897176,
+      "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+    },
+    {
+      "path": "assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt",
+      "bytes": 4394,
+      "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+    },
+    {
+      "path": "assets/rpg/fonts/licenses/ark-pixel.txt",
+      "bytes": 4391,
+      "sha256": "8080ca8194383ad39d8d7c308bcf387c6d4879622aae57876b386f4e5a085f72"
+    },
+    {
+      "path": "assets/rpg/fonts/licenses/cubic-11.txt",
+      "bytes": 5363,
+      "sha256": "bdd640c94530f5845de621089875aefcaec17585dbd4dab191c97118539bf92f"
+    },
+    {
+      "path": "assets/rpg/fonts/licenses/galmuri.txt",
+      "bytes": 4361,
+      "sha256": "9ff00566e64a6f1609b197f5eb982f14e50a050edaf0ed588fef4f5aabaea8a9"
+    },
+    {
+      "path": "assets/rpg/interiors/README.md",
+      "bytes": 4895,
+      "sha256": "326369c7b4eaf7696d081f2fb048d39a62e6eac2c3e83f2dbcffd17cfe39bcd6"
+    },
+    {
+      "path": "assets/rpg/interiors/canteen_interior.png",
+      "bytes": 2639288,
+      "sha256": "e7ae6722e6ae599ab50edfca033e5879f0520f6879597500b366442d8483afb2"
+    },
+    {
+      "path": "assets/rpg/interiors/dorm_hub.png",
+      "bytes": 2256027,
+      "sha256": "361f857e028b5d03defdaba9befd1e3ac0462133ca48a73f4e24c623a8db7519"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/README.md",
+      "bytes": 8548,
+      "sha256": "12d2b57802bca1fa83d398ac8bc42e058d2c1126785a5220367ca88a98d1502c"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/base/a1.png",
+      "bytes": 2398705,
+      "sha256": "0df950f034d70b57429239871b5977acbd546b960fa0b89918b3718665f485e3"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/base/a2.png",
+      "bytes": 2409677,
+      "sha256": "b1d09d66f13e4a0c63a34ff6eff5a3f446c6925061e8cb421f437e5ac6e7fb04"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/base/a3.png",
+      "bytes": 2243422,
+      "sha256": "3077b3f6a2f16d97ecee866c516f1fd80341889f7a38779cc892680d5ba0a02e"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/props/chapter4_a2_calibration_jig_v01.png",
+      "bytes": 11311,
+      "sha256": "2ad48cba86f784ea2e1e339a8f4f7cef200528acf03a05fe49639f464c0101ea"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/props/chapter4_a2_circuit_terminal_v01.png",
+      "bytes": 10990,
+      "sha256": "11d8c9dc2c0903ce02d0c4a1b190159545916ce72f4fbb30f3b9a2bdd624bf72"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/props/chapter4_a2_evacuation_map_v01.png",
+      "bytes": 9905,
+      "sha256": "8aa16c628b1531cd07db5eb8fc67dae6bd241363bcc7712a4f5186b8fb301b52"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_alignment_scanner_v01.png",
+      "bytes": 15615,
+      "sha256": "72dfb597b25a476f5e5a4449e88b08330533676102f7949eb79d1cd5044fd5db"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_archive_film_v01.png",
+      "bytes": 6703,
+      "sha256": "51f085170a7167fa1c18da4e670bf94cecf94d5d80e419885949402b598868cc"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/props/chapter4_front_desk_duty_board_v01.png",
+      "bytes": 8915,
+      "sha256": "da51f187ed8fe5ea2f4c374cf0a524d0c908a606a1ad144b9f42b572ad576cc9"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_a2_room204_dark_residual_v02.png",
+      "bytes": 1371405,
+      "sha256": "a0012d2d74e40d803dfb6875f8b778d581c8fc03618d4db0bd752e0e948f2595"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_a2_room204_furniture_v02.png",
+      "bytes": 1857888,
+      "sha256": "37905e165bd6d5e5b30425d2635eca64feb2f695b21ca9c88b698fee10128b39"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_clock_states_v01.png",
+      "bytes": 1205141,
+      "sha256": "f0383adb43fc3a2c1da3386756230d2969de794c3ad9104f6bebe0530c9db3e3"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_power_panel_states_v01.png",
+      "bytes": 1476073,
+      "sha256": "3b043c9f634a36352544e352f0246b0c37196c59f393c5cecf36eb2e4a43b829"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_story_items_v02.png",
+      "bytes": 1449853,
+      "sha256": "ef78a5a24134d8c0ec4de3d7d656f5a619c6ff299cd4d908f994f811470b7488"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a1_0754_blackout.png",
+      "bytes": 1618195,
+      "sha256": "47a72533a5312d65fe6961b430a0d08216af0aa18d4deb2ce4d586325ea0eef7"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a1_0755_morning.png",
+      "bytes": 2201113,
+      "sha256": "ce7922dc71b68bf100b9952adb385e1cfa685b8bda55b3e9499b0a056b013db7"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a1_1225_bakery.png",
+      "bytes": 3802172,
+      "sha256": "6400a796a87ad3b98247560e1c9f1bd3b94bc408a9584284f661d7a645383f44"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a1_2245_maintenance.png",
+      "bytes": 1901936,
+      "sha256": "8059218cf9e49bbcda71bb34307adae2345b1bbcd2e592f65cd71c8fee27b2a3"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a1_2245_opening.png",
+      "bytes": 3112902,
+      "sha256": "722c89e62b8b3efdd83deacf7ca90d9950f387c3b05dd813f24ad02f8551d47e"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a2_0754_chase.png",
+      "bytes": 1673981,
+      "sha256": "9444e7bc9ac33fb73166134f54e3658d7151a0c476252716df52a9ab05d086dd"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a2_1850_evening.png",
+      "bytes": 2240196,
+      "sha256": "52621f2fffb2273991a58f534198f8e5fbbeac26dc5cb3631e72658402830b0f"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a2_202_final_minute.png",
+      "bytes": 2414650,
+      "sha256": "171f05d4762794ef9d96db04a6c05ff24535a817639a336caea19760ef66a5e1"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/chapter4-755/states/a3_1850_reference.png",
+      "bytes": 2151040,
+      "sha256": "e577321b077a70428a8819a376f066633fc5875e40431196eedc7160992b0836"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/finale_1f_lobby_maxwell.png",
+      "bytes": 2026870,
+      "sha256": "69ec1bd886b09e58f8dcc0c2682c723837e1cbd81721d195d758d43dfc93ed04"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/finale_2f_activity.png",
+      "bytes": 2253926,
+      "sha256": "f58d92d9641d3c924925069125ceec4238a3a2f882d60c71236079e11f27f4c6"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/finale_arrival_arcade.png",
+      "bytes": 2056672,
+      "sha256": "ff2212c9957c7d3b18636c55780173ed5f639d270e186846bc66486e48f85a35"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/finale_environment_manifest.json",
+      "bytes": 125767,
+      "sha256": "b969c4b1e0130c7bd703861611a9cef8e8685ac2fb28c84661ea1e06488ab1aa"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/finale_final_classroom.png",
+      "bytes": 1608291,
+      "sha256": "7fe26303d26981b1a8be8770c5f758cfaaf5c34e3bafa38a3ddd14d006a430a4"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/finale_stairwell.png",
+      "bytes": 1150552,
+      "sha256": "0337215b6b76baeafa7e7106b3a9735c5f391c1e79728e0552928fbf4b57eb8b"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/finale_vertical_core.png",
+      "bytes": 1887688,
+      "sha256": "034a0eba73fe0d4513b1e83b19f9e1a5996808f075116a1c986de568ca1a9eb5"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/teaching_building_elevator_doors.png",
+      "bytes": 5525,
+      "sha256": "a4b57a2c9aa97d1e76770994888e726675afa4aece0581f06ab4caf50226e319"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/teaching_building_floor_1.png",
+      "bytes": 689415,
+      "sha256": "74ecf977ac016d52dc8751a28228d6a51f299d3aa881ecf3d08a41248868b51d"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/teaching_building_floor_2.png",
+      "bytes": 661038,
+      "sha256": "8a5a06fe4d6d41357a0f5d91219ddb44cdd9f2dc3ae0d190dfbe48eae06af775"
+    },
+    {
+      "path": "assets/rpg/interiors/finale/teaching_building_floor_3.png",
+      "bytes": 664726,
+      "sha256": "0181209d62ccacf9d97cd65808fcdeb2ef5dc8167022187dbd1307b0246ad054"
+    },
+    {
+      "path": "assets/rpg/interiors/library_interior.png",
+      "bytes": 2621767,
+      "sha256": "9c17066c0edfdbaa53ff3025fbcd473129e54106b3a8452b465954999e22ee2b"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_channel.png",
+      "bytes": 2771284,
+      "sha256": "6c30a174aba3d26269c79671db14f77c701fddbf1b94bd16fb37a91950ef39d3"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_decoy.png",
+      "bytes": 2846521,
+      "sha256": "b6c24743e02a9de982cd3b8921bccda0375750197ae8a9f9e573e980c7678a07"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_dock.png",
+      "bytes": 2567407,
+      "sha256": "c9d66e2b036a6d925a56feb65b5a0b65f29476ea5bcee3786927d5a74dab1351"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_dock_no_sign.png",
+      "bytes": 2536147,
+      "sha256": "aa8d92483ffd86875a021123a876217dfa052cb2abe425b8a5ed1fc3b41d5f1d"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_mist.png",
+      "bytes": 2330839,
+      "sha256": "2da0c281ad57d1faf5104522bf2beeb87b4ede3c7f8954f26cffd95da83cac36"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_open_water.png",
+      "bytes": 2712494,
+      "sha256": "da1fb9f66960af061e194643ed4b7d72095a6cd0b28f3102c9e1a0520d33d72e"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_reflection.png",
+      "bytes": 2637854,
+      "sha256": "21a83373372458b2c0f80886eb667b78c02986da10d3033d07bd6e88db3b89a8"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_signs.png",
+      "bytes": 2894833,
+      "sha256": "ebd57142f43c940622d33a7d32fcad0b97e5b1261fdd76c8d0624f548cd7bfc1"
+    },
+    {
+      "path": "assets/rpg/interiors/qizhen_lake_swan_cove.png",
+      "bytes": 2701645,
+      "sha256": "061faeef570be075c284449d289493025ffcbd13306487211409d2b21fda8912"
+    },
+    {
+      "path": "assets/rpg/interiors/source/dorm_hub_gpt_image.png",
+      "bytes": 2222102,
+      "sha256": "72ea4c6a103966327e754e553517913f3a29f8a16c17ac00e30d1dd79bfe3927"
+    },
+    {
+      "path": "assets/rpg/interiors/source/dorm_hub_gpt_image_empty_table_rpg.png",
+      "bytes": 2422366,
+      "sha256": "af8b055cf64474c60511b2deb305017b21ed1538e8201128d757bc68b0659fe3"
+    },
+    {
+      "path": "assets/rpg/interiors/source/dorm_hub_gpt_image_open_aisle_rpg.png",
+      "bytes": 2393216,
+      "sha256": "441bdf4445ddff2cb0d339020aada7f342206fdecae3a159d34888851674d0f7"
+    },
+    {
+      "path": "assets/rpg/interiors/source/dorm_hub_gpt_image_rpg.png",
+      "bytes": 2604098,
+      "sha256": "cd3b34ec83051129f84dd42a339e938824126d36d0b327b3c105bb52d618f450"
+    },
+    {
+      "path": "assets/rpg/interiors/source/dorm_hub_gpt_image_table_card_reference.png",
+      "bytes": 2363376,
+      "sha256": "a671ba384edbc94ef0e45339c2058cf1a116ed819ad508a128992ad888e4dbcd"
+    },
+    {
+      "path": "assets/rpg/interiors/source/dorm_hub_user_selected_topdown.png",
+      "bytes": 2256027,
+      "sha256": "361f857e028b5d03defdaba9befd1e3ac0462133ca48a73f4e24c623a8db7519"
+    },
+    {
+      "path": "assets/rpg/interiors/source/library_interior_gpt_image.png",
+      "bytes": 2809096,
+      "sha256": "eced0e9aa1177d1ecaeeea7dc4f28b4fa54421617e16bd9eb643f5aec5de2036"
+    },
+    {
+      "path": "assets/rpg/interiors/source/library_interior_gpt_image_rpg.png",
+      "bytes": 3007366,
+      "sha256": "0daed807ba48bf67072293491558e7ceb571a7d16814ce1cd75a65a24a9ff4e6"
+    },
+    {
+      "path": "assets/rpg/interiors/theater_center_exit_closed_v03.png",
+      "bytes": 16761,
+      "sha256": "5ecde400cfc17e8b95e7dbc49bbac4a05fa28ed81d36d155aa08681f59456a8e"
+    },
+    {
+      "path": "assets/rpg/interiors/theater_interior.png",
+      "bytes": 2084876,
+      "sha256": "8de37e1976c36c637b3022df76ce52d81b31a40ce9bbf64a7d82255fd5c9f5d3"
+    },
+    {
+      "path": "assets/rpg/interiors/weather/qizhen_lake_dock_rain_concept_v01.png",
+      "bytes": 3042304,
+      "sha256": "735d05847189ece155e50de2f51c52b3411ad73130ab35e73a41896588637699"
+    },
+    {
+      "path": "assets/rpg/landmarks/crescent_building.png",
+      "bytes": 1403688,
+      "sha256": "459143c988b843ce50f5f06084035eb20bec308427bc825c56677bf5ab079f4a"
+    },
+    {
+      "path": "assets/rpg/landmarks/foundation_library.png",
+      "bytes": 1347908,
+      "sha256": "90b50d42299781a0d5647443cb2783f476248ffaeb8b17c8dcc6acbd3e2f9657"
+    },
+    {
+      "path": "assets/rpg/landmarks/main_library.png",
+      "bytes": 1678749,
+      "sha256": "84026ac6ca69451e8d1fb832fdcc7c13e4dfd1de6c5590c7df038c06f1ca154f"
+    },
+    {
+      "path": "assets/rpg/landmarks/management_school.png",
+      "bytes": 1546132,
+      "sha256": "d389f3c7420da469f65843e7069ef2aedce2f4e8dd9f2563a2c7602bb26d23ac"
+    },
+    {
+      "path": "assets/rpg/landmarks/qiushi_auditorium.png",
+      "bytes": 1510588,
+      "sha256": "6c69a6335c6027587b0095a05287a93c9a84f934e425143cdcc2ca4b70b87f50"
+    },
+    {
+      "path": "assets/rpg/landmarks/source/crescent_building.png",
+      "bytes": 1813072,
+      "sha256": "ad28ad4cc96a40854c4151610941c5e2b2decf64eb241f3e8eb3c61e575fb5e9"
+    },
+    {
+      "path": "assets/rpg/landmarks/source/foundation_library.png",
+      "bytes": 1811386,
+      "sha256": "a191ded18ee731871fefdbeaebae064d06f452ddb28e5404530e729d7db004a1"
+    },
+    {
+      "path": "assets/rpg/landmarks/source/main_library.png",
+      "bytes": 2126025,
+      "sha256": "a9c543ddd8cd8ba4f0000059965ed1332dfdfe5971038b3034f8b4657221b874"
+    },
+    {
+      "path": "assets/rpg/landmarks/source/management_school.png",
+      "bytes": 1863299,
+      "sha256": "ffb9e8017538e7b4e77a910081eeb802468a460bfd663dd8d9737eb23dc10778"
+    },
+    {
+      "path": "assets/rpg/landmarks/source/qiushi_auditorium.png",
+      "bytes": 1972227,
+      "sha256": "d40094937054df60d657087423257a5144bbcc8d13f58301e59b7367c534ac9f"
+    },
+    {
+      "path": "assets/rpg/landmarks/source/south_gate.png",
+      "bytes": 1295823,
+      "sha256": "737bc1b46ec74fd2c281987439ef4ef1c665806102bb534be88273b4a9079442"
+    },
+    {
+      "path": "assets/rpg/landmarks/source/zijingang_stadium.png",
+      "bytes": 1737676,
+      "sha256": "7b509969f41d6891bb60b921f6eac38b9fdb36de4b76059a83578f096ae8aa8c"
+    },
+    {
+      "path": "assets/rpg/landmarks/south_gate.png",
+      "bytes": 688134,
+      "sha256": "aad288bd11a1ee1da9df0c99a46bdbaea32287e6706bb078160344c15c8834d3"
+    },
+    {
+      "path": "assets/rpg/landmarks/zijingang_stadium.png",
+      "bytes": 946064,
+      "sha256": "9022cd6ebbb60581f4d5e84bbcd98c95632182627b0b5f02ace4e602dc8caa8d"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/canteen_queue_student_01.png",
+      "bytes": 13520,
+      "sha256": "fbca59927cc420785dec5db72db34a6720b6c9f4142144ff710accaba97a7d10"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/canteen_queue_student_01_back.png",
+      "bytes": 13520,
+      "sha256": "fbca59927cc420785dec5db72db34a6720b6c9f4142144ff710accaba97a7d10"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/canteen_queue_student_01_front.png",
+      "bytes": 17693,
+      "sha256": "49d4daca70722f224ea126214a6a46583c1aadd495174ecc563dea397ff45a0a"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/counter_aunties_2frame.png",
+      "bytes": 89690,
+      "sha256": "d34e1beed06432ebae593bdf4b8df7fd9e1c59bbd6b6603ab672eb0a67005080"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/queue_students_2frame.png",
+      "bytes": 245581,
+      "sha256": "cd2b2974dda61e0239fd356d11e92a655130954a389f05d22ceecdd4346fdb25"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/return_auntie_2frame.png",
+      "bytes": 19355,
+      "sha256": "e154023d129c3b7fef8c594bc8f1b33840c6f3018aa3e119761e6ef6f03ec4bb"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/seated_students_2frame.png",
+      "bytes": 152683,
+      "sha256": "ac0c49d18960e07d2d23f4a6d2fadfed1a80955152b3108e7dc847820eb46bd5"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/seated_students_extra_2frame.png",
+      "bytes": 124023,
+      "sha256": "cb2168847c1ded1923624645a45d20f147134eb1c9344b158bc6bd166e488614"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/shadow_auntie_3frame.png",
+      "bytes": 32333,
+      "sha256": "1d2d0c72393a732e88759fd09a3801f0140e536c796e2a47a3f6967e32ca37ed"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/source/canteen_queue_student_01_chromakey.png",
+      "bytes": 1269406,
+      "sha256": "2d8077c549291c5be23bb5283493ae49bf2d54a374916b2ef388a75b38f16b27"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/source/canteen_queue_student_01_front_chromakey.png",
+      "bytes": 1305180,
+      "sha256": "ec0df3674c8333abc93dc1e9a8e02048ab637f538e372cd61ebabe09de3a6a96"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/source/canteen_queue_student_01_front_rgba.png",
+      "bytes": 381293,
+      "sha256": "c7d21098e921331e005016f6c995b40c3e4e859081641e20902457a14a803732"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/source/canteen_queue_student_01_rgba.png",
+      "bytes": 328911,
+      "sha256": "c7f37f5ccc0633fcfc6d98689e727e369f6519488ad85e1eba52ad65f3f128a7"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/source/canteen_queue_student_01_straight_back_chromakey.png",
+      "bytes": 1273074,
+      "sha256": "39729ed1a70dc5fcb2f809e9042cc63207d8255959be9100f36d2e46c7cd67e4"
+    },
+    {
+      "path": "assets/rpg/npcs/canteen/source/canteen_queue_student_01_straight_back_rgba.png",
+      "bytes": 379011,
+      "sha256": "f97dde090232257eb913ee8cfb9753ef3edecc5e1ef9a94b4d0e180af334699d"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_idle_2frame.png",
+      "bytes": 24919,
+      "sha256": "2119caa68acc8a88e52ab766e68d37ea77ee1b3ad3a41acce45b0b1de0a982cc"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_idle_8frame.png",
+      "bytes": 96191,
+      "sha256": "391f5288aa8acdfa2d6b96efcdf49fbc07d60b2b7b76cf31bb4ea362d45ca203"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_mop_3frame.png",
+      "bytes": 41278,
+      "sha256": "39f4e7ce0e814c58434434f7617d858654798a3735b3a7dd9e892c1917cb02c1"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_mop_4frame.png",
+      "bytes": 73680,
+      "sha256": "996fd7c0521d49c633d9033db1e0eae2de5a9a003861b013452d882e70ca57ba"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_place_sign_2frame.png",
+      "bytes": 33498,
+      "sha256": "31c6a29ee7262a32a475438320e9cbbb962b7a91a03d2b044c0b9ec51ad0f6a9"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_push_cart_4frame.png",
+      "bytes": 105108,
+      "sha256": "35a7e47cc4fa9f448f3f04c9c4fb87a0595344f72478223961fd29157d2e81f8"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_push_cart_8frame.png",
+      "bytes": 190569,
+      "sha256": "b3149e79622fd89da7eec97c4f9f1aa0bf6fdda4838d93f15ff64b636ab5d4d4"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_push_cart_down_8frame.png",
+      "bytes": 102253,
+      "sha256": "56b17d565581ca697864482cd4cebe1b55d71dd6153c9e6d7197d16b017e1bfb"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_push_cart_up_8frame.png",
+      "bytes": 100996,
+      "sha256": "4ad404ac81f54c121f250ffbaf606f98955106df51796508623e5f350cb262bc"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_rest_1frame.png",
+      "bytes": 14824,
+      "sha256": "a2301b101d0baabd9912e511f51bc3e78c4f1fd19a0ae04ca8144654b0b18edc"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_rest_2frame.png",
+      "bytes": 23810,
+      "sha256": "48b9edf459c7ab691297a6e189cca3c22b7d7cee86a054c1bba138fdd92bc75e"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaner_toggle_lights_2frame.png",
+      "bytes": 29062,
+      "sha256": "46f33382f833e040f06b505f27625fb6cd3ec0894e6448f5a18a4993ff77af8e"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/cleaning_cart_1frame.png",
+      "bytes": 18939,
+      "sha256": "13521f3e15df3f73cec566c71fdb43042664db7898bea982e20f6837212f08fb"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/finale_npc_manifest.json",
+      "bytes": 12012,
+      "sha256": "a6a11e51d93d71ecf657a6471ba8d7fe5d0ef54097477310cfdaa5457ba35d52"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_check_list_2frame.png",
+      "bytes": 30208,
+      "sha256": "246823ed7ac726efbcc13f822826949e32cd19aa9685f6272293b139f9e3e797"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_check_watch_2frame.png",
+      "bytes": 30279,
+      "sha256": "183820b808dc7ea801cb878687aa6537c34225910569b37a421ed4755d5d346e"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_flashlight_down_2frame.png",
+      "bytes": 30703,
+      "sha256": "4205c8b97bcf132f1e0ec04d76b07e5a59e675a21f8f0d1ef1123cd481fd8395"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_radio_2frame.png",
+      "bytes": 28965,
+      "sha256": "edd060f3a462ebd7a1e0150c587c4112f0abeb67f06848a420dba4b077bab1de"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_walk_4frame.png",
+      "bytes": 44017,
+      "sha256": "71faaa4ecf73e7ada33b581f0e1744ebd243d5fcef2ef722158fecace727f879"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_walk_8frame.png",
+      "bytes": 102832,
+      "sha256": "21a66a9887295dd6d00bbce8acf18b637cf4b0364248b7cb83994e8de7c84da2"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_walk_down_8frame.png",
+      "bytes": 106068,
+      "sha256": "f27adc541f0b73f669163d1e4e2e15dec4349a1b07f10069e6cfa875dabe0dc1"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/guard_walk_up_8frame.png",
+      "bytes": 91762,
+      "sha256": "2649d5abba5a7b8c34fad580c8f1148f858b9cdebd639dea2c44c460273bc423"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_cleaner_idle_source_grid_v3.png",
+      "bytes": 1547691,
+      "sha256": "7fa25df28e6883ae876616d3026e4976b44f368565a3206d08fd041df04b6a8e"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_cleaner_push_down_source_grid_v3.png",
+      "bytes": 1767837,
+      "sha256": "cb5e2e9231177ce49705d2b7e58970c1e9e201f583850d0154b248756cf2d286"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_cleaner_push_side_source_grid_v3.png",
+      "bytes": 1775911,
+      "sha256": "210c157aa5ddb1f47a1af38b34d1aec2e819512c6ef4ee15fc02b001f66f304d"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_cleaner_push_up_source_grid_v3.png",
+      "bytes": 1672473,
+      "sha256": "055d65f71b8e1df393f761a206b39efa564e05a2f5a10cfe9f96bac935d0de4b"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_cleaner_source_grid.png",
+      "bytes": 1571326,
+      "sha256": "057e7f7322701d7c22cc59cc8dff7f4cbfad735bf0820c46da5de93859590710"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_cleaner_source_grid_v2.png",
+      "bytes": 1373177,
+      "sha256": "6557cdc0a33dbc90dfee3c4b057fd1034dec4463fa1511335433a058780b9431"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_guard_source_grid.png",
+      "bytes": 1411946,
+      "sha256": "9096550096f128f07e35675a1a04739b13fcbc83c04a8e2950985e54710be881"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_guard_source_grid_v2.png",
+      "bytes": 1016422,
+      "sha256": "f2ad7d29e005acba8b105d092aba4c70e69182ccd79bedb1b61b19af16be05cf"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_guard_walk_down_source_grid_v3.png",
+      "bytes": 688338,
+      "sha256": "fbc26f392564b59e3dc814610e80f707684d6e977d2d9003e973284bdbac83ef"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_guard_walk_side_source_grid_v3.png",
+      "bytes": 677586,
+      "sha256": "2313d308eb478490898d6ba9e0cacf178ff31f49cc7d898cb86a2a20e0f03d4a"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_guard_walk_up_source_grid_v3.png",
+      "bytes": 1477437,
+      "sha256": "d5a88030dba36097a3d1b8d56b6c52e9928a41e6436e1f185db40b2ae11ba936"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_student_source_grid.png",
+      "bytes": 1304461,
+      "sha256": "0999eda1a82ebfa4ca91f83fb709a921b4c1849b3d8158b1bed5460fe41b2982"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/source/finale_student_source_grid_v2.png",
+      "bytes": 983880,
+      "sha256": "e134515b1d842a12f20c139df23a19dbba6365ddda598c10f50137fb56c1d927"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/student_adjust_bag_2frame.png",
+      "bytes": 25897,
+      "sha256": "780bc736d7e20857508898ee6af3243e395b057c78a4a8534c21f9f317119e59"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/student_idle_1frame.png",
+      "bytes": 12158,
+      "sha256": "88871c8c1100ee72ba9cebb84de3602e466c6bf5747972d529db79dbf9c8f22f"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/student_phone_glance_2frame.png",
+      "bytes": 23896,
+      "sha256": "f2813f220d47c73d0880b95ba056881c09886f901a9fce7371fcacd2321c29b0"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/student_push_door_3frame.png",
+      "bytes": 44218,
+      "sha256": "9dcda9aa6534ef93976b5f69b6c0cb7afbf58091991a2157ae0b71b82ee6f637"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/student_walk_4frame.png",
+      "bytes": 37885,
+      "sha256": "cc2fc2f86d3c5b6b35b24663330dbbee04500709b441e7b552c953f4c9f97994"
+    },
+    {
+      "path": "assets/rpg/npcs/finale/student_walk_8frame.png",
+      "bytes": 107596,
+      "sha256": "f3b256e7a7350d624f406bacef08ae666d8afa118432ab224e1a4a2fedd4fe2e"
+    },
+    {
+      "path": "assets/rpg/npcs/library/front_desk_staff_2frame.png",
+      "bytes": 19957,
+      "sha256": "9b39f7eee992a4077090a4c19cbbae4e884ca487538a7580c327ec83b66d7df9"
+    },
+    {
+      "path": "assets/rpg/npcs/library/source/front_desk_staff_2frame_chromakey.png",
+      "bytes": 1175373,
+      "sha256": "d72d57a0920f752ee1176e978021249a5bae07e21a826e0854d7f815300a62f1"
+    },
+    {
+      "path": "assets/rpg/optimized/README.md",
+      "bytes": 850,
+      "sha256": "638b7cc3ce5470cf89863e856f41e8b8a0a23243816e7cc2728e0aee649445b0"
+    },
+    {
+      "path": "assets/rpg/optimized/campus__zijingang_campus_loop_panorama.webp",
+      "bytes": 18472256,
+      "sha256": "7ddc8461f7b14bb2f74534740c57dd30007343a3d8a387a5aca8d28a059e4ae3"
+    },
+    {
+      "path": "assets/rpg/optimized/campus__zijingang_campus_plate.webp",
+      "bytes": 17288460,
+      "sha256": "2f89d1efe6febd7a8be9a9b895b35bec3baba741f8320d04fd98f8ab5f6a6245"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__canteen_interior.webp",
+      "bytes": 2033626,
+      "sha256": "294affec9ca3210e3ac22abc93f20d7cb9acd67793ebf25df560afd6325632ad"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__dorm_hub.webp",
+      "bytes": 1760088,
+      "sha256": "b3d5523881928b693f045628fdfbb31b485f387b57d0f046fd6aebfd1f160f9f"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__base__a1.webp",
+      "bytes": 1801520,
+      "sha256": "4c52fd89df325cbbb2c499fbd3d7980e23b67352c93d8b5daab6ff88eee64db4"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__base__a2.webp",
+      "bytes": 1842386,
+      "sha256": "c77dc9b5f7d001e1cfbdcba691cd93eb851fb90fc4a2e855ca6223af61e042f2"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__base__a3.webp",
+      "bytes": 1706812,
+      "sha256": "f42439a4502d325f83a05997c7b3732b98eeaecc83608784799bb9f946298636"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_0754_blackout.webp",
+      "bytes": 1236750,
+      "sha256": "d54a1e48da37bf5faf75573101df5b65f932b3b0648e765c1ac556cc04170ef9"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_0755_morning.webp",
+      "bytes": 1680800,
+      "sha256": "8d5c6e20aa59d642867893600836417f3688acbd576471e4fbec86ae257b522c"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_1225_bakery.webp",
+      "bytes": 1818880,
+      "sha256": "7da904f76ba2f2b5a498e512632595de1d35c6aefc26adacf374700f8a8e9422"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_2245_maintenance.webp",
+      "bytes": 1466632,
+      "sha256": "ad69f076e59a1d2c94b10aceb9b45d7e89840e7d250d42ce263d8cb328b7f4b3"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_2245_opening.webp",
+      "bytes": 1470200,
+      "sha256": "55f3c65ca56bab24b987e670c842079458fa3383792c8b56023fd1b68c619e78"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a2_0754_chase.webp",
+      "bytes": 1326422,
+      "sha256": "6a27efd0a3158543f97d0d5917ea4a1b5a9fd71c97dd932f782d420a43ff29aa"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a2_1850_evening.webp",
+      "bytes": 1742164,
+      "sha256": "ad84e66891b09277109a5877b1b87586c8887c730c9d61510d2a1e44b60049cb"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a2_202_final_minute.webp",
+      "bytes": 1304334,
+      "sha256": "7056c843a87e96d24c3d1fec37647ff6156042bcca91982ec6f7080efede1fe8"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__finale__chapter4-755__states__a3_1850_reference.webp",
+      "bytes": 1655332,
+      "sha256": "7c93acb3af3ace528ce520543420fe1fb23c9dc23b13c3c25b940de3b03da3fc"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__library_interior.webp",
+      "bytes": 1962660,
+      "sha256": "aa2f85f080addca715a2a34ea0c9bda0c08f61791f283eff5bb015d1a602d1f2"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__qizhen_lake_channel.webp",
+      "bytes": 2165914,
+      "sha256": "f89170ae8d23c2dec7de5030d8ce73e16673d6edc8a699d95aa13e6ee723d00b"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__qizhen_lake_dock.webp",
+      "bytes": 1962208,
+      "sha256": "2da151bea50dc992bba894f6867cded1cc77191dde3eb37b0eeca61c4bb74710"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__qizhen_lake_dock_no_sign.webp",
+      "bytes": 1960390,
+      "sha256": "ad6b0c935d661e790a70736f84f67235a62f6476e997bbeb0e80f35cbc081ba1"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__qizhen_lake_open_water.webp",
+      "bytes": 2109992,
+      "sha256": "c65df6f1f9007bcf067f791c32d0cb7b68f7757f8679dd69996c4cf72727e727"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__qizhen_lake_swan_cove.webp",
+      "bytes": 2104984,
+      "sha256": "a539367940fa68805b083c48ae1f32ae1eb44611920deba230debe8f0a37a240"
+    },
+    {
+      "path": "assets/rpg/optimized/interiors__theater_interior.webp",
+      "bytes": 1622174,
+      "sha256": "1a12bcf2ac867358f3cd1859899f26b4b21ce121a0f1f5bb953bc623b932b457"
+    },
+    {
+      "path": "assets/rpg/optimized/manifest.json",
+      "bytes": 9459,
+      "sha256": "f31dd3f55ac433c07d04f033940789256bb353d4e3d3ecb31ce60ebf7eaadf1c"
+    },
+    {
+      "path": "assets/rpg/player/README.md",
+      "bytes": 2926,
+      "sha256": "dc2291d824bf9828bd0fdf7ca1427511a1af1f54959c58c18778b03d3d18bf66"
+    },
+    {
+      "path": "assets/rpg/player/player_down_0.png",
+      "bytes": 11887,
+      "sha256": "ab29c2e04c8ca5a165ede053b0b879be695adb41971c820bc67dbdf4c36f6fd9"
+    },
+    {
+      "path": "assets/rpg/player/player_down_1.png",
+      "bytes": 12348,
+      "sha256": "5f5e0d3f3fbd1cf5a45fc7da9526da555d93461748cb91fc768a9cdb56dc36d0"
+    },
+    {
+      "path": "assets/rpg/player/player_down_2.png",
+      "bytes": 11931,
+      "sha256": "703d15dd937a50e69e7b544537a26a87be3ffb0795f72e7133b85f969c7dd31c"
+    },
+    {
+      "path": "assets/rpg/player/player_down_3.png",
+      "bytes": 11881,
+      "sha256": "716bccbdb08ce82a34964d11a4697dc8141a4c889661202123ce42db1fda2b01"
+    },
+    {
+      "path": "assets/rpg/player/player_down_4.png",
+      "bytes": 11899,
+      "sha256": "ea7c316ff586fd5ff692cb324f140555beda475dc3ad23130c8664bcc9c4db21"
+    },
+    {
+      "path": "assets/rpg/player/player_down_5.png",
+      "bytes": 12217,
+      "sha256": "00aa6145b664027e51c7ac9a47ff39f89875a5524b36a8fa0f36ea247cadad47"
+    },
+    {
+      "path": "assets/rpg/player/player_down_6.png",
+      "bytes": 11864,
+      "sha256": "ed9828f50e51aa3ebd3fdc7cb75f91d742150bc83d70dd18812852cff25c7626"
+    },
+    {
+      "path": "assets/rpg/player/player_down_7.png",
+      "bytes": 11670,
+      "sha256": "43cd462beaa782a2afa4720114dc1365cbf4a24d731d4121b7ddb8804d05809f"
+    },
+    {
+      "path": "assets/rpg/player/player_push_cart_sheet.png",
+      "bytes": 643530,
+      "sha256": "fc36143caf182dc9aff42e0c1f9ee21ff78fb212021990bb60ab192fa3bf7905"
+    },
+    {
+      "path": "assets/rpg/player/player_push_cart_sheet_8f.png",
+      "bytes": 1000531,
+      "sha256": "bd2aef5761ef3129eaf5fc49345788b1cae580e54f2bf81cd08827de02e5ae4a"
+    },
+    {
+      "path": "assets/rpg/player/player_side_0.png",
+      "bytes": 10997,
+      "sha256": "75f2f28b9e64ca18d993546b37a6c801df940f702d5b56888924b92fe552a819"
+    },
+    {
+      "path": "assets/rpg/player/player_side_1.png",
+      "bytes": 9059,
+      "sha256": "97126037c035c7ce85981985f3439f2efd777d8a886eeeeaccb64e3f34102c5b"
+    },
+    {
+      "path": "assets/rpg/player/player_side_2.png",
+      "bytes": 8807,
+      "sha256": "9f2c99d04063a315b8a7500534496741dca9bc5fb99aad847f41008f93ef8ab5"
+    },
+    {
+      "path": "assets/rpg/player/player_side_3.png",
+      "bytes": 9473,
+      "sha256": "640abc30e5f590b327a9402207355b2b20cf099b5a896ded8e11c699576d4ef4"
+    },
+    {
+      "path": "assets/rpg/player/player_side_4.png",
+      "bytes": 10869,
+      "sha256": "b7fe78005d62a21c0de08b898ccc08b190b0ac061b237ff8af7349347e8bbd18"
+    },
+    {
+      "path": "assets/rpg/player/player_side_5.png",
+      "bytes": 9293,
+      "sha256": "58eaa07bc0d0278aa385f0d5ef75de7f08416ad667399f015af28e0a6a42ed45"
+    },
+    {
+      "path": "assets/rpg/player/player_side_6.png",
+      "bytes": 8775,
+      "sha256": "3486c76fd81eee7af8dcdfd1e19162c05fedc435a5221193d25294ede08d60f9"
+    },
+    {
+      "path": "assets/rpg/player/player_side_7.png",
+      "bytes": 9162,
+      "sha256": "be86a6be40fa970273c7337994cefd0466d143eda24ac9a3c3027f578ae92096"
+    },
+    {
+      "path": "assets/rpg/player/player_side_idle.png",
+      "bytes": 8836,
+      "sha256": "21c1f8a73cada7886f9c9b1147ae77e4cc81b37fcb09d4e103923f03818b9cfe"
+    },
+    {
+      "path": "assets/rpg/player/player_up_0.png",
+      "bytes": 10418,
+      "sha256": "00b0bb17d1351f9c79318e7921bc12f922d2c4b1b21f974d4b869d1424aaf50e"
+    },
+    {
+      "path": "assets/rpg/player/player_up_1.png",
+      "bytes": 11269,
+      "sha256": "877c199373c4c5f212996ee6c2ab8d2b5811de00a5fbbf9c1999a353cab36881"
+    },
+    {
+      "path": "assets/rpg/player/player_up_2.png",
+      "bytes": 10643,
+      "sha256": "de1ab6f397b16ce6548e43dc1f84336b74073d977c4ac71b63399a755e6674b1"
+    },
+    {
+      "path": "assets/rpg/player/player_up_3.png",
+      "bytes": 10577,
+      "sha256": "0f445447978221edb9e220311304f56c98925749574d9fa9aeedb79293a1f48e"
+    },
+    {
+      "path": "assets/rpg/player/player_up_4.png",
+      "bytes": 10268,
+      "sha256": "a408b697cb390f86ae3429b44b33b8ea6c229f4e481b8d0f69b8f6b02f7121ef"
+    },
+    {
+      "path": "assets/rpg/player/player_up_5.png",
+      "bytes": 10626,
+      "sha256": "f664855d1cfab0770571aa88519b220865dec1196900fad096ccebfdae7df454"
+    },
+    {
+      "path": "assets/rpg/player/player_up_6.png",
+      "bytes": 10669,
+      "sha256": "62c370f6e70f41e5c4cd02c50cf6d6a38bb7bbca791ad0bef2da94e06962a938"
+    },
+    {
+      "path": "assets/rpg/player/player_up_7.png",
+      "bytes": 10216,
+      "sha256": "479a3748ce52532fdb4e81955004a15ee76bb8916eb5e6995723a7ad896f6aa4"
+    },
+    {
+      "path": "assets/rpg/player/source/player_push_cart_sheet_8f_chroma.png",
+      "bytes": 1777072,
+      "sha256": "77801be4dc3686d0e8bd317924e03e5f3fe67ecbaafba7fdc9ea255ba0347638"
+    },
+    {
+      "path": "assets/rpg/player/source/player_side_model_9pose_generated_v4.png",
+      "bytes": 1390484,
+      "sha256": "3f0c4af48e2c28ca9fde31d07ece53ba3bd97505c5070aafa0b127e28d32df6c"
+    },
+    {
+      "path": "assets/rpg/player/source/player_side_passing_close_v1.png",
+      "bytes": 365960,
+      "sha256": "103ffc90dae6906bfec6bfec7fe6f614ddf11f911c06d658b3ce6946a80fdd3a"
+    },
+    {
+      "path": "assets/rpg/player/source/player_side_transition_01_v3.png",
+      "bytes": 432728,
+      "sha256": "1c4935f2512658ebce4af2d5104a59639e9bb9cedb1e3189e429b7b63334120f"
+    },
+    {
+      "path": "assets/rpg/player/source/player_side_transition_23_v3.png",
+      "bytes": 366065,
+      "sha256": "51b1895f6b555da14a8a6ade4666231c612638a899265bd6a8b505caf3d16cab"
+    },
+    {
+      "path": "assets/rpg/player/source/player_side_transition_45_v3.png",
+      "bytes": 366716,
+      "sha256": "7259e76541f1cd5c397aa2fde37dfda404875ddbc2c792fb8b61517cd76da78f"
+    },
+    {
+      "path": "assets/rpg/player/source/player_side_transition_67_v3.png",
+      "bytes": 358073,
+      "sha256": "abe3903dc8d8da5f58eeee5c959f1b4b475d2c8b5099bb8f5a54982ca45e22f4"
+    },
+    {
+      "path": "assets/rpg/player/source/player_side_walk_8frame_generated_v4.png",
+      "bytes": 1341700,
+      "sha256": "7dca3703fd36bcd11f97eb11ba4e3d210677dce322c6c493d558975bd7001d49"
+    },
+    {
+      "path": "assets/rpg/player/source/player_walk_24pose_transparent_v2.png",
+      "bytes": 1991396,
+      "sha256": "28652d3d4ad6a78095fc0b5ef039aa86e750f46cd8d7362092fdd65457798288"
+    },
+    {
+      "path": "assets/rpg/player/source/student_walk_gpt_image_sheet.png",
+      "bytes": 1147242,
+      "sha256": "790701405e0c5f83a291e23a614ea6187183e9077bcf7027b4a0e0015d209e20"
+    },
+    {
+      "path": "assets/rpg/player/source/student_walk_transparent.png",
+      "bytes": 1236558,
+      "sha256": "42a1c79b7291d37a61101a0838cf4f78a69bda5c013f6f53609ce05756dce553"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/bei_shizhang_v01.png",
+      "bytes": 126241,
+      "sha256": "ef7c6c995e82512e271ab414416e841a67592951f9f8bef0326fa91b798c1c1e"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/chen_jiangong_v01.png",
+      "bytes": 120866,
+      "sha256": "eb397ef79ff705962014a9dd8ef8b9f3b3b15d21997281bc05936592309b2020"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/chen_yizhang_v01.png",
+      "bytes": 135064,
+      "sha256": "556dc18a05124fa3300540d858c4dd4a30b813426695cbfbe7a56e6ce6aacb32"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/cheng_kaijia_v01.png",
+      "bytes": 127135,
+      "sha256": "8a9cf5017ffd5dfd713353596fecc2bc07d38ee6c22c67eb0aab44d6f05d89d3"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/gu_chaohao_v01.png",
+      "bytes": 117636,
+      "sha256": "4f74b7d5ba41b020019a681e1baaedf10d9ba0f07e32f0b6334115276182cdf7"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/han_zhenxiang_v01.png",
+      "bytes": 119569,
+      "sha256": "6d58187c708003c11fb402375bf4eb0b1feb893acda42e3f0b1eeb0e09a5a13f"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/li_zhengdao_v01.png",
+      "bytes": 122312,
+      "sha256": "9199e910d28ab23bca2c74e7d598ebce350f4141a26d96257f49e280082bf343"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/lin_junde_v01.png",
+      "bytes": 122198,
+      "sha256": "6c18896ed5afa8f598012269b728b5444494bddf8e5fb0834934537831813ae5"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/lu_yongxiang_v01.png",
+      "bytes": 124648,
+      "sha256": "bc5308c8910b2a15b76ba296c4311b8749242916a533d043dc79c499ffeeeb88"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/pan_jingfu_v01.png",
+      "bytes": 113079,
+      "sha256": "96ec426350685794b5f23527cdbd48f9c508fd58c3baf53a66e2ec2a6e85bd6d"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/pan_yunhe_v01.png",
+      "bytes": 127856,
+      "sha256": "0619e63bfe24c27fcc9776528cdac84d29d9ab770621d38b93a9e56d9159cdbb"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/su_buqing_v01.png",
+      "bytes": 138473,
+      "sha256": "5ac778564c7dd0db93fbd7a895cd4998703b071b8db5270ef32719a4719b7e8e"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/tan_jiazhen_v01.png",
+      "bytes": 124694,
+      "sha256": "cb18a8400335fa79694de6fad7274b1ac920fa2fed6b26be9a91f700cf021e86"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/tan_qixiang_v01.png",
+      "bytes": 168221,
+      "sha256": "7214422b3d4d2f3ff03b4b96c5ade068747969ca366a6cfb50e84783ff324208"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/wang_ganchang_v01.png",
+      "bytes": 115024,
+      "sha256": "612ce5691a06b8e02e8e77e1aab9eb45eb00a64efc039d2d0fb089a49584d674"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/wang_yuan_v01.png",
+      "bytes": 112216,
+      "sha256": "e28c36a71aa8fbfc262d23b2a73b94bbff09f7146424ba7978f8e0dca37af95a"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/xia_daoxing_v01.png",
+      "bytes": 119182,
+      "sha256": "ca1922a7c2dc306ea225450cc9227c204901dc48a386b4d5a2ca729655aefb22"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/yang_wei_v01.png",
+      "bytes": 117677,
+      "sha256": "abd63a556a9e65a4582e0c86ae55e22d02f405c504cf30f4c28b651f710b93e9"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/zheng_shusen_v01.png",
+      "bytes": 110683,
+      "sha256": "0d8d7ffbf790ebb345183a646cba11baafb8127a9bf32e2ce3d2c6c7e9bb099d"
+    },
+    {
+      "path": "assets/rpg/portraits/chapter4/alumni/zhu_kezhen_v01.png",
+      "bytes": 119823,
+      "sha256": "ed5d76dc115640b4dffec88b3880d9e4948febdf1c1ee0d38cb13bb3d67e36b4"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/cleaner_a.png",
+      "bytes": 1412425,
+      "sha256": "feba7beef5be25cdb19a60bbda8babe950018d37beed54af9075679f5111a968"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/cleaner_b.png",
+      "bytes": 1442401,
+      "sha256": "2688d9d5b29d2aa044fbdeba74f6f011f9d12882915d0f62f074cf5c728f9582"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/departing_student_a.png",
+      "bytes": 1519204,
+      "sha256": "86454dc21ca0bbe4871f18e54a1b99aeae269041e08ec0d7553a106a2558ddf6"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/departing_student_b.png",
+      "bytes": 1435267,
+      "sha256": "6d172586ae6b5a3c6bdddfe1fe782bd8ea980d98d8f710ccd60e523fd7cd5c7f"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/guard_a.png",
+      "bytes": 1525429,
+      "sha256": "8ab2cbc32a14a523e779f6bbb9873287bb343332815ea0d05cfed52418a01dfd"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/guard_b.png",
+      "bytes": 1512121,
+      "sha256": "14d9167d7dde5e9fdc8a7731b0a977fbeb6f41105149e7c719e2e365e68bf529"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/runtime/cleaner_a.png",
+      "bytes": 77775,
+      "sha256": "68c545e18ea155090a9ffd2fe16d72d1390edc2b831c3e495690d096d90d0a78"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/runtime/cleaner_b.png",
+      "bytes": 79977,
+      "sha256": "391b7ad6fbed5ac80d8af46dd36247d9432656d222be05ef6d4f37125e97c8c5"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/runtime/departing_student_a.png",
+      "bytes": 77929,
+      "sha256": "2a3d5a438020f5a74d4e284370e659f1606f452ab81378659b1ca5718a577d01"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/runtime/departing_student_b.png",
+      "bytes": 77698,
+      "sha256": "5ebe52854d4cdadc9451dfc0d6cd6098e987a74fbeb6e7b4a3ad83203071b993"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/runtime/guard_a.png",
+      "bytes": 82030,
+      "sha256": "b74c1be1c0eb3e2e53d95e4bf01f967752c933e59e66af71ad188ae828b64baf"
+    },
+    {
+      "path": "assets/rpg/portraits/finale/runtime/guard_b.png",
+      "bytes": 82924,
+      "sha256": "bcd1dc6476497f8657e496eab2b5c370f3115a972f5a8ea2577ae082aa724bbb"
+    },
+    {
+      "path": "assets/rpg/props/front-source/bike_shelter.png",
+      "bytes": 1673496,
+      "sha256": "4a4edf65a5ffd9282c7faca6fa5e4dc913561343899509b8225a6f6ec21e3728"
+    },
+    {
+      "path": "assets/rpg/props/front-source/campus_kiosk.png",
+      "bytes": 1329488,
+      "sha256": "0087a1096923b7b82d1fd6248efb34ea7f4647c1e466ef1202fbaaa8c29f5882"
+    },
+    {
+      "path": "assets/rpg/props/front-source/dorm_cluster.png",
+      "bytes": 1833635,
+      "sha256": "15b00788b0b8039cc8ecdf90fbf0090c9b6599508702fdda7901b24d8c59e543"
+    },
+    {
+      "path": "assets/rpg/props/front-source/greenhouse_garden.png",
+      "bytes": 1984043,
+      "sha256": "be1e470666e3738142b1f58d01e957a20d64975887f2cbd7dba7237479a7d659"
+    },
+    {
+      "path": "assets/rpg/props/front-source/lake_heart_island.png",
+      "bytes": 1818896,
+      "sha256": "bf4aea090065ea061fd257aee6fa93062252a14409b1784b45ce15b48ad94125"
+    },
+    {
+      "path": "assets/rpg/props/front-source/nanhuayuan.png",
+      "bytes": 2017109,
+      "sha256": "2d890ccc233f6744ebd5d454abd7f52980c0bc91cb882edb49488470703f8b50"
+    },
+    {
+      "path": "assets/rpg/props/front-source/research_cluster.png",
+      "bytes": 1924015,
+      "sha256": "f001b523dd158f4f647bb11ba323e6a21cbd5a72d2445a44968206cb02ab84f2"
+    },
+    {
+      "path": "assets/rpg/props/front-source/service_block.png",
+      "bytes": 1774977,
+      "sha256": "75189c3f11efd67eadfdd7c145c3dc9dc5c3ba7974db823717090ac5031cfd1c"
+    },
+    {
+      "path": "assets/rpg/props/front-source/sports_courts.png",
+      "bytes": 169464,
+      "sha256": "7b195a63c0075ff23e72d15bb597635bb5992ecfd777ff85e8ea73f1e38f622e"
+    },
+    {
+      "path": "assets/rpg/props/front-source/teaching_courtyard.png",
+      "bytes": 1575857,
+      "sha256": "3e8afb176756af04d24ccc8a698023cba3efa69899f39d1e435c3b6717f52179"
+    },
+    {
+      "path": "assets/rpg/props/items/hair_dryer_generated_v01.png",
+      "bytes": 8494,
+      "sha256": "c3ae9dc9ce1efc31183024cd8c0613ae4b8030bd3bbf3a38eaa470fe99a5f418"
+    },
+    {
+      "path": "assets/rpg/props/landscape-source/avenue_tree_row.png",
+      "bytes": 2215137,
+      "sha256": "c2cdc16dc485d127a341e2d28a0d8a7eac3a1995b5ed94072196ab7f45aee1d2"
+    },
+    {
+      "path": "assets/rpg/props/landscape-source/tree_grove.png",
+      "bytes": 2115495,
+      "sha256": "54ccc3c2dd8bd01ea9c336f0f5b28a719ff172bb4dca67ae190eefce4de2ebd4"
+    },
+    {
+      "path": "assets/rpg/props/landscape-source/willow_bank.png",
+      "bytes": 1956228,
+      "sha256": "98d55cc76e8a932d3614cb955897b919e4e4575a2eb44c4e9b114f3a160effbc"
+    },
+    {
+      "path": "assets/rpg/props/library_front_desk_stamp_v01.png",
+      "bytes": 5658,
+      "sha256": "d1174715a44692416925611f94c57108ccf6033c40bbe739eba3819951de363a"
+    },
+    {
+      "path": "assets/rpg/props/qizhen_bridge_segment.png",
+      "bytes": 71053,
+      "sha256": "6a81dd09b58963d78361643bb4cd4208ac39be56699dddcb7f4794603717a7d4"
+    },
+    {
+      "path": "assets/rpg/props/side-source/dorm_cluster_side.png",
+      "bytes": 1466996,
+      "sha256": "0e3d07bc7f868b42cdae67cc09f95b67703e5d1d1462c2d67236b1e248815739"
+    },
+    {
+      "path": "assets/rpg/props/side-source/greenhouse_garden_side.png",
+      "bytes": 1645448,
+      "sha256": "7de58e07a7f40759f161878ed3a3025b5af8a8bb2d813594c44f776a985cddd1"
+    },
+    {
+      "path": "assets/rpg/props/side-source/service_block_side.png",
+      "bytes": 1394468,
+      "sha256": "dda9371812e1ee287f6bcf378542bd5deef0d2206fb42d6ac6d4c44a6613e393"
+    },
+    {
+      "path": "assets/rpg/props/side-source/teaching_courtyard_side.png",
+      "bytes": 1251304,
+      "sha256": "c261e03c0ca2d072c030599310bd0592e0976a0a1b7acf68ef28a5be6fc2c8a3"
+    },
+    {
+      "path": "assets/rpg/props/zijingang_environment.png",
+      "bytes": 4132783,
+      "sha256": "cf58e1502507203d6b0a992f9ba8684fc9c7c33f17630e407ce32550a6ab6503"
+    },
+    {
+      "path": "assets/rpg/props/zijingang_environment_source.png",
+      "bytes": 2484296,
+      "sha256": "ed3e51ce2225383369a4374d142f182aaf98088d76fe6af4c525032f9f016d2d"
+    },
+    {
+      "path": "assets/rpg/qizhen/kayak_overhead_frame_a.png",
+      "bytes": 8944,
+      "sha256": "0a9def5e6db8ef8bf6367ef26a4404bb6358f6df8b66a4668d512eaa8782a7df"
+    },
+    {
+      "path": "assets/rpg/qizhen/kayak_overhead_frame_b.png",
+      "bytes": 9069,
+      "sha256": "c4e7bb36259a6a268e4908264ccd323cfe732b71d12ab6aad5cf8f88489ce667"
+    },
+    {
+      "path": "assets/rpg/qizhen/source/kayak_overhead_frame_a.svg",
+      "bytes": 2461,
+      "sha256": "ddb765363d5450722d7460edd2673e92b553c93b480aebe535030c576e9ddf84"
+    },
+    {
+      "path": "assets/rpg/qizhen/source/kayak_overhead_frame_b.svg",
+      "bytes": 2460,
+      "sha256": "e6bb0c4d743b39945c916cded04e7c8932e5e590675eb398401d58f9d3dc8e61"
+    },
+    {
+      "path": "assets/rpg/qizhen_fishing/README.md",
+      "bytes": 3406,
+      "sha256": "50cb1573800bad93023680cf80180a5c84ad7b41cfb8a922bcf6793fb073d53d"
+    },
+    {
+      "path": "assets/rpg/qizhen_fishing/player_blue_fishing_skiff.png",
+      "bytes": 814228,
+      "sha256": "47b5c2799543fb6e0ea335d69488a793bde91daad154cf26f86fa636efe18390"
+    },
+    {
+      "path": "assets/rpg/qizhen_fishing/qizhen_fishing_dawn_environment.png",
+      "bytes": 2666392,
+      "sha256": "46a5bcb9270bd3c85a5b578efcaa6c4de3e12ade9fd0630a791c2f93f926f0b6"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/stage_manager_ghost_fade.png",
+      "bytes": 13264,
+      "sha256": "0203e44300213cb7f5ba22c77c4422b94f6ec9ab7cafb6e17da98a9e6a2b7f8f"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/stage_manager_ghost_idle.png",
+      "bytes": 15844,
+      "sha256": "2a8ce7c2e16284e5877af569fcb21d970dee72ce6a37f1094bcfef653f6a5ba7"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/stage_manager_ghost_point.png",
+      "bytes": 14941,
+      "sha256": "6f1f4ec53e7fe382ecdeaef3d40abe7f177d18239feb2e3970ab359c3d075ab0"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/stage_manager_ghost_warn.png",
+      "bytes": 16904,
+      "sha256": "f84551020a2fbb33a4d1b521bb4644af0590c61fb2c3052925d970e2fdd7787b"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/ticket_inspector_idle_back.png",
+      "bytes": 12106,
+      "sha256": "73797069506909d5e7f03047576a2a0c2a609eaf06ee323a5385ee4847300262"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/ticket_inspector_idle_front.png",
+      "bytes": 14173,
+      "sha256": "0dd7a303ddca9e3eb396968c58e01131757d6f44b695c3abb0a5a1f8e341d586"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/ticket_inspector_idle_left.png",
+      "bytes": 11139,
+      "sha256": "612edafce10e841f421dad3864649d02ce3a64a5324214c57e3be381ffee4f3b"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/ticket_inspector_idle_right.png",
+      "bytes": 11213,
+      "sha256": "46ae2728bd4fe1a4a86bd53a148849d166e3737fc38bc7587a0dca085bf80644"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/ticket_inspector_scan_front.png",
+      "bytes": 14967,
+      "sha256": "0342dfedddd3311a956f939b0f2a98281d29310ecd9b40979ff7b61af90c58c2"
+    },
+    {
+      "path": "assets/rpg/theater/generated/actors/ticket_inspector_scan_side.png",
+      "bytes": 12189,
+      "sha256": "d3faea52ee610397c2c5de870a2affdab9d82aa35a16e1fbf633e89da5bf6d3d"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/clue_paper_future_path.png",
+      "bytes": 7307,
+      "sha256": "85b982ebe0c91de20e01e7bd5a7b241a2ebc3ef365dd93968ceb97a6cc046bf8"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/clue_program_back_1.png",
+      "bytes": 5652,
+      "sha256": "05f585e4232c13b56f4c43a90b37ae3dda8e30746a9b023ce8335f927745376d"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/clue_program_back_2.png",
+      "bytes": 6300,
+      "sha256": "fb28ee9a52c94f5b147e166411216a0da8fde99fe46f5260b3c23feeb6771936"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/clue_program_back_3.png",
+      "bytes": 6063,
+      "sha256": "986c51d95c63a0cf5f1e5c6fcce6e4e25f6ad3486ce828532a188f67f2e49c69"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/clue_prop_box_ghost.png",
+      "bytes": 19420,
+      "sha256": "c453abb10ab4dd8e7c6a07838cdcdc686907119056e88bee5e4f7d0e22944b35"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/clue_ticket_code_0832.png",
+      "bytes": 9472,
+      "sha256": "9d3e5c0c83aacead241d8e731f3288a6ca50f503d68e3a7b81759e6e373d4e6d"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/clue_ticket_hidden_mark.png",
+      "bytes": 12942,
+      "sha256": "bd5321a64945dcff1f1c1b604e80f5ecf8870b84e32fc401f3d4190172cf738d"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/paper_reversal_cracked.png",
+      "bytes": 7725,
+      "sha256": "f6cdaef00c4fdaa8f39623da13a5bb2b17caa17bd2b8d91082b1b9dca83811ff"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/paper_reversal_decoy.png",
+      "bytes": 3967,
+      "sha256": "1979a6e9901ae498c25908f10919725bc7154213596c91754b29888731df7550"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/paper_reversal_escape.png",
+      "bytes": 6712,
+      "sha256": "e32352c72c465c01e5b02133e6a74ea36b4bba9d161f867368c6674d38e45b6a"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/paper_reversal_fragments.png",
+      "bytes": 5679,
+      "sha256": "8f5e5a00a4c5c33bdab58597aa77bd04a5b34fe34e4eb12c4441d69983f83876"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/paper_reversal_locked.png",
+      "bytes": 5166,
+      "sha256": "4c6c285d0cf1c8136641d5707b5c669f581945d18e28477ddf5a15a2376d18d0"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/spotlight_beam.png",
+      "bytes": 24978,
+      "sha256": "9e742cf161b423d1a4286977d8c7a21bd92d8aeae1848a5096b786cd6eed8261"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/spotlight_fault_strip.png",
+      "bytes": 11511,
+      "sha256": "796f9317499b28a600175bbf378c58e2ef1c59ab076f756ae0ab06104414a0d6"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/spotlight_hit_ring.png",
+      "bytes": 3526,
+      "sha256": "f598c19e2335616d2e3d9e0884bd0e3207887ae0d489420f385c4c10de4d4a96"
+    },
+    {
+      "path": "assets/rpg/theater/generated/effects/spotlight_sparks.png",
+      "bytes": 4431,
+      "sha256": "50315ce718b4ad71920a4f501e1305960e684fbd8d63d6401b638560f16fc71f"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_decoy_paper.png",
+      "bytes": 5138,
+      "sha256": "0a1ec0c27f0115307870f864675b529f0525e90ce3d53526290f74a4feb197d7"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_fluorescent_brush.png",
+      "bytes": 3298,
+      "sha256": "0a14e657ed72fd8f0ee68e2f6bea79871203e7183142f72208be4b3928112966"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_spotlight_remote.png",
+      "bytes": 3738,
+      "sha256": "503dedfad1ef5ee804fa0580c414272663e267f3f0224ce16c31765ea5bdeeb9"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_temporary_theater_ticket.png",
+      "bytes": 4545,
+      "sha256": "4bd185faad04f78371ba0b9c0afa67125d97d7ae5298e069db09edcc84f9f36c"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_theater_program_finale.png",
+      "bytes": 5398,
+      "sha256": "5ee873e1dfe036464c6ed80ca194c04f5a5f5db216edb920e43a0a52f4c943c1"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_theater_program_opening.png",
+      "bytes": 4606,
+      "sha256": "76fe0bf8c6331b76bdca7c62e93262a20a8391428f54e985dd4f44b15f63f22b"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_theater_program_spotlight.png",
+      "bytes": 3380,
+      "sha256": "ded2111f0fe165fecb4715abaf8d02da25b0e57ca54f2c95f385078bb00e1ed4"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_theater_ticket_half_a.png",
+      "bytes": 5999,
+      "sha256": "85c0a8a7291f987b19840a109b6316cf2cc63985e93c25d0fc294241b6d0abae"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_theater_ticket_half_b.png",
+      "bytes": 5958,
+      "sha256": "603c1a0a72a75d8de104f8b4292e23072c86f91df0427649c8544010a5fc353c"
+    },
+    {
+      "path": "assets/rpg/theater/generated/icons/item_wet_program.png",
+      "bytes": 5165,
+      "sha256": "9d6a126d6feffa6c220bdfd47709c4da89c4004241ea0e644374b6f3b8850bb8"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_cracked.png",
+      "bytes": 6587,
+      "sha256": "a7095bc571df5cbe1969197559d81c7ad7ed8dd757246536bcd6ed95a42dbe1c"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_escape.png",
+      "bytes": 3253,
+      "sha256": "9db00056b93239d7403fa814ebac0d0611663f63ce0f58a12876cd9fc5dcbb66"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_flight_0.png",
+      "bytes": 6386,
+      "sha256": "bffbfe118f3b2383dcef99037c0c2d260105013b9357413ec21f8a97fe411b93"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_flight_1.png",
+      "bytes": 6018,
+      "sha256": "a7a65b1b682ac9ad22bd97f6476c488027f55fc78e21fbf75f2572282c8271d8"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_flight_2.png",
+      "bytes": 4958,
+      "sha256": "bb006bbff0978ab40d205a7a9a338ccfa6cf5e3cf27b781810c122ec7f378f5a"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_flight_3.png",
+      "bytes": 6041,
+      "sha256": "5eaba412d350415aff3dfec744517b5ef7889b474ee41440ed7d8fb939424970"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_flight_4.png",
+      "bytes": 5421,
+      "sha256": "0f4c0f8913ab364d53782e50393825073a515b950a8bb0328b0eb1fb16f9b5bb"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_fluorescent.png",
+      "bytes": 5874,
+      "sha256": "ec725e9e552b50082c86bfb0d8f6b18e5aa5ecc77de941ed482abe7616089650"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_locked.png",
+      "bytes": 6873,
+      "sha256": "d2b8759db669134446e20b9a387a15468ffdc0613798d6b2e399f4045993f8df"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_residual.png",
+      "bytes": 6578,
+      "sha256": "55d68a3a101e99393195272ac69a32f67cd7b964caeb14be352ccf5c7d022e80"
+    },
+    {
+      "path": "assets/rpg/theater/generated/paper/paper_reverse.png",
+      "bytes": 5744,
+      "sha256": "67952eeed37d9a325ad7740ff58b873c6473e4d904a5be0aacf5b684094ec548"
+    },
+    {
+      "path": "assets/rpg/theater/generated/theater_art_manifest.json",
+      "bytes": 21093,
+      "sha256": "bf46738fde460d12b12cc9894c49a109c0eda3befea2dcea814e19431fa747c7"
+    },
+    {
+      "path": "assets/rpg/theater/source/theater_characters_paper_source.png",
+      "bytes": 1730659,
+      "sha256": "79afb377aa6b51d85a8ef0b610edeaa8647c0aa11b3919334b845228f2f9bb1f"
+    },
+    {
+      "path": "assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "bytes": 1543592,
+      "sha256": "2ac87e494fd4ac3c8d4b29916f009e8944d779a090b7384ab74a25bb986461f5"
+    },
+    {
+      "path": "assets/rpg/theater/source/theater_facilities_props_source.png",
+      "bytes": 1543977,
+      "sha256": "147b03d21a28855f4d5fbfdf091b0baaf7be1d48832da6fe25029107f8e93008"
+    },
+    {
+      "path": "assets/rpg/theater/source/theater_portraits_source.png",
+      "bytes": 1672702,
+      "sha256": "73b45dc7e1c6e42b7a268285ecefb261752b9477fa2ff167a78fee6c2b40c6c1"
+    },
+    {
+      "path": "assets/rpg/tiles/zijingang_terrain.png",
+      "bytes": 29567,
+      "sha256": "6af64c22583b698626ab24ab45f6e3d2da4af16ecae9870c9c4be40faad2e07b"
+    },
+    {
+      "path": "assets/ui/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "assets/ui/bonsai_bloom.png",
+      "bytes": 1603367,
+      "sha256": "2315238da60b1eb5db02fb792c450ff02ee87eafd2b1dfb3b578936a008bdf13"
+    },
+    {
+      "path": "assets/ui/bonsai_bud.png",
+      "bytes": 1331371,
+      "sha256": "1320836847d047c58e6b7e7623001cbe9568f69127255985d01d087af710f45b"
+    },
+    {
+      "path": "assets/ui/cc98/theater_755_student_play_poster_v01.png",
+      "bytes": 508128,
+      "sha256": "b54f2405c5b4a926bcd67abcc135dd1cd6f62fcaac734294bfbd11e004c2d93e"
+    },
+    {
+      "path": "assets/ui/cc98_forum_treasure.png",
+      "bytes": 145191,
+      "sha256": "b325861da299026577edf8ea7778f209cf28d5a954fb2603296f9b8ef5ffe59b"
+    },
+    {
+      "path": "assets/ui/dorm_room.png",
+      "bytes": 1909884,
+      "sha256": "ebacd393ad9ed7689776a1ffb8eef1c8b31f500ea7b5b8e48587b6abfce6fe95"
+    },
+    {
+      "path": "assets/ui/library_avatar.png",
+      "bytes": 44777,
+      "sha256": "276df5e6c53c6a2667f1c7697d5e6b46c8fb3395759bbf4942f2186039d3ffc3"
+    },
+    {
+      "path": "assets/ui/library_foundation_reference.jpg",
+      "bytes": 521036,
+      "sha256": "db2a0e350872816b56bdb7b8b1176dda78d8c7facf35205a99f431d66a22f2e1"
+    },
+    {
+      "path": "assets/ui/library_room_east.png",
+      "bytes": 68997,
+      "sha256": "f6cd0b07a8485925a324d9c559fb26e9fb43895e546667e122a5f5162d86eb10"
+    },
+    {
+      "path": "assets/ui/library_room_north.png",
+      "bytes": 74965,
+      "sha256": "f3c2b7573195ea3a0a0e24e85a4c470295bbc0432ec88c91293644215b5d840b"
+    },
+    {
+      "path": "assets/ui/library_room_south.png",
+      "bytes": 67309,
+      "sha256": "f03ecabc569ca8376031199a4b700c3534c1496174c68f9777c8f83c5a588323"
+    },
+    {
+      "path": "assets/ui/photo-evidence/campus-life/campus_crescent_after_rain.webp",
+      "bytes": 100310,
+      "sha256": "83bb6010ec19d4af5948faf7bd2cbd13defdc50d754f5c8195d41fe23ab15e8e"
+    },
+    {
+      "path": "assets/ui/photo-evidence/campus-life/campus_qizhen_dock_morning.webp",
+      "bytes": 92346,
+      "sha256": "4a299054d156b86bfac19873b41c6f43685e2293800ed6c3805afab577976b23"
+    },
+    {
+      "path": "assets/ui/photo-evidence/campus-life/campus_zijingang_gate_cloudy.webp",
+      "bytes": 76960,
+      "sha256": "c2225782700a6978412919413d3d2a7234bef5a2c4724cd5b39cc7a6db3d3fcc"
+    },
+    {
+      "path": "assets/ui/photo-evidence/campus-life/life_bike_basket_raincoat.webp",
+      "bytes": 83244,
+      "sha256": "b155d7142721e4e19da7e8c8df9f7ed8bc3c79d24e987d5d4b6bad41c876b470"
+    },
+    {
+      "path": "assets/ui/photo-evidence/campus-life/life_canteen_queue.webp",
+      "bytes": 72520,
+      "sha256": "2a648449af7ba64bac58b3278d017714af58ac017bba16b6fde6953adf58975a"
+    },
+    {
+      "path": "assets/ui/photo-evidence/campus-life/life_study_room_late_snack.webp",
+      "bytes": 49976,
+      "sha256": "0de404e9340c47c70ec400cfa1c59e960eb855056c18a5ef02d4c2cbe4cb365c"
+    },
+    {
+      "path": "assets/ui/photo-evidence/chapter35_live_lake_memory_a.webp",
+      "bytes": 62236,
+      "sha256": "a5fb32821f8336da552d04d757c469a408fb561961109b7eea7116026c1c4693"
+    },
+    {
+      "path": "assets/ui/photo-evidence/chapter35_live_lake_memory_b.webp",
+      "bytes": 62120,
+      "sha256": "d1982eed58c7dc9bce6f83713ed0509b60d3146947c4be90dea62502d049f712"
+    },
+    {
+      "path": "assets/ui/photo-evidence/chapter35_live_paper_left.webp",
+      "bytes": 62910,
+      "sha256": "aae373147f060743877212bdb3a9e39a05e999a11ff7092d80e945fb15634c62"
+    },
+    {
+      "path": "assets/ui/photo-evidence/chapter35_live_paper_middle.webp",
+      "bytes": 62716,
+      "sha256": "12e0e290d6cac38b8c0a1e45e085e6670da46bad233fafee6e0f4433c1d63146"
+    },
+    {
+      "path": "assets/ui/photo-evidence/chapter35_live_paper_right.webp",
+      "bytes": 62758,
+      "sha256": "09a33f482cf094bfefb2e98aba46d1670a5b65dbd3d9edc1946adf3441c9dd78"
+    },
+    {
+      "path": "assets/ui/photo-evidence/library-roll/library_roll_01_takeout_soy.webp",
+      "bytes": 13874,
+      "sha256": "0288cbab8b8db53c82f050f5e44c55f8588b338c64665fbeeb596c5916b68250"
+    },
+    {
+      "path": "assets/ui/photo-evidence/library-roll/library_roll_02_dorm_meal.webp",
+      "bytes": 14262,
+      "sha256": "7aa4d450243b46b629cd697deaabc7b4e18ad66595c6715a3eab34718aa6b99e"
+    },
+    {
+      "path": "assets/ui/photo-evidence/library-roll/library_roll_03_rainy_breakfast.webp",
+      "bytes": 18518,
+      "sha256": "4f9cf15d3468ee3167e1fff2d8e0bf7aeb5eb82faf4cedc9c7fb9129168103ff"
+    },
+    {
+      "path": "assets/ui/photo-evidence/library-roll/library_roll_04_library_snack.webp",
+      "bytes": 12588,
+      "sha256": "f7b3549eaaaac082045fa46e63c475bed64297f8d5ddb67cea76e855c43f45d9"
+    },
+    {
+      "path": "assets/ui/photo-evidence/library-roll/library_roll_05_canteen_takeout.webp",
+      "bytes": 12024,
+      "sha256": "98e9120fc0404ccfa80cb74508217211b7521d7e0bc76c81fe797ead8fe6d1a3"
+    },
+    {
+      "path": "assets/ui/photo-evidence/library-roll/library_roll_06_seat_022_clue.webp",
+      "bytes": 10468,
+      "sha256": "610880edb03312650596a8548e7a4e7b4cc76806dc9966b620e17a0ba468e7b0"
+    },
+    {
+      "path": "assets/ui/photo-evidence/library_022_reflection.webp",
+      "bytes": 35636,
+      "sha256": "c20dbd496ead878dfa8291a33b78c495204d78b252fc6fc93ee8fd3bc47518cf"
+    },
+    {
+      "path": "assets/ui/tiyi_loading.png",
+      "bytes": 875277,
+      "sha256": "7b41a27b1a8f67c771299dbc8901a1a0b7022ae08e9de66cb34f6b3c13a8c767"
+    },
+    {
+      "path": "assets/ui/tiyi_main.png",
+      "bytes": 1252142,
+      "sha256": "ff9fedbc37f95ad6b38c3b92b30913c62e8ccbdc3855091c767e083b716a1375"
+    },
+    {
+      "path": "assets/ui/zjuding.png",
+      "bytes": 33322,
+      "sha256": "61e65ec1963b624bcac0f3c0d9ba777b46ef7fa2388f375339ce46abfdf25888"
+    },
+    {
+      "path": "assets/ui/zjuding_home.png",
+      "bytes": 1330491,
+      "sha256": "00c3c25b0d6101220ed64d7e5f345985f93ab3256372659c442e926741325424"
+    },
+    {
+      "path": "assets/ui/zjuding_loading.png",
+      "bytes": 957336,
+      "sha256": "b655732c3840891b45b8220beed654ca3097188490a4d7d12472f9f87f1a344c"
+    }
+  ]
+}

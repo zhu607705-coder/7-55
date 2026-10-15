@@ -37,3 +37,9 @@ Thumbs.db
 Desktop.ini
 *.textClipping
 .gstack/
+
+# Original755 geometry extraction intermediates
+godot_native/.chase-source-export/
+godot_native/tools/chase_source_export/*.generated.mjs
+godot_native/tools/chase_transition_export/export_source.mjs
+godot_native/assets/derived/chase_transition_3d/source_transition.glb

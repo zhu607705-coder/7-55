@@ -1,0 +1,117 @@
+{
+  "schema": "buct_registered_hd_region_v4",
+  "id": "north_large",
+  "quality_approved": true,
+  "approval_scope": "Northern terrain only: original two bodies retained; real native output, uniform registration, selected lifecycle and actual X11 render evidence retained. No full-campus, all-three-campus or hardware-performance acceptance",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "roi_xywh": [
+    350,
+    167,
+    384,
+    256
+  ],
+  "core_xywh": [
+    362,
+    179,
+    360,
+    232
+  ],
+  "runtime_size": [
+    1536,
+    1024
+  ],
+  "texels_per_source_pixel": 4,
+  "ground_asset": "res://campuses/buct_changping/assets/north_large_hd_ground.png",
+  "ground_rgba_sha256": "1e41812d1dac462577bb4b922704ee86d22283378277a639a197818de17a582a",
+  "source_body_ownership": {
+    "asset": "res://campuses/buct_changping/data/north_large_body_ownership.r8.bin",
+    "sha256": "8586ca0dee5d621c3b73d22640237aff47b128be38e295712f6ca04ea465f75b",
+    "size": [
+      384,
+      256
+    ],
+    "encoding": "owner_index_u8",
+    "owner_ids": [
+      "hill_south_block",
+      "north_sports_west_shelter"
+    ]
+  },
+  "shared_lower_edges": [
+    {
+      "side": "west",
+      "neighbor_node": "RegisteredHDRegion_west_north",
+      "rect": [
+        398,
+        399,
+        256,
+        24
+      ],
+      "sample_size": [
+        1280,
+        122
+      ],
+      "sample_texels_per_source_pixel": 5,
+      "source_ground_rgba_sha256": "8ec2e094a8221119baa5f724982ea396f421756254860c9a98a76787c3961ebd",
+      "asset": "res://campuses/buct_changping/assets/north_large_lower_west_hd_strip.png",
+      "rgba_sha256": "859a09f872507a69abf0a8704bddad5da610225516061f47c0a1b5a8acfce609"
+    },
+    {
+      "side": "east",
+      "neighbor_node": "RegisteredHDRegion_north_adjacent",
+      "rect": [
+        630,
+        399,
+        104,
+        24
+      ],
+      "sample_size": [
+        520,
+        122
+      ],
+      "sample_texels_per_source_pixel": 5,
+      "source_ground_rgba_sha256": "9cd2e3d9f4b11a957b1aa199466d359d5091e4989d584b7ac6c50624229d6213",
+      "asset": "res://campuses/buct_changping/assets/north_large_lower_east_hd_strip.png",
+      "rgba_sha256": "26b8b3c22db04d2ff5b4e06065419560e69caae99ad041e4cd35aabb0fe29ada"
+    }
+  ],
+  "independent_buildings": [],
+  "shadow": null,
+  "foreground": [],
+  "limits": [
+    "Original buildings are source fallback until their separate whole RGBA, masks, anchors and depth rows are accepted.",
+    "This is one additional region, not full-campus or all-three-campus replacement.",
+    "No geometry, character, interiors or automatic streaming changes."
+  ],
+  "provenance": {
+    "schema": "buct_uniform_ground_registration_v1",
+    "native_original_size": [
+      1536,
+      1024
+    ],
+    "runtime_grid_size": [
+      1536,
+      1024
+    ],
+    "runtime_grid_texels_per_source_pixel": 4,
+    "effective_native_detail_density": 3.9722207553296323,
+    "uniform_raw_to_source_scale": 0.2517483447158051,
+    "raw_origin_source_world": [
+      349.8530690426254,
+      167.60493548518747
+    ],
+    "rotation_degrees": 0,
+    "anisotropic_scale": false,
+    "deformation": false,
+    "physics_or_source_map_transformed": false,
+    "diagnostic_fit_points": 12,
+    "rms_image_fit_source_px": 0.9590672850044749,
+    "max_image_fit_source_px": 1.7869650269575503,
+    "diagnostic_note": "Gradient landmark consistency, not surveying or completed GPU acceptance",
+    "input_composite_sha256": "65ddd9cf598ca598d742b840da0e6d71fa1164503adab9780b0ec48447cfff46",
+    "runtime_png_sha256": "d9ce70c347ecb2a2d62c4393e2c696f32a3a0d4b0c1faa4156d3f02d55232bb7",
+    "runtime_rgba_sha256": "1e41812d1dac462577bb4b922704ee86d22283378277a639a197818de17a582a",
+    "fill_gutter_policy": "Any unsampled raw border lies within <=2 source-pixel discarded outer collar, outside core; not counted HD"
+  },
+  "source_fallback_core_pixels": 5016,
+  "hd_terrain_core_source_pixels": 78504
+}

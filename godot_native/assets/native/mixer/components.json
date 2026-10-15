@@ -1,0 +1,54 @@
+{
+  "source": "original canteen_tasting_counter_concept.png; built-in image editing candidates, registered uniformly at runtime",
+  "background": "res://assets/native/mixer/canteen_tasting_counter_clean_background.png",
+  "components": {
+    "glass": {
+      "path": "res://assets/native/mixer/glass_rgba_v1.png",
+      "region": [
+        595,
+        229,
+        346,
+        557
+      ],
+      "cap_pixels": 0,
+      "sha256": "1947dd5c871bcabd38f019ea5650fff62088ccd28f6ac78b9aeedec0d1dc5715",
+      "registration": "uniform source-region scale and bottom-center anchor; original bytes preserved"
+    },
+    "lemonTea": {
+      "path": "res://assets/native/mixer/lemonTea_rgba_v1.png",
+      "region": [
+        670,
+        378,
+        194,
+        423
+      ],
+      "cap_pixels": 72,
+      "sha256": "f370938d083232c26ededd925ba16058081a7fc4cc739fac9420a95b84fdff57",
+      "registration": "uniform source-region scale and bottom-center anchor; original bytes preserved"
+    },
+    "sparklingWater": {
+      "path": "res://assets/native/mixer/sparklingWater_rgba_v1.png",
+      "region": [
+        707,
+        554,
+        123,
+        250
+      ],
+      "cap_pixels": 42,
+      "sha256": "ce2b1125a9e2b7e40d6fa5d744a5f734a58badd34f883c4406f7fdce53aab4bd",
+      "registration": "uniform source-region scale and bottom-center anchor; original bytes preserved"
+    },
+    "blackCoffee": {
+      "path": "res://assets/native/mixer/blackCoffee_rgba_v1.png",
+      "region": [
+        987,
+        562,
+        91,
+        192
+      ],
+      "cap_pixels": 32,
+      "sha256": "2aa19e22701ed12dab64840fd3072bfe05bea27d14a859a7673e731ed0995586",
+      "registration": "uniform source-region scale and bottom-center anchor; original bytes preserved"
+    }
+  }
+}

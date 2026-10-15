@@ -1,0 +1,31 @@
+{
+  "sha256": "553579fb870f4d5cfc7cfde3068271c9018e0096bf7db6dc6ecf5a6e2fde4d94",
+  "dimensions": [
+    1961,
+    802
+  ],
+  "mode": "RGBA",
+  "bytes": 1600883,
+  "original_bytes_preserved": true,
+  "created_utc": "2026-10-12T15:55:59.924769Z",
+  "reference_sha256": "0b1de4b417e63003392a9e00e2f81acb62b57b48b1d501b451bc26717d89b205",
+  "source_world_rect": [
+    440,
+    433,
+    154,
+    63
+  ],
+  "asset": "body.png",
+  "method": "ChatGPT web image generation from the approved source crop; targeted revision v2",
+  "approved_source_asset": "res://campuses/buct/assets/approved-chaoyang.png",
+  "approved_source_sha256": "b9d3c5ce191003bd30f959a51c16737c84dceb3f59985f703fe668ad274fc6e9",
+  "reference_crop_xywh": [
+    440,
+    433,
+    154,
+    63
+  ],
+  "registration_profile": "res://campuses/buct/data/court-north-profile.json",
+  "rejected_prior_candidate": "V1 was rejected because its registered facade was 9.83 source pixels tall instead of 18\u201319",
+  "registration": "Original padded PNG and fixed uniform transform; production native/GPU/interaction checks pass. A separate 201-source-pixel repair removes the major old north equipment/lip; tiny mask-exterior old edges remain documented."
+}

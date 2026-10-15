@@ -1,0 +1,43 @@
+{
+  "source_files": [
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionRenderer.ts",
+      "sha256": "581dd4685f49f1727de8625d8ccafc5efc44cc36673bdee68cc9b68f792dbe68"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionTimeline.ts",
+      "sha256": "4aae6d57e96c09b681d87f4f74680378d1acafaf358eefd0fe86354e51cb8ea2"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRiderRig.ts",
+      "sha256": "6fff299479bb4639d3590d25770a0a88848c5d8eb6880c56334cf44b9cfb15c3"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseHumanAsset.ts",
+      "sha256": "c68ce0d018f21d7fa0b62b25409e939ee5f149d40a2506e3cb068b69adada7e7"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseHumanPose.ts",
+      "sha256": "028d2a80f3df5ce380aa7422beb0faa53c9c2194bc91ea73d738f152ab8ec1a9"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseCampusEnvironment.ts",
+      "sha256": "77ff289ac5084a632cb85bef8cf8f2cbab92e21be838dd825b9e012cc5e7a86c"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChasePeople.ts",
+      "sha256": "bad134ed23030ccd0764bbd9592db75fb0fab0ed0255c02897111357acfbf633"
+    },
+    {
+      "path": "src/scenes/rpg/ThreePrimitiveCache.ts",
+      "sha256": "5e91f58612d9e6677e54f432eb45561da987ea62a51a01878bcec4e3f2323fe9"
+    },
+    {
+      "path": "src/assets/rpg/canteen-characters/quaternius_casual.glb",
+      "sha256": "fea7e71271203e7073f1a073fa1208de7402df276f87f80e149bf7589b5d46b4"
+    }
+  ],
+  "export_adapter": "Only WebGLRenderer constructor is replaced with a no-op recording adapter; source rig, IK, environment, pose and camera methods execute unchanged. Canvas grain uses original pixels; text labels use Pillow/NotoSansCJK 74px instead of browser generic sans-serif. No source pixel render occurred.",
+  "godot_frame_binding": "Direct source-authored 24fps TRS + 62-bone world matrices, with one fixed imported-bone bind-space correction; avoids GLTF importer FPS resampling/track reduction.",
+  "source_pixel_comparison": "Pending: Chromium extension blocked localhost ERR_BLOCKED_BY_CLIENT; no bypass attempted. No applicable checked-in chase reference images were found."
+}
