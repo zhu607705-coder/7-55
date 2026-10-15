@@ -23,3 +23,8 @@
 `provenance.json`保存原图、原图层数据、原路网数据逐字节SHA。`tests/verify_buct_changping_source.mjs`只作静态来源与入口检查；实际入口、学生与释放检查由集成测试执行。地图中旧qa.manual_action仍保留原来源字段，正式动作命名空间由场景安装并由入口测试直接验证。
 
 测试必须使用workspace内TMP/TEMP/TMPDIR和XDG data/config/cache/state，隔离测试存档。轻量校园stage使用 `BUCT_ENTRY_CAMPUS_ONLY=1` 会显式跳过故事画面恢复，只检查真实State数据与存档字节隔离；完整故事恢复须在完整依赖工程/CI中另外通过。
+
+
+## Default Wenli high-detail outdoor region
+
+The Changping entry now enables the bounded Wenli ground/canopy replacement by default. Source ROI `[630,615,240,240]` covers 3.66% of the original map; full-detail core is 216×216. Genuine generated masters are 1254×1254 and the runtime texture is 1200×1200, not whole-campus 4K. Nine original foreground alpha masks, student, roads and physics remain unchanged. The old surrounding map remains visible, with a discernible clarity transition. Missing/invalid resources atomically restore the #138 visuals. See [scope, provenance, limits and validation](../../../docs/BUCT_CHANGPING_WENLI_HD_REGION.md).

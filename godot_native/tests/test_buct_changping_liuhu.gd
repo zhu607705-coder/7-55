@@ -38,7 +38,7 @@ func run() -> void:
 	invalid.free()
 	check(not lake.selected and lake.animation_enabled, "Default subtle motion with no selection")
 	check(campus.data.route_waypoints.size() == 41 and campus.data.landmarks.size() == 3, "Original 41 route points and 3 POIs")
-	check(campus.walk_polys.size() == 82, "Original paving plus existing east road only")
+	check(campus.walk_polys.size() == 83, "Original paving plus accepted east and north roads only")
 	check(campus.visitor.display_height == 18 and campus.visitor.speed == 88, "Shared student size and speed retained")
 	check(campus.visitor.get_node("FeetCollision").shape.radius == 3, "Original foot collision retained")
 	check(is_instance_valid(campus.first_teaching_layer) and is_instance_valid(campus.library_layer) and is_instance_valid(campus.east_road_extension), "Existing building and east-road layers retained")

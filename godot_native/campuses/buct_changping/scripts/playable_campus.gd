@@ -6,6 +6,31 @@ const LIBRARY_PATCH = preload("res://campuses/buct_changping/scripts/library_pat
 var library_layer: Node2D
 const WENLI_PATCH = preload("res://campuses/buct_changping/scripts/wenli_patch.gd")
 var wenli_layer: Node2D
+const WENLI_HD_REGION = preload("res://campuses/buct_changping/scripts/wenli_hd_region.gd")
+var wenli_hd_region: Node2D
+var enable_wenli_hd_region := true
+const REGISTERED_HD_REGION = preload("res://campuses/buct_changping/scripts/registered_hd_region.gd")
+const NORTH_LARGE_HD_REGION = preload("res://campuses/buct_changping/scripts/registered_hd_north_large.gd")
+const NORTH_LARGE_HD_PROFILE = "res://campuses/buct_changping/data/north_large_hd_region.json"
+var north_large_hd_region: Node2D
+var enable_north_large_hd_region := true
+const NORTH_WEST_UPPER_HD_REGION = preload("res://campuses/buct_changping/scripts/registered_hd_north_west_upper.gd")
+const NORTH_WEST_UPPER_HD_PROFILE = "res://campuses/buct_changping/data/north_west_upper_hd_region.json"
+var north_west_upper_hd_region: Node2D
+var enable_north_west_upper_hd_region := true
+const HD_VISIBLE_RESIDENCY=preload("res://campuses/buct_changping/scripts/visible_hd_residency.gd")
+var enable_hd_visible_residency := false
+var hd_visible_residency: Node
+const NORTH_ROAD_EXTENSION = preload("res://campuses/buct_changping/scripts/north_road_extension.gd")
+var north_hd_region: Node2D
+var north_road_extension: Node2D
+# Logical road availability is separate from every HD display flag.
+var enable_north_road_extension := true
+var enable_north_hd_region := true
+# Display residency only. Existing logical roads/collisions remain independently loaded.
+var enable_west_hd_regions := true
+var west_hd_regions: Array[Node2D] = []
+const WEST_HD_PROFILES = ["res://campuses/buct_changping/data/west_north_hd_region.json", "res://campuses/buct_changping/data/west_south_hd_region.json"]
 const EAST_ROAD_EXTENSION = preload("res://campuses/buct_changping/scripts/east_road_extension.gd")
 var east_road_extension: Node2D
 const LIUHU_WATER = preload("res://campuses/buct_changping/scripts/liuhu_water_surface.gd")
@@ -85,11 +110,20 @@ func _ready() -> void:
 	objects=world.get_node("IndependentRegisteredObjects")
 	for poly in data.walkable_polygons: walk_polys.append(pts(poly))
 	east_road_extension = EAST_ROAD_EXTENSION.install(self)
+	# Authored road rights belong to the campus, independent of HD display residency.
+	if enable_north_road_extension: north_road_extension = NORTH_ROAD_EXTENSION.install(self)
 	var building_data: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/buct_changping/data/layers.json"))
 	_prepare_depth_layers(building_data)
 	first_teaching_layer = FIRST_TEACHING_PATCH.install(world, objects, building_data)
 	library_layer = LIBRARY_PATCH.install(world, objects, building_data)
 	wenli_layer = WENLI_PATCH.install(world, objects, building_data)
+	if enable_wenli_hd_region:
+		wenli_hd_region = WENLI_HD_REGION.install(self)
+	if enable_north_hd_region:
+		north_hd_region = REGISTERED_HD_REGION.install(self,"res://campuses/buct_changping/data/north_hd_region.json")
+	if enable_west_hd_regions:set_west_hd_resident(true)
+	if enable_north_large_hd_region:set_north_large_hd_resident(true)
+	if enable_north_west_upper_hd_region:set_north_west_upper_hd_resident(true)
 	var landmark_ids: Array=[]
 	for landmark in data.landmarks: landmark_ids.append(str(landmark.id))
 	for item in building_data.objects:
@@ -128,6 +162,7 @@ func _ready() -> void:
 	initialized=true
 	get_viewport().size_changed.connect(_layout_ui)
 	_layout_ui()
+	if enable_hd_visible_residency:hd_visible_residency=HD_VISIBLE_RESIDENCY.install(self)
 	status.text="点击步道前往第一教学楼与图书馆"
 
 func _prepare_depth_layers(building_data: Dictionary) -> void:
@@ -180,6 +215,16 @@ func _prepare_depth_layers(building_data: Dictionary) -> void:
 			original.hide()
 
 func landmark_at(point: Vector2) -> String:
+	if is_instance_valid(north_west_upper_hd_region):
+		var new_hit: String=north_west_upper_hd_region.hit_test(point)
+		if not new_hit.is_empty():return new_hit
+	for region in west_hd_regions:
+		if is_instance_valid(region):
+			var west_hit: String = region.hit_test(point)
+			if not west_hit.is_empty():return west_hit
+	if is_instance_valid(north_hd_region):
+		var north_hit: String = north_hd_region.hit_test(point)
+		if not north_hit.is_empty():return north_hit
 	if is_instance_valid(wenli_layer) and wenli_layer.hit_test_alpha(point):return "wenli_building"
 	if is_instance_valid(library_layer) and library_layer.hit_test_alpha(point):return "library"
 	if is_instance_valid(first_teaching_layer) and first_teaching_layer.hit_test_alpha(point):return "main_building"
@@ -331,9 +376,28 @@ func return_to_gate() -> void:
 	status.text="已回到南门"
 
 func show_landmark(id: String) -> void:
+	if is_instance_valid(north_west_upper_hd_region):north_west_upper_hd_region.select_body(id)
+	for region in west_hd_regions:
+		if is_instance_valid(region):region.select_body(id)
+	if is_instance_valid(north_hd_region):north_hd_region.select_body(id)
 	if is_instance_valid(wenli_layer):wenli_layer.set_selected(id == "wenli_building")
 	if is_instance_valid(library_layer):library_layer.set_selected(id == "library")
 	if is_instance_valid(first_teaching_layer):first_teaching_layer.set_selected(id == "main_building")
+	if id == "dorm_nw_02":
+		info_id=id;info_title.text="西北宿舍带 02"
+		info_text.text="西北区域原图楼体外观。沿既有开放步道观察，内部空间暂未开放。"
+		info_panel.show()
+		return
+	if id == "teaching_2":
+		info_id=id;info_title.text="第二教学楼"
+		info_text.text="双院落教学楼外观。原图中的两处露天院落和中央连接体已保留；内部空间暂未开放。"
+		info_panel.show()
+		return
+	if id == "north_sports_hall":
+		info_id=id;info_title.text="北侧长灰楼"
+		info_text.text="北运动场南侧的长灰楼外观。可沿西南侧已开放灰色步道观察；建筑用途与内部空间尚未核实，室内不开放。"
+		info_panel.show()
+		return
 	if id == "wenli_building":
 		info_id = id;info_title.text = "文理楼"
 		info_text.text = "庭院式建筑外观。沿周边已开放步道观看，院内暂未开放行走。"
@@ -348,6 +412,10 @@ func show_landmark(id: String) -> void:
 			return
 
 func close_info() -> void:
+	if is_instance_valid(north_west_upper_hd_region):north_west_upper_hd_region.select_body("")
+	for region in west_hd_regions:
+		if is_instance_valid(region):region.select_body("")
+	if is_instance_valid(north_hd_region):north_hd_region.select_body("")
 	if is_instance_valid(wenli_layer):wenli_layer.set_selected(false)
 	if is_instance_valid(lake_surface):lake_surface.set_selected(false)
 	if is_instance_valid(south_bridge_surface):south_bridge_surface.set_selected(false)
@@ -486,6 +554,10 @@ func _process(delta: float) -> void:
 		if is_instance_valid(first_teaching_layer):first_teaching_layer.update_actor_foot(visitor.global_position.y)
 		if is_instance_valid(library_layer):library_layer.update_actor_foot(visitor.global_position.y)
 		if is_instance_valid(wenli_layer):wenli_layer.update_actor_foot(visitor.global_position.y)
+		if is_instance_valid(north_west_upper_hd_region):north_west_upper_hd_region.update_actor_foot(visitor.global_position.y)
+		if is_instance_valid(north_hd_region):north_hd_region.update_actor_foot(visitor.global_position.y)
+		for region in west_hd_regions:
+			if is_instance_valid(region):region.update_actor_foot(visitor.global_position.y)
 		canopy_locator.position=visitor.position+Vector2(0,1)
 		canopy_locator.visible=not overview and is_head_under_canopy(visitor.position)
 		if overview:
@@ -645,3 +717,60 @@ func _show_initialization_error(message: String) -> void:
 	var panel:=VBoxContainer.new();panel.position=Vector2(16,16);ui.add_child(panel)
 	status=Label.new();status.text=message;status.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"));panel.add_child(status)
 	return_button=Button.new();return_button.name="ChangpingReturnToEntry";return_button.text="返回入口";return_button.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"));return_button.custom_minimum_size=Vector2(160,48);return_button.pressed.connect(return_to_entry);panel.add_child(return_button)
+
+# Explicit bounded residency hook for later camera policy; no streaming scheduler.
+func set_west_hd_resident(wanted: bool) -> bool:
+	if not wanted:
+		for region in west_hd_regions:
+			if is_instance_valid(region):
+				if is_instance_valid(lake_surface):lake_surface.remove_hd_rgb(region)
+				region.uninstall()
+		west_hd_regions.clear()
+		return true
+	if not west_hd_regions.is_empty():
+		var ready := true
+		for region in west_hd_regions:ready=ready and is_instance_valid(region) and region.get_diagnostics().active
+		if ready:
+			var active_south: Node2D=west_hd_regions[1]
+			return is_instance_valid(lake_surface) and lake_surface.install_hd_rgb(active_south,active_south.ground_texture,active_south.region_rect,str(active_south.profile.ground_rgba_sha256))
+		set_west_hd_resident(false)
+	if not _west_hd_precommit():return false
+	var prepared: Array[Node2D] = REGISTERED_HD_REGION.install_group(self,WEST_HD_PROFILES,{"precommit_validator":Callable(self,"_west_hd_precommit")})
+	if prepared.size()!=2:return false
+	var south: Node2D = prepared[1]
+	if not lake_surface.install_hd_rgb(south,south.ground_texture,south.region_rect,str(south.profile.ground_rgba_sha256)):
+		prepared[0].uninstall()
+		return false
+	west_hd_regions=prepared
+	return true
+
+func _west_hd_precommit() -> bool:
+	return is_instance_valid(library_layer) and library_layer._configured and library_layer.body_texture.resource_path=="res://campuses/buct_changping/assets/library_body.png" and is_instance_valid(lake_surface) and lake_surface.has_method("install_hd_rgb")
+
+func get_west_hd_residency() -> Dictionary:
+	var regions: Array = []
+	for region in west_hd_regions:
+		if is_instance_valid(region):regions.append(region.get_diagnostics())
+	return {"group_id":"west_adjacent_pair","regions":regions,"automatic_streaming":false,"logical_geometry_independent":true}
+
+# Explicit northern display residency. Factory admission stays fail-closed.
+func set_north_large_hd_resident(wanted: bool) -> bool:
+	if not wanted:
+		if is_instance_valid(north_large_hd_region):north_large_hd_region.uninstall()
+		north_large_hd_region=null
+		return true
+	var installed: Node2D=NORTH_LARGE_HD_REGION.install_region(self,NORTH_LARGE_HD_PROFILE)
+	if not is_instance_valid(installed):return false
+	north_large_hd_region=installed
+	return true
+
+# Visual residency only. Pending/unapproved resources fail without changing existing owners.
+func set_north_west_upper_hd_resident(wanted: bool) -> bool:
+	if not wanted:
+		if is_instance_valid(north_west_upper_hd_region):north_west_upper_hd_region.uninstall()
+		north_west_upper_hd_region=null
+		return true
+	var installed: Node2D=NORTH_WEST_UPPER_HD_REGION.install_region(self,NORTH_WEST_UPPER_HD_PROFILE)
+	if not is_instance_valid(installed):return false
+	north_west_upper_hd_region=installed
+	return true

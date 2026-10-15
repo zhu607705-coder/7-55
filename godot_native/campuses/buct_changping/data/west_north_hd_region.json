@@ -1,0 +1,167 @@
+{
+  "schema": "buct_registered_hd_region_v3",
+  "id": "west_north",
+  "quality_approved": true,
+  "approval_scope": "Parent accepted source registration/body/court reuse and mask-only courtyard correction. Full-group native/GPU/manual gates tracked separately.",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "roi_xywh": [
+    398,
+    399,
+    256,
+    240
+  ],
+  "core_xywh": [
+    426,
+    411,
+    216,
+    216
+  ],
+  "runtime_size": [
+    1280,
+    1200
+  ],
+  "texels_per_source_pixel": 5,
+  "atomic_group_id": "west_adjacent_pair",
+  "atomic_region_ids": [
+    "west_north",
+    "west_south"
+  ],
+  "ground_asset": "res://campuses/buct_changping/assets/west_north_hd_ground.png",
+  "ground_rgba_sha256": "8ec2e094a8221119baa5f724982ea396f421756254860c9a98a76787c3961ebd",
+  "ground_png_sha256": "0a3c15cc48ec80b226e17b7ffa34cc778acfcb587f1d55082ded58761cdb9e7c",
+  "source_body_ownership": {
+    "asset": "res://campuses/buct_changping/data/west_north_body_ownership.r8.bin",
+    "sha256": "3305d022b7374c3d1b763f58f199555c52cc1f154d08346aca776b6296038b27",
+    "size": [
+      256,
+      240
+    ]
+  },
+  "shared_edges": [
+    {
+      "edge": "east",
+      "neighbor_node": "RegisteredHDRegion_north_adjacent",
+      "rect": [
+        630,
+        399,
+        24,
+        240
+      ],
+      "sample_size": [
+        122,
+        1200
+      ],
+      "unfeathered_strip_asset": "res://campuses/buct_changping/assets/west_north_east_hd_strip.png",
+      "rgba_sha256": "67992d3ca38acc5b539785a8f698e53198c0180e9366720d9f9e7e0c8c713a42"
+    },
+    {
+      "edge": "south",
+      "neighbor_node": "RegisteredHDRegion_west_south",
+      "rect": [
+        398,
+        615,
+        256,
+        24
+      ]
+    }
+  ],
+  "independent_buildings": [
+    {
+      "id": "teaching_2",
+      "registration": "res://campuses/buct_changping/data/teaching_2_registration.json",
+      "legacy_visual_names": [
+        "SourcePixelSilhouette",
+        "teaching_2_SourceShadowOrAnnex_1",
+        "teaching_2_SourceShadowOrAnnex_2",
+        "teaching_2_SourceShadowOrAnnex_3",
+        "teaching_2_SourceShadowOrAnnex_4"
+      ],
+      "underlay_names": [
+        "CleanUnderlay_teaching_2",
+        "StaticSourceGroundShadows/teaching_2_GroundShadow_1"
+      ]
+    }
+  ],
+  "retire_world_visuals": [],
+  "shadow": null,
+  "foreground": [],
+  "residency_policy": "Atomic pair visibility/loading interface; no new physics; route authority remains loaded independently. No automatic streaming claimed.",
+  "shared_corner": {
+    "rect": [
+      630,
+      615,
+      24,
+      24
+    ],
+    "owner_node": "RegisteredHDRegion_west_north",
+    "southeast_neighbor_node": "WenliHighDetailRegion"
+  },
+  "world_shadows": [
+    {
+      "owner_id": "teaching_2",
+      "polygons_source_xy": [
+        [
+          [
+            398,
+            631
+          ],
+          [
+            403,
+            622
+          ],
+          [
+            416,
+            681
+          ],
+          [
+            424,
+            721
+          ],
+          [
+            411,
+            724
+          ],
+          [
+            399,
+            679
+          ]
+        ]
+      ],
+      "opacity": 0.14,
+      "art_status": "Schematic translucent cast projection using previously authored source polygon; not a newly generated RGBA shadow."
+    },
+    {
+      "owner_id": "library",
+      "polygons_source_xy": [
+        [
+          [
+            514,
+            734
+          ],
+          [
+            520,
+            733
+          ],
+          [
+            518,
+            779
+          ],
+          [
+            518,
+            804
+          ],
+          [
+            509,
+            800
+          ],
+          [
+            506,
+            765
+          ]
+        ]
+      ],
+      "opacity": 0.14,
+      "art_status": "Schematic translucent cast projection using previously authored source polygon; not a newly generated RGBA shadow."
+    }
+  ]
+}
