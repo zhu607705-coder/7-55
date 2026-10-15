@@ -1,0 +1,547 @@
+{
+  "revision": "contact-shadow-v2",
+  "status": "contact_shadow_v2_verified_on_exact_combined_base__independent_draft_and_full_exact_head_ci_pending",
+  "baseline_reference": {
+    "pr": 134,
+    "head": "2e2d4a1fdfc2e8aaebf3bc87adc1346f627474cb",
+    "tree": "d29824ba76d162972e6f32d16f76463cf5c112de"
+  },
+  "source_checks": 18,
+  "native_behavior": {
+    "checks": 63,
+    "failures": [],
+    "results": [
+      {
+        "label": "Valid small route configures at 30 Hz",
+        "pass": true
+      },
+      {
+        "label": "One sprite, one notifier, eight cached textures",
+        "pass": true
+      },
+      {
+        "label": "Visual actor contains no collision nodes",
+        "pass": true
+      },
+      {
+        "label": "Uniform scale only",
+        "pass": true
+      },
+      {
+        "label": "Three cached shadow layers have half-size radii for bounded AA and 13 percent center opacity",
+        "pass": true
+      },
+      {
+        "label": "Small warm contact shadow starts at the original foot anchor",
+        "pass": true
+      },
+      {
+        "label": "Shadow toggle cannot change actor geometry or add nodes",
+        "pass": true
+      },
+      {
+        "label": "Idle, peek, flick and four real run frames both ways",
+        "pass": true
+      },
+      {
+        "label": "Every simulated sample stays legal with exact mirrored foot anchor",
+        "pass": true
+      },
+      {
+        "label": "Stops use true idle; non-run actions do not slide",
+        "pass": true
+      },
+      {
+        "label": "Repeated bounded out-and-back trips complete",
+        "pass": true
+      },
+      {
+        "label": "No per-tick texture allocation",
+        "pass": true
+      },
+      {
+        "label": "Off-screen fully paused with no time catch-up",
+        "pass": true
+      },
+      {
+        "label": "Focus loss fully paused",
+        "pass": true
+      },
+      {
+        "label": "Long frame is bounded, never fast-forwards",
+        "pass": true
+      },
+      {
+        "label": "Invalidated route stops safely without changing navigation",
+        "pass": true
+      },
+      {
+        "label": "Actor and child resources released at 30 Hz",
+        "pass": true
+      },
+      {
+        "label": "Valid small route configures at 60 Hz",
+        "pass": true
+      },
+      {
+        "label": "One sprite, one notifier, eight cached textures",
+        "pass": true
+      },
+      {
+        "label": "Visual actor contains no collision nodes",
+        "pass": true
+      },
+      {
+        "label": "Uniform scale only",
+        "pass": true
+      },
+      {
+        "label": "Idle, peek, flick and four real run frames both ways",
+        "pass": true
+      },
+      {
+        "label": "Every simulated sample stays legal with exact mirrored foot anchor",
+        "pass": true
+      },
+      {
+        "label": "Stops use true idle; non-run actions do not slide",
+        "pass": true
+      },
+      {
+        "label": "Repeated bounded out-and-back trips complete",
+        "pass": true
+      },
+      {
+        "label": "No per-tick texture allocation",
+        "pass": true
+      },
+      {
+        "label": "Time-step invariant position, stride and pose",
+        "pass": true
+      },
+      {
+        "label": "Off-screen fully paused with no time catch-up",
+        "pass": true
+      },
+      {
+        "label": "Focus loss fully paused",
+        "pass": true
+      },
+      {
+        "label": "Long frame is bounded, never fast-forwards",
+        "pass": true
+      },
+      {
+        "label": "Invalidated route stops safely without changing navigation",
+        "pass": true
+      },
+      {
+        "label": "Actor and child resources released at 60 Hz",
+        "pass": true
+      },
+      {
+        "label": "Valid small route configures at 120 Hz",
+        "pass": true
+      },
+      {
+        "label": "One sprite, one notifier, eight cached textures",
+        "pass": true
+      },
+      {
+        "label": "Visual actor contains no collision nodes",
+        "pass": true
+      },
+      {
+        "label": "Uniform scale only",
+        "pass": true
+      },
+      {
+        "label": "Idle, peek, flick and four real run frames both ways",
+        "pass": true
+      },
+      {
+        "label": "Every simulated sample stays legal with exact mirrored foot anchor",
+        "pass": true
+      },
+      {
+        "label": "Stops use true idle; non-run actions do not slide",
+        "pass": true
+      },
+      {
+        "label": "Repeated bounded out-and-back trips complete",
+        "pass": true
+      },
+      {
+        "label": "No per-tick texture allocation",
+        "pass": true
+      },
+      {
+        "label": "Time-step invariant position, stride and pose",
+        "pass": true
+      },
+      {
+        "label": "Off-screen fully paused with no time catch-up",
+        "pass": true
+      },
+      {
+        "label": "Focus loss fully paused",
+        "pass": true
+      },
+      {
+        "label": "Long frame is bounded, never fast-forwards",
+        "pass": true
+      },
+      {
+        "label": "Invalidated route stops safely without changing navigation",
+        "pass": true
+      },
+      {
+        "label": "Actor and child resources released at 120 Hz",
+        "pass": true
+      },
+      {
+        "label": "Initially blocked route rejects actor before scene attachment",
+        "pass": true
+      },
+      {
+        "label": "Duplicate-index fake run cycle rejected",
+        "pass": true
+      },
+      {
+        "label": "Exactly one actor installed on campus entry 0",
+        "pass": true
+      },
+      {
+        "label": "Feet-sorted alongside existing student and tree nodes",
+        "pass": true
+      },
+      {
+        "label": "Repeated installer is idempotent",
+        "pass": true
+      },
+      {
+        "label": "All 49 half-pixel route samples and seven existing graph nodes are legal",
+        "pass": true
+      },
+      {
+        "label": "Ambient actor cannot alter navigation, visitor or visit state",
+        "pass": true
+      },
+      {
+        "label": "Real radius-three physics body traverses entire squirrel route",
+        "pass": true
+      },
+      {
+        "label": "Full campus exit releases squirrel on entry 0",
+        "pass": true
+      },
+      {
+        "label": "Exactly one actor installed on campus entry 1",
+        "pass": true
+      },
+      {
+        "label": "Feet-sorted alongside existing student and tree nodes",
+        "pass": true
+      },
+      {
+        "label": "Repeated installer is idempotent",
+        "pass": true
+      },
+      {
+        "label": "All 49 half-pixel route samples and seven existing graph nodes are legal",
+        "pass": true
+      },
+      {
+        "label": "Ambient actor cannot alter navigation, visitor or visit state",
+        "pass": true
+      },
+      {
+        "label": "Real radius-three physics body traverses entire squirrel route",
+        "pass": true
+      },
+      {
+        "label": "Full campus exit releases squirrel on entry 1",
+        "pass": true
+      }
+    ]
+  },
+  "gpu_contact_shadow": {
+    "captures": [
+      {
+        "camera_zoom": 2.1,
+        "child_count": 2,
+        "file": "contact-shadow-v2-before-2.1x.png",
+        "shadow_enabled": false,
+        "source_pose": 0,
+        "source_scale": 0.0255591049790382,
+        "source_xy": [
+          722.0,
+          690.0
+        ]
+      },
+      {
+        "camera_zoom": 2.1,
+        "child_count": 2,
+        "file": "contact-shadow-v2-after-2.1x.png",
+        "shadow_enabled": true,
+        "source_pose": 0,
+        "source_scale": 0.0255591049790382,
+        "source_xy": [
+          722.0,
+          690.0
+        ]
+      },
+      {
+        "camera_zoom": 6.0,
+        "child_count": 2,
+        "file": "contact-shadow-v2-before-6.0x.png",
+        "shadow_enabled": false,
+        "source_pose": 0,
+        "source_scale": 0.0255591049790382,
+        "source_xy": [
+          722.0,
+          690.0
+        ]
+      },
+      {
+        "camera_zoom": 6.0,
+        "child_count": 2,
+        "file": "contact-shadow-v2-after-6.0x.png",
+        "shadow_enabled": true,
+        "source_pose": 0,
+        "source_scale": 0.0255591049790382,
+        "source_xy": [
+          722.0,
+          690.0
+        ]
+      }
+    ],
+    "geometry_unchanged": true,
+    "gpu_pixel_checks": [
+      {
+        "bbox_xywh": [
+          604,
+          349,
+          9,
+          2
+        ],
+        "brightened_channel_samples": 0,
+        "camera_zoom": 2.1,
+        "changed_pixels": 14,
+        "maximum_channel_delta": 12,
+        "maximum_visible_source_extent": [
+          4.0,
+          1.0
+        ],
+        "passed": true
+      },
+      {
+        "bbox_xywh": [
+          538,
+          327,
+          24,
+          7
+        ],
+        "brightened_channel_samples": 0,
+        "camera_zoom": 6.0,
+        "changed_pixels": 111,
+        "maximum_channel_delta": 13,
+        "maximum_visible_source_extent": [
+          4.0,
+          1.0
+        ],
+        "passed": true
+      }
+    ],
+    "layer_alpha": [
+      0.035,
+      0.045,
+      0.055
+    ],
+    "maximum_visible_source_footprint_including_scaled_aa": [
+      4.0,
+      1.0
+    ],
+    "nominal_outer_ellipse_size_before_aa": [
+      2.0,
+      0.5
+    ],
+    "raster_coverage_tolerance_screen_px": 1.0,
+    "source_offset": [
+      0,
+      0.1
+    ],
+    "source_png_unchanged": true
+  },
+  "unshadowed_original_motion": {
+    "duration_seconds": 18.025,
+    "actual_timestamped_images": 233,
+    "unique_run_artwork_poses": 4,
+    "rest_to_peek_wall_seconds": 8.996,
+    "tail_wall_seconds": 10.53,
+    "run_wall_seconds": [
+      11.828,
+      13.186
+    ],
+    "path_source_xy": [
+      [
+        722,
+        690
+      ],
+      [
+        746,
+        690
+      ]
+    ],
+    "all_samples_legal_focused_and_on_screen": true,
+    "blocked_samples": 0,
+    "movies_remain_unshadowed_and_unchanged": true
+  },
+  "limits": [
+    "More side-on, round-eyed and sharp than the high aerial map art",
+    "Light original grounding improved by a minimal engine shadow only",
+    "Four-pose illustration is not a biomechanically exact support cycle",
+    "Full exact published-head Native/Web CI and independent Draft publication remain pending"
+  ],
+  "final_combined_baseline_validation": {
+    "base_commit": "f08bdc4ebbee5a5c112e35f93e1cee13ee5636f2",
+    "base_tree": "070f6fc4460550e7edaa7b3e15c5d2211fb41714",
+    "verification_date_utc": "2026-10-13",
+    "exit_code": 0,
+    "native_scripts_passed": 14,
+    "native_scripts_failed": 0,
+    "native_assertions": 2354,
+    "source_groups_passed": 8,
+    "source_assertions": 2258,
+    "save_guard_cases_passed": 11,
+    "unsupported_platform_guards_passed": 4,
+    "engine": "Godot 4.6.3 stable",
+    "full_repository_import_ran": false,
+    "cached_assets_reused_after_source_and_import_setting_check": 73,
+    "runtime_code_matches_frozen_contact_shadow_v2": true,
+    "native_scripts": [
+      {
+        "script": "test_buct_source_layers.gd",
+        "checks": 284,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_student_maps.gd",
+        "checks": 86,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_student_pin_layout.gd",
+        "checks": 85,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_playable.gd",
+        "checks": 115,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_chaoyang_walkability.gd",
+        "checks": 41,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_roads_l_integration.gd",
+        "checks": 37,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_court_north.gd",
+        "checks": 139,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_ambient_squirrel.gd",
+        "checks": 63,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_haidian.gd",
+        "checks": 72,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_entry.gd",
+        "checks": 1234,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_changping_east_road.gd",
+        "checks": 41,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_changping_liuhu.gd",
+        "checks": 59,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_changping_south_bridge_water.gd",
+        "checks": 50,
+        "failures": 0
+      },
+      {
+        "script": "test_buct_haidian_east_roads.gd",
+        "checks": 48,
+        "failures": 0
+      }
+    ],
+    "source_groups": [
+      {
+        "suite": "haidian",
+        "checks": 363,
+        "failures": 0
+      },
+      {
+        "suite": "haidian_east_roads",
+        "checks": 228,
+        "failures": 0
+      },
+      {
+        "suite": "student",
+        "checks": 37,
+        "failures": 0
+      },
+      {
+        "suite": "changping",
+        "checks": 117,
+        "failures": 0
+      },
+      {
+        "suite": "chaoyang_walkability",
+        "checks": 1322,
+        "failures": 0
+      },
+      {
+        "suite": "ambient_squirrel",
+        "checks": 18,
+        "failures": 0
+      },
+      {
+        "suite": "changping_east_road",
+        "checks": 70,
+        "failures": 0
+      },
+      {
+        "suite": "changping_liuhu_and_south_bridge",
+        "checks": 103,
+        "failures": 0
+      }
+    ],
+    "skipped": [
+      "Final Continue Story transition and its phone_home resume assertion: existing BUCT_ENTRY_CAMPUS_ONLY=1 focused-stage option. Exact published-head full Native/Web CI must run with normal story resources."
+    ],
+    "not_repeated": [
+      "GUI capture and artwork generation; frozen v2 native pixel comparison and original unshadowed 18.025s motion evidence retained."
+    ],
+    "remaining_publication_gates": [
+      "Independent Draft creation on this exact base",
+      "Full exact-head Native and Web CI; no merge authorization implied"
+    ]
+  }
+}

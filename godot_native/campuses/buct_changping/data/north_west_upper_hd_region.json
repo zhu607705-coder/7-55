@@ -1,0 +1,120 @@
+{
+  "schema": "buct_registered_hd_region_v5",
+  "id": "north_west_upper",
+  "quality_approved": true,
+  "approval_scope": "Accepted local default startup, exact physical authority and normal contiguous seam review; original body envelopes remain excluded",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "roi_xywh": [
+    118,
+    167,
+    256,
+    256
+  ],
+  "core_xywh": [
+    130,
+    179,
+    232,
+    232
+  ],
+  "runtime_size": [
+    1024,
+    1024
+  ],
+  "texels_per_source_pixel": 4,
+  "ground_asset": "res://campuses/buct_changping/assets/north_west_upper_hd_ground.png",
+  "ground_rgba_sha256": "263d5c5562a6630eca59ac21e5e974a09ee6aa8f00a2cb995b013f4ec8a024b2",
+  "source_body_ownership": {
+    "asset": "res://campuses/buct_changping/data/north_west_upper_body_ownership.r8.bin",
+    "sha256": "fd4a8ffbf9b930d7ed69005c14c6104b017236c59a7133650b2bce46eed61da8",
+    "size": [
+      256,
+      256
+    ],
+    "encoding": "owner_index_u8",
+    "owner_ids": [
+      "dorm_nw_01",
+      "dorm_nw_02",
+      "dorm_nw_03",
+      "dorm_nw_04",
+      "dorm_north_low_annex",
+      "dorm_w_01",
+      "dorm_w_02",
+      "hill_south_block"
+    ]
+  },
+  "shared_east": {
+    "neighbor_node": "RegisteredHDRegion_north_large",
+    "rect": [
+      350,
+      167,
+      24,
+      256
+    ],
+    "sample_size": [
+      96,
+      1024
+    ],
+    "sample_texels_per_source_pixel": 4,
+    "source_profile_sha256": "11f73273b005792f0951c7847e74944dd903c008c1dff3b8f69ad3287317c97d",
+    "source_ground_rgba_sha256": "1e41812d1dac462577bb4b922704ee86d22283378277a639a197818de17a582a",
+    "asset": "res://campuses/buct_changping/assets/north_west_upper_east_hd_strip.png",
+    "rgba_sha256": "09591e73547af1a46b22c3c9ae0a487080cbf666be2ec54e0ce9b44e81b9c5cb"
+  },
+  "independent_buildings": [
+    {
+      "id": "dorm_nw_02",
+      "registration": "res://campuses/buct_changping/data/dorm_nw_02_registration.json",
+      "legacy_visual_names": [
+        "SourcePixelSilhouette"
+      ],
+      "underlay_names": [
+        "CleanUnderlay_dorm_nw_02"
+      ]
+    }
+  ],
+  "foreground": [],
+  "shadow": null,
+  "source_fallback_core_pixels": 8268,
+  "potential_hd_terrain_core_source_pixels": 45556,
+  "accepted_added_hd_source_pixels": 45556,
+  "provenance": {
+    "schema": "buct_north_west_uniform_ground_registration_v1",
+    "native_original_size": [
+      1254,
+      1254
+    ],
+    "runtime_grid_size": [
+      1024,
+      1024
+    ],
+    "runtime_grid_texels_per_source_pixel": 4,
+    "raw_original_native_density": 4.885666278594716,
+    "uniform_image_to_world_scale": 0.2046803737662643,
+    "raw_origin_world": [
+      117.48430124075107,
+      167.4574997238446
+    ],
+    "scale_is_uniform": true,
+    "road_or_source_geometry_transformed": false,
+    "no_upsampling_claim": true,
+    "diagnostic_landmarks": 6,
+    "rms_source_px": 0.46847758814055374,
+    "max_source_px": 0.6865919775394066,
+    "image_consistency_not_surveying": true,
+    "masked_hill_edge_fragment_not_hd_terrain": true,
+    "raw_sha256": "1dfb1a4977b5f4e33cba84bfb6cf4923bb4d5fbd95851cac0d3a592708871c8c",
+    "runtime_png_sha256": "f8c7c451c2445a042874e3dc713202109af0dc2ae9a2ac17f7f701d079bdcd30",
+    "runtime_rgba_sha256": "263d5c5562a6630eca59ac21e5e974a09ee6aa8f00a2cb995b013f4ec8a024b2",
+    "unmapped_border_policy": "Any unsampled edge is only in discarded outer collar, not core",
+    "status": "accepted_local_scope"
+  },
+  "limits": [
+    "All eight original buildings, source anchors, roads, physics and character stay authoritative",
+    "Conservative source-fallback envelopes include ground; nonzero pixels never count as new HD",
+    "No interior, automatic streaming or all-campus coverage claim"
+  ],
+  "ground_png_sha256": "f8c7c451c2445a042874e3dc713202109af0dc2ae9a2ac17f7f701d079bdcd30",
+  "body_approval_scope": "One accepted full RGBA dorm_nw_02, exact original anchor/Vector2 physical footprints, normal rendered central-step review; seven original envelopes remain",
+  "original_body_mask_core_pixels": 11224,
+  "independent_body_retired_core_pixels": 2956
+}

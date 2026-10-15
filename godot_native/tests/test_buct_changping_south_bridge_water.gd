@@ -78,7 +78,7 @@ func run() -> void:
 	var foreign := CanvasItemMaterial.new();ground.material = foreign;segment.free();campus.south_bridge_surface = null
 	check(ground.material == foreign, "Cleanup respects newer foreign owner")
 	ground.material = main.cutout_material
-	check(campus.data.route_waypoints.size() == 41 and campus.data.landmarks.size() == 3 and campus.walk_polys.size() == 82, "Original route, POIs and east-road paving unchanged")
+	check(campus.data.route_waypoints.size() == 41 and campus.data.landmarks.size() == 3 and campus.walk_polys.size() == 83, "Original route and POIs unchanged; accepted east and north road paving retained")
 	await finish()
 func pointer(point: Vector2,touch: bool) -> void:
 	var screen: Vector2 = campus.get_canvas_transform()*point

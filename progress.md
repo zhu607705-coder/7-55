@@ -4687,3 +4687,39 @@ Public package regression is now reproducible via `python3 godot_native/tools/te
 - Preserve both complete branch histories and every progress entry; union all seven source suites and thirteen focused native registrations
 - Keep existing save/evidence isolation and all nonconflicting production blobs byte-identical to their owning approved branches
 - Complete combined-tree Native and Web CI is required before merge
+
+
+## 2026-10-13 — Changping Wenli independent exterior
+
+- Replace only Wenli's four legacy visual parts with one source-registered RGBA exterior and two complementary depth passes. Preserve all three original physics bodies, existing student, route, water and Zhejiang story.
+- Keep the complete generated body and clean-plate PNG bytes. Nine-point uniform registration RMS is 1.258 source pixels. Hidden ground uses only a bounded inferred paving sample; visible contour differences remain and this is not a surveyed courtyard or new walking area.
+- Frozen local validation: source 16/16; six serial native groups 3,186 assertions with zero failures (Wenli 1,032; First Teaching 942; Library 1,062; east road 41; Liu Lake 59; south bridge water 50); actual GPU 29/29; manual movement, alpha selection, close, entry return and re-entry passed. A minimal exported PCK loaded the real scene and binary masks successfully.
+- GPU complementary passes match the common-quad reference exactly; opaque gray/map composites differ by at most one channel level. The original standard Sprite transparent-RGBA comparison retains a maximum delta of eight with unchanged alpha support. Ground changes zero pixels outside its ownership mask.
+- Add reproducible source/GPU CI checks and evidence artifact. Exact-head full Native and Web CI remain pending at publication. No local full-story run, Windows runtime, physical-mobile acceptance, interior or TileMap conversion is claimed. Independent Draft only; squirrel PR #137 remains separate and unmerged.
+
+
+## 2026-10-13 17:03 UTC — Default Changping Wenli high-detail region
+
+- Stack on Draft #138 at 72fcafd285dd388eed2735be71b60fa23f428548. Enable one coherent ground/canopy region by default: source ROI [630,615,240,240], 3.66% of campus, 216-square core. Genuine generated masters 1254-square; fixed runtime 1200-square. Visible new/old clarity transition remains. No whole-campus 4K, interiors, world-coordinate warping or route expansion.
+- Keep original body/transform/source masks, three colliders, student and complete navigation source hash-identical. One approved masked correction and a bounded B-courtyard texture-only registration replace the rejected material-strip experiments. Dense 1,440,000-sample displacement/Jacobian checks pass; independent 21 road holdouts preserve three disclosed full-profile low correlations while frozen-clear-mask exclusion yields 21/21 and 0.3px maximum drift.
+- Nine existing leaf owners share final RGB without new leaf textures; original 798 alpha pixels, 17 outsideROI and nine footlines remain. Atomic preparation/fallback, repeated install, uninstall/resource release and cached detach/re-entry are tested. Fixed new texture mip budget 9,599,600 bytes, no new physics.
+- Local source 28/28 plus old 16/16, new lifecycle/physics 584/584, related original headless 3198 assertions, and native GPU 16/16 all pass. Default GPU changes zero exterior pixels; two-zoom full-nine sampling is within 1 LSB. Existing 113px full-scene diagnostic is retained and attributed to original nearest leaf versus linear background at the south collar plus 1 LSB roundoff, not silently threshold-relaxed.
+- Clean new asset import and 28 MB scoped PCK load pass. The PCK check caught shared CPU mip metadata mutation; validation now duplicates before clearing mips and verifies retention. Final actual desktop process RSS 485,486,592 bytes is whole-process, not component-only.
+- Continuous native movie 223 frames/11.15s walks 958.09 source px at unchanged speed 88, height18, zero off-route frames; 20 FPS fixed offline sampling is not a real-time benchmark. Actual manual motion, roof card, Escape, entry return and Changping re-entry passed, normal exit 0/no errors. Both default HD and isolated original Wenli checks are wired into existing Native CI. Full exact-head Native/Web CI remains a publication check; #137/#138 stay Draft/unmerged.
+
+
+## 2026-10-13 — Independent Chaoyang ambient squirrel, contact-shadow v2
+
+- Exact base: godot-version `f08bdc4ebbee5a5c112e35f93e1cee13ee5636f2`, tree `070f6fc4460550e7edaa7b3e15c5d2211fb41714`. Add only one true-RGBA eight-source-pixel squirrel on the existing 24px tree-adjacent paving segment. Four genuine run poses follow actual distance; idle/peek/tail and long varied rests stay visual-only. A small cached contact shadow is GPU-bounded to 4x1 source pixels plus one screen-pixel boundary coverage. Original PNG, map, shared student, navigation, collisions and story/save authority are unchanged.
+- The accepted v2 runtime files remain frozen. Existing code changes are three Chaoyang installation lines plus two entries in the existing isolated BUCT test runner. All original thirteen native/seven source registrations and save/evidence guards remain intact.
+- Exact-base local aggregate exits 0: 14 native scripts (2,354 assertions), 8 source groups (2,258 assertions), 11 save-isolation cases and 4 platform guards pass. This includes three-campus entry/return 1,234/0, squirrel 63/0, and unchanged road/student/building/lake/bridge-south behavior. Reuse of 73 matching source/import artifacts avoids a full import. The initial minimal-stage missing source JSONs were filled with 57 exact-base JSON blobs, then the complete aggregate reran cleanly.
+- Local focused entry coverage deliberately skips only its final Continue Story transition and phone_home assertion using the existing campus-only option. Full exact-published-head Native/Web CI remains required. Existing unshadowed 18.025s motion evidence and the separate accepted v2 contact-shadow comparisons are not replaced or conflated. Prepare an independent Draft; do not merge automatically or expand buildings/interiors/story work.
+
+## 2026-10-15 First-batch exported-campus integrity repair
+
+The full release PCK exposed a real packaging-only regression: north_large and north_west_upper rejected the remapped approved source texture because the original PNG bytes are absent from normal exports. The two newer owners silently fell back despite source-project tests passing.
+
+- Added a shared fail-closed verifier: exact resource identity/type/950x1656 dimensions; pinned raw PNG SHA256 whenever present; always authenticate a duplicated, decompressed, mip-cleared RGBA8 image against an independently verified pixel hash. Original image state, HD/mask/body hashes, ownership budgets and fallback behavior remain unchanged.
+- Both factories authenticate before the cached-owner fast path. Added 14 negative/source checks, including changed pixels, identity, dimensions and a process-local corrupt-PNG overlay; run against both source and the actual source-less PCK.
+- Added a bounded complete-PCK contract: all six active HD owners and independent dorm, road/path/real physical walking, chooser pointer navigation, object retirement, all three campuses and story resume. Combined builds strictly require the ambient squirrel. CI exports the complete pack and runs both tests with watchdogs and shell timeouts.
+- Recovered the same source from the persisted combined work branch after the cloud workspace reset. Fresh full import and affected native checks passed; fresh exact-head combined CI remains the merge gate. Earlier successful source graphics and recordings remain evidence for their recorded commit, not a claim of Windows hardware, hardware GPU performance or complete manual story playthrough.

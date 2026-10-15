@@ -27,7 +27,7 @@ func disk_clear(p:Vector2) -> bool:
 		if p.distance_squared_to(Geometry2D.get_closest_point_to_segment(p,edge[0],edge[1]))<9.0-0.0001:return false
 	return true
 func run() -> void:
-	campus=load("res://campuses/buct_changping/scenes/playable.tscn").instantiate();root.add_child(campus)
+	campus=load("res://campuses/buct_changping/scenes/playable.tscn").instantiate();campus.enable_north_hd_region=false;campus.enable_north_road_extension=false;root.add_child(campus)
 	await tick();await tick()
 	check(campus.initialized,"Production scene initialized")
 	check(campus.data.route_waypoints.size()==41 and campus.data.landmarks.size()==3,"Original 41 guide points and 3 POIs retained")

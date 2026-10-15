@@ -14,6 +14,15 @@ var source_origin := Vector2.ZERO
 var animation_enabled := true
 var selected := false
 var wave_time := 0.0
+var _hd_rgb_owner: CanvasItem
+var _hd_rgb_texture: Texture2D
+var _hd_rgb_material: ShaderMaterial
+var _hd_rgb_rect := Rect2()
+var _hd_rgb_sha := ""
+var _hd_rgb_previous: Dictionary = {}
+var _hd_rgb_active := false
+var _hd_rgb_validation_full_mip_image_bytes := 0
+var _hd_rgb_validation_base_rgba_bytes := 0
 
 static func install(world: Node2D) -> Node2D:
 	var ground := world.get_node_or_null("StaticUnseparatedCampus") as Sprite2D
@@ -102,6 +111,7 @@ func _sha256(bytes: PackedByteArray) -> String:
 	return context.finish().hex_encode()
 
 func _process(delta: float) -> void:
+	if _hd_rgb_active and (not is_instance_valid(_hd_rgb_owner) or not _hd_rgb_owner.is_visible_in_tree()):_clear_hd_rgb()
 	if animation_enabled:
 		set_wave_time(wave_time + delta)
 
@@ -125,6 +135,79 @@ func hit_test_alpha(source_point: Vector2) -> bool:
 	return alpha_image.get_pixel(floori(local.x), floori(local.y)).a > 0.5
 
 func _exit_tree() -> void:
+	_clear_hd_rgb()
 	# If this component is removed, restore the original ground owner cleanly.
 	if is_instance_valid(static_ground) and static_ground.material == cutout_material:
 		static_ground.material = null
+
+## An optional RGB-only view of the already allocated SW region ground. Original
+## water alpha, distance, registration, wave time and enabled state remain owners.
+func install_hd_rgb(owner: CanvasItem, texture: Texture2D, source_rect: Rect2, rgba_sha256: String) -> bool:
+	if not is_instance_valid(owner) or not owner.is_visible_in_tree() or texture==null:return false
+	if not is_instance_valid(water_sprite) or water_material==null or water_sprite.material!=water_material or water_material.shader!=WATER_SHADER:return false
+	if source_rect!=Rect2(398,615,256,240) or texture.get_size()!=Vector2(1280,1200):return false
+	if _hd_rgb_active:
+		return owner==_hd_rgb_owner and texture==_hd_rgb_texture and source_rect==_hd_rgb_rect and rgba_sha256==_hd_rgb_sha and _hd_rgb_material==water_material and water_material.get_shader_parameter("hd_rgb_enabled")==true and water_material.get_shader_parameter("hd_rgb")==texture
+	# Do not take over an input owned outside this optional interface.
+	if water_material.get_shader_parameter("hd_rgb_enabled")==true:return false
+	var image: Image = texture.get_image()
+	if image==null or image.is_empty():return false
+	image=image.duplicate()
+	if image.is_compressed() and image.decompress()!=OK:return false
+	_hd_rgb_validation_full_mip_image_bytes=image.get_data_size()
+	image.clear_mipmaps();image.convert(Image.FORMAT_RGBA8)
+	_hd_rgb_validation_base_rgba_bytes=image.get_data_size()
+	var bytes := image.get_data()
+	if _sha256(bytes)!=rgba_sha256:return false
+	for i in range(3,bytes.size(),4):
+		if bytes[i]!=255:return false
+	# Validation buffers are temporary. This interface adds no RGB allocation.
+	image=null;bytes.clear()
+	_hd_rgb_previous={}
+	for key in ["hd_rgb_enabled","hd_rgb","hd_original_water","hd_source_rect"]:
+		_hd_rgb_previous[key]=water_material.get_shader_parameter(key)
+	_hd_rgb_owner=owner;_hd_rgb_texture=texture;_hd_rgb_material=water_material
+	_hd_rgb_rect=source_rect;_hd_rgb_sha=rgba_sha256
+	water_material.set_shader_parameter("hd_rgb",texture)
+	# Named sampler avoids passing the built-in TEXTURE sampler through a shader
+	# function, which the Compatibility compiler cannot lower on this engine.
+	water_material.set_shader_parameter("hd_original_water",water_sprite.texture)
+	water_material.set_shader_parameter("hd_source_rect",Vector4(source_rect.position.x,source_rect.position.y,source_rect.size.x,source_rect.size.y))
+	water_material.set_shader_parameter("hd_rgb_enabled",true)
+	_hd_rgb_active=true
+	owner.tree_exiting.connect(_on_hd_rgb_owner_exiting)
+	owner.visibility_changed.connect(_on_hd_rgb_owner_visibility_changed)
+	return true
+
+func remove_hd_rgb(owner: CanvasItem) -> bool:
+	if not _hd_rgb_active:return true
+	if not is_instance_valid(owner) or owner!=_hd_rgb_owner:return false
+	_clear_hd_rgb()
+	return true
+
+func _on_hd_rgb_owner_exiting() -> void:
+	_clear_hd_rgb()
+
+func _on_hd_rgb_owner_visibility_changed() -> void:
+	if _hd_rgb_active and (not is_instance_valid(_hd_rgb_owner) or not _hd_rgb_owner.is_visible_in_tree()):_clear_hd_rgb()
+
+func _clear_hd_rgb() -> void:
+	if not _hd_rgb_active:return
+	_hd_rgb_active=false
+	if is_instance_valid(_hd_rgb_owner):
+		if _hd_rgb_owner.tree_exiting.is_connected(_on_hd_rgb_owner_exiting):_hd_rgb_owner.tree_exiting.disconnect(_on_hd_rgb_owner_exiting)
+		if _hd_rgb_owner.visibility_changed.is_connected(_on_hd_rgb_owner_visibility_changed):_hd_rgb_owner.visibility_changed.disconnect(_on_hd_rgb_owner_visibility_changed)
+	# Restore only the material whose inputs this interface actually installed.
+	# A separately replaced material is never overwritten during group teardown.
+	if is_instance_valid(_hd_rgb_material):
+		for key in _hd_rgb_previous:_hd_rgb_material.set_shader_parameter(key,_hd_rgb_previous[key])
+	_hd_rgb_owner=null;_hd_rgb_texture=null;_hd_rgb_material=null
+	_hd_rgb_previous.clear();_hd_rgb_rect=Rect2();_hd_rgb_sha=""
+
+func get_hd_rgb_diagnostics() -> Dictionary:
+	return {"active":_hd_rgb_active,"source_rect":_hd_rgb_rect,"additional_gpu_texture_bytes":0,
+		"shared_region_texture":_hd_rgb_active,"alpha_distance_unchanged":true,
+		"independent_wave_clock":false,"hd_rgb_filter":"continuous_alpha_guarded_base_bilinear",
+		"validation_full_mip_image_bytes":_hd_rgb_validation_full_mip_image_bytes,
+		"validation_base_rgba_bytes":_hd_rgb_validation_base_rgba_bytes,"stable_retained_cpu_rgba_bytes":0,
+		"hd_guard_fallback":"same_coordinate_static_hd_rgb","outer_fallback_source_collar_px":2,"outer_transition_source_px":10}
