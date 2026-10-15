@@ -1,4 +1,5 @@
 extends Node2D
+const AMBIENT_SQUIRREL_PATCH = preload("res://campuses/buct/scripts/ambient_squirrel_patch.gd")
 const COURT_NORTH_PATCH = preload("res://campuses/buct/scripts/court_north_patch.gd")
 const COURT_NORTH_INFO_FONT = preload("res://campuses/buct/assets/court_north/info-font.otf")
 const L_INFO_FONT = preload("res://campuses/buct/assets/west_inner_l/l-info-font.otf")
@@ -49,6 +50,7 @@ var map_area := Rect2()
 var compact := false
 var l_building: Node2D
 var court_north: Node2D
+var ambient_squirrel: Node2D
 var library: Node2D
 var library_blockers: Array[PackedVector2Array] = []
 
@@ -88,6 +90,7 @@ func _ready() -> void:
 				else: blockers.append(expanded)
 	_add_tree_occluders()
 	_build_grid()
+	ambient_squirrel=AMBIENT_SQUIRREL_PATCH.install(self,objects)
 	visitor=CharacterBody2D.new()
 	visitor.set_script(VISITOR)
 	visitor.map=self
