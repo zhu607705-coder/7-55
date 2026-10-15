@@ -1,0 +1,815 @@
+{
+  "schema": "buct_north_hd_validation_v1",
+  "status": "accepted_local_scope",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "tests": {
+    "headless": {
+      "checks": 83,
+      "failures": [],
+      "evidence_file": "north-region-headless-result.json",
+      "evidence_sha256": "9942bb48d51002b0fb2262a5a0654627326f4952802559edff0c054aeb37c2e8",
+      "final_headless_log": "test-north-final-selection.log"
+    },
+    "actual_key_walk": {
+      "checks": 38,
+      "failures": [],
+      "evidence_file": "default-north-walk-result.json",
+      "evidence_sha256": "847746227b1e9ab2ef2d59666e97b077dadbe2de9d73117cc1f6529587847f49",
+      "physical_ticks": 984,
+      "illegal_ticks": 0,
+      "maximum_speed": 88.0038142204285,
+      "position_writes_after_initial_spawn": 0,
+      "arrivals": [
+        {
+          "actual": [
+            707.546997070312,
+            622.587463378906
+          ],
+          "kind": "physical_key_events",
+          "target": [
+            707.0,
+            620.0
+          ]
+        },
+        {
+          "actual": [
+            668.136840820312,
+            549.443786621094
+          ],
+          "kind": "physical_key_events",
+          "target": [
+            666.0,
+            548.0
+          ]
+        },
+        {
+          "actual": [
+            705.472778320312,
+            619.046569824219
+          ],
+          "kind": "physical_key_events",
+          "target": [
+            707.0,
+            620.0
+          ]
+        },
+        {
+          "actual": [
+            730.363403320312,
+            673.270690917969
+          ],
+          "kind": "physical_key_events",
+          "target": [
+            731.0,
+            676.0
+          ]
+        }
+      ]
+    },
+    "gpu": {
+      "checks": 26,
+      "failures": [],
+      "evidence_file": "gpu/north-render-result.json",
+      "evidence_sha256": "f5e70267e37a29586a217f2b8ce8b9c474b55d47afe5e48345b6e689072e94bf"
+    },
+    "legacy_east_road_opt_out": {
+      "checks": 41,
+      "failures": 0,
+      "exit_code": 0,
+      "evidence_file": "east-road-opt-out-regression.log",
+      "evidence_sha256": "30ac632f1cc3ce5a0dd98996bf4db971ce3bdcc65803c36d872f39c50a7c42bc"
+    },
+    "all_campus_entry_and_story_resume": {
+      "checks": 1236,
+      "failures": 0,
+      "exit_code": 0,
+      "evidence_file": "entry-full-default-north.log",
+      "evidence_sha256": "d1c43368ed8d778d7b744ae190ed5095cc3072ac79d8e7d581b13131f6c08fe4"
+    },
+    "legacy_wenli_body": {
+      "checks": 1032,
+      "failures": 0,
+      "exit_code": 0,
+      "evidence_file": "test-wenli-final.log",
+      "evidence_sha256": "58c880b8369bb32b2bb48b384f03a840a8cbc6dc4d765137e30bd6a5dfd79343"
+    },
+    "legacy_wenli_region": {
+      "checks": 584,
+      "failures": 0,
+      "exit_code": 0,
+      "evidence_file": "test-hd_region-final.log",
+      "evidence_sha256": "4f0c274efc5dda7aa3e7e6761fcdeddae3ffc6ab99ed275881a6bc72bb386fd9"
+    },
+    "source_less_package": {
+      "checks": 164,
+      "passed": true,
+      "case_results": [
+        {
+          "case": "valid",
+          "checks": 48,
+          "evidence": {
+            "body ownership": {
+              "dimensions": [
+                240,
+                240
+              ],
+              "r8_sha256": "9521898a09f24eeecfe714dc3ce46580e498270df15e88874fdc73e614c2a624"
+            },
+            "body_diagnostics": {
+              "body_passes_active": 2,
+              "body_passes_allocated": 2,
+              "cpu_alpha_bytes": 1572075,
+              "depth_texture_bytes": 5100,
+              "player_hide_move_enabled": false,
+              "production_has_mipmaps": true,
+              "raw_texture_size": "(1275, 1233)",
+              "rgb_lod": 3.4566071237438,
+              "status": "registered_independent_hd_body",
+              "surface_count": 1,
+              "surface_texture_bytes": 1572075,
+              "uniform_scale": 0.0910872462177628
+            },
+            "configure_accepted": true,
+            "depth_sha256": "b559a7318f2d946856c7c24cc1ad0b19cf6ac676e35b0468dc06903fc234a095",
+            "north ground": {
+              "dimensions": [
+                1200,
+                1200
+              ],
+              "rgba_sha256": "9cd2e3d9f4b11a957b1aa199466d359d5091e4989d584b7ac6c50624229d6213",
+              "source_png_absent": true
+            },
+            "north_road_crown_01": {
+              "dimensions": [
+                100,
+                120
+              ],
+              "r8_sha256": "e3e45e65e5438937bb2996dc74ac856d34e4e5e38653891b46be966c18715072"
+            },
+            "shared strip": {
+              "dimensions": [
+                1200,
+                122
+              ],
+              "rgba_sha256": "a9a075b5e77135d82100ce24893151ca46ae925e70b57d4037ed6f7669546f83",
+              "source_png_absent": true
+            },
+            "source_png_absent": true,
+            "surface_accepted": true,
+            "texture_accepted": true
+          },
+          "expected_diagnostics": "Missing imported binary and missing R8 cases may log engine errors; case assertions and exit status are authoritative.",
+          "failures": [],
+          "scope": "Actual standalone PCK; production resource helpers and building configure only. No campus/scene/gameplay/GPU acceptance.",
+          "exit_code": 0,
+          "pck_bytes": 6130200
+        },
+        {
+          "case": "missing_ctex",
+          "checks": 38,
+          "evidence": {
+            "body ownership": {
+              "dimensions": [
+                240,
+                240
+              ],
+              "r8_sha256": "9521898a09f24eeecfe714dc3ce46580e498270df15e88874fdc73e614c2a624"
+            },
+            "configure_accepted": false,
+            "north ground": {
+              "dimensions": [
+                1200,
+                1200
+              ],
+              "rgba_sha256": "9cd2e3d9f4b11a957b1aa199466d359d5091e4989d584b7ac6c50624229d6213",
+              "source_png_absent": true
+            },
+            "north_road_crown_01": {
+              "dimensions": [
+                100,
+                120
+              ],
+              "r8_sha256": "e3e45e65e5438937bb2996dc74ac856d34e4e5e38653891b46be966c18715072"
+            },
+            "safe_rejection": true,
+            "shared strip": {
+              "dimensions": [
+                1200,
+                122
+              ],
+              "rgba_sha256": "a9a075b5e77135d82100ce24893151ca46ae925e70b57d4037ed6f7669546f83",
+              "source_png_absent": true
+            },
+            "source_png_absent": true,
+            "surface_accepted": true,
+            "texture_accepted": false
+          },
+          "expected_diagnostics": "Missing imported binary and missing R8 cases may log engine errors; case assertions and exit status are authoritative.",
+          "failures": [],
+          "scope": "Actual standalone PCK; production resource helpers and building configure only. No campus/scene/gameplay/GPU acceptance.",
+          "exit_code": 0,
+          "pck_bytes": 4719872
+        },
+        {
+          "case": "missing_surface",
+          "checks": 38,
+          "evidence": {
+            "body ownership": {
+              "dimensions": [
+                240,
+                240
+              ],
+              "r8_sha256": "9521898a09f24eeecfe714dc3ce46580e498270df15e88874fdc73e614c2a624"
+            },
+            "configure_accepted": false,
+            "north ground": {
+              "dimensions": [
+                1200,
+                1200
+              ],
+              "rgba_sha256": "9cd2e3d9f4b11a957b1aa199466d359d5091e4989d584b7ac6c50624229d6213",
+              "source_png_absent": true
+            },
+            "north_road_crown_01": {
+              "dimensions": [
+                100,
+                120
+              ],
+              "r8_sha256": "e3e45e65e5438937bb2996dc74ac856d34e4e5e38653891b46be966c18715072"
+            },
+            "safe_rejection": true,
+            "shared strip": {
+              "dimensions": [
+                1200,
+                122
+              ],
+              "rgba_sha256": "a9a075b5e77135d82100ce24893151ca46ae925e70b57d4037ed6f7669546f83",
+              "source_png_absent": true
+            },
+            "source_png_absent": true,
+            "surface_accepted": false,
+            "texture_accepted": true
+          },
+          "expected_diagnostics": "Missing imported binary and missing R8 cases may log engine errors; case assertions and exit status are authoritative.",
+          "failures": [],
+          "scope": "Actual standalone PCK; production resource helpers and building configure only. No campus/scene/gameplay/GPU acceptance.",
+          "exit_code": 0,
+          "pck_bytes": 4558032
+        },
+        {
+          "case": "corrupt_surface",
+          "checks": 40,
+          "evidence": {
+            "body ownership": {
+              "dimensions": [
+                240,
+                240
+              ],
+              "r8_sha256": "9521898a09f24eeecfe714dc3ce46580e498270df15e88874fdc73e614c2a624"
+            },
+            "configure_accepted": false,
+            "north ground": {
+              "dimensions": [
+                1200,
+                1200
+              ],
+              "rgba_sha256": "9cd2e3d9f4b11a957b1aa199466d359d5091e4989d584b7ac6c50624229d6213",
+              "source_png_absent": true
+            },
+            "north_road_crown_01": {
+              "dimensions": [
+                100,
+                120
+              ],
+              "r8_sha256": "e3e45e65e5438937bb2996dc74ac856d34e4e5e38653891b46be966c18715072"
+            },
+            "safe_rejection": true,
+            "shared strip": {
+              "dimensions": [
+                1200,
+                122
+              ],
+              "rgba_sha256": "a9a075b5e77135d82100ce24893151ca46ae925e70b57d4037ed6f7669546f83",
+              "source_png_absent": true
+            },
+            "source_png_absent": true,
+            "surface_accepted": false,
+            "texture_accepted": true
+          },
+          "expected_diagnostics": "Missing imported binary and missing R8 cases may log engine errors; case assertions and exit status are authoritative.",
+          "failures": [],
+          "scope": "Actual standalone PCK; production resource helpers and building configure only. No campus/scene/gameplay/GPU acceptance.",
+          "exit_code": 0,
+          "pck_bytes": 6130232
+        }
+      ],
+      "evidence_file": "north-package-f31wqf4n/summary.json",
+      "evidence_sha256": "2d137693fbd60496c916916a6a31a76f11c52187318e3481bc53e71b42e8fa3f"
+    },
+    "legacy_east_source": {
+      "checks": 70,
+      "failures": 0,
+      "previous_failure": "One README byte assertion failed against the older east-road baseline; all69 other assertions passed",
+      "baseline_sync": "Verified only the previous accepted28-file Wenli overlay appended5 HD documentation lines. README unchanged by this north work; single expected hash rebased to d0d88bf3aaf93ec5cdb057f704b4d660b6506d04, original hash preserved in previous validation manifest."
+    },
+    "native_preview": {
+      "checks": 250,
+      "duration_seconds": 12,
+      "failures": [],
+      "fixed_fps": 20,
+      "frame_format": "Godot Image.save_jpg quality0.92; pixel proofs and full map remain PNG",
+      "illegal_ticks": 0,
+      "maximum_speed": 88.0038142204285,
+      "physical_ticks": 1368,
+      "position_writes_after_initial_spawn": 0,
+      "production_path_targets": {
+        "actual_north_grid": [
+          667.0,
+          549.0
+        ],
+        "actual_start_grid": [
+          731.0,
+          677.0
+        ],
+        "requested_north_junction": [
+          666,
+          548
+        ],
+        "requested_start": [
+          731,
+          676
+        ]
+      },
+      "recorded_frames": 240,
+      "scope": "Automated continuous production navigation; manual entry is separately verified. Only two contiguous HD regions, remainder original artwork.",
+      "evidence_file": "preview/preview-native-result.json",
+      "evidence_sha256": "85e96b8e18f79d20f38f187a2290cc35ed1379734fc2254d6c843d510a807de4",
+      "actual_gui_exit_code": 0
+    },
+    "manual_gui": {
+      "review": {
+        "completed_utc": "2026-10-14T01:48:00Z",
+        "status": "actual_manual_entry_interaction_passed",
+        "terminal_exit_code": 0,
+        "native_window_closed": true,
+        "no_errors_in_log": true,
+        "sequence": [
+          {
+            "action": "Real entry click 昌平校园漫游",
+            "result": "South-gate spawn; 0/3 progress."
+          },
+          {
+            "action": "Down300ms, Right350ms",
+            "result": "Small movement and existing walk-boundary feedback, no passage outside open paved region."
+          },
+          {
+            "action": "Up500ms then release",
+            "result": "Clear northward movement/camera follow; later screenshot confirms stopped after release."
+          },
+          {
+            "action": "Overview, click near transparent northern-left margin at window(646,278)",
+            "result": "No building card."
+          },
+          {
+            "action": "Click solid roof at window(657,295)",
+            "result": "北侧长灰楼 neutral exterior card shown; no invented function/interior."
+          },
+          {
+            "action": "Escape",
+            "result": "Card closed while overview remains."
+          },
+          {
+            "action": "返回入口 then 昌平校园漫游",
+            "result": "Real entry returns, reentry starts at south gate with 0/3 and no stale card."
+          },
+          {
+            "action": "Alt+F4",
+            "result": "Window closes and wrapper prints NORTH_MANUAL_EXIT=0."
+          }
+        ],
+        "screenshots_directory": "manual",
+        "settled_screenshot_notes": "11 and14 are transitional frames;12 verifies entry returned,13 verifies reentry,15 verifies final exit.",
+        "separate_preview_status": "Initial automatic preview failed arrival/return fixture checks and remains separate; not claimed as successful clip."
+      },
+      "evidence_file": "manual-native-review.json",
+      "evidence_sha256": "65894d6f8ffb1edec939d50339d26374dca40ef237e496d280a90ff16c9318c4",
+      "actual_gui_exit_code": 0
+    },
+    "registry_source": {
+      "positive_assertions": 56,
+      "required_negative_cases": 7,
+      "failures": 0
+    },
+    "north_source": {
+      "checks": 45,
+      "failures": 0
+    },
+    "wenli_region_source": {
+      "checks": 28,
+      "failures": 0
+    },
+    "wenli_body_source": {
+      "checks": 16,
+      "failures": 0
+    }
+  },
+  "allocation": {
+    "active": true,
+    "automatic_camera_streaming": false,
+    "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+    "independent_bodies": 1,
+    "independent_body_gpu_bytes": 9956875,
+    "new_collision_bodies": 0,
+    "new_foreground_owners": 3,
+    "new_gpu_texture_bytes": 8587240,
+    "region_ground_foreground_seam_ownership_gpu_bytes": 8587240,
+    "region_residency_limit": 6,
+    "shared_hd_owner_active": true,
+    "stable_retained_new_cpu_rgba_bytes": 0,
+    "total_new_gpu_texture_bytes": 18544115,
+    "validation_rgba_buffer_bytes": 5760000
+  },
+  "production_invariant_comparison": {
+    "additive_road_polygons": 1,
+    "baseline": {
+      "collision_layers_masks_shapes_global_transforms_sha256": "56a25ea74fa41c99ffd45631517996e3ea1278c5ee2ca2d21ffdad4ae580c16d",
+      "collision_record_count": 150,
+      "original82_paving_sha256": "45b335221626c146353178a3f7c84f7a05264374409b60b9b96b02b2e19c8372",
+      "original_registered_ids_anchors_transforms_zsort_sha256": "06efac980c82003b94477764ffecc0146c49b46d300d406d46aecd44a8e291cd",
+      "poi_spawn_guide_sha256": "2ddb4452a8f83de8ea25fb013f96c9dc8839adfe71ac45c148e99f037a2de14a",
+      "registered_source_owner_count": 53,
+      "shared_student_feet_sha256": "8fb7f6383aa9c704e0f9a0421b6c90fae38b7c86456a52870cc2d566ca753748",
+      "source_layers_file_sha256": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88",
+      "source_route_file_sha256": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6"
+    },
+    "candidate": {
+      "collision_layers_masks_shapes_global_transforms_sha256": "56a25ea74fa41c99ffd45631517996e3ea1278c5ee2ca2d21ffdad4ae580c16d",
+      "collision_record_count": 150,
+      "original82_paving_sha256": "45b335221626c146353178a3f7c84f7a05264374409b60b9b96b02b2e19c8372",
+      "original_registered_ids_anchors_transforms_zsort_sha256": "06efac980c82003b94477764ffecc0146c49b46d300d406d46aecd44a8e291cd",
+      "poi_spawn_guide_sha256": "2ddb4452a8f83de8ea25fb013f96c9dc8839adfe71ac45c148e99f037a2de14a",
+      "registered_source_owner_count": 53,
+      "shared_student_feet_sha256": "8fb7f6383aa9c704e0f9a0421b6c90fae38b7c86456a52870cc2d566ca753748",
+      "source_layers_file_sha256": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88",
+      "source_route_file_sha256": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6"
+    },
+    "new_body_visual_owners": 1,
+    "new_leaf_visual_owners": 3
+  },
+  "gpu_records": [
+    {
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "reversed_neighbor_install_order"
+    },
+    {
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 3,
+        "max_channel_delta": 1
+      },
+      "fixture": "all3_same_HD_RGB_no_actor"
+    },
+    {
+      "changed_inside": 242829,
+      "changed_outside": 0,
+      "fixture": "new_region_source_ownership"
+    },
+    {
+      "active_passes": 1,
+      "actor_foot_y": 450.0,
+      "body_allocation": {
+        "body_passes_active": 1,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": false
+    },
+    {
+      "active_passes": 2,
+      "actor_foot_y": 480.0,
+      "body_allocation": {
+        "body_passes_active": 2,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": false
+    },
+    {
+      "active_passes": 2,
+      "actor_foot_y": 505.0,
+      "body_allocation": {
+        "body_passes_active": 2,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": false
+    },
+    {
+      "active_passes": 2,
+      "actor_foot_y": 530.0,
+      "body_allocation": {
+        "body_passes_active": 2,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": false
+    },
+    {
+      "active_passes": 1,
+      "actor_foot_y": 548.0,
+      "body_allocation": {
+        "body_passes_active": 1,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": false
+    },
+    {
+      "active_passes": 1,
+      "actor_foot_y": 450.0,
+      "body_allocation": {
+        "body_passes_active": 1,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": true
+    },
+    {
+      "active_passes": 2,
+      "actor_foot_y": 480.0,
+      "body_allocation": {
+        "body_passes_active": 2,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": true
+    },
+    {
+      "active_passes": 2,
+      "actor_foot_y": 505.0,
+      "body_allocation": {
+        "body_passes_active": 2,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": true
+    },
+    {
+      "active_passes": 2,
+      "actor_foot_y": 530.0,
+      "body_allocation": {
+        "body_passes_active": 2,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": true
+    },
+    {
+      "active_passes": 1,
+      "actor_foot_y": 548.0,
+      "body_allocation": {
+        "body_passes_active": 1,
+        "body_passes_allocated": 2,
+        "cpu_alpha_bytes": 1572075,
+        "depth_texture_bytes": 5100,
+        "player_hide_move_enabled": false,
+        "production_has_mipmaps": true,
+        "raw_texture_size": "(1275, 1233)",
+        "rgb_lod": 1.19357266058245,
+        "status": "registered_independent_hd_body",
+        "surface_count": 1,
+        "surface_texture_bytes": 1572075,
+        "uniform_scale": 0.0910872462177628
+      },
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_rgba_common_quad_vs_original",
+      "opaque_original_background": true
+    },
+    {
+      "comparison": {
+        "alpha_support_difference": 0,
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      },
+      "fixture": "shared_core_no_low_resolution_residue",
+      "source_probe": "replace source sampler with opaque magenta"
+    },
+    {
+      "behind_changed": 677,
+      "controlled_legal_pose_not_manual_walk": true,
+      "fixture": "legal_road_foot_canopy_depth",
+      "front_changed": 0,
+      "id": "north_road_crown_01"
+    },
+    {
+      "behind_changed": 358,
+      "controlled_legal_pose_not_manual_walk": true,
+      "fixture": "legal_road_foot_canopy_depth",
+      "front_changed": 0,
+      "id": "north_road_crown_02"
+    },
+    {
+      "behind_changed": 376,
+      "controlled_legal_pose_not_manual_walk": true,
+      "fixture": "legal_road_foot_canopy_depth",
+      "front_changed": 0,
+      "id": "north_road_crown_03"
+    }
+  ],
+  "remaining_gates": [],
+  "limitations": [
+    "Only two contiguous Changping regions are HD",
+    "No automatic camera streaming",
+    "GPU byte accounting excludes other world assets, framebuffers and transient copies",
+    "v2 rejected in full",
+    "Artistic road marks are not verified traffic markings"
+  ],
+  "delivered_native_media": {
+    "video": {
+      "file": "preview/changping-north-continuous-native-12s.mp4",
+      "sha256": "d90f51b363d96d52166368659356d0d6c7896e73529f4c5c3df4182c0c667153",
+      "bytes": 830990,
+      "width": 1280,
+      "height": 720,
+      "frames": 240,
+      "fps": 20,
+      "duration_seconds": 12,
+      "complete_decode_exit": 0,
+      "origin": "Native JPEG quality0.92 frame capture then H264; not a GPU pixel-equality proof"
+    },
+    "full_map": {
+      "file": "preview/changping-full-map-native-950x1656.png",
+      "sha256": "a151d0657efbd18465a349a60c1ec4239a12e8fa32560b553f3390eb8ca26779",
+      "width": 950,
+      "height": 1656,
+      "origin": "Actual production World2D rendered by native SubViewport, no HUD/player, original whole source extent",
+      "coverage": "Only two contiguous HD regions; remainder original artwork"
+    }
+  },
+  "retained_failure_evidence": [
+    "preparation-first-narrow-route-failure: real2px AStar disconnected by overnarrow pavement trace; safe source-traced width corrected",
+    "gpu-first-failure:43 bilinear-alpha edge pixels and1LSB shared-core source dependence; corrected without altering original RGBA/registration",
+    "road-validation-overstrict-first-failure: old union tail need not fit local guard; source bounds remain checked",
+    "preview-first-failure: requested arbitrary point differs from production snapped grid endpoint; target corrected without changing arrival threshold or movement",
+    "legacy-east-source-readme-baseline-failure: accepted earlier documentation addition; single explicit accepted baseline update with original hash retained"
+  ],
+  "final_selection_fix": "Clear existing building selections before the north neutral-card early return; three passing assertions cover exclusive Wenli selection, Wenli-to-north and north-to-Wenli transitions. No render resource, transform or road changes.",
+  "publication_validation": {
+    "workflow": "Godot native migration",
+    "new_steps": [
+      "static north source",
+      "static registry and7 negative cases",
+      "headless lifecycle",
+      "actual key-input walk",
+      "xvfb GPU proof",
+      "four source-less small PCKs"
+    ],
+    "static_yaml_and_script_references": "passed",
+    "local_commands": "passed as individually reported",
+    "exact_head_remote_ci": "not run; repository publication pending coordinator",
+    "recording_in_ci": false
+  }
+}

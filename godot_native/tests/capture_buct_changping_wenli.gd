@@ -15,6 +15,7 @@ func _run() -> void:
 	if out.is_empty():out = ProjectSettings.globalize_path("user://changping-wenli-proof")
 	DirAccess.make_dir_recursive_absolute(out)
 	var campus = load("res://campuses/buct_changping/scenes/playable.tscn").instantiate()
+	campus.enable_wenli_hd_region = false;campus.enable_north_hd_region = false # Isolated #138 object contract remains unchanged.
 	root.add_child(campus)
 	await frame()
 	var body = campus.wenli_layer

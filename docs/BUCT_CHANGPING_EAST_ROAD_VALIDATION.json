@@ -5,7 +5,10 @@
   "unchanged_source_contracts": [
     {
       "path": "godot_native/campuses/buct_changping/README.md",
-      "sha256": "1c2f3c48d32b3c0c0169a27b5a5e94f075c39dc408a65bd4f794dd9a31d616ee"
+      "sha256": "3c511d43381ec00194a8b5f8b9bfa75d70751c88c4a3ea49f12b36dd008e167a",
+      "original_east_road_baseline_sha256": "1c2f3c48d32b3c0c0169a27b5a5e94f075c39dc408a65bd4f794dd9a31d616ee",
+      "accepted_baseline_tree": "d0d88bf3aaf93ec5cdb057f704b4d660b6506d04",
+      "baseline_note": "Only the accepted prior Wenli 28-file overlay appended its HD documentation. The original README bytes are not claimed unchanged. No README edit is made by the north region; all other road/physics/source contracts retain original hashes."
     },
     {
       "path": "godot_native/campuses/buct_changping/assets/FONT-LICENSE.txt",

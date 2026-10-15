@@ -13,7 +13,7 @@ func _run() -> void:
 	for item in original_data.objects:
 		if str(item.id) == "wenli_building": original = item
 	for cycle in range(2):
-		var campus = scene.instantiate();root.add_child(campus)
+		var campus = scene.instantiate();campus.enable_wenli_hd_region = false;campus.enable_north_hd_region = false;root.add_child(campus)
 		await process_frame;await physics_frame;await process_frame
 		var body = campus.get_node_or_null("RegisteredCampus/IndependentRegisteredObjects/WenliRGBA")
 		check(body != null, "Formal Changping scene installs independent Wenli body")

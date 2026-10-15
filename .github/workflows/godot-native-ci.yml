@@ -1,7 +1,7 @@
 name: Godot native migration
 on:
   pull_request:
-    paths: ['godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py']
+    paths: ['godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
   workflow_dispatch:
 jobs:
   native-parse-and-tests:
@@ -40,7 +40,10 @@ jobs:
       - name: Import, parse, and test native runtime
         env:
           GODOT_TEST_REPORT: native-test-report.json
-        run: node godot_native/tools/validate_native.mjs
+          BUCT_V4_QA_DIR: ${{ github.workspace }}/.buct-north-large-native-ci
+        run: |
+          mkdir -p "$BUCT_V4_QA_DIR"
+          node godot_native/tools/validate_native.mjs
       - name: Verify Wenli exterior source and GPU contracts
         run: |
           command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
@@ -50,6 +53,36 @@ jobs:
           export XDG_CONFIG_HOME="$BUCT_WENLI_QA_DIR/config" XDG_CACHE_HOME="$BUCT_WENLI_QA_DIR/cache"
           export XDG_DATA_HOME="$BUCT_WENLI_QA_DIR/data" XDG_STATE_HOME="$BUCT_WENLI_QA_DIR/state" XDG_RUNTIME_DIR="$BUCT_WENLI_QA_DIR/run"
           xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" bash scripts/test-buct-changping-wenli.sh godot_native proof
+      - name: Verify default Wenli high-detail region and lifecycle
+        run: |
+          export BUCT_HD_QA_DIR="$GITHUB_WORKSPACE/.buct-wenli-hd-ci"
+          bash scripts/test-buct-changping-hd-region.sh godot_native headless
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" bash scripts/test-buct-changping-hd-region.sh godot_native proof
+      - name: Verify adjacent north region source, lifecycle, route and GPU contracts
+        timeout-minutes: 8
+        run: |
+          node scripts/check-buct-changping-north-region.mjs
+          node scripts/check-buct-hd-region-registry.mjs
+          export BUCT_NORTH_QA_DIR="$GITHUB_WORKSPACE/.buct-north-ci"
+          mkdir -p "$BUCT_NORTH_QA_DIR"/{tmp,config,cache,data,state,run,gpu}
+          export TMPDIR="$BUCT_NORTH_QA_DIR/tmp" TEMP="$BUCT_NORTH_QA_DIR/tmp" TMP="$BUCT_NORTH_QA_DIR/tmp"
+          export XDG_CONFIG_HOME="$BUCT_NORTH_QA_DIR/config" XDG_CACHE_HOME="$BUCT_NORTH_QA_DIR/cache"
+          export XDG_DATA_HOME="$BUCT_NORTH_QA_DIR/data" XDG_STATE_HOME="$BUCT_NORTH_QA_DIR/state" XDG_RUNTIME_DIR="$BUCT_NORTH_QA_DIR/run"
+          timeout 180 bash scripts/test-buct-changping-north-region.sh headless
+          timeout 90 bash scripts/test-buct-changping-north-region.sh walk
+          timeout 180 xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" bash scripts/test-buct-changping-north-region.sh proof
+          timeout 120 python3 godot_native/tools/north_package_validation.py --output-root "$BUCT_NORTH_QA_DIR"
+      - name: Verify complete exported campus PCK
+        timeout-minutes: 5
+        run: |
+          export BUCT_EXPORTED_QA_DIR="$GITHUB_WORKSPACE/.buct-exported-ci"
+          mkdir -p "$BUCT_EXPORTED_QA_DIR"/{data,config,cache,state}
+          export XDG_DATA_HOME="$BUCT_EXPORTED_QA_DIR/data" XDG_CONFIG_HOME="$BUCT_EXPORTED_QA_DIR/config"
+          export XDG_CACHE_HOME="$BUCT_EXPORTED_QA_DIR/cache" XDG_STATE_HOME="$BUCT_EXPORTED_QA_DIR/state"
+          if test -f godot_native/campuses/buct/scripts/ambient_squirrel.gd; then export BUCT_REQUIRE_SQUIRREL=1; fi
+          godot --headless --audio-driver Dummy --path godot_native --export-pack 'Linux x86_64' "$BUCT_EXPORTED_QA_DIR/campuses.pck"
+          timeout 180 godot --headless --audio-driver Dummy --main-pack "$BUCT_EXPORTED_QA_DIR/campuses.pck" --script "$GITHUB_WORKSPACE/godot_native/tests/verify_exported_campuses.gd"
+          BUCT_EXPECT_SOURCELESS=1 timeout 60 godot --headless --audio-driver Dummy --main-pack "$BUCT_EXPORTED_QA_DIR/campuses.pck" --script "$GITHUB_WORKSPACE/godot_native/tests/test_buct_changping_source_texture.gd"
       - name: Compare native replay traces with original TypeScript models
         run: |
           node godot_native/tests/verify_source_model_parity.mjs
@@ -62,6 +95,34 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          name: changping-north-large-native-proof
+          path: .buct-north-large-native-ci/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
           name: wenli-exterior-proof
           path: .buct-wenli-ci/gpu/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wenli-hd-region-proof
+          path: .buct-wenli-hd-ci/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: changping-north-hd-proof
+          path: |
+            .buct-north-ci/gpu/
+            .buct-north-ci/*.json
+            .buct-north-ci/north-package-*/summary.json
+            .buct-north-ci/north-package-*/*/validation.log
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exported-campus-contract
+          path: .buct-exported-ci/result.json
           if-no-files-found: ignore

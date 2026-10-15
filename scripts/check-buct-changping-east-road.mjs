@@ -13,7 +13,7 @@ let checks = 0;
 const failures = [];
 function check(ok, text) { checks++; if (!ok) failures.push(text); }
 for (const entry of validation.unchanged_source_contracts) {
-  check(sha(read(entry.path)) === entry.sha256, `Unchanged exact-base source: ${entry.path}`);
+  check(sha(read(entry.path)) === entry.sha256, `${entry.accepted_baseline_tree ? "Exact accepted document baseline" : "Unchanged exact-base source"}: ${entry.path}`);
 }
 check(data.polygon_source_xy.length === 28, 'Original reviewed 28-vertex paved polygon');
 check(JSON.stringify(data.polygon_source_xy) === JSON.stringify(validation.reviewed_polygon), 'No shrinkage or changed reviewed road outline');
