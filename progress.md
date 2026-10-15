@@ -4687,3 +4687,12 @@ Public package regression is now reproducible via `python3 godot_native/tools/te
 - Preserve both complete branch histories and every progress entry; union all seven source suites and thirteen focused native registrations
 - Keep existing save/evidence isolation and all nonconflicting production blobs byte-identical to their owning approved branches
 - Complete combined-tree Native and Web CI is required before merge
+
+
+## 2026-10-13 — Changping Wenli independent exterior
+
+- Replace only Wenli's four legacy visual parts with one source-registered RGBA exterior and two complementary depth passes. Preserve all three original physics bodies, existing student, route, water and Zhejiang story.
+- Keep the complete generated body and clean-plate PNG bytes. Nine-point uniform registration RMS is 1.258 source pixels. Hidden ground uses only a bounded inferred paving sample; visible contour differences remain and this is not a surveyed courtyard or new walking area.
+- Frozen local validation: source 16/16; six serial native groups 3,186 assertions with zero failures (Wenli 1,032; First Teaching 942; Library 1,062; east road 41; Liu Lake 59; south bridge water 50); actual GPU 29/29; manual movement, alpha selection, close, entry return and re-entry passed. A minimal exported PCK loaded the real scene and binary masks successfully.
+- GPU complementary passes match the common-quad reference exactly; opaque gray/map composites differ by at most one channel level. The original standard Sprite transparent-RGBA comparison retains a maximum delta of eight with unchanged alpha support. Ground changes zero pixels outside its ownership mask.
+- Add reproducible source/GPU CI checks and evidence artifact. Exact-head full Native and Web CI remain pending at publication. No local full-story run, Windows runtime, physical-mobile acceptance, interior or TileMap conversion is claimed. Independent Draft only; squirrel PR #137 remains separate and unmerged.

@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-13",
+  "base_commit": "f08bdc4ebbee5a5c112e35f93e1cee13ee5636f2",
+  "engine": "Godot 4.6.3 stable official, Compatibility, Mesa llvmpipe",
+  "scope": "Changping Wenli exterior, minimal native campus stage; no story or other-campus runtime claim",
+  "source_checks": {
+    "passed": 16,
+    "total": 16,
+    "registration_generator_reproduced_bytes": true
+  },
+  "headless_regressions": {
+    "wenli": {
+      "checks": 1032,
+      "failures": 0,
+      "exit": 0
+    },
+    "first_teaching": {
+      "checks": 942,
+      "failures": 0,
+      "exit": 0
+    },
+    "library": {
+      "checks": 1062,
+      "failures": 0,
+      "exit": 0
+    },
+    "east_road": {
+      "checks": 41,
+      "failures": 0,
+      "exit": 0
+    },
+    "liuhu": {
+      "checks": 59,
+      "failures": 0,
+      "exit": 0
+    },
+    "south_bridge_water": {
+      "checks": 50,
+      "failures": 0,
+      "exit": 0
+    }
+  },
+  "headless_total": 3186,
+  "headless_failures": 0,
+  "native_gpu": {
+    "checks": 29,
+    "failures": 0,
+    "exit": 0,
+    "same_canonical_quad_rgba_max": 0,
+    "stationary_zoom": [
+      2.1,
+      4.8
+    ],
+    "standard_sprite_vs_canonical_raw_rgba_max": 8,
+    "standard_sprite_vs_canonical_alpha_support_difference": 0,
+    "opaque_gray_and_original_map_composite_max": 1,
+    "ground_owned_source_pixels": 7685,
+    "outside_ground_source_mask_changed": 0
+  },
+  "manual": {
+    "passed": true,
+    "actions": [
+      "Up movement",
+      "click roof opens Wenli exterior card",
+      "Esc closes card",
+      "Down movement",
+      "return entry",
+      "re-enter Changping"
+    ],
+    "new_courtyard_navigation": false
+  },
+  "preview": {
+    "type": "automated native actual physics and production pointer",
+    "duration_seconds": 11.15,
+    "frames": 223,
+    "fps": 20,
+    "resolution": [
+      1280,
+      720
+    ],
+    "walkable_samples": 22,
+    "total_samples": 22,
+    "hidden_ground_labeled_inferred": true,
+    "bytes": 390840,
+    "sha256": "eb054d80e9373f6aae61ea7de871ecced7dae567bd5b59ccac957a174fae04b5"
+  },
+  "export_pack": {
+    "export_exit": 0,
+    "load_exit": 0,
+    "actual_packed_scene_probe_passed": true,
+    "binary_masks_loaded": true
+  },
+  "cost": {
+    "visual_nodes_added": 4,
+    "legacy_visual_nodes_removed": 4,
+    "net_nodes": 0,
+    "original_collision_bodies": 3,
+    "body_passes_allocated": 2,
+    "body_passes_active_max": 2,
+    "body_rgba_base_bytes": 6287760,
+    "body_rgba_mip_bytes": 8380536,
+    "ground_rgb_base_bytes": 4721220,
+    "ground_rgb_mip_bytes": 6293100,
+    "cpu_alpha_bytes": 1571940,
+    "surface_r8_bytes": 1571940,
+    "depth_rf_bytes": 24600,
+    "source_mask_r8_bytes": 11990,
+    "meaning": "logical decoded data, not measured driver VRAM"
+  },
+  "static_overlap": {
+    "original_canopies_tested": 10,
+    "east_road_foliage_tested": 9,
+    "intersecting_source_pixels": 0
+  },
+  "limitations": [
+    "Hidden ground is inferred from a bounded generated plain paving sample, not surveyed courtyard ground.",
+    "Registration RMS is 1.258 source pixels; some contour differences remain as a small dark ground border.",
+    "High-confidence courtyard cores are protected; ambiguous masonry/shadow edges are not a full pixel-perfect ground claim.",
+    "Original standard Sprite transparent raw RGBA max delta8 is retained in report; actual opaque composites differ by at most1.",
+    "No complete story, Windows runtime or mobile device validation claimed."
+  ]
+}
