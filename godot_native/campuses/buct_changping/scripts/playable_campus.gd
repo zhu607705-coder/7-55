@@ -4,6 +4,8 @@ const FIRST_TEACHING_PATCH = preload("res://campuses/buct_changping/scripts/firs
 var first_teaching_layer: Node2D
 const LIBRARY_PATCH = preload("res://campuses/buct_changping/scripts/library_patch.gd")
 var library_layer: Node2D
+const WENLI_PATCH = preload("res://campuses/buct_changping/scripts/wenli_patch.gd")
+var wenli_layer: Node2D
 const EAST_ROAD_EXTENSION = preload("res://campuses/buct_changping/scripts/east_road_extension.gd")
 var east_road_extension: Node2D
 const LIUHU_WATER = preload("res://campuses/buct_changping/scripts/liuhu_water_surface.gd")
@@ -87,6 +89,7 @@ func _ready() -> void:
 	_prepare_depth_layers(building_data)
 	first_teaching_layer = FIRST_TEACHING_PATCH.install(world, objects, building_data)
 	library_layer = LIBRARY_PATCH.install(world, objects, building_data)
+	wenli_layer = WENLI_PATCH.install(world, objects, building_data)
 	var landmark_ids: Array=[]
 	for landmark in data.landmarks: landmark_ids.append(str(landmark.id))
 	for item in building_data.objects:
@@ -177,6 +180,7 @@ func _prepare_depth_layers(building_data: Dictionary) -> void:
 			original.hide()
 
 func landmark_at(point: Vector2) -> String:
+	if is_instance_valid(wenli_layer) and wenli_layer.hit_test_alpha(point):return "wenli_building"
 	if is_instance_valid(library_layer) and library_layer.hit_test_alpha(point):return "library"
 	if is_instance_valid(first_teaching_layer) and first_teaching_layer.hit_test_alpha(point):return "main_building"
 	for id in landmark_hit_polys:
@@ -327,8 +331,14 @@ func return_to_gate() -> void:
 	status.text="已回到南门"
 
 func show_landmark(id: String) -> void:
+	if is_instance_valid(wenli_layer):wenli_layer.set_selected(id == "wenli_building")
 	if is_instance_valid(library_layer):library_layer.set_selected(id == "library")
 	if is_instance_valid(first_teaching_layer):first_teaching_layer.set_selected(id == "main_building")
+	if id == "wenli_building":
+		info_id = id;info_title.text = "文理楼"
+		info_text.text = "庭院式建筑外观。沿周边已开放步道观看，院内暂未开放行走。"
+		info_panel.show()
+		return
 	for item in data.landmarks:
 		if str(item.id)==id:
 			info_id=id;info_title.text=str(item.name);info_text.text=str(item.description)
@@ -338,6 +348,7 @@ func show_landmark(id: String) -> void:
 			return
 
 func close_info() -> void:
+	if is_instance_valid(wenli_layer):wenli_layer.set_selected(false)
 	if is_instance_valid(lake_surface):lake_surface.set_selected(false)
 	if is_instance_valid(south_bridge_surface):south_bridge_surface.set_selected(false)
 	if is_instance_valid(library_layer):library_layer.set_selected(false)
@@ -474,6 +485,7 @@ func _process(delta: float) -> void:
 	if is_instance_valid(visitor):
 		if is_instance_valid(first_teaching_layer):first_teaching_layer.update_actor_foot(visitor.global_position.y)
 		if is_instance_valid(library_layer):library_layer.update_actor_foot(visitor.global_position.y)
+		if is_instance_valid(wenli_layer):wenli_layer.update_actor_foot(visitor.global_position.y)
 		canopy_locator.position=visitor.position+Vector2(0,1)
 		canopy_locator.visible=not overview and is_head_under_canopy(visitor.position)
 		if overview:
