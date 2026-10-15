@@ -527,13 +527,15 @@ func _process(delta: float) -> void:
 		if State.d.native.scene!=scene_id or str(State.d.qizhenLake.zone)!=last_zone:
 			refresh_world(); return
 		_sync_player()
+	# Settle on-foot animation once, after automatic and manual movement.
+	var walk_start := player
 	if scene_id == "dorm_hub" and not State.d.actOne.get("controlsInstalled",false):
 		move_target = Vector2.INF
 		axis = Vector2.ZERO
 		if State.d.actOne.get("exerciseStarted",false):
 			var pace_x := 245 + (520 + sin(Time.get_ticks_msec()/900.0)*130)*.5
 			var pace_position := Vector2(pace_x,player.y)
-			if can_stand(pace_position): player = pace_position; walk_clock += delta; facing = "side"; _sync_player()
+			if can_stand(pace_position): player = pace_position; _sync_player()
 	# A zero-length route waypoint still needs its normal completion step.
 	if axis.length_squared() > 0 or not _floor_route.is_empty():
 		if mobile_exploration and _floor_route.is_empty(): pan_offset=Vector2.ZERO
@@ -560,13 +562,15 @@ func _process(delta: float) -> void:
 				if can_stand(player+Vector2(displacement.x,0)): player.x += displacement.x
 				if can_stand(player+Vector2(0,displacement.y)): player.y += displacement.y
 		if old.distance_to(player) > 0:
-			walk_clock += delta
-			player_flip = axis.x < 0
-			facing = "side" if absf(axis.x) > absf(axis.y) else "up" if axis.y < 0 else "down"
 			_sync_player()
 			if scene_id == "dorm_hub" and State.d.actOne.get("movementEnabled",false) and not _manual_sent:
 				_manual_sent = true
 				State.act("c2_manual_input",{"moved":true,"distance":old.distance_to(player)*2,"input":_input_kind})
+	var walked := player-walk_start
+	if walked.length_squared() > 0:
+		walk_clock += delta
+		player_flip = walked.x < 0
+		facing = "side" if absf(walked.x) > absf(walked.y) else "up" if walked.y < 0 else "down"
 	else: walk_clock = 0.0
 	nearby = {}
 	var nearest := INF
@@ -1182,7 +1186,8 @@ func _notification(what: int) -> void:
 	elif what==NOTIFICATION_WM_WINDOW_FOCUS_OUT: _cancel_table_drag()
 	elif what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree(): _cancel_table_drag()
 	elif what==NOTIFICATION_RESIZED: _cancel_table_drag()
-	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and (mobile_exploration or not kayak_mouse_gesture.is_empty()): cancel_exploration_gestures()
+	# Desktop clicks and compact gestures share the same focus-loss boundary.
+	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT: cancel_exploration_gestures()
 
 func cancel_exploration_gestures() -> void:
 	_cancel_table_drag()
