@@ -1,0 +1,421 @@
+{
+  "schema": "buct_hd_region_registry_v1",
+  "campus": "buct_changping",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "canvas_size": [
+    950,
+    1656
+  ],
+  "grid": {
+    "core_source_pixels": 216,
+    "overlap_source_pixels": 24,
+    "runtime_texels_per_source_pixel": 5,
+    "source_collar_pixels": 2,
+    "transition_source_pixels": 10
+  },
+  "residency": {
+    "max_regions": 6,
+    "maximum_region_layer_bytes": 57597600,
+    "maximum_single_region_layer_bytes": 12000000,
+    "runtime_admission_enforced": true,
+    "runtime_streaming_implemented": false,
+    "body_bytes_separate": true,
+    "excluded": [
+      "original map",
+      "other buildings and actors",
+      "framebuffers",
+      "transient validation buffers"
+    ],
+    "known_registered_region_body_and_layer_bytes": 92169031,
+    "known_region_layer_bytes": 52283306,
+    "known_independent_body_bytes": 39885725,
+    "display_residency_hook": "set_west_hd_resident(wanted); set_north_large_hd_resident(wanted); set_north_west_upper_hd_resident(wanted); original logical geometry remains independent"
+  },
+  "regions": [
+    {
+      "id": "wenli_east",
+      "status": "accepted",
+      "default_enabled": true,
+      "adapter": "legacy_wenli",
+      "profile": "res://campuses/buct_changping/data/wenli_hd_region.json",
+      "roi_xywh": [
+        630,
+        615,
+        240,
+        240
+      ],
+      "core_xywh": [
+        642,
+        627,
+        216,
+        216
+      ],
+      "runtime_size": [
+        1200,
+        1200
+      ],
+      "ground_asset": "res://campuses/buct_changping/assets/wenli_hd_ground.png",
+      "shadow_asset": "res://campuses/buct_changping/data/wenli_hd_shadow.r8.bin",
+      "independent_building_owner_ids": [
+        "wenli_building"
+      ],
+      "foreground_owner_ids": [
+        "east_road_east_leaf_edge_01",
+        "east_road_east_leaf_edge_02",
+        "east_road_east_leaf_edge_03",
+        "east_road_east_leaf_edge_04",
+        "east_road_east_leaf_edge_05",
+        "east_road_east_leaf_edge_06",
+        "east_road_east_leaf_edge_07",
+        "east_road_west_leaf_edge_01",
+        "east_road_west_leaf_edge_02"
+      ],
+      "region_layer_gpu_bytes": 9599600,
+      "independent_body_gpu_bytes": 9977076,
+      "runtime_default_flag": "enable_wenli_hd_region"
+    },
+    {
+      "id": "north_adjacent",
+      "status": "accepted",
+      "default_enabled": true,
+      "adapter": "registered_hd_region_v2",
+      "profile": "res://campuses/buct_changping/data/north_hd_region.json",
+      "roi_xywh": [
+        630,
+        399,
+        240,
+        240
+      ],
+      "core_xywh": [
+        642,
+        411,
+        216,
+        216
+      ],
+      "runtime_size": [
+        1200,
+        1200
+      ],
+      "ground_asset": "res://campuses/buct_changping/assets/north_hd_ground.png",
+      "shadow_asset": null,
+      "independent_building_owner_ids": [
+        "north_sports_hall"
+      ],
+      "foreground_owner_ids": [
+        "north_road_crown_01",
+        "north_road_crown_02",
+        "north_road_crown_03"
+      ],
+      "region_layer_gpu_bytes": 8587240,
+      "independent_body_gpu_bytes": 9956875,
+      "runtime_default_flag": "enable_north_hd_region",
+      "acceptance_report": "docs/BUCT_CHANGPING_NORTH_HD_REGION_VALIDATION.json"
+    },
+    {
+      "id": "west_north",
+      "status": "accepted",
+      "default_enabled": true,
+      "adapter": "registered_hd_region_v3",
+      "profile": "res://campuses/buct_changping/data/west_north_hd_region.json",
+      "roi_xywh": [
+        398,
+        399,
+        256,
+        240
+      ],
+      "core_xywh": [
+        426,
+        411,
+        216,
+        216
+      ],
+      "runtime_size": [
+        1280,
+        1200
+      ],
+      "ground_asset": "res://campuses/buct_changping/assets/west_north_hd_ground.png",
+      "shadow_asset": null,
+      "independent_building_owner_ids": [
+        "teaching_2"
+      ],
+      "reused_independent_body_ids": [],
+      "foreground_owner_ids": [],
+      "region_layer_gpu_bytes": 9053411,
+      "independent_body_gpu_bytes": 9984162,
+      "runtime_default_flag": "enable_west_hd_regions",
+      "atomic_group_id": "west_adjacent_pair",
+      "acceptance_report": "docs/BUCT_CHANGPING_WEST_HD_VALIDATION.json"
+    },
+    {
+      "id": "west_south",
+      "status": "accepted",
+      "default_enabled": true,
+      "adapter": "registered_hd_region_v3",
+      "profile": "res://campuses/buct_changping/data/west_south_hd_region.json",
+      "roi_xywh": [
+        398,
+        615,
+        256,
+        240
+      ],
+      "core_xywh": [
+        426,
+        627,
+        216,
+        216
+      ],
+      "runtime_size": [
+        1280,
+        1200
+      ],
+      "ground_asset": "res://campuses/buct_changping/assets/west_south_hd_ground.png",
+      "shadow_asset": null,
+      "independent_building_owner_ids": [],
+      "reused_independent_body_ids": [
+        "library"
+      ],
+      "foreground_owner_ids": [
+        "west_library_approach_crown_01",
+        "west_library_approach_crown_02",
+        "west_library_approach_crown_03"
+      ],
+      "region_layer_gpu_bytes": 9149791,
+      "independent_body_gpu_bytes": 0,
+      "runtime_default_flag": "enable_west_hd_regions",
+      "atomic_group_id": "west_adjacent_pair",
+      "acceptance_report": "docs/BUCT_CHANGPING_WEST_HD_VALIDATION.json"
+    },
+    {
+      "id": "north_large",
+      "status": "accepted",
+      "default_enabled": true,
+      "adapter": "registered_hd_region_v4",
+      "profile": "res://campuses/buct_changping/data/north_large_hd_region.json",
+      "roi_xywh": [
+        350,
+        167,
+        384,
+        256
+      ],
+      "core_xywh": [
+        362,
+        179,
+        360,
+        232
+      ],
+      "runtime_size": [
+        1536,
+        1024
+      ],
+      "runtime_texels_per_source_pixel": 4,
+      "effective_native_detail_density": 3.9722207553296323,
+      "ground_asset": "res://campuses/buct_changping/assets/north_large_hd_ground.png",
+      "shadow_asset": null,
+      "independent_building_owner_ids": [],
+      "retained_original_body_owner_ids": [
+        "hill_south_block",
+        "north_sports_west_shelter"
+      ],
+      "foreground_owner_ids": [],
+      "region_layer_gpu_bytes": 9689195,
+      "independent_body_gpu_bytes": 0,
+      "source_fallback_core_pixels": 5016,
+      "hd_terrain_core_source_pixels": 78504,
+      "runtime_default_flag": "enable_north_large_hd_region",
+      "acceptance_report": "docs/BUCT_CHANGPING_NORTH_LARGE_HD_VALIDATION.json"
+    },
+    {
+      "id": "north_west_upper",
+      "status": "accepted",
+      "default_enabled": true,
+      "adapter": "registered_hd_region_v5",
+      "profile": "res://campuses/buct_changping/data/north_west_upper_hd_region.json",
+      "roi_xywh": [
+        118,
+        167,
+        256,
+        256
+      ],
+      "core_xywh": [
+        130,
+        179,
+        232,
+        232
+      ],
+      "runtime_size": [
+        1024,
+        1024
+      ],
+      "runtime_texels_per_source_pixel": 4,
+      "effective_native_detail_density": 4.885666278594716,
+      "ground_asset": "res://campuses/buct_changping/assets/north_west_upper_hd_ground.png",
+      "shadow_asset": null,
+      "independent_building_owner_ids": [
+        "dorm_nw_02"
+      ],
+      "retained_original_body_owner_ids": [
+        "dorm_nw_01",
+        "dorm_nw_03",
+        "dorm_nw_04",
+        "dorm_north_low_annex",
+        "dorm_w_01",
+        "dorm_w_02",
+        "hill_south_block"
+      ],
+      "foreground_owner_ids": [],
+      "region_layer_gpu_bytes": 6204069,
+      "independent_body_gpu_bytes": 9967612,
+      "source_fallback_core_pixels": 8268,
+      "hd_terrain_core_source_pixels": 45556,
+      "runtime_default_flag": "enable_north_west_upper_hd_region",
+      "acceptance_report": "docs/BUCT_CHANGPING_NORTH_WEST_UPPER_HD_VALIDATION.json"
+    }
+  ],
+  "adjacencies": [
+    {
+      "a": "north_adjacent",
+      "b": "wenli_east",
+      "shared_source_xywh": [
+        630,
+        615,
+        240,
+        24
+      ],
+      "core_boundary_source_y": 627,
+      "seam_status": "accepted_gpu",
+      "seam_rule": "North region is the sole opaque owner inside shared band while legacy Wenli is active. Smoothstep RGB mix of two high-detail sources; no old low-resolution source rim in the shared core.",
+      "seam_validation": {
+        "file": "docs/BUCT_CHANGPING_NORTH_HD_REGION_VALIDATION.json",
+        "sha256": "e4740b84dd7ea74b760864db95acb1e645633203fd70f8b314f3959c00f20db2",
+        "fixture": "shared_core_no_low_resolution_residue",
+        "max_channel_delta": 0,
+        "changed_pixels": 0
+      }
+    },
+    {
+      "a": "west_north",
+      "b": "north_adjacent",
+      "shared_source_xywh": [
+        630,
+        399,
+        24,
+        240
+      ],
+      "seam_status": "accepted_gpu",
+      "seam_rule": "Single opaque directed owner; separable four-source RGB corner; no source RGB in active cores.",
+      "seam_validation": {
+        "file": "docs/BUCT_CHANGPING_WEST_HD_VALIDATION.json",
+        "sha256": "712e2b6739ce3201c6a33070caa4e74a2fca3537cf36b107f7aef58afcdc9a43",
+        "fixture": "accepted_all_neighbors_NW_core_source_poison",
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      }
+    },
+    {
+      "a": "west_south",
+      "b": "wenli_east",
+      "shared_source_xywh": [
+        630,
+        615,
+        24,
+        240
+      ],
+      "seam_status": "accepted_gpu",
+      "seam_rule": "Single opaque directed owner; separable four-source RGB corner; no source RGB in active cores.",
+      "seam_validation": {
+        "file": "docs/BUCT_CHANGPING_WEST_HD_VALIDATION.json",
+        "sha256": "712e2b6739ce3201c6a33070caa4e74a2fca3537cf36b107f7aef58afcdc9a43",
+        "fixture": "accepted_all_neighbors_SW_core_source_poison",
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      }
+    },
+    {
+      "a": "west_north",
+      "b": "west_south",
+      "shared_source_xywh": [
+        398,
+        615,
+        256,
+        24
+      ],
+      "seam_status": "accepted_gpu",
+      "seam_rule": "Single opaque directed owner; separable four-source RGB corner; no source RGB in active cores.",
+      "seam_validation": {
+        "file": "docs/BUCT_CHANGPING_WEST_HD_VALIDATION.json",
+        "sha256": "712e2b6739ce3201c6a33070caa4e74a2fca3537cf36b107f7aef58afcdc9a43",
+        "fixture": "accepted_all_neighbors_NW_core_source_poison",
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      }
+    },
+    {
+      "a": "north_large",
+      "b": "west_north",
+      "shared_source_xywh": [
+        398,
+        399,
+        256,
+        24
+      ],
+      "seam_status": "accepted_gpu",
+      "seam_rule": "One opaque northern ground owner reconstructs the accepted lower mix. Full owner-zero new core has no source/backing residue; original buildings remain separately excluded.",
+      "seam_validation": {
+        "file": "docs/BUCT_CHANGPING_NORTH_LARGE_HD_VALIDATION.json",
+        "sha256": "97d809a6d2ec73dc49c2d71bf782f06e5361d15a3f532797cfa389e29f3dddb6",
+        "fixture": "entire_owner_zero_core_source_poison",
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      }
+    },
+    {
+      "a": "north_large",
+      "b": "north_adjacent",
+      "shared_source_xywh": [
+        630,
+        399,
+        104,
+        24
+      ],
+      "seam_status": "accepted_gpu",
+      "seam_rule": "One opaque northern ground owner reconstructs the accepted lower mix. Full owner-zero new core has no source/backing residue; original buildings remain separately excluded.",
+      "seam_validation": {
+        "file": "docs/BUCT_CHANGPING_NORTH_LARGE_HD_VALIDATION.json",
+        "sha256": "97d809a6d2ec73dc49c2d71bf782f06e5361d15a3f532797cfa389e29f3dddb6",
+        "fixture": "entire_owner_zero_core_source_poison",
+        "changed_pixels": 0,
+        "max_channel_delta": 0
+      }
+    },
+    {
+      "a": "north_west_upper",
+      "b": "north_large",
+      "shared_source_xywh": [
+        350,
+        167,
+        24,
+        256
+      ],
+      "seam_status": "accepted_normal_render",
+      "seam_rule": "Single horizontal opaque owner with shared indexed original-body exclusion; normal rendered seam and prior strict V4 proof retained",
+      "seam_validation": {
+        "file": "docs/BUCT_CHANGPING_NORTH_WEST_UPPER_HD_VALIDATION.json",
+        "sha256": "569c10e19a5674f0ceb6a125599558ef9f807a530920e7617fb83b10a0dda984",
+        "scope": "normal_default_render_only"
+      }
+    }
+  ],
+  "legacy_grid_scope": "Legacy four regions use their unchanged five-texel grid. V4/V5 use explicit four-texel runtime grids, with separately recorded genuine original density.",
+  "coverage": {
+    "previous_hd_terrain_core_source_pixels": 265128,
+    "new_logical_core_source_pixels": 53824,
+    "unaccepted_original_body_core_source_pixels": 8268,
+    "new_hd_terrain_core_source_pixels": 45556,
+    "total_hd_terrain_core_source_pixels": 310684,
+    "canvas_source_pixels": 1573200,
+    "changping_hd_terrain_core_percent": 19.748538011695906,
+    "haidian_hd_terrain_core_percent": 0,
+    "chaoyang_hd_terrain_core_percent": 0,
+    "new_independent_rgba_bodies_this_phase": 1
+  }
+}

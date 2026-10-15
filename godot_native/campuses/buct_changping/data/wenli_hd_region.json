@@ -1,0 +1,338 @@
+{
+  "schema": "buct_wenli_hd_region_v1",
+  "quality_approved": true,
+  "approval_scope": "CPU source geometry, constrained texture registration and visible art approved; native tests are tracked separately.",
+  "base_head": "72fcafd285dd388eed2735be71b60fa23f428548",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "body_sha256": "29acba79fa0ba17512350d3db377a6b8e2f675ef683f59754d305e2dc04f6afc",
+  "immutable_body_transform": {
+    "scale": 0.08707916874086201,
+    "rotation_degrees": 0,
+    "origin": [
+      654.170110833,
+      735.708489019
+    ],
+    "raw_size": [
+      1230,
+      1278
+    ]
+  },
+  "roi_xywh": [
+    630,
+    615,
+    240,
+    240
+  ],
+  "core_xywh": [
+    642,
+    627,
+    216,
+    216
+  ],
+  "runtime_size": [
+    1200,
+    1200
+  ],
+  "texels_per_source_pixel": 5,
+  "native_generated_size": [
+    1254,
+    1254
+  ],
+  "ground_asset": "res://campuses/buct_changping/assets/wenli_hd_ground.png",
+  "ground_png_sha256": "2f1a8caa6e406cd8ad16113acf402b94a220013aeea69650f9056c7ad3e3ac63",
+  "ground_rgba_sha256": "30a828313e2f7649b4fd99db07b4f5b631c2d119bcebfdc4cee9e93c42298ff0",
+  "shadow_asset": "res://campuses/buct_changping/data/wenli_hd_shadow.r8.bin",
+  "shadow_r8_sha256": "5dd2f13b01127c909927c54dece86e3d8a66f6c181d5d6e15eb4b65056b956ed",
+  "shadow_opacity": 0.28,
+  "foreground": [
+    {
+      "id": "east_road_east_leaf_edge_01",
+      "bbox_xywh": [
+        741,
+        661,
+        9,
+        17
+      ],
+      "baseline_y": 680,
+      "spans_sha256": "ea6cab5c9fa41a60122779e261268da7204f635e2da04713ddbe525462fd04b3"
+    },
+    {
+      "id": "east_road_east_leaf_edge_02",
+      "bbox_xywh": [
+        749,
+        683,
+        8,
+        18
+      ],
+      "baseline_y": 701,
+      "spans_sha256": "979c63099732bcd9a59dabfa444baf401f92416cb10c7643f91f2c9683d41846"
+    },
+    {
+      "id": "east_road_east_leaf_edge_03",
+      "bbox_xywh": [
+        753,
+        701,
+        12,
+        21
+      ],
+      "baseline_y": 722,
+      "spans_sha256": "710a288e82c325e7ccbb557ad859c5dba955d5d637a97deef7b7ef481aa59319"
+    },
+    {
+      "id": "east_road_east_leaf_edge_04",
+      "bbox_xywh": [
+        760,
+        722,
+        12,
+        22
+      ],
+      "baseline_y": 744,
+      "spans_sha256": "68c8a76eee3741e7c75ea1f9fbd3006c2f9394d486ead33024752ef125fa001a"
+    },
+    {
+      "id": "east_road_east_leaf_edge_05",
+      "bbox_xywh": [
+        768,
+        744,
+        9,
+        20
+      ],
+      "baseline_y": 764,
+      "spans_sha256": "0fa08923808bc3e34b2dff1da24e13a907cecd50345bd21a7baef442090b1bca"
+    },
+    {
+      "id": "east_road_east_leaf_edge_06",
+      "bbox_xywh": [
+        772,
+        764,
+        11,
+        21
+      ],
+      "baseline_y": 785,
+      "spans_sha256": "dbc5f8bd428abe00c8e0a603249a96fdd1de63b0245afe5ec94dd54898551b8f"
+    },
+    {
+      "id": "east_road_east_leaf_edge_07",
+      "bbox_xywh": [
+        777,
+        785,
+        9,
+        11
+      ],
+      "baseline_y": 796,
+      "spans_sha256": "e32621e35abf09763ca71c95ef791772574cc9b256a0ff0219062205105731b2"
+    },
+    {
+      "id": "east_road_west_leaf_edge_01",
+      "bbox_xywh": [
+        753,
+        833,
+        6,
+        9
+      ],
+      "baseline_y": 842,
+      "spans_sha256": "d2749511b89d11c021a6937608e1fa2a98e56f8b0ea67e2e2e9f525ec0fba707"
+    },
+    {
+      "id": "east_road_west_leaf_edge_02",
+      "bbox_xywh": [
+        747,
+        842,
+        12,
+        16
+      ],
+      "baseline_y": 858,
+      "spans_sha256": "9d5e97d3f99046b7d492e6f29b7c5f5bfa5347143529ce7b3282a5a54a79334e"
+    }
+  ],
+  "registration": {
+    "uniform_raw_to_world_scale": 0.19138755980861244,
+    "uniform_raw_to_world_origin": [
+      630,
+      615
+    ],
+    "local_texture_correction": {
+      "status": "B_only_observations_preserve_A_before_fit",
+      "uniform_raw_scale": 0.19138755980861244,
+      "uniform_raw_origin": [
+        630,
+        615
+      ],
+      "compact_residual_support_rect_xywh": [
+        684,
+        750,
+        62,
+        72
+      ],
+      "support_rule": "One continuous C1-tapered displacement field shared by all RGB. Exactly zero outside this rectangle and at its edge; no material donor patches. Curbs, roads and all nine foreground masks are outside it.",
+      "observation_uncertainty_source_px": 0.3,
+      "records": [
+        {
+          "id": "A_west_planted_boundary",
+          "target_source_xy": [
+            693.1,
+            768.0
+          ],
+          "observed_candidate_source_xy": [
+            693.1,
+            768.0
+          ],
+          "role": "zero-displacement preservation constraint; A color proxy alone does not justify correction"
+        },
+        {
+          "id": "A_east_planted_boundary",
+          "target_source_xy": [
+            700.4,
+            768.0
+          ],
+          "observed_candidate_source_xy": [
+            700.4,
+            768.0
+          ],
+          "role": "zero-displacement preservation constraint; A color proxy alone does not justify correction"
+        },
+        {
+          "id": "A_core",
+          "target_source_xy": [
+            697.0,
+            769.0
+          ],
+          "observed_candidate_source_xy": [
+            697.0,
+            769.0
+          ],
+          "role": "zero-displacement preservation constraint; A color proxy alone does not justify correction"
+        },
+        {
+          "id": "B_top_left_boundary",
+          "target_source_xy": [
+            715.0,
+            776.0
+          ],
+          "observed_candidate_source_xy": [
+            715.0,
+            776.0
+          ]
+        },
+        {
+          "id": "B_top_right_boundary",
+          "target_source_xy": [
+            729.0,
+            776.0
+          ],
+          "observed_candidate_source_xy": [
+            728.7,
+            776.0
+          ]
+        },
+        {
+          "id": "B_core",
+          "target_source_xy": [
+            723.0,
+            779.0
+          ],
+          "observed_candidate_source_xy": [
+            723.0,
+            779.0
+          ]
+        },
+        {
+          "id": "B_lower_tip",
+          "target_source_xy": [
+            719.5,
+            795.0
+          ],
+          "observed_candidate_source_xy": [
+            719.5,
+            792.3
+          ]
+        },
+        {
+          "id": "C_core_unchanged",
+          "target_source_xy": [
+            692.0,
+            791.0
+          ],
+          "observed_candidate_source_xy": [
+            692.0,
+            791.0
+          ]
+        },
+        {
+          "id": "inferred_floor_south_recovery",
+          "target_source_xy": [
+            720.0,
+            810.0
+          ],
+          "observed_candidate_source_xy": [
+            720.0,
+            810.0
+          ]
+        }
+      ],
+      "constraints": "Boundary and floor-recovery points are zero-displacement regularization constraints, not claims of matched new landmarks. Three named courtyard boundary observations are based on the saved source-polygon overlay. No heldout road or canopy observation enters the fit. No color threshold changes.",
+      "previous_unapplied_A_observations_retained": [
+        {
+          "id": "A_west_planted_boundary",
+          "target_source_xy": [
+            693.1,
+            768.0
+          ],
+          "observed_candidate_source_xy": [
+            693.65,
+            768.0
+          ]
+        },
+        {
+          "id": "A_east_planted_boundary",
+          "target_source_xy": [
+            700.4,
+            768.0
+          ],
+          "observed_candidate_source_xy": [
+            700.4,
+            768.0
+          ]
+        },
+        {
+          "id": "A_core",
+          "target_source_xy": [
+            697.0,
+            769.0
+          ],
+          "observed_candidate_source_xy": [
+            697.2,
+            768.8
+          ]
+        }
+      ],
+      "selected_smoothing": 10,
+      "selection_rule": "First tested regularization with coarse distortion gate pass, in predeclared ascending set [1,5,10,25,50]; no heldout or courtyard coverage metric used to select."
+    },
+    "dense_validation": {
+      "sample_count": 1440000,
+      "maximum_displacement_source_px": 2.603746608280734,
+      "jacobian_min_singular": 0.8022383251209283,
+      "jacobian_max_singular": 1.211555784499691,
+      "jacobian_min_determinant": 0.7955972085240632,
+      "maximum_adjacent_displacement_delta_per_source_px": 0.21138791388504363,
+      "grid": [
+        1200,
+        1200
+      ],
+      "source_pitch": 0.2,
+      "distortion_gate_pass": true
+    }
+  },
+  "raw_provenance_hashes": {
+    "v1": "73744c50370cebbcaa0bb6fd5d010370e8b844309a63dadea1e2504c0e8c5ab3",
+    "v2_local_revision": "eab760185cb767964c8240c55b5e68526f5cb4a163e9444f658fb73d4098faa3"
+  },
+  "limits": [
+    "Only3.66percent of the original campus source area is enhanced.",
+    "The source-to-new clarity transition remains visible; this is not a seamless whole-campus4K replacement.",
+    "Original foreground source-pixel alpha silhouettes and depths remain unchanged.",
+    "CourtyardA retains an approximately half-source-pixel edge discrepancy; the visible aperture contains foliage and soil.",
+    "Hidden under-building ground is inferred."
+  ]
+}

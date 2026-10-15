@@ -1,0 +1,1239 @@
+{
+  "schema": "buct_wenli_hd_region_acceptance_v1",
+  "base_head": "72fcafd285dd388eed2735be71b60fa23f428548",
+  "scope": "Default bounded Changping outdoor region; no world geometry change",
+  "approval_status": "All scoped local acceptance passed; exact-head full Native/Web CI remains publication validation",
+  "immutable_resource_sha256": {
+    "campuses/buct_changping/assets/approved-changping.png": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+    "campuses/buct_changping/assets/wenli_body.png": "29acba79fa0ba17512350d3db377a6b8e2f675ef683f59754d305e2dc04f6afc",
+    "campuses/buct_changping/data/wenli_registration.json": "8d905082e7150c3bab850b262eff3c63f414f9cdafbdb9454f8879fe19aa6821",
+    "campuses/buct_changping/data/wenli_surfaces.r8.bin": "bd97497765e526fe9cbaa977df2542eb3a66cd93574fc37edc4b1b2179085b2b",
+    "campuses/buct_changping/data/wenli_source_removal.r8.bin": "e7094e44a373124d707a43718379bc88a636578cc09447684a202fb7ec92655c",
+    "campuses/buct_changping/data/playable_route.json": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6",
+    "campuses/buct_changping/data/layers.json": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88",
+    "campuses/buct_changping/data/east_road_extension.json": "5a68e34d0bc84d68bafc3a8a7fafa4b629fdd19e1a4433354704432eeb3e6254",
+    "campuses/buct_changping/scripts/campus_visitor.gd": "d175ff4eaa927e9adcaad8f9f265317efb0b2c55bef8dfd22399b6905d2997a4",
+    "campuses/buct_changping/scripts/wenli_building.gd": "2ae89b1adcc4cb70b0d632c649c3e90b8d5a0e1a5c4637eaf8fa1d36d3065ad1",
+    "campuses/buct_changping/shaders/wenli_depth.gdshader": "8918da73a6cf2a876fd1b12d02bbdee2650324b19552af9cc3b40a15e9e7eafd",
+    "campuses/buct_shared/student/data/student-movement-profile.json": "6319bf1947664fcafe2a8fe8e8fbffc800a43abc3201265217eaf24ed9ef0eac"
+  },
+  "source_checks": {
+    "new": {
+      "passed": 28,
+      "total": 28
+    },
+    "legacy_wenli": {
+      "passed": 16,
+      "total": 16
+    }
+  },
+  "headless": {
+    "new_default_lifecycle_physics": {
+      "checks": 584,
+      "failures": []
+    },
+    "legacy_related": {
+      "wenli": 1032,
+      "east_road": 41,
+      "first_teaching": 948,
+      "library": 1068,
+      "liuhu": 59,
+      "south_bridge_water": 50
+    },
+    "legacy_related_failures": 0
+  },
+  "native_gpu": {
+    "checks": 16,
+    "failures": [],
+    "records": [
+      {
+        "actual_canvas_scale": 2.09999990463257,
+        "expected_lod": 2.45113929179862,
+        "fixture": "settled_actual_canvas_body_lod",
+        "requested_zoom": 2.1,
+        "rgb_lod": 2.45113929179862
+      },
+      {
+        "actual_canvas_scale": 4.80000019073486,
+        "expected_lod": 1.25849409101147,
+        "fixture": "settled_actual_canvas_body_lod",
+        "requested_zoom": 4.8,
+        "rgb_lod": 1.25849409101147
+      },
+      {
+        "comparison": {
+          "changed_pixels": 113,
+          "max_rgb_delta": 25
+        },
+        "fixture": "full_scene_inherited_filter_sampling_diagnostic",
+        "original_local_capture_fixture_label": "full_scene_leaf_over_object_physical_composition_not_ground_rgb_oracle"
+      },
+      {
+        "comparison": {
+          "changed_pixels": 6,
+          "max_rgb_delta": 1
+        },
+        "fixture": "all9_isolated_same_final_texels_leaf_overlay",
+        "includes17_original_pixels_outside_roi": true,
+        "zoom": 2.1
+      },
+      {
+        "comparison": {
+          "changed_pixels": 0,
+          "max_rgb_delta": 0
+        },
+        "fixture": "all9_isolated_same_final_texels_leaf_overlay",
+        "includes17_original_pixels_outside_roi": true,
+        "zoom": 4.8
+      },
+      {
+        "body_lod_at2_1": 2.45113929179862,
+        "fixture": "default_region_exact_outer_ownership",
+        "inside_changed": 210811,
+        "outside_changed": 0
+      },
+      {
+        "baseline_y": 680.0,
+        "behind_leaf_changed": 329,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_east_leaf_edge_01",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 701.0,
+        "behind_leaf_changed": 1478,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_east_leaf_edge_02",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 722.0,
+        "behind_leaf_changed": 1432,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_east_leaf_edge_03",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 744.0,
+        "behind_leaf_changed": 1562,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_east_leaf_edge_04",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 764.0,
+        "behind_leaf_changed": 1667,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_east_leaf_edge_05",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 785.0,
+        "behind_leaf_changed": 1849,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_east_leaf_edge_06",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 796.0,
+        "behind_leaf_changed": 1213,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_east_leaf_edge_07",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 842.0,
+        "behind_leaf_changed": 742,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 0,
+        "id": "east_road_west_leaf_edge_01",
+        "off_route_fixture": true
+      },
+      {
+        "baseline_y": 858.0,
+        "behind_leaf_changed": 1629,
+        "fixture": "actual_student_original_leaf_footline",
+        "front_leaf_changed": 360,
+        "id": "east_road_west_leaf_edge_02",
+        "off_route_fixture": true
+      }
+    ],
+    "status": "automated_native_GPU_not_manual_play"
+  },
+  "fullscene_leaf_difference_attribution": {
+    "fullscene_changed_pixels": 113,
+    "max_rgb_delta": 25,
+    "old_source_collar_or_outside_pixels": 96,
+    "enhanced_sampling_roundoff_pixels": 17,
+    "enhanced_max_rgb_delta": 1,
+    "collar_world_bounds": [
+      747.3809523809524,
+      853.0952380952381,
+      753.5714285714286,
+      857.8571428571429
+    ],
+    "underlying_linear_source_rgb_max_error": 0.9200680272104336,
+    "cause": "Existing nearest source leaf crop over inherited linear StaticUnseparatedCampus background; only west_leaf_edge_02 at south original collar/outsideROI. No building/shadow intersects these points. Preserved legacy sampling, not new texture mismatch.",
+    "new_world_geometry_changes": 0,
+    "nearest_source_nonboundary_max_error": 0,
+    "nearest_texel_boundary_cases": {
+      "screen_pixel_count": 4,
+      "source_y": 855,
+      "note": "Exactly on a nearest-sampling texel boundary. GPU selects source row854 rather than floating CPU floor row855; both candidate texels checked. Nonboundary96minus4 leaf RGB matches source exactly."
+    },
+    "nearest_source_max_error_including_boundary_choice": 0,
+    "collar_nearest_source_rgb_max_error_without_boundary_handling": 26,
+    "initial_building_shadow_hypothesis": "Rejected after actual screen-to-world difference localization; no object or cast-shadow overlap at y853..858"
+  },
+  "final_runtime_bake": {
+    "runtime_size": [
+      1200,
+      1200
+    ],
+    "world_scale": 0.2,
+    "rgba_sha256": "30a828313e2f7649b4fd99db07b4f5b631c2d119bcebfdc4cee9e93c42298ff0",
+    "png_sha256": "2f1a8caa6e406cd8ad16113acf402b94a220013aeea69650f9056c7ad3e3ac63",
+    "shadow_r8_sha256": "5dd2f13b01127c909927c54dece86e3d8a66f6c181d5d6e15eb4b65056b956ed",
+    "clear_mask_pixels_mixing_old_source": 0,
+    "outer_two_source_pixel_texture_changed": 0,
+    "fixed_runtime_texture_bytes_rgba8_mips": 7679680,
+    "fixed_shadow_texture_bytes_r8_mips": 1919920,
+    "new_leaf_rgb_textures": 0,
+    "source_roi_fraction_full_map": 0.036613272311212815,
+    "core_xywh": [
+      642,
+      627,
+      216,
+      216
+    ],
+    "source_native_master_dimensions": [
+      1254,
+      1254
+    ],
+    "genuinely_4k": false
+  },
+  "registration_dense_grid": {
+    "sample_count": 1440000,
+    "maximum_displacement_source_px": 2.603746608280734,
+    "jacobian_min_singular": 0.8022383251209283,
+    "jacobian_max_singular": 1.211555784499691,
+    "jacobian_min_determinant": 0.7955972085240632,
+    "maximum_adjacent_displacement_delta_per_source_px": 0.21138791388504363,
+    "grid": [
+      1200,
+      1200
+    ],
+    "source_pitch": 0.2,
+    "distortion_gate_pass": true
+  },
+  "road_holdouts": {
+    "status": "FINAL_REGISTERED_RUNTIME_FIXED_HOLDOUT_DIAGNOSTIC",
+    "method": "Fixed source locations; symmetric1.2px band RGB cross-profile NCC,0.1-sourcepx lag resolution. Final1200-square masked-composite plus constrained texture-registration plus boundary-feather derivative. No heldout used for fitting; registration support excludes roads.",
+    "method_limits": "Subpixel precision does not exceed low-resolution source certainty. Profiles can be ambiguous; visual readback is required. This normal translation is not a complete edge-shape test.",
+    "records": [
+      {
+        "id": "east_road_y623",
+        "center_source_xy": [
+          700.0,
+          623
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.1,
+        "correlation": 0.979567701008317,
+        "one_pixel_distant_alternative_score": 0.8348829893359081,
+        "ambiguity_gap": 0.14468471167240893,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.979567701008317,
+        "clear_mask_excluded_drift_source_px": 0.1,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y642",
+        "center_source_xy": [
+          710.375,
+          642
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.2,
+        "correlation": 0.9243062792306975,
+        "one_pixel_distant_alternative_score": 0.7523912989658142,
+        "ambiguity_gap": 0.17191498026488328,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9243062792306975,
+        "clear_mask_excluded_drift_source_px": 0.2,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y682",
+        "center_source_xy": [
+          729.8571428571429,
+          682
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.2,
+        "correlation": 0.9376820987669061,
+        "one_pixel_distant_alternative_score": 0.7000885961974086,
+        "ambiguity_gap": 0.23759350256949752,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9376820987669061,
+        "clear_mask_excluded_drift_source_px": 0.2,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y700",
+        "center_source_xy": [
+          737.0,
+          700
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.2,
+        "correlation": 0.9467754429035449,
+        "one_pixel_distant_alternative_score": 0.8119117891549765,
+        "ambiguity_gap": 0.13486365374856835,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9467754429035449,
+        "clear_mask_excluded_drift_source_px": 0.2,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y721",
+        "center_source_xy": [
+          745.074074074074,
+          721
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.2,
+        "correlation": 0.9410071533460419,
+        "one_pixel_distant_alternative_score": 0.7504110635479142,
+        "ambiguity_gap": 0.1905960897981277,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9410071533460419,
+        "clear_mask_excluded_drift_source_px": 0.2,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y749",
+        "center_source_xy": [
+          754.0,
+          749
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.3,
+        "correlation": 0.42509806412932,
+        "one_pixel_distant_alternative_score": 0.3148706118845982,
+        "ambiguity_gap": 0.1102274522447218,
+        "unchanged_source_support_fraction": 0.5681063122923588,
+        "clear_mask_excluded_correlation": 0.9425109652728657,
+        "clear_mask_excluded_drift_source_px": 0.3,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y785",
+        "center_source_xy": [
+          762.1379310344828,
+          785
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.1,
+        "correlation": 0.6504587057347843,
+        "one_pixel_distant_alternative_score": 0.5037436164191303,
+        "ambiguity_gap": 0.1467150893156539,
+        "unchanged_source_support_fraction": 0.770764119601329,
+        "clear_mask_excluded_correlation": 0.9447311152135951,
+        "clear_mask_excluded_drift_source_px": 0.2,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y808",
+        "center_source_xy": [
+          765.8064516129032,
+          808
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.1,
+        "correlation": 0.5859907817037805,
+        "one_pixel_distant_alternative_score": 0.500477363486446,
+        "ambiguity_gap": 0.08551341821733449,
+        "unchanged_source_support_fraction": 0.8604651162790697,
+        "clear_mask_excluded_correlation": 0.8666685388803778,
+        "clear_mask_excluded_drift_source_px": 0.0,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "east_road_y841",
+        "center_source_xy": [
+          768.0,
+          841
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": -0.1,
+        "correlation": 0.9609441233812107,
+        "one_pixel_distant_alternative_score": 0.8798917501552218,
+        "ambiguity_gap": 0.0810523732259889,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9609441233812107,
+        "clear_mask_excluded_drift_source_px": -0.1,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "cross_road_x646",
+        "center_source_xy": [
+          646,
+          677.3076923076923
+        ],
+        "profile_axis": "y",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.0,
+        "correlation": 0.9534756699787454,
+        "one_pixel_distant_alternative_score": 0.7149390180189618,
+        "ambiguity_gap": 0.23853665195978369,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9534756699787454,
+        "clear_mask_excluded_drift_source_px": 0.0,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "cross_road_x674",
+        "center_source_xy": [
+          674,
+          671.2758620689655
+        ],
+        "profile_axis": "y",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.0,
+        "correlation": 0.8760933060345916,
+        "one_pixel_distant_alternative_score": 0.5946795628519473,
+        "ambiguity_gap": 0.2814137431826442,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.8760933060345916,
+        "clear_mask_excluded_drift_source_px": 0.0,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "cross_road_x747",
+        "center_source_xy": [
+          747,
+          657.1111111111111
+        ],
+        "profile_axis": "y",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.0,
+        "correlation": 0.9497065739972929,
+        "one_pixel_distant_alternative_score": 0.6967994025909383,
+        "ambiguity_gap": 0.25290717140635455,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9497065739972929,
+        "clear_mask_excluded_drift_source_px": 0.0,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "cross_road_x777",
+        "center_source_xy": [
+          777,
+          650.8
+        ],
+        "profile_axis": "y",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": -0.1,
+        "correlation": 0.9720439996191403,
+        "one_pixel_distant_alternative_score": 0.8288858778982775,
+        "ambiguity_gap": 0.14315812172086284,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9720439996191403,
+        "clear_mask_excluded_drift_source_px": -0.1,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "cross_road_x809",
+        "center_source_xy": [
+          809,
+          643.6551724137931
+        ],
+        "profile_axis": "y",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": -0.1,
+        "correlation": 0.9342771243658093,
+        "one_pixel_distant_alternative_score": 0.8304502650753458,
+        "ambiguity_gap": 0.10382685929046354,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9342771243658093,
+        "clear_mask_excluded_drift_source_px": -0.1,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "cross_road_x841",
+        "center_source_xy": [
+          841,
+          637.25
+        ],
+        "profile_axis": "y",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": -0.2,
+        "correlation": 0.9321134998989137,
+        "one_pixel_distant_alternative_score": 0.7220140824954189,
+        "ambiguity_gap": 0.2100994174034948,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9321134998989137,
+        "clear_mask_excluded_drift_source_px": -0.2,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "cross_road_x860",
+        "center_source_xy": [
+          860,
+          633.8181818181819
+        ],
+        "profile_axis": "y",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": -0.1,
+        "correlation": 0.9734328576872489,
+        "one_pixel_distant_alternative_score": 0.8539842167444895,
+        "ambiguity_gap": 0.11944864094275931,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9734328576872489,
+        "clear_mask_excluded_drift_source_px": -0.1,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "west_path_y700",
+        "center_source_xy": [
+          641.3703703703703,
+          700
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.0,
+        "correlation": 0.9752388891046189,
+        "one_pixel_distant_alternative_score": 0.7035508906074255,
+        "ambiguity_gap": 0.2716879984971934,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9752388891046189,
+        "clear_mask_excluded_drift_source_px": 0.0,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "west_path_y729",
+        "center_source_xy": [
+          646.551724137931,
+          729
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.1,
+        "correlation": 0.9526079845768657,
+        "one_pixel_distant_alternative_score": 0.5935953886437306,
+        "ambiguity_gap": 0.35901259593313506,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9526079845768657,
+        "clear_mask_excluded_drift_source_px": 0.1,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "west_path_y761",
+        "center_source_xy": [
+          649.421052631579,
+          761
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.0,
+        "correlation": 0.8725905327289213,
+        "one_pixel_distant_alternative_score": 0.5143844142829456,
+        "ambiguity_gap": 0.3582061184459757,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.8725905327289213,
+        "clear_mask_excluded_drift_source_px": 0.0,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "west_path_y799",
+        "center_source_xy": [
+          654.3157894736842,
+          799
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.3,
+        "correlation": 0.9594061190762477,
+        "one_pixel_distant_alternative_score": 0.7971458492815735,
+        "ambiguity_gap": 0.16226026979467423,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9594061190762477,
+        "clear_mask_excluded_drift_source_px": 0.3,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      },
+      {
+        "id": "west_path_y833",
+        "center_source_xy": [
+          658.0,
+          833
+        ],
+        "profile_axis": "x",
+        "independent_holdout": true,
+        "used_for_fitting": false,
+        "normal_drift_source_px": 0.2,
+        "correlation": 0.9265858112942528,
+        "one_pixel_distant_alternative_score": 0.5854080093606943,
+        "ambiguity_gap": 0.3411778019335585,
+        "unchanged_source_support_fraction": 1.0,
+        "clear_mask_excluded_correlation": 0.9265858112942528,
+        "clear_mask_excluded_drift_source_px": 0.2,
+        "clear_mask_exclusion": "Only frozen body/shadow ownership, never an error-shaped mask. The unmasked score remains above.",
+        "match_verification": "NUMERICAL_PROFILE_REQUIRES_VISUAL_REVIEW",
+        "at_search_limit": false
+      }
+    ],
+    "evaluated_count": 21,
+    "correlation_at_least_point8_count": 18,
+    "reliable_rms_source_px": 0.14719601443879748,
+    "reliable_max_source_px": 0.3,
+    "clear_mask_excluded_reliable_count": 21,
+    "clear_mask_excluded_rms_source_px": 0.15735915849388865,
+    "clear_mask_excluded_max_source_px": 0.3,
+    "clear_mask_excluded_numerical_thresholds_pass": true,
+    "numerical_thresholds_pass": false,
+    "candidate_runtime_size": [
+      1200,
+      1200
+    ],
+    "true_generated_master_size": [
+      1254,
+      1254
+    ]
+  },
+  "minimal_packed_export": {
+    "passed": true,
+    "default_component_active": true,
+    "foreground_owners": 9,
+    "raw_shadow_bytes": 1440000,
+    "imported_mip_chain_retained": true,
+    "size_bytes": 28429532,
+    "scope": "Scoped stage, not full game package"
+  },
+  "native_static_process_measurement_before_validation_duplicate_fix": {
+    "exit_code": 0,
+    "elapsed_seconds": 58.2085763569994,
+    "maximum_resident_set_kib": 484216,
+    "maximum_resident_set_bytes": 495837184,
+    "user_cpu_seconds": 67.444072,
+    "system_cpu_seconds": 7.094043,
+    "method": "Linux Python resource.getrusage(RUSAGE_CHILDREN), exactly one Godot child"
+  },
+  "native_walk": {
+    "fixed_fps": 20,
+    "off_route_frames": 0,
+    "planned_frames": 220,
+    "samples": [
+      {
+        "feet": [
+          733.0,
+          683.0
+        ],
+        "frame": 0,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          744.522705078125,
+          701.19775390625
+        ],
+        "frame": 5,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          748.280395507812,
+          722.140075683594
+        ],
+        "frame": 10,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          758.466369628906,
+          740.955139160156
+        ],
+        "frame": 15,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          760.997436523438,
+          762.507629394531
+        ],
+        "frame": 20,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          762.855590820312,
+          784.137451171875
+        ],
+        "frame": 25,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          764.995361328125,
+          805.718872070312
+        ],
+        "frame": 30,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          765.0,
+          827.718994140625
+        ],
+        "frame": 35,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          763.1826171875,
+          849.349609375
+        ],
+        "frame": 40,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          761.000366210938,
+          870.889282226562
+        ],
+        "frame": 45,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          761.0,
+          857.689208984375
+        ],
+        "frame": 50,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          762.998840332031,
+          836.070617675781
+        ],
+        "frame": 55,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          764.999328613281,
+          814.47314453125
+        ],
+        "frame": 60,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          763.366149902344,
+          792.82861328125
+        ],
+        "frame": 65,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          761.016479492188,
+          771.248657226562
+        ],
+        "frame": 70,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          757.911315917969,
+          750.165954589844
+        ],
+        "frame": 75,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          751.891174316406,
+          729.963317871094
+        ],
+        "frame": 80,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          744.415222167969,
+          710.476623535156
+        ],
+        "frame": 85,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          738.383666992188,
+          689.888366699219
+        ],
+        "frame": 90,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          744.358215332031,
+          700.867431640625
+        ],
+        "frame": 95,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          748.121948242188,
+          721.890747070312
+        ],
+        "frame": 100,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          754.996154785156,
+          741.357971191406
+        ],
+        "frame": 105,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          760.888854980469,
+          761.632995605469
+        ],
+        "frame": 110,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          762.802062988281,
+          783.273132324219
+        ],
+        "frame": 115,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          764.988952636719,
+          804.950744628906
+        ],
+        "frame": 120,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          765.0,
+          826.950866699219
+        ],
+        "frame": 125,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          763.001159667969,
+          848.574645996094
+        ],
+        "frame": 130,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          761.000671386719,
+          870.261596679688
+        ],
+        "frame": 135,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          761.0,
+          857.0615234375
+        ],
+        "frame": 140,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          762.998779296875,
+          835.436157226562
+        ],
+        "frame": 145,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          764.999328613281,
+          813.748413085938
+        ],
+        "frame": 150,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          763.344116210938,
+          792.108825683594
+        ],
+        "frame": 155,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          761.0166015625,
+          770.446044921875
+        ],
+        "frame": 160,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          757.896179199219,
+          749.392028808594
+        ],
+        "frame": 165,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          751.891540527344,
+          729.223327636719
+        ],
+        "frame": 170,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          743.837341308594,
+          709.857727050781
+        ],
+        "frame": 175,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 2.09999990463257
+      },
+      {
+        "feet": [
+          738.264709472656,
+          689.119201660156
+        ],
+        "frame": 180,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      },
+      {
+        "feet": [
+          744.014282226562,
+          700.494201660156
+        ],
+        "frame": 185,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      },
+      {
+        "feet": [
+          747.930908203125,
+          721.547790527344
+        ],
+        "frame": 190,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      },
+      {
+        "feet": [
+          754.993347167969,
+          741.04443359375
+        ],
+        "frame": 195,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      },
+      {
+        "feet": [
+          760.861206054688,
+          761.213256835938
+        ],
+        "frame": 200,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      },
+      {
+        "feet": [
+          762.811157226562,
+          782.819641113281
+        ],
+        "frame": 205,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      },
+      {
+        "feet": [
+          764.982971191406,
+          804.468688964844
+        ],
+        "frame": 210,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      },
+      {
+        "feet": [
+          765.0,
+          826.46875
+        ],
+        "frame": 215,
+        "height": 18.0,
+        "speed": 88.0,
+        "walkable": true,
+        "zoom": 4.80000019073486
+      }
+    ],
+    "status": "automated_native_continuous_walk",
+    "traveled_source_px": 958.089159011841
+  },
+  "limits": [
+    "Only3.66percent of the original campus source area is enhanced.",
+    "The source-to-new clarity transition remains visible; this is not a seamless whole-campus4K replacement.",
+    "Original foreground source-pixel alpha silhouettes and depths remain unchanged.",
+    "CourtyardA retains an approximately half-source-pixel edge discrepancy; the visible aperture contains foliage and soil.",
+    "Hidden under-building ground is inferred."
+  ],
+  "native_walk_media_probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "223"
+      }
+    ],
+    "format": {
+      "duration": "11.150000",
+      "size": "2957660"
+    }
+  },
+  "final_manual_process_resources": {
+    "exit_code": 0,
+    "elapsed_seconds": 121.56492323400016,
+    "maximum_resident_set_kib": 474108,
+    "maximum_resident_set_bytes": 485486592,
+    "user_cpu_seconds": 318.805745,
+    "system_cpu_seconds": 31.393777,
+    "method": "Linux Python resource.getrusage(RUSAGE_CHILDREN), exactly one Godot child"
+  },
+  "actual_manual_acceptance": {
+    "passed": true,
+    "exit_code": 0,
+    "actions": [
+      "Up450ms and Down250ms: actual movement/facing",
+      "Wenli roof click opens correct information card",
+      "Escape closes the card",
+      "Return to entry",
+      "Choose Changping and re-enter normal south gate scene",
+      "Close window normally"
+    ],
+    "error_log_errors": 0,
+    "screenshots": 9,
+    "time_utc": "2026-10-13T17:03:30Z",
+    "scope": "Actual desktop interaction, separate from automated movie"
+  }
+}
