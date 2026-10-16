@@ -1,0 +1,56 @@
+{
+  "checks": 497,
+  "failures": [],
+  "files": {
+    "lower_rotating_stair.glb": {
+      "sha256": "f437c092ecc10fbcd31a6f977c7e313f48908380c5c9934e5c978c8910d33c6d",
+      "meshes": 177,
+      "images": 1
+    },
+    "upper_rotating_stair.glb": {
+      "sha256": "d9c2f39f1cb4d90e4a89690566dc2132961b4ab30c3aa87af465fd33506c052f",
+      "meshes": 172,
+      "images": 1
+    },
+    "b_platform_start.glb": {
+      "sha256": "d99d09d0e82de695eb345a17cbcd0729413ee7c7bb50006f07e5644853bcffbd",
+      "meshes": 79,
+      "images": 1
+    },
+    "b_platform_lower_base.glb": {
+      "sha256": "3ea0605a5f10d36a4ae76986e9ab40299963aadb7185d2ab140c03ee80173702",
+      "meshes": 5,
+      "images": 1
+    },
+    "mid_lift_platform.glb": {
+      "sha256": "1ca31bd62a518c41a5d490882bb55f103ff17dcb13a6f6f65617d1f6bf7b1494",
+      "meshes": 1,
+      "images": 1
+    },
+    "b_platform_landing.glb": {
+      "sha256": "e88e903b6530d1fa82f4be0b6af1331be8334dc38db4373b9ef5b4cda98781e5",
+      "meshes": 58,
+      "images": 1
+    },
+    "b_platform_island.glb": {
+      "sha256": "7b05d486d44b89782d757ff6151853b7e05e35ee57fe9180da9ce6692445713a",
+      "meshes": 28,
+      "images": 1
+    },
+    "exit_slide_platform.glb": {
+      "sha256": "84f10e985c0fb6ebd0274afe50291dcb5d9daa669a1bc6773e222c55af7a641a",
+      "meshes": 1,
+      "images": 1
+    },
+    "b_platform_exit.glb": {
+      "sha256": "05bc52750edfa3dfa7cf25f5feae03a659c85c91eaf8babab1bf87a526e95bdc",
+      "meshes": 37,
+      "images": 1
+    },
+    "school_door.glb": {
+      "sha256": "ad6e90d3a96d6122ab5db1f77b9564dcb13bc79229755223c38a7aacae2ada47",
+      "meshes": 82,
+      "images": 1
+    }
+  }
+}

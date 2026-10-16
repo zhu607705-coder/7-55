@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+RENDERER_COMBINATIONS {"checks":7747,"failures":0,"fixed_state_start_exit_paths":0,"max_degree":2,"real_renderer_rejections":1248,"states":432,"topologies":10,"unique_undirected_local_paths":27}
