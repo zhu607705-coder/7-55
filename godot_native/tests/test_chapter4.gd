@@ -109,15 +109,16 @@ func full_chain(records: Array) -> void:
 	for zone in ["east_corridor","classroom_zone","bakery_back_area"]: chapter.dispatch(s,"c4_toggle_"+zone)
 	chapter.dispatch(s,"c4_lock_power"); check(s.chapter4.phase=="final_chase" and s.chapter4.factIds.has("canruo_star_lamp_primed"),"Light-grid handoff only primes lamp")
 	request=chapter.dispatch(s,"c4_chase")
-	var trace: Array=[]; var at: Vector2=Vector2(833,826); var time: float=0;var committed_landing:=0
-	for target in [Vector2(989,826),Vector2(989,426),Vector2(784,426),Vector2(784,207),Vector2(715,207),Vector2(715,57)]:
+	var chase_geometry:RefCounted=chapter._chase_geometry()
+	var trace: Array=[]; var at: Vector2=chase_geometry.vec(chase_geometry.layout.landings[0].spawn); var time: float=0;var committed_landing:=0
+	for target in chase_geometry.route.slice(1):
 		while at.distance_to(target)>0.01:
 			at=at.move_toward(target,20.8); time+=100; trace.append({"x":at.x,"y":at.y,"t":time})
-			if committed_landing<2 and chapter._inside(at,chapter.extra.stair.gates[committed_landing]):
+			if committed_landing<2 and chase_geometry.gates[committed_landing].has_point(at):
 				committed_landing+=1
-				var progress:Dictionary=chapter.dispatch(s,"c4_chase_landing",{"session":request.game.session,"expectedAttempt":s.chapter4.chaseAttempt,"landing":committed_landing,"path":trace.duplicate(true),"elapsedMs":time})
+				var progress:Dictionary=chapter.dispatch(s,"c4_chase_landing",{"session":request.game.session,"geometryVersion":request.game.geometryVersion,"expectedAttempt":s.chapter4.chaseAttempt,"landing":committed_landing,"path":trace.duplicate(true),"elapsedMs":time})
 				check(progress.get("accepted",false),"Original stair platform committed in order")
-	complete_game(chapter,s,request,{"expectedAttempt":s.chapter4.chaseAttempt,"path":trace,"escaped":true,"elapsedMs":time}); check(s.chapter4.floor=="A2" and s.chapter4.chaseStairwellStage=="complete","Physical stair trace validates both landings and exit")
+	complete_game(chapter,s,request,{"geometryVersion":request.game.geometryVersion,"expectedAttempt":s.chapter4.chaseAttempt,"path":trace,"escaped":true,"elapsedMs":time}); check(s.chapter4.floor=="A2" and s.chapter4.chaseStairwellStage=="complete","Physical stair trace validates both landings and exit")
 	chapter.dispatch(s,"c4_reach202"); chapter.dispatch(s,"c4_final_minute"); check(s.items.finalMinute and s.items.attendanceRecordPaper,"Minute and attendance paper recovered together")
 	chapter.dispatch(s,"c4_return_stair"); chapter.dispatch(s,"c4_install_minute"); check(s.chapter4.phase=="morning_checkin" and int(s.chapter4.worldTimeSeconds)==28500,"Recovered minute restores exact 07:55")
 	chapter.dispatch(s,"c4_checkin_paper"); check(not s.chapter4.completed,"One check-in input cannot complete chapter")
