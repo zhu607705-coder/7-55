@@ -1,0 +1,124 @@
+{
+  "module": "b_lower_stair",
+  "source_state": 0,
+  "steps": 12,
+  "width_m": 1.34,
+  "source_pivot_godot": [
+    -2.15,
+    0.3,
+    1.35
+  ],
+  "closed_body_edge_incidence": 2,
+  "cosmetic_side_expansion_m": 0.002,
+  "srgb_to_linear_material_colors": true,
+  "walk_surface_meshes_unchanged": true,
+  "source_rules_changed": false,
+  "web_art_used_as_texture": false,
+  "web_reference": "lower_stair_threequarter_art_rgba_v1.png",
+  "details": [
+    "terrazzo albedo",
+    "three anti-slip lines",
+    "round metal rails",
+    "joint cuffs and small base fixings",
+    "closed underside"
+  ],
+  "checks": 13,
+  "render_views": {
+    "threequarter": {
+      "camera_blender": [
+        [
+          0.7893522381782532,
+          0.32121655344963074,
+          -0.5232045650482178,
+          -7.400000095367432
+        ],
+        [
+          -0.6139405965805054,
+          0.4129926562309265,
+          -0.6726915836334229,
+          -10.350000381469727
+        ],
+        [
+          -2.9705315540695665e-08,
+          0.8522071242332458,
+          0.5232045650482178,
+          8.970585823059082
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 5.099999904632568
+    },
+    "reverse": {
+      "camera_blender": [
+        [
+          -0.7893521189689636,
+          -0.3212165832519531,
+          0.5232046842575073,
+          6.599999904632568
+        ],
+        [
+          0.6139407157897949,
+          -0.4129924774169922,
+          0.6726915836334229,
+          7.650000095367432
+        ],
+        [
+          -9.87147004138933e-08,
+          0.8522071838378906,
+          0.5232044458389282,
+          8.970585823059082
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 5.099999904632568
+    },
+    "bottom": {
+      "camera_blender": [
+        [
+          -1.0,
+          0.0,
+          -8.742277657347586e-08,
+          -0.40000003576278687
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -1.350000023841858
+        ],
+        [
+          8.742277657347586e-08,
+          0.0,
+          -1.0,
+          -13.029414176940918
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 5.099999904632568
+    }
+  },
+  "pixel_texture_size": [
+    128,
+    128
+  ],
+  "turntable": {
+    "frames": 32,
+    "fps": 8,
+    "same_mesh": true
+  }
+}
