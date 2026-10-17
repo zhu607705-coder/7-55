@@ -1,0 +1,13 @@
+{
+  "generator": "built-in image_gen",
+  "generated_at": "2026-10-10",
+  "original_reference": "res://assets/native/canteen_objects/canteen_drink_dispenser.png",
+  "concept_source": "exec-a9e1be23-6c89-4e7f-9962-0c82cc1f8ce1.png",
+  "dimensions": [
+    1536,
+    1024
+  ],
+  "sha256": "64252b4d638c5415a61b07e2332c6f0d0b98d8c7da16c85beb6533f102cb27f8",
+  "role": "fixed three-outlet cabinet, no moving levers",
+  "alpha": "Original bytes preserved; canvas-item alpha cutoff removes exterior low-opacity glow."
+}

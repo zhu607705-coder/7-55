@@ -1,0 +1,26 @@
+{
+  "generator": "built-in image_gen",
+  "generated_at": "2026-10-10",
+  "reference": "res://assets/native/canteen_objects/canteen_drink_dispenser.png",
+  "source_dimensions": [
+    1254,
+    1254
+  ],
+  "sha256": "c212f700a692c79e0cb1bdb436d0d6ebd0a0476b2345164ce8b15b4fe25a3008",
+  "registered_region": [
+    488,
+    150,
+    280,
+    960
+  ],
+  "hinge_center": [
+    627,
+    240
+  ],
+  "right_pad_contact": [
+    733,
+    950
+  ],
+  "animation": "Rigid generated paddle rotates continuously about fixed registered hinge. Same artwork for rest, press and spring return; no frame registration drift.",
+  "contact_registration": "Visible metal pad rim against bright glass wall; excludes black shadow fringe, so apparent contact survives native rasterization."
+}
