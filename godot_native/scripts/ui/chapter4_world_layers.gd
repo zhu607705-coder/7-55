@@ -3,7 +3,9 @@ const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-pixel furniture, residuals and bakery machinery. No progression writes.
 const Room = preload("res://scripts/games/chapter4_room204_model.gd")
 const PhaseLayers = preload("res://scripts/ui/chapter4_phase_layers.gd")
+const ArchiveMotion = preload("res://scripts/objects/room301_archive_motion.gd")
 var phases: RefCounted=PhaseLayers.new()
+var archive_motion: RefCounted=ArchiveMotion.new()
 static var presentation: Dictionary={}
 var source_font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 var textures: Dictionary={}
@@ -28,6 +30,7 @@ func texture(path: String) -> Texture2D:
 	return textures[path]
 func tick(delta: float,state: Dictionary) -> void:
 	phases.tick(delta,state)
+	archive_motion.tick(delta,state)
 	clock_ms+=minf(delta,0.05)*1000
 	var bakery_phase: String=str(state.get("chapter4",{}).get("phase",""))
 	if bakery_phase!=bakery_key: bakery_ms=0; conveyor_ms=0; bakery_key=bakery_phase
@@ -87,6 +90,7 @@ func draw_before_furniture(canvas: CanvasItem,context: Dictionary,state: Diction
 		_draw_bakery_people(canvas,context,state,false)
 func draw_after_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	if not _active(context,state): return
+	archive_motion.draw(self,canvas,context,state,front)
 	var c: Dictionary=state.chapter4
 	if front:
 		if presentation.get("kind","")=="projection" and state.chapter4.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y<475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
