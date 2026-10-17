@@ -1,0 +1,30 @@
+{
+  "active_time": 108.641666666699,
+  "collisions": 0,
+  "completed_at": [
+    10.9,
+    28.724999999999,
+    46.1083333333314,
+    58.291666666664,
+    64.1833333333305,
+    71.5416666666697,
+    78.8333333333421,
+    91.9583333333526,
+    108.641666666699
+  ],
+  "damage": 0,
+  "distance": 25553.6596716018,
+  "elapsed": 108.641666666699,
+  "inspected": true,
+  "position": [
+    5961.70703125,
+    2846.3193359375
+  ],
+  "progress": 8,
+  "recovered": true,
+  "status": "won",
+  "strokes": 220,
+  "swan_charges": 2,
+  "swan_warnings": 2,
+  "_evidence_context": "Historical pre-publication prototype run, 2026-10-17. See PUBLICATION.md for fresh packaging tests."
+}

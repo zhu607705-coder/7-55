@@ -1,0 +1,9 @@
+{
+  "mean_fps": 59.8815423329569,
+  "measured_frames": 300,
+  "p95_frame_ms": 16.6666666666667,
+  "renderer": "Godot OpenGL compatibility / cloud llvmpipe",
+  "terrain_cache": "2250x4000 render once, 4x nearest scale",
+  "wall_seconds": 5.009891,
+  "_evidence_context": "Historical pre-publication prototype run, 2026-10-17. See PUBLICATION.md for fresh packaging tests."
+}
