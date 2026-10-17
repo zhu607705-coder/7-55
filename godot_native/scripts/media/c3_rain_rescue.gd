@@ -4,7 +4,7 @@ extends Control
 signal event(action: String,value: Variant)
 const Session=preload("res://scripts/media/c3_rain_rescue_session.gd")
 const Model=preload("res://scripts/media/c3_rain_rescue_model.gd")
-const KayakVisual=preload("res://scripts/ui/kayak_visual.gd")
+const KayakRig=preload("res://scenes/objects/kayak_rig.tscn")
 const Metrics=preload("res://scripts/player_metrics.gd")
 var session: RefCounted
 var read_state: Callable
@@ -14,7 +14,9 @@ var reported:=false
 var video: VideoStreamPlayer
 var caption: Label
 var skip: Button
-var visual: RefCounted=KayakVisual.new()
+var visual: Node2D
+var walker: Sprite2D
+var splash: Node2D
 var pose: Dictionary={}
 var old_camera:=Vector2.ZERO
 var old_zoom:=1.0
@@ -34,6 +36,16 @@ func setup(config: Dictionary) -> void:
 	world.presentation_actor_hidden=true
 	world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO
 	if not session.begin(self): cancel(); return
+	walker=Sprite2D.new();walker.name="RescueWalker";walker.centered=false;walker.hide();add_child(walker)
+	visual=KayakRig.instantiate();visual.name="RescueKayak";visual.hide();add_child(visual)
+	splash=Node2D.new();splash.name="CapsizeSplash";add_child(splash)
+	for i in range(4 if session.reduced_motion() else 8):
+		var ring:=Line2D.new();ring.name="Ring"+str(i+1);ring.width=2;ring.default_color=Color(.88,.97,1,.7);ring.antialiased=true
+		var points:=PackedVector2Array()
+		for j in 25:points.append(Vector2.from_angle(j*TAU/24))
+		ring.points=points;splash.add_child(ring)
+	splash.hide()
+	var caption_back:=ColorRect.new();caption_back.name="CaptionBackdrop";caption_back.position=Vector2(12,434);caption_back.size=Vector2(936,94);caption_back.color=Color(.02,.07,.11,.9);caption_back.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(caption_back)
 	caption=Label.new(); caption.position=Vector2(24,440); caption.size=Vector2(912,78); caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; caption.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	caption.add_theme_font_override("font",font); caption.add_theme_font_size_override("font_size",20); caption.add_theme_color_override("font_color",Color("e9f9ff")); caption.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(caption)
@@ -58,6 +70,7 @@ func _process(_delta: float) -> void:
 		var point:=Vector2(pose.x,pose.y)
 		var half: Vector2=Vector2(480,270)/world.zoom
 		world.camera=point.clamp(half,Model.MAP_SIZE-half)
+	_update_native_actor()
 	world.queue_redraw(); queue_redraw()
 	if snap.phase=="complete":
 		reported=true; _restore()
@@ -70,7 +83,7 @@ func _begin_video() -> void:
 		caption.text=degraded_reason; session.finish_cinematic(self,"fallback","missing_video"); return
 	video=VideoStreamPlayer.new(); video.stream=load(Model.VIDEO_PATH); video.expand=true; video.size=Vector2(960,540); video.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	video.volume_db=-80 # Source rescue <video> is muted.
-	add_child(video); move_child(video,0)
+	add_child(video); move_child(video,caption.get_index())
 	caption.text="启真湖 · 雨天救援\n正在将落水者拉回码头"
 	skip=Button.new(); skip.text="跳过回放"; skip.position=Vector2(800,20); skip.size=Vector2(140,44); add_child(skip)
 	skip.pressed.connect(func(): session.finish_cinematic(self,"skipped"))
@@ -92,20 +105,37 @@ func _exit_tree() -> void:
 		if session!=null: session.cancel()
 		_restore()
 		if session!=null: event.emit(callback,session)
-func _draw() -> void:
-	if pose.is_empty() or not is_instance_valid(world): return
+func _update_native_actor() -> void:
+	if not is_instance_valid(visual) or not is_instance_valid(world):return
 	var stage: String=pose.get("stage","")
+	visual.visible=stage not in ["approach","rescued","cinematic",""]
+	walker.visible=stage in ["approach","rescued"]
+	splash.visible=stage=="capsize"
 	var origin: Vector2=size/2-world.camera*world.zoom
-	if stage in ["approach","rescued"]:
-		var frame: Texture2D=world.player_frames["down" if stage=="rescued" else "up"][0]
+	if walker.visible:
+		walker.texture=world.player_frames["down" if stage=="rescued" else "up"][0]
 		var rect: Rect2=Metrics.visual_rect(Vector2(pose.x,pose.y))
-		draw_texture_rect(frame,Rect2(origin+rect.position*world.zoom,rect.size*world.zoom),false,Color(1,1,1,float(pose.get("alpha",1))))
-	elif stage not in ["cinematic",""]:
-		var body: Dictionary=pose.duplicate(); body.strokeAgeMs=body.get("localMs",1000)
-		visual.draw(self,origin+Vector2(pose.x,pose.y)*world.zoom,world.zoom,body,float(session.snapshot().elapsedMs))
-		if stage=="capsize":
-			var progress: float=clampf(float(pose.localMs)/float(Model.timing(session.reduced_motion()).capsizeMs),0,1)
-			for i in range(4 if session.reduced_motion() else 8):
-				var center: Vector2=origin+(Vector2(pose.x,pose.y)+Vector2.from_angle(i*TAU/8)*(10+i*2))*world.zoom
-				draw_arc(center,(15+i*5)*(1+progress*.55)*world.zoom,0,TAU,24,Color(.88,.97,1,(1-progress)*.7),2)
-	draw_rect(Rect2(12,434,936,94),Color(.02,.07,.11,.9))
+		walker.position=origin+rect.position*world.zoom
+		walker.scale=rect.size*world.zoom/Vector2(walker.texture.get_size())
+		walker.modulate.a=float(pose.get("alpha",1))
+	if not visual.visible:return
+	var body: Dictionary=pose.duplicate()
+	# Reconstruct presentation stroke history from the authored rain route. A new
+	# opposite-side stroke must not rewind the paddle that is still recovering.
+	var elapsed_ms: float=float(session.snapshot().elapsedMs)
+	var timing: Dictionary=Model.timing(session.reduced_motion())
+	var route: Array=Model.route(session.reduced_motion())
+	var events: Array=[]
+	for i in range(route.size()):
+		var start_ms: float=timing.approachMs+timing.launchMs+i*(timing.strokeMs+timing.strokeGapMs)
+		if elapsed_ms>=start_ms:events.append({"side":route[i].side,"tick":start_ms*.12,"direction":"forward"})
+	body.strokeEvents=events;body.tick=elapsed_ms*.12
+	visual.configure_view(origin+Vector2(pose.x,pose.y)*world.zoom,world.zoom,body)
+	if splash.visible:
+		var progress: float=clampf(float(pose.localMs)/float(timing.capsizeMs),0,1)
+		for i in splash.get_child_count():
+			var ring: Line2D=splash.get_child(i)
+			ring.position=origin+(Vector2(pose.x,pose.y)+Vector2.from_angle(i*TAU/8)*(10+i*2))*world.zoom
+			ring.scale=Vector2.ONE*(15+i*5)*(1+progress*.55)*world.zoom
+			ring.width=2.0/maxf(ring.scale.x,.001)
+			ring.modulate.a=1-progress

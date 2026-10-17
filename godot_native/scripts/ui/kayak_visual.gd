@@ -1,35 +1,55 @@
 extends RefCounted
-## Exact two-frame source presentation from QizhenKayakTextures.ts.
-## Original art is uniformly scaled by .52 and oriented heading + PI/2.
-var frames: Array=[]
+## Read-only articulation samples for the native kayak rig. No rendering or physics.
+const STROKE_MS: float=680.0
+var layers: Dictionary={}
 func _load() -> void:
-	if not frames.is_empty(): return
-	for suffix in ["a","b"]: frames.append(load("res://assets/rpg/qizhen/kayak_overhead_frame_"+suffix+".png"))
-func _ellipse(canvas: CanvasItem, center: Vector2, dimensions: Vector2, color: Color, width: float=2) -> void:
-	var points:=PackedVector2Array()
-	for i in range(33): points.append(center+Vector2(cos(TAU*i/32),sin(TAU*i/32))*dimensions/2)
-	canvas.draw_polyline(points,color,width,true)
-func draw(canvas: CanvasItem, point: Vector2, zoom: float, pose: Dictionary, elapsed_ms: float) -> void:
-	_load()
-	var heading: float=float(pose.get("heading",-PI/2))
-	var speed: float=float(pose.get("speed",0))
-	var forward: float=clampf(maxf(0,speed)/360,0,1)
-	var reverse: float=clampf(maxf(0,-speed)/230,0,1)
-	var ratio: float=maxf(forward,reverse)
-	var unit: float=zoom*.52
-	var alpha: float=float(pose.get("alpha",1))
-	canvas.draw_set_transform(point,heading+PI/2,Vector2.ONE*unit)
-	_ellipse(canvas,Vector2(0,72),Vector2(46,112)*(.68+forward*.9),Color(.66,.92,1,.3*forward*.44*alpha))
-	_ellipse(canvas,Vector2(0,58),Vector2(32,78)*(.76+forward*.7),Color(.84,.98,1,.46*forward*.66*alpha))
-	_ellipse(canvas,Vector2(0,-66),Vector2(44,94)*(.62+reverse*.96),Color(.74,.94,1,.36*reverse*.5*alpha))
-	_ellipse(canvas,Vector2(0,-54),Vector2(30,68)*(.7+reverse*.82),Color(.91,.99,1,.5*reverse*.72*alpha))
-	var frame: int=int(elapsed_ms/(150 if ratio>.08 else 420))%2
-	if float(pose.get("strokeAgeMs",1000))<180: frame=1 if pose.get("side")=="left" else 0
-	var texture: Texture2D=frames[frame]
-	var roll: float=clampf(float(pose.get("roll",0)),-1,1)
-	var body_y: float=float(pose.get("bodyY",roll*5))
-	var offset: Vector2=Vector2(0,body_y).rotated(heading+PI/2)*unit
-	var body_scale: Vector2=pose.get("bodyScale",Vector2.ONE)
-	canvas.draw_set_transform(point+offset,heading+PI/2+deg_to_rad(float(pose.get("bodyAngle",0))),body_scale*unit)
-	canvas.draw_texture_rect(texture,Rect2(-Vector2(texture.get_size())/2,texture.get_size()),false,Color(1,1,1,alpha*float(pose.get("bodyAlpha",1))))
-	canvas.draw_set_transform(Vector2.ZERO)
+	if not layers.is_empty(): return
+	for id: String in ["hull","seated_player"]:
+		layers[id]=load("res://assets/native/kayak/"+id+".svg")
+
+static func _ease(value: float) -> float:
+	var t:=clampf(value,0,1)
+	return t*t*(3-2*t)
+
+static func stroke_pose(side: String,age_ms: float,reverse: bool=false,roll: float=0) -> Dictionary:
+	var sign_x: float=-1 if side=="left" else 1
+	var t:=clampf(age_ms/STROKE_MS,0,1)
+	var phase: String="rest"
+	var sweep: float=-.72
+	var wet: float=0
+	var lift: float=0
+	if age_ms>=0 and age_ms<STROKE_MS:
+		if t<.18:
+			phase="entry";sweep=lerpf(-.72,-1.05,_ease(t/.18));wet=_ease(t/.18)
+		elif t<.56:
+			phase="pull";sweep=lerpf(-1.05,.82,_ease((t-.18)/.38));wet=1
+		elif t<.73:
+			phase="exit";sweep=lerpf(.82,1.02,_ease((t-.56)/.17));wet=1-_ease((t-.56)/.17);lift=sin((t-.56)/.17*PI/2)*6
+		else:
+			phase="recovery";sweep=lerpf(1.02,-.72,_ease((t-.73)/.27));lift=sin((1-t)/.27*PI/2)*6
+	if reverse: sweep=-sweep
+	var grip:=Vector2(sign_x*(17+wet*3),9+sin(sweep)*9-lift)
+	var tip:=grip+Vector2(sign_x*cos(sweep),sin(sweep))*58
+	var bend: float=(8*wet*sin(clampf((t-.18)/.38,0,1)*PI)) if side=="left" else 0
+	if reverse: bend=-bend
+	var shoulder:=Vector2(sign_x*11+roll*3,15)
+	var elbow:=shoulder.lerp(grip,.55)+Vector2(sign_x*(8+absf(roll)*3),5)
+	return {"phase":phase,"grip":grip,"tip":tip,"shaft_mid":grip.lerp(tip,.55)+Vector2(0,bend),"shoulder":shoulder,"elbow":elbow,"wet":wet,"lift":lift,"bend":bend,"reverse":reverse,"ageMs":age_ms}
+
+static func paddle_poses(pose: Dictionary) -> Dictionary:
+	var result: Dictionary={}
+	for side: String in ["left","right"]:
+		var age: float=10000
+		var reverse: bool=false
+		var events: Array=pose.get("strokeEvents",[])
+		if pose.has("strokeEvents"):
+			for i in range(events.size()-1,-1,-1):
+				var input: Dictionary=events[i]
+				if input.get("side")==side:
+					age=(float(pose.get("tick",0))-float(input.get("tick",0)))*1000.0/120.0
+					reverse=input.get("direction","")=="reverse"
+					break
+		elif pose.get("side","")==side:
+			age=float(pose.get("strokeAgeMs",10000));reverse=pose.get("direction","")=="reverse"
+		result[side]=stroke_pose(side,age,reverse,float(pose.get("roll",0)))
+	return result

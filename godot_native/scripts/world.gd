@@ -7,7 +7,7 @@ const MobileFloorRoute = preload("res://scripts/mobile_floor_route.gd")
 const CanteenFloorTap = preload("res://scripts/canteen_floor_tap.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
-const KayakVisual = preload("res://scripts/ui/kayak_visual.gd")
+const KayakObject = preload("res://scripts/objects/kayak_world_adapter.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 ## Source-pixel exploration surface. No story facts are authored by rendering.
 var worlds: Dictionary = {}
@@ -50,7 +50,6 @@ var _last_floor := ""
 var _input_kind := "keyboard"
 var touch_axis := Vector2.ZERO
 var kayak: RefCounted
-var kayak_texture: Texture2D
 var safe_player := Vector2.ZERO
 var foreground: Array = []
 var target_textures: Dictionary = {}
@@ -98,7 +97,7 @@ var chapter3_layers: RefCounted
 var furniture_drag_preview: Control
 var _native_table_drag:=false
 var presentation_actor_hidden := false
-var kayak_visual: RefCounted = KayakVisual.new()
+var kayak_visual: Node2D
 var lake_session: RefCounted
 const KAYAK_BOUNDARY_HINT_COOLDOWN_MS:=2400
 const KAYAK_BOUNDARY_HINT_DURATION:=2.2
@@ -143,6 +142,7 @@ func _ready() -> void:
 	chapter4_layers.native_prop=room204_object
 	native_canteen=load("res://scripts/objects/canteen_object_scene.gd").new();add_child(native_canteen);native_canteen.setup(self)
 	native_dorm=load("res://scripts/objects/dorm_scene_adapter.gd").new();add_child(native_dorm);native_dorm.setup(self)
+	kayak_visual=KayakObject.new();kayak_visual.name="NativeKayak";add_child(kayak_visual);kayak_visual.setup(self)
 	refresh_world()
 
 func refresh_world() -> void:
@@ -265,7 +265,6 @@ func refresh_world() -> void:
 		# Entry headings can differ from the zone's default checkpoint heading.
 		# Validate the same rotated full hull that the live session will use.
 		kayak.heading = float(spawn.get("heading",-PI/2))
-		kayak_texture = load("res://assets/rpg/qizhen/kayak_overhead_frame_a.png")
 	if not can_stand(player): player = _find_safe(player)
 	transition_alpha = 1.0
 	safe_player = player
@@ -275,6 +274,7 @@ func refresh_world() -> void:
 	_manual_sent = bool(State.d.actOne.get("manualControlTested",false))
 	_sync_player()
 	_update_camera()
+	if is_instance_valid(kayak_visual):kayak_visual.sync()
 	queue_redraw()
 
 func _rect(value: Dictionary) -> Rect2:
@@ -696,6 +696,7 @@ func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 func _render_context() -> Dictionary:
 	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id",""))}
 func _draw() -> void:
+	if is_instance_valid(kayak_visual):kayak_visual.sync()
 	if is_instance_valid(native_dorm):
 		native_dorm.sync(State.d,scene_id)
 		native_dorm.configure_view(size/2-camera*zoom,zoom)
@@ -710,6 +711,10 @@ func _draw() -> void:
 		if room204_object.has_objects():
 			room204_object.configure_view(size/2-camera*zoom,zoom)
 			return
+	if is_instance_valid(kayak_visual) and kayak_visual.active:
+		draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
+		kayak_visual.configure_view(size/2-camera*zoom,zoom)
+		return
 	object_picker.clear()
 	_record_plate_targets()
 	var context:=_render_context()
@@ -719,6 +724,19 @@ func _draw() -> void:
 	_draw_actor_pass(self,context)
 	if chapter4_layers!=null: chapter4_layers.draw_front(self,context,State.d)
 	_draw_tail_pass(self,context)
+func draw_kayak_object_pass(canvas: CanvasItem,before: bool) -> void:
+	if not is_instance_valid(kayak_visual) or not kayak_visual.active:return
+	var context:=_render_context()
+	if before:
+		object_picker.clear()
+		_record_plate_targets()
+		_draw_base_pass(canvas,context)
+		for target: Dictionary in _ordered_targets():
+			if _target_point(target).y<=player.y:_draw_target(target,context.origin,canvas)
+	else:
+		_draw_actor_foreground(canvas,context)
+		_draw_tail_pass(canvas,context)
+
 func draw_room204_object_pass(canvas: CanvasItem,before: bool) -> void:
 	if not is_instance_valid(room204_object) or not room204_object.has_objects(): return
 	var context:=_render_context()
@@ -754,10 +772,7 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
 		if _target_point(target).y <= player.y: _draw_target(target,origin,canvas)
-	if not presentation_actor_hidden and kayak and kayak_texture:
-		var presentation: Dictionary=lake_session.actor_presentation() if lake_session!=null else {"offset":Vector2.ZERO,"scale":1.0,"alpha":1.0}
-		kayak_visual.draw(canvas,origin+(player+presentation.offset)*zoom,zoom*float(presentation.scale),{"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,"side":kayak.last_side,"strokeAgeMs":(kayak.elapsed-kayak.last_stroke)*1000,"alpha":presentation.alpha},Time.get_ticks_msec())
-	elif not presentation_actor_hidden and not frame_set.is_empty():
+	if not presentation_actor_hidden and not kayak and not frame_set.is_empty():
 		var frame: Texture2D = player_side_idle if facing == "side" and walk_clock <= 0 else frame_set[PlayerMetrics.frame_at(walk_clock*1000)]
 		var visual: Rect2 = PlayerMetrics.visual_rect(player,display_scale_at(player))
 		var dimensions := visual.size*zoom
@@ -768,6 +783,11 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 			if target.get("follow_player",false): actor_ids.push_front(str(target.id))
 		if not actor_ids.is_empty(): register_object_surface(actor_ids,{"rect":visual,"texture":frame,"flip_h":player_flip and facing=="side"})
 		canvas.draw_texture_rect(frame,Rect2(position,Vector2(-dimensions.x,dimensions.y) if player_flip and facing == "side" else dimensions),false)
+	_draw_actor_foreground(canvas,layer_context)
+
+func _draw_actor_foreground(canvas: CanvasItem,layer_context: Dictionary) -> void:
+	var origin: Vector2=layer_context.origin
+	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
 		if _target_point(target).y > player.y: _draw_target(target,origin,canvas)
 	if chapter3_layers!=null: chapter3_layers.draw_front(canvas,layer_context,State.d)
