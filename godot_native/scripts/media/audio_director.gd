@@ -724,6 +724,13 @@ func _map_native_actions(action: String, previous: Dictionary, next: Dictionary)
 	if action == "c1_wake" and _rose(previous, next, "native.wake_warned"): _mapped_cue("wake_flash")
 	if action == "c1_enter_home" and _value_at(previous, "native.page") == "desktop" and _value_at(next, "native.page") == "phone_home":
 		_native_effect("01_global_ui_button_tap_confirm", .9)
+	# P11_Checkin.collectAbsenceZero calls the existing11_ once. Its keypad
+	# entry pulse is a different action and must never replay collection audio.
+	if action == "c1_absence" and _rose(previous,next,"flags.cardZeroTaken"):
+		_native_effect("11_p04_campus_card_balance_zero_click", .9)
+	if action == "c1_tiyi_digit" and _rose(previous,next,"flags.tiyiCountTaken"):
+		_native_effect("10_global_digit_collect_fly_to_slot", .9)
+		_mapped_cue("tiyi_47")
 	var legacy_flags: Dictionary = {"gearFallen":"17_p08_settings_gear_drop_flip","slashHalfDropped":"19_p03_avatar_slash_metal_drop","waterDropTaken":"18_p07_weather_water_drop_collect","plantWatered":"22_p10_plant_water_growth_step","plantLit":"23_p10_plant_light_growth_step","plantFertilized":"24_p10_plant_fertilizer_growth_step","checkinDone":"27_p11_checkin_submit_button_press"}
 	for key in legacy_flags:
 		if _rose(previous, next, "flags."+str(key)):

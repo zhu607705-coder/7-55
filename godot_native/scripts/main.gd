@@ -4,6 +4,7 @@ var phone: PanelContainer
 var phone_content: VBoxContainer
 var phone_padding: Control
 var phone_chrome: Control
+var phone_object_pickup: Control
 var phone_document: Control
 var phone_document_previous_focus: WeakRef
 var control_center: Control
@@ -208,6 +209,10 @@ func _build_shell() -> void:
 		phone_chrome=load("res://scripts/ui/phone_chrome.gd").new()
 		phone.add_child(phone_chrome)
 		phone_chrome.setup(_read_runtime_state)
+		phone_object_pickup=load("res://scripts/ui/phone_object_pickup.gd").new()
+		phone_chrome.add_child(phone_object_pickup)
+		phone_object_pickup.setup(phone_chrome,func() -> Dictionary: return State.d,_read_runtime_state)
+		State.action_completed.connect(phone_object_pickup.accept_action)
 		phone_chrome.page_requested.connect(_on_phone_page)
 		phone_chrome.task_requested.connect(_show_journal)
 		phone_chrome.inspect_requested.connect(_inspect_item)
@@ -824,6 +829,7 @@ func _refresh() -> void:
 	_refresh_control_center()
 	if world and world.has_method("refresh_world"): world.refresh_world()
 	_layout()
+	if is_instance_valid(phone_object_pickup): phone_object_pickup.after_refresh()
 
 func _add_app_grid(parent: Control) -> void:
 	var grid := GridContainer.new()
@@ -1939,6 +1945,7 @@ func _capture_world(config: Dictionary) -> void:
 	State.act(str(config.get("on_success","c3_journal_capture_result")),session)
 
 func _reset_runtime_presentations() -> void:
+	if is_instance_valid(phone_object_pickup): phone_object_pickup.reset("story-reset")
 	_cancel_library_reveal()
 	photo_brightness_session.reset()
 	observation_comparison_session.clear()
@@ -2006,6 +2013,7 @@ func _on_phone_page(page: String) -> void:
 	State.open_page(page)
 
 func _on_phone_action(id: String,value: Variant) -> void:
+	if is_instance_valid(phone_object_pickup): phone_object_pickup.capture_action(id,page_body,State.d)
 	match id:
 		"native_control_center_close":
 			State.d.ui.controlCenterOpen=false
