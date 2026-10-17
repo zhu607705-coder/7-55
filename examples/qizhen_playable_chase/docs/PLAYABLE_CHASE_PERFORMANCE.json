@@ -1,0 +1,51 @@
+{
+  "draw_calls": {
+    "max": 95.0,
+    "mean": 91.8714233973198,
+    "p50": 92.0,
+    "p95": 95.0,
+    "p99": 95.0
+  },
+  "elapsed": 22.0,
+  "fixed_fps": false,
+  "fps_cap": 0,
+  "frame_ms": {
+    "max": 45.505,
+    "mean": 7.97244367982615,
+    "over_16_667ms": 8,
+    "p50": 7.729,
+    "p95": 10.078,
+    "p99": 13.131
+  },
+  "frames": 2761,
+  "guarantees_device_60fps": false,
+  "inputs": 50,
+  "mode": "native_window_no_recording",
+  "movie_writer": false,
+  "outcome": "running",
+  "process_ms": {
+    "max": 40.494,
+    "mean": 15.7959101774719,
+    "over_16_667ms": 750,
+    "p50": 13.15,
+    "p95": 32.539,
+    "p99": 40.494
+  },
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "resolution": [
+    1180,
+    812
+  ],
+  "seconds": 22.005147,
+  "swan_phases_observed": [
+    "tracking",
+    "charge_warning",
+    "charge",
+    "recovery"
+  ],
+  "vendor": "Mesa",
+  "vsync_mode": 0,
+  "workload": "scripted real-time stroke injection; not manual play evidence",
+  "frame_measurement": "Time.get_ticks_usec between rendered SceneTree process callbacks; p50/p95 from actual monotonic wall time",
+  "process_monitor_note": "Godot Performance.TIME_PROCESS is a separate sampled engine monitor, not used as frame time or FPS"
+}

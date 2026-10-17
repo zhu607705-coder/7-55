@@ -1,0 +1,92 @@
+{
+  "verified_at_utc": "2026-10-17T08:30:57.104633+00:00",
+  "engine": "Godot 4.6.3.stable.official.7d41c59c4",
+  "method": "Headless automated event injection and deterministic model replay; no GUI used",
+  "suites": {
+    "inputs": {
+      "checks": 94,
+      "failures": [],
+      "suite": "AUTOMATED independent playable input audit"
+    },
+    "model": {
+      "checks": 498,
+      "failures": [],
+      "suite": "AUTOMATED playable chase model"
+    }
+  },
+  "full_chase_replays": [
+    {
+      "raft_route": "upper",
+      "outcome": "won",
+      "next_story": "3.5",
+      "elapsed": 25.9833333333333,
+      "ticks": 3118,
+      "input_count": 59,
+      "collisions": 0,
+      "gate_passed": true,
+      "berth_dwell": 0.6,
+      "swan_dodges": 3
+    },
+    {
+      "raft_route": "lower",
+      "outcome": "won",
+      "next_story": "3.5",
+      "elapsed": 20.4666666666667,
+      "ticks": 2456,
+      "input_count": 74,
+      "collisions": 0,
+      "gate_passed": true,
+      "berth_dwell": 0.6,
+      "swan_dodges": 2
+    }
+  ],
+  "sha256": {
+    "scripts/games/qizhen_playable_chase.gd": "d31db331ce0b9376e9e0612d6b31808bd9b8e26d6b7b830540260bb971cf9a0a",
+    "scripts/presentation/qizhen_playable_chase_view.gd": "476aef66e2c665f2656ed301832a2a9744dab40dafb39e2505dc3b0edf0b8029",
+    "tests/test_playable_chase_inputs.gd": "d68f54ef56ea083ee52a01457867d7dbd6cced49cc2823fc1d1791153509c73e",
+    "tests/test_playable_chase_model.gd": "d3cf754b4050f31804e57c5f39b9b70fc5cf5b1ed164393f597c56ad2c53d548",
+    "tests/fixtures/playable_upper_manual_input.json": "e9acc07ef0ac711f1cdb5c18f834c850e0a4e229a1db6a4c805f6ef79ad180a1",
+    "tests/fixtures/playable_lower_automated_input.json": "c606fdb6b471024255cff9f71c3676aea62b76e34261cfc1ad004cb534eeca6c"
+  },
+  "scope_limits": [
+    "Model replay does not independently authenticate the source recording as human input",
+    "Lower route is explicitly automated",
+    "Geometry and berth fixture tests are not full playthroughs",
+    "No physical touchscreen, target-device performance, or video/frame quality validation",
+    "Story 3.5 is a local result field, not formal save mutation or scene handoff"
+  ],
+  "open_findings": [],
+  "release_final_validation": {
+    "verified_at_utc": "2026-10-17T08:33:56.835267+00:00",
+    "source": "frozen release-project dependency-only copy, writable HOME and all XDG directories",
+    "clean_import_errors": 0,
+    "suites": {
+      "test_paddling": {
+        "checks": 85,
+        "failures": 0
+      },
+      "test_paddling_cadence": {
+        "checks": 2422,
+        "failures": 0
+      },
+      "test_paddling_cadence_matrix": {
+        "checks": 81,
+        "failures": 0
+      },
+      "test_paddling_geometry": {
+        "checks": 2566,
+        "failures": 0
+      },
+      "test_playable_chase_model": {
+        "checks": 498,
+        "failures": 0
+      },
+      "test_playable_chase_inputs": {
+        "checks": 94,
+        "failures": 0
+      }
+    },
+    "total_checks": 5746,
+    "scope": "Latest view has final 640x360 label/result-panel layout corrections. Prior independent logical audit is retained; all six suites reran on the release source."
+  }
+}
