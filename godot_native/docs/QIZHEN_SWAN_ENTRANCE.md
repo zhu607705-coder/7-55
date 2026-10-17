@@ -92,3 +92,5 @@ godot --headless --path <独立工程> --script res://tests/test_qizhen_swan_mot
 ## 游泳反馈后的独立审看
 
 新增 `scenes/qizhen_swan_swim_study.tscn`，不覆盖本出场。详见 [游泳近景说明](QIZHEN_SWAN_SWIM_STUDY.md)。当前泳姿仍待用户确认，Draft不代表视觉已接受。
+
+新增 `scenes/qizhen_swan_hop_study.tscn` 的16姿态展翅短扑，详见 [短扑审看说明](QIZHEN_SWAN_HOP_STUDY.md)。2026-10-17 用户认可此轮短扑样片并要求上传 PR；原出场和平游仍独立，整章视觉与正式剧情集成尚未验收。

@@ -64,5 +64,21 @@
     "frames": 360,
     "mode": "deterministic presentation trajectory; native Movie Maker",
     "source": "imagegen transparent RGBA atlas; four stable direction frames and one acceleration pose"
+  },
+  "hop_review_v3": {
+    "status": "motion_sample_approved_upload_authorized_not_integrated",
+    "motion_sample_approved_date": "2026-10-17",
+    "assertions": 2055,
+    "failures": 0,
+    "seconds": 7,
+    "fps": 30,
+    "frames": 210,
+    "key_poses": 16,
+    "airborne_seconds": 0.86,
+    "maximum_height_source_pixels": 32,
+    "launch_count": 1,
+    "landing_count": 1,
+    "mode": "native deterministic Movie Maker",
+    "previous_remote_ci_does_not_cover_this_change": "1386d88"
   }
 }
