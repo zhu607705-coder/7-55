@@ -4,6 +4,7 @@ const Session=preload("res://scripts/media/c3_rain_rescue_session.gd")
 const FOCUS_SHELL_PATH="res://tests/fixtures/rain_rescue_focus_shell.gd"
 var failures:=0
 var checks:=0
+var recording_capture_rect:=Rect2()
 func check(value: bool,message: String) -> void:
 	checks+=1
 	if not value: failures+=1; push_error("TEST FAILED: "+message)
@@ -164,24 +165,30 @@ func _run_graphical() -> void:
 	var shell: Control=load("res://scenes/main.tscn").instantiate(); root.add_child(shell)
 	root.grab_focus(); await create_timer(.15).timeout
 	fixture(state,shell,false)
+	await process_frame; await RenderingServer.frame_post_draw
+	await _prepare_graphical_recording()
 	check(DisplayServer.get_name()!="headless" and shell.get_window().has_focus(),"graphical test has real OS window focus")
+	var start: int=Time.get_ticks_msec()
 	var result: Dictionary=state.act("c3_lake_target:qizhen_dock_board")
 	check(result.has("world_effect"),"untouched graphical Main starts actual rain presenter")
 	if not result.has("world_effect"):
 		await shell.shutdown(); shell.queue_free(); quit(1); return
 	var session: RefCounted=result.world_effect.session
 	var presenter: Control=shell.world_effect
+	await process_frame; await RenderingServer.frame_post_draw
+	_check_rescue_root_bounds(shell,presenter,"desktop route")
 	var snapshot: Dictionary=presenter.read_state.call()
 	check(not is_same(snapshot,state.d) and snapshot.native.host.focused and snapshot.native.host.world_visible,"unchanged Main host reader keeps focused deep-snapshot boundary")
 	var capture_dir: String=OS.get_environment("RAIN_RESCUE_CAPTURE_DIR")
 	if not capture_dir.is_empty(): DirAccess.make_dir_recursive_absolute(capture_dir)
 	var captures: Array[int]=[0,5750,10550]
 	var prelude_captured:=false
+	var dock_checked:=false
 	var deadline: int=Time.get_ticks_msec()+30000
-	var start: int=Time.get_ticks_msec()
 	while Time.get_ticks_msec()<deadline and not state.d.qizhenLake.rainRescueCompleted:
 		if session.phase()=="route" and session.snapshot().pose.stage=="capsize" and session.snapshot().pose.localMs>=850 and not prelude_captured:
 			prelude_captured=true
+			_check_rescue_root_bounds(shell,presenter,"desktop capsize")
 			if not capture_dir.is_empty():
 				await RenderingServer.frame_post_draw
 				check(root.get_texture().get_image().save_png(capture_dir+"/prelude_capsize.png")==OK,"graphical source prelude capsize frame saved")
@@ -189,14 +196,20 @@ func _run_graphical() -> void:
 			var at: int=captures.pop_front()
 			check(is_instance_valid(presenter.native_renderer),"graphical timeline embeds actual native renderer")
 			if at==0: check(presenter.native_renderer.elapsed>=2.65 and presenter.native_renderer.elapsed<2.85,"graphical native first frame is post-capsize hold_hull, never wind/fall")
+			_check_rescue_root_bounds(shell,presenter,"desktop native "+str(at))
 			if not capture_dir.is_empty():
 				await RenderingServer.frame_post_draw
 				check(root.get_texture().get_image().save_png(capture_dir+"/native_rescue_"+str(at)+".png")==OK,"graphical rescue frame saved")
+		if session.phase()=="rescued" and not dock_checked:
+			dock_checked=true
+			_check_rescue_root_bounds(shell,presenter,"desktop dock hold")
 		await create_timer(.02).timeout
+	check(dock_checked,"graphical run checks final dock caption bounds")
 	check(state.d.qizhenLake.rainRescueCompleted and session.phase()=="consumed" and session.snapshot().outcome=="native","unchanged graphical Main completes native route through retained controller receipt")
 	check(Time.get_ticks_msec()-start>=19600,"graphical completion preserves full native duration and dock hold")
 	check(state.d.native.scene=="dorm_hub" and state.d.currentScene=="phone_home" and state.d.qizhenLake.weatherAdjustmentRequested,"graphical completion keeps original dorm/weather handoff")
 	check(prelude_captured and captures.is_empty(),"graphical run preserves one prelude capsize before rescue contact and wet steps")
+	await _finish_graphical_recording()
 	await shell.shutdown(); shell.queue_free(); await process_frame
 	print("Rain rescue graphical real focus: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)
@@ -208,6 +221,9 @@ func _run_graphical_touch_skip() -> void:
 	var shell: Control=load("res://scenes/main.tscn").instantiate(); root.add_child(shell)
 	root.grab_focus(); await create_timer(.15).timeout
 	fixture(state,shell,false)
+	# Wait for the real container resize/layout; user input cannot occur before
+	# this first visible frame, and pre-layout source coordinates are stale.
+	await process_frame; await RenderingServer.frame_post_draw
 	check(DisplayServer.get_name()!="headless" and shell.get_window().has_focus(),"portrait touch test has real OS window focus")
 	var result: Dictionary=state.act("c3_lake_target:qizhen_dock_board")
 	check(result.has("world_effect"),"portrait Main starts controller-issued rain presenter")
@@ -215,10 +231,13 @@ func _run_graphical_touch_skip() -> void:
 		await shell.shutdown(); shell.queue_free(); quit(1); return
 	var session: RefCounted=result.world_effect.session
 	var presenter: Control=shell.world_effect
-	_check_compact_caption(presenter,state.content("chapter3-qizhen-lake.content").dock.forcedLaunch,"route")
+	# Main adopts the newly mounted authored-world contract in its _process
+	# before drawing. Check the visible frame, not the synchronous setup tree.
+	await process_frame; await RenderingServer.frame_post_draw
+	_check_compact_caption(shell,presenter,state.content("chapter3-qizhen-lake.content").dock.forcedLaunch,"route")
 	var capsize_deadline: int=Time.get_ticks_msec()+6500
 	while Time.get_ticks_msec()<capsize_deadline and presenter.pose.get("stage","")!="capsize": await create_timer(.02).timeout
-	_check_compact_caption(presenter,state.content("chapter3-qizhen-lake.content").dock.forcedCapsize,"capsize")
+	_check_compact_caption(shell,presenter,state.content("chapter3-qizhen-lake.content").dock.forcedCapsize,"capsize")
 	check(await wait_phase(session,"cinematic",7500),"portrait rescue reaches native continuation")
 	while session.phase()=="cinematic" and session.snapshot().cinematicMs<1050: await create_timer(.02).timeout
 	var host: Dictionary=presenter.read_state.call().native.host
@@ -228,7 +247,7 @@ func _run_graphical_touch_skip() -> void:
 	check(presenter.skip.size.y*display_scale>=44 and presenter.skip.get_theme_font_size("font_size")*display_scale>=16,"portrait skip has actual 44px minimum height and readable 16px font")
 	check(Rect2(Vector2.ZERO,Vector2(960,540)).encloses(presenter.skip.get_rect()),"enlarged skip remains inside logical cinematic viewport")
 	check(presenter.native_renderer.external_caption,"portrait native caption uses only one outer Label")
-	_check_compact_caption(presenter,presenter.native_renderer.caption_text(),"native rescue")
+	_check_compact_caption(shell,presenter,presenter.native_renderer.caption_text(),"native rescue")
 	var source: Vector2=presenter.skip.get_global_transform_with_canvas()*(presenter.skip.size/2)
 	var container_point: Vector2=source*shell.world_view.size/Vector2(shell.world_viewport.size)
 	var point: Vector2=shell.world_view.get_global_transform_with_canvas()*container_point
@@ -253,17 +272,100 @@ func _run_graphical_touch_skip() -> void:
 	check(touch_events==["down","up"] and pressed_events.size()==1 and session.phase()=="rescued" and session.snapshot().outcome=="skipped","actual root ScreenTouch reaches Button and activates native skip exactly once")
 	check(not state.d.qizhenLake.rainRescueCompleted,"touch skip cannot bypass dock hold")
 	await process_frame
-	_check_compact_caption(presenter,state.content("chapter3-qizhen-lake.content").dock.forcedRescue,"dock hold")
+	_check_compact_caption(shell,presenter,state.content("chapter3-qizhen-lake.content").dock.forcedRescue,"dock hold")
 	check(await wait_phase(session,"consumed",2500),"touch skip consumes original controller receipt after dock hold")
 	check(state.d.native.scene=="dorm_hub" and state.d.currentScene=="phone_home" and state.d.qizhenLake.rainRescueCompleted and not state.d.qizhenLake.rainSafetyCleared,"portrait touch preserves dorm handoff and weather gate")
 	await shell.shutdown(); shell.queue_free(); await process_frame
 	print("Rain rescue graphical touch skip: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)
 
-func _check_compact_caption(presenter: Control, expected: String, stage: String) -> void:
+func _check_compact_caption(shell: Control, presenter: Control, expected: String, stage: String) -> void:
 	var display_scale: float=presenter.read_state.call().native.host.world_display_scale
 	var label: Label=presenter.caption
 	check(label.visible and label.text==expected,stage+" caption preserves every original word in one visible Label")
 	check(label.get_theme_font_size("font_size")*display_scale>=14,stage+" caption is at least 14 physical pixels")
 	check(Rect2(0,424,960,116).encloses(label.get_rect()),stage+" caption stays inside original footer")
 	check(label.get_line_count()<=2 and label.get_visible_line_count()==label.get_line_count(),stage+" caption wraps to at most two unclipped lines")
+
+	_check_rescue_root_bounds(shell,presenter,"portrait "+stage)
+
+func _rescue_rect_to_root(shell: Control, item: CanvasItem, rect: Rect2) -> Rect2:
+	var viewport_scale:=Transform2D.IDENTITY.scaled(shell.world_view.size/Vector2(shell.world_viewport.size))
+	return shell.world_view.get_global_transform_with_canvas()*viewport_scale*item.get_global_transform_with_canvas()*rect
+
+func _check_rescue_root_bounds(shell: Control, presenter: Control, stage: String) -> void:
+	var root_rect:=Rect2(Vector2.ZERO,Vector2(root.size))
+	var source_rect:=Rect2(0,0,960,540)
+	var frame: Rect2=_rescue_rect_to_root(shell,presenter,source_rect)
+	check(root_rect.encloses(frame),stage+" entire 960x540 frame fits inside actual root screen")
+	var native_visible: bool=is_instance_valid(presenter.native_renderer) and presenter.native_renderer.visible
+	var text_rect: Rect2
+	var padded_rect: Rect2
+	var owner: CanvasItem=presenter
+	if native_visible and not presenter.native_renderer.external_caption:
+		var renderer: Control=presenter.native_renderer
+		owner=renderer
+		var metrics: Vector2=renderer.font.get_string_size(renderer.caption_text(),HORIZONTAL_ALIGNMENT_LEFT,-1,20)
+		var ascent: float=renderer.font.get_ascent(20)
+		var descent: float=renderer.font.get_descent(20)
+		text_rect=Rect2(Vector2(24,455-ascent),Vector2(metrics.x,maxf(metrics.y,ascent+descent)))
+		padded_rect=text_rect.grow(4)
+		check(metrics.x<=912 and Rect2(0,424,960,116).encloses(padded_rect),stage+" complete native caption and 4px padding fit authored footer")
+	else:
+		var label: Label=presenter.caption
+		owner=label
+		var font_size: int=label.get_theme_font_size("font_size")
+		var caption_font: Font=label.get_theme_font("font")
+		var metrics: Vector2=caption_font.get_multiline_string_size(label.text,label.horizontal_alignment,label.size.x,font_size,-1,TextServer.BREAK_MANDATORY|TextServer.BREAK_WORD_BOUND|TextServer.BREAK_ADAPTIVE)
+		var text_height: float=maxf(metrics.y,caption_font.get_height(font_size)*label.get_line_count()+label.get_theme_constant("line_spacing")*maxi(0,label.get_line_count()-1))
+		text_rect=Rect2(Vector2((label.size.x-metrics.x)/2,(label.size.y-text_height)/2),Vector2(metrics.x,text_height))
+		padded_rect=Rect2(Vector2.ZERO,label.size).grow(4)
+		check(label.visible and metrics.x<=label.size.x and text_height<=label.size.y and label.get_visible_line_count()==label.get_line_count(),stage+" complete caption text fits visible Label without clipping")
+		check(Rect2(0,424,960,116).encloses(label.get_transform()*padded_rect),stage+" whole Label and 4px padding fit authored footer")
+	var root_text: Rect2=_rescue_rect_to_root(shell,owner,text_rect)
+	var root_padding: Rect2=_rescue_rect_to_root(shell,owner,padded_rect)
+	check(root_rect.encloses(root_text) and root_rect.encloses(root_padding),stage+" complete text rectangle and padding stay inside actual root screen")
+	if recording_capture_rect.has_area():
+		var screen_text:=Rect2(root_text.position+Vector2(root.position),root_text.size)
+		var screen_padding:=Rect2(root_padding.position+Vector2(root.position),root_padding.size)
+		var screen_frame:=Rect2(frame.position+Vector2(root.position),frame.size)
+		check(recording_capture_rect.encloses(screen_text) and recording_capture_rect.encloses(screen_padding) and recording_capture_rect.encloses(screen_frame),stage+" actual window origin plus full text/padding/frame fit verified X11 capture crop")
+	if is_instance_valid(presenter.skip) and presenter.skip.visible:
+		check(root_rect.encloses(_rescue_rect_to_root(shell,presenter.skip,Rect2(Vector2.ZERO,presenter.skip.size))),stage+" entire skip button fits actual root screen")
+	print("RAIN_RESCUE_BOUNDS: ",stage," root=",root_rect," frame=",frame," text=",root_text," padded=",root_padding)
+
+func _prepare_graphical_recording() -> void:
+	# The recorder must verify the OS client rectangle, not assume that the
+	# X11 screen and the Godot window share their origin or dimensions.
+	var sync_dir: String=OS.get_environment("RAIN_RESCUE_RECORDING_SYNC_DIR")
+	if sync_dir.is_empty(): return
+	await RenderingServer.frame_post_draw
+	check(root.position==Vector2i.ZERO and root.size==Vector2i(1280,720),"recording window uses verified 1280x720 client at desktop origin")
+	var root_image: Image=root.get_texture().get_image()
+	check(root_image.get_size()==root.size,"recording root render dimensions match actual OS window size")
+	var details: Dictionary={"windowId":DisplayServer.window_get_native_handle(DisplayServer.WINDOW_HANDLE),"windowPosition":[root.position.x,root.position.y],"windowSize":[root.size.x,root.size.y],"rootTextureSize":[root_image.get_width(),root_image.get_height()]}
+	var file:=FileAccess.open(sync_dir+"/window-ready.json",FileAccess.WRITE)
+	file.store_string(JSON.stringify(details)); file.close()
+	var deadline: int=Time.get_ticks_msec()+15000
+	while Time.get_ticks_msec()<deadline and not FileAccess.file_exists(sync_dir+"/capture-started"):
+		await create_timer(.02).timeout
+	check(FileAccess.file_exists(sync_dir+"/capture-started"),"recorder starts only after independent X11 window-rectangle verification")
+	if FileAccess.file_exists(sync_dir+"/verified-window.json"):
+		var verified: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(sync_dir+"/verified-window.json"))
+		var crop: Array=verified.captureRect
+		recording_capture_rect=Rect2(crop[0],crop[1],crop[2],crop[3])
+	check(recording_capture_rect==Rect2(Vector2(root.position),Vector2(root.size)),"actual OS capture crop matches window position and complete root dimensions")
+
+func _finish_graphical_recording() -> void:
+	var sync_dir: String=OS.get_environment("RAIN_RESCUE_RECORDING_SYNC_DIR")
+	if sync_dir.is_empty(): return
+	await RenderingServer.frame_post_draw
+	var capture_dir: String=OS.get_environment("RAIN_RESCUE_CAPTURE_DIR")
+	if not capture_dir.is_empty():
+		check(root.get_texture().get_image().save_png(capture_dir+"/recording-final-root.png")==OK,"final dorm root frame saved for recording comparison")
+	# Keep the real final controller-owned scene visible through the recording,
+	# rather than recording a closed window or altering the session clock.
+	var deadline: int=Time.get_ticks_msec()+15000
+	while Time.get_ticks_msec()<deadline and not FileAccess.file_exists(sync_dir+"/capture-finished"):
+		await create_timer(.02).timeout
+	check(FileAccess.file_exists(sync_dir+"/capture-finished"),"recording ends on the real final scene before closing the window")
