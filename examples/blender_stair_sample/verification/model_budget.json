@@ -1,0 +1,17 @@
+{
+  "mesh_objects": 36,
+  "triangles": 24480,
+  "materials": 12,
+  "glb_bytes": 1530444,
+  "route_modules": [
+    "entry",
+    "flight_0",
+    "turn_0",
+    "flight_1",
+    "turn_1",
+    "sample_exit"
+  ],
+  "editable_source": "source/stairwell_sample.blend",
+  "coordinate_system": "Godot metres, Y-up; authored via explicit axis conversion",
+  "no_glow": true
+}

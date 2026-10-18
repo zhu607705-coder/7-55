@@ -1,0 +1,10 @@
+{
+  "asset": "stair_text.ttf",
+  "source": "Noto Sans CJK JP Regular (system-distributed Noto CJK), subset for the Chinese labels used by B3; OFL license in FONT_LICENSE.txt",
+  "purpose": "Subset used by the independently delivered B3 stair prototype for labels and controls",
+  "sha256": "b48b95ec7329d6ade2187d779f5618950963bd7d25178fe4f0d253db9c68044a",
+  "bytes": 102368,
+  "runtime_art": "All player and guard textures retain original src/assets bytes through the existing sync_source.mjs step. No generated jump atlas is supplied.",
+  "fontFamily": "Noto Sans CJK JP",
+  "copyright": "© 2014-2021 Adobe (http://www.adobe.com/)."
+}
