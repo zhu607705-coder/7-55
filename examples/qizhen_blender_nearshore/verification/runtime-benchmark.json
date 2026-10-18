@@ -1,0 +1,15 @@
+{
+  "environment_glb_draw_groups": 25,
+  "fixed_fps_capture": false,
+  "mean_fps": 30.4034723197667,
+  "measured_frames": 300,
+  "mobile_hardware_tested": false,
+  "p95_frame_ms": 43.9393939393939,
+  "renderer": "Godot 4.6.3 compatibility / Mesa llvmpipe software rasterizer",
+  "size": [
+    1280,
+    720
+  ],
+  "two_live_subviewports": true,
+  "wall_seconds": 9.867294
+}

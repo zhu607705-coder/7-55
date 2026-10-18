@@ -1,0 +1,15 @@
+xauth:  file /workspace/scratch/675ce2b27270/lake-blender-sample-20261018/runtime/xauth-63 does not exist
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+Movie Maker mode enabled, recording movie in 1280×720 @ 30 FPS...
+NATIVE_SAMPLE_CAPTURE {"actual_glb_boat":true,"actual_glb_environment":true,"fps":30,"frames":720,"input_only":true,"invalid_progress_jumps":0,"maximum_frame_distance":9.41541194915771,"maximum_frame_turn_radians":0.0500000000000007,"native_godot_renderer":true,"no_teleports":true,"render_seconds":59.803,"result":{"active_time":20.3499999999995,"collisions":0,"completed_at":[3.89999999999999,8.71666666666681,21.3833333333328],"damage":0,"distance":2094.49475397012,"elapsed":21.3833333333328,"inspected":false,"position":[5995.53125,2840.09765625],"progress":2,"recovered":true,"status":"won","strokes":31,"swan_charges":0,"swan_warnings":0},"rig_accepted":31,"rig_started":30,"video_seconds":24}
+--------------------------------------------------------------------------------
+Done recording movie at path: /workspace/scratch/675ce2b27270/lake-blender-sample-20261018/outputs/qizhen_blender_final_24s.avi
+720 frames at 30 FPS (movie length: 00:00:24:00), recorded in 00:01:00 (40% of real-time speed).
+CPU render time: 3.52 seconds (average: 4.89 ms/frame)
+GPU render time: 3.57 seconds (average: 4.95 ms/frame)
+Encoding time: 8.40 seconds (average: 11.67 ms/frame)
+--------------------------------------------------------------------------------

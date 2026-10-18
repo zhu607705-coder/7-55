@@ -1,0 +1,194 @@
+{
+  "scope": "Original pixel actors/strokes/font copied unchanged from the PR147 input-camera baseline; new procedural Blender/GLB scenery and boat added in this independent sample.",
+  "unchanged_baseline_assets": [
+    {
+      "file": "assets/paddling/hand_grip.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/hand_grip.svg",
+      "sha256": "4189ba25593b16ff3eb7d758767468eb476d7bfa8512513f6e7c904e703ce4c8",
+      "matches_source": true
+    },
+    {
+      "file": "assets/paddling/hand_palm.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/hand_palm.svg",
+      "sha256": "0841d55e821030679d9849891da072036472ac777919453a8e19835220f7e979",
+      "matches_source": true
+    },
+    {
+      "file": "assets/paddling/head.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/head.svg",
+      "sha256": "fc5b41bc1c76170db9a5fa693675c428879bb8c15e63ad11ca03994c27100d7d",
+      "matches_source": true
+    },
+    {
+      "file": "assets/paddling/hull.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/hull.svg",
+      "sha256": "d0dd30a776c8c898b0ba02ecdc3704f565f1277326bb8b808c3d33151db11c25",
+      "matches_source": true
+    },
+    {
+      "file": "assets/paddling/legs.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/legs.svg",
+      "sha256": "f58ab40e2c75d034fe24cba921e4ec13ef178d352fecd06e7dfc85ea2a698c9c",
+      "matches_source": true
+    },
+    {
+      "file": "assets/paddling/source/original_kayak.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/source/original_kayak.svg",
+      "sha256": "ddb765363d5450722d7460edd2673e92b553c93b480aebe535030c576e9ddf84",
+      "matches_source": true
+    },
+    {
+      "file": "assets/paddling/torso.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/torso.svg",
+      "sha256": "77930840d81bff32f77901f47cc4b2ce0fe4ad3347f4781d7f50bc205099cb93",
+      "matches_source": true
+    },
+    {
+      "file": "assets/paddling/waist.svg",
+      "source": "Approved PR147 input-camera large-world baseline / assets/paddling/waist.svg",
+      "sha256": "860e651862b2a0f17b959176181bda9d7eaca17293f6f92a0a231016b6d29133",
+      "matches_source": true
+    },
+    {
+      "file": "assets/native/chapter3/black_swan_swim_atlas_v2.png",
+      "source": "Approved PR147 input-camera large-world baseline / assets/native/chapter3/black_swan_swim_atlas_v2.png",
+      "sha256": "0f857be684db0cdf8446610469a0cfe0c32a4a9d2ee7ed7b1bbd745dd244c34c",
+      "matches_source": true
+    },
+    {
+      "file": "assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "source": "Approved PR147 input-camera large-world baseline / assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08",
+      "matches_source": true
+    },
+    {
+      "file": "assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+      "source": "Approved PR147 input-camera large-world baseline / assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+      "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc",
+      "matches_source": true
+    },
+    {
+      "file": "scripts/presentation/kayak_rig.gd",
+      "source": "Approved PR147 input-camera large-world baseline / scripts/presentation/kayak_rig.gd",
+      "sha256": "f982cf40db7e162025f1e5df6dae5d3f5eb7e63f0f73934059ee656fffff8a67",
+      "matches_source": true
+    },
+    {
+      "file": "scripts/presentation/kayak_stroke_timeline.gd",
+      "source": "Approved PR147 input-camera large-world baseline / scripts/presentation/kayak_stroke_timeline.gd",
+      "sha256": "13d7013d5ae4cac8fb376f2ac6b6805f0ea034f67630a2789d5141dac604a47f",
+      "matches_source": true
+    },
+    {
+      "file": "scripts/presentation/qizhen_swan_swim_visual.gd",
+      "source": "Approved PR147 input-camera large-world baseline / scripts/presentation/qizhen_swan_swim_visual.gd",
+      "sha256": "aa367b03ac06e425031519e1324bbffbbab4639069e322d8ad3da79df780f9ee",
+      "matches_source": true
+    },
+    {
+      "file": "scripts/games/lake_geometry.gd",
+      "source": "Approved PR147 input-camera large-world baseline / scripts/games/lake_geometry.gd",
+      "sha256": "d1ea15f66a9f1716099815fb424ffd4c541597d22c14289dfc95227727a87352",
+      "matches_source": true
+    }
+  ],
+  "new_authored_assets": [
+    {
+      "file": "assets/blender/blue.png",
+      "sha256": "a5605f5f6496b7449753b79bb40af2eb4a840472d9bcdd1833ce605d6b20752a",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/grass.png",
+      "sha256": "a12e5cebcf6d4181b3aa51042daa74041c399847820d302e71ac40a845de5e77",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/orange.png",
+      "sha256": "026009fdc72d5acab38cacc38151ae871086549e53d86b51e3f95b333d9b4129",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/path.png",
+      "sha256": "28c1f1f908c425d0f6e4168106c034e4d5c64d68d81c437e16e9d5830a1699d0",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_kayak.glb",
+      "sha256": "c13ec3216f10739ebd00b58b109cbe3584455e0efa9155041e7871f7aed0f3ec",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_kayak_orange.png",
+      "sha256": "026009fdc72d5acab38cacc38151ae871086549e53d86b51e3f95b333d9b4129",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_north_bank.glb",
+      "sha256": "604d51329ec5a95414140b83f6e3d86e00a124f8931010b727a991b091d8c2ab",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_north_bank_blue.png",
+      "sha256": "a5605f5f6496b7449753b79bb40af2eb4a840472d9bcdd1833ce605d6b20752a",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_north_bank_grass.png",
+      "sha256": "a12e5cebcf6d4181b3aa51042daa74041c399847820d302e71ac40a845de5e77",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_north_bank_path.png",
+      "sha256": "28c1f1f908c425d0f6e4168106c034e4d5c64d68d81c437e16e9d5830a1699d0",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_north_bank_stone.png",
+      "sha256": "2c17cdd1d14c1e9e792d502437518c6c9769fff6d963924071ce76c79f046d51",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/qizhen_north_bank_wood.png",
+      "sha256": "0b068d3e5d246f740415932275ce604d15d7bdc838a7568abd18a7a5f36f245b",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/scene_manifest.json",
+      "sha256": "d909a43b49b0601684e98f8895a18226f4489bc7900e7cb9d0abdbcf3c56c90d",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/shore_distance.png",
+      "sha256": "5100c8ed1e4a013947089a1d2b556697e1db6b17adf07e31bc327e56e4c07490",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/stone.png",
+      "sha256": "2c17cdd1d14c1e9e792d502437518c6c9769fff6d963924071ce76c79f046d51",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    },
+    {
+      "file": "assets/blender/wood.png",
+      "sha256": "0b068d3e5d246f740415932275ce604d15d7bdc838a7568abd18a7a5f36f245b",
+      "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
+    }
+  ],
+  "editable_source": {
+    "file": "../source/qizhen_north_bank.blend",
+    "sha256": "7bbeffa89acc914b88015c7691989d1091882b3d67a6010b9049b34d80b8e426",
+    "rebuild": [
+      "../source/build_lake_sample.py",
+      "../source/build_shore_distance.py"
+    ]
+  },
+  "third_party_models_or_stock_textures": false,
+  "font_license": "assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+  "reference_images_redistributed": false,
+  "reference_links": [
+    "https://www.zju.edu.cn/2018/0410/c32747a1513553/page.psp",
+    "https://hr.zju.edu.cn/cn/2024/0517/c29598a2918345/page.htm",
+    "https://www.zju.edu.cn/2023/0324/c75118a2732446/pagem.htm"
+  ],
+  "scope_warning": "Dock dimensions, attachment, facades, vegetation, path details and shallow-water styling are game adaptations, not measured/current reality."
+}
