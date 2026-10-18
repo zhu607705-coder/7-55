@@ -4,7 +4,7 @@ signal finished(result: Dictionary)
 signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
 const DURATIONS = [2.2,1.9,1.65]
-const DIALOGUE = ["旁白：嘿！你到底在干什么？放开我！", "玩家：不，除非你帮助我", "玩家：不然你就和我的绩点同归于尽吧", "旁白：哦，好吧，好吧！但你先把手放开！"]
+const DIALOGUE = ["旁白：喂！你拽我弹窗干什么？！快松手！要未响应了！", "玩家：帮我补签到！", "玩家：不帮就一起死机！", "旁白：行行行！算你狠！我帮你想办法还不行吗？先把手指挪开！"]
 var phase = "success"
 var elapsed = 0.0
 var blocks = 0

@@ -1,5 +1,6 @@
 extends SceneTree
 const Session=preload("res://scripts/presentation/c3_scene_session.gd")
+const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 const Library=preload("res://scripts/chapters/library022.gd")
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
 const Host=preload("res://scripts/presentation/c3_scene_host.gd")
@@ -47,13 +48,16 @@ func run() -> void:
 	var opening: RefCounted=library.scene_session(s)
 	check(opening==library.scene_session(s),"pending opening reuses issued capability")
 	check(opening.beats.size()==27 and opening.lines.size()==20,"source has 20 authored lines and seven transition beats")
-	var fixture: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter3_scene_source.json"))
-	check(JSON.parse_string(JSON.stringify(opening.beats))==fixture.normal,"all normal opening beats equal original TypeScript helper output")
-	check(JSON.parse_string(JSON.stringify(Session.new(s,"opening",true).beats))==fixture.reduced,"all reduced opening beats equal original TypeScript helper output")
+	var fixture: Dictionary=DisplayFixture.opening(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter3_scene_source.json")))
+	check(JSON.parse_string(JSON.stringify(opening.beats))==fixture.normal,"normal opening keeps source beats plus approved unvoiced reading time")
+	check(JSON.parse_string(JSON.stringify(Session.new(s,"opening",true).beats))==fixture.reduced,"reduced opening keeps source beats plus approved unvoiced reading time")
 	for beat: Dictionary in opening.beats:
 		if beat.lineIndex!=null:
 			var line: String=opening.lines[int(beat.lineIndex)].text
-			check(beat.durationMs==clampi(760+line.to_utf16_buffer().size()/2*48,1200,1900),"source UTF16 duration "+str(beat.lineIndex))
+			var key: String="library_story_library_friend_contacted_%02d" % [int(beat.lineIndex)+1]
+			var expected_ms: int=clampi(760+line.to_utf16_buffer().size()/2*48,1200,1900)
+			if opening.opening_durations.has(key): expected_ms=maxi(int(opening.opening_durations[key]),DisplayFixture.reading_ms(line))
+			check(beat.durationMs==expected_ms,"unvoiced reading allowance with source minimum "+str(beat.lineIndex))
 	check(opening.attach(s,native_host),"opening attaches to one host")
 	check(not opening.attach(s,native_host),"duplicate opening attachment refused")
 	var impostor:=Node.new(); root.add_child(impostor)

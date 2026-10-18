@@ -90,9 +90,9 @@ func view(page: String, s: Dictionary) -> Dictionary:
 			elif s.actOne.exerciseStarted and not s.actOne.pushTriangleTaken: body += "\n新通知：方向校准　▶\n头像边缘有一个三角形。"
 			return {"title":"手机主页", "body":body}
 		"wechat":
-			var body = "朋友　07:55\n快快老师在点名，学在浙大\n\n室友　07:21\n晚上一起去食堂吃饭呀~\n\n导师　07:18\n请把实验报告的初稿发我一下。"
+			var body = "朋友　07:55\n速来！老头突然开始点名了，学在浙大雷达签到！\n\n室友　07:21\n晚上一起去食堂吃饭呀~\n\n导师　07:18\n请把实验报告的初稿发我一下。"
 			if _prologue(s) and s.flags.codeScattered: body += "\n\n朋友：这是签到码 ▓▓▓▓\n头像上有一条斜线。"
-			if s.actOne.phase == "friend_message_required": body = "朋友：成功了吗\n玩家：没有，但我正试着威胁系统\n朋友：？"
+			if s.actOne.phase == "friend_message_required": body = "朋友：签上了吗？？\n玩家：没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。\n朋友：？你没睡醒吧"
 			if _movement(s) and not s.actOne.mentorLineReleased: body += "\n导师头像：两枚卡扣封住了一条竖线，胶缝里似乎缺一点能流动的东西。"
 			return {"title":"微信", "body":body}
 		"system_chat":
@@ -255,9 +255,9 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			return _page(s, "desktop")
 		"c1_wake":
 			s.native.wake_warned = true
-			return _ok("起床蠢货！！！")
+			return _ok("还睡？！早八要迟到了！！")
 		"c1_enter_home":
-			if not s.native.get("wake_warned",false): return _ok("你没有5分钟了，但你很有勇气。")
+			if not s.native.get("wake_warned",false): return _ok("早八快上课了。不得不说，你还敢赖床，心理素质真硬。")
 			return _page(s,"phone_home")
 		"c1_friend":
 			if f.codeScattered: return _ok("朋友的签到码已经被打散了。")
@@ -305,7 +305,7 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			items.reverseGear = true
 			return _ok("获得反向齿轮，背面的数字已记下。")
 		"c1_avatar":
-			if not f.codeScattered: return _ok("朋友：快快老师在点名，学在浙大。")
+			if not f.codeScattered: return _ok("朋友：速来！老头突然开始点名了，学在浙大雷达签到！")
 			if f.slashTaken: return _ok("头像上的斜线已经取走。")
 			if not f.slashHalfDropped: return _ok("斜线晃了晃，还没掉。" if s.ui.autoRotate else "头像上的斜线纹丝不动。或许可以再斜一点。")
 			f.slashTapCount += 1
@@ -422,7 +422,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 		"c2_friend_exchange":
 			if a.phase != "friend_message_required": return _ok("朋友：？")
 			a.phase = "system_required"
-			return _ok("朋友：成功了吗\n玩家：没有，但我正试着威胁系统\n朋友：？")
+			return _ok("朋友：签上了吗？？\n玩家：没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。\n朋友：？你没睡醒吧")
 		"c2_open_system": return _page(s, "system_chat")
 		"c2_confront_system":
 			if not ["system_required", "inventory_required", "system_return_required"].has(a.phase): return _ok("系统暂时没有新的要求。")
@@ -452,7 +452,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 		"c2_inspect_character":
 			if not _movement(s): return _ok("小人站在寝室里。")
 			a.characterPromptSeen = true
-			return _ok("他听不到你说话。现在的他连一个能回应的名字都没有。" if not a.characterNamed else "他好像没什么动力走。" if not a.exerciseStarted else "他走起来了，但他不知道该往哪里走。")
+			return _ok("别戳他了，他听不见。没绑定姓名和学号之前，他就是个没加载完的默认建模。" if not a.characterNamed else "他好像没什么动力走。" if not a.exerciseStarted else "他走起来了，但他不知道该往哪里走。")
 		"c2_card_identity":
 			if not a.inventoryRecovered or not items.campusCard: return _ok("需要随身校园卡。")
 			a.cc98Login.studentIdDiscovered = true
@@ -489,7 +489,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 				items.weatherWater = true
 			return _ok("获得天气水滴。")
 		"c2_mentor":
-			if not _movement(s) or str(value) != "weatherWater" or not items.weatherWater: return _ok("那条竖线粘住了。看来导师头像也有自己的排版要求。")
+			if not _movement(s) or str(value) != "weatherWater" or not items.weatherWater: return _ok("这根分割线焊得死死的。毕竟是导师的对话框，连排版都透着一股压迫感。")
 			items.weatherWater = false
 			items.mentorLine = true
 			a.mentorLineReleased = true
@@ -499,7 +499,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			if a.balanceShifted: return _ok("小数点已经移动过了。")
 			a.balanceShifted = true
 			s.wallet.campusCardCents = 600
-			return _ok("小数点向右移动了两位。六分钱暂时获得了六元钱的尊严。")
+			return _ok("小数点右移两位！0.06 秒变 6.00 元——趁财务系统还没反应过来，赶紧去98把二手手柄付了！")
 		"c2_login_hint":
 			a.cc98Login.revealedHintCount = mini(3, int(a.cc98Login.revealedHintCount) + 1)
 			return _ok("认证提示已展开。")
@@ -507,7 +507,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 		"c2_purchase_gamepad":
 			if not _movement(s) or s.networkMode != "campus_wifi" or not a.cc98Login.authenticated: return _ok("请先在校园网完成统一身份认证。")
 			if a.gamepadPurchased: return _ok("手柄已经购买，不会重复扣款。")
-			if not a.balanceShifted or int(s.wallet.campusCardCents) < 600: return _ok("你只有零点零六元。卖家拒绝了你分一百期付款的方案。")
+			if not a.balanceShifted or int(s.wallet.campusCardCents) < 600: return _ok("全身上下六分钱，还想跟98卖家分一百期买手柄？人家直接把你拒了。")
 			s.wallet.campusCardCents -= 600
 			a.gamepadPurchased = true
 			items.gamepad = true

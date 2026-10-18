@@ -672,7 +672,7 @@ func _layout_toast() -> void:
 func _scene_owns_feedback(message: String) -> bool:
 	if str(State.d.native.page)!="desktop": return false
 	var line:=message.strip_edges().trim_suffix("。")
-	return line=="起床蠢货！！！" if State.d.native.get("wake_warned",false) else line=="你没有5分钟了，但你很有勇气"
+	return line=="还睡？！早八要迟到了！！" if State.d.native.get("wake_warned",false) else line=="早八快上课了。不得不说，你还敢赖床，心理素质真硬"
 
 func _schedule_layout() -> void:
 	if relayout_pending: return

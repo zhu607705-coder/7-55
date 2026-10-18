@@ -1,5 +1,7 @@
 // Source-evaluated parity fixture for the exact active LibraryStoryOverlay route.
 import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {applySourceTextRevisions} from '../tools/apply-zh-text-revisions.mjs';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 import ts from 'typescript';
@@ -21,7 +23,7 @@ const duration=evalTS(helpers,'textFeedbackDuration');
 const sequences=Object.fromEntries(Object.entries(content.storyDialogues).map(([id,lines])=>[id,lines.map((line,index)=>({...line,lineKey:`library_story_${id}_${String(index+1).padStart(2,'0')}`,durationMs:duration(line.text)}))]));
 const files=['src/App.tsx','src/components/LibraryStoryOverlay.tsx','src/data/libraryFinalsStory.ts','src/data/library-finals.content.json','src/modules/LibraryFinalsController.ts','src/modules/AudioDirector.ts'];
 const fixture={sources:files.map(path=>({path,sha256:crypto.createHash('sha256').update(read(path)).digest('hex')})),...maps,confirmation,sequenceCount:Object.keys(sequences).length,lineCount:Object.values(sequences).reduce((sum,lines)=>sum+lines.length,0),ignoredUnresolvedSequenceIds:['library_route_unlocked'],separateOwner:{sequenceId:'library_friend_contacted',native:'scripts/presentation/c3_scene_session.gd',lineCount:content.library.dialogue022.length},sequences};
-if (read('src/data/library-finals.content.json')!==read('godot_native/data/source/library-finals.content.json')) throw Error('Native library source content diverged');
+assert.deepEqual(JSON.parse(read('godot_native/data/source/library-finals.content.json')),applySourceTextRevisions(root,'library-finals.content.json',structuredClone(content)),'Native library display source diverged');
 const path=root+'godot_native/tests/fixtures/library_story_source.json';
 const serialized=JSON.stringify(fixture,null,2)+'\n';
 if(process.argv.includes('--check')) {if(fs.readFileSync(path,'utf8')!==serialized)throw Error('Library story source fixture is stale'); console.log(`Library story source parity: ${fixture.sequenceCount} sequences, ${fixture.lineCount} lines`);} else {fs.writeFileSync(path,serialized); console.log(path);}

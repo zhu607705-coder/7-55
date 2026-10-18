@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {build} from 'esbuild';
 import {sourceTones} from './audio-source-tones.mjs';
+import {applyNativeAudioTextRevisions} from './audio-text-revisions.mjs';
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const data=path.join(root,'src/data');
 const timelineOrder=['act-one','library-finals','chapter3-canteen','chapter3-theater','chapter3-qizhen','chapter3-story','chapter4-prologue','chapter4-755','pursuit'];
@@ -48,7 +49,11 @@ const maze=read('chapter4-three-floor-maze.layout.json');
 const chapter4Audio={bakeryConveyor:maze.bakeryRuntime.targetEntities.find(x=>x.targetId==='a1_bakery_conveyor_edge').installationBounds,maintenancePushDurationMs:maze.maintenanceRuntime.repairedPush.durationMs};
 const out={version:1,chiptune,procedural,chapter3KeysBySubtitle,theaterDialogue,chapter4Audio,textDurationMsByKey,sources:{timelines:timelineOrder.map(x=>x+'.audio.json'),generated:generatedFiles,catalog:'src/data/storyLines.ts'},events,legacy,aliases,assets,storyLines:catalog.STORY_LINE_CATALOG,presentation:catalog.PRESENTATION_CUES,chapter4CueIds};
 const output=path.join(root,'godot_native/data/native/audio-director-source.json');
-const serialized=JSON.stringify(out,null,2)+'\n';
+// Calculate source durations before applying native-only Chinese display edits.
+// Audio assets, voice definitions, offsets and cue order remain source-authored.
+const revisionsPath=path.join(root,'godot_native/data/zh_text_revisions.json');
+const nativeOut=fs.existsSync(revisionsPath)?applyNativeAudioTextRevisions(out,JSON.parse(fs.readFileSync(revisionsPath,'utf8'))):out;
+const serialized=JSON.stringify(nativeOut,null,2)+'\n';
 if(process.argv.includes('--check')){if(fs.readFileSync(output,'utf8')!==serialized)throw Error('Native audio source export is stale');}
 else fs.writeFileSync(output,serialized);
 const missing=Object.entries(assets).filter(([,v])=>!fs.existsSync(path.join(root,'godot_native',v.path.slice(6)))).map(([k])=>k);

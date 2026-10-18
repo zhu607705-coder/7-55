@@ -1,6 +1,7 @@
 extends SceneTree
 const Game = preload("res://scripts/games/prologue_interception.gd")
 const Director = preload("res://scripts/media/audio_director.gd")
+const DisplayFixture = preload("res://tests/zh_text_fixture.gd")
 var checks: int = 0
 var errors: int = 0
 var events: Array = []
@@ -72,7 +73,11 @@ func run() -> void:
 	if not intro_started: await finish(); return
 	var intro_starts: Array=playbacks.filter(func(p: Dictionary) -> bool: return p.channel=="voice" and p.asset=="vo_prologue_narrator_intro")
 	check(intro_starts.size()==1 and int(intro_starts[0].at)>=intro_deadline,"intro playback cannot start before its scheduled owner deadline")
-	check(game.intro_segments==["噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。","我想你只好乖乖起来滚去上课了。","祝你好运，孩子！我要走了！"],"narrator subtitle segments preserved from source")
+	var expected_segments: Array=["噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。","我想你只好乖乖起来滚去上课了。","祝你好运，孩子！我要走了！"]
+	var revisions: Array=DisplayFixture.revisions()
+	for index in range(expected_segments.size()):
+		expected_segments[index]=DisplayFixture.text_at(revisions,"act-one-bootstrap.content.json",["audioNarration","prologue_narrator_intro","subtitleSegmentsZh",index],expected_segments[index])
+	check(game.intro_segments==expected_segments,"narrator preserves three source segments with approved Chinese text")
 	game._pause(); var frozen: float=game.elapsed; var playback: float=audio.voice.get_playback_position()
 	tick(.5); await wait_msec(220)
 	check(game.elapsed==frozen and audio.voice.stream_paused,"pause freezes game and native narrator")

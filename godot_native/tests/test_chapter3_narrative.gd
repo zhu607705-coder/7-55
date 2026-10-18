@@ -3,6 +3,7 @@ const Chapter=preload("res://scripts/chapters/chapter3.gd")
 const Session=preload("res://scripts/presentation/c3_narrative_session.gd")
 const Host=preload("res://scripts/presentation/c3_narrative_host.gd")
 const Guard=preload("res://scripts/save_domain_guard.gd")
+const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 var checks: int=0
 var errors: int=0
 var s: Dictionary
@@ -38,10 +39,11 @@ func finish(session: RefCounted,host: Node) -> void:
 	chapter.dispatch(s,"c3_story_complete",session)
 func _initialize() -> void: call_deferred("run")
 func run() -> void:
-	var fixture: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter3_narrative_source.json"))
+	var fixture: Dictionary=DisplayFixture.chapter3(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter3_narrative_source.json")))
 	var owner:=Node.new(); root.add_child(owner)
 	# Original TS methods, executed with their own timer and duration helper,
-	# independently provide all 19 authored queues (not native assumptions).
+	# independently provide all authored clocks. Only approved display strings
+	# are projected by exact source path; timing, order and completion stay original.
 	for id: String in fixture.groups:
 		var oracle: Dictionary=fixture.groups[id]
 		s=initial("theater_interior" if id.begins_with("theater_") else "canteen_interior")

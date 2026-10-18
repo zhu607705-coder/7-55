@@ -17,8 +17,16 @@ var cue_queue: Array=[]
 func _init(state: Dictionary={}, id: String="", authored: Array=[]) -> void:
 	bound_state=state; sequence_id=id; lines=authored.duplicate(true)
 	requires_confirmation=id=="cc98_evidence_set_completed"
-	for line: Dictionary in lines:
-		durations_ms.append(text_duration(str(line.text)))
+	# Stable keys preserve the source clock as a minimum. Unvoiced Chinese
+	# can take longer to read; existing advance/confirmation controls still apply.
+	var audio: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/audio-director-source.json"))
+	var source_durations: Dictionary=audio.get("textDurationMsByKey",{})
+	for index in range(lines.size()):
+		var key: String="library_story_%s_%02d" % [sequence_id,index+1]
+		var reading_ms: int=text_duration(str(lines[index].text))
+		var source_ms: int=int(source_durations.get(key,reading_ms))
+		var voiced: bool=audio.get("storyLines",{}).get(key,{}).has("voiceRole")
+		durations_ms.append(source_ms if voiced else maxi(source_ms,reading_ms))
 
 static func text_duration(text: String) -> int:
 	# Source counts non-whitespace graphemes. All 53 authored Chinese lines

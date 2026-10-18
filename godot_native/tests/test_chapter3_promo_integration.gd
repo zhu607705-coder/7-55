@@ -65,7 +65,7 @@ func run() -> void:
 	check(not state.d.canteenHunt.queueGapOpened and state.d.canteenHunt.phase=="tray_search" and session.snapshot().rawText.is_empty(),"no premature gap,phase or dialogue at3998ms")
 	advance_to(3999)
 	check(state.d.canteenHunt.queueGapOpened and state.d.canteenHunt.phase=="menu_order" and session.visual_acknowledged,"authentic intermediate source callback opens queue at3999ms")
-	check(session.snapshot().rawText=="玩家：他们怎么都退了？" and host.blocks_input(),"only then first original reply appears; interaction stays locked")
+	check(session.snapshot().rawText=="玩家：前面排队的怎么全散了？" and host.blocks_input(),"only then first original reply appears; interaction stays locked")
 	check(boundary_count==1,"actual host sends one visual boundary callback")
 	state.act("c3_story_complete",session)
 	check(host.current==session and session.status=="playing","cannot skip remaining dialogue with visual receipt")

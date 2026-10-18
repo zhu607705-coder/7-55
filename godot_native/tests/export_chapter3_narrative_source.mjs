@@ -1,6 +1,8 @@
 // Execute the original scene queue methods with a deterministic read-only timer.
 // Do not mirror the native queue's algorithm as its own oracle.
 import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {applySourceTextRevisions} from '../tools/apply-zh-text-revisions.mjs';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 import ts from 'typescript';
@@ -10,7 +12,7 @@ const read=p=>fs.readFileSync(root+p,'utf8');
 const data=id=>JSON.parse(read(`src/data/${id}.json`));
 const sourcePaths=['src/scenes/rpg/CanteenInteriorScene.ts','src/scenes/rpg/TheaterInteriorScene.ts','src/scenes/rpg/QizhenLoopScene.ts','src/modules/AudioDirector.ts','src/data/chapter3-canteen.content.json','src/data/chapter3-theater.content.json','src/data/chapter3-qizhen-lake.content.json','src/data/maps/zijingang-campus-loop-runtime.json'];
 const canteen=data('chapter3-canteen.content'),theater=data('chapter3-theater.content'),lake=data('chapter3-qizhen-lake.content');
-for(const id of ['chapter3-canteen.content','chapter3-theater.content','chapter3-qizhen-lake.content'])if(read(`src/data/${id}.json`)!==read(`godot_native/data/source/${id}.json`))throw Error(`Copied source drift: ${id}`);
+for(const id of ['chapter3-canteen.content','chapter3-theater.content','chapter3-qizhen-lake.content'])assert.deepEqual(JSON.parse(read(`godot_native/data/source/${id}.json`)),applySourceTextRevisions(root,id+'.json',data(id)),`Copied native display source drift: ${id}`);
 function method(path,name){const text=read(path),file=ts.createSourceFile(path,text,ts.ScriptTarget.Latest,true);let found;function visit(node){if(ts.isMethodDeclaration(node)&&node.name.getText(file)===name)found=node.getText(file);ts.forEachChild(node,visit)}visit(file);if(!found)throw Error(name);return found}
 const audio=read('src/modules/AudioDirector.ts');
 const helpers=audio.slice(audio.indexOf('function visibleGraphemeCount'),audio.indexOf('function toastTone')).replaceAll('export ','');

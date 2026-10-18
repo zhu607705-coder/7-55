@@ -83,6 +83,6 @@ static func sample(milliseconds:float,reduced:bool=false,start_player:Vector2=Ve
 		"paper_scale":lerpf(2.15,1.12,_out(_ratio(t,6980,700))),
 		"paper_angle":lerpf(-12,348,_out(_ratio(t,6980,700))),
 		"cart_alpha":cart_alpha,
-		"subtitle":"玩家：那是鸡吗？" if t>=9580 and t<10360 else "系统：现在不是了。" if t>=10480 and t<11260 else "",
+		"subtitle":"玩家：纸包鸡……飞了？！" if t>=9580 and t<10360 else "系统：包装纸被纸条策反了！" if t>=10480 and t<11260 else "",
 		"done":t>=DURATION_MS
 	}

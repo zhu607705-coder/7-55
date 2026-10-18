@@ -2,6 +2,7 @@ extends SceneTree
 const Library=preload("res://scripts/chapters/library022.gd")
 const Session=preload("res://scripts/presentation/library_story_session.gd")
 const Host=preload("res://scripts/presentation/library_story_host.gd")
+const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 var checks: int=0
 var errors: int=0
 var s: Dictionary
@@ -45,7 +46,7 @@ func play(id: String) -> void:
 	covered.append(id)
 func _initialize() -> void: call_deferred("run")
 func run() -> void:
-	fixture=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json"))
+	fixture=DisplayFixture.library(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json")))
 	library=Library.new(); witness=Node.new(); root.add_child(witness); s=fresh()
 	check(fixture.sequenceCount==12 and fixture.lineCount==53,"fixture covers 12 sequences and 53 authored lines")
 	check(fixture.separateOwner.lineCount==20,"final 20-line 022 conversation remains C3-owned")

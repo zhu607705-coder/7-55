@@ -821,7 +821,39 @@
     "系统：还在嘲笑你的倒影。": "c3_qizhen_taunt_system",
     "纸条从湖面倒影弹出来，贴着地面飞。": "c3_qizhen_release_narrator",
     "系统：现在！它回到浅色模式了！": "c3_qizhen_now_system",
-    "系统：能抓了！": "c3_qizhen_grab_system"
+    "系统：能抓了！": "c3_qizhen_grab_system",
+    "系统：连一张逃跑的异常纸条，进了浙大食堂都得老老实实排队。": "c3_canteen_queue_system",
+    "系统：这包子连馅儿都是实的，藏不进纸条。再说了，纸条也不吃碳水。": "c3_canteen_bun_system",
+    "系统：没有线索，只有碳水。恭喜你获得了一份平平无奇的早饭。": "c3_canteen_breakfast_system",
+    "系统：“纸包鸡”。听名字，前两个字就跟我们的目标很有缘分。": "c3_canteen_paper_chicken_system",
+    "系统：我们要的是外面那层纸，里面的鸡肉纯属赠品。": "c3_canteen_packaging_system",
+    "系统：粥还烫嘴，但线索已经断了。换个窗口找找吧。": "c3_canteen_cold_clue_system",
+    "系统：打住，别在这种地方强行发散思维。": "c3_canteen_worldview_system",
+    "纸条撞回食堂，抖落了一地蓝色的数据残影。": "c3_canteen_paper_impact_narrator",
+    "纸条急眼了，决定直接插队硬闯取餐口！": "c3_canteen_paper_angry_narrator",
+    "系统：现在的食堂自助取餐，已经进化到全自动打架了吗？": "c3_canteen_self_service_system",
+    "系统：靠你这两条没吃早饭的腿，是追不上风的。找辆共享单车吧。": "c3_bike_human_speed_system",
+    "系统：人家只是一张纸，可没有挂科扣绩点的心理负担，当然飞得快。": "c3_bike_gpa_system",
+    "系统：“余额不足”这四个字，今天真是刻进你DNA里了。先去帮阿姨收盘子赚钱吧。": "c3_bike_no_money_system",
+    "旁白：摔得十分干脆，连体面都没留。": "c3_theater_failure_narrator",
+    "系统：彩排临时改过场次顺序，纸质节目单早就过时了。得看现场的痕迹。": "c3_theater_logic_system",
+    "系统：别高兴得太早，把纸条翻过来看看背面。": "c3_theater_celebrate_system",
+    "系统：背面印着剧社的道具编号。这是张舞台替身，真家伙早就趁乱溜出剧场了。": "c3_theater_substitute_system",
+    "系统：跟丢了。这次它学精了，沿路半点蓝光都没漏。": "c3_qizhen_no_trail_system",
+    "系统：遇事不决上 98。发个悬赏帖，让全校的夜猫子帮你找。": "c3_qizhen_forum_system",
+    "系统：98 老哥给出了极其严谨的排除法：至少没飞进厕所。": "c3_qizhen_cc98_system",
+    "系统：馆藏线索指向湖岸与倒影……看来这张纸条还挺讲究意境。": "c3_qizhen_catalog_system",
+    "系统：三条线索拼齐——目标锁定，启真湖！": "c3_qizhen_map_system",
+    "系统：它没泡在水里，是卡在湖面的倒影图层里了。": "c3_qizhen_reflection_system",
+    "系统：别想不开往水里跳，你体艺游泳课还没修呢。找船过去。": "c3_qizhen_swimming_system",
+    "系统：水波一晃，它又缩回深色倒影里了。": "c3_qizhen_gone_system",
+    "系统：岸边那块旧指示牌木头不错，拆下来正好当右船桨使。": "c3_qizhen_sign_system",
+    "系统：锁定坐标了！它就猫在这片倒影底下。": "c3_qizhen_hiding_system",
+    "系统：把刚才在剧场抓到的那张假替身挂在鱼钩上！": "c3_qizhen_fake_system",
+    "系统：一个占了三天座位的老赖，绝对容不下冒牌货顶替它的位置。": "c3_qizhen_ego_system",
+    "系统：偏了！你这杆甩下去，除了惊起两圈水波啥也没钓着。": "c3_qizhen_atmosphere_system",
+    "系统：瞧见没，水底下的正主正隔着倒影看你笑话呢。对准点！": "c3_qizhen_taunt_system",
+    "系统：趁现在，按住它！": "c3_qizhen_grab_system"
   },
   "theaterDialogue": {
     "wrong_order": [
@@ -832,7 +864,7 @@
         "subtitleKey": null
       },
       {
-        "text": "系统：台上的顺序改过，印刷版未必跟得上。",
+        "text": "系统：彩排临时改过场次顺序，纸质节目单早就过时了。得看现场的痕迹。",
         "offsetMs": 3160,
         "durationMs": 3640,
         "subtitleKey": "c3_theater_logic_system"
@@ -846,7 +878,7 @@
         "subtitleKey": null
       },
       {
-        "text": "系统：先翻过来看。",
+        "text": "系统：别高兴得太早，把纸条翻过来看看背面。",
         "offsetMs": 2520,
         "durationMs": 2400,
         "subtitleKey": "c3_theater_celebrate_system"
@@ -866,7 +898,7 @@
         "subtitleKey": null
       },
       {
-        "text": "系统：替身有编号。原件去向不在节目单里。",
+        "text": "系统：背面印着剧社的道具编号。这是张舞台替身，真家伙早就趁乱溜出剧场了。",
         "offsetMs": 5680,
         "durationMs": 3640,
         "subtitleKey": "c3_theater_substitute_system"
@@ -6295,38 +6327,38 @@
       "speaker": "narrator",
       "voiceRole": "male_narrator",
       "voiceTextEn": "You do not have five minutes. Still, the confidence is impressive.",
-      "subtitleZh": "你没有5分钟了，但你很有勇气"
+      "subtitleZh": "早八快上课了。不得不说，你还敢赖床，心理素质真硬。"
     },
     "wake_flash": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "Wake up, idiot!",
-      "subtitleZh": "起床蠢货！！！"
+      "subtitleZh": "还睡？！早八要迟到了！！"
     },
     "xy_attack": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "Wait, wait, wait. You are trying to skip class? Absolutely not. I am not letting you check in.",
-      "subtitleZh": "等等等等，你想翘课？没门！我不会让你签上的！"
+      "subtitleZh": "等等——人还在被窝里就想隔空签到？想得美！这分我今天扣定了！"
     },
     "xy_laugh": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "Go find your digits. All four of them. Ha.",
-      "subtitleZh": "找你的数字去吧哈哈哈"
+      "subtitleZh": "签到码给你拆碎咯，慢慢找去吧哈哈哈！"
     },
     "sys_balance": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "余额暂时不足以购买尊严"
+      "subtitleZh": "校园卡余额：0.06元。这点钱连起床气都买不起。"
     },
     "sys_net_try": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "校园网已经尽力了，你也是"
+      "subtitleZh": "ZJUWLAN 正在疯狂转圈。它尽力了，你也尽力了。"
     },
     "sys_no_money": {
       "kind": "taunt",
@@ -6336,27 +6368,27 @@
     "tiyi_47": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "就差一次，真绝望"
+      "subtitleZh": "体艺打卡：47/48次。离及格永远只差最后一次，经典的绝望。"
     },
     "gear_pickup": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "哈，一个废齿轮"
+      "subtitleZh": "哟，从设置图标上抠下来一个生锈的齿轮？"
     },
     "act1_locked_entry": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "很好，你打开了游戏。现在请先去申请操作自己。"
+      "subtitleZh": "……好吧，看来你不仅没起床，连自己身体的控制权都还没登录。先去认证一下身份吧。"
     },
     "act1_identity_verified": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "登录成功。这个角色终于有名字了，仍然没联网。"
+      "subtitleZh": "学号核验通过。好消息：你想起自己叫什么了。坏消息：你的身体还没联网。"
     },
     "act1_phone_linked": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "电话接通。用学号当电话号码，很有校园特色。"
+      "subtitleZh": "信号接通了。拿学号当手机号拨通自己，也就这破系统干得出来。"
     },
     "act1_controls_installed": {
       "kind": "taunt",
@@ -6366,7 +6398,7 @@
     "act1_movement_enabled": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "锻炼开始。恭喜，你现在被允许步行。"
+      "subtitleZh": "体艺打卡启动！恭喜，你终于获得了在自己寝室里合法走路的权限。"
     },
     "act1_required_item_collected": {
       "kind": "taunt",
@@ -6383,42 +6415,42 @@
       "speaker": "narrator",
       "voiceRole": "male_narrator",
       "voiceTextEn": "Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it? I suppose you will have to get up, drag yourself to class, and deal with it. Good luck, kid! I am leaving!",
-      "subtitleZh": "噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。我想你只好乖乖起来滚去上课了。祝你好运，孩子！我要走了！"
+      "subtitleZh": "噗……不好意思啊，没忍住。签到又报错了！看来你只能认命爬起来去教室解释了。祝你好运咯，同学，我下班了！"
     },
     "prologue_narrator_caught": {
       "kind": "dialogue",
       "speaker": "narrator",
       "voiceRole": "male_narrator",
       "voiceTextEn": "Hey! What exactly do you think you are doing? Let go of me!",
-      "subtitleZh": "嘿！你到底在干什么？放开我！"
+      "subtitleZh": "喂！你拽我弹窗干什么？！快松手！要未响应了！"
     },
     "prologue_narrator_bargain": {
       "kind": "dialogue",
       "speaker": "narrator",
       "voiceRole": "male_narrator",
       "voiceTextEn": "Oh, fine, fine! But first, take your hand off me!",
-      "subtitleZh": "哦，好吧，好吧！但你先把手放开！"
+      "subtitleZh": "行行行！算你狠！我帮你想办法还不行吗？先把手指挪开！"
     },
     "act2_system_found_intro": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "Oh, damn it. You win, kid.",
-      "subtitleZh": "哦，该死。你赢了，孩子。"
+      "subtitleZh": "……服了你了。为了不陪你一起蓝屏，我认栽。"
     },
     "act2_system_inventory_demand": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "Fine. Bring out your inventory.",
-      "subtitleZh": "行。把你的道具栏拿出来。"
+      "subtitleZh": "来，先把你的道具栏调出来，咱们准备动身。"
     },
     "act2_system_inventory_missing": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "Wait. Where is your inventory? You cannot expect me to work empty-handed!",
-      "subtitleZh": "等等，你的道具栏呢？你总不能指望我空手干活！"
+      "subtitleZh": "……等等，你连道具栏都没加载？你不会指望我徒手给你黑进系统吧！"
     },
     "act2_system_just_find_it": {
       "kind": "dialogue",
@@ -6432,28 +6464,28 @@
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "You found it. Great. Then let us get moving.",
-      "subtitleZh": "你找到了，那就太好了，我们出发吧！"
+      "subtitleZh": "总算找着了。行，那赶紧操作你床上的身体出门吧！"
     },
     "act2_system_confession": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "I should be honest. I do not have permission to edit attendance records.",
-      "subtitleZh": "我得说实话了，我没有修改记录权限"
+      "subtitleZh": "但丑话说在前头，我只是个前端提示音，没有直接篡改教务考勤的权限。"
     },
     "act2_system_friend": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "But I have a friend who might.",
-      "subtitleZh": "但我有一个朋友她或许能做到"
+      "subtitleZh": "不过……我在图书馆有个老熟人，她手里有底层接口，或许能帮你把时间改回去。"
     },
     "act2_system_library": {
       "kind": "dialogue",
       "speaker": "system",
       "voiceRole": "female_system",
       "voiceTextEn": "If we still want your participation grade, we need to find her in the library.",
-      "subtitleZh": "如果我们还想要平时分，就得去图书馆找她"
+      "subtitleZh": "想保住你的平时分，现在就得去基础馆一楼找她。"
     },
     "act2_system_move_now": {
       "kind": "dialogue",
@@ -6465,7 +6497,7 @@
     "act2_character_cannot_hear": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "他听不到你说话。现在的他连一个能回应的名字都没有。"
+      "subtitleZh": "别戳他了，他听不见。没绑定姓名和学号之前，他就是个没加载完的默认建模。"
     },
     "act2_character_named": {
       "kind": "taunt",
@@ -6480,62 +6512,62 @@
     "act2_push_triangle_collected": {
       "kind": "task",
       "speaker": "system",
-      "subtitleZh": "获得道具：三角形。"
+      "subtitleZh": "拆下来一个播放键三角。再去天气页接滴雨水试试？"
     },
     "act2_weather_water_collected": {
       "kind": "task",
       "speaker": "system",
-      "subtitleZh": "获得道具：天气水滴。"
+      "subtitleZh": "雨水到手。去看看导师头像旁边那根卡死的竖线，泡软了应该能抠下来。"
     },
     "act2_mentor_line_stuck": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "那条竖线粘住了。看来导师头像也有自己的排版要求。"
+      "subtitleZh": "这根分割线焊得死死的。毕竟是导师的对话框，连排版都透着一股压迫感。"
     },
     "act2_right_arrow_assembled": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "一个三角形加一条竖线。现在你有了一支能把东西向右移的箭头。"
+      "subtitleZh": "三角加横杆，拼成右移箭头了。去看看你的余额小数点能不能往右挪挪？"
     },
     "act2_balance_shifted": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "小数点向右移动了两位。六分钱暂时获得了六元钱的尊严。"
+      "subtitleZh": "小数点右移两位！0.06 秒变 6.00 元——趁财务系统还没反应过来，赶紧去98把二手手柄付了！"
     },
     "act2_gamepad_purchase_rejected": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "你只有零点零六元。卖家拒绝了你分一百期付款的方案。"
+      "subtitleZh": "全身上下六分钱，还想跟98卖家分一百期买手柄？人家直接把你拒了。"
     },
     "act2_exit_ready": {
       "kind": "task",
       "speaker": "system",
-      "subtitleZh": "现在可以出门了。"
+      "subtitleZh": "走吧，去基础图书馆一楼，找 022 号座位！"
     },
     "library_story_library_entered_01": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "这里就是图书馆？"
+      "subtitleZh": "这就是基础馆？你说的那个朋友在哪？"
     },
     "library_story_library_entered_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "她最后留下入馆记录的地方。"
+      "subtitleZh": "在入馆闸机最后的登记记录里。她一直待在一层书库。"
     },
     "library_story_library_entered_03": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "你朋友是管理员？"
+      "subtitleZh": "她是这里的图书管理员？"
     },
     "library_story_library_entered_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "她不管馆内秩序。"
+      "subtitleZh": "不是。她不管借书，也不在教职工名册里。"
     },
     "library_story_library_entered_05": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "馆长？"
+      "subtitleZh": "那是谁？总不能是馆长吧。"
     },
     "library_story_library_entered_06": {
       "kind": "dialogue",
@@ -6550,27 +6582,27 @@
     "library_story_library_entered_08": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "一个座位，一层书库 022。"
+      "subtitleZh": "是一层书库的 022 号座位。"
     },
     "library_story_library_entered_09": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "……"
+      "subtitleZh": "……你是说，你的朋友是一张桌子？"
     },
     "library_story_library_entered_10": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "上次见面时，她就在 022。"
+      "subtitleZh": "准确地说，是绑定在 022 号座位上的旧版选座终端。上次系统升级前，全校的考勤与选座时间戳都归她管。"
     },
     "library_story_library_entered_11": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "以前？"
+      "subtitleZh": "那直接过去找她就行？"
     },
     "library_story_library_entered_12": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "这张记录没有固定时长。先去闸机核对入馆时间。"
+      "subtitleZh": "她的入馆记录停在三天前，一直没签退。先刷闸机进去看看情况。"
     },
     "library_story_library_occupied_seat_found_01": {
       "kind": "dialogue",
@@ -6580,17 +6612,17 @@
     "library_story_library_occupied_seat_found_02": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "022 被一个书包占着，桌上的纸条写着“主人马上回来”。"
+      "subtitleZh": "022 号座位上赫然盘踞着一个鼓鼓囊囊的书包，上面贴着一张便签纸：“本人离开三分钟，马上回来”。"
     },
     "library_story_library_occupied_seat_found_03": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "它把座位占了。"
+      "subtitleZh": "……被占座了。而且一个书包怎么连选座终端的屏幕都挡死了？"
     },
     "library_story_library_occupied_seat_found_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "先别碰。去 CC98 查三分钟离座的规则。"
+      "subtitleZh": "别硬拽！馆内选座系统判定它还在“三分钟暂离保护期”内，强行挪动会触发警报。去 CC98 搜搜怎么破这个死循环。"
     },
     "library_story_cc98_occupation_post_opened_01": {
       "kind": "dialogue",
@@ -6620,32 +6652,32 @@
     "library_story_library_archived_rule_recovered_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "旧版离座规则找到了。"
+      "subtitleZh": "755 号书架背面的旧版《三分钟离座法》找到了。"
     },
     "library_story_library_archived_rule_recovered_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "坏消息？"
+      "subtitleZh": "看你这语气，流程很阴间？"
     },
     "library_story_library_archived_rule_recovered_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "它要求三项证明。"
+      "subtitleZh": "非常官僚。要想强制清退超时占座物，必须集齐三份纸质证明："
     },
     "library_story_library_archived_rule_recovered_04": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "书包还要核验身份？"
+      "subtitleZh": "……？我要去向图书馆证明一个双肩包不是人？！"
     },
     "library_story_library_archived_rule_recovered_05": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "规则只认已经留下的材料。"
+      "subtitleZh": "因为在后台数据库里，这个书包已经连续刷了三天全勤，系统默认它是模范读者。"
     },
     "library_story_library_archived_rule_recovered_06": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "座位小票、到馆证明、书包非本人证明。"
+      "subtitleZh": "第一，你本人的到馆时间证明；第二，022 座位的小票；第三……“该书包不是人类”的身份核验公章。"
     },
     "library_story_library_archived_rule_recovered_07": {
       "kind": "dialogue",
@@ -6655,37 +6687,37 @@
     "library_story_library_front_desk_proof_request_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "请说明要处理的物品。"
+      "subtitleZh": "同学你好，办什么业务？"
     },
     "library_story_library_front_desk_proof_request_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "022 的占座书包。"
+      "subtitleZh": "我想举报 022 号座位的占座书包。"
     },
     "library_story_library_front_desk_proof_request_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "请先提交书包非本人证明。"
+      "subtitleZh": "清退占座需先提交《占用物非本人证明》。"
     },
     "library_story_library_front_desk_proof_request_04": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "书包也要做身份核验？"
+      "subtitleZh": "不是，它就是个帆布包，你抬头看一眼不就知道了？"
     },
     "library_story_library_front_desk_proof_request_05": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "系统里，它目前登记为座位使用者。"
+      "subtitleZh": "不好意思，选座系统只认公章，不认肉眼。在系统里它有合法占座权。"
     },
     "library_story_library_bag_nonperson_proof_issued_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "盖章完成。书包不再算 022 的使用者。"
+      "subtitleZh": "公章盖好了。“书包不具备自然人学籍”核验通过。"
     },
     "library_story_library_bag_nonperson_proof_issued_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "我今天跑的证明比上课还多。"
+      "subtitleZh": "为了赶一节早八，我今天办的证明比退学手续还全。"
     },
     "library_story_tiyi_presence_proof_issued_01": {
       "kind": "dialogue",
@@ -6715,22 +6747,22 @@
     "library_story_cc98_evidence_set_completed_01": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "好了，证据齐了。现在图书馆会处理了吧？"
+      "subtitleZh": "三份证明终于跑齐了，现在能把书包清走了吧？"
     },
     "library_story_cc98_evidence_set_completed_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "还差公开确认。图书馆 App 只读取十大帖的四位热度口令。"
+      "subtitleZh": "还差最后一步“舆论监督”。用四位受理口令完成确认，帖子冲上 CC98 十大第一，清退入口才会开放。"
     },
     "library_story_cc98_evidence_set_completed_03": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "bd 到底是什么？"
+      "subtitleZh": "还要我去发帖控评？那个“bd”又是什么？"
     },
     "library_story_cc98_evidence_set_completed_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "bd 是“帮顶”。在一条数字回复上点 bd，数字就会按顺序写入口令。"
+      "subtitleZh": "98 黑话，“帮顶”的意思。你按证据栏的顺序给那几层带数字的楼层点 bd，楼层的数字就会拼成四位受理口令。"
     },
     "library_story_cc98_top_ten_reached_01": {
       "kind": "dialogue",
@@ -6750,22 +6782,22 @@
     "library_story_library_backpack_evicted_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "请占座物品离开 022。"
+      "subtitleZh": "022 号座位清退申请已通过。请占座物品立即离开座位。"
     },
     "library_story_library_backpack_evicted_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "如需认领，请前往失物招领。"
+      "subtitleZh": "逾期未领的书包将移交失物招领处。"
     },
     "library_story_library_backpack_evicted_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "主人马上回来。"
+      "subtitleZh": "本人……马上回来。"
     },
     "library_story_library_backpack_evicted_04": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "什么时候？"
+      "subtitleZh": "你到底什么时候回来？"
     },
     "library_story_library_backpack_evicted_05": {
       "kind": "dialogue",
@@ -6775,62 +6807,62 @@
     "library_story_library_backpack_evicted_06": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "纸条上的这句话已经留了三天。"
+      "subtitleZh": "别信它。这张纸条上的“三分钟”，已经在这儿卡了整整三天了。"
     },
     "library_story_library_friend_contacted_01": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "你终于坐下了。"
+      "subtitleZh": "……呼，压死我了。你终于坐下了。"
     },
     "library_story_library_friend_contacted_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "你就是系统的朋友？"
+      "subtitleZh": "你就是系统说的那个朋友？"
     },
     "library_story_library_friend_contacted_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "她以前不在座位上。"
+      "subtitleZh": "好久不见。你以前可不会被一个帆布包封印三天。"
     },
     "library_story_library_friend_contacted_04": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "你以前也不在红圈里。"
+      "subtitleZh": "你以前也不会为了保一个迟到学生的平时分，亲自跑来求我。"
     },
     "library_story_library_friend_contacted_05": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "先查签到记录。能修改吗？"
+      "subtitleZh": "少叙旧了，快帮他查查今天早八的签到记录，还能从后台改回 07:55 吗？"
     },
     "library_story_library_friend_contacted_06": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "我先查。"
+      "subtitleZh": "稍等，我调一下日志……"
     },
     "library_story_library_friend_contacted_07": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "可以改吗？"
+      "subtitleZh": "有戏吗？"
     },
     "library_story_library_friend_contacted_08": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "查完了。签到记录离开了原页面。"
+      "subtitleZh": "糟了。你的签到记录不在教务服务器里——它被刚才书包上那张便签纸粘走了！"
     },
     "library_story_library_friend_contacted_09": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "它夹在一张纸条里，记录停在 07:55。"
+      "subtitleZh": "那张写着“马上回来”的纸条在座位上卡了太久，变成了吞噬时间的异常缓存。它把你的签到时间锁死在 07:55，刚才趁书包被清退，顺着网线溜出去了。"
     },
     "library_story_library_friend_contacted_10": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "纸条往哪去了？"
+      "subtitleZh": "那它往哪跑了？我怎么一点没看见？"
     },
     "library_story_library_friend_contacted_11": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "它不在浅色操作能看见的位置。"
+      "subtitleZh": "在正常的浅色界面下，你当然看不见底层缓存的溢出轨迹。"
     },
     "library_story_library_friend_contacted_12": {
       "kind": "dialogue",
@@ -6840,27 +6872,27 @@
     "library_story_library_friend_contacted_13": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "说明白一点。"
+      "subtitleZh": "直接把权限开给他吧，别卖关子了。"
     },
     "library_story_library_friend_contacted_14": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "切到深色观察，能看见纸条留下的痕迹。"
+      "subtitleZh": "我帮你解锁了“深色观察”模式。切到深色界面，你就能看见纸条残留的蓝光轨迹了。"
     },
     "library_story_library_friend_contacted_15": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "这就是暗色模式？"
+      "subtitleZh": "这不就是手机的暗黑模式吗？"
     },
     "library_story_library_friend_contacted_16": {
       "kind": "dialogue",
       "speaker": "seat022",
-      "subtitleZh": "这是它在系统里的名称。"
+      "subtitleZh": "在你们眼里是护眼模式，在我们眼里是底层调试视图。"
     },
     "library_story_library_friend_contacted_17": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "先追痕迹，别让纸条离开视野。"
+      "subtitleZh": "蓝光动了！快追，别让那张纸条跑出图书馆！"
     },
     "library_story_library_friend_contacted_18": {
       "kind": "dialogue",
@@ -6870,12 +6902,12 @@
     "library_story_library_friend_contacted_19": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "它会说话了？！"
+      "subtitleZh": "卧槽，纸条成精说话了？！"
     },
     "library_story_library_friend_contacted_20": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "它把原来的话留在纸条上了。"
+      "subtitleZh": "那不是它在说话，是原主人三天前留下的语音残影！快追！"
     },
     "c3_canteen_queue_system": {
       "kind": "dialogue",
@@ -6883,7 +6915,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Maybe it only came to experience the queue. Many things end up queuing in a cafeteria.",
       "voiceAsset": "vo_c3_canteen_queue_system",
-      "subtitleZh": "系统：它可能只是来体验一下排队，很多东西在食堂都会排队。"
+      "subtitleZh": "系统：连一张逃跑的异常纸条，进了浙大食堂都得老老实实排队。"
     },
     "c3_canteen_labor_system": {
       "kind": "dialogue",
@@ -6899,7 +6931,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "That does not look like something a paper slip would eat. Admittedly, paper should not eat at all.",
       "voiceAsset": "vo_c3_canteen_bun_system",
-      "subtitleZh": "系统：它看起来不像纸条会吃的东西，虽然纸条也不该吃东西。"
+      "subtitleZh": "系统：这包子连馅儿都是实的，藏不进纸条。再说了，纸条也不吃碳水。"
     },
     "c3_canteen_breakfast_system": {
       "kind": "dialogue",
@@ -6907,7 +6939,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "No. It is merely a disappointingly real breakfast.",
       "voiceAsset": "vo_c3_canteen_breakfast_system",
-      "subtitleZh": "系统：不是，是一份比较真实的早饭。"
+      "subtitleZh": "系统：没有线索，只有碳水。恭喜你获得了一份平平无奇的早饭。"
     },
     "c3_canteen_paper_chicken_system": {
       "kind": "dialogue",
@@ -6915,7 +6947,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Paper-wrapped chicken. At least the first word is suspicious.",
       "voiceAsset": "vo_c3_canteen_paper_chicken_system",
-      "subtitleZh": "系统：纸包鸡。我知道的至少前两个字很有嫌疑。"
+      "subtitleZh": "系统：“纸包鸡”。听名字，前两个字就跟我们的目标很有缘分。"
     },
     "c3_canteen_packaging_system": {
       "kind": "dialogue",
@@ -6923,7 +6955,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "One clue. The chicken is only packaging.",
       "voiceAsset": "vo_c3_canteen_packaging_system",
-      "subtitleZh": "系统：一份线索。鸡只是包装。"
+      "subtitleZh": "系统：我们要的是外面那层纸，里面的鸡肉纯属赠品。"
     },
     "c3_canteen_cold_clue_system": {
       "kind": "dialogue",
@@ -6931,7 +6963,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "The congee is hot. The clue is cold.",
       "voiceAsset": "vo_c3_canteen_cold_clue_system",
-      "subtitleZh": "系统：这份粥很热，但线索很冷。"
+      "subtitleZh": "系统：粥还烫嘴，但线索已经断了。换个窗口找找吧。"
     },
     "c3_canteen_worldview_system": {
       "kind": "dialogue",
@@ -6939,7 +6971,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Please do not expand the worldbuilding.",
       "voiceAsset": "vo_c3_canteen_worldview_system",
-      "subtitleZh": "系统：请不要拓展世界观。"
+      "subtitleZh": "系统：打住，别在这种地方强行发散思维。"
     },
     "c3_canteen_paper_impact_narrator": {
       "kind": "dialogue",
@@ -6947,7 +6979,7 @@
       "voiceRole": "male_narrator",
       "voiceTextEn": "The paper crashes back into the cafeteria and sheds a flicker of blue light.",
       "voiceAsset": "vo_c3_canteen_paper_impact_narrator",
-      "subtitleZh": "纸条撞回食堂，掉下一点蓝光。"
+      "subtitleZh": "纸条撞回食堂，抖落了一地蓝色的数据残影。"
     },
     "c3_canteen_paper_angry_narrator": {
       "kind": "dialogue",
@@ -6955,7 +6987,7 @@
       "voiceRole": "male_narrator",
       "voiceTextEn": "The paper is getting desperate. It has stopped respecting the pickup procedure.",
       "voiceAsset": "vo_c3_canteen_paper_angry_narrator",
-      "subtitleZh": "纸条急了，它开始不尊重取餐流程。"
+      "subtitleZh": "纸条急眼了，决定直接插队硬闯取餐口！"
     },
     "c3_canteen_self_service_system": {
       "kind": "dialogue",
@@ -6963,7 +6995,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Self-service has advanced too far. I am mildly concerned.",
       "voiceAsset": "vo_c3_canteen_self_service_system",
-      "subtitleZh": "系统：自助服务发展到这一步，我有点害怕。"
+      "subtitleZh": "系统：现在的食堂自助取餐，已经进化到全自动打架了吗？"
     },
     "c3_bike_escape_narrator": {
       "kind": "dialogue",
@@ -6979,7 +7011,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "You are moving at the speed of a human who skipped breakfast.",
       "voiceAsset": "vo_c3_bike_human_speed_system",
-      "subtitleZh": "系统：你正在以“没吃早饭的人类速度”移动。"
+      "subtitleZh": "系统：靠你这两条没吃早饭的腿，是追不上风的。找辆共享单车吧。"
     },
     "c3_bike_gpa_system": {
       "kind": "dialogue",
@@ -6987,7 +7019,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "It carries no grade-point burden.",
       "voiceAsset": "vo_c3_bike_gpa_system",
-      "subtitleZh": "系统：它没有绩点负担。"
+      "subtitleZh": "系统：人家只是一张纸，可没有挂科扣绩点的心理负担，当然飞得快。"
     },
     "c3_bike_no_money_system": {
       "kind": "dialogue",
@@ -6995,7 +7027,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "That sentence occurs far too often in this game.",
       "voiceAsset": "vo_c3_bike_no_money_system",
-      "subtitleZh": "系统：这句话在本游戏里出现频率太高了。"
+      "subtitleZh": "系统：“余额不足”这四个字，今天真是刻进你DNA里了。先去帮阿姨收盘子赚钱吧。"
     },
     "c3_theater_failure_narrator": {
       "kind": "dialogue",
@@ -7003,7 +7035,7 @@
       "voiceRole": "male_narrator",
       "voiceTextEn": "A remarkably generous failure.",
       "voiceAsset": "vo_c3_theater_failure_narrator",
-      "subtitleZh": "旁白：失败得很慷慨。"
+      "subtitleZh": "旁白：摔得十分干脆，连体面都没留。"
     },
     "c3_theater_logic_system": {
       "kind": "dialogue",
@@ -7011,7 +7043,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "They changed the running order. The printed program may be out of date.",
       "voiceAsset": "vo_c3_theater_logic_system",
-      "subtitleZh": "系统：台上的顺序改过，印刷版未必跟得上。"
+      "subtitleZh": "系统：彩排临时改过场次顺序，纸质节目单早就过时了。得看现场的痕迹。"
     },
     "c3_theater_celebrate_system": {
       "kind": "dialogue",
@@ -7019,7 +7051,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Turn it over first.",
       "voiceAsset": "vo_c3_theater_celebrate_system",
-      "subtitleZh": "系统：先翻过来看。"
+      "subtitleZh": "系统：别高兴得太早，把纸条翻过来看看背面。"
     },
     "c3_theater_substitute_system": {
       "kind": "dialogue",
@@ -7027,7 +7059,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "The substitute has a serial number. The program says nothing about where the original went.",
       "voiceAsset": "vo_c3_theater_substitute_system",
-      "subtitleZh": "系统：替身有编号。原件去向不在节目单里。"
+      "subtitleZh": "系统：背面印着剧社的道具编号。这是张舞台替身，真家伙早就趁乱溜出剧场了。"
     },
     "c3_qizhen_no_trail_system": {
       "kind": "dialogue",
@@ -7035,7 +7067,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "No idea. This time it left no paper scraps along the road.",
       "voiceAsset": "vo_c3_qizhen_no_trail_system",
-      "subtitleZh": "系统：不知道。它这次没有沿路掉纸屑。"
+      "subtitleZh": "系统：跟丢了。这次它学精了，沿路半点蓝光都没漏。"
     },
     "c3_qizhen_forum_system": {
       "kind": "dialogue",
@@ -7043,7 +7075,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Use the old method. Ask the campus forum.",
       "voiceAsset": "vo_c3_qizhen_forum_system",
-      "subtitleZh": "系统：老办法，发个论坛问问。"
+      "subtitleZh": "系统：遇事不决上 98。发个悬赏帖，让全校的夜猫子帮你找。"
     },
     "c3_qizhen_cc98_system": {
       "kind": "dialogue",
@@ -7051,7 +7083,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "CC98 has provided a highly precise range: not the restroom.",
       "voiceAsset": "vo_c3_qizhen_cc98_system",
-      "subtitleZh": "系统：CC98 提供了一个非常精确的范围：不是厕所。"
+      "subtitleZh": "系统：98 老哥给出了极其严谨的排除法：至少没飞进厕所。"
     },
     "c3_qizhen_catalog_system": {
       "kind": "dialogue",
@@ -7059,7 +7091,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "It means the paper is currently more artistic than we are.",
       "voiceAsset": "vo_c3_qizhen_catalog_system",
-      "subtitleZh": "系统：意思是它现在比我们更艺术。"
+      "subtitleZh": "系统：馆藏线索指向湖岸与倒影……看来这张纸条还挺讲究意境。"
     },
     "c3_qizhen_map_system": {
       "kind": "dialogue",
@@ -7067,7 +7099,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Congratulations. You have completed a campus-scale guessing game.",
       "voiceAsset": "vo_c3_qizhen_map_system",
-      "subtitleZh": "系统：恭喜，你完成了一次校园级猜谜。"
+      "subtitleZh": "系统：三条线索拼齐——目标锁定，启真湖！"
     },
     "c3_qizhen_reflection_system": {
       "kind": "dialogue",
@@ -7075,7 +7107,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "More precisely, it is inside the reflection.",
       "voiceAsset": "vo_c3_qizhen_reflection_system",
-      "subtitleZh": "系统：准确来说，是在倒影里。"
+      "subtitleZh": "系统：它没泡在水里，是卡在湖面的倒影图层里了。"
     },
     "c3_qizhen_swimming_system": {
       "kind": "dialogue",
@@ -7083,7 +7115,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "For someone who cannot swim, the difference is substantial.",
       "voiceAsset": "vo_c3_qizhen_swimming_system",
-      "subtitleZh": "系统：对不会游泳的人来说区别很大。"
+      "subtitleZh": "系统：别想不开往水里跳，你体艺游泳课还没修呢。找船过去。"
     },
     "c3_qizhen_gone_system": {
       "kind": "dialogue",
@@ -7091,7 +7123,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "It disappeared again.",
       "voiceAsset": "vo_c3_qizhen_gone_system",
-      "subtitleZh": "系统：它又消失了。"
+      "subtitleZh": "系统：水波一晃，它又缩回深色倒影里了。"
     },
     "c3_qizhen_sign_system": {
       "kind": "dialogue",
@@ -7099,7 +7131,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Should there not be a sign around here to point us somewhere?",
       "voiceAsset": "vo_c3_qizhen_sign_system",
-      "subtitleZh": "系统：通常这里不应该有给我们指指路的牌子吗？"
+      "subtitleZh": "系统：岸边那块旧指示牌木头不错，拆下来正好当右船桨使。"
     },
     "c3_qizhen_hiding_system": {
       "kind": "dialogue",
@@ -7107,7 +7139,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "So this is where it is hiding. Hah.",
       "voiceAsset": "vo_c3_qizhen_hiding_system",
-      "subtitleZh": "系统：这就是它躲藏的地方，哈"
+      "subtitleZh": "系统：锁定坐标了！它就猫在这片倒影底下。"
     },
     "c3_qizhen_display_system": {
       "kind": "dialogue",
@@ -7123,7 +7155,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Use the fake one.",
       "voiceAsset": "vo_c3_qizhen_fake_system",
-      "subtitleZh": "系统：就是这个假的"
+      "subtitleZh": "系统：把刚才在剧场抓到的那张假替身挂在鱼钩上！"
     },
     "c3_qizhen_ego_system": {
       "kind": "dialogue",
@@ -7131,7 +7163,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "Because it cannot tolerate someone else escaping in its place.",
       "voiceAsset": "vo_c3_qizhen_ego_system",
-      "subtitleZh": "系统：因为它不能接受别人替它逃跑。"
+      "subtitleZh": "系统：一个占了三天座位的老赖，绝对容不下冒牌货顶替它的位置。"
     },
     "c3_qizhen_atmosphere_system": {
       "kind": "dialogue",
@@ -7139,7 +7171,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "You have only made the lake more atmospheric.",
       "voiceAsset": "vo_c3_qizhen_atmosphere_system",
-      "subtitleZh": "系统：你只是让湖更有氛围了。"
+      "subtitleZh": "系统：偏了！你这杆甩下去，除了惊起两圈水波啥也没钓着。"
     },
     "c3_qizhen_taunt_system": {
       "kind": "dialogue",
@@ -7147,7 +7179,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "It is still mocking your reflection.",
       "voiceAsset": "vo_c3_qizhen_taunt_system",
-      "subtitleZh": "系统：还在嘲笑你的倒影。"
+      "subtitleZh": "系统：瞧见没，水底下的正主正隔着倒影看你笑话呢。对准点！"
     },
     "c3_qizhen_release_narrator": {
       "kind": "dialogue",
@@ -7171,7 +7203,7 @@
       "voiceRole": "female_system",
       "voiceTextEn": "You can catch it now!",
       "voiceAsset": "vo_c3_qizhen_grab_system",
-      "subtitleZh": "系统：能抓了！"
+      "subtitleZh": "系统：趁现在，按住它！"
     },
     "ch4_prologue_player_01": {
       "kind": "dialogue",
@@ -7187,7 +7219,7 @@
       "voiceRole": "male_narrator",
       "voiceTextEn": "The lake did not keep it. The night wind carried it into the teaching building that was still lit.",
       "voiceAsset": "vo_ch4_prologue_narrator_01",
-      "subtitleZh": "湖面没有留下它。夜风把它送进了仍然亮着灯的教学楼。"
+      "subtitleZh": "湖水没有留住它。晚风裹着那张纸条，一路吹进了还亮着灯的段永平教学楼。"
     },
     "ch4_prologue_cleaner_01": {
       "kind": "dialogue",
@@ -7195,7 +7227,7 @@
       "voiceRole": "female_cleaner",
       "voiceTextEn": "Careful, I just mopped. That paper went inside.",
       "voiceAsset": "vo_ch4_prologue_cleaner_01",
-      "subtitleZh": "小心，刚拖过。那张纸往里去了。"
+      "subtitleZh": "哎同学当心脚下，刚拖的地！你追的那张纸片往大厅里头飞了。"
     },
     "ch4_prologue_guard_01": {
       "kind": "dialogue",
@@ -7203,7 +7235,7 @@
       "voiceRole": "male_guard",
       "voiceTextEn": "The North Teaching Building is closing. Please pack up.",
       "voiceAsset": "vo_ch4_prologue_guard_01",
-      "subtitleZh": "同学，北教要清楼了，请收好东西。"
+      "subtitleZh": "同学，北教马上二十三点清楼了啊，拿完东西赶紧出来！"
     }
   },
   "presentation": {
@@ -7429,5 +7461,30 @@
     "final_chase_pressure_close",
     "final_chase_close_voice",
     "final_chase_floor_changed"
-  ]
+  ],
+  "chapter3TheaterDurationMsBySubtitle": {
+    "系统：彩排临时改过场次顺序，纸质节目单早就过时了。得看现场的痕迹。": 3640,
+    "系统：别高兴得太早，把纸条翻过来看看背面。": 2400,
+    "系统：背面印着剧社的道具编号。这是张舞台替身，真家伙早就趁乱溜出剧场了。": 3640
+  },
+  "chapter3OpeningDurationMsByKey": {
+    "library_story_library_friend_contacted_01": 1200,
+    "library_story_library_friend_contacted_02": 1200,
+    "library_story_library_friend_contacted_03": 1200,
+    "library_story_library_friend_contacted_04": 1240,
+    "library_story_library_friend_contacted_05": 1336,
+    "library_story_library_friend_contacted_06": 1200,
+    "library_story_library_friend_contacted_07": 1200,
+    "library_story_library_friend_contacted_08": 1480,
+    "library_story_library_friend_contacted_09": 1720,
+    "library_story_library_friend_contacted_10": 1200,
+    "library_story_library_friend_contacted_11": 1432,
+    "library_story_library_friend_contacted_13": 1200,
+    "library_story_library_friend_contacted_14": 1624,
+    "library_story_library_friend_contacted_15": 1200,
+    "library_story_library_friend_contacted_16": 1288,
+    "library_story_library_friend_contacted_17": 1432,
+    "library_story_library_friend_contacted_19": 1200,
+    "library_story_library_friend_contacted_20": 1384
+  }
 }

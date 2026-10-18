@@ -525,7 +525,7 @@ func draw_board_view(view: Control,is_overview: bool) -> void:
 			view.draw_string(font,Vector2(area.position.x+6,area.position.y+66),"推车碰到纸条，它就会改换出口",HORIZONTAL_ALIGNMENT_CENTER,area.size.x-12,16,Color("94e0e3"))
 
 func owns_pickup_subtitle(text: String) -> bool:
-	return _pickup_active and text in ["玩家：那是鸡吗？","系统：现在不是了。"]
+	return _pickup_active and text in ["玩家：纸包鸡……飞了？！","系统：包装纸被纸条策反了！"]
 
 func pickup_subtitle() -> String:
 	return str(pickup_pose().subtitle) if _pickup_active else ""
@@ -536,11 +536,11 @@ func _pickup_tick(milliseconds: float) -> void:
 		presentation_requested.emit(str(PICKUP_CUES[_pickup_beat][1]),{})
 		_pickup_beat+=1
 	if before<9580 and _pickup_elapsed>=9580:
-		hint.text="玩家：那是鸡吗？"
-		presentation_requested.emit("native_story_subtitle",{"text":"玩家：那是鸡吗？","durationMs":780,"tone":"player"})
+		hint.text="玩家：纸包鸡……飞了？！"
+		presentation_requested.emit("native_story_subtitle",{"text":"玩家：纸包鸡……飞了？！","durationMs":780,"tone":"player"})
 	if before<10480 and _pickup_elapsed>=10480:
-		hint.text="系统：现在不是了。"
-		presentation_requested.emit("native_story_subtitle",{"text":"系统：现在不是了。","durationMs":780,"tone":"system"})
+		hint.text="系统：包装纸被纸条策反了！"
+		presentation_requested.emit("native_story_subtitle",{"text":"系统：包装纸被纸条策反了！","durationMs":780,"tone":"system"})
 	if _pickup_elapsed>=PickupTimeline.DURATION_MS:
 		_pickup_active=false
 		config["source_pickup_prelude"]=false

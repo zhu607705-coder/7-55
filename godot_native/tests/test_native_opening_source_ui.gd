@@ -100,7 +100,7 @@ func run() -> void:
 		check(state.d.native.page=="desktop" and not state.d.native.get("wake_warned",false),"real close enters wake choice")
 		var sleep:=check_button("c1_wake",Color("fff6df"),Color("222322"))
 		var narration: Label=find_named(shell.page_body,"WakeNarration")
-		check(narration!=null and narration.text=="你没有5分钟了，但你很有勇气","one scene-owned authored narration")
+		check(narration!=null and narration.text=="早八快上课了。不得不说，你还敢赖床，心理素质真硬。","one scene-owned authored narration")
 		check(narration.get_node("NoticeSpeaker").text=="旁白" and narration.get_node("NoticeAvatar/Icon").texture!=null,"source narrator composition and pixel icon")
 		check(narration.get_theme_font_size("font_size")==16,"phone caption retains16 logical pixels")
 		var expected: Vector2=shell.phone.position+Vector2(19,55)*shell.phone.scale
@@ -108,7 +108,7 @@ func run() -> void:
 		check(rect(find_named(shell.page_body,"WakeTime")).end.y<=rect(narration).position.y+0.1,"narration does not overlap wake status")
 		check(not rect(narration).intersects(rect(sleep)),"narration does not overlap wake action")
 		check(rect(shell.phone).encloses(rect(narration)),"narration contained by430x860 frame")
-		shell._feedback("你没有5分钟了，但你很有勇气。")
+		shell._feedback("早八快上课了。不得不说，你还敢赖床，心理素质真硬。")
 		check(shell.toast.text.is_empty() and not shell.toast.visible,"scene narration is not duplicated as global feedback")
 		await press_without_action(sleep)
 		check(not state.d.native.get("wake_warned",false),"canceled sleep does not warn")

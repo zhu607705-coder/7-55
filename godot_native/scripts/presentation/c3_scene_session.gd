@@ -3,6 +3,7 @@ extends RefCounted
 ## Source: ChapterThreeOpeningOverlay.tsx and CanteenInteriorScene.ts.
 const PAPER_ORIGIN := Vector2(1053,302)
 const TRIGGER_RADIUS := 360.0
+const LibraryTextTiming = preload("res://scripts/presentation/library_story_session.gd")
 const CAPTIONS := {
 	"record_scan":"短暂加载后：", "mode_unlock":"获得功能：外观模式切换",
 	"paper_burst":"纸条突然从 022 座位详情页弹出，贴着图书馆窗缝飞走。",
@@ -33,10 +34,13 @@ var escape_end_ms: float=0
 var completion_ms: float=0
 var prompt_lines: Array=[]
 var emitted: Dictionary={}
+var opening_durations: Dictionary={}
 
 func _init(state: Dictionary={}, type: String="opening", reduce: bool=false) -> void:
 	bound_state=state; kind=type; reduced_motion=reduce
 	if kind=="opening":
+		var audio: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/audio-director-source.json"))
+		opening_durations=audio.get("chapter3OpeningDurationMsByKey",{})
 		lines=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/library-finals.content.json")).library.dialogue022
 		_add_lines(0,8,"conversation"); _beat("record_scan",1350,850)
 		_add_lines(8,18,"record_escape"); _beat("mode_unlock",1700,1050)
@@ -61,7 +65,12 @@ func _add_lines(first: int,last: int,phase: String) -> void:
 	for i in range(first,mini(last,lines.size())):
 		# JavaScript .length counts UTF-16 code units, not Unicode code points.
 		var length: int=str(lines[i].text).to_utf16_buffer().size()/2
-		beats.append({"phase":phase,"durationMs":clampi(760+length*48,1200,1900),"lineIndex":i})
+		# Revised 022 lines are unvoiced. Keep the original beat as a minimum
+		# and allow the new Chinese to be read; advance and skip stay unchanged.
+		var key: String="library_story_library_friend_contacted_%02d" % [i+1]
+		var duration: int=clampi(760+length*48,1200,1900)
+		if opening_durations.has(key): duration=maxi(int(opening_durations[key]),LibraryTextTiming.text_duration(str(lines[i].text)))
+		beats.append({"phase":phase,"durationMs":duration,"lineIndex":i})
 func _beat(phase: String,normal: int,reduced: int) -> void:
 	beats.append({"phase":phase,"durationMs":reduced if reduced_motion else normal,"lineIndex":null,"caption":CAPTIONS[phase]})
 

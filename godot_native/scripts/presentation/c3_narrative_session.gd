@@ -37,7 +37,9 @@ func _init(s: Dictionary={},request: Dictionary={}) -> void:
 	var durations: Array=spec.get("durations",[])
 	for index in range(authored.size()):
 		var text: String=str(authored[index])
-		var duration: float=float(durations[index]) if index<durations.size() else (theater_duration(text) if scene=="theater_interior" else float(spec.get("stepMs",2500))-120)
+		# Revised Chinese must keep the original theater queue clock.
+		var theater_ms: float=float(audio.get("chapter3TheaterDurationMsBySubtitle",{}).get(_normalize(text),theater_duration(text)))
+		var duration: float=float(durations[index]) if index<durations.size() else (theater_ms if scene=="theater_interior" else float(spec.get("stepMs",2500))-120)
 		lines.append({"text":text,"atMs":start,"durationMs":duration})
 		start+=duration+120
 	duration_ms=start+float(spec.get("tailMs",0))

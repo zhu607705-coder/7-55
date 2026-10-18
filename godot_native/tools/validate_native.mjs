@@ -19,8 +19,10 @@ function run(label,args,command=executable){
 }
 if(!fs.existsSync(path.join(project,'assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf')))throw Error('Run node godot_native/tools/sync_source.mjs first');
 run('Godot asset import and editor parse',['--headless','--path',project,'--editor','--import','--quit']);
+run('Native Chinese text revisions',[path.join(project,'tests/verify_zh_text_revisions.mjs')],process.execPath);
 run('Native startup',['--headless','--path',project,'--quit-after','15','--','--fresh']);
 for(const f of fs.readdirSync(path.join(project,'tests')).filter(x=>x.endsWith('.gd')&&x!=='test_save_migration.gd'&&(x.startsWith('test_')||x.startsWith('smoke_'))).sort())run(f,['--headless','--path',project,'--script',`res://tests/${f}`]);
+run('Native Chinese/audio text contract',[path.join(project,'tests/verify_zh_audio_contract.mjs')],process.execPath);
 run('BUCT save-fixture isolation', [path.join(project,'tools/test_buct.mjs'),'--guard-only'],process.execPath);
 for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-director.mjs','tools/export-c3-world-source.mjs','tools/export-chapter4-device-source.mjs','tools/export-chapter4-context-source.mjs','tests/export_audio_state_fixtures.mjs','tests/export_chapter3_scene_source.mjs','tests/export_library_story_source.mjs','tests/export_lake_live_source_fixtures.mjs','tests/export_chapter3_narrative_source.mjs','tests/export_library_world_source.mjs','tests/export_canteen_mixer_source.mjs','tests/export_c3_devices_source.mjs','tests/export_c3_canteen_devices_source.mjs','tests/export_c3_bike_world_source.mjs']) {
  const args=[path.join(project,relative),'--check'];

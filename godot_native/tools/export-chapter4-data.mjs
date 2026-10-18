@@ -1,3 +1,5 @@
+import {fileURLToPath} from 'node:url';
+import {applyNativeTextRevisions} from './apply-zh-text-revisions.mjs';
 import fs from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 const root=new URL('../../',import.meta.url);
@@ -15,6 +17,7 @@ const prologue=await load('src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts'
 const guard=await load('src/modules/ChapterFourGuardModel.ts');
 const chase=await load('src/modules/ChapterFourFinalChaseModel.ts');
 const out={guard:{maintenanceRules:guard.CHAPTER_FOUR_MAINTENANCE_GUARD_RULES,patrol:guard.CHAPTER_FOUR_MAINTENANCE_PATROL_WAYPOINTS,chaseRules:chase.CHAPTER_FOUR_FINAL_CHASE_RULES,chasePoints:chase.CHAPTER_FOUR_FINAL_CHASE_POINTS,chaseWaypoints:chase.CHAPTER_FOUR_FINAL_CHASE_WAYPOINTS},prologue:{beats:prologue.PROLOGUE_BEATS,subtitles:prologue.PROLOGUE_SUBTITLES},levels:levels.STAIR_LEVEL_ORDER.map(levels.getStairLevel),cameras:levels.LEVEL_CAMERAS,alumni:alumni.CHAPTER_FOUR_ALUMNI_HONOR_WALL,questions:alumni.CHAPTER_FOUR_ZHU_QUESTIONS,puzzles:puzzles.CHAPTER_FOUR_INSERTED_PUZZLES,registration:puzzles.CHAPTER_FOUR_DEVICE_REGISTRATION,stair:{edges:stair.NATIVE_EDGES,walkable:stair.CHASE_STAIR_WALKABLE,landings:stair.CHASE_STAIR_LANDINGS,gates:stair.CHASE_STAIR_GATES,exit:stair.CHASE_STAIR_EXIT,route:stair.CHASE_STAIR_ROUTE}};
+applyNativeTextRevisions(fileURLToPath(root), 'chapter4-native-source.json', out);
 fs.mkdirSync(new URL('godot_native/data/native/',root),{recursive:true});
 fs.writeFileSync(new URL('godot_native/data/native/chapter4-native-source.json',root),JSON.stringify(out,null,2)+'\n');
 console.log('Exported authored four-level stair campaign, honor wall, questions, puzzle contracts and chase-stair geometry');

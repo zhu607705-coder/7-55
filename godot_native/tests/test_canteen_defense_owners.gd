@@ -37,7 +37,7 @@ func run() -> void:
 	# Source subtitle windows remain visible through pause and layout, exactly780ms.
 	game=await open_activity(Vector2i(430,860),true)
 	game._pickup_elapsed=0;game._pickup_beat=0;game._pickup_tick(0)
-	for sample: Array in [[9580.0,"玩家：那是鸡吗？"],[10480.0,"系统：现在不是了。"]]:
+	for sample: Array in [[9580.0,"玩家：纸包鸡……飞了？！"],[10480.0,"系统：包装纸被纸条策反了！"]]:
 		while game._pickup_elapsed<float(sample[0]):game._process(.01)
 		check(game.hint.text==sample[1] and game.hint.is_visible_in_tree(),"source subtitle visible in activity "+str(sample[0]))
 		check(shell.toast.text!=sample[1] and not shell.world_frame.visible,"subtitle has one visible owner")

@@ -84,3 +84,35 @@ The intermittent media-test leak was isolated with Godot `--verbose` to `07_p14_
 See `AUDIO_WIRING_COVERAGE.md` for concrete reached routes and explicitly outstanding native presentation work. Broad manifest support must not be described as proof that every source scene milestone already exists natively.
 
 Final focused freeze (2026-10-01): director 4,646 checks; prologue 26; gameplay wiring 43; unified C4 ownership 12; early games 15; Chapter 1/2 46; Chapter 3 controller 69; actual media/charging 30; Chapter 4 114. Canteen defense, deterministic minigame models and minigame UI smoke also passed. The strict run rejects script errors, ERROR output, ObjectDB leaks and resources still in use. Exports pass their --check modes and git diff --check is clean. The source physics model files were not changed by this audio work.
+
+## Native Chinese display revisions (2026-10-18)
+
+`data/zh_text_revisions.json` is a native-only display overlay. The exporter first
+builds the unchanged source audio catalog, then applies exact Chinese text edits.
+`tools/audio-text-revisions.mjs` retains every existing C3 subtitle lookup and adds
+revised Chinese as aliases of the same stable key. Both `feedback` and the C3
+narrative queue keep using their existing exact-match resolver and cue path.
+Ambiguous aliases, duplicate catalog targets with different replacements, stale
+keys, and speaker-prefix changes fail instead of selecting another recording.
+Library sequence/index paths resolve to their exact catalog key; matching short
+text never broadcasts an edit to multiple catalog entries.
+
+Audio assets, English recording text, roles, cue order, offsets, playback rates,
+voice durations and `textDurationMsByKey` remain unchanged. Revised voiced theater
+lines retain their original queue durations through
+`chapter3TheaterDurationMsBySubtitle`. The separate
+`chapter3OpeningDurationMsByKey` records each revised 022 opening line's original
+UTF-16-based beat minimum. Those 022 lines and the library story sequences are
+unvoiced: their native reading time may extend to the larger of the original
+minimum and `clamp(1600 + 120 * visible characters, 2400, 6500)`. Existing advance,
+confirmation, focus pause and skip behavior still owns progression. Unchanged
+022 opening lines keep their original timing.
+
+`tests/verify_zh_audio_contract.mjs` checks an immutable pre-revision protected
+catalog hash, all 37 old C3 mappings, exact new aliases, collision rejection,
+unvoiced-line behavior and the two timing tables. `test_zh_audio_compatibility.gd`
+exercises the unchanged cue scheduler and narrative path for old/new Chinese,
+including same-turn deduplication and stable keys. Original TypeScript fixtures
+remain unchanged; test-only exact-path display projections permit only approved
+Chinese edits and the explicit unvoiced reading-time allowance. They do not
+re-record timing or weaken role, line count, progression, cue-count or skip tests.

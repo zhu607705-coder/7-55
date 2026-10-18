@@ -313,11 +313,11 @@ func _wake() -> Control:
 	if not s.native.get("wake_warned",false):
 		_opening_chip(root,"（我）",Vector2(189,303)).name="WakePlayerChip"
 		_opening_button(root,"……再睡5分钟……",Rect2(45,338,288,72),"c1_wake","paper")
-		var narration:=PhoneNotice.create("你没有5分钟了，但你很有勇气","旁白")
+		var narration:=PhoneNotice.create("早八快上课了。不得不说，你还敢赖床，心理素质真硬。","旁白")
 		narration.name="WakeNarration"; narration.position=Vector2(16,52)/PHONE_SCALE; narration.scale=Vector2.ONE/PHONE_SCALE
 		root.add_child(narration); PhoneNotice.layout(narration,392)
 	else:
-		var flash = _label(root,"起床蠢货\n！！！",Rect2(15,245,348,180),53,Color("c85454"),HORIZONTAL_ALIGNMENT_CENTER)
+		var flash = _label(root,"还睡？！\n早八要迟到了！！",Rect2(15,245,348,180),38,Color("c85454"),HORIZONTAL_ALIGNMENT_CENTER)
 		_animate_flash(root,flash)
 		_opening_button(root,"进入手机主界面",Rect2(64,450,250,68),"c1_enter_home","primary")
 	handled.append("c1_wake")
@@ -414,7 +414,7 @@ func _home() -> Control:
 		var note = _page(root,"",Rect2(12,4,352,50),"wechat",Color("f6f2e7"))
 		_app_icon(_panel(note,Rect2(10,8,34,34),Color("61b58c"),INK,4,1),"wechat",.7)
 		_label(note,"朋友",Rect2(54,4,232,22),16)
-		_label(note,"成功了吗" if s.actOne.phase=="friend_message_required" else "快快老师在点名，学在浙大。",Rect2(54,26,275,19),12,MUTED)
+		_label(note,"签上了吗？？" if s.actOne.phase=="friend_message_required" else "速来！老师开始雷达签到！",Rect2(54,26,275,19),12,MUTED)
 
 	return root
 
@@ -595,7 +595,7 @@ func _wechat(_view: Dictionary) -> Control:
 	_label(root,"⌕ ⊕",Rect2(325,9,45,29),14,INK,HORIZONTAL_ALIGNMENT_RIGHT)
 	_panel(root,Rect2(0,47,378,33),Color("f2f2f2"),Color("e0e0e0"),0,1)
 	_label(root,"已登录 2 台设备 ›",Rect2(14,53,350,21),12,Color("666666"))
-	var preview="你到底到哪了？" if lake_apps.active(s) else "成功了吗" if s.actOne.phase=="friend_message_required" else "这是签到码 ▓▓▓▓" if s.flags.codeScattered else "快快老师在点名，学在浙大"
+	var preview="你到底到哪了？" if lake_apps.active(s) else "签上了吗？？" if s.actOne.phase=="friend_message_required" else "这是签到码 ▓▓▓▓" if s.flags.codeScattered else "速来！老师开始雷达签到！"
 	var movement=s.actOne.phase in ["movement_required","reservation_briefing_required","reservation_required","movement_ready"]
 	var rows=[["文件传输助手","[图片]","09:28",Color("10af42")],["朋友",preview,"07:55",Color("a9c5e8")],["室友","晚上一起去食堂吃饭呀~","07:21",Color("72bb50")],["导师","头像框中间多了一条被封住的竖线。" if movement and not s.actOne.mentorLineReleased else "请把实验报告的初稿发我一下。","07:18",Color("9c80d8")]]
 	for i in range(4):
@@ -653,7 +653,7 @@ func _friend_chat() -> Control:
 	_panel(root,Rect2(16,83,40,40),Color("d5ba8b"),Color("a6a6a6"),3,1)
 	_label(root,"/",Rect2(16,83,40,40),27,Color("644845"),HORIZONTAL_ALIGNMENT_CENTER)
 	_panel(root,Rect2(68,80,287,58),Color.WHITE,Color("d4d8d4"),3,1)
-	_label(root,"快快老师在点名，学在浙大。",Rect2(79,87,263,43),18)
+	_label(root,"速来！老头突然开始点名了，学在浙大雷达签到！",Rect2(79,87,263,43),18)
 	var message=Control.new(); message.size=Vector2(378,86); message.position=Vector2(0,157); root.add_child(message)
 	_panel(message,Rect2(16,3,40,40),Color("d5ba8b"),Color("a6a6a6"),3,1)
 	_label(message,"/",Rect2(16,3,40,40),27,Color("644845"),HORIZONTAL_ALIGNMENT_CENTER)
@@ -670,11 +670,11 @@ func _friend_chat() -> Control:
 		else:
 			_panel(root,Rect2(16,261,40,40),Color("d5ba8b"),Color("a6a6a6"),3,1)
 			_panel(root,Rect2(68,259,138,49),Color.WHITE,Color("d4d8d4"),3,1)
-			_label(root,"成功了吗",Rect2(81,265,112,36),19)
-			var reply=_panel(root,Rect2(70,340,285,68),Color("a7e775"),Color("89be69"),3,1)
-			_label(reply,"没有，但我正试着威胁系统",Rect2(13,7,259,54),18)
-			var question=_panel(root,Rect2(68,441, 70,49),Color.WHITE,Color("d4d8d4"),3,1)
-			_label(question,"？",Rect2(8,6,54,36),22)
+			_label(root,"签上了吗？？",Rect2(81,265,112,36),19)
+			var reply=_panel(root,Rect2(70,340,285,88),Color("a7e775"),Color("89be69"),3,1)
+			_label(reply,"没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。",Rect2(13,7,259,74),18)
+			var question=_panel(root,Rect2(68,441,175,49),Color.WHITE,Color("d4d8d4"),3,1)
+			_label(question,"？你没睡醒吧",Rect2(8,6,159,36),22)
 			if s.actOne.phase=="friend_message_required":
 				reply.visible=false; question.visible=false
 				root.ready.connect(func():
@@ -688,9 +688,9 @@ func _friend_chat() -> Control:
 		var burst=_panel(root,Rect2(13,280,352,206),Color("100d13"),Color("74232c"),0,2)
 		burst.visible=false
 		_panel(burst,Rect2(158,14,36,36),Color("3a0d10"),Color("d43a3a"),18,8)
-		_label(burst,"等等等等，你想翘课？没门！",Rect2(12,62,328,59),23,Color("ff7070"),HORIZONTAL_ALIGNMENT_CENTER)
-		_label(burst,"我不会让你签上的！",Rect2(12,123,328,29),19,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-		var laugh=_label(burst,"找你的数字去吧哈哈哈",Rect2(12,163,328,31),19,Color("ffb1b1"),HORIZONTAL_ALIGNMENT_CENTER); laugh.visible=false
+		_label(burst,"等等——人还在被窝里就想隔空签到？",Rect2(12,62,328,59),20,Color("ff7070"),HORIZONTAL_ALIGNMENT_CENTER)
+		_label(burst,"想得美！这分我今天扣定了！",Rect2(12,123,328,29),18,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+		var laugh=_label(burst,"签到码给你拆碎咯，慢慢找去吧哈哈哈！",Rect2(12,163,328,31),15,Color("ffb1b1"),HORIZONTAL_ALIGNMENT_CENTER); laugh.visible=false
 		var skip=_button(root,"",Rect2(0,60,378,560),func(): entry_session.skip_friend(),Color.TRANSPARENT,Color.TRANSPARENT,0,Color.TRANSPARENT)
 		skip.name="FriendAttackSkip"; skip.mouse_filter=Control.MOUSE_FILTER_IGNORE; skip.focus_mode=Control.FOCUS_NONE
 		for mode in ["normal","hover","pressed","focus"]: skip.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
