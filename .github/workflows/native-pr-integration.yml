@@ -15,6 +15,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   source-and-formal-handoffs:
     runs-on: ubuntu-latest
@@ -42,6 +46,7 @@ jobs:
         run: node scripts/verify-native-pr-integration.mjs --runtime
       - name: Verify real pointer entry and touch targets
         run: |
+          set -euo pipefail
           command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
           sandbox=$(mktemp -d /tmp/755-pr-graphical-XXXXXX)
           mkdir -p "$sandbox"/{home,data,config,cache,state}
@@ -50,6 +55,7 @@ jobs:
           xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" godot --audio-driver Dummy --path godot_native --resolution 390x844 --script res://tests/test_rain_rescue.gd -- --graphical-touch-skip | tee native-pr-rescue-touch.log
       - name: Verify source-less packed adapters
         run: |
+          set -euo pipefail
           sandbox=$(mktemp -d /tmp/755-pr-pack-XXXXXX)
           mkdir -p "$sandbox"/{home,data,config,cache,state,empty}
           export HOME="$sandbox/home" XDG_DATA_HOME="$sandbox/data" XDG_CONFIG_HOME="$sandbox/config" XDG_CACHE_HOME="$sandbox/cache" XDG_STATE_HOME="$sandbox/state"
