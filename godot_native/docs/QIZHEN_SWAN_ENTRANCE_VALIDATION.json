@@ -1,0 +1,84 @@
+{
+  "status": "draft_isolated_native_preview",
+  "validated_at_utc": "2026-10-17T03:08:00Z",
+  "base_commit": "2c8cc05ed9297a4040c2e0916351bd9d57ee3a15",
+  "engine": "Godot 4.6.3",
+  "intro_seconds": 7.2,
+  "tests": {
+    "entrance": {
+      "assertions": 1440,
+      "failures": 0
+    },
+    "motion": {
+      "assertions": 1615,
+      "failures": 0
+    },
+    "compact_native_390x844": {
+      "assertions": 17,
+      "failures": 0
+    },
+    "clean_package_import": "passed"
+  },
+  "manual_cloud_native_keys": [
+    "R restart",
+    "Space skip",
+    "A/D paddle",
+    "P pause"
+  ],
+  "touch_evidence": "Input.parse_input_event synthetic native touch dispatch; emulated mouse deduplication; no physical phone test",
+  "movie": {
+    "mode": "Godot Movie Maker offline fixed fps, scripted real paddle intents",
+    "resolution": [
+      1280,
+      720
+    ],
+    "fps": 30,
+    "frames": 360,
+    "seconds": 12,
+    "paddle_inputs": 18,
+    "handoff_count": 1,
+    "final_stage": "escaped",
+    "final_player": [
+      366.478118896484,
+      811.950988769531
+    ],
+    "wall_seconds": 11,
+    "cpu_render_ms_per_frame": 1.05,
+    "gpu_render_ms_per_frame": 4.46,
+    "encoding_ms_per_frame": 13.75,
+    "renderer": "OpenGL Compatibility / Mesa llvmpipe; not user-device performance"
+  },
+  "limitations": [
+    "not integrated into formal chapter story",
+    "visual scale and pixel granularity pending review",
+    "eight left-facing poses, not complete directional art",
+    "conservative local banks, not whole-lake walkability QA",
+    "no physical phone or full-campaign regression"
+  ],
+  "swim_review_v2": {
+    "status": "visual_pending_user_review_not_integrated",
+    "assertions": 2766,
+    "failures": 0,
+    "seconds": 12,
+    "fps": 30,
+    "frames": 360,
+    "mode": "deterministic presentation trajectory; native Movie Maker",
+    "source": "imagegen transparent RGBA atlas; four stable direction frames and one acceleration pose"
+  },
+  "hop_review_v3": {
+    "status": "motion_sample_approved_upload_authorized_not_integrated",
+    "motion_sample_approved_date": "2026-10-17",
+    "assertions": 2055,
+    "failures": 0,
+    "seconds": 7,
+    "fps": 30,
+    "frames": 210,
+    "key_poses": 16,
+    "airborne_seconds": 0.86,
+    "maximum_height_source_pixels": 32,
+    "launch_count": 1,
+    "landing_count": 1,
+    "mode": "native deterministic Movie Maker",
+    "previous_remote_ci_does_not_cover_this_change": "1386d88"
+  }
+}
