@@ -78,7 +78,7 @@ assert.doesNotMatch(effects,/run\.\w+\s*=(?!=)|\b(?:randf|randi|seed|randomize)\
 if(process.env.CANTEEN_EFFECTS_SOURCE_ONLY!=='1'){
  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'canteen-paper-effects-check-'));
  try{
-  for(const relative of ['scripts/presentation/c3_paper_art.gd','scripts/presentation/c3_canteen_paper_view.gd','scripts/presentation/c3_scene_session.gd','scripts/presentation/c3_defense_effects.gd','scripts/games/canteen_defense_model.gd','tests/test_canteen_paper_effects.gd','tests/fixtures/canteen_defense.json']){
+  for(const relative of ['scripts/presentation/c3_paper_art.gd','scripts/presentation/c3_canteen_paper_view.gd','scripts/presentation/c3_scene_session.gd','scripts/presentation/library_story_session.gd','scripts/presentation/c3_defense_effects.gd','scripts/games/canteen_defense_model.gd','tests/test_canteen_paper_effects.gd','tests/fixtures/canteen_defense.json']){
    const target=path.join(temp,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,'godot_native',relative),target);
   }
   for(const relative of ['data/worlds.json','data/source/chapter3-canteen.content.json']){
