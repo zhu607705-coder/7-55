@@ -4,12 +4,14 @@ extends Control
 signal finished(result: Dictionary)
 signal exited
 const BeamClip = preload("res://scripts/presentation/endless_stair_beam_clipper.gd")
+const StairGait = preload("res://scripts/presentation/endless_stair_gait.gd")
 const RhythmFeedback=preload("res://scripts/presentation/endless_stair_guard_feedback.gd")
 const Model = preload("res://scripts/games/chapter4_endless_stair_model.gd")
 const JUMP_PATH = "res://assets/native/endless_stair_b3/player_jump_atlas.png"
 const JUMP_ROOTS = [Vector2(284,686),Vector2(252,657.25),Vector2(280,615.25),Vector2(242,681)]
 var model = Model.new()
 var rhythm_feedback
+var stair_gait
 var surface: SubViewportContainer
 var viewport: SubViewport
 var world: Node3D
@@ -35,7 +37,14 @@ var instruction: Label
 var start_button: Button
 var active := false
 var focus_paused := false
+const JUMP_BUFFER_TICKS := 7 # 117 ms at the unchanged 60 Hz model tick.
 var queued_jump := false
+var jump_buffer_ticks := 0
+var jump_pressed_last := false
+var input_rearm_keys: Dictionary = {}
+var camera_route_direction := 1.0
+var camera_route_intent := 1.0
+var input_view_size := Vector2.ZERO
 var primary_touch := -99
 var touch_origin := Vector2.ZERO
 var touch_point := Vector2.ZERO
@@ -95,6 +104,9 @@ func _ready() -> void:
 	rhythm_feedback=RhythmFeedback.new()
 	add_child(rhythm_feedback)
 	rhythm_feedback.setup(self)
+	stair_gait = StairGait.new()
+	add_child(stair_gait)
+	stair_gait.setup(self)
 	resized.connect(_fit)
 	get_window().focus_exited.connect(_lose_focus)
 	_fit()
@@ -598,15 +610,24 @@ func _exit_standalone_preview() -> void:
 
 func _fit() -> void:
 	if surface == null: return
+	if input_view_size != Vector2.ZERO and not input_view_size.is_equal_approx(size):
+		_clear_input()
+	input_view_size = size
 	view_rect = Rect2(Vector2.ZERO,size)
 	surface.position = Vector2.ZERO
 	surface.size = size
 	# Container owns its child viewport dimensions when stretching is enabled.
-	surface.stretch_shrink = maxi(1,ceili(maxf(size.x/640.0,size.y/360.0)))
+	# A tall phone must not collapse to a 130 px-wide render target. Preserve
+	# source-pixel detail while keeping the original landscape render budget.
+	surface.stretch_shrink = maxi(1, floori(size.x / 360.0)) if size.y > size.x else maxi(1, ceili(maxf(size.x / 640.0, size.y / 360.0)))
 	if subtitle:
 		subtitle.position = Vector2(24,size.y-66)
 		subtitle.size = Vector2(size.x-48,40)
-	camera.size = 9.0 if size.y>size.x else 6.0
+	# Keep horizontal warning distance on a narrow phone, without cropping the
+	# next landing. The same fixed isometric basis is used in both orientations.
+	camera.keep_aspect = Camera3D.KEEP_HEIGHT
+	camera.size = _camera_size()
+	if active: _update_camera(0.0)
 	menu.size = Vector2(minf(590,maxf(200,size.x-24)),0)
 	menu.position = (size-menu.size)*.5
 
@@ -621,6 +642,7 @@ func _show_menu(text: String, button: String) -> void:
 
 func _start() -> void:
 	model.reset()
+	if stair_gait: stair_gait.reset()
 	if rhythm_feedback:rhythm_feedback.reset()
 	highest_visual_progress = model.player.x
 	last_beam_tick=-1
@@ -638,6 +660,9 @@ func _start() -> void:
 	retained_heading = Vector3.RIGHT
 	guard_heading = Vector3.RIGHT
 	follow_center = Vector3(-6,3.4,-1.3)
+	camera_route_direction = 1.0
+	camera_route_intent = 1.0
+	_update_camera(0.0)
 	focus_paused = false
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	active = true
@@ -666,12 +691,67 @@ func _adjust_input_mask(mask: int) -> int:
 	held_screen_axis = axis
 	return (mask&Model.JUMP) | (Model.RIGHT if held_route_direction>0 else (Model.LEFT if held_route_direction<0 else 0))
 
+func _key_down(key: Key) -> bool:
+	var pressed := Input.is_physical_key_pressed(key)
+	if input_rearm_keys.has(key):
+		if not pressed: input_rearm_keys.erase(key)
+		return false
+	return pressed
+
+func _buffered_jump_mask(mask: int, pressed: bool, requested: bool = false) -> int:
+	# Buffer the intent in the input adapter. The model still records/replays
+	# only the consumed raw edge; physics, proof version and jump height stay intact.
+	if requested or (pressed and not jump_pressed_last):
+		jump_buffer_ticks = JUMP_BUFFER_TICKS
+	jump_pressed_last = pressed
+	var result := mask & ~Model.JUMP
+	if jump_buffer_ticks > 0:
+		if model.player_grounded and not (model.last_input & Model.JUMP):
+			result |= Model.JUMP
+			jump_buffer_ticks = 0
+		else:
+			jump_buffer_ticks -= 1
+	return result
+
+func _camera_size() -> float:
+	# 7.8 m horizontal world span preserves the feet, the 4.5 m warning horizon
+	# and a side margin on a 390x844 phone. No black bars or extra overlay.
+	var aspect := maxf(size.x, 1.0) / maxf(size.y, 1.0)
+	return maxf(6.0, 7.8 / aspect)
+
+func _camera_ground(progress: float) -> Vector3:
+	var at := clampf(progress, float(model.geometry.bounds[0]), float(model.geometry.exit.x))
+	return model.route_position(at, model.route_surface_height(at))
+
+func _camera_target() -> Vector3:
+	# Sample route position, not the discontinuous tangent at a landing.
+	# A triangular footprint smooths the corner before the player reaches it.
+	var ahead: float = model.player.x + camera_route_direction * 1.45
+	var target := (_camera_ground(ahead - .45) + _camera_ground(ahead) * 2.0 + _camera_ground(ahead + .45)) * .25
+	return target + Vector3(0, 1.25, -.35)
+
+func _update_camera(delta: float) -> void:
+	if absf(model.player_velocity.x) > .001:
+		camera_route_intent = signf(model.player_velocity.x)
+	camera_route_direction = camera_route_intent if delta <= 0 else move_toward(camera_route_direction, camera_route_intent, delta * 4.0)
+	var center := _camera_target()
+	# Never use actor.y here: jump, step-pose and landing bob are not camera input.
+	if delta <= 0:
+		follow_center = center
+	else:
+		# Reversing A/D blends the lead over half a second; a bounded camera
+		# speed prevents a large single-frame catch-up even after rapid reversals.
+		var smoothed := follow_center.lerp(center, 1.0 - exp(-delta * 8.0))
+		follow_center = follow_center.move_toward(smoothed, delta * 6.0)
+	camera.position = follow_center + Vector3(-2.5, 7.5, 18.0)
+	camera.look_at(follow_center)
+
 func _physics_process(_delta: float) -> void:
 	if not active: return
-	var left: bool = Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)
-	var right: bool = Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)
+	var left: bool = _key_down(KEY_A) or _key_down(KEY_LEFT)
+	var right: bool = _key_down(KEY_D) or _key_down(KEY_RIGHT)
 	var mask: int = (Model.LEFT if left or touch_axis<0 else 0) | (Model.RIGHT if right or touch_axis>0 else 0)
-	if queued_jump or Input.is_physical_key_pressed(KEY_SPACE): mask |= Model.JUMP
+	mask = _buffered_jump_mask(mask, _key_down(KEY_SPACE), queued_jump)
 	queued_jump = false
 	var grounded: bool = model.player_grounded
 	if demo_mode:
@@ -701,28 +781,29 @@ func _process(delta: float) -> void:
 func _present(delta: float) -> void:
 	var p: Vector3 = model.route_position(model.player.x,model.player.y)
 	var g: Vector3 = model.route_position(model.guard.x,model.guard.y)
-	var ground_y: float = model.route_surface_height(model.player.x)
-	var lookahead: Vector3 = model.route_position(minf(model.player.x-.25,float(model.geometry.exit.x)),ground_y)
-	var center := Vector3(lookahead.x,ground_y+1.25,p.z-.35)
-	if size.y>size.x:
-		center = p+model.route_heading(model.player.x)*1.5
-		center.y = ground_y+3
-	follow_center = center if delta<=0 else follow_center.lerp(center,1-exp(-delta*8))
-	camera.position = follow_center+Vector3(-2.5,7.5,18.0)
-	camera.look_at(follow_center)
+	_update_camera(delta)
 	if absf(model.player_velocity.x)>.001: retained_heading=model.route_heading(model.player.x,signf(model.player_velocity.x))
 	if absf(model.guard_velocity.x)>.001: guard_heading=model.route_heading(model.guard.x,signf(model.guard_velocity.x))
+	actor.region_enabled = false
+	pursuer.region_enabled = false
+	pursuer.hframes = 8
+	pursuer.offset = Vector2(0, 62)
 	actor.position = p
 	pursuer.position = g
+	if stair_gait:
+		stair_gait.prepare()
+		if stair_gait.player_pose.get("active", false): retained_heading = stair_gait.player_pose.heading * (-1 if model.player_velocity.x < 0 else 1)
+		if stair_gait.guard_pose.get("active", false): guard_heading = stair_gait.guard_pose.heading * (-1 if model.guard_velocity.x < 0 else 1)
 	var facing: Dictionary = Model.visible_facing(retained_heading,camera.global_basis)
 	var direction: String = facing.facing
 	actor.flip_h = direction=="side" and bool(facing.left)
 	actor.pixel_size = 1.7/128.0
 	actor.offset = Vector2(0,62)
 	var frame: int = floori(model.tick/7.0)%8
+	if stair_gait: frame = stair_gait.source_frame(false, frame)
 	actor.texture = player_frames[direction][frame if absf(model.player_velocity.x)>.001 else 0]
 	if direction=="side" and absf(model.player_velocity.x)<.001: actor.texture=player_frames.idle
-	if direction=="side" and jump_frames.size()==4 and (not model.player_grounded or land_ticks>0):
+	if direction=="side" and jump_frames.size()==4 and (not model.player_grounded or land_ticks>0) and not (stair_gait and stair_gait.player_pose.get("active", false)):
 		var index: int = 3 if model.player_grounded else (0 if jump_ticks<=2 else (1 if jump_ticks<=7 else 2))
 		actor.texture = jump_frames[index]
 		actor.pixel_size = 1.7/724.0
@@ -733,11 +814,16 @@ func _present(delta: float) -> void:
 	pursuer.flip_h = guard_facing.facing=="side" and bool(guard_facing.left)
 	rhythm_feedback.advance()
 	var guard_frame:int=rhythm_feedback.frame()
+	if stair_gait: guard_frame = stair_gait.source_frame(true, guard_frame)
 	pursuer.frame = guard_frame
+	if stair_gait:
+		stair_gait.apply(false, direction, frame)
+		stair_gait.apply(true, guard_facing.facing, guard_frame)
 	# Pixel anchors follow each whole-body source frame, including the billboard basis.
 	guard_hand_world = _sprite_socket(pursuer,_hand_pixel(true,guard_facing.facing,guard_frame))
 	guard_hand_world=rhythm_feedback.hand_pose(guard_hand_world,guard_facing.facing,delta)
 	var hand_pixel: Vector2 = Vector2(45,89) if direction=="side" and absf(model.player_velocity.x)<.001 else _hand_pixel(false,direction,frame if absf(model.player_velocity.x)>.001 else 0)
+	if stair_gait and stair_gait.player_pose.get("active", false): hand_pixel = Vector2(36,91)
 	player_hand_world = _sprite_socket(actor,hand_pixel)
 	phone.position = player_hand_world+camera.global_basis.z*.07
 	phone.global_basis = camera.global_basis
@@ -763,8 +849,11 @@ func _present(delta: float) -> void:
 		last_beam_tick=model.tick
 
 func _sprite_socket(sprite: Sprite3D, pixel: Vector2) -> Vector3:
+	if stair_gait and sprite.region_enabled:
+		pixel = stair_gait.warp_pixel(pixel, sprite == pursuer)
 	var x: float = (pixel.x-48)*(-1 if sprite.flip_h else 1)+sprite.offset.x
-	var y: float = 64-pixel.y+sprite.offset.y
+	var source_half_height: float = sprite.region_rect.size.y * .5 if sprite.region_enabled else 64.0
+	var y: float = source_half_height-pixel.y+sprite.offset.y
 	return sprite.position+(camera.global_basis.x*x+camera.global_basis.y*y)*sprite.pixel_size
 
 func _hand_pixel(guard: bool, direction: String, frame: int) -> Vector2:
@@ -776,7 +865,7 @@ func _hand_pixel(guard: bool, direction: String, frame: int) -> Vector2:
 		"up":[Vector2(67,83),Vector2(66,85),Vector2(66,84),Vector2(68,87),Vector2(66,89),Vector2(66,88),Vector2(67,90),Vector2(66,88)],
 		"down":[Vector2(69,84),Vector2(69,87),Vector2(69,84),Vector2(67,83),Vector2(67,84),Vector2(68,86),Vector2(69,81),Vector2(69,87)]}
 	else:
-		anchors = {"side":[Vector2(63,84),Vector2(45,91),Vector2(45,91),Vector2(60,85),Vector2(62,79),Vector2(47,90),Vector2(47,90),Vector2(47,90)],
+		anchors = {"side":[Vector2(36,91),Vector2(44,91),Vector2(43,91),Vector2(44,91),Vector2(38,91),Vector2(46,90),Vector2(46,90),Vector2(46,90)],
 		"up":[Vector2(28,89),Vector2(27,90),Vector2(27,86),Vector2(28,88),Vector2(33,84),Vector2(28,89),Vector2(27,92),Vector2(28,87)],
 		"down":[Vector2(67,83),Vector2(67,91),Vector2(66,90),Vector2(65,89),Vector2(65,90),Vector2(67,91),Vector2(68,81),Vector2(68,83)]}
 	return anchors[direction][frame%8]
@@ -789,6 +878,9 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		return
 	# Release is processed even over the menu; a lost release must never keep running.
+	if event is InputEventKey and not event.pressed:
+		input_rearm_keys.erase(event.physical_keycode)
+		input_rearm_keys.erase(event.keycode)
 	if event is InputEventKey and not event.pressed and event.physical_keycode in [KEY_A,KEY_D,KEY_LEFT,KEY_RIGHT]:
 		if not (Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_RIGHT)):
 			held_screen_axis=0; held_route_direction=0
@@ -808,7 +900,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if not active: return
 	if event is InputEventKey and event.pressed and not event.echo and (event.physical_keycode==KEY_SPACE or event.keycode==KEY_SPACE):
-		queued_jump=true; get_viewport().set_input_as_handled()
+		if not input_rearm_keys.has(KEY_SPACE): queued_jump=true
+		get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and event.pressed: _pointer_press(event.index,event.position,true)
 	elif event is InputEventScreenDrag: _pointer_move(event.index,event.position)
 	elif event is InputEventMouseButton and event.device != InputEvent.DEVICE_ID_EMULATION and event.button_index==MOUSE_BUTTON_LEFT and event.pressed: _pointer_press(-1,event.position,true)
@@ -823,7 +916,8 @@ func _pointer_press(index: int, point: Vector2, pressed: bool) -> void:
 		touch_started=Time.get_ticks_msec(); swipe_used=false
 		_steer_touch()
 	elif primary_touch==index:
-		if active and Time.get_ticks_msec()-touch_started<180 and point.distance_to(touch_origin)<22: queued_jump=true
+		# Releasing a movement touch never creates a new jump. Use the existing
+		# upward swipe or a second finger for an explicit jump intent.
 		primary_touch=-99; touch_axis=0; held_screen_axis=0; held_route_direction=0
 
 func _cancel_touch(index: int) -> void:
@@ -843,7 +937,12 @@ func _steer_touch() -> void:
 	touch_axis = int(signf(difference)) if absf(difference)>24 else 0
 
 func _clear_input() -> void:
+	# A key held through pause/focus-loss must be released before it can drive
+	# the resumed scene. No movement or buffered jump survives a lifecycle reset.
+	for key in [KEY_A, KEY_D, KEY_LEFT, KEY_RIGHT, KEY_SPACE]:
+		if Input.is_physical_key_pressed(key): input_rearm_keys[key] = true
 	primary_touch=-99; touch_axis=0; queued_jump=false; swipe_used=false
+	jump_buffer_ticks=0; jump_pressed_last=false
 	held_screen_axis=0; held_route_direction=0
 
 func _lose_focus() -> void:

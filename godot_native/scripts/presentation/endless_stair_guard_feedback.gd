@@ -9,6 +9,7 @@ var last_guard_x:=0.0
 var walk_frame_phase:=0.0
 var foot_distance:=0.0
 var foot_side:=0
+var stair_contact_token := ""
 var arm_amount:=0.0
 var lift_angle:=0.0
 var cues_played:Array[Dictionary]=[]
@@ -55,6 +56,7 @@ func reset()->void:
 	last_tick=-1;last_serial=-1;last_guard_x=view.model.guard.x
 	walk_frame_phase=0;foot_distance=0;foot_side=0;arm_amount=0;lift_angle=0
 	scheduled_click_tick=-1;cues_played.clear();step_events.clear()
+	stair_contact_token = ""
 	for sound in steps:sound.stop()
 	if click:click.stop()
 	if breath:breath.stop()
@@ -66,17 +68,23 @@ func advance()->void:
 	if last_tick==m.tick:return
 	var moved:=absf(float(m.guard.x)-last_guard_x)
 	last_guard_x=m.guard.x
-	walk_frame_phase+=moved*3.5
-	foot_distance+=moved
+	if m.guard_grounded:
+		walk_frame_phase+=moved*3.5
+		foot_distance+=moved
 	var gap:=absf(float(m.player.x-m.guard.x))
 	var gain:=clampf(-8.0-(gap-2.0)*1.15,-20,-8)
-	if view.active and m.guard_grounded and foot_distance>=.98:
-		foot_distance=fmod(foot_distance,.98)
+	var stair_token: String = ""
+	if view.stair_gait and view.stair_gait.guard_pose.get("active", false):
+		stair_token = view.stair_gait.guard_pose.contact_token
+	var step_due: bool = stair_token != stair_contact_token if not stair_token.is_empty() else foot_distance>=.98
+	stair_contact_token = stair_token
+	if view.active and m.guard_grounded and moved > .00001 and step_due:
+		foot_distance = 0.0 if not stair_token.is_empty() else fmod(foot_distance,.98)
 		steps[foot_side].volume_db=gain
 		steps[foot_side].pitch_scale=1.10 if m.pursuit_phase=="burst" else .96
 		if audio_enabled:steps[foot_side].play()
 		foot_side=1-foot_side
-		step_events.append({"tick":m.tick,"phase":m.pursuit_phase,"speed":m.guard_pursuit_speed})
+		step_events.append({"tick":m.tick,"phase":m.pursuit_phase,"speed":m.guard_pursuit_speed,"stair_contact":stair_token})
 	if int(m.pursuit_event_serial)!=last_serial:
 		last_serial=int(m.pursuit_event_serial)
 		if m.pursuit_phase=="windup":

@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 if (process.platform !== 'linux') throw Error('This isolated QA runner currently requires Linux/XDG.');
 const project = path.resolve(import.meta.dirname, '..');
 const godot = process.env.GODOT_BIN || 'godot';
-const names = ['route', 'pursuit', 'feedback', 'presentation', 'beam', 'integration'];
+const names = ['route', 'pursuit', 'feedback', 'presentation', 'beam', 'integration', 'step_pose', 'gait', 'camera_input'];
 const results = [];
 for (const name of names) {
   const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), '755-endless-stair-'));
