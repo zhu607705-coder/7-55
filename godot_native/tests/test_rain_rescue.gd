@@ -1,6 +1,7 @@
 extends SceneTree
 const Model=preload("res://scripts/media/c3_rain_rescue_model.gd")
 const Session=preload("res://scripts/media/c3_rain_rescue_session.gd")
+const NativeTimeline=preload("res://scripts/media/c3_rain_rescue_native/timeline.gd")
 const FOCUS_SHELL_PATH="res://tests/fixtures/rain_rescue_focus_shell.gd"
 var failures:=0
 var checks:=0
@@ -8,6 +9,34 @@ var recording_capture_rect:=Rect2()
 func check(value: bool,message: String) -> void:
 	checks+=1
 	if not value: failures+=1; push_error("TEST FAILED: "+message)
+# Observe the first actual presented frame, not a timer's later polling sample.
+# This probe cannot advance the presenter or session and never changes a clock.
+class FirstNativeFrameProbe:
+	extends Node
+	var presenter: Control
+	var elapsed: float=-1.0
+	var frame: int=-1
+	func _process(_delta: float) -> void:
+		if elapsed>=0 or not is_instance_valid(presenter): return
+		var renderer: Control=presenter.native_renderer
+		if not is_instance_valid(renderer) or not renderer.visible: return
+		elapsed=renderer.elapsed
+		frame=Engine.get_process_frames()
+		set_process(false)
+
+func observe_native_opening(presenter: Control) -> FirstNativeFrameProbe:
+	var probe:=FirstNativeFrameProbe.new()
+	probe.presenter=presenter
+	probe.process_priority=presenter.process_priority+1
+	root.add_child(probe)
+	return probe
+
+func check_native_opening(probe: FirstNativeFrameProbe) -> void:
+	check(Model.native_source_ms(0)==2650,"zero session sample maps exactly to post-capsize source 2650ms")
+	check(probe.frame>=0 and probe.elapsed>=2.65 and probe.elapsed<2.8 and NativeTimeline.phase_at(probe.elapsed)=="hold_hull","first actual native frame starts holding the overturned hull, never wind/fall")
+	print("RAIN_NATIVE_FIRST_FRAME: first_elapsed=",probe.elapsed," first_frame=",probe.frame," poll_elapsed=",probe.presenter.native_renderer.elapsed," poll_frame=",Engine.get_process_frames())
+	probe.queue_free()
+
 func _initialize() -> void: _run.call_deferred()
 func fixture(state: Node, shell: Control, reduced: bool=true) -> void:
 	state.new_game(); state.developer_mode=true
@@ -87,6 +116,7 @@ func _run() -> void:
 	var start: int=Time.get_ticks_msec()
 	result=state.act("c3_lake_target:qizhen_dock_board"); session=result.world_effect.session
 	var presenter: Control=shell.world_effect
+	var first_native_frame:=observe_native_opening(presenter)
 	shell.test_focused=false; await create_timer(.05).timeout
 	var frozen: Dictionary=session.snapshot()
 	await create_timer(.12).timeout
@@ -95,7 +125,11 @@ func _run() -> void:
 	check(await wait_phase(session,"cinematic",6500),"normal route opens native cinematic")
 	check(is_instance_valid(presenter.native_renderer) and not is_instance_valid(presenter.video),"normal route embeds native art and creates no video decoder")
 	check(session.snapshot().cinematicMode=="native" and session.snapshot().cinematicDurationMs==12350,"session records explicit native 12.350-second continuation mode")
-	check(presenter.native_renderer.elapsed>=2.65 and presenter.native_renderer.elapsed<2.8,"native continuation starts with the player already holding the overturned hull")
+	# A late test observer must still validate the first submitted frame.
+	# Let the real presentation advance; do not pause or rewrite its clock.
+	await create_timer(.25).timeout
+	check(first_native_frame.frame<Engine.get_process_frames(),"first native sample is latched before delayed observation resumes")
+	check_native_opening(first_native_frame)
 	check(not session.finish_cinematic(presenter,"native") and not session.finish_cinematic(presenter,"video"),"early native and foreign video callbacks are rejected")
 	check(not session.finish_cinematic(presenter,"played") and not session.finish_cinematic(presenter,"skipped_preview"),"sample terminal labels have no production authority")
 	var foreign:=Node.new(); root.add_child(foreign)
@@ -175,6 +209,7 @@ func _run_graphical() -> void:
 		await shell.shutdown(); shell.queue_free(); quit(1); return
 	var session: RefCounted=result.world_effect.session
 	var presenter: Control=shell.world_effect
+	var first_native_frame:=observe_native_opening(presenter)
 	await process_frame; await RenderingServer.frame_post_draw
 	_check_rescue_root_bounds(shell,presenter,"desktop route")
 	var snapshot: Dictionary=presenter.read_state.call()
@@ -195,7 +230,7 @@ func _run_graphical() -> void:
 		if session.phase()=="cinematic" and not captures.is_empty() and session.snapshot().cinematicMs>=captures[0]:
 			var at: int=captures.pop_front()
 			check(is_instance_valid(presenter.native_renderer),"graphical timeline embeds actual native renderer")
-			if at==0: check(presenter.native_renderer.elapsed>=2.65 and presenter.native_renderer.elapsed<2.85,"graphical native first frame is post-capsize hold_hull, never wind/fall")
+			if at==0: check_native_opening(first_native_frame)
 			_check_rescue_root_bounds(shell,presenter,"desktop native "+str(at))
 			if not capture_dir.is_empty():
 				await RenderingServer.frame_post_draw
