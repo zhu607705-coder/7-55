@@ -1,0 +1,40 @@
+{
+  "events": [
+    {
+      "action": "Space key jump",
+      "frame": 285,
+      "pass": 1,
+      "tick": 571
+    },
+    {
+      "frame": 342,
+      "pass": 1,
+      "proof_valid": true,
+      "status": "finished",
+      "tick": 685
+    },
+    {
+      "action": "restart second ordinary-input replay",
+      "frame": 366
+    }
+  ],
+  "fps_claim": "Offline MovieWriter cadence only; not real-time device performance",
+  "frames": 600,
+  "input": "Synthetic D and Space events via Input.parse_input_event; no coordinate overrides, no speed changes, no human input",
+  "max_draw_calls_observed": 54.0,
+  "max_primitives_observed": 28720.0,
+  "max_video_mem_bytes_observed": 21655687.0,
+  "offline_movie_fps": 30,
+  "passes": "one full clear, 0.8 s result menu, then second partial replay",
+  "physics_hz": 60,
+  "renderer": "Godot 4.6.3 Compatibility / Mesa llvmpipe software renderer",
+  "requested_duration_s": 20,
+  "subviewport": [
+    640,
+    360
+  ],
+  "viewport": [
+    1280,
+    720
+  ]
+}

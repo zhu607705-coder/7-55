@@ -1,0 +1,506 @@
+{
+  "ASSET_LICENSES.md": {
+    "bytes": 1268,
+    "sha256": "844fde35f7e01accd3fd1ed059abafca344a733e67e6d12a9b3f24de4e09e581"
+  },
+  "README.md": {
+    "bytes": 3739,
+    "sha256": "a94df6218705ed693e49e960f7d6424e3e23630ba446b0dfe65a67008e60d167"
+  },
+  "docs/PROPOSED_PUBLICATION.md": {
+    "bytes": 1334,
+    "sha256": "a4a4c88721330e863779ba2792f93e2ff9ab3cb72e39119c9d472499ae4c65b6"
+  },
+  "preview/assets/blender/concrete.png": {
+    "bytes": 2708,
+    "sha256": "597f7cce29e6a8a20009a2b7b7b95cdd5d98ec5dc5c35d9a564e62af2c7f8db0"
+  },
+  "preview/assets/blender/concrete.png.import": {
+    "bytes": 942,
+    "sha256": "b514fc6129466f2cd2453f615e1a7e1534bdbff376dfe0c8f5e3ab7083b49a84"
+  },
+  "preview/assets/blender/dado.png": {
+    "bytes": 1924,
+    "sha256": "348e3672b8db138f62be7d6effe8b9467b0259d6fa0ea8c8dabb7a427594a89a"
+  },
+  "preview/assets/blender/dado.png.import": {
+    "bytes": 931,
+    "sha256": "d1dba2cd6dcda0134ee1d2913443c548a2d97b8f1007027bd638ce14b56493aa"
+  },
+  "preview/assets/blender/door.png": {
+    "bytes": 1542,
+    "sha256": "813e3f2f3e16e3f50f4ac1dd15a968740d34bfe1481506516c2aee7b70387a4d"
+  },
+  "preview/assets/blender/door.png.import": {
+    "bytes": 931,
+    "sha256": "5be8c1a359e576aafde373b58e817246bf4981d3c96d2cf8265e40767e79eeb6"
+  },
+  "preview/assets/blender/plaster.png": {
+    "bytes": 2933,
+    "sha256": "cb19bea32c7757ac2c60f2f8de3007be04d9cb98f5228422a51ab1146e95b440"
+  },
+  "preview/assets/blender/plaster.png.import": {
+    "bytes": 939,
+    "sha256": "86a917b5b078b940fda6dcf083271e6bce147c1d8ae7b4e756dbab0be489e7ce"
+  },
+  "preview/assets/blender/stairwell_manifest.json": {
+    "bytes": 61967,
+    "sha256": "7d0f69b6020eb865a286db2827f3a83cf7f6ac8af0d644151dd267ebbab067ba"
+  },
+  "preview/assets/blender/stairwell_sample.glb": {
+    "bytes": 1530444,
+    "sha256": "77cae3927b454e221a488a4a273fdccc6f95ed2ef47a19d27237201bdea8d934"
+  },
+  "preview/assets/blender/stairwell_sample.glb.import": {
+    "bytes": 1069,
+    "sha256": "4f6b59792557244cbaecf5a66e203592b947bdef832bf31883c4daaf5b1aea89"
+  },
+  "preview/assets/blender/stairwell_sample_concrete.png": {
+    "bytes": 2708,
+    "sha256": "597f7cce29e6a8a20009a2b7b7b95cdd5d98ec5dc5c35d9a564e62af2c7f8db0"
+  },
+  "preview/assets/blender/stairwell_sample_concrete.png.import": {
+    "bytes": 1059,
+    "sha256": "93b0a6da6936f7478abbc734b8873ef39f9587a6c1384895269b6089653f0ef6"
+  },
+  "preview/assets/blender/stairwell_sample_dado.png": {
+    "bytes": 1924,
+    "sha256": "348e3672b8db138f62be7d6effe8b9467b0259d6fa0ea8c8dabb7a427594a89a"
+  },
+  "preview/assets/blender/stairwell_sample_dado.png.import": {
+    "bytes": 1047,
+    "sha256": "2eabba11f7091dca8a300cc550ee171c4652dcd78b8ff103fdc9fe1be1e90ec5"
+  },
+  "preview/assets/blender/stairwell_sample_door.png": {
+    "bytes": 1542,
+    "sha256": "813e3f2f3e16e3f50f4ac1dd15a968740d34bfe1481506516c2aee7b70387a4d"
+  },
+  "preview/assets/blender/stairwell_sample_door.png.import": {
+    "bytes": 1047,
+    "sha256": "0aea6a1be5e887bdab5c78e044b373593887885a97bac12c2fde7fadd16eb5c1"
+  },
+  "preview/assets/blender/stairwell_sample_plaster.png": {
+    "bytes": 2933,
+    "sha256": "cb19bea32c7757ac2c60f2f8de3007be04d9cb98f5228422a51ab1146e95b440"
+  },
+  "preview/assets/blender/stairwell_sample_plaster.png.import": {
+    "bytes": 1057,
+    "sha256": "7afc43a965c53ee2d9e332d7caf12ae64dbe4590dd03f5854aa1d7fa266f52ac"
+  },
+  "preview/assets/native/endless_stair_b3/FONT_LICENSE.txt": {
+    "bytes": 14712,
+    "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+  },
+  "preview/assets/native/endless_stair_b3/provenance.json": {
+    "bytes": 639,
+    "sha256": "2f319039ae87c65c804f4428c0ee22702f558a600dd1aec786b842664fc35ebc"
+  },
+  "preview/assets/native/endless_stair_b3/stair_text.ttf": {
+    "bytes": 102368,
+    "sha256": "b48b95ec7329d6ade2187d779f5618950963bd7d25178fe4f0d253db9c68044a"
+  },
+  "preview/assets/native/endless_stair_b3/stair_text.ttf.import": {
+    "bytes": 786,
+    "sha256": "ad0fffa06bf8c3e04935328affbd1395b215a314c277fc9a46c40256a3c8788a"
+  },
+  "preview/assets/rpg/npcs/finale/guard_walk_8frame.png": {
+    "bytes": 102832,
+    "sha256": "21a66a9887295dd6d00bbce8acf18b637cf4b0364248b7cb83994e8de7c84da2"
+  },
+  "preview/assets/rpg/npcs/finale/guard_walk_8frame.png.import": {
+    "bytes": 978,
+    "sha256": "e63e02839ced30bb95d4ba3c9e708e77d3f077435c9d04a9878c09063aacf6ea"
+  },
+  "preview/assets/rpg/npcs/finale/guard_walk_down_8frame.png": {
+    "bytes": 106068,
+    "sha256": "f27adc541f0b73f669163d1e4e2e15dec4349a1b07f10069e6cfa875dabe0dc1"
+  },
+  "preview/assets/rpg/npcs/finale/guard_walk_down_8frame.png.import": {
+    "bytes": 993,
+    "sha256": "7b8ee806838e3425a07a25fdb3f14054bb8d3e66c34bce58b098d255258b9bc2"
+  },
+  "preview/assets/rpg/npcs/finale/guard_walk_up_8frame.png": {
+    "bytes": 91762,
+    "sha256": "2649d5abba5a7b8c34fad580c8f1148f858b9cdebd639dea2c44c460273bc423"
+  },
+  "preview/assets/rpg/npcs/finale/guard_walk_up_8frame.png.import": {
+    "bytes": 987,
+    "sha256": "788ffb7111e9fa2891793a2b6865f757e67106c4aa0ae7f7215a4bc30fde1f9b"
+  },
+  "preview/assets/rpg/player/player_down_0.png": {
+    "bytes": 11887,
+    "sha256": "ab29c2e04c8ca5a165ede053b0b879be695adb41971c820bc67dbdf4c36f6fd9"
+  },
+  "preview/assets/rpg/player/player_down_0.png.import": {
+    "bytes": 961,
+    "sha256": "6a0e02cdd61481f3ae4f53814e935176c810f98cb4b2b90951796a9ee41c4f26"
+  },
+  "preview/assets/rpg/player/player_down_1.png": {
+    "bytes": 12348,
+    "sha256": "5f5e0d3f3fbd1cf5a45fc7da9526da555d93461748cb91fc768a9cdb56dc36d0"
+  },
+  "preview/assets/rpg/player/player_down_1.png.import": {
+    "bytes": 961,
+    "sha256": "fc693b3504b34165ef12705d00e9028caa76885cf993835de475c684c422e270"
+  },
+  "preview/assets/rpg/player/player_down_2.png": {
+    "bytes": 11931,
+    "sha256": "703d15dd937a50e69e7b544537a26a87be3ffb0795f72e7133b85f969c7dd31c"
+  },
+  "preview/assets/rpg/player/player_down_2.png.import": {
+    "bytes": 961,
+    "sha256": "74f2cae96dbc94c955d88fe2980a9abba6c517f82976e54f677bf6d5a0109c82"
+  },
+  "preview/assets/rpg/player/player_down_3.png": {
+    "bytes": 11881,
+    "sha256": "716bccbdb08ce82a34964d11a4697dc8141a4c889661202123ce42db1fda2b01"
+  },
+  "preview/assets/rpg/player/player_down_3.png.import": {
+    "bytes": 960,
+    "sha256": "3b0589624c4cca288915817ba6235ec2f0e2b8a2cd78dccdad91ddec8c4fc17c"
+  },
+  "preview/assets/rpg/player/player_down_4.png": {
+    "bytes": 11899,
+    "sha256": "ea7c316ff586fd5ff692cb324f140555beda475dc3ad23130c8664bcc9c4db21"
+  },
+  "preview/assets/rpg/player/player_down_4.png.import": {
+    "bytes": 961,
+    "sha256": "7e477422cfee159147dc0621a646ec7d145b161d201bd11403bc52da371a0099"
+  },
+  "preview/assets/rpg/player/player_down_5.png": {
+    "bytes": 12217,
+    "sha256": "00aa6145b664027e51c7ac9a47ff39f89875a5524b36a8fa0f36ea247cadad47"
+  },
+  "preview/assets/rpg/player/player_down_5.png.import": {
+    "bytes": 961,
+    "sha256": "f67e3a54a2e24ddb032006c524676eae4542ebbd5b5ab5ccb448f487dd1ac7b6"
+  },
+  "preview/assets/rpg/player/player_down_6.png": {
+    "bytes": 11864,
+    "sha256": "ed9828f50e51aa3ebd3fdc7cb75f91d742150bc83d70dd18812852cff25c7626"
+  },
+  "preview/assets/rpg/player/player_down_6.png.import": {
+    "bytes": 961,
+    "sha256": "5e62ff38aa37ff3acb17da3e9360d1276a8b1ee534312105a588adb34850d7a3"
+  },
+  "preview/assets/rpg/player/player_down_7.png": {
+    "bytes": 11670,
+    "sha256": "43cd462beaa782a2afa4720114dc1365cbf4a24d731d4121b7ddb8804d05809f"
+  },
+  "preview/assets/rpg/player/player_down_7.png.import": {
+    "bytes": 960,
+    "sha256": "89b239a33f8b6ed6608942e241441fc3c9f5104fb989783da3ebe9f350e72514"
+  },
+  "preview/assets/rpg/player/player_side_0.png": {
+    "bytes": 10997,
+    "sha256": "75f2f28b9e64ca18d993546b37a6c801df940f702d5b56888924b92fe552a819"
+  },
+  "preview/assets/rpg/player/player_side_0.png.import": {
+    "bytes": 961,
+    "sha256": "5612e28a37a675c6a7dc6ae144c90da1ca2010d9a762b5677e7d4104de23e5f0"
+  },
+  "preview/assets/rpg/player/player_side_1.png": {
+    "bytes": 9059,
+    "sha256": "97126037c035c7ce85981985f3439f2efd777d8a886eeeeaccb64e3f34102c5b"
+  },
+  "preview/assets/rpg/player/player_side_1.png.import": {
+    "bytes": 960,
+    "sha256": "08590effd3c6a05cf040757b5818411f29e07c52b49b4ed09c517f5e3b7148b7"
+  },
+  "preview/assets/rpg/player/player_side_2.png": {
+    "bytes": 8807,
+    "sha256": "9f2c99d04063a315b8a7500534496741dca9bc5fb99aad847f41008f93ef8ab5"
+  },
+  "preview/assets/rpg/player/player_side_2.png.import": {
+    "bytes": 961,
+    "sha256": "5203953e74962ab914898b0d25d797e88418f3f40ea3e48c030f6f9e24fceb65"
+  },
+  "preview/assets/rpg/player/player_side_3.png": {
+    "bytes": 9473,
+    "sha256": "640abc30e5f590b327a9402207355b2b20cf099b5a896ded8e11c699576d4ef4"
+  },
+  "preview/assets/rpg/player/player_side_3.png.import": {
+    "bytes": 960,
+    "sha256": "3e024b9186ed564fa2e56313a43d612e7425ecd39c2b3e7e3e22297633f96add"
+  },
+  "preview/assets/rpg/player/player_side_4.png": {
+    "bytes": 10869,
+    "sha256": "b7fe78005d62a21c0de08b898ccc08b190b0ac061b237ff8af7349347e8bbd18"
+  },
+  "preview/assets/rpg/player/player_side_4.png.import": {
+    "bytes": 961,
+    "sha256": "cf58508741833e9da35e28c9317714d9f2e4735bcd8857ad5fcfb24dc4096b71"
+  },
+  "preview/assets/rpg/player/player_side_5.png": {
+    "bytes": 9293,
+    "sha256": "58eaa07bc0d0278aa385f0d5ef75de7f08416ad667399f015af28e0a6a42ed45"
+  },
+  "preview/assets/rpg/player/player_side_5.png.import": {
+    "bytes": 961,
+    "sha256": "108bda3b42d52264227364833c26e50134d127bc69ffa1d3dcdbe8ae9fbc7a7a"
+  },
+  "preview/assets/rpg/player/player_side_6.png": {
+    "bytes": 8775,
+    "sha256": "3486c76fd81eee7af8dcdfd1e19162c05fedc435a5221193d25294ede08d60f9"
+  },
+  "preview/assets/rpg/player/player_side_6.png.import": {
+    "bytes": 961,
+    "sha256": "209d25ff208a11ce3bca8001866b8238a0b285b2dc6ef2e3d6f8c4e8f5762d0c"
+  },
+  "preview/assets/rpg/player/player_side_7.png": {
+    "bytes": 9162,
+    "sha256": "be86a6be40fa970273c7337994cefd0466d143eda24ac9a3c3027f578ae92096"
+  },
+  "preview/assets/rpg/player/player_side_7.png.import": {
+    "bytes": 961,
+    "sha256": "f5636e1412d6e84456849f21d11308de3357b07492d82a772ac43983661540d0"
+  },
+  "preview/assets/rpg/player/player_side_idle.png": {
+    "bytes": 8836,
+    "sha256": "21c1f8a73cada7886f9c9b1147ae77e4cc81b37fcb09d4e103923f03818b9cfe"
+  },
+  "preview/assets/rpg/player/player_side_idle.png.import": {
+    "bytes": 970,
+    "sha256": "549e94da509308d0829a16b50ad207b981bfe08adc17dacfbfa071925dee97ef"
+  },
+  "preview/assets/rpg/player/player_up_0.png": {
+    "bytes": 10418,
+    "sha256": "00b0bb17d1351f9c79318e7921bc12f922d2c4b1b21f974d4b869d1424aaf50e"
+  },
+  "preview/assets/rpg/player/player_up_0.png.import": {
+    "bytes": 955,
+    "sha256": "fa904e67677911ab846f462678a33d6860c3ede8855e870107eb200769d0981e"
+  },
+  "preview/assets/rpg/player/player_up_1.png": {
+    "bytes": 11269,
+    "sha256": "877c199373c4c5f212996ee6c2ab8d2b5811de00a5fbbf9c1999a353cab36881"
+  },
+  "preview/assets/rpg/player/player_up_1.png.import": {
+    "bytes": 955,
+    "sha256": "9f4058fc8c6cad7f3ed57a7d1588bcd9775c82ab174e65a15ed8f97dd3e7d033"
+  },
+  "preview/assets/rpg/player/player_up_2.png": {
+    "bytes": 10643,
+    "sha256": "de1ab6f397b16ce6548e43dc1f84336b74073d977c4ac71b63399a755e6674b1"
+  },
+  "preview/assets/rpg/player/player_up_2.png.import": {
+    "bytes": 955,
+    "sha256": "ed0babe1f063e6127b6b63d65570e357c640b5d5b23d942c423edb7e67cd0da6"
+  },
+  "preview/assets/rpg/player/player_up_3.png": {
+    "bytes": 10577,
+    "sha256": "0f445447978221edb9e220311304f56c98925749574d9fa9aeedb79293a1f48e"
+  },
+  "preview/assets/rpg/player/player_up_3.png.import": {
+    "bytes": 955,
+    "sha256": "5c8b3e903a4e09ff8bacad2cecc3e551bad6ccd228f4501d682bb43ded633454"
+  },
+  "preview/assets/rpg/player/player_up_4.png": {
+    "bytes": 10268,
+    "sha256": "a408b697cb390f86ae3429b44b33b8ea6c229f4e481b8d0f69b8f6b02f7121ef"
+  },
+  "preview/assets/rpg/player/player_up_4.png.import": {
+    "bytes": 955,
+    "sha256": "4d98bb6312deddb4517a9011734e3afb1bd9fc1b000cfad9c8b4c831ed82be4f"
+  },
+  "preview/assets/rpg/player/player_up_5.png": {
+    "bytes": 10626,
+    "sha256": "f664855d1cfab0770571aa88519b220865dec1196900fad096ccebfdae7df454"
+  },
+  "preview/assets/rpg/player/player_up_5.png.import": {
+    "bytes": 955,
+    "sha256": "3c3355d348d5147ec909585b905f788138b7ab9691283ad7160e3e5833fc0351"
+  },
+  "preview/assets/rpg/player/player_up_6.png": {
+    "bytes": 10669,
+    "sha256": "62c370f6e70f41e5c4cd02c50cf6d6a38bb7bbca791ad0bef2da94e06962a938"
+  },
+  "preview/assets/rpg/player/player_up_6.png.import": {
+    "bytes": 954,
+    "sha256": "533b5fab5a6cdf4a80cf47217a8682fb721e4c0db4448c1f161855e95b4b5922"
+  },
+  "preview/assets/rpg/player/player_up_7.png": {
+    "bytes": 10216,
+    "sha256": "479a3748ce52532fdb4e81955004a15ee76bb8916eb5e6995723a7ad896f6aa4"
+  },
+  "preview/assets/rpg/player/player_up_7.png.import": {
+    "bytes": 955,
+    "sha256": "ac76665e8c9c83dda966cb16cc30560f3d60c2381e6c82f3ffb5c0297de60f17"
+  },
+  "preview/data/native/chapter4-endless-stair-b3.json": {
+    "bytes": 6800,
+    "sha256": "29bf7112b924cdd07baf98b8f203dbe22c5659a0584135d2d9fba36d4881cea9"
+  },
+  "preview/project.godot": {
+    "bytes": 554,
+    "sha256": "9c94c512bd83baf55264e07ce339006a30517567737d3740c59f95cbbf7b4fd0"
+  },
+  "preview/scenes/chapter4_endless_stair_preview.tscn": {
+    "bytes": 407,
+    "sha256": "c25586c8d08a6c1a3c9e1225665c0cb4cb94c44bf2f2281010d259e3c8ba57e1"
+  },
+  "preview/scripts/audio/endless_stair_guard_foley.gd": {
+    "bytes": 1431,
+    "sha256": "04e7aed35157ec4fcb4fe4bc5ff52a81399eacae27cd9410300e7f88040d31b5"
+  },
+  "preview/scripts/audio/endless_stair_guard_foley.gd.uid": {
+    "bytes": 20,
+    "sha256": "7a6b43127e0e11081e050496b26a52386e07f1132d659b39c0dfa515c8c5fc20"
+  },
+  "preview/scripts/games/chapter4_endless_stair_model.gd": {
+    "bytes": 11880,
+    "sha256": "06cf6e03a086b1024a534ae31674541144f82e4413be34ea04469172f9a1a5f1"
+  },
+  "preview/scripts/games/chapter4_endless_stair_model.gd.uid": {
+    "bytes": 19,
+    "sha256": "f200f98d57d89fd3184119169b9cd3a0f2e205a77e4d2525872c87f6ec531a5d"
+  },
+  "preview/scripts/games/chapter4_endless_stair_physics.gd": {
+    "bytes": 9196,
+    "sha256": "a80a13d9b3383ce7c6909e85de95cc5cdcd25f3cc891ac8f31f841819d09f642"
+  },
+  "preview/scripts/games/chapter4_endless_stair_physics.gd.uid": {
+    "bytes": 19,
+    "sha256": "ede7ff85a0afe7d6742aef036016afe930340c1328e422e1cbf66b7e038e9d05"
+  },
+  "preview/scripts/presentation/chapter4_endless_stair_view.gd": {
+    "bytes": 54090,
+    "sha256": "40cea90cb8ea0eaca496ba9efb733d9833c53d90cdefa147769fd50b0c3287f9"
+  },
+  "preview/scripts/presentation/chapter4_endless_stair_view.gd.uid": {
+    "bytes": 20,
+    "sha256": "03d79c430889585e775da8fd90f21e8cedbbdc3810b49b850a28b9fc2540ef61"
+  },
+  "preview/scripts/presentation/endless_stair_beam_clipper.gd": {
+    "bytes": 4780,
+    "sha256": "d4bb8ecc59b973e996c364082bdb5623843a3292468b39de2d417d4d6b31ab9f"
+  },
+  "preview/scripts/presentation/endless_stair_beam_clipper.gd.uid": {
+    "bytes": 20,
+    "sha256": "740491d4deb3dfb78aa4266d448fc1ba2d73f6b6f5b4ea9b377242c611c6a0ac"
+  },
+  "preview/scripts/presentation/endless_stair_gait.gd": {
+    "bytes": 13717,
+    "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b"
+  },
+  "preview/scripts/presentation/endless_stair_gait.gd.uid": {
+    "bytes": 19,
+    "sha256": "4df7b6d543b2711d93201347c9d5841fe8f2743aecc7aaa41833a6cd2551aab2"
+  },
+  "preview/scripts/presentation/endless_stair_guard_feedback.gd": {
+    "bytes": 7318,
+    "sha256": "5d29c2ab743785d10cc2df9dc4177ec4cc1a862b48a84a445b25aefaed30fdc8"
+  },
+  "preview/scripts/presentation/endless_stair_guard_feedback.gd.uid": {
+    "bytes": 19,
+    "sha256": "c325c67e0945279b47c358559cc52cb474d9027922b069a280efbec342884787"
+  },
+  "preview/scripts/presentation/endless_stair_step_pose.gd": {
+    "bytes": 6767,
+    "sha256": "ba3e43f9d106d33c23c5d945be289f3230a515bdf94a3a9ea349bc727b42cfb0"
+  },
+  "preview/scripts/presentation/endless_stair_step_pose.gd.uid": {
+    "bytes": 19,
+    "sha256": "2d85d40179332a156b5433954f751bf707e894084cc715a544ff55a1205f8998"
+  },
+  "preview/tests/benchmark_endless_stair.gd": {
+    "bytes": 3222,
+    "sha256": "44060f0f259c6ec78f47cf95aef0c4603dc901ebd4a2758b468f1a455bfd77ab"
+  },
+  "preview/tests/benchmark_endless_stair.gd.uid": {
+    "bytes": 20,
+    "sha256": "25b105c6f7735afd32afd040d37b779c423c5e63eaf1600deee7d1da0a75f2d0"
+  },
+  "preview/tests/benchmark_endless_stair_view.gd": {
+    "bytes": 1155,
+    "sha256": "e79ef201311a3a4b2a44a0fc2338734eb53a49db94a0b65a43aaa095ef5cd9be"
+  },
+  "preview/tests/benchmark_endless_stair_view.gd.uid": {
+    "bytes": 20,
+    "sha256": "6426cef14c24ebaea18c617a16743395e4fd0e00ef9e4b5132abdd1aca5146be"
+  },
+  "preview/tests/capture_blender_sample.gd": {
+    "bytes": 3650,
+    "sha256": "954c8b02732976b32905bc7dc5c76c43233389a60e06a6cd6e36e42005b5bdc0"
+  },
+  "preview/tests/capture_blender_sample.gd.uid": {
+    "bytes": 19,
+    "sha256": "36c7ba2688f265a4e8a90d8f93582a9afe096cae43806bf9d7409a2d1d317ae2"
+  },
+  "preview/tests/inspect_blender_sample.gd": {
+    "bytes": 1055,
+    "sha256": "4bcdba23be06b0190b6f1848e02ed3aa428eabf43ab9af1dc8a2e6b89b9e06b5"
+  },
+  "preview/tests/inspect_blender_sample.gd.uid": {
+    "bytes": 20,
+    "sha256": "0ed9efcc2c2f35c7752498f0e5d3373231d47996d78f8a66329e7bd263345f3e"
+  },
+  "preview/tests/test_blender_sample.gd": {
+    "bytes": 5621,
+    "sha256": "aa176bb951367808715a82c468c5f3aa3bc44fbf642c2b9086abb6ac2eecd44b"
+  },
+  "preview/tests/test_blender_sample.gd.uid": {
+    "bytes": 20,
+    "sha256": "21be9bbdbc91cea87fe7e610e31394bb1c9cab91934a21c8ff4d59ce71895880"
+  },
+  "preview/tests/test_blender_sample_camera_input.gd": {
+    "bytes": 9824,
+    "sha256": "716be9c6d04f2ebc0f1ee7b643a2a5feaf5557701e08938b3c44b53b6da572a9"
+  },
+  "preview/tests/test_blender_sample_camera_input.gd.uid": {
+    "bytes": 19,
+    "sha256": "2b24bd01db881b24a6c8a9d8081105f002a50d5b7df0406c0044f9a3685883fa"
+  },
+  "preview/tests/test_endless_stair_beam.gd": {
+    "bytes": 4817,
+    "sha256": "e53764675646a094ef774f0cff4579f2d08431987c34e3ca273ebe885f017bb6"
+  },
+  "preview/tests/test_endless_stair_beam.gd.uid": {
+    "bytes": 20,
+    "sha256": "f10b3a9dd424ec7160c41577c289868ece88d6c49dfb30f82475186808697c55"
+  },
+  "source/build_stair_sample.py": {
+    "bytes": 15706,
+    "sha256": "5b1ca72f2b75bbda0958f6d1db09ce3d23d24e5ea44d8b45d271cb4830ab5009"
+  },
+  "source/stairwell_sample.blend": {
+    "bytes": 2319692,
+    "sha256": "a6a49d601d3b6bea4e4e28e66cb0b8ff71fe77f7557e3e1a2c6295415ce6c521"
+  },
+  "verification/capture-final.json": {
+    "bytes": 995,
+    "sha256": "56c1660037de4e2397e8eb3d9e499c86a38d6c52357508ae6a0328d5e36856fb"
+  },
+  "verification/model_budget.json": {
+    "bytes": 363,
+    "sha256": "3c0bc9d75fcb94787951d1f087c4718c8aa15edb03e235301616c2e29f33b242"
+  },
+  "verification/package_validation.json": {
+    "bytes": 251,
+    "sha256": "fb08087e180682e094ec68bab6b1c82a2b1bc5a0d9af19635857c1da06000f14"
+  },
+  "verification/runtime_benchmark.json": {
+    "bytes": 2404,
+    "sha256": "015ad53116be8ca29816a448d0b74681ee52a4cfdc9d0c497c005e60cf4ddf1d"
+  },
+  "verification/test-beam.log": {
+    "bytes": 114,
+    "sha256": "22eb32d2b85a67b7dfed02c4dc8e9e64da088800b14716ad312d94b27c3e004f"
+  },
+  "verification/test-camera-input.log": {
+    "bytes": 1261,
+    "sha256": "65efe9f4ef8c782f3dcbcb4ce8c7a85e95cbabb25d19693706095d4125cfdc44"
+  },
+  "verification/test-sample.log": {
+    "bytes": 515,
+    "sha256": "c1d85ed937aa33cfca6e00a7983059957cc2cf78fc6e6c6e31375162769a5563"
+  },
+  "verification/verification.json": {
+    "bytes": 5122,
+    "sha256": "3a59b77e58722f93922179c574471b7c88937745611ba2d64f312c3fe4966848"
+  },
+  "verification/video-probe-final.json": {
+    "bytes": 397,
+    "sha256": "cd14b9af5c672526af03fed98e20b2fb4e270b5e84a477ac8e99f52841ec9c83"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "fresh_package_import": "passed",
+  "fresh_package_tests": "259 checks, 0 failures",
+  "fresh_blender_rebuild": "passed",
+  "glb_rebuild_bitwise_identical": true,
+  "glb_sha256": "77cae3927b454e221a488a4a273fdccc6f95ed2ef47a19d27237201bdea8d934"
+}

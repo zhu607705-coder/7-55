@@ -1,0 +1,118 @@
+{
+  "beam_usec": {
+    "count": 528,
+    "max": 1582.0,
+    "mean": 992.229166666667,
+    "min": 307.0,
+    "p50": 1028.0,
+    "p95": 1264.0,
+    "p99": 1348.0
+  },
+  "broadphase_usec": {
+    "count": 528,
+    "max": 409.0,
+    "mean": 161.068181818182,
+    "min": 106.0,
+    "p50": 158.0,
+    "p95": 214.0,
+    "p99": 286.0
+  },
+  "draw_calls": {
+    "count": 547,
+    "max": 50.0,
+    "mean": 42.2285191956124,
+    "min": 36.0,
+    "p50": 42.0,
+    "p95": 48.0,
+    "p99": 49.0
+  },
+  "fixed_fps": false,
+  "frame_ms": {
+    "count": 547,
+    "max": 38.267,
+    "mean": 17.1859853747715,
+    "min": 11.756,
+    "p50": 16.876,
+    "p95": 20.714,
+    "p99": 25.422
+  },
+  "measured_fps": 58.1869458278471,
+  "measured_wall_seconds": 9.400734,
+  "node_count": 99.0,
+  "object_count": 1898.0,
+  "physics_hz": 60,
+  "physics_process_ms": {
+    "count": 547,
+    "max": 4.326,
+    "mean": 1.00984277879342,
+    "min": 0.258,
+    "p50": 0.473,
+    "p95": 4.326,
+    "p99": 4.326
+  },
+  "physics_ticks": 685,
+  "physics_usec": {
+    "count": 566,
+    "max": 10760.0,
+    "mean": 162.277385159011,
+    "min": 39.0,
+    "p50": 132.0,
+    "p95": 204.0,
+    "p99": 703.0
+  },
+  "present_usec": {
+    "count": 547,
+    "max": 4528.0,
+    "mean": 2091.5886654479,
+    "min": 161.0,
+    "p50": 2266.0,
+    "p95": 2726.0,
+    "p99": 2989.0
+  },
+  "primitives": {
+    "count": 547,
+    "max": 28720.0,
+    "mean": 22539.4552102377,
+    "min": 17138.0,
+    "p50": 22322.0,
+    "p95": 28684.0,
+    "p99": 28720.0
+  },
+  "process_ms": {
+    "count": 547,
+    "max": 42.973,
+    "mean": 23.1366654478978,
+    "min": 16.688,
+    "p50": 20.291,
+    "p95": 42.973,
+    "p99": 42.973
+  },
+  "recording": false,
+  "rendered_objects": {
+    "count": 547,
+    "max": 72.0,
+    "mean": 61.2760511882998,
+    "min": 53.0,
+    "p50": 60.0,
+    "p95": 72.0,
+    "p99": 72.0
+  },
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "resolution": [
+    1280,
+    720
+  ],
+  "reveal_usec": {
+    "count": 528,
+    "max": 232.0,
+    "mean": 25.5056818181818,
+    "min": 13.0,
+    "p50": 19.0,
+    "p95": 60.0,
+    "p99": 101.0
+  },
+  "status": "finished",
+  "video_memory_bytes": 21655687.0,
+  "wall_seconds": 11.40552,
+  "interpretation": "One short real-time Godot window run on cloud llvmpipe software rendering; not a mobile device guarantee. Internal 3D viewport 640x360, outer window 1280x720. Separate from offline movie timing."
+}
