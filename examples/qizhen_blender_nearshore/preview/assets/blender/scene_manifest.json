@@ -238,8 +238,8 @@
     "https://hr.zju.edu.cn/cn/2024/0517/c29598a2918345/page.htm",
     "https://www.zju.edu.cn/2023/0324/c75118a2732446/pagem.htm"
   ],
-  "runtime_environment_draw_groups": 25,
-  "mesh_objects": 1609,
-  "vertices": 11586,
-  "triangles_estimate": 14320
+  "runtime_environment_draw_groups": 24,
+  "mesh_objects": 2332,
+  "vertices": 52707,
+  "triangles_estimate": 49709
 }

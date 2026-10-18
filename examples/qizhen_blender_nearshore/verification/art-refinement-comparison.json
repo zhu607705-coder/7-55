@@ -1,0 +1,51 @@
+{
+  "scope": "Art-detail revision candidate; not final user art acceptance",
+  "method": "Same cloud computer, Godot 4.6.3 Compatibility, Mesa llvmpipe, 1280x720, real-time 300 measured frames after 30 warm-up frames. One paired run per revision; scheduling variance is possible. No fixed-FPS movie timing used.",
+  "before": {
+    "environment_glb_draw_groups": 25,
+    "fixed_fps_capture": false,
+    "mean_fps": 31.3806776406291,
+    "measured_frames": 300,
+    "mobile_hardware_tested": false,
+    "p95_frame_ms": 40.5657272727272,
+    "renderer": "Godot 4.6.3 compatibility / Mesa llvmpipe software rasterizer",
+    "size": [
+      1280,
+      720
+    ],
+    "two_live_subviewports": true,
+    "wall_seconds": 9.560023
+  },
+  "after": {
+    "environment_glb_draw_groups": 24,
+    "fixed_fps_capture": false,
+    "mean_fps": 28.2214529890329,
+    "measured_frames": 300,
+    "mobile_hardware_tested": false,
+    "p95_frame_ms": 52.7777777777778,
+    "renderer": "Godot 4.6.3 compatibility / Mesa llvmpipe software rasterizer",
+    "size": [
+      1280,
+      720
+    ],
+    "two_live_subviewports": true,
+    "wall_seconds": 10.630211
+  },
+  "mean_fps_change_percent": -10.067420110475545,
+  "p95_frame_ms_change_percent": 30.104354897788067,
+  "mobile_hardware_tested": false,
+  "lake_outline_collision_input_physics_changes": false,
+  "art_changes": [
+    "real small leaf fan meshes over irregular canopy cores",
+    "upward leaf winding, full detail in shadow pass and softer shadow opacity",
+    "flat terrain receives shadows without self-shadow acne; low sparse shore grass replaces needle reeds",
+    "two low-frequency water color fields, local broken blue/green reflection approximation, irregular sparse arc packets"
+  ],
+  "comparison_clock": 12,
+  "comparison_files": [
+    "material-before-dock.png",
+    "material-after-dock.png",
+    "material-before-pickup.png",
+    "material-after-pickup.png"
+  ]
+}

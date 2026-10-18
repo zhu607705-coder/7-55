@@ -115,7 +115,7 @@
     },
     {
       "file": "assets/blender/qizhen_kayak.glb",
-      "sha256": "c13ec3216f10739ebd00b58b109cbe3584455e0efa9155041e7871f7aed0f3ec",
+      "sha256": "924efc718d3ad1309c4c1d12700a34d1fb3224ca720971c7150882477a79d36d",
       "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
     },
     {
@@ -125,7 +125,7 @@
     },
     {
       "file": "assets/blender/qizhen_north_bank.glb",
-      "sha256": "604d51329ec5a95414140b83f6e3d86e00a124f8931010b727a991b091d8c2ab",
+      "sha256": "d2bedf4f9324e8f3930dd8dff57ff9629a199be1f7353f0ab340744f9caa26bd",
       "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
     },
     {
@@ -155,7 +155,7 @@
     },
     {
       "file": "assets/blender/scene_manifest.json",
-      "sha256": "d909a43b49b0601684e98f8895a18226f4489bc7900e7cb9d0abdbcf3c56c90d",
+      "sha256": "4fcb1e8632f80a89f27837040b0062eb05824daef1947ee129a0e462a16ef5f7",
       "origin": "Authored for this sample; Blender script / shore-style bake or Godot GLB import extraction"
     },
     {
@@ -176,7 +176,7 @@
   ],
   "editable_source": {
     "file": "../source/qizhen_north_bank.blend",
-    "sha256": "7bbeffa89acc914b88015c7691989d1091882b3d67a6010b9049b34d80b8e426",
+    "sha256": "1f2c9617a7cd1ec8a6152833143a83b71841734be1d117a238b05cabf47bbc9c",
     "rebuild": [
       "../source/build_lake_sample.py",
       "../source/build_shore_distance.py"

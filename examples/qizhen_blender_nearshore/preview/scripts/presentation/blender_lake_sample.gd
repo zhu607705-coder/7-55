@@ -54,12 +54,17 @@ func _contact_allowed(model: RefCounted,goal: Dictionary) -> bool:
  var bow: Vector2=model.position+Vector2.from_angle(model.heading)*39.0
  return bow.distance_to(bow.clamp(DOCK_RECT.position,DOCK_RECT.end))<=7.0
 func _create_3d() -> void:
- lake_viewport=SubViewport.new();lake_viewport.name="LiveBlenderWorld";lake_viewport.own_world_3d=true;lake_viewport.transparent_bg=false;lake_viewport.msaa_3d=Viewport.MSAA_2X;lake_viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS;add_child(lake_viewport)
+ lake_viewport=SubViewport.new();lake_viewport.name="LiveBlenderWorld";lake_viewport.own_world_3d=true;lake_viewport.transparent_bg=false;lake_viewport.msaa_3d=Viewport.MSAA_2X;lake_viewport.mesh_lod_threshold=0.0;lake_viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS;add_child(lake_viewport)
  world_3d=Node3D.new();world_3d.name="WorldProjectionCompensation";world_3d.scale.x=1.0/COS_TILT;lake_viewport.add_child(world_3d)
  environment_glb=load("res://assets/blender/qizhen_north_bank.glb").instantiate();environment_glb.name="ActualBlenderGLBEnvironment";world_3d.add_child(environment_glb)
+ # Imported LODs can collapse small foliage fans into cross-shaped shadow casters.
+ # Keep the authored leaf mesh. Flat terrain receives shadows but must not self-cast.
+ for surface in environment_glb.find_children("*", "MeshInstance3D"):
+  if surface.name in ["Batch_grass","Batch_earth","Batch_stone","Batch_stone_warm","Batch_stone_dark","Batch_coping","Batch_mortar","Batch_path","Batch_path_alt","Batch_path_edge","Batch_reed","Batch_reed_dark"]:
+   surface.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
  boat_3d=load("res://assets/blender/qizhen_kayak.glb").instantiate();boat_3d.name="ActualBlenderGLBKayak";world_3d.add_child(boat_3d)
  var env_node:=WorldEnvironment.new();var env:=Environment.new();env.background_mode=Environment.BG_COLOR;env.background_color=Color("293d39");env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;env.ambient_light_color=Color("d3dfd4");env.ambient_light_energy=.48;env.tonemap_mode=Environment.TONE_MAPPER_LINEAR;env_node.environment=env;lake_viewport.add_child(env_node)
- var light:=DirectionalLight3D.new();light.name="SoftAfternoonKey";light.rotation_degrees=Vector3(-53,-28,-10);light.light_color=Color("fff3d4");light.light_energy=.50;light.shadow_enabled=true;light.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL;light.directional_shadow_max_distance=140;light.shadow_bias=.04;lake_viewport.add_child(light)
+ var light:=DirectionalLight3D.new();light.name="SoftAfternoonKey";light.rotation_degrees=Vector3(-53,-28,-10);light.light_color=Color("fff3d4");light.light_energy=.50;light.shadow_enabled=true;light.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL;light.directional_shadow_max_distance=100;light.shadow_bias=.025;light.shadow_normal_bias=.4;light.shadow_blur=1.4;light.shadow_opacity=.68;lake_viewport.add_child(light)
  lake_camera=Camera3D.new();lake_camera.projection=Camera3D.PROJECTION_ORTHOGONAL;lake_camera.keep_aspect=Camera3D.KEEP_HEIGHT;lake_camera.near=.1;lake_camera.far=200;lake_viewport.add_child(lake_camera);lake_camera.current=true
  _create_water_mesh()
  # The live 2D character/paddle is a depth-tested ground-oriented Sprite3D.

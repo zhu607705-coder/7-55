@@ -128,37 +128,49 @@ for poly,label in [(LAKE,'Main'),(ISLAND,'Island')]:
 # Carefully restrained vegetation on land. Canopies are separate low-poly painted layers.
 parent('North_Bank_Detail_Art_Adaptation')
 def tree(x,y,r=1.3):
- base=P((x,y),.55);rod('Tree_Trunk',base,base+Vector((.06,0,2.5)),.10,'trunk')
- # Off-centre, differently-sized leaf masses. No concentric rings or repeated tiers.
+ # Branches, uneven canopy volumes, then leaf sprays. No alpha cards or sphere pile.
+ tr=random.Random(int(x*79+y*43));base=P((x,y),.55)
+ rod('Tree_Trunk',base,base+Vector((.06,0,2.5)),.10,'trunk')
  turn=(x*.013+y*.007)%math.tau
- clusters=[(0,0,2.60,.73,'leaf_dark'),(-.66,.10,2.66,.42,'leaf'),(.53,-.11,2.88,.60,'leaf'),(.05,.56,2.77,.51,'leaf'),(-.31,-.48,3.02,.53,'leaf'),(-.24,.18,3.45,.54,'leaf_lit'),(.38,.15,3.27,.34,'leaf'),(-.18,.42,3.66,.27,'leaf_lit')]
+ clusters=[(0,0,2.60,.64,'leaf_dark'),(-.66,.10,2.66,.38,'leaf'),(.53,-.11,2.88,.51,'leaf'),(.05,.56,2.77,.43,'leaf_dark'),(-.31,-.48,3.02,.45,'leaf'),(-.24,.18,3.45,.44,'leaf'),(.38,.15,3.27,.29,'leaf'),(-.18,.42,3.66,.22,'leaf_lit')]
  for q,(xx,yy,zz,rr,mat) in enumerate(clusters):
   xx,yy=(xx*math.cos(turn)-yy*math.sin(turn)),(xx*math.sin(turn)+yy*math.cos(turn))
-  off=Vector((xx*r,yy*r,zz+.08*math.sin(q+turn)))
-  ico('Irregular_Painted_Leaf_Mass',base+off,r*rr,mat,2,(1,.85+.08*math.sin(turn+q),.82))
+  center=base+Vector((xx*r,yy*r,zz+.08*math.sin(q+turn)))
+  if q in [1,2,3,4]:rod('Visible_Canopy_Branch',base+Vector((0,0,1.65)),center-Vector((0,0,.10)),.035,'trunk',5)
+  core=ico('Uneven_Shaded_Canopy_Core',center,r*rr,mat,2,(1,.85+.08*math.sin(turn+q),.72))
+  for v in core.data.vertices:
+   n=v.co.normalized();v.co*=.88+.13*math.sin(n.x*7+n.z*4+q)+.065*math.cos(n.y*9-n.z*5+turn)
+  # Leaf sprays form overlapping small fans with gaps, at different heights and angles.
+  # ~3px individual leaves at the sample camera: readable grouped edges, not bright speckles.
+  for k in range(15 if q<6 else 10):
+   az=tr.uniform(0,math.tau);lift=tr.uniform(-.18,.93);horizontal=math.sqrt(1-lift*lift)
+   radial=Vector((math.cos(az)*horizontal,math.sin(az)*horizontal,lift))
+   spot=center+Vector((radial.x*r*rr*.93,radial.y*r*rr*.82,radial.z*r*rr*.75))
+   verts=[];faces=[];yaw=az+tr.uniform(-.8,.8);length=tr.uniform(.15,.25)*r
+   for leaf in range(tr.randint(4,7)):
+    angle=yaw+(leaf-2.5)*.42+tr.uniform(-.12,.12)
+    d=Vector((math.cos(angle),math.sin(angle),tr.uniform(-.15,.30)))
+    across=Vector((-math.sin(angle),math.cos(angle),0));root=spot+d*(leaf%3)*.04
+    ll=length*tr.uniform(.78,1.2);ww=ll*tr.uniform(.26,.37);off=len(verts)
+    verts.extend([root,root+d*ll*.30+across*ww,root+d*ll*.74+across*ww*.67,root+d*ll,root+d*ll*.74-across*ww*.67,root+d*ll*.30-across*ww,root+d*ll*.48+Vector((0,0,.027))])
+    faces.extend([(off+6,off+(j+1)%6,off+j) for j in range(6)])
+   shade='leaf_lit' if lift>.35 and tr.random()<.48 else ('leaf_dark' if lift<.05 else 'leaf')
+   mesh('Layered_Leaf_Spray',verts,faces,shade)
 for x,y,r in [(6380,2350,1.2),(6510,2580,1.6),(6350,3000,1.35),(6260,3220,1.6),(6110,3500,1.3),(6160,3800,1.5),(6360,4010,1.4),(6440,4280,1.6),(6260,2520,1.0),(6480,3580,1.4)]:
  if not inside((x,y),LAKE):tree(x,y,r)
-# grass tuft ribbons, no bright random flecks
+# Low irregular grass clumps with open gaps, not a repeated dark contour line.
 for a,b in zip(LAKE,LAKE[1:]+LAKE[:1]):
  A=Vector(a);B=Vector(b);d=B-A
  if min(a[1],b[1])>4400 or max(a[1],b[1])<2100 or min(a[0],b[0])<5700:continue
- n=Vector((d.y,-d.x)).normalized()
- for k in range(max(1,int(d.length/25))):
-  c=A+d*(k/max(1,int(d.length/25)))+n*RNG.uniform(23,46)
+ n=Vector((d.y,-d.x)).normalized();cursor=RNG.uniform(15,55)
+ while cursor<d.length:
+  c=A+d*(cursor/d.length)+n*RNG.uniform(28,47);cursor+=RNG.uniform(58,125)
   if 5900<c.x<6300 and 2650<c.y<2880:continue
-  for q in range(3):
-   p=P(c+Vector((q*2,0)),.56);h=RNG.uniform(.23,.55)
-   mesh('Shore_Grass_Blade',[p,p+Vector((.045,0,0)),p+Vector((.045,.06,h))],[(0,1,2)],'reed' if q==1 else 'reed_dark')
-# Broken reed clumps and shallow moss follow the actual edge, never a straight green stripe.
-for y in [2940,2970,3190,3220,3250,3470,3500,3770,3800,4070]:
- for a,b in zip(LAKE,LAKE[1:]+LAKE[:1]):
-  if a[1]<=y<b[1] and min(a[0],b[0])>5700:
-   t=(y-a[1])/(b[1]-a[1]);x=a[0]+(b[0]-a[0])*t
-   for q in range(9):
-    xx=x+RNG.uniform(-5,18);yy=y+RNG.uniform(-20,20);z=.55 if xx>x else .03
-    base=P((xx,yy),z);h=RNG.uniform(.32,.8)
-    rod('Bank_Reed_Stem',base,base+Vector((RNG.uniform(-.05,.06),.05,h)),.012,'reed_dark',5)
-    mesh('Bank_Reed_Leaf',[base+Vector((0,0,h*.3)),base+Vector((.04,0,h*.75)),base+Vector((.17,.02,h*.86))],[(0,1,2)],'reed')
+  for q in range(RNG.randint(3,6)):
+   p=P(c+Vector((RNG.uniform(-5,5),RNG.uniform(-7,7))),.56);h=RNG.uniform(.09,.23);angle=RNG.uniform(0,math.tau)
+   side=Vector((math.cos(angle),math.sin(angle),0))*.025;lean=Vector((math.sin(angle)*.07,-math.cos(angle)*.07,h))
+   mesh('Sparse_Shore_Grass_Clump',[p-side,p+side,p+lean],[(0,1,2)],'reed')
+# Shore greenery is kept low and sparse above; no dark needle-reed strip on the stone cap.
 # Low shrubs soften the grass transition with broad readable shapes.
 for x,y in [(6320,2960),(6180,3270),(6100,3580),(6250,4020)]:
  for q in range(4):
@@ -234,7 +246,7 @@ bpy.ops.export_scene.gltf(filepath=str(OUT/'qizhen_kayak.glb'),export_format='GL
 boat_group.hide_render=True
 for o in boat_children:o.hide_render=True
 # Editable source keeps all named component meshes and generated materials.
-bpy.ops.wm.save_as_mainfile(filepath=str(BASE/'source/qizhen_north_bank.blend'))
+bpy.ops.wm.save_as_mainfile(filepath=str(BASE/'source/qizhen_north_bank.blend'),compress=True)
 # Runtime-only batching: bake bevels, preserve UVs, one mesh per painted material.
 # The saved .blend above stays fully editable; this reduces 1500 draw calls to ~30.
 deps=bpy.context.evaluated_depsgraph_get();buckets={}

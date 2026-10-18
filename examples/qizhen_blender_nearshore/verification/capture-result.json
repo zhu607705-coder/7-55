@@ -9,7 +9,7 @@
   "maximum_frame_turn_radians": 0.0500000000000007,
   "native_godot_renderer": true,
   "no_teleports": true,
-  "render_seconds": 59.803,
+  "render_seconds": 57.407,
   "result": {
     "active_time": 20.3499999999995,
     "collisions": 0,
