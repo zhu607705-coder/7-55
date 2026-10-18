@@ -1,0 +1,34 @@
+{
+  "failures": [],
+  "result": {
+    "active_time": 110.691666666701,
+    "collisions": 2,
+    "completed_at": [
+      10.9083333333334,
+      29.5083333333323,
+      47.0083333333313,
+      59.2416666666639,
+      65.1583333333313,
+      72.5166666666704,
+      80.8583333333438,
+      93.9916666666875,
+      110.691666666701
+    ],
+    "damage": 0,
+    "distance": 25559.9915471098,
+    "elapsed": 110.691666666701,
+    "inspected": true,
+    "position": [
+      5963.388671875,
+      2841.6396484375
+    ],
+    "progress": 8,
+    "recovered": true,
+    "status": "won",
+    "strokes": 225,
+    "swan_charges": 2,
+    "swan_warnings": 2
+  },
+  "test_kind": "deterministic input-only controller, no model teleportation",
+  "_evidence_context": "Historical pre-publication prototype run, 2026-10-17. See PUBLICATION.md for fresh packaging tests."
+}
