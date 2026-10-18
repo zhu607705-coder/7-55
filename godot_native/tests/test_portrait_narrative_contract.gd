@@ -1,4 +1,5 @@
 extends "res://tests/test_portrait_exploration.gd"
+const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 ## Source-phase fixtures through real State/Main/host and projected touch.
 class SourceLine extends RefCounted:
 	var line: String=""
@@ -34,7 +35,7 @@ func run() -> void:
 	state=root.get_node("State"); state.developer_mode=false; state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames()
 	shell.c3_narrative_host.set_process(false); shell.c3_scene_host.set_process(false); shell.world.set_process(false)
-	var oracle:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter3_narrative_source.json"))
+	var oracle:Dictionary=DisplayFixture.chapter3(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chapter3_narrative_source.json")))
 	for dimensions in [Vector2i(390,844),Vector2i(430,860),Vector2i(844,390)]:
 		await configure(dimensions)
 		var world:Control=shell.world

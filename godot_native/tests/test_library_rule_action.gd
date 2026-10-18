@@ -1,6 +1,7 @@
 extends SceneTree
 ## Portable headless Main/input contract; no developer checkpoint or UI callback shortcuts.
 const Chapter=preload("res://scripts/chapters/chapter1_2.gd")
+const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 const RULE_BODY="期末周修订版 · 已归档\n适用范围：座位被非本人随身物持续占用\n目标座位：022\n恢复申请须同时具备三类证明：\n一、本人确实到馆；\n二、目标座位与凭据一致；\n三、当前占用物不具备本人身份。\n规则依据须先完成公开公示。"
 var state: Node
 var shell: Control
@@ -102,7 +103,7 @@ func run() -> void:
 	before_shelf=earned_shelf()
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames(); shell.set_process(false)
 	state.action_completed.connect(func(id,_before,_after,result): events.append({"id":id,"result":result.duplicate(true)}))
-	var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json"))
+	var source: Dictionary=DisplayFixture.library(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json")))
 	for viewport in [Vector2i(390,844),Vector2i(430,860),Vector2i(1440,900)]:
 		case_name=str(viewport); root.size=viewport; shell.size=Vector2(viewport); await frames()
 		await fixture()
