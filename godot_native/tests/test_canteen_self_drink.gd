@@ -2,6 +2,7 @@ extends "res://tests/test_portrait_exploration.gd"
 ## Main/root-viewport integration. Fixtures are labelled; EARNED_SELF_DRINK=1
 ## loads a byte-identical ordinary pre-mix save through State's normal loader.
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
+const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 var oracle: Dictionary
 var baseline: Dictionary
 var mixed: Dictionary
@@ -42,8 +43,10 @@ func check_dialogue() -> void:
 	check(story!=null and story.sequence_id=="canteen_bad_drink","existing controller issues authored bad-drink story")
 	if story==null:return
 	check(story.lines.size()==oracle.dialogue.lines.size() and story.duration_ms==oracle.dialogue.completeAtMs,"source dialogue count and total timing retained")
+	var revisions: Array=DisplayFixture.revisions()
 	for i in story.lines.size():
-		check(story.lines[i].text==oracle.dialogue.lines[i] and story.lines[i].atMs==oracle.dialogue.atMs[i] and story.lines[i].durationMs==oracle.dialogue.durationMs[i],"exact source text, start and display time retained")
+		var expected_text: String=DisplayFixture.text_at(revisions,"chapter3-canteen.content.json",["drinks","badDrinkConsumed",i],oracle.dialogue.lines[i])
+		check(story.lines[i].text==expected_text and story.lines[i].atMs==oracle.dialogue.atMs[i] and story.lines[i].durationMs==oracle.dialogue.durationMs[i],"approved exact display text and original source start/display time retained")
 func test_controller_oracle() -> void:
 	for row: Dictionary in oracle.eligibility:
 		var c=Chapter.new();var s:Dictionary=baseline.duplicate(true)

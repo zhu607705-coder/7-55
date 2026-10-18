@@ -1,5 +1,6 @@
 extends SceneTree
 const UI = preload("res://scripts/ui/native_ui_theme.gd")
+const DisplayFixture = preload("res://tests/zh_text_fixture.gd")
 ## Source-phase fixtures exercise the real transaction surface and authority.
 ## This does not stand in for an earned manual campaign run.
 var state: Node
@@ -72,13 +73,14 @@ func check_geometry(purchased: bool = false) -> void:
 func run() -> void:
 	state = root.get_node("State"); state.developer_mode = true; state.d = state.initial()
 	shell = load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames(); shell.set_process(false)
+	var rejected_text: String = DisplayFixture.text_at(DisplayFixture.revisions(), "act-one-bootstrap.content.json", ["audioNarration", "act2_gamepad_purchase_rejected", "subtitleZh"], "你只有零点零六元。卖家拒绝了你分一百期付款的方案。")
 	for viewport: Vector2i in [Vector2i(390,844), Vector2i(430,860), Vector2i(1440,900)]:
 		await fixture(viewport, 6, false); check_geometry()
 		check(named(shell.page_body, "Cc98GamepadBalance").text == "¥0.06", "original six-cent balance displayed")
 		check(named(shell.page_body, "Cc98GamepadRecipient").text == "林星宇 · 3250100755", "owned identity matches source")
 		await click(named(shell.page_body, "Cc98GamepadPurchase"))
 		check(not state.d.actOne.gamepadPurchased and not state.d.items.gamepad and state.d.wallet.campusCardCents == 6, "wrong balance cannot buy or debit")
-		check(str(state.last_result.message).contains("零点零六元"), "controller purchase rejection is shown by existing feedback")
+		check(str(state.last_result.message) == rejected_text, "approved exact controller purchase rejection is shown by existing feedback")
 		state.d.wallet.campusCardCents = 600; await refresh()
 		await click(named(shell.page_body, "Cc98GamepadPurchase"))
 		check(not state.d.actOne.gamepadPurchased and state.d.wallet.campusCardCents == 600, "amount alone cannot bypass balance-shift proof")

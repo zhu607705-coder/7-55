@@ -1,5 +1,6 @@
 extends SceneTree
 const Activity=preload("res://scripts/games/chapter4_activity.gd")
+const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 var checks:=0
 var failures:=0
 func _initialize()->void:call_deferred("run")
@@ -34,6 +35,10 @@ func run()->void:
 	var event:=InputEventKey.new();event.keycode=KEY_ENTER;event.pressed=true
 	view._gui_input(event)
 	check(owner.d.chapter4.completed,"Keyboard final acknowledgement reaches sole controller")
-	check(owner.last_result.message=="外面亮了一下。\n这次真的结束了？\n结束了，签到记录已归档。","Original three-line ending exchange survives")
+	var expected_lines: Array[String]=["外面亮了一下。","这次真的结束了？","结束了，签到记录已归档。"]
+	var revisions: Array=DisplayFixture.revisions()
+	for i in expected_lines.size():
+		expected_lines[i]=DisplayFixture.text_at(revisions,"chapter4-755.content.json",["dialogues","exterior.closure",i,"text"],expected_lines[i])
+	check(owner.last_result.message=="\n".join(expected_lines),"Approved three-line ending exchange survives")
 	activity.queue_free();await process_frame;await process_frame
 	print("CHAPTER4_LAMP_LIFECYCLE_TESTS ",checks," checks; ",failures," failures");quit(1 if failures else 0)
