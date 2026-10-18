@@ -43,3 +43,6 @@ godot_native/.chase-source-export/
 godot_native/tools/chase_source_export/*.generated.mjs
 godot_native/tools/chase_transition_export/export_source.mjs
 godot_native/assets/derived/chase_transition_3d/source_transition.glb
+
+# Independent Godot preview import caches (project roots stay isolated)
+examples/blender_stair_sample/preview/.godot/

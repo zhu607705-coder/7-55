@@ -21,6 +21,14 @@ const APPROACH_POINT: Vector2=Vector2(690,620)
 const MAP_SIZE: Vector2=Vector2(1672,941)
 const VIDEO_PATH: String="res://assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.ogv"
 const VIDEO_DURATION_MS: float=5875.0
+# The native renderer has a distinct authored timeline; never stretch the video guard.
+# The route already shows wind and capsize. Continue at the sample's hold_hull
+# pose after its splash, rather than replaying its wind/fall introduction.
+const NATIVE_CINEMATIC_SOURCE_START_MS: float=2650.0
+const NATIVE_CINEMATIC_DURATION_MS: float=12350.0
+
+static func native_source_ms(cinematic_ms: float) -> float:
+	return NATIVE_CINEMATIC_SOURCE_START_MS+clampf(cinematic_ms,0,NATIVE_CINEMATIC_DURATION_MS)
 
 static func timing(reduced: bool) -> Dictionary:
 	return TIMING.reduced if reduced else TIMING.normal

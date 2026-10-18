@@ -1,5 +1,6 @@
 extends "res://scripts/chapters/c3_base.gd"
 const RainSession = preload("res://scripts/media/c3_rain_rescue_session.gd")
+const SwanEntranceSession = preload("res://scripts/media/c3_swan_entrance_session.gd")
 var rain_session: RefCounted
 const Journal = preload("res://scripts/chapters/c3_journal.gd")
 var journal: RefCounted=Journal.new()
@@ -373,6 +374,9 @@ func fishing_result(s: Dictionary, value: Variant) -> Dictionary:
 			q.fishCaught=true
 			q.phase="swan_exchange"
 		"paper":
+			# Freeze only the real cove actor for the optional shot before the
+			# existing atomic channel transition replaces its live world binding.
+			var captured_pose: Dictionary=SwanEntranceSession.capture_pose(s,live_session)
 			q.paperCaptured=true
 			q.swanReleased=true
 			pending_entry={"from":"swan_cove","to":"channel"}
@@ -383,7 +387,10 @@ func fishing_result(s: Dictionary, value: Variant) -> Dictionary:
 			q.chaseDistance=0
 			q.chaseAttempts+=1
 			s.rpgCheckpoint="qizhen_chase"
-			return _fishing_audio(response(prose("chapter3-qizhen-lake.content","swan.paperCapture")+"\n"+prose("chapter3-qizhen-lake.content","swan.gateRelease")), audio_cues)
+			var result: Dictionary=_fishing_audio(response(prose("chapter3-qizhen-lake.content","swan.paperCapture")+"\n"+prose("chapter3-qizhen-lake.content","swan.gateRelease")), audio_cues)
+			if not captured_pose.is_empty():
+				result.world_effect={"script":"res://scripts/media/c3_swan_entrance.gd","session":SwanEntranceSession.new(s,captured_pose),"blocks_input":true}
+			return result
 	return _fishing_audio(response("钓获成功。"), audio_cues)
 
 func rain_rescue_request(s: Dictionary) -> Dictionary:

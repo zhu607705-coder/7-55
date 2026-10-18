@@ -266,11 +266,14 @@ func rescue(config: Dictionary) -> void:
 	presenter.event.connect(func(id,value): r.state.act(id,value))
 	presenter.setup(setup)
 	var session: RefCounted=config.session
-	var deadline: int=Time.get_ticks_msec()+14000
+	var deadline: int=Time.get_ticks_msec()+26000
 	var skipped:=false
 	while not r.state.d.qizhenLake.rainRescueCompleted and Time.get_ticks_msec()<deadline:
 		if is_instance_valid(presenter) and is_instance_valid(presenter.skip) and not skipped:
-			if presenter.video.stream_position>0:
+			if is_instance_valid(presenter.native_renderer) and session.snapshot().cinematicMs>0:
+				r.trace.append({"nativeRescueCinematicMs":session.snapshot().cinematicMs,"nativeRescuePoseSeconds":presenter.native_renderer.elapsed,"elapsedMs":session.snapshot().elapsedMs})
+				presenter.skip.pressed.emit(); skipped=true
+			elif is_instance_valid(presenter.video) and presenter.video.stream_position>0:
 				r.trace.append({"nativeRescueVideoPosition":presenter.video.stream_position,"elapsedMs":session.snapshot().elapsedMs})
 				presenter.skip.pressed.emit(); skipped=true
 		await r.create_timer(.025).timeout
