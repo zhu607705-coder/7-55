@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+PADDLE_TEST {"assertions":85,"failures":[],"observed_phases":["catch","power","exit","recovery","rest"],"passed":true,"unique_native_stroke_samples":44}

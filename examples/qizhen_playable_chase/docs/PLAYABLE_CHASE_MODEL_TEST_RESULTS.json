@@ -1,0 +1,34 @@
+{
+  "checks": 498,
+  "failures": [],
+  "suite": "AUTOMATED playable chase model",
+  "engine": "Godot 4.6.3 stable",
+  "coverage_type": "Automated model tests; legal-corridor and berth tests use explicit isolated fixtures",
+  "model_sha256": "d31db331ce0b9376e9e0612d6b31808bd9b8e26d6b7b830540260bb971cf9a0a",
+  "full_chase_replays": [
+    {
+      "outcome": "won",
+      "route": "upper",
+      "elapsed": 25.9833333333333,
+      "ticks": 3118,
+      "input_count": 59,
+      "collisions": 0,
+      "swan_dodges": 3,
+      "fixture": "tests/fixtures/playable_upper_manual_input.json",
+      "source": "real keyboard recording",
+      "replay_method": "Only accepted stroke(side,reverse) and step(delta); no coordinate assignment"
+    },
+    {
+      "outcome": "won",
+      "route": "lower",
+      "elapsed": 20.4666666666667,
+      "ticks": 2456,
+      "input_count": 74,
+      "collisions": 0,
+      "swan_dodges": 2,
+      "fixture": "tests/fixtures/playable_lower_automated_input.json",
+      "source": "automated deterministic input search; not human play",
+      "replay_method": "Only accepted stroke(side,reverse) and step(delta); no coordinate/parameter assignment or disabled swan"
+    }
+  ]
+}

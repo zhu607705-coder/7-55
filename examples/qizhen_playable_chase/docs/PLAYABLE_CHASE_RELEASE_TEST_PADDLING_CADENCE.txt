@@ -1,0 +1,6 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+ISOLATED {"max_recovery_water":0.0}
+CADENCE {"cadence":0.18,"first_right":0.3,"intents":20,"old_wet_samples_during_blend":0,"started":20,"starts":[{"side":"left","time":0.0},{"side":"right","time":0.3},{"side":"left","time":0.483333333333333},{"side":"right","time":0.65},{"side":"left","time":0.833333333333333},{"side":"right","time":1.0},{"side":"left","time":1.18333333333333},{"side":"right","time":1.35},{"side":"left","time":1.53333333333333},{"side":"right","time":1.71666666666667},{"side":"left","time":1.88333333333333},{"side":"right","time":2.06666666666667},{"side":"left","time":2.23333333333333},{"side":"right","time":2.41666666666667},{"side":"left","time":2.58333333333333},{"side":"right","time":2.76666666666667},{"side":"left","time":2.95},{"side":"right","time":3.11666666666667},{"side":"left","time":3.3},{"side":"right","time":3.46666666666667}]}
+POST_LOSS {"model_after":4,"model_before":4,"status":"lost","visual_after":4,"visual_before":4}
+AUDIT {"checks":2422,"failures":[]}
