@@ -1,0 +1,20 @@
+Use case: style-transfer. Asset type: production 2D pixel-art game character rescue pose atlas.
+Transform and extend the three supplied reference sprites into ONE new transparent 4-column by 3-row sprite atlas, with exactly 12 separate cell subjects in the order specified below. The reference images are character identity and pixel-art style references, not background elements. Reference 1 is the player's right-facing side sprite, Reference 2 the player's front sprite, Reference 3 the navy campus safety officer two-frame sheet.
+Preserve the player's youthful black tousled hair, blue hooded jacket over light shirt, dark trousers and dark sneakers; preserve the navy officer's cap, uniform and mature face. Third identity is an adult teacher with short graying hair and gray/navy raincoat outerwear. All characters use the SAME chibi game proportions, crisp stepped pixel clusters, dark outlines, compact readable shading and common pixel density as the supplied sprites. No painterly or realistic reinterpretation.
+Atlas composition: landscape 4 columns × 3 rows, equal-size spacious cells, centered subjects, generous fully transparent padding between cells, no visible grid, no labels, no text. Camera is an elevated three-quarter RPG view consistent with source sprites. Every pose must be a complete separated subject, including all head, arms, hands, legs and feet inside its cell. Character height stays consistent across all standing poses.
+Row 1 left-to-right:
+1. Player seated, balancing with both arms out, legs bent forward, facing right. No boat or seat.
+2. Player falling sideways toward the right, torso leaning almost horizontal, both hands extended, legs and feet completely visible. No water.
+3. Player floating on back and keeping head up, both arms spread, knees slightly bent, complete body visible, facing front-right. No water, no waterline.
+4. Player pulling an invisible rim with BOTH hands together in front at chest level, elbows bent, knees bent below, facing left. No rim or separate prop.
+Row 2 left-to-right:
+5. Same player crouched, dripping-wet blue clothes, head bowed but visible, one knee on ground-level plane, both hands on knees. No drawn ground or puddle.
+6. Same player standing, shivering shoulders, pale off-white towel over shoulders and around upper body, face visible, complete legs and shoes visible.
+7. Adult teacher leaning forward and reaching to the RIGHT with BOTH hands, braced feet, gray/navy coat, complete body.
+8. SAME teacher pulling toward the RIGHT, both hands gripping an invisible rope, body leaning backward to the left, braced feet, complete body. No rope.
+Row 3 left-to-right:
+9. Navy safety officer leaning forward and reaching to the LEFT with BOTH hands, complete body.
+10. SAME officer pulling toward the LEFT, both hands gripping an invisible rope, body leaning backward to the right, braced feet, complete body. No rope.
+11. A separate folded soft off-white towel, single object, matching pixel art.
+12. A separate orange-and-white circular life ring with a fully transparent central hole, single object, matching pixel art.
+Actual fully transparent RGBA background. No checkerboard pixels, colored matte, scenery, ground, water, shadow plane, decorative border, UI, captions, multiple people in a cell, detached limbs or overlapping cells. Do not draw ropes or boats. Keep each subject isolated for in-game atlas sampling.
