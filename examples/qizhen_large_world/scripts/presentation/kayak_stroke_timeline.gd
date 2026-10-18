@@ -34,6 +34,8 @@ func reset() -> void:
 	started_strokes = 0
 
 func set_paused(value: bool) -> void:
+	# This is a state transition, not a per-frame reset.
+	if paused == value: return
 	paused = value
 	# Never replay buffered touch/key intent after focus/pause changes.
 	pending.clear()

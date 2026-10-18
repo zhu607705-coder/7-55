@@ -6,7 +6,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 [display]
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/stretch/mode="canvas_items"
+window/stretch/mode="disabled"
 [rendering]
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

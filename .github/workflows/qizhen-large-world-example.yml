@@ -31,9 +31,9 @@ jobs:
         run: |
           godot --headless --editor --path examples/qizhen_large_world --import --quit 2>&1 | tee "$RUNNER_TEMP/qizhen-import.log"
           ! grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/qizhen-import.log"
-      - name: Test model, 41-check audit, and 30 Hz route
+      - name: Test model, 41-check audit, 70-check input/camera suite, and 30 Hz route
         run: |
-          for suite in test_large_world audit_large_world test_route_30hz; do
+          for suite in test_large_world audit_large_world test_input_camera test_route_30hz; do
             godot --headless --path examples/qizhen_large_world --script "res://tests/$suite.gd" 2>&1 | tee "$RUNNER_TEMP/$suite.log"
             ! grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/$suite.log"
           done

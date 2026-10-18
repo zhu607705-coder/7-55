@@ -1,0 +1,39 @@
+{
+  "accepted_strokes": 70,
+  "duration_seconds": 38,
+  "fps": 30,
+  "frames": 1140,
+  "has_teleports": false,
+  "map_interval_frames": [
+    180,
+    225
+  ],
+  "pause_interval_frames": [
+    390,
+    420
+  ],
+  "result": {
+    "active_time": 35.3666666666653,
+    "collisions": 0,
+    "completed_at": [
+      10.9416666666667,
+      28.824999999999
+    ],
+    "damage": 0,
+    "distance": 7750.06296604278,
+    "elapsed": 35.4666666666653,
+    "inspected": true,
+    "position": [
+      4768.9228515625,
+      9161.9013671875
+    ],
+    "progress": 2,
+    "recovered": false,
+    "status": "running",
+    "strokes": 70,
+    "swan_charges": 1,
+    "swan_warnings": 1
+  },
+  "source": "Godot native renderer with synthetic input events; not manual play",
+  "started_visual_strokes": 70
+}

@@ -38,3 +38,9 @@ Docking currently checks speed, orientation and range; physical dock collision, 
 ## Rights and sources
 
 The bundled Fusion Pixel font retains its complete SIL Open Font License notice. Other reused assets/scripts retain their existing project provenance and rights; no blanket new open-source license is asserted. Official ZJU photographs and map raster are linked for reference rather than redistributed. The source-derived geometry is not a survey or an open-license claim. See `ASSET_PROVENANCE.json` and `REFERENCE_AND_SCOPE.md`.
+
+## Input/camera update · 2026-10-18
+
+The original publication audit above describes commit `6db72961629c0bb737c714f82558415dbf3ca635`. This incremental update preserves its portable test outputs, asset provenance, model, geometry, scene and complete-route driver. It fixes idempotent pause/stroke state, adds touch input and direct target taps, and updates camera/HUD behavior. The 70 new scene/input checks, original 41-check audit, model checks and 30 Hz route pass locally. The Godot example CI now also runs the 70-check suite.
+
+The separately delivered 38-second, 1280×720/30 FPS native video uses synthetic touch/key events. It is neither manual play nor physical touchscreen validation. Its 70 model strokes and 70 visual strokes are a partial-route recording, not a complete-route win. Layout fixtures and video/cache files are not committed. See `INPUT_CAMERA_VERIFICATION_20261018.md` for scope, evidence and limitations.

@@ -116,6 +116,8 @@ func reset() -> void:
 		_sync_rig(); wake.queue_redraw(); water_occlusion.queue_redraw(); effects.queue_redraw()
 
 func set_paused(value: bool) -> void:
+	# This is a state transition, not a per-frame reset.
+	if motion.paused == value: return
 	motion.set_paused(value)
 	# Freeze existing droplets with the pose. Invalidate derivatives so neither
 	# camera changes during pause nor the first resumed frame can make a splash.
