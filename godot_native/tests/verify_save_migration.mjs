@@ -8,6 +8,7 @@ import { gunzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createServer } from 'vite';
+import {createNativeTestSandbox} from '../tools/native_test_sandbox.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'755-save-differential-'));
 const server=await createServer({root,configFile:false,appType:'custom',logLevel:'error',optimizeDeps:{noDiscovery:true,include:[]},server:{middlewareMode:true,ws:false}});
@@ -68,7 +69,8 @@ try {
   add('actual_v35_completed',{version:35,state:completed},{completed:true,stair:true,elevator:true});
   fs.writeFileSync(path.join(temporary,'fixtures.json'),JSON.stringify({initial,fixtures}));
   await server.close();
-  const invocation=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',path.join(root,'godot_native'),'--script','res://tests/test_save_migration.gd','--','--fresh',path.join(temporary,'fixtures.json')],{encoding:'utf8',maxBuffer:32*1024*1024,timeout:20*60*1000,env:{...process.env,XDG_DATA_HOME:path.join(temporary,'data'),XDG_CONFIG_HOME:path.join(temporary,'config'),HOME:path.join(temporary,'home')}});
+  const isolated=createNativeTestSandbox(path.join(root,'godot_native'));
+  const invocation=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',isolated.project,'--script','res://tests/test_save_migration.gd','--','--fresh',path.join(temporary,'fixtures.json')],{encoding:'utf8',maxBuffer:32*1024*1024,timeout:20*60*1000,env:isolated.env});
   process.stdout.write(invocation.stdout||'');process.stderr.write(invocation.stderr||'');
   if(invocation.error)throw invocation.error;
   if(invocation.status!==0)throw new Error('Native differential tests failed ('+invocation.status+'); fixtures retained in '+temporary);

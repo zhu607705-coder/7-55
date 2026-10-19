@@ -80,7 +80,7 @@ func verify_poses(dimensions: Vector2i) -> void:
 	host._process(.0011); check(host.current.is_empty(),"terminal callback only clears at360ms")
 	check(state.d.flags.cardZeroTaken and state.d.digits.d1=="0","clearing retains accepted reward")
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing anchor01 persistence outside isolated /tmp profile"); quit(2); return
 	create_timer(70).timeout.connect(func(): push_error("Anchor01 watchdog"); quit(2))
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()

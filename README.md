@@ -2,13 +2,26 @@
 
 [![Web CI](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml)
 
-《7:55》的现行 Web 兼容基线与正在建设的 Godot 原生目标。
+《7:55》Godot 原生游戏与保留的网页版本。
 
-截至 2026-10-10，Godot 4.6.3 原生迁移在 `godot-version` 与其功能分支开发；
-[基础 PR #105](https://github.com/zhu607705-coder/7-55/pull/105) 尚未合并，不能据此宣称全量迁移、移动端验收或原生发布已经完成。
-原生代码位于 `godot_native/`，运行与验证入口见迁移分支的
-[原生 README](https://github.com/zhu607705-coder/7-55/blob/godot-version/godot_native/README.md)。
-开发边界以 [AGENTS.md](AGENTS.md) 为准。
+全量整合审阅候选位于 [`codex/godot-complete-20261019`](https://github.com/zhu607705-coder/7-55/tree/codex/godot-complete-20261019)。打开
+[`godot_native/project.godot`](godot_native/project.godot)，或在 Mac 上双击
+[`godot_native/启动游戏.command`](godot_native/启动游戏.command)。当前整合、PR 来源和实测边界见
+[`godot_native/docs/FULL_INTEGRATION_20261019.md`](godot_native/docs/FULL_INTEGRATION_20261019.md)。
+入口提供正式剧情、三个校园漫游，以及独立动画与原型预览。完整 Git 检出需先准备资源：
+
+```bash
+npm ci
+npm run native:sync
+npm run native:media # 需要 ffmpeg
+npm run native:validate
+```
+
+自带 `assets/` 与 `data/source/` 的原生源码包可直接打开，无需 Node。
+`npm run native:package` 生成这种自包含源码包；`npm run build` 和 `npm run web:build`
+继续生成网页版本。开发边界见 [AGENTS.md](AGENTS.md)，详细原生说明见
+[原生 README](godot_native/README.md)。远端 #105 与原有分支的合并状态不由本地候选改变。
+本轮推送范围、提交映射和后续验收边界见 [推送验收记录](godot_native/docs/PUSH_ACCEPTANCE_20261019.md)。
 
 当前 Web 项目使用 Vite、TypeScript、React、Zustand、
 Phaser 和 Three.js。React / TypeScript 负责手机端、共享状态、控制器、存档、任务、

@@ -9,7 +9,7 @@ func check(value: bool,label: String) -> void:
 	if not value: failures+=1; push_error("TEST FAILED: "+label)
 func _initialize() -> void: _run.call_deferred()
 func _run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"): push_error("Refusing non-test save directory"); quit(1); return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): push_error("Refusing non-test save directory"); quit(1); return
 	var state=root.get_node("State")
 	state.d=state.initial(); state.developer_mode=false
 	state.d.native.chapter=3; state.d.native.scene="qizhen_lake"; state.d.native.page="c3_journal_camera"; state.d.native.player={"x":836,"y":470}

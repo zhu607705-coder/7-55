@@ -47,3 +47,6 @@
 
 # Godot's generated HTML shell ends with a separator line. Keep the export byte-identical.
 public/godot/**/*.html whitespace=-blank-at-eof
+
+# Preserve the checked release console transcript, including Vite's trailing space.
+godot_native/verification/integration_20261019/web_release.txt whitespace=-blank-at-eol

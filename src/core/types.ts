@@ -371,6 +371,8 @@ export interface QizhenLakeState {
   directPaperCastFailures: number;
   lockerOpened: boolean;
   netCombined: boolean;
+  /** Explicit legacy net consumption; credits spent cord/frame without restoring items. */
+  legacyNetMaterialsConsumed: boolean;
   feedTinRetrieved: boolean;
   feedTinOpened: boolean;
   fishCaught: boolean;

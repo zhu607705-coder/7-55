@@ -29,7 +29,7 @@ class PaddlePane extends Control:
 	func text_at(p: Vector2,s: String,n: int) -> void:
 		var w:=font.get_string_size(s,HORIZONTAL_ALIGNMENT_LEFT,-1,n).x;draw_string(font,p-Vector2(w/2,0),s,HORIZONTAL_ALIGNMENT_LEFT,-1,n,Color("e8eddf"))
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):quit(2);return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	root.size=Vector2i(1180,600)
 	stage=Control.new();stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.add_child(stage)
 	var left:=Control.new();left.position=Vector2(0,0);left.size=Vector2(590,600);stage.add_child(left)

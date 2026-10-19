@@ -62,7 +62,7 @@ func sample_manual()->void:
 
 func run()->void:
 	# Refuse before any fixture/state change. Production saves are never touched.
-	if not ProjectSettings.globalize_path("user://").begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("INVENTORY_RELEASE_TEMP_PROFILE_REQUIRED");quit(2);return
 	state=root.get_node("State");state.developer_mode=true
 	state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))

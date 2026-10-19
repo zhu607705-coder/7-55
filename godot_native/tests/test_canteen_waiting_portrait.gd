@@ -32,7 +32,7 @@ func tick_to(target: float) -> void:
 	while shell.c3_scene_host.current!=null and shell.c3_scene_host.current.elapsed_ms<target:
 		shell.c3_scene_host.tick(minf(100,target-shell.c3_scene_host.current.elapsed_ms),true)
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated test profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated test profile")
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()

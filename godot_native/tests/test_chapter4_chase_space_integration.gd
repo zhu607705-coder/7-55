@@ -4,7 +4,7 @@ var checks:=0
 var failures:=0
 func _initialize()->void:run.call_deferred()
 func _guard_isolated_profile()->bool:
-	if OS.get_user_data_dir().begins_with("/tmp/"):return true
+	if load("res://tests/native_test_isolation.gd").is_isolated_save():return true
 	push_error("Refusing chase integration tests outside an isolated /tmp profile; ordinary saves must remain untouched.")
 	quit(2);return false
 func check(ok:bool,label:String)->void:

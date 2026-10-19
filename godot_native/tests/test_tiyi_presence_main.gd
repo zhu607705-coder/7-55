@@ -27,13 +27,16 @@ func click(control: Control) -> void:
 	await frames()
 func key(code: Key,unicode_value: int=0,ctrl: bool=false) -> void:
 	for down in [true,false]:
-		var event=InputEventKey.new(); event.keycode=code; event.physical_keycode=code; event.unicode=unicode_value; event.ctrl_pressed=ctrl; event.pressed=down; root.push_input(event,true); await frames(1)
+		var event=InputEventKey.new(); event.keycode=code; event.physical_keycode=code; event.unicode=unicode_value
+		# LineEdit's native Select All shortcut is Command+A on macOS.
+		event.ctrl_pressed=ctrl and OS.get_name()!="macOS";event.meta_pressed=ctrl and OS.get_name()=="macOS"
+		event.pressed=down; root.push_input(event,true); await frames(1)
 	await frames()
 func type_into(id: String,text: String) -> void:
 	var field=node("TiyiField_"+id)
 	await click(field); await key(KEY_A,0,true); await key(KEY_BACKSPACE)
 	for ch in text: await key(ch.unicode_at(0),ch.unicode_at(0))
-	check(node("TiyiField_"+id)!=null and node("TiyiField_"+id).text==text,"actual keyboard retains typed "+id+"="+text)
+	check(node("TiyiField_"+id)!=null and node("TiyiField_"+id).text==text,"actual keyboard retains typed "+id+"="+text+" (actual="+str(node("TiyiField_"+id).text)+")")
 func acknowledge(controller: RefCounted,s: Dictionary) -> void:
 	var session=controller.library.story_session(s)
 	while session!=null:

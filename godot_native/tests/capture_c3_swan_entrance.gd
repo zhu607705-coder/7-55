@@ -1,7 +1,7 @@
 extends "res://tests/test_c3_swan_entrance_shell.gd"
 ## Explicit visual-QA fixture: no manual save/progress is touched.
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"): quit(2); return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): quit(2); return
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()
 	var compact: bool=OS.get_cmdline_user_args().has("--compact")
 	root.size=Vector2i(390,844) if compact else Vector2i(1280,720)

@@ -79,7 +79,7 @@ func wait_for_mixer_close() -> void:
 		await frames(1)
 	await frames()
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"test profile isolated")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"test profile isolated")
 	if errors: quit(1); return
 	state=root.get_node("State")
 	# Executed-source controller edits, not a hand-authored recipe oracle.

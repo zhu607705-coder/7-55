@@ -8,7 +8,7 @@ func check(ok: bool,label: String) -> void:
 func _initialize() -> void: call_deferred("run")
 func run() -> void:
 	var state: Node=root.get_node("State")
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"shell tests isolate production save writes")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"shell tests isolate production save writes")
 	if errors: quit(1); return
 	root.size=Vector2i(1280,720)
 	state.developer_mode=false; state.d=state.initial()

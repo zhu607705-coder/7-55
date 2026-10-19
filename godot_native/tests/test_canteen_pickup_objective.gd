@@ -40,7 +40,7 @@ func oracle_cases() -> void:
 	check(Goal.current(value).id=="menu_order","food collection returns to existing menu guidance")
 
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"test profile is isolated")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"test profile is isolated")
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	var path:=OS.get_environment("CANTEEN_EARNED_SAVE")

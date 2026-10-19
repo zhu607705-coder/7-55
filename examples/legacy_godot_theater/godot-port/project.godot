@@ -1,0 +1,17 @@
+; Independent, experimental spatial migration slice. Not the production game.
+config_version=5
+
+[application]
+config/name="7:55 - Godot spatial migration"
+run/main_scene="res://scenes/theater.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[display]
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

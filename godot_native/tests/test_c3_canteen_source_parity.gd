@@ -157,7 +157,7 @@ func run_scenario(family: String, sample: Dictionary) -> void:
 	if chapter.story != null: chapter.story.cancel()
 
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"), "source parity test uses isolated /tmp profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(), "source parity test uses isolated /tmp profile")
 	if errors:
 		quit(1)
 		return

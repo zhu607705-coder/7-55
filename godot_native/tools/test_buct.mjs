@@ -1,12 +1,11 @@
 // Focused BUCT checks. Every Godot process gets a new disposable save directory.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
+import {createNativeTestSandbox} from './native_test_sandbox.mjs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 
-if(process.platform!=='linux')throw new Error('NATIVE_TEST_PLATFORM_REQUIRED: XDG-isolated native tests require Linux; refusing to launch Godot');
 
 const project=path.resolve(import.meta.dirname,'..');
 const executable=process.env.GODOT_BIN||'godot';
@@ -23,18 +22,16 @@ if(!process.argv.includes('--guard-only')) {
 }
 if(process.argv.includes('--source-only'))process.exit(0);
 function sandbox() {
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'755-native-check-'));
- for(const folder of ['data','config','cache','state','tmp','runtime','evidence'])fs.mkdirSync(path.join(root,folder));
- const userData=path.join(root,'data','SevenFiftyFiveNative');
- fs.mkdirSync(userData);
- return {root,userData,env:{...process.env,BUCT_EAST_ROAD_OUTPUT:path.join(root,'evidence'),BUCT_LIUHU_OUTPUT:path.join(root,'evidence'),TMPDIR:path.join(root,'tmp'),TEMP:path.join(root,'tmp'),TMP:path.join(root,'tmp'),XDG_RUNTIME_DIR:path.join(root,'runtime'),XDG_DATA_HOME:path.join(root,'data'),XDG_CONFIG_HOME:path.join(root,'config'),XDG_CACHE_HOME:path.join(root,'cache'),XDG_STATE_HOME:path.join(root,'state'),GODOT_TEST_USER_DATA_DIR:userData,GODOT_SILENCE_ROOT_WARNING:'1'}};
+ const fixture=createNativeTestSandbox(project);
+ Object.assign(fixture.env,{BUCT_EAST_ROAD_OUTPUT:path.join(fixture.root,'evidence'),BUCT_LIUHU_OUTPUT:path.join(fixture.root,'evidence'),XDG_RUNTIME_DIR:path.join(fixture.root,'runtime'),TMPDIR:path.join(fixture.root,'tmp'),TEMP:path.join(fixture.root,'tmp'),TMP:path.join(fixture.root,'tmp')});
+ return fixture;
 }
 function invoke(fixture,script) {
- const result=spawnSync(executable,['--headless','--path',project,'--script',`res://tests/${script}`,'--','--fresh'],{env:fixture.env,encoding:'utf8',timeout:5*60*1000,maxBuffer:8*1024*1024});
+ const result=spawnSync(executable,['--headless','--path',fixture.project,'--script',`res://tests/${script}`,'--','--fresh'],{env:fixture.env,encoding:'utf8',timeout:5*60*1000,maxBuffer:8*1024*1024});
  if(result.error)throw result.error;
  return {...result,text:(result.stdout||'')+(result.stderr||'')};
 }
-for(const platform of ['darwin','win32'])for(const runner of ['test_buct.mjs','validate_native.mjs']) {
+for(const platform of ['win32','freebsd'])for(const runner of ['test_buct.mjs','validate_native.mjs']) {
  const code=`Object.defineProperty(process,'platform',{value:${JSON.stringify(platform)}});await import(${JSON.stringify(pathToFileURL(path.join(project,'tools',runner)).href)});`;
  const result=spawnSync(process.execPath,['--input-type=module','-e',code],{encoding:'utf8',timeout:10000,env:{...process.env,GODOT_BIN:'must-not-launch-without-isolation'}});
  if(result.error)throw result.error;

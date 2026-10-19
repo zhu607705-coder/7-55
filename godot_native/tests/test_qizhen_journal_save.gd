@@ -9,7 +9,7 @@ func check(value: bool, text: String) -> void:
 		push_error(text)
 func _initialize() -> void: call_deferred("run")
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Run this persistence regression with HOME/XDG_DATA_HOME under /tmp; refusing to touch formal user saves.")
 		quit(1)
 		return

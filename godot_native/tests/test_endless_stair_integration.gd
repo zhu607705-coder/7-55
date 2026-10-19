@@ -247,7 +247,7 @@ func run() -> void:
 		return
 	var user_dir := ProjectSettings.globalize_path("user://").trim_suffix("/")
 	var expected := OS.get_environment("GODOT_TEST_USER_DATA_DIR").trim_suffix("/")
-	check(user_dir.begins_with("/tmp/") and (expected.is_empty() or expected == user_dir),
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save() and (expected.is_empty() or expected == user_dir),
 		"formal-save probe uses an isolated temporary XDG directory")
 	check(root.has_node("State"), "real native State autoload is present")
 	if failures:

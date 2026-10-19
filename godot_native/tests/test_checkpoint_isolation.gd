@@ -8,7 +8,7 @@ func check(value: bool,label: String) -> void:
 func _initialize() -> void: run.call_deferred()
 func run() -> void:
 	var state=root.get_node("State")
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"formal-save probe is isolated")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"formal-save probe is isolated")
 	if failures: quit(1); return
 	var base: Dictionary={"known":[],"existing":{"defaults":[0]},"scalar":1}
 	var incoming: Dictionary={"known":[[1],{"values":[2]}],"unknown":{"nested":[{"label":"source"}]},"existing":{"overrides":[3]},"scalar":5,"bool":false,"nullable":null,"text":"原文"}

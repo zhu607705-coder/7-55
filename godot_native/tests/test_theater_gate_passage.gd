@@ -9,7 +9,7 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;push_error(label)
 func _initialize()->void:run.call_deferred()
 func run()->void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated test save")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated test save")
 	if failures:quit(1);return
 	var state:Node=root.get_node("State");state.developer_mode=true;state.begin_checkpoint("c3-theater-code")
 	state.d.items.temporaryTheaterTicket=true;state.d.native.selected_item="temporaryTheaterTicket"

@@ -54,7 +54,7 @@ func verify_poses(dimensions: Vector2i) -> void:
 	host._process(.339); check(not host.current.is_empty(),"water visual remains before340ms")
 	host._process(.0011); check(host.current.is_empty() and state.d.items.waterDrop,"340ms retires only water copy")
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing anchor03 persistence outside isolated /tmp profile"); quit(2); return
 	create_timer(80).timeout.connect(func(): push_error("Anchor03 watchdog"); quit(2))
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()

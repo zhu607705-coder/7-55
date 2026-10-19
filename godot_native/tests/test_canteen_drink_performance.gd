@@ -530,8 +530,8 @@ func _test_art() -> void:
 func _test_full_shell() -> void:
 	# This is intentionally the production autoload, scene and State.act path.
 	# It catches ordering differences hidden by the custom-dispatch fixtures.
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"), "full-shell regression isolates native persistence")
-	if not ProjectSettings.globalize_path("user://").begins_with("/tmp/"): return
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(), "full-shell regression isolates native persistence")
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): return
 	var native_state: Node = root.get_node("State")
 	native_state.developer_mode = true
 	var chapter: RefCounted = load("res://scripts/chapters/chapter3.gd").new()

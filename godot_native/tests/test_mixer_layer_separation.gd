@@ -8,7 +8,7 @@ var rows: Array=[]
 func check(ok: bool,label: String) -> void:
 	super.check(ok,label);rows.append({"check":label,"passed":ok})
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing mixer layer tests outside an isolated /tmp profile");quit(2);return
 	state=root.get_node("State")
 	var manifest: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/native/mixer/components.json"))

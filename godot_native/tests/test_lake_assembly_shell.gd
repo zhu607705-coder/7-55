@@ -8,7 +8,7 @@ func check(ok: bool,label: String) -> void:
 func frames(n: int=3) -> void:
 	for i in n:await process_frame
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):quit(2);return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	var state: Node=root.get_node("State");state.developer_mode=true
 	var shell: Control=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
 	for dim: Vector2i in [Vector2i(390,844),Vector2i(1180,812)]:

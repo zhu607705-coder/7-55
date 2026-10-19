@@ -1,0 +1,22 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+PASS environment is an instantiated GLB with batched paint groups
+PASS boat is an instantiated GLB
+PASS live pixel actor participates in 3D depth testing
+PASS approved rig renders into a live isolated texture
+PASS 108 ground projection probes across 3 positions / zooms and 4 aspect ratios under 0.01px
+PASS northbound boat stops at the visible float surface
+PASS rigid bow cannot overlap the float deck
+PASS rigid bow remains in water at the east stone bank
+PASS float footprint rejects an intersecting hull
+PASS E cannot claim a remote mooring
+PASS stationary turn cannot rotate the rigid hull into shore or platform at (5843.0, 3500.0)
+PASS stationary turn cannot rotate the rigid hull into shore or platform at (6000.0, 2829.0)
+PASS stationary turn cannot rotate the rigid hull into shore or platform at (5952.0, 2754.0)
+PASS holding E 15px from deck cannot complete mooring
+PASS pixel actor does not bypass the depth buffer
+PASS map pauses physics and sample goals
+PASS map restores original 2D actor rendering
+PASS return from map restores depth-tested actor
+PASS map return clears stale inputs
+SAMPLE_TESTS 19 passed / 0 failed

@@ -8,7 +8,7 @@ func save(name:String)->void:
 	var error:int=root.get_texture().get_image().save_jpg(directory+"/"+name+".jpg",.92)
 	if error!=OK:push_error("HUD screenshot write failed: "+str(error));quit(2)
 func run()->void:
-	if not ProjectSettings.globalize_path("user://").begins_with("/tmp/"):quit(2);return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	if DisplayServer.get_name()=="headless":quit(2);return
 	Engine.max_fps=30
 	state=root.get_node("State")

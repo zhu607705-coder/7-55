@@ -6,7 +6,7 @@ func check(ok:bool,label:String)->void:
 	checks+=1
 	if not ok:failures+=1;push_error("THEATER PREVIEW STORAGE: "+label)
 func run()->void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated fixture profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated fixture profile")
 	if failures:quit(1);return
 	var preview:Control=preload("res://tests/preview_theater.gd").new()
 	root.add_child(preview);preview.set_process(false);preview.game.set_process(false);await process_frame

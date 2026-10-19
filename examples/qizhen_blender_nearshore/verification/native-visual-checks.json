@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "file": "hud-1280x720.png",
+      "kind": "native_responsive_screenshot",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "hud-844x390.png",
+      "kind": "native_responsive_screenshot",
+      "size": [
+        844,
+        390
+      ]
+    },
+    {
+      "file": "hud-390x844.png",
+      "kind": "native_responsive_screenshot",
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "file": "hud-1024x768.png",
+      "kind": "native_responsive_screenshot",
+      "size": [
+        1024,
+        768
+      ]
+    },
+    {
+      "color": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "kind": "actual_native_depth_probe",
+      "label": "depth-water-visible",
+      "passed": true,
+      "pixel": [
+        406.81591796875,
+        359.999938964844
+      ],
+      "visible_expected": true
+    },
+    {
+      "color": [
+        0.486274510622025,
+        0.5686274766922,
+        0.309803932905197
+      ],
+      "kind": "actual_native_depth_probe",
+      "label": "depth-bank-occluded",
+      "passed": true,
+      "pixel": [
+        978.015930175781,
+        359.999938964844
+      ],
+      "visible_expected": false
+    },
+    {
+      "color": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "kind": "actual_native_depth_probe",
+      "label": "depth-above-bank-visible",
+      "passed": true,
+      "pixel": [
+        996.159790039062,
+        359.999938964844
+      ],
+      "visible_expected": true
+    }
+  ],
+  "failures": [],
+  "method": "Native Godot screenshots of the same Sprite3D depth configuration in clear water, below bank surface, and above bank surface; no mocked renderer",
+  "same_actor_depth_configuration": true
+}

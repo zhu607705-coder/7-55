@@ -27,7 +27,7 @@ func center(side: String) -> Vector2:
  var size: Vector2=shell.world.size
  return screen(Vector2(120 if side=="left" else size.x-120,size.y-130))
 func run() -> void:
- if not OS.get_user_data_dir().begins_with("/tmp/"):quit(2);return
+ if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
  state=root.get_node("State");state.developer_mode=false
  for dims: Vector2i in [Vector2i(390,844),Vector2i(430,860)]:
   await reset(dims)

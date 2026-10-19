@@ -1,0 +1,25 @@
+{
+  "active_time": 19.7999999999995,
+  "collisions": 0,
+  "completed_at": [
+    2.89999999999999,
+    7.50000000000016,
+    20.1499999999995
+  ],
+  "damage": 0,
+  "distance": 2076.75229859364,
+  "elapsed": 20.1499999999995,
+  "input_only": true,
+  "inspected": false,
+  "no_teleports": true,
+  "position": [
+    5995.4814453125,
+    2840.03979492188
+  ],
+  "progress": 2,
+  "recovered": true,
+  "status": "won",
+  "strokes": 30,
+  "swan_charges": 0,
+  "swan_warnings": 0
+}

@@ -225,6 +225,7 @@
     "directPaperCastFailures": 0,
     "lockerOpened": false,
     "netCombined": false,
+    "legacyNetMaterialsConsumed": false,
     "feedTinRetrieved": false,
     "feedTinOpened": false,
     "fishCaught": false,

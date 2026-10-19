@@ -4,6 +4,7 @@ const Seven=preload("res://scripts/ui/tiyi_seven_art.gd")
 const SEVEN_SOUND="10_global_digit_collect_fly_to_slot"
 const SEVEN_VOICE="vo_legacy_tiyi_47"
 var seven_events: Array=[]
+var approved_seven_taunt: String=""
 func check(ok: bool,message: String) -> void:
 	checks+=1
 	if not ok: failures+=1; push_error("ANCHOR02: "+message)
@@ -34,7 +35,8 @@ func collect(touch: bool=false) -> void:
 	check(rect(named("TiyiSourcePlate"))==original_rect and named("TiyiSourcePlate").texture==original_texture,"entire original plate stays fixed and byte-identical")
 	check(named("TiyiSourcePlate").material.shader.code==Seven.TAKEN_SHADER,"terminal patch is limited to the native7 region")
 	check(cues.count(SEVEN_SOUND)==1 and seven_events.count("tiyi_47")==1,"original10_ and authored tiyi_47 event each occur once")
-	check(cues.count(SEVEN_VOICE)==0 and shell.audio_director.last_subtitle.text=="就差一次，真绝望","existing native text-only taunt policy remains intact")
+	check(cues.count(SEVEN_VOICE)==0,"existing native taunt remains text-only")
+	check(shell.audio_director.last_subtitle.text==approved_seven_taunt,"anchor02 displays the approved native Chinese taunt revision")
 func verify_poses(dimensions: Vector2i) -> void:
 	if host.current.is_empty(): return
 	var source: Rect2=host.current.source; var target: Rect2=host.current.target
@@ -57,7 +59,7 @@ func verify_poses(dimensions: Vector2i) -> void:
 	host._process(.479); check(not host.current.is_empty(),"7 hold remains before480ms")
 	host._process(.0011); check(host.current.is_empty() and host.glyph_texture==null,"480ms clears only copied artwork")
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing anchor02 persistence outside isolated /tmp profile"); quit(2); return
 	create_timer(80).timeout.connect(func(): push_error("Anchor02 watchdog"); quit(2))
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()
@@ -65,6 +67,10 @@ func run() -> void:
 	shell.audio_director.playback_started.connect(func(_channel: String,asset: String): cues.append(asset))
 	shell.audio_director.cue_published.connect(func(id: String,_payload: Dictionary): seven_events.append(id))
 	state.action_completed.connect(func(id: String,_before: Dictionary,_after: Dictionary,_result: Dictionary): actions.append(id))
+	var revisions: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/zh_text_revisions.json"))
+	for revision: Dictionary in revisions.revisions:
+		if revision.sourceFile=="vo.map.json" and revision.get("key","")=="tiyi_47":approved_seven_taunt=revision.newText
+	check(not approved_seven_taunt.is_empty(),"native text-revision catalog owns anchor02 taunt copy")
 	var touch_before: bool=Input.emulate_mouse_from_touch; Input.emulate_mouse_from_touch=true
 	check(Seven.SOURCE.get_size()==Vector2(852,1846),"verified original source dimensions")
 	check(Seven.SEVEN_REGION.position.x==126 and Seven.SEVEN_REGION.end.x==194,"crop starts strictly after the complete4 atx118")

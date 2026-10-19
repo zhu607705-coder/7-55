@@ -34,7 +34,7 @@ func bike_screen() -> Vector2:
 	return Vector2.INF
 func run() -> void:
 	state=root.get_node("State")
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated test profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated test profile")
 	var baseline: bool=Input.emulate_mouse_from_touch;Input.emulate_mouse_from_touch=false
 	# Geometry uses the exact same alpha as the visible source bicycle.
 	var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/c3_bike_world_source.json"))

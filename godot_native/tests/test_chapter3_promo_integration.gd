@@ -22,7 +22,7 @@ func find_entry(id: String) -> Dictionary:
 		if e.id==id: return e
 	return {}
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"promo test saves isolated")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"promo test saves isolated")
 	if errors: quit(1); return
 	state=root.get_node("State"); state.developer_mode=false; state.d=state.initial()
 	state.d.native.chapter=3; state.d.native.scene="canteen_interior"; state.d.native.page="c3_canteen"; state.d.rpgScene="canteen_interior"; state.d.runtimeMode="rpg"

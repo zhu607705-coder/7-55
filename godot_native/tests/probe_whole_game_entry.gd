@@ -36,7 +36,7 @@ func check_destination(s:Dictionary,label:String):
 	check(not s.native.has("c3_pending_handoff"),label+" has no consumed handoff receipt")
 func run():
 	state=root.get_node("State")
-	check(OS.get_user_data_dir().begins_with("/tmp/"),"formal save is isolated from player data")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"formal save is isolated from player data")
 	check(FileAccess.file_exists(state.SAVE_PATH) and state.load_game(),"process startup loads actual valid formal save")
 	if failures:quit(1);return
 	var before:Dictionary=state.d.duplicate(true)

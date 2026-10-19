@@ -9,7 +9,7 @@ func check(ok: bool,label: String) -> void:
 func frames(n:=3) -> void:
 	for i in n:await process_frame
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):quit(2);return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	var atlas: Image=load("res://assets/native/dorm_cabinet/cabinet_opening_frames.png").get_image()
 	var plate: Image=load("res://assets/rpg/interiors/dorm_hub.png").get_image()
 	check(atlas.get_size()==Vector2i(1024,512),"registered atlas is four exact 256px columns and two rows")

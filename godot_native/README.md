@@ -4,6 +4,10 @@ This is an independent, native Godot 4.6 migration of the existing game. It uses
 
 **Status:** playable native migration under verification, not feature-complete and not a release candidate. Authored story/data/assets are retained, but native behavior, layouts, save compatibility and end-to-end chapter progression require the acceptance work recorded in `docs/INDEPENDENT_PARITY_AUDIT.md`. A rendered page or a chapter action list is not evidence of gameplay parity.
 
+## 2026-10-19 integrated candidate
+
+The local complete-integration candidate combines the #152 continuity chain, #118 animation batch and the remaining formal increments, with a separate preview catalog for prototypes. See [the integration record](docs/FULL_INTEGRATION_20261019.md) and the 34-PR source manifest. The current workstation runs Godot 4.7.2 and Blender 5.2.2 LTS. A source ZIP remains directly playable after opening `project.godot`; on macOS `启动游戏.command` finds the installed Godot app. `npm run native:package:all` also includes the independent `examples/` and `samples/` projects.
+
 ## Open locally
 
 1. A downloaded self-contained source ZIP already includes `assets/` and `data/source/`: open its `project.godot` directly. For a Git checkout only, run `node godot_native/tools/sync_source.mjs` from repository root to copy original assets/JSON and export source initial state. Copies are build inputs, intentionally excluded from Git.

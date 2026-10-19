@@ -39,7 +39,7 @@ func open_archive()->Control:
 func shell_state()->Dictionary:
 	return {"player":shell.world.player,"camera":shell.world.camera,"pan":shell.world.pan_offset,"viewport":shell.world_viewport.size,"world_visible":shell.world_frame.visible,"phone_visible":shell.phone.visible,"input":shell.world_viewport.gui_disable_input,"mobile":shell.mobile_world}
 func run()->void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing Room301 persistence tests outside an isolated /tmp HOME/XDG_DATA_HOME; formal saves must remain untouched.")
 		quit(2)
 		return

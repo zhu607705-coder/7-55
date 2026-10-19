@@ -80,6 +80,55 @@ func run_steps(steps: Array,label: String) -> void:
 				if step.result!="accepted": check(state.d==before,label+" rejected assembly is zero-write")
 			"reload": reload_disk(label+" step "+str(index))
 		compare(step.expected,label+" "+str(index)+" "+step.op)
+		if step.op=="feedSwan":
+			check(state.d.items.fishingRod and state.d.items.swanMagnet and not state.d.items.magneticFishingRod,"legacy feeding alone grants no final rod")
+			if state.d.qizhenLake.get("legacyNetMaterialsConsumed",false):
+				check(lake.can_assemble(state.d) and lake.actions("c3_lake",state.d).any(func(a):return a.id=="c3_lake_combine"),"legacy receipt exposes the real native assembly action")
+
+func write_fixture(path: String,payload: Dictionary) -> void:
+	var file:=FileAccess.open(path,FileAccess.WRITE)
+	check(file!=null,"legacy fixture file opens")
+	if file:file.store_string(JSON.stringify(payload));file.close()
+
+func legacy_saved_continuations() -> void:
+	for entry: Dictionary in source.legacySaves:
+		var path: String="user://lake-legacy-browser.json"
+		write_fixture(path,entry.raw)
+		var imported: Dictionary=state.import_save(path)
+		check(imported.get("ok",false),entry.label+" browser file imports through production State")
+		if not imported.get("ok",false):continue
+		lake=Lake.new()
+		compare(entry.initial,entry.label+" normalized import")
+		run_steps(entry.steps,entry.label+" imported continuation")
+		if entry.kind!="earned":continue
+		# Old native files bypass the browser normalizer. Exercise both ordinary
+		# Continue loading and portable import before defaults hide missing fields.
+		for portable: bool in [false,true]:
+			setup(entry.initial)
+			var snapshot: Dictionary=state.d.duplicate(true)
+			snapshot.qizhenLake.erase("legacyNetMaterialsConsumed")
+			var envelope: Dictionary={"format":"7-55-godot-native","version":1,"sourceVersion":35,"state":snapshot}
+			path="user://lake-legacy-native.json" if portable else state.SAVE_PATH
+			write_fixture(path,envelope)
+			state.d=state.initial()
+			check(state.import_save(path).get("ok",false) if portable else state.load_game(),entry.label+" old native file loads without a receipt field")
+			lake=Lake.new()
+			compare(entry.initial,entry.label+" old native consumption receipt")
+			run_steps(entry.steps,entry.label+" old native final assembly")
+	# A structurally valid old native phase does not prove consumed materials.
+	setup(source.legacySaves[0].initial)
+	state.d.qizhenLake.netCombined=false;state.d.qizhenLake.lockerOpened=false
+	state.d.qizhenLake.erase("legacyNetMaterialsConsumed")
+	write_fixture(state.SAVE_PATH,{"format":"7-55-godot-native","version":1,"state":state.d})
+	state.d=state.initial();check(state.load_game(),"old native phase-only file remains loadable")
+	check(not state.d.qizhenLake.legacyNetMaterialsConsumed,"old native phase-only file earns no material credit")
+	physical("qizhen_black_swan")
+	var before: Dictionary=state.d.duplicate(true)
+	check(lake.combine_items(state.d,lake.FINAL_PARTS).get("status")=="wrong_item" and state.d==before,"native phase-only receipt rejects assembly without writes")
+	reload_disk("native phase-only credit")
+	check(not state.d.qizhenLake.legacyNetMaterialsConsumed,"native phase-only false survives another load")
+	state.d.qizhenLake.legacyNetMaterialsConsumed=1
+	check(not state.validate_snapshot(state.d),"present native consumption receipt remains strictly boolean")
 func isolated_save_fixture() -> bool:
 	# The launcher declares a fresh mkdtemp profile. Its actual location must match;
 	# neither a /tmp prefix nor a general workspace path is permission to write saves.
@@ -141,7 +190,8 @@ func run() -> void:
 		if entry.result!="accepted": check(state.d==before,entry.label+" swan rejection is zero-write")
 	setup(source.legacy.initial)
 	run_steps(source.legacy.steps,"legacy net/tin/fish save")
-	check(state.d.items.fishingRod and state.d.items.swanMagnet and not state.d.items.magneticFishingRod,"legacy feeding grants an independent magnet and preserves rod")
+	check(state.d.items.magneticFishingRod and not state.d.items.fishingRod and not state.d.items.swanMagnet and not state.d.qizhenLake.legacyNetMaterialsConsumed,"legacy feeding can finish assembly and close its consumption receipt")
+	legacy_saved_continuations()
 	test_ui_and_physical_guards()
 	print("Qizhen source branch parity: ",checks," checks, ",saves," native disk saves, ",failures," failures")
 	quit(1 if failures else 0)

@@ -3,7 +3,11 @@ extends Control
 const Entrance = preload("res://scripts/games/qizhen_swan_entrance.gd")
 const Motion = preload("res://scripts/games/qizhen_swan_motion.gd")
 const Kayak = preload("res://scripts/games/kayak_model.gd")
-const KayakArt = preload("res://scripts/ui/kayak_visual.gd")
+const KayakRig = preload("res://scenes/objects/kayak_rig.tscn")
+class ForegroundPass extends Node2D:
+	var view: Control
+	func _draw() -> void:
+		if is_instance_valid(view): view.draw_foreground(self)
 const SPRITE_REGIONS: Array[Rect2] = [
 	Rect2(40,180,385,214), Rect2(452,70,365,325), Rect2(871,180,440,220), Rect2(1345,100,400,300),
 	Rect2(40,451,405,380), Rect2(447,548,420,285), Rect2(910,600,440,225), Rect2(1430,570,310,242)]
@@ -11,7 +15,8 @@ const SPRITE_ANCHORS: Array[Vector2] = [Vector2(201,185),Vector2(197,293),Vector
 var timeline: RefCounted = Entrance.new()
 var swan: RefCounted = Motion.new()
 var kayak: RefCounted = Kayak.new()
-var kayak_art: RefCounted = KayakArt.new()
+var kayak_rig: Node2D
+var foreground: ForegroundPass
 var lake_plate: Texture2D
 var gate_cleanplate: Texture2D
 var swan_atlas: Texture2D
@@ -68,6 +73,14 @@ func _ready() -> void:
 			audio.volume_db = -10
 			add_child(audio)
 			sound_players.append(audio)
+	kayak_rig = KayakRig.instantiate()
+	kayak_rig.name = "PreviewKayak"
+	add_child(kayak_rig)
+	foreground = ForegroundPass.new()
+	foreground.name = "PreviewForeground"
+	foreground.view = self
+	add_child(foreground)
+	resized.connect(_refresh_presentation)
 	restart()
 
 func restart() -> void:
@@ -93,7 +106,7 @@ func restart() -> void:
 	camera = current_pose.camera
 	world_zoom = current_pose.zoom
 	status = ""
-	queue_redraw()
+	_refresh_presentation()
 
 func handoff() -> void:
 	if stage != "intro": return
@@ -106,6 +119,7 @@ func handoff() -> void:
 	kayak.roll = 0
 	status = "交替划桨，朝左下方的南口离开"
 	touch_starts.clear()
+	_refresh_presentation()
 
 func skip_intro() -> void:
 	if stage != "intro": return
@@ -178,7 +192,7 @@ func _process(delta: float) -> void:
 		var point: Vector2 = current_pose.position if stage == "intro" else swan.position
 		trail.append({"point":point,"born":clock,"power":1.0 if stage=="intro" and timeline.elapsed>4.75 else 0.4})
 	while not trail.is_empty() and clock-float(trail[0].born)>1.6: trail.pop_front()
-	queue_redraw()
+	_refresh_presentation()
 
 func _sound_once(key: String,index: int) -> void:
 	if sounded.has(key): return
@@ -220,7 +234,7 @@ func _notification(what: int) -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event is InputEventKey or not event.pressed or event.echo: return
 	if event.keycode == KEY_R: restart()
-	elif event.keycode in [KEY_ESCAPE,KEY_P]: paused = not paused; touch_starts.clear(); queue_redraw()
+	elif event.keycode in [KEY_ESCAPE,KEY_P]: paused = not paused; touch_starts.clear(); _refresh_presentation()
 	elif event.keycode in [KEY_SPACE,KEY_ENTER] and stage == "intro": skip_intro()
 	elif event.keycode in [KEY_A,KEY_LEFT]: stroke("left",Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))
 	elif event.keycode in [KEY_D,KEY_RIGHT]: stroke("right",Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))
@@ -233,6 +247,10 @@ func _gui_input(event: InputEvent) -> void:
 		if event.device == -1: return
 		_pointer(event.position,event.pressed,-1)
 	elif event is InputEventScreenTouch:
+		if event.canceled:
+			touch_starts.erase(event.index)
+			accept_event()
+			return
 		_pointer(event.position,event.pressed,event.index)
 
 func _pointer(point: Vector2,pressed: bool,id: int) -> void:
@@ -243,7 +261,7 @@ func _pointer(point: Vector2,pressed: bool,id: int) -> void:
 				elif action=="replay": restart()
 				elif action=="pause": paused=not paused;touch_starts.clear()
 				else: touch_starts[id]={"side":action,"start":point}
-				accept_event();queue_redraw();return
+				accept_event();_refresh_presentation();return
 	elif touch_starts.has(id):
 		var intent: Dictionary=touch_starts[id]
 		touch_starts.erase(id)
@@ -318,24 +336,35 @@ func _draw() -> void:
 				var dx: float=side*(20+age*65+float(n)*1.8)
 				var dy: float=-sin(age/0.65*PI)*(15+float(n)*2.3)+age*10
 				draw_circle(_screen(p+Vector2(dx,dy)),(1.5+(n%3))*z,Color(.82,.97,1,(1-age/0.65)*.85))
-	kayak_art.draw(self,_screen(kayak.position),z,{"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,"side":kayak.last_side,"strokeAgeMs":(kayak.elapsed-kayak.last_stroke)*1000},clock*1000)
+
+func _refresh_presentation() -> void:
+	if is_instance_valid(kayak_rig):
+		kayak_rig.configure_view(_screen(kayak.position),scale_factor(),{
+			"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,
+			"strokeEvents":kayak.inputs,"tick":kayak.tick})
+	if is_instance_valid(foreground): foreground.queue_redraw()
+	queue_redraw()
+
+func draw_foreground(canvas: CanvasItem) -> void:
+	if lake_plate == null: return
+	var z: float = scale_factor()
 	# The captured paper stays attached to the actual boat throughout the shot.
 	var paper: Vector2=_screen(kayak.position+Vector2(-9,-17))
-	draw_set_transform(paper,sin(clock*3)*.08,Vector2.ONE*z)
-	draw_colored_polygon(PackedVector2Array([Vector2(-7,-8),Vector2(8,-7),Vector2(7,8),Vector2(-8,7)]),Color("eee5c5"))
-	draw_line(Vector2(-4,-3),Vector2(4,-3),Color("827c67"),1)
-	draw_line(Vector2(-4,1),Vector2(2,1),Color("827c67"),1)
-	draw_set_transform(Vector2.ZERO)
+	canvas.draw_set_transform(paper,sin(clock*3)*.08,Vector2.ONE*z)
+	canvas.draw_colored_polygon(PackedVector2Array([Vector2(-7,-8),Vector2(8,-7),Vector2(7,8),Vector2(-8,7)]),Color("eee5c5"))
+	canvas.draw_line(Vector2(-4,-3),Vector2(4,-3),Color("827c67"),1)
+	canvas.draw_line(Vector2(-4,1),Vector2(2,1),Color("827c67"),1)
+	canvas.draw_set_transform(Vector2.ZERO)
 	var bars: float=48*(float(current_pose.get("letterbox",0)) if stage=="intro" else 0)
 	if bars>0:
-		draw_rect(Rect2(0,0,size.x,bars),Color("081219"))
-		draw_rect(Rect2(0,size.y-bars,size.x,bars),Color("081219"))
-	_draw_hud()
+		canvas.draw_rect(Rect2(0,0,size.x,bars),Color("081219"))
+		canvas.draw_rect(Rect2(0,size.y-bars,size.x,bars),Color("081219"))
+	_draw_hud(canvas)
 
-func _button(label: String,rect: Rect2,action: String) -> void:
+func _button(canvas: CanvasItem,label: String,rect: Rect2,action: String) -> void:
 	controls[action]=rect
-	draw_style_box(_panel(Color(.03,.10,.14,.90)),rect)
-	draw_string(font,rect.position+Vector2(12,rect.size.y/2+6),label,HORIZONTAL_ALIGNMENT_CENTER,rect.size.x-24,18,Color("e1eeee"))
+	canvas.draw_style_box(_panel(Color(.03,.10,.14,.90)),rect)
+	canvas.draw_string(font,rect.position+Vector2(12,rect.size.y/2+6),label,HORIZONTAL_ALIGNMENT_CENTER,rect.size.x-24,18,Color("e1eeee"))
 
 func _panel(color: Color) -> StyleBoxFlat:
 	var style:=StyleBoxFlat.new()
@@ -345,17 +374,17 @@ func _panel(color: Color) -> StyleBoxFlat:
 	style.set_border_width_all(1)
 	return style
 
-func _draw_hud() -> void:
+func _draw_hud(canvas: CanvasItem) -> void:
 	controls.clear()
 	var compact: bool=size.x<750
 	var label: String="启真湖 · 黑天鹅出场" if stage=="intro" else "启真湖 · 已交还划桨"
 	if compact: label="启真湖 · 黑天鹅"
-	draw_string(font,Vector2(18,32),label,HORIZONTAL_ALIGNMENT_LEFT,-1,18 if compact else 22,Color("e6eee6"))
+	canvas.draw_string(font,Vector2(18,32),label,HORIZONTAL_ALIGNMENT_LEFT,-1,18 if compact else 22,Color("e6eee6"))
 	if not capture_demo:
-		_button("重播" if compact else "重播 R",Rect2(size.x-(142 if compact else 210),14,62 if compact else 94,34),"replay")
-		_button(("继续" if paused else "暂停") if compact else ("继续 P" if paused else "暂停 P"),Rect2(size.x-(72 if compact else 108),14,62 if compact else 94,34),"pause")
+		_button(canvas,"重播" if compact else "重播 R",Rect2(size.x-(142 if compact else 210),14,62 if compact else 94,34),"replay")
+		_button(canvas,("继续" if paused else "暂停") if compact else ("继续 P" if paused else "暂停 P"),Rect2(size.x-(72 if compact else 108),14,62 if compact else 94,34),"pause")
 	if stage=="intro":
-		if not capture_demo: _button("跳过",Rect2(size.x-110,size.y-48,96,34),"skip")
+		if not capture_demo: _button(canvas,"跳过",Rect2(size.x-110,size.y-48,96,34),"skip")
 		return
 	var safe: float=maxf(0,3.5-play_time)
 	var hint: String="A / D 左右交替划桨 · S + 划桨反划制动"
@@ -363,9 +392,9 @@ func _draw_hud() -> void:
 	if safe>0: hint=("操作已恢复 · 保护 %.1fs" if compact else "已恢复操作 · 安全缓冲 %.1f 秒") % safe
 	if paused: hint="已暂停 · 点右上角继续" if compact else "已暂停，按 P 继续"
 	if stage in ["caught","escaped"]: hint=("被追上了，正在重试" if stage=="caught" else "已驶出围栏 · R 重播") if compact else status
-	draw_style_box(_panel(Color(.025,.09,.12,.9)),Rect2(14,size.y-60,size.x-28,46))
-	draw_string(font,Vector2(28,size.y-31),hint,HORIZONTAL_ALIGNMENT_CENTER,size.x-56,16 if compact else 20,Color("e7efe4"))
+	canvas.draw_style_box(_panel(Color(.025,.09,.12,.9)),Rect2(14,size.y-60,size.x-28,46))
+	canvas.draw_string(font,Vector2(28,size.y-31),hint,HORIZONTAL_ALIGNMENT_CENTER,size.x-56,16 if compact else 20,Color("e7efe4"))
 	if not capture_demo:
-		_button("左桨 A",Rect2(18,size.y-145,128,66),"left")
-		_button("右桨 D",Rect2(size.x-146,size.y-145,128,66),"right")
-		if compact: draw_string(font,Vector2(24,size.y-156),"上划前进，下划后退",HORIZONTAL_ALIGNMENT_LEFT,-1,16,Color("e4efe6"))
+		_button(canvas,"左桨 A",Rect2(18,size.y-145,128,66),"left")
+		_button(canvas,"右桨 D",Rect2(size.x-146,size.y-145,128,66),"right")
+		if compact: canvas.draw_string(font,Vector2(24,size.y-156),"上划前进，下划后退",HORIZONTAL_ALIGNMENT_LEFT,-1,16,Color("e4efe6"))

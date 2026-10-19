@@ -6,7 +6,7 @@ func capture(label:String)->void:
 	root.get_texture().get_image().save_png(output+"/"+label+".png")
 func run()->void:
 	if DisplayServer.get_name()=="headless":print("MAINTENANCE_COVER_CAPTURE needs a graphical display");quit(0);return
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing maintenance capture import outside isolated /tmp profile");quit(2);return
 	state=root.get_node("State");output=OS.get_environment("COVER_CAPTURE_DIR")
 	if output.is_empty():output=ProjectSettings.globalize_path("res://.screenshots/maintenance-cover")

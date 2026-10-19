@@ -5,7 +5,7 @@ var frames_taken: Dictionary={}
 var output: String
 func _initialize() -> void: run.call_deferred()
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing opening capture outside isolated /tmp profile");quit(2);return
 	output=OS.get_environment("WAKE_CAPTURE_DIR")
 	if output.is_empty(): output="user://wake-actual"

@@ -19,7 +19,7 @@ func setup(zone: String) -> void:
 func frames(count: int) -> void:
 	for i: int in range(count): host._process(1.0/60)
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"): quit(2); return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): quit(2); return
 	state=root.get_node("State"); state.developer_mode=false
 	var map: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds.qizhen_lake
 	for destination: String in ["open_water","channel","swan_cove"]:

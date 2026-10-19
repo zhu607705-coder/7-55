@@ -71,7 +71,7 @@ func device_flow(dimensions: Vector2i) -> void:
 	check(Goal.current(state.d).is_empty() and state.objective()=="骑车追上纸条","active chase retires bike details and preserves original task")
 
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated test profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated test profile")
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	check(state.begin_checkpoint("c3-canteen-entry"),"source checkpoint initializes fixture")

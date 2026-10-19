@@ -3,23 +3,22 @@
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {mkdtempSync,mkdirSync,rmSync,writeFileSync,readFileSync,existsSync} from 'node:fs';
-import {tmpdir} from 'node:os';
+import {mkdirSync,rmSync,writeFileSync,readFileSync,existsSync} from 'node:fs';
+import {createNativeTestSandbox} from '../tools/native_test_sandbox.mjs';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-if(process.platform!=='linux')throw new Error('NATIVE_TEST_PLATFORM_REQUIRED: lake parity requires Linux XDG-isolated native tests');
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const saveNames=['save.json','save.previous.json','save.json.tmp'];
 function fixture(prefix='755-lake-source-parity-') {
-  const sandbox=mkdtempSync(join(tmpdir(),prefix));
-  for(const folder of ['home','data','config','cache','state'])mkdirSync(join(sandbox,folder));
-  const userData=join(sandbox,'data','SevenFiftyFiveNative');mkdirSync(userData);
+  const isolated=createNativeTestSandbox(join(root,'godot_native'),prefix);
+  const sandbox=isolated.root,userData=isolated.userData;
   const nonce=randomUUID(),receipt=join(sandbox,'.lake-test-fixture.json');
   writeFileSync(receipt,JSON.stringify({schema:'lake-test-fixture-v1',nonce,user_data_dir:userData}));
-  return {sandbox,userData,nonce,receipt,env:{...process.env,HOME:join(sandbox,'home'),XDG_DATA_HOME:join(sandbox,'data'),XDG_CONFIG_HOME:join(sandbox,'config'),XDG_CACHE_HOME:join(sandbox,'cache'),XDG_STATE_HOME:join(sandbox,'state'),GODOT_TEST_USER_DATA_DIR:userData,GODOT_LAKE_TEST_NONCE:nonce,GODOT_SILENCE_ROOT_WARNING:'1'}};
+  return {...isolated,sandbox,nonce,receipt,env:{...isolated.env,GODOT_LAKE_TEST_NONCE:nonce}};
 }
-function invoke(env) {
-  return spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path','godot_native','--script','res://tests/test_qizhen_branches.gd','--','--fresh'],{cwd:root,env,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024});
+function invoke(fixture) {
+  const env=fixture.env;
+  return spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',fixture.project,'--script','res://tests/test_qizhen_branches.gd','--','--fresh'],{cwd:root,env,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024});
 }
 // All rejection probes use disposable fixtures, never ordinary player directories.
 const invalid=['undeclared','mismatch','relative','non_test_location','wrong_temp_root','missing_receipt','mismatched_receipt'];
@@ -41,7 +40,7 @@ for(const {kind,populated} of cases) {
       const bytes=Buffer.from(`Untouched ${kind} ${name}\n`);
       writeFileSync(join(f.userData,name),bytes);sentinels.set(name,bytes);
     }
-    const result=invoke(f.env);if(result.error)throw result.error;
+    const result=invoke(f);if(result.error)throw result.error;
     const output=(result.stdout||'')+(result.stderr||'');
     assert.equal(result.status,2,`${kind}: expected fail-closed exit; got ${result.status}\n${output}`);
     assert.match(output,/LAKE_TEST_ISOLATION_REQUIRED/);
@@ -59,6 +58,6 @@ try {
   const generated=spawnSync(process.execPath,['godot_native/tests/export_lake_branch_source_fixtures.mjs'],{cwd:root,env:f.env,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024});
   const generatedOutput=(generated.stdout||'')+(generated.stderr||'');process.stdout.write(generatedOutput);
   if(generated.error||generated.status!==0)throw new Error(`Source fixture generation failed: ${generated.error||generated.status}`);
-  const result=invoke(f.env);const output=(result.stdout||'')+(result.stderr||'');process.stdout.write(output);
+  const result=invoke(f);const output=(result.stdout||'')+(result.stderr||'');process.stdout.write(output);
   if(result.error||result.status!==0||/(?:^|\n)ERROR:|SCRIPT ERROR:|Parse Error:/.test(output))throw new Error(`Lake source parity failed: ${result.error||result.status}`);
 } finally {rmSync(f.sandbox,{recursive:true,force:true});}

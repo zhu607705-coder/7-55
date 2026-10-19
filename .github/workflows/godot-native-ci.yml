@@ -1,7 +1,9 @@
 name: Godot native migration
 on:
+  push:
+    branches: [main, godot-version]
   pull_request:
-    paths: ['godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
+    paths: ['package.json', 'package-lock.json', 'godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
   workflow_dispatch:
 jobs:
   native-parse-and-tests:

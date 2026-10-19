@@ -5,7 +5,11 @@ signal event(action: String, value: Variant) # Generic world_effect host contrac
 signal dismissed(reason: String)
 const Session = preload("res://scripts/media/c3_swan_entrance_session.gd")
 const Entrance = preload("res://scripts/games/qizhen_swan_entrance.gd")
-const KayakArt = preload("res://scripts/ui/kayak_visual.gd")
+const KayakRig = preload("res://scenes/objects/kayak_rig.tscn")
+class ForegroundPass extends Node2D:
+	var view: Control
+	func _draw() -> void:
+		if is_instance_valid(view): view.draw_foreground(self)
 # Same opaque full-body atlas regions/anchors as the unchanged PR144 preview.
 const REGIONS: Array[Rect2] = [Rect2(40,180,385,214),Rect2(452,70,365,325),Rect2(871,180,440,220),Rect2(1345,100,400,300),Rect2(40,451,405,380),Rect2(447,548,420,285),Rect2(910,600,440,225),Rect2(1430,570,310,242)]
 const ANCHORS: Array[Vector2] = [Vector2(201,185),Vector2(197,293),Vector2(261,183),Vector2(195,263),Vector2(201,344),Vector2(209,247),Vector2(244,175),Vector2(160,209)]
@@ -14,7 +18,8 @@ var session: RefCounted
 var world: Control
 var read_state: Callable
 var timeline: RefCounted = Entrance.new()
-var kayak_art: RefCounted = KayakArt.new()
+var kayak_rig: Node2D
+var foreground: ForegroundPass
 var lake_plate: Texture2D
 var cleanplate: Texture2D
 var atlas: Texture2D
@@ -47,6 +52,13 @@ func setup(config: Dictionary) -> void:
 	# Discard any old cove gesture, including a pending touch release. Do not
 	# touch the host's player, model, camera, collision or chase proof.
 	world.cancel_exploration_gestures()
+	kayak_rig = KayakRig.instantiate()
+	kayak_rig.name = "CinematicKayak"
+	add_child(kayak_rig)
+	foreground = ForegroundPass.new()
+	foreground.name = "CinematicForeground"
+	foreground.view = self
+	add_child(foreground)
 	caption = Label.new()
 	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	caption.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -100,6 +112,10 @@ func _update_pose() -> void:
 		caption.text = "纸条已固定\n黑天鹅冲出了围栏" if timeline.elapsed<5.85 else "进入浮排河道\n左右交替划桨，向西返航"
 	else:
 		caption.text = "纸条已固定，黑天鹅冲出了围栏" if timeline.elapsed<5.85 else "接下来进入浮排河道 · 交替划桨，向西返回小码头"
+	# Sample the captured pose only. The formal channel model and lease remain
+	# authoritative; this child owns no input, movement or completion clock.
+	if is_instance_valid(kayak_rig): kayak_rig.configure_view(_screen(session.source_pose.position),_scale_factor(),session.source_pose)
+	if is_instance_valid(foreground): foreground.queue_redraw()
 	queue_redraw()
 
 func skip_intro() -> void:
@@ -216,22 +232,25 @@ func _draw() -> void:
 				var age: float = fmod(timeline.elapsed-4.75+float(n)*0.073,0.65)
 				var offset := Vector2(side*(20+age*65+float(n)*1.8),-sin(age/0.65*PI)*(15+float(n)*2.3)+age*10)
 				draw_circle(_screen(p+offset),(1.5+(n%3))*z,Color(.82,.97,1,(1-age/0.65)*.85))
+
+func draw_foreground(canvas: CanvasItem) -> void:
+	if lake_plate == null or pose.is_empty(): return
+	var z: float = _scale_factor()
 	var boat: Dictionary = session.source_pose
-	kayak_art.draw(self,_screen(boat.position),z,boat,0.0 if session.reduced_motion else elapsed*1000)
 	var paper: Vector2 = _screen(boat.position+Vector2(-9,-17).rotated(float(boat.heading)+PI/2))
-	draw_set_transform(paper,0.0 if session.reduced_motion else sin(elapsed*3)*.08,Vector2.ONE*z)
-	draw_colored_polygon(PackedVector2Array([Vector2(-7,-8),Vector2(8,-7),Vector2(7,8),Vector2(-8,7)]),Color("eee5c5"))
-	draw_line(Vector2(-4,-3),Vector2(4,-3),Color("827c67"),1)
-	draw_line(Vector2(-4,1),Vector2(2,1),Color("827c67"),1)
-	draw_set_transform(Vector2.ZERO)
+	canvas.draw_set_transform(paper,0.0 if session.reduced_motion else sin(elapsed*3)*.08,Vector2.ONE*z)
+	canvas.draw_colored_polygon(PackedVector2Array([Vector2(-7,-8),Vector2(8,-7),Vector2(7,8),Vector2(-8,7)]),Color("eee5c5"))
+	canvas.draw_line(Vector2(-4,-3),Vector2(4,-3),Color("827c67"),1)
+	canvas.draw_line(Vector2(-4,1),Vector2(2,1),Color("827c67"),1)
+	canvas.draw_set_transform(Vector2.ZERO)
 	var bars: float = 36*(0.0 if session.reduced_motion else float(pose.letterbox))
 	if bars>0:
-		draw_rect(Rect2(0,0,size.x,bars),Color("081219"))
-		draw_rect(Rect2(0,size.y-bars,size.x,bars),Color("081219"))
-	draw_rect(Rect2(12,size.y-hud_height-14,size.x-24,hud_height),Color(.025,.09,.12,.94))
-	draw_rect(skip_rect(),Color("263d49"))
+		canvas.draw_rect(Rect2(0,0,size.x,bars),Color("081219"))
+		canvas.draw_rect(Rect2(0,size.y-bars,size.x,bars),Color("081219"))
+	canvas.draw_rect(Rect2(12,size.y-hud_height-14,size.x-24,hud_height),Color(.025,.09,.12,.94))
+	canvas.draw_rect(skip_rect(),Color("263d49"))
 	var button_font: int = roundi(16*hud_scale)
-	draw_string(font,skip_rect().position+Vector2(8,skip_rect().size.y/2+button_font*.35),"跳过",HORIZONTAL_ALIGNMENT_CENTER,skip_rect().size.x-16,button_font,Color("e7efe4"))
+	canvas.draw_string(font,skip_rect().position+Vector2(8,skip_rect().size.y/2+button_font*.35),"跳过",HORIZONTAL_ALIGNMENT_CENTER,skip_rect().size.x-16,button_font,Color("e7efe4"))
 	var title_font: int = roundi(16*hud_scale) if hud_scale>1.6 else 20
-	draw_rect(Rect2(0,0,size.x,maxf(36,32*hud_scale)),Color(.025,.07,.10,.92))
-	draw_string(font,Vector2(18,maxf(30,23*hud_scale)),"启真湖 · 黑天鹅出场",HORIZONTAL_ALIGNMENT_LEFT,-1,title_font,Color("e6eee6"))
+	canvas.draw_rect(Rect2(0,0,size.x,maxf(36,32*hud_scale)),Color(.025,.07,.10,.92))
+	canvas.draw_string(font,Vector2(18,maxf(30,23*hud_scale)),"启真湖 · 黑天鹅出场",HORIZONTAL_ALIGNMENT_LEFT,-1,title_font,Color("e6eee6"))

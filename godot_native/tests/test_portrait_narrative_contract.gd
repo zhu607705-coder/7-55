@@ -30,7 +30,7 @@ func advance_to(ms: float) -> void:
 	while host.current!=null and host.current.elapsed_ms<ms and host.current.status!="inspecting":
 		host.tick(minf(100,ms-host.current.elapsed_ms),true)
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated fixture profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated fixture profile")
 	if failures: quit(1); return
 	state=root.get_node("State"); state.developer_mode=false; state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames()

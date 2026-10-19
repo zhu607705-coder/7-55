@@ -73,6 +73,7 @@
     "qizhen:validate-fishing": "node scripts/verify-qizhen-fishing-rhythm.mjs",
     "qizhen:validate-swan-chase": "node scripts/verify-qizhen-swan-chase-pressure.mjs",
     "qizhen:validate-tool-branches": "node scripts/verify-qizhen-tool-branches.mjs",
+    "qizhen:validate-legacy-assembly": "node scripts/verify-qizhen-legacy-assembly.mjs",
     "qizhen:validate-rain-safety": "node scripts/verify-qizhen-rain-safety.mjs",
     "theater:validate-spotlight": "node scripts/verify-theater-spotlight.mjs",
     "theater:validate-lobby": "node scripts/verify-theater-lobby.mjs",
@@ -107,7 +108,13 @@
     "chapter4:validate-chase-stairwell": "node scripts/verify-chapter4-chase-stairwell.mjs",
     "chapter4:validate-stair-campaign": "node scripts/verify-chapter4-stair-campaign.mjs",
     "canteen:validate-stunts": "node scripts/verify-canteen-stunts.mjs",
-    "verify:canteen-chase-model": "node scripts/verify-canteen-chase-model.mjs"
+    "verify:canteen-chase-model": "node scripts/verify-canteen-chase-model.mjs",
+    "native:sync": "node godot_native/tools/sync_source.mjs",
+    "native:media": "bash godot_native/tools/convert_media.sh",
+    "native:validate": "node godot_native/tools/validate_native.mjs",
+    "native:package": "node godot_native/tools/package_project.mjs",
+    "native:package:all": "node godot_native/tools/package_integration.mjs",
+    "web:build": "npm run build"
   },
   "dependencies": {
     "@fontsource/fusion-pixel-12px-proportional-sc": "^5.2.5",

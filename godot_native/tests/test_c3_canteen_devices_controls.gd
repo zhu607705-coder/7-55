@@ -57,7 +57,7 @@ func close_check(original: Vector2) -> void:
 	check(shell.world.player.distance_to(original)<.1,"dismissal never moves or acts through to world")
 	check(shell.world.get_viewport().gui_get_focus_owner()==shell.world,"dismissal returns world keyboard focus")
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated test profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated test profile")
 	if errors: quit(1);return
 	state=root.get_node("State")
 	var machines: Array=controller.world("canteen_interior").constants.CANTEEN_DRINK_MACHINES

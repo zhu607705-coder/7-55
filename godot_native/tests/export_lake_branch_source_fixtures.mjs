@@ -10,7 +10,7 @@ try {
   ]);
   const parts=['nylonCord','brokenNetFrame','swanMagnet','fishingRod'];
   const itemIds=[...parts,'magneticFishingRod','rustedLockerKey','improvisedDipNet','sealedFeedTin','fishFeedPellets','smallCarp','decoyPaper'];
-  const qKeys=['active','phase','mode','zone','vehicle','rodFound','decoyBaitAttached','lockerOpened','netCombined','feedTinRetrieved','feedTinOpened','fishCaught','swanFed','magneticRodCombined','paperCaptured','swanReleased'];
+  const qKeys=['active','phase','mode','zone','vehicle','rodFound','decoyBaitAttached','lockerOpened','netCombined','legacyNetMaterialsConsumed','feedTinRetrieved','feedTinOpened','fishCaught','swanFed','magneticRodCombined','paperCaptured','swanReleased'];
   const project=s=>({items:Object.fromEntries(itemIds.map(k=>[k,s.items[k]])),qizhenLake:Object.fromEntries(qKeys.map(k=>[k,s.qizhenLake[k]])),selectedItem:s.ui.selectedItem});
   function fixture(itemPatch={},qPatch={},selectedItem=null) {
     const fresh=createInitialGameState();
@@ -63,6 +63,11 @@ try {
   combo('already_combined',parts,parts,{magneticRodCombined:true});
   combo('permuted',parts,[...parts].reverse());combo('duplicate_missing',parts,['nylonCord','nylonCord','swanMagnet','fishingRod']);
   combo('superset',parts,[...parts,'decoyPaper']);combo('selection_unrelated',parts,parts,{},'campusCard');
+  combo('legacy_stale_spent_selection',['fishingRod','swanMagnet'],parts,{legacyNetMaterialsConsumed:true,netCombined:true,lockerOpened:true,feedTinRetrieved:true},'nylonCord');
+  for(const [label,patch] of [
+    ['legacy_missing_net',{netCombined:false}],['legacy_missing_locker',{lockerOpened:false}],
+    ['legacy_missing_consumption',{feedTinRetrieved:false}],['legacy_non_boolean_credit',{legacyNetMaterialsConsumed:1}]
+  ])combo(label,['fishingRod','swanMagnet'],parts,{legacyNetMaterialsConsumed:true,netCombined:true,lockerOpened:true,feedTinRetrieved:true,...patch});
   const swan=[];
   for(const [label,qPatch,itemPatch] of [
     ['independent',{},{}],['dark',{mode:'dark'},{}],['wrong_zone',{zone:'open_water'},{}],['wrong_phase',{phase:'swan_exchange'},{}],
@@ -80,6 +85,24 @@ try {
   move(legacyFixture,'swan_cove');record(legacyFixture,legacy,'move',['swan_cove','kayak'],'accepted');
   act(legacyFixture,legacy,'feedSwan',['smallCarp']);
   reload(legacyFixture);record(legacyFixture,legacy,'reload',[],'accepted');
-  await writeFile('godot_native/tests/fixtures/qizhen_branch_source.json',JSON.stringify({source:'src/modules/ChapterThreeQizhenLakeController.ts + src/core/SaveStore.ts',parts,itemIds,qKeys,orders,combinations,swan,legacy:{initial:legacyInitial,steps:legacy}},null,2)+'\n');
-  console.log(`Qizhen original source fixtures: ${orders.length} branch orders, ${combinations.length} assembly cases, ${swan.length} swan cases, legacy fish path`);
+  act(legacyFixture,legacy,'combineItems',[parts]);reload(legacyFixture);record(legacyFixture,legacy,'reload',[],'accepted');act(legacyFixture,legacy,'combineItems',[parts]);
+  const legacySaves=[];
+  for(const [label,version,kind] of [['legacy_v18',18,'earned'],['legacy_v26',26,'earned'],['legacy_v35',35,'earned'],['phase_only',35,'phase_only'],['explicit_false',35,'explicit_false']]) {
+    const f=fixture({smallCarp:true},{phase:'swan_exchange',zone:'swan_cove',lockerOpened:true,netCombined:true,feedTinRetrieved:true,feedTinOpened:true,fishCaught:true});
+    f.store.setState(s=>({...s,runtimeMode:'rpg',rpgScene:'qizhen_lake'}));
+    const raw={version,state:structuredClone(f.store.getState())};
+    delete raw.state.qizhenLake.legacyNetMaterialsConsumed;
+    if(kind==='phase_only')for(const key of ['lockerOpened','netCombined','feedTinRetrieved','feedTinOpened','fishCaught'])delete raw.state.qizhenLake[key];
+    if(kind==='explicit_false')raw.state.qizhenLake.legacyNetMaterialsConsumed=false;
+    const memory=new Map([['seven_fifty_five_state',JSON.stringify(raw)]]);
+    const save=new SaveStore({getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)});
+    f.store.setState(()=>save.load(createInitialGameState()));
+    const initial=project(f.store.getState()),steps=[];
+    act(f,steps,'feedSwan',['smallCarp']);reload(f);record(f,steps,'reload',[],'accepted');
+    reload(f);record(f,steps,'reload',[],'accepted');act(f,steps,'combineItems',[parts]);
+    reload(f);record(f,steps,'reload',[],'accepted');act(f,steps,'combineItems',[parts]);
+    legacySaves.push({label,kind,raw,initial,steps});
+  }
+  await writeFile('godot_native/tests/fixtures/qizhen_branch_source.json',JSON.stringify({source:'src/modules/ChapterThreeQizhenLakeController.ts + src/core/SaveStore.ts',parts,itemIds,qKeys,orders,combinations,swan,legacy:{initial:legacyInitial,steps:legacy},legacySaves},null,2)+'\n');
+  console.log(`Qizhen original source fixtures: ${orders.length} branch orders, ${combinations.length} assembly cases, ${swan.length} swan cases, legacy fish path and ${legacySaves.length} saved continuations`);
 } finally {await server.close();}

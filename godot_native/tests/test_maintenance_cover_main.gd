@@ -31,7 +31,7 @@ func wheel_screen(id:String)->Vector2:
 func diagnose()->void:
 	state.act("c4_diagnose",{"wheel_sound":"latch","clock_jam":"gear_offset","oil_trace":"oil_shortage"});await frames()
 func run()->void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing maintenance persistence fixture outside isolated /tmp profile");quit(2);return
 	state=root.get_node("State")
 	state.feedback.connect(func(t:String):print("COVER_FEEDBACK ",t))

@@ -23,7 +23,7 @@ func _initialize() -> void: run.call_deferred()
 func frames(count: int=3) -> void:
 	for i in count: await process_frame
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing manual source-fixture capture outside isolated /tmp profile");quit(2);return
 	if DisplayServer.get_name()=="headless": print("Manual graphical capture needs cloud desktop");quit(0);return
 	output=OS.get_environment("PHONE_ANCHORS_CAPTURE_DIR")

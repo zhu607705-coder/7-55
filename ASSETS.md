@@ -1,5 +1,12 @@
 # 7:55 Release Assets
 
+## 20261019 — Native integration review candidate
+
+- Source branch: [codex/godot-complete-20261019](https://github.com/zhu607705-coder/7-55/tree/codex/godot-complete-20261019), targeting `godot-version` for review. No merge to `main` or replacement release is claimed.
+- Runtime and handoff evidence: [integration report](godot_native/docs/FULL_INTEGRATION_20261019.md), [push acceptance](godot_native/docs/PUSH_ACCEPTANCE_20261019.md).
+- Rebuild the complete native source archive with `npm run native:package:all`; it includes generated source assets and all registered original prototype evidence. The ZIP, PCK, checksums and package validation are local outputs under `godot_native/exports/`, not ordinary Git blobs or published Release attachments.
+- Retained Web release validation: 36/36. Native latest evidence: 413 passing stages, with original runs and focused reruns recorded separately. Exact-head Linux CI, manual full chapters and physical-device acceptance remain separate gates.
+
 ## 20260905 — branch prerelease, not merged into main
 
 - Release: [7:55 Demo 20260905 — 未合并 main](https://github.com/zhu607705-coder/7-55/releases/tag/demo-20260905)

@@ -56,7 +56,7 @@ func journal_round_trip(method: String) -> void:
 	check(JSON.stringify(state.d)==before and actions.size()==count,"Tasks/read/return submits no story action and changes no save field")
 
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"test profile is isolated")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"test profile is isolated")
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	var path:=OS.get_environment("CANTEEN_EARNED_SAVE")

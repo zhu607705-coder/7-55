@@ -80,7 +80,7 @@ func check_subtitle(label: String) -> void:
 	check(not caption.grow(8).has_point(arrival),"source exit arrival point remains clear of dialogue: "+label)
 
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated fixture save profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated fixture save profile")
 	if failures: quit(1); return
 	state=root.get_node("State")
 	oracle=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/canteen_victory_source.json"))

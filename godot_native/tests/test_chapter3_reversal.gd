@@ -24,7 +24,7 @@ func reload_file() -> void:
 	state.story_reset.emit(); state.changed.emit(); await process_frame; await process_frame
 	host.set_process(false); world.set_process(false); host.tick(0,true)
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"reversal tests use isolated actual save files")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"reversal tests use isolated actual save files")
 	if errors: quit(1); return
 	state=root.get_node("State"); state.developer_mode=false; state.d=state.initial()
 	state.d.native.chapter=3; state.d.native.scene="theater_interior"; state.d.native.page="c3_theater"; state.d.rpgScene="theater_interior"; state.d.runtimeMode="rpg"

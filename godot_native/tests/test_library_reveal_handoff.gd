@@ -355,7 +355,7 @@ func reset_case(dimensions: Vector2i) -> void:
 func run() -> void:
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()
 	case_name="fixture"
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"test uses an isolated temporary profile for the actual reset case")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"test uses an isolated temporary profile for the actual reset case")
 	if failures>0: quit(1); return
 	emulation_baseline=Input.emulate_mouse_from_touch
 	before_shelf=earned_shelf()

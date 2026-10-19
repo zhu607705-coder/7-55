@@ -103,8 +103,8 @@ func blank_release(item_id: String) -> void:
 	if chrome.inventory_open: await click(chrome.inventory_handle)
 
 func save_reload() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"persistence test isolated from formal save")
-	if not ProjectSettings.globalize_path("user://").begins_with("/tmp/"): return
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"persistence test isolated from formal save")
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): return
 	state.developer_mode=false
 	check(state.save_game(),"controller-earned state passes real save validation")
 	state.d=state.initial()

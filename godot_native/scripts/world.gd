@@ -623,12 +623,11 @@ func _apply_player_motion(motion:Vector2,intent:Vector2,delta:float) -> void:
 	var changed:bool=pose.facing!=facing or (pose.facing=="side" and pose.flip!=player_flip)
 	if changed:
 		player_turn={"from_facing":facing,"from_flip":player_flip and facing=="side","to_facing":pose.facing,"to_flip":pose.flip and pose.facing=="side","elapsed_ms":0.0,"duration_ms":CharacterFacing.turn_duration(facing,player_flip,pose.facing,pose.flip)}
-		walk_clock=0.0
 	elif not player_turn.is_empty():
 		player_turn.elapsed_ms+=maxf(0,delta)*1000
-		if float(player_turn.elapsed_ms)>=float(player_turn.duration_ms):player_turn.clear(); walk_clock=0.0
+		if float(player_turn.elapsed_ms)>=float(player_turn.duration_ms):player_turn.clear()
 	facing=pose.facing; player_flip=pose.flip
-	walk_clock=walk_clock+maxf(0,delta) if motion.is_finite() and not motion.is_zero_approx() and player_turn.is_empty() else 0.0
+	walk_clock=walk_clock+maxf(0,delta) if motion.is_finite() and not motion.is_zero_approx() else 0.0
 
 func player_visual() -> Dictionary:
 	# One selection path for CanvasItem, native canteen Sprite2D and alpha picking.
@@ -641,7 +640,7 @@ func player_visual() -> Dictionary:
 	var frames:Array=player_frames.get(direction,[])
 	var texture:Texture2D=null
 	if not frames.is_empty():
-		texture=frames[PlayerMetrics.frame_at(walk_clock*1000)%frames.size()]
+		texture=frames[PlayerMetrics.frame_at((walk_clock if player_turn.is_empty() else 0.0)*1000)%frames.size()]
 		if walk_clock<=0 and player_turn.is_empty():
 			if direction=="side" and player_side_idle!=null:texture=player_side_idle
 			elif direction=="left" and player_left_idle!=null:texture=player_left_idle

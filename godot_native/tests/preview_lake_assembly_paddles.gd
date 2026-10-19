@@ -10,7 +10,7 @@ func frames(n: int=3) -> void:
 func reset() -> void:
 	state.begin_checkpoint("c3-qizhen-paper");shell._refresh();shell._show_world_mobile();shell._layout()
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):push_error("Preview requires an isolated /tmp XDG_DATA_HOME");quit(2);return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():push_error("Preview requires an isolated /tmp XDG_DATA_HOME");quit(2);return
 	state=root.get_node("State");state.developer_mode=true
 	root.size=Vector2i(1180,812)
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames();reset();await frames()

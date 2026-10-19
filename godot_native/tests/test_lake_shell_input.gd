@@ -28,7 +28,7 @@ func flush() -> void:
 	await process_frame; await process_frame
 	shell.world.set_process(false)
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"): push_error("Isolated /tmp HOME required"); quit(1); return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): push_error("Isolated /tmp HOME required"); quit(1); return
 	state=root.get_node("State"); state.developer_mode=false; state.d=state.initial()
 	root.size=Vector2i(1440,900)
 	var s: Dictionary=state.d

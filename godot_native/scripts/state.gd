@@ -284,6 +284,9 @@ func _matches_shape(template: Variant, value: Variant, depth: int = 0, location:
 	if template is Dictionary:
 		if not value is Dictionary: return false
 		for key in template:
+			# Added consumption receipt; older native saves have no such field.
+			# Present values still pass the ordinary boolean shape check below.
+			if location==".qizhenLake" and key=="legacyNetMaterialsConsumed" and not value.has(key): continue
 			if not value.has(key) or not _matches_shape(template[key],value[key],depth+1,location+"."+str(key)): return false
 		return true
 	if template is Array:
@@ -484,7 +487,15 @@ func _read_native_save(path: String) -> Dictionary:
 	if not envelope is Dictionary or envelope.get("format") != "7-55-godot-native": return {}
 	if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1: return {}
 	if not validate_snapshot(envelope.get("state")): return {}
+	_upgrade_legacy_net_receipt(envelope.state)
 	return envelope
+
+func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
+	# Raw native save has already passed structural/domain validation. Preserve
+	# explicit false, and never derive previously spent materials from phase.
+	var q: Dictionary=snapshot.qizhenLake
+	if not q.has("legacyNetMaterialsConsumed"):
+		q.legacyNetMaterialsConsumed=q.netCombined and q.lockerOpened and not q.magneticRodCombined
 
 func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 	# The source lake rehydrates at its checkpoint, not a stale moving/chasing
@@ -540,6 +551,7 @@ func import_save(path: String) -> Dictionary:
 	var store_service: Script
 	if envelope.get("format") == "7-55-godot-native":
 		if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1 or not validate_snapshot(envelope.get("state")): return {"ok":false,"message":"原生存档结构或剧情凭据无效，当前进度未改变。"}
+		_upgrade_legacy_net_receipt(envelope.state)
 		candidate = merge_defaults(initial(),envelope.state)
 		if envelope.has("journalImages"):
 			var prepared: Dictionary=JOURNAL_ARCHIVE.prepare(candidate,envelope.journalImages)

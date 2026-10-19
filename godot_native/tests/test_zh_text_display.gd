@@ -19,17 +19,25 @@ func labels(node: Node) -> Array:
 func verify_copy(expected: Array, tag: String) -> void:
 	var all:=labels(shell.page_body)
 	for value: String in expected:
-		var found=all.filter(func(x): return x.text==value)
+		var found: Array=all.filter(func(x): return x.text==value)
+		# The merged wake animation owns its two drawn text lines directly;
+		# it intentionally has no second Label copy behind the CanvasItem.
+		var flash: Control=shell.page_body.find_child("WakeFlash",true,false)
+		if flash!=null and flash.get("text")==value:found.append(flash)
 		check(not found.is_empty(),tag+" uses revised copy: "+value)
-		for label: Label in found:
-			check(label.get_line_count()<=label.get_visible_line_count(),tag+" no clipped lines: "+value)
+		for label: Control in found:
+			if label is Label:check(label.get_line_count()<=label.get_visible_line_count(),tag+" no clipped lines: "+value)
+			else:
+				check(label==flash and flash.tooltip_text==value.replace("\n",""),tag+" native flash owns revised glyphs and accessible copy")
+				for line: String in value.split("\n"):check(flash.line_width(line)<=flash.size.x*flash.art_scale,tag+" drawn flash line fits: "+line)
+				check(flash.logical_font_size*1.15*value.split("\n").size()<=flash.size.y*flash.art_scale,tag+" drawn flash lines fit original frame height")
 			var start=label.get_global_transform_with_canvas()*Vector2.ZERO
 			var end=label.get_global_transform_with_canvas()*label.size
 			var phone_start=shell.phone.get_global_transform_with_canvas()*Vector2.ZERO
 			var phone_end=shell.phone.get_global_transform_with_canvas()*shell.phone.size
 			check(start.x>=phone_start.x-1 and end.x<=phone_end.x+1,tag+" horizontal bounds: "+value)
 			check(start.y>=phone_start.y-1 and end.y<=phone_end.y+1,tag+" vertical bounds: "+value)
-			captured.append({"text":value,"size":label.size,"lines":label.get_line_count(),"visible":label.get_visible_line_count()})
+			captured.append({"text":value,"size":label.size,"lines":label.get_line_count() if label is Label else value.split("\n").size(),"visible":label.get_visible_line_count() if label is Label else value.split("\n").size()})
 func run() -> void:
 	state=root.get_node("State");state.developer_mode=true
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames();shell.set_process(false)

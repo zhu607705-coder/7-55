@@ -142,7 +142,7 @@ func comparison_case(dimensions: Vector2i) -> void:
 	check(JSON.stringify(state.d)==before,"comparison round-trip preserves complete save")
 	await press(KEY_ESCAPE)
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated test profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated test profile")
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	var path:=OS.get_environment("CANTEEN_EARNED_SAVE")

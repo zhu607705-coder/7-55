@@ -1,0 +1,59 @@
+[
+  {
+    "label": "test_kayak_rain_nodes.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T08:53:04.614Z",
+    "finishedAt": "2026-10-19T08:53:05.916Z",
+    "durationMs": 1302,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-UFbsuy/workspace/godot_native",
+      "--script",
+      "res://tests/test_kayak_rain_nodes.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nKAYAK_RAIN_NODES: 24 checks; 0 failures\n"
+  },
+  {
+    "label": "test_lake_main_handoffs.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T08:53:05.919Z",
+    "finishedAt": "2026-10-19T08:53:42.737Z",
+    "durationMs": 36818,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-BCPzyo/workspace/godot_native",
+      "--script",
+      "res://tests/test_lake_main_handoffs.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLAKE_MAIN_HANDOFF_TEST_SHA256 1a0199060e86aaecab5f210280bbbb163f20e230c170e8a8da207b5d98e1fa82\nRAIN_NATURAL_HANDOFF_MS 19621 observation_ms 24204\nSWAN_NATURAL_HANDOFF_MS 7171 initial_timeline_ms 0.0\nLake Main natural handoffs: 36 checks; 0 failures; mode=headless OS-focus seam\n"
+  },
+  {
+    "label": "test_rain_rescue_ownership.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T08:53:42.740Z",
+    "finishedAt": "2026-10-19T08:53:44.175Z",
+    "durationMs": 1435,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-h4TvL3/workspace/godot_native",
+      "--script",
+      "res://tests/test_rain_rescue_ownership.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nRain ownership: 25 checks, 0 failures\n"
+  }
+]

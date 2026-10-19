@@ -26,25 +26,47 @@ var caption_back: ColorRect
 var pose: Dictionary={}
 var old_camera:=Vector2.ZERO
 var old_zoom:=1.0
+var old_actor_hidden:=false
+var owns_world:=false
+var owns_session:=false
 var last_stage:=""
 var font: Font
 var cinematic_started:=false
 var degraded_reason:=""
+static func _valid_world(candidate: Variant) -> bool:
+	if not is_instance_valid(candidate) or not candidate is Control: return false
+	# Keep real world subclasses valid, while refusing an arbitrary Control
+	# before registering its session or reading world-only camera/font fields.
+	var script: Script=candidate.get_script()
+	while script!=null:
+		if script.resource_path=="res://scripts/world.gd": return true
+		script=script.get_base_script()
+	return false
 func setup(config: Dictionary) -> void:
+	if reported or owns_session: return
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	set_meta("blocks_input",true)
-	session=config.get("session"); read_state=config.get("read_state",Callable()); world=config.get("world")
+	# Refused setup has no world or foreign-session cleanup rights. In particular,
+	# do not cancel a capability that another presenter has already registered.
+	var candidate_session: Variant=config.get("session")
+	var candidate_reader: Variant=config.get("read_state",Callable())
+	var candidate_world: Variant=config.get("world")
+	if not candidate_session is Session or not candidate_reader is Callable or not candidate_reader.is_valid() or not _valid_world(candidate_world): cancel(); return
+	var initial_state: Variant=candidate_reader.call()
+	if not initial_state is Dictionary or not Session.eligible(initial_state): cancel(); return
+	session=candidate_session; read_state=candidate_reader; world=candidate_world
 	callback=str(config.get("on_event",callback))
-	if not session is Session or not read_state.is_valid() or not is_instance_valid(world) or not Session.eligible(read_state.call()): cancel(); return
-	font=world.font
-	old_camera=world.camera; old_zoom=world.zoom
-	world.presentation_actor_hidden=true
-	world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO
 	cinematic_mode=str(config.get("cinematic_mode","native"))
 	if cinematic_mode not in ["native","video"]: cinematic_mode="native"
 	if cinematic_mode=="native" and not NativeRenderer.available(): cinematic_mode="video"
 	if not session.begin(self,cinematic_mode): cancel(); return
+	owns_session=true
+	font=world.font
+	old_camera=world.camera; old_zoom=world.zoom; old_actor_hidden=world.presentation_actor_hidden
+	owns_world=true
+	world.presentation_actor_hidden=true
+	world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO
 	walker=Sprite2D.new();walker.name="RescueWalker";walker.centered=false;walker.hide();add_child(walker)
 	visual=KayakRig.instantiate();visual.name="RescueKayak";visual.hide();add_child(visual)
 	splash=Node2D.new();splash.name="CapsizeSplash";add_child(splash)
@@ -178,20 +200,27 @@ func _request_finish(result: String) -> void:
 func cancel() -> void:
 	if reported: return
 	reported=true
-	if session!=null: session.cancel()
+	var notify: bool=owns_session
+	if owns_session and session!=null: session.cancel()
+	owns_session=false
 	_restore()
-	if session!=null: event.emit(callback,session)
+	if notify: event.emit(callback,session)
 	queue_free()
 func _restore() -> void:
 	if is_instance_valid(video): video.stop()
 	if is_instance_valid(native_renderer): native_renderer.hide()
+	if not owns_world: return
+	owns_world=false
 	if is_instance_valid(world):
-		world.presentation_actor_hidden=false; world.camera=old_camera; world.zoom=old_zoom; world.queue_redraw()
+		world.presentation_actor_hidden=old_actor_hidden; world.camera=old_camera; world.zoom=old_zoom; world.queue_redraw()
 func _exit_tree() -> void:
 	if not reported:
-		if session!=null: session.cancel()
+		reported=true
+		var notify: bool=owns_session
+		if owns_session and session!=null: session.cancel()
+		owns_session=false
 		_restore()
-		if session!=null: event.emit(callback,session)
+		if notify: event.emit(callback,session)
 func _update_native_actor() -> void:
 	if not is_instance_valid(visual) or not is_instance_valid(world):return
 	var stage: String=pose.get("stage","")

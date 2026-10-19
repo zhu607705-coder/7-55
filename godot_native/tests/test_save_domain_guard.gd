@@ -23,7 +23,7 @@ func corrupt(path: String,value: Variant,label: String="") -> void:
  check(not guard.validate(invalid),"reject "+path+" "+label)
  check(JSON.stringify(invalid)==before,"validation never mutates "+path)
 func run() -> void:
- if not OS.get_user_data_dir().begins_with("/tmp/"):
+ if not load("res://tests/native_test_isolation.gd").is_isolated_save():
   push_error("Refusing domain persistence tests outside isolated /tmp HOME/XDG_DATA_HOME."); quit(2); return
  state=root.get_node("State")
  check(guard.validate(state.initial()),"initial complete source state validates: "+guard.failure)

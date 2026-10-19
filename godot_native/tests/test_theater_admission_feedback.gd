@@ -17,7 +17,7 @@ func seed_gate(ticket: bool=true,dark: bool=false)->void:
 	state.d.native.player={"x":907.0,"y":812.0,"scene":"theater_interior"}
 	state.d.native.positions={"theater_interior:":{"x":907.0,"y":812.0}}
 func run()->void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated user profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated user profile")
 	if failures: quit(1);return
 	state=root.get_node("State"); state.developer_mode=true
 	for t in [-1.0,0.0,350.0,899.0,900.0,1020.0,1160.0,1420.0,5440.0,9000.0,INF]:

@@ -4,7 +4,7 @@ func check(value: bool,label: String) -> void:
 	if not value: failures+=1; push_error("TEST FAILED: "+label)
 func _initialize() -> void: _run.call_deferred()
 func _run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"): quit(1); return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): quit(1); return
 	var state=root.get_node("State"); state.developer_mode=true
 	var shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await process_frame
 	state.begin_checkpoint("c3-qizhen-swan-chase"); shell._refresh(); shell.mobile_world=true; shell._layout()

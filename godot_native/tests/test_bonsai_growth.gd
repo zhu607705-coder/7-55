@@ -126,7 +126,7 @@ func run() -> void:
 	check(not pages.bonsai_growth.active(), "Leaving cancels mounted animation")
 	rebuilt.queue_free(); await frames()
 	# The actual save reader/writer, only inside a fresh isolated test profile.
-	if ProjectSettings.globalize_path("user://").begins_with("/tmp/"):
+	if load("res://tests/native_test_isolation.gd").is_isolated_save():
 		state.d = s; state.developer_mode = false
 		check(state.save_game(), "Ordinary save accepts committed bloom while presentation is transient")
 		state.d = state.initial()

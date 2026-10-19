@@ -28,6 +28,11 @@ func run() -> void:
 	var view: Control=load("res://scenes/qizhen_swan_entrance_preview.tscn").instantiate()
 	root.add_child(view)
 	view.set_process(false)
+	var native_rig: Node2D=view.kayak_rig
+	check(is_instance_valid(native_rig) and native_rig.scene_file_path=="res://scenes/objects/kayak_rig.tscn","isolated entrance owns the current native kayak scene")
+	check(native_rig.get_index()<view.foreground.get_index(),"isolated paper and HUD render above the rig")
+	await process_frame
+	await process_frame
 	check(view.sound_players.size()==2,"original source sound assets loaded")
 	check(view.swan.spawn_valid and view.swan.position==Entrance.SWAN_HANDOFF,"handoff is valid water without relocation")
 	check(view.boat_valid(view.kayak.position,view.kayak.heading),"original kayak hull starts in valid water")
@@ -38,12 +43,15 @@ func run() -> void:
 	check(view.handed_back==1 and view.stage=="play" and view.swan.elapsed==0,"skip restores controls once with full grace")
 	view.stroke("left");view._process(0.05)
 	check(view.kayak.inputs.size()==1 and view.kayak.position!=before,"same visible boat moves after actual paddle intent")
+	check(native_rig.position.is_equal_approx(view._screen(view.kayak.position)) and native_rig.sampled_pose.left.phase=="entry","native child follows real boat and sampled paddle phase")
+	await process_frame
 	view.paused=true
 	var frozen: float=view.play_time
 	view._process(0.05)
 	check(view.play_time==frozen,"pause freezes chase clock")
 	view.restart()
 	check(view.stage=="intro" and view.handed_back==0 and view.kayak.inputs.is_empty() and view.trail.is_empty(),"retry clears input particles and handoff")
+	check(view.kayak_rig==native_rig,"replay reuses one native rig without orphaning children")
 	view.skip_intro()
 	for i: int in range(69):view._process(0.05)
 	check(view.stage=="play" and not view.swan.caught,"idle player cannot be caught during handoff protection")
@@ -104,11 +112,23 @@ func run() -> void:
 	emulated.pressed=true
 	view._gui_input(emulated)
 	check(view.paused,"emulated mouse cannot cancel the touch pause")
+	view.restart();view.skip_intro()
+	view.controls={"left":Rect2(0,0,120,120)}
+	var cancelled_touch:=InputEventScreenTouch.new()
+	cancelled_touch.index=9;cancelled_touch.position=Vector2(60,50);cancelled_touch.pressed=true
+	view._gui_input(cancelled_touch)
+	cancelled_touch=InputEventScreenTouch.new()
+	cancelled_touch.index=9;cancelled_touch.position=Vector2(60,90);cancelled_touch.canceled=true
+	view._gui_input(cancelled_touch)
+	check(view.kayak.inputs.is_empty() and not view.touch_starts.has(9),"cancelled touch discards the paddle gesture without an intent")
+	cancelled_touch.canceled=false;view._gui_input(cancelled_touch)
+	check(view.kayak.inputs.is_empty(),"a late release after touch cancellation cannot paddle")
 	view.restart();view.skip_intro();view.capture_demo=true
 	for i: int in range(120):
 		view._process(1.0/30.0)
 		check(view.boat_valid(view.kayak.position,view.kayak.heading),"input-only capture route keeps full hull in water")
 	check(view.stage=="escaped" and view.capture_input_count==18 and view.handed_back==1,"capture route reaches real south mouth using eighteen paddle intents")
 	view.free()
+	check(not is_instance_valid(native_rig),"isolated preview exit frees its entire native rig")
 	print("QIZHEN_SWAN_ENTRANCE: ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

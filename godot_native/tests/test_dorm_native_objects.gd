@@ -24,7 +24,7 @@ func target(id: String) -> Dictionary:
 		if value.id==id:return value
 	return {}
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):quit(2);return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	state=root.get_node("State")
 	for dim: Vector2i in [Vector2i(1180,812),Vector2i(390,844)]:
 		await fixture("c2-inventory",dim)

@@ -125,7 +125,7 @@ func guards() -> void:
 	check(state.get_c3_narrative_session()!=null and state.story_input_locked(),"guard uses a controller-issued C3 dialogue")
 	await rejected_press("C3 narrative");state.story_reset.emit()
 func run() -> void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"test uses an isolated profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"test uses an isolated profile")
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames();shell.set_process(false)

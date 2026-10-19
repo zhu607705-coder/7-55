@@ -37,7 +37,7 @@ func release_to(id: String,from: Vector2) -> void:
 	for i in range(1,5):motion(from.lerp(end,i/4.0),(end-from)/4,MOUSE_BUTTON_MASK_LEFT);await process_frame
 	mouse(end,false);await frames();check(not root.gui_is_dragging(),"drop releases native pointer")
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):quit(2);return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	state=root.get_node("State");state.developer_mode=true
 	state.feedback.connect(func(text):messages.append(text));state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))
 	for dim: Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1180,812)]:

@@ -148,7 +148,10 @@
         },
         {
           "path": "godot_native/tests/test_endless_stair_integration.gd",
-          "sha256": "5282999dd00f1a670288c0c6e339638bb2a70bbadf7cebe1ab07ed425837b787"
+          "sha256": "5282999dd00f1a670288c0c6e339638bb2a70bbadf7cebe1ab07ed425837b787",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/test_endless_stair_integration.gd.source.txt",
+          "adapted_sha256": "571029dbf8b964f7895f896bd4d172ff6cd31da2fc01b3e919cfa1f29b2c1aec",
+          "reason": "Retain the original PR #143 bytes in a verified snapshot while adapting only native test-save isolation for macOS and Linux; gameplay and prototype progression remain unchanged."
         },
         {
           "path": "godot_native/tests/test_endless_stair_presentation.gd",
@@ -180,7 +183,10 @@
         },
         {
           "path": "godot_native/tools/test_endless_stair.mjs",
-          "sha256": "987bcc8ac4297d113cd2d16b84f6f5d528beb017335c11de98d1e2aca65a60b7"
+          "sha256": "987bcc8ac4297d113cd2d16b84f6f5d528beb017335c11de98d1e2aca65a60b7",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/test_endless_stair.mjs.source.txt",
+          "adapted_sha256": "eebcb65dcae744bd5440750dc6d1742f5428e77950ad0f9af16e81934d78a17d",
+          "reason": "Retain the original PR #143 bytes in a verified snapshot while adapting only native test-save isolation for macOS and Linux; gameplay and prototype progression remain unchanged."
         }
       ]
     },
@@ -253,7 +259,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd",
-          "sha256": "a2fd233abebb166cec85201e728922516a881d443776c2791e88857343d84537"
+          "sha256": "a2fd233abebb166cec85201e728922516a881d443776c2791e88857343d84537",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_entrance_preview.gd.source.txt",
+          "adapted_sha256": "fd206df4783a548e086a072bd71f656ba49d029c19769bf364b3c9d101937192",
+          "reason": "Preserve PR #144 source bytes while adapting its read-only kayak presentation to the current native RigScene; paper/HUD painter order and original input/physics remain unchanged. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent."
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd.uid",
@@ -297,7 +306,10 @@
         },
         {
           "path": "godot_native/tests/test_qizhen_swan_entrance.gd",
-          "sha256": "173e53a2ce62f4907243c845270da6259ecc3d1764efcba304982bf5d0376625"
+          "sha256": "173e53a2ce62f4907243c845270da6259ecc3d1764efcba304982bf5d0376625",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/test_qizhen_swan_entrance.gd.source.txt",
+          "adapted_sha256": "87756baebdb91bbab1202618b992c7a11007f7214f6d49fa1131c6c8ecc7000d",
+          "reason": "Preserve PR #144 source bytes while exercising actual draw frames and native kayak ownership, model pose sampling, replay reuse and child cleanup. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent."
         },
         {
           "path": "godot_native/tests/test_qizhen_swan_hop.gd",
@@ -317,7 +329,10 @@
         },
         {
           "path": "godot_native/tools/package_swan_entrance.py",
-          "sha256": "8c0e6e83e8fa373127558df652d64c827ad68daca664e06ecf8699c193755a2a"
+          "sha256": "8c0e6e83e8fa373127558df652d64c827ad68daca664e06ecf8699c193755a2a",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/package_swan_entrance.py.source.txt",
+          "adapted_sha256": "ba94d658635604b832c9278cdeba9725821a0730458ece95b11a3c6eeba01a37",
+          "reason": "Preserve PR #144 source bytes while including the native kayak rig scenes, scripts and textures required by the adapted self-contained preview."
         }
       ]
     },
@@ -1261,7 +1276,10 @@
         },
         {
           "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample.glb.import",
-          "sha256": "4f6b59792557244cbaecf5a66e203592b947bdef832bf31883c4daaf5b1aea89"
+          "sha256": "4f6b59792557244cbaecf5a66e203592b947bdef832bf31883c4daaf5b1aea89",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr148/stairwell_sample.glb.import.source.txt",
+          "adapted_sha256": "5903636eeb493b0af30bddd4c6c8a4760e04ab17570dfeeb0dd46ae6ffdbcb0e",
+          "reason": "Preserve PR #148 import metadata while recording the Godot 4.7.2 importer defaults added during the verified preview import: mesh-library node naming false, surface deduplication true and glTF texture-map mode 0. The authored GLB bytes remain unchanged."
         },
         {
           "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_concrete.png",

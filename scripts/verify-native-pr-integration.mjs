@@ -5,7 +5,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
+import {createNativeTestSandbox} from '../godot_native/tools/native_test_sandbox.mjs';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 const root=path.resolve(import.meta.dirname,'..');
@@ -13,12 +13,21 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'godot_native/docs/PR_I
 const report={kind:'cross-pr-source-and-runtime-compatibility',base:manifest.base,checks:[],runs:[],notManualPlaythrough:true,physicalMobileTest:false};
 let failures=0;
 const check=(ok,label)=>{report.checks.push({label,passed:!!ok});if(!ok){failures++;console.error('FAIL '+label);}};
+const matchesHash=(file,sha)=>fs.existsSync(file)&&crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')===sha;
 const sourcePaths=new Set();
 for(const source of manifest.sources){
  for(const file of source.source_files){
   check(!sourcePaths.has(file.path),`PR${source.pr}: disjoint source path ${file.path}`);sourcePaths.add(file.path);
   const p=path.join(root,file.path);
-  check(fs.existsSync(p)&&crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')===file.sha256,`PR${source.pr}: original bytes preserved ${file.path}`);
+  if(file.original_snapshot||file.adapted_sha256||file.reason){
+   const snapshot=path.resolve(root,file.original_snapshot||'');
+   const snapshotDir=path.join(root,'godot_native/docs/source_snapshots',`pr${source.pr}`)+path.sep;
+   check(typeof file.original_snapshot==='string'&&snapshot.startsWith(snapshotDir)&&snapshot.endsWith('.source.txt')&&typeof file.reason==='string'&&file.reason.trim().length>0,`PR${source.pr}: adaptation has a scoped original snapshot and reason ${file.path}`);
+   check(snapshot.startsWith(snapshotDir)&&matchesHash(snapshot,file.sha256),`PR${source.pr}: original bytes preserved in snapshot ${file.path}`);
+   check(/^[a-f0-9]{64}$/.test(file.adapted_sha256||'')&&matchesHash(p,file.adapted_sha256),`PR${source.pr}: adapted bytes match reviewed hash ${file.path}`);
+  }else{
+   check(matchesHash(p,file.sha256),`PR${source.pr}: original bytes preserved ${file.path}`);
+  }
  }
  check(fs.existsSync(path.join(root,source.project_root,'project.godot')),`PR${source.pr}: separate project root exists`);
 }
@@ -27,6 +36,21 @@ check(sourceCheck.status===0,'native rescue adapter provenance and adapted-sourc
 report.sourceCheckOutput=(sourceCheck.stdout||'')+(sourceCheck.stderr||'');
 const projectRoots=[...new Set(manifest.sources.map(s=>s.project_root))];
 function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.name==='.godot'?[]:e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
+// PR #118 deliberately permits one unauthored idle asset. Require its exact
+// guarded load and the real side-art mirror; all other resources stay required.
+const optionalLeftIdle='res://assets/rpg/player/player_left_idle.png';
+function hasGuardedLeftIdleFallback(text,project){
+ const escaped=optionalLeftIdle.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+ const guard=new RegExp(`^([\\t ]*)if ResourceLoader\\.exists\\(["']${escaped}["']\\):\\r?\\n\\1[\\t ]+player_left_idle\\s*=\\s*load\\(["']${escaped}["']\\)\\s*$`,'m');
+ return guard.test(text)
+  &&text.split(optionalLeftIdle).length===3
+  &&fs.existsSync(path.join(project,'assets/rpg/player/player_side_idle.png'))
+  &&/player_side_idle\s*=\s*load\("res:\/\/assets\/rpg\/player\/player_side_idle\.png"\)/.test(text)
+  &&/var flip:\s*bool\s*=\s*pose\.flip and direction=="side"/.test(text)
+  &&/if flip and player_frames\.get\("left",\[\]\)\.size\(\)==8:\s*\n\s*direction="left";\s*flip=false/.test(text)
+  &&/if direction=="side" and player_side_idle!=null:\s*texture=player_side_idle/.test(text)
+  &&/return \{[^\n]*"flip_h":flip/.test(text);
+}
 for(const relative of projectRoots){
  const project=path.join(root,relative),uids=new Map();
  for(const p of walk(project)){
@@ -37,7 +61,12 @@ for(const relative of projectRoots){
   for(const m of references){
    if(m[1].includes('%')||!path.extname(m[1]))continue;
    const target=path.resolve(project,m[1].slice(6));
-   check(target.startsWith(project+path.sep)&&fs.existsSync(target),`${relative}: local resource ${m[1]} from ${path.relative(project,p)}`);
+   const owner=path.relative(project,p);
+   if(relative==='godot_native'&&owner==='scripts/world.gd'&&m[1]===optionalLeftIdle){
+    check(hasGuardedLeftIdleFallback(text,project),`${relative}: optional left idle has exists guard and real mirrored side fallback`);
+   }else{
+    check(target.startsWith(project+path.sep)&&fs.existsSync(target),`${relative}: local resource ${m[1]} from ${owner}`);
+   }
   }
  }
 }
@@ -47,7 +76,7 @@ check(config.includes('run/main_scene="res://scenes/entry.tscn"'),'formal produc
 const chapter4=fs.readFileSync(path.join(root,'godot_native/scripts/chapters/chapter4.gd'),'utf8');
 check(chapter4.includes('chapter4_chase_stair_model.gd')&&!chapter4.includes('chapter4_endless_stair_model.gd'),'unapproved twelve/two-flight replacement cannot impersonate formal chase proof');
 const suites=[
- ['godot_native',['test_rain_rescue.gd','test_lake_live_world.gd','test_lake_entry_heading.gd','test_lake_app_routes.gd','test_chapter3.gd','test_lake_shell_input.gd','test_chapter4_post_stair_return.gd','test_endless_stair_integration.gd']],
+ ['godot_native',['test_rain_rescue.gd','test_lake_live_world.gd','test_lake_entry_heading.gd','test_lake_app_routes.gd','test_chapter3.gd','test_lake_shell_input.gd','test_chapter4_post_stair_return.gd','test_endless_stair_integration.gd','test_character_facing.gd','test_qizhen_swan_entrance.gd']],
  ['samples/qizhen-rain-rescue-native',['test_rescue.gd','test_rescue_input.gd']],
  ['examples/qizhen_playable_chase',['test_paddling.gd','test_paddling_cadence.gd','test_paddling_cadence_matrix.gd','test_paddling_geometry.gd','test_playable_chase_model.gd','test_playable_chase_inputs.gd']],
  ['examples/qizhen_large_world',['test_large_world.gd','audit_large_world.gd','test_input_camera.gd','test_route_30hz.gd']],
@@ -57,14 +86,13 @@ const mainTests=fs.readdirSync(path.join(root,'godot_native/tests')).filter(f=>/
 suites[0][1].push(...mainTests);
 const mode=process.argv.includes('--runtime')?'runtime':process.argv.includes('--examples')?'examples':'static';
 function run(relative,label,args){
- const sandbox=fs.mkdtempSync(path.join(os.tmpdir(),'755-pr-integration-'));
- for(const dir of ['home','data','config','cache','state'])fs.mkdirSync(path.join(sandbox,dir));
- const env={...process.env,HOME:path.join(sandbox,'home'),XDG_DATA_HOME:path.join(sandbox,'data'),XDG_CONFIG_HOME:path.join(sandbox,'config'),XDG_CACHE_HOME:path.join(sandbox,'cache'),XDG_STATE_HOME:path.join(sandbox,'state'),GODOT_TEST_USER_DATA_DIR:path.join(sandbox,'data','SevenFiftyFiveNative'),GODOT_SILENCE_ROOT_WARNING:'1'};
+ const fixture=createNativeTestSandbox(path.join(root,relative));
+ const sandbox=fixture.root,env=fixture.env;
  const protectedFiles = relative==='godot_native'?[]:['save.json','save.previous.json','save.json.tmp'].map(name=>{
   const file=path.join(sandbox,'data','SevenFiftyFiveNative',name);fs.mkdirSync(path.dirname(file),{recursive:true});
   const bytes=Buffer.from('integration-isolation-sentinel:'+name+'\n');fs.writeFileSync(file,bytes);return {file,bytes};
  });
- const before=Date.now();const r=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--audio-driver','Dummy','--path',path.join(root,relative),...args],{env,encoding:'utf8',maxBuffer:32*1024*1024,timeout:20*60*1000});
+ const before=Date.now();const r=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--audio-driver','Dummy','--path',fixture.project,...args],{env,encoding:'utf8',maxBuffer:32*1024*1024,timeout:20*60*1000});
  for(const {file,bytes} of protectedFiles)check(fs.existsSync(file)&&fs.readFileSync(file).equals(bytes),`${relative}: ${label} leaves formal ${path.basename(file)} bytes unchanged`);
  const output=(r.stdout||'')+(r.stderr||'');const passed=!r.error&&r.status===0&&!/(?:^|\n)ERROR:|SCRIPT ERROR:|Parse Error:|TEST FAILED|ASSERTION FAILED/.test(output);
  report.runs.push({project:relative,label,passed,exitCode:r.status,elapsedMs:Date.now()-before,output});

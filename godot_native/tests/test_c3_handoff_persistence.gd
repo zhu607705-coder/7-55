@@ -25,7 +25,7 @@ func drain() -> void:
 	state.act("c3_story_complete",session)
 	check(session.status=="consumed","controller consumes transition once")
 func run():
-	check(OS.get_user_data_dir().begins_with("/tmp/"),"persistence regression cannot overwrite a player's save")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"persistence regression cannot overwrite a player's save")
 	if failures:quit(1);return
 	state=root.get_node("State");witness=Node.new();root.add_child(witness)
 	for module in state.modules:

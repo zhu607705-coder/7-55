@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {createNativeTestSandbox} from '../tools/native_test_sandbox.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const sourceRoot=process.env.CANTEEN_SOURCE_ROOT||root;
 const source=fs.readFileSync(path.join(sourceRoot,'src/scenes/rpg/CanteenInteriorScene.ts'),'utf8');
@@ -86,8 +87,9 @@ if(process.env.CANTEEN_EFFECTS_SOURCE_ONLY!=='1'){
   }
   fs.writeFileSync(path.join(temp,'project.godot'),'config_version=5\n[application]\nconfig/name="Canteen paper effects source parity"\n[threading]\nworker_pool/max_threads=1\n');
   const dump=path.join(temp,'effects.json');
-  const env={...process.env,CANTEEN_EFFECTS_DUMP:dump,HOME:temp,XDG_CACHE_HOME:path.join(temp,'.cache'),XDG_DATA_HOME:path.join(temp,'.data'),XDG_CONFIG_HOME:path.join(temp,'.config')};
-  const result=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',temp,'--script','res://tests/test_canteen_paper_effects.gd','--quit-after','8'],{encoding:'utf8',timeout:30000,env});
+  const isolated=createNativeTestSandbox(temp);
+  const env={...isolated.env,CANTEEN_EFFECTS_DUMP:dump};
+  const result=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',isolated.project,'--script','res://tests/test_canteen_paper_effects.gd','--quit-after','8'],{encoding:'utf8',timeout:30000,env});
   const output=(result.stdout||'')+(result.stderr||'');process.stdout.write(output);assert.ifError(result.error);assert.equal(result.status,0);assert.doesNotMatch(output,/SCRIPT ERROR|Parse Error/);assert.match(output,/CANTEEN_PAPER_EFFECTS \d+ checks; 0 failures/);
   const native=JSON.parse(fs.readFileSync(dump,'utf8'));
   const compare=(actual,expected,label)=>{if(typeof expected==='number'){assert.ok(Math.abs(actual-expected)<.0002,`${label}: ${actual} != ${expected}`);}else if(expected&&typeof expected==='object'){for(const key of Object.keys(expected))compare(actual[key],expected[key],`${label}.${key}`);}else assert.equal(actual,expected,label);};

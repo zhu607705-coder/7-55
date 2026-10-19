@@ -63,7 +63,7 @@ func reject_raw(raw: String, label: String) -> void:
 	check(bytes(Store.posts_path) == prior_posts and bytes(Store.quest_path) == prior_overrides,label + " leaves separate CC98 files byte-identical")
 
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing persistence tests outside isolated /tmp HOME/XDG_DATA_HOME; formal saves must remain untouched.")
 		quit(2)
 		return

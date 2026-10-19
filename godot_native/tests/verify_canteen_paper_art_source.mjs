@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {createNativeTestSandbox} from '../tools/native_test_sandbox.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const sourceRoot=process.env.CANTEEN_SOURCE_ROOT||root;
@@ -51,8 +52,9 @@ try{
   fs.copyFileSync(path.join(sourceRoot,'godot_native/data/worlds.json'),path.join(temp,'data/worlds.json'));
   fs.writeFileSync(path.join(temp,'project.godot'),'config_version=5\n[application]\nconfig/name="Paper art source parity"\n[threading]\nworker_pool/max_threads=1\n');
   const dump=path.join(temp,'frames.json');
-  const isolatedEnv={...process.env,CANTEEN_PAPER_DUMP:dump,HOME:temp,XDG_CACHE_HOME:path.join(temp,'.cache'),XDG_DATA_HOME:path.join(temp,'.data'),XDG_CONFIG_HOME:path.join(temp,'.config')};
-  const run=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',temp,'--script','res://tests/test_canteen_paper_art.gd','--quit-after','8'],{
+  const isolated=createNativeTestSandbox(temp);
+  const isolatedEnv={...isolated.env,CANTEEN_PAPER_DUMP:dump};
+  const run=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',isolated.project,'--script','res://tests/test_canteen_paper_art.gd','--quit-after','8'],{
     encoding:'utf8',timeout:30000,env:isolatedEnv
   });
   const output=(run.stdout||'')+(run.stderr||'');

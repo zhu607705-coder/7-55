@@ -175,17 +175,29 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 # The source ChapterThreeQizhenLakeController.combineItems is authoritative.
 # Validate the complete set before touching any item or selection; order is irrelevant.
 func can_assemble(s: Dictionary) -> bool:
-	return s.qizhenLake.active and s.qizhenLake.phase in ["tool_chain","swan_exchange","paper_capture"] and light(s) and not s.qizhenLake.magneticRodCombined and FINAL_PARTS.all(func(id: Variant) -> bool: return own(s,id))
+	return s.qizhenLake.active and s.qizhenLake.phase in ["tool_chain","swan_exchange","paper_capture"] and light(s) and not s.qizhenLake.magneticRodCombined and has_final_materials(s)
+
+func has_legacy_net_materials(s: Dictionary) -> bool:
+	var q: Dictionary=s.qizhenLake
+	return q.get("legacyNetMaterialsConsumed",false) is bool and q.get("legacyNetMaterialsConsumed",false) and q.netCombined and q.lockerOpened and q.feedTinRetrieved and not q.magneticRodCombined
+
+func has_final_materials(s: Dictionary) -> bool:
+	var legacy: bool=has_legacy_net_materials(s)
+	return FINAL_PARTS.all(func(id: Variant) -> bool: return own(s,id) or (legacy and id in ["nylonCord","brokenNetFrame"]))
 
 func combine_items(s: Dictionary, item_ids: Variant) -> Dictionary:
 	var q: Dictionary=s.qizhenLake
 	if not q.active or q.phase not in ["tool_chain","swan_exchange","paper_capture"]: return branch_result("inactive")
 	if not light(s): return branch_result("wrong_mode")
 	if q.magneticRodCombined: return branch_result("already_complete")
-	if not item_ids is Array or not FINAL_PARTS.all(func(id: Variant) -> bool: return item_ids.has(id) and own(s,id)): return branch_result("wrong_item","四件材料尚未集齐。")
-	for id: String in FINAL_PARTS: consume(s,id)
+	if not item_ids is Array or not FINAL_PARTS.all(func(id: Variant) -> bool: return item_ids.has(id)) or not has_final_materials(s): return branch_result("wrong_item","四件材料尚未集齐。")
+	for id: String in FINAL_PARTS:
+		if own(s,id): consume(s,id)
+	if s.ui.get("selectedItem") in FINAL_PARTS:s.ui.selectedItem=null
+	if s.native.get("selected_item","") in FINAL_PARTS:s.native.selected_item=""
 	s.items.magneticFishingRod=true
 	q.netCombined=true
+	q.legacyNetMaterialsConsumed=false
 	q.magneticRodCombined=true
 	q.phase="paper_capture"
 	var result:=branch_result("accepted","尼龙绳、破损网框和磁性扣已装到钓鱼竿上，可以捕纸了。")
@@ -318,6 +330,7 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 			consume(s,"improvisedDipNet")
 			s.items.sealedFeedTin=true
 			q.feedTinRetrieved=true
+			q.legacyNetMaterialsConsumed=true
 			q.phase="tool_chain"
 			return response("临时抄网捞起密封饲料罐。")
 		"swan":

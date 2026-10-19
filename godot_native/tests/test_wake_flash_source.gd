@@ -80,12 +80,17 @@ func verify_motion(dimensions: Vector2i) -> void:
 			await capture("wake-%dx%d-%dms" % [dimensions.x,dimensions.y,milliseconds])
 	check(JSON.stringify(state.d)==state_before,"presentation clocks never change story, inventory or save state")
 	check(flash.mouse_filter==Control.MOUSE_FILTER_IGNORE,"decorative flash cannot capture taps")
-	check(flash.text=="起床蠢货\n！！！","authored two-line warning is unchanged")
+	check(flash.text=="还睡？！\n早八要迟到了！！","current two-line warning uses the revised Chinese copy")
 	check(flash.SHADOW_OFFSET==Vector2(4,4) and flash.MARK_SPACING==8 and flash.MARK_SHIFT==10,"source pixel shadow and punctuation layout")
-	check(is_equal_approx(flash.logical_font_size,Opening.WakeFlash.font_size_at(dimensions.x)),"font uses original viewport clamp")
+	check(flash.logical_font_size>=24 and flash.logical_font_size<=Opening.WakeFlash.font_size_at(dimensions.x),"longer copy retains the source font ceiling and remains readable")
+	for line: String in flash.text.split("\n"):
+		check(flash.line_width(line)<=flash.size.x*flash.art_scale-24+1,"revised warning line fits the original inner width")
 	for width: int in [280,320,390,430,1440]:
 		root.size=Vector2i(width,dimensions.y); shell.size=Vector2(width,dimensions.y); await frames(2)
-		check(is_equal_approx(flash.logical_font_size,clampf(width*.15,36.4,59.8)),"existing warning responds to resize "+str(width))
+		check(is_equal_approx(Opening.WakeFlash.font_size_at(width),clampf(width*.15,36.4,59.8)),"independent source font clamp remains exact at "+str(width))
+		check(flash.logical_font_size>=24 and flash.logical_font_size<=clampf(width*.15,36.4,59.8),"existing warning respects the source font ceiling after resize "+str(width))
+		for line: String in flash.text.split("\n"):
+			check(flash.line_width(line)<=flash.size.x*flash.art_scale-24+1,"resized revised copy fits the original frame at "+str(width))
 	root.size=dimensions; shell.size=Vector2(dimensions); await frames()
 	var old: WeakRef=weakref(flash)
 	await click(named("OpeningAction_c1_enter_home"))
@@ -97,11 +102,14 @@ func verify_motion(dimensions: Vector2i) -> void:
 	shell._refresh(); await frames()
 	check(count==1 and shell.page_body.find_children("WakeFlash","",true,false).size()==1,"same-page rebuild never duplicates flash owners")
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing wake-flash save tests outside isolated /tmp profile"); quit(2); return
 	create_timer(80).timeout.connect(func(): push_error("Wake flash watchdog"); quit(2))
 	capture_dir=OS.get_environment("WAKE_CAPTURE_DIR")
 	if not capture_dir.is_empty(): DirAccess.make_dir_recursive_absolute(capture_dir)
+	var reusable: Control=Opening.WakeFlash.new()
+	check(reusable.text=="起床蠢货\n！！！","independent source presentation retains its original default copy")
+	reusable.free()
 	check(is_equal_approx(Opening.WakeFlash.CYCLE_SECONDS,.42),"source cycle remains420ms")
 	check(Opening.WakeFlash.sample_at(0).is_equal_approx(Vector2(1,1)),"source0% keyframe")
 	check(Opening.WakeFlash.sample_at(.1051).is_equal_approx(Vector2(.62,1.03)),"steps2 reaches half interpolation at105ms")

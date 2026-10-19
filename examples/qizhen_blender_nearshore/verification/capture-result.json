@@ -1,0 +1,39 @@
+{
+  "actual_glb_boat": true,
+  "actual_glb_environment": true,
+  "fps": 30,
+  "frames": 720,
+  "input_only": true,
+  "invalid_progress_jumps": 0,
+  "maximum_frame_distance": 9.41541194915771,
+  "maximum_frame_turn_radians": 0.0500000000000007,
+  "native_godot_renderer": true,
+  "no_teleports": true,
+  "render_seconds": 57.407,
+  "result": {
+    "active_time": 20.3499999999995,
+    "collisions": 0,
+    "completed_at": [
+      3.89999999999999,
+      8.71666666666681,
+      21.3833333333328
+    ],
+    "damage": 0,
+    "distance": 2094.49475397012,
+    "elapsed": 21.3833333333328,
+    "inspected": false,
+    "position": [
+      5995.53125,
+      2840.09765625
+    ],
+    "progress": 2,
+    "recovered": true,
+    "status": "won",
+    "strokes": 31,
+    "swan_charges": 0,
+    "swan_warnings": 0
+  },
+  "rig_accepted": 31,
+  "rig_started": 30,
+  "video_seconds": 24
+}

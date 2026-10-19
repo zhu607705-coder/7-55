@@ -870,6 +870,13 @@ function normalizeQizhenLake(
   const lockerOpened = netCombined
     || migratedLegacyChase
     || booleanOr(saved.lockerOpened, initial.lockerOpened);
+  // Read the raw receipt before phase-based recovery derives net/locker facts.
+  // Persist explicit false too, so a phase-only save cannot acquire credit on
+  // its second load. Completed assembly closes the credit without minting items.
+  const legacyNetMaterialsConsumed = !magneticRodCombined && booleanOr(
+    saved.legacyNetMaterialsConsumed,
+    saved.netCombined === true && saved.lockerOpened === true && saved.magneticRodCombined !== true
+  );
   const paperCaptured = reachedChase
     || migratedLegacyChase
     || booleanOr(saved.paperCaptured, initial.paperCaptured);
@@ -978,6 +985,7 @@ function normalizeQizhenLake(
     directPaperCastFailures: nonNegativeIntegerOr(saved.directPaperCastFailures, initial.directPaperCastFailures),
     lockerOpened,
     netCombined,
+    legacyNetMaterialsConsumed,
     feedTinRetrieved,
     feedTinOpened,
     fishCaught,

@@ -1,24 +1,18 @@
 import fs from 'node:fs';
-import os from 'node:os';
+import {createNativeTestSandbox} from './native_test_sandbox.mjs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 
 // Keep prototype tests away from the user's real SevenFiftyFiveNative saves.
-if (process.platform !== 'linux') throw Error('This isolated QA runner currently requires Linux/XDG.');
 const project = path.resolve(import.meta.dirname, '..');
 const godot = process.env.GODOT_BIN || 'godot';
 const names = ['route', 'pursuit', 'feedback', 'presentation', 'beam', 'integration', 'step_pose', 'gait', 'camera_input'];
 const results = [];
 for (const name of names) {
-  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), '755-endless-stair-'));
-  const env = {...process.env};
-  for (const [key, folder] of Object.entries({HOME:'home', XDG_DATA_HOME:'data', XDG_CONFIG_HOME:'config', XDG_CACHE_HOME:'cache', XDG_STATE_HOME:'state'})) {
-    fs.mkdirSync(path.join(sandbox, folder));
-    env[key] = path.join(sandbox, folder);
-  }
-  env.GODOT_TEST_USER_DATA_DIR = path.join(sandbox, 'data', 'SevenFiftyFiveNative');
+  const fixture = createNativeTestSandbox(project);
+  const env = fixture.env;
   const script = `test_endless_stair_${name}.gd`;
-  const run = spawnSync(godot, ['--headless', '--audio-driver', 'Dummy', '--path', project, '--script', `res://tests/${script}`, '--', '--fresh'], {
+  const run = spawnSync(godot, ['--headless', '--audio-driver', 'Dummy', '--path', fixture.project, '--script', `res://tests/${script}`, '--', '--fresh'], {
     env, encoding:'utf8', timeout:300000, maxBuffer:16 * 1024 * 1024
   });
   const output = (run.stdout || '') + (run.stderr || '');

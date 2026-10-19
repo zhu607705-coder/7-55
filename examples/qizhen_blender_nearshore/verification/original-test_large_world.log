@@ -1,0 +1,35 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+PASS: real world dimensions exceed old fixed viewport
+PASS: spawn is on navigable water
+PASS: goal on clear water: 01  离开教学浮码头
+PASS: goal on clear water: 02  找到漂浮信号
+PASS: goal on clear water: 03  沿岛西侧南下
+PASS: goal on clear water: 04  取回南端防水袋
+PASS: goal on clear water: 05  东支水道返航
+PASS: goal on clear water: 06  通过岛东窄口
+PASS: goal on clear water: 07  避开黑天鹅返航
+PASS: goal on clear water: 08  横渡中央水面
+PASS: goal on clear water: 09  安全靠回浮码头
+PASS: idle cannot progress or auto-complete
+PASS: pause freezes physics and objectives
+ROUTE {"active_time":0.0166666666666667,"collisions":0,"completed_at":[],"damage":0,"distance":1.16020959615707,"elapsed":0.0166666666666667,"inspected":false,"position":[5998.98486328125,2850.56176757812],"progress":0,"recovered":false,"status":"running","strokes":1,"swan_charges":0,"swan_warnings":0}
+ROUTE {"active_time":10.0166666666667,"collisions":0,"completed_at":[],"damage":0,"distance":2326.30191415548,"elapsed":10.0166666666667,"inspected":false,"position":[4576.69873046875,4637.45947265625],"progress":0,"recovered":false,"status":"running","strokes":22,"swan_charges":0,"swan_warnings":0}
+ROUTE {"active_time":20.0166666666662,"collisions":1,"completed_at":[10.9083333333334],"damage":0,"distance":4350.6026801914,"elapsed":20.0166666666662,"inspected":false,"position":[5380.04736328125,6236.0400390625],"progress":1,"recovered":false,"status":"running","strokes":43,"swan_charges":0,"swan_warnings":0}
+ROUTE {"active_time":30.0166666666656,"collisions":1,"completed_at":[10.9083333333334,29.5083333333323],"damage":0,"distance":6435.65014808113,"elapsed":30.0166666666656,"inspected":true,"position":[5684.8115234375,8256.92578125],"progress":2,"recovered":false,"status":"running","strokes":59,"swan_charges":0,"swan_warnings":0}
+ROUTE {"active_time":40.016666666665,"collisions":1,"completed_at":[10.9083333333334,29.5083333333323],"damage":0,"distance":8757.75466536218,"elapsed":40.016666666665,"inspected":true,"position":[4739.93505859375,10173.1728515625],"progress":2,"recovered":false,"status":"running","strokes":81,"swan_charges":1,"swan_warnings":1}
+ROUTE {"active_time":50.0166666666645,"collisions":1,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313],"damage":0,"distance":11333.8711745613,"elapsed":50.0166666666645,"inspected":true,"position":[4422.12841796875,12572.763671875],"progress":3,"recovered":false,"status":"running","strokes":102,"swan_charges":1,"swan_warnings":1}
+ROUTE {"active_time":60.0166666666639,"collisions":1,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313,59.2416666666639],"damage":0,"distance":13365.8703988029,"elapsed":60.0166666666639,"inspected":true,"position":[5700.62646484375,14006.91015625],"progress":4,"recovered":true,"status":"running","strokes":120,"swan_charges":1,"swan_warnings":1}
+ROUTE {"active_time":70.0166666666685,"collisions":1,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313,59.2416666666639,65.1583333333313],"damage":0,"distance":15730.3729005887,"elapsed":70.0166666666685,"inspected":true,"position":[6497.47216796875,11926.4716796875],"progress":5,"recovered":true,"status":"running","strokes":141,"swan_charges":1,"swan_warnings":1}
+ROUTE {"active_time":80.0166666666764,"collisions":2,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313,59.2416666666639,65.1583333333313,72.5166666666704],"damage":0,"distance":18084.651052369,"elapsed":80.0166666666764,"inspected":true,"position":[6219.36083984375,9640.357421875],"progress":6,"recovered":true,"status":"running","strokes":163,"swan_charges":1,"swan_warnings":2}
+ROUTE {"active_time":90.0166666666844,"collisions":2,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313,59.2416666666639,65.1583333333313,72.5166666666704,80.8583333333438],"damage":0,"distance":20604.2099645271,"elapsed":90.0166666666844,"inspected":true,"position":[5259.93359375,7523.93701171875],"progress":7,"recovered":true,"status":"running","strokes":184,"swan_charges":2,"swan_warnings":2}
+ROUTE {"active_time":100.016666666692,"collisions":2,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313,59.2416666666639,65.1583333333313,72.5166666666704,80.8583333333438,93.9916666666875],"damage":0,"distance":23181.9263123407,"elapsed":100.016666666692,"inspected":true,"position":[5751.185546875,5173.31640625],"progress":8,"recovered":true,"status":"running","strokes":206,"swan_charges":2,"swan_warnings":2}
+ROUTE {"active_time":110.0166666667,"collisions":2,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313,59.2416666666639,65.1583333333313,72.5166666666704,80.8583333333438,93.9916666666875],"damage":0,"distance":25558.903579904,"elapsed":110.0166666667,"inspected":true,"position":[5963.3798828125,2842.7275390625],"progress":8,"recovered":true,"status":"running","strokes":225,"swan_charges":2,"swan_warnings":2}
+PASS: input-only full route succeeds
+PASS: successful route has at least 90 seconds of natural duration
+PASS: route duration is active control, not idle padding
+PASS: route traverses expanded physical world
+PASS: both meaningful stop-and-interact objectives completed
+PASS: all nine stages earned in order
+PASS: successful route does not rely on scraping shoreline
+FINAL {"active_time":110.691666666701,"collisions":2,"completed_at":[10.9083333333334,29.5083333333323,47.0083333333313,59.2416666666639,65.1583333333313,72.5166666666704,80.8583333333438,93.9916666666875,110.691666666701],"damage":0,"distance":25559.9915471098,"elapsed":110.691666666701,"inspected":true,"position":[5963.388671875,2841.6396484375],"progress":8,"recovered":true,"status":"won","strokes":225,"swan_charges":2,"swan_warnings":2}

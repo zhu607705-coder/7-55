@@ -32,7 +32,7 @@ func interact(shell: Control,action: String) -> void:
 		var event:=InputEventKey.new(); event.keycode=KEY_SPACE; event.physical_keycode=KEY_SPACE; event.pressed=down; shell.world_viewport.push_input(event,true)
 	await frames(4)
 func run() -> void:
-	check(OS.get_user_data_dir().begins_with("/tmp/"),"entry persistence uses isolated temporary user data")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"entry persistence uses isolated temporary user data")
 	if failures: quit(1); return
 	state=root.get_node("State")
 	check(state.begin_checkpoint("c3-qizhen-rain-hold"),"load authored source checkpoint as explicit test fixture")

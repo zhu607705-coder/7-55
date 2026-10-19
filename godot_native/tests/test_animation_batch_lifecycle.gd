@@ -21,7 +21,7 @@ func install(value:Dictionary)->void:
 	shell.c3_narrative_host.set_process(false);shell.library_story_host.set_process(false)
 	shell.world._process(0)
 func run()->void:
-	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated profile")
+	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated profile")
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	root.size=Vector2i(1280,720)

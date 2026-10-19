@@ -359,7 +359,7 @@ func check_save_reload() -> void:
 	state.developer_mode = true
 
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"):
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("Refusing phone mechanism save tests outside isolated /tmp HOME/XDG_DATA_HOME")
 		quit(2); return
 	create_timer(90).timeout.connect(func(): push_error("Phone mechanism watchdog"); quit(2))

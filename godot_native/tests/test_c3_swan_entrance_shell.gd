@@ -65,10 +65,13 @@ func capture() -> Dictionary:
 	effect.dismissed.connect(func(reason: String):dismissals.append(reason))
 	effect.event.connect(func(action: String,value: Variant):domain_events.append([action,value]))
 	check(effect.session.source_pose.position==source,"shot freezes the real captured cove actor, not the preview model")
+	check(is_instance_valid(effect.kayak_rig) and effect.kayak_rig.scene_file_path=="res://scenes/objects/kayak_rig.tscn","formal entrance owns the current native kayak scene")
+	check(effect.kayak_rig.get_index()<effect.foreground.get_index() and effect.foreground.get_index()<effect.caption.get_index(),"paper and HUD stay above the native rig")
+	check(effect.kayak_rig.position.is_equal_approx(effect._screen(source)) and is_equal_approx(effect.kayak_rig.rotation,float(effect.session.source_pose.heading)+PI/2),"formal native rig samples frozen source position and heading")
 	return state.last_result.get("world_effect",{})
 
 func run() -> void:
-	if not OS.get_user_data_dir().begins_with("/tmp/"): push_error("Isolated /tmp HOME required"); quit(2); return
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): push_error("Isolated /tmp HOME required"); quit(2); return
 	state=root.get_node("State"); state.developer_mode=false; state.d=state.initial()
 	root.size=Vector2i(1440,900)
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames()
@@ -79,6 +82,7 @@ func run() -> void:
 	var config: Dictionary=capture()
 	if config.is_empty(): await shell.shutdown(); shell.queue_free(); quit(1); return
 	var effect: Control=shell.world_effect
+	var completed_rig: Node2D=effect.kayak_rig
 	var lease: RefCounted=config.session
 	var actor: RefCounted=shell.world.kayak
 	var proof: RefCounted=shell.world.lake_session
@@ -99,6 +103,7 @@ func run() -> void:
 	effect._process(.05); effect._process(.05); effect.skip_intro(); effect.cancel()
 	check(dismissals==["completed"] and domain_events.is_empty() and lease.status=="dismissed","normal end and repeated callbacks dismiss once without any domain event")
 	await frames(3)
+	check(not is_instance_valid(completed_rig),"normal presentation completion frees its entire native rig")
 	check(not is_instance_valid(shell.world_effect) and shell.world_viewport.gui_get_focus_owner()==shell.world,"one tree exit returns world keyboard focus")
 	check(actor.inputs.is_empty() and shell.world.touch_points.is_empty() and shell.world.kayak_mouse_gesture.is_empty(),"no held input transfers to the channel")
 	for frame in range(600):
@@ -153,8 +158,10 @@ func run() -> void:
 	check(dismissals==["skipped"] and state.d.qizhenLake.phase=="swan_chase" and shell.world.kayak.inputs.is_empty(),"resumed shot skips once without reverting capture or stale paddle")
 
 	await fixture(); config=capture(); effect=shell.world_effect
+	var cancelled_rig: Node2D=effect.kayak_rig
 	state.d.qizhenLake.chaseAttempts+=1; effect._process(.05); await frames()
 	check(config.session.status=="cancelled" and dismissals==["cancelled"] and state.d.qizhenLake.chaseAttempts==2,"old attempt cannot continue or mutate a newer chase")
+	check(not is_instance_valid(cancelled_rig),"cancelled presentation frees its entire native rig")
 
 	await fixture(); config=capture(); effect=shell.world_effect
 	state.d=state.d.duplicate(true); effect._process(.05); await frames()
