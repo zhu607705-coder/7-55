@@ -1,0 +1,103 @@
+{
+  "kind": "Complete native validation plus exact source-fixture freshness follow-up",
+  "completedAt": "2026-10-19T16:05:10.620022+00:00",
+  "engine": "Godot v4.7.2.stable.official.ed1daf0bf",
+  "fullRun": {
+    "startedAt": "2026-10-19T15:34:58.953Z",
+    "finishedAt": "2026-10-19T16:03:29.403Z",
+    "processExitCode": 1,
+    "stages": 417,
+    "passed": 416,
+    "failed": [
+      "Source catalog tests/export_library_story_source.mjs"
+    ],
+    "scheduledGdChecks": 378,
+    "parsedGdScripts": 731,
+    "resume": false
+  },
+  "focusedRerun": {
+    "processExitCode": 0,
+    "stages": 3,
+    "passed": 3,
+    "failed": [],
+    "labels": [
+      "test_library_rule_action.gd",
+      "test_library_story_sequences.gd",
+      "Source catalog tests/export_library_story_source.mjs"
+    ],
+    "finishedAt": "2026-10-19T16:04:20.309Z"
+  },
+  "effectiveCoverage": {
+    "distinctStages": 417,
+    "passed": 417,
+    "failed": 0,
+    "qualification": "Coverage combines original full run plus focused reruns; this is not a claim that the original uninterrupted run had 417 passes."
+  },
+  "runtime": {
+    "start": "9ce696546f462fb62fc92e372673d279ed39c6a408bc258ee9c596e4ff8d9549",
+    "end": "9ce696546f462fb62fc92e372673d279ed39c6a408bc258ee9c596e4ff8d9549",
+    "fileCount": 2834,
+    "unchanged": true
+  },
+  "validationCode": {
+    "start": "c79f74716bd3d54503dd0939e56f2191abe92af3bb42b411e4a30b6e13a53763",
+    "end": "c79f74716bd3d54503dd0939e56f2191abe92af3bb42b411e4a30b6e13a53763",
+    "unchanged": true,
+    "fileCount": 556
+  },
+  "fixtureRefresh": {
+    "at": "2026-10-19T16:04:02.461073+00:00",
+    "kind": "Strict source-metadata freshness refresh, unchanged generated dialogue and controller model",
+    "generator": "node godot_native/tests/export_library_story_source.mjs",
+    "diffs": [
+      {
+        "path": "/sources/0/sha256",
+        "before": "80423741ed73b814ed44c219ceba376bebea60d2e988686f1baa6df09bc78df0",
+        "after": "febe2a13d2bb2f5d473890bb20d53cb253e7b7e8a87e98fc12932ff00d5f6eb4"
+      }
+    ],
+    "fixtureSha256": "f9ed9bf6d0272c54f6755d6b0a20219ff073eed90dfd3665efa3193d136b6c9f"
+  },
+  "sourceTree": {
+    "localCommit": "9dbaa14472985097801a5c676022c06326ac7297",
+    "remoteCommit": "bc5dcd5c53e1bf59244d11450baa08eafcad6667",
+    "sameTree": "4e44ba4238563de0d1fe38fb2dab5dd42b0e5205",
+    "qualification": "Native byte inventories prove same runtime input across run. Full run started on earlier HEAD plus uncommitted reviewed native changes; Web-only fix and metadata fixture refresh are recorded separately. Fixture one-SHA refresh requires follow-up source commit."
+  },
+  "evidence": {
+    "codex-755-release-full-native.json": {
+      "path": "/tmp/codex-755-release-full-native.json",
+      "sha256": "5c0397d5b9a89a69d7570a0dd16ba183e367c21d41508039a500d0cde1ea8569"
+    },
+    "codex-755-release-full-native.json.meta.json": {
+      "path": "/tmp/codex-755-release-full-native.json.meta.json",
+      "sha256": "1199da2c07b9aed3cb5db6e85e307b5665e0aa4d4dd1c0bbf143ced844d9039a"
+    },
+    "codex-755-release-full-native.log": {
+      "path": "/tmp/codex-755-release-full-native.log",
+      "sha256": "8f8a2a07b58fcc67f71357b3551581ee4adcd1661c90696791c3678ab9714501"
+    },
+    "codex-755-release-library-freshness-rerun.json": {
+      "path": "/tmp/codex-755-release-library-freshness-rerun.json",
+      "sha256": "fc4c14083cccec9a91952daec481ac8f4ec25aa46373991bc03457f1776618fd"
+    },
+    "codex-755-release-library-freshness-rerun.log": {
+      "path": "/tmp/codex-755-release-library-freshness-rerun.log",
+      "sha256": "c0d7685f4c4bfef75db1e7a1133738da6433979fa05cdfcc1acf7f4022f368fc"
+    },
+    "codex-755-release-full-native-start-sha.json": {
+      "path": "/tmp/codex-755-release-full-native-start-sha.json",
+      "sha256": "6d2850306a7a449592657d3edd2712ba1f556b3aa8af98939f9a5fedef53026a"
+    },
+    "codex-755-release-full-native-end-sha.json": {
+      "path": "/tmp/codex-755-release-full-native-end-sha.json",
+      "sha256": "49be1778dd565bf9bce6d7e5cc78b3881fe06feec1b9b25843e8fe5e1d584a95"
+    },
+    "codex-755-release-library-source-refresh.json": {
+      "path": "/tmp/codex-755-release-library-source-refresh.json",
+      "sha256": "25b6f124eea4fa0f1e655e220ca6306aa1665c0eb0de65e0502972c9bc5f43ef"
+    }
+  },
+  "archive": "godot_native/exports/verification/release_20261020/full_native",
+  "limitations": "Automated headless validation; packaged artifact, actual GUI, audible and physical-device acceptance are separate. Web-only fix during run is excluded from native runtime digest; later source oracles used frozen final Web bytes. Original failing run is retained, not rewritten as uninterrupted 417 PASS."
+}
