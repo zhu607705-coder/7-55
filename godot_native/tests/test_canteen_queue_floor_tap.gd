@@ -70,6 +70,7 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 		legal=legal and w.can_stand(w.player);transform_ok=transform_ok and w._floor_transform_current()
 		continuous=continuous and previous.distance_to(w.player)<=165*.05+.001;count+=1
 	check(w._floor_status=="arrived" and Metrics.foot_rect(w.player).get_center().distance_to(expected)<.002,"live Main frames arrive at selected full-foot center")
+	check(w.walk_clock==0,"arrival retires walking pixels before the next root input")
 	check(legal and continuous and transform_ok,"every frame preserves exact feet, native speed and camera ownership")
 	check(w.collisions==geometry and story()==before and actions.size()==action_count,"route changes no geometry, story, inventory, wallet or interaction")
 	await snapshot(str(records.size())+"-arrived")

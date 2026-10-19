@@ -1,0 +1,607 @@
+{
+  "source_sha256": "b22fbf7a8796bb0b0f646a433a2d482e5bd959ded485b7be805f1e8d56312362",
+  "level": {
+    "id": "stair_b",
+    "title": "环形错层楼梯井",
+    "startNodeId": "B_START",
+    "exitNodeId": "B_EXIT",
+    "nodes": [
+      {
+        "id": "B_START",
+        "ownerId": "level",
+        "position": [
+          -5.2,
+          0.9,
+          1.8
+        ],
+        "safe": true
+      },
+      {
+        "id": "B_LOWER_LOW",
+        "ownerId": "b_lower_stair",
+        "position": [
+          -2.15,
+          0.9,
+          1.35
+        ],
+        "safe": false
+      },
+      {
+        "id": "B_LOWER_HIGH",
+        "ownerId": "b_lower_stair",
+        "position": [
+          1.35,
+          2.7,
+          1.35
+        ],
+        "safe": false
+      },
+      {
+        "id": "B_MID_LIFT_LOW",
+        "ownerId": "b_mid_lift",
+        "position": [
+          -0.3035,
+          1.7,
+          2.7731
+        ],
+        "safe": false
+      },
+      {
+        "id": "B_MID_LIFT_HIGH",
+        "ownerId": "level",
+        "position": [
+          0.85,
+          3.9,
+          1.75
+        ],
+        "safe": true
+      },
+      {
+        "id": "B_UPPER_LOW",
+        "ownerId": "b_upper_stair",
+        "position": [
+          2,
+          3.9,
+          0.8
+        ],
+        "safe": false
+      },
+      {
+        "id": "B_UPPER_HIGH",
+        "ownerId": "b_upper_stair",
+        "position": [
+          0.3043,
+          5.6,
+          3.5138
+        ],
+        "safe": false
+      },
+      {
+        "id": "B_HIGH_ISLAND",
+        "ownerId": "level",
+        "position": [
+          4.7138,
+          8.5437,
+          5.204
+        ],
+        "safe": true
+      },
+      {
+        "id": "B_EXIT_SLIDE",
+        "ownerId": "b_exit_slide",
+        "position": [
+          8.1138,
+          8.5437,
+          5.7
+        ],
+        "safe": false
+      },
+      {
+        "id": "B_EXIT",
+        "ownerId": "level",
+        "position": [
+          4.7138,
+          8.5437,
+          7.9
+        ],
+        "safe": true
+      }
+    ],
+    "physicalEdges": [
+      {
+        "id": "b_edge_start_lower",
+        "a": "B_START",
+        "b": "B_LOWER_LOW"
+      },
+      {
+        "id": "b_edge_lower_span",
+        "a": "B_LOWER_LOW",
+        "b": "B_LOWER_HIGH"
+      },
+      {
+        "id": "b_edge_landing_upper",
+        "a": "B_MID_LIFT_HIGH",
+        "b": "B_UPPER_LOW"
+      },
+      {
+        "id": "b_edge_upper_span",
+        "a": "B_UPPER_LOW",
+        "b": "B_UPPER_HIGH"
+      }
+    ],
+    "mechanisms": [
+      {
+        "id": "b_lower_stair",
+        "kind": "rotate",
+        "stateCount": 4,
+        "initialState": 1,
+        "pivot": [
+          -2.15,
+          0.3,
+          1.35
+        ],
+        "axis": "y",
+        "stepSize": 0,
+        "label": "下层旋转梯"
+      },
+      {
+        "id": "b_mid_lift",
+        "kind": "vertical",
+        "stateCount": 3,
+        "initialState": 0,
+        "pivot": [
+          -0.3035,
+          1.52,
+          2.7731
+        ],
+        "axis": "y",
+        "stepSize": 1.1,
+        "label": "中层升降台"
+      },
+      {
+        "id": "b_upper_stair",
+        "kind": "rotate",
+        "stateCount": 4,
+        "initialState": 0,
+        "pivot": [
+          2,
+          3.3,
+          0.8
+        ],
+        "axis": "y",
+        "stepSize": 0,
+        "label": "上层旋转梯"
+      },
+      {
+        "id": "b_exit_slide",
+        "kind": "horizontal",
+        "stateCount": 3,
+        "initialState": 0,
+        "pivot": [
+          8.1138,
+          8.3637,
+          5.7
+        ],
+        "axis": "x",
+        "stepSize": -1.7,
+        "label": "出口横移台"
+      }
+    ],
+    "mechanismEdges": [
+      {
+        "id": "b_edge_lift_landing",
+        "a": "B_MID_LIFT_LOW",
+        "b": "B_MID_LIFT_HIGH",
+        "mechanismId": "b_mid_lift",
+        "requiredState": 2
+      },
+      {
+        "id": "b_edge_island_slide",
+        "a": "B_HIGH_ISLAND",
+        "b": "B_EXIT_SLIDE",
+        "mechanismId": "b_exit_slide",
+        "requiredState": 2
+      },
+      {
+        "id": "b_edge_slide_exit",
+        "a": "B_EXIT_SLIDE",
+        "b": "B_EXIT",
+        "mechanismId": "b_exit_slide",
+        "requiredState": 2
+      }
+    ],
+    "connectors": [
+      {
+        "id": "b_seam_lower_high",
+        "ownerId": "b_lower_stair",
+        "worldPosition": {
+          "x": 1.35,
+          "y": 2.7,
+          "z": 1.35
+        },
+        "worldTangent": {
+          "x": 1,
+          "y": 0,
+          "z": 0
+        },
+        "nodeId": "B_LOWER_HIGH",
+        "views": [
+          "south_east",
+          "south_west",
+          "top_oblique"
+        ],
+        "linkGroup": "B_LOWER_LINK",
+        "projectionMode": "perspective"
+      },
+      {
+        "id": "b_seam_lift_low",
+        "ownerId": "b_mid_lift",
+        "worldPosition": {
+          "x": -0.3035,
+          "y": 1.7,
+          "z": 2.7731
+        },
+        "worldTangent": {
+          "x": 0,
+          "y": 0,
+          "z": -1
+        },
+        "nodeId": "B_MID_LIFT_LOW",
+        "views": [
+          "south_east",
+          "south_west",
+          "top_oblique"
+        ],
+        "linkGroup": "B_LOWER_LINK",
+        "projectionMode": "perspective"
+      },
+      {
+        "id": "b_seam_upper_high",
+        "ownerId": "b_upper_stair",
+        "worldPosition": {
+          "x": 0.3043,
+          "y": 5.6,
+          "z": 3.5138
+        },
+        "worldTangent": {
+          "x": -0.529919,
+          "y": 0,
+          "z": 0.848048
+        },
+        "nodeId": "B_UPPER_HIGH",
+        "views": [
+          "south_east",
+          "south_west",
+          "top_oblique"
+        ],
+        "linkGroup": "B_UPPER_LINK",
+        "projectionMode": "perspective"
+      },
+      {
+        "id": "b_seam_high_island",
+        "ownerId": "level",
+        "worldPosition": {
+          "x": 4.7138,
+          "y": 8.5437,
+          "z": 5.204
+        },
+        "worldTangent": {
+          "x": -0.848048,
+          "y": 0,
+          "z": -0.529919
+        },
+        "nodeId": "B_HIGH_ISLAND",
+        "views": [
+          "south_east",
+          "south_west",
+          "top_oblique"
+        ],
+        "linkGroup": "B_UPPER_LINK",
+        "projectionMode": "perspective"
+      }
+    ],
+    "perspectiveLinks": [
+      {
+        "id": "b_link_lower_stair_lift",
+        "linkGroup": "B_LOWER_LINK",
+        "connectorA": "b_seam_lower_high",
+        "connectorB": "b_seam_lift_low"
+      },
+      {
+        "id": "b_link_upper_stair_island",
+        "linkGroup": "B_UPPER_LINK",
+        "connectorA": "b_seam_upper_high",
+        "connectorB": "b_seam_high_island"
+      }
+    ],
+    "ascentViewSequence": [
+      "south_west",
+      "top_oblique"
+    ],
+    "geometry": {
+      "platforms": [
+        {
+          "id": "b_platform_start",
+          "ownerId": "level",
+          "center": [
+            -4.8,
+            0.72,
+            1.6
+          ],
+          "size": [
+            4.8,
+            0.36,
+            2.4
+          ],
+          "material": "stone_lit",
+          "walkable": true
+        },
+        {
+          "id": "b_platform_lower_base",
+          "ownerId": "level",
+          "center": [
+            -2.15,
+            0.72,
+            1.35
+          ],
+          "size": [
+            1.3,
+            0.36,
+            1.5
+          ],
+          "material": "stone_back",
+          "walkable": true
+        },
+        {
+          "id": "b_platform_lift",
+          "ownerId": "b_mid_lift",
+          "center": [
+            -0.3035,
+            1.52,
+            2.7731
+          ],
+          "size": [
+            2,
+            0.36,
+            2
+          ],
+          "material": "structure",
+          "walkable": true
+        },
+        {
+          "id": "b_platform_landing",
+          "ownerId": "level",
+          "center": [
+            0.85,
+            3.72,
+            1.75
+          ],
+          "size": [
+            3.4,
+            0.36,
+            3.2
+          ],
+          "material": "stone_lit",
+          "walkable": true
+        },
+        {
+          "id": "b_platform_island",
+          "ownerId": "level",
+          "center": [
+            4.7138,
+            8.3637,
+            6.404
+          ],
+          "size": [
+            2.2,
+            0.36,
+            2.4
+          ],
+          "material": "stone_lit",
+          "walkable": true
+        },
+        {
+          "id": "b_platform_exit_slide",
+          "ownerId": "b_exit_slide",
+          "center": [
+            8.1138,
+            8.3637,
+            5.7
+          ],
+          "size": [
+            2,
+            0.36,
+            2.6
+          ],
+          "material": "structure",
+          "walkable": true
+        },
+        {
+          "id": "b_platform_exit",
+          "ownerId": "level",
+          "center": [
+            4.7138,
+            8.3637,
+            7.9
+          ],
+          "size": [
+            2,
+            0.36,
+            2
+          ],
+          "material": "stone_lit",
+          "walkable": true
+        },
+        {
+          "id": "b_backdrop_wall",
+          "ownerId": "level",
+          "center": [
+            1,
+            3.5,
+            -5.8
+          ],
+          "size": [
+            22,
+            9,
+            0.4
+          ],
+          "material": "wall_lit",
+          "walkable": false
+        }
+      ],
+      "stairs": [
+        {
+          "id": "b_lower_stair_span",
+          "ownerId": "b_lower_stair",
+          "from": [
+            -2.15,
+            0.9,
+            1.35
+          ],
+          "to": [
+            1.35,
+            2.7,
+            1.35
+          ],
+          "width": 1.34,
+          "steps": 12,
+          "material": "stone_lit"
+        },
+        {
+          "id": "b_upper_stair_span",
+          "ownerId": "b_upper_stair",
+          "from": [
+            2,
+            3.9,
+            0.8
+          ],
+          "to": [
+            0.3043,
+            5.6,
+            3.5138
+          ],
+          "width": 1.34,
+          "steps": 11,
+          "material": "stone_lit"
+        }
+      ],
+      "decorations": [
+        {
+          "id": "b_deco_fire_door",
+          "kind": "fire_door",
+          "position": [
+            4.7138,
+            8.5437,
+            8.75
+          ],
+          "rotationY": 3.141592653589793
+        },
+        {
+          "id": "b_deco_floor_plate",
+          "kind": "floor_plate",
+          "position": [
+            -3.5,
+            3.2,
+            -5.58
+          ]
+        },
+        {
+          "id": "b_deco_lamp_1",
+          "kind": "wall_lamp",
+          "position": [
+            0.5,
+            4.6,
+            -5.58
+          ]
+        },
+        {
+          "id": "b_deco_lamp_2",
+          "kind": "wall_lamp",
+          "position": [
+            5.5,
+            5.4,
+            -5.58
+          ]
+        },
+        {
+          "id": "b_deco_window_1",
+          "kind": "window_frame",
+          "position": [
+            -6,
+            2.6,
+            -5.59
+          ]
+        },
+        {
+          "id": "b_deco_window_2",
+          "kind": "window_frame",
+          "position": [
+            2.5,
+            5.8,
+            -5.59
+          ]
+        },
+        {
+          "id": "b_deco_plant_1",
+          "kind": "potted_plant",
+          "position": [
+            -6.9,
+            0.9,
+            2.6
+          ]
+        },
+        {
+          "id": "b_deco_plant_2",
+          "kind": "potted_plant",
+          "position": [
+            2.3,
+            3.9,
+            3.1
+          ]
+        }
+      ]
+    },
+    "feedback": {
+      "objective": "每升高一段都切换视角，让入口、两段梯段和出口逐层连续。",
+      "firstSeam": "这个视角下，两端连在一起。",
+      "blocked": "通路在这里中断。调整机关或切换视角。",
+      "wrongDirection": "端点位置接近，行进方向没有接上。"
+    }
+  },
+  "camera": {
+    "center": [
+      0,
+      4.5,
+      0.5
+    ],
+    "halfWidth": 9.8,
+    "halfHeight": 5.5,
+    "near": 0.1,
+    "far": 80,
+    "views": {
+      "south_east": {
+        "position": [
+          12,
+          11,
+          14
+        ]
+      },
+      "south_west": {
+        "position": [
+          -12,
+          11,
+          14
+        ]
+      },
+      "top_oblique": {
+        "position": [
+          0,
+          17,
+          12
+        ]
+      }
+    }
+  },
+  "original_frame": "755-html-presentation-site/dist/media-v2/stairs3d-clean.jpg",
+  "provenance": "Extracted original stair_b JSON; no gameplay edits"
+}

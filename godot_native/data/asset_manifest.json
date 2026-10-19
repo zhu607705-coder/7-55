@@ -1,7 +1,7 @@
 {
   "sourceCommit": "39ccde029b0cd25a6011739a4e4f98f8c898b2c3",
-  "assetCount": 718,
-  "totalBytes": 625907429,
+  "assetCount": 719,
+  "totalBytes": 626168607,
   "assets": [
     {
       "path": "assets/anim/.gitkeep",
@@ -3337,6 +3337,11 @@
       "path": "assets/rpg/theater/generated/icons/item_wet_program.png",
       "bytes": 5165,
       "sha256": "9d6a126d6feffa6c220bdfd47709c4da89c4004241ea0e644374b6f3b8850bb8"
+    },
+    {
+      "path": "assets/rpg/theater/generated/objects/theater_ticket_wings_material_v1.png",
+      "bytes": 261178,
+      "sha256": "c429d97973a4cb3c6de66890254cb7fcac5a4f15be1c2dde8adca0e3a772bf0a"
     },
     {
       "path": "assets/rpg/theater/generated/paper/paper_cracked.png",

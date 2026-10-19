@@ -1,0 +1,1090 @@
+{
+  "actions": [
+    {
+      "action": {
+        "delta": -1,
+        "id": "b_lower_stair",
+        "type": "step"
+      },
+      "ticks_ms": 3259
+    },
+    {
+      "action": {
+        "delta": -1,
+        "id": "b_lower_stair",
+        "type": "step"
+      },
+      "ticks_ms": 4084
+    },
+    {
+      "action": {
+        "type": "view",
+        "value": "south_west"
+      },
+      "ticks_ms": 4926
+    },
+    {
+      "action": {
+        "node": "B_MID_LIFT_LOW",
+        "type": "walk"
+      },
+      "ticks_ms": 5767
+    },
+    {
+      "action": {
+        "type": "view",
+        "value": "south_east"
+      },
+      "ticks_ms": 7814
+    },
+    {
+      "action": {
+        "type": "view",
+        "value": "south_west"
+      },
+      "ticks_ms": 8636
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_mid_lift",
+        "type": "step"
+      },
+      "ticks_ms": 9424
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_mid_lift",
+        "type": "step"
+      },
+      "ticks_ms": 10224
+    },
+    {
+      "action": {
+        "node": "B_UPPER_HIGH",
+        "type": "walk"
+      },
+      "ticks_ms": 11056
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_upper_stair",
+        "type": "step"
+      },
+      "ticks_ms": 12449
+    },
+    {
+      "action": {
+        "type": "view",
+        "value": "top_oblique"
+      },
+      "ticks_ms": 13294
+    },
+    {
+      "action": {
+        "node": "B_HIGH_ISLAND",
+        "type": "walk"
+      },
+      "ticks_ms": 14123
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_exit_slide",
+        "type": "step"
+      },
+      "ticks_ms": 15134
+    },
+    {
+      "action": {
+        "delta": 1,
+        "id": "b_exit_slide",
+        "type": "step"
+      },
+      "ticks_ms": 15947
+    },
+    {
+      "action": {
+        "node": "B_EXIT",
+        "type": "walk"
+      },
+      "ticks_ms": 16743
+    }
+  ],
+  "campaign": [
+    {
+      "actions": [
+        {
+          "delta": -1,
+          "id": "b_lower_stair",
+          "type": "step"
+        },
+        {
+          "delta": -1,
+          "id": "b_lower_stair",
+          "type": "step"
+        },
+        {
+          "type": "view",
+          "value": "south_west"
+        },
+        {
+          "node": "B_MID_LIFT_LOW",
+          "type": "walk"
+        },
+        {
+          "type": "view",
+          "value": "south_east"
+        },
+        {
+          "type": "view",
+          "value": "south_west"
+        },
+        {
+          "delta": 1,
+          "id": "b_mid_lift",
+          "type": "step"
+        },
+        {
+          "delta": 1,
+          "id": "b_mid_lift",
+          "type": "step"
+        },
+        {
+          "node": "B_UPPER_HIGH",
+          "type": "walk"
+        },
+        {
+          "delta": 1,
+          "id": "b_upper_stair",
+          "type": "step"
+        },
+        {
+          "type": "view",
+          "value": "top_oblique"
+        },
+        {
+          "node": "B_HIGH_ISLAND",
+          "type": "walk"
+        },
+        {
+          "delta": 1,
+          "id": "b_exit_slide",
+          "type": "step"
+        },
+        {
+          "delta": 1,
+          "id": "b_exit_slide",
+          "type": "step"
+        },
+        {
+          "node": "B_EXIT",
+          "type": "walk"
+        }
+      ],
+      "id": "stair_b"
+    }
+  ],
+  "method": "actual Godot renderer; automated actions; native timings; no text UI",
+  "result_level": "stair_c",
+  "samples": [
+    {
+      "file": "00000.png",
+      "ticks_ms": 2040
+    },
+    {
+      "file": "00001.png",
+      "ticks_ms": 2123
+    },
+    {
+      "file": "00002.png",
+      "ticks_ms": 2207
+    },
+    {
+      "file": "00003.png",
+      "ticks_ms": 2287
+    },
+    {
+      "file": "00004.png",
+      "ticks_ms": 2366
+    },
+    {
+      "file": "00005.png",
+      "ticks_ms": 2445
+    },
+    {
+      "file": "00006.png",
+      "ticks_ms": 2528
+    },
+    {
+      "file": "00007.png",
+      "ticks_ms": 2609
+    },
+    {
+      "file": "00008.png",
+      "ticks_ms": 2692
+    },
+    {
+      "file": "00009.png",
+      "ticks_ms": 2776
+    },
+    {
+      "file": "00010.png",
+      "ticks_ms": 2856
+    },
+    {
+      "file": "00011.png",
+      "ticks_ms": 2936
+    },
+    {
+      "file": "00012.png",
+      "ticks_ms": 3024
+    },
+    {
+      "file": "00013.png",
+      "ticks_ms": 3115
+    },
+    {
+      "file": "00014.png",
+      "ticks_ms": 3198
+    },
+    {
+      "file": "00015.png",
+      "ticks_ms": 3281
+    },
+    {
+      "file": "00016.png",
+      "ticks_ms": 3373
+    },
+    {
+      "file": "00017.png",
+      "ticks_ms": 3454
+    },
+    {
+      "file": "00018.png",
+      "ticks_ms": 3532
+    },
+    {
+      "file": "00019.png",
+      "ticks_ms": 3621
+    },
+    {
+      "file": "00020.png",
+      "ticks_ms": 3701
+    },
+    {
+      "file": "00021.png",
+      "ticks_ms": 3778
+    },
+    {
+      "file": "00022.png",
+      "ticks_ms": 3858
+    },
+    {
+      "file": "00023.png",
+      "ticks_ms": 3942
+    },
+    {
+      "file": "00024.png",
+      "ticks_ms": 4020
+    },
+    {
+      "file": "00025.png",
+      "ticks_ms": 4101
+    },
+    {
+      "file": "00026.png",
+      "ticks_ms": 4188
+    },
+    {
+      "file": "00027.png",
+      "ticks_ms": 4272
+    },
+    {
+      "file": "00028.png",
+      "ticks_ms": 4361
+    },
+    {
+      "file": "00029.png",
+      "ticks_ms": 4443
+    },
+    {
+      "file": "00030.png",
+      "ticks_ms": 4528
+    },
+    {
+      "file": "00031.png",
+      "ticks_ms": 4613
+    },
+    {
+      "file": "00032.png",
+      "ticks_ms": 4697
+    },
+    {
+      "file": "00033.png",
+      "ticks_ms": 4776
+    },
+    {
+      "file": "00034.png",
+      "ticks_ms": 4860
+    },
+    {
+      "file": "00035.png",
+      "ticks_ms": 4945
+    },
+    {
+      "file": "00036.png",
+      "ticks_ms": 5038
+    },
+    {
+      "file": "00037.png",
+      "ticks_ms": 5134
+    },
+    {
+      "file": "00038.png",
+      "ticks_ms": 5235
+    },
+    {
+      "file": "00039.png",
+      "ticks_ms": 5342
+    },
+    {
+      "file": "00040.png",
+      "ticks_ms": 5441
+    },
+    {
+      "file": "00041.png",
+      "ticks_ms": 5526
+    },
+    {
+      "file": "00042.png",
+      "ticks_ms": 5611
+    },
+    {
+      "file": "00043.png",
+      "ticks_ms": 5700
+    },
+    {
+      "file": "00044.png",
+      "ticks_ms": 5786
+    },
+    {
+      "file": "00045.png",
+      "ticks_ms": 5876
+    },
+    {
+      "file": "00046.png",
+      "ticks_ms": 5970
+    },
+    {
+      "file": "00047.png",
+      "ticks_ms": 6059
+    },
+    {
+      "file": "00048.png",
+      "ticks_ms": 6144
+    },
+    {
+      "file": "00049.png",
+      "ticks_ms": 6229
+    },
+    {
+      "file": "00050.png",
+      "ticks_ms": 6314
+    },
+    {
+      "file": "00051.png",
+      "ticks_ms": 6401
+    },
+    {
+      "file": "00052.png",
+      "ticks_ms": 6487
+    },
+    {
+      "file": "00053.png",
+      "ticks_ms": 6574
+    },
+    {
+      "file": "00054.png",
+      "ticks_ms": 6676
+    },
+    {
+      "file": "00055.png",
+      "ticks_ms": 6768
+    },
+    {
+      "file": "00056.png",
+      "ticks_ms": 6855
+    },
+    {
+      "file": "00057.png",
+      "ticks_ms": 6939
+    },
+    {
+      "file": "00058.png",
+      "ticks_ms": 7032
+    },
+    {
+      "file": "00059.png",
+      "ticks_ms": 7124
+    },
+    {
+      "file": "00060.png",
+      "ticks_ms": 7207
+    },
+    {
+      "file": "00061.png",
+      "ticks_ms": 7292
+    },
+    {
+      "file": "00062.png",
+      "ticks_ms": 7377
+    },
+    {
+      "file": "00063.png",
+      "ticks_ms": 7475
+    },
+    {
+      "file": "00064.png",
+      "ticks_ms": 7564
+    },
+    {
+      "file": "00065.png",
+      "ticks_ms": 7656
+    },
+    {
+      "file": "00066.png",
+      "ticks_ms": 7744
+    },
+    {
+      "file": "00067.png",
+      "ticks_ms": 7832
+    },
+    {
+      "file": "00068.png",
+      "ticks_ms": 7931
+    },
+    {
+      "file": "00069.png",
+      "ticks_ms": 8026
+    },
+    {
+      "file": "00070.png",
+      "ticks_ms": 8123
+    },
+    {
+      "file": "00071.png",
+      "ticks_ms": 8217
+    },
+    {
+      "file": "00072.png",
+      "ticks_ms": 8306
+    },
+    {
+      "file": "00073.png",
+      "ticks_ms": 8388
+    },
+    {
+      "file": "00074.png",
+      "ticks_ms": 8491
+    },
+    {
+      "file": "00075.png",
+      "ticks_ms": 8573
+    },
+    {
+      "file": "00076.png",
+      "ticks_ms": 8653
+    },
+    {
+      "file": "00077.png",
+      "ticks_ms": 8756
+    },
+    {
+      "file": "00078.png",
+      "ticks_ms": 8851
+    },
+    {
+      "file": "00079.png",
+      "ticks_ms": 8951
+    },
+    {
+      "file": "00080.png",
+      "ticks_ms": 9070
+    },
+    {
+      "file": "00081.png",
+      "ticks_ms": 9172
+    },
+    {
+      "file": "00082.png",
+      "ticks_ms": 9258
+    },
+    {
+      "file": "00083.png",
+      "ticks_ms": 9355
+    },
+    {
+      "file": "00084.png",
+      "ticks_ms": 9447
+    },
+    {
+      "file": "00085.png",
+      "ticks_ms": 9537
+    },
+    {
+      "file": "00086.png",
+      "ticks_ms": 9620
+    },
+    {
+      "file": "00087.png",
+      "ticks_ms": 9707
+    },
+    {
+      "file": "00088.png",
+      "ticks_ms": 9799
+    },
+    {
+      "file": "00089.png",
+      "ticks_ms": 9883
+    },
+    {
+      "file": "00090.png",
+      "ticks_ms": 9979
+    },
+    {
+      "file": "00091.png",
+      "ticks_ms": 10067
+    },
+    {
+      "file": "00092.png",
+      "ticks_ms": 10154
+    },
+    {
+      "file": "00093.png",
+      "ticks_ms": 10243
+    },
+    {
+      "file": "00094.png",
+      "ticks_ms": 10334
+    },
+    {
+      "file": "00095.png",
+      "ticks_ms": 10438
+    },
+    {
+      "file": "00096.png",
+      "ticks_ms": 10525
+    },
+    {
+      "file": "00097.png",
+      "ticks_ms": 10618
+    },
+    {
+      "file": "00098.png",
+      "ticks_ms": 10707
+    },
+    {
+      "file": "00099.png",
+      "ticks_ms": 10805
+    },
+    {
+      "file": "00100.png",
+      "ticks_ms": 10900
+    },
+    {
+      "file": "00101.png",
+      "ticks_ms": 10986
+    },
+    {
+      "file": "00102.png",
+      "ticks_ms": 11078
+    },
+    {
+      "file": "00103.png",
+      "ticks_ms": 11166
+    },
+    {
+      "file": "00104.png",
+      "ticks_ms": 11256
+    },
+    {
+      "file": "00105.png",
+      "ticks_ms": 11345
+    },
+    {
+      "file": "00106.png",
+      "ticks_ms": 11428
+    },
+    {
+      "file": "00107.png",
+      "ticks_ms": 11512
+    },
+    {
+      "file": "00108.png",
+      "ticks_ms": 11598
+    },
+    {
+      "file": "00109.png",
+      "ticks_ms": 11682
+    },
+    {
+      "file": "00110.png",
+      "ticks_ms": 11764
+    },
+    {
+      "file": "00111.png",
+      "ticks_ms": 11851
+    },
+    {
+      "file": "00112.png",
+      "ticks_ms": 11937
+    },
+    {
+      "file": "00113.png",
+      "ticks_ms": 12026
+    },
+    {
+      "file": "00114.png",
+      "ticks_ms": 12121
+    },
+    {
+      "file": "00115.png",
+      "ticks_ms": 12208
+    },
+    {
+      "file": "00116.png",
+      "ticks_ms": 12298
+    },
+    {
+      "file": "00117.png",
+      "ticks_ms": 12383
+    },
+    {
+      "file": "00118.png",
+      "ticks_ms": 12466
+    },
+    {
+      "file": "00119.png",
+      "ticks_ms": 12549
+    },
+    {
+      "file": "00120.png",
+      "ticks_ms": 12632
+    },
+    {
+      "file": "00121.png",
+      "ticks_ms": 12716
+    },
+    {
+      "file": "00122.png",
+      "ticks_ms": 12800
+    },
+    {
+      "file": "00123.png",
+      "ticks_ms": 12885
+    },
+    {
+      "file": "00124.png",
+      "ticks_ms": 12969
+    },
+    {
+      "file": "00125.png",
+      "ticks_ms": 13057
+    },
+    {
+      "file": "00126.png",
+      "ticks_ms": 13147
+    },
+    {
+      "file": "00127.png",
+      "ticks_ms": 13228
+    },
+    {
+      "file": "00128.png",
+      "ticks_ms": 13311
+    },
+    {
+      "file": "00129.png",
+      "ticks_ms": 13409
+    },
+    {
+      "file": "00130.png",
+      "ticks_ms": 13523
+    },
+    {
+      "file": "00131.png",
+      "ticks_ms": 13623
+    },
+    {
+      "file": "00132.png",
+      "ticks_ms": 13723
+    },
+    {
+      "file": "00133.png",
+      "ticks_ms": 13803
+    },
+    {
+      "file": "00134.png",
+      "ticks_ms": 13882
+    },
+    {
+      "file": "00135.png",
+      "ticks_ms": 13961
+    },
+    {
+      "file": "00136.png",
+      "ticks_ms": 14045
+    },
+    {
+      "file": "00137.png",
+      "ticks_ms": 14139
+    },
+    {
+      "file": "00138.png",
+      "ticks_ms": 14229
+    },
+    {
+      "file": "00139.png",
+      "ticks_ms": 14316
+    },
+    {
+      "file": "00140.png",
+      "ticks_ms": 14396
+    },
+    {
+      "file": "00141.png",
+      "ticks_ms": 14481
+    },
+    {
+      "file": "00142.png",
+      "ticks_ms": 14576
+    },
+    {
+      "file": "00143.png",
+      "ticks_ms": 14657
+    },
+    {
+      "file": "00144.png",
+      "ticks_ms": 14749
+    },
+    {
+      "file": "00145.png",
+      "ticks_ms": 14828
+    },
+    {
+      "file": "00146.png",
+      "ticks_ms": 14909
+    },
+    {
+      "file": "00147.png",
+      "ticks_ms": 14990
+    },
+    {
+      "file": "00148.png",
+      "ticks_ms": 15070
+    },
+    {
+      "file": "00149.png",
+      "ticks_ms": 15149
+    },
+    {
+      "file": "00150.png",
+      "ticks_ms": 15227
+    },
+    {
+      "file": "00151.png",
+      "ticks_ms": 15307
+    },
+    {
+      "file": "00152.png",
+      "ticks_ms": 15391
+    },
+    {
+      "file": "00153.png",
+      "ticks_ms": 15470
+    },
+    {
+      "file": "00154.png",
+      "ticks_ms": 15552
+    },
+    {
+      "file": "00155.png",
+      "ticks_ms": 15630
+    },
+    {
+      "file": "00156.png",
+      "ticks_ms": 15715
+    },
+    {
+      "file": "00157.png",
+      "ticks_ms": 15798
+    },
+    {
+      "file": "00158.png",
+      "ticks_ms": 15880
+    },
+    {
+      "file": "00159.png",
+      "ticks_ms": 15965
+    },
+    {
+      "file": "00160.png",
+      "ticks_ms": 16049
+    },
+    {
+      "file": "00161.png",
+      "ticks_ms": 16134
+    },
+    {
+      "file": "00162.png",
+      "ticks_ms": 16243
+    },
+    {
+      "file": "00163.png",
+      "ticks_ms": 16332
+    },
+    {
+      "file": "00164.png",
+      "ticks_ms": 16417
+    },
+    {
+      "file": "00165.png",
+      "ticks_ms": 16503
+    },
+    {
+      "file": "00166.png",
+      "ticks_ms": 16595
+    },
+    {
+      "file": "00167.png",
+      "ticks_ms": 16678
+    },
+    {
+      "file": "00168.png",
+      "ticks_ms": 16759
+    },
+    {
+      "file": "00169.png",
+      "ticks_ms": 16837
+    },
+    {
+      "file": "00170.png",
+      "ticks_ms": 16927
+    },
+    {
+      "file": "00171.png",
+      "ticks_ms": 17007
+    },
+    {
+      "file": "00172.png",
+      "ticks_ms": 17097
+    },
+    {
+      "file": "00173.png",
+      "ticks_ms": 17184
+    },
+    {
+      "file": "00174.png",
+      "ticks_ms": 17282
+    },
+    {
+      "file": "00175.png",
+      "ticks_ms": 17364
+    },
+    {
+      "file": "00176.png",
+      "ticks_ms": 17450
+    },
+    {
+      "file": "00177.png",
+      "ticks_ms": 17537
+    },
+    {
+      "file": "00178.png",
+      "ticks_ms": 17621
+    },
+    {
+      "file": "00179.png",
+      "ticks_ms": 17702
+    },
+    {
+      "file": "00180.png",
+      "ticks_ms": 17790
+    },
+    {
+      "file": "00181.png",
+      "ticks_ms": 17870
+    },
+    {
+      "file": "00182.png",
+      "ticks_ms": 17955
+    },
+    {
+      "file": "00183.png",
+      "ticks_ms": 18036
+    },
+    {
+      "file": "00184.png",
+      "ticks_ms": 18120
+    },
+    {
+      "file": "00185.png",
+      "ticks_ms": 18202
+    },
+    {
+      "file": "00186.png",
+      "ticks_ms": 18333
+    },
+    {
+      "file": "00187.png",
+      "ticks_ms": 18413
+    },
+    {
+      "file": "00188.png",
+      "ticks_ms": 18495
+    },
+    {
+      "file": "00189.png",
+      "ticks_ms": 18571
+    },
+    {
+      "file": "00190.png",
+      "ticks_ms": 18658
+    },
+    {
+      "file": "00191.png",
+      "ticks_ms": 18737
+    },
+    {
+      "file": "00192.png",
+      "ticks_ms": 18813
+    },
+    {
+      "file": "00193.png",
+      "ticks_ms": 18884
+    },
+    {
+      "file": "00194.png",
+      "ticks_ms": 18957
+    },
+    {
+      "file": "00195.png",
+      "ticks_ms": 19030
+    },
+    {
+      "file": "00196.png",
+      "ticks_ms": 19109
+    },
+    {
+      "file": "00197.png",
+      "ticks_ms": 19181
+    },
+    {
+      "file": "00198.png",
+      "ticks_ms": 19311
+    },
+    {
+      "file": "00199.png",
+      "ticks_ms": 19393
+    },
+    {
+      "file": "00200.png",
+      "ticks_ms": 19485
+    },
+    {
+      "file": "00201.png",
+      "ticks_ms": 19573
+    },
+    {
+      "file": "00202.png",
+      "ticks_ms": 19665
+    },
+    {
+      "file": "00203.png",
+      "ticks_ms": 19750
+    },
+    {
+      "file": "00204.png",
+      "ticks_ms": 19833
+    },
+    {
+      "file": "00205.png",
+      "ticks_ms": 19917
+    },
+    {
+      "file": "00206.png",
+      "ticks_ms": 20002
+    },
+    {
+      "file": "00207.png",
+      "ticks_ms": 20087
+    },
+    {
+      "file": "00208.png",
+      "ticks_ms": 20174
+    },
+    {
+      "file": "00209.png",
+      "ticks_ms": 20259
+    },
+    {
+      "file": "00210.png",
+      "ticks_ms": 20346
+    },
+    {
+      "file": "00211.png",
+      "ticks_ms": 20441
+    },
+    {
+      "file": "00212.png",
+      "ticks_ms": 20542
+    },
+    {
+      "file": "00213.png",
+      "ticks_ms": 20639
+    },
+    {
+      "file": "00214.png",
+      "ticks_ms": 20728
+    },
+    {
+      "file": "00215.png",
+      "ticks_ms": 20839
+    },
+    {
+      "file": "00216.png",
+      "ticks_ms": 20934
+    },
+    {
+      "file": "00217.png",
+      "ticks_ms": 21017
+    },
+    {
+      "file": "00218.png",
+      "ticks_ms": 21101
+    },
+    {
+      "file": "00219.png",
+      "ticks_ms": 21184
+    },
+    {
+      "file": "00220.png",
+      "ticks_ms": 21289
+    },
+    {
+      "file": "00221.png",
+      "ticks_ms": 21378
+    },
+    {
+      "file": "00222.png",
+      "ticks_ms": 21461
+    },
+    {
+      "file": "00223.png",
+      "ticks_ms": 21544
+    }
+  ]
+}

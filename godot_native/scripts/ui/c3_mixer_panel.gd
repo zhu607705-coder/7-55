@@ -52,7 +52,7 @@ func setup(state_reader: Callable, action_sink: Callable, feedback_sink: Callabl
 	if slots.is_empty(): _build()
 	close_emitted = false
 	finishing=false;submitting=false;finish_state={};modulate.a=1.0
-	surface.cancel_presentation();_show_feedback("");prompt_label.text="选择饮料，倒入杯中"
+	surface.cancel_presentation();_show_feedback("");prompt_label.text="选择对应出口，向前推杯接取"
 	visible = true
 	refresh()
 	return true
@@ -102,31 +102,35 @@ func configure_layout(viewport: Vector2, compact: bool) -> void:
 	_place(title_label,Rect2(start+Vector2(14,10),Vector2(w-94,32)),20)
 	_place(exit_button,Rect2(start+Vector2(w-74,8),Vector2(62,44)),16)
 	_place(exit_label,Rect2(exit_button.position,exit_button.size),16);exit_label.text="退出"
-	var side_by_side: bool=compact and not compact_portrait
-	var cup_height: float=180 if compact_portrait else minf(144,h-150) if side_by_side else clampf(h*.265,88,150)
-	var cup: Vector2=start+Vector2(w*.20,h-94) if side_by_side else start+Vector2(w/2,h*.545 if not compact_portrait else h*.535)
-	var ingredient_height: float=cup_height*(100.0/150.0)
-	var bottle_y: float=h*.77 if compact_portrait else h-94 if side_by_side else h*.746
-	var contacts: Array[Vector2]=[]
+	# Three registered outlets share a depth-aware tray. Hit targets use the
+	# actual corresponding selector positions, not an unrelated floating row.
+	var rig_type=preload("res://scripts/presentation/drink_fountain_rig.gd")
+	var short_landscape:bool=compact and not compact_portrait and h<360.0
+	var machine_top:float=64.0 if short_landscape else 96.0
+	var machine_height:float=h-machine_top-68.0
+	var k:float=minf((w-32.0)/rig_type.BOUNDS.size.x,machine_height/rig_type.BOUNDS.size.y)
+	var free_height:float=machine_height-rig_type.BOUNDS.size.y*k
+	var cup:Vector2=start+Vector2(w/2,machine_top+free_height/2.0-rig_type.BOUNDS.position.y*k)
+	var cup_height:float=150*k
+	var ingredient_height:float=36*k
+	var contacts:Array[Vector2]=[]
 	for index in range(3):
-		var cx: float=w*(0.2+index*.3) if compact_portrait else w*(0.48+index*.17) if side_by_side else w*(0.328+index*.174)
-		var foot: Vector2=start+Vector2(cx,bottle_y);contacts.append(foot)
-		var target_width: float=minf(110,w*.275) if compact_portrait else 110
-		var label_top: float=start.y+h*.824+10 if compact_portrait else foot.y+10
-		var label_rect:=Rect2(Vector2(foot.x-target_width/2,label_top),Vector2(target_width,44 if compact_portrait else 28))
-		var rect:=Rect2(foot-Vector2(target_width/2,ingredient_height+6),Vector2(target_width,label_rect.end.y-(foot.y-ingredient_height-6)))
-		_place(slots[index],rect,16)
-		_place(labels[index],label_rect,14)
+		var center:Vector2=cup+rig_type.selector_center(index)*k
+		var foot:Vector2=center+Vector2(0,ingredient_height/2)
+		contacts.append(foot)
+		var target_size:Vector2=Vector2.ONE*maxf(44,ingredient_height+4)
+		_place(slots[index],Rect2(center-target_size/2,target_size),16)
+		_place(labels[index],Rect2(center+Vector2(-42,-50*k-8),Vector2(84,20)),14)
 		labels[index].autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	_place(glass_label,Rect2(Vector2(cup.x-90 if side_by_side else start.x+16,cup.y-cup_height-30),Vector2(180 if side_by_side else w-32,24)),14)
+	_place(glass_label,Rect2(cup+Vector2(-90,-165)*k,Vector2(180,24)),14)
 	# Keep bottle names on their own row. One quiet footer owns either the
 	# operation hint or the latest feedback; the recorded clue stays at the top.
 	var status_rect:=Rect2(start+Vector2(16,h-54),Vector2(w-32,46))
 	_place(status_strip,Rect2(start+Vector2(1,h-62),Vector2(w-2,61)))
 	_place(prompt_label,status_rect,14)
-	prompt_label.text="调配中…" if finishing else "选择饮料，倒入杯中"
+	prompt_label.text="调配中…" if finishing else "选择对应出口，向前推杯接取"
 	prompt_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	_place(shelf_label,Rect2(start+Vector2(16,52),Vector2(w-32,40)),14)
+	_place(shelf_label,Rect2(start+Vector2(218,8),Vector2(w-304,36)) if short_landscape else Rect2(start+Vector2(16,52),Vector2(w-32,40)),14)
 	shelf_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	_place(feedback_label,status_rect,14)
 	feedback_label.visible=not feedback_label.text.is_empty()
@@ -188,7 +192,7 @@ func refresh() -> void:
 		var slot: Dictionary = model.slots[index]
 		# Missing ingredients remain visible and clickable for source feedback.
 		slots[index].disabled = false
-		slots[index].tooltip_text = slot.label
+		slots[index].tooltip_text = "推杯接取"+str(Session.NAMES[slot.id]) if slot.owned else slot.label
 		labels[index].text = str(Session.NAMES[slot.id])
 		labels[index].add_theme_color_override("font_color", Color("f4fbff") if slot.owned else Color("7f8d92"))
 	surface.synchronize(model,read_state.call())
