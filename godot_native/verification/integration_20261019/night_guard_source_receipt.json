@@ -1,0 +1,8 @@
+{
+  "kind": "Source integrity validation receipt",
+  "reportSha256": "835705ca21473af806daa832a478e1566f98485c68d61837cceb3bfd1abe0c36",
+  "originalLocalReport": "/tmp/codex-755-guard-crosspr-static.json",
+  "checks": 2419,
+  "failures": 0,
+  "sourcePatchSummary": "guard_performance_summary.json"
+}

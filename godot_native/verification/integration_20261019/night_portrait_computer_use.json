@@ -1,0 +1,29 @@
+{
+  "kind": "Manual computer-use night portrait acceptance",
+  "checkedAtUtc": "2026-10-19T13:51:37.850161+00:00",
+  "baselineCommit": "e9dcd316d072e2f20378b91437cc7047a3006998",
+  "sourceSha256": {
+    "godot_native/scripts/games/chapter4_guard_navigation.gd": "b00eb337fc3a2b61659ebe40ef3804a89b44b2bbca7d273961fb5302e63df1d1",
+    "godot_native/scripts/world.gd": "d275eb1bc22888c6bfa67d2a3cd72e23f96581973b9a25e6fedb17925f655fda",
+    "godot_native/tests/test_chapter4_guard_navigation.gd": "5877d414bf407761acc2bf25378c88cbb5b86f43f7e721315087107620dad64a",
+    "godot_native/tests/test_chapter4_guard_repath.gd": "dab927c69b57e513fc7d6e0fa3cdc48e953132fff32519b0743aab8fa0c556a4",
+    "godot_native/tests/fixtures/chapter4_guard_navigation_baseline.gd.source.txt": "9fdd07012a8216eaf2dc4548955a121eb9cdd9ffe02c400b80ec49acc4f074dc",
+    "godot_native/scripts/ui/chapter4_phase_layers.gd": "514eee89cfb4ccbc8a4ec0cba60528555c459f449d5c54993f148fab0f5a9ecf",
+    "godot_native/tests/test_chapter4_phase_world.gd": "95c6ebbc0d6bf3bdf83018fa9a92be4e77d8541714b179d1dfbb4238c0375800"
+  },
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "method": "CUA Godot Project Manager Run, real game window, isolated test save and DEV checkpoint111",
+  "observed": [
+    "Walked from A1 reception around planters to north central corridor",
+    "Night portrait photographs and frame follow wall darkness in light mode",
+    "Toggled dark observation: portraits remain dark with surrounding wall, no isolated bright faces",
+    "Restored formal isolated progress using DEV restore and observed 07:55 phone chat list"
+  ],
+  "notClaimed": [
+    "Manual all-floor or complete chapter playthrough",
+    "Unique attribution of prior long CUA response time",
+    "Final chase manual performance acceptance"
+  ],
+  "otherFloorCoverage": "Automated549 lighting, Canvas and biography checks; A2 contains no honor portraits",
+  "ordinaryPlayerSaveTouched": false
+}

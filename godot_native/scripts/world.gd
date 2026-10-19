@@ -765,7 +765,7 @@ func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 	return object_picker.pick(point,targets,inventory_drop)
 
 func _render_context() -> Dictionary:
-	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id",""))}
+	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id","")),"background":background,"mode_mix":mode_mix}
 func _draw() -> void:
 	if is_instance_valid(kayak_visual):kayak_visual.sync()
 	if is_instance_valid(native_dorm):
@@ -1247,7 +1247,7 @@ func _update_guard(delta: float) -> void:
 				guard_navigation.setup(walls,world_size.x,world_size.y)
 				guard_navigation_key=nav_key
 				guard_repath_ms=0
-			if guard_clock_ms>=guard_repath_ms or guard_navigation_target==Vector2.INF or guard_position.distance_to(guard_navigation_target)<10:
+			if guard_clock_ms>=guard_repath_ms or guard_position.distance_to(guard_navigation_target)<10:
 				var path: Array=guard_navigation.path(guard_position,foot if same_floor else Vector2(1001,214))
 				guard_navigation_target=path[0] if not path.is_empty() else Vector2.INF
 				guard_repath_ms=guard_clock_ms+260

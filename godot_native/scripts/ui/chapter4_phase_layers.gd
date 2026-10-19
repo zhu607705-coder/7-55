@@ -18,6 +18,8 @@ var cover_open: bool=false
 var oil_ms: float=9999
 var clock_key: String=""
 var clock_ms: float=0
+var portrait_images:Dictionary={}
+var portrait_ambient:Dictionary={}
 func _init() -> void:
 	source=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter4-three-floor-maze.layout.json"))
 	var manifest: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/rpg/npcs/finale/finale_npc_manifest.json"))
@@ -241,19 +243,72 @@ func support_pose(person:Dictionary,context:Dictionary) -> Dictionary:
 		pose.time_ms=0.0
 	return pose
 
+func _portrait_image(texture:Texture2D)->Image:
+	if texture==null:return null
+	var key:String=texture.resource_path
+	if not portrait_images.has(key):
+		var image:Image=texture.get_image()
+		if image!=null and image.is_compressed() and image.decompress()!=OK:image=null
+		portrait_images[key]=image
+	return portrait_images[key]
+func _luminance(color:Color)->float:return color.r*.2126+color.g*.7152+color.b*.0722
+func _sample_portrait_region(image:Image,bounds:Rect2)->Dictionary:
+	var colors:Color=Color(0,0,0,0);var values:Array[float]=[]
+	for y in range(9):
+		for x in range(9):
+			var point:Vector2=bounds.position+bounds.size*Vector2((x+.5)/9.0,(y+.5)/9.0)
+			var color:Color=image.get_pixel(clampi(int(point.x),0,image.get_width()-1),clampi(int(point.y),0,image.get_height()-1))
+			if color.a<.5:continue
+			colors+=color;values.append(_luminance(color))
+	if values.is_empty():return {"color":Color.BLACK,"bright":0.0}
+	values.sort()
+	return {"color":colors/float(values.size()),"bright":values[int((values.size()-1)*.9)]}
+func portrait_tint(owner:RefCounted,context:Dictionary,state:Dictionary,person:Dictionary)->Color:
+	if str(state.chapter4.timeState) not in ["2245_opening","1850_evening","2245_maintenance","0754_blackout"]:return Color.WHITE
+	var plate:Texture2D=context.get("background")
+	var portrait:Texture2D=owner.texture(person.portraitUrl)
+	var image:Image=_portrait_image(plate);var photo:Image=_portrait_image(portrait)
+	if image==null or photo==null:return Color(.25,.28,.32)
+	var key:String=plate.resource_path+":"+str(person.targetId)
+	if not portrait_ambient.has(key):
+		var frame:Rect2=Room.rect(person.frameBounds);var wall:Color=Color(0,0,0,0)
+		# Sample the wall around the frame, excluding its photograph and gold
+		# trim. Bright source photos cannot act as their own light source.
+		for strip:Rect2 in [Rect2(frame.position-Vector2(8,0),Vector2(6,frame.size.y)),Rect2(Vector2(frame.end.x+2,frame.position.y),Vector2(6,frame.size.y)),Rect2(frame.position-Vector2(0,8),Vector2(frame.size.x,6)),Rect2(Vector2(frame.position.x,frame.end.y+2),Vector2(frame.size.x,6))]:
+			wall+=_sample_portrait_region(image,strip).color*.25
+		var source_light:float=_sample_portrait_region(image,Room.rect(person.imageBounds)).bright
+		var target:float=minf(_luminance(wall),source_light)*.9
+		var photo_light:float=_sample_portrait_region(photo,Rect2(Vector2.ZERO,photo.get_size())).bright
+		var gain:float=clampf(target/maxf(.01,photo_light),0,1)
+		var peak:float=maxf(.01,maxf(wall.r,maxf(wall.g,wall.b)))
+		portrait_ambient[key]=Color(wall.r/peak*gain,wall.g/peak*gain,wall.b/peak*gain)
+	return portrait_ambient[key]
+func _portrait_environment(owner:RefCounted,canvas:CanvasItem,context:Dictionary,state:Dictionary,covered:Rect2)->void:
+	owner._world(canvas,context)
+	# World applies this wash before dynamic layers. Repeat it only on the
+	# pixels replaced by the portrait, at the same crossfade as the wall.
+	var mix_value:float=float(context.get("mode_mix",1.0 if state.chapter4.mode=="dark" else 0.0))
+	if mix_value>0:canvas.draw_rect(covered,Color(.03,.15,.26,mix_value*.3))
+	if state.chapter4.floor=="A1" and state.chapter4.phase in ["blackout_light_grid","final_chase"]:
+		for i in range(source.lightGridRuntime.visualRegions.size()):
+			var overlap:Rect2=covered.intersection(Room.rect(source.lightGridRuntime.visualRegions[i].bounds))
+			if overlap.has_area():canvas.draw_rect(overlap,Color("020711",.08 if (int(state.chapter4.lightGrid.mask)&(1<<i))!=0 else .7))
+	canvas.draw_set_transform(Vector2.ZERO)
 func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	for person in honor_figures(state):
 		if not _depth(context,162 if int(person.floor)==1 else 842,front): continue
 		var frame: Rect2=Room.rect(person.frameBounds); var image_bounds: Rect2=Room.rect(person.imageBounds)
+		var tint:Color=portrait_tint(owner,context,state,person)
 		Picker.record(canvas,[str(person.targetId)],frame)
 		owner._world(canvas,context)
-		if person.get("drawRuntimeFrame",false): canvas.draw_rect(frame,Color("281f18")); canvas.draw_rect(frame,Color("b8964d"),false,3)
-		canvas.draw_rect(image_bounds,Color("17191d")); canvas.draw_set_transform(Vector2.ZERO)
+		if person.get("drawRuntimeFrame",false): canvas.draw_rect(frame,Color("281f18")*tint); canvas.draw_rect(frame,Color("b8964d")*tint,false,3)
+		canvas.draw_rect(image_bounds,Color("17191d")*tint); canvas.draw_set_transform(Vector2.ZERO)
 		var portrait: Texture2D=owner.texture(person.portraitUrl)
 		if portrait:
 			# Keep the original image undistorted within the source matte bounds.
 			var dimensions: Vector2=portrait.get_size(); dimensions*=minf(image_bounds.size.x/dimensions.x,image_bounds.size.y/dimensions.y)
-			canvas.draw_texture_rect(portrait,Rect2(Vector2(context.origin)+(image_bounds.get_center()-dimensions/2)*float(context.zoom),dimensions*float(context.zoom)),false)
+			canvas.draw_texture_rect(portrait,Rect2(Vector2(context.origin)+(image_bounds.get_center()-dimensions/2)*float(context.zoom),dimensions*float(context.zoom)),false,tint)
+		_portrait_environment(owner,canvas,context,state,frame if person.get("drawRuntimeFrame",false) else image_bounds)
 	for person in support_people(state):
 		var p: Vector2=Room.point(person.position)
 		if _depth(context,p.y,front):
