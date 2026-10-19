@@ -108,6 +108,8 @@ func campaign(r) -> void:
 	if not r.check(r.game_results.size()==1 and r.state.d.chapter4.chaseStairwellStage=="complete","actual chase movement crosses both landings and emits escape proof"): return
 	r.trace.append({"nativeActivity":"chase_stairwell","result":r.game_results[0].duplicate(true)})
 	free_game(r)
+	await r.boundary("chapter4 chase A2 exit")
+	r.check(r.state.d.chapter4.floor=="A2" and r.state.d.chapter4.chaseStairwellStage=="complete" and not r.state.d.chapter4.factIds.has("room202_route_reached"),"ordinary chase-exit reload preserves A2 without granting later story progress")
 	await act(r,"c4_reach202")
 	await act(r,"c4_final_minute")
 	await act(r,"c4_return_stair")
@@ -291,7 +293,7 @@ func solve_chase(r) -> void:
 		r.state.act(str(owned.config.on_failure),proof)
 		r.check(false,"continuous source route was captured")
 	)
-	for target in [Vector2(989,826),Vector2(989,426),Vector2(784,426),Vector2(784,207),Vector2(715,207),Vector2(715,57)]:
+	for target in owned.geometry.route.slice(1):
 		# Pointer positions come from the current visible camera, not the retired
 		# full-plate miniature. Held pointer moves track the same world target.
 		var view:Control=owned.chase_view

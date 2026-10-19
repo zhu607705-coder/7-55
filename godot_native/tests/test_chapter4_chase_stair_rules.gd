@@ -1,5 +1,6 @@
 extends SceneTree
 const Model=preload("res://scripts/games/chapter4_chase_stair_model.gd")
+const Space=preload("res://scripts/games/chapter4_chase_space.gd")
 const Chapter=preload("res://scripts/chapters/chapter4.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Capture=preload("res://scripts/presentation/chapter4_guard_capture.gd")
@@ -17,8 +18,14 @@ func path_from(start:int,targets:Array)->Array:
 		while at.distance_to(target)>.01:
 			at=at.move_toward(target,20.8);clock+=100;path.append({"x":at.x,"y":at.y,"t":clock})
 	return path
+func new_path_from(space:RefCounted,start:int,targets:Array)->Array:
+	var path:Array=[];var at:Vector2=space.vec(space.layout.landings[start].spawn);var clock:=0.0
+	for target:Vector2 in targets:
+		while at.distance_to(target)>.01:
+			at=at.move_toward(target,20.8);clock+=100;path.append({"x":at.x,"y":at.y,"t":clock})
+	return path
 func proof(config:Dictionary,path:Array,landing:int=-1)->Dictionary:
-	return {"kind":"chase_stairwell","session":config.session,"expectedAttempt":config.expectedAttempt,"path":path.duplicate(true),"elapsedMs":path.back().t,"landing":landing,"escaped":landing==2}
+	return {"kind":"chase_stairwell","session":config.session,"geometryVersion":config.get("geometryVersion",""),"expectedAttempt":config.expectedAttempt,"path":path.duplicate(true),"elapsedMs":path.back().t,"landing":landing,"escaped":landing==2}
 func drive(game:Control,targets:Array):
 	for target:Vector2 in targets:
 		var safety:=0
@@ -55,6 +62,12 @@ func run():
 	check(not Model.valid_trace(bad,0,1,false,first.back().t),"Malformed coordinate rejected without casting")
 	bad=second.duplicate(true);bad[0].x+=.1
 	check(not Model.valid_trace(bad,0,2,false,second.back().t,first),"Accepted prefix cannot be rewritten")
+	var space:=Space.new()
+	# Legacy source model tests above remain independent. Controller/actual-input
+	# checks below now traverse the authorized new space with unchanged rules.
+	first=new_path_from(space,0,space.route.slice(1,9))
+	second=new_path_from(space,0,space.route.slice(1,17))
+	complete=new_path_from(space,0,space.route.slice(1))
 	var state:Node=root.get_node("State");state.developer_mode=true;state.begin_checkpoint("c4-755-chase")
 	var chapter:RefCounted=Chapter.new();var s:Dictionary=state.d.duplicate(true)
 	var entered:Dictionary=chapter.dispatch(s,"c4_chase",{"expectedAttempt":s.chapter4.chaseAttempt,"leadDistance":1200})
@@ -76,9 +89,9 @@ func run():
 	var resume:Dictionary=chapter.dispatch(restored,"c4_chase_resume");cfg=resume.game
 	check(restored.chapter4.chaseStairwellLanding==1 and cfg.startLanding==1 and cfg.session!=old_cfg.session,"Serialized platform resumes with a new session")
 	check(not chapter.dispatch(restored,"c4_chase_done",proof(old_cfg,complete,2)).get("accepted",false),"Old exit proof cannot cross the replacement session")
-	var resumed_second:Array=path_from(1,[Vector2(784,426),Vector2(784,207)])
+	var resumed_second:Array=new_path_from(space,1,space.route.slice(9,17))
 	check(chapter.dispatch(restored,"c4_chase_landing",proof(cfg,resumed_second,2)).get("accepted",false),"Resumed first platform reaches second authoritatively")
-	var resumed_exit:Array=path_from(1,[Vector2(784,426),Vector2(784,207),Vector2(715,207),Vector2(715,57)])
+	var resumed_exit:Array=new_path_from(space,1,space.route.slice(9))
 	check(chapter.dispatch(restored,"c4_chase_done",proof(cfg,resumed_exit,2)).get("accepted",false) and restored.chapter4.floor=="A2","Resumed trace completes original exit")
 	var arrival_key:="duan_yongping_temporal_maze:A2:0754_blackout:final_chase"
 	check(restored.native.positions[arrival_key]=={"x":966.0,"y":214.0},"Arrival pose committed before save")
@@ -87,12 +100,12 @@ func run():
 	var shell:Control=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames(5)
 	state.act("c4_chase");await frames(2)
 	var game:Control=shell.active_game;game.set_process(false)
-	drive(game,[Vector2(989,826),Vector2(989,426)])
+	drive(game,space.route.slice(1,9))
 	check(game.landing==1 and state.d.chapter4.chaseStairwellLanding==1,"Native movement signal commits saved platform")
 	var old:Control=game;var old_proof:Dictionary=game._chase_proof_payload();old._leave_chase()
 	check(not is_instance_valid(shell.active_game),"Deliberate Exit releases owner")
 	shell._show_world_mobile();game=shell.active_game;game.set_process(false)
-	check(game.config.startLanding==1 and game.player==Vector2(989,426),"Explicit Return resumes original platform spawn")
+	check(game.config.startLanding==1 and game.player==Vector2(2820,800),"Explicit Return resumes original platform spawn")
 	var attempt:int=state.d.chapter4.chaseAttempt
 	old_proof.landing=2;old.progress_requested.emit(old_proof);old.attempt_failed.emit(old_proof)
 	check(shell.active_game==game and state.d.chapter4.chaseAttempt==attempt,"Retired owner callbacks cannot affect replacement")
@@ -100,7 +113,7 @@ func run():
 	game._leave_chase();await frames();shell._refresh();shell._layout();await frames()
 	check(not is_instance_valid(shell.active_game),"Refresh/resize do not reopen deliberately exited activity")
 	shell._show_world_mobile();game=shell.active_game;game.set_process(false)
-	drive(game,[Vector2(784,426),Vector2(784,207),Vector2(715,207),Vector2(715,70)])
+	drive(game,space.route.slice(9))
 	check(state.d.chapter4.floor=="A2" and not is_instance_valid(shell.active_game),"Native owned exit reaches A2 once")
 	check(not shell.world.stair_handoff.is_empty() and float(shell.world.stair_handoff.leadDistance)>=600,"Accepted view hands original lead to A2")
 	check(not shell.world.accept_stair_handoff({"attempt":attempt+1,"destination":"A2","leadDistance":1200}),"Stale handoff rejected")
