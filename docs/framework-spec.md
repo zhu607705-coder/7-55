@@ -1,6 +1,13 @@
 # 7:55 Framework Spec
 
-## Technical Decision
+Current runtime scope is defined in [AGENTS.md](../AGENTS.md), updated 2026-10-10.
+This document's React/Phaser structure describes the retained Web baseline. Independent
+Godot 4.6.3 development is allowed under `godot_native/` on the migration branches;
+it preserves the authored data and progression contracts using native controllers.
+PR #105 remains unmerged and native acceptance is incomplete. Web bridges are not a
+requirement to embed a browser inside the native game.
+
+## Technical Decision (Web baseline)
 
 Use `Vite + TypeScript + React + Phaser 3 + Zustand + Vitest`.
 

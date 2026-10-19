@@ -2,7 +2,15 @@
 
 [![Web CI](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml)
 
-《7:55》的可玩版本与技术框架。当前项目使用 Vite、TypeScript、React、Zustand、
+《7:55》的现行 Web 兼容基线与正在建设的 Godot 原生目标。
+
+截至 2026-10-10，Godot 4.6.3 原生迁移在 `godot-version` 与其功能分支开发；
+[基础 PR #105](https://github.com/zhu607705-coder/7-55/pull/105) 尚未合并，不能据此宣称全量迁移、移动端验收或原生发布已经完成。
+原生代码位于 `godot_native/`，运行与验证入口见迁移分支的
+[原生 README](https://github.com/zhu607705-coder/7-55/blob/godot-version/godot_native/README.md)。
+开发边界以 [AGENTS.md](AGENTS.md) 为准。
+
+当前 Web 项目使用 Vite、TypeScript、React、Zustand、
 Phaser 和 Three.js。React / TypeScript 负责手机端、共享状态、控制器、存档、任务、
 道具和表现层；Phaser 负责校园地图与横屏 RPG 内景；第四章错位楼梯是
 唯一经过批准的 Three.js 场景。
@@ -73,8 +81,10 @@ GitHub Actions 会对包含 Markdown 与 `docs/` 以外变更的 PR 和 `main` �
 运行时包含 `phone` 和 `rpg` 两种模式；两者应共用 `src/core` 与 `src/modules`
 中的剧情进度和状态。
 
-2026-08-25 起，退役的 Godot 源码、Web 导出、React 兼容层和同步脚本均已删除，
-不得重新加入活动构建或 CI。
+2026-08-25 清理的旧 `godot/` 与 `src/integrations/godot/` 混合运行时仍不得恢复。
+该历史清理不禁止当前独立 `godot_native/` 迁移、原生导出、同步工具或原生 CI。
+Web CI 与 Pages 继续验证和交付浏览器版本；原生 CI 验证 Godot 导入、启动、原生测试及
+部分 TypeScript 模型差分。通过其中一套不能代替另一套验证或完整实际通关验收。
 
 新增剧情前请先阅读 [CLAUDE.md](CLAUDE.md) 与
 [框架说明](docs/framework-spec.md)。

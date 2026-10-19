@@ -7,19 +7,28 @@
 - `src/assets/ui/`: bundled visual references used by scenes.
 - `src/core/`: shared game state, routing, and types.
 - `src/styles/`: shared tokens, shell layout, and scene-specific styling.
+- `godot_native/`: active Godot 4.6.3 native migration on `godot-version` and dependent feature branches; see the runtime decision below.
 - `godot/`: archived implementation reference from the retired Godot migration; active builds, runtime selection, CI, and new feature work must not depend on it.
 - `src/integrations/godot/`: archived compatibility code only; active application code must not import or mount its frame, loader, or scene-specific panels.
 - `demo/index.html`: generated standalone game build; do not edit it by hand.
 
-## Runtime Engine Decision
+## Runtime Engine Decision (updated 2026-10-10)
+
+- The browser-only decision of 2026-08-09/2026-08-25 describes the historical Web baseline. The current user-authorized target is an independent Godot 4.6.3 native migration. PR #105 (`godot-version` → `main`) remains unmerged; native feature PRs such as #107 target `godot-version`. Native migration is work in progress, not an accepted replacement release.
+- Native scenes, GDScript, assets, source-sync tools, tests, export presets and packaging belong under `godot_native/`; native CI belongs in `.github/workflows/godot-native-ci.yml`. These are allowed migration work. Do not restore retired `godot/`, `src/integrations/godot/`, iframe/WebView loaders or the old hybrid runtime.
+- The following React/TypeScript/Phaser ownership and DOM/CSS/browser viewport rules apply to the retained Web runtime. They do not require native views to run React or Phaser. Native gameplay uses native controllers and validated state; source TypeScript models are build/test oracles, not an additional runtime progression authority. Preserve authored story, dialogue, evidence gates, item IDs and consume/retain semantics, recipes, rewards, source map/collision coordinates and save migration meaning. Presentation, animation and audio must not commit progression independently of the active runtime controller.
+- Keep `src/`, root Web build scripts and browser delivery working as the compatibility and behavioral reference baseline. Native-only presentation changes do not require duplicate browser implementation unless the task explicitly requests it. Changes to shared source data/controllers require both affected Web regressions and native source/parity validation.
+- Native validation runs `node godot_native/tools/sync_source.mjs`, required media conversion and `node godot_native/tools/validate_native.mjs`, plus relevant source-differential tests; follow the native README and CI on the migration branch. Web validation follows `docs/TESTING.md`. Neither suite proves the other runtime, full manual chapter parity or physical mobile-device acceptance. Record exact tested commits and remaining gaps; merge/release acceptance remains separate.
+
+### Retained Web runtime contract
 
 - On 2026-08-09 the product selected one browser-native runtime. React and TypeScript own the phone, shell, shared state, controllers, saves, task UI, inventory, audio direction, and presentation overlays; Phaser owns the campus map and landscape RPG interiors. The Chapter 4 misaligned-stair puzzle is the single approved Three.js rendering exception: it mounts inside `RpgGameHost`, replaces the Phaser surface while active, and still submits completion through the TypeScript Chapter 4 controller.
 - The active scope includes campus, dorm, library, east canteen, theater, Qizhen Lake, the teaching building, and future landscape exploration scenes. Portrait phone pages and portrait mini-games continue in the React/TypeScript application; Phaser may also own canvas-based portrait mini-games.
 - `RpgGameHost` mounts one active game surface. Phaser remains mounted for normal RPG scenes; while the Chapter 4 misaligned-stair puzzle is active, Phaser is paused and hidden and one Three.js canvas takes over the same `960 × 540` logical viewport. HTTP, deployed, offline single-file, desktop split, and mobile layouts use the same controller state and viewport contract.
 - TypeScript `GameState`, controllers, `SaveStore`, `selectFeatureAccess`, and `selectQuestViewModel` remain the only progression authority. Phaser scenes render state and submit engine-neutral domain events; they must not own a second save, wallet, inventory, quest graph, or story controller.
 - Shared runtime ports remain valid scene boundaries for state reads, intent writes, event subscriptions, viewport data, and checkpoints. They serve the Phaser scenes directly and must not introduce a second engine-specific gameplay path.
-- No new Godot scene, export, synchronization step, CI check, runtime loader, iframe, compatibility panel, or migration task may be added. Existing Godot files remain historical reference material until an explicit cleanup request removes them.
-- `demo/index.html` is the canonical distributable game and must exercise the same Phaser runtime as the Vite development build.
+- The retired hybrid Godot integration remains prohibited; the independent `godot_native/` migration and its native CI are allowed under the scope above.
+- `demo/index.html` is the canonical Web distributable and must exercise the same Phaser runtime as the Vite development build.
 
 ## Naming
 
