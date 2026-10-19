@@ -1,0 +1,16 @@
+{
+  "source": "ChatGPT web image generation, using two explicitly approved game-art references",
+  "date": "2026-10-11",
+  "references": [
+    "src/assets/rpg/qizhen_fishing/player_blue_fishing_skiff.png",
+    "native assembly presentation screenshot"
+  ],
+  "purpose": "Detailed modeling reference for four independent Godot objects; no gameplay icon identity changes",
+  "alpha": {
+    "format": "RGBA PNG",
+    "width": 1536,
+    "height": 1024,
+    "fully_transparent_pixels": 1150212,
+    "note": "Original generated RGBA preserved. Partial-alpha edge pixels are present; no checkerboard is baked into opaque background."
+  }
+}

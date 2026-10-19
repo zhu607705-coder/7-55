@@ -1,0 +1,74 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/objects/kayak_paddle.gd" id="1"]
+[node name="WarningSignPaddle" type="Node2D"]
+script=ExtResource("1")
+side="right"
+[node name="Grip" type="Marker2D" parent="."]
+
+[node name="ShaftOutline" type="Line2D" parent="."]
+points=PackedVector2Array(0, 0, 31.9, 0, 58, 0)
+width=10
+default_color=Color(0.17254901960784313, 0.12941176470588237, 0.09411764705882353, 1)
+antialiased=true
+
+[node name="Shaft" type="Line2D" parent="."]
+points=PackedVector2Array(0, 0, 31.9, 0, 58, 0)
+width=5
+default_color=Color(0.8823529411764706, 0.8980392156862745, 0.8666666666666667, 1)
+antialiased=true
+
+[node name="BladePivot" type="Node2D" parent="."]
+position=Vector2(58,0)
+
+[node name="Blade" type="Polygon2D" parent="BladePivot"]
+polygon=PackedVector2Array(17, 0, -9, -15, -9, 15)
+color=Color(0.9411764705882353, 0.8470588235294118, 0.33725490196078434, 1)
+
+[node name="BladeEdge" type="Line2D" parent="BladePivot"]
+points=PackedVector2Array(17, 0, -9, -15, -9, 15, 17, 0)
+width=3
+default_color=Color(0.8313725490196079, 0.23529411764705882, 0.19215686274509805, 1)
+antialiased=true
+
+[node name="WarningDot" type="Polygon2D" parent="BladePivot"]
+polygon=PackedVector2Array(4.3, 0, 4.0488025, 1.2628553, 3.3334524, 2.3334524, 2.2628553, 3.0488025, 1, 3.3, -0.26285533, 3.0488025, -1.3334524, 2.3334524, -2.0488025, 1.2628553, -2.3, 4.0413344e-16, -2.0488025, -1.2628553, -1.3334524, -2.3334524, -0.26285533, -3.0488025, 1, -3.3, 2.2628553, -3.0488025, 3.3334524, -2.3334524, 4.0488025, -1.2628553)
+color=Color(0.14901960784313725, 0.21176470588235294, 0.23921568627450981, 1)
+
+[node name="WarningSlash" type="Line2D" parent="BladePivot"]
+points=PackedVector2Array(-6, -7, 7, 8)
+width=3
+default_color=Color(0.8313725490196079, 0.23529411764705882, 0.19215686274509805, 1)
+antialiased=true
+
+[node name="WaterContact" type="Node2D" parent="."]
+position=Vector2(58,0)
+
+[node name="Ripple" type="Line2D" parent="WaterContact"]
+points=PackedVector2Array(12.5, 0, 12.259816, 0.97545161, 11.548494, 1.9134172, 10.39337, 2.7778512, 8.8388348, 3.5355339, 6.9446279, 4.1573481, 4.7835429, 4.6193977, 2.438629, 4.9039264, 7.6540425e-16, 5, -2.438629, 4.9039264, -4.7835429, 4.6193977, -6.9446279, 4.1573481, -8.8388348, 3.5355339, -10.39337, 2.7778512, -11.548494, 1.9134172, -12.259816, 0.97545161, -12.5, 6.123234e-16, -12.259816, -0.97545161, -11.548494, -1.9134172, -10.39337, -2.7778512, -8.8388348, -3.5355339, -6.9446279, -4.1573481, -4.7835429, -4.6193977, -2.438629, -4.9039264, -2.2962127e-15, -5, 2.438629, -4.9039264, 4.7835429, -4.6193977, 6.9446279, -4.1573481, 8.8388348, -3.5355339, 10.39337, -2.7778512, 11.548494, -1.9134172, 12.259816, -0.97545161, 12.5, -1.2246468e-15)
+width=2
+default_color=Color(0.69,0.93,0.94,0.66)
+antialiased=true
+position=Vector2(0,4)
+visible=false
+
+[node name="Surface" type="Line2D" parent="WaterContact"]
+points=PackedVector2Array(-10, 5, 10, 5)
+width=3
+default_color=Color(0.39,0.70,0.75,0.7)
+antialiased=true
+visible=false
+
+[node name="Drops" type="Node2D" parent="WaterContact"]
+visible=false
+
+[node name="Drop1" type="Polygon2D" parent="WaterContact/Drops"]
+polygon=PackedVector2Array(-7, 9, -5, 9, -5, 12, -7, 12)
+color=Color(0.75,0.96,1,1)
+
+[node name="Drop2" type="Polygon2D" parent="WaterContact/Drops"]
+polygon=PackedVector2Array(0, 14, 2, 14, 2, 17, 0, 17)
+color=Color(0.75,0.96,1,1)
+
+[node name="Drop3" type="Polygon2D" parent="WaterContact/Drops"]
+polygon=PackedVector2Array(7, 19, 9, 19, 9, 22, 7, 22)
+color=Color(0.75,0.96,1,1)

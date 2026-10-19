@@ -188,7 +188,10 @@ func combine_items(s: Dictionary, item_ids: Variant) -> Dictionary:
 	q.netCombined=true
 	q.magneticRodCombined=true
 	q.phase="paper_capture"
-	return branch_result("accepted","尼龙绳、破损网框和磁性扣已装到钓鱼竿上，可以捕纸了。")
+	var result:=branch_result("accepted","尼龙绳、破损网框和磁性扣已装到钓鱼竿上，可以捕纸了。")
+	# The existing transaction is final before presentation; closing/reloading cannot replay it.
+	result["world_effect"]={"script":"res://scripts/ui/lake_rod_assembly_view.gd","kind":"lake_rod_assembly","blocks_input":true}
+	return result
 
 func complete_swan_branch(s: Dictionary) -> Dictionary:
 	var q: Dictionary=s.qizhenLake

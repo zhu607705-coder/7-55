@@ -1922,7 +1922,10 @@ func _open_world_effect(config: Dictionary) -> void:
 	if not world or not ResourceLoader.exists(str(config.get("script",""))): return
 	world.refresh_world()
 	world_effect = load(str(config.script)).new()
-	world.add_child(world_effect)
+	# Assembly can originate in either inventory surface. Its read-only close-up
+	# belongs to the shell and must not switch the player's scene or phone page.
+	if config.get("kind","")=="lake_rod_assembly": add_child(world_effect)
+	else: world.add_child(world_effect)
 	world_effect.set_meta("blocks_input",bool(config.get("blocks_input",false)))
 	var setup := config.duplicate()
 	setup["read_state"] = _read_runtime_state
