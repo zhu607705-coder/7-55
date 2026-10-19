@@ -168,7 +168,9 @@ func run() -> void:
 	check(stale.status=="cancelled" and host.current==null and not host.apply_owned_camera(),"same-scene reset releases old camera capability")
 	check(is_equal_approx(world.zoom,.85) and world.transition_alpha==1.0,"same-scene reload establishes fresh exploration camera and entry fade")
 	host.tick(0,true)
-	check(host.current==null and not host.apply_owned_camera(),"save replacement cannot replay an old ephemeral victory")
+	check(host.current!=null and host.current!=stale and host.current.elapsed_ms==0 and host.current.origin==stale.origin,"saved pending handoff creates a fresh victory owner from its validated receipt")
+	check_camera("restored pending handoff")
+	check(stale.status=="cancelled" and not stale.valid(state.d),"save replacement cannot reuse the old ephemeral capability")
 	# A scene change before cancellation already owns its camera and its fade.
 	await open_victory(Vector2i(1440,900),true)
 	host=shell.c3_narrative_host; world=shell.world; stale=host.current

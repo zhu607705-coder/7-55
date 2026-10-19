@@ -166,11 +166,16 @@ func run() -> void:
 	story=chapter.narrative_session(s); story.attach(s,owner); run_ms(story,owner,6000)
 	s=s.duplicate(true); reopened=chapter.narrative_session(s)
 	check(not story.valid(s) and reopened!=story and reopened.elapsed_ms==0,"reload preserves unseen flag and restarts source approach")
-	# Source replays theater greeting only on fresh unmodified lobby entry.
+	# Re-entering an unfinished greeting restarts it; a consumed greeting is durable.
 	s=initial("theater_interior"); chapter=Chapter.new(); s.theaterHunt.active=true; s.theaterHunt.phase="entry_ticket"
 	story=chapter.narrative_session(s); check(story.sequence_id=="theater_entry" and story.lines[0].atMs==1100,"theater entry is staged after original delay")
-	finish(story,owner); check(chapter.narrative_session(s)==null,"entry is once per scene mount")
-	s=s.duplicate(true); check(chapter.narrative_session(s)!=null,"fresh unmodified lobby reload replays source greeting")
+	story.cancel(); reopened=chapter.narrative_session(s)
+	check(reopened!=story and reopened.elapsed_ms==0 and not s.native.get("c3_theater_entry_seen",false),"cancelled introduction restarts without granting acknowledgement")
+	finish(reopened,owner); check(chapter.narrative_session(s)==null,"completed entry does not replay in same scene")
+	s=s.duplicate(true); check(chapter.narrative_session(s)==null,"acknowledged lobby reload does not repeat source greeting")
+	chapter=Chapter.new();check(chapter.narrative_session(s)==null,"new controller preserves saved intro acknowledgement")
+	s.native.erase("c3_theater_entry_seen");chapter=Chapter.new()
+	check(chapter.narrative_session(s)!=null,"legacy unacknowledged lobby retains original greeting")
 	chapter=Chapter.new(); s.theaterHunt.posterCleaned=true
 	check(chapter.narrative_session(s)==null,"progressed theater lobby never shows introductory future conversation")
 	intruder.free(); owner.free()

@@ -10,7 +10,7 @@ function run(label,args,command=executable){
  const sandbox=fs.mkdtempSync(path.join(os.tmpdir(),'755-native-check-'));
  for(const folder of ['data','config','cache','state'])fs.mkdirSync(path.join(sandbox,folder));
  const env={...process.env,XDG_DATA_HOME:path.join(sandbox,'data'),XDG_CONFIG_HOME:path.join(sandbox,'config'),XDG_CACHE_HOME:path.join(sandbox,'cache'),XDG_STATE_HOME:path.join(sandbox,'state'),GODOT_TEST_USER_DATA_DIR:path.join(sandbox,'data','SevenFiftyFiveNative'),GODOT_SILENCE_ROOT_WARNING:'1'};
- const timeout=(label==='Godot asset import and editor parse'?20:label==='test_full_campaign.gd'?12:5)*60*1000;
+ const timeout=(label==='Godot asset import and editor parse'?20:['test_full_campaign.gd','Formal campaign entry persistence'].includes(label)?12:5)*60*1000;
  const r=spawnSync(command,args,{encoding:'utf8',maxBuffer:32*1024*1024,timeout,env});
  const text=(r.stdout||'')+(r.stderr||''); logs.push({label,status:r.status,output:text});
  const failed=r.error||r.status!==0||/(?:^|\n)ERROR:|SCRIPT ERROR:|Parse Error:|Failed to load script|TEST FAILED|ASSERTION FAILED/.test(text);
@@ -22,6 +22,7 @@ run('Godot asset import and editor parse',['--headless','--path',project,'--edit
 run('Native Chinese text revisions',[path.join(project,'tests/verify_zh_text_revisions.mjs')],process.execPath);
 run('Native startup',['--headless','--path',project,'--quit-after','15','--','--fresh']);
 for(const f of fs.readdirSync(path.join(project,'tests')).filter(x=>x.endsWith('.gd')&&x!=='test_save_migration.gd'&&(x.startsWith('test_')||x.startsWith('smoke_'))).sort())run(f,['--headless','--path',project,'--script',`res://tests/${f}`]);
+run('Formal campaign entry persistence', [path.join(project,'tests/verify_continuity_entry.mjs')], process.execPath);
 run('Native Chinese/audio text contract',[path.join(project,'tests/verify_zh_audio_contract.mjs')],process.execPath);
 run('BUCT save-fixture isolation', [path.join(project,'tools/test_buct.mjs'),'--guard-only'],process.execPath);
 for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-director.mjs','tools/export-c3-world-source.mjs','tools/export-chapter4-device-source.mjs','tools/export-chapter4-context-source.mjs','tests/export_audio_state_fixtures.mjs','tests/export_chapter3_scene_source.mjs','tests/export_library_story_source.mjs','tests/export_lake_live_source_fixtures.mjs','tests/export_chapter3_narrative_source.mjs','tests/export_library_world_source.mjs','tests/export_canteen_mixer_source.mjs','tests/export_c3_devices_source.mjs','tests/export_c3_canteen_devices_source.mjs','tests/export_c3_bike_world_source.mjs']) {

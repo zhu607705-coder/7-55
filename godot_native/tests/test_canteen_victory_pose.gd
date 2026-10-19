@@ -88,7 +88,8 @@ func run() -> void:
 		check(session.spec.paperFrame==replay.paper_frame and session.spec.paperFlip==replay.paper_flip and is_equal_approx(float(session.spec.paperAngle),replay.paper_angle),"caller frame/flip/angle cannot replace frozen replay pose")
 		var pose: Dictionary=session.paper_pose()
 		check(pose.frame==replay.paper_frame and pose.flip==replay.paper_flip and is_equal_approx(float(pose.angle),replay.paper_angle) and pose.scaleXY==Vector2(1.16,1.16),"victory begins without texture/orientation/scale pop")
-		check(JSON.stringify(state)==JSON.stringify(expected),"only existing phase/blockHits facts change; reward/save/proof authority unchanged")
+		expected.native.c3_pending_handoff={"id":"canteen_escape","scene":"canteen_interior","paperX":float(replay.paper.x),"paperY":float(replay.paper.y),"playerX":float(replay.player.x),"playerY":float(replay.player.y),"paperFrame":int(replay.paper_frame),"paperFlip":bool(replay.paper_flip),"paperAngle":float(replay.paper_angle)}
+		check(JSON.stringify(state)==JSON.stringify(expected),"only phase/blockHits and bounded validated handoff receipt change; reward/proof authority unchanged")
 		submitted.paperFrame=99;submitted.paperStart[0]=-9999
 		check(session.paper_pose()==pose,"later caller mutation cannot change issued presentation")
 		session.cancel()

@@ -24,6 +24,8 @@ func narrative_session(s: Dictionary,_delta_ms: float=0) -> RefCounted:
 	if story!=null and not story.valid(s):
 		story.cancel(); story=null; story_request={}
 	if story==null and story_request.is_empty():
+		story_request=_restored_handoff(s)
+	if story==null and story_request.is_empty():
 		if scene=="canteen_interior" and side_active(s.canteenHunt) and s.canteenHunt.promoDrinkPlaced and not s.canteenHunt.queueGapOpened:
 			story_request={"id":"canteen_promo","scene":scene,"lines":source_lines("chapter3-canteen.content","drinks.queueShiftDialogue"),"timelineStartMs":220,"delayMs":220+PromoTimeline.timing(bool(s.native.get("settings",{}).get("reduced_motion",false))).completeAt}
 		elif scene=="campus_qizhen_loop" and s.qizhenLake.active and s.qizhenLake.phase=="location_search" and not s.qizhenLake.locationBriefingSeen:
@@ -38,7 +40,7 @@ func narrative_session(s: Dictionary,_delta_ms: float=0) -> RefCounted:
 		elif scene=="theater_interior" and s.native.get("c3_reversal_pending",false)==true and s.theaterHunt.phase in ["reversal","complete"]:
 			var done: bool=s.theaterHunt.phase=="complete"
 			story_request={"id":"theater_reversal","scene":scene,"lines":source_lines("chapter3-theater.content","spotlight.endingDialogue"),"delayMs":0 if done else 1320,"visualCompleted":done}
-		elif scene=="theater_interior" and s.theaterHunt.phase=="entry_ticket" and not s.theaterHunt.posterCleaned and not s.theaterHunt.ticketCodeRead and not theater_entry_played:
+		elif scene=="theater_interior" and s.theaterHunt.phase=="entry_ticket" and not s.theaterHunt.posterCleaned and not s.theaterHunt.ticketCodeRead and not theater_entry_played and not s.native.get("c3_theater_entry_seen",false):
 			story_request={"id":"theater_entry","scene":scene,"lines":source_lines("chapter3-theater.content","entryDialogue"),"delayMs":160 if s.native.get("settings",{}).get("reduced_motion",false) else 1100}
 	if not story_request.is_empty() and (story==null or story.status=="cancelled"):
 		if str(story_request.id)=="theater_reversal" and s.theaterHunt.phase=="complete": story_request.delayMs=0; story_request.visualCompleted=true
@@ -52,6 +54,7 @@ func tell_lines(s: Dictionary,id: String,lines: Array,extra: Dictionary={}) -> D
 	story_state=s; story_scene=str(s.native.scene)
 	story_request={"id":id,"scene":story_scene,"lines":lines.duplicate(true)}
 	story_request.merge(extra,true)
+	_remember_handoff(s,id,extra)
 	story=NarrativeSession.new(s,story_request)
 	# AudioDirector must not also synthesize this queue from a joined feedback toast.
 	return {"handled":true,"message":"","narrative_owned":true}
@@ -59,7 +62,10 @@ func tell_lines(s: Dictionary,id: String,lines: Array,extra: Dictionary={}) -> D
 func finish_story(s: Dictionary,value: Variant) -> Dictionary:
 	if not value is NarrativeSession or value!=story or not value.consume(s): return locked("对话尚未结束。")
 	var finish: String=str(story_request.get("onComplete",""))
-	if story.sequence_id=="theater_entry": theater_entry_played=true
+	if story.sequence_id=="theater_entry":
+		theater_entry_played=true
+		s.native.c3_theater_entry_seen=true
+	if story.sequence_id in ["canteen_escape","theater_admission"]: s.native.erase("c3_pending_handoff")
 	if story.sequence_id=="theater_reversal": s.native.c3_reversal_pending=false
 	story=null; story_request={}
 	match finish:
@@ -67,6 +73,10 @@ func finish_story(s: Dictionary,value: Variant) -> Dictionary:
 		"canteen_exit": return _audio_event(enter(s,"campus_bootstrap","c3_canteen","campus_canteen_gate"),"canteen_returned_to_campus")
 		"admission":
 			var point: Dictionary=world("theater_interior").spawns.theater_auditorium
+			# Save the accepted destination before State emits the visual teleport.
+			if not s.native.get("positions") is Dictionary: s.native.positions={}
+			s.native.positions["theater_interior:"]={"x":point.x,"y":point.y}
+			s.native.player={"scene":"theater_interior","x":point.x,"y":point.y,"world_x":point.x,"world_y":point.y}
 			return {"handled":true,"teleport":[point.x,point.y]}
 		"approach":
 			s.qizhenLake.locationBriefingSeen=true
@@ -74,6 +84,24 @@ func finish_story(s: Dictionary,value: Variant) -> Dictionary:
 			var point: Dictionary=world("campus_qizhen_loop").manifest.qizhen.approachTransition.stop
 			s.native.player={"x":point.x,"y":point.y,"scene":"campus_qizhen_loop"}
 	return response()
+
+## Persist only a bounded pending transition receipt. Rebuild dialogue from the
+## current source catalog; saved prose, elapsed time and callbacks are not authority.
+func _remember_handoff(s: Dictionary,id: String,extra: Dictionary) -> void:
+	if id not in ["canteen_escape","theater_admission"]: return
+	var paper: Array=extra.get("paperStart",[1053.0,302.0])
+	var actor: Array=extra.get("playerStart",[1053.0,540.0])
+	s.native.c3_pending_handoff={"id":id,"scene":str(s.native.scene),"paperX":float(paper[0]),"paperY":float(paper[1]),"playerX":float(actor[0]),"playerY":float(actor[1]),"paperFrame":int(extra.get("paperFrame",0)),"paperFlip":bool(extra.get("paperFlip",false)),"paperAngle":float(extra.get("paperAngle",0))}
+
+func _restored_handoff(s: Dictionary) -> Dictionary:
+	var pending: Dictionary=s.native.get("c3_pending_handoff",{})
+	if pending.is_empty() or pending.get("scene","")!=s.native.scene: return {}
+	var reduced: bool=s.native.get("settings",{}).get("reduced_motion",false)
+	if pending.get("id","")=="canteen_escape" and s.native.scene=="canteen_interior" and s.canteenHunt.active and s.canteenHunt.phase=="chase_ready" and int(s.canteenHunt.blockHits)>=3 and not s.canteenHunt.chaseCompleted:
+		return {"id":"canteen_escape","scene":s.native.scene,"lines":source_lines("chapter3-canteen.content","blocking.escapeDialogue"),"delayMs":220 if reduced else 1020,"stepMs":1200,"tailMs":166 if reduced else 475,"onComplete":"canteen_exit","paperStart":[pending.paperX,pending.paperY],"playerStart":[pending.playerX,pending.playerY],"paperFrame":pending.paperFrame,"paperFlip":pending.paperFlip,"paperAngle":pending.paperAngle}
+	if pending.get("id","")=="theater_admission" and s.native.scene=="theater_interior" and s.theaterHunt.active and s.theaterHunt.admitted and s.theaterHunt.phase=="program_search":
+		return {"id":"theater_admission","scene":s.native.scene,"lines":source_lines("chapter3-theater.content","ticket.admissionDialogue"),"onComplete":"admission","tailMs":80 if reduced else 260}
+	return {}
 
 func scene_session(s: Dictionary) -> RefCounted:
 	if not SceneSession.pending_canteen(s):

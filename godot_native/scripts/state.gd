@@ -342,7 +342,8 @@ func validate_snapshot(value: Variant) -> bool:
 	if float(value.native.settings.text_scale) < .5 or float(value.native.settings.text_scale) > 3: return false
 	var optional_templates := {
 		"dorm_props":{"cabinet_open":false,"lamp_01_on":false,"lamp_03_on":false},
-		"c3_reversal_pending":false,
+		"c3_reversal_pending":false,"c3_theater_entry_seen":false,
+		"c3_pending_handoff":{"id":"","scene":"","paperX":0.0,"paperY":0.0,"playerX":0.0,"playerY":0.0,"paperFrame":0,"paperFlip":false,"paperAngle":0.0},
 		"alarm_ringing":false,"wake_warned":false,"flower_eight_visible":false,"friend_scatter_pending":false,"tower_key_pending":false,
 		"c35_frame":"","c35_voice_stage":"","c35_summary_choice":"","c4_bio":"","c4_context":"","c4_last_dialogue":"","checkpoint_id":"",
 		"lib_catalog_results":false,"lib_dialogue_index":0,"lib_selected_photo":"","lib_photo_filter":"","c4_elevator_transport":false,"c4_native_elevator_completed":false,
@@ -357,6 +358,13 @@ func validate_snapshot(value: Variant) -> bool:
 			for slot in value.native[key]:
 				if not slot is Dictionary or not (slot.get("x") is int or slot.get("x") is float) or not (slot.get("y") is int or slot.get("y") is float): return false
 		elif not _matches_shape(optional_templates[key],value.native[key],0,".native."+key): return false
+	if value.native.has("c3_pending_handoff"):
+		var handoff: Dictionary=value.native.c3_pending_handoff
+		if handoff.id not in ["canteen_escape","theater_admission"]: return false
+		if handoff.scene!=("canteen_interior" if handoff.id=="canteen_escape" else "theater_interior"): return false
+		if handoff.paperFrame<0 or handoff.paperFrame>100 or absf(handoff.paperAngle)>36000: return false
+		for key in ["paperX","paperY","playerX","playerY"]:
+			if absf(handoff[key])>10000: return false
 	for point in value.native.get("positions",{}).values():
 		if not point is Dictionary or not (point.get("x") is int or point.get("x") is float) or not (point.get("y") is int or point.get("y") is float): return false
 
