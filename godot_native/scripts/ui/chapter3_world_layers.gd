@@ -8,6 +8,8 @@ var ticket_gate_art:RefCounted=TicketGateArt.new()
 const TicketGate=preload("res://scripts/presentation/c3_ticket_gate_view.gd")
 var ticket_gate:RefCounted=TicketGate.new()
 const AdmissionFeedback=preload("res://scripts/presentation/c3_admission_feedback.gd")
+const TheaterClues=preload("res://scripts/presentation/c3_theater_clue_view.gd")
+var theater_clues:RefCounted=TheaterClues.new()
 const ModeFibers=preload("res://scripts/presentation/c3_mode_fibers.gd")
 var mode_fibers: RefCounted=ModeFibers.new()
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
@@ -43,6 +45,7 @@ func asset(key: String) -> String: return str(source.assets.get(key,""))
 func reduced(s: Dictionary) -> bool: return bool(s.native.get("settings",{}).get("reduced_motion",false))
 func scene_npcs(s: Dictionary) -> bool: return s.canteenHunt.phase!="exit_blocking"
 func sync(s: Dictionary,scene_changed: bool=false) -> void:
+	theater_clues.sync(s,scene_changed)
 	mode_fibers.sync(s,scene_changed)
 	var current: String=str(s.native.get("scene",""))
 	if scene_changed or current!=scene_id or previous_state.is_empty():
@@ -72,6 +75,7 @@ func sync(s: Dictionary,scene_changed: bool=false) -> void:
 	previous_state=s.duplicate(true)
 func tick(delta: float,s: Dictionary) -> void:
 	sync(s)
+	theater_clues.tick(delta,s)
 	mode_fibers.tick(delta,s)
 	var dt: float=clampf(delta,0,.1)*1000
 	clock_ms+=dt; admission_ms+=dt; pickup_ms+=dt; fade_ms=minf(180,fade_ms+dt)
@@ -195,12 +199,13 @@ func entries(s: Dictionary) -> Array:
 			result.append({"id":"manager_ghost","kind":"sprite","asset":asset("stageManagerGhostIdleUrl" if reduced(s) or int(clock_ms/720)%2==0 else "stageManagerGhostPointUrl"),"point":Vector2(500,166),"scale":.7,"alpha":alpha,"depth":1604})
 			result.append({"id":"prop_clue","kind":"text","point":Vector2(310,108),"text":theater_text.prop.ghost+"\n"+theater_text.prop.managerHint,"width":280.0,"fontSize":12,"depth":1603})
 		if dark and t.phase=="spotlight_ready": result.append({"id":"paper_future_path","kind":"sprite","asset":asset("paperFuturePathUrl"),"point":Vector2(835,180),"scale":.78,"depth":2101})
-		if t.phase in ["spotlight_ready","spotlight_hunt","reversal"]:
+		if t.phase in ["spotlight_ready","spotlight_hunt","reversal"] and not theater_clues.paper_active():
 			var p: float=_yoyo(clock_ms,760)
 			result.append({"id":"stage_paper","kind":"sprite","asset":asset("paperResidualUrl" if dark else "paperFluorescentUrl" if t.paperDusted else "paperFlightUrl"),"point":Vector2(835,180+7*p),"angle":lerpf(-4,4,p),"scale":1.0,"depth":2100})
 		if dark and t.phase=="entry_ticket" and not t.posterCleaned: result.append({"id":"poster_half","kind":"poster","point":Vector2(282,731),"depth":1603})
 		if not dark and t.phase=="entry_ticket" and t.cc98TicketCommissionPhase=="delivered" and not s.items.theaterTicketHalfB and not s.items.temporaryTheaterTicket:
 			result.append({"id":"kiosk_receipt","kind":"text","point":Vector2(1146,715),"text":theater_text.ticket.codeVisible,"width":350.0,"fontSize":13,"depth":1603})
+		result.append_array(theater_clues.entries(s,clock_ms))
 	result.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.depth)<float(b.depth))
 	return result
 func canteen_occlusion(cover: Dictionary, player: Vector2, is_reduced: bool) -> Dictionary:
@@ -218,6 +223,10 @@ func canteen_occlusion(cover: Dictionary, player: Vector2, is_reduced: bool) -> 
 	return {"visible":behind,"alpha":alpha,"softened":overlaps}
 
 func draw_landmarks(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
+	# The original poster_case_front crop is drawn after actor-depth props.
+	# Surface contact must be painted on that glass, not erased by its plate.
+	# This pass already follows source occlusion; no world/collision change.
+	theater_clues.present(canvas,context,s,clock_ms)
 	bike_view.draw_hint(canvas,context,s)
 	# Small presentation repair for an existing authored mixer hotspot that was
 	# otherwise indistinguishable from the five ordering kiosks in the base plate.
@@ -294,6 +303,7 @@ func _draw_partition(canvas: CanvasItem,context: Dictionary,s: Dictionary,front:
 	if scene_id not in ["canteen_interior","theater_interior","qizhen_lake"]: return
 	var depth: float=context.player.y+(159 if scene_id=="canteen_interior" else 120)
 	for entry: Dictionary in entries(s):
+		if entry.kind=="theater_clue":continue # Glass/paper surface pass is post-occlusion.
 		if entry.id=="qizhen_dock_safety_officer" and context.get("nearby_id","")==entry.id: entry.scale*=1.08
 		if (float(entry.depth)>depth)==front: _draw_entry(canvas,context,entry)
 func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> void:
