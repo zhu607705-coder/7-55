@@ -1,0 +1,39 @@
+{
+  "kind": "elevator-alignment-keyboard-focus-repair",
+  "gitHead": "49a5bc2770e0ab4ce1f4227a76b8641dbbf641eb",
+  "uncommittedChanges": [
+    "godot_native/scripts/main.gd",
+    "godot_native/tests/test_chapter4_elevator_inputs.gd"
+  ],
+  "time": "2026-10-19T11:44:30.234067+00:00",
+  "negativeControl": {
+    "report": "elevator_focus_before.json",
+    "checks": 40,
+    "failures": 8,
+    "scope": "actual root Space after completed/cancelled alignment, 1440x900 and 390x844, unfixed production Main"
+  },
+  "fix": "Restore original world SubViewport focus after elevator_alignment completes or cancels using existing guarded deferred focus method; no state/proof/recipe/timing changes.",
+  "finalReport": "elevator_focus_final.json",
+  "stages": 7,
+  "failures": 0,
+  "inputRegressionChecks": 52,
+  "behaviorChecksTotal": 300,
+  "allScriptsParsed": 726,
+  "scopeNotes": [
+    "Main production delta is two conditions only.",
+    "Regression uses source checkpoint and authored stand as setup, then actual root Space and visible UI buttons through cancellation, replay, boarding, natural elapsed calibration, subsequent Space, record Ride and natural A3 arrival.",
+    "No direct State.act calls, map click or grab_focus is used after activity terminals to conceal missing return ownership.",
+    "Natural lake handoff run is headless with its existing OS-focus seam, not a new graphical/manual claim.",
+    "No Git mutation, packaging or full-suite rerun."
+  ],
+  "inputs": [
+    {
+      "path": "godot_native/scripts/main.gd",
+      "sha256": "82fa2cbcebab55572f6366967a56248b5d9325da9252928ee8d85de8a2e561d8"
+    },
+    {
+      "path": "godot_native/tests/test_chapter4_elevator_inputs.gd",
+      "sha256": "97e7bb7875f8819a40bd634e46b63c1fbec7913da16f32fd4c299dbc56b05b30"
+    }
+  ]
+}
