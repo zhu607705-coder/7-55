@@ -1,5 +1,6 @@
 extends Control
 ## One global modal surface across both phone and RPG, matching LibraryStoryOverlay.
+const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var body_scroll:ScrollContainer
 const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
@@ -15,7 +16,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_STOP; focus_mode=Control.FOCUS_ALL
 	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	var box:=StyleBoxFlat.new(); box.bg_color=Color("081419",0.97); box.border_color=Color("b6c9bb"); box.set_border_width_all(2); box.set_corner_radius_all(4)
+	var box:=Ui.box(Ui.PAPER,Ui.INK,Ui.EDGE)
 	panel.add_theme_stylebox_override("panel",box)
 	for field: String in ["speaker","body","prompt"]:
 		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -23,8 +24,8 @@ func _ready() -> void:
 		panel.add_child(label); set(field,label)
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
 	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	body.add_theme_color_override("font_color",Color("f4edd6"))
-	prompt.add_theme_color_override("font_color",Color("9fafac")); prompt.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	body.add_theme_color_override("font_color",Ui.INK)
+	prompt.add_theme_color_override("font_color",Color("544c3d")); prompt.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 	visible=false
 func tick() -> void:
 	visible=session!=null
@@ -50,13 +51,11 @@ func tick() -> void:
 		if below_film>=region.position.y and below_film+panel.size.y<=region.end.y:panel.position.y=below_film
 	speaker.position=metrics.speaker.position; speaker.size=metrics.speaker.size
 	speaker.add_theme_font_size_override("font_size",metrics.speaker_font)
-	speaker.add_theme_color_override("font_color",Color("edc36c") if v.speaker=="旁白" else Color("c0d59d") if v.speaker=="玩家" else Color("8ed2e4"))
+	speaker.add_theme_color_override("font_color",Color("684822") if v.speaker=="旁白" else Color("31523a") if v.speaker=="玩家" else Ui.FOCUS)
 	body.add_theme_font_size_override("font_size",metrics.body_font); body_scroll.layout_body(metrics.body_viewport,metrics.body.size.y)
 	prompt.position=metrics.prompt.position; prompt.size=metrics.prompt.size; prompt.add_theme_font_size_override("font_size",metrics.prompt_font)
 	if last_sequence!=str(v.sequenceId): grab_focus(); last_sequence=str(v.sequenceId)
 	queue_redraw()
-func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO,size),Color(0,0,0,0.22))
 func _input(event: InputEvent) -> void:
 	if not visible or session==null: return
 	if event is InputEventKey:

@@ -14,6 +14,8 @@
     "build:single": "npm run build:demo",
     "verify:single": "node scripts/verify-single-file-build.mjs",
     "verify:browser-smoke": "node scripts/verify-browser-smoke.mjs",
+    "verify:notice-queue": "node scripts/verify-notice-queue.mjs",
+    "verify:prologue-interception": "node scripts/verify-prologue-interception.mjs",
     "validate:quick": "node scripts/run-validation-suite.mjs quick",
     "validate:critical": "node scripts/run-validation-suite.mjs critical",
     "validate:extended": "node scripts/run-validation-suite.mjs extended",

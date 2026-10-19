@@ -1,0 +1,92 @@
+{
+  "startedAt": "2026-10-19T16:23:30.680Z",
+  "scope": "Disposable mirrored profiles only. Production worktree source is never mutated.",
+  "cases": [
+    {
+      "name": "wrong-word-admission",
+      "file": "scripts/games/prologue_word_model.gd",
+      "from": "if not card.text in wanted:",
+      "to": "if false:",
+      "script": "res://tests/test_prologue_words.gd",
+      "assertion": "a real collision with the wrong word does not count as semantic success",
+      "sourceSha256": "e933e8ad6ba7e39c67dfdd9565d2627e0989b877a7215063486cff1d089e6c64",
+      "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-e7HGSv",
+      "status": 1,
+      "error": null,
+      "caughtByIntendedAssertion": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROLOGUE_WORD_MODEL: 28 checks; 6 failures\nERROR: PROLOGUE WORDS: no input cannot collect the first geometrically offset target or finish a stage\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:33)\nERROR: PROLOGUE WORDS: only the six authored targets produce captures in three stages\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:47)\nERROR: PROLOGUE WORDS: a real collision with the wrong word does not count as semantic success\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:70)\nERROR: PROLOGUE WORDS: hint tier escalates without resetting or auto-completing a stage\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:73)\nERROR: PROLOGUE WORDS: hint tier escalates without resetting or auto-completing a stage\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:73)\nERROR: PROLOGUE WORDS: hint tier escalates without resetting or auto-completing a stage\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:73)\n"
+    },
+    {
+      "name": "continuation-clears-collection",
+      "file": "scripts/games/prologue_word_model.gd",
+      "from": "phase=\"search\";hint={};cards.clear();spawn_index=0",
+      "to": "collected=[];phase=\"search\";hint={};cards.clear();spawn_index=0",
+      "script": "res://tests/test_prologue_words.gd",
+      "assertion": "failure continuation keeps both earlier stages and current-stage collected words",
+      "sourceSha256": "e933e8ad6ba7e39c67dfdd9565d2627e0989b877a7215063486cff1d089e6c64",
+      "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-pwzFot",
+      "status": 1,
+      "error": null,
+      "caughtByIntendedAssertion": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROLOGUE_WORD_MODEL: 28 checks; 3 failures\nERROR: PROLOGUE WORDS: failure continuation keeps both earlier stages and current-stage collected words\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:64)\nERROR: PROLOGUE WORDS: only missing words remain after continuation\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:65)\nERROR: PROLOGUE WORDS: continuation emits a missing next fragment rather than an already retained word\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:67)\n"
+    },
+    {
+      "name": "ordered-target-bypass",
+      "file": "scripts/games/prologue_word_model.gd",
+      "from": "if current().get(\"ordered\",false) and card.text!=wanted[collected.size()]:",
+      "to": "if false:",
+      "script": "res://tests/test_prologue_words.gd",
+      "assertion": "blocking a future sentence fragment cannot replace the next required fragment",
+      "sourceSha256": "e933e8ad6ba7e39c67dfdd9565d2627e0989b877a7215063486cff1d089e6c64",
+      "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-gtvsmZ",
+      "status": 1,
+      "error": null,
+      "caughtByIntendedAssertion": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROLOGUE_WORD_MODEL: 28 checks; 2 failures\nERROR: PROLOGUE WORDS: blocking a future sentence fragment cannot replace the next required fragment\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:62)\nERROR: PROLOGUE WORDS: continuation emits a missing next fragment rather than an already retained word\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:67)\n"
+    },
+    {
+      "name": "swept-contact-removed",
+      "file": "scripts/games/prologue_word_model.gd",
+      "from": "return {\"time\":maxf(0,enter),\"normal\":hit_normal}",
+      "to": "return {}",
+      "script": "res://tests/test_prologue_words.gd",
+      "assertion": "swept word rectangle catches a complete high-speed pass through the tilted board",
+      "sourceSha256": "e933e8ad6ba7e39c67dfdd9565d2627e0989b877a7215063486cff1d089e6c64",
+      "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-PSmN3D",
+      "status": 1,
+      "error": null,
+      "caughtByIntendedAssertion": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROLOGUE_WORD_MODEL: 28 checks; 2 failures\nERROR: PROLOGUE WORDS: swept word rectangle catches a complete high-speed pass through the tilted board\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:27)\nERROR: PROLOGUE WORDS: relative sweep catches a rapidly moving window rather than tunneling sideways\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_words.gd:10)\n       [1] run (res://tests/test_prologue_words.gd:31)\n"
+    },
+    {
+      "name": "touch-cancel-ignored",
+      "file": "scripts/games/prologue_interception.gd",
+      "from": "pointer_id=-99;dragging=false;holding=false;session.stop_pointer()",
+      "to": "pass # deliberately broken cancellation for the negative control",
+      "script": "res://tests/test_prologue_focus_input.gd",
+      "assertion": "touch cancellation releases ownership and stops stale drag movement",
+      "sourceSha256": "7c59baeacf6e0e10179699fb218e4c3ddba89e294223f9ea29bf8e6529c1a1ba",
+      "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-fNxWr4",
+      "status": 1,
+      "error": null,
+      "caughtByIntendedAssertion": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_PROLOGUE_FOCUS_INPUT: 35 checks; 1 failures\nERROR: PROLOGUE INPUT: touch cancellation releases ownership and stops stale drag movement\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_focus_input.gd:15)\n       [1] run (res://tests/test_prologue_focus_input.gd:69)\n       [2] click (res://tests/test_prologue_focus_input.gd:28)\n       [3] frames (res://tests/test_prologue_focus_input.gd:17)\n"
+    },
+    {
+      "name": "viewport-cover-instead-of-contain",
+      "file": "scripts/games/prologue_interception.gd",
+      "from": "display_scale=minf(size.x/430.0,size.y/820.0)",
+      "to": "display_scale=maxf(size.x/430.0,size.y/820.0)",
+      "script": "res://tests/test_prologue_focus_input.gd",
+      "assertion": "source viewport fits entirely within",
+      "sourceSha256": "7c59baeacf6e0e10179699fb218e4c3ddba89e294223f9ea29bf8e6529c1a1ba",
+      "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-XVH04Y",
+      "status": 1,
+      "error": null,
+      "caughtByIntendedAssertion": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_PROLOGUE_FOCUS_INPUT: 35 checks; 3 failures\nERROR: PROLOGUE INPUT: source viewport fits entirely within (390.0, 780.0)\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_focus_input.gd:15)\n       [1] run (res://tests/test_prologue_focus_input.gd:111)\n       [2] click (res://tests/test_prologue_focus_input.gd:28)\n       [3] frames (res://tests/test_prologue_focus_input.gd:17)\nERROR: PROLOGUE INPUT: source viewport fits entirely within (800.0, 820.0)\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_focus_input.gd:15)\n       [1] run (res://tests/test_prologue_focus_input.gd:111)\n       [2] click (res://tests/test_prologue_focus_input.gd:28)\n       [3] frames (res://tests/test_prologue_focus_input.gd:17)\nERROR: PROLOGUE INPUT: source viewport fits entirely within (320.0, 640.0)\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_prologue_focus_input.gd:15)\n       [1] run (res://tests/test_prologue_focus_input.gd:111)\n       [2] click (res://tests/test_prologue_focus_input.gd:28)\n       [3] frames (res://tests/test_prologue_focus_input.gd:17)\n"
+    }
+  ],
+  "completedAt": "2026-10-19T16:23:34.364Z",
+  "passed": true
+}

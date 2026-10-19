@@ -1,0 +1,59 @@
+[
+  {
+    "label": "test_all_scripts_parse.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:22:43.718Z",
+    "finishedAt": "2026-10-19T16:22:48.342Z",
+    "durationMs": 4624,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-ZkO8ya/workspace/godot_native",
+      "--script",
+      "res://tests/test_all_scripts_parse.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 736 scripts, 0 failures\n"
+  },
+  {
+    "label": "test_native_chase_integration.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:22:48.345Z",
+    "finishedAt": "2026-10-19T16:22:51.173Z",
+    "durationMs": 2828,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-Gnb9BI/workspace/godot_native",
+      "--script",
+      "res://tests/test_native_chase_integration.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_CHASE_INTEGRATION: 98 checks; 0 failures\n"
+  },
+  {
+    "label": "test_notice_queue_lifecycle.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:22:51.176Z",
+    "finishedAt": "2026-10-19T16:22:53.125Z",
+    "durationMs": 1949,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-h7XHvv/workspace/godot_native",
+      "--script",
+      "res://tests/test_notice_queue_lifecycle.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNOTICE_QUEUE_LIFECYCLE: 22 checks; 0 failures\n"
+  }
+]

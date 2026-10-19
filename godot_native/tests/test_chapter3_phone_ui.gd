@@ -57,7 +57,11 @@ func run() -> void:
 	press(ui,controller,s,"c35_photos","确认照片顺序")
 	for code: String in ["CLIP D7","CLIP 91","CLIP 4C","CLIP 3A"]:
 		press(ui,controller,s,"c35_voice","▶",code)
-		await create_timer(4.65).timeout
+		# The native button is unlocked only by actual playback evidence.
+		var heard: bool=await await_actual_heard(media,s)
+		check(heard,"real AudioStreamPlayer crossed80 percent for "+code)
+		if not heard:
+			await media.shutdown();media.queue_free();await process_frame;quit(1);return
 		press(ui,controller,s,"c35_voice","保留这段",code)
 	press(ui,controller,s,"c35_voice","进入排序")
 	press(ui,controller,s,"c35_voice","确认录音顺序")
@@ -106,3 +110,13 @@ func press(ui: RefCounted,controller: RefCounted,s: Dictionary,page: String,text
 	check(selected!=null and not selected.disabled,"native button reachable "+page+" / "+text+" / "+row_text)
 	if selected!=null and not selected.disabled: selected.pressed.emit()
 	surface.free()
+
+func await_actual_heard(media: Node,state: Dictionary) -> bool:
+	if media.current==null:return false
+	var clip: String=media.current.clip_id
+	var deadline: int=Time.get_ticks_msec()+7500
+	while Time.get_ticks_msec()<deadline:
+		if state.native.get("c35_listened",[]).has(clip):return true
+		if media.current==null or media.current.phase!="playing":return false
+		await process_frame
+	return false

@@ -1,0 +1,21 @@
+[
+  {
+    "label": "test_native_chase_integration.gd",
+    "status": 1,
+    "failed": true,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:21:50.616Z",
+    "finishedAt": "2026-10-19T16:21:53.451Z",
+    "durationMs": 2835,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-i5PM5x/workspace/godot_native",
+      "--script",
+      "res://tests/test_native_chase_integration.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_CHASE_INTEGRATION: 98 checks; 1 failures\nERROR: film-owned arrival must not replay later from the ordinary notice queue\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_native_chase_integration.gd:11)\n       [1] run (res://tests/test_native_chase_integration.gd:106)\n       [2] frames (res://tests/test_native_chase_integration.gd:13)\n"
+  }
+]

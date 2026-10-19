@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "boardX": 215.0,
+      "dragging": true,
+      "label": "root mouse down remains held across three rendered/layout frames",
+      "pass": true
+    },
+    {
+      "boardX": 295.666666666667,
+      "dragging": true,
+      "label": "root mouse motion across six frames moves the actual drawn window, without direct pointer/model calls",
+      "pass": true
+    },
+    {
+      "boardX": 295.666666666667,
+      "dragging": true,
+      "label": "mouse movement tilts the physical window",
+      "pass": true
+    },
+    {
+      "boardX": 295.666666666667,
+      "dragging": false,
+      "label": "root mouse up releases the retained pointer",
+      "pass": true
+    },
+    {
+      "boardX": 295.666666666667,
+      "dragging": false,
+      "label": "unheld root mouse motion cannot drag the window after release",
+      "pass": true
+    },
+    {
+      "boardX": 235.666666666667,
+      "dragging": true,
+      "label": "a second real mouse grab works at the new rendered location",
+      "pass": true
+    }
+  ],
+  "failures": 0,
+  "input": "Viewport.push_input InputEventMouseButton / MouseMotion, held across actual process_frame; no direct gameplay pointer or model mutation"
+}

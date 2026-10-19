@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "checks": 27,
+  "failures": [],
+  "results": [
+    {
+      "name": "local reading surfaces",
+      "captionBackground": "rgb(242, 234, 216)",
+      "captionColor": "rgb(41, 38, 31)",
+      "captionShadow": "none",
+      "modalBackground": "rgb(244, 237, 220)",
+      "reasonColor": "rgb(41, 38, 31)"
+    },
+    {
+      "name": "scaled touch",
+      "rect": {
+        "bx": 194.99999237060547,
+        "by": 637.543701171875,
+        "x": 20.469768524169922,
+        "y": 103.4000015258789,
+        "w": 349.06048583984375,
+        "h": 665.650146484375
+      },
+      "boardX": 294.20000000000005,
+      "events": [
+        {
+          "type": "pointerdown",
+          "target": "",
+          "x": 195,
+          "y": 637.543701171875
+        },
+        {
+          "type": "pointermove",
+          "target": "ending-geo-error-board ",
+          "x": 334.62420654296875,
+          "y": 637.543701171875
+        }
+      ]
+    },
+    {
+      "name": "keyboard six-target run",
+      "formalSaveReloadRetained": true,
+      "fixtureSha256": "2938026ec9dd9d9b3817e9f093aec36e3c5bcf5e03073c75bc5bba42cefb857d",
+      "elapsedMs": 64200,
+      "recoveries": 0,
+      "keptProgress": true,
+      "controllerHandoff": "friend_message_required"
+    },
+    {
+      "name": "old exact-scene negative",
+      "fixtureSha256": "971d56b6b770e1c4bf3335781225f56bb97245b47983f53226af3fe15cd9d654",
+      "phase": "lock",
+      "blockedCount": 3,
+      "semanticTargetModelPresent": false,
+      "effectiveSemanticContractFailure": true
+    }
+  ],
+  "scope": "headless real app, native Input keyboard/mouse/touch; externally serialized SaveStore fixture through ordinary storage, no product QA route",
+  "artifacts": "/tmp/codex-755-prologue-interception-browser"
+}

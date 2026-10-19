@@ -8,6 +8,8 @@ const VALIDATORS = Object.freeze({
   typecheck: Object.freeze({ area: "source", script: "typecheck", risk: "TypeScript contract and import integrity" }),
   text: Object.freeze({ area: "generated-text", script: "text:check", risk: "player-facing text inventory freshness" }),
   taskGuidance: Object.freeze({ area: "task-ui", script: "verify:task-guidance", risk: "single owner for persistent route guidance" }),
+  noticeQueue: Object.freeze({ area: "presentation", script: "verify:notice-queue", risk: "unread notification preservation, scene deferral and visible reading time" }),
+  prologueInterception: Object.freeze({ area: "chapter-1", script: "verify:prologue-interception", risk: "readable semantic targets, continuous contact, retry preservation and original story proof" }),
   developerLevels: Object.freeze({ area: "developer-tools", script: "verify:developer-levels", risk: "checkpoint coverage and unique assignment" }),
   cc98Login: Object.freeze({ area: "chapter-2", script: "verify:cc98-login", risk: "identity gate, lockout and save migration" }),
   interlude: Object.freeze({ area: "chapter-3.5", script: "chapter3:validate-interlude", risk: "parallel evidence order, rejection and save migration" }),
@@ -51,10 +53,13 @@ const SUITE_KEYS = Object.freeze({
     "typecheck",
     "text",
     "taskGuidance",
+    "noticeQueue",
     "developerLevels"
   ]),
   critical: Object.freeze([
     "typecheck",
+    "noticeQueue",
+    "prologueInterception",
     "cc98Login",
     "interlude",
     "canteenBike",
@@ -90,6 +95,8 @@ const SUITE_KEYS = Object.freeze({
   ]),
   release: Object.freeze([
     "typecheck",
+    "noticeQueue",
+    "prologueInterception",
     "text",
     "taskGuidance",
     "developerLevels",

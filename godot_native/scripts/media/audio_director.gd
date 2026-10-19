@@ -71,6 +71,7 @@ func _process(_delta: float) -> void:
 		if pending.has("story"):
 			var line: Dictionary=pending.story
 			var tone: String="player" if str(line.text).begins_with("玩家：") else "system" if str(line.text).begins_with("系统：") or str(line.text).begins_with("手机系统：") else "task" if str(line.text).begins_with("任务：") else "narrator"
+			last_subtitle={"text":str(line.text),"surface":"toast","durationMs":float(line.durationMs),"tone":tone,"presentationRole":"notification" if tone=="task" else "dialogue"}
 			subtitle_timed.emit(str(line.text),"toast",float(line.durationMs),tone)
 			feedback(str(line.text))
 		elif pending.has("inspect"): inspect_requested.emit(str(pending.inspect))
@@ -207,6 +208,7 @@ func cue(id: String, payload: Dictionary = {}) -> void:
 		cue("sys_net_try")
 		return
 	if id == "native_story_subtitle":
+		last_subtitle={"text":str(payload.get("text","")),"surface":"toast","durationMs":float(payload.get("durationMs",2400)),"tone":str(payload.get("tone","system")),"presentationRole":"notification" if payload.get("tone","")=="task" else "dialogue"}
 		subtitle_timed.emit(str(payload.get("text","")),"toast",float(payload.get("durationMs",2400)),str(payload.get("tone","system")))
 		feedback(str(payload.get("text",""))); return
 	if id in ["native_activity_paused","native_activity_resumed","native_activity_closed"]:
@@ -340,7 +342,9 @@ func _play_text(item: Dictionary, duration_override: float = -1) -> void:
 	var text: String = str(line.get("subtitleZh", ""))
 	var duration: float = duration_override if duration_override >= 0 else float(source.get("textDurationMsByKey", {}).get(str(item.get("subtitleKey", "")), 3600))
 	var tone: String = "task" if line.get("kind") == "task" else "system" if line.get("speaker") == "narrator" else "xiaoying"
-	last_subtitle = {"text":text,"surface":"toast","durationMs":duration,"tone":tone}
+	var role:String="dialogue" if line.get("kind","") in ["dialogue","taunt"] else "notification"
+	var speaker:String=str({"narrator":"旁白","system":"系统","player":"玩家","seat022":"022","cleaner":"保洁阿姨","guard":"保安"}.get(str(line.get("speaker","")),"系统"))
+	last_subtitle = {"text":text,"surface":"toast","durationMs":duration,"tone":tone,"presentationRole":role,"speaker":speaker}
 	subtitle_timed.emit(text, "toast", duration, tone)
 	subtitle.emit(text, "toast")
 	if _tiyi_taunt_waiting and str(item.get("subtitleKey",""))=="sys_net_try":

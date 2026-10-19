@@ -1002,7 +1002,7 @@
 }
 
 .canteen-chase-narration.game-subtitle-frame {
-  --subtitle-panel: rgba(38, 51, 42, 0.92);
+  --subtitle-panel: #e6ecdf;
   --subtitle-accent: #526c56;
   bottom: auto;
   display: grid;

@@ -1,0 +1,65 @@
+{
+  "schema": "native-world-notice-expiry-focused-v1",
+  "sourceBefore": {
+    "scripts/main.gd": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b",
+    "scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023",
+    "tests/test_world_notice_ownership.gd": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b",
+    "tests/test_notice_queue_lifecycle.gd": "17d63f3150d546bbb023a7854a6cebf78480f29b8e52de0fcbfb82a919318732",
+    "tests/test_world_overlay_integration.gd": "16a4ffc34cf0dc39781c20f6e2fd45cce1b9ae70b88b1188340f7ff6b30fa1e2"
+  },
+  "sourceAfter": {
+    "scripts/main.gd": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b",
+    "scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023",
+    "tests/test_world_notice_ownership.gd": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b",
+    "tests/test_notice_queue_lifecycle.gd": "17d63f3150d546bbb023a7854a6cebf78480f29b8e52de0fcbfb82a919318732",
+    "tests/test_world_overlay_integration.gd": "16a4ffc34cf0dc39781c20f6e2fd45cce1b9ae70b88b1188340f7ff6b30fa1e2"
+  },
+  "sourceUnchanged": true,
+  "stages": [
+    {
+      "mode": "old",
+      "script": "res://tests/test_world_notice_ownership.gd",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-world-expiry-final-G7ihQz",
+      "status": 1,
+      "error": null,
+      "durationMs": 2326,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_NOTICE_OWNERSHIP: 19 checks; 13 failures\nERROR: WORLD_NOTICE_OWNERSHIP: Main owns State feedback instead of a second direct world route\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:25)\nERROR: WORLD_NOTICE_OWNERSHIP: State feedback burst never leaks over an active scene\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:28)\nERROR: WORLD_NOTICE_OWNERSHIP: first actual world expiry starts only the second State message at full duration\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:35)\nERROR: WORLD_NOTICE_OWNERSHIP: world reading time is deducted once, not twice per tick\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:37)\nERROR: WORLD_NOTICE_OWNERSHIP: second expiry starts only the third State message at full duration\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:39)\nERROR: WORLD_NOTICE_OWNERSHIP: all State messages expire once with no replay or stale FIFO head\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:41)\nERROR: WORLD_NOTICE_OWNERSHIP: ordinary world-to-phone route preserves unread time and one surface\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:45)\nERROR: WORLD_NOTICE_OWNERSHIP: ordinary phone-to-world route retains its unread time\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:47)\nERROR: WORLD_NOTICE_OWNERSHIP: an external same-text owner does not clear or charge the queued notice\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:50)\nERROR: WORLD_NOTICE_OWNERSHIP: external same-text expiry cannot finish Main's different owner token\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:52)\nERROR: WORLD_NOTICE_OWNERSHIP: external owner releases to the same unread Main item\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:53)\nERROR: WORLD_NOTICE_OWNERSHIP: an external clear resumes rather than consumes unread content\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:56)\nERROR: WORLD_NOTICE_OWNERSHIP: resumed surface eventually completes once\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_world_notice_ownership.gd:8)\n       [1] run (res://tests/test_world_notice_ownership.gd:58)\n"
+    },
+    {
+      "mode": "final",
+      "script": "res://tests/test_world_notice_ownership.gd",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-world-expiry-final-siQQ7i",
+      "status": 0,
+      "error": null,
+      "durationMs": 2343,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_NOTICE_OWNERSHIP: 19 checks; 0 failures\n"
+    },
+    {
+      "mode": "final",
+      "script": "res://tests/test_notice_queue_lifecycle.gd",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-world-expiry-final-9VEJMS",
+      "status": 0,
+      "error": null,
+      "durationMs": 2051,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNOTICE_QUEUE_LIFECYCLE: 32 checks; 0 failures\n"
+    },
+    {
+      "mode": "final",
+      "script": "res://tests/test_world_overlay_integration.gd",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-world-expiry-final-fM5gtn",
+      "status": 0,
+      "error": null,
+      "durationMs": 2529,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_OVERLAY_INTEGRATION: 89 checks; 0 failures\n"
+    },
+    {
+      "mode": "final",
+      "script": "res://tests/test_world_presentation_lifecycle.gd",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-world-expiry-final-pxZAOX",
+      "status": 0,
+      "error": null,
+      "durationMs": 1823,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_OWNER_DIAGNOSTIC {\"noticeSurface\":\"\",\"queueCurrent\":{\"duration\":2.4,\"elapsed\":0.0,\"exact\":false,\"remaining\":2.4,\"speaker\":\"系统\",\"text\":\"单一场景字幕\"},\"queuePending\":[{\"duration\":4.2,\"elapsed\":0.0,\"exact\":true,\"remaining\":4.2,\"speaker\":\"系统\",\"text\":\"单一语音字幕\"}],\"sceneOwns\":true,\"toastVisible\":false,\"worldSubtitle\":\"\"}\nWORLD_FIFO_DIAGNOSTIC {\"current\":{\"duration\":4.2,\"elapsed\":0.0,\"exact\":true,\"remaining\":4.2,\"speaker\":\"系统\",\"text\":\"单一语音字幕\"},\"left\":4.2,\"pending\":[],\"surface\":\"world\",\"worldText\":\"单一语音字幕\"}\nWorld presentation/input lifecycle checks: 12; failures: 0\n"
+    }
+  ]
+}

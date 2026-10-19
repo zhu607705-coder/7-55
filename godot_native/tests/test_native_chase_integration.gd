@@ -102,6 +102,8 @@ func run() -> void:
 	var proof: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/chase.json"))
 	game.finished.emit(proof)
 	check(shell.toast.text.is_empty() and not shell.toast.visible,"accepted success notice is owned by the film caption only")
+	var arrival_message:String=str(state.last_result.get("message",""))
+	check(shell.notice_queue.current.get("text","")!=arrival_message and not shell.notice_queue.pending.any(func(item:Dictionary)->bool:return item.text==arrival_message),"film-owned arrival must not replay later from the ordinary notice queue")
 	check(state.d.canteenHunt.chaseCompleted and state.d.native.positions["campus_bootstrap:"].x==3300.0,"accepted proof saves authored arrival synchronously before film")
 	var saved=JSON.parse_string(FileAccess.get_file_as_string(state.SAVE_PATH))
 	check(saved.state.canteenHunt.chaseCompleted and saved.state.native.positions["campus_bootstrap:"].y==1360.0,"disk save contains accepted win and source arrival before optional ending")

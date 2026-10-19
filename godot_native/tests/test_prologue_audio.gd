@@ -1,5 +1,6 @@
 extends SceneTree
 const Game = preload("res://scripts/games/prologue_interception.gd")
+const WordDriver=preload("res://tests/prologue_word_driver.gd")
 const Director = preload("res://scripts/media/audio_director.gd")
 const DisplayFixture = preload("res://tests/zh_text_fixture.gd")
 var checks: int = 0
@@ -84,22 +85,21 @@ func run() -> void:
 	check(absf(audio.voice.get_playback_position()-playback)<.04,"paused voice offset cannot drift")
 	game._resume(); await process_frame
 	check(not audio.voice.stream_paused and count("prologue_playback_resumed")==1,"resume continues same clip")
-	# Source misses and retry emit exact events without waiting for narration callbacks.
-	game._switch("intercept")
+	game._review(true); var review_clock: float=game.intro_elapsed_ms; playback=audio.voice.get_playback_position()
+	tick(.4); await wait_msec(150)
+	check(game.session.reviewing and game.intro_elapsed_ms==review_clock and audio.voice.stream_paused,"clue review freezes original narration and its scene caption clock")
+	game._review(false); await process_frame
+	check(not audio.voice.stream_paused,"closing clue review resumes the same original voice owner")
+	# Semantic failure freezes the branch; continuing does not replay the intro.
 	for index in range(3):
-		game.paddle=79
-		while game.phase=="intercept": tick(.01)
-		tick(.66)
-	check(game.phase=="failed" and count("prologue_error_intercept_missed")==3 and count("prologue_error_round_failed")==1,"all misses/failure events follow actual collision results")
-	check(events.filter(func(e: Dictionary) -> bool: return e.id=="prologue_error_intercept_missed")[2].payload=={"misses":3,"maxMisses":3},"third miss payload source parity")
-	game._retry(); tick(1.51)
-	check(await voice_reached("vo_prologue_narrator_intro"),"retry intro scheduled120ms has actually started before fast simulated catch")
-	check(count("prologue_narrator_intro")==2,"retry replays source intro without blackout")
-	for end_x in [24,78,50]:
-		game.paddle=end_x
-		while game.phase=="intercept": tick(.01)
-		tick(.36)
-	check(game.phase=="lock" and count("prologue_error_intercepted")==3 and count("prologue_error_lock_ready")==1,"three blocks emit source lock ready")
+		while game.phase != "failed": tick(.01)
+		if index < 2: game._retry()
+	check(game.phase=="failed" and count("prologue_error_intercept_missed")==3 and count("prologue_error_round_failed")==1,"miss and escalating-hint sounds follow actual escaped target words")
+	check(events.filter(func(e: Dictionary) -> bool: return e.id=="prologue_error_intercept_missed")[2].payload=={"misses":3,"maxMisses":3},"third miss retains the existing presentation payload")
+	game._retry()
+	check(count("prologue_narrator_intro")==1 and pending_voice("vo_prologue_narrator_intro").is_empty(),"continue resumes the current semantic stage without replaying narration")
+	check(WordDriver.until(game,"lock"),"actual word selection and board collisions earn the lock")
+	check(game.phase=="lock" and count("prologue_error_intercepted")==3 and count("prologue_error_lock_ready")==1,"three completed semantic stages emit the original lock cue once")
 	game.holding=true; tick(1.41)
 	await voice_reached("vo_prologue_narrator_caught")
 	check(game.phase=="caught" and audio.voice_asset=="vo_prologue_narrator_caught","1400ms hold plays only narrator caught voice")

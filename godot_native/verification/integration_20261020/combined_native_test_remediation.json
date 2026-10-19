@@ -1,0 +1,27 @@
+{
+  "appliedAt": "2026-10-19T17:11:36.615762+00:00",
+  "scope": "Only three test files; all production changes separately owned by crosspr and not attributed to these test-only repairs.",
+  "changes": [
+    {
+      "path": "godot_native/tests/test_chapter3_media.gd",
+      "beforeSha256": "cc3978daa4bb52692d62475ac37badff763161c2ab230155366f691c8a10df47",
+      "afterSha256": "2f90173ccb1460d8c04cb9cb61d39b08b1f61fda5f6b2b36a6c8785739cbe336",
+      "originalBackup": "/tmp/codex-755-combined-original-test_chapter3_media.gd",
+      "prototype": "/tmp/codex-755-c3-media-fixed.gd"
+    },
+    {
+      "path": "godot_native/tests/test_chapter3_phone_ui.gd",
+      "beforeSha256": "4c3e0a88db0f89ba4f2e82e39eb4909c3e6b8dff50266c4493e543b50d350006",
+      "afterSha256": "04f9d36c97dba659427a047ecd11c6a8c577e0ee6de5c9b6cab83d69ab8625cd",
+      "originalBackup": "/tmp/codex-755-combined-original-test_chapter3_phone_ui.gd",
+      "prototype": "/tmp/codex-755-c3-phone-ui-fixed.gd"
+    },
+    {
+      "path": "godot_native/tests/test_world_presentation_lifecycle.gd",
+      "beforeSha256": "8f6b8468bbe393c9ef4bb182c258dac5d1ad1e86317314c78ccc625ea38b52ec",
+      "afterSha256": "9118b02c03088f7ea73f976a20e2d482320818d7eea8298dca179111949044ce",
+      "originalBackup": "/tmp/codex-755-combined-original-test_world_presentation_lifecycle.gd",
+      "prototype": "/tmp/codex-755-world-presentation-fixed.gd"
+    }
+  ]
+}

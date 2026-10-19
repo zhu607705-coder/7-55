@@ -1,4 +1,5 @@
 extends SceneTree
+const PrologueWordDriver=preload("res://tests/prologue_word_driver.gd")
 ## Continuous campaign integration, ONE fresh state. Spatial positioning is
 ## explicitly logged test setup, never a claim of manual navigation. No source
 ## checkpoint fixtures or story flag writes are used to advance the campaign.
@@ -214,10 +215,9 @@ func beginning() -> void:
 	if not check(state.d.digits=={"d1":"0","d2":"7","d3":"9","d4":"8"},"four authored digits collected"): return
 	game=make_game(await step("c1_checkin","0798"))
 	if game==null: return
-	for frame in range(2000):
+	for frame in range(7000):
 		if not game_results.is_empty(): break
-		if game.phase=="intercept": game._pointer(game._position(Vector2([24,78,50][mini(game.blocks,2)],80)),true)
-		if game.phase=="lock": game._pointer(game._position(Vector2(50,42)),true)
+		PrologueWordDriver.steer(game)
 		game._process(.02)
 	check(game_results.size()==1 and state.d.native.chapter==2,"real prologue input and completed exchange")
 	game.free(); game=null

@@ -1,0 +1,76 @@
+{
+  "captures": [
+    {
+      "age": 3.27499999999999,
+      "id": 1,
+      "spawn_time": 7.55000000000003,
+      "stage": 0,
+      "time": 10.825,
+      "word": "等"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 3,
+      "spawn_time": 19.0249999999994,
+      "stage": 1,
+      "time": 22.7083333333327,
+      "word": "经度"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 5,
+      "spawn_time": 26.5749999999989,
+      "stage": 1,
+      "time": 30.2583333333323,
+      "word": "纬度"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 7,
+      "spawn_time": 38.4583333333316,
+      "stage": 2,
+      "time": 42.1416666666649,
+      "word": "旁白"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 9,
+      "spawn_time": 46.0083333333312,
+      "stage": 2,
+      "time": 49.6916666666645,
+      "word": "还没"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 11,
+      "spawn_time": 53.5583333333307,
+      "stage": 2,
+      "time": 57.2416666666641,
+      "word": "说完"
+    }
+  ],
+  "hint": {},
+  "kind": "local-scene-clock-ordinary-pointer-intents-not-manual-play",
+  "minimumReadableSeconds": 3.27499999999999,
+  "passed": true,
+  "result": [
+    {
+      "dialogueCount": 4,
+      "failed": false,
+      "interceptedCount": 3,
+      "lockHeldMs": 1400.0,
+      "whiteoutCompleted": true
+    }
+  ],
+  "sourceHoldMs": 1400.0,
+  "sourceTargetTransitSeconds": "3.0+.35*word.length",
+  "spawnSchedulingIntervalsMs": [
+    350,
+    1000,
+    1900,
+    700
+  ],
+  "totalSceneSeconds": 80.06,
+  "wordModelSeconds": 57.891666666664,
+  "zeroFailures": true
+}

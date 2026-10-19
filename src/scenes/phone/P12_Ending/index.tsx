@@ -2,638 +2,263 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import { kit } from "../../../modules/GameKit";
-import {
-  clearEndingRuntimeSnapshot,
-  setEndingRuntimeSnapshot,
-  type EndingRuntimePhase,
-  type EndingRuntimeSnapshot
-} from "./EndingRuntime";
+import { clearEndingRuntimeSnapshot, setEndingRuntimeSnapshot, type EndingRuntimePhase, type EndingRuntimeSnapshot } from "./EndingRuntime";
+import { INTERCEPTION_STAGES, WINDOW_BODY, clamp, createInterceptionState, stepInterception, continueInterception,
+  toggleClueReview, missingTargets, failureHint, type InterceptionState } from "./InterceptionModel";
 
 const BLACKOUT_MS = 7000;
 const ERROR_DEPLOY_MS = 1500;
-const ATTEMPT_DURATION_MS = [2200, 1900, 1650] as const;
-const IMPACT_PAUSE_MS = 350;
-const MISS_PAUSE_MS = 650;
 const HOLD_TO_CATCH_MS = 1400;
 const REQUIRED_BLOCKS = 3;
-const MAX_MISSES = 3;
-const PADDLE_WIDTH_PERCENT = 38;
-const PADDLE_MIN_X = PADDLE_WIDTH_PERCENT / 2 + 2;
-const PADDLE_MAX_X = 100 - PADDLE_MIN_X;
-const KEYBOARD_SPEED_PERCENT_PER_SECOND = 54;
-
-type EndingFeedback = "blocked" | "missed" | "round_failed" | null;
-
 interface EndingViewState {
-  phase: EndingRuntimePhase;
-  phaseElapsedMs: number;
-  introElapsedMs: number;
-  blockedCount: number;
-  misses: number;
-  paddleX: number;
-  orbX: number;
-  orbY: number;
-  orbRotation: number;
-  lockHeldMs: number;
-  lockActive: boolean;
-  dialogueStep: number;
-  feedback: EndingFeedback;
-  paused: boolean;
-  completionRequested: boolean;
+  phase: EndingRuntimePhase; phaseElapsedMs: number; introElapsedMs: number; blockedCount: number;
+  game: InterceptionState; lockHeldMs: number; lockActive: boolean; dialogueStep: number;
+  paused: boolean; completionRequested: boolean;
 }
-
 const DIALOGUE = [
   { speaker: "narrator", text: actOneContent.audioNarration.prologue_narrator_caught.subtitleZh },
   { speaker: "player", text: "不，除非你帮助我" },
   { speaker: "player", text: "不然你就和我的绩点同归于尽吧" },
   { speaker: "narrator", text: actOneContent.audioNarration.prologue_narrator_bargain.subtitleZh }
 ] as const;
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value));
-}
-
 function createEndingViewState(): EndingViewState {
-  return {
-    phase: "blackout",
-    phaseElapsedMs: 0,
-    introElapsedMs: 0,
-    blockedCount: 0,
-    misses: 0,
-    paddleX: 50,
-    orbX: 82,
-    orbY: 12,
-    orbRotation: -8,
-    lockHeldMs: 0,
-    lockActive: false,
-    dialogueStep: 0,
-    feedback: null,
-    paused: false,
-    completionRequested: false
-  };
+  return { phase: "blackout", phaseElapsedMs: 0, introElapsedMs: 0, blockedCount: 0,
+    game: createInterceptionState(), lockHeldMs: 0, lockActive: false, dialogueStep: 0, paused: false, completionRequested: false };
+}
+function toRuntimeSnapshot(s: EndingViewState): EndingRuntimeSnapshot {
+  return { coordinateSystem: "430x820 scene coordinates, origin at top-left, x right, y down",
+    phase: s.phase, blockedCount: s.blockedCount, requiredBlocks: 3, misses: s.game.failures, maxMisses: null,
+    attempt: Math.min(3, s.game.stage + 1), paddle: { xPercent: s.game.boardX / 430 * 100, widthPercent: WINDOW_BODY.width / 430 * 100 },
+    narratorOrb: s.phase === "lock" ? { xPercent: 50, yPercent: 42 } : null,
+    lockProgress: clamp(s.lockHeldMs / HOLD_TO_CATCH_MS, 0, 1), lockRequiredMs: 1400,
+    paused: s.paused || ["hint", "review"].includes(s.game.phase),
+    feedback: s.game.phase === "hint" ? "round_failed" : s.game.phase === "stage_complete" ? "blocked" : null,
+    interception: { stage: s.game.stage + 1, phase: s.game.phase, collected: [...s.game.collected],
+      missing: missingTargets(s.game), clueIndex: s.game.clueIndex, failures: s.game.stageFailures,
+      failureReason: s.game.failure, boardX: s.game.boardX, boardY: WINDOW_BODY.y, boardAngle: s.game.boardAngle,
+      words: s.game.words.map((w) => ({ ...w })) } };
 }
 
-function narratorPath(round: number, progress: number): { x: number; y: number; rotation: number } {
-  const p = clamp(progress, 0, 1);
-  if (round === 0) {
-    return {
-      x: clamp(84 - 60 * p + Math.sin(p * Math.PI * 2) * 9 + Math.sin(p * Math.PI * 5) * 3, 8, 92),
-      y: 12 + 69 * p + Math.sin(p * Math.PI * 3) * 2.5,
-      rotation: -18 + 56 * p + Math.sin(p * Math.PI * 4) * 18
-    };
-  }
-  if (round === 1) {
-    return {
-      x: clamp(14 + 64 * p + Math.sin(p * Math.PI * 3) * 10 - Math.sin(p * Math.PI * 7) * 3, 8, 92),
-      y: 12 + 69 * p + Math.sin(p * Math.PI * 4) * 3,
-      rotation: 22 - 60 * p + Math.sin(p * Math.PI * 6) * 22
-    };
-  }
-  return {
-    x: clamp(50 + 32 * Math.sin(p * Math.PI * 3) + 7 * Math.sin(p * Math.PI * 8), 8, 92),
-    y: 12 + 69 * p + Math.sin(p * Math.PI * 5) * 3,
-    rotation: -20 + 540 * p
-  };
-}
-
-function toRuntimeSnapshot(state: EndingViewState): EndingRuntimeSnapshot {
-  const orbVisible = !["blackout", "failed", "burst", "whiteout"].includes(state.phase);
-  return {
-    coordinateSystem: "430x820 scene coordinates, origin at top-left, x right, y down",
-    phase: state.phase,
-    blockedCount: state.blockedCount,
-    requiredBlocks: 3,
-    misses: state.misses,
-    maxMisses: 3,
-    attempt: Math.min(REQUIRED_BLOCKS, state.blockedCount + 1),
-    paddle: { xPercent: state.paddleX, widthPercent: PADDLE_WIDTH_PERCENT },
-    narratorOrb: orbVisible ? { xPercent: state.orbX, yPercent: state.orbY } : null,
-    lockProgress: clamp(state.lockHeldMs / HOLD_TO_CATCH_MS, 0, 1),
-    lockRequiredMs: 1400,
-    paused: state.paused,
-    feedback: state.feedback
-  };
-}
-
-/**
- * P12 序章结算：7 秒黑屏后用经纬度错误框挡住三次离场路径，再按住旁白圆圈完成锁定。
- */
+/** Text discovery is presentation-local; only all three stages plus the original hold submit the existing controller proof. */
 export function EndingScene({ state, events }: SceneComponentProps) {
-  const runtimeRef = useRef<EndingViewState>(createEndingViewState());
-  const [view, setView] = useState<EndingViewState>(() => ({ ...runtimeRef.current }));
+  const runtimeRef = useRef(createEndingViewState());
+  const [view, setView] = useState(() => ({ ...runtimeRef.current }));
+  const sceneRef = useRef<HTMLElement>(null);
+  const [stageScale, setStageScale] = useState(1);
   const fieldRef = useRef<HTMLDivElement>(null);
   const paddleRef = useRef<HTMLButtonElement>(null);
   const lockButtonRef = useRef<HTMLButtonElement>(null);
   const retryButtonRef = useRef<HTMLButtonElement>(null);
-  const dragPointerRef = useRef<number | null>(null);
+  const dragPointerRef = useRef<{ id: number; offset: number } | null>(null);
+  const pointerTargetRef = useRef<number | null>(null);
   const heldDirectionsRef = useRef({ left: false, right: false });
-
-  const publishRuntime = useCallback(() => {
-    const next = { ...runtimeRef.current };
-    setView(next);
-    setEndingRuntimeSnapshot(toRuntimeSnapshot(next));
+  useEffect(() => {
+    const element = sceneRef.current;
+    if (!element) return;
+    const measure = () => setStageScale(Math.min(element.clientWidth / 430, (element.clientHeight - 40) / 820));
+    measure();
+    const observer = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
+    observer?.observe(element);
+    window.addEventListener("resize", measure);
+    return () => { observer?.disconnect(); window.removeEventListener("resize", measure); };
   }, []);
-
+  const clearMotion = useCallback(() => {
+    dragPointerRef.current = null; pointerTargetRef.current = null;
+    heldDirectionsRef.current.left = false; heldDirectionsRef.current.right = false;
+  }, []);
+  const publishRuntime = useCallback(() => {
+    const r = runtimeRef.current;
+    setView({ ...r, game: { ...r.game, collected: [...r.game.collected], words: r.game.words.map((w) => ({ ...w })), ring: r.game.ring ? { ...r.game.ring } : null } });
+    setEndingRuntimeSnapshot(toRuntimeSnapshot(r));
+  }, []);
   const advanceSimulation = useCallback((requestedMs: number) => {
-    let remainingMs = clamp(Number.isFinite(requestedMs) ? requestedMs : 0, 0, 10000);
-    while (remainingMs > 0) {
-      const deltaMs = Math.min(remainingMs, 34);
-      remainingMs -= deltaMs;
-      const runtime = runtimeRef.current;
-      if (runtime.paused || runtime.phase === "failed") {
-        continue;
+    let remaining = clamp(Number.isFinite(requestedMs) ? requestedMs : 0, 0, 10000);
+    while (remaining > 0) {
+      const delta = Math.min(remaining, 1000 / 120); remaining -= delta;
+      const r = runtimeRef.current;
+      if (r.paused) continue;
+      r.phaseElapsedMs += delta;
+      if (["deploy", "intercept", "impact", "failed", "lock"].includes(r.phase)) r.introElapsedMs += delta;
+      if (r.phase === "blackout" && r.phaseElapsedMs >= BLACKOUT_MS) {
+        r.phase = "deploy"; r.phaseElapsedMs = 0; r.introElapsedMs = 0;
+        events.emit("prologue_narrator_intro"); queueMicrotask(() => paddleRef.current?.focus()); continue;
       }
-
-      if (["deploy", "intercept", "impact", "miss", "lock"].includes(runtime.phase)) {
-        runtime.introElapsedMs += deltaMs;
+      if (r.phase === "deploy" && r.phaseElapsedMs >= ERROR_DEPLOY_MS) {
+        r.phase = "intercept"; r.phaseElapsedMs = 0; continue;
       }
-
-      if (["deploy", "intercept", "impact", "miss"].includes(runtime.phase)) {
-        const direction = Number(heldDirectionsRef.current.right) - Number(heldDirectionsRef.current.left);
-        runtime.paddleX = clamp(
-          runtime.paddleX + direction * KEYBOARD_SPEED_PERCENT_PER_SECOND * deltaMs / 1000,
-          PADDLE_MIN_X,
-          PADDLE_MAX_X
-        );
-      }
-
-      runtime.phaseElapsedMs += deltaMs;
-
-      if (runtime.phase === "blackout" && runtime.phaseElapsedMs >= BLACKOUT_MS) {
-        runtime.phase = "deploy";
-        runtime.phaseElapsedMs = 0;
-        runtime.introElapsedMs = 0;
-        runtime.feedback = null;
-        events.emit("prologue_narrator_intro");
-        queueMicrotask(() => paddleRef.current?.focus());
-        continue;
-      }
-
-      if (runtime.phase === "deploy" && runtime.phaseElapsedMs >= ERROR_DEPLOY_MS) {
-        runtime.phase = "intercept";
-        runtime.phaseElapsedMs = 0;
-        const path = narratorPath(runtime.blockedCount, 0);
-        runtime.orbX = path.x;
-        runtime.orbY = path.y;
-        runtime.orbRotation = path.rotation;
-        continue;
-      }
-
-      if (runtime.phase === "intercept") {
-        const round = Math.min(runtime.blockedCount, REQUIRED_BLOCKS - 1);
-        const durationMs = ATTEMPT_DURATION_MS[round];
-        const progress = clamp(runtime.phaseElapsedMs / durationMs, 0, 1);
-        const path = narratorPath(round, progress);
-        runtime.orbX = path.x;
-        runtime.orbY = path.y;
-        runtime.orbRotation = path.rotation;
-        if (progress >= 1) {
-          const hitRange = PADDLE_WIDTH_PERCENT / 2;
-          if (Math.abs(runtime.paddleX - runtime.orbX) <= hitRange) {
-            runtime.blockedCount += 1;
-            runtime.phase = "impact";
-            runtime.phaseElapsedMs = 0;
-            runtime.feedback = "blocked";
-            events.emit("prologue_error_intercepted", {
-              blockedCount: runtime.blockedCount,
-              requiredBlocks: REQUIRED_BLOCKS
-            });
-          } else {
-            runtime.misses += 1;
-            runtime.phase = "miss";
-            runtime.phaseElapsedMs = 0;
-            runtime.orbY = 92;
-            runtime.feedback = "missed";
-            events.emit("prologue_error_intercept_missed", {
-              misses: runtime.misses,
-              maxMisses: MAX_MISSES
-            });
-          }
+      if (["intercept", "impact", "failed"].includes(r.phase)) {
+        const oldStages = r.game.completedStages, oldFailures = r.game.failures;
+        stepInterception(r.game, delta, { direction: Number(heldDirectionsRef.current.right) - Number(heldDirectionsRef.current.left), targetX: pointerTargetRef.current });
+        r.blockedCount = r.game.completedStages;
+        if (r.blockedCount > oldStages) events.emit("prologue_error_intercepted", { blockedCount: r.blockedCount, requiredBlocks: REQUIRED_BLOCKS });
+        if (r.game.failures > oldFailures) {
+          clearMotion(); events.emit("prologue_error_intercept_missed", { misses: r.game.failures, reason: r.game.failure });
+          queueMicrotask(() => retryButtonRef.current?.focus());
         }
-        continue;
-      }
-
-      if (runtime.phase === "impact" && runtime.phaseElapsedMs >= IMPACT_PAUSE_MS) {
-        runtime.phaseElapsedMs = 0;
-        runtime.feedback = null;
-        if (runtime.blockedCount >= REQUIRED_BLOCKS) {
-          runtime.phase = "lock";
-          runtime.orbX = 50;
-          runtime.orbY = 42;
-          runtime.orbRotation = 0;
+        r.phase = r.game.phase === "hint" ? "failed" : r.game.phase === "stage_complete" ? "impact" : "intercept";
+        if (r.game.phase === "complete") {
+          r.phase = "lock"; r.phaseElapsedMs = 0; clearMotion();
           events.emit("prologue_error_lock_ready", { requiredHoldMs: HOLD_TO_CATCH_MS });
           queueMicrotask(() => lockButtonRef.current?.focus());
-        } else {
-          runtime.phase = "intercept";
-          const path = narratorPath(runtime.blockedCount, 0);
-          runtime.orbX = path.x;
-          runtime.orbY = path.y;
-          runtime.orbRotation = path.rotation;
         }
         continue;
       }
-
-      if (runtime.phase === "miss" && runtime.phaseElapsedMs >= MISS_PAUSE_MS) {
-        runtime.phaseElapsedMs = 0;
-        if (runtime.misses >= MAX_MISSES) {
-          runtime.phase = "failed";
-          runtime.feedback = "round_failed";
-          events.emit("prologue_error_round_failed", { misses: runtime.misses });
-          queueMicrotask(() => retryButtonRef.current?.focus());
-        } else {
-          runtime.phase = "intercept";
-          runtime.feedback = null;
-          const path = narratorPath(runtime.blockedCount, 0);
-          runtime.orbX = path.x;
-          runtime.orbY = path.y;
-          runtime.orbRotation = path.rotation;
+      if (r.phase === "lock" && r.lockActive) {
+        r.lockHeldMs = Math.min(HOLD_TO_CATCH_MS, r.lockHeldMs + delta);
+        if (r.lockHeldMs >= HOLD_TO_CATCH_MS) {
+          r.lockActive = false; r.phase = "caught"; r.phaseElapsedMs = 0; r.dialogueStep = 0;
+          events.emit("prologue_narrator_caught", { blockedCount: r.blockedCount, lockHeldMs: r.lockHeldMs });
         }
         continue;
       }
-
-      if (runtime.phase === "lock" && runtime.lockActive) {
-        runtime.lockHeldMs = Math.min(HOLD_TO_CATCH_MS, runtime.lockHeldMs + deltaMs);
-        if (runtime.lockHeldMs >= HOLD_TO_CATCH_MS) {
-          runtime.lockActive = false;
-          runtime.phase = "caught";
-          runtime.phaseElapsedMs = 0;
-          runtime.dialogueStep = 0;
-          runtime.feedback = "blocked";
-          events.emit("prologue_narrator_caught", {
-            blockedCount: runtime.blockedCount,
-            lockHeldMs: runtime.lockHeldMs
-          });
-        }
+      if (r.phase === "caught") {
+        const next = r.phaseElapsedMs >= 5200 ? 3 : r.phaseElapsedMs >= 4100 ? 2 : r.phaseElapsedMs >= 3000 ? 1 : 0;
+        if (next !== r.dialogueStep) { r.dialogueStep = next; if (next === 3) events.emit("prologue_narrator_bargain"); }
+        if (r.phaseElapsedMs >= 8900) { r.phase = "burst"; r.phaseElapsedMs = 0; events.emit("prologue_white_burst"); }
         continue;
       }
-
-      if (runtime.phase === "caught") {
-        const nextDialogueStep = runtime.phaseElapsedMs >= 5200
-          ? 3
-          : runtime.phaseElapsedMs >= 4100
-            ? 2
-            : runtime.phaseElapsedMs >= 3000
-              ? 1
-              : 0;
-        if (nextDialogueStep !== runtime.dialogueStep) {
-          runtime.dialogueStep = nextDialogueStep;
-          if (nextDialogueStep === 3) {
-            events.emit("prologue_narrator_bargain");
-          }
-        }
-        if (runtime.phaseElapsedMs >= 8900) {
-          runtime.phase = "burst";
-          runtime.phaseElapsedMs = 0;
-          events.emit("prologue_white_burst");
-        }
-        continue;
-      }
-
-      if (runtime.phase === "burst" && runtime.phaseElapsedMs >= 950) {
-        runtime.phase = "whiteout";
-        runtime.phaseElapsedMs = 0;
-        continue;
-      }
-
-      if (runtime.phase === "whiteout" && runtime.phaseElapsedMs >= 700 && !runtime.completionRequested) {
-        runtime.completionRequested = true;
-        kit.actOne.completeNarratorIntervention({
-          interceptedCount: runtime.blockedCount,
-          lockHeldMs: runtime.lockHeldMs,
-          failed: false
-        });
+      if (r.phase === "burst" && r.phaseElapsedMs >= 950) { r.phase = "whiteout"; r.phaseElapsedMs = 0; continue; }
+      if (r.phase === "whiteout" && r.phaseElapsedMs >= 700 && !r.completionRequested) {
+        r.completionRequested = true;
+        kit.actOne.completeNarratorIntervention({ interceptedCount: r.blockedCount, lockHeldMs: r.lockHeldMs, failed: false });
       }
     }
     publishRuntime();
-  }, [events, publishRuntime]);
-
+  }, [events, publishRuntime, clearMotion]);
   useEffect(() => {
-    events.emit("ending_started");
-    events.emit("prologue_blackout_started", { durationMs: BLACKOUT_MS });
+    events.emit("ending_started"); events.emit("prologue_blackout_started", { durationMs: BLACKOUT_MS });
     setEndingRuntimeSnapshot(toRuntimeSnapshot(runtimeRef.current));
     return () => clearEndingRuntimeSnapshot();
   }, [events]);
-
   useEffect(() => {
-    const previousAdvanceTime = window.advanceTime;
-    const controlledByClient = window.__vt_pending instanceof Set;
-    let frame = 0;
-    let lastTime = performance.now();
-
-    const advanceForTests = async (ms: number) => {
-      advanceSimulation(ms);
-      await Promise.resolve();
-    };
-    window.advanceTime = advanceForTests;
-
-    if (!controlledByClient) {
-      const loop = (now: number) => {
-        advanceSimulation(Math.min(100, now - lastTime));
-        lastTime = now;
-        frame = window.requestAnimationFrame(loop);
-      };
-      frame = window.requestAnimationFrame(loop);
+    const previous = window.advanceTime, controlled = window.__vt_pending instanceof Set;
+    let frame = 0, last = performance.now();
+    const advance = async (ms: number) => { advanceSimulation(ms); await Promise.resolve(); };
+    window.advanceTime = advance;
+    if (!controlled) {
+      const loop = (now: number) => { advanceSimulation(Math.min(100, now - last)); last = now; frame = requestAnimationFrame(loop); };
+      frame = requestAnimationFrame(loop);
     }
-
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      if (window.advanceTime === advanceForTests) {
-        if (previousAdvanceTime) window.advanceTime = previousAdvanceTime;
-        else delete window.advanceTime;
-      }
-    };
+    return () => { cancelAnimationFrame(frame); if (window.advanceTime === advance) { if (previous) window.advanceTime = previous; else delete window.advanceTime; } };
   }, [advanceSimulation]);
-
-  useEffect(() => {
-    const onVisibilityChange = () => {
-      runtimeRef.current.paused = document.hidden;
-      heldDirectionsRef.current.left = false;
-      heldDirectionsRef.current.right = false;
-      if (document.hidden && runtimeRef.current.phase === "lock") {
-        runtimeRef.current.lockActive = false;
-        runtimeRef.current.lockHeldMs = 0;
-      }
-      publishRuntime();
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, [publishRuntime]);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (setHeldDirection(event.key, true)) {
-        event.preventDefault();
-        return;
-      }
-      if ((event.key === " " || event.key === "Enter") && !event.repeat && runtimeRef.current.phase === "lock") {
-        event.preventDefault();
-        beginLock();
-      }
-    };
-    const onKeyUp = (event: KeyboardEvent) => {
-      if (setHeldDirection(event.key, false)) {
-        event.preventDefault();
-        return;
-      }
-      if ((event.key === " " || event.key === "Enter") && runtimeRef.current.phase === "lock") {
-        event.preventDefault();
-        cancelLock();
-      }
-    };
-    const onWindowBlur = () => {
-      heldDirectionsRef.current.left = false;
-      heldDirectionsRef.current.right = false;
-      cancelLock();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
-    window.addEventListener("blur", onWindowBlur);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
-      window.removeEventListener("blur", onWindowBlur);
-    };
-  });
-
-  function updatePaddleFromClientX(clientX: number) {
-    const rect = fieldRef.current?.getBoundingClientRect();
-    if (!rect?.width) return;
-    runtimeRef.current.paddleX = clamp(
-      (clientX - rect.left) / rect.width * 100,
-      PADDLE_MIN_X,
-      PADDLE_MAX_X
-    );
-    publishRuntime();
+  function cancelLock() {
+    const r = runtimeRef.current;
+    if (r.phase !== "lock" || !r.lockActive) return;
+    const heldMs = r.lockHeldMs; r.lockActive = false; r.lockHeldMs = 0;
+    events.emit("prologue_error_lock_cancelled", { heldMs }); publishRuntime();
   }
-
-  function beginPaddleDrag(event: React.PointerEvent<HTMLButtonElement>) {
-    if (!["deploy", "intercept", "impact", "miss"].includes(runtimeRef.current.phase)) return;
-    dragPointerRef.current = event.pointerId;
-    try {
-      event.currentTarget.setPointerCapture?.(event.pointerId);
-    } catch {
-      // Older engines and synthetic pointers may not provide pointer capture.
-    }
-    updatePaddleFromClientX(event.clientX);
+  function beginLock() {
+    const r = runtimeRef.current;
+    if (r.paused || r.phase !== "lock" || r.lockActive) return;
+    r.lockActive = true; events.emit("prologue_error_lock_started", { requiredHoldMs: HOLD_TO_CATCH_MS }); publishRuntime();
   }
-
-  function movePaddle(event: React.PointerEvent<HTMLButtonElement>) {
-    if (dragPointerRef.current !== event.pointerId) return;
-    event.preventDefault();
-    updatePaddleFromClientX(event.clientX);
-  }
-
-  function endPaddleDrag(event: React.PointerEvent<HTMLButtonElement>) {
-    if (dragPointerRef.current !== event.pointerId) return;
-    dragPointerRef.current = null;
-    try {
-      event.currentTarget.releasePointerCapture?.(event.pointerId);
-    } catch {
-      // The pointer may already have been released by the browser.
-    }
-  }
-
-  function setHeldDirection(key: string, held: boolean) {
-    if (key === "ArrowLeft" || key.toLowerCase() === "a") {
-      heldDirectionsRef.current.left = held;
-      return true;
-    }
-    if (key === "ArrowRight" || key.toLowerCase() === "d") {
-      heldDirectionsRef.current.right = held;
-      return true;
-    }
+  function setDirection(key: string, held: boolean) {
+    if (key === "ArrowLeft" || key.toLowerCase() === "a") { heldDirectionsRef.current.left = held; return true; }
+    if (key === "ArrowRight" || key.toLowerCase() === "d") { heldDirectionsRef.current.right = held; return true; }
     return false;
   }
-
-  function beginLock() {
-    const runtime = runtimeRef.current;
-    if (runtime.phase !== "lock" || runtime.lockActive) return;
-    runtime.lockActive = true;
-    events.emit("prologue_error_lock_started", { requiredHoldMs: HOLD_TO_CATCH_MS });
-    publishRuntime();
+  useEffect(() => {
+    const visibility = () => { runtimeRef.current.paused = document.hidden; clearMotion(); if (document.hidden) cancelLock(); publishRuntime(); };
+    const down = (e: KeyboardEvent) => {
+      if (setDirection(e.key, true)) { e.preventDefault(); return; }
+      if ((e.key === " " || e.key === "Enter") && !e.repeat && runtimeRef.current.phase === "lock") { e.preventDefault(); beginLock(); }
+    };
+    const up = (e: KeyboardEvent) => {
+      if (setDirection(e.key, false)) { e.preventDefault(); return; }
+      if ((e.key === " " || e.key === "Enter") && runtimeRef.current.phase === "lock") { e.preventDefault(); cancelLock(); }
+    };
+    const blur = () => { clearMotion(); cancelLock(); };
+    document.addEventListener("visibilitychange", visibility); window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up); window.addEventListener("blur", blur);
+    return () => { document.removeEventListener("visibilitychange", visibility); window.removeEventListener("keydown", down); window.removeEventListener("keyup", up); window.removeEventListener("blur", blur); };
+  });
+  function logicalX(clientX: number): number | null {
+    const rect = fieldRef.current?.getBoundingClientRect(); return rect?.width ? (clientX - rect.left) / rect.width * 430 : null;
   }
-
-  function cancelLock() {
-    const runtime = runtimeRef.current;
-    if (runtime.phase !== "lock" || !runtime.lockActive) return;
-    const heldMs = runtime.lockHeldMs;
-    runtime.lockActive = false;
-    runtime.lockHeldMs = 0;
-    events.emit("prologue_error_lock_cancelled", { heldMs });
-    publishRuntime();
+  function beginDrag(e: React.PointerEvent<HTMLButtonElement>) {
+    if (!["clue", "playing"].includes(runtimeRef.current.game.phase) || runtimeRef.current.paused) return;
+    const x = logicalX(e.clientX); if (x === null) return;
+    dragPointerRef.current = { id: e.pointerId, offset: x - runtimeRef.current.game.boardX };
+    pointerTargetRef.current = runtimeRef.current.game.boardX;
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* Pointer capture may be unavailable. */ }
   }
-
-  function beginPointerLock(event: React.PointerEvent<HTMLButtonElement>) {
-    try {
-      event.currentTarget.setPointerCapture?.(event.pointerId);
-    } catch {
-      // Pointer capture is optional for older browsers.
-    }
-    beginLock();
+  function moveDrag(e: React.PointerEvent<HTMLButtonElement>) {
+    const drag = dragPointerRef.current;
+    if (!drag || drag.id !== e.pointerId) return;
+    e.preventDefault(); const x = logicalX(e.clientX); if (x !== null) pointerTargetRef.current = x - drag.offset;
   }
-
+  function endDrag(e: React.PointerEvent<HTMLButtonElement>) {
+    if (dragPointerRef.current?.id !== e.pointerId) return;
+    dragPointerRef.current = null; pointerTargetRef.current = null;
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* The browser may already have released it. */ }
+  }
+  function reviewClues() { clearMotion(); toggleClueReview(runtimeRef.current.game); publishRuntime(); }
   function retryInterception() {
-    const next = createEndingViewState();
-    next.phase = "deploy";
-    next.phaseElapsedMs = 0;
-    next.introElapsedMs = 0;
-    runtimeRef.current = next;
-    heldDirectionsRef.current.left = false;
-    heldDirectionsRef.current.right = false;
-    events.emit("prologue_narrator_intro");
-    publishRuntime();
+    clearMotion(); continueInterception(runtimeRef.current.game); runtimeRef.current.phase = "intercept"; publishRuntime();
     queueMicrotask(() => paddleRef.current?.focus());
   }
-
-  const showGame = ["deploy", "intercept", "impact", "miss", "failed", "lock"].includes(view.phase);
-  const showPaddle = ["deploy", "intercept", "impact", "miss", "lock"].includes(view.phase);
-  const introSegments = actOneContent.audioNarration.prologue_narrator_intro.subtitleSegmentsZh;
-  const introSegmentIndex = view.introElapsedMs >= 6800 ? 2 : view.introElapsedMs >= 3400 ? 1 : 0;
+  const game = view.game, stage = INTERCEPTION_STAGES[game.stage];
+  const showGame = ["deploy", "intercept", "impact", "failed", "lock"].includes(view.phase);
+  const intro = actOneContent.audioNarration.prologue_narrator_intro.subtitleSegmentsZh;
+  const introIndex = view.introElapsedMs >= 6800 ? 2 : view.introElapsedMs >= 3400 ? 1 : 0;
   const dialogue = view.phase === "caught" ? DIALOGUE[view.dialogueStep] : null;
   const lockProgress = clamp(view.lockHeldMs / HOLD_TO_CATCH_MS, 0, 1);
-  const orbStyle = {
-    left: `${view.orbX}%`,
-    top: `${view.orbY}%`,
-    transform: `translate(-50%, -50%) rotate(${view.orbRotation}deg)`
-  } satisfies CSSProperties;
-  const paddleStyle = { left: `${view.paddleX}%` } satisfies CSSProperties;
-  const lockStyle = { "--lock-progress": `${lockProgress * 360}deg` } as CSSProperties;
-
+  const lockStyle = { left: "50%", top: "42%", transform: "translate(-50%, -50%)", "--lock-progress": `${lockProgress * 360}deg` } as CSSProperties;
+  const boardStyle = { left: `${game.boardX / 430 * 100}%`, top: `${WINDOW_BODY.y / 820 * 100}%`, transform: `translate(-50%, -50%) rotate(${game.boardAngle}deg)` } as CSSProperties;
   return (
-    <section
-      className={`ending-scene ending-${view.phase}`}
-      aria-label="序章结算"
-      data-ending-phase={view.phase}
-      data-blocked-count={view.blockedCount}
-      data-misses={view.misses}
-    >
+    <section ref={sceneRef} className={`ending-scene ending-text-discovery ending-${view.phase}`} aria-label="序章结算"
+      data-ending-phase={view.phase} data-blocked-count={view.blockedCount} data-misses={game.failures} data-semantic-stage={game.stage + 1}>
       {view.phase === "blackout" ? <div className="ending-seven-second-blackout" aria-label="黑屏" /> : null}
-
-      {showGame ? (
-        <>
-          <header className="ending-intercept-hud">
-            <div>
-              <small>GEO ERROR // INTERCEPT</small>
-              <strong>错误框拦截</strong>
-            </div>
-            <ol aria-label={`已挡住 ${view.blockedCount} 次，共 ${REQUIRED_BLOCKS} 次`}>
-              {Array.from({ length: REQUIRED_BLOCKS }, (_, index) => (
-                <li key={index} className={index < view.blockedCount ? "is-complete" : ""}>{index + 1}</li>
-              ))}
-            </ol>
-            <span>失误 {view.misses}/{MAX_MISSES}</span>
-          </header>
-
-          <p
-            key={`intro-${introSegmentIndex}`}
-            className="ending-game-subtitle game-subtitle-frame subtitle-tone-narrator is-line-entering"
-            aria-live="polite"
-          >
-            <small className="game-subtitle-speaker">旁白</small>
-            <span>{introSegments[introSegmentIndex]}</span>
-          </p>
-
-          <div ref={fieldRef} className={`ending-intercept-field is-${view.phase}`}>
-            <i className="ending-field-grid" aria-hidden="true" />
-            <i className="ending-exit-slot" aria-hidden="true"><span>EXIT</span></i>
-
-            {view.phase !== "failed" ? (
-              view.phase === "lock" ? (
-                <button
-                  ref={lockButtonRef}
-                  type="button"
-                  className={`narrator-orb is-lock-target ${view.lockActive ? "is-held" : ""}`}
-                  style={{ ...orbStyle, ...lockStyle }}
-                  aria-label={`按住旁白圆圈完成锁定，当前 ${Math.round(lockProgress * 100)}%`}
-                  onPointerDown={beginPointerLock}
-                  onPointerUp={cancelLock}
-                  onPointerCancel={cancelLock}
-                  onLostPointerCapture={cancelLock}
-                  onKeyDown={(event) => {
-                    if ((event.key === " " || event.key === "Enter") && !event.repeat) {
-                      event.preventDefault();
-                      beginLock();
-                    }
-                  }}
-                  onKeyUp={(event) => {
-                    if (event.key === " " || event.key === "Enter") {
-                      event.preventDefault();
-                      cancelLock();
-                    }
-                  }}
-                >
-                  <span aria-hidden="true" />
-                  <strong>{Math.round(lockProgress * 100)}%</strong>
-                </button>
-              ) : (
-                <div
-                  className={`narrator-orb is-moving ${view.phase === "impact" ? "is-impact" : ""} ${view.phase === "miss" ? "is-missed" : ""}`}
-                  style={orbStyle}
-                  role="img"
-                  aria-label="正在移动的旁白圆圈"
-                >
-                  <span aria-hidden="true" />
-                  <strong>旁白</strong>
-                </div>
-              )
-            ) : null}
-
-            {view.phase === "lock" ? <div className="ending-capture-frame" aria-hidden="true"><i /><i /><i /><i /></div> : null}
-
-            {showPaddle ? (
-              <button
-                ref={paddleRef}
-                type="button"
-                className={`ending-geo-error-board ${view.phase === "deploy" ? "is-deploying" : ""} ${view.phase === "impact" ? "is-impact" : ""}`}
-                style={paddleStyle}
-                aria-label="拖动经纬度错误框挡住下方出口，键盘可用 A D 或左右方向键"
-                onPointerDown={beginPaddleDrag}
-                onPointerMove={movePaddle}
-                onPointerUp={endPaddleDrag}
-                onPointerCancel={endPaddleDrag}
-                onLostPointerCapture={(event) => {
-                  if (dragPointerRef.current === event.pointerId) dragPointerRef.current = null;
-                }}
-                onKeyDown={(event) => {
-                  if (setHeldDirection(event.key, true)) event.preventDefault();
-                }}
-                onKeyUp={(event) => {
-                  if (setHeldDirection(event.key, false)) event.preventDefault();
-                }}
-                onBlur={() => {
-                  heldDirectionsRef.current.left = false;
-                  heldDirectionsRef.current.right = false;
-                }}
-              >
-                <span className="ending-error-title"><small>LOCATION ERROR</small><i aria-hidden="true">×</i></span>
-                <strong>经度与纬度不存在</strong>
-                <span className="ending-error-coordinates">null / null</span>
-              </button>
-            ) : null}
-
-            {view.feedback === "blocked" && view.phase === "impact" ? (
-              <p className="ending-intercept-feedback game-subtitle-frame subtitle-tone-success is-success is-line-entering" role="status">已挡住 {view.blockedCount}/{REQUIRED_BLOCKS}</p>
-            ) : null}
-            {view.feedback === "missed" ? (
-              <p className="ending-intercept-feedback game-subtitle-frame subtitle-tone-error is-failure is-line-entering" role="status">未命中出口位置</p>
-            ) : null}
-
-            {view.phase === "failed" ? (
-              <section className="ending-intercept-failed" role="dialog" aria-labelledby="ending-retry-title">
-                <small>SIGNAL LOST</small>
-                <h2 id="ending-retry-title">拦截失败</h2>
-                <p>错误框连续三次没有对齐出口。</p>
-                <button ref={retryButtonRef} type="button" onClick={retryInterception}>重新部署错误框</button>
-              </section>
-            ) : null}
-          </div>
-
-          <p className="ending-control-hint">
-            {view.phase === "lock" ? "按住圆圈 1.4 秒完成锁定" : "拖动错误框 · 键盘 A / D 或 ← / →"}
-          </p>
-        </>
-      ) : null}
-
+      {showGame ? <>
+        <header className="ending-intercept-hud"><div><small>LOCATION ERROR</small><strong>未结束的字句</strong></div>
+          <ol aria-label={`已接回 ${view.blockedCount} 段，共三段`}>{[0,1,2].map((i) => <li key={i} className={i < view.blockedCount ? "is-complete" : ""}>{i + 1}</li>)}</ol>
+          <span>{game.collected.length ? `留下 ${game.collected.length}/${stage.targets.length}` : `第 ${game.stage + 1} 段`}</span>
+        </header>
+        <p key={`intro-${introIndex}`} className="ending-game-subtitle game-subtitle-frame subtitle-tone-narrator is-line-entering" aria-live="polite">
+          <small className="game-subtitle-speaker">旁白</small><span>{intro[introIndex]}</span>
+        </p>
+        {view.phase !== "lock" ? <section className="ending-clue-lane" aria-label="字句线索">
+          <div className="ending-clue-trail" aria-hidden="true">{stage.fragments.slice(Math.max(0, game.clueIndex - 2), game.clueIndex).join(" ")}</div>
+          <p aria-live="polite">{stage.fragments[game.clueIndex]}</p>
+          <button type="button" onClick={reviewClues} disabled={view.phase === "deploy" || game.phase === "hint" || game.phase === "stage_complete"}>回看完整字句</button>
+        </section> : null}
+        <div ref={fieldRef} className={`ending-intercept-field is-${view.phase}`} style={{ transform: `translateX(-50%) scale(${stageScale})` }}>
+          <i className="ending-field-grid" aria-hidden="true" />
+          {game.assist && game.phase === "playing" ? game.words.filter((w) => !w.contacted && w.target).map((w) =>
+            <i key={`assist-${w.id}`} className="ending-word-assist" style={{ left: `${w.x / 430 * 100}%`, top: `${WINDOW_BODY.y / 820 * 100}%` }} aria-hidden="true" />) : null}
+          {view.phase !== "lock" ? game.words.map((w) => <div key={w.id} className={`ending-word-body ${w.contacted ? "is-retained" : ""}`} data-word-id={w.id}
+            style={{ left: `${w.x / 430 * 100}%`, top: `${w.y / 820 * 100}%`, width: `${w.width}px`, height: `${w.height}px`, transform: `translate(-50%, -50%) rotate(${w.angle}deg)` }}>{w.text}</div>) : null}
+          {game.ring ? <i className="ending-word-contact" style={{ left: `${game.ring.x / 430 * 100}%`, top: `${game.ring.y / 820 * 100}%` }} aria-hidden="true" /> : null}
+          {view.phase === "lock" ? <>
+            <button ref={lockButtonRef} type="button" className={`narrator-orb is-lock-target ${view.lockActive ? "is-held" : ""}`} style={lockStyle}
+              aria-label={`按住旁白圆圈完成锁定，当前 ${Math.round(lockProgress * 100)}%`}
+              onPointerDown={(e) => { try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* Optional. */ } beginLock(); }}
+              onPointerUp={cancelLock} onPointerCancel={cancelLock} onLostPointerCapture={cancelLock}>
+              <span aria-hidden="true" /><strong>{Math.round(lockProgress * 100)}%</strong>
+            </button><div className="ending-capture-frame" aria-hidden="true"><i/><i/><i/><i/></div>
+          </> : null}
+          <button ref={paddleRef} type="button" className={`ending-geo-error-board ${view.phase === "deploy" ? "is-deploying" : ""}`} style={boardStyle}
+            aria-label="经纬度错误窗口，可拖动或用 A D 和左右方向键移动"
+            disabled={["hint", "review", "stage_complete", "complete"].includes(game.phase)}
+            onPointerDown={beginDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}
+            onLostPointerCapture={(e) => { if (dragPointerRef.current?.id === e.pointerId) { dragPointerRef.current = null; pointerTargetRef.current = null; } }}
+            onBlur={() => { clearMotion(); }}>
+            <span className="ending-error-title"><small>LOCATION ERROR</small><i aria-hidden="true">×</i></span>
+            <strong>经度与纬度不存在</strong><span className="ending-error-coordinates">null / null</span>
+          </button>
+          {game.phase === "hint" ? <section className="ending-intercept-failed" role="dialog" aria-modal="true" aria-labelledby="ending-retry-title">
+            <small>这一瞬间已暂停</small><h2 id="ending-retry-title">字句还在等你</h2><p>{failureHint(game)}</p>
+            <p className="ending-retained-words">{game.collected.length ? `已留下：${game.collected.join("、")}。` : ""}这一段的进度会保留。</p>
+            {game.stageFailures >= 3 ? <label><input type="checkbox" checked={game.assist} onChange={(e) => { runtimeRef.current.game.assist = e.target.checked; publishRuntime(); }}/> 落点助视</label> : null}
+            <button ref={retryButtonRef} type="button" onClick={retryInterception}>继续这一段</button>
+          </section> : null}
+          {game.phase === "review" ? <section className="ending-clue-review" role="dialog" aria-modal="true" aria-labelledby="ending-clue-title">
+            <h2 id="ending-clue-title">第 {game.stage + 1} 段 · 完整字句</h2>{stage.fragments.map((t) => <p key={t}>{t}</p>)}
+            <small>阅读时文字暂停，不会漏掉目标。</small><button type="button" onClick={reviewClues}>回到这一瞬间</button>
+          </section> : null}
+        </div>
+        <p className="ending-control-hint">{view.phase === "lock" ? "按住圆圈 1.4 秒完成锁定" : game.collected.length ? `已留下：${game.collected.join("、")}` : game.stageFailures >= 2 ? "拖动窗口标题栏 · A / D 或 ← / →" : "字句会重来，完整线索可随时回看。"}</p>
+      </> : null}
       {view.phase === "caught" ? (
         <>
           <div className="ending-capture-frame is-complete" aria-hidden="true"><i /><i /><i /><i /></div>

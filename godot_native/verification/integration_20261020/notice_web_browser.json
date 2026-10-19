@@ -1,0 +1,188 @@
+{
+  "kind": "isolated actual source component harness; not a production campaign or physical mobile device",
+  "legacy": false,
+  "checks": 30,
+  "failures": [],
+  "infrastructureError": null,
+  "browserExceptions": [],
+  "evidence": {
+    "ownerAssertions": {
+      "method": "Exact current App/PhoneShell ownership clauses, combined with real component blocked-lifetime behavior below",
+      "appSha256": "a10551942e5997d8cd74d0ae43fcb9484e1ba696f240697c5e4c99cf4e0e63a3",
+      "phoneSha256": "6cc6bbe0faa4e3fdef78b541b64355039ce508ac863cfa6e61bbb4f98b7349a6"
+    },
+    "desktop": {
+      "phone": {
+        "x": 349.59375,
+        "y": 40,
+        "w": 430,
+        "h": 860
+      },
+      "caption": {
+        "x": 368.59375,
+        "y": 722.015625,
+        "w": 392,
+        "h": 78.984375
+      },
+      "notice": null,
+      "text": {
+        "x": 388.59375,
+        "y": 762.40625,
+        "w": 355,
+        "h": 25.59375,
+        "lineHeight": 25.6,
+        "logicalWidth": 355,
+        "logicalHeight": 26
+      },
+      "captionBackground": "rgb(241, 236, 223)",
+      "documentOverflow": false,
+      "logicalPhone": {
+        "w": 430,
+        "h": 860
+      }
+    },
+    "visibility": {
+      "before": {
+        "now": 484.90000000596046,
+        "hidden": false,
+        "notices": [
+          "系统保留甲"
+        ],
+        "noticeDurations": [
+          2200
+        ],
+        "captions": []
+      },
+      "hidden": {
+        "now": 517.5,
+        "hidden": true,
+        "notices": [],
+        "noticeDurations": [],
+        "captions": []
+      },
+      "resumed": {
+        "now": 3068.4000000059605,
+        "hidden": false,
+        "notices": [
+          "系统保留甲"
+        ],
+        "noticeDurations": [
+          1842.0999999940395
+        ],
+        "captions": []
+      },
+      "hiddenWaitMs": 2500
+    },
+    "remount": {
+      "unmountedWaitMs": 1900,
+      "remounted": {
+        "now": 2597.9000000059605,
+        "hidden": false,
+        "notices": [
+          "系统保留甲"
+        ],
+        "noticeDurations": [
+          1733.4000000059605
+        ],
+        "captions": []
+      },
+      "surfaceReplaced": {
+        "now": 2641.2000000029802,
+        "hidden": false,
+        "notices": [
+          "系统保留甲"
+        ],
+        "noticeDurations": [
+          1690.7000000029802
+        ],
+        "captions": []
+      },
+      "second": {
+        "now": 4423.4000000059605,
+        "hidden": false,
+        "notices": [
+          "系统保留乙"
+        ],
+        "noticeDurations": [
+          1100
+        ],
+        "captions": []
+      },
+      "third": {
+        "now": 5555.5,
+        "hidden": false,
+        "notices": [
+          "系统保留丙"
+        ],
+        "noticeDurations": [
+          1100
+        ],
+        "captions": []
+      }
+    },
+    "mobileNotice": {
+      "phone": {
+        "x": -0.0031280517578125,
+        "y": 76,
+        "w": 352.5999755859375,
+        "h": 705.2000122070312
+      },
+      "caption": null,
+      "notice": {
+        "x": 15.576871871948242,
+        "y": 121.0999984741211,
+        "w": 321.4399719238281,
+        "h": 60.83374786376953
+      },
+      "text": null,
+      "captionBackground": null,
+      "documentOverflow": false,
+      "logicalPhone": {
+        "w": 430,
+        "h": 860
+      }
+    },
+    "mobileCaption": {
+      "phone": {
+        "x": -0.0031280517578125,
+        "y": 76,
+        "w": 352.5999755859375,
+        "h": 705.2000122070312
+      },
+      "caption": {
+        "x": 15.576871871948242,
+        "y": 635.2528076171875,
+        "w": 321.4399719238281,
+        "h": 64.7672119140625
+      },
+      "notice": null,
+      "text": {
+        "x": 31.976871490478516,
+        "y": 668.3731079101562,
+        "w": 291.0999755859375,
+        "h": 20.98687744140625,
+        "lineHeight": 25.6,
+        "logicalWidth": 355,
+        "logicalHeight": 26
+      },
+      "captionBackground": "rgb(241, 236, 223)",
+      "documentOverflow": false,
+      "logicalPhone": {
+        "w": 430,
+        "h": 860
+      }
+    }
+  },
+  "fixture": {
+    "path": "scripts/fixtures/notice-presentation/toast-before-queue.tsx.source.txt",
+    "sha256": "160b6e4360988941e1e5d39185b30fa567e71d6b6214adff02cd9f60d9ef7e32",
+    "transformCount": 0
+  },
+  "passed": true,
+  "negativeReproduced": false,
+  "limits": [
+    "App owner checks are source assertions plus real blocked component behavior, not a full chapter-transition campaign.",
+    "Phone/RPG replacement uses the actual ToastLayer with the same EventBus in an isolated host, not the entire RpgGameHost.",
+    "Audio event timing is checked; real audio-device playback and human reading acceptance remain separate."
+  ]
+}

@@ -21,6 +21,19 @@ var title_label: Label
 var quest_label: Label
 var toast: Label
 var toast_time := 0.0
+const NoticeQueue=preload("res://scripts/ui/native_notice_queue.gd")
+const StoryCaption=preload("res://scripts/presentation/c3_narrative_view.gd")
+var notice_queue=NoticeQueue.new()
+var notice_surface:=""
+var notice_world_revision:=-1
+var story_caption:Control
+var story_caption_time:=0.0
+var story_caption_surface:=""
+class ShellStoryLine extends RefCounted:
+	var text:=""
+	var speaker:=""
+	func snapshot()->Dictionary:return {"rawText":text,"text":text,"speaker":speaker}
+var story_caption_line=ShellStoryLine.new()
 var chapter_label: Label
 var app_grid: GridContainer
 var page_body: VBoxContainer
@@ -239,6 +252,7 @@ func _build_shell() -> void:
 		world.custom_minimum_size = Vector2(960,540)
 		world.size = Vector2(960,540)
 		world.host_node = self
+		world.subtitle_expired.connect(_on_world_notice_expired)
 		world_view = load("res://scripts/ui/world_viewport_container.gd").new()
 		world_view.world_surface = world
 		world_view.custom_minimum_size = Vector2(960,540)
@@ -249,6 +263,8 @@ func _build_shell() -> void:
 		world_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 		world_view.add_child(world_viewport)
 		world_viewport.add_child(world)
+		# Main queues State feedback; a standalone world retains its fallback.
+		State.feedback.disconnect(world._receive_feedback)
 	inventory_dock = PanelContainer.new()
 	inventory_dock.add_theme_stylebox_override("panel",_box(Color("1e3038"),Color("62787d"),8))
 	add_child(inventory_dock)
@@ -272,6 +288,11 @@ func _build_shell() -> void:
 	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	toast.z_index = 110
 	add_child(toast)
+	story_caption=StoryCaption.new()
+	story_caption.name="ShellStoryCaption"
+	story_caption.z_index=110
+	add_child(story_caption)
+	story_caption.set_process_input(false)
 	voice_player = AudioStreamPlayer.new()
 	add_child(voice_player)
 	mobile_back = _button("手机 · P",_show_phone_surface,Vector2(140,44))
@@ -645,35 +666,126 @@ func _configure_world_surface(extent: Vector2,compact: bool) -> void:
 		world._update_camera()
 		world.queue_redraw()
 
+func _notice_scene_busy() -> bool:
+	# Generic modal results retain their reserved row. Devices with a local
+	# feedback owner are filtered before anything reaches this queue.
+	if is_instance_valid(modal_notice_slot): return false
+	if is_instance_valid(active_game) or is_instance_valid(phone_document) or is_instance_valid(control_center): return true
+	if is_instance_valid(file_dialog) and file_dialog.visible: return true
+	if State.story_input_locked() or str(State.d.native.page)=="desktop":return true
+	if is_instance_valid(world_effect) and world_effect.get_meta("blocks_input",false): return true
+	if is_instance_valid(library_story_host) and library_story_host.current!=null: return true
+	if is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract(): return true
+	return is_instance_valid(c3_narrative_host) and is_instance_valid(c3_narrative_host.view) and c3_narrative_host.view.is_visible_in_tree()
+
+func _world_notice_owned() -> bool:
+	return notice_surface=="world" and is_instance_valid(world) and world.subtitle_revision==notice_world_revision and world.subtitle==notice_queue.current.get("text","")
+
+func _on_world_notice_expired(revision:int,text:String) -> void:
+	# Only the surface that actually read this queue item can finish its clock.
+	# A replacement hint/scene may share its text, but not its revision.
+	if notice_surface=="world" and revision==notice_world_revision and text==notice_queue.current.get("text",""):
+		notice_queue.sync_remaining(0)
+
+func _sync_notice_remaining() -> void:
+	if _world_notice_owned():notice_queue.sync_remaining(world.subtitle_left)
+
+func _hide_notice_surface() -> void:
+	if _world_notice_owned():
+		world.subtitle=""; world.subtitle_left=0; world.queue_redraw()
+	notice_surface="";notice_world_revision=-1
+	toast.text="";toast_time=0;toast.hide()
+	if is_instance_valid(modal_notice_slot):modal_notice_slot.hide()
+
+func _layout_story_caption() -> void:
+	if not is_instance_valid(story_caption):return
+	if story_caption_time<=0:
+		if story_caption_surface=="world" and is_instance_valid(world) and world.subtitle==story_caption_line.text:
+			world.subtitle="";world.subtitle_left=0;world.queue_redraw()
+		story_caption_surface="";story_caption.session=null;story_caption.tick();return
+	if _feedback_world_active() and not is_instance_valid(modal_notice_slot):
+		story_caption.session=null;story_caption.tick()
+		world._receive_feedback(story_caption_line.text);world.subtitle_left=story_caption_time;world.queue_redraw()
+		story_caption_surface="world";return
+	if story_caption_surface=="world" and is_instance_valid(world) and world.subtitle==story_caption_line.text:
+		world.subtitle="";world.subtitle_left=0;world.queue_redraw()
+	story_caption_surface="caption"
+	story_caption.session=story_caption_line
+	story_caption.text_scale=float(State.d.native.settings.get("text_scale",1.0))
+	if is_instance_valid(modal_notice_slot):
+		var available:=maxf(1,modal_panel.size.y-100)
+		story_caption.screen_rect=Rect2(modal_notice_slot.global_position,Vector2(maxf(1,modal_panel.size.x-32),available))
+		story_caption.tick();story_caption.panel.position.y=modal_notice_slot.global_position.y
+		modal_notice_slot.custom_minimum_size.y=story_caption.panel.size.y;modal_notice_slot.show()
+	elif is_instance_valid(phone) and phone.visible:
+		story_caption.screen_rect=Rect2(phone.position+Vector2(19,100)*phone.scale,Vector2(392,720)*phone.scale)
+		story_caption.tick()
+		story_caption.panel.position.y=story_caption.screen_rect.end.y-story_caption.panel.size.y
+	else:
+		story_caption.screen_rect=Rect2(16,64,maxf(1,size.x-32),maxf(1,size.y-144))
+		story_caption.tick()
+		story_caption.panel.position.y=story_caption.screen_rect.end.y-story_caption.panel.size.y
+
 func _layout_toast() -> void:
 	if not is_instance_valid(toast): return
-	# Generic shell modals own a reserved row below their header. The notice
-	# remains a single non-interactive root label, never a modal focus target.
+	_sync_notice_remaining()
+	if _notice_scene_busy() or story_caption_time>0:
+		_hide_notice_surface();_layout_story_caption();return
+	_layout_story_caption()
+	if notice_queue.current.is_empty():
+		_hide_notice_surface();return
+	var item:Dictionary=notice_queue.current
+	var use_world:=_feedback_world_active() and not is_instance_valid(modal_notice_slot)
+	if use_world:
+		# A local world hint is another live owner, not stale space to overwrite.
+		if not world.subtitle.is_empty() and world.subtitle_left>0 and not _world_notice_owned():
+			_hide_notice_surface();return
+		toast.text="";toast_time=0;toast.hide()
+		if not _world_notice_owned():
+			world._receive_feedback(item.text)
+			notice_world_revision=world.subtitle_revision
+			if not item.get("exact",false) and float(item.elapsed)==0:
+				# The lake's source catch failure has a special three-second lifetime.
+				# Set the initial duration, not fictitious already-read time.
+				item.duration=minf(float(item.duration),world.subtitle_left)
+				item.remaining=minf(float(item.remaining),float(item.duration))
+		world.subtitle_left=float(item.remaining);world.queue_redraw();notice_surface="world";return
+	if notice_surface=="world":_hide_notice_surface()
+	notice_surface="toast"
+	PhoneNotice.set_message(toast,item.text,item.speaker)
+	toast_time=float(item.remaining)
 	if is_instance_valid(modal_notice_slot):
-		modal_notice_slot.visible=not toast.text.is_empty()
-		if modal_notice_slot.visible:
-			toast.scale=Vector2.ONE
-			PhoneNotice.layout(toast,maxf(1,modal_panel.size.x-32))
-			modal_notice_slot.custom_minimum_size.y=toast.size.y
-			toast.global_position=modal_notice_slot.global_position
-		return
-	# A minigame may publish its result before releasing its surface. Once
-	# the world returns, hand that same notice to its single feedback owner.
-	# Keep the remaining duration; do not replay or rewrite the earned result.
-	if _feedback_world_active() and not toast.text.is_empty():
-		if toast_time>0:
-			world._receive_feedback(toast.text)
-			world.subtitle_left=toast_time
-		toast.text=""; toast_time=0; toast.hide(); world.queue_redraw()
-		return
-	if is_instance_valid(phone) and phone.visible and not is_instance_valid(active_game):
-		toast.scale=phone.scale
-		PhoneNotice.layout(toast,392)
+		modal_notice_slot.show();toast.scale=Vector2.ONE
+		PhoneNotice.layout(toast,maxf(1,modal_panel.size.x-32))
+		modal_notice_slot.custom_minimum_size.y=toast.size.y;toast.global_position=modal_notice_slot.global_position
+	elif is_instance_valid(phone) and phone.visible:
+		toast.scale=phone.scale;PhoneNotice.layout(toast,392)
 		toast.position=phone.position+Vector2(19,55)*phone.scale
 	else:
-		toast.scale=Vector2.ONE
-		PhoneNotice.layout(toast,minf(680,maxf(160,size.x-32)))
+		toast.scale=Vector2.ONE;PhoneNotice.layout(toast,minf(680,maxf(160,size.x-32)))
 		toast.position=Vector2((size.x-toast.size.x)/2,maxf(12,size.y-toast.size.y-maxf(72,size.y*.1)))
+	toast.move_to_front()
+
+func _advance_notices(delta:float) -> void:
+	_sync_notice_remaining()
+	var caption_was_active:=story_caption_time>0
+	story_caption_time=maxf(0,story_caption_time-maxf(0,delta))
+	if not _notice_scene_busy() and not caption_was_active and not notice_queue.current.is_empty():
+		if float(notice_queue.current.remaining)<=0:
+			_hide_notice_surface();notice_queue.finish()
+		elif notice_surface=="toast":notice_queue.advance(delta)
+	_layout_toast()
+
+func _show_story_caption(text:String,tone:String,duration:float,speaker:String="") -> void:
+	_sync_notice_remaining();_hide_notice_surface();notice_queue.discard(text)
+	story_caption_line.text=text
+	story_caption_line.speaker=speaker if not speaker.is_empty() else str(PhoneNotice.SPEAKERS.get(tone,"系统"))
+	story_caption_time=maxf(.1,duration)
+	_layout_toast()
+
+func _clear_notice_presentations() -> void:
+	_hide_notice_surface();notice_queue.clear()
+	story_caption_time=0;_layout_story_caption()
 
 func _scene_owns_feedback(message: String) -> bool:
 	if str(State.d.native.page)!="desktop": return false
@@ -1671,6 +1783,7 @@ func _finish_chase_owner(owner: Control,proof: Dictionary) -> void:
 	if accepted.get("chase_arrival",false):
 		# The accepted result remains in the journal. The film owns its visible
 		# caption, so the same success message must not cover it a second time.
+		notice_queue.discard(str(accepted.get("message","")))
 		toast.text="";toast_time=0;toast.hide();_layout_toast()
 	# Release the entire ride viewport before allocating the ending world.
 	await get_tree().process_frame
@@ -1784,27 +1897,25 @@ func _virtual_run_owns_feedback(message: String) -> bool:
 	if str(active_game.get_script().resource_path) != "res://scripts/games/virtual_run.gd": return false
 	return active_game.owns_result_feedback(message)
 
-func _feedback(message: String,tone: String="system") -> void:
-	# The device owns failed-attempt feedback while submitting.
+func _feedback(message: String,tone: String="system",duration_override:float=-1) -> void:
 	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
-	if _room302_studio_active():
-		modal.set_feedback(message)
-		return
-	if _virtual_run_owns_feedback(message): return
-	if _scene_owns_feedback(message):
-		toast.text=""; toast_time=0; toast.hide()
-		_layout_toast()
-		return
-	var duration: float=clampf(1.6+message.length()*.12,2.4,6.5)
-	if _feedback_world_active() and not is_instance_valid(modal_notice_slot):
-		# One subtitle owner: the source RPG bottom-safe-zone surface.
-		toast.text=""; toast_time=0; toast.hide()
-		world._receive_feedback(message); world.queue_redraw()
-		return
-	PhoneNotice.set_message(toast,message,str(PhoneNotice.SPEAKERS.get(tone,"系统")))
-	toast_time = duration
+	if _room302_studio_active():modal.set_feedback(message);return
+	if _virtual_run_owns_feedback(message) or _scene_owns_feedback(message):return
+	_sync_notice_remaining()
+	var duration:float=duration_override if duration_override>=0 else clampf(1.6+message.length()*.12,2.4,6.5)
+	notice_queue.enqueue(message,str(PhoneNotice.SPEAKERS.get(tone,"系统")),duration,duration_override>=0)
 	_layout_toast()
-	toast.move_to_front()
+
+func _on_audio_subtitle(text:String,surface:String,duration_ms:float,tone:String) -> void:
+	if surface!="toast":return
+	if is_instance_valid(active_game) and active_game.has_method("owns_pickup_subtitle") and active_game.owns_pickup_subtitle(text):return
+	if _virtual_run_owns_feedback(text) or _scene_owns_feedback(text):return
+	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback():return
+	if _room302_studio_active():modal.set_feedback(text);return
+	var metadata:Dictionary=audio_director.last_subtitle if audio_director.last_subtitle.get("text","")==text else {}
+	if metadata.get("presentationRole","")=="dialogue":
+		_show_story_caption(text,tone,duration_ms/1000.0,str(metadata.get("speaker","")))
+	else:_feedback(text,tone,maxf(.1,duration_ms/1000.0))
 
 func _process(delta: float) -> void:
 	if is_instance_valid(world) and world.chapter4_layers != null:
@@ -1816,11 +1927,7 @@ func _process(delta: float) -> void:
 	if is_instance_valid(c3_device_panel) and is_instance_valid(world):
 		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")
 	for cue: String in State.advance_phone_entry(delta*1000): _play_presentation_cue(cue)
-	if toast_time > 0:
-		toast_time -= delta
-		if toast_time <= 0:
-			toast.text = ""; toast.hide()
-			_layout_toast()
+	_advance_notices(delta)
 	if _screenshot_requested and Engine.get_process_frames() > 90:
 		_screenshot_requested = false
 		_capture.call_deferred()
@@ -1893,14 +2000,8 @@ func _setup_runtime_hosts() -> void:
 		audio_director.external_cue_prefixes = ["chapter35_voice_audition_"]
 		audio_director.setup(_read_runtime_state)
 		State.action_completed.connect(audio_director.update_state)
-		audio_director.subtitle_timed.connect(func(text: String,surface: String,duration_ms: float,_tone: String):
-			if surface == "toast":
-				if is_instance_valid(active_game) and active_game.has_method("owns_pickup_subtitle") and active_game.owns_pickup_subtitle(text): return
-				if _virtual_run_owns_feedback(text): return
-				_feedback(text,_tone)
-				if _feedback_world_active(): world.subtitle_left=maxf(.1,duration_ms/1000.0)
-				else: toast_time = maxf(.1,duration_ms/1000.0)
-		)
+		audio_director.subtitle_timed.connect(_on_audio_subtitle)
+
 		audio_director.visual_requested.connect(_presentation_visual)
 		audio_director.inspect_requested.connect(_inspect_item_by_id)
 		State.feedback.connect(audio_director.feedback)
@@ -1980,6 +2081,7 @@ func _capture_world(config: Dictionary) -> void:
 	State.act(str(config.get("on_success","c3_journal_capture_result")),session)
 
 func _reset_runtime_presentations() -> void:
+	_clear_notice_presentations()
 	if is_instance_valid(phone_object_pickup): phone_object_pickup.reset("story-reset")
 	_cancel_library_reveal()
 	photo_brightness_session.reset()
@@ -2025,9 +2127,7 @@ func _presentation_visual(definition: Dictionary) -> void:
 	var detail := str(definition.get("detail",""))
 	if not detail.is_empty(): text += "\n" + detail
 	if text.is_empty(): return
-	_feedback(text)
-	if _feedback_world_active(): world.subtitle_left=maxf(.1,float(definition.get("durationMs",2600))/1000.0)
-	else: toast_time = maxf(.1,float(definition.get("durationMs",2600))/1000.0)
+	_feedback(text,"system",maxf(.1,float(definition.get("durationMs",2600))/1000.0))
 
 func _combine_inventory_items(a: String,b: String) -> void:
 	var pair := [a,b]

@@ -31,16 +31,20 @@ func run()->void:
 			check(not world.touch_controls if dimensions.x>1000 else world.mobile_exploration,"desktop stays keyboard and compact keeps touch")
 			var inverse:Vector2=(door-world.size/2)/zoom+world.camera
 			check(inverse.distance_to(Vector2(1352,935))<.01,"world screen inverse remains exact")
-		# Reproduce the real ordering: result notice created while another
-		# surface owns feedback, then the exploration layout becomes visible.
+		# Use the real feedback entry and surface handoff. A live world hint
+		# must finish before a queued shell notification can take the one owner.
+		shell._clear_notice_presentations();shell.mobile_world=false;shell._layout()
 		world.subtitle="旧消息";world.subtitle_left=4
-		shell.PhoneNotice.set_message(shell.toast,"获得书包非本人证明。","系统");shell.toast_time=3.25
-		shell._layout_toast()
-		check(not shell.toast.visible and shell.toast.text.is_empty(),"world handoff retires the old root notice")
-		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,3.25),"handoff preserves exact message and remaining lifetime")
-		world.subtitle="旧消息"
-		shell.PhoneNotice.set_message(shell.toast,"获得书包非本人证明。","系统");shell.toast_time=.04;shell._layout_toast()
-		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,.04),"fresh notice replaces stale world feedback without extending its final40ms")
+		shell._feedback("获得书包非本人证明。","system",3.25)
+		shell._show_world_mobile();shell._layout_toast()
+		check(not shell.toast.visible and shell.toast.text.is_empty(),"world handoff retires the root notice without a second subtitle owner")
+		check(world.subtitle=="旧消息" and is_equal_approx(world.subtitle_left,4),"world handoff waits for live local feedback rather than replacing it")
+		world.subtitle="";world.subtitle_left=0;shell._layout_toast()
+		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,3.25),"after the local hint, handoff preserves the full unread lifetime")
+		shell._clear_notice_presentations();shell.mobile_world=false;shell._layout()
+		shell._feedback("获得书包非本人证明。","system",.04)
+		shell._show_world_mobile();shell._layout_toast()
+		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,.04),"handoff preserves a notice's final40ms without extending it")
 		world.subtitle_left=3.25
 		var view:Control=shell.library_story_host.view
 		view.session=SourceLine.new();shell.library_story_host.current=view.session;view.tick();shell._layout();await frames(2);view.tick()

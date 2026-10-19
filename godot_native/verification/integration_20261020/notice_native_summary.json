@@ -1,0 +1,161 @@
+{
+  "status": "Focused native notification/caption acceptance PASS; isolated worktree only",
+  "frozenAt": "2026-10-19T16:28:16.429851+00:00",
+  "workspace": "/tmp/codex-755-c1-ui",
+  "canonicalEditedByThisTask": false,
+  "productionFiles": 6,
+  "testFiles": 6,
+  "files": [
+    {
+      "path": "godot_native/scripts/main.gd",
+      "sha256": "27effb4b3e709cab54aacb4c68293e88b5f6986c814568ec5f0128eddcde05c3",
+      "kind": "production"
+    },
+    {
+      "path": "godot_native/scripts/media/audio_director.gd",
+      "sha256": "382e4dd1f0350c8ae3ac9f7ed7a3550506ce30b2aaae743b6f1fddbba86e317a",
+      "kind": "production"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_notice_queue.gd",
+      "sha256": "dd3b536eb3f3b476a60f704714542cd938fe0048b52e2e5bedcd9fd8c05fde2b",
+      "kind": "production"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_phone_notice.gd",
+      "sha256": "f430c3996b09fe31c71fa5202411595b656ebedb61a46e4d1d451455982d5be1",
+      "kind": "production"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_narrative_view.gd",
+      "sha256": "8608423dc79c6828893ef26e27068a805afdf5d970ec7abd4e48f630f9c4d026",
+      "kind": "production"
+    },
+    {
+      "path": "godot_native/scripts/presentation/library_story_view.gd",
+      "sha256": "9dc13c87140e7c57ecdac3993c3fc01dabe19f5bbbe0b872700735befb1c927d",
+      "kind": "production"
+    },
+    {
+      "path": "godot_native/tests/test_notice_queue_lifecycle.gd",
+      "sha256": "17d63f3150d546bbb023a7854a6cebf78480f29b8e52de0fcbfb82a919318732",
+      "kind": "test"
+    },
+    {
+      "path": "godot_native/tests/test_native_dialog_notice.gd",
+      "sha256": "c4609f477cdac464dc99682f5a4c404cebb16b85ef54d1e28180604e0f722bf0",
+      "kind": "test"
+    },
+    {
+      "path": "godot_native/tests/test_native_opening_source_ui.gd",
+      "sha256": "a3c7d0f0425cffa3ee89e62f7e551d81620dd11a26018986c985f29bd679123b",
+      "kind": "test"
+    },
+    {
+      "path": "godot_native/tests/test_virtual_run_main_lifecycle.gd",
+      "sha256": "6527c68f17abe2e5a8213510e5170f543c5514b04004cb2bac000fd580f9d6f7",
+      "kind": "test"
+    },
+    {
+      "path": "godot_native/tests/test_world_overlay_integration.gd",
+      "sha256": "16a4ffc34cf0dc39781c20f6e2fd45cce1b9ae70b88b1188340f7ff6b30fa1e2",
+      "kind": "test"
+    },
+    {
+      "path": "godot_native/tests/test_native_chase_integration.gd",
+      "sha256": "6982f67a041aa9d4e95b7c44f354290ad67cb18ff61f2647ed746e52fe8be02d",
+      "kind": "test"
+    }
+  ],
+  "behavior": [
+    "Ordinary notices keep FIFO order and merge repeated current/pending text without restarting reading time.",
+    "Full-screen games, visible C3/library captions and authored wake-scene captions suspend generic notices and preserve unread time. Generic modal results retain the reserved row.",
+    "Dialogue/taunt captions remain immediate on the source audio clock. Catalog source kind and raw timed-task tone determine the presentation role; the existing four-argument subtitle_timed signal is unchanged.",
+    "Phone dialogue uses a distinct speaker/body reading panel at logical bottom820, below the status/header/task area; world dialogue retains its single subtitle owner. Scene-owned, Room302, canteen pickup and virtual-run result owners retain priority.",
+    "C3 and library existing panels use opaque warm paper/dark text; library full-window translucent dim is removed. Existing safe rectangles, exit lanes, overflow scroll, session callbacks and controls remain.",
+    "The film-owned bike-chase arrival message is precisely discarded from the ordinary queue, preventing post-film replay."
+  ],
+  "validation": {
+    "distinctStages": 18,
+    "failed": 0,
+    "histories": [
+      {
+        "report": "/tmp/codex-755-c1-notice-final.json",
+        "sha256": "a7ef255cef2969a92e33f4086fd857184363087ef0932c47716a71c02bc9d856",
+        "stages": 17,
+        "passed": 17,
+        "failed": 0
+      },
+      {
+        "report": "/tmp/codex-755-c1-notice-chase-final.json",
+        "sha256": "c584e04ce50977c5fb5e7102e6f30628a296eca53ed274337f68b0f8ad04ba30",
+        "stages": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "report": "/tmp/codex-755-c1-notice-audio-final.json",
+        "sha256": "3e3e3fe403f886a99cadaffbe5daccbccc1ba10f09a01ee7369314b5ba1538cc",
+        "stages": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      {
+        "report": "/tmp/codex-755-c1-notice-bottom-final.json",
+        "sha256": "8e68e9bf8f162ba37e375b3c190d1d4940762ae1f7537fb9a1db2b55181ea91b",
+        "stages": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      {
+        "report": "/tmp/codex-755-c1-notice-layout-final.json",
+        "sha256": "dc5b1e577cb1fc7a6eb38ddca4d64b248527ffb48dc5ba08aee061dd4a521a41",
+        "stages": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    ],
+    "latestQueueChecks": 32,
+    "parsedScripts": 736,
+    "qualification": "17 focused stages passed before the last three small fixes; affected chase/queue/audio/phone/modal/parse stages were rerun after each fix, preserving all intermediate evidence. This is not a new complete mandatory native suite.",
+    "headlessOnly": true,
+    "phoneBounds": [
+      "430x860",
+      "390x844",
+      "667x375"
+    ]
+  },
+  "negativeControls": [
+    {
+      "report": "/tmp/codex-755-c1-notice-acceptance-negative.json",
+      "sha256": "5aea1fdaafc16f058766ab04b162c32eabe2d7b7749ef1959738eb773a63da23",
+      "summary": [
+        "NOTICE_QUEUE_LIFECYCLE: 21 checks; 15 failures"
+      ],
+      "scope": "Final exact regression script against an isolated copy of canonical old Main/audio/caption sources; no canonical files changed."
+    },
+    {
+      "report": "/tmp/codex-755-c1-notice-chase-before.json",
+      "sha256": "2d0f7dd42d464c068187c47b6a5399a4fc77aeeea31be1e14d9094967ac6e379",
+      "errors": [
+        "ERROR: film-owned arrival must not replay later from the ordinary notice queue"
+      ],
+      "scope": "FIFO intermediate tree before the one-line film-owned arrival discard."
+    }
+  ],
+  "independentReview": "package_review read-only review: no native blocker found after bottom-lane correction; verified source-role split, four-argument signal, synchronous metadata, input-disabled shell caption, world single owner, preserved notice reading clock and chase exact discard.",
+  "limits": [
+    "No GUI was launched or controlled by this agent; actual visual acceptance remains with root.",
+    "No Git, package export or canonical source integration performed.",
+    "The earlier canonical 417-stage full native run does not validate these new C1-worktree changes.",
+    "Web NoticeQueue/ToastLayer/ChapterIntro and C1 interception gameplay belong to other agents and are outside this patch scope."
+  ],
+  "canonicalBaseline": {
+    "godot_native/scripts/main.gd": "2d6b300dc90ef86628fd4c4ecba660538035b842c76bb119b7b01917599931cb",
+    "godot_native/scripts/media/audio_director.gd": "45597f791ec5a0f49c341e67f199b68413f0e4e273eb16264b553d1518b13fc3",
+    "godot_native/scripts/ui/native_phone_notice.gd": "c35e78376576787c6c7b9f396e79354859431812bceee524fb47b4eaf643ec0f",
+    "godot_native/scripts/presentation/c3_narrative_view.gd": "8cf702e0882a223405d1c801e78399c435dc0e00a6d87a0d678b898b14b0bf44",
+    "godot_native/scripts/presentation/library_story_view.gd": "0b5e303b8d09a0811915392d4de99fd8d3c822c042b35570672d4f6207ca7662"
+  },
+  "archive": "/tmp/codex-755-c1-ui/godot_native/exports/verification/notifications_20261020"
+}

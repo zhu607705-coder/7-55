@@ -1,0 +1,436 @@
+{
+  "schema": "755-c1-reading-evidence-v1",
+  "assembledAt": "2026-10-19T16:36:13.844266+00:00",
+  "localDate": "2026-10-20",
+  "workspace": "isolated /tmp/codex-755-c1-ui",
+  "status": "Local scoped native and complete Web acceptance finished; original419=416PASS/3FAIL retained, final22 distinct delta stages PASS. Artifacts/remoteCI/manual residuals have separate receipts and acceptance.",
+  "scope": [
+    "C1 six target texts / three semantic stages",
+    "Independent coordinate order and current-stage recovery",
+    "Ordinary notice reading queue versus immediate dialogue captions"
+  ],
+  "evidence": [
+    {
+      "file": "c1_web_summary.json",
+      "bytes": 7928,
+      "sha256": "de279acb00425239c94417577a431d7ab19150898c3c5fcd2417be9457714c67",
+      "originalLocalPath": "/tmp/codex-755-c1-web-summary.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_web_model.json",
+      "bytes": 1233,
+      "sha256": "d6c30086ad466475ab0d73083f0e59c6151eb27b784e7e52176e943a69505cf1",
+      "originalLocalPath": "/tmp/codex-755-prologue-interception-model.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_web_browser.json",
+      "bytes": 1771,
+      "sha256": "fef8a24c4902f1c4a0f14e95218b269971b05ee78d6d5a1622ac4e97298af32c",
+      "originalLocalPath": "/tmp/codex-755-prologue-interception-browser/browser-report.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_summary.json",
+      "bytes": 9650,
+      "sha256": "125704a40cc7deebfbaf440f88620b3d8d6ff309e17371f5c31d52f8c67b63ac",
+      "originalLocalPath": "/tmp/codex-755-c1-native-final.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_negative_controls.json",
+      "bytes": 10786,
+      "sha256": "9616c21b5b6d60b11874e22dd1add4febf49adca5fbc29658ad713602f93b838",
+      "originalLocalPath": "/tmp/codex-755-c1-negative-controls.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_zero_failure_timing.json",
+      "bytes": 1599,
+      "sha256": "1b65fe64414cf7c579fbecca2726666d8a8ff991a608ac4ecdb5b5a3052fe95d",
+      "originalLocalPath": "/tmp/codex-755-c1-zero-failure-timing.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_word_readability.json",
+      "bytes": 1558,
+      "sha256": "2d59b0051709eebbb3eef769181172a220988b9508fe9f06fd7684cf795539df",
+      "originalLocalPath": "/tmp/codex-755-c1-word-readability.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_summary.json",
+      "bytes": 7526,
+      "sha256": "0e0e55ec3048f33bed9e944875a6f8be3dadaa24f42a016292547fdbac4ec92b",
+      "originalLocalPath": "/tmp/codex-755-native-notice-summary-20261020.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_focused.json",
+      "bytes": 16203,
+      "sha256": "a7ef255cef2969a92e33f4086fd857184363087ef0932c47716a71c02bc9d856",
+      "originalLocalPath": "/tmp/codex-755-c1-notice-final.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_chase_final.json",
+      "bytes": 2019,
+      "sha256": "c584e04ce50977c5fb5e7102e6f30628a296eca53ed274337f68b0f8ad04ba30",
+      "originalLocalPath": "/tmp/codex-755-c1-notice-chase-final.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_audio_final.json",
+      "bytes": 1994,
+      "sha256": "3e3e3fe403f886a99cadaffbe5daccbccc1ba10f09a01ee7369314b5ba1538cc",
+      "originalLocalPath": "/tmp/codex-755-c1-notice-audio-final.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_bottom_final.json",
+      "bytes": 3658,
+      "sha256": "8e68e9bf8f162ba37e375b3c190d1d4940762ae1f7537fb9a1db2b55181ea91b",
+      "originalLocalPath": "/tmp/codex-755-c1-notice-bottom-final.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_layout_final.json",
+      "bytes": 673,
+      "sha256": "dc5b1e577cb1fc7a6eb38ddca4d64b248527ffb48dc5ba08aee061dd4a521a41",
+      "originalLocalPath": "/tmp/codex-755-c1-notice-layout-final.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_old_source_negative.json",
+      "bytes": 7099,
+      "sha256": "5aea1fdaafc16f058766ab04b162c32eabe2d7b7749ef1959738eb773a63da23",
+      "originalLocalPath": "/tmp/codex-755-c1-notice-acceptance-negative.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_chase_negative.json",
+      "bytes": 1070,
+      "sha256": "2d0f7dd42d464c068187c47b6a5399a4fc77aeeea31be1e14d9094967ac6e379",
+      "originalLocalPath": "/tmp/codex-755-c1-notice-chase-before.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_web_browser.json",
+      "bytes": 4717,
+      "sha256": "f965671bf507fcd8c235ed739bb595377be512cb26ec0454fc85a487a30402fd",
+      "originalLocalPath": "/tmp/codex-755-notice-presentation-browser/report.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_web_legacy_negative.json",
+      "bytes": 5567,
+      "sha256": "cbff5a7137fdcd1c9cb74fad1d89d5996c9d4bfa996bcbd4b2796bb3e4d9981b",
+      "originalLocalPath": "/tmp/codex-755-notice-presentation-browser/legacy-report.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_held_button_before.json",
+      "bytes": 3824,
+      "sha256": "a32888d89e3b55e94dc3551494f1d765be9a91d6b8a37c55511953a981e54e15",
+      "originalLocalPath": "/tmp/codex-755-c1-held-button-before.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_held_button_final.json",
+      "bytes": 9394,
+      "sha256": "cb7854112b696485428225f3d7e091b4c4bb54bce310697f4be74c88dd5c4b3a",
+      "originalLocalPath": "/tmp/codex-755-c1-held-button-final.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_after_button_fix.json",
+      "bytes": 2908,
+      "sha256": "54a28e16930109b4098fecf5e7fae7bad656df3f1abdf478d4e75a544c1358ff",
+      "originalLocalPath": "/tmp/codex-755-c1-layout-fix-focused.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "combined_web_release.json",
+      "bytes": 54504,
+      "sha256": "c1fb47447d0e70845875111be620ebbe82e78496656f0315d20ad3620c16fda8",
+      "originalLocalPath": "/tmp/codex-755-c1-combined-web-release-report.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "combined_web_release_smoke.json",
+      "bytes": 3748,
+      "sha256": "b0a30531b136a8f85bb179347b83ee2c73554a85d96fec0ce134fa78a12f5aaa",
+      "originalLocalPath": "/tmp/codex-755-c1-combined-release-smoke/browser-smoke.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_web_harness_summary.json",
+      "bytes": 6143,
+      "sha256": "512ce9eae07f05b9c7cd86e23bfe3817c60f0b6dddbfd8f20bbc87a62237d806",
+      "originalLocalPath": "/tmp/codex-755-notice-harness-final-summary.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_gui_review.json",
+      "bytes": 6398,
+      "sha256": "15abbfea8fc22d9a7ad52f820eb537b362656697d9b7618704f2b81f735b15b4",
+      "originalLocalPath": null,
+      "copiedByteForByte": false,
+      "provenance": "Root actual CUA observations handed off in this session; compact record only, no screenshots or raw logs"
+    },
+    {
+      "file": "c1_native_viewport_mouse_drag.json",
+      "bytes": 1200,
+      "sha256": "3fc12061db005220b29f8bc170fa1439b7706f1853d20a6ba87be664049aaff7",
+      "originalLocalPath": "/tmp/codex-755-c1-real-mouse-drag.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_summary.json",
+      "bytes": 39489,
+      "sha256": "08b2e6e2ed11c25afe7f45934f45b47f7174334dc44d30995829b1d24d44b91d",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input/summary.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_1440x900.json",
+      "bytes": 10378,
+      "sha256": "1ada938802086c2e2b4a2fb900b31e64f85a4061f358824ed424bce075c5a6bd",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input/1440x900.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_390x844.json",
+      "bytes": 10293,
+      "sha256": "69a957d0c856fe572dd6219103a65de853174383217a1c9dfd2145214c03cd31",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input/390x844.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_667x375.json",
+      "bytes": 10290,
+      "sha256": "499d99c428e085e12a7f378bbd55ccc780384a16ffca22231123bfdccb65cb21",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input/667x375.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_handoff_readonly_review.json",
+      "bytes": 8934,
+      "sha256": "d74ce20e8815f897618bcc340009e6b604f57adfafd4b332553e0fbefbd81b75",
+      "originalLocalPath": "/tmp/codex-755-c1-handoff-readonly-review.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_world_expiry_summary.json",
+      "bytes": 2998,
+      "sha256": "6471816700d6188eab44f6630804611a667fe85cc935a3981a481f8ea655471c",
+      "originalLocalPath": "/tmp/codex-755-native-world-notice-summary.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_world_expiry_focused.json",
+      "bytes": 8197,
+      "sha256": "7af90a036c24cf6b671af2211cd2ed9a2f1a698ac1e88f40340c0b1edf605768",
+      "originalLocalPath": "/tmp/codex-755-world-expiry-patch/final-focused.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_world_expiry_natural_negative.json",
+      "bytes": 2249,
+      "sha256": "b70756010e79a78f0e2155ac6109f51cc0cb511781ca5db503893a0a348b8e04",
+      "originalLocalPath": "/tmp/codex-755-world-presentation-prototype.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_after_expiry_summary.json",
+      "bytes": 39872,
+      "sha256": "2c7a4da74a63b82a3d2c70b41357be342bb2171717396e8c6ad426294b0a7ae8",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input-after-expiry/summary.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_after_expiry_1440x900.json",
+      "bytes": 10334,
+      "sha256": "bb54dd104e983f490bf9f8100609cd376bd3f01593185e6c18df1de2b60d3de3",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input-after-expiry/1440x900.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_after_expiry_390x844.json",
+      "bytes": 10293,
+      "sha256": "5cc9915959f935eac25cb0721348f250751f69b0c67d64590613c65f80ec08ec",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input-after-expiry/390x844.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "c1_native_main_nested_input_after_expiry_667x375.json",
+      "bytes": 10128,
+      "sha256": "ae27743f6e2e34cedb84a91a7ee0137fce5d04fff9a8bfe1e5b62a3dd8eef6fd",
+      "originalLocalPath": "/tmp/codex-755-c1-main-nested-input-after-expiry/667x375.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "notice_native_world_expiry_valid_negative.json",
+      "bytes": 1238,
+      "sha256": "ac91982e14b050fcca40d1ed427ef69774d15e005a1c8b898f5c8ecfa1135c9f",
+      "originalLocalPath": null,
+      "copiedByteForByte": false,
+      "provenance": "Compact index of unchanged raw old/final focused record plus exact restored source hashes; source files and failed runner setup are not archived"
+    },
+    {
+      "file": "combined_native_acceptance.json",
+      "bytes": 18780,
+      "sha256": "4ecdcb3a1ee0ee5c02eac4066bdc2e2b29d32fb7540a0e2abac1aca004a540af",
+      "originalLocalPath": "/tmp/codex-755-combined-native-acceptance.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "combined_native_delta.json",
+      "bytes": 16900,
+      "sha256": "141d6805672926b96551dcd0b5b32425f67f304e975f07dfb0c0cd8cd245cdbf",
+      "originalLocalPath": "/tmp/codex-755-combined-native-delta.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "combined_native_clock_negative.json",
+      "bytes": 2655,
+      "sha256": "f1b21a71e112567194f42fc0eec91485b7b225fed18e5a7da70db8ac1014f1bf",
+      "originalLocalPath": "/tmp/codex-755-c3-clock-negative-controls.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "combined_native_clock_diagnostic.json",
+      "bytes": 1417,
+      "sha256": "bc9f28beb5597c288ed069173e452f82cd5b931dbd9237b45006ebbc9689b33d",
+      "originalLocalPath": "/tmp/codex-755-c3-media-diagnostic.json",
+      "copiedByteForByte": true
+    },
+    {
+      "file": "combined_native_test_remediation.json",
+      "bytes": 1419,
+      "sha256": "43e76dbb14dc2ab71e262de15822fecc0f4b0c6c1e7c9b490e250507b9823ba3",
+      "originalLocalPath": "/tmp/codex-755-combined-test-remediation.json",
+      "copiedByteForByte": true
+    }
+  ],
+  "totalEvidenceBytes": 379034,
+  "pending": {
+    "completeMandatoryNative": "Completed as full original419=416PASS/3FAIL plus final19/19 filtered delta and4 supplementary stages with1 duplicate=22 distinct final stages;737parse. No second full419/420 all-green claim.",
+    "webRelease": "PASS 38/38, 83139ms; exact demo/index.html production artifact, four smoke cases; see combined_web_release.json",
+    "manualGui": "Partial actual GUI acceptance:earlier4/6 and stage3 review retained as historical; final Main/world source restarted normally via Project Manager and ordinary story/Ending Resume Continue, checkin preserved, local words0, natural first-target miss then R opens full stage1 clue. Currently paused there; no final manual ending/mouse-drag claim.",
+    "candidatePckZip": "Generated separately from final frozen commit; exact artifact/source acceptance belongs to matching exports/*.validation.json receipts. This document intentionally does not embed future package hashes."
+  },
+  "timingCaveats": {
+    "webModel59100ms": "deterministic simulated model clock; excludes original seven-second blackout and deployment; not human performance",
+    "webBrowser64200ms": "driver main-loop counter only; deliberate failure advances not included; not whole scene or human solve time",
+    "nativeModel57_8917sAndScene80_06s": "automated ordinary-pointer-intent scene/model clocks; not manual or physical-device time"
+  },
+  "gemini": {
+    "actualModel": "3.5 Flash-Lite",
+    "conversation": "https://gemini.google.com/app/862f03f73afba38f",
+    "availability": "Argon was disabled by quota; it was not the model used for this C1 request",
+    "scope": "text and frontend UI candidates only, partially adopted and manually corrected; no backend advice or new voiced story adopted"
+  },
+  "documentationOnlyCorrection": {
+    "path": "src/scenes/phone/P12_Ending/README.md",
+    "priorReportedSha256": "44226d007ce07938240015d317bb604e10a502a36377708bb60d6a6ccdb57d2e",
+    "currentSha256": "7b8ba72b7cb3f4353236f3f409fb0fd3aab60fd44c96a206c9db592df587c0c5",
+    "reason": "Root explicitly authorized replacing misleading observed-play-time wording with exact simulated-clock limitations after focused source freeze; no runtime code/test dependency changed."
+  },
+  "evidencePolicy": "Small JSON reports only. No raw screenshots, movies, audio, giant logs, import caches, or generated delivery files are archived here. Assertion totals are diagnostics, not journey/branch coverage. Earlier negative failures are retained as expected controls, not production failures.",
+  "updatedAt": "2026-10-19T17:27:21.066840+00:00",
+  "sourceVersionQualification": {
+    "c1_native_summary.json": "Pre-button-fix nine-stage snapshot. Its same-frame root-input35 test missed the later real GUI issue; it is not the final cross-frame input proof.",
+    "c1_native_held_button_before.json": "Intended cross-frame production negative:20checks7failures before removing per-frame hide/show.",
+    "c1_native_held_button_final.json": "Fixed cross-frame root input37/0 including R recovery.",
+    "c1_native_after_button_fix.json": "Six focused stages after fix, all PASS including model, root input, source audio, early games, automated four-chapter campaign and736script parse.",
+    "c1_native_main_nested_input_summary.json": "Pre-expiry Main/world input snapshot; superseded for final runtime by the after-expiry summary while original bytes are retained.",
+    "c1_handoff_readonly_review.json": "Historical pre-expiry independent source review with no new blockers at that time. Its two docNotes were corrected; Main/world source changes and final regressions are separately recorded in combined_native_acceptance.json. Original report bytes retained.",
+    "c1_native_main_nested_input_after_expiry_summary.json": "Final Main/world source/editor production-feature rerun:legitimate earned seed43/0 and actual nested Main viewport input81/0 at three sizes. No independent bounds or OS pointer acceptance claim.",
+    "notice_native_world_expiry_focused.json": "Final exact-source four focused stages152checks/0fail, plus unchanged same-test old-source19checks13fail record; world lifecycle12 also appears in the separate broader delta and must not be counted twice.",
+    "notice_native_world_expiry_summary.json": "Immutable fix summary written before broader delta completed; completed19/19 and final fingerprints are in combined_native_acceptance.json. Original fix summary bytes retained."
+  },
+  "nativeButtonFixSourceSha256": {
+    "godot_native/scripts/games/prologue_interception.gd": "f481f96a50090035e5aa6e6f5e15405ededd1e05f6cca356490e95c04638e663",
+    "godot_native/tests/test_prologue_focus_input.gd": "23dbcedc83133283ce11dcae20993c334774cf9261c2d4f86fa2d3d315bf5626"
+  },
+  "documentationChecks": {
+    "checkedAt": "2026-10-19T17:27:21.066840+00:00",
+    "localDocumentLinks": 36,
+    "brokenLocalLinks": 0,
+    "jsonReportCount": 43,
+    "allJsonParsesAndSha256Match": true,
+    "runtimeSuitesRunByDocumentTask": 0,
+    "documents": {
+      "AGENTS.md": "328e529f47fa978ee8e5918a31bc12324126e91d838e2be2c07161fdfce32b8b",
+      "progress.md": "89c90f7dfb5825ce6de36ef145dd345e4724ca68616a1138403533b28f514b30",
+      "docs/gameplay-debug-walkthrough.md": "7e88995db223d415ed21c6c535863460135ff10d7674d9f011115fc1511c62f9",
+      "src/scenes/phone/P12_Ending/README.md": "7b8ba72b7cb3f4353236f3f409fb0fd3aab60fd44c96a206c9db592df587c0c5",
+      "godot_native/docs/C1_WORD_INTERCEPTION_AND_READING_20261020.md": "6b451865fb3a9ba0b098e0777c620c9bb07696dd12f406079b8d0f6d029db4f7"
+    },
+    "finalScopeAuditCorrections": [
+      "Walkthrough checkpoint table now says three stages/six words, matching its detailed rules",
+      "AGENTS distinguishes the Web controller DTO checks from view-owned exchange/whiteout completion and explicit native result validation"
+    ]
+  },
+  "dialogueParityQualification": "Existing approved native Chinese display adaptation is intentionally not verbatim Web parity; retain each runtime four lines and existing English voice/offsets. Source-ledger review, not a new bug/missing merge or actual GUI ending proof.",
+  "finalNativeAcceptance": {
+    "summary": "combined_native_acceptance.json",
+    "originalFull": {
+      "stages": 419,
+      "passed": 416,
+      "failed": 3,
+      "exitStatus": 1,
+      "parseScripts": 736
+    },
+    "officialDelta": {
+      "stages": 19,
+      "passed": 19,
+      "failed": 0,
+      "parseScripts": 737
+    },
+    "supplementaryStages": 4,
+    "duplicateStage": "test_world_presentation_lifecycle.gd",
+    "distinctFinalDeltaStages": 22,
+    "finalMainInputChecks": 81,
+    "legitimateEarnedSeedChecks": 43,
+    "runtimeDeltaFiles": [
+      {
+        "path": "godot_native/scripts/main.gd",
+        "beforeSha256": "27effb4b3e709cab54aacb4c68293e88b5f6986c814568ec5f0128eddcde05c3",
+        "afterSha256": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b"
+      },
+      {
+        "path": "godot_native/scripts/world.gd",
+        "beforeSha256": "d275eb1bc22888c6bfa67d2a3cd72e23f96581973b9a25e6fedb17925f655fda",
+        "afterSha256": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023"
+      },
+      {
+        "path": "godot_native/tests/test_chapter3_media.gd",
+        "beforeSha256": "cc3978daa4bb52692d62475ac37badff763161c2ab230155366f691c8a10df47",
+        "afterSha256": "2f90173ccb1460d8c04cb9cb61d39b08b1f61fda5f6b2b36a6c8785739cbe336"
+      },
+      {
+        "path": "godot_native/tests/test_chapter3_phone_ui.gd",
+        "beforeSha256": "4c3e0a88db0f89ba4f2e82e39eb4909c3e6b8dff50266c4493e543b50d350006",
+        "afterSha256": "04f9d36c97dba659427a047ecd11c6a8c577e0ee6de5c9b6cab83d69ab8625cd"
+      },
+      {
+        "path": "godot_native/tests/test_world_notice_ownership.gd",
+        "beforeSha256": null,
+        "afterSha256": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b"
+      },
+      {
+        "path": "godot_native/tests/test_world_presentation_lifecycle.gd",
+        "beforeSha256": "8f6b8468bbe393c9ef4bb182c258dac5d1ad1e86317314c78ccc625ea38b52ec",
+        "afterSha256": "9118b02c03088f7ea73f976a20e2d482320818d7eea8298dca179111949044ce"
+      }
+    ],
+    "baselineRuntimeSha256": "bd461c886975f187814948f713bdff153e7b116cedb17a5886ac73b7eb81bb18",
+    "finalRuntimeSha256": "bc7c077fc5f5f2c03b6765fa27240fe34ebdee82f02e395a4250fe175e792056",
+    "finalNativeInputSha256": "24ca124f6846ff932475c273988577f89ff69bb74611e3b960c42cf1d281b19b",
+    "finalInputAndRuntimeUnchangedDuringDelta": true,
+    "fullRawSnapshots": "ignored exports/verification/c1_20261020; referenced by compact acceptance summary, not copied into Git evidence"
+  }
+}

@@ -40,11 +40,19 @@ func run() -> void:
 	await create_timer(0.3).timeout
 	check(host.current.phase=="paused" and absf(host.current.position_ms-paused)<2,"pause freezes actual offset")
 	host.apply(controller.dispatch(s,"c35_listen","lake").media)
-	await create_timer(3.25).timeout
+	# Wall time is not AudioServer evidence: wait for the real session receipt.
+	var heard_deadline: int=Time.get_ticks_msec()+6500
+	while not s.native.get("c35_listened",[]).has("lake") and Time.get_ticks_msec()<heard_deadline and host.current!=null and host.current.phase=="playing":
+		await process_frame
 	check(s.native.get("c35_listened",[]).has("lake"),"actual AudioStreamPlayer crossed80 percent")
+	if not s.native.get("c35_listened",[]).has("lake"):
+		await host.shutdown();host.queue_free();await process_frame;quit(1);return
 	check(not s.native.get("c35_reviewed",[]).has("lake"),"audio success is distinct from fallback review")
 	var full: RefCounted = request.media.session
 	request = controller.dispatch(s,"c35_excerpt",{"id":"lake","index":2})
+	check(request.has("media"),"a genuine heard receipt permits the source excerpt")
+	if not request.has("media"):
+		await host.shutdown();host.queue_free();await process_frame;quit(1);return
 	check(absf(request.media.session.start_ms-440)<1 and absf(request.media.session.end_ms-2840)<1,"source event seek has180ms lead and220ms tail")
 	check(not request.media.session.marks_heard,"event excerpt cannot mark full audition")
 	host.apply(request.media)

@@ -1,0 +1,12 @@
+[
+  {
+    "script": "/tmp/codex-755-world-presentation-fixed.gd",
+    "fixture": "/Users/zhu/Library/Application Support/755-c3-clock-f7vyLg",
+    "startedAt": "2026-10-19T17:09:45.505Z",
+    "durationMs": 1845,
+    "status": 1,
+    "error": null,
+    "passed": false,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_OWNER_DIAGNOSTIC {\"noticeSurface\":\"\",\"queueCurrent\":{\"duration\":2.4,\"elapsed\":0.0,\"exact\":false,\"remaining\":2.4,\"speaker\":\"系统\",\"text\":\"单一场景字幕\"},\"queuePending\":[{\"duration\":4.2,\"elapsed\":0.0,\"exact\":true,\"remaining\":4.2,\"speaker\":\"系统\",\"text\":\"单一语音字幕\"}],\"sceneOwns\":true,\"toastVisible\":false,\"worldSubtitle\":\"\"}\nWORLD_FIFO_DIAGNOSTIC {\"current\":{\"duration\":2.4,\"elapsed\":2.4,\"exact\":false,\"remaining\":0.0000000000000000693889390390723,\"speaker\":\"系统\",\"text\":\"单一场景字幕\"},\"left\":0.0000000000000000693889390390723,\"pending\":[{\"duration\":4.2,\"elapsed\":0.0,\"exact\":true,\"remaining\":4.2,\"speaker\":\"系统\",\"text\":\"单一语音字幕\"}],\"surface\":\"world\",\"worldText\":\"\"}\nWorld presentation/input lifecycle checks: 12; failures: 3\nERROR: TEST FAILED: FIFO audio-derived notice begins with its complete authored4.2-second lifetime on the same single world surface\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (/tmp/codex-755-world-presentation-fixed.gd:6)\n       [1] _run (/tmp/codex-755-world-presentation-fixed.gd:42)\nERROR: TEST FAILED: visible world notice uses its actual surface reading clock\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (/tmp/codex-755-world-presentation-fixed.gd:6)\n       [1] _run (/tmp/codex-755-world-presentation-fixed.gd:44)\nERROR: TEST FAILED: both queued notices expire once without a duplicate root surface\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (/tmp/codex-755-world-presentation-fixed.gd:6)\n       [1] _run (/tmp/codex-755-world-presentation-fixed.gd:48)\n"
+  }
+]

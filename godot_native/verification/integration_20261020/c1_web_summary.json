@@ -1,0 +1,217 @@
+{
+  "status": "owned Web C1 source frozen, pending root integration/release acceptance",
+  "frozenAtUtc": "2026-10-19T16:19:19.634408+00:00",
+  "worktree": "/private/tmp/codex-755-c1-ui",
+  "baseProvidedByRoot": "9dbaa144",
+  "canonicalEdited": false,
+  "gitMutation": false,
+  "guiUsed": false,
+  "ownedPaths": {
+    "src/data/prologue-interception.content.json": {
+      "sha256": "64ff1f31b664749a43d5590bf9464717634c33bdb342386852c9244a91fea778",
+      "bytes": 1055
+    },
+    "src/scenes/phone/P12_Ending/InterceptionModel.ts": {
+      "sha256": "c12b3febe3e94c404cef184b8cc570fc58f67e6cbe4c392224b4cec4ed774773",
+      "bytes": 12341
+    },
+    "src/scenes/phone/P12_Ending/index.tsx": {
+      "sha256": "c1f5b6c3d6d40c188449ddcfef9416b27b8b5dbadeab40cce1c6f79d6ca22ba3",
+      "bytes": 20456
+    },
+    "src/scenes/phone/P12_Ending/EndingRuntime.ts": {
+      "sha256": "5d2e044e8128018177f29f0a12e5df831a41abd0953c3ac3646cec7332160b2f",
+      "bytes": 1519
+    },
+    "src/styles/scenes/p12-ending.css": {
+      "sha256": "0ef9114b2d07316c32bada1bdcd423570c9b2237819b773050dc4b6795018bcf",
+      "bytes": 16667
+    },
+    "src/scenes/phone/P12_Ending/README.md": {
+      "sha256": "44226d007ce07938240015d317bb604e10a502a36377708bb60d6a6ccdb57d2e",
+      "bytes": 3426
+    },
+    "scripts/verify-prologue-interception.mjs": {
+      "sha256": "018c8afb4f5df118b59e066f23c1e2f8c00743e4793c9bfcc9e958b98027b849",
+      "bytes": 12395
+    },
+    "scripts/verify-prologue-interception-browser.mjs": {
+      "sha256": "7a7f4c393b5c0730f8e34247225ea3818e71367847f28bfc639ecf3d84f88a15",
+      "bytes": 18465
+    },
+    "scripts/fixtures/prologue-interception/ending-before-text-discovery.tsx.source.txt": {
+      "sha256": "971d56b6b770e1c4bf3335781225f56bb97245b47983f53226af3fe15cd9d654",
+      "bytes": 24987
+    }
+  },
+  "sourceContractUnchanged": {
+    "src/modules/ActOneBootstrapController.ts": {
+      "sha256": "415cf6a30a82556da7ff2dbd24c2135b985d956b65718caf3db0c005212c3981",
+      "sameAsCanonicalFrozenReference": true
+    },
+    "src/core/GameState.ts": {
+      "sha256": "83a67df784ecad894be4618fbb026b7d57043f748d5e7d36cb0473e4785de662",
+      "sameAsCanonicalFrozenReference": true
+    },
+    "src/core/SaveStore.ts": {
+      "sha256": "3f1c56fcbfc7b08f5c28985477e88745f9385c303ebc5c28e04d4b12850dc8ad",
+      "sameAsCanonicalFrozenReference": true
+    },
+    "src/core/types.ts": {
+      "sha256": "79070fe7ac2e14f17eb5bf8285a4e0e9c32952b3374ec164f79f4333f52c6162",
+      "sameAsCanonicalFrozenReference": true
+    }
+  },
+  "checks": {
+    "typecheck": {
+      "passed": true,
+      "command": "node node_modules/typescript/bin/tsc --noEmit"
+    },
+    "model": {
+      "passed": true,
+      "checks": 52,
+      "report": "/tmp/codex-755-prologue-interception-model.json",
+      "sha256": "d6c30086ad466475ab0d73083f0e59c6151eb27b784e7e52176e943a69505cf1",
+      "normalInput": [
+        {
+          "name": "normal-continuous-input",
+          "elapsedMs": 59100,
+          "recoveries": 0,
+          "completedStages": 3
+        }
+      ],
+      "oldAlgorithmNegative": {
+        "fixtureSha256": "971d56b6b770e1c4bf3335781225f56bb97245b47983f53226af3fe15cd9d654",
+        "effectiveFailures": [
+          "old endpoint position awards contact without any swept collision",
+          "old later endpoint ignores an earlier real contact at center",
+          "old implementation cannot retain semantic missing targets"
+        ],
+        "source": "exact old path and terminal predicate executed"
+      }
+    },
+    "browser": {
+      "passed": true,
+      "checks": 27,
+      "report": "/tmp/codex-755-prologue-interception-browser/browser-report.json",
+      "sha256": "fef8a24c4902f1c4a0f14e95218b269971b05ee78d6d5a1622ac4e97298af32c",
+      "cases": [
+        {
+          "name": "local reading surfaces",
+          "captionBackground": "rgb(242, 234, 216)",
+          "captionColor": "rgb(41, 38, 31)",
+          "captionShadow": "none",
+          "modalBackground": "rgb(244, 237, 220)",
+          "reasonColor": "rgb(41, 38, 31)"
+        },
+        {
+          "name": "scaled touch",
+          "rect": {
+            "bx": 194.99999237060547,
+            "by": 637.543701171875,
+            "x": 20.469768524169922,
+            "y": 103.4000015258789,
+            "w": 349.06048583984375,
+            "h": 665.650146484375
+          },
+          "boardX": 294.20000000000005,
+          "events": [
+            {
+              "type": "pointerdown",
+              "target": "",
+              "x": 195,
+              "y": 637.543701171875
+            },
+            {
+              "type": "pointermove",
+              "target": "ending-geo-error-board ",
+              "x": 334.62420654296875,
+              "y": 637.543701171875
+            }
+          ]
+        },
+        {
+          "name": "keyboard six-target run",
+          "formalSaveReloadRetained": true,
+          "fixtureSha256": "2938026ec9dd9d9b3817e9f093aec36e3c5bcf5e03073c75bc5bba42cefb857d",
+          "elapsedMs": 64200,
+          "recoveries": 0,
+          "keptProgress": true,
+          "controllerHandoff": "friend_message_required"
+        },
+        {
+          "name": "old exact-scene negative",
+          "fixtureSha256": "971d56b6b770e1c4bf3335781225f56bb97245b47983f53226af3fe15cd9d654",
+          "phase": "lock",
+          "blockedCount": 3,
+          "semanticTargetModelPresent": false,
+          "effectiveSemanticContractFailure": true
+        }
+      ],
+      "method": "headless real app, native Input keyboard/mouse/touch; externally serialized SaveStore fixture through ordinary storage, no product QA route",
+      "screenshotsVisuallyReviewed": [
+        "mobile-clue-reading.png",
+        "desktop-first-reason.png",
+        "desktop-clue-review.png"
+      ]
+    },
+    "behavioralTotal": 79
+  },
+  "design": {
+    "semanticTargets": [
+      [
+        "等"
+      ],
+      [
+        "经度",
+        "纬度"
+      ],
+      [
+        "旁白",
+        "还没",
+        "说完"
+      ]
+    ],
+    "ordered": [
+      false,
+      false,
+      true
+    ],
+    "controllerGates": 3,
+    "realTargetContacts": 6,
+    "lockMs": 1400,
+    "firstPassiveDemoGapMs": 1000,
+    "subsequentSpawnGapMs": 1900,
+    "maxOnscreenWords": 2,
+    "logicalStage": [
+      430,
+      820
+    ],
+    "reservedTopPx": 40,
+    "windowBody": [
+      164,
+      58
+    ],
+    "maxWindowSpeedPxPerSecond": 440,
+    "maxWindowTiltDegrees": 6,
+    "wordMinimumApproachSeconds": "3.0 + .35 per character",
+    "failure": "same stage, retained words, missing-only safe reissue",
+    "review": "complete clue and failure prompts pause physics, no reading penalties",
+    "readingSurfaces": "opaque warm paper / dark body text; compact speaker label; scene black background retained"
+  },
+  "limitations": [
+    "Headless actual-input tests do not prove physical mobile-device acceptance or a first-time human solving experience.",
+    "Root final combined release/source-native validation and manual visual review remain separate.",
+    "The preserved original intro caption and new clue lane partly share time; clue reread prevents missed-reading softlocks."
+  ],
+  "fixtureCorrections": [
+    "Early DEV-route harness had panel-mount/scale timing races; final harness uses ordinary externally validated SaveStore fixture, waits for new document/fonts/scale, and performs actual formal save+reload.",
+    "One early moving-board SAT test used the opposite board displacement; corrected test direction, not production geometry."
+  ],
+  "backgroundProcessesLeft": false,
+  "supersedes": {
+    "summarySha256": "7815c56a2af2eca5b5a5b710779f331635be399a861e0059f74a080dac79d18b",
+    "path": "/tmp/codex-755-c1-web-pre-reading-style-summary.json",
+    "reason": "Root visual review requested own story caption and failure/review panes as opaque warm-paper reading surfaces; text, timing and collision/controller behavior unchanged."
+  }
+}

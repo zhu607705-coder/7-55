@@ -1,0 +1,25 @@
+{
+  "schema": "755-world-notice-valid-negative-v1",
+  "recordedAt": "2026-10-19T17:19:18.890126+00:00",
+  "sameFinalTest": "godot_native/tests/test_world_notice_ownership.gd",
+  "testSha256": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b",
+  "oldProductionSha256": {
+    "godot_native/scripts/main.gd": "27effb4b3e709cab54aacb4c68293e88b5f6986c814568ec5f0128eddcde05c3",
+    "godot_native/scripts/world.gd": "d275eb1bc22888c6bfa67d2a3cd72e23f96581973b9a25e6fedb17925f655fda"
+  },
+  "checks": 19,
+  "failures": 13,
+  "exitStatus": 1,
+  "parseOrInfrastructureFailure": false,
+  "rawRecord": "notice_native_world_expiry_focused.json",
+  "qualification": "Several downstream assertions share the same stuck FIFO cause; these are not thirteen independent product bugs. Raw record also contains the positive final-source19/0 run.",
+  "naturalExpiryNegative": {
+    "record": "notice_native_world_expiry_natural_negative.json",
+    "checks": 12,
+    "failures": 3
+  },
+  "excludedSetupAttempt": {
+    "path": "/tmp/codex-755-world-expiry-patch/isolation-prefix-guard-failed.json",
+    "reason": "Existing isolation guard rejected the external runner prefix before product assertions; not an effective product negative"
+  }
+}

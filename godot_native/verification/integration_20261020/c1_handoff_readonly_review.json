@@ -1,0 +1,174 @@
+{
+  "schema": "c1-handoff-independent-readonly-review-v1",
+  "reviewedAt": "2026-10-19T16:56:14.853Z",
+  "sourceRoot": "/tmp/codex-755-c1-ui",
+  "sourceHashes": {
+    "src/scenes/phone/P12_Ending/index.tsx": "c1f5b6c3d6d40c188449ddcfef9416b27b8b5dbadeab40cce1c6f79d6ca22ba3",
+    "src/scenes/phone/P12_Ending/InterceptionModel.ts": "c12b3febe3e94c404cef184b8cc570fc58f67e6cbe4c392224b4cec4ed774773",
+    "src/scenes/phone/P12_Ending/EndingRuntime.ts": "5d2e044e8128018177f29f0a12e5df831a41abd0953c3ac3646cec7332160b2f",
+    "src/modules/ActOneBootstrapController.ts": "415cf6a30a82556da7ff2dbd24c2135b985d956b65718caf3db0c005212c3981",
+    "godot_native/scripts/games/prologue_interception.gd": "f481f96a50090035e5aa6e6f5e15405ededd1e05f6cca356490e95c04638e663",
+    "godot_native/scripts/games/prologue_word_model.gd": "e933e8ad6ba7e39c67dfdd9565d2627e0989b877a7215063486cff1d089e6c64",
+    "godot_native/scripts/chapters/chapter1_2.gd": "c19fe619314a79a42d8a7a1f58f9ba4e400fb2178fe832a1ebe488d8f24d3473",
+    "godot_native/scripts/main.gd": "27effb4b3e709cab54aacb4c68293e88b5f6986c814568ec5f0128eddcde05c3",
+    "godot_native/scripts/ui/native_ending_resume.gd": "91b55eb366ba7ce3b7439d8a94f220ecbf9250152c7ad1d86e53cf5a3902ad21",
+    "godot_native/docs/chinese-text-revision-20261018.json": "b0d503289cfea094f78536c9c5ddc2596b8da5c3ba13efb885db1895ab66441c",
+    "godot_native/data/zh_text_revisions.json": "40334794b1bab530ff473a9d024012ab0d3597620939e4fc5d2752315aa55bc2"
+  },
+  "confirmedNewProductBlockers": [],
+  "findings": [
+    {
+      "topic": "Check-in and formal reload/resume",
+      "evidence": [
+        "godot_native/scripts/chapters/chapter1_2.gd:368-395",
+        "godot_native/scripts/ui/native_ending_resume.gd:7-28"
+      ],
+      "conclusion": "Ordinary check-in sets checkinDone and ending page before opening the current game; pending save can legally resume only while prologue remains current. Real exported/imported save and separate normal entry were exercised in a fresh receipt profile."
+    },
+    {
+      "topic": "Semantic target authority and retry",
+      "evidence": [
+        "godot_native/scripts/games/prologue_word_model.gd:53-54,84-98,198-223",
+        "src/scenes/phone/P12_Ending/InterceptionModel.ts",
+        "scripts/verify-prologue-interception.mjs:46-50",
+        "scripts/verify-prologue-interception-browser.mjs:91-103"
+      ],
+      "conclusion": "Six physical text contacts map to three semantic stages. Coordinate names are unordered; sentence fragments are ordered. Failure preserves collected set and stage, clears unsafe cards and restarts only missing targets. Reread and failure stop simulation; background words leaving unblocked are safe. moved_distance affects demonstration/failure classification only, not valid target capture."
+    },
+    {
+      "topic": "Completion timing and original progression",
+      "evidence": [
+        "src/scenes/phone/P12_Ending/index.tsx:89-123",
+        "src/modules/ActOneBootstrapController.ts:73-116",
+        "godot_native/scripts/games/prologue_interception.gd:134-171",
+        "godot_native/scripts/chapters/chapter1_2.gd:382-391"
+      ],
+      "conclusion": "Only semantic completion opens lock, held input must reach 1400ms, then four dialogue intervals, 950ms burst and 700ms whiteout precede once-only result. Web controller validates unchanged three-fields proof; native additionally validates dialogueCount and whiteoutCompleted. Scene audio cues only request presentation; neither sound completion nor runtime inspection snapshot commits progress."
+    },
+    {
+      "topic": "Stale save/proof and ownership",
+      "evidence": [
+        "src/modules/ActOneBootstrapController.ts:75-84",
+        "src/scenes/phone/P12_Ending/EndingRuntime.ts:37-49",
+        "godot_native/scripts/chapters/chapter1_2.gd:246",
+        "godot_native/scripts/main.gd:1696-1724",
+        "godot_native/scripts/save_migration.gd:125-136"
+      ],
+      "conclusion": "Fresh ending runtime begins zero progress. No word/card progress save fields were added. Invalid incomplete/failed proof is rejected; already completed chapter phase cannot regress via old C1 result. Main captures active-game identity and ignores stale activity callbacks. This is an internal controller contract, not tamper-proof attestation against arbitrary code execution."
+    }
+  ],
+  "acceptedDialogueContract": {
+    "decision": "Keep Web authored lines and native accepted 2026-10-18 Chinese display revisions; do not revert ledger adoption or change English voice assets/offsets.",
+    "ledger": "godot_native/docs/chinese-text-revision-20261018.json:516-622",
+    "displayRevisions": "godot_native/data/zh_text_revisions.json:245-273",
+    "lines": [
+      {
+        "intervalMs": [
+          0,
+          3000
+        ],
+        "web": "嘿！你到底在干什么？放开我！",
+        "native": "喂！你拽我弹窗干什么？！快松手！要未响应了！",
+        "speaker": "旁白",
+        "voice": "vo_prologue_narrator_caught",
+        "voiceOffsetMs": 100,
+        "voiceDurationMs": 2926,
+        "adoption": "采纳; original English retained by explicit voiceReview"
+      },
+      {
+        "intervalMs": [
+          3000,
+          4100
+        ],
+        "web": "不，除非你帮助我",
+        "native": "帮我补签到！",
+        "speaker": "玩家",
+        "voice": null,
+        "adoption": "适配采纳; fixed ~1100ms unvoiced window"
+      },
+      {
+        "intervalMs": [
+          4100,
+          5200
+        ],
+        "web": "不然你就和我的绩点同归于尽吧",
+        "native": "不帮就一起死机！",
+        "speaker": "玩家",
+        "voice": null,
+        "adoption": "适配采纳; fixed ~1100ms unvoiced window"
+      },
+      {
+        "intervalMs": [
+          5200,
+          8900
+        ],
+        "web": "哦，好吧，好吧！但你先把手放开！",
+        "native": "行行行！算你狠！我帮你想办法还不行吗？先把手指挪开！",
+        "speaker": "旁白",
+        "voice": "vo_prologue_narrator_bargain",
+        "voiceOffsetMs": 0,
+        "voiceDurationMs": 3396,
+        "adoption": "采纳; original English retained by explicit voiceReview"
+      }
+    ],
+    "remainingRisk": "Two fixed 1100ms player-caption windows remain fast, especially the longer Web second player line. Native ledger intentionally compressed them. Readability is not proven for every reader; this review preserves the accepted timing and captions. Captured English voice exceeds first 3000ms caption boundary by about26ms with its100ms offset; existing source timing is unchanged, not introduced by new word stages."
+  },
+  "focusedNewInput": {
+    "summary": "/tmp/codex-755-c1-main-nested-input/summary.json",
+    "sha256": "08b2e6e2ed11c25afe7f45934f45b47f7174334dc44d30995829b1d24d44b91d",
+    "seed": {
+      "checks": 43,
+      "failures": 0,
+      "bareProgressWrites": false
+    },
+    "mainActualLayout": {
+      "checks": 81,
+      "failures": 0,
+      "sizes": [
+        [
+          1440,
+          900
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          667,
+          375
+        ]
+      ],
+      "ordinaryEntryAndResumeMouseButtons": true,
+      "independentReceiptPerSize": true,
+      "viewportGlobalMouseAcrossFrames": true,
+      "touchFingerAndCancel": true,
+      "reviewButtonsAndR": true,
+      "productionPolicy": true,
+      "freezeSourcesUnchanged": true
+    }
+  },
+  "existingEvidence": {
+    "webRelease": "/tmp/codex-755-c1-combined-web-release-report.json",
+    "webReleaseValidatorsPassed": 38,
+    "webReleaseRerun": false,
+    "webSceneBrowser": "/tmp/codex-755-prologue-interception-browser/browser-report.json",
+    "webModel": "/tmp/codex-755-prologue-interception-model.json",
+    "notFullNativeAllGreenClaim": true
+  },
+  "limits": [
+    "Headless Viewport.push_input verifies actual Main GUI transform routing, not OS-level Computer Use event delivery or physical touch hardware.",
+    "Focused nested input stops before target capture and grants no completion; natural full handoff is established by existing separate model/browser/native focus tests, not by this drag probe.",
+    "No new full campaign or release suite was run for this review. Root/native agents own current full native status, including unrelated audio fixtures.",
+    "No production/source/Git/GUI changes were made. External test scripts and JSON evidence only."
+  ],
+  "docNotes": [
+    {
+      "path": "docs/gameplay-debug-walkthrough.md:368",
+      "note": "Checkpoint table retains old phrase 三次错误框拦截; the detailed walkthrough130-138 and467 already correctly say six targets/three stages."
+    },
+    {
+      "path": "AGENTS.md:232",
+      "note": "Phrase controller validates full authored exchange/whiteout should distinguish Web unchanged three-field DTO from view timing and native extra proof fields."
+    }
+  ]
+}

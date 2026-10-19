@@ -1,5 +1,6 @@
 extends Control
 ## Non-modal source subtitles: dialogue locks interaction, never ordinary walking.
+const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var body_scroll:ScrollContainer
 const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
@@ -19,14 +20,14 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	var box:=StyleBoxFlat.new(); box.bg_color=Color("101f29",.95); box.border_color=Color("86b6c4",.8); box.set_border_width_all(2); box.set_corner_radius_all(3)
+	var box:=Ui.box(Ui.PAPER,Ui.INK,Ui.EDGE)
 	panel.add_theme_stylebox_override("panel",box)
 	for field: String in ["speaker","body"]:
 		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		label.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"))
 		panel.add_child(label); set(field,label)
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
-	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; body.add_theme_color_override("font_color",Color("f7f1dc"))
+	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; body.add_theme_color_override("font_color",Ui.INK)
 	visible=false
 func tick() -> void:
 	if not is_instance_valid(panel): return
@@ -51,7 +52,7 @@ func tick() -> void:
 	elif align_left:panel.position.x=region.position.x
 	speaker.text=str(v.speaker); speaker.add_theme_font_size_override("font_size",metrics.speaker_font)
 	speaker.position=metrics.speaker.position; speaker.size=metrics.speaker.size
-	speaker.add_theme_color_override("font_color",Color("c0d59d") if v.speaker=="玩家" else Color("8ed2e4"))
+	speaker.add_theme_color_override("font_color",Color("31523a") if v.speaker=="玩家" else Ui.FOCUS)
 	body.text=str(v.text); body.add_theme_font_size_override("font_size",metrics.body_font)
 	body_scroll.layout_body(metrics.body_viewport,metrics.body.size.y)
 

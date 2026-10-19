@@ -4,7 +4,7 @@ extends RefCounted
 const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const INK=Color("222322")
-const PAPER=Color("fff8e2",.85)
+const PAPER=Ui.PAPER
 const SPEAKERS={"system":"系统","narrator":"旁白","task":"任务","success":"记录","error":"提示","broadcast":"广播","player":"我","xiaoying":"小影"}
 const ICONS={
 	"系统":"M4 3h8v10H4z M2 1h2v3H2z M6 0h1v3H6z M9 0h1v3H9z M12 1h2v3h-2z M0 5h3v1H0z M0 9h3v1H0z M13 5h3v1h-3z M13 9h3v1h-3z M5 14h1v2H5z M10 14h1v2h-1z",

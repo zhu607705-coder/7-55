@@ -57,12 +57,12 @@ func run() -> void:
 		shell.audio_director.subtitle_timed.emit("锻炼记录已同步。","toast",3600.0,"task")
 		check(shell.toast.text.is_empty(),"late AudioDirector result subtitle remains scene-owned")
 		shell._feedback("电量仅剩 1%，请寻找现场充电服务站。")
-		var notice: String = shell.toast.text
-		var notice_duration: float = shell.toast_time
+		var notice: Dictionary = shell.notice_queue.current.duplicate(true)
+		check(not shell.toast.visible,"unrelated ordinary feedback waits while the retained result owns the surface")
 		shell.audio_director.subtitle_timed.emit("锻炼记录已同步。","toast",2400.0,"task")
-		check(shell.toast.text == notice and shell.toast.visible and shell.toast_time == notice_duration,"late result cue neither erases nor retimes an unrelated notice")
+		check(shell.notice_queue.current == notice and not shell.toast.visible,"late result cue neither erases nor retimes the waiting unrelated notice")
 		# Clear this test-only injected notice before testing the return control.
-		shell.toast.text = ""; shell.toast.hide(); shell.toast_time = 0
+		shell._clear_notice_presentations()
 		root.size = Vector2i(430,860) if view.x == 390 else Vector2i(390,844)
 		shell.size = Vector2(root.size)
 		shell._layout()

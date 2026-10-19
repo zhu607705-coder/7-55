@@ -44,7 +44,12 @@ var nearby: Dictionary = {}
 var walk_clock := 0.0
 var facing := "down"
 var player_turn:Dictionary={}
-var subtitle := ""
+signal subtitle_expired(revision:int,text:String)
+var subtitle_revision:=0
+var subtitle := "":
+	set(value):
+		subtitle=value
+		subtitle_revision+=1
 var subtitle_left := 0.0
 var font: Font
 var _last_save := 0.0
@@ -498,7 +503,11 @@ func _process(delta: float) -> void:
 	transition_alpha = maxf(0,transition_alpha-delta*2.0)
 	if subtitle_left > 0:
 		subtitle_left -= delta
-		if subtitle_left <= 0: subtitle = ""
+		if subtitle_left <= 0:
+			var expired_revision:=subtitle_revision
+			var expired_text:=subtitle
+			subtitle="";subtitle_left=0
+			subtitle_expired.emit(expired_revision,expired_text)
 	queue_redraw()
 	# Pause physical actors, while keeping the existing scene fades and visual
 	# animation alive, as source physics.pause() does.

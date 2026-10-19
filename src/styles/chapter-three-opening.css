@@ -855,15 +855,15 @@
 }
 
 .chapter-three-opening__subtitle-meta span {
-  color: #e9d06e;
+  color: #6d5827;
   font-size: 11px;
 }
 
-.chapter-three-opening__subtitle.tone-player .chapter-three-opening__subtitle-meta span { color: #8fd3f4; }
-.chapter-three-opening__subtitle.tone-paper .chapter-three-opening__subtitle-meta span { color: #ff9b9f; }
+.chapter-three-opening__subtitle.tone-player .chapter-three-opening__subtitle-meta span { color: #32616b; }
+.chapter-three-opening__subtitle.tone-paper .chapter-three-opening__subtitle-meta span { color: #884c59; }
 
 .chapter-three-opening__subtitle-meta small {
-  color: #83959d;
+  color: #596c66;
   font-family: monospace;
   font-size: 9px;
 }

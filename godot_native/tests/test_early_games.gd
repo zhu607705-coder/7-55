@@ -1,5 +1,6 @@
 extends SceneTree
 const Interception = preload("res://scripts/games/prologue_interception.gd")
+const WordDriver=preload("res://tests/prologue_word_driver.gd")
 const VirtualRun = preload("res://scripts/games/virtual_run.gd")
 const Stamp = preload("res://scripts/games/identity_stamp.gd")
 var passed = 0
@@ -25,26 +26,20 @@ func _run() -> void:
 	check(game.phase == "blackout","seven-second blackout cannot be skipped")
 	tick(game,.5)
 	check(game.phase == "deploy","blackout leads to same error-window board")
-	game._switch("intercept")
-	for i in range(3):
-		game.paddle = 79 if i == 0 else 21
-		if game.blocks == 0: game.paddle = 79
-		tick(game,2.3)
-		tick(game,.7)
-	check(game.phase == "failed" and game.misses == 3,"three misses enter retry")
+	for index in 3500:
+		if game.phase == "failed": break
+		game._process(.02)
+	check(game.phase == "failed" and game.misses == 1,"missing a required word opens its context branch")
+	var stage = game.session.stage
 	game._retry()
-	check(game.phase == "deploy" and game.misses == 0,"retry skips blackout and resets misses")
-	tick(game,1.6)
-	for end_x in [24,78,50]:
-		game.paddle = end_x
-		while game.phase == "intercept": game._process(.02)
-		tick(game,.4)
-	check(game.phase == "lock" and game.blocks == 3,"three actual path interceptions unlock hold")
-	game.holding = true
+	check(game.phase == "intercept" and game.misses == 1 and game.session.stage == stage,"branch continuation keeps the same stage and failure history")
+	check(WordDriver.until(game,"lock"),"all six real word contacts complete the three semantic stages")
+	check(game.phase == "lock" and game.blocks == 3,"three semantic stages unlock the unchanged hold")
+	game._pointer(game.field.position+game._lock_center()*game.display_scale,true)
 	tick(game,1.0)
-	game._pointer(Vector2.ZERO,false)
+	game._pointer(game.field.position+game._lock_center()*game.display_scale,false)
 	check(game.hold_ms == 0 and game.phase == "lock","early pointer release resets hold")
-	game.holding = true
+	game._pointer(game.field.position+game._lock_center()*game.display_scale,true)
 	tick(game,1.42)
 	check(game.phase == "caught" and game.hold_ms >= 1400,"full hold locks narrator")
 	var results: Array = []
