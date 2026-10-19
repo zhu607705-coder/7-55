@@ -12,6 +12,16 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;push_error(label)
 func frames(n:int=2)->void:
 	for i in n:await process_frame
+func root_key(code:Key)->void:
+	for down:bool in [true,false]:
+		var event:=InputEventKey.new();event.keycode=code;event.physical_keycode=code;event.pressed=down
+		root.push_input(event,true);await frames()
+func root_click(button:Button)->void:
+	var point:Vector2=button.get_global_rect().get_center()
+	var motion:=InputEventMouseMotion.new();motion.position=point;root.push_input(motion,true);await frames()
+	for down:bool in [true,false]:
+		var event:=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down
+		root.push_input(event,true);await frames()
 func issue(state:Node)->Dictionary:
 	state.begin_checkpoint("c4-755-chase")
 	return state.act("c4_chase",{"expectedAttempt":state.d.chapter4.chaseAttempt,"leadDistance":650})
@@ -148,14 +158,20 @@ func run()->void:
 	check(state.act("c4_chase_failed",failure).get("accepted",false) and state.d.chapter4.chaseAttempt==attempt+1 and state.d.chapter4.floor=="A1" and state.d.chapter4.chaseStairwellLanding==0,"Original failure increments once and resets to A1, not a free platform respawn")
 	check(not state.act("c4_chase_failed",failure).get("accepted",false) and state.d.chapter4.chaseAttempt==attempt+1,"Duplicate failure is rejected")
 	game.queue_free();await frames()
+	root.size=Vector2i(1440,900)
 	state.begin_checkpoint("c4-755-chase")
 	var shell:Control=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames(5)
+	# Explicit authored source fixture, before entering the activity. There is
+	# no placement or focus repair after Return: Space must reach this target.
+	shell.world.player=Vector2(1001,214);shell.world._sync_player();shell.world._process(0);shell.world.grab_focus()
 	state.act("c4_chase");await frames()
 	check(is_instance_valid(shell.active_game) and shell.active_game.get_script().resource_path.ends_with("chapter4_chase_space_activity.gd"),"Actual Main routes the original trigger into the new activity")
-	shell.active_game.set_process(false);shell.active_game._leave_chase();await frames()
+	var cancelled_owner:Control=shell.active_game;cancelled_owner.set_process(false)
+	await root_click(cancelled_owner.controls.get_child(0));await frames()
 	check(not is_instance_valid(shell.active_game),"Actual Main releases the independent scene on Return")
-	shell._show_world_mobile();await frames()
-	check(is_instance_valid(shell.active_game) and shell.active_game.player==Vector2(180,1320),"Explicit world Return resumes the independent space safely")
-	shell.queue_free();await frames(4)
+	check(shell.world_frame.is_visible_in_tree() and shell.world_viewport.gui_get_focus_owner()==shell.world and root.gui_get_focus_owner()==null,"Actual chase Return restores original world keyboard focus without a map click")
+	await root_key(KEY_SPACE);await frames()
+	check(is_instance_valid(shell.active_game) and shell.active_game!=cancelled_owner and shell.active_game.player==Vector2(180,1320),"First root Space after Return resumes a new chase owner through its real world target")
+	await shell.shutdown();shell.queue_free();await frames(4)
 	print("CHAPTER4_CHASE_SPACE_INTEGRATION ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

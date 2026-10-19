@@ -78,6 +78,8 @@ func completed_return(view: Vector2i) -> void:
 	check(await wait_until(func(): return state_node.d.chapter4.floor=="A3"),"actual3960ms world presentation arrives A3")
 	check(state_node.d.native.c4_elevator_transport and state_node.d.native.c4_native_elevator_completed,"only completed native transit earns provenance")
 	await frames(4);check_world_focus("Arrival "+str(view))
+	var targets:Array=state_node.get_targets("duan_yongping_temporal_maze")
+	check(targets.any(func(target):return target.action=="c4_device_media_alignment"),"earned A3 transit exposes the scanner target")
 func run() -> void:
 	state_node=root.get_node("State"); state_node.developer_mode=true
 	create_timer(110).timeout.connect(func():push_error("Elevator input watchdog");quit(2))

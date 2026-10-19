@@ -1610,7 +1610,9 @@ func _open_game_now(config: Dictionary) -> void:
 		var accepted:Dictionary=State.act(callback,result) if not callback.is_empty() else {}
 		if callback=="c4_chase_done" and accepted.get("accepted",false) and not stair_handoff.is_empty():world.accept_stair_handoff(stair_handoff)
 		_layout()
-		if config.get("type","")=="rhythm" or config.get("kind","") in ["chase_stairwell","elevator_alignment"]:_focus_world_surface.call_deferred()
+		# The callback chooses the destination. Recheck its visible surface and
+		# current input owner after the activity controls leave the tree.
+		_focus_world_surface.call_deferred()
 	if active_game.has_signal("finished"): active_game.connect("finished",finish)
 	elif active_game.has_signal("completed"): active_game.connect("completed",finish)
 	if active_game.has_signal("cancelled"):
@@ -1621,7 +1623,7 @@ func _open_game_now(config: Dictionary) -> void:
 			active_game = null
 			_layout()
 			if config.get("type","")=="chase":_focus_chase_world.call_deferred()
-			elif config.get("type","")=="rhythm" or config.get("kind","")=="elevator_alignment":_focus_world_surface.call_deferred()
+			else:_focus_world_surface.call_deferred()
 		)
 	if active_game.has_signal("attempt_submitted"):
 		var submitted_game: Control=active_game
