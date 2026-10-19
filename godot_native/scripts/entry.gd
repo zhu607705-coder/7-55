@@ -1,6 +1,8 @@
 extends Control
 ## Independent scene chooser. Never resets, advances, or saves story state.
 const STORY_SCENE := "res://scenes/main.tscn"
+const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
+const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const BUCT_SCENE := "res://campuses/buct/scenes/playable.tscn"
 const HAIDIAN_SCENE := "res://campuses/buct_haidian/scenes/playable.tscn"
 const CHANGPING_SCENE := "res://campuses/buct_changping/scenes/playable.tscn"
@@ -27,6 +29,8 @@ var changping_button: Button
 var content: VBoxContainer
 var title: Label
 var detail: Label
+var story_heading: Label
+var campus_heading: Label
 
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -34,10 +38,11 @@ func _ready() -> void:
 	if not get_tree().root.has_meta("entry_arguments_consumed"):
 		get_tree().root.set_meta("entry_arguments_consumed",true)
 		for argument in OS.get_cmdline_user_args():
-			if argument in ["--fresh","--story","--screenshot"] or argument.begins_with("--preview=") or argument.begins_with("--checkpoint=") or argument.begins_with("--page="):
+			var qa_argument:=argument in ["--fresh","--screenshot"] or argument.begins_with("--preview=") or argument.begins_with("--checkpoint=") or argument.begins_with("--page=")
+			if argument=="--story" or (DeveloperTools.available() and qa_argument):
 				open_story.call_deferred()
 	var font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
-	theme=Theme.new();theme.default_font=font;theme.default_font_size=20
+	theme=NativeUi.make_theme(font,20,18)
 	var background:=ColorRect.new();background.mouse_filter=Control.MOUSE_FILTER_IGNORE;background.color=Color("101e28")
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(background)
 	card=PanelContainer.new();add_child(card)
@@ -47,44 +52,59 @@ func _ready() -> void:
 	content=VBoxContainer.new();content.add_theme_constant_override("separation",18);card.add_child(content)
 	title=Label.new();title.text="7:55";title.add_theme_font_size_override("font_size",42);title.add_theme_color_override("font_color",Color("284e48"));content.add_child(title)
 	subtitle=Label.new();subtitle.text="选择入口";subtitle.add_theme_color_override("font_color",Color("435f56"));content.add_child(subtitle)
-	story_button=_button("继续《7:55》",open_story);story_button.name="ContinueStory";content.add_child(story_button)
+	story_heading=_section_title("主线故事");content.add_child(story_heading)
+	story_button=_button("进入主线故事",open_story);story_button.name="ContinueStory";content.add_child(story_button)
+	NativeUi.apply_button(story_button,NativeUi.FOCUS,NativeUi.PAPER,NativeUi.FOCUS,8,NativeUi.EDGE,20)
+	campus_heading=_section_title("独立校园漫游");content.add_child(campus_heading)
+	detail=Label.new();detail.text="不影响主线进度"
+	detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("435f56"));content.add_child(detail)
 	campus_button=_button("朝阳校园漫游",open_campus);campus_button.name="OpenBuctCampus";content.add_child(campus_button)
 	haidian_button=_button("海淀校园漫游",open_haidian);haidian_button.name="OpenBuctHaidian";content.add_child(haidian_button)
 	changping_button=_button("昌平校园漫游",open_changping);changping_button.name="OpenBuctChangping";content.add_child(changping_button)
-	preview_button=_button("动画与原型预览",open_previews);preview_button.name="OpenPrototypePreviews";content.add_child(preview_button)
-	detail=Label.new();detail.text="三处校园均为独立漫游\n原有剧情与存档保持不变"
-	detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("435f56"));content.add_child(detail)
-	_build_preview_menu()
+	if DeveloperTools.available():
+		preview_button=_button("动画与原型预览",open_previews);preview_button.name="OpenPrototypePreviews";content.add_child(preview_button)
+	if DeveloperTools.available(): _build_preview_menu()
 	resized.connect(_layout);card.minimum_size_changed.connect(_layout.call_deferred)
 	_layout.call_deferred();story_button.grab_focus()
 
 func _button(text: String, action: Callable) -> Button:
 	var result:=Button.new();result.text=text;result.custom_minimum_size.y=58
+	NativeUi.apply_button(result,NativeUi.PAPER,NativeUi.INK,NativeUi.INK,8,NativeUi.EDGE,18)
 	result.clip_text=true;result.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
 	result.pressed.connect(action)
 	return result
+
+func _section_title(text: String) -> Label:
+	var label:=Label.new();label.text=text
+	label.add_theme_font_size_override("font_size",20);label.add_theme_color_override("font_color",Color("284e48"))
+	return label
 
 func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(card) or not card.visible:return
 	var available:=get_viewport_rect().size
 	var width:=minf(640 if previews_open else 500,available.x-32)
 	var compact:=available.y<740
-	content.add_theme_constant_override("separation",6 if compact else 18)
-	title.add_theme_font_size_override("font_size",28 if compact else 42)
-	detail.add_theme_font_size_override("font_size",15 if compact else 17)
-	detail.visible=available.y>=500
+	var short_window:=available.y<420
+	content.add_theme_constant_override("separation",3 if short_window else 6 if compact else 14)
+	title.add_theme_font_size_override("font_size",24 if short_window else 28 if compact else 42)
+	story_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
+	campus_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
+	detail.add_theme_font_size_override("font_size",13 if short_window else 15 if compact else 17)
 	subtitle.visible=available.y>=420
 	for button: Button in [story_button,campus_button,haidian_button,changping_button,preview_button]:
-		button.custom_minimum_size.y=44 if compact else 58
+		if is_instance_valid(button):
+			button.custom_minimum_size.y=44 if compact else 58
+			button.add_theme_font_size_override("font_size",16 if compact else 20 if button==story_button else 18)
 	var panel_style: StyleBoxFlat=card.get_theme_stylebox("panel")
-	panel_style.content_margin_top=12 if compact else 28
-	panel_style.content_margin_bottom=12 if compact else 28
+	panel_style.content_margin_top=8 if short_window else 12 if compact else 28
+	panel_style.content_margin_bottom=8 if short_window else 12 if compact else 28
 	if previews_open:
 		preview_scroll.custom_minimum_size=Vector2(0,maxf(90,minf(540,available.y-210)))
 	card.size=Vector2(width,0)
 	card.position=Vector2((available.x-width)/2,maxf(12,(available.y-card.get_combined_minimum_size().y)/2))
 
 func _build_preview_menu() -> void:
+	if not DeveloperTools.available(): return
 	preview_menu=VBoxContainer.new();preview_menu.visible=false
 	preview_menu.add_theme_constant_override("separation",10);card.add_child(preview_menu)
 	var heading:=Label.new();heading.text="动画与原型预览"
@@ -112,14 +132,15 @@ func _add_preview(text: String, description: String, action: Callable) -> void:
 	label.add_theme_font_size_override("font_size",15);label.add_theme_color_override("font_color",Color("435f56"));preview_rows.add_child(label)
 
 func open_previews() -> void:
-	if opening:return
+	if not DeveloperTools.available() or opening:return
 	previews_open=true;content.hide();preview_menu.show();_layout.call_deferred();preview_back.grab_focus()
 
 func close_previews() -> void:
+	if not DeveloperTools.available(): return
 	previews_open=false;preview_menu.hide();content.show();_layout.call_deferred();preview_button.grab_focus()
 
 func _open_preview(path: String) -> void:
-	if opening or is_instance_valid(preview_instance):return
+	if not DeveloperTools.available() or opening or is_instance_valid(preview_instance):return
 	var resource:=load(path) as PackedScene
 	if resource==null:
 		preview_status.text="预览资源暂不可用："+path
@@ -151,6 +172,7 @@ func _close_preview() -> void:
 	card.show();_layout.call_deferred();preview_back.grab_focus.call_deferred()
 
 func _launch_example(relative_path: String) -> void:
+	if not DeveloperTools.available(): return
 	var repository:=ProjectSettings.globalize_path("res://").trim_suffix("/").get_base_dir()
 	var project:=repository.path_join(relative_path)
 	if not FileAccess.file_exists(project.path_join("project.godot")):

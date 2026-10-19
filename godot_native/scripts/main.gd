@@ -122,6 +122,7 @@ func _ready() -> void:
 	_resume_recovered_replay.call_deferred()
 	_focus_world_surface.call_deferred()
 	for arg in OS.get_cmdline_user_args():
+		if not State.developer_tools_available(): break
 		if arg.begins_with("--preview="):
 			State.begin_preview(1,arg.trim_prefix("--preview="))
 		if arg.begins_with("--checkpoint="): State.begin_checkpoint(arg.trim_prefix("--checkpoint="))
@@ -1418,13 +1419,15 @@ func _show_settings() -> void:
 		confirm.add_child(_button("确认重置",func(): State.new_game(); _close_modal()))
 	))
 	box.add_child(_button("全屏 / 窗口",func(): DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)))
-	box.add_child(_button("DEV · 独立场景检查",_show_developer))
+	if State.developer_tools_available(): box.add_child(_button("DEV · 独立场景检查",_show_developer))
 	box.add_child(_button("保存画面截图",func(): _close_modal(); _capture.call_deferred()))
-	var note := _label("原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。",15,Color("6b756c"))
+	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"
+	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
 
 func _show_developer() -> void:
+	if not State.developer_tools_available(): return
 	var box := _modal_base("DEV · 不写入正式存档")
 	box.add_child(_label("正式进度已隔离；检查点使用原版完整状态。",16))
 	if ResourceLoader.exists("res://tests/visual_gallery.gd"):
@@ -1855,8 +1858,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			return
 		if event.keycode == KEY_F10: _show_settings()
 		if event.keycode == KEY_F12: _capture.call_deferred()
-		if event.keycode == KEY_D and event.ctrl_pressed and event.shift_pressed: _show_developer()
-		if event.keycode == KEY_G and event.ctrl_pressed and event.shift_pressed: _run_visual_gallery()
+		if State.developer_tools_available():
+			if event.keycode == KEY_D and event.ctrl_pressed and event.shift_pressed: _show_developer()
+			if event.keycode == KEY_G and event.ctrl_pressed and event.shift_pressed: _run_visual_gallery()
 
 func _library_stamp_presentation_active() -> bool:
 	# Only a live, visible local presentation may defer the proof dialogue.
@@ -2083,6 +2087,7 @@ func _inspect_item_by_id(id: String) -> void:
 				return
 
 func _run_visual_gallery() -> void:
+	if not State.developer_tools_available(): return
 	if not ResourceLoader.exists("res://tests/visual_gallery.gd"): return
 	var runner=load("res://tests/visual_gallery.gd").new()
 	get_tree().root.add_child(runner)

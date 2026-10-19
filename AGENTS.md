@@ -177,10 +177,11 @@
 
 ## Developer Channel
 
-- The generated offline build shows the collapsed `DEV` trigger by default so a reviewer can recover from a stale save or jump to a gameplay checkpoint. `?dev=0` is the explicit presentation-only opt-out.
+- The user's 2026-10-19 release requirement supersedes the historical offline DEV default: production Web and native exports must not expose chapter/checkpoint jumps, developer shortcuts, or prototype catalogues. Ordinary story entry, valid save continuation and independent campus roaming remain available.
+- Web developer navigation is available only in the Vite development build. Native developer navigation requires a debug build without the `755_production` feature; formal export presets must set that feature even when a PCK is run with an editor binary. URL, command-line, environment or saved-state flags must not enable these tools in production.
 - Developer navigation uses chapter groups only as the first level. Every entry must seed a named gameplay checkpoint with all required quest, item, scene, runtime, and UI facts.
 - Granular checkpoints cover puzzle starts, intermediate evidence states, presentation handoffs, action gates, and chapter results. A route-only scene change is not a valid checkpoint.
-- `?devCheckpoint=<id>` is the stable direct-entry contract for both Vite and the generated single file. `Ctrl+Shift+D` toggles the panel.
+- `?devCheckpoint=<id>` and `Ctrl+Shift+D` remain QA contracts only. Production browser smoke uses externally prepared, SaveStore-validated ordinary saves rather than exposing a product checkpoint hook.
 - Before the first developer jump, preserve the current state and provide an explicit restore action. Developer seeds must not become reachable through normal story controls.
 
 ## Quest And Inventory Feedback

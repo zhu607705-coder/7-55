@@ -5,6 +5,7 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { eventBus } from "./core/EventBus";
 import { selectFeatureAccess } from "./core/FeatureAccess";
 import { gameStore } from "./core/GameState";
+import { clearDeveloperSession } from "./core/DeveloperSession";
 import { selectQuestViewModel } from "./core/QuestModel";
 import type { GameState } from "./core/types";
 import { applyDeveloperCheckpointFromUrl } from "./modules/DeveloperChannel";
@@ -141,8 +142,12 @@ if (import.meta.hot) {
 }
 
 window.render_game_to_text = () => JSON.stringify(summarizeGameState(gameStore.getState()));
-if (import.meta.env.BASE_URL !== "/7-55/") {
+if (import.meta.env.DEV && import.meta.env.BASE_URL !== "/7-55/") {
   applyDeveloperCheckpointFromUrl(gameStore, window.location);
+} else {
+  // A previous QA tab may have left a marker that suppresses formal autosaves
+  // or exposes CC98 maintenance. Resume the real save, never the QA backup.
+  clearDeveloperSession();
 }
 
 if (import.meta.env.DEV) {

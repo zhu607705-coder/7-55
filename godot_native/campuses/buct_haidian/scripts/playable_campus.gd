@@ -1,4 +1,5 @@
 extends Node2D
+const DeveloperTools=preload("res://scripts/developer_tools_policy.gd")
 const STUDENT_PIN_LAYOUT = preload("res://campuses/buct_shared/student/scripts/landmark_pin_layout.gd")
 const VISITOR = preload("res://campuses/buct_haidian/scripts/campus_visitor.gd")
 var SOURCE: Texture2D
@@ -398,6 +399,8 @@ func _make_ui() -> void:
 	ui_controls.back=button("返回入口",Rect2(),return_to_entry)
 	ui_controls.back.name="HaidianReturnToEntry";return_button=ui_controls.back
 	ui_controls.building_debug=button("建筑检查",Rect2(),open_debug)
+	ui_controls.building_debug.visible=DeveloperTools.available()
+	ui_controls.building_debug.disabled=not DeveloperTools.available()
 	status=label("",Vector2.ZERO,18)
 	hint_label=label("WASD / 方向键 · 点击路面寻路 · E 地标 · 滚轮缩放",Vector2.ZERO,15)
 	ui_controls.guide=button("自动导览",Rect2(),start_guide)
@@ -418,7 +421,7 @@ func _make_ui() -> void:
 	info_panel.hide()
 
 func open_debug() -> void:
-	if not initialized or leaving:return
+	if not DeveloperTools.available() or not initialized or leaving:return
 	close_info();building_controls.visible=not building_controls.visible
 	if building_controls.visible:cancel_route_for_manual_input()
 
@@ -426,6 +429,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if leaving:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		var code: int=event.physical_keycode if event.physical_keycode!=0 else event.keycode
+		if code in [KEY_F3,KEY_H,KEY_T,KEY_B] and not DeveloperTools.available():
+			get_viewport().set_input_as_handled();return
 		if code==KEY_ESCAPE:
 			if initialized and building_controls.visible:building_controls.hide()
 			elif not info_id.is_empty():close_info()
@@ -601,17 +606,20 @@ func _rebuild_real_navigation() -> void:
 	_build_grid()
 
 func toggle_real_visible() -> void:
+	if not DeveloperTools.available():return
 	if not real_buildings.has(active_building):return
 	cancel_route_for_manual_input();close_info();var b=real_buildings[active_building];b.set_body_visible(not b.body_enabled);_rebuild_real_navigation()
 	status.text="已切换所选楼体、独立影和脚碰撞；原坐标补底保留"
 
 func toggle_real_moved() -> void:
+	if not DeveloperTools.available():return
 	if not real_buildings.has(active_building):return
 	cancel_route_for_manual_input();close_info();var b=real_buildings[active_building]
 	b.position=b.source_anchor+Vector2(35,-20) if b.position.is_equal_approx(b.source_anchor) else b.source_anchor
 	_rebuild_real_navigation();status.text="所选建筑与地影、碰撞一起移动；地面不动"
 
 func reset_real_buildings() -> void:
+	if not DeveloperTools.available():return
 	cancel_route_for_manual_input();close_info()
 	for b in real_buildings.values():b.reset_building()
 	_rebuild_real_navigation();status.text="教学楼已精确复位；R 回原北侧入口"

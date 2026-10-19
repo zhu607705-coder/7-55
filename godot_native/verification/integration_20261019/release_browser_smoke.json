@@ -1,0 +1,105 @@
+{
+  "passed": true,
+  "artifact": "demo/index.html",
+  "developerEntryPolicy": "production rejects URL and keyboard checkpoint entry",
+  "fixtureMethod": "External CDP storage initialization using SaveStore.save/load validated envelopes; no product QA hook",
+  "results": [
+    {
+      "id": "cc98-stale-session",
+      "surface": "phone",
+      "bytes": 146259,
+      "width": 390,
+      "height": 844,
+      "sha256": "d76a6ce63700694e1865e1d436c5a2a3e7c903d3349b76ef39b6a1422063ef88",
+      "fixture": "c2-cc98-upload",
+      "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+      "saveVersion": 35,
+      "saveSha256": "2a9be4a53aeebc3a9b36d41dc4ceba938c5e5191ef388cd1bde48313944f3cff",
+      "expectedRoute": {
+        "runtimeMode": "phone",
+        "rpgScene": "campus_bootstrap",
+        "currentScene": "cc98",
+        "chapter": "chapter_two"
+      },
+      "devUrlRejected": true,
+      "ctrlAndMetaShiftDRejected": true,
+      "productControllerExposed": false,
+      "staleDeveloperSessionCleared": true,
+      "cc98MaintenanceHidden": true,
+      "persistence": {
+        "action": "actual CC98 exit button",
+        "savedScene": "phone_home",
+        "realReloadRetained": true
+      }
+    },
+    {
+      "id": "phone-mobile",
+      "surface": "phone",
+      "bytes": 303804,
+      "width": 390,
+      "height": 844,
+      "sha256": "3dde85ffe2fb7983fe837c2e1df7609fb26311341f1360fa19d0f58274a4e7a9",
+      "fixture": "initial",
+      "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+      "saveVersion": 35,
+      "saveSha256": "89d6470cdd39c310d44c2d3c6c6dae3cace4ccd9bd98878beeae7a3bc98d5387",
+      "expectedRoute": {
+        "runtimeMode": "phone",
+        "rpgScene": "campus_bootstrap",
+        "currentScene": "alarm",
+        "chapter": "chapter_one"
+      },
+      "devUrlRejected": true,
+      "ctrlAndMetaShiftDRejected": true,
+      "productControllerExposed": false,
+      "staleDeveloperSessionCleared": true,
+      "cc98MaintenanceHidden": true
+    },
+    {
+      "id": "theater-rpg",
+      "surface": "rpg",
+      "bytes": 951657,
+      "width": 1440,
+      "height": 900,
+      "sha256": "5b8ec630220c3b4ac7a0eb9f1112e71dd9c11946d89453890ec90613352382d5",
+      "fixture": "c3-theater-entry",
+      "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+      "saveVersion": 35,
+      "saveSha256": "695981afb29bee26811a4cc65e1c782c7cf878d9b095fd644db35d8742bad8f3",
+      "expectedRoute": {
+        "runtimeMode": "rpg",
+        "rpgScene": "theater_interior",
+        "currentScene": "phone_home",
+        "chapter": "chapter_three"
+      },
+      "devUrlRejected": true,
+      "ctrlAndMetaShiftDRejected": true,
+      "productControllerExposed": false,
+      "staleDeveloperSessionCleared": true,
+      "cc98MaintenanceHidden": true
+    },
+    {
+      "id": "chapter4-rpg",
+      "surface": "rpg",
+      "bytes": 822823,
+      "width": 1440,
+      "height": 900,
+      "sha256": "95e53389dd6ce889274b729e41c9b93564bee290b560f4c1131db0e3584a8c9e",
+      "fixture": "c4-755-opening",
+      "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+      "saveVersion": 35,
+      "saveSha256": "e7ea25e74cc1acab5ffeb3396bb1f6145e0464781848dd1439bcb68344ad83bf",
+      "expectedRoute": {
+        "runtimeMode": "rpg",
+        "rpgScene": "duan_yongping_temporal_maze",
+        "currentScene": "phone_home",
+        "chapter": "chapter_four"
+      },
+      "devUrlRejected": true,
+      "ctrlAndMetaShiftDRejected": true,
+      "productControllerExposed": false,
+      "staleDeveloperSessionCleared": true,
+      "cc98MaintenanceHidden": true
+    }
+  ]
+}

@@ -67,6 +67,10 @@ After the offline single file is built and structurally verified, `scripts/verif
 - valid, non-trivial screenshots with the requested dimensions;
 - distinct screenshots for distinct checkpoints.
 
+Chapter 3 and Chapter 4 states are external test fixtures, normalized through the real `SaveStore.save`/`load` transaction and placed in an isolated browser profile before boot. The production application loads them as ordinary version-35 saves; the smoke does not add a product test hook or use a checkpoint URL to establish progress. Every case also supplies a conflicting `devCheckpoint` URL and sends both developer keyboard shortcuts, asserting that the URL cannot change the loaded chapter and no developer panel or controller hook appears. Development entry remains limited to Vite development mode and its existing path restriction.
+
+A fourth case boots a valid CC98 save with all eight legacy QA session records. It verifies that production removes only these temporary records, hides CC98 maintenance, persists the real exit button's transition to the phone home screen, and retains that transition after an actual reload. State-write tests separately construct the store before cleanup, prove the stale marker blocks subsequent saves, and verify that cleanup neither writes formal save bytes nor restores the QA backup.
+
 The DOM is intentionally not dumped because serializing the 258 MB inline script would test browser-output throughput instead of game rendering. `verify:single` owns the HTML, title, inline-script, inline-style, and embedded-resource structure checks; the browser smoke owns visual boot and route differentiation for the same artifact. Together they prove offline-bundle startup and routing in Chromium. They do not establish full playthrough correctness, pixel-level visual equivalence, audio audibility, or Firefox and WebKit compatibility.
 
 ## Extended authoring audit

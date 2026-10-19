@@ -38,7 +38,7 @@ import {
 } from "./scenes/rpg/RpgRuntimePreload";
 import { Chapter4PrologueRuntimeGate } from "./components/Chapter4PrologueRuntimeGate";
 
-const DEVELOPER_TOOLS_ENABLED = import.meta.env.BASE_URL !== "/7-55/";
+const DEVELOPER_TOOLS_ENABLED = import.meta.env.DEV && import.meta.env.BASE_URL !== "/7-55/";
 const DeveloperChannel = DEVELOPER_TOOLS_ENABLED
   ? lazy(async () => ({ default: (await import("./components/DeveloperChannel")).DeveloperChannel }))
   : null;

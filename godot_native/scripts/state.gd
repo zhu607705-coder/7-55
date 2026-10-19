@@ -17,6 +17,7 @@ const SAVE_PATH := "user://save.json"
 const BACKUP_PATH := "user://save.previous.json"
 const SOURCE_VERSION := 35
 const SaveDomainGuard = preload("res://scripts/save_domain_guard.gd")
+const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
 var _domain_guard: RefCounted = SaveDomainGuard.new()
 const JOURNAL_ARCHIVE = preload("res://scripts/media/journal_archive.gd")
 const MAX_PORTABLE_SAVE_BYTES := 48*1024*1024
@@ -37,8 +38,11 @@ func _ready() -> void:
 			var script = load(path)
 			if script and script.can_instantiate(): modules.append(script.new())
 	d = initial()
-	if not OS.get_cmdline_user_args().has("--fresh"):
+	if not (developer_tools_available() and OS.get_cmdline_user_args().has("--fresh")):
 		load_game()
+
+func developer_tools_available() -> bool:
+	return DeveloperTools.available()
 
 func initial() -> Dictionary:
 	var value = JSON.parse_string(FileAccess.get_file_as_string("res://data/initial_state.json"))
@@ -605,6 +609,7 @@ func new_game() -> void:
 	changed.emit()
 
 func begin_preview(chapter: int, scene: String = "") -> void:
+	if not developer_tools_available(): return
 	if not developer_mode: formal_snapshot = d.duplicate(true)
 	developer_mode = true
 	d = initial()
@@ -623,6 +628,7 @@ func restore_formal() -> void:
 	changed.emit()
 
 func developer_checkpoints() -> Array:
+	if not developer_tools_available(): return []
 	if not _content_cache.has("_developer_checkpoints"):
 		var file := FileAccess.open("res://data/native/developer_checkpoints.json.gz",FileAccess.READ)
 		if not file: return []
@@ -632,6 +638,7 @@ func developer_checkpoints() -> Array:
 	return _content_cache["_developer_checkpoints"]
 
 func begin_checkpoint(id: String) -> bool:
+	if not developer_tools_available(): return false
 	for checkpoint in developer_checkpoints():
 		if str(checkpoint.id) != id: continue
 		if not developer_mode: formal_snapshot = d.duplicate(true)

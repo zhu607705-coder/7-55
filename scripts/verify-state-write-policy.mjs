@@ -72,12 +72,15 @@ test('failed hydration write retries even with identical initial state', () => {
 // Storage quota errors must not suppress the next immutable store notification.
 const bundle = await build({
   stdin: {
-    contents: `export * from './src/core/GameState.ts'; export * from './src/core/SaveStore.ts'; export * from './src/core/StorageKeys.ts';`,
+    contents: `export * from './src/core/GameState.ts'; export * from './src/core/SaveStore.ts'; export * from './src/core/StorageKeys.ts';
+      export * from './src/core/DeveloperSession.ts';
+      export {getActiveDeveloperCheckpoint, getDeveloperCc98Mode} from './src/modules/DeveloperChannel.ts';`,
     resolveDir: fileURLToPath(new URL('..', import.meta.url))
   },
   bundle: true, platform: 'node', format: 'esm', write: false
 });
-const { createInitialGameState, createPersistentGameStore, SaveStore, GAME_SAVE_KEY, DEVELOPER_ACTIVE_KEY } =
+const { createInitialGameState, createPersistentGameStore, SaveStore, GAME_SAVE_KEY, DEVELOPER_ACTIVE_KEY,
+  DEVELOPER_BACKUP_KEY, DEVELOPER_SESSION_KEYS, clearDeveloperSession, getActiveDeveloperCheckpoint, getDeveloperCc98Mode } =
   await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
 class MemoryStorage {
   values = new Map();
@@ -135,6 +138,48 @@ test('real developer checkpoint gate leaves later formal saves retryable', () =>
     store.setState(state => ({ ...state }));
     assert.equal(storage.primaryAttempts, 1);
     assert.equal(JSON.parse(storage.getItem(GAME_SAVE_KEY)).state.currentScene, 'phone_home');
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
+
+test('production session cleanup resumes formal saves without restoring a QA backup', () => {
+  const previousWindow = globalThis.window;
+  const sessionStorage = new MemoryStorage();
+  const storage = new MemoryStorage();
+  globalThis.window = { sessionStorage };
+  try {
+    const initial = createInitialGameState();
+    const formal = { ...initial, phoneBattery: { ...initial.phoneBattery, percent: 73 } };
+    assert(new SaveStore(storage).save(formal));
+    for (const key of DEVELOPER_SESSION_KEYS) sessionStorage.setItem(key, 'old-qa-value');
+    sessionStorage.setItem(DEVELOPER_ACTIVE_KEY, 'c2-cc98-upload');
+    sessionStorage.setItem(DEVELOPER_BACKUP_KEY, JSON.stringify({ ...formal, phoneBattery: { ...formal.phoneBattery, percent: 9 }, currentScene: 'ending' }));
+    sessionStorage.setItem('reader-preference', 'keep');
+    const seedWrites = storage.primaryAttempts;
+    const store = createPersistentGameStore(storage);
+    assert.equal(store.getState().phoneBattery.percent, 73, 'pre-cleanup hydration uses the formal save, not the QA backup');
+    assert.equal(store.getState().currentScene, formal.currentScene);
+    assert(storage.primaryAttempts > seedWrites, 'required hydration save is not suppressed by the stale marker');
+    const savedBefore = storage.getItem(GAME_SAVE_KEY);
+    const writesBefore = storage.primaryAttempts;
+    store.setState(state => ({ ...state, phoneBattery: { ...state.phoneBattery, percent: 72 } }));
+    assert.equal(storage.primaryAttempts, writesBefore, 'old QA marker demonstrably blocks the real writer');
+    assert.equal(getActiveDeveloperCheckpoint(sessionStorage), 'c2-cc98-upload');
+    assert.equal(getDeveloperCc98Mode(sessionStorage), 'investigation');
+    clearDeveloperSession(sessionStorage);
+    assert.equal(storage.getItem(GAME_SAVE_KEY), savedBefore, 'cleanup leaves the formal save bytes intact');
+    assert.equal(sessionStorage.getItem('reader-preference'), 'keep');
+    for (const key of DEVELOPER_SESSION_KEYS) assert.equal(sessionStorage.getItem(key), null);
+    assert.equal(getActiveDeveloperCheckpoint(sessionStorage), null, 'CC98 maintenance has no active developer session');
+    assert.equal(getDeveloperCc98Mode(sessionStorage), null);
+    assert.equal(store.getState().phoneBattery.percent, 72, 'cleanup never restores the QA backup');
+    store.setState(state => ({ ...state, phoneBattery: { ...state.phoneBattery, percent: 71 } }));
+    assert.equal(storage.primaryAttempts, writesBefore + 1);
+    const reloaded = new SaveStore(storage).load(createInitialGameState());
+    assert.equal(reloaded.phoneBattery.percent, 71);
+    assert.equal(reloaded.currentScene, formal.currentScene);
   } finally {
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;

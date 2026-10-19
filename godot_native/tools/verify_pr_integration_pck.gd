@@ -2,6 +2,7 @@ extends SceneTree
 ## Run as an external --script against the production --main-pack, with no
 ## source project beside the pack. Tests/tools are excluded from release PCK.
 const Renderer=preload("res://scripts/media/c3_rain_rescue_native/renderer.gd")
+const DeveloperTools=preload("res://scripts/developer_tools_policy.gd")
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -36,6 +37,16 @@ func run()->void:
 	for resource:String in ["res://scripts/media/c3_swan_entrance.gd","res://scripts/media/c3_swan_entrance_session.gd","res://scripts/presentation/qizhen_swan_entrance_preview.gd","res://scripts/media/c3_rain_rescue.gd","res://scripts/media/c3_rain_rescue_session.gd"]:
 		check(load(resource) is GDScript,"production adapter compiled: "+resource)
 	check(root.has_node("State"),"unchanged production State autoload starts from PCK")
+	check(OS.has_feature("755_production"),"formal export has the production feature even with an editor executable")
+	check(not DeveloperTools.available(),"production pack refuses developer tools")
+	if root.has_node("State"):
+		var state:Node=root.get_node("State")
+		var before:Dictionary=state.d.duplicate(true)
+		var was_developer:bool=state.developer_mode
+		check(not state.developer_tools_available(),"production State uses the same developer policy")
+		check(not state.begin_checkpoint("c4-755-opening") and state.d==before and state.developer_mode==was_developer,"production checkpoint is rejected without changing state")
+		state.begin_preview(4,"duan_yongping_temporal_maze")
+		check(state.d==before and state.developer_mode==was_developer,"production scene preview is rejected without changing state")
 	var rig:Node2D=load("res://scenes/objects/kayak_rig.tscn").instantiate();root.add_child(rig)
 	rig.configure_view(Vector2(480,270),1,{"heading":-.5,"roll":.2,"speed":120})
 	check(rig.get_node("BodyRoll/Hull").texture is Texture2D and rig.get_node("BodyRoll/SeatedPlayer").texture is Texture2D,"native kayak scene imports both source textures from the PCK")

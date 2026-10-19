@@ -1,0 +1,39 @@
+{
+  "kind": "Native entry hierarchy + player-facing production settings note; post-UI source validation only",
+  "frozenFiles": {
+    "godot_native/scripts/entry.gd": "1a287a9dde8c1315548b8e7a3f15186c2b9839068f0ab3f520a80c84e8902212",
+    "godot_native/scripts/main.gd": "2d6b300dc90ef86628fd4c4ecba660538035b842c76bb119b7b01917599931cb",
+    "godot_native/tests/verify_buct_haidian_source.mjs": "52343b163a5203c6dc6f456e18a1ffb74cc2c799e31cc181585b0874e0911abe"
+  },
+  "changes": [
+    "Entry reuses NativeUi.make_theme/apply_button and existing palette; primary emphasis; stable ContinueStory callback and identity",
+    "Story and independent roaming sections; exact story label进入主线故事; roaming caption不影响主线进度; QA-only prototypes retained",
+    "Production settings note removes migration wording/technical version range; QA retains original note",
+    "One obsolete source checker now checks normal--story and developer-gated QA args, and allows only exact shared policy dependency"
+  ],
+  "validation": {
+    "sourceRuntimeReport": "/tmp/codex-755-entry-ui-focused.json",
+    "runtimeBehaviorChecks": 1344,
+    "parseScripts": 731,
+    "runtimeStages": 4,
+    "failures": 0,
+    "newStyleAndHierarchyProbe": "/tmp/codex-755-entry-ui-layout-check.log",
+    "newStyleAndHierarchyChecks": 35,
+    "haidianSourceChecks": 398,
+    "changpingSourceChecks": 307,
+    "sourceIntegrityChecks": 2427,
+    "sourceIntegrityReport": "/tmp/codex-755-entry-ui-crosspr-static.json"
+  },
+  "beforeFailures": [
+    "Initial short667x375 card bottom381 exceeded375 by6px; tightened gaps while keeping44px buttons; fixed tests passed",
+    "Old source check expected ungated legacy CLI list; then missing exact shared-policy resource allowlist. Both adapted without restoring unsafe entry or weakening asset hashes."
+  ],
+  "beforeSourceFailureLog": "/tmp/codex-755-entry-ui-source-before.log",
+  "afterSourcePassLog": "/tmp/codex-755-entry-ui-source-after.log",
+  "productionPckState": "Previous20/18/etc PCK reports are pre-UI baselines only; actual new PCK and rootGUI validation remain required",
+  "sharedPhoneScale": "No430x860 phone shell, root scale, story/controller/save schema changes",
+  "syncSourceAndValidateNative": "Not rerun by this agent in this UI round; root plans mandatory sync_source+validate_native after freeze",
+  "whitespaceIssues": [],
+  "noGitMutation": true,
+  "noNewExport": true
+}

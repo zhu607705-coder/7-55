@@ -40,7 +40,11 @@ for(const name of ['ContinueStory','OpenBuctCampus','OpenBuctHaidian'])check(cho
 check(/func open_campus\(\) -> void:\s*_open\(BUCT_SCENE\)/.test(chooser),'Original open_campus semantic retained');
 check(/func open_haidian\(\) -> void:\s*_open\(HAIDIAN_SCENE\)/.test(chooser),'New Haidian callback routes independently');
 check(chooser.includes('if opening:return')&&chooser.includes('_change_scene.call_deferred(path)'),'Chooser retains transition guard/deferred lifecycle');
-check(chooser.includes('entry_arguments_consumed')&&chooser.includes('"--fresh","--story","--screenshot"'),'Story direct-entry CLI contract retained');
+const qaArguments=chooser.match(/var qa_argument\s*:=([^\n]+)/)?.[1]||'';
+check(chooser.includes('entry_arguments_consumed')
+ &&['--fresh','--screenshot','--preview=','--checkpoint=','--page='].every(arg=>qaArguments.includes(`"${arg}"`))
+ &&/if\s+argument\s*==\s*"--story"\s+or\s+\(DeveloperTools\.available\(\)\s+and\s+qa_argument\):\s*open_story\.call_deferred\(\)/.test(chooser),
+ 'Normal --story entry retained; every QA direct-entry argument requires developer permission');
 check(read('project.godot').includes('run/main_scene="res://scenes/entry.tscn"'),'Default native entry remains the shared chooser');
 
 const manifest=json('data/buildings/scene-manifest.json');
@@ -104,7 +108,7 @@ for(const method of ['return_to_entry','_exit_tree','_notification'])check(runti
 check(runtime.includes('owned_actions')&&runtime.includes('InputMap.erase_action'),'Haidian records and removes only owned actions');
 check(runtime.includes('res://scenes/entry.tscn'),'Haidian returns to the same existing chooser');
 
-const allowedResourceRoots=[prefix,'campuses/buct_shared/student/scripts/landmark_pin_layout.gd','scenes/entry.tscn','assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf'];
+const allowedResourceRoots=[prefix,'campuses/buct_shared/student/scripts/landmark_pin_layout.gd','scripts/developer_tools_policy.gd','scenes/entry.tscn','assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf'];
 for(const file of walk(campus)){
  const relative=path.relative(campus,file).replaceAll(path.sep,'/');
  check(!/(^|\/)(?:delivery|evidence|exports|\.godot|cache)(\/|$)|\.zip$/.test(relative),`No old delivery/evidence/cache in campus: ${relative}`);

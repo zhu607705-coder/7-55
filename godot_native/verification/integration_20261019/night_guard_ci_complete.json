@@ -1,0 +1,54 @@
+{
+  "scope": "Latest frozen night portrait and guard navigation/retry candidate; exact pushed source tree only.",
+  "exactHead": "551f1d31a7850222c9d72ef738bd617e46c57cdb",
+  "sourceTree": "7805b4a7a98cf6c63e9bd62be0bc808681edc2f9",
+  "localCommit": "e96bb9f54778f4b5547d6d66052367aa3071aeee",
+  "status": "completed",
+  "completedSuccess": 8,
+  "expectedWorkflowCount": 8,
+  "expectedNativeStages": 416,
+  "expectedGdStages": 377,
+  "completedAtObserved": "2026-10-19T14:56:18.811931+00:00",
+  "nativeFullSuite": {
+    "exactHead": "551f1d31a7850222c9d72ef738bd617e46c57cdb",
+    "run": 39264507890,
+    "runUrl": "https://github.com/zhu607705-coder/7-55/actions/runs/39264507890",
+    "job": 118100456918,
+    "godot": "4.6.3.stable.official.7d41c59c4",
+    "node": "24 (configured by workflow)",
+    "nativeStageLabelsPassed": 416,
+    "gdStages": 377,
+    "missingStageLabels": [],
+    "missingGdStages": [],
+    "expectedLabelOccurrenceCount": 1,
+    "allJobStepsSucceeded": true,
+    "actualCheckout": {
+      "commit": "18bbf4c0ec472b8c82ee4c0dedc83e0745517469",
+      "tree": "7805b4a7a98cf6c63e9bd62be0bc808681edc2f9",
+      "parents": [
+        "2c8cc05ed9297a4040c2e0916351bd9d57ee3a15",
+        "551f1d31a7850222c9d72ef738bd617e46c57cdb"
+      ],
+      "verifiedAt": "2026-10-19T14:54:55.906Z",
+      "source": "Native job checkout log plus connected GET git/commits/18bbf4c0ec472b8c82ee4c0dedc83e0745517469"
+    },
+    "log": "/tmp/codex-755-native-551f1d3.log",
+    "exportedLog": "/Users/zhu/Downloads/755/godot_native/exports/7-55-integrated-20261019.native-ci.log",
+    "decodedLogSha256": "3208b430c56e5ace739b9171578f6b5ebf8e47c317988ae76e0f8ea6053e4887",
+    "artifactUrls": [
+      "https://github.com/zhu607705-coder/7-55/actions/runs/39264507890/artifacts/12195274411",
+      "https://github.com/zhu607705-coder/7-55/actions/runs/39264507890/artifacts/12195274423",
+      "https://github.com/zhu607705-coder/7-55/actions/runs/39264507890/artifacts/12194874946"
+    ],
+    "jobStartedAt": "2026-10-19T13:56:43Z",
+    "jobCompletedAt": "2026-10-19T14:52:02Z",
+    "jobDurationSeconds": 3319,
+    "fullImportTestStartedAt": "2026-10-19T13:58:19Z",
+    "fullImportTestCompletedAt": "2026-10-19T14:49:33Z",
+    "fullImportTestDurationSeconds": 3074,
+    "semantics": "One complete fresh Linux/Godot4.6.3 workflow. All416 expected stage labels occur once in the decoded job log; all377 current direct GD entry labels are present. GitHub PR merge checkout has exactly the same tree as the packaged pushed head."
+  },
+  "latestPrHeadVerified": "551f1d31a7850222c9d72ef738bd617e46c57cdb",
+  "appliesToCurrentReleaseUiPatch": false,
+  "nativeRun": "https://github.com/zhu607705-coder/7-55/actions/runs/39264507890"
+}
