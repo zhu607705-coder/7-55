@@ -155,14 +155,32 @@ async function clickControl(nameOrText, match = 'either') {
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
 async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = false) {
   const began = Date.now();
-  const saved = await poll(async () => {
+  const attempt = { label, beganAt: began, previousToken, visibleSuccess, observations: [] };
+  (active.saveAttempts ||= []).push(attempt);
+  let observed = '';
+  let saved;
+  try { saved = await poll(async () => {
     const value = await snapshot(); const receipt = value?.savePersistence;
+    const identity = JSON.stringify([receipt, value?.saveDigest]);
+    if (identity !== observed && attempt.observations.length < 160) {
+      observed = identity;
+      attempt.observations.push({ elapsedMs: Date.now() - began, receipt, currentDigest: value?.saveDigest });
+    }
     if (!receipt || receipt.token <= previousToken) return null;
     if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);
     const visible = !visibleSuccess || controls(value).some(c => c.name === 'SaveNativeProgress' && c.text === '已保存' && !c.disabled);
     return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;
   }, `${label}: current native save has an exact durable receipt`, 30000);
+  } catch (error) {
+    attempt.failedAt = Date.now();
+    // A readonly backing-store sample diagnoses a failed receipt without
+    // accepting it, retrying a game save, or extending the original watchdog.
+    try { attempt.failureDisk = await readPersistentSaveEntries(); }
+    catch (readError) { attempt.failureDisk = { error: readError.message }; }
+    throw error;
+  }
   const disk = await readPersistentSaveEntries(); const primary = disk.entries.find(e => e.key.endsWith('/save.json'));
+  attempt.completedAt = Date.now(); attempt.disk = disk;
   check(primary?.sha256 === saved.saveDigest, `${label}: independent readonly IndexedDB primary matches the current native save`, { elapsedMs: Date.now() - began, receipt: saved.savePersistence, primary, diskReadMs: disk.readDurationMs });
   return saved;
 }
@@ -437,7 +455,7 @@ async function readPersistentSaveEntries() {
           const bytes=raw instanceof Uint8Array?raw:new Uint8Array(raw),text=new TextDecoder().decode(bytes);
           let envelope;try{envelope=JSON.parse(text)}catch{continue}
           const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');
-          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,mode:envelope.state?.native?.mode,flags:envelope.state?.flags,canteenPhase:envelope.state?.canteenHunt?.phase});
+          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,timestampMs:row.value.timestamp instanceof Date?row.value.timestamp.getTime():null,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,mode:envelope.state?.native?.mode,flags:envelope.state?.flags,canteenPhase:envelope.state?.canteenHunt?.phase});
         }
       }finally{db.close()}
     }
@@ -673,7 +691,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     report.cases.push({ id, width, height, touch, dpr, passed: true, ...result, coldBoot: active.coldBoot, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
     report.network.push(...network.values());
   } catch (e) { report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
-  finally { await Promise.allSettled(active.bootBodyJobs); active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
+  finally { if (report.cases.at(-1)?.id === id) report.cases.at(-1).saveAttempts = active.saveAttempts || []; await Promise.allSettled(active.bootBodyJobs); active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
 }
 try {
   const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280'));

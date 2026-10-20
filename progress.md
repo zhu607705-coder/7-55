@@ -4897,3 +4897,14 @@ The full release PCK exposed a real packaging-only regression: north_large and n
 - 返回修复后的关联native9阶段全部通过，报告SHA `e393e71d77868adbd51168c07fe2872baf9fc92c977a6965f967228831876b03`，15个相关文件前后SHA一致；再次719源资产同步与verify-only确认36ba未变。运行输入清单相对fe92只变Main，19个后续包及WASM逐字节一致；这是本机包比较，不冒称Linux新包身份相同。
 - 36ba真实DPR3食堂35项通过：普通earned导入、活动退出→手机TaskTrigger→JournalResume→恢复同一阶段活动→退出→精确保存ACK/独立IDB→新document恢复rpg/单活动，phase/items/wallet不变；DPR3物理1170×2532/逻辑390×844保留。普通第三章实际要求Chapter2+3十个包，均完整ready；35/4明确阻断，未注入ready或修改控制器来绕过依赖。5张截图已逐张看后清理，报告SHA `1f1b71ee98958643013451b8c803491f22bd8b87e79368415dc372b4198b8634`。
 - 同36ba桌面DPR2骑行亦实际41项通过：353个原始3D MeshInstance正常presented，退出→手机→Journal恢复活动→保存/独立IDB→真实新document重载保持chasing、rpg、scene、物品和钱包。首次因helper沿用旧按钮文案而失败的尝试保留，改用实际稳定WorldPhoneButton节点重测；没有改产品来迎合测试，也不将首试重标为通过。
+
+### 2026-10-20 浏览器存档同步的有界恢复与失败诊断
+
+- c152的Web CI39411760267与cross39411760281通过，同候选树00e48c21；Pages39411755479在173个已完成断言、第4个retina场景因真实存档回执超时失败，deploy跳过，线上仍是已验收a251。失败末帧native字节摘要764fe4…与IDB观察42efec…不符；旧报告缺乏完整generation时间线、失败独立IDB样本和mtime，不能据此认定根因或把它改标为通过。
+- 保留官方Godot单一FS writer与只读实际字节ACK，在同一原始20秒attempt内按真实Time ticks每500ms至多续发一次官方force_fs_sync，总计40次（含initial），不重置token/digest/startedMs或JSwatchdog，不重复State.save_game，不修改存档schema。成功、失败、timeout或dispose停止续发，原失败文件不每帧自动重开attempt。只读syncRequests记录请求次数，不能当作落盘次数。
+- 原生保存回执原20项及新增15项共35通过，含丢首次请求后仅精确当前字节成功、旧代/晚到字节拒绝、499/500ms边界、40次/19500ms上限、超时不滑动与无额外State写入；原JS transport39项保留全过。独立最终SHA审查未见阻断；不能声称解决equal-mtime跳过或已证明c152失败根因。
+- 正式浏览器工具保留原deadline、输入和精确ACK/独立IDB强断言，仅补充至多160条只读attempt变化时间线、失败后独立DB采样及文件timestamp，以便后续失败可定位；失败仍重抛。没有放宽发布门槛或注入剧情状态。
+- 新本机冻结包exports/web-save-sync-20261020，以c152为基底dirty=true，source-input 02d7c7b5288cf580c2523dea47f6a17355dbc607f8a26bee9c056d0a4aa7b8ac，manifest ef2f683abe58be4c17207f3826cfec422b7e5b79c7fc271aa74748b878b998d3。719资产同步、import/export与verify-only通过；初载94,512,972B、托管594,122,516B、逻辑499,961,666B，91启动块/19后续包/1011核心与2284全资源。
+- 该新包实际正式6场景737断言全过，142325ms，报告SHA0415f2db0a9c47db730524360f201f7596d577304932f189bf3c25bffc3982fb；六例普通输入/精确保存/只读IDB/新document刷新、DPR1/2/3逻辑与高清物理尺寸、110个独立transport均验证。6张截图查看后留hash删除，独立profile清理；正常路径只需initial1次同步，故不能把这轮当成故障恢复证明。新提交的干净Linux发布和原站实际验收仍需分别记录。
+- 同新02d7包另有真实普通HTTP16项聚焦通过：两document均secureContext=false、crypto.subtle=false且IDB可用，DPR2真实闹钟→手机→模式切换→保存→native精确ACK/Node侧独立IDB字节hash→新document继续恢复chapter/page/mode/flags/items/wallet及相同摘要；116ms、1次请求、console/page/request errors均0。收据SHA322e6a7c206d14e532d888e559da9b8b5e13619f91a43328c9517017018927cc；没有继承旧缓存中断测试，也不当作续推恢复证据。
+- 唯一一轮受控真实浏览器对照（独立HTTP临时engine响应，同DPR2/CPU4x）在基线精确ACK及空闲后，仅遗漏一次新字节的官方GodotFS.sync，之后原函数全放行。旧36ba真实产品20秒timeout，native622bd48c…而独立IDB/observed/ACK仍0466cf5d…；新02d7在6149ms、8次请求内得到精确c548204b…，独立IDB与新document恢复相同摘要，27检查通过。没有第二writer、额外Save点击、改deadline或注入剧情；比较收据SHA1360d71bacca13c820c845713c85ef4c60912ce6dd41d604ed2a5005754d6908。旧负控后续导航CDP超时独立保留，未验证其重载，未确定是否beforeunload。3图检查留hash后删除、自有server/profile清理。这个临时hook诊断证明续推可恢复单flush丢失，不冒充无hook正式验收或c152实际云端根因证明。

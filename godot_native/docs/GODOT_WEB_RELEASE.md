@@ -74,13 +74,21 @@ Godot 4.7.2 的文件关闭回调和 `force_fs_sync()` 只是登记待同步，�
 - 手动保存按钮立即显示“正在保存…”并禁用重复点击，精确 ACK 后才在该按钮显示“已保存”。反馈留在操作旁，不通过可能排队的剧情 toast 假定本次成功。20 秒超时、持久存储不可用或读取失败不能显示成功；失败后可再点保存重试，或通过已有便携导出保留当前进度。未确认写入会保留浏览器允许的 `beforeunload` 提示，dispose 会取消计时器、回调与提示；这不是强行终止浏览器仍保证保存的承诺。
 - 正式 browser gate 必须等待真实成功状态，再通过测试侧独立只读 IndexedDB 检查精确摘要，随后真实重载并保留原有路线、现实模式及剧情标记断言。不能靠增加固定 sleep 或删去断言让失败变绿。
 
+2026-10-20，候选 `c1528f89` 的 Pages run `39411755479` 在保存 gate 失败：报告记录 173 项已完成检查、4 个已进入的视口用例；前三个用例完成精确保存与真实重载，第四个 `retina-1440`（CSS `1440×900`、DPR=2）等待当前保存回执超时。失败时当前 MEMFS 摘要为 `764fe4bb…`，只读回调观察的摘要仍为旧的 `42efec34…`，按钮显示“保存未完成·重试”。原报告没有失败时的独立 IDB 字节、mtime 或逐次 generation 记录，不能据此确定旧字节始终未提交、回执晚到或主线程调度的具体原因。该用例只走首次进入、设置与保存，没有触发本次 Journal 返回回调。Publish job 已跳过；记录时线上仍为已发布的 `a2517a6a`。
+
+随后新增的恢复能力在同一次 pending attempt 内，按真实 `Time.get_ticks_msec()` 每 500ms 再请求一次官方 `force_fs_sync()`，包含首次请求最多 40 次。续推不重新执行 `State.save_game()`，不直接写 IndexedDB，也不重置 token、摘要、`startedMs` 或原来的 JS 20 秒 watchdog。精确 ACK、超时、失败或 dispose 后停止续推；达到原期限或请求上限后也不再请求。只读 `syncRequests` 表示请求次数，`lastSyncMs` 表示最后请求时间，二者都不构成提交回执。已有 token 与实际字节 SHA-256 一致仍是唯一成功条件。
+
+正式 verifier 同时保留每次等待的回执历史；失败后补采独立只读 `failureDisk`，包括 `FILE_DATA` 字节摘要和 `timestampMs`，然后保留原失败。诊断不重试游戏保存、不延长产品 watchdog、不改变精确 ACK 或重载断言。
+
+该恢复能力已通过隔离原生 35 项检查（保留原 20 项并新增 15 项）及原 JS transport 39 项检查，独立只读审查未发现阻塞问题。独立的真实 Chromium/官方 IDBFS 18 项负控证明，同 mtime、不同字节可以被同步算法跳过，重复同步也无法修复这一受控情况；它没有证明本次云端失败发生了 mtime 碰撞。旧 `36ba4391…` 包的本地调度诊断也没有复现云端 20 秒超时，不能用本地通过替换原失败。完整范围、来源和 SHA 见 [保存续推证据](../verification/save_sync_renewal_20261020/summary.json)。新不可变包 source-input `02d7c7b5288cf580c2523dea47f6a17355dbc607f8a26bee9c056d0a4aa7b8ac` 已在本机六视口/DPR 场景完成 737 项实际检查，用时 142325ms，每个用例的 native ACK、独立只读 IDB 摘要和新 document 重载均通过，6 张截图检查后已留 SHA 并清理。新包另通过实际普通 HTTP 的 DPR=2 场景 16 项检查：`isSecureContext=false`、`crypto.subtle` 不可用、IndexedDB 可用，真实模式切换、手动保存、native 精确 ACK、测试侧 Node 计算的独立 IDB 摘要与新 document 重载均通过；该次保存观察用时 116ms，仍只有 1 次同步请求。这不继承旧版三次启动缓存测试的结论。这些常规用例仅用到首次同步请求，不能作为续推恢复的证明。另一次受控对照在相同 DPR=2、4 倍 CPU 降速及原 20 秒期限下，仅丢弃一次符合条件的官方 flush：旧 `36ba4391…` 包保持旧 IDB 摘要并触发产品超时；新包经 8 次官方请求，在 6149ms 的保存观察窗口内达到 native/IDB 精确 ACK，27 项检查及真实新 document Continue 恢复均通过。两侧使用相同临时诊断 engine hook（`6ce274f3…`，原 engine 为 `649986c2…`），没有额外 Save 点击、第二写入者或时钟改动。这证明受控丢 flush 机制的恢复，仍不能证明原 clean Linux CI 失败由同一原因导致。旧对照在保存失败记录完成后另有 `Page.navigate` 超时，没有记录 dialog 事件，旧版重载及其超时原因均未验明。新 clean Linux CI 与部署仍待完成。
+
 具体实现、超时与负控结果随 `progress.md` 和独立产物收据记录。历史短间隔导入探针仅说明当时特定样本的观察结果，不构成耐久保证。
 
 发布前还须对导出的真实 WASM 页面验收：桌面/手机窗口和非 16:9、主线首次进入、触摸和键盘、手机与横屏地图切换、存档/重载、失焦中断、剧情音视频、章节边界、生产无测试跳转，以及 Blink/Gecko/WebKit。用独立浏览器配置与测试存档，不覆盖用户存档。HTTP 验证包含 `/7-55/` 相对路径、WASM 正确 MIME 类型、PCK 完整字节和缺失资源；仅通过本脚本不算游戏验收通过。
 
 ## GitHub Pages
 
-`.github/workflows/deploy-pages.yml` 仅由 `main` 和已获用户明确授权的 `codex/godot-complete-20261019` 推送或手动启动。构建使用锁定依赖、官方 Godot/模板的固定 SHA-512 校验、源素材同步、影片转换、真实 Godot export、产物/来源校验。随后在真实 `/7-55/` HTTP 子路径，用 Linux Chrome/SwiftShader 执行 `tools/verify_web_export.mjs`：三个桌面/手机视口、真实输入、音频状态、IndexedDB 刷新恢复、正式无跳转、WASM/PCK HTTP SHA-256 校验通过后，才上传 `godot_native/exports/web-release/`。不调用根 `npm run build`，不上传 `dist/`。这项 CI 为实际 Chromium gate，不代替 Gecko/WebKit 和人工媒体验收。
+`.github/workflows/deploy-pages.yml` 仅由 `main` 和已获用户明确授权的 `codex/godot-complete-20261019` 推送或手动启动。构建使用锁定依赖、官方 Godot/模板的固定 SHA-512 校验、源素材同步、影片转换、真实 Godot export、产物/来源校验。随后在真实 `/7-55/` HTTP 子路径，用 Linux Chrome/SwiftShader 执行 `tools/verify_web_export.mjs`：六个桌面/手机视口与 DPR 场景、真实输入、音频状态、IndexedDB 刷新恢复、正式无跳转、WASM/PCK HTTP SHA-256 校验通过后，才上传 `godot_native/exports/web-release/`。不调用根 `npm run build`，不上传 `dist/`。这项 CI 为实际 Chromium gate，不代替 Gecko/WebKit 和人工媒体验收。
 
 GitHub `github-pages` 环境的发布分支权限继续限于原来允许的 `main` 和这一唯一候选分支。此次工作不拓展部署权限、不合并迁移 PR、不宣称 Godot 替代发布已经正式验收。
 

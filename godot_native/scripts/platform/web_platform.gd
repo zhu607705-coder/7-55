@@ -6,6 +6,9 @@ const IMPORT_PATH := "user://web-save-import.json"
 const EXPORT_PATH := "user://web-save-export.json"
 const MAX_SAVE_BYTES := 48 * 1024 * 1024
 const SNAPSHOT_INTERVAL := 0.25
+const SAVE_SYNC_INTERVAL_MS := 500
+const SAVE_ATTEMPT_MS := 20000
+const MAX_SAVE_SYNC_REQUESTS := 40
 var shell: Control
 var state: Node
 var _browser: JavaScriptObject
@@ -28,6 +31,8 @@ var _save_pending := false
 var _save_error := ""
 var _save_explicit := false
 var _save_started_ms := 0
+var _save_sync_requests := 0
+var _save_last_sync_ms := 0
 
 func setup(owner_shell: Control, owner_state: Node) -> void:
 	shell = owner_shell
@@ -161,6 +166,19 @@ func _force_save_sync() -> void:
 	# database bytes below constitute completion, rather than FileAccess.close().
 	if OS.has_feature("web"): JavaScriptBridge.force_fs_sync()
 
+func _request_save_sync(now_ms: int) -> void:
+	# These are official sync requests, never a claim that IDB committed bytes.
+	_save_sync_requests += 1
+	_save_last_sync_ms = now_ms
+	_force_save_sync()
+
+func _advance_save_sync(now_ms: int) -> void:
+	if not _save_pending or _persistence_host == null: return
+	# Keep the original attempt and JS watchdog. Slow frames cannot turn this
+	# into extra State writes, new tokens, or a continuously extended deadline.
+	if now_ms - _save_started_ms >= SAVE_ATTEMPT_MS or _save_sync_requests >= MAX_SAVE_SYNC_REQUESTS: return
+	if now_ms - _save_last_sync_ms >= SAVE_SYNC_INTERVAL_MS: _request_save_sync(now_ms)
+
 func _begin_save_persistence(digest: String, explicit: bool = false) -> int:
 	_save_token += 1
 	_save_digest = digest
@@ -169,8 +187,10 @@ func _begin_save_persistence(digest: String, explicit: bool = false) -> int:
 	_save_error = ""
 	_save_explicit = _save_explicit or explicit
 	_save_started_ms = Time.get_ticks_msec()
+	_save_sync_requests = 0
+	_save_last_sync_ms = _save_started_ms
 	if explicit: save_feedback.emit("正在保存…")
-	_force_save_sync()
+	_request_save_sync(_save_started_ms)
 	_persistence_host.watchSave(_save_token, ProjectSettings.globalize_path(state.SAVE_PATH), _save_callback)
 	return _save_token
 
@@ -216,7 +236,7 @@ func request_save() -> void:
 	_begin_save_persistence(digest, true)
 
 func read_save_persistence() -> Dictionary:
-	return {"pending": _save_pending, "token": _save_token, "digest": _save_digest, "observedDigest": _save_observed_digest, "acknowledgedDigest": _save_acknowledged_digest, "error": _save_error, "startedMs": _save_started_ms}
+	return {"pending": _save_pending, "token": _save_token, "digest": _save_digest, "observedDigest": _save_observed_digest, "acknowledgedDigest": _save_acknowledged_digest, "error": _save_error, "startedMs": _save_started_ms, "syncRequests": _save_sync_requests, "lastSyncMs": _save_last_sync_ms}
 
 func _on_browser_visibility(args: Array) -> void:
 	if args.size() == 1 and args[0] is bool: _apply_visibility(args[0])
@@ -354,6 +374,7 @@ func download_picture(image: Image) -> void:
 
 func _process(delta: float) -> void:
 	if not OS.has_feature("web") or _browser == null: return
+	_advance_save_sync(Time.get_ticks_msec())
 	_snapshot_left -= delta
 	if _snapshot_left <= 0:
 		_snapshot_left = SNAPSHOT_INTERVAL
