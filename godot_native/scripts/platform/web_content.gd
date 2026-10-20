@@ -3,6 +3,7 @@ extends Node
 signal blocking_changed(blocking: bool)
 signal content_changed
 const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "campus_shared", "campus_chaoyang", "campus_haidian", "campus_changping"]
+const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
 var _host: Variant
 var _callback: JavaScriptObject
@@ -80,14 +81,14 @@ func _configure_manifest(value: Dictionary, host: Variant) -> bool:
 	var families: Dictionary = {}
 	var files: Dictionary = {str(value.core.file): true}
 	for item: Variant in value.packs:
-		if not item is Dictionary or not _valid_id(item.get("id")) or item.id == "core" or item.get("family") not in FAMILIES or not _valid_file(item) or packs.has(item.id) or files.has(item.file): return false
+		if not item is Dictionary or not _valid_id(item.get("id")) or item.id == "core" or not ReleaseContent.family_available(item.get("family")) or not _valid_file(item) or packs.has(item.id) or files.has(item.file): return false
 		packs[item.id] = {"id": item.id, "family": item.family, "file": item.file, "bytes": int(item.bytes), "sha256": item.sha256, "status": "missing", "error": ""}
 		if not families.has(item.family): families[item.family] = []
 		families[item.family].append(item.id)
 		files[item.file] = true
 	var seen: Dictionary = {}
 	for family: Variant in value.backgroundOrder:
-		if not family is String or family not in FAMILIES or seen.has(family): return false
+		if not ReleaseContent.family_available(family) or seen.has(family): return false
 		seen[family] = true
 	_packs = packs
 	_families = families
@@ -134,12 +135,14 @@ func ensure_state(snapshot: Dictionary) -> bool:
 	return await ensure_families(required_families(snapshot))
 
 func ensure_families(families: Array) -> bool:
+	# Admission precedes the native monolithic fallback as well: loading a Web
+	# story-only PCK with a native editor binary must not reopen stripped content.
+	for family: Variant in families:
+		if not ReleaseContent.family_available(family): return false
 	if not _enabled: return true
 	if not _fatal_error.is_empty():
 		_show_fatal()
 		return false
-	for family: Variant in families:
-		if not family is String or family not in FAMILIES: return false
 	var ids := _required_ids(families)
 	if _ids_ready(ids): return true
 	_next_waiter += 1

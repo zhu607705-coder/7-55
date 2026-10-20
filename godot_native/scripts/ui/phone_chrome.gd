@@ -311,6 +311,8 @@ func refresh(next_state: Dictionary) -> void:
 	var ui: Dictionary=state.get("ui",{})
 	var page:=str(state.get("native",{}).get("page",state.get("currentScene","phone_home")))
 	var bare:=page in ["alarm","desktop","ending"]
+	# The reconstructed check-in app uses a clean paper surface and live type.
+	pixel_grid.visible=page!="checkin"
 	status_bar.visible=not bare
 	task_button.visible=not bare and show_task_bar and _task_visible()
 	_refresh_status()

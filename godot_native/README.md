@@ -73,4 +73,6 @@ Open only one Godot editor and avoid simultaneous heavy builds for the initial71
 
 ## Independent BUCT campus entry
 
-Default launch now offers **Continue 7:55** and **BUCT campus walk**. The original Zhejiang story and saves remain intact. The BUCT entry opens the approved source-layered Chaoyang campus with a playable south-gate–main-building–library corridor, keyboard/click/touch walking, landmark cards and guided exploration. Return to the entry from the map's top-right button. See [BUCT_CAMPUS_WALK.md](docs/BUCT_CAMPUS_WALK.md) for controls, geometry qualifications, isolation and tests.
+The Web production release now ships only the **7:55 story**. Its actual `755_story_only` export feature removes the Chaoyang, Haidian and Changping buttons, rejects direct campus scene requests, and excludes all `campuses/` resources and their imported payloads from the PCKs. Zhejiang story maps, saves and chapter handoffs remain included. This exclusion reduces the complete deployment; these optional maps were already absent from the first-chapter download and story background prefetch.
+
+The editor and independent native research builds retain the three BUCT campus walks, shared student artwork and layered-tree pilot. Their source assets and existing regressions remain checked in. See [BUCT_CAMPUS_WALK.md](docs/BUCT_CAMPUS_WALK.md) for controls, geometry qualifications, isolation and tests.

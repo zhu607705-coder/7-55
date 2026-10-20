@@ -2,6 +2,7 @@ extends Control
 ## Independent scene chooser. Never resets, advances, or saves story state.
 const STORY_SCENE := "res://scenes/main.tscn"
 const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
+const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const BUCT_SCENE := "res://campuses/buct/scenes/playable.tscn"
 const HAIDIAN_SCENE := "res://campuses/buct_haidian/scenes/playable.tscn"
@@ -55,12 +56,15 @@ func _ready() -> void:
 	story_heading=_section_title("主线故事");content.add_child(story_heading)
 	story_button=_button("进入主线故事",open_story);story_button.name="ContinueStory";content.add_child(story_button)
 	NativeUi.apply_button(story_button,NativeUi.FOCUS,NativeUi.PAPER,NativeUi.FOCUS,8,NativeUi.EDGE,20)
-	campus_heading=_section_title("独立校园漫游");content.add_child(campus_heading)
-	detail=Label.new();detail.text="不影响主线进度"
+	detail=Label.new();detail.text="" if ReleaseContent.story_only() else "不影响主线进度"
 	detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("435f56"));content.add_child(detail)
-	campus_button=_button("朝阳校园漫游",open_campus);campus_button.name="OpenBuctCampus";content.add_child(campus_button)
-	haidian_button=_button("海淀校园漫游",open_haidian);haidian_button.name="OpenBuctHaidian";content.add_child(haidian_button)
-	changping_button=_button("昌平校园漫游",open_changping);changping_button.name="OpenBuctChangping";content.add_child(changping_button)
+	detail.visible=not ReleaseContent.story_only()
+	if ReleaseContent.campuses_available():
+		campus_heading=_section_title("独立校园漫游");content.add_child(campus_heading)
+		content.move_child(campus_heading,detail.get_index())
+		campus_button=_button("朝阳校园漫游",open_campus);campus_button.name="OpenBuctCampus";content.add_child(campus_button)
+		haidian_button=_button("海淀校园漫游",open_haidian);haidian_button.name="OpenBuctHaidian";content.add_child(haidian_button)
+		changping_button=_button("昌平校园漫游",open_changping);changping_button.name="OpenBuctChangping";content.add_child(changping_button)
 	if DeveloperTools.available():
 		preview_button=_button("动画与原型预览",open_previews);preview_button.name="OpenPrototypePreviews";content.add_child(preview_button)
 	if DeveloperTools.available(): _build_preview_menu()
@@ -88,7 +92,7 @@ func _layout() -> void:
 	content.add_theme_constant_override("separation",3 if short_window else 6 if compact else 14)
 	title.add_theme_font_size_override("font_size",24 if short_window else 28 if compact else 42)
 	story_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
-	campus_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
+	if is_instance_valid(campus_heading):campus_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
 	detail.add_theme_font_size_override("font_size",13 if short_window else 15 if compact else 17)
 	subtitle.visible=available.y>=420
 	for button: Button in [story_button,campus_button,haidian_button,changping_button,preview_button]:
@@ -116,7 +120,8 @@ func _build_preview_menu() -> void:
 	preview_rows.add_theme_constant_override("separation",10);preview_scroll.add_child(preview_rows)
 	_add_preview("折叠楼梯与手机灯","四跑追逐、保安手电和手机近身照明",_open_preview.bind(FOLDED_SCENE))
 	_add_preview("无尽楼梯","十二跑楼梯与快慢保安追逐",_open_preview.bind(ENDLESS_SCENE))
-	_add_preview("朝阳双树与学生","独立分层树冠、暖棕树干、四向学生与导览",_open_preview.bind(TREE_PILOT_SCENE))
+	if ReleaseContent.campuses_available():
+		_add_preview("朝阳双树与学生","独立分层树冠、暖棕树干、四向学生与导览",_open_preview.bind(TREE_PILOT_SCENE))
 	_add_preview("启真湖追逐","独立工程，在新窗口打开",_launch_example.bind("examples/qizhen_playable_chase"))
 	_add_preview("启真湖大地图","独立工程，在新窗口打开",_launch_example.bind("examples/qizhen_large_world"))
 	_add_preview("Blender 楼梯","独立工程，在新窗口打开",_launch_example.bind("examples/blender_stair_sample/preview"))
@@ -140,7 +145,7 @@ func close_previews() -> void:
 	previews_open=false;preview_menu.hide();content.show();_layout.call_deferred();preview_button.grab_focus()
 
 func _open_preview(path: String) -> void:
-	if not DeveloperTools.available() or opening or is_instance_valid(preview_instance):return
+	if not DeveloperTools.available() or not ReleaseContent.scene_available(path) or opening or is_instance_valid(preview_instance):return
 	var resource:=load(path) as PackedScene
 	if resource==null:
 		preview_status.text="预览资源暂不可用："+path
@@ -195,20 +200,26 @@ func open_story() -> void:
 	_open(STORY_SCENE)
 
 func open_campus() -> void:
+	if not ReleaseContent.campuses_available():return
 	_open(BUCT_SCENE)
 
 func open_haidian() -> void:
+	if not ReleaseContent.campuses_available():return
 	_open(HAIDIAN_SCENE)
 
 func open_changping() -> void:
+	if not ReleaseContent.campuses_available():return
 	_open(CHANGPING_SCENE)
 
 func _open(path: String) -> void:
-	if opening:return
+	if opening or not ReleaseContent.scene_available(path):return
 	opening=true
 	_change_scene.call_deferred(path)
 
 func _change_scene(path: String) -> void:
+	if not ReleaseContent.scene_available(path):
+		opening=false
+		return
 	if OS.has_feature("web"):
 		var ready: bool
 		if path == STORY_SCENE: ready = await WebContent.ensure_state(State.d)

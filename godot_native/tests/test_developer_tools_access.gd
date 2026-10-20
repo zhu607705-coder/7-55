@@ -48,14 +48,19 @@ func run()->void:
 	state=root.get_node("State")
 	var args:=OS.get_cmdline_user_args()
 	var production:=OS.has_feature("755_production")
+	var story_only:=OS.has_feature("755_story_only")
 	if args.has("--require-production"):
 		check(production,"Real exported pack declares755_production; an editor source run cannot substitute")
 		if not production:finish();return
+	if args.has("--require-story-only"):
+		check(story_only,"Actual exported pack declares755_story_only")
+		check(production and OS.has_feature("755_web"),"Story-only acceptance uses the actual Web production feature set")
+		if not story_only:finish();return
 	check(state.has_method("developer_tools_available"),"State exposes the shared read-only developer policy")
 	if not state.has_method("developer_tools_available"):finish();return
 	var allowed:bool=state.developer_tools_available()
 	check(allowed==(OS.is_debug_build() and not production),"Actual binary and exported feature determine developer access")
-	print("DEVELOPER_ACCESS_RUNTIME ",JSON.stringify({"productionFeature":production,"debugBinary":OS.is_debug_build(),"editorBinary":OS.has_feature("editor"),"available":allowed,"args":Array(args)}))
+	print("DEVELOPER_ACCESS_RUNTIME ",JSON.stringify({"productionFeature":production,"storyOnlyFeature":story_only,"debugBinary":OS.is_debug_build(),"editorBinary":OS.has_feature("editor"),"available":allowed,"args":Array(args)}))
 	# A settings-only import is a persisted boot fixture, never story progress.
 	if args.has("--seed-formal-volume"):
 		var seed:Dictionary=state.initial();seed.native.settings.volume=.37
@@ -77,6 +82,31 @@ func run()->void:
 	if entry.scene_file_path!="res://scenes/entry.tscn":finish();return
 	check(is_instance_valid(entry.preview_button)==allowed,"Prototype menu exists only in an allowed development runtime")
 	check(has_button(entry,"动画与原型预览")==allowed,"Production does not merely hide a still-created preview button")
+	for button in [entry.campus_button,entry.haidian_button,entry.changping_button]:
+		check(is_instance_valid(button)==(not story_only),"Research campus buttons are not constructed in a story-only pack")
+	check(has_button(entry,"朝阳校园漫游")==(not story_only) and has_button(entry,"海淀校园漫游")==(not story_only) and has_button(entry,"昌平校园漫游")==(not story_only),"Chooser content follows the actual release feature")
+	if story_only:
+		for view:Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(844,390),Vector2i(1440,900)]:
+			root.size=view;await frames(4)
+			var bounds:=Rect2(Vector2.ZERO,Vector2(view))
+			check(bounds.encloses(entry.card.get_global_rect()) and bounds.encloses(entry.story_button.get_global_rect()),"Story-only chooser layout remains usable at "+str(view))
+		entry.open_campus();entry.open_haidian();entry.open_changping()
+		entry._open("res://campuses/buct/scenes/playable.tscn")
+		entry._change_scene("res://campuses/buct_haidian/scenes/playable.tscn")
+		await frames()
+		check(current_scene==entry and not entry.opening,"Direct campus entry methods and deferred scene path reject stripped content")
+		var coordinator:Node=root.get_node("WebContent")
+		for family:String in ["campus_shared","campus_chaoyang","campus_haidian","campus_changping"]:
+			check(not await coordinator.ensure_families([family]),"Story-only coordinator denies research request even in a native binary: "+family)
+			var probe:Node=load("res://scripts/platform/web_content.gd").new()
+			var manifest:Dictionary={"schema":"755-web-content-v1","core":{"file":"index.pck","bytes":1,"sha256":"0".repeat(64)},"packs":[{"id":family+"_001","family":family,"file":"content/"+family+".pck","bytes":1,"sha256":"1".repeat(64)}],"backgroundOrder":[]}
+			check(not probe._configure_manifest(manifest,null),"Story-only coordinator rejects a campus manifest: "+family)
+			manifest.packs=[];manifest.backgroundOrder=[family]
+			check(not probe._configure_manifest(manifest,null),"Story-only coordinator rejects a campus background order: "+family)
+			probe.free()
+		for campus:String in ["buct","buct_haidian","buct_changping","buct_pilots/chaoyang"]:
+			check(not ResourceLoader.exists("res://campuses/"+campus+"/scenes/"+("promenade.tscn" if campus.contains("pilots") else "playable.tscn")),"Actual exported pack has no research campus scene: "+campus)
+		root.size=Vector2i(1440,900);await frames(4)
 	if allowed:
 		await click(entry.preview_button)
 		check(entry.previews_open and entry.preview_menu.visible,"Source QA opens its real preview catalogue")

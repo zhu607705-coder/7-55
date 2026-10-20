@@ -137,7 +137,7 @@ function check(name, value) { assert.ok(value, name); checks.push(name); }
 for (const kind of ['truncated', 'overflow']) {
   let cancelled = 0, reads = 0;
   const bytes = kind === 'truncated' ? body(packs[0].id).slice(0, -1) : new Uint8Array(packs[0].bytes + 1);
-  const f = fixture({ noCrypto: true, fetch: () => ({ ok: true, body: { getReader: () => ({ read: async () => reads++ === 0 ? { done: false, value: bytes } : { done: true }, cancel: async () => { cancelled++; } }) } }) });
+  const f = fixture({ noCrypto: true, fetch: () => ({ ok: true, status: 200, body: { getReader: () => ({ read: async () => reads++ === 0 ? { done: false, value: bytes } : { done: true }, cancel: async () => { cancelled++; } }) } }) });
   request(f.host, packs[0].id);
   await until(() => f.events.length === 1, `${kind} rejection`);
   check(`A ${kind} streamed response is rejected without WebCrypto before engine copy/cache`, f.copies.length === 0 && record(f.host, packs[0].id).status === 'error' && /Incomplete content|Content size differs/.test(f.events[0].error) && !f.cacheEvents.some(event => event[0] === 'put'));
@@ -147,9 +147,9 @@ for (const kind of ['truncated', 'overflow']) {
 
 // A transport without a streaming body still enforces its declared byte count.
 {
-  const f = fixture({ fetch: () => ({ ok: true, body: null, arrayBuffer: async () => new Uint8Array(1).buffer }) });
+  const f = fixture({ fetch: () => ({ ok: true, status: 200, body: null, arrayBuffer: async () => new Uint8Array(1).buffer }) });
   request(f.host, packs[0].id); await until(() => f.events.length === 1, 'arrayBuffer size rejection');
-  check('The arrayBuffer fallback also rejects a wrong byte count before MEMFS', f.copies.length === 0 && /Content size differs/.test(f.events[0].error));
+  check('The arrayBuffer fallback also rejects a wrong byte count before MEMFS', f.copies.length === 0 && /Content size differs|Incomplete content/.test(f.events[0].error));
   f.host.dispose();
 }
 

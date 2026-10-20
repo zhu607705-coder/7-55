@@ -42,7 +42,7 @@ func run() -> void:
 	state.modules[1]=load("res://scripts/chapters/chapter3.gd").new()
 	state.d=state.initial();state.developer_mode=true
 	state.d.native.chapter=3;state.d.native.scene="theater_interior";state.d.native.page="phone_home"
-	state.d.runtimeMode="rpg";state.d.rpgScene="theater_interior"
+	state.d.runtimeMode="phone";state.d.rpgScene="theater_interior"
 	state.d.theaterHunt.active=true;state.d.theaterHunt.phase="entry_ticket"
 	root.size=Vector2i(390,844);shell.size=Vector2(390,844);shell.mobile_world=false
 	state.story_reset.emit();shell._refresh();await frames()

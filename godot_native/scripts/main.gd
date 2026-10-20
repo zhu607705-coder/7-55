@@ -89,6 +89,7 @@ var media_host: Node
 var world_effect: Control
 var battery_prank: Control
 var capture_busy := false
+var checkin_feedback_depth := 0
 var audio_director: Node
 var c3_scene_host: Control
 var library_story_host: Control
@@ -388,9 +389,9 @@ func _has_world_scene() -> bool:
 	return not str(State.d.get("native",{}).get("scene","")).is_empty()
 
 func _restore_shell_surface() -> void:
-	# Desktop resumes the saved world; the prologue has no world and stays on
-	# its authored phone. Compact sessions retain their explicit view choice.
-	mobile_world = _has_world_scene() and str(State.d.get("runtimeMode","phone")) == "rpg" and (mobile_world or not _uses_compact_layout())
+	# Explicit phone/world returns persist this choice at every viewport size.
+	# A save without a world still keeps the prologue on its authored phone.
+	mobile_world = _has_world_scene() and str(State.d.get("runtimeMode","phone")) == "rpg"
 
 func _surface_navigation_blocked(ignore_world_presentation: bool=false) -> bool:
 	if is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(active_game) or bool(State.d.ui.controlCenterOpen) or capture_busy: return true
@@ -423,12 +424,15 @@ func _show_phone_surface() -> void:
 	world_page_origin_scene = ""
 	mobile_world = false
 	# Keep the existing world-to-phone homepage route and its app lifecycle.
+	State.d.runtimeMode = "phone"
 	State.open_page("phone_home")
 	_layout()
 	phone_world_return.grab_focus()
 
 func _return_from_phone() -> void:
 	if not _has_world_scene() or _surface_navigation_blocked(): return
+	State.d.runtimeMode = "rpg"
+	State.save_game()
 	_show_world_mobile()
 
 func _focus_world_surface() -> void:
@@ -1837,7 +1841,12 @@ func _open_game_now(config: Dictionary) -> void:
 	if active_game.has_method("configure_canteen_scene"):
 		active_game.configure_canteen_scene(world.native_canteen,world.chapter3_layers,world.player,world.camera,world.zoom)
 	if active_game.has_method("setup"): active_game.setup(config)
-	elif active_game.has_method("start"): active_game.start(config)
+	elif active_game.has_method("start"):
+		var start_config:Dictionary=config
+		if config.get("type","")=="interception":
+			start_config=config.duplicate(true)
+			start_config["reduced_motion"]=bool(State.d.native.settings.get("reduced_motion",false))
+		active_game.start(start_config)
 	if _activity_owns_scene(): mobile_world=true
 	_layout()
 
@@ -2012,6 +2021,7 @@ func _show_local_world_feedback(message:String)->bool:
 	return true
 
 func _feedback(message: String,tone: String="system",duration_override:float=-1) -> void:
+	if checkin_feedback_depth>0 and str(State.d.native.page)=="checkin" and phone_builder!=null and phone_builder.checkin_page.owns_feedback(message):return
 	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
 	if _room302_studio_active():modal.set_feedback(message);return
 	if _virtual_run_owns_feedback(message) or _scene_owns_feedback(message):return
@@ -2281,6 +2291,12 @@ func _on_phone_action(id: String,value: Variant) -> void:
 		"native_save_tools": _show_settings(); return
 		"native_save_now": _save_progress(); return
 		"native_reset_progress": State.new_game(); return
+	if id=="c1_checkin" and value!=null:
+		# Keep the accepted controller/log result; the form owns wrong-code copy.
+		checkin_feedback_depth+=1
+		State.act(id,value)
+		checkin_feedback_depth-=1
+		return
 	if value==null:
 		var page: String="control_center" if State.d.ui.controlCenterOpen else str(State.d.native.page)
 		for action in State.get_actions(page):

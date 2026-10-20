@@ -1,0 +1,11 @@
+{
+  "tool": "built-in image_gen",
+  "createdAt": "2026-10-20",
+  "intent": "transparent paper object with native monochrome printed lettering; no gemstone, gold rim or checkmark badge",
+  "assets": [
+    {
+      "path": "checkin_receipt_v1.png",
+      "prompt": "Use case: stylized-concept\nAsset type: one isolated blank attendance receipt paper for a refined campus game, separate transparent sprite to animate in Godot.\nPrimary request: a premium warm ivory paper receipt, tall rounded rectangle, almost perfectly front-facing, gently tactile cotton paper fibers, thin physical thickness, a very subtle curled lower-right corner and finely scalloped/perforated bottom edge. The center must be completely blank and light enough for dark live Chinese UI typography.\nComposition: only one complete paper object centered on a square transparent canvas, paper width approximately 62% of image, height 82%, generous transparent margins. Flat broad front surface without perspective tilt; no deep folds across writing area. Upper half and center blank. A single extremely subtle thin sage-green printed rule near the top edge and another near the bottom, no other marks.\nLighting/mood: soft warm morning studio light from upper left, delicate realistic edge shading, elegant quiet editorial style, no exaggerated gloss. Ivory #F8F5EA, subtle pale sage #DCE5DC.\nConstraints: true alpha outside paper, no background or floor, no checkerboard, no text, no numerals, no letters, no symbols, no checkmark, no logos, no medal, no stamp, no hands, no props, no confetti. Separate reusable game object, not screenshot or interface layout. 1024x1024."
+    }
+  ]
+}

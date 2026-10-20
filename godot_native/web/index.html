@@ -103,31 +103,67 @@
       };
       let engine;
       let pack;
+      let bootReusedBytes = 0;
+      let bootCacheStorage = '';
       message.textContent = '正在准备开场…';
       // Only the engine and the complete first-chapter dependency closure are
       // blocking. Later chapters retain their original res:// paths in packs.
-      fetch('content-manifest.json', { cache: 'no-cache' }).then(function (response) {
-        if (!response.ok) throw new Error('Content manifest HTTP ' + response.status);
-        return response.json();
-      }).then(function (raw) {
+      function readManifest(file) {
+        return fetch(file, { cache: 'no-cache' }).then(function (response) {
+          if (!response.ok) throw new Error('Release manifest HTTP ' + response.status);
+          return response.json();
+        });
+      }
+      function releaseManifests(attempt) {
+        return Promise.all([readManifest('content-manifest.json'), readManifest('build-manifest.json')]).then(function (values) {
+          if (typeof Godot755Content === 'undefined') throw new Error('Content loader unavailable');
+          const manifest = Godot755Content.validate(values[0]);
+          try { return { manifest: manifest, boot: Godot755Content.bootResources(values[1], manifest, config.executable) }; }
+          catch (error) { if (attempt === 0) return releaseManifests(1); throw error; }
+        });
+      }
+      releaseManifests(0).then(function (release) {
         if (typeof Godot755Content === 'undefined') throw new Error('Content loader unavailable');
-        const manifest = Godot755Content.validate(raw);
+        const api = Godot755Content;
+        const manifest = release.manifest;
+        const cache = api.createResourceCache();
         pack = manifest.core.file;
         config.mainPack = pack;
         config.fileSizes = Object.assign({}, config.fileSizes || {});
         config.fileSizes[pack] = manifest.core.bytes;
+        const downloadProgress = config.onProgress;
+        // Godot also reports its cached WASM preloader/compile work. Keep that
+        // different denominator out of the single boot-download progress bar.
+        config.onProgress = function () {};
         engine = new Engine(config);
-        const transport = Godot755Content.create({ manifest: manifest, engine: engine });
+        const transport = api.create({ manifest: manifest, engine: engine, resourceCache: cache });
         // The native autoload takes this private interface and removes the
         // window property. No gameplay intent is exposed to page scripts.
         window.__GODOT_755_CONTENT_HOST__ = transport;
         delete window.Godot755Content;
-        return Promise.all([engine.init(config.executable), engine.preloadFile(pack, pack)]);
+        const counts = [0, 0];
+        const total = release.boot.wasm.bytes + release.boot.core.bytes;
+        function downloaded(index) { return function (current) {
+          counts[index] = current;
+          downloadProgress(counts[0] + counts[1], total);
+          if (counts[0] + counts[1] === total) message.textContent = '正在校验资源并启动引擎…';
+        }; }
+        return Promise.all([
+          cache.load(release.boot.wasm, { response: true, onProgress: downloaded(0) }).then(function (loaded) { return api.initEngine(engine, config.executable, release.boot.wasm, loaded.response); }),
+          cache.load(release.boot.core, { onProgress: downloaded(1) }).then(function (loaded) { return engine.preloadFile(loaded.buffer, pack); })
+        ]).then(function () {
+          const state = cache.snapshot();
+          bootReusedBytes = state.reusedBytes;
+          bootCacheStorage = state.storage;
+          document.documentElement.dataset.resourceCache = state.storage;
+          document.documentElement.dataset.reusedBytes = String(state.reusedBytes);
+          detail.textContent = state.reusedBytes > 0 ? '已复用本机资源，下次可继续使用。' : '资源已准备好，后续章节会在游玩时后台加载。';
+        });
       }).then(function () {
         if (failed) return;
         document.documentElement.dataset.bootState = 'ready';
         message.textContent = '准备好了';
-        detail.textContent = '点击进入，后续内容会在游玩时后台准备。';
+        detail.textContent = bootReusedBytes > 0 ? '已复用 ' + (bootReusedBytes / 1048576).toFixed(1) + ' MB 本机资源。点击进入。' : bootCacheStorage === 'unavailable' ? '点击进入。浏览器未允许保存资源缓存，下次可能需要重新下载。' : '点击进入，资源已保存在本机，后续内容会在游玩时后台准备。';
         progress.hidden = true;
         start.hidden = false;
         start.focus();

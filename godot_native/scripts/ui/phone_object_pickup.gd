@@ -36,7 +36,7 @@ func capture_action(action: String,page_body: Control,state: Dictionary) -> void
 	var source_rect:=Rect2(transform.origin,source.size*transform.get_scale())
 	if not Rect2(Vector2.ZERO,size).encloses(source_rect): return
 	state_owner=state
-	pending={"action":action,"spec":spec,"source":source_rect,"font_size":source.get_theme_font_size("font_size")*transform.get_scale().x,"ink":source.get_theme_color("font_color"),"accepted":false}
+	pending={"action":action,"spec":spec,"source":source_rect,"font":source.get_theme_font("font"),"font_size":source.get_theme_font_size("font_size")*transform.get_scale().x,"ink":source.get_theme_color("font_color"),"accepted":false}
 	if source.has_meta("pickup_texture"):
 		pending.kind="texture"; pending.texture=source.get_meta("pickup_texture"); pending.material=source.get_meta("pickup_material")
 
@@ -221,10 +221,11 @@ func _draw() -> void:
 	var pivot:=Vector2(base_size.x/2,base_size.y)
 	var fs:=ceili(float(current.font_size)); var font_ratio: float=float(current.font_size)/fs
 	var digit: String=current.spec.digit
-	var width: float=FONT.get_string_size(digit,HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x*font_ratio
-	var baseline:=Vector2((base_size.x-width)/2,(base_size.y-FONT.get_height(fs)*font_ratio)/2+FONT.get_ascent(fs)*font_ratio)-pivot
+	var glyph_font:Font=current.get("font",FONT)
+	var width: float=glyph_font.get_string_size(digit,HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x*font_ratio
+	var baseline:=Vector2((base_size.x-width)/2,(base_size.y-glyph_font.get_height(fs)*font_ratio)/2+glyph_font.get_ascent(fs)*font_ratio)-pivot
 	draw_set_transform_matrix(get_transform_for_glyph(sample.anchor,sample.rotation,sample.scale,baseline,font_ratio))
-	draw_string(FONT,Vector2.ZERO,digit,HORIZONTAL_ALIGNMENT_LEFT,-1,fs,sample.ink)
+	draw_string(glyph_font,Vector2.ZERO,digit,HORIZONTAL_ALIGNMENT_LEFT,-1,fs,sample.ink)
 	draw_set_transform(Vector2.ZERO)
 
 static func get_transform_for_glyph(anchor: Vector2,rotation: float,squash: Vector2,baseline: Vector2,font_ratio: float) -> Transform2D:

@@ -50,14 +50,12 @@ func run() -> void:
 		await key(KEY_P); await key(KEY_ESCAPE); exclusive("phone")
 		check(state.d.native.page=="alarm" and state.d.native.scene.is_empty(),"opening shortcuts do not bypass story")
 		await create_shell(view,"library_interior")
+		exclusive("world")
+		check(state.d.runtimeMode=="rpg","saved world mode is restored at every viewport")
 		if view.x>=1100:
-			exclusive("world")
 			check(shell.world_frame.get_global_rect().size.x>view.x*.85,"desktop world uses the full play width")
 			check(not shell.world.mobile_exploration,"desktop keeps keyboard/camera contract")
 		else:
-			exclusive("phone")
-			await click(shell.phone_world_return)
-			exclusive("world")
 			check(shell.world.mobile_exploration,"compact world keeps responsive exploration")
 		var actor: Vector2=shell.world.player
 		var world_instance: int=shell.world.get_instance_id()
@@ -71,12 +69,14 @@ func run() -> void:
 			shell.world.move_target=actor+Vector2(30,0); shell.world.touch_axis=Vector2.RIGHT
 			await click(shell.mobile_back)
 			exclusive("phone")
+			check(state.d.runtimeMode=="phone","explicit phone action retains phone mode at every viewport")
 			check(shell.world.move_target==Vector2.INF and shell.world.touch_axis==Vector2.ZERO,"opening phone cancels world gestures")
 			shell.world._process(.05); await key(KEY_W); await key(KEY_SPACE)
 			check(shell.world.player==actor and state.d.native.scene==scene,"phone input cannot move or interact with hidden world")
 			check(shell.world.get_instance_id()==world_instance,"phone never remounts the world")
 			check(Rect2(Vector2.ZERO,Vector2(view)).encloses(shell.phone.get_global_rect()),"canonical phone fits available viewport")
 			await key(KEY_ESCAPE); exclusive("world")
+			check(state.d.runtimeMode=="rpg","explicit Return retains world mode at every viewport")
 			check(shell.world.has_focus(),"return restores keyboard focus")
 			check(shell.world.camera==camera and shell.world.pan_offset==pan,"same-size phone open/back preserves camera and pan")
 			check(shell.world.player==actor and state.d.items==items and state.d.ui.libraryFinalsPuzzle==progress,"open/back preserves actor items and story")

@@ -233,10 +233,38 @@ func recovery(root: VBoxContainer) -> void:
 			var marker:ColorRect=ColorRect.new();marker.custom_minimum_size=Vector2(3,18);marker.size_flags_vertical=Control.SIZE_SHRINK_CENTER;marker.color=GREEN;line.add_child(marker)
 			var time:Label=label(entry[0],16,GREEN);time.custom_minimum_size.x=80;time.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN;line.add_child(time)
 			line.add_child(label(entry[1],16))
+	# Source P20 exposes this comparison only after all four evidence classes.
+	# It names the player's saved candidate, never the correct answer for them.
+	var matrix: VBoxContainer=card(root,Color("fffaf3"))
+	matrix.name="C35EvidenceMatrix"
+	matrix.add_child(label("把记录对一对",20))
+	matrix.add_child(label("四处来源",14,MUTED))
+	matrix.add_child(label("离湖 · CC98 × 照片",17))
+	matrix.add_child(label("同一移动过程，方向连续。",16,MUTED))
+	matrix.add_child(label("末段 · 录音 × 网络",17))
+	matrix.add_child(label("室内广播、三秒陌生设备与候选地点需要同时成立。",16,MUTED))
+	matrix.add_child(label("候选 · 已保存接入记录",17))
+	var candidate_label: String="尚未保存"
+	for record: Dictionary in Interlude.RECORDS:
+		if record.id==c.networkRecordId:
+			candidate_label=str(record.label)
+			break
+	var candidate: Label=label(candidate_label,16,MUTED)
+	candidate.name="C35EvidenceMatrixCandidate"
+	matrix.add_child(candidate)
+	if module.exclusions_ready(c):
 		if c.destinationId==null:
-			timeline.add_child(label("哪个地方能对上时间、沿途声音、入口变化和网络记录？",16))
-			for place: Dictionary in Interlude.DESTINATIONS: action(timeline,place.label,"c35_destination",place.id)
-		else: action(timeline,"开始回放","c35_replay",null,true)
+			var destination: VBoxContainer=card(root,Color("fffaf3"))
+			destination.add_child(label("选择最终地点",20))
+			destination.add_child(label("哪个地方能对上时间、沿途声音、入口变化和网络记录？",16))
+			for place: Dictionary in Interlude.DESTINATIONS: action(destination,place.label,"c35_destination",place.id)
+		else:
+			var replay: VBoxContainer=card(root,Color("e7f1ed"))
+			replay.name="C35RecoveredPath"
+			eyebrow(replay,"RECOVERED")
+			replay.add_child(label("路径记录已恢复",20))
+			replay.add_child(label("回放会从启真湖最后一帧开始，并在已确认地点结束。",16))
+			action(replay,"开始回放","c35_replay",null,true)
 
 func journal(root: VBoxContainer) -> void:
 	eyebrow(root,"CC98 小程序")
