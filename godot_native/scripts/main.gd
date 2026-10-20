@@ -585,7 +585,11 @@ func _layout() -> void:
 	if not has_world: mobile_world = false
 	var phone_top := 64.0 if has_world else 18.0
 	var phone_space := available - Vector2(24,phone_top + 18)
-	var phone_scale := maxf(.1,minf(1.0,minf(phone_space.y / 860.0,phone_space.x / 430.0)))
+	# WebDisplay expresses this viewport in CSS-sized logical pixels. Let large
+	# browser windows use the available height instead of stopping at 430x860;
+	# the authored phone and every anchored hit area still scale together.
+	var fit_scale := maxf(.1,minf(phone_space.y / 860.0,phone_space.x / 430.0))
+	var phone_scale := fit_scale if OS.has_feature("web") else minf(1.0,fit_scale)
 	phone.scale = Vector2.ONE * phone_scale
 	phone.size = Vector2(430,860)
 	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)

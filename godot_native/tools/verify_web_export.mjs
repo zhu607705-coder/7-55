@@ -197,11 +197,18 @@ async function startStory(reload = false) {
   return { snapshot: s, bootReadyMs, mainReadyMs: Date.now() - start };
 }
 async function assertLayout(label) {
-  const geometry = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas'),r=c.getBoundingClientRect();return{width:innerWidth,height:innerHeight,canvas:{x:r.x,y:r.y,width:r.width,height:r.height},overflowX:document.documentElement.scrollWidth>innerWidth,overflowY:document.documentElement.scrollHeight>innerHeight};})()`);
+  const geometry = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas'),r=c.getBoundingClientRect();return{width:innerWidth,height:innerHeight,dpr:devicePixelRatio,canvas:{x:r.x,y:r.y,width:r.width,height:r.height,pixelWidth:c.width,pixelHeight:c.height},overflowX:document.documentElement.scrollWidth>innerWidth,overflowY:document.documentElement.scrollHeight>innerHeight};})()`);
   check(!geometry.overflowX && !geometry.overflowY, `${label}: no document overflow`, geometry);
   check(geometry.canvas.width > 0 && geometry.canvas.height > 0 && geometry.canvas.x >= -1 && geometry.canvas.y >= -1 && geometry.canvas.x + geometry.canvas.width <= geometry.width + 1 && geometry.canvas.y + geometry.canvas.height <= geometry.height + 1, `${label}: canvas fits viewport`);
   const s = await snapshot(); const phone = s.phoneRect || s.viewport?.phoneRect;
-  if (phone) check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
+  check(Math.abs(geometry.dpr - active.dpr) < .01, `${label}: actual browser pixel ratio matches the test`, geometry);
+  check(Math.abs(s.viewport.width - geometry.canvas.width) <= 2 && Math.abs(s.viewport.height - geometry.canvas.height) <= 2, `${label}: logical Godot layout uses CSS dimensions on high-density screens`, { viewport: s.viewport, geometry });
+  check(Math.abs(geometry.canvas.pixelWidth - geometry.canvas.width * geometry.dpr) <= 2 && Math.abs(geometry.canvas.pixelHeight - geometry.canvas.height * geometry.dpr) <= 2, `${label}: high-density rendering keeps the full backing resolution`, geometry);
+  if (phone) {
+    check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
+    check(phone.x >= 0 && phone.y >= 0 && phone.x + phone.width <= s.viewport.width + 1 && phone.y + phone.height <= s.viewport.height + 1, `${label}: phone and its hit areas stay inside the logical viewport`, phone);
+    check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
+  }
   return geometry;
 }
 async function settings() { await press('F10'); await poll(async () => controls(await snapshot()).some(c => c.text === '导入存档'), 'settings opened'); }
@@ -276,7 +283,8 @@ async function portableSaveCase() {
   const rejectedAfter = await snapshot(); check(rejectedAfter.saveDigest === rejectedBefore.saveDigest && JSON.stringify(state(rejectedAfter)) === JSON.stringify(state(rejectedBefore)), 'malformed file preserves actual native state and saved bytes', { beforeSaveDigest: rejectedBefore.saveDigest, afterSaveDigest: rejectedAfter.saveDigest, beforeStateSha256: hash(JSON.stringify(state(rejectedBefore))), afterStateSha256: hash(JSON.stringify(state(rejectedAfter))) });
   await press('Escape'); await interval(350); await settings(); await clickControl('保存画面截图');
   const pngName = await poll(async () => (await readdir(active.downloadDir)).find(f => f.endsWith('.png')), 'ordinary screenshot PNG download'); const png = await readFile(path.join(active.downloadDir, pngName));
-  check(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) && png.readUInt32BE(16) === active.width && png.readUInt32BE(20) === active.height, 'downloaded Godot screenshot is PNG at the actual viewport dimensions');
+  const screenshotCanvas = await canvasGeometry();
+  check(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) && png.readUInt32BE(16) === screenshotCanvas.pixelWidth && png.readUInt32BE(20) === screenshotCanvas.pixelHeight, 'downloaded Godot screenshot preserves the actual high-density backing dimensions', screenshotCanvas);
   active.portable.roundTripImported = true; active.portable.invalidFileRejectedWithoutChanges = true; active.portable.screenshot = { filename: pngName, bytes: png.length, sha256: hash(png), width: png.readUInt32BE(16), height: png.readUInt32BE(20) };
 }
 async function legacyCase() {
@@ -599,10 +607,10 @@ async function streamingCase() {
   console.log('desktop-1280: earned C2 file import, visible failure/retry, full-family map recovery and cache-only real reload passed');
 }
 
-async function browserCase(id, width, height, touch) {
+async function browserCase(id, width, height, touch, dpr = 1) {
   const temp = await mkdtemp(path.join(tmpdir(), '755-godot-web-browser-')); const profile = path.join(temp, 'profile'); const errors = []; const network = new Map(); const responses = new Map();
   const child = spawn(chrome, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--disable-extensions', '--disable-sync', '--disable-default-apps', ...chromeArgs, `--window-size=${width},${height}`, '--force-device-scale-factor=1', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] }); let stderr = ''; child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-10000); });
-  active = { id, width, height, touch, child, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
+  active = { id, width, height, touch, dpr, child, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
   if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
   let result;
   try {
@@ -641,7 +649,7 @@ async function browserCase(id, width, height, touch) {
     // Retain the complete ~94 MB cold boot response set while the inspector
     // hashes real response bodies, even when local export I/O delays CDP.
     // This changes observation capacity only; HTTP/hash/cache checks stay strict.
-    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 });
+    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
     if (scenarios === 'streaming') await prepareStreamingFault();
     result = await freshCase(); await portableSaveCase();
@@ -662,13 +670,13 @@ async function browserCase(id, width, height, touch) {
     check(renderer.webgl2, `${id}: actual WebGL2 context available`, renderer);
     check(await evaluate("JSON.stringify(Object.keys(window.__GODOT_755__))") === '["snapshot"]', 'production browser bridge exposes only a read operation');
     check(await evaluate("(()=>{const s=window.__GODOT_755__.snapshot(),old=s.state.native.chapter;s.state.native.chapter=999;return window.__GODOT_755__.snapshot().state.native.chapter===old})()"), 'returned browser snapshot is a detached copy');
-    report.cases.push({ id, width, height, touch, passed: true, ...result, coldBoot: active.coldBoot, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
+    report.cases.push({ id, width, height, touch, dpr, passed: true, ...result, coldBoot: active.coldBoot, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
     report.network.push(...network.values());
-  } catch (e) { report.cases.push({ id, width, height, touch, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
+  } catch (e) { report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
   finally { await Promise.allSettled(active.bootBodyJobs); active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
 }
 try {
-  const selected = [['desktop-1280', 1280, 720, false], ['desktop-1440', 1440, 900, false], ['touch-390', 390, 844, true]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280'));
+  const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280'));
   check(selected.length > 0, 'at least one requested viewport selected');
   delivery = await prepareDeliveryEvidence();
   for (const selectedCase of selected) await browserCase(...selectedCase);
