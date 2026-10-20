@@ -4807,3 +4807,12 @@ The full release PCK exposed a real packaging-only regression: north_large and n
 
 - Follow-up packaging verification: first Linux Pages run 39371236507 correctly refused a 26,326,859 B q8 C4 OGV above the 24 MB pack budget; it did not publish. Added actual-size bounded q8→q4 fallback with 23.5 MB media ceiling, complete decoded-frame/size/FPS/duration/audio validation and atomic generated-file replacement. Real 43.833333-second/1052-frame source triggered q8→q7 under an isolated 20 MB cap; audio and impossible-budget preservation controls passed. Actual default conversion of both authored clips passed (q8 21,045,558 B and 3,514,284 B). build_web passes its Node binary explicitly and hashes the converter input; gameplay scripts are unchanged.
 - All three independent campuses separately passed 33 browser/visual assertions with only shared+selected packs, real movement and Escape return; no missing dependencies. Clean b0 re-export differs from accepted v4 only in UID-cache entry ordering: all 1175 UID→path mappings match, all other 2655 resources match, but core/PCK metadata bytes are explicitly not claimed identical. Actual target-server SSH remains publickey-refused with no upload. Final CI media encoding and online-byte acceptance remain separate from the pre-packaging browser summary.
+
+
+### 2026-10-20 分章加载发布验收：保留 CI 刷新失败并补采证据
+
+- `6956c253d1de59a1d513b387a77cd4889c15b7a0` 的 Pages run `39372748155`：Linux OGV 首段 q8 26,326,859 B 自动回退 q7 20,587,122 B；两个视频的完整帧、时长和音轨验证通过。Godot 导出、33 项 transport、7 项 lossless partition、实际 boot assets 与来源/100 MB 首载门槛均通过。
+- 发布被真实浏览器验收阻断：两种桌面尺寸通过，`touch-390` 在比较刷新前后 `{page, chapter, mode, flags}` 时失败。该旧报告没有保存 desired/actual 差异，不能仅从标签和最后 light 模式推定原因。发布步骤 skipped，原站仍保留 a8 已发布版本，没有将失败包上线。
+- 原 CI 报告与日志留在 `godot_native/exports/verification/ci_failure_6956_20261020/`（生成验收证据，不提交导出物）。相同 clean 6956 构建在独立本地 Chrome 三尺寸 basic 验收 163 项通过；4 倍 CPU 降速触摸临时诊断 97 项通过，原 1.6 秒等待不变，未复现失败。后者只读 IDBFS 在刷新前观察 primary=dark、backup=light，刷新后仍 dark；已有内存 saveDigest 不能独自证明浏览器磁盘耐久完成。
+- 本次只修改浏览器验收 harness 的证据记录：保存模式切换前后、真实点击矩形/坐标、保存及刷新时刻、刷新前 IDBFS 主备存档的模式/字段/哈希、desired/actual 差异。保持原严格恢复断言，不重写存档，不强制同步，不等待 IDB 匹配，不延长既有 sleep。只读数据库采样会增加少量观测开销，报告记录耗时，因此本轮不被描述为严格 1.6 秒内耐久保证。若 Linux 再次失败，应凭记录定位真实输入或持久化问题，不能通过放宽验收发布。
+- clean 6956 本地服务器候选的实际基础与媒体浏览器验收 118/118 通过（报告 SHA-256 `8c4134c858f7d76e089b609f8d3300cb143d2677a1caecf38f729ede48fcef51`）；39 文件部署 dry-run 通过，未向服务器上传。标准 SSH 身份仍缺失，服务器 `/7-55/` 仍 404；没有改动该服务器已有项目。

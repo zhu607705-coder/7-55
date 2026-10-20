@@ -88,7 +88,9 @@ async function renderPoint(point, value) { value ||= await snapshot(); const can
 function controls(value) { return value?.visibleControls || []; }
 async function clickControl(nameOrText, match = 'either') {
   const found = await poll(async () => { const s = await snapshot(); const c = controls(s).find(c => !c.disabled && (match !== 'text' && c.name === nameOrText || match !== 'name' && c.text === nameOrText)); return c ? { s, c } : null; }, `control ${nameOrText}`);
-  const r = found.c.rect; await clickPoint(await renderPoint({ x: r.x + r.width / 2, y: r.y + r.height / 2 }, found.s)); await interval(350);
+  const r = found.c.rect; const point = await renderPoint({ x: r.x + r.width / 2, y: r.y + r.height / 2 }, found.s);
+  if (active.fresh?.recording) active.fresh.inputs.push({ at: Date.now(), text: found.c.text, name: found.c.name, rect: r, point, touch: active.touch, observedMode: state(found.s)?.native?.mode, observedSaveDigest: found.s.saveDigest });
+  await clickPoint(point); await interval(350);
 }
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
 async function startStory(reload = false) {
@@ -152,14 +154,29 @@ async function freshCase() {
   await clickControl('……再睡5分钟……'); await poll(async () => state(await snapshot())?.native.wake_warned, 'real wake warning');
   await clickControl('进入手机主界面'); await poll(async () => state(await snapshot())?.native.page === 'phone_home', 'real phone home');
   await assertLayout(active.id); await settings();
-  const s = await snapshot(); const beforeMode = state(s).native.mode; const toggle = controls(s).find(c => c.text.startsWith('当前：')); check(!!toggle, 'mode toggle states current and destination'); await clickControl(toggle.text);
-  await poll(async () => state(await snapshot())?.native.mode !== beforeMode, 'real mode toggle'); await clickControl('保存进度');
+  const evidence = value => ({ page: state(value)?.native?.page, chapter: state(value)?.native?.chapter, mode: state(value)?.native?.mode, flags: state(value)?.flags, saveDigest: value?.saveDigest });
+  const s = await snapshot(); const beforeMode = state(s).native.mode; const toggle = controls(s).find(c => c.text.startsWith('当前：')); check(!!toggle, 'mode toggle states current and destination');
+  active.fresh = { recording: true, inputs: [], before: evidence(s) };
+  await clickControl(toggle.text);
+  const toggled = await poll(async () => { const value = await snapshot(); return state(value)?.native.mode !== beforeMode ? value : null; }, 'real mode toggle');
+  active.fresh.toggled = evidence(toggled); await clickControl('保存进度');
   const saved = await poll(async () => { const s = await snapshot(); return s.saveDigest ? s : null; }, 'native formal save exists');
+  active.fresh.saved = evidence(saved); active.fresh.savedObservedAt = Date.now();
   check(saved.persistentStorageAvailable === true, `${active.id}: IndexedDB persistent storage available`);
   const desired = { page: state(saved).native.page, chapter: state(saved).native.chapter, mode: state(saved).native.mode, flags: state(saved).flags };
   active.screenshots.push(await screenshot(`${active.id}-phone`));
-  await interval(1600); const after = await startStory(true);
-  check(JSON.stringify({ page: state(after.snapshot).native.page, chapter: state(after.snapshot).native.chapter, mode: state(after.snapshot).native.mode, flags: state(after.snapshot).flags }) === JSON.stringify(desired), `${active.id}: actual page reload retains native save and selected mode`);
+  // Keep the original 1.6 s reload boundary. Read the backing database without
+  // flushing it, so a failure distinguishes stale bridge/UI observations from
+  // an in-memory save that has not reached IndexedDB. Record read time as well.
+  await interval(1600); active.fresh.beforeReload = evidence(await snapshot());
+  active.fresh.persistentReadStartedAt = Date.now();
+  try { active.fresh.beforeReloadIDB = await readPersistentSaveEntries(); } catch (error) { active.fresh.beforeReloadIDB = { error: error.message }; }
+  active.fresh.reloadRequestedAt = Date.now(); active.fresh.recording = false;
+  const after = await startStory(true);
+  const actual = { page: state(after.snapshot).native.page, chapter: state(after.snapshot).native.chapter, mode: state(after.snapshot).native.mode, flags: state(after.snapshot).flags };
+  active.fresh.desired = desired; active.fresh.afterReload = evidence(after.snapshot);
+  active.fresh.differences = Object.keys(desired).filter(key => JSON.stringify(desired[key]) !== JSON.stringify(actual[key]));
+  check(JSON.stringify(actual) === JSON.stringify(desired), `${active.id}: actual page reload retains native save and selected mode`, active.fresh);
   return { bootReadyMs: start.bootReadyMs, mainReadyMs: start.mainReadyMs, reloadedMainReadyMs: after.mainReadyMs, savedDigest: saved.saveDigest, geometry: await assertLayout(`${active.id}-reloaded`) };
 }
 async function portableSaveCase() {
@@ -332,7 +349,7 @@ async function readPersistentSaveEntries() {
           const bytes=raw instanceof Uint8Array?raw:new Uint8Array(raw),text=new TextDecoder().decode(bytes);
           let envelope;try{envelope=JSON.parse(text)}catch{continue}
           const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');
-          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,canteenPhase:envelope.state?.canteenHunt?.phase});
+          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,mode:envelope.state?.native?.mode,flags:envelope.state?.flags,canteenPhase:envelope.state?.canteenHunt?.phase});
         }
       }finally{db.close()}
     }
@@ -548,9 +565,9 @@ async function browserCase(id, width, height, touch) {
     check(renderer.webgl2, `${id}: actual WebGL2 context available`, renderer);
     check(await evaluate("JSON.stringify(Object.keys(window.__GODOT_755__))") === '["snapshot"]', 'production browser bridge exposes only a read operation');
     check(await evaluate("(()=>{const s=window.__GODOT_755__.snapshot(),old=s.state.native.chapter;s.state.native.chapter=999;return window.__GODOT_755__.snapshot().state.native.chapter===old})()"), 'returned browser snapshot is a detached copy');
-    report.cases.push({ id, width, height, touch, passed: true, ...result, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
+    report.cases.push({ id, width, height, touch, passed: true, ...result, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
     report.network.push(...network.values());
-  } catch (e) { report.cases.push({ id, width, height, touch, passed: false, result, error: e.stack || String(e), imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
+  } catch (e) { report.cases.push({ id, width, height, touch, passed: false, result, error: e.stack || String(e), fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
   finally { active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
 }
 try {
