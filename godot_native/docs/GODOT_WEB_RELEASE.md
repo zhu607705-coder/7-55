@@ -51,6 +51,21 @@ Web 包排除测试、工具、文档、验证截图/日志、原型样例和构
 
 供浏览器测试读取的 `document.documentElement.dataset.bootState` 只有 `loading`、`ready`、`running`、`error`，只是 HTML 加载状态，不是剧情状态或剧情写入端口。`running` 仅代表引擎启动 Promise 成功；不能将它当作场景、地图、存档或章节衔接已经通过的证据。
 
+## 保存完成边界（修复与验收中）
+
+提交 `95f21403aeeac346b94bb862fb08aedc0fe0e5b9` 的 Linux CI 暴露了真实的 Web 持久化问题：触摸 `390×844` 场景中，Godot 内存与已关闭的本地文件已经是深色模式，但只读 IndexedDB 主存档仍是此前的浅色模式；实际重载恢复了浅色模式。该候选没有发布，桌面用例通过也不能消除这个失败。
+
+Godot 4.7.2 的文件关闭回调和 `force_fs_sync()` 只是登记待同步，由主循环异步发起持久化；`is_userfs_persistent()` 说明存储可用，不是本次保存完成。参见固定版本的 [OS_Web 同步调度](https://github.com/godotengine/godot/blob/4.7.2-stable/platform/web/os_web.cpp#L70-L85) 和 [GodotFS 异步同步](https://github.com/godotengine/godot/blob/4.7.2-stable/platform/web/js/libs/library_godot_os.js#L178-L192)。因此，MEMFS 中的 `saveDigest`、旧的同步 Promise、等待 350 ms 或 1.6 s 都不能单独当作本次 IndexedDB 提交的回执。
+
+本轮保存协议已实现、仍在验收；尚不能据此宣称已上线或验收通过：
+
+- `State` 的保存逻辑和信号保持不变，仍是唯一存档写入者，负责已有完整包络、校验、临时文件与原子替换。两个手动保存入口统一调用 `request_save`，先执行原有 `State.save_game()`，再请求文件系统同步；自动保存通过既有快照发布观察 MEMFS 文件摘要变化。浏览器适配器不直接写 IndexedDB，不另建存档格式、钱包、物品或剧情状态。
+- 本次保存使用具体文件字节的 SHA-256 与请求 token 关联。私有 Web 回调只读 `/userfs` 的 `FILE_DATA` 主存档并返回实际字节，由 GDScript 计算摘要；只有摘要精确匹配且 token 仍属于当前请求，才允许确认。它不依赖原始 IP HTTP 环境可能缺失的 WebCrypto。较旧请求的回执不能替较新保存确认。
+- 手动保存按钮立即显示“正在保存…”并禁用重复点击，精确 ACK 后才在该按钮显示“已保存”。反馈留在操作旁，不通过可能排队的剧情 toast 假定本次成功。20 秒超时、持久存储不可用或读取失败不能显示成功；失败后可再点保存重试，或通过已有便携导出保留当前进度。未确认写入会保留浏览器允许的 `beforeunload` 提示，dispose 会取消计时器、回调与提示；这不是强行终止浏览器仍保证保存的承诺。
+- 正式 browser gate 必须等待真实成功状态，再通过测试侧独立只读 IndexedDB 检查精确摘要，随后真实重载并保留原有路线、现实模式及剧情标记断言。不能靠增加固定 sleep 或删去断言让失败变绿。
+
+具体实现、超时与负控结果需随修复提交和新的产物收据更新。历史短间隔导入探针仅说明当时特定样本的观察结果，不构成耐久保证。
+
 发布前还须对导出的真实 WASM 页面验收：桌面/手机窗口和非 16:9、主线首次进入、触摸和键盘、手机与横屏地图切换、存档/重载、失焦中断、剧情音视频、章节边界、生产无测试跳转，以及 Blink/Gecko/WebKit。用独立浏览器配置与测试存档，不覆盖用户存档。HTTP 验证包含 `/7-55/` 相对路径、WASM 正确 MIME 类型、PCK 完整字节和缺失资源；仅通过本脚本不算游戏验收通过。
 
 ## GitHub Pages

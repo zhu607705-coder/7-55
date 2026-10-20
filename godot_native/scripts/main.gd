@@ -55,6 +55,7 @@ var active_game: Control
 var font: Font
 var file_dialog: FileDialog
 var export_mode := false
+var save_progress_button: Button
 var web_platform: Node
 var _content_owns_tree_pause := false
 var rebuild_pending := false
@@ -146,6 +147,7 @@ func _ready() -> void:
 		web_platform.name = "WebPlatform"
 		add_child(web_platform)
 		web_platform.import_finished.connect(_feedback)
+		web_platform.save_feedback.connect(_on_web_save_feedback)
 		web_platform.setup(self, State)
 		WebContent.blocking_changed.connect(_on_content_blocking)
 		WebContent.start_prefetch()
@@ -1565,7 +1567,9 @@ func _show_settings() -> void:
 	if is_instance_valid(active_game): return
 	var box := _modal_base("控制中心")
 	box.add_child(_button("当前：%s → 切换%s" % ["深色观察" if State.d.native.mode == "dark" else "浅色操作","浅色操作" if State.d.native.mode == "dark" else "深色观察"],func(): State.toggle_mode(); _show_settings()))
-	box.add_child(_button("保存进度",func(): _feedback("已保存" if State.save_game() else "测试会话不覆盖正式存档")))
+	save_progress_button = _button("保存进度", _save_progress)
+	save_progress_button.name = "SaveNativeProgress"
+	box.add_child(save_progress_button)
 	box.add_child(_button("导出存档",func(): _show_file_dialog(true)))
 	box.add_child(_button("导入存档",func(): _show_file_dialog(false)))
 	if is_instance_valid(web_platform) and web_platform.legacy_save_available():
@@ -1583,6 +1587,22 @@ func _show_settings() -> void:
 	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
+
+func _save_progress() -> void:
+	if is_instance_valid(web_platform): web_platform.request_save()
+	else: _feedback("已保存" if State.save_game() else "测试会话不覆盖正式存档")
+
+func _on_web_save_feedback(message: String) -> void:
+	# Keep this receipt beside its own action. Queued story notices or an older
+	# save toast cannot imply that the latest browser write is already durable.
+	var buttons: Array[Button] = []
+	if is_instance_valid(save_progress_button) and save_progress_button.is_inside_tree(): buttons.append(save_progress_button)
+	var phone_save := find_child("ControlSaveNow", true, false) as Button
+	if is_instance_valid(phone_save): buttons.append(phone_save)
+	for button: Button in buttons:
+		button.text = "正在保存…" if message == "正在保存…" else "已保存" if message == "已保存" else "保存未完成·重试"
+		button.disabled = message == "正在保存…"
+	if message not in ["正在保存…", "已保存"]: _feedback(message)
 
 func _show_developer() -> void:
 	if not State.developer_tools_available(): return
@@ -2259,7 +2279,7 @@ func _on_phone_action(id: String,value: Variant) -> void:
 			_refresh_control_center()
 			return
 		"native_save_tools": _show_settings(); return
-		"native_save_now": _feedback("进度已保存。" if State.save_game() else "测试会话不覆盖正式存档。"); return
+		"native_save_now": _save_progress(); return
 		"native_reset_progress": State.new_game(); return
 	if value==null:
 		var page: String="control_center" if State.d.ui.controlCenterOpen else str(State.d.native.page)

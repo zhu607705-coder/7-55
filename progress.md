@@ -4816,3 +4816,17 @@ The full release PCK exposed a real packaging-only regression: north_large and n
 - 原 CI 报告与日志留在 `godot_native/exports/verification/ci_failure_6956_20261020/`（生成验收证据，不提交导出物）。相同 clean 6956 构建在独立本地 Chrome 三尺寸 basic 验收 163 项通过；4 倍 CPU 降速触摸临时诊断 97 项通过，原 1.6 秒等待不变，未复现失败。后者只读 IDBFS 在刷新前观察 primary=dark、backup=light，刷新后仍 dark；已有内存 saveDigest 不能独自证明浏览器磁盘耐久完成。
 - 本次只修改浏览器验收 harness 的证据记录：保存模式切换前后、真实点击矩形/坐标、保存及刷新时刻、刷新前 IDBFS 主备存档的模式/字段/哈希、desired/actual 差异。保持原严格恢复断言，不重写存档，不强制同步，不等待 IDB 匹配，不延长既有 sleep。只读数据库采样会增加少量观测开销，报告记录耗时，因此本轮不被描述为严格 1.6 秒内耐久保证。若 Linux 再次失败，应凭记录定位真实输入或持久化问题，不能通过放宽验收发布。
 - clean 6956 本地服务器候选的实际基础与媒体浏览器验收 118/118 通过（报告 SHA-256 `8c4134c858f7d76e089b609f8d3300cb143d2677a1caecf38f729ede48fcef51`）；39 文件部署 dry-run 通过，未向服务器上传。标准 SSH 身份仍缺失，服务器 `/7-55/` 仍 404；没有改动该服务器已有项目。
+
+
+### 2026-10-20 修复真实 Web 存档落盘完成边界（分章加载发布阻断）
+
+- `95f21403aeeac346b94bb862fb08aedc0fe0e5b9` 的 Pages run `39374160473` 再次在 touch reload 失败。新增记录现已确定：内存保存为 dark、digest `813df16f…59abdc`；刷新前只读 IDB 主档仍为旧 light、digest `bf6fa14c…d18109`，刷新后仍 light，差异只有 mode。桌面 1280 最新内存 `600c9dcd…ec2fe6` 与落盘 `35b19559…7ff320` 同样不一致，只因两份都为 dark 而通过旧状态比较。原失败证据保留，发布 skipped，原站 a8 未被替换。
+- 原因边界：Godot 4.7.2 的 FileAccess.close/flush 与非空内存摘要不是 IndexedDB 完成回执。官方 `JavaScriptBridge.force_fs_sync()` 只请求后续异步同步。未找到分包代码吞掉 dirty 的路径；不能把可能的单线程/磁盘调度延迟冒称已证根因。
+- 修复不改 State、控制器或存档内容。WebPlatform 观察既有原生 save.json 的摘要，显式保存仍调用原 State.save_game，随后使用官方同步请求；私有能力桥只读 `/userfs` 的 FILE_DATA，实际字节交回 Godot 做 SHA-256。只有当前 token 与本次文件 SHA 精确一致才确认；旧回执、旧字节、失败和 20 秒独立 watchdog 均不产生成功。无 WebCrypto 的 HTTP 也由 Godot 核验。未提交时提供 beforeunload 提醒，失败保留内存进度、可重试或导出；不保证强制终止浏览器能保存未提交写入。
+- 控制中心两处保存共用同一接口，成功/等待/失败落在保存按钮旁，pending 时禁重复点击；不借旧的排队剧情 toast 证明新保存成功。普通浏览器快照仍只有只读能力。
+- 验收变强：每次显式保存要求本次 token、真正“已保存”按钮、acknowledgedDigest 与当前原生摘要一致，再以独立只读 IDB 主档 SHA 复核；每次真实 reload 前也检查当前自动存档回执。原 page/chapter/mode/flags 严格比较保留。原 1.6 秒仅作为成功确认后的额外间隔，不再被误称为耐久完成证明。
+- 新聚焦测试：原生保存回执 20、真实运行时 inline JS 负控 39 全通过；负控覆盖延迟、数据库错误/永久挂起、超时后迟到结果、连续保存旧 ACK、非法内容/路径、无 WebCrypto、重试和 dispose。39 项已加入 Pages gate。原生 filtered validation 还重跑 content 69、platform 18、visibility 33、activity-focus 54，5 个阶段合计 194 项通过；不是完整原生 suite。
+- 已按 AGENTS 运行 sync_source（719 源资产），再导出新 dirty 证明包 `exports/web-streaming-save-20261020`：source-base 95f21403、source-input `d3f3efaf46ec0624db385d60a02bde2bfcc2a5803f0533b72bd05020c8e62576`，首载 93,547,670 B，总量 580,130,936 B，999 core/2,657 full entries、25 个后续包。已纳入与 CI 一致的额外 1,055 B 源 JSON，未删除内容来缩首包。
+- 真实触摸浏览器 99 项通过（报告 SHA `f3a3a06f879e6f3e8b68470eaa895fc5c488bc8d2b9d15e3670f8c287440b4b9`）：实际 Uint8Array→GDScript 哈希回执、按钮、独立 IDB 与重载全部一致，dark 保留。分章故障/缓存恢复 111 项通过（报告 SHA `9c678336fda6c34598e7730041d36e34b9990d91e338d3774028a20b6248b5eb`），只阻断明确的后续包，其余错误仍严格拒绝。
+- 新修复 dirty 包实际完整三尺寸回归 302/302 项通过（3 cases、0 errors），报告 SHA `320312296a969d3a950817009df8e8aa9f7bed8e29184b8d621caa666d2a6c9b`；三尺寸本次内存 digest、独立 IDB 主档 SHA 与真实 reload 后 digest 全部一致，模式均 dark、differences=[]。13 张截图逐张检查并清理留 SHA 收据。新证明追加到原 browser_summary 的 saveDurabilityFix，原 v3/v4 历史证据不被改写或冒作新修复证明。
+- 本轮正式源、测试与说明已可审查；服务器仍无有效 SSH 公钥身份，未上传、未安装 Nginx 配置。完整人工通关、物理手机、最低浏览器和听感仍不由以上自动化证明。

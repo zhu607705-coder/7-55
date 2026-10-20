@@ -29,6 +29,52 @@ paths and bytes with `--export-dir` when set.
 `web-acceptance.json` records the runner hash, export manifest, renderer, cold
 startup timings, input cases, failures, screenshots, asset hashes and limitations.
 
+## Persistence correction under acceptance
+
+The Linux CI candidate at commit
+`95f21403aeeac346b94bb862fb08aedc0fe0e5b9` failed the real touch
+`390×844` reload case. Its in-memory state and MEMFS save were dark, while an
+independent read of the IndexedDB primary save still contained light mode;
+the new document restored that older mode. This was a persistence failure, not
+an accepted timing variation. That candidate was not published. Passing desktop
+cases and earlier local checks do not supersede this negative evidence.
+
+In pinned Godot 4.7.2,
+[OS_Web schedules filesystem synchronization asynchronously](https://github.com/godotengine/godot/blob/4.7.2-stable/platform/web/os_web.cpp#L70-L85),
+and [GodotFS completes through an asynchronous IDBFS callback](https://github.com/godotengine/godot/blob/4.7.2-stable/platform/web/js/libs/library_godot_os.js#L178-L192).
+An available persistent filesystem, a successful native file close, the MEMFS
+`saveDigest`, or an older sync Promise is not an exact receipt for the latest
+save. Earlier 350 ms and 1.6 s probes remain historical observations; neither
+interval establishes a durable-write contract.
+
+The replacement protocol is implemented and undergoing acceptance; it is not
+yet a passing or deployed result. `State` save logic and signals are unchanged:
+it remains the sole save writer and validator. Both manual entry points call
+`request_save`, which invokes the original `State.save_game()` and then requests
+filesystem synchronization. Existing snapshot publication observes changed
+MEMFS digests for automatic saves; it does not create another write authority.
+
+The private Web watcher only reads the `/userfs` `FILE_DATA` primary file and
+returns its actual bytes. GDScript computes the complete byte SHA-256, matches
+the current digest and request token, and only then acknowledges that request.
+This also works without browser WebCrypto. The adapter does not write IndexedDB,
+seed state, change save format, or commit story progress. A stale acknowledgement
+cannot certify a newer request. The clicked button shows pending immediately,
+disables duplicate clicks, and shows saved only after its acknowledgement;
+queued story toasts are not the success oracle. A 20-second timeout or read
+failure leaves an explicit retry/export path and an uncommitted-write warning.
+Disposal cancels watcher timers, callbacks and the pending `beforeunload` warning;
+that browser warning is best effort, not a guarantee after forced termination.
+
+The runner revision must observe the real successful save state and separately
+read IndexedDB to require the exact requested digest before issuing the same
+ordinary document reload. Original route, selected-mode, story-flag and input
+assertions remain in place. Failure diagnostics retain memory digest/state and
+the primary/backup persistence observations. Do not replace this boundary with
+a longer fixed sleep, relaxed state comparisons or a JavaScript write to the
+store. Actual timeout, stale-token and blocked-storage controls require their
+own evidence before this section can be marked accepted.
+
 Linux CI without a GPU may explicitly select its isolated software renderer:
 
 ```sh
@@ -114,7 +160,9 @@ engines, a fresh manual four-chapter campaign, or every authored puzzle solution
 Record separate evidence for those scopes; do not relabel native headless tests
 or retained-Web tests as Godot-in-browser acceptance.
 
-The local accepted artifact on 2026-10-20 is Godot `4.7.2.stable.official`,
+## Historical monolithic evidence
+
+The earlier locally accepted monolithic artifact on 2026-10-20 used Godot `4.7.2.stable.official`,
 source-input SHA-256
 `0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62`.
 The complete Chromium run passed **242/242 checks and 3/3 viewport cases** using
@@ -128,13 +176,14 @@ The compact evidence index is
 It records exact report, runner, WASM and PCK hashes, companion diagnostics and
 the effective old audio-lifecycle negative that the accepted package fixes.
 
-Save probes include a small C2 import followed by normal reload at approximately
-350ms, a 1.6-second control, and an early-C4-map-to-bike import whose IndexedDB
-primary and backup bytes matched the new engine digest before a 356ms reload.
-They passed. An earlier late-C4-lamp-to-bike immediate-reload observation did not
-reproduce under the correct early-map precondition and remains documented with
-its timing/scene-owner ambiguity. No claim is made that forcibly terminating a
-browser before asynchronous IndexedDB commit always preserves the last write.
+Historical save probes observed successful reloads for a small C2 import at
+approximately 350 ms, a 1.6-second control, and an early-C4-map-to-bike import
+whose IndexedDB primary and backup bytes matched the new engine digest before
+a 356 ms reload. They did not establish a durable-write contract for later
+saves, as the confirmed `95f21403` touch failure demonstrates. An earlier
+late-C4-lamp-to-bike observation also retains its timing/scene-owner ambiguity.
+Keep these reports as sample-specific history, not proof that a fixed delay or
+forced browser termination preserves the latest write.
 
 The accepted artifact was exported from recorded dirty source inputs. A clean
 CI prepare adds one unconsumed JSON duplicate, as documented in

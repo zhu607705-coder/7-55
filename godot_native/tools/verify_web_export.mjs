@@ -93,7 +93,26 @@ async function clickControl(nameOrText, match = 'either') {
   await clickPoint(point); await interval(350);
 }
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
+async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = false) {
+  const began = Date.now();
+  const saved = await poll(async () => {
+    const value = await snapshot(); const receipt = value?.savePersistence;
+    if (!receipt || receipt.token <= previousToken) return null;
+    if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);
+    const visible = !visibleSuccess || controls(value).some(c => c.name === 'SaveNativeProgress' && c.text === '已保存' && !c.disabled);
+    return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;
+  }, `${label}: current native save has an exact durable receipt`, 30000);
+  const disk = await readPersistentSaveEntries(); const primary = disk.entries.find(e => e.key.endsWith('/save.json'));
+  check(primary?.sha256 === saved.saveDigest, `${label}: independent readonly IndexedDB primary matches the current native save`, { elapsedMs: Date.now() - began, receipt: saved.savePersistence, primary, diskReadMs: disk.readDurationMs });
+  return saved;
+}
+async function saveProgressAndWait(label) {
+  const before = await snapshot();
+  await clickControl('SaveNativeProgress', 'name');
+  return waitForPersistedSave(label, before.savePersistence?.token ?? -1, true);
+}
 async function startStory(reload = false) {
+  if (reload) await waitForPersistedSave(`${active.id} before actual reload`);
   const start = Date.now(); await active.cdp.send(reload ? 'Page.reload' : 'Page.navigate', reload ? { ignoreCache: true } : { url: active.url || url });
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
@@ -159,15 +178,15 @@ async function freshCase() {
   active.fresh = { recording: true, inputs: [], before: evidence(s) };
   await clickControl(toggle.text);
   const toggled = await poll(async () => { const value = await snapshot(); return state(value)?.native.mode !== beforeMode ? value : null; }, 'real mode toggle');
-  active.fresh.toggled = evidence(toggled); await clickControl('保存进度');
-  const saved = await poll(async () => { const s = await snapshot(); return s.saveDigest ? s : null; }, 'native formal save exists');
+  active.fresh.toggled = evidence(toggled);
+  const saved = await saveProgressAndWait(`${active.id} explicit save`);
   active.fresh.saved = evidence(saved); active.fresh.savedObservedAt = Date.now();
   check(saved.persistentStorageAvailable === true, `${active.id}: IndexedDB persistent storage available`);
   const desired = { page: state(saved).native.page, chapter: state(saved).native.chapter, mode: state(saved).native.mode, flags: state(saved).flags };
   active.screenshots.push(await screenshot(`${active.id}-phone`));
-  // Keep the original 1.6 s reload boundary. Read the backing database without
-  // flushing it, so a failure distinguishes stale bridge/UI observations from
-  // an in-memory save that has not reached IndexedDB. Record read time as well.
+  // The visible saved acknowledgement now proves this generation reached IDB.
+  // Retain the additional original settle interval and independent diagnostics;
+  // never substitute an arbitrary delay for the actual completion receipt.
   await interval(1600); active.fresh.beforeReload = evidence(await snapshot());
   active.fresh.persistentReadStartedAt = Date.now();
   try { active.fresh.beforeReloadIDB = await readPersistentSaveEntries(); } catch (error) { active.fresh.beforeReloadIDB = { error: error.message }; }
@@ -314,7 +333,7 @@ async function bikeCase() {
   const stillPaused = await snapshot(); check(gameOf(stillPaused).paused && gameOf(stillPaused).model.distance === gameOf(manualPause).model.distance, 'visibility restoration preserves a player-owned bike pause and model distance');
   await clickControl('退出'); await poll(async () => !gameOf(await snapshot())?.script, 'ordinary bike exit disposes the 3D activity');
   const after = state(await snapshot()); check(!after.canteenHunt.chaseCompleted && JSON.stringify(after.items) === JSON.stringify(earned.items) && JSON.stringify(after.wallet) === JSON.stringify(earned.wallet), 'exiting incomplete 3D ride preserves earned inventory, wallet and unfinished chase');
-  await settings(); await clickControl('保存进度'); await interval(1500); await startStory(true);
+  await settings(); await saveProgressAndWait('bike explicit save'); await interval(1500); await startStory(true);
   const resumed = await poll(async () => { const s = await snapshot(); return gameOf(s)?.mode === 'chase' && gameOf(s).nativeChaseView?.ready3d ? s : null; }, 'ordinary save reload re-enters the unfinished 3D bike ride', 180000);
   check(!state(resumed).canteenHunt.chaseCompleted && JSON.stringify(state(resumed).items) === JSON.stringify(earned.items) && JSON.stringify(state(resumed).wallet) === JSON.stringify(earned.wallet), 'actual native reload preserves the incomplete paid ride without granting 755m completion');
   await clickControl('退出'); await poll(async () => !gameOf(await snapshot())?.script, 'resumed bike exits through its ordinary control');
@@ -499,7 +518,7 @@ async function streamingCase() {
   const cached = await poll(async () => { const value = await cachedContentKeys(); return value.available && expectedCacheKeys.every(key => value.keys.includes(key)) ? value : null; }, 'only natively accepted C2 chunks are committed to actual CacheStorage', 60000);
   check(cached.available && expectedCacheKeys.every(key => cached.keys.includes(key)), 'CacheStorage contains every verified C2 chunk under its full SHA-256 identity', cached);
   active.streaming.cacheBeforeReload = cached;
-  await settings(); await clickControl('保存进度'); await interval(1600);
+  await settings(); await saveProgressAndWait('streaming explicit save'); await interval(1600);
   const saved = await snapshot();
   active.faultPhase = 'reload-from-verified-cache';
   active.controlledBlockedUrls = new Set(active.deferredUrls);

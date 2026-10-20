@@ -67,6 +67,7 @@ jobs:
       - name: Check content transport and lossless pack partition
         run: |
           node godot_native/tools/test_web_content_loader.mjs
+          node godot_native/tests/verify_web_save_transport.mjs
           node godot_native/tools/test_partition_web_pack.mjs
           node godot_native/tests/verify_web_content_boot_assets.mjs --export=godot_native/exports/web-release
 

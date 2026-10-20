@@ -1,6 +1,7 @@
 extends Node
 ## Browser capabilities only. State remains the sole save/progression authority.
 signal import_finished(message: String)
+signal save_feedback(message: String)
 const IMPORT_PATH := "user://web-save-import.json"
 const EXPORT_PATH := "user://web-save-export.json"
 const MAX_SAVE_BYTES := 48 * 1024 * 1024
@@ -17,6 +18,16 @@ var _suspended := false
 var _hidden_audio: Array[Dictionary] = []
 var _hidden_director: WeakRef
 var _owns_director_pause := false
+var _persistence_host: Variant
+var _save_callback: JavaScriptObject
+var _save_token := 0
+var _save_digest := ""
+var _save_observed_digest := ""
+var _save_acknowledged_digest := ""
+var _save_pending := false
+var _save_error := ""
+var _save_explicit := false
+var _save_started_ms := 0
 
 func setup(owner_shell: Control, owner_state: Node) -> void:
 	shell = owner_shell
@@ -29,6 +40,18 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 		let snapshot = '{}';
 		let input = null;
 		let visibilityHandler = null;
+		let saveWatch = null;
+		let saveUncommitted = false;
+		const beforeUnload = event => {
+			if (!saveUncommitted) return;
+			event.preventDefault(); event.returnValue = '';
+		};
+		window.addEventListener('beforeunload', beforeUnload);
+		function cancelSaveWatch() {
+			if (saveWatch && saveWatch.timer) clearTimeout(saveWatch.timer);
+			if (saveWatch && saveWatch.timeout) clearTimeout(saveWatch.timeout);
+			saveWatch = null;
+		}
 		Object.defineProperty(window, '__GODOT_755__', {
 			configurable: true,
 			value: Object.freeze({ snapshot: () => JSON.parse(snapshot) })
@@ -61,7 +84,59 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 				try { return index === 0 || index === 1 ? (localStorage.getItem(keys[index]) || '') : ''; }
 				catch (_) { return ''; }
 			},
+			watchSave: (token, absolutePath, receive) => {
+				cancelSaveWatch(); saveUncommitted = true;
+				const watch = { token, timer: null, timeout: null, deadline: Date.now() + 20000 };
+				saveWatch = watch;
+				const current = () => saveWatch === watch;
+				const fail = code => {
+					if (!current()) return;
+					cancelSaveWatch(); receive(token, null, code);
+				};
+				watch.timeout = setTimeout(() => fail('timeout'), 20000);
+				if (!/^\\/userfs\\/(?:[^/]+\\/)*save\\.json$/.test(absolutePath) || absolutePath.split('/').includes('..')) { fail('invalid_path'); return; }
+				if (typeof indexedDB === 'undefined') { fail('unavailable'); return; }
+				async function read() {
+					if (!current()) return;
+					if (Date.now() >= watch.deadline) { fail('timeout'); return; }
+					let db;
+					try {
+						db = await new Promise((resolve, reject) => {
+							const request = indexedDB.open('/userfs');
+							request.onupgradeneeded = () => { request.transaction.abort(); reject(new Error('missing_database')); };
+							request.onsuccess = () => resolve(request.result);
+							request.onerror = () => reject(request.error);
+						});
+						if (!current()) return;
+						if (!db.objectStoreNames.contains('FILE_DATA')) throw new Error('missing_store');
+						const value = await new Promise((resolve, reject) => {
+							const tx = db.transaction('FILE_DATA', 'readonly');
+							const request = tx.objectStore('FILE_DATA').get(absolutePath);
+							tx.oncomplete = () => resolve(request.result);
+							tx.onerror = tx.onabort = () => reject(tx.error || new Error('read_failed'));
+						});
+						if (!current()) return;
+						if (value && value.contents != null) {
+							const raw = value.contents;
+							const bytes = ArrayBuffer.isView(raw) ? new Uint8Array(raw.buffer, raw.byteOffset, raw.byteLength) : raw instanceof ArrayBuffer ? new Uint8Array(raw) : null;
+							if (!bytes || bytes.byteLength > 8 * 1024 * 1024) throw new Error('invalid_contents');
+							// The native owner hashes the actual bytes. This also works on
+							// ordinary HTTP, where WebCrypto is unavailable.
+							receive(token, bytes, '');
+						}
+					} catch (_) { fail('read_failed'); return; }
+					finally { if (db) db.close(); }
+					if (current()) watch.timer = setTimeout(read, 100);
+				}
+				watch.timer = setTimeout(read, 0);
+			},
+			finishSave: (token, accepted) => {
+				if (!saveWatch || saveWatch.token !== token) return;
+				cancelSaveWatch(); if (accepted) saveUncommitted = false;
+			},
 			dispose: () => {
+				cancelSaveWatch();
+				window.removeEventListener('beforeunload', beforeUnload);
 				if (input) input.remove();
 				if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
 				delete window.__GODOT_755__;
@@ -74,7 +149,74 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 	_browser.install(_file_callback)
 	_visibility_callback = JavaScriptBridge.create_callback(_on_browser_visibility)
 	_browser.observeVisibility(_visibility_callback)
+	_save_callback = JavaScriptBridge.create_callback(_on_save_observation)
+	_persistence_host = _browser
 	_publish_snapshot()
+
+func _current_save_digest() -> String:
+	return FileAccess.get_sha256(state.SAVE_PATH) if state != null and FileAccess.file_exists(state.SAVE_PATH) else ""
+
+func _force_save_sync() -> void:
+	# Official Godot API requests a sync; only the independently observed backing
+	# database bytes below constitute completion, rather than FileAccess.close().
+	if OS.has_feature("web"): JavaScriptBridge.force_fs_sync()
+
+func _begin_save_persistence(digest: String, explicit: bool = false) -> int:
+	_save_token += 1
+	_save_digest = digest
+	_save_observed_digest = ""
+	_save_pending = true
+	_save_error = ""
+	_save_explicit = _save_explicit or explicit
+	_save_started_ms = Time.get_ticks_msec()
+	if explicit: save_feedback.emit("正在保存…")
+	_force_save_sync()
+	_persistence_host.watchSave(_save_token, ProjectSettings.globalize_path(state.SAVE_PATH), _save_callback)
+	return _save_token
+
+func _observe_save_digest(digest: String) -> void:
+	# Do not retry a failed observation every frame. An explicit Save or a new
+	# successful native write starts a fresh bounded attempt.
+	if _persistence_host != null and not digest.is_empty() and digest != _save_digest:
+		_begin_save_persistence(digest)
+
+func _on_save_observation(args: Array) -> void:
+	if args.size() != 3 or typeof(args[0]) not in [TYPE_INT, TYPE_FLOAT] or int(args[0]) != _save_token or not _save_pending: return
+	var error := str(args[2])
+	if not error.is_empty():
+		_finish_save_persistence(false, error)
+		return
+	var bytes: PackedByteArray
+	if args[1] is PackedByteArray: bytes = args[1]
+	elif args[1] is JavaScriptObject and JavaScriptBridge.is_js_buffer(args[1]): bytes = JavaScriptBridge.js_buffer_to_packed_byte_array(args[1])
+	else: return
+	var hashing := HashingContext.new()
+	hashing.start(HashingContext.HASH_SHA256)
+	hashing.update(bytes)
+	_save_observed_digest = hashing.finish().hex_encode()
+	if _save_observed_digest == _save_digest: _finish_save_persistence(true, "")
+
+func _finish_save_persistence(accepted: bool, error: String) -> void:
+	_save_pending = false
+	_save_error = error
+	if accepted: _save_acknowledged_digest = _save_digest
+	if _persistence_host != null: _persistence_host.finishSave(_save_token, accepted)
+	if _save_explicit:
+		save_feedback.emit("已保存" if accepted else "保存尚未完成，请重试或导出存档；暂时不要刷新页面。")
+	_save_explicit = false
+
+func request_save() -> void:
+	if not state.save_game():
+		save_feedback.emit("测试会话不覆盖正式存档")
+		return
+	var digest := _current_save_digest()
+	if _persistence_host == null or digest.is_empty():
+		save_feedback.emit("保存尚未完成，请重试或导出存档；暂时不要刷新页面。")
+		return
+	_begin_save_persistence(digest, true)
+
+func read_save_persistence() -> Dictionary:
+	return {"pending": _save_pending, "token": _save_token, "digest": _save_digest, "observedDigest": _save_observed_digest, "acknowledgedDigest": _save_acknowledged_digest, "error": _save_error, "startedMs": _save_started_ms}
 
 func _on_browser_visibility(args: Array) -> void:
 	if args.size() == 1 and args[0] is bool: _apply_visibility(args[0])
@@ -218,7 +360,9 @@ func _process(delta: float) -> void:
 		_publish_snapshot()
 
 func _publish_snapshot() -> void:
-	if _browser != null: _browser.publish(JSON.stringify(read_snapshot()))
+	if _browser != null:
+		_observe_save_digest(_current_save_digest())
+		_browser.publish(JSON.stringify(read_snapshot()))
 
 func _rect(value: Rect2) -> Dictionary:
 	return {"x": value.position.x, "y": value.position.y, "width": value.size.x, "height": value.size.y}
@@ -296,10 +440,14 @@ func read_snapshot() -> Dictionary:
 	var save := FileAccess.get_file_as_string(state.SAVE_PATH) if FileAccess.file_exists(state.SAVE_PATH) else ""
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "world": world, "phoneRect": _rect(shell.phone.get_global_rect()), "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "world": world, "phoneRect": _rect(shell.phone.get_global_rect()), "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _browser != null: _browser.dispose()
 	_browser = null
 	_file_callback = null
 	_visibility_callback = null
+	_persistence_host = null
+	_save_callback = null
+	_save_token += 1
+	_save_pending = false
