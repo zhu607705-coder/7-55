@@ -222,8 +222,30 @@ func _consume_scene_open(previous: String, next: String) -> void:
 func story_input_locked() -> bool:
 	return get_library_story_session()!=null or get_c3_narrative_session()!=null
 
+func _invalidate_progressive_activities() -> void:
+	for module in modules:
+		if module.has_method("invalidate_progressive_session"):
+			module.invalidate_progressive_session()
+	var lake = lake_module()
+	if lake != null and lake.has_method("invalidate_logistics_session"):
+		lake.invalidate_logistics_session()
+
+func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
+	# Retire only a matching runtime capability. Closing or replacing a view
+	# must also work during a new narrative, without saving or emitting state.
+	if action == "c4_puzzle_cancel":
+		for module in modules:
+			if module.has_method("cancel_progressive_session"):
+				return module.cancel_progressive_session(value.get("session"))
+	elif action == "c3_lake_logistics_cancel":
+		var lake = lake_module()
+		if lake != null and lake.has_method("cancel_logistics_session"):
+			return lake.cancel_logistics_session(value.get("session"))
+	return false
+
 func open_page(page: String) -> void:
 	if story_input_locked(): return
+	_invalidate_progressive_activities()
 	# P10's revealed flower digit is local to its mounted page.
 	if str(d.native.page)=="bonsai" and page!="bonsai": d.native.erase("flower_eight_visible")
 	_consume_scene_open(str(d.native.page),page)
@@ -236,6 +258,7 @@ func open_page(page: String) -> void:
 
 func open_scene(scene: String) -> void:
 	if story_input_locked(): return
+	_invalidate_progressive_activities()
 	d.native.scene = scene
 	d.rpgScene = scene
 	d.runtimeMode = "rpg"
@@ -244,6 +267,7 @@ func open_scene(scene: String) -> void:
 
 func toggle_mode() -> void:
 	if story_input_locked(): return
+	_invalidate_progressive_activities()
 	d.native.mode = "dark" if d.native.mode == "light" else "light"
 	d.themeMode = "dark" if d.native.mode == "dark" else "normal"
 	d.chapter4.mode = d.native.mode

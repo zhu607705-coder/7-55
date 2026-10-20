@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="86" height="52" viewBox="0 0 86 52">
+  <!-- Native dock logistics entrance: north-up equipment trolley, no puzzle answer text. -->
+  <ellipse cx="43" cy="42" rx="38" ry="8" fill="#233438" opacity=".22"/>
+  <path d="M8 10H78V43H8Z" fill="#7b624c" stroke="#493f36" stroke-width="2"/>
+  <path d="M8 10H78V34H8Z" fill="#d1ba8d" stroke="#54493c" stroke-width="2"/>
+  <path d="M12 16H74M12 24H74M12 32H74M26 12V33M60 12V33" fill="none" stroke="#a28a65" stroke-width="1.5"/>
+  <rect x="17" y="12" width="23" height="18" rx="1" fill="#9e7952" stroke="#4d4237" stroke-width="2"/>
+  <path d="M18 14L39 28M39 14L18 28" stroke="#c7a67a" stroke-width="2"/>
+  <rect x="48" y="17" width="18" height="13" fill="#d8d4bc" stroke="#64665a" stroke-width="2"/>
+  <path d="M54 18V29M61 18V29" stroke="#989c89" stroke-width="2"/>
+  <path d="M73 10V5H82V29H78" fill="none" stroke="#5d6c69" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M15 38V45M69 38V45" stroke="#454e4c" stroke-width="4"/>
+  <circle cx="15" cy="45" r="4" fill="#3b4342"/><circle cx="69" cy="45" r="4" fill="#3b4342"/>
+  <path d="M11 35H75" stroke="#e2cfaa" stroke-width="2"/>
+</svg>

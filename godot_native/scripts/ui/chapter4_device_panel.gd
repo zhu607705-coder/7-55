@@ -136,7 +136,7 @@ func dispose_session() -> void:
 	if session != null: session.close()
 
 func _submit_or_close() -> void:
-	if session.view_kind() != "controls":
+	if session.view_kind() not in ["controls","activity"]:
 		request_close()
 		return
 	var request: Dictionary = session.begin_submit()
@@ -206,7 +206,7 @@ func refresh_view() -> void:
 			image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			image.custom_minimum_size.y = 150
 			figure.add_child(image)
-		figure.add_child(label("记录完成" if session.completed else ("观察残留痕迹" if session.mode == "dark" else "扫描台尚未放入底片"),13,muted))
+		figure.add_child(label("记录完成" if session.completed else ("观察残留痕迹" if session.mode == "dark" else ("返回物件现场" if kind=="activity" else "扫描台尚未放入底片")),13,muted))
 	workspace.add_child(label(session.definition.darkPrompt if session.mode == "dark" else session.definition.lightPrompt))
 	match kind:
 		"completed":
@@ -217,13 +217,16 @@ func refresh_view() -> void:
 			workspace.add_child(label("扫描台里还没放底片。301 的索引抽屉存着旧导视胶片。"))
 		"observation":
 			for trace: String in session.source.traces[session.puzzle_id]: workspace.add_child(label("• "+trace))
+		"activity":
+			workspace.add_child(label("操作现场装置",18,accent))
+			workspace.add_child(label("未完成的摆放会从这一处重新开始。可以随时返回现场。"))
 		"controls": _controls()
 	feedback_label = label(session.feedback,15,Color("9b3e2d") if session.mode == "light" else accent)
 	feedback_label.name = "DeviceFeedback"
 	feedback_label.visible = not session.feedback.is_empty()
 	workspace.add_child(feedback_label)
 	close_button.disabled = session.pending
-	submit_button.text = "返回现场" if kind != "controls" else ("正在核对…" if session.pending else "提交结果")
+	submit_button.text = ("正在打开…" if session.pending else "操作现场装置") if kind=="activity" else ("返回现场" if kind != "controls" else ("正在核对…" if session.pending else "提交结果"))
 	submit_button.disabled = session.pending or (kind == "controls" and not session.can_submit())
 	if is_inside_tree(): _restore_view.call_deferred(previous_scroll,_focus_key)
 

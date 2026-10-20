@@ -1,0 +1,333 @@
+{
+  "schema": "755-progressive-puzzles-acceptance-v1",
+  "verifiedAt": "2026-10-20T13:29:38.182Z",
+  "runtime": "independent-godot-native-and-web",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "baseCommit": "f963d47cbe31e5d799b405e36d4ad68cd97546fa",
+  "sourceWasDirtyAtValidation": true,
+  "sourceInputSha256": "2acb978c835f1016ecd1a3253e1c53a73970be8525e2634b06b9406e8006cf15",
+  "buildManifestSha256": "4c048bd404a3d50d42c47e4f72a064262fe6a9563637ca7c2159508b6dbe3b6a",
+  "privateCopy": {
+    "repository": "zhu607705-coder/7-55-godot-20261020",
+    "private": true,
+    "baselineCommit": "f963d47cbe31e5d799b405e36d4ad68cd97546fa",
+    "baselineTree": "3814d2fdba2f0173dd78edde384c59cf06bee58e",
+    "implementationBranch": "codex/progressive-world-puzzles-20261020"
+  },
+  "files": [
+    {
+      "path": "godot_native/assets/native/chapter3/dock_logistics_table.svg",
+      "sha256": "fe80158803885d90504874f3c03d107f6a21f1ae719db46c3167b49d635e0dea"
+    },
+    {
+      "path": "godot_native/data/native/progressive-transport-levels.json",
+      "sha256": "d29224a5ba7dfe43e2380eb2062e97a05ee92f074b96f15292491883f4964594"
+    },
+    {
+      "path": "godot_native/scripts/chapters/c3_lake.gd",
+      "sha256": "628533ae645564221a0fe0de23cdac863ea93d876a904b3bb6d21475b2c3c4d5"
+    },
+    {
+      "path": "godot_native/scripts/chapters/chapter4.gd",
+      "sha256": "0df104432d90a6848a6b5768b2f55cf0af5d2387bb4a88f676a2006eb0d05afd"
+    },
+    {
+      "path": "godot_native/scripts/games/progressive_transport.gd",
+      "sha256": "3d36eeff62badf6437dc8e375cb6622cd2b985a33a6f07d8f09cd7835067be18"
+    },
+    {
+      "path": "godot_native/scripts/games/progressive_transport_model.gd",
+      "sha256": "5190b240a4339c5acab55f9a1365ab251158359a22385c81ae59b70ec408a70c"
+    },
+    {
+      "path": "godot_native/scripts/main.gd",
+      "sha256": "bca598a62b9f756de878e936545e56fddd7c75002e6e1473cf71e6daf7c7e6c8"
+    },
+    {
+      "path": "godot_native/scripts/platform/web_platform.gd",
+      "sha256": "a5e3063251afdb6c7cbdf78d212572fba1ee899e043f0df775824e78f653c78e"
+    },
+    {
+      "path": "godot_native/scripts/state.gd",
+      "sha256": "5110dcce00bb5960f6b658649138cca0b4594d7a9ac17b801a06e01bdddbd28c"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_device_panel.gd",
+      "sha256": "faafbd2fb145fdac88417970daf469962ccdc42bb04e1b5362f8fcbb1f929bcf"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_device_session.gd",
+      "sha256": "b2abd6e1d8e3f6e0ee2c051cabdc0b8288f2df573c2fc817c39130b97b2050bb"
+    }
+  ],
+  "nativeSuites": [
+    {
+      "file": "regression-final.json",
+      "sha256": "7e9031450a81b4a1f5b26100257001ab5175e046e6a5e0b81e05ff2098f2a67f",
+      "passed": true,
+      "stages": 92,
+      "summaries": [
+        {
+          "label": "test_full_campaign.gd",
+          "summary": "CONTINUOUS CAMPAIGN chapters=[1, 2, 3, 4] failures=0"
+        },
+        {
+          "label": "test_progressive_transport_model.gd",
+          "summary": "PROGRESSIVE_TRANSPORT_MODEL: 447 checks, 0 failures"
+        },
+        {
+          "label": "test_progressive_transport_ui.gd",
+          "summary": "PROGRESSIVE_UI_RESULT {\"checks\":47,\"failures\":0,\"passed\":true}"
+        },
+        {
+          "label": "test_web_platform.gd",
+          "summary": "WEB_PLATFORM: 18 checks; 0 failures"
+        }
+      ],
+      "scope": "92 affected native stages before final portrait presentation changes"
+    },
+    {
+      "file": "presentation-final.json",
+      "sha256": "75bd9e3d464a7eda6f773f04570e969f851aa41600f59e896e3fbeb4202a671e",
+      "passed": true,
+      "stages": 6,
+      "summaries": [
+        {
+          "label": "test_progressive_transport_controller.gd",
+          "summary": "PROGRESSIVE_TRANSPORT_CONTROLLER 181 checks; 0 failures"
+        },
+        {
+          "label": "test_progressive_transport_model.gd",
+          "summary": "PROGRESSIVE_TRANSPORT_MODEL: 447 checks, 0 failures"
+        },
+        {
+          "label": "test_progressive_transport_ui.gd",
+          "summary": "PROGRESSIVE_UI_RESULT {\"checks\":56,\"failures\":0,\"passed\":true}"
+        },
+        {
+          "label": "test_progressive_transport_main.gd",
+          "summary": "PROGRESSIVE_TRANSPORT_MAIN 364 checks; 0 failures"
+        },
+        {
+          "label": "test_web_platform.gd",
+          "summary": "WEB_PLATFORM: 22 checks; 0 failures"
+        }
+      ],
+      "scope": "Focused production model/controller/view checks before the final objective-row restoration"
+    },
+    {
+      "file": "presentation-final-v2.json",
+      "sha256": "aca7b7251b42af37722eb6d1727c63068ca61458840319e3196512296035b889",
+      "passed": true,
+      "stages": 2,
+      "summaries": [
+        {
+          "label": "test_progressive_transport_main.gd",
+          "summary": "PROGRESSIVE_TRANSPORT_MAIN 360 checks; 0 failures"
+        },
+        {
+          "label": "test_progressive_transport_ui.gd",
+          "summary": "PROGRESSIVE_UI_RESULT {\"checks\":56,\"failures\":0,\"passed\":true}"
+        }
+      ],
+      "scope": "Final portrait UI and Main integration, including physical world entry"
+    },
+    {
+      "file": "campaign-final-v2.json",
+      "sha256": "454c9f304cfeaeb4040f0e95d50f67039fd3b1448b37ad245efe22f4549b2aaa",
+      "passed": true,
+      "stages": 1,
+      "summaries": [
+        {
+          "label": "test_full_campaign.gd",
+          "summary": "CONTINUOUS CAMPAIGN chapters=[1, 2, 3, 4] failures=0"
+        }
+      ],
+      "scope": "Final continuous native controller campaign across chapters 1–4"
+    },
+    {
+      "file": "web-geometry.json",
+      "sha256": "8eb1801c56ca31b3051590e52e3e9a8489818e6d9210d41dbd9eca2e8882db86",
+      "passed": true,
+      "stages": 1,
+      "summaries": [
+        {
+          "label": "test_web_platform.gd",
+          "summary": "WEB_PLATFORM: 22 checks; 0 failures"
+        }
+      ],
+      "scope": "Final read-only browser geometry bridge"
+    }
+  ],
+  "browserBasic": {
+    "report": "basic-six-v2/web-acceptance.json",
+    "sha256": "b39f6bde29a64bd32f904923d937869dabee349cd71a6a90991000bbc7614eda",
+    "success": true,
+    "checks": 737,
+    "cases": [
+      {
+        "id": "desktop-1280"
+      },
+      {
+        "id": "desktop-1440"
+      },
+      {
+        "id": "touch-390"
+      },
+      {
+        "id": "retina-1440"
+      },
+      {
+        "id": "retina-touch-390"
+      },
+      {
+        "id": "desktop-1920"
+      }
+    ]
+  },
+  "browserActivities": [
+    {
+      "engine": "chromium",
+      "report": "chromium-v2-attempt2/report.json",
+      "sha256": "ee0c55c4b033e122f25fc538f34ea8f64c42bf175d8de0f073f0ef30673b0983",
+      "success": true,
+      "sourceInputSha256": "2acb978c835f1016ecd1a3253e1c53a73970be8525e2634b06b9406e8006cf15",
+      "cases": [
+        {
+          "id": "desktop-dpr2",
+          "puzzles": [
+            "power_topology",
+            "evacuation_route",
+            "lake_logistics"
+          ],
+          "checks": 57,
+          "success": true,
+          "pageErrors": 0,
+          "consoleErrors": 0,
+          "requestErrors": 0
+        },
+        {
+          "id": "mobile-dpr3",
+          "puzzles": [
+            "power_topology",
+            "lake_logistics"
+          ],
+          "checks": 41,
+          "success": true,
+          "pageErrors": 0,
+          "consoleErrors": 0,
+          "requestErrors": 0
+        }
+      ]
+    },
+    {
+      "engine": "firefox",
+      "report": "firefox-v2-attempt2/report.json",
+      "sha256": "b4e0cb3aef40b05c60d72dcf210638e21bdd98d3009d60801e9f11da90e73bc5",
+      "success": true,
+      "sourceInputSha256": "2acb978c835f1016ecd1a3253e1c53a73970be8525e2634b06b9406e8006cf15",
+      "cases": [
+        {
+          "id": "desktop-dpr2",
+          "puzzles": [
+            "power_topology",
+            "evacuation_route",
+            "lake_logistics"
+          ],
+          "checks": 57,
+          "success": true,
+          "pageErrors": 0,
+          "consoleErrors": 0,
+          "requestErrors": 0
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "report": "webkit-v2-attempt2/report.json",
+      "sha256": "6d00a8c3f10b973a8be537e164d92303a8a65771e44a723457a17746ffb0100d",
+      "success": true,
+      "sourceInputSha256": "2acb978c835f1016ecd1a3253e1c53a73970be8525e2634b06b9406e8006cf15",
+      "cases": [
+        {
+          "id": "desktop-dpr2",
+          "puzzles": [
+            "power_topology",
+            "evacuation_route",
+            "lake_logistics"
+          ],
+          "checks": 57,
+          "success": true,
+          "pageErrors": 0,
+          "consoleErrors": 0,
+          "requestErrors": 0
+        },
+        {
+          "id": "mobile-dpr3",
+          "puzzles": [
+            "power_topology",
+            "lake_logistics"
+          ],
+          "checks": 41,
+          "success": true,
+          "pageErrors": 0,
+          "consoleErrors": 0,
+          "requestErrors": 0
+        }
+      ]
+    }
+  ],
+  "activityRunnerSha256": "4b0be3116b6d5a59181c3687bf8e90e83dcbdf79826b5b15cc0dae2ba8f845f5",
+  "pack": {
+    "initialPayloadBytes": 94580636,
+    "forbiddenCount": 0,
+    "resources": [
+      {
+        "path": ".godot/imported/dock_logistics_table.svg-a828081d813682927d988b6c850200e3.ctex",
+        "group": "chapter3_002",
+        "sha256": "ec9430891a0a62627e2efcb72ae626d6932d355fc61df38c12be72d7d6a7def6"
+      },
+      {
+        "path": "assets/native/chapter3/dock_logistics_table.svg.import",
+        "group": "chapter3_006",
+        "sha256": "d7313af98e977c827501db4a5e85252acac434e0800e564c78f59cad13436ca2"
+      },
+      {
+        "path": "data/native/progressive-transport-levels.json",
+        "group": "core",
+        "sha256": "d29224a5ba7dfe43e2380eb2062e97a05ee92f074b96f15292491883f4964594"
+      },
+      {
+        "path": "scripts/games/progressive_transport.gd.remap",
+        "group": "core",
+        "sha256": "bd28cca395e571abca68984c24aa7beeabc20092d33831315874b26d751a01ad"
+      },
+      {
+        "path": "scripts/games/progressive_transport.gdc",
+        "group": "core",
+        "sha256": "c247024991c88d296ac7506193cff84863683414e72032b4651dce2381ab3458"
+      },
+      {
+        "path": "scripts/games/progressive_transport_model.gd.remap",
+        "group": "core",
+        "sha256": "eab3b7033a8d9fd728952d35d81593a9c1cbea8a1381f6e1cd87fb2d0c676bbb"
+      },
+      {
+        "path": "scripts/games/progressive_transport_model.gdc",
+        "group": "core",
+        "sha256": "1be62e58160a266bb7b2bdd20e7c24cdf185e91dd78d77ffa697fca19df06537"
+      }
+    ]
+  },
+  "limits": [
+    "World entry fixtures are explicit validated test setup, not an earned manual traversal.",
+    "Native controller campaign and browser-emulated touch do not prove a full human playthrough, physical mobile hardware, Windows execution or older browser versions.",
+    "The new activities are a private branch candidate; this record does not assert a new public-site deployment."
+  ],
+  "historicalFailuresRetained": [
+    "Native UI attempts 1–3: emulated mouse ownership and nested touch geometry, fixed before passing focused runs.",
+    "Initial Main fixture stood on A3 while requesting A2 objects; changed setup to use the original four-stair controller handoff, not a weakened gate.",
+    "Intermediate test-only parse/fixture errors retained in continuity-attempt2.json.",
+    "Browser ad-hoc attempts with missing map focus/guessed world click coordinates and stale snapshot timing were retained; final runner uses observed camera and actual touch rectangles plus visible-state polling."
+  ]
+}

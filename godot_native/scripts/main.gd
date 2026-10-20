@@ -1753,6 +1753,20 @@ func _open_game(config: Dictionary) -> void:
 		return
 	_open_game_now(config)
 
+func _retire_progressive_game(owner: Control) -> void:
+	if not is_instance_valid(owner) or owner.get_meta("progressive_session_retired",false): return
+	var script: Script = owner.get_script()
+	if script == null or script.resource_path != "res://scripts/games/progressive_transport.gd": return
+	var request: Variant = owner.get("config")
+	if not request is Dictionary or request.get("kind","") != "progressive_transport": return
+	var session: Variant = request.get("session",{})
+	if not session is Dictionary: return
+	owner.set_meta("progressive_session_retired",true)
+	owner.dispose_presentation()
+	# This retires only this view's exact issued nonce. A replacement may have
+	# already issued a fresh nonce; it must survive retirement of its old view.
+	State.cancel_progressive_activity(str(request.get("on_cancel","")),{"session":session,"puzzleId":request.get("puzzleId","")})
+
 func _open_game_now(config: Dictionary) -> void:
 	if not await _content_ready(): return
 	# The source opens the real A1 doors before the registered lamp questions.
@@ -1771,9 +1785,12 @@ func _open_game_now(config: Dictionary) -> void:
 	_cancel_world_effect()
 	_close_modal()
 	if is_instance_valid(active_game):
+		_retire_progressive_game(active_game)
 		if active_game.has_method("dispose_presentation"):active_game.dispose_presentation()
 		active_game.queue_free()
 	var path := str(config.get("script","res://scripts/ui/minigame_host.gd"))
+	if config.get("kind","") == "progressive_transport":
+		path = "res://scripts/games/progressive_transport.gd"
 	if not ResourceLoader.exists(path):
 		_feedback("该原生小游戏尚未接入，剧情未前进。")
 		return
@@ -1816,6 +1833,9 @@ func _open_game_now(config: Dictionary) -> void:
 	if active_game.has_signal("cancelled"):
 		active_game.connect("cancelled",func():
 			if not is_instance_valid(owned_game) or active_game!=owned_game:return
+			# A world exercise owns a controller-issued nonce. Retire it before
+			# releasing its view; cancellation grants no progress or save receipt.
+			_retire_progressive_game(owned_game)
 			if owned_game.has_method("dispose_presentation"):owned_game.dispose_presentation()
 			if is_instance_valid(active_game): active_game.queue_free()
 			active_game = null
@@ -1887,6 +1907,7 @@ func _open_chase_film(stage: String) -> void:
 func _queue_chase_scene(stage: String,config: Dictionary) -> void:
 	_cancel_world_effect();_close_modal()
 	if is_instance_valid(active_game):
+		_retire_progressive_game(active_game)
 		if active_game.has_method("dispose_presentation"):active_game.dispose_presentation()
 		active_game.queue_free()
 	var loading: Control=load("res://scripts/presentation/chase_loading.gd").new()
@@ -1928,6 +1949,7 @@ func _queue_chase_scene(stage: String,config: Dictionary) -> void:
 func _open_chase_film_now(stage: String) -> void:
 	_cancel_world_effect();_close_modal()
 	if is_instance_valid(active_game):
+		_retire_progressive_game(active_game)
 		if active_game.has_method("dispose_presentation"):active_game.dispose_presentation()
 		active_game.queue_free()
 	var presenter: Control=load("res://scripts/presentation/chase_transition_3d_presenter.gd").new()
@@ -2244,7 +2266,9 @@ func _reset_runtime_presentations() -> void:
 	State.d.ui.controlCenterOpen=false
 	_close_modal(_room302_studio_active())
 	_cancel_world_effect()
-	if is_instance_valid(active_game): active_game.queue_free()
+	if is_instance_valid(active_game):
+		_retire_progressive_game(active_game)
+		active_game.queue_free()
 	active_game = null
 	if is_instance_valid(voice_player): voice_player.stop()
 	if is_instance_valid(audio_director):
@@ -2358,7 +2382,10 @@ func shutdown() -> void:
 	if is_instance_valid(library_story_host): library_story_host.reset(); library_story_host.set_process(false)
 	if is_instance_valid(c3_narrative_host): c3_narrative_host.reset(); c3_narrative_host.set_process(false)
 	_cancel_world_effect()
-	if is_instance_valid(active_game): active_game.queue_free(); active_game=null
+	if is_instance_valid(active_game):
+		_retire_progressive_game(active_game)
+		active_game.queue_free()
+		active_game=null
 	if is_instance_valid(voice_player): voice_player.stop(); voice_player.stream=null
 	if is_instance_valid(media_host): await media_host.shutdown()
 	if is_instance_valid(battery_prank): await battery_prank.shutdown()

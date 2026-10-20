@@ -1,0 +1,925 @@
+{
+  "version": 1,
+  "puzzles": {
+    "power_topology": {
+      "title": "五区线路",
+      "stages": [
+        {
+          "id": "power-1",
+          "title": "通过检验通道",
+          "objective": "通过检验通道",
+          "teachingGoal": "让触点替你留守，再亲自穿过通道",
+          "rows": [
+            "#########",
+            "#.......#",
+            "#.....###",
+            "#########"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 2,
+            "kind": "person"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 3,
+              "y": 2,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块",
+              "terrain": "land"
+            }
+          ],
+          "plates": [
+            {
+              "id": "a",
+              "x": 5,
+              "y": 2,
+              "label": "承重触点"
+            }
+          ],
+          "gates": [
+            {
+              "id": "g",
+              "x": 6,
+              "y": 1,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "a"
+              ],
+              "label": "联动通道"
+            }
+          ],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 2,
+              "label": "留守位"
+            }
+          ],
+          "goalTargets": [
+            "delivery"
+          ],
+          "checkpoints": [],
+          "requiredCheckpoints": [],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 7,
+            "y": 1
+          },
+          "hints": [
+            "人能暂时压住触点，离开以后通道会怎样？",
+            "物件能替人留在触点上；观察物件两侧是否留有站位。",
+            "通道打开后，还需要亲自走到出口。"
+          ],
+          "context": "北教 · 203 线路桌"
+        },
+        {
+          "id": "power-2",
+          "title": "完成线路检验并离场",
+          "objective": "完成线路检验并离场",
+          "teachingGoal": "相同触点，换一个可施力的方向",
+          "rows": [
+            "#########",
+            "#.......#",
+            "#.....###",
+            "#.....###",
+            "#.....###",
+            "#########"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 3,
+            "kind": "person"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 3,
+              "y": 3,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块",
+              "terrain": "land"
+            }
+          ],
+          "plates": [
+            {
+              "id": "a",
+              "x": 5,
+              "y": 2,
+              "label": "承重触点"
+            }
+          ],
+          "gates": [
+            {
+              "id": "g",
+              "x": 6,
+              "y": 1,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "a"
+              ],
+              "label": "联动通道"
+            }
+          ],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 2,
+              "label": "留守位"
+            }
+          ],
+          "goalTargets": [
+            "delivery"
+          ],
+          "checkpoints": [],
+          "requiredCheckpoints": [],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 7,
+            "y": 1
+          },
+          "hints": [
+            "触点没有变，接线块起点变了。",
+            "只能从接线块身后推动；先给自己留下绕行位置。",
+            "物件停稳以后，别把自己关在通道外。"
+          ],
+          "context": "北教 · 203 线路桌"
+        },
+        {
+          "id": "power-3",
+          "title": "恢复五区线路并完成检验",
+          "objective": "恢复五区线路并完成检验",
+          "teachingGoal": "接通五区线路，并从检验通道离场",
+          "rows": [
+            "##########",
+            "#........#",
+            "#......###",
+            "#......###",
+            "#......###",
+            "#......###",
+            "##########"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 4,
+            "kind": "person"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 3,
+              "y": 3,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块",
+              "terrain": "land"
+            },
+            {
+              "id": "d",
+              "x": 3,
+              "y": 5,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块乙",
+              "terrain": "land"
+            }
+          ],
+          "plates": [
+            {
+              "id": "a",
+              "x": 5,
+              "y": 2,
+              "label": "承重触点"
+            },
+            {
+              "id": "b",
+              "x": 5,
+              "y": 5,
+              "label": "回程触点"
+            }
+          ],
+          "gates": [
+            {
+              "id": "g",
+              "x": 7,
+              "y": 1,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "a",
+                "b"
+              ],
+              "label": "联动通道"
+            }
+          ],
+          "targets": [
+            {
+              "id": "relay_a",
+              "objectId": "c",
+              "x": 5,
+              "y": 2,
+              "label": "上层接点"
+            },
+            {
+              "id": "relay_b",
+              "objectId": "d",
+              "x": 5,
+              "y": 5,
+              "label": "下层接点"
+            }
+          ],
+          "goalTargets": [
+            "relay_a",
+            "relay_b"
+          ],
+          "checkpoints": [
+            {
+              "id": "verify",
+              "x": 6,
+              "y": 1,
+              "label": "线路检验",
+              "requiresTargets": [
+                "relay_a",
+                "relay_b"
+              ]
+            }
+          ],
+          "requiredCheckpoints": [
+            "verify"
+          ],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 8,
+            "y": 1
+          },
+          "hints": [
+            "两块接线块共同维持检验通道。",
+            "电路由实际压住的接点决定，空着的接点保持断开。",
+            "确认线路后，检验者也必须离场。"
+          ],
+          "connections": [
+            {
+              "id": "hall__west_corridor",
+              "contact": {
+                "x": 5,
+                "y": 2
+              }
+            },
+            {
+              "id": "hall__east_corridor",
+              "contact": {
+                "x": 5,
+                "y": 2
+              }
+            },
+            {
+              "id": "west_corridor__bakery_back_area",
+              "contact": {
+                "x": 5,
+                "y": 2
+              }
+            },
+            {
+              "id": "east_corridor__classroom_zone",
+              "contact": {
+                "x": 5,
+                "y": 5
+              }
+            },
+            {
+              "id": "bakery_back_area__classroom_zone",
+              "contact": {
+                "x": 5,
+                "y": 5
+              }
+            },
+            {
+              "id": "west_corridor__east_corridor",
+              "contact": {
+                "x": 2,
+                "y": 2
+              }
+            },
+            {
+              "id": "hall__classroom_zone",
+              "contact": {
+                "x": 2,
+                "y": 5
+              }
+            }
+          ],
+          "expectedConnections": [
+            "hall__west_corridor",
+            "hall__east_corridor",
+            "west_corridor__bakery_back_area",
+            "east_corridor__classroom_zone",
+            "bakery_back_area__classroom_zone"
+          ],
+          "circuitZones": [
+            "hall",
+            "west_corridor",
+            "east_corridor",
+            "bakery_back_area",
+            "classroom_zone"
+          ],
+          "context": "北教 · 203 线路桌"
+        }
+      ]
+    },
+    "evacuation_route": {
+      "title": "往返疏散",
+      "stages": [
+        {
+          "id": "evac-1",
+          "title": "取回记录并回到入口",
+          "objective": "取回记录并回到入口",
+          "teachingGoal": "保持通道开放，抵达记录点后返回入口",
+          "rows": [
+            "#########",
+            "#.......#",
+            "#.....###",
+            "#########"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 2,
+            "kind": "person"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 3,
+              "y": 2,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块",
+              "terrain": "land"
+            }
+          ],
+          "plates": [
+            {
+              "id": "a",
+              "x": 5,
+              "y": 2,
+              "label": "承重触点"
+            }
+          ],
+          "gates": [
+            {
+              "id": "g",
+              "x": 6,
+              "y": 1,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "a"
+              ],
+              "label": "联动通道"
+            }
+          ],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 2,
+              "label": "留守位"
+            }
+          ],
+          "goalTargets": [
+            "delivery"
+          ],
+          "checkpoints": [
+            {
+              "id": "sample",
+              "x": 7,
+              "y": 1,
+              "label": "路线记录",
+              "requiresTargets": [
+                "delivery"
+              ]
+            }
+          ],
+          "requiredCheckpoints": [
+            "sample"
+          ],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 1,
+            "y": 2
+          },
+          "hints": [
+            "取到记录不是终点，还要能回到原处。",
+            "先观察通道由谁留守，再考虑人的往返。",
+            "记录点亮后沿仍然开放的路线返回入口。"
+          ],
+          "context": "北教 · 自习区疏散板"
+        },
+        {
+          "id": "evac-2",
+          "title": "带回记录与工具",
+          "objective": "带回记录与工具",
+          "teachingGoal": "记录以后回收同一块工具，再回到入口",
+          "rows": [
+            "#########",
+            "#.......#",
+            "#......##",
+            "#......##",
+            "#......##",
+            "#########"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 3,
+            "kind": "person"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 3,
+              "y": 3,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块",
+              "terrain": "land"
+            }
+          ],
+          "plates": [
+            {
+              "id": "a",
+              "x": 5,
+              "y": 2,
+              "label": "承重触点"
+            }
+          ],
+          "gates": [
+            {
+              "id": "g",
+              "x": 6,
+              "y": 1,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "a"
+              ],
+              "label": "联动通道"
+            }
+          ],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 2,
+              "label": "临时留守"
+            },
+            {
+              "id": "home",
+              "objectId": "c",
+              "x": 3,
+              "y": 4,
+              "label": "回收位"
+            }
+          ],
+          "goalTargets": [
+            "home"
+          ],
+          "checkpoints": [
+            {
+              "id": "sample",
+              "x": 7,
+              "y": 1,
+              "label": "路线记录",
+              "requiresTargets": [
+                "delivery"
+              ]
+            }
+          ],
+          "requiredCheckpoints": [
+            "sample"
+          ],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 1,
+            "y": 3
+          },
+          "hints": [
+            "临时留守位和最终回收位不同。",
+            "回收时仍需要站在物件的另一侧，先查看通道旁的空地。",
+            "记录保留下来，工具和人都需要回家。"
+          ],
+          "context": "北教 · 自习区疏散板"
+        },
+        {
+          "id": "evac-3",
+          "title": "完成疏散路线记录后离场",
+          "objective": "完成疏散路线记录后离场",
+          "teachingGoal": "依次验证四处路线，让人和工具都能撤回",
+          "rows": [
+            "############",
+            "#.....#....#",
+            "#..........#",
+            "#.....#....#",
+            "#.....#....#",
+            "#..........#",
+            "#.....#....#",
+            "############"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 4,
+            "kind": "person"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 3,
+              "y": 2,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块",
+              "terrain": "land"
+            },
+            {
+              "id": "d",
+              "x": 3,
+              "y": 5,
+              "width": 1,
+              "height": 1,
+              "role": "module",
+              "label": "接线块乙",
+              "terrain": "land"
+            }
+          ],
+          "plates": [
+            {
+              "id": "a",
+              "x": 5,
+              "y": 3,
+              "label": "承重触点"
+            },
+            {
+              "id": "b",
+              "x": 8,
+              "y": 4,
+              "label": "回程触点"
+            }
+          ],
+          "gates": [
+            {
+              "id": "g_a",
+              "x": 6,
+              "y": 2,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "a"
+              ],
+              "label": "联动通道"
+            },
+            {
+              "id": "g_b",
+              "x": 6,
+              "y": 5,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "b"
+              ],
+              "label": "联动通道"
+            }
+          ],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 3,
+              "label": "临时留守"
+            },
+            {
+              "id": "relay",
+              "objectId": "d",
+              "x": 8,
+              "y": 4,
+              "label": "回程接点"
+            },
+            {
+              "id": "recovered",
+              "objectId": "c",
+              "x": 3,
+              "y": 5,
+              "label": "工具回收"
+            }
+          ],
+          "goalTargets": [
+            "relay",
+            "recovered"
+          ],
+          "checkpoints": [
+            {
+              "id": "lecture_202_door",
+              "x": 2,
+              "y": 4,
+              "label": "202 门口",
+              "requiresTargets": []
+            },
+            {
+              "id": "east_corridor",
+              "x": 5,
+              "y": 2,
+              "label": "东走廊",
+              "requiresTargets": []
+            },
+            {
+              "id": "transport_core",
+              "x": 9,
+              "y": 2,
+              "label": "交通核",
+              "requiresTargets": [
+                "relay"
+              ]
+            },
+            {
+              "id": "main_stair_down",
+              "x": 2,
+              "y": 6,
+              "label": "主楼梯下行",
+              "requiresTargets": [
+                "relay",
+                "recovered"
+              ]
+            }
+          ],
+          "requiredCheckpoints": [
+            "lecture_202_door",
+            "east_corridor",
+            "transport_core",
+            "main_stair_down"
+          ],
+          "orderedCheckpoints": true,
+          "exit": {
+            "x": 1,
+            "y": 6
+          },
+          "hints": [
+            "记录点的顺序来自现场路线，不能在列表里填答案。",
+            "去程开口不一定能完成回收；留住另一处开口的操作侧。",
+            "最后一处记录需要回程接点和已回收工具，人仍需走到出口。"
+          ],
+          "context": "北教 · 自习区疏散板"
+        }
+      ]
+    },
+    "lake_logistics": {
+      "title": "码头往返",
+      "localOnly": true,
+      "stages": [
+        {
+          "id": "lake-1",
+          "title": "驶出练习水道",
+          "objective": "驶出练习水道",
+          "teachingGoal": "让浮台留住水道，船再通过",
+          "rows": [
+            "#########",
+            "#~~~~~~~#",
+            "#~~~~~###",
+            "#########"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 2,
+            "kind": "boat"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 3,
+              "y": 2,
+              "width": 1,
+              "height": 1,
+              "role": "floating_tool",
+              "label": "浮台",
+              "terrain": "water"
+            }
+          ],
+          "plates": [
+            {
+              "id": "a",
+              "x": 5,
+              "y": 2,
+              "label": "停泊感应位"
+            }
+          ],
+          "gates": [
+            {
+              "id": "g",
+              "x": 6,
+              "y": 1,
+              "width": 1,
+              "height": 1,
+              "requires": [
+                "a"
+              ],
+              "label": "联动通道"
+            }
+          ],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 2,
+              "label": "停泊位"
+            }
+          ],
+          "goalTargets": [
+            "delivery"
+          ],
+          "checkpoints": [],
+          "requiredCheckpoints": [],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 7,
+            "y": 1
+          },
+          "hints": [
+            "浮台和船都能占住感应位，离开后水道会关闭。",
+            "船可以从浮台旁绕行，浮台只能从接触的一侧推动。",
+            "浮台停好以后，船也要穿过水道。"
+          ],
+          "context": "启真湖 · 码头练习"
+        },
+        {
+          "id": "lake-2",
+          "title": "运送浮台并到达终点",
+          "objective": "运送浮台并到达终点",
+          "teachingGoal": "船能过窄口，宽浮台需要另一条水路",
+          "rows": [
+            "##########",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "##~##~~###",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "##########"
+          ],
+          "actor": {
+            "x": 2,
+            "y": 1,
+            "kind": "boat"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 2,
+              "y": 2,
+              "width": 2,
+              "height": 1,
+              "role": "floating_tool",
+              "label": "浮台",
+              "terrain": "water"
+            }
+          ],
+          "plates": [],
+          "gates": [],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 6,
+              "label": "送达位"
+            }
+          ],
+          "goalTargets": [
+            "delivery"
+          ],
+          "checkpoints": [
+            {
+              "id": "delivery_receipt",
+              "x": 7,
+              "y": 6,
+              "label": "送达记录",
+              "requiresTargets": [
+                "delivery"
+              ]
+            }
+          ],
+          "requiredCheckpoints": [
+            "delivery_receipt"
+          ],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 8,
+            "y": 7
+          },
+          "hints": [
+            "船和浮台占用的宽度不同。",
+            "不要只检查船能否过去，还要检查整个浮台的两格空间。",
+            "送达以后，船需要绕开浮台走到出口。"
+          ],
+          "context": "启真湖 · 码头练习"
+        },
+        {
+          "id": "lake-3",
+          "title": "完成送达记录后返回码头",
+          "objective": "完成送达记录后返回码头",
+          "teachingGoal": "同一浮台送达后回收，船返回起点",
+          "rows": [
+            "##########",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "##~##~~###",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "#~~~~~~~~#",
+            "##########"
+          ],
+          "actor": {
+            "x": 1,
+            "y": 1,
+            "kind": "boat"
+          },
+          "objects": [
+            {
+              "id": "c",
+              "x": 2,
+              "y": 2,
+              "width": 2,
+              "height": 1,
+              "role": "floating_tool",
+              "label": "浮台",
+              "terrain": "water"
+            }
+          ],
+          "plates": [],
+          "gates": [],
+          "targets": [
+            {
+              "id": "delivery",
+              "objectId": "c",
+              "x": 5,
+              "y": 6,
+              "label": "临时送达"
+            },
+            {
+              "id": "home",
+              "objectId": "c",
+              "x": 2,
+              "y": 2,
+              "label": "原停泊位"
+            }
+          ],
+          "goalTargets": [
+            "home"
+          ],
+          "checkpoints": [
+            {
+              "id": "delivery_receipt",
+              "x": 7,
+              "y": 6,
+              "label": "送达记录",
+              "requiresTargets": [
+                "delivery"
+              ]
+            }
+          ],
+          "requiredCheckpoints": [
+            "delivery_receipt"
+          ],
+          "orderedCheckpoints": false,
+          "exit": {
+            "x": 1,
+            "y": 1
+          },
+          "hints": [
+            "送达的记录会保留，但浮台还要回到原位。",
+            "回收需要站到浮台另一边；先检查水路和两侧空位。",
+            "浮台归位以后，船也要返回起点。"
+          ],
+          "context": "启真湖 · 码头练习"
+        }
+      ]
+    }
+  }
+}

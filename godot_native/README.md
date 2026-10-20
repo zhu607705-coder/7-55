@@ -12,6 +12,14 @@ The local complete-integration candidate combines the #152 continuity chain, #11
 
 ## Open locally
 
+The 2026-10-20 progressive world-puzzle branch adds two existing A2 device
+activities and a replayable optional Qizhen dock exercise. Their design,
+original progression boundaries and acceptance requirements are recorded in
+[Progressive world puzzles](docs/PROGRESSIVE_WORLD_PUZZLES_20261020.md).
+The [acceptance ledger](docs/PROGRESSIVE_WORLD_PUZZLES_ACCEPTANCE_20261020.json)
+identifies the tested source, actual browser runs and remaining limits.
+The dock exercise does not award story items or become a required chapter gate.
+
 1. A downloaded self-contained source ZIP already includes `assets/` and `data/source/`: open its `project.godot` directly. For a Git checkout only, run `node godot_native/tools/sync_source.mjs` from repository root to copy original assets/JSON and export source initial state. Copies are build inputs, intentionally excluded from Git.
 2. Install Godot 4.6.3 from https://godotengine.org/download/archive/4.6.3-stable/ . Open `godot_native/project.godot`.
 3. Wait for the one-time asset import, then press F6/F5 or run `godot --path godot_native`.
