@@ -19,7 +19,7 @@ const monolithic = args.includes('--monolithic');
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const relative = file => path.relative(project, file).split(path.sep).join('/');
 const limits = { siteBytes: 950_000_000, packBytes: 800_000_000, wasmBytes: 70_000_000, deferredPackBytes: CONTENT_PACK_LIMIT };
-const deliveryTools = ['tools/build_web.mjs', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs'];
+const deliveryTools = ['tools/build_web.mjs', 'tools/convert_media.sh', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs'];
 const browserSources = ['web/index.html', 'web/content_loader.js'];
 const excludedPrefixes = ['docs/', 'tests/', 'tools/', 'verification/', 'exports/', 'web/', '.screenshots/', 'examples/', 'samples/', 'assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/'];
 const excludedSuffixes = ['.mp4', '.md', '.log', '.blend', '.blend1', '.py', '.ts', '.mjs'];
@@ -27,8 +27,8 @@ function excluded(name) {
   name = name.replace(/^res:\/\//, '');
   return excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn';
 }
-function run(command, commandArgs, capture = false) {
-  const result = spawnSync(command, commandArgs, { cwd: root, encoding: 'utf8', stdio: capture ? 'pipe' : 'inherit', maxBuffer: 16 * 1024 * 1024 });
+function run(command, commandArgs, capture = false, environment = process.env) {
+  const result = spawnSync(command, commandArgs, { cwd: root, env: environment, encoding: 'utf8', stdio: capture ? 'pipe' : 'inherit', maxBuffer: 16 * 1024 * 1024 });
   if (result.error || result.status !== 0) throw new Error(`${command} failed (${result.status}): ${result.error || result.stderr || ''}`);
   return capture ? result.stdout.trim() : '';
 }
@@ -105,7 +105,7 @@ if (!verifyOnly) {
   if (!actual.startsWith(version)) throw new Error(`Godot must be ${version}, found ${actual}`);
   if (!args.includes('--skip-prepare')) {
     run(process.execPath, ['godot_native/tools/sync_source.mjs']);
-    run('bash', ['godot_native/tools/convert_media.sh']);
+    run('bash', ['godot_native/tools/convert_media.sh'], false, { ...process.env, NODE_BIN: process.execPath });
   }
   for (const required of ['assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf', 'data/source/items.config.json', 'assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv', 'assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.ogv']) {
     if (!fs.existsSync(path.join(project, required))) throw new Error(`Build input missing: ${required}; run without --skip-prepare`);

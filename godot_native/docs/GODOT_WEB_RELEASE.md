@@ -15,6 +15,8 @@ GODOT_BIN=/Applications/Godot.app/Contents/MacOS/Godot node godot_native/tools/b
 
 构建脚本同步源资产/JSON，使用现有 `convert_media.sh` 转换剧情影片，导入 Godot 资源后运行 `--export-release 'Web production'`。必须安装 ffmpeg。Linux 可使用 `GODOT_BIN=godot` 或默认的 `godot`。Node 固定 22.23.3，满足同步工具的 TypeScript 源模型解析需求。导入/导出使用 quiet 模式，完整日志保存在 `exports/verification/godot-web-build/`；检测到 `SCRIPT ERROR:` 或 `ERROR:` 时，即使 Godot 返回码为 0 也拒绝发布。
 
+媒体转换同时需要 FFmpeg 自带的 `ffprobe`。先保持 Theora q8；只有实际文件超过 23,500,000 字节才逐级降低视频编码质量，最低 q4 仍超预算则拒绝。不截时、删帧、变速、缩放或删除音轨；完整帧数、尺寸、帧率、时长和音轨后检通过后才原子替换生成 OGV，原 MP4 保留。可用 `FFMPEG_BIN`、`FFPROBE_BIN` 指定已有工具；构建脚本将自身 Node 路径通过 `NODE_BIN` 传入转换器，避免桌面应用 PATH 缺少 Node 时失败。转换器本身也纳入发布源摘要。
+
 父进程已完成准备/导入且没有其他 Godot 进程写同一工程时，可用 `--skip-prepare --skip-import`。这两个参数不会生成遗漏的输入，脚本会验证关键输入存在。重复构建加 `--replace`，先将既有目录重命名为带时间戳的备份。不要并行导入或导出同一工程。
 
 默认输出 `godot_native/exports/web-release/`；可用 `--output=godot_native/exports/<独立目录>` 指定工程 exports 内的目录。只检查已有产物：
