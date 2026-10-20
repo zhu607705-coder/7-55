@@ -43,6 +43,23 @@ var _observed_page: String = ""
 var _observed_runtime: Dictionary = {}
 var _paused_prefixes: Dictionary = {}
 var _retiring_playbacks: Array = []
+var _platform_pause_at: int = -1
+var _platform_paused_ms: int = 0
+
+func presentation_clock() -> int:
+	# The browser may keep its audio thread running after rAF is suspended.
+	# Use one active-time clock for cue offsets, cutoffs and overlapping prefixes.
+	return (_platform_pause_at if _platform_pause_at >= 0 else Time.get_ticks_msec()) - _platform_paused_ms
+
+func pause_for_platform() -> bool:
+	if _platform_pause_at >= 0: return false
+	_platform_pause_at = Time.get_ticks_msec()
+	return true
+
+func resume_from_platform() -> void:
+	if _platform_pause_at < 0: return
+	_platform_paused_ms += Time.get_ticks_msec() - _platform_pause_at
+	_platform_pause_at = -1
 
 func setup(reader: Callable) -> void:
 	read_state = reader
@@ -57,10 +74,10 @@ func setup(reader: Callable) -> void:
 			for entry in _scene_entry(state): cue(entry.cueId, entry.get("payload", {}))
 
 func _process(_delta: float) -> void:
-	if not _ready_to_play: return
+	if not _ready_to_play or _platform_pause_at >= 0: return
 	_refresh_settings()
 	if _retiring_playbacks.size() > 64: _retiring_playbacks = _retiring_playbacks.filter(func(ref: WeakRef) -> bool: return ref.get_ref() != null)
-	var now: int = Time.get_ticks_msec()
+	var now: int = presentation_clock()
 	var ready: Array = []
 	var waiting: Array = []
 	for pending in scheduled:
@@ -274,11 +291,11 @@ func cue(id: String, payload: Dictionary = {}) -> void:
 			if played_once.has(once_key): continue
 			played_once[once_key] = true
 		_sequence += 1
-		scheduled.append({"id":id,"cue":item,"at":Time.get_ticks_msec() + maxi(0, int(item.get("offsetMs", 0))),"sequence":_sequence})
+		scheduled.append({"id":id,"cue":item,"at":presentation_clock() + maxi(0, int(item.get("offsetMs", 0))),"sequence":_sequence})
 
 func schedule_cue(id: String, payload: Dictionary, delay_ms: float) -> void:
 	_sequence+=1
-	scheduled.append({"id":id,"trigger":payload.duplicate(true),"at":Time.get_ticks_msec()+maxi(0,int(delay_ms)),"sequence":_sequence})
+	scheduled.append({"id":id,"trigger":payload.duplicate(true),"at":presentation_clock()+maxi(0,int(delay_ms)),"sequence":_sequence})
 
 func _release_token(token: String) -> void:
 	emitted_this_turn.erase(token)
@@ -295,10 +312,10 @@ func _queue_theater_dialogue(id: String, inspect_after: bool=false) -> void:
 	var lines: Array=source.get("theaterDialogue",{}).get(id,[])
 	for line in lines:
 		_sequence+=1
-		scheduled.append({"id":"native_theater_dialogue_"+id,"story":line.duplicate(true),"at":Time.get_ticks_msec()+int(line.offsetMs),"sequence":_sequence})
+		scheduled.append({"id":"native_theater_dialogue_"+id,"story":line.duplicate(true),"at":presentation_clock()+int(line.offsetMs),"sequence":_sequence})
 	if inspect_after and not lines.is_empty():
 		var last: Dictionary=lines[-1]
-		scheduled.append({"id":"native_theater_dialogue_inspect","inspect":"decoyPaper","at":Time.get_ticks_msec()+int(last.offsetMs)+int(last.durationMs)+120,"sequence":_sequence})
+		scheduled.append({"id":"native_theater_dialogue_inspect","inspect":"decoyPaper","at":presentation_clock()+int(last.offsetMs)+int(last.durationMs)+120,"sequence":_sequence})
 
 func _finite_number(value: Variant) -> bool:
 	return (value is int or value is float) and is_finite(float(value))
@@ -506,7 +523,7 @@ func _play_voice(item: Dictionary) -> void:
 	voice = _player("voice", asset, stream, item); voice_asset = asset
 	var gain: float = float(item.get("volume", 1)); voice.set_meta("gain", gain); _set_volume(voice, gain)
 	# Whole files finish on the audio clock; only explicit excerpts have a cutoff.
-	voice_deadline = Time.get_ticks_msec() + maxi(1, int(duration)) if item.has("durationMs") else -1
+	voice_deadline = presentation_clock() + maxi(1, int(duration)) if item.has("durationMs") else -1
 	voice_duck = clampf(float(item.duckMusicTo), 0, 1) if item.has("duckMusicTo") else -1.0
 	_apply_music_volume()
 	voice.finished.connect(stop_voice)
@@ -524,7 +541,7 @@ func _play_effect(item: Dictionary, id: String) -> void:
 	if stream == null: stream = _tone_stream(item.tone) if item.get("tone") is Dictionary else _stream(asset, bool(item.get("loop", false)))
 	if stream == null: return
 	var player: AudioStreamPlayer = _player("sfx", asset, stream, item)
-	var entry: Dictionary = {"player":player,"asset":asset,"id":id,"gain":float(item.get("volume", .8)),"deadline":Time.get_ticks_msec()+maxi(1,int(item.durationMs)) if item.has("durationMs") else -1,"bus":""}
+	var entry: Dictionary = {"player":player,"asset":asset,"id":id,"gain":float(item.get("volume", .8)),"deadline":presentation_clock()+maxi(1,int(item.durationMs)) if item.has("durationMs") else -1,"bus":""}
 	if item.has("pan"):
 		var bus_name: String = "NativeCue_" + str(get_instance_id()) + "_" + str(player.get_instance_id())
 		AudioServer.add_bus(); var index: int = AudioServer.bus_count - 1
@@ -556,19 +573,19 @@ func _owned_players(prefix: String) -> Array:
 
 func pause_prefix(prefix: String) -> void:
 	if _paused_prefixes.has(prefix): return
-	_paused_prefixes[prefix] = Time.get_ticks_msec()
+	_paused_prefixes[prefix] = presentation_clock()
 	for player in _owned_players(prefix): player.stream_paused = true
 
 func resume_prefix(prefix: String) -> void:
 	if not _paused_prefixes.has(prefix): return
-	var duration: int = Time.get_ticks_msec() - int(_paused_prefixes[prefix])
+	var duration: int = presentation_clock() - int(_paused_prefixes[prefix])
 	_paused_prefixes.erase(prefix)
 	for pending in scheduled:
 		if str(pending.id).begins_with(prefix): pending.at += duration
 	if is_instance_valid(voice) and str(voice.get_meta("cue_id", "")).begins_with(prefix) and voice_deadline >= 0: voice_deadline += duration
 	for entry in effects:
 		if str(entry.id).begins_with(prefix) and int(entry.deadline) >= 0: entry.deadline += duration
-	for player in _owned_players(prefix): player.stream_paused = false
+	for player in _owned_players(prefix): player.stream_paused = _platform_pause_at >= 0
 
 func stop_prefix(prefix: String) -> void:
 	cancel_scheduled(prefix); _paused_prefixes.erase(prefix)
@@ -685,7 +702,7 @@ func _rose(previous: Dictionary, next: Dictionary, path: String) -> bool:
 func _native_effect(asset: String, gain: float = .8) -> void:
 	# Exact Sfx callsites exported by identifier, never arbitrary filename guessing.
 	_sequence += 1
-	scheduled.append({"id":"legacy_sfx_"+asset,"cue":{"channel":"sfx","asset":asset,"volume":gain},"at":Time.get_ticks_msec(),"sequence":_sequence})
+	scheduled.append({"id":"legacy_sfx_"+asset,"cue":{"channel":"sfx","asset":asset,"volume":gain},"at":presentation_clock(),"sequence":_sequence})
 
 func _mapped_cue(id: String, payload: Dictionary = {}) -> void:
 	# An explicit controller event supersedes this compatibility adapter, even if

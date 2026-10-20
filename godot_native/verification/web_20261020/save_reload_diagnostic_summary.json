@@ -1,0 +1,164 @@
+{
+  "schema": "755-godot-web-save-reload-diagnostic-v1",
+  "smallFast": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_import_fast_probe_20261020/web-acceptance.json",
+      "reportSha256": "ff7c910dd2c5db11d294841a43807e2a0f00fbe0c23c6240b9353736cbf01c0b",
+      "runnerSha256": "24a208108d09e8ba7032367869ac864ca35f4f352abe4b29214bde6ff5ae3845",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": true,
+      "checksPassed": 50,
+      "checksTotal": 50,
+      "casesPassed": 1,
+      "casesTotal": 1,
+      "startedAt": "2026-10-20T03:00:24.346Z",
+      "completedAt": "2026-10-20T03:00:46.909Z"
+    },
+    "observations": {
+      "settleMs": 0,
+      "importedObservedAt": 1792465242998,
+      "reloadRequestedAt": 1792465243001,
+      "beforeReloadChapter": 2,
+      "beforeReloadPage": "zjuding",
+      "beforeReloadDigest": "38d7ddc76383852b1609161e5356e8209920bc7fce4028437fafac8bdbd78cac",
+      "afterReloadChapter": 2,
+      "afterReloadPage": "zjuding",
+      "afterReloadDigest": "38d7ddc76383852b1609161e5356e8209920bc7fce4028437fafac8bdbd78cac",
+      "oldDocumentTimeOrigin": 1792465233592.2,
+      "newDocumentTimeOrigin": 1792465243007.2
+    },
+    "timingNote": "Importer already waits 350ms after first accepted snapshot. This earlier runner timestamped observation after that wait, so observed-to-reload milliseconds are not total commit latency."
+  },
+  "smallSettledControl": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_import_settled_probe_20261020/web-acceptance.json",
+      "reportSha256": "d5e4fa7c00c7740c5fdfbd9670457a013a877264a884e279e696b7679e711d08",
+      "runnerSha256": "24a208108d09e8ba7032367869ac864ca35f4f352abe4b29214bde6ff5ae3845",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": true,
+      "checksPassed": 50,
+      "checksTotal": 50,
+      "casesPassed": 1,
+      "casesTotal": 1,
+      "startedAt": "2026-10-20T03:02:34.259Z",
+      "completedAt": "2026-10-20T03:02:58.289Z"
+    },
+    "observations": {
+      "settleMs": 1600,
+      "importedObservedAt": 1792465372786,
+      "reloadRequestedAt": 1792465374389,
+      "beforeReloadChapter": 2,
+      "beforeReloadPage": "zjuding",
+      "beforeReloadDigest": "09391a4b22a8b0b1a79073a3f80f184b35fea9f8ad7bcdc1313c0df561fb4164",
+      "afterReloadChapter": 2,
+      "afterReloadPage": "zjuding",
+      "afterReloadDigest": "09391a4b22a8b0b1a79073a3f80f184b35fea9f8ad7bcdc1313c0df561fb4164",
+      "oldDocumentTimeOrigin": 1792465363555.7,
+      "newDocumentTimeOrigin": 1792465374395.1
+    }
+  },
+  "earlyC4ToBikeFastSwitch": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_import_switch_probe_20261020/web-acceptance.json",
+      "reportSha256": "fd03cd9886b104fa6a8b6e27e0cf2ba543eed3b1bf8f57a31ae269cf1d3a285f",
+      "runnerSha256": "0ad27e2f179c74433e3dcc5fbc4addcb6323304ffe0d42822b063d9c46d0f5f1",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": true,
+      "checksPassed": 59,
+      "checksTotal": 59,
+      "casesPassed": 1,
+      "casesTotal": 1,
+      "startedAt": "2026-10-20T03:04:36.499Z",
+      "completedAt": "2026-10-20T03:05:05.603Z"
+    },
+    "observations": {
+      "mode": "earlier-C4-map-to-earned-bike",
+      "extraSettleMs": 0,
+      "firstAcceptedAt": 1792465500908,
+      "observedAt": 1792465501260,
+      "beforeReloadAt": 1792465501264,
+      "memoryChapter": 3,
+      "memoryPage": "c3_canteen",
+      "memorySaveDigest": "27430d69bdf3248662542bfd588572e779178b32631d796173e2e56fd478880c",
+      "priorDisk": {
+        "readDurationMs": 1.7000000029802322,
+        "entries": [
+          {
+            "database": "/userfs",
+            "key": "/userfs/SevenFiftyFiveNative/save.json",
+            "bytes": 31680,
+            "sha256": "ebf51e37e91a496e8cfa9c357271d99ffd62dc50ff422c190817563212124467",
+            "chapter": 4,
+            "page": "c4_notes",
+            "scene": "duan_yongping_temporal_maze",
+            "canteenPhase": "theater_reached"
+          },
+          {
+            "database": "/userfs",
+            "key": "/userfs/SevenFiftyFiveNative/save.previous.json",
+            "bytes": 11818,
+            "sha256": "249bb6ae7b6aa28dceaa8b0f95d7f6baf9efc93d92c3220143f0d5197996f3fa",
+            "chapter": 1,
+            "page": "phone_home",
+            "scene": "",
+            "canteenPhase": "tracking"
+          }
+        ]
+      },
+      "beforeReloadDisk": {
+        "readDurationMs": 0.9000000059604645,
+        "entries": [
+          {
+            "database": "/userfs",
+            "key": "/userfs/SevenFiftyFiveNative/save.json",
+            "bytes": 23740,
+            "sha256": "27430d69bdf3248662542bfd588572e779178b32631d796173e2e56fd478880c",
+            "chapter": 3,
+            "page": "c3_canteen",
+            "scene": "campus_bootstrap",
+            "canteenPhase": "chasing"
+          },
+          {
+            "database": "/userfs",
+            "key": "/userfs/SevenFiftyFiveNative/save.previous.json",
+            "bytes": 23740,
+            "sha256": "27430d69bdf3248662542bfd588572e779178b32631d796173e2e56fd478880c",
+            "chapter": 3,
+            "page": "c3_canteen",
+            "scene": "campus_bootstrap",
+            "canteenPhase": "chasing"
+          }
+        ]
+      },
+      "oldDocumentTimeOrigin": 1792465496518.3,
+      "newDocumentTimeOrigin": 1792465501265.8,
+      "afterReloadChapter": 3,
+      "afterReloadPhase": "chasing",
+      "afterReloadSaveDigest": "27430d69bdf3248662542bfd588572e779178b32631d796173e2e56fd478880c"
+    },
+    "reloadAfterFirstAcceptedMs": 356,
+    "conclusion": "Both IndexedDB FILE_DATA primary and backup already contained the same chapter-3 chasing bytes as the engine saveDigest before reload, and a new document restored that digest/route. Correct early-C4 fixture had no active game."
+  },
+  "historicalUnresolvedObservation": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_accepted_full_20261020/web-acceptance.json",
+      "reportSha256": "c85b19de9546684b483f445973cf6366c9a8d6fdb72330f74779c453e704630d",
+      "runnerSha256": "d4e5036943dc7650e0bb20d8bec249fe3c6ebb553902c010d883021077dafd6a",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": false,
+      "checksPassed": 124,
+      "checksTotal": 124,
+      "casesPassed": 0,
+      "casesTotal": 1,
+      "startedAt": "2026-10-20T02:48:23.333Z",
+      "completedAt": "2026-10-20T02:54:38.938Z"
+    },
+    "classification": "Not a confirmed GPU failure or proven engine data loss.",
+    "facts": "An earlier run used late action_c4_checkin_card.json as a map fixture; it actually starts legitimate star-lamp closure. Bike import appeared accepted, but immediate reload returned to the late C4 lamp and the SourceChase3D wait timed out. No console/page errors; failure screenshot succeeded. Proper small-save and early-C4-map fast switches did not reproduce this.",
+    "resolution": "Retain original failed evidence and timing/owner ambiguity. Final complete matrix uses correct early action_c4_prologue_end.json; bike import settles and asserts chapter/phase after a real reload before GPU evaluation. No speculative storage-engine or progression patch was made for the anomaly."
+  },
+  "limitations": [
+    "Godot Web storage synchronizes asynchronously; these probes do not guarantee survival of forced browser/process termination before the IndexedDB transaction completes.",
+    "Successful normal reload and byte-level durable-file observation do not prove every storage-denial/private-mode condition."
+  ]
+}

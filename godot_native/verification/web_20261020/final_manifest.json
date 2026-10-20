@@ -1,0 +1,96 @@
+{
+  "schema": "755-godot-web-final-acceptance-index-v1",
+  "recordedAt": "2026-10-20T03:14:59.500978+00:00",
+  "status": "accepted-local-artifact-passed",
+  "runtime": "Independent Godot Web, not React/Phaser",
+  "testedArtifact": {
+    "directory": "godot_native/exports/web-release-accepted",
+    "engine": "4.7.2.stable.official",
+    "sourceCommit": "fe3f1a9d33a84b69d4a5217370ea2ea66feaba8f",
+    "sourceDirty": true,
+    "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+    "buildManifestSha256": "0be676c80c973c5cc0a1e0c35347519694ec15235d4df0ad7e8e892906873853",
+    "totalPayloadBytes": 579262228,
+    "pack": {
+      "format": 4,
+      "engine": "4.7.2",
+      "flags": 2,
+      "files": 2654,
+      "inventorySha256": "d54771fe7ce9cdcc0a3b041ac640e648125e46652564266b56267afa020bd2a1"
+    },
+    "assets": [
+      {
+        "url": "http://127.0.0.1:5209/7-55/index.wasm",
+        "bytes": 39514754,
+        "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
+      },
+      {
+        "url": "http://127.0.0.1:5209/7-55/index.pck",
+        "bytes": 539428704,
+        "sha256": "de9d88937ef29f5a98de380219d0f7b1c01382e1fa4f0da3064e2e03a1e14454"
+      }
+    ]
+  },
+  "fullAcceptance": {
+    "reportPath": "godot_native/exports/verification/godot_web_accepted_final_full_20261020/web-acceptance.json",
+    "reportSha256": "1bf41dd4e09729f2b2bae93eca5c3931f935357d54ab88d015ad242183465abf",
+    "runnerSha256": "0ad27e2f179c74433e3dcc5fbc4addcb6323304ffe0d42822b063d9c46d0f5f1",
+    "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+    "passed": true,
+    "checksPassed": 242,
+    "checksTotal": 242,
+    "casesPassed": 3,
+    "casesTotal": 3,
+    "startedAt": "2026-10-20T03:04:47.459Z",
+    "completedAt": "2026-10-20T03:09:18.147Z"
+  },
+  "ciEquivalentBasic": {
+    "reportPath": "godot_native/exports/verification/godot_web_accepted_ci_20261020/web-acceptance.json",
+    "reportSha256": "9eb4e23171fb78410863dc0723c5df4935f2e5f0107d3142510d3bd4eb32103b",
+    "runnerSha256": "d4e5036943dc7650e0bb20d8bec249fe3c6ebb553902c010d883021077dafd6a",
+    "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+    "passed": true,
+    "checksPassed": 106,
+    "checksTotal": 106,
+    "casesPassed": 3,
+    "casesTotal": 3,
+    "startedAt": "2026-10-20T02:56:05.361Z",
+    "completedAt": "2026-10-20T02:57:07.520Z"
+  },
+  "summaries": [
+    {
+      "path": "full_pass_summary.json",
+      "sha256": "16a79e99c446a081fdae57959b5c919c4bfc0e7ac62e0b7efbc6533bcfa7db71"
+    },
+    {
+      "path": "ci_basic_summary.json",
+      "sha256": "630bc97594fbaf5682198911f68ccaad9635a50b81c44572e8c238449aadfff7"
+    },
+    {
+      "path": "visibility_regression_summary.json",
+      "sha256": "30e091c468fe95a6409eafb8cd45bc650b06e2e38d87bf987719fd6c29ca9923"
+    },
+    {
+      "path": "save_reload_diagnostic_summary.json",
+      "sha256": "b0532fc91c84eca04b0002eaad68fe9107f20d4538a5a384e10f5de9a5ebb0fd"
+    },
+    {
+      "path": "reviewed_visual_summary.json",
+      "sha256": "33a1f18b1453bf36c4e3fde79d698e6bfc87016b48476c271237819da98db967"
+    }
+  ],
+  "freshPrepareComparison": {
+    "path": "fresh_prepare_comparison.json",
+    "sha256": "d934bef545a68034dd4c8c365d8820ce6ca82b7bb574b7bf31561b60c297cc37",
+    "meaning": "Fresh sync did not change accepted consumed runtime bytes, but adds an unconsumed JSON duplicate. Clean CI artifact will have its own source/PCK digest and needs actual deployed-artifact verification; it is not byte-identical by assertion."
+  },
+  "scopeLimits": [
+    "No React tests or headless native tests are counted as Godot-in-browser acceptance.",
+    "No fresh manual full-campaign, physical mobile, minimum supported browser-version, human-audibility or full 755m ride completion claim.",
+    "Only Chromium evidence is indexed here. Firefox/WebKit and actual computer-use review are separate root-owned reports.",
+    "Parent commit fe3f1a9d prior CI successes do not prove these dirty-source Web fixes. Exact source input digest identifies this tested artifact; delivery commit and fresh CI build require separate provenance.",
+    "Root accidental broad native invocation without GODOT_BIN produced ENOENT and is invalid evidence; it is not counted as a pass. See godot_native/exports/verification/godot_web_20261020/root_validation_invocation_correction.json.",
+    "Keep the historical near-ending lamp import/reload anomaly and asynchronous persistence limits recorded in save_reload_diagnostic_summary.json."
+  ],
+  "screenshotPolicy": "Only reviewed/authorized screenshots were removed with hash receipts. No large screenshot or raw log is included in this tracked index."
+}

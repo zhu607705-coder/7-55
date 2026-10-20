@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN" data-boot-state="loading">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101e28">
+  <meta name="seven55-runtime" content="godot-web">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%23101e28'/%3E%3Ctext%20x='32'%20y='46'%20text-anchor='middle'%20font-family='sans-serif'%20font-size='44'%20fill='%23f1f0e5'%3E7%3C/text%3E%3C/svg%3E">
+  <title>7:55</title>
+  $GODOT_HEAD_INCLUDE
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; background: #101e28; color: #f1f0e5; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
+    #canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: none; }
+    #loading { position: fixed; inset: 0; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px)); background: #101e28; }
+    #loading[hidden] { display: none; }
+    .card { width: min(100%, 420px); text-align: center; }
+    .clock { font-size: clamp(56px, 16vw, 84px); font-variant-numeric: tabular-nums; font-weight: 300; letter-spacing: .04em; margin: 0 0 24px; }
+    #loading-message { line-height: 1.7; margin: 12px 0; white-space: pre-line; }
+    #loading-detail { color: #adbbb7; font-size: 14px; line-height: 1.6; min-height: 2em; overflow-wrap: anywhere; }
+    progress { display: block; width: 100%; height: 7px; margin: 24px 0; accent-color: #b6d5bf; }
+    progress[hidden] { display: none; }
+    button { min-height: 48px; min-width: 160px; padding: 12px 28px; border: 1px solid #c5d5ca; border-radius: 8px; background: #e8eee3; color: #17352d; font: inherit; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #e7bf71; outline-offset: 4px; }
+    button[hidden] { display: none; }
+    button:disabled { opacity: .65; cursor: wait; }
+    noscript { position: fixed; inset: 0; display: grid; place-items: center; background: #101e28; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" tabindex="0" aria-label="7:55 游戏画面"></canvas>
+  <section id="loading" aria-label="游戏加载">
+    <div class="card">
+      <h1 class="clock">07:55</h1>
+      <p id="loading-message" role="status" aria-live="polite">正在准备游戏…</p>
+      <progress id="loading-progress" aria-label="游戏加载进度"></progress>
+      <p id="loading-detail">首次加载需要一些时间，请保持页面打开。</p>
+      <button id="start-game" type="button" hidden>进入游戏</button>
+      <button id="retry-game" type="button" hidden>重新加载</button>
+    </div>
+  </section>
+  <noscript>请启用 JavaScript 后重新打开游戏。</noscript>
+  <script src="$GODOT_URL" onerror="document.documentElement.dataset.loaderFailed='true'"></script>
+  <script>
+    'use strict';
+    (function () {
+      const canvas = document.getElementById('canvas');
+      const loading = document.getElementById('loading');
+      const message = document.getElementById('loading-message');
+      const detail = document.getElementById('loading-detail');
+      const progress = document.getElementById('loading-progress');
+      const start = document.getElementById('start-game');
+      const retry = document.getElementById('retry-game');
+      let failed = false;
+      function fail(error) {
+        if (failed) return;
+        failed = true;
+        document.documentElement.dataset.bootState = 'error';
+        loading.hidden = false;
+        start.hidden = true;
+        progress.hidden = true;
+        retry.hidden = false;
+        message.textContent = '游戏暂时未能打开';
+        detail.textContent = '请检查网络后重试；若仍无法打开，请尝试更新浏览器。';
+        console.error('[7:55 Godot Web]', error);
+      }
+      retry.addEventListener('click', function () { window.location.reload(); });
+      canvas.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+      canvas.addEventListener('webglcontextlost', function (event) {
+        event.preventDefault();
+        fail(new Error('WebGL context lost'));
+      });
+      if (typeof Engine === 'undefined') {
+        fail(new Error('Godot engine loader unavailable'));
+        return;
+      }
+      if (!Engine.isWebGLAvailable(2) || typeof WebAssembly === 'undefined') {
+        fail(new Error('WebGL 2 and WebAssembly are required'));
+        detail.textContent = '当前浏览器无法运行游戏。请使用支持 WebGL 2 的新版浏览器，并开启图形加速。';
+        return;
+      }
+      const config = $GODOT_CONFIG;
+      // No URL arguments, developer routes, iframe, or alternate runtime.
+      config.args = [];
+      config.canvas = canvas;
+      config.canvasResizePolicy = 2;
+      config.ensureCrossOriginIsolationHeaders = false;
+      config.onProgress = function (current, total) {
+        if (failed) return;
+        if (total > 0) {
+          progress.max = total;
+          progress.value = current;
+          detail.textContent = Math.floor(current / total * 100) + '% · ' + (current / 1048576).toFixed(1) + ' / ' + (total / 1048576).toFixed(1) + ' MB';
+        } else {
+          progress.removeAttribute('value');
+          detail.textContent = '已接收 ' + (current / 1048576).toFixed(1) + ' MB';
+        }
+      };
+      config.onExit = function (code) {
+        if (code !== 0) fail(new Error('Godot exited with code ' + code));
+      };
+      const engine = new Engine(config);
+      const pack = config.mainPack || config.executable + '.pck';
+      message.textContent = '正在加载游戏…';
+      // Complete asynchronous downloads before requesting the user's gesture.
+      // Starting from this button lets Godot unlock browser audio on interaction.
+      Promise.all([engine.init(config.executable), engine.preloadFile(pack, pack)]).then(function () {
+        if (failed) return;
+        document.documentElement.dataset.bootState = 'ready';
+        message.textContent = '准备好了';
+        detail.textContent = '点击进入，开始这一天。';
+        progress.hidden = true;
+        start.hidden = false;
+        start.focus();
+      }).catch(fail);
+      start.addEventListener('click', function () {
+        if (failed || start.disabled) return;
+        start.disabled = true;
+        message.textContent = '正在进入游戏…';
+        engine.start({ args: ['--main-pack', pack] }).then(function () {
+          if (failed) return;
+          document.documentElement.dataset.bootState = 'running';
+          loading.hidden = true;
+          canvas.focus();
+        }).catch(fail);
+      });
+    }());
+  </script>
+</body>
+</html>

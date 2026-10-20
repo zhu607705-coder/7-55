@@ -21,6 +21,12 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 
 State="*res://scripts/state.gd"
 
+[audio]
+
+; The native director mixes authored tones and per-cue effect buses. Keep that
+; same mixer on Web; sample playback does not support its effect graph.
+general/default_playback_type.web=0
+
 [display]
 
 window/size/viewport_width=1440

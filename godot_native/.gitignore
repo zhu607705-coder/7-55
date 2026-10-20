@@ -13,3 +13,9 @@ data/source/
 
 # Godot-generated import metadata is rebuilt from portable source assets.
 *.import
+# Untracked script UIDs are generated on a clean import as well. Existing
+# committed UIDs stay tracked; new path-based scripts need no random UID input.
+*.uid
+# GLB import extracts these embedded textures; authored tracked textures remain
+# tracked and are still included in Web and native exports.
+assets/native/stair_b/*_pixel_albedo.png

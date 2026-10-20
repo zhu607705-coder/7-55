@@ -1,5 +1,17 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-10-20 真正 Godot 浏览器交付适配
+
+- 用户明确要求网站运行 Godot 迁移版。先前 `49332ec` 的网站是保留的 React/Phaser 构建，不作为 Godot 发布或 Godot 验收证据。
+- 新增独立 Godot 4.7.2 Compatibility 单线程 Web 生产预设、中文启动页、可复现导出及 Pages 构建管线；不挂载 React 或旧 iframe 混合实现。正式生产继续关闭章节跳转和原型入口，保留主线及三个独立校园漫游。
+- Web 文件选择、JSON/PNG 下载及原网页存档迁移复用现有严格 State 校验。原网页 localStorage 主存档和备份仅在玩家明确操作后导入，原始字节保留；Godot 自动存档使用 IndexedDB。运行状态接口只有返回副本的只读 snapshot。
+- 首轮真实 WASM/PCK 已通过 Chrome、Firefox、WebKit 的启动/输入/刷新恢复及触控模拟；CUA 实际进入 Godot 主线并操作闹钟和手机主页。具体记录见 `godot_native/exports/verification/godot_web_20261020/` 及各分项目录。实体手机、旧浏览器与听感不能由这些模拟覆盖。
+- 媒体专项真实发现旧包后台循环音轨仍推进，循环感知的有效负控保留。最终适配通过浏览器 visibilitychange 同步暂停原生音轨，并以排除后台时间的演出时钟保存既有 cue prefix 与手动暂停所有权；原生针对性 4769 项通过，最终 Wasm 的循环解包音频／OGV 后台恢复及三维追逐输入专项通过。不能采用早期弱判据的音频暂停结论。
+- 本地最终导出 runtime 输入 SHA-256 为 `0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62`，PCK 为 `de9d88937ef29f5a98de380219d0f7b1c01382e1fa4f0da3064e2e03a1e14454`，主要启动资源 579262228 字节。此未提交构建如实标记 dirty；远端 CI 必须从提交重新构建、验收并记录自己产物，不伪改本地来源，也不假设跨平台影片编码字节完全相同。
+- 快速普通存档导入三组对照通过；合法早期 C4 地图到 C3 骑行档在约 350ms 后直接读取 IndexedDB 的主／备份摘要，与内存摘要及真实刷新后的摘要完全一致。早期章末灯夹具后的一次时序异常未独立复现，保留原始记录；本轮没有据此改动 Godot 内核异步同步机制，也不宣称任意瞬间关页均有事务确认。
+- 最终本地完整浏览器矩阵 `242/242`、三个视口通过，覆盖六词三阶段及中断长按、C1→C2、C3／剧场／湖畔衔接、C4 真实 A1、三维骑行、原网页显式迁移、JSON／PNG、触控及真实刷新；报告 SHA-256 `1bf41dd4e09729f2b2bae93eca5c3931f935357d54ab88d015ad242183465abf`。Firefox／WebKit 基础桌面与触控模拟 4 例 56 项通过，WebKit 协议模拟真实 visibility 状态的媒体恢复 21 项通过；Firefox 自动化固定前台状态未覆盖后台验收。线上 CI／部署结果单独记录于发布 PR；部署前不将本地测试写为线上通过。实体手机、旧 Safari、听感、完整四章连续人工通关和首次约 579MB 下载体验仍未验收。
+- 构建与验收方法分别见 [Godot Web 发布说明](godot_native/docs/GODOT_WEB_RELEASE.md)、[浏览器验收说明](godot_native/docs/WEB_EXPORT_ACCEPTANCE.md)、[平台边界](godot_native/docs/WEB_PLATFORM_BRIDGE.md)。来源清单、真实 PCK/WASM 哈希和 CI 发布结果独立记录；旧 Web 回滚来源保留。
+
 ## 2026-10-20 网站上线与原生局部反馈回归修复
 
 - 用户明确确认只额外允许 `codex/godot-complete-20261019` 发布；原网址已以精确 `49332ec` 通过 Pages #4 上线，主分支未合并。线上 436 资源／876 HTTP、四个生产场景、C1 24 项与 C4 真地图就绪通过；旧版保留可回滚。

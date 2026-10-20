@@ -1,0 +1,40 @@
+{
+  "schema": "755-godot-web-reviewed-visual-summary-v1",
+  "bike": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_accepted_bike_20261020/web-acceptance.json",
+      "reportSha256": "21a7e0b9c07cd8c0bba4b56d7538b010f56c0a568cbd23c5fc4b3346ee0ae916",
+      "runnerSha256": "d63f294587e910cffa512ecc59282ca0e5cfe66600963ffeff3f2d3f697d7360",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": true,
+      "checksPassed": 60,
+      "checksTotal": 60,
+      "casesPassed": 1,
+      "casesTotal": 1,
+      "startedAt": "2026-10-20T02:58:06.972Z",
+      "completedAt": "2026-10-20T02:58:41.562Z"
+    },
+    "review": "Root viewed original GLB bicycle road/pedestrians/obstacles and visible jump, nonblank rendering, normal proportions, real changing 32m HUD. Presented flag alone is not proof of pixel output.",
+    "cleanupReceipt": "godot_native/exports/verification/godot_web_accepted_bike_20261020/screenshot-cleanup.json",
+    "cleanupReceiptSha256": "e7292ae8cdda6955f271c00d4754eb4ca0fa12bf7af3b1ee5251e748f0562dab"
+  },
+  "earlyC4Map": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_accepted_final_full_20261020/web-acceptance.json",
+      "reportSha256": "1bf41dd4e09729f2b2bae93eca5c3931f935357d54ab88d015ad242183465abf",
+      "runnerSha256": "0ad27e2f179c74433e3dcc5fbc4addcb6323304ffe0d42822b063d9c46d0f5f1",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": true,
+      "checksPassed": 242,
+      "checksTotal": 242,
+      "casesPassed": 3,
+      "casesTotal": 3,
+      "startedAt": "2026-10-20T03:04:47.459Z",
+      "completedAt": "2026-10-20T03:09:18.147Z"
+    },
+    "review": "Root viewed early C4 A1 map screenshot and confirmed layout normal.",
+    "cleanupReceipt": "godot_native/exports/verification/godot_web_accepted_final_full_20261020/screenshot-cleanup.json",
+    "cleanupReceiptSha256": "f807dfbc8e758fc01d1607160a90987e8d9b1ae9b02df0e7c2d47837617f3ca9"
+  },
+  "scope": "These are the specifically reviewed screenshots; this file does not label every automated capture as manually reviewed."
+}

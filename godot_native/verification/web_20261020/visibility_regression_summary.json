@@ -1,0 +1,169 @@
+{
+  "schema": "755-godot-web-visibility-regression-v1",
+  "method": "Actual browser background/foreground and real engine playback positions. Unwrap the 3.12-second tune loop; hidden interval is shorter than its period. Cached paused flags and negative raw deltas are not pause evidence. Polling and visible transition overhead are included in the reported deltas; this does not claim zero elapsed samples.",
+  "effectiveOldNegative": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_final_media_loopaware_20261020/web-acceptance.json",
+      "reportSha256": "f555b4100409957bcbf349000e972d2c02ceb5aa87cfe739aaad8af375c18747",
+      "runnerSha256": "7e443a644699fcda595a90960b3d27b7dbede44b8cd08644bc00b1229c200239",
+      "sourceInputSha256": "3c4b435d5ce80bc04394d99855e584b8826796bd49e8d0d2cc05777fe091f27f",
+      "passed": false,
+      "checksPassed": 37,
+      "checksTotal": 38,
+      "casesPassed": 0,
+      "casesTotal": 1,
+      "startedAt": "2026-10-20T02:31:59.701Z",
+      "completedAt": "2026-10-20T02:32:26.693Z"
+    },
+    "failedAssertion": "real hidden-tab interval does not advance the native audio playhead",
+    "observations": {
+      "hiddenMs": 2382,
+      "audioAdvanceSeconds": 2.41066681861877,
+      "beforeVideo": {
+        "name": "@VideoStreamPlayer@374",
+        "paused": false,
+        "playing": true,
+        "position": 2.6093,
+        "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+      },
+      "hiddenCachedVideo": {
+        "name": "@VideoStreamPlayer@374",
+        "paused": false,
+        "playing": true,
+        "position": 2.6093,
+        "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+      },
+      "afterVideo": {
+        "name": "@VideoStreamPlayer@374",
+        "paused": false,
+        "playing": true,
+        "position": 3.24163333333333,
+        "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+      },
+      "beforeAudio": {
+        "name": "Chiptune_0",
+        "paused": false,
+        "playing": true,
+        "position": 2.6693332195282,
+        "stream": ""
+      },
+      "afterAudio": {
+        "name": "Chiptune_0",
+        "paused": false,
+        "playing": true,
+        "position": 1.96000003814697,
+        "stream": ""
+      }
+    },
+    "loopLengthSeconds": 3.12,
+    "classification": "Confirmed old-package audio clock advanced by 2.411s over a 2.382s hidden interval; actual product lifecycle regression, fixed before accepted package.",
+    "pckSha256": "34f31faafe31a243d107ab67bb6810b4396a95a5c88b794b0122a9a639685d25"
+  },
+  "fixedPositive": {
+    "evidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_visibility_fixed_media_20261020/web-acceptance.json",
+      "reportSha256": "0bb0b57b983e2be7b6b6b99c5ace38af3ed2c38c3433531af48cc9706edaeb8b",
+      "runnerSha256": "d4e5036943dc7650e0bb20d8bec249fe3c6ebb553902c010d883021077dafd6a",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": true,
+      "checksPassed": 61,
+      "checksTotal": 61,
+      "casesPassed": 1,
+      "casesTotal": 1,
+      "startedAt": "2026-10-20T02:46:58.347Z",
+      "completedAt": "2026-10-20T02:47:37.164Z"
+    },
+    "observations": {
+      "hiddenMs": 2368,
+      "audioAdvanceSeconds": 0.4906667125225086,
+      "beforeVideo": {
+        "name": "@VideoStreamPlayer@374",
+        "paused": false,
+        "playing": true,
+        "position": 2.64216666666666,
+        "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+      },
+      "hiddenCachedVideo": {
+        "name": "@VideoStreamPlayer@374",
+        "paused": false,
+        "playing": true,
+        "position": 2.87549999999999,
+        "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+      },
+      "afterVideo": {
+        "name": "@VideoStreamPlayer@374",
+        "paused": false,
+        "playing": true,
+        "position": 3.25913333333333,
+        "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+      },
+      "beforeAudio": {
+        "asset": "procedural_chiptune",
+        "channel": "chiptune",
+        "cueId": "",
+        "length": 3.12,
+        "name": "Chiptune_0",
+        "paused": false,
+        "playing": true,
+        "position": 2.70133328437805,
+        "stream": ""
+      },
+      "afterAudio": {
+        "asset": "procedural_chiptune",
+        "channel": "chiptune",
+        "cueId": "",
+        "length": 3.12,
+        "name": "Chiptune_0",
+        "paused": false,
+        "playing": true,
+        "position": 0.0719999969005585,
+        "stream": ""
+      }
+    },
+    "exactC4PrefixFromFullRun": {
+      "before": {
+        "asset": "music_ch4_prologue_h3_44s",
+        "channel": "music",
+        "cueId": "chapter4_prologue_started",
+        "length": 44,
+        "name": "Music_1",
+        "paused": false,
+        "playing": true,
+        "position": 2.6354649066925,
+        "stream": ""
+      },
+      "after": {
+        "asset": "music_ch4_prologue_h3_44s",
+        "channel": "music",
+        "cueId": "chapter4_prologue_started",
+        "length": 44,
+        "name": "Music_1",
+        "paused": false,
+        "playing": true,
+        "position": 3.13759636878967,
+        "stream": ""
+      }
+    },
+    "fullRunEvidence": {
+      "reportPath": "godot_native/exports/verification/godot_web_accepted_final_full_20261020/web-acceptance.json",
+      "reportSha256": "1bf41dd4e09729f2b2bae93eca5c3931f935357d54ab88d015ad242183465abf",
+      "runnerSha256": "0ad27e2f179c74433e3dcc5fbc4addcb6323304ffe0d42822b063d9c46d0f5f1",
+      "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+      "passed": true,
+      "checksPassed": 242,
+      "checksTotal": 242,
+      "casesPassed": 3,
+      "casesTotal": 3,
+      "startedAt": "2026-10-20T03:04:47.459Z",
+      "completedAt": "2026-10-20T03:09:18.147Z"
+    }
+  },
+  "invalidEarlierEvidence": [
+    "The earlier raw-delta media playhead report is not valid pause proof because wraparound produced a misleading negative delta.",
+    "A cached hidden snapshot reporting paused=false/true does not prove live playback because rAF publication may stop."
+  ],
+  "limitations": [
+    "No human audio audibility claim.",
+    "Visible audio growth before background and preserved audio clock over background are verified; a separate post-return audio-resumption growth interval was not independently asserted. Video resumption/re-entry was asserted."
+  ]
+}

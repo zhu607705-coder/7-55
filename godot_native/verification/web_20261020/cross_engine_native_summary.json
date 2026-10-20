@@ -1,0 +1,143 @@
+{
+  "schema": "755-root-cross-engine-native-evidence-v1",
+  "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+  "crossEngine": {
+    "reportPath": "godot_native/exports/verification/godot_web_engines_20261020/accepted-summary.json",
+    "sha256": "524b42e5bde20219ab39122bc68e9f0baaebd7099087ae7f37a64f54a973c806",
+    "core": {
+      "passed": true,
+      "cases": 4,
+      "checks": 56,
+      "engines": [
+        {
+          "id": "firefox-desktop",
+          "browser": "157.0"
+        },
+        {
+          "id": "firefox-touch",
+          "browser": "157.0"
+        },
+        {
+          "id": "webkit-desktop",
+          "browser": "27.2"
+        },
+        {
+          "id": "webkit-touch",
+          "browser": "27.2"
+        }
+      ]
+    },
+    "foregroundMedia": {
+      "passed": true,
+      "checkCount": 4,
+      "note": "Actual Godot OGV and looping audio playheads advance in Firefox and WebKit."
+    },
+    "webkitVisibility": {
+      "passed": true,
+      "checks": 21,
+      "method": "WebKit browser protocol Emulation.setActiveAndFocused; engine state simulation, not physical Safari tab",
+      "measurements": {
+        "hiddenAndForegroundMs": 2144,
+        "hiddenWaitMs": 1500,
+        "foregroundWaitMs": 600,
+        "audioLength": 3.12,
+        "audioAdvanceSeconds": 0.7893334627151498,
+        "videoAdvanceSeconds": 0.9099999999999899,
+        "beforeAudio": {
+          "asset": "procedural_chiptune",
+          "channel": "chiptune",
+          "cueId": "",
+          "length": 3.12,
+          "name": "Chiptune_0",
+          "paused": false,
+          "playing": true,
+          "position": 1.58133327960968,
+          "stream": ""
+        },
+        "hiddenAudio": {
+          "asset": "procedural_chiptune",
+          "channel": "chiptune",
+          "cueId": "",
+          "length": 3.12,
+          "name": "Chiptune_0",
+          "paused": true,
+          "playing": false,
+          "position": 0,
+          "stream": ""
+        },
+        "afterAudio": {
+          "asset": "procedural_chiptune",
+          "channel": "chiptune",
+          "cueId": "",
+          "length": 3.12,
+          "name": "Chiptune_0",
+          "paused": false,
+          "playing": true,
+          "position": 2.37066674232483,
+          "stream": ""
+        },
+        "beforeVideo": {
+          "name": "@VideoStreamPlayer@374",
+          "paused": false,
+          "playing": true,
+          "position": 1.57366666666667,
+          "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+        },
+        "afterVideo": {
+          "name": "@VideoStreamPlayer@374",
+          "paused": false,
+          "playing": true,
+          "position": 2.48366666666666,
+          "stream": "res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"
+        }
+      },
+      "report": "accepted_webkit_protocol_final/engines-acceptance.json",
+      "sha256": "10515e8d35f43ac13d5b54d554fb61b0459983fc8eb5ef66b72db7abb998b710"
+    },
+    "firefoxVisibility": {
+      "status": "not_verified",
+      "reason": "Playwright keeps both tabs visible/focused even with focusmanager.testmode=false; no JS visibility event or property was fabricated.",
+      "probe": "accepted_final/visibility-harness-probe.json",
+      "officialProtocol": "https://github.com/microsoft/playwright/blob/main/browser_patches/firefox/juggler/protocol/Protocol.js"
+    }
+  },
+  "nativeFocused": {
+    "reportPath": "godot_native/exports/verification/godot_web_visibility_20261020/native-final.json",
+    "sha256": "3dac8819e424764ad132a3595d812b31635ced1f820dbad89153affc0fa8e5ae",
+    "passed": true,
+    "checks": 4769,
+    "stages": [
+      {
+        "label": "test_audio_director.gd",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_native_surface_save.gd",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_prologue_focus_input.gd",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_web_platform.gd",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_web_visibility.gd",
+        "failed": false,
+        "status": 0
+      }
+    ],
+    "scope": "AudioDirector, surface, prologue focus input, Web platform, Web visibility; does not substitute for actual browser coverage."
+  },
+  "limitations": [
+    "Protocol-based WebKit27.2 and Firefox157 tests are not physical Safari/iPhone or minimum-version acceptance.",
+    "Final source patches are dirty on parentfe; published CI source and artifact require separate verification.",
+    "No listening-quality or human continuous four-chapter playthrough claim."
+  ]
+}

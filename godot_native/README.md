@@ -1,6 +1,8 @@
 # 7:55 — native Godot migration (work in progress)
 
-This is an independent, native Godot 4.6 migration of the existing game. It uses Godot Controls and Canvas rendering, not a browser, WebView, Phaser wrapper or remote service. Original web source and delivery remain available at repository root.
+This is an independent Godot migration of the existing game. It uses Godot Controls and Canvas rendering, with the same controllers available to native executables and a standalone Godot WebAssembly export. Original React/Phaser source and build tools remain available at repository root as a separate behavioral reference.
+
+The browser delivery uses pinned Godot 4.7.2 Web templates and the production `Web production` preset. It has no React host or WebView. See [Godot Web build and release](docs/GODOT_WEB_RELEASE.md), [browser acceptance](docs/WEB_EXPORT_ACCEPTANCE.md), and [browser storage/media boundaries](docs/WEB_PLATFORM_BRIDGE.md). A native test pass does not replace actual browser acceptance; touch emulation does not replace physical-device testing.
 
 **Status:** playable native migration under verification, not feature-complete and not a release candidate. Authored story/data/assets are retained, but native behavior, layouts, save compatibility and end-to-end chapter progression require the acceptance work recorded in `docs/INDEPENDENT_PARITY_AUDIT.md`. A rendered page or a chapter action list is not evidence of gameplay parity.
 

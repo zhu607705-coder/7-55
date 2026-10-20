@@ -55,6 +55,7 @@ var active_game: Control
 var font: Font
 var file_dialog: FileDialog
 var export_mode := false
+var web_platform: Node
 var rebuild_pending := false
 var backdrop: ColorRect
 var _screenshot_requested := false
@@ -138,6 +139,12 @@ func _ready() -> void:
 	_resume_world_activity.call_deferred()
 	_resume_recovered_replay.call_deferred()
 	_focus_world_surface.call_deferred()
+	if OS.has_feature("web"):
+		web_platform = preload("res://scripts/platform/web_platform.gd").new()
+		web_platform.name = "WebPlatform"
+		add_child(web_platform)
+		web_platform.import_finished.connect(_feedback)
+		web_platform.setup(self, State)
 	for arg in OS.get_cmdline_user_args():
 		if not State.developer_tools_available(): break
 		if arg.begins_with("--preview="):
@@ -1518,6 +1525,10 @@ func _show_form(action: Dictionary) -> void:
 	))
 
 func _show_file_dialog(saving: bool) -> void:
+	if is_instance_valid(web_platform):
+		if saving: _feedback("已发起存档下载。" if web_platform.export_save() == OK else "导出失败，进度仍保留。")
+		else: web_platform.request_import()
+		return
 	export_mode=saving
 	file_dialog.file_mode=FileDialog.FILE_MODE_SAVE_FILE if saving else FileDialog.FILE_MODE_OPEN_FILE
 	if saving: file_dialog.current_file="7-55-native-save.json"
@@ -1533,6 +1544,8 @@ func _show_settings() -> void:
 	box.add_child(_button("保存进度",func(): _feedback("已保存" if State.save_game() else "测试会话不覆盖正式存档")))
 	box.add_child(_button("导出存档",func(): _show_file_dialog(true)))
 	box.add_child(_button("导入存档",func(): _show_file_dialog(false)))
+	if is_instance_valid(web_platform) and web_platform.legacy_save_available():
+		box.add_child(_button("导入原网页存档",func(): _feedback(str(web_platform.import_legacy_save().message))))
 	box.add_child(_button("重新开始",func():
 		var confirm := _modal_base("确认重新开始？")
 		confirm.add_child(_label("将重置故事进度。此操作不会退出应用。",17))
@@ -1542,6 +1555,7 @@ func _show_settings() -> void:
 	if State.developer_tools_available(): box.add_child(_button("DEV · 独立场景检查",_show_developer))
 	box.add_child(_button("保存画面截图",func(): _close_modal(); _capture.call_deferred()))
 	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"
+	if is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
 	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
@@ -1988,6 +2002,9 @@ func _process(delta: float) -> void:
 func _capture() -> void:
 	await RenderingServer.frame_post_draw
 	if DisplayServer.get_name() != "headless":
+		if is_instance_valid(web_platform):
+			web_platform.download_picture(get_viewport().get_texture().get_image())
+			return
 		var capture_path := "user://screenshot.png"
 		if FileAccess.file_exists("res://project.godot"):
 			DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://.screenshots"))
