@@ -12,6 +12,8 @@ var _file_callback: JavaScriptObject
 var _visibility_callback: JavaScriptObject
 var _snapshot_left := 0.0
 var _document_hidden := false
+var _content_loading := false
+var _suspended := false
 var _hidden_audio: Array[Dictionary] = []
 var _hidden_director: WeakRef
 var _owns_director_pause := false
@@ -19,6 +21,7 @@ var _owns_director_pause := false
 func setup(owner_shell: Control, owner_state: Node) -> void:
 	shell = owner_shell
 	state = owner_state
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if not OS.has_feature("web"): return
 	# Keep the transport private; the public surface can only read a fresh copy.
 	# A callback cannot return a value across Godot's JS bridge, hence the cache.
@@ -90,8 +93,24 @@ func _same_hidden_playback(record: Dictionary) -> AudioStreamPlayer:
 	return player if player.get_stream_playback() == playback else null
 
 func _apply_visibility(hidden: bool) -> void:
-	if hidden == _document_hidden: return
 	_document_hidden = hidden
+	_apply_suspension(hidden or _content_loading)
+
+func set_content_loading(loading: bool) -> void:
+	_content_loading = loading
+	_apply_suspension(_document_hidden or loading)
+
+func _apply_suspension(hidden: bool) -> void:
+	if hidden == _suspended:
+		# SceneTree resume may notify its audio players while another owner
+		# (such as a hidden browser tab) still needs them paused.
+		if hidden:
+			for record: Dictionary in _hidden_audio:
+				var player := _same_hidden_playback(record)
+				if player != null: player.stream_paused = true
+		_publish_snapshot()
+		return
+	_suspended = hidden
 	if hidden:
 		_hidden_audio.clear()
 		_remember_audio(shell)
@@ -275,7 +294,9 @@ func read_snapshot() -> Dictionary:
 		world["visible"] = shell.world_frame.is_visible_in_tree()
 		world["rect"] = _rect(shell.world_view.get_global_rect())
 	var save := FileAccess.get_file_as_string(state.SAVE_PATH) if FileAccess.file_exists(state.SAVE_PATH) else ""
-	return {"engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "world": world, "phoneRect": _rect(shell.phone.get_global_rect()), "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
+	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
+	return {"engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "world": world, "phoneRect": _rect(shell.phone.get_global_rect()), "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _browser != null: _browser.dispose()

@@ -89,6 +89,24 @@ func run() -> void:
 	paused = true; bridge._apply_visibility(true); bridge._apply_visibility(false)
 	check(paused, "an already paused SceneTree is never unpaused by page visibility")
 	paused = false
+	# A required chapter and browser visibility share one captured playback.
+	# Releasing either owner alone cannot restart the still-paused content.
+	manual.stream_paused = true
+	shell.web_platform = bridge
+	shell._on_content_blocking(true)
+	check(paused and not bridge._document_hidden and ordinary.stream_paused, "content loading pauses the tree and live audio without pretending the document is hidden")
+	var content_clock: int = shell.audio_director.presentation_clock()
+	bridge._apply_visibility(true)
+	await create_timer(.10).timeout
+	shell._on_content_blocking(false)
+	check(not paused and ordinary.stream_paused and bridge._document_hidden, "finishing content restores its tree lease but retains real browser hiding")
+	check(shell.audio_director.presentation_clock() == content_clock, "overlapping content and hiding exclude wall time only once")
+	bridge._apply_visibility(false)
+	check(not ordinary.stream_paused and manual.stream_paused, "last pause owner restores the original manual audio ownership")
+	paused = true
+	shell._on_content_blocking(true); shell._on_content_blocking(false)
+	check(paused, "content loading never resumes a tree paused by another owner")
+	paused = false; shell.web_platform = null
 	# C3's actual fallback host must stop at focus loss, before hidden wall time.
 	var voice_host: Node = load("res://scripts/media/c3_media_host.gd").new()
 	shell.add_child(voice_host)

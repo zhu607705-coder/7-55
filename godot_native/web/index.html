@@ -35,13 +35,14 @@
       <h1 class="clock">07:55</h1>
       <p id="loading-message" role="status" aria-live="polite">正在准备游戏…</p>
       <progress id="loading-progress" aria-label="游戏加载进度"></progress>
-      <p id="loading-detail">首次加载需要一些时间，请保持页面打开。</p>
+      <p id="loading-detail">先准备开场，后续内容会在游玩时后台加载。</p>
       <button id="start-game" type="button" hidden>进入游戏</button>
       <button id="retry-game" type="button" hidden>重新加载</button>
     </div>
   </section>
   <noscript>请启用 JavaScript 后重新打开游戏。</noscript>
   <script src="$GODOT_URL" onerror="document.documentElement.dataset.loaderFailed='true'"></script>
+  <script src="content-loader.js"></script>
   <script>
     'use strict';
     (function () {
@@ -100,16 +101,33 @@
       config.onExit = function (code) {
         if (code !== 0) fail(new Error('Godot exited with code ' + code));
       };
-      const engine = new Engine(config);
-      const pack = config.mainPack || config.executable + '.pck';
-      message.textContent = '正在加载游戏…';
-      // Complete asynchronous downloads before requesting the user's gesture.
-      // Starting from this button lets Godot unlock browser audio on interaction.
-      Promise.all([engine.init(config.executable), engine.preloadFile(pack, pack)]).then(function () {
+      let engine;
+      let pack;
+      message.textContent = '正在准备开场…';
+      // Only the engine and the complete first-chapter dependency closure are
+      // blocking. Later chapters retain their original res:// paths in packs.
+      fetch('content-manifest.json', { cache: 'no-cache' }).then(function (response) {
+        if (!response.ok) throw new Error('Content manifest HTTP ' + response.status);
+        return response.json();
+      }).then(function (raw) {
+        if (typeof Godot755Content === 'undefined') throw new Error('Content loader unavailable');
+        const manifest = Godot755Content.validate(raw);
+        pack = manifest.core.file;
+        config.mainPack = pack;
+        config.fileSizes = Object.assign({}, config.fileSizes || {});
+        config.fileSizes[pack] = manifest.core.bytes;
+        engine = new Engine(config);
+        const transport = Godot755Content.create({ manifest: manifest, engine: engine });
+        // The native autoload takes this private interface and removes the
+        // window property. No gameplay intent is exposed to page scripts.
+        window.__GODOT_755_CONTENT_HOST__ = transport;
+        delete window.Godot755Content;
+        return Promise.all([engine.init(config.executable), engine.preloadFile(pack, pack)]);
+      }).then(function () {
         if (failed) return;
         document.documentElement.dataset.bootState = 'ready';
         message.textContent = '准备好了';
-        detail.textContent = '点击进入，开始这一天。';
+        detail.textContent = '点击进入，后续内容会在游玩时后台准备。';
         progress.hidden = true;
         start.hidden = false;
         start.focus();

@@ -137,7 +137,7 @@ func _ready() -> void:
 	player_side_idle = load("res://assets/rpg/player/player_side_idle.png")
 	if ResourceLoader.exists("res://assets/rpg/player/player_left_idle.png"):
 		player_left_idle=load("res://assets/rpg/player/player_left_idle.png")
-	State.world_teleport.connect(func(point: Array): pending_teleport = Vector2(float(point[0]),float(point[1])); refresh_world())
+	State.world_teleport.connect(_receive_teleport)
 	if ResourceLoader.exists("res://scripts/games/chapter4_guard_model.gd"):
 		guard_model = load("res://scripts/games/chapter4_guard_model.gd")
 		guard_sheet = load("res://assets/rpg/npcs/finale/guard_walk_8frame.png")
@@ -160,7 +160,15 @@ func _ready() -> void:
 	kayak_visual=KayakObject.new();kayak_visual.name="NativeKayak";add_child(kayak_visual);kayak_visual.setup(self)
 	refresh_world()
 
+func _receive_teleport(point: Array) -> void:
+	if OS.has_feature("web"):
+		var owner: Dictionary = State.d
+		if not await WebContent.ensure_state(owner) or not is_inside_tree() or not is_same(owner, State.d): return
+	pending_teleport = Vector2(float(point[0]),float(point[1]))
+	refresh_world()
+
 func refresh_world() -> void:
+	if OS.has_feature("web") and not WebContent.ready_for_state(State.d): return
 	if worlds.is_empty() or State.d.is_empty(): return
 	if guard_capture.active and not guard_capture.matches(_guard_capture_context()): _cancel_guard_capture()
 	if not stair_handoff.is_empty() and (State.d.native.scene!="duan_yongping_temporal_maze" or State.d.chapter4.phase!="final_chase" or State.d.chapter4.floor!="A2" or int(stair_handoff.attempt)!=int(State.d.chapter4.chaseAttempt)):stair_handoff.clear()

@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import { readPack } from './partition_web_pack.mjs';
+import { createContentDelivery, verifyContentDelivery, fileSha256, CONTENT_PACK_LIMIT } from './web_content_delivery.mjs';
 
 // This builds the independent Godot project. The retained Vite/React build is
 // deliberately not an input, fallback, or output of this command.
@@ -13,9 +15,12 @@ const version = '4.7.2.stable.official';
 const preset = 'Web production';
 const output = path.resolve(args.find(value => value.startsWith('--output='))?.slice(9) || path.join(project, 'exports/web-release'));
 const verifyOnly = args.includes('--verify-only');
+const monolithic = args.includes('--monolithic');
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const relative = file => path.relative(project, file).split(path.sep).join('/');
-const limits = { siteBytes: 950_000_000, packBytes: 800_000_000, wasmBytes: 70_000_000 };
+const limits = { siteBytes: 950_000_000, packBytes: 800_000_000, wasmBytes: 70_000_000, deferredPackBytes: CONTENT_PACK_LIMIT };
+const deliveryTools = ['tools/build_web.mjs', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs'];
+const browserSources = ['web/index.html', 'web/content_loader.js'];
 const excludedPrefixes = ['docs/', 'tests/', 'tools/', 'verification/', 'exports/', 'web/', '.screenshots/', 'examples/', 'samples/', 'assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/'];
 const excludedSuffixes = ['.mp4', '.md', '.log', '.blend', '.blend1', '.py', '.ts', '.mjs'];
 function excluded(name) {
@@ -48,14 +53,14 @@ function walk(directory) {
 }
 function sourceInventory() {
   const files = ['scripts', 'scenes', 'data', 'assets', 'campuses'].flatMap(directory => walk(path.join(project, directory)))
-    .concat(['project.godot', 'export_presets.cfg', 'web/index.html', 'tools/build_web.mjs'].map(file => path.join(project, file)))
+    .concat(['project.godot', 'export_presets.cfg', ...browserSources, ...deliveryTools].map(file => path.join(project, file)))
     // Import sidecars and newly generated UIDs can differ between a clean CI
     // checkout and an editor workspace; the exported PCK has its own byte hash.
     .filter(file => !file.endsWith('.import') && !file.endsWith('.uid') && !file.includes('/.DS_Store'));
-  const inventory = files.filter(file => !excluded(relative(file)) || ['web/index.html', 'tools/build_web.mjs'].includes(relative(file)))
+  const inventory = files.filter(file => !excluded(relative(file)) || [...browserSources, ...deliveryTools].includes(relative(file)))
     .map(file => ({ path: relative(file), bytes: fs.statSync(file).size, sha256: sha256(fs.readFileSync(file)) }))
     .sort((a, b) => a.path.localeCompare(b.path, 'en'));
-  const excludedFiles = files.filter(file => excluded(relative(file)) && !['web/index.html', 'tools/build_web.mjs'].includes(relative(file)))
+  const excludedFiles = files.filter(file => excluded(relative(file)) && ![...browserSources, ...deliveryTools].includes(relative(file)))
     .map(file => ({ path: relative(file), bytes: fs.statSync(file).size }));
   return { inventory, excludedFiles, digest: sha256(JSON.stringify(inventory)) };
 }
@@ -74,56 +79,27 @@ function validatePreset() {
     }
   }
 }
-function readPck(filename) {
+function validatePackEntries(entries, full = false) {
+  for (const entry of entries) if (excluded(entry.path)) throw new Error(`Non-production resource leaked into PCK: ${entry.path}`);
+  const required = ['project.binary', 'scripts/entry.gd', 'scripts/main.gd', 'scripts/state.gd', 'scripts/developer_tools_policy.gd', 'scenes/entry.tscn', 'scenes/main.tscn', 'data/initial_state.json', 'data/native/prologue-interception.content.json', 'assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf.import'];
+  if (full) required.push('campuses/buct/scenes/playable.tscn', 'campuses/buct_haidian/scenes/playable.tscn', 'campuses/buct_changping/scenes/playable.tscn');
+  for (const name of required) if (!entries.some(entry => entry.path === name || entry.path === `${name}.remap`)) throw new Error(`Formal ${full ? 'full-export' : 'boot-core'} dependency absent from PCK: ${name}`);
+}
+function readPck(filename, full = false) {
+  const pack = readPack(filename);
+  validatePackEntries(pack.entries, full);
+  const config = pack.entries.find(entry => entry.path === 'project.binary');
   const fd = fs.openSync(filename, 'r');
-  let cursor = 0;
-  function read(size) {
-    const buffer = Buffer.alloc(size);
-    if (fs.readSync(fd, buffer, 0, size, cursor) !== size) throw new Error('Truncated PCK directory');
-    cursor += size;
-    return buffer;
-  }
-  function u32() { return read(4).readUInt32LE(); }
-  function u64() { return Number(read(8).readBigUInt64LE()); }
   try {
-    if (read(4).toString('ascii') !== 'GDPC') throw new Error('Not a Godot PCK');
-    const format = u32();
-    const engine = [u32(), u32(), u32()].join('.');
-    if (![2, 3, 4].includes(format) || engine !== '4.7.2') throw new Error(`Unexpected PCK format/engine: ${format}/${engine}`);
-    const flags = u32();
-    const fileBase = u64();
-    if (flags & 1 || flags & 4) throw new Error('Encrypted/sparse PCK is not supported by this delivery contract');
-    if (format >= 3) cursor = u64(); else cursor += 64;
-    const count = u32();
-    if (count < 100 || count > 50_000) throw new Error(`Unexpected PCK entry count: ${count}`);
-    const entries = [];
-    for (let index = 0; index < count; index++) {
-      const length = u32();
-      if (length < 1 || length > 16_384) throw new Error('Invalid PCK path length');
-      const name = read(length).toString('utf8').replace(/\0+$/, '').replace(/^res:\/\//, '');
-      const offset = fileBase + u64();
-      const bytes = u64();
-      const md5 = read(16).toString('hex');
-      const entryFlags = u32();
-      if (!Number.isSafeInteger(offset) || offset < 0 || offset + bytes > fs.statSync(filename).size || entryFlags !== 0) throw new Error(`Invalid PCK range/flags: ${name}`);
-      entries.push({ path: name, offset, bytes, md5 });
-    }
-    if (new Set(entries.map(entry => entry.path)).size !== count) throw new Error('Duplicate PCK paths');
-    for (const entry of entries) {
-      if (excluded(entry.path)) throw new Error(`Non-production resource leaked into PCK: ${entry.path}`);
-    }
-    for (const required of ['project.binary', 'scripts/entry.gd', 'scripts/main.gd', 'scripts/state.gd', 'scripts/developer_tools_policy.gd', 'scenes/entry.tscn', 'scenes/main.tscn', 'data/initial_state.json', 'data/native/prologue-interception.content.json', 'campuses/buct/scenes/playable.tscn', 'campuses/buct_haidian/scenes/playable.tscn', 'campuses/buct_changping/scenes/playable.tscn']) {
-      if (!entries.some(entry => entry.path === required || entry.path === `${required}.remap`)) throw new Error(`Formal runtime dependency absent from PCK: ${required}`);
-    }
-    const config = entries.find(entry => entry.path === 'project.binary');
-    cursor = config.offset;
-    const configBytes = read(config.bytes);
+    const configBytes = Buffer.alloc(config.bytes);
+    if (fs.readSync(fd, configBytes, 0, config.bytes, config.offset) !== config.bytes) throw new Error('Truncated project.binary');
     for (const feature of ['755_production', '755_web', 'gl_compatibility']) if (!configBytes.includes(Buffer.from(feature))) throw new Error(`PCK lost production feature: ${feature}`);
-    return { format, engine, flags, count, entries };
   } finally { fs.closeSync(fd); }
+  return pack;
 }
 
 validatePreset();
+let sourceBeforeExport;
 if (!verifyOnly) {
   const actual = run(godot, ['--version'], true);
   if (!actual.startsWith(version)) throw new Error(`Godot must be ${version}, found ${actual}`);
@@ -143,7 +119,12 @@ if (!verifyOnly) {
   }
   fs.mkdirSync(output, { recursive: true });
   if (!args.includes('--skip-import')) runGodot('import', ['--headless', '--path', project, '--editor', '--import']);
+  sourceBeforeExport = sourceInventory().digest;
   runGodot('export', ['--headless', '--path', project, '--export-release', preset, path.join(output, 'index.html')]);
+  fs.copyFileSync(path.join(project, 'web/content_loader.js'), path.join(output, 'content-loader.js'));
+  // Validate the complete Godot export before assigning any resources to packs.
+  readPck(path.join(output, 'index.pck'), true);
+  if (!monolithic) createContentDelivery({ exportDirectory: output, intermediateDirectory: path.join(project, 'exports/verification/godot-web-build', `${path.basename(output)}-${new Date().toISOString().replace(/[:.]/g, '-')}-${process.pid}`) });
 }
 
 const html = fs.readFileSync(path.join(output, 'index.html'), 'utf8');
@@ -155,21 +136,33 @@ try {
   fs.readSync(wasm, magic, 0, 8, 0);
   if (!magic.equals(Buffer.from([0, 97, 115, 109, 1, 0, 0, 0]))) throw new Error('Missing or invalid WebAssembly module');
 } finally { fs.closeSync(wasm); }
-const pack = readPck(path.join(output, 'index.pck'));
+const streaming = fs.existsSync(path.join(output, 'content-manifest.json'));
+if (monolithic && streaming) throw new Error('--monolithic cannot verify a split delivery');
+if (!streaming && !monolithic) throw new Error('Production delivery requires content-manifest.json; use --monolithic only for an internal full-export intermediate');
+const content = streaming ? verifyContentDelivery(output) : null;
+if (content) validatePackEntries(content.fullEntries, true);
+const pack = readPck(path.join(output, 'index.pck'), !streaming);
 const files = walk(output).filter(file => !['build-manifest.json', 'source-inputs.json', 'pack-inventory.json', '.nojekyll'].includes(path.basename(file)))
-  .map(file => ({ path: path.relative(output, file).split(path.sep).join('/'), bytes: fs.statSync(file).size, sha256: sha256(fs.readFileSync(file)) }));
+  .map(file => ({ path: path.relative(output, file).split(path.sep).join('/'), bytes: fs.statSync(file).size, sha256: fileSha256(file) }));
 if (files.some(file => /service\.worker|\.worker\.js$|\.side\.wasm$/.test(file.path))) throw new Error('Unexpected threaded/PWA dependency');
 const siteBytes = files.reduce((total, file) => total + file.bytes, 0);
+const initialPayloadBytes = files.filter(file => !file.path.startsWith('content/') && file.path !== 'content-inventory.json').reduce((sum, file) => sum + file.bytes, 0);
 if (siteBytes > limits.siteBytes || files.find(file => file.path === 'index.pck').bytes > limits.packBytes || files.find(file => file.path === 'index.wasm').bytes > limits.wasmBytes) throw new Error(`Web build exceeds declared delivery budget: ${siteBytes} bytes`);
 const source = sourceInventory();
+if (sourceBeforeExport && sourceBeforeExport !== source.digest) throw new Error('Source inputs changed during export/partition; freeze inputs and rebuild');
 if (verifyOnly) {
   const previous = JSON.parse(fs.readFileSync(path.join(output, 'build-manifest.json'), 'utf8'));
+  const recordedPack = JSON.parse(fs.readFileSync(path.join(output, 'pack-inventory.json'), 'utf8'));
+  const recordedSource = JSON.parse(fs.readFileSync(path.join(output, 'source-inputs.json'), 'utf8'));
+  if (JSON.stringify(recordedPack) !== JSON.stringify(pack) || recordedSource.digest !== source.digest || JSON.stringify(recordedSource.files) !== JSON.stringify(source.inventory)) throw new Error('Published core/source inventories differ from their actual verified inputs');
   for (const file of files) {
     const recorded = previous.files.find(item => item.path === file.path);
     if (!recorded || recorded.bytes !== file.bytes || recorded.sha256 !== file.sha256) throw new Error(`Artifact no longer matches its build manifest: ${file.path}`);
   }
   if (previous.files.length !== files.length || previous.sourceInputSha256 !== source.digest || previous.pack.inventorySha256 !== sha256(JSON.stringify(pack.entries))) throw new Error('Build provenance differs from current inputs/PCK; rebuild instead of rewriting provenance');
-  console.log(JSON.stringify({ verified: true, output, originalSourceCommit: previous.sourceCommit, sourceInputSha256: source.digest, payloadBytes: siteBytes, packFiles: pack.count }, null, 2));
+  if (previous.delivery !== (streaming ? 'chapter-content-packs' : 'internal-monolithic') || previous.initialPayloadBytes !== initialPayloadBytes || previous.totalPayloadBytes !== siteBytes) throw new Error('Delivery layout or byte budget differs from its build manifest');
+  if (content && (JSON.stringify(previous.fullPack) !== JSON.stringify(content.inventory.full) || previous.content?.inventorySha256 !== fileSha256(path.join(output, 'content-inventory.json')) || previous.content?.entryCount !== content.fullEntries.length)) throw new Error('Complete-export provenance differs from the verified content inventory');
+  console.log(JSON.stringify({ verified: true, output, originalSourceCommit: previous.sourceCommit, sourceInputSha256: source.digest, payloadBytes: siteBytes, initialPayloadBytes, coreFiles: pack.count, fullFiles: content?.inventory.full.count ?? pack.count, deferredPacks: content?.manifest.packs.length ?? 0 }, null, 2));
   process.exit(0);
 }
 const commit = run('git', ['rev-parse', 'HEAD'], true);
@@ -181,12 +174,13 @@ const manifest = {
   builtAt: new Date().toISOString(), sourceCommit: commit, sourceTree: tree, sourceDirty: dirty.length !== 0,
   sourceChanges: dirty, sourceInputSha256: source.digest, sourceInputCount: source.inventory.length,
   excludedSourceFiles: source.excludedFiles.length, excludedSourceBytes: source.excludedFiles.reduce((sum, file) => sum + file.bytes, 0),
-  totalPayloadBytes: siteBytes, limits, files,
-  pack: { format: pack.format, engine: pack.engine, flags: pack.flags, files: pack.count, inventorySha256: sha256(JSON.stringify(pack.entries)) },
+  delivery: streaming ? 'chapter-content-packs' : 'internal-monolithic', totalPayloadBytes: siteBytes, initialPayloadBytes, limits, files,
+  pack: { role: streaming ? 'boot-core' : 'internal-full-export', format: pack.format, engine: pack.engine, flags: pack.flags, files: pack.count, inventorySha256: sha256(JSON.stringify(pack.entries)) },
+  ...(content ? { fullPack: content.inventory.full, content: { schema: content.manifest.schema, packs: content.manifest.packs.length, deferredBytes: content.manifest.packs.reduce((sum, item) => sum + item.bytes, 0), coreBytes: content.manifest.core.bytes, exactCoverage: true, entryCount: content.inventory.full.count, inventorySha256: fileSha256(path.join(output, 'content-inventory.json')) } } : {}),
   acceptance: 'Artifact verification only. Actual browser input, rendering, persistence and chapter continuity are separate required gates.',
 };
 fs.writeFileSync(path.join(output, 'source-inputs.json'), JSON.stringify({ digest: source.digest, files: source.inventory, excluded: source.excludedFiles }, null, 2) + '\n');
 fs.writeFileSync(path.join(output, 'pack-inventory.json'), JSON.stringify(pack, null, 2) + '\n');
 fs.writeFileSync(path.join(output, 'build-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 fs.writeFileSync(path.join(output, '.nojekyll'), '');
-console.log(JSON.stringify({ output, sourceCommit: commit, sourceInputSha256: source.digest, payloadBytes: siteBytes, packFiles: pack.count, excludedSourceBytes: manifest.excludedSourceBytes }, null, 2));
+console.log(JSON.stringify({ output, sourceCommit: commit, sourceInputSha256: source.digest, payloadBytes: siteBytes, initialPayloadBytes, coreFiles: pack.count, fullFiles: content?.inventory.full.count ?? pack.count, deferredPacks: content?.manifest.packs.length ?? 0, excludedSourceBytes: manifest.excludedSourceBytes }, null, 2));

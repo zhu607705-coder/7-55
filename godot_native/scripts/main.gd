@@ -56,6 +56,7 @@ var font: Font
 var file_dialog: FileDialog
 var export_mode := false
 var web_platform: Node
+var _content_owns_tree_pause := false
 var rebuild_pending := false
 var backdrop: ColorRect
 var _screenshot_requested := false
@@ -107,6 +108,7 @@ const ACCENT := Color("c9e96e")
 const BLUE := Color("267b9e")
 
 func _ready() -> void:
+	if OS.has_feature("web") and not await WebContent.ensure_state(State.d): return
 	# Let native audio owners retire their mixer-thread playbacks before exit.
 	get_tree().auto_accept_quit = false
 	get_tree().root.close_requested.connect(_request_quit)
@@ -145,6 +147,8 @@ func _ready() -> void:
 		add_child(web_platform)
 		web_platform.import_finished.connect(_feedback)
 		web_platform.setup(self, State)
+		WebContent.blocking_changed.connect(_on_content_blocking)
+		WebContent.start_prefetch()
 	for arg in OS.get_cmdline_user_args():
 		if not State.developer_tools_available(): break
 		if arg.begins_with("--preview="):
@@ -153,6 +157,24 @@ func _ready() -> void:
 		if arg.begins_with("--page="):
 			State.open_page(arg.trim_prefix("--page="))
 		if arg == "--screenshot": _screenshot_requested = true
+
+func _content_ready() -> bool:
+	if not OS.has_feature("web"): return true
+	var owner: Dictionary = State.d
+	var ready: bool = await WebContent.ensure_state(owner)
+	return ready and is_inside_tree() and is_same(owner, State.d)
+
+func _on_content_blocking(blocking: bool) -> void:
+	if blocking:
+		# Capture pause ownership before SceneTree notifies its audio players.
+		# The same platform pause spans overlapping loading and hidden-tab time.
+		if is_instance_valid(web_platform): web_platform.set_content_loading(true)
+		_content_owns_tree_pause = not get_tree().paused
+		if _content_owns_tree_pause: get_tree().paused = true
+	else:
+		if _content_owns_tree_pause: get_tree().paused = false
+		_content_owns_tree_pause = false
+		if is_instance_valid(web_platform): web_platform.set_content_loading(false)
 
 func _box(color: Color, border: Color, radius: int, width: int = 1) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
@@ -842,6 +864,7 @@ func _layout_modal() -> void:
 	_layout_toast()
 
 func _schedule_refresh() -> void:
+	if not await _content_ready(): return
 	_validate_library_reveal()
 	_sync_inventory_dock_input()
 	if rebuild_pending: return
@@ -849,6 +872,7 @@ func _schedule_refresh() -> void:
 	_refresh.call_deferred()
 
 func _refresh() -> void:
+	if not await _content_ready(): return
 	rebuild_pending = false
 	if State.d.is_empty(): return
 	_validate_library_reveal()
@@ -1677,6 +1701,7 @@ func _resume_canteen_defense() -> void:
 	State.act("c3_defense")
 
 func _play_audio(path: String) -> void:
+	if not await _content_ready(): return
 	var resolved := State.asset(path)
 	if ResourceLoader.exists(resolved):
 		voice_player.stop()
@@ -1685,6 +1710,7 @@ func _play_audio(path: String) -> void:
 		voice_player.play()
 
 func _open_game(config: Dictionary) -> void:
+	if not await _content_ready(): return
 	if config.get("type","")=="chase" and config.get("departure",false):
 		_open_chase_film("start")
 		return
@@ -1694,6 +1720,7 @@ func _open_game(config: Dictionary) -> void:
 	_open_game_now(config)
 
 func _open_game_now(config: Dictionary) -> void:
+	if not await _content_ready(): return
 	# The source opens the real A1 doors before the registered lamp questions.
 	# This local visual prelude never changes controller facts or completion proof.
 	if config.get("kind","")=="star_lamp_closure" and not config.get("native_exterior_presented",false):
@@ -1901,6 +1928,7 @@ func _continue_chase_departure(owner: Control) -> void:
 	_layout()
 
 func _open_narrative(config: Dictionary) -> void:
+	if not await _content_ready(): return
 	var box := _modal_base(str(config.get("title","7:55")))
 	var label := _label(str(config.get("text",config.get("body",""))),20)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -2069,7 +2097,7 @@ func _setup_runtime_hosts() -> void:
 		add_child(audio_director)
 		audio_director.external_cue_prefixes = ["chapter35_voice_audition_"]
 		audio_director.setup(_read_runtime_state)
-		State.action_completed.connect(audio_director.update_state)
+		State.action_completed.connect(_update_audio_after_content)
 		audio_director.subtitle_timed.connect(_on_audio_subtitle)
 
 		audio_director.visual_requested.connect(_presentation_visual)
@@ -2086,7 +2114,12 @@ func _setup_runtime_hosts() -> void:
 		battery_prank.setup(_read_runtime_state)
 		battery_prank.set_anchors_preset(Control.PRESET_TOP_LEFT)
 
+func _update_audio_after_content(action: String, previous: Dictionary, next: Dictionary, result: Dictionary) -> void:
+	if not await _content_ready(): return
+	if is_instance_valid(audio_director): audio_director.update_state(action, previous, next, result)
+
 func _apply_media(config: Dictionary) -> void:
+	if not await _content_ready(): return
 	_setup_runtime_hosts()
 	if is_instance_valid(media_host): media_host.apply(config)
 	else: _feedback("音频播放组件尚未就绪，进度没有改变。")
@@ -2095,6 +2128,7 @@ func _cancel_world_effect() -> void:
 	if is_instance_valid(world_effect) and world_effect.has_method("cancel"): world_effect.cancel()
 
 func _open_world_effect(config: Dictionary) -> void:
+	if not await _content_ready(): return
 	_cancel_world_effect()
 	if not world or not ResourceLoader.exists(str(config.get("script",""))): return
 	world.refresh_world()

@@ -64,13 +64,20 @@ jobs:
       - name: Build actual production Godot HTML, WebAssembly and PCK
         run: node godot_native/tools/build_web.mjs
 
+      - name: Check content transport and lossless pack partition
+        run: |
+          node godot_native/tools/test_web_content_loader.mjs
+          node godot_native/tools/test_partition_web_pack.mjs
+          node godot_native/tests/verify_web_content_boot_assets.mjs --export=godot_native/exports/web-release
+
       - name: Check immutable build provenance
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const m = JSON.parse(fs.readFileSync('godot_native/exports/web-release/build-manifest.json'));
           if (m.sourceCommit !== process.env.GITHUB_SHA || m.sourceDirty || m.runtime !== 'godot-web' || !m.production || m.threads || m.chapterShortcuts) throw Error('Unverified Godot release provenance');
-          console.log(JSON.stringify({ commit: m.sourceCommit, inputs: m.sourceInputSha256, payloadBytes: m.totalPayloadBytes, pack: m.pack }, null, 2));
+          if (m.delivery !== 'chapter-content-packs' || !m.content?.exactCoverage || m.initialPayloadBytes > 100_000_000 || m.content.packs < 1) throw Error('Missing staged content delivery or initial payload budget exceeded');
+          console.log(JSON.stringify({ commit: m.sourceCommit, inputs: m.sourceInputSha256, initialPayloadBytes: m.initialPayloadBytes, payloadBytes: m.totalPayloadBytes, pack: m.pack, content: m.content }, null, 2));
           NODE
 
       - name: Accept actual Godot Web input and persisted reload at Pages subpath
@@ -103,6 +110,8 @@ jobs:
             godot_native/exports/web-release/build-manifest.json
             godot_native/exports/web-release/source-inputs.json
             godot_native/exports/web-release/pack-inventory.json
+            godot_native/exports/web-release/content-manifest.json
+            godot_native/exports/web-release/content-inventory.json
             godot_native/exports/verification/godot-web-build/*.log
             godot_native/exports/verification/web_ci/*.json
           if-no-files-found: warn

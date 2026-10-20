@@ -22,6 +22,32 @@ const scenarios = option('scenarios', 'all');
 const importSettleMs = Number(option('import-settle-ms', 1600));
 const bootTimeout = Number(option('boot-timeout', 360000));
 const chromeArgs = args.flatMap((arg, i) => arg.startsWith('--chrome-arg=') ? [arg.slice('--chrome-arg='.length)] : arg === '--chrome-arg' && args[i + 1] ? [args[i + 1]] : []);
+function artifactLocation(assetUrl, pageUrl = url, rootDirectory = exportDir) {
+  const base = new URL('.', pageUrl);
+  const asset = new URL(assetUrl);
+  if (asset.origin !== base.origin || !asset.pathname.startsWith(base.pathname) || asset.search || asset.hash) throw new Error(`Resource is outside the accepted page origin/base: ${assetUrl}`);
+  const relativePath = decodeURIComponent(asset.pathname.slice(base.pathname.length));
+  if (!relativePath || relativePath.startsWith('/') || relativePath.includes('\\') || /[\x00-\x1f\x7f]/.test(relativePath) || relativePath.split('/').some(part => ['', '.', '..'].includes(part))) throw new Error(`Invalid resource path: ${assetUrl}`);
+  const root = rootDirectory ? path.resolve(rootDirectory) : null;
+  const local = root ? path.resolve(root, relativePath) : null;
+  if (local && !local.startsWith(root + path.sep)) throw new Error(`Resource escapes export directory: ${assetUrl}`);
+  return { relativePath, local };
+}
+if (args.includes('--self-test-paths')) {
+  const base = 'http://127.0.0.1:5211/7-55/';
+  const root = '/tmp/755-artifact-path-unit';
+  const examples = [['index.wasm', 'index.wasm'], ['content/chapter2_001-abcd.pck', 'content/chapter2_001-abcd.pck']];
+  for (const [resource, expected] of examples) {
+    const actual = artifactLocation(new URL(resource, base).href, base, root);
+    if (actual.relativePath !== expected || actual.local !== path.join(root, expected)) throw new Error('Artifact path self-test failed');
+  }
+  for (const resource of ['http://127.0.0.1:5212/7-55/index.pck', 'http://127.0.0.1:5211/other/index.pck', 'http://127.0.0.1:5211/7-55/%2e%2e/index.pck', 'http://127.0.0.1:5211/7-55/content/%2f..%2f..%2fescape.pck', 'http://127.0.0.1:5211/7-55/content/%5cescape.pck', 'http://127.0.0.1:5211/7-55/index.pck?seed=1']) {
+    let rejected = false; try { artifactLocation(resource, base, root); } catch { rejected = true; }
+    if (!rejected) throw new Error(`Artifact path self-test did not reject ${resource}`);
+  }
+  console.log('Artifact path self-test PASS: root and nested content paths, origin/base, encoded traversal, backslash and query controls');
+  process.exit(0);
+}
 const interval = ms => new Promise(resolve => setTimeout(resolve, ms));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const report = { schema: '755-godot-web-acceptance-v1', startedAt: new Date().toISOString(), url,
@@ -69,6 +95,11 @@ async function startStory(reload = false) {
   const start = Date.now(); await active.cdp.send(reload ? 'Page.reload' : 'Page.navigate', reload ? { ignoreCache: true } : { url: active.url || url });
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
+  if (active.streaming) {
+    const deferred = active.requests.filter(request => request.at >= start && active.deferredUrls.has(request.url));
+    check(deferred.length === 0, `${active.id}: initial engine/first-chapter stage never requests deferred packs`, deferred);
+    active.streaming.boots.push({ at: start, reload, bootReadyMs, deferredRequestsBeforeStart: deferred.length, initialRequests: active.requests.filter(request => request.at >= start).map(request => ({ url: request.url, at: request.at })) });
+  }
   const startRect = await evaluate("(()=>{const r=document.getElementById('start-game').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};})()"); await clickPoint(startRect);
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'running'"), 'Godot engine running', 60000);
   await interval(500); await evaluate("(document.getElementById('canvas')||document.querySelector('canvas')).focus()");
@@ -362,10 +393,119 @@ async function c1Case(full) {
   await interval(1500); const reloaded = await startStory(true); check(state(reloaded.snapshot).actOne.phase === 'friend_message_required', 'C1 controller completion persists through actual page reload');
   console.log('desktop-1280: C1 six-word real pointer/keyboard run, authored C2 handoff and native reload passed');
 }
+async function prepareStreamingFault() {
+  if (!fixtureDir || !existsSync(path.join(fixtureDir, 'after_c2_dorm_exit.json'))) throw new Error('Streaming acceptance requires an earned after_c2_dorm_exit.json fixture directory');
+  const manifestUrl = new URL('content-manifest.json', new URL('.', url)).href;
+  const response = await fetch(manifestUrl, { cache: 'no-cache' });
+  check(response.ok, 'streaming content manifest is independently available');
+  const bytes = Buffer.from(await response.arrayBuffer());
+  const manifest = JSON.parse(bytes);
+  check(manifest.schema === '755-web-content-v1' && manifest.core && Array.isArray(manifest.packs) && manifest.packs.length > 0, 'delivery declares separate core and deferred content packs');
+  const base = new URL('.', url);
+  const coreUrl = new URL(manifest.core.file, base).href;
+  const deferredUrls = manifest.packs.map(pack => new URL(pack.file, base).href);
+  for (const deferred of deferredUrls) {
+    const location = artifactLocation(deferred);
+    check(location.relativePath.startsWith('content/') && deferred !== coreUrl, 'controlled failure targets only a declared deferred content path', { relativePath: location.relativePath });
+  }
+  check(new Set(deferredUrls).size === manifest.packs.length, 'deferred content URLs are unique');
+  if (exportDir) check(await shaFile(path.join(exportDir, 'content-manifest.json')) === hash(bytes), 'HTTP content manifest matches the actual split export');
+  active.deferredUrls = new Set(deferredUrls);
+  active.controlledBlockedUrls = new Set(deferredUrls);
+  active.faultPhase = 'fresh-c1-deferred-blocked';
+  active.streamingManifest = manifest;
+  active.streaming = { manifestUrl, manifestSha256: hash(bytes), core: manifest.core, deferredPacks: manifest.packs.map(({ id, family, file, bytes, sha256 }) => ({ id, family, file, bytes, sha256 })), boots: [], controlledFailures: [], reloadContentRequests: [] };
+  await active.cdp.send('Network.setBlockedURLs', { urls: deferredUrls });
+}
+
+async function cachedContentKeys() {
+  return evaluate(`(async()=>{
+    if(typeof caches==='undefined')return {available:false,names:[],keys:[]};
+    const names=await caches.keys();
+    if(!names.includes('755-godot-content-v1'))return {available:true,names,keys:[]};
+    const cache=await caches.open('755-godot-content-v1');
+    return {available:true,names,keys:(await cache.keys()).map(request=>request.url)};
+  })()`);
+}
+
+function storyEvidence(value) {
+  return { chapter: state(value)?.native.chapter, page: state(value)?.native.page, scene: state(value)?.native.scene, stateSha256: hash(JSON.stringify(state(value))), saveDigest: value.saveDigest, itemsSha256: hash(JSON.stringify(state(value)?.items)), walletSha256: hash(JSON.stringify(state(value)?.wallet)), actOnePhase: state(value)?.actOne.phase };
+}
+
+async function streamingCase() {
+  const fresh = await snapshot();
+  check(state(fresh)?.native.chapter === 1 && !fresh.content?.blocking, 'fresh C1 ordinary phone interaction and save/reload remain usable with every deferred HTTP URL blocked');
+  await poll(() => active.streaming.controlledFailures.length > 0, 'background transport actually encounters the controlled deferred-content block', 30000);
+  const backgroundFailed = await snapshot();
+  check(!backgroundFailed.content.blocking && backgroundFailed.content.packs.some(pack => pack.status === 'error'), 'a real optional background failure does not show the required-content overlay');
+  check(backgroundFailed.content.enabled && !backgroundFailed.content.monolithic && !backgroundFailed.content.manifestError, 'the running engine uses the content coordinator and a valid split manifest');
+  active.streaming.freshWithBlockedBackground = { evidence: storyEvidence(backgroundFailed), content: backgroundFailed.content };
+  console.log('desktop-1280: first-chapter input/save/reload survives deferred-content HTTP failure');
+
+  active.faultPhase = 'c2-required-failure';
+  await press('Escape'); await interval(250);
+  await importSave(path.join(fixtureDir, 'after_c2_dorm_exit.json'));
+  const blocked = await poll(async () => { const value = await snapshot(); return value?.content?.blocking && value.content.retryVisible && controls(value).some(control => control.name === 'RetryRequiredContent') ? value : null; }, 'ordinary later save shows the real required-content retry control', 60000);
+  check(state(blocked).native.chapter === 2 && state(blocked).native.scene === 'campus_bootstrap' && blocked.content.requiredIds.length > 0, 'validated earned C2 import is retained while required assets are unavailable');
+  const frozen = storyEvidence(blocked);
+  await interval(1200);
+  const whileBlocked = await snapshot();
+  check(whileBlocked.content.blocking && whileBlocked.saveDigest === frozen.saveDigest && hash(JSON.stringify(state(whileBlocked))) === frozen.stateSha256, 'required-content network failure preserves actual imported State and committed save bytes while waiting');
+  active.streaming.requiredFailure = { at: Date.now(), evidence: frozen, content: whileBlocked.content, retryControl: controls(whileBlocked).find(control => control.name === 'RetryRequiredContent') };
+  active.screenshots.push(await screenshot('desktop-streaming-required-retry'));
+
+  active.faultPhase = 'c2-user-retry-recovery';
+  active.controlledBlockedUrls.clear();
+  await active.cdp.send('Network.setBlockedURLs', { urls: [] });
+  await clickControl('RetryRequiredContent', 'name');
+  const ready = await poll(async () => {
+    const value = await snapshot();
+    return value?.content?.readyFamilies?.includes('chapter2') && !value.content.blocking && value.world?.visible && value.world.scene_id === 'campus_bootstrap' && value.world.player ? value : null;
+  }, 'user Retry downloads every C2 block and reveals the real Godot campus map', bootTimeout);
+  check(hash(JSON.stringify(state(ready).items)) === frozen.itemsSha256 && hash(JSON.stringify(state(ready).wallet)) === frozen.walletSha256 && state(ready).actOne.phase === frozen.actOnePhase, 'asset recovery preserves earned inventory, wallet and story phase');
+  const chapter2Packs = active.streamingManifest.packs.filter(pack => pack.family === 'chapter2');
+  check(chapter2Packs.length > 1 && chapter2Packs.every(pack => ready.content.packs.some(loaded => loaded.id === pack.id && loaded.status === 'ready')), 'family readiness requires every independently verified C2 content block');
+  const position = ready.world.player;
+  await evaluate("document.getElementById('canvas').focus()");
+  let moved = false;
+  for (const direction of ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp']) {
+    await key(direction, direction, true); await interval(500); await key(direction, direction, false); await interval(350);
+    const now = (await snapshot()).world?.player;
+    if (now && Math.hypot(now.x - position.x, now.y - position.y) > 3) { moved = true; break; }
+  }
+  check(moved, 'recovered native campus renders and accepts real keyboard movement');
+  await assertLayout('streaming-recovered-campus');
+  active.screenshots.push(await screenshot('desktop-streaming-campus-recovered'));
+  active.streaming.recovery = { at: Date.now(), evidence: storyEvidence(await snapshot()), content: ready.content, realKeyboardMovement: moved };
+
+  const expectedCacheKeys = chapter2Packs.map(pack => new URL('/.755-content-cache/' + pack.sha256 + '.pck', new URL(url).origin).href);
+  const cached = await poll(async () => { const value = await cachedContentKeys(); return value.available && expectedCacheKeys.every(key => value.keys.includes(key)) ? value : null; }, 'only natively accepted C2 chunks are committed to actual CacheStorage', 60000);
+  check(cached.available && expectedCacheKeys.every(key => cached.keys.includes(key)), 'CacheStorage contains every verified C2 chunk under its full SHA-256 identity', cached);
+  active.streaming.cacheBeforeReload = cached;
+  await settings(); await clickControl('保存进度'); await interval(1600);
+  const saved = await snapshot();
+  active.faultPhase = 'reload-from-verified-cache';
+  active.controlledBlockedUrls = new Set(active.deferredUrls);
+  await active.cdp.send('Network.setBlockedURLs', { urls: [...active.deferredUrls] });
+  const requestStart = active.requests.length;
+  const oldDocument = await evaluate('performance.timeOrigin');
+  const reloaded = await startStory(true);
+  const resumed = await poll(async () => { const value = await snapshot(); return !value?.content?.blocking && value?.content?.readyFamilies?.includes('chapter2') && value.world?.visible && value.world.scene_id === 'campus_bootstrap' ? value : null; }, 'real document reload restores C2 entirely from verified content cache', 60000);
+  const chapter2Urls = new Set(chapter2Packs.map(pack => new URL(pack.file, new URL('.', url)).href));
+  const requests = active.requests.slice(requestStart).filter(request => chapter2Urls.has(request.url));
+  check(requests.length === 0, 'ordinary reload makes no C2 HTTP requests while all deferred URLs remain explicitly blocked', requests);
+  check(await evaluate('performance.timeOrigin') !== oldDocument && state(resumed).native.chapter === 2 && state(resumed).native.scene === 'campus_bootstrap', 'cache recovery occurs in a new real document and retains the saved C2 route');
+  check(hash(JSON.stringify(state(resumed).items)) === hash(JSON.stringify(state(saved).items)) && hash(JSON.stringify(state(resumed).wallet)) === hash(JSON.stringify(state(saved).wallet)), 'cache-only reload preserves earned items and wallet');
+  active.streaming.reload = { beforeEvidence: storyEvidence(saved), afterEvidence: storyEvidence(resumed), mainReadyMs: reloaded.mainReadyMs, oldDocumentTimeOrigin: oldDocument, newDocumentTimeOrigin: await evaluate('performance.timeOrigin'), chapter2HttpRequests: requests, cache: await cachedContentKeys() };
+  active.screenshots.push(await screenshot('desktop-streaming-campus-cache-reload'));
+  check(active.streaming.controlledFailures.length > 0 && active.streaming.controlledFailures.every(failure => active.deferredUrls.has(failure.url) && ['', 'net::ERR_BLOCKED_BY_CLIENT'].includes(failure.errorText) && failure.blockedReason === 'inspector'), 'only explicitly injected deferred inspector blocks are recorded as controlled failures', active.streaming.controlledFailures);
+  console.log('desktop-1280: earned C2 file import, visible failure/retry, full-family map recovery and cache-only real reload passed');
+}
+
 async function browserCase(id, width, height, touch) {
   const temp = await mkdtemp(path.join(tmpdir(), '755-godot-web-browser-')); const profile = path.join(temp, 'profile'); const errors = []; const network = new Map(); const responses = new Map();
   const child = spawn(chrome, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--disable-extensions', '--disable-sync', '--disable-default-apps', ...chromeArgs, `--window-size=${width},${height}`, '--force-device-scale-factor=1', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] }); let stderr = ''; child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-10000); });
-  active = { id, width, height, touch, child, imports: [], screenshots: [], mediaObservations: [], downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
+  active = { id, width, height, touch, child, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
   if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
   let result;
   try {
@@ -373,12 +513,25 @@ async function browserCase(id, width, height, touch) {
     active.cdp = await connect(targets.find(t => t.type === 'page').webSocketDebuggerUrl, ({ method, params }) => {
       if (method === 'Runtime.exceptionThrown') errors.push({ type: 'pageerror', ...params.exceptionDetails });
       if (method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(params.type)) { const text = params.args.map(a => a.value ?? a.description ?? '').join(' '); if (params.type === 'error' || /SCRIPT ERROR|Parse Error|Failed to load|ERROR:/.test(text)) errors.push({ type: params.type, text }); }
+      if (method === 'Network.requestWillBeSent') {
+        const request = { requestId: params.requestId, url: params.request.url, at: Date.now(), phase: active.faultPhase || '', controlled: active.controlledBlockedUrls.has(params.request.url) };
+        active.requests.push(request); active.requestsById.set(params.requestId, request);
+      }
       if (method === 'Network.responseReceived') responses.set(params.requestId, { url: params.response.url, status: params.response.status, mimeType: params.response.mimeType, fromDiskCache: params.response.fromDiskCache || false });
       if (method === 'Network.loadingFinished' && responses.has(params.requestId)) network.set(responses.get(params.requestId).url, { ...responses.get(params.requestId), encodedDataLength: params.encodedDataLength });
-      if (method === 'Network.loadingFailed' && !params.canceled) errors.push({ type: 'network', requestId: params.requestId, errorText: params.errorText });
+      if (method === 'Network.loadingFailed' && !params.canceled) {
+        const request = active.requestsById.get(params.requestId);
+        const failure = { type: 'network', requestId: params.requestId, url: request?.url || '', phase: request?.phase || '', errorText: params.errorText, blockedReason: params.blockedReason || '' };
+        // Chromium 155 reports an empty errorText for Network.setBlockedURLs;
+        // blockedReason=inspector and the exact active injected URL remain the
+        // authoritative, narrowly scoped fault identity. Keep the raw event.
+        if (active.streaming && request?.controlled && active.deferredUrls.has(request.url) && ['', 'net::ERR_BLOCKED_BY_CLIENT'].includes(params.errorText || '') && params.blockedReason === 'inspector') active.streaming.controlledFailures.push(failure);
+        else errors.push(failure);
+      }
     });
     await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable'); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
+    if (scenarios === 'streaming') await prepareStreamingFault();
     result = await freshCase(); await portableSaveCase();
     if (id === 'desktop-1280') {
       if (scenarios === 'all') { await legacyCase(); await c1Case(true); await fixtureCases(); }
@@ -386,6 +539,7 @@ async function browserCase(id, width, height, touch) {
       if (scenarios === 'all' || scenarios === 'media') await mediaCase();
       if (scenarios === 'durability') await durabilityCase();
       if (scenarios === 'durability-switch') await durabilitySwitchCase();
+      if (scenarios === 'streaming') await streamingCase();
     } else if (touch && scenarios === 'all') await c1Case(false);
     const resources = [...network.values()].filter(n => /\.(wasm|pck)(?:$|\?)/.test(n.url)); check(resources.some(n => /\.wasm(?:$|\?)/.test(n.url) && n.status === 200), `${id}: actual engine WASM loaded over HTTP`); check(resources.some(n => /\.pck(?:$|\?)/.test(n.url) && n.status === 200), `${id}: actual Godot PCK loaded over HTTP`);
     check(![...network.values()].some(n => n.status >= 400), `${id}: no failed HTTP resources`, [...network.values()].filter(n => n.status >= 400));
@@ -394,20 +548,21 @@ async function browserCase(id, width, height, touch) {
     check(renderer.webgl2, `${id}: actual WebGL2 context available`, renderer);
     check(await evaluate("JSON.stringify(Object.keys(window.__GODOT_755__))") === '["snapshot"]', 'production browser bridge exposes only a read operation');
     check(await evaluate("(()=>{const s=window.__GODOT_755__.snapshot(),old=s.state.native.chapter;s.state.native.chapter=999;return window.__GODOT_755__.snapshot().state.native.chapter===old})()"), 'returned browser snapshot is a detached copy');
-    report.cases.push({ id, width, height, touch, passed: true, ...result, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
+    report.cases.push({ id, width, height, touch, passed: true, ...result, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
     report.network.push(...network.values());
-  } catch (e) { report.cases.push({ id, width, height, touch, passed: false, result, error: e.stack || String(e), imports: active.imports, durability: active.durability, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
+  } catch (e) { report.cases.push({ id, width, height, touch, passed: false, result, error: e.stack || String(e), imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
   finally { active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
 }
 try {
-  const selected = [['desktop-1280', 1280, 720, false], ['desktop-1440', 1440, 900, false], ['touch-390', 390, 844, true]].filter(([id]) => only === 'all' || id === only);
+  const selected = [['desktop-1280', 1280, 720, false], ['desktop-1440', 1440, 900, false], ['touch-390', 390, 844, true]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280'));
   check(selected.length > 0, 'at least one requested viewport selected');
   for (const selectedCase of selected) await browserCase(...selectedCase);
   const resources = new Map(report.network.filter(n => /\.(wasm|pck)(?:$|\?)/.test(n.url)).map(n => [n.url, n])); report.assets = [];
   for (const resource of resources.values()) {
+    const { relativePath, local } = artifactLocation(resource.url);
     const response = await fetch(resource.url); check(response.ok, `asset independently fetched: ${resource.url}`); const h = createHash('sha256'); let bytes = 0; for await (const chunk of response.body) { h.update(chunk); bytes += chunk.length; } const sha256 = h.digest('hex');
-    const filename = path.basename(new URL(resource.url).pathname); const local = exportDir ? path.join(exportDir, filename) : null; if (local) { check(existsSync(local), `export artifact exists: ${filename}`); check(await shaFile(local) === sha256, `HTTP bytes match actual Godot export: ${filename}`); }
-    report.assets.push({ url: resource.url, bytes, sha256, local });
+    if (local) { check(existsSync(local), `export artifact exists: ${relativePath}`); check(await shaFile(local) === sha256, `HTTP bytes match actual Godot export: ${relativePath}`); }
+    report.assets.push({ url: resource.url, relativePath, bytes, sha256, local });
   }
   report.passed = report.cases.every(c => c.passed) && report.checks.every(c => c.ok);
 } catch (e) { report.errors.push(e.stack || String(e)); process.exitCode = 1; }

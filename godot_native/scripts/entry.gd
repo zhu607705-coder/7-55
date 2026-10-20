@@ -209,6 +209,15 @@ func _open(path: String) -> void:
 	_change_scene.call_deferred(path)
 
 func _change_scene(path: String) -> void:
+	if OS.has_feature("web"):
+		var ready: bool
+		if path == STORY_SCENE: ready = await WebContent.ensure_state(State.d)
+		else:
+			var family := "campus_chaoyang" if path == BUCT_SCENE else "campus_haidian" if path == HAIDIAN_SCENE else "campus_changping"
+			ready = await WebContent.ensure_families(["campus_shared", family])
+		if not ready:
+			opening = false
+			return
 	var error:=get_tree().change_scene_to_file(path)
 	if error!=OK:
 		opening=false

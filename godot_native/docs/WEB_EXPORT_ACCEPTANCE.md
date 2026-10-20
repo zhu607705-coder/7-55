@@ -24,7 +24,8 @@ download. The non-16:9 case also supplies historical developer URL arguments and
 must still open the fresh production alarm. It checks the real WebGL 2 context,
 read-only snapshot boundary, developer controls, document/canvas bounds, browser
 errors, and actual `.wasm` and `.pck` network loads. It independently downloads
-and hashes those two files, comparing their bytes with `--export-dir` when set.
+and hashes observed engine/core/deferred files, comparing their full relative
+paths and bytes with `--export-dir` when set.
 `web-acceptance.json` records the runner hash, export manifest, renderer, cold
 startup timings, input cases, failures, screenshots, asset hashes and limitations.
 
@@ -70,6 +71,25 @@ that visibility restoration preserves a player-owned pause, and that Exit and
 native save/reload retain inventory, wallet and the unfinished ride. It does not
 claim to complete the full 755 metres. `--scenarios bike --only desktop-1280`
 isolates this GPU diagnostic while retaining the basic/file checks.
+
+For split-delivery fault acceptance, use `--scenarios streaming --only
+desktop-1280 --fixtures /absolute/path/to/earned`. The runner blocks only the
+manifest's exact deferred URLs, leaving engine/core requests available. It
+accepts ordinary first-chapter phone input and save/reload, imports the earned
+C2 save through the shipped picker, requires a visible Retry control and stable
+State/save bytes, then restores HTTP and clicks Retry. Every C2 block must mount
+before the real campus map and keyboard movement resume. After actual
+CacheStorage writes, another real reload with all deferred HTTP blocked must
+restore C2 with zero C2 network requests. This scope does not claim an entire
+offline four-chapter campaign.
+
+Injected `Network.setBlockedURLs` failures are recorded separately only when
+their request URL exactly matches the current manifest block set and CDP reports
+`blockedReason: inspector` with empty or `ERR_BLOCKED_BY_CLIENT` text. Other page,
+script and network errors remain fatal. Boot evidence records zero deferred
+requests before the user starts; nested pack HTTP hashes retain `content/` in
+their local artifact paths. `--self-test-paths` checks that mapping and rejects
+foreign origins, bases and encoded path traversal without opening a browser.
 
 The hidden-tab media check uses actual playback positions after returning to the
 foreground. A hidden page may stop the snapshot publisher's animation frame, so

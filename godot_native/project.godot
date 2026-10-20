@@ -20,6 +20,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 [autoload]
 
 State="*res://scripts/state.gd"
+WebContent="*res://scripts/platform/web_content.gd"
 
 [audio]
 
