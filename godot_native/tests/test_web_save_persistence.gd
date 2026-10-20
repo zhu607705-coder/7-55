@@ -32,7 +32,7 @@ func digest(bytes: PackedByteArray) -> String:
 func _initialize() -> void: call_deferred("run")
 func run() -> void:
 	# The runner must have its own user directory; refuse the canonical game save.
-	if str(ProjectSettings.get_setting("application/config/custom_user_dir_name", "")) == "SevenFiftyFiveNative":
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
 		push_error("SAVE_RECEIPT_TEST_ISOLATION_REQUIRED"); quit(2); return
 	var state := FakeState.new()
 	var bridge := Platform.new()
