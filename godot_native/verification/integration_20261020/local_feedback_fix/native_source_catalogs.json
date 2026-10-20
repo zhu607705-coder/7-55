@@ -1,0 +1,246 @@
+[
+  {
+    "label": "Source catalog tools/export-save-domains.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:08.177Z",
+    "finishedAt": "2026-10-20T01:32:08.394Z",
+    "durationMs": 217,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tools/export-save-domains.mjs",
+      "--check"
+    ],
+    "output": "Source save domains: 66 exact enum sets\n"
+  },
+  {
+    "label": "Source catalog tools/export-audio-director.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:08.398Z",
+    "finishedAt": "2026-10-20T01:32:08.469Z",
+    "durationMs": 71,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tools/export-audio-director.mjs",
+      "--check"
+    ],
+    "output": "{\n  \"events\": 237,\n  \"assets\": 223,\n  \"lines\": 152,\n  \"missing\": []\n}\n"
+  },
+  {
+    "label": "Source catalog tools/export-c3-world-source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:08.472Z",
+    "finishedAt": "2026-10-20T01:32:08.749Z",
+    "durationMs": 277,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tools/export-c3-world-source.mjs",
+      "--check"
+    ],
+    "output": "C3 world constants/assets source-verified: 16 constants, 34 assets\n"
+  },
+  {
+    "label": "Source catalog tools/export-chapter4-device-source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:08.751Z",
+    "finishedAt": "2026-10-20T01:32:08.933Z",
+    "durationMs": 182,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tools/export-chapter4-device-source.mjs",
+      "--check"
+    ],
+    "output": "Executed original TS model + TSX panel: 170 source control checks, six wrong → adjust → right flows, close/reopen, defaults, locked/dark/completed contracts, exact labels/traces/ranges exported.\n"
+  },
+  {
+    "label": "Source catalog tools/export-chapter4-context-source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:08.935Z",
+    "finishedAt": "2026-10-20T01:32:09.002Z",
+    "durationMs": 67,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tools/export-chapter4-context-source.mjs",
+      "--check"
+    ],
+    "output": "C4_CONTEXT_SOURCE 48 checks; 2 authored contexts and exact exterior timing exported\n(node:5533) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+  },
+  {
+    "label": "Source catalog tests/export_audio_state_fixtures.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:09.004Z",
+    "finishedAt": "2026-10-20T01:32:09.050Z",
+    "durationMs": 46,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_audio_state_fixtures.mjs",
+      "--check"
+    ],
+    "output": "Original PresentationDirector: 64 states, 4096 transition pairs\n"
+  },
+  {
+    "label": "Source catalog tests/export_chapter3_scene_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:09.052Z",
+    "finishedAt": "2026-10-20T01:32:09.259Z",
+    "durationMs": 207,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_chapter3_scene_source.mjs",
+      "--check"
+    ],
+    "output": "Chapter 3 native opening fixture matches original TS helper\n"
+  },
+  {
+    "label": "Source catalog tests/export_library_story_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:09.262Z",
+    "finishedAt": "2026-10-20T01:32:09.479Z",
+    "durationMs": 217,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_library_story_source.mjs",
+      "--check"
+    ],
+    "output": "Library story source parity: 12 sequences, 53 lines\n"
+  },
+  {
+    "label": "Source catalog tests/export_lake_live_source_fixtures.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:09.481Z",
+    "finishedAt": "2026-10-20T01:32:09.904Z",
+    "durationMs": 424,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_lake_live_source_fixtures.mjs",
+      "--check"
+    ],
+    "output": "Source live lake: 1200 pressure cases, 3 tutorial traces, stationary:247, westward:274\n"
+  },
+  {
+    "label": "Source catalog tests/export_chapter3_narrative_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:09.906Z",
+    "finishedAt": "2026-10-20T01:32:10.360Z",
+    "durationMs": 454,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_chapter3_narrative_source.mjs",
+      "--check"
+    ],
+    "output": "C3 original scene queues: 21 groups verified\n"
+  },
+  {
+    "label": "Source catalog tests/export_library_world_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:10.363Z",
+    "finishedAt": "2026-10-20T01:32:10.581Z",
+    "durationMs": 218,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_library_world_source.mjs",
+      "--check"
+    ],
+    "output": "Library world source geometry/timelines match\n"
+  },
+  {
+    "label": "Source catalog tests/export_canteen_mixer_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:10.582Z",
+    "finishedAt": "2026-10-20T01:32:10.753Z",
+    "durationMs": 171,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_canteen_mixer_source.mjs",
+      "--check"
+    ],
+    "output": "Canteen mixer fixture matches executed original TypeScript methods\n"
+  },
+  {
+    "label": "Source catalog tests/export_c3_devices_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:10.755Z",
+    "finishedAt": "2026-10-20T01:32:10.942Z",
+    "durationMs": 187,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_c3_devices_source.mjs",
+      "--check"
+    ],
+    "output": "C3 devices fixture matches executed original TypeScript\n"
+  },
+  {
+    "label": "Source catalog tests/export_c3_canteen_devices_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:10.944Z",
+    "finishedAt": "2026-10-20T01:32:11.150Z",
+    "durationMs": 206,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_c3_canteen_devices_source.mjs",
+      "--check",
+      "--source-root",
+      "/private/tmp/codex-755-native-local-feedback"
+    ],
+    "output": "C3 canteen devices fixture matches executed original TypeScript\n"
+  },
+  {
+    "label": "Source catalog tests/export_c3_bike_world_source.mjs",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-20T01:32:11.152Z",
+    "finishedAt": "2026-10-20T01:32:11.308Z",
+    "durationMs": 156,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-native-local-feedback/godot_native/tests/export_c3_bike_world_source.mjs",
+      "--check",
+      "--source-root",
+      "/private/tmp/codex-755-native-local-feedback"
+    ],
+    "output": "C3 bicycle world fixture matches executed original TypeScript\n"
+  }
+]

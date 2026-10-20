@@ -242,6 +242,34 @@ async function runChromeSmoke(executable, args, { profileDir, screenshotPath, ur
       if (value.recordingMode?.developerChannelOpen || value.recordingMode?.developerLauncherVisible) throw new Error(`${testCase.id}: production developer UI is visible`);
     };
     assertRoute(state);
+    let chapter4Readiness;
+    if (testCase.id === "chapter4-rpg") {
+      const started = Date.now();
+      const ready = await waitForValue(async () => {
+        const value = await read();
+        const entry = value?.rpgWarmup?.phaseSnapshots?.find(phase => (
+          phase.sceneId === "duan_yongping_temporal_maze" && phase.phase === "entry"
+        ));
+        const input = value?.rpgRuntime?.input;
+        if (entry?.status !== "ready" || entry.failedUrls.length
+          || value?.rpgRuntime?.scene !== "duan_yongping_temporal_maze"
+          || !input?.gameEnabled || !input.sceneEnabled || !input.keyboardEnabled) return null;
+        const overlay = await cdp.send("Runtime.evaluate", {
+          expression: "document.querySelector('.chapter4-prologue-overlay') !== null",
+          returnByValue: true
+        });
+        return overlay.result?.value === false ? value : null;
+      }, 70_000, "Chapter 4 entry warmup, live map input and released prologue overlay");
+      chapter4Readiness = {
+        waitedMs: Date.now() - started,
+        scene: ready.rpgRuntime.scene,
+        input: ready.rpgRuntime.input,
+        entry: ready.rpgWarmup.phaseSnapshots.find(phase => (
+          phase.sceneId === "duan_yongping_temporal_maze" && phase.phase === "entry"
+        )),
+        prologueOverlayVisible: false
+      };
+    }
     for (const modifiers of [10, 12]) {
       await cdp.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "D", code: "KeyD", windowsVirtualKeyCode: 68, modifiers });
       await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "D", code: "KeyD", windowsVirtualKeyCode: 68, modifiers });
@@ -277,7 +305,8 @@ async function runChromeSmoke(executable, args, { profileDir, screenshotPath, ur
     return { fixture: fixture.id, fixtureSource: "external factory → SaveStore.save/load → ordinary persisted envelope",
       saveVersion: fixture.saveVersion, saveSha256: fixture.saveSha256, expectedRoute: fixture.expected,
       devUrlRejected: true, ctrlAndMetaShiftDRejected: true, productControllerExposed: false,
-      staleDeveloperSessionCleared: true, cc98MaintenanceHidden: !session.result.value.maintenance, persistence };
+      staleDeveloperSessionCleared: true, cc98MaintenanceHidden: !session.result.value.maintenance,
+      chapter4Readiness, persistence };
   } catch (error) {
     throw new Error(`${testCase.id}: ${error.message}\n${trimDiagnostic(diagnostics)}`);
   } finally {

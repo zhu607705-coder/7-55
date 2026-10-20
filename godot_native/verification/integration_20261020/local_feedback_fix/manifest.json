@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "49332ec51eaf118554a949105ec6fef13dbbd8b3",
+  "websiteDeployedCommit": "49332ec51eaf118554a949105ec6fef13dbbd8b3",
+  "website": "https://zhu607705-coder.github.io/7-55/",
+  "deploymentRun": 39352126258,
+  "mainSha256": "fb3a779d792d827efcf3a1b87c3fd8f00ed02dce7e660330a7698e9eac0c9eb7",
+  "browserSmokeSha256": "1c61e5f9a158e4b4adbf8adac95c09c65f47ece43769fe3eac57430eaa9e4aed",
+  "evidence": [
+    {
+      "path": "native_acceptance.json",
+      "sourcePath": "/private/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/acceptance-compact.json",
+      "bytes": 6109,
+      "sha256": "6ceb682a5eecb84324b50cb391197012c1ebc9cc9ec61914e070a3c649360530"
+    },
+    {
+      "path": "native_final.json",
+      "sourcePath": "/private/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final.json",
+      "bytes": 11228,
+      "sha256": "6df12e23ce32fb31761b156e20dda83a9808f9da762e36829038eb193341aaef"
+    },
+    {
+      "path": "native_negative_old493.json",
+      "sourcePath": "/private/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/negative-old493.json",
+      "bytes": 18742,
+      "sha256": "e640b3f3865adc71df1908a4e0fc2d59e82ee45b01c32130ee610ee623111b90"
+    },
+    {
+      "path": "native_negative_retirement.json",
+      "sourcePath": "/private/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/negative-pre-retirement.json",
+      "bytes": 2386,
+      "sha256": "bce73b5adb7eefbd52ae84a72764c1f1ee40539daf0235cd01d61054af96f53e"
+    },
+    {
+      "path": "native_source_catalogs.json",
+      "sourcePath": "/private/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/source-catalog-final.json",
+      "bytes": 9091,
+      "sha256": "aafee58ad9bf68ebb4bcf11080927b40358ce1d934f160e5d8d05b638a1e2d14"
+    },
+    {
+      "path": "web_online_acceptance.json",
+      "sourcePath": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/online-acceptance.json",
+      "bytes": 7893,
+      "sha256": "b1466049e82758141342ef2c9c607b8a05383991d3a12cf949736fa09d14d7d9"
+    },
+    {
+      "path": "web_smoke_patch_replay.json",
+      "sourcePath": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/smoke_patch_replay/replay-report.json",
+      "bytes": 8350,
+      "sha256": "40a39cb8fc9a4f34eab921063df1a2b24b3471b31b42163f7630f459e8245808"
+    }
+  ],
+  "independentReadOnlyReview": {
+    "result": "No remaining blocker in the confirmed C3 local feedback, issued swan-catch feedback, FIFO preservation and local-to-narrative handoff scope.",
+    "worldUnchanged": true,
+    "controllerAndSaveUnchanged": true,
+    "followUp": "World kayak boundary hint subtitle_left=2.2 interaction with Main FIFO is a static concern only, not dynamically reproduced; outside this bounded fix."
+  },
+  "limits": [
+    "Final local focused tests only, not a fresh complete native suite or Linux CI result.",
+    "C4 candidate smoke ran all four cases with only its filesystem root adapted for external execution.",
+    "Screenshots were reviewed then deleted; none included."
+  ]
+}

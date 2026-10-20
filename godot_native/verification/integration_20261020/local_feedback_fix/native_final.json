@@ -1,0 +1,172 @@
+{
+  "schema": "native-local-feedback-followup-v1",
+  "baseCommit": "49332ec51eaf118554a949105ec6fef13dbbd8b3",
+  "startedAt": "2026-10-20T01:32:06.972Z",
+  "updatedAt": "2026-10-20T01:33:18.649Z",
+  "rows": [
+    {
+      "script": "test_lake_pursuit_feedback.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLAKE_PURSUIT_FEEDBACK: 16 checks; 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-op7tdz",
+      "durationMs": 1974,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_lake_pursuit_feedback.gd.log"
+    },
+    {
+      "script": "test_native_local_feedback_ownership.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_LOCAL_FEEDBACK_OWNERSHIP: 142 checks; 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-ivk4Ri",
+      "durationMs": 2971,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_native_local_feedback_ownership.gd.log"
+    },
+    {
+      "script": "test_mixer_layer_separation.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nMIXER_LAYER_SEPARATION 1000 checks; 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-II8eoA",
+      "durationMs": 26539,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_mixer_layer_separation.gd.log"
+    },
+    {
+      "script": "test_compact_device_navigation.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nDoor handoff observed: source=1500.56233333333ms; wall=1612ms\nCompact device navigation: 1170 checks, 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-JyGpWU",
+      "durationMs": 24654,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_compact_device_navigation.gd.log"
+    },
+    {
+      "script": "test_notice_queue_lifecycle.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNOTICE_QUEUE_LIFECYCLE: 32 checks; 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-2n8qHD",
+      "durationMs": 1951,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_notice_queue_lifecycle.gd.log"
+    },
+    {
+      "script": "test_world_notice_ownership.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_NOTICE_OWNERSHIP: 19 checks; 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-iwk6WZ",
+      "durationMs": 2253,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_world_notice_ownership.gd.log"
+    },
+    {
+      "script": "test_all_scripts_parse.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 738 scripts, 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-mIminG",
+      "durationMs": 4541,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_all_scripts_parse.gd.log"
+    },
+    {
+      "script": "test_world_presentation_lifecycle.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_OWNER_DIAGNOSTIC {\"noticeSurface\":\"\",\"queueCurrent\":{\"duration\":2.4,\"elapsed\":0.0,\"exact\":false,\"remaining\":2.4,\"speaker\":\"系统\",\"text\":\"单一场景字幕\"},\"queuePending\":[{\"duration\":4.2,\"elapsed\":0.0,\"exact\":true,\"remaining\":4.2,\"speaker\":\"系统\",\"text\":\"单一语音字幕\"}],\"sceneOwns\":true,\"toastVisible\":false,\"worldSubtitle\":\"\"}\nWORLD_FIFO_DIAGNOSTIC {\"current\":{\"duration\":4.2,\"elapsed\":0.0,\"exact\":true,\"remaining\":4.2,\"speaker\":\"系统\",\"text\":\"单一语音字幕\"},\"left\":4.2,\"pending\":[],\"surface\":\"world\",\"worldText\":\"单一语音字幕\"}\nWorld presentation/input lifecycle checks: 12; failures: 0\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-eZARph",
+      "durationMs": 1748,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_world_presentation_lifecycle.gd.log"
+    },
+    {
+      "script": "test_c3_handoff_persistence.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC3_HANDOFF_PERSISTENCE 28 checks; 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-OsZ2Ua",
+      "durationMs": 639,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_c3_handoff_persistence.gd.log"
+    },
+    {
+      "script": "test_world_overlay_integration.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_OVERLAY_INTEGRATION: 89 checks; 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-RITn0J",
+      "durationMs": 2542,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_world_overlay_integration.gd.log"
+    },
+    {
+      "script": "test_c3_canteen_devices_controls.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC3 controls viewport (1280, 720)\nC3 controls viewport (960, 540)\nC3 controls viewport (390, 844)\nC3 controls viewport (430, 860)\nC3 controls viewport (844, 390)\nC3 canteen routed controls: 3552 checks, 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-rC9im4",
+      "durationMs": 46644,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_c3_canteen_devices_controls.gd.log"
+    },
+    {
+      "script": "test_c3_devices_controls.gd",
+      "passed": true,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC3 local device actual controls/source checks: 2961 checks, 0 failures\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-5X35mH",
+      "durationMs": 68701,
+      "log": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final-test_c3_devices_controls.gd.log"
+    }
+  ],
+  "sourceBefore": {
+    "scripts/main.gd": "fb3a779d792d827efcf3a1b87c3fd8f00ed02dce7e660330a7698e9eac0c9eb7",
+    "scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023",
+    "tests/test_native_local_feedback_ownership.gd": "5fe11a87fddd271bd3cdd0d741380bacd83658962feee8388a608a9fa173def1",
+    "tests/test_lake_pursuit_feedback.gd": "4c16875a0823bec7413bdde67a3fb3e3994e0efeabb093641fdf28372ab5560d",
+    "tests/test_mixer_layer_separation.gd": "bc69f1fe9ce57c63d66f3c04fad970be9d670d53d340f09c0143b897dc1886a6",
+    "tests/test_c3_canteen_devices_controls.gd": "f0d7c6540707105378dd00296569498b754c230190152e8c2ce7d05ad1a7a3a3",
+    "tests/test_compact_device_navigation.gd": "4268e41bd80f0dcf4f0abe061a705e9781ab8f0d9fb7afaedb9f4915ab46c105",
+    "tests/test_c3_devices_controls.gd": "65147ded94b3cb7846144ed84c422c90784f38515e84e82168b8c98a0f2eaeb8",
+    "tests/test_all_scripts_parse.gd": "afb129a88c4ab705d75417a6c4555ea8374c701a2834dd6aac54bd66a77cb7cd",
+    "tests/test_notice_queue_lifecycle.gd": "17d63f3150d546bbb023a7854a6cebf78480f29b8e52de0fcbfb82a919318732",
+    "tests/test_world_notice_ownership.gd": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b",
+    "tests/test_world_presentation_lifecycle.gd": "9118b02c03088f7ea73f976a20e2d482320818d7eea8298dca179111949044ce",
+    "tests/test_world_overlay_integration.gd": "16a4ffc34cf0dc39781c20f6e2fd45cce1b9ae70b88b1188340f7ff6b30fa1e2",
+    "tests/test_c3_handoff_persistence.gd": "f1d2a874d721ac9f89f1abdfd17c01ede78793f8b45e710dbe6ce5c80d8ec06c"
+  },
+  "sourceAfter": {
+    "scripts/main.gd": "fb3a779d792d827efcf3a1b87c3fd8f00ed02dce7e660330a7698e9eac0c9eb7",
+    "scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023",
+    "tests/test_native_local_feedback_ownership.gd": "5fe11a87fddd271bd3cdd0d741380bacd83658962feee8388a608a9fa173def1",
+    "tests/test_lake_pursuit_feedback.gd": "4c16875a0823bec7413bdde67a3fb3e3994e0efeabb093641fdf28372ab5560d",
+    "tests/test_mixer_layer_separation.gd": "bc69f1fe9ce57c63d66f3c04fad970be9d670d53d340f09c0143b897dc1886a6",
+    "tests/test_c3_canteen_devices_controls.gd": "f0d7c6540707105378dd00296569498b754c230190152e8c2ce7d05ad1a7a3a3",
+    "tests/test_compact_device_navigation.gd": "4268e41bd80f0dcf4f0abe061a705e9781ab8f0d9fb7afaedb9f4915ab46c105",
+    "tests/test_c3_devices_controls.gd": "65147ded94b3cb7846144ed84c422c90784f38515e84e82168b8c98a0f2eaeb8",
+    "tests/test_all_scripts_parse.gd": "afb129a88c4ab705d75417a6c4555ea8374c701a2834dd6aac54bd66a77cb7cd",
+    "tests/test_notice_queue_lifecycle.gd": "17d63f3150d546bbb023a7854a6cebf78480f29b8e52de0fcbfb82a919318732",
+    "tests/test_world_notice_ownership.gd": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b",
+    "tests/test_world_presentation_lifecycle.gd": "9118b02c03088f7ea73f976a20e2d482320818d7eea8298dca179111949044ce",
+    "tests/test_world_overlay_integration.gd": "16a4ffc34cf0dc39781c20f6e2fd45cce1b9ae70b88b1188340f7ff6b30fa1e2",
+    "tests/test_c3_handoff_persistence.gd": "f1d2a874d721ac9f89f1abdfd17c01ede78793f8b45e710dbe6ce5c80d8ec06c"
+  }
+}

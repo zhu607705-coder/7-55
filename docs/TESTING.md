@@ -67,6 +67,8 @@ After the offline single file is built and structurally verified, `scripts/verif
 - valid, non-trivial screenshots with the requested dimensions;
 - distinct screenshots for distinct checkpoints.
 
+The Chapter 4 screenshot waits for its `entry` warmup to be ready, the actual map and input to be live, and the blocking prologue overlay to leave. A canvas alone is insufficient; later `transport` preloading may continue in the background.
+
 Chapter 3 and Chapter 4 states are external test fixtures, normalized through the real `SaveStore.save`/`load` transaction and placed in an isolated browser profile before boot. The production application loads them as ordinary version-35 saves; the smoke does not add a product test hook or use a checkpoint URL to establish progress. Every case also supplies a conflicting `devCheckpoint` URL and sends both developer keyboard shortcuts, asserting that the URL cannot change the loaded chapter and no developer panel or controller hook appears. Development entry remains limited to Vite development mode and its existing path restriction.
 
 A fourth case boots a valid CC98 save with all eight legacy QA session records. It verifies that production removes only these temporary records, hides CC98 maintenance, persists the real exit button's transition to the phone home screen, and retains that transition after an actual reload. State-write tests separately construct the store before cleanup, prove the stale marker blocks subsequent saves, and verify that cleanup neither writes formal save bytes nor restores the QA backup.

@@ -26,6 +26,10 @@ const StoryCaption=preload("res://scripts/presentation/c3_narrative_view.gd")
 var notice_queue=NoticeQueue.new()
 var notice_surface:=""
 var notice_world_revision:=-1
+# Synchronous device actions own their existing operation row, not the notice FIFO.
+var c3_device_action_depth:=0
+var local_feedback_revision:=-1
+var local_feedback_text:=""
 var story_caption:Control
 var story_caption_time:=0.0
 var story_caption_surface:=""
@@ -669,6 +673,7 @@ func _configure_world_surface(extent: Vector2,compact: bool) -> void:
 func _notice_scene_busy() -> bool:
 	# Generic modal results retain their reserved row. Devices with a local
 	# feedback owner are filtered before anything reaches this queue.
+	if is_instance_valid(c3_device_panel): return true
 	if is_instance_valid(modal_notice_slot): return false
 	if is_instance_valid(active_game) or is_instance_valid(phone_document) or is_instance_valid(control_center): return true
 	if is_instance_valid(file_dialog) and file_dialog.visible: return true
@@ -728,6 +733,7 @@ func _layout_story_caption() -> void:
 
 func _layout_toast() -> void:
 	if not is_instance_valid(toast): return
+	_retire_local_feedback_on_takeover()
 	_sync_notice_remaining()
 	if _notice_scene_busy() or story_caption_time>0:
 		_hide_notice_surface();_layout_story_caption();return
@@ -1289,13 +1295,15 @@ func _open_c3_device(kind: String) -> void:
 		if is_instance_valid(c3_device_panel):
 			c3_device_panel=null
 			_close_modal())
+	# Pause only the ordinary shell notice before this device takes its row.
+	_sync_notice_remaining();_hide_notice_surface()
+	world.subtitle="";world.subtitle_left=0
 	var reader:=func() -> Dictionary: return State.d
-	var opened: bool=c3_device_panel.setup(kind,reader,State.act,_feedback,State.toggle_mode) if canteen_device else c3_device_panel.setup(reader,State.act,_feedback) if kind=="mixer" else c3_device_panel.setup(kind,reader,State.act,_feedback)
+	var opened: bool=c3_device_panel.setup(kind,reader,_dispatch_c3_device_action,_c3_device_feedback,State.toggle_mode) if canteen_device else c3_device_panel.setup(reader,_dispatch_c3_device_action,_c3_device_feedback) if kind=="mixer" else c3_device_panel.setup(kind,reader,_dispatch_c3_device_action,_c3_device_feedback)
 	if not opened: _close_modal(); return
 	world.move_target=Vector2.INF
 	world.touch_axis=Vector2.ZERO
 	world.walk_clock=0
-	world.subtitle=""; world.subtitle_left=0
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
 	_layout_modal()
 	modal.grab_focus()
@@ -1897,10 +1905,55 @@ func _virtual_run_owns_feedback(message: String) -> bool:
 	if str(active_game.get_script().resource_path) != "res://scripts/games/virtual_run.gd": return false
 	return active_game.owns_result_feedback(message)
 
+func _dispatch_c3_device_action(action:String,value:Variant=null)->Dictionary:
+	# State emits feedback synchronously before changed/close callbacks. Keep
+	# this context through those callbacks, even if the device dismisses itself.
+	c3_device_action_depth+=1
+	var result:Dictionary=State.act(action,value)
+	c3_device_action_depth-=1
+	return result
+
+func _c3_device_feedback(message:String)->void:
+	if not _show_local_world_feedback(message):_feedback(message)
+
+func _issued_swan_catch_feedback(message:String)->bool:
+	if not _feedback_world_active() or world.scene_id!="qizhen_lake":return false
+	if str(State.last_result.get("message",""))!=message:return false
+	for cue:Dictionary in State.last_result.get("presentation",[]):
+		if str(cue.get("cueId",""))=="qizhen_chase_failed" and str(cue.get("payload",{}).get("reason",""))=="swan_caught":return true
+	return false
+
+func _local_feedback_reading_taken()->bool:
+	if State.story_input_locked() or story_caption_time>0 or is_instance_valid(active_game):return true
+	if is_instance_valid(world_effect) and world_effect.get_meta("blocks_input",false):return true
+	if is_instance_valid(library_story_host) and library_story_host.current!=null:return true
+	if is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract():return true
+	return is_instance_valid(c3_narrative_host) and is_instance_valid(c3_narrative_host.view) and c3_narrative_host.view.is_visible_in_tree()
+
+func _retire_local_feedback_on_takeover()->void:
+	if local_feedback_revision<0 or not is_instance_valid(world):return
+	var owned:bool=world.subtitle_revision==local_feedback_revision and world.subtitle==local_feedback_text
+	if owned and not _local_feedback_reading_taken():return
+	if owned:
+		world.subtitle="";world.subtitle_left=0;world.queue_redraw()
+	# Replacement/expiry belongs to its new owner, even with identical text.
+	local_feedback_revision=-1;local_feedback_text=""
+
+func _show_local_world_feedback(message:String)->bool:
+	if not _feedback_world_active() or _local_feedback_reading_taken():return false
+	_sync_notice_remaining();_hide_notice_surface()
+	# World retains the existing actual display clock and issued lake-catch
+	# duration. A local action pauses the FIFO without spending unread time.
+	world._receive_feedback(message);world.queue_redraw()
+	local_feedback_revision=world.subtitle_revision;local_feedback_text=message
+	if is_instance_valid(c3_device_panel):c3_device_panel.set_feedback(message)
+	return true
+
 func _feedback(message: String,tone: String="system",duration_override:float=-1) -> void:
 	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
 	if _room302_studio_active():modal.set_feedback(message);return
 	if _virtual_run_owns_feedback(message) or _scene_owns_feedback(message):return
+	if (c3_device_action_depth>0 or _issued_swan_catch_feedback(message)) and _show_local_world_feedback(message):return
 	_sync_notice_remaining()
 	var duration:float=duration_override if duration_override>=0 else clampf(1.6+message.length()*.12,2.4,6.5)
 	notice_queue.enqueue(message,str(PhoneNotice.SPEAKERS.get(tone,"系统")),duration,duration_override>=0)

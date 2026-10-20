@@ -60,10 +60,15 @@ func run() -> void:
 		check(panel.prompt_label.visible and not panel.feedback_label.visible,"idle footer shows only one operation hint")
 		check(panel.art_board.encloses(feedback_rect),"feedback stays within the bounded mixer panel")
 		for message in [str(panel.session.drinks.ingredientAdded),str(panel.session.drinks.ingredientMissing),str(panel.session.drinks.mixerNeedShelf)]:
-			shell._feedback(message);await frames()
+			panel.feedback.call(message);await frames()
 			check(panel.feedback_label.visible and not panel.prompt_label.visible,"feedback replaces the instruction instead of adding another line")
 			check(panel.feedback_label.get_minimum_size().y<=feedback_rect.size.y,"original feedback fits its reserved row without clipping: "+message)
+		# Ambient notices keep their unread FIFO time while this operation row is owned.
+		shell._feedback("普通待阅通知");await frames()
+		var unread:float=shell.notice_queue.current.remaining
+		check(shell.notice_queue.current.text=="普通待阅通知" and shell.notice_surface.is_empty(),"ambient notification waits instead of replacing the mixer result")
 		shell.world.subtitle="";shell.world.subtitle_left=0;await frames()
+		check(is_equal_approx(shell.notice_queue.current.remaining,unread),"clearing a local result cannot consume an unread ambient notification")
 		check(panel.prompt_label.visible and not panel.feedback_label.visible,"cleared feedback restores the same single operation row")
 		for label: Label in panel.labels:
 			check(not Rect2(label.position,label.size).intersects(prompt_rect),"ingredient caption does not collide with instruction text")
@@ -92,6 +97,7 @@ func run() -> void:
 		var count: int=motion.observed_accepts
 		await click(panel.slots[chosen])
 		check(motion.observed_accepts==count and state.d.canteenHunt.drinkMixSequence==["blackCoffee"],"missing repeat feedback cannot consume or repeat an accepted pour")
+		check(panel.feedback_label.visible and not panel.prompt_label.visible and panel.feedback_label.text==panel.session.missing_feedback() and shell.world.subtitle==panel.session.missing_feedback(),"real missing-ingredient control presents its corrective source result on the existing operation row")
 		await key(KEY_ESCAPE)
 		check(not is_instance_valid(shell.c3_device_panel) and state.d.canteenHunt.drinkMixSequence==["blackCoffee"],"cancel retains source partial glass and releases input")
 		state.developer_mode=false
