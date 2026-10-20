@@ -4884,3 +4884,16 @@ The full release PCK exposed a real packaging-only regression: north_large and n
 - 正式浏览器验收工具增加DPR2/DPR3及1920窗口，必须同时核对CSS逻辑尺寸、完整物理backing、手机填充与比例、实际控件输入、PNG高清尺寸和原有真实保存/重载；云端发布仍须以新提交的干净Linux产物独立通过。
 - 本机正式6场景737断言全部通过，实际146.821秒，报告SHA `ce9a75cb4e8e40f2d4ddda3b2aca3300f39aabdb4622935e1f98c1c2b2ab6b0d`。1440×900在DPR1/2下均为432×864手机，DPR2保留2880×1800画布；390×844在DPR1/3下均为366×732手机，DPR3保留1170×2532画布；1920×1080可放大到522×1044。六例普通输入、真实保存/只读IDB、导入/非法文件拒绝与真实刷新均通过，各91个冷启动块和110个独立transport完整校验。截图逐张查看后删除留哈希，未使用用户浏览器。
 - 额外聚焦实际交互分别保存原始尝试：同一document DPR2→1.25→0.8→2后逻辑1440×900保留，手机约432×864（0.8的CSS舍入差不足1px，原始测量保留），真实0798点击/删除正确；DPR2已赚取C2导入、键盘移动、返回手机、精确native/IDB保存、新document恢复与世界源坐标不变均实际验证。首试因DPR浮点严格相等等待失败，改为测量容差；次试在已完成86个检查后进入另一场景时CDP导航超时，原失败保留。独立新profile补完1920的22项与390DPR3的36项（含实际触摸移动、手机返回/耐久保存/刷新），全部通过；不将部分失败报告改为全过或把多次尝试累加成唯一功能数。
+
+### 2026-10-20 发布复核与调查记录返回现场的持久性
+
+- 高分屏修复a2517a6a已通过独立Linux Pages run39408229772的737断言/6场景，实际406.346秒，10:40:31 UTC发布原站。clean source-input `a57bd628cf7f52a10e02e6149e43725e45358cf16698b80c082595e20fd375d0`，manifest SHA `b93740c0cf1a461b7719d32509d5ca696ba21e89578c2f9482fc0f72243fd967`；与本机fe92分别留证。新Web CI39408237816及cross39408237773成功，merge-test d0037bb0的树054046c3与候选一致。
+- a251原站实际DPR2新profile54项通过：CSS1440×900、logical1440×900、backing2880×1800、phone432×864；实际91冷启动块各一次HTTP200，压缩传输60,087,642B，本次到Main24,374ms；新document到Main6,202ms，含布局/耐久检查热段总7,310ms，禁HTTPcache仍零bootHTTP且IDB复用94,160,402B。19个后续URL精确受控阻断、22次受控失败单列，无非受控错误；2图已查看/清理。报告SHA `61c05a90bd937b2a6fc7620ac8d223b8702d9d5ac7a3e41f269e234549568d81`，不冒充后续返回现场修复的证明。
+- 旧641完整原生CI39402404110确实失败：bike_reentry、canteen_resume的显式rpg存档被旧compact断言要求phone；early_games仍按旧0.9秒成功展示推算，而当前打印展示3.8秒。保留完整原始失败日志SHA `1cd953a66306421d0623d9b98dcec657dbd58db755f8f1e66a55d9eed3900e23`；后续GPU/export/parity未运行，不能称完整CI通过。
+- 修正测试时新增真正save→清空内存→load的手机/地图双向检查，额外暴露真实缺陷：JournalResume显式返回恢复了小游戏，却未将runtimeMode从phone保存回rpg。仅在该明确用户动作的原准入条件内，必要时写rpg并State.save_game，然后沿原_show_world_mobile恢复；普通C2手机Journal、自动展示方法、控制器准入、物品与余额没有新增变化。
+- bike最终35项、canteen最终50项及early20项隔离通过，含Journal实际返回后模式/phase/items/wallet不变、普通磁盘重载恰好一个活动，以及旧暂停、Exit、导入、支付与非法准入负控。两个新增持久写入测试都有隔离guard；不通过夹具手动赋rpg掩盖缺陷。首个新增bike测试抓到缺陷后出现nil owner并终止的失败收据保留，未改写为通过。
+- 返回修复本机冻结包 `exports/web-display-journal-return-20261020`，a251基底dirty=true，source-input `36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3`；import/export通过，初载94,512,428B、托管594,121,428B、逻辑499,961,122B，仍91启动块/19后续包/1011核心与2284全资源。新提交仍须独立干净Linux与线上验收，不继承a251的54项或737项结果。
+- 用户已回复服务器部署“先算了”，本任务不再追问SSH身份或尝试10.70.223.113部署；服务器未上传或安装配置。原生完整CI、完整人工四章、物理手机和其他浏览器接受保持独立范围。
+- 返回修复后的关联native9阶段全部通过，报告SHA `e393e71d77868adbd51168c07fe2872baf9fc92c977a6965f967228831876b03`，15个相关文件前后SHA一致；再次719源资产同步与verify-only确认36ba未变。运行输入清单相对fe92只变Main，19个后续包及WASM逐字节一致；这是本机包比较，不冒称Linux新包身份相同。
+- 36ba真实DPR3食堂35项通过：普通earned导入、活动退出→手机TaskTrigger→JournalResume→恢复同一阶段活动→退出→精确保存ACK/独立IDB→新document恢复rpg/单活动，phase/items/wallet不变；DPR3物理1170×2532/逻辑390×844保留。普通第三章实际要求Chapter2+3十个包，均完整ready；35/4明确阻断，未注入ready或修改控制器来绕过依赖。5张截图已逐张看后清理，报告SHA `1f1b71ee98958643013451b8c803491f22bd8b87e79368415dc372b4198b8634`。
+- 同36ba桌面DPR2骑行亦实际41项通过：353个原始3D MeshInstance正常presented，退出→手机→Journal恢复活动→保存/独立IDB→真实新document重载保持chasing、rpg、scene、物品和钱包。首次因helper沿用旧按钮文案而失败的尝试保留，改用实际稳定WorldPhoneButton节点重测；没有改产品来迎合测试，也不将首试重标为通过。

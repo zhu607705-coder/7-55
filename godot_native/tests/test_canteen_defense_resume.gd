@@ -12,6 +12,18 @@ func new_main(view: Vector2i) -> void:
 	if is_instance_valid(shell.active_game): shell.active_game.set_process(false)
 func defense_fixture() -> void:
 	state.d=imported.duplicate(true);state.developer_mode=true
+func persisted_defense_fixture(mode: String) -> void:
+	await close_main()
+	defense_fixture();state.d.runtimeMode=mode
+	persist_current_defense(mode)
+func persist_current_defense(mode: String) -> void:
+	var prior: Dictionary={"phase":state.d.canteenHunt.phase,"items":state.d.items.duplicate(true),"wallet":state.d.wallet.duplicate(true)}
+	state.developer_mode=false
+	check(state.save_game(),"ordinary defense surface save succeeds: "+mode)
+	state.d=state.initial()
+	check(state.load_game(),"ordinary defense surface save reloads: "+mode)
+	check(state.d.runtimeMode==mode and state.d.canteenHunt.phase==prior.phase and state.d.items==prior.items and state.d.wallet==prior.wallet,"surface persistence retains mode, phase, items and wallet: "+mode)
+	state.developer_mode=true
 func find_text(node: Node,text: String) -> Button:
 	if node is Button and node.text==text and node.is_visible_in_tree(): return node
 	for child in node.get_children():
@@ -19,6 +31,8 @@ func find_text(node: Node,text: String) -> Button:
 		if found!=null:return found
 	return null
 func run() -> void:
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
+		push_error("Canteen defense resume persistence requires an isolated native test profile");quit(2);return
 	state=root.get_node("State");state.developer_mode=true
 	var path:=OS.get_environment("DEFENSE_EARNED_SAVE")
 	if not path.is_empty():
@@ -52,13 +66,31 @@ func run() -> void:
 		if back!=null:await click(back)
 		check(is_instance_valid(shell.active_game) and starts==count+1,"Tasks Return deliberately admits another controller session")
 		if is_instance_valid(shell.active_game):await tap(shell.active_game.exit_button)
-	# Compact fresh startup stays on phone until existing Return explicitly enters.
-	defense_fixture();var count:=starts;await new_main(Vector2i(430,860))
+	# Compact startup restores the explicitly saved surface, just like desktop.
+	await persisted_defense_fixture("rpg");var count:=starts;await new_main(Vector2i(430,860))
+	check(is_instance_valid(shell.active_game) and not shell.phone.visible and starts==count+1,"portrait rpg save restores exactly one controller session")
+	if is_instance_valid(shell.active_game):
+		var game: Control=shell.active_game
+		check(not game._pickup_active,"portrait saved defense never replays pickup")
+		shell._refresh();shell._layout();shell._resume_canteen_defense();await frames()
+		check(shell.active_game==game and starts==count+1 and state.d.canteenHunt.phase=="exit_blocking","portrait rpg refresh retains its session without story advancement")
+		await tap(game.exit_button)
+	# An explicitly saved phone remains there until the existing Return action.
+	await persisted_defense_fixture("phone");count=starts;await new_main(Vector2i(430,860))
 	check(not is_instance_valid(shell.active_game) and shell.phone.visible and starts==count,"portrait reload stays on requested phone page")
+	var prior: Dictionary={"phase":state.d.canteenHunt.phase,"items":state.d.items.duplicate(true),"wallet":state.d.wallet.duplicate(true)}
 	shell._show_journal();await frames();var back: Button=shell.find_child("JournalResume",true,false)
 	if back!=null:await click(back)
 	check(is_instance_valid(shell.active_game) and starts==count+1,"portrait phone to Return starts saved defense")
+	check(state.d.runtimeMode=="rpg" and state.d.canteenHunt.phase==prior.phase and state.d.items==prior.items and state.d.wallet==prior.wallet,"actual Tasks Return persists world intent without advancing phase or changing items and wallet")
 	if is_instance_valid(shell.active_game):await tap(shell.active_game.exit_button)
+	await close_main();persist_current_defense("rpg")
+	count=starts;await new_main(Vector2i(430,860))
+	check(state.d.runtimeMode=="rpg" and is_instance_valid(shell.active_game) and not shell.phone.visible and starts==count+1,"ordinary Tasks Return save reload restores world and exactly one defense session")
+	check(state.d.canteenHunt.phase==prior.phase and state.d.items==prior.items and state.d.wallet==prior.wallet,"Tasks Return reload preserves phase, items and wallet")
+	if is_instance_valid(shell.active_game):
+		check(not shell.active_game._pickup_active,"Tasks Return reload never replays pickup")
+		await tap(shell.active_game.exit_button)
 	count=starts;state.d.canteenHunt.phase="pickup_search";shell._show_world_mobile();await frames()
 	check(starts==count and not is_instance_valid(shell.active_game),"earlier phase cannot enter defense")
 	# A desktop journal promises Return to scene even after a portrait resize.

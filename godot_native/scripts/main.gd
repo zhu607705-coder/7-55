@@ -1493,7 +1493,13 @@ func _show_journal() -> void:
 	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),return_to_world)
 	journal.resume_requested.connect(func():
 		_close_modal()
-		if return_to_world or _is_canteen_defense_entry() or _is_bike_chase_entry(): _show_world_mobile()
+		if return_to_world or _is_canteen_defense_entry() or _is_bike_chase_entry():
+			# This is an explicit scene return, so persist the same destination as
+			# the phone's Return control before admitting the retained activity.
+			if str(State.d.get("runtimeMode","phone"))!="rpg":
+				State.d.runtimeMode="rpg"
+				State.save_game()
+			_show_world_mobile()
 	)
 	journal.comparison_requested.connect(func(): _show_observation_comparison(true))
 	box.add_child(journal)
