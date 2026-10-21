@@ -1,4 +1,5 @@
 extends Control
+const CampusMaterial = preload("res://scripts/ui/campus_ui_material.gd")
 const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var overflow_feedback:ScrollContainer
@@ -922,7 +923,10 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var line := _hud_line()
 	var hud := hud_metrics(line)
 	if not film:
-		canvas.draw_rect(Rect2(0,0,size.x,hud.header_height),Color(.04,.1,.13,.86))
+		# Separate mounted signs leave the centre of the world unobscured.
+		var place_width := minf(size.x-hud.mode_rect.size.x-hud.body_gap*2,font.get_string_size(str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,hud.title_font).x+hud.padding*2)
+		CampusMaterial.draw(canvas,Rect2(0,0,maxf(1,place_width),hud.header_height),"placard")
+		CampusMaterial.draw(canvas,hud.mode_rect,"placard")
 		if hud.compact:
 			var mode_text: String="深色观察" if State.d.native.mode == "dark" else "浅色操作"
 			var mode_width: float=font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
@@ -937,13 +941,14 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0
 	if film:body_rect.position.y=hud.body_gap
 	if hud.body_height>0:
-		canvas.draw_rect(body_rect,Color(.02,.08,.12,.88))
+		CampusMaterial.draw(canvas,body_rect,"paper")
 		if hud.body_overflow and is_instance_valid(overflow_feedback):
 			overflow_feedback.label.text=line;overflow_feedback.label.add_theme_font_size_override("font_size",hud.body_font)
-			overflow_feedback.layout_body(Rect2(hud.body_padding,body_rect.position.y+hud.body_inset,size.x-hud.body_padding*2,body_rect.size.y-hud.body_inset*2),hud.body_content_height)
+			overflow_feedback.label.add_theme_color_override("font_color",CampusMaterial.INK)
+			overflow_feedback.layout_body(Rect2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset,body_rect.size.x-hud.body_padding*2,body_rect.size.y-hud.body_inset*2),hud.body_content_height)
 			overflow_feedback.show()
 		else:
-			canvas.draw_multiline_string(font,Vector2(hud.body_padding,body_rect.position.y+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,Color("f1f2dc"))
+			canvas.draw_multiline_string(font,Vector2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,CampusMaterial.INK)
 	if not film and (touch_controls or mobile_exploration): _draw_touch_controls(canvas)
 	if transition_alpha > 0: canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 
@@ -981,7 +986,8 @@ func hud_metrics(text: String) -> Dictionary:
 	var available:float=maxf(1,bottom-hud.header_height-hud.body_gap)
 	if hud.body_height>available:
 		hud.body_height=available;hud.body_inset=minf(hud.body_inset,maxf(0,(available-1)/2));hud.body_overflow=true
-	hud.body_rect=Rect2(hud.body_gap,maxf(hud.header_height+hud.body_gap,bottom-hud.body_height),size.x-hud.body_gap*2,hud.body_height)
+	var surface_width: float=minf(size.x-hud.body_gap*2,hud.body_width+hud.body_padding*2)
+	hud.body_rect=Rect2((size.x-surface_width)/2,maxf(hud.header_height+hud.body_gap,bottom-hud.body_height),surface_width,hud.body_height)
 	return hud
 
 func hud_mode_rect() -> Rect2:

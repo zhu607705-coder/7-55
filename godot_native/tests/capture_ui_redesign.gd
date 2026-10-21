@@ -25,6 +25,12 @@ func run() -> void:
 	state = root.get_node("State")
 	state.developer_mode = true
 	state.d = state.initial()
+	for dimensions: Vector2i in [Vector2i(1440,900),Vector2i(390,844)]:
+		DisplayServer.window_set_size(dimensions); root.size=dimensions
+		var entry: Control=load("res://scenes/entry.tscn").instantiate()
+		root.add_child(entry); await frames()
+		await capture("%dx%d-entry"%[dimensions.x,dimensions.y])
+		entry.queue_free(); await frames()
 	shell = load("res://scenes/main.tscn").instantiate()
 	root.add_child(shell)
 	await frames()
@@ -37,8 +43,14 @@ func run() -> void:
 			state.d.native.scene = ""
 			state.d.native.page = sample[1]
 			state.d.native.settings.volume = 0
+			state.d.networkMode = "campus_wifi"
+			state.d.phoneBattery.percent = 100
 			shell.mobile_world = false
 			shell._refresh()
+			await frames()
+			# Settle the real 1500ms app-entry presentation before page capture.
+			shell._process(2.0)
+			await frames()
 			shell._layout()
 			await capture("%dx%d-%s" % [dimensions.x,dimensions.y,sample[1]])
 		state.begin_checkpoint("c2-dorm-exit")
@@ -49,6 +61,17 @@ func run() -> void:
 		shell.world.transition_alpha = 0
 		shell.world.queue_redraw()
 		await capture("%dx%d-world" % [dimensions.x,dimensions.y])
+		shell.compact_inventory_open=true; shell._layout()
+		await capture("%dx%d-world-inventory" % [dimensions.x,dimensions.y])
+		shell._show_journal()
+		await capture("%dx%d-journal" % [dimensions.x,dimensions.y])
+		shell._close_modal()
+		shell._show_settings()
+		await capture("%dx%d-pause" % [dimensions.x,dimensions.y])
+		shell._close_modal()
+		shell._show_inventory()
+		await capture("%dx%d-inventory" % [dimensions.x,dimensions.y])
+		shell._close_modal()
 		var body: VBoxContainer = shell._modal_base("调查记录")
 		body.add_child(shell._label("在现场收集证据，再回到这里核对。",17))
 		await capture("%dx%d-short-dialog" % [dimensions.x,dimensions.y])

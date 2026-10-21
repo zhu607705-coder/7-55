@@ -1,4 +1,5 @@
 extends RefCounted
+const Typography = preload("res://scripts/ui/native_typography.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 ## Source-native mobile library. UI-local navigation and draft selection only.
 ## All booking, catalog evidence and recovery transitions are existing chapter intents.
@@ -154,9 +155,8 @@ func enter_room(b, room: String) -> void:
 
 func spaces(b) -> Control:
 	var root=base(b,"图书馆空间预约...",func(): goto(b,"home"))
-	# This source page explicitly uses the platform sans-serif stack, unlike the pixel apps.
-	var sans=SystemFont.new(); sans.font_names=PackedStringArray(["PingFang SC","Microsoft YaHei","Noto Sans CJK SC","sans-serif"]); sans.fallbacks=[load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")]
-	var page_theme=Theme.new(); page_theme.default_font=sans; root.theme=page_theme
+	# Keep this page's sans-serif role deterministic on native and Web.
+	var page_theme=Theme.new(); page_theme.default_font=Typography.body_font(); root.theme=page_theme
 	var width=25 if rail_collapsed else 48
 	var rail_background: Panel=b._panel(root,Rect2(0,54,width,b.APP_HEIGHT-114),Color("061a49"))
 	var rail: Button=b._button(root,"»\n\n座\n位\n预\n约" if not rail_collapsed else "»",Rect2(0,61,width,265),func(): rail_collapsed=not rail_collapsed; refresh(b),Color.TRANSPARENT,Color.WHITE,0,Color.TRANSPARENT); rail.name="LibraryReservationRail"
@@ -190,6 +190,7 @@ func spaces(b) -> Control:
 	b._label(inner,"没有更多了" if not available_rooms.is_empty() else "该馆暂未开放可预约空间",Rect2(left,y,working_width,46),14,Color("999999"),HORIZONTAL_ALIGNMENT_CENTER)
 	bottom_nav(b,root,true)
 	if not sheet.is_empty(): add_sheet(b,root)
+	Typography.apply_body_text_tree(root)
 	return root
 
 func seat_count(b) -> int:

@@ -36,6 +36,9 @@ jobs:
         run: |
           node godot_native/tools/sync_source.mjs
           GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
+      - name: Verify bundled body font stays in boot content
+        if: matrix.source == 'candidate'
+        run: node godot_native/tools/test_ui_font_pack.mjs
       - name: Capture actual desktop and compact interfaces
         run: |
           mkdir -p "/tmp/755-ui-profile"/{data,config,cache,state}

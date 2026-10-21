@@ -1,0 +1,56 @@
+# Interaction surface map — 2026-10-21
+
+This maps the native game’s existing owners, not a new gameplay state machine.
+Presentation may restyle a control. Only existing controller intents may earn
+progress, consume items, advance narration, or persist a save.
+
+## Common visual states
+
+`interaction_chrome.gd` provides paper faces, navy equipment trays, thin metal
+edges and a coral selection mark. `apply_states` assigns normal, hover, pressed,
+hover-pressed, disabled and keyboard-focus styles explicitly. Pressed darkens the
+face; disabled reduces contrast; focus is a contrasting transparent outline,
+separate from selection. No style changes a minimum size, callback, permission or
+input owner. `HardwareDetail` is mouse-transparent and never focusable. On a
+larger transparent touch target, detail/focus follows the actual `painted_rect`.
+
+## Surface owners and transitions
+
+| Surface / owner | Inputs and ordinary transition | Blocked, failure, success | Close / interruption |
+|---|---|---|---|
+| Phone status / `phone_chrome.status_right` | Mouse/touch or focused button activation emits `page_requested(control_center)`; clock/network/battery read shared state | Disabled when Main owns an overlay. Low battery and untrusted clock retain authored warning values; opening never earns evidence | Existing Control Center return restores its previous app and draft |
+| Phone task tab / `phone_chrome.task_button` | Mouse/touch, Enter/Space via Button emits `task_requested`; Main opens journal | Shared task facts only. Four ordered digit slots remain masked until earned; no answer invented by presentation | Journal Close/resume returns through Main; task tab blocks while modal owns input |
+| Phone inventory handle / `phone_chrome.inventory_handle` | Click/tap or keyboard activation toggles drawer; pointer drag moves authored drawer vertically | Hidden during original chapter-one inventory lock and when no owned items. Modal blocks input. Reading-page anchor keeps existing larger transparent hit area | Collapse clears local selection via existing intent. Page/anchor changes cancel owned gestures; dragging the handle suppresses accidental click |
+| Item slots / `inventory_item.gd`, PhoneChrome `InventorySlot` | Single tap/Space selects; double tap/click or Enter inspects. Native drag submits canonical `{kind: inventory_item, item: id}` | Selected slot gains coral edge/mark; never a green check gem. Disabled slots cannot start gestures. Rejected drop emits existing feedback; item remains owned | Escape cancels drag. Hidden/disabled/focus loss cancels owned touch/drag. Item-inspection close restores prior focus via Main |
+| Touch item gesture / `inventory_item.gd` | Single touch owner; 10px threshold; early motion along scroll axis scrolls, held motion can drag | Extra fingers cannot acquire a second source or release first owner. Drop accepted only by existing target/controller | Canceled touch releases ownership, not an item-use intent |
+| Combination / `InventorySlot._drop_data` | Different item accepts canonical drop and emits `items_combined` | Existing controller validates recipe and consume/retain semantics. Self-drop rejected. UI cannot manufacture result | Failed recipe remains recoverable with original inventory state |
+| Acquisition / `phone_chrome.acquisition` | Actual increase in owned IDs triggers existing item-art flight | Restore does not simulate a new reward. No success badge or progression callback added | Existing expiry/settle lifecycle; exact digit and item receipt geometry preserved |
+| World inventory / `main.gd`, `world_inventory_item.gd` | Main owns expand/collapse and keyboard focus; shared native item gesture submits world use | Existing range, physical target and story gates; each rejected use retains readable feedback | Collapse returns focus to world only when no other modal/phone owner exists |
+| Task/journal / `native_journal_view.gd`, `main.gd` | Current objective first; optional evidence comparison and lazy history remain separate | Task copy reflects controller facts; navigation cannot solve puzzle | Close/Escape/resume through existing Main owner, with focus restoration |
+| Dialogue / story hosts, `world.gd`, narrative views | Continue/interact only through existing narrative owner | Speaker, source text and completion proof remain authored; subtitle queue has one owner | Modal/media interruption obeys existing session rules; no decorative animation completes dialogue |
+| Notices / Main notice queue + PhoneNotice/world subtitle | Controller feedback enters existing queue or device-local feedback surface | Success/error are text and material, not duplicate badges; timing and audio ownership unchanged | Expiry remains queue-owned; decorative UI never clears story facts |
+| Device/puzzle overlay / chapter-specific views | Existing controller-backed real controls; keyboard/touch events shared | Disabled or out-of-order actions remain rejected by controller | Existing close/cancel/retry owner restores world; no generic card replaces puzzle geometry |
+
+## Phone chrome geometry held fixed
+
+- Phone interior 424×854; status band 40px.
+- Task tab 76×30, or 136×30 with earned-digit slots. Digit font, positions,
+  visibility and `digit_clue_geometry` are unchanged. The plain task label is
+  enlarged inside its existing single-line rectangle.
+- Drawer body 74px; slot 52×52; slot separation 8px; existing 38/40px handle.
+- Dynamic reading anchor, transformed release coordinates, touch ownership,
+  scroll range, item artwork and acquisition path remain the existing code.
+- Screen-wide grid remains hidden; material details do not cover app text.
+
+## Coverage and limits
+
+This increment redesigns PhoneChrome status/task materials, drawer/slots,
+selection and complete button states. The same helper is available to Main/world
+owners. It does **not** claim every authored app, special device, minigame,
+subtitle or cinematic has been redesigned. Their ownership is mapped above so
+remaining work can preserve semantics. Main/world integration and visual review
+are tracked separately by the integrated redesign task.
+
+Headless checks verify state/geometry, not aesthetic quality. Actual screenshot
+inspection, keyboard/touch end-to-end checks, device-specific layouts and the
+final commit’s CI remain independent acceptance gates.

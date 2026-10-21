@@ -1,6 +1,28 @@
 extends Control
 ## Non-modal source subtitles: dialogue locks interaction, never ordinary walking.
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
+const UiMaterial=preload("res://scripts/ui/campus_ui_material.gd")
+class DialoguePaper extends Panel:
+	var accent:=Color("263c49")
+	var rule:=Rect2()
+	var status_rect:=Rect2()
+	var show_status:=false
+	var paused:=false
+	var pixel:=1.0
+	func _draw()->void:
+		if rule.has_area():
+			draw_rect(rule,Color("d8cfc0"))
+			draw_rect(Rect2(rule.position,Vector2(minf(24*pixel,rule.size.x),rule.size.y)),accent)
+		if not show_status:return
+		# Timed dialogue is not a Continue button. Reflect only the session's
+		# existing paused flag; no clock, text reveal, or input authority here.
+		if paused:
+			draw_rect(Rect2(status_rect.position,Vector2(2*pixel,status_rect.size.y)),accent)
+			draw_rect(Rect2(status_rect.position+Vector2(4*pixel,0),Vector2(2*pixel,status_rect.size.y)),accent)
+		else:
+			draw_rect(Rect2(status_rect.position+Vector2(0,2*pixel),Vector2(6*pixel,2*pixel)),accent)
+
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var body_scroll:ScrollContainer
 const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
@@ -19,15 +41,15 @@ var exploration_rect:=Rect2()
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
-	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	var box:=Ui.box(Ui.PAPER,Ui.INK,Ui.EDGE)
+	panel=DialoguePaper.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
+	var box:=UiMaterial.panel_style("paper",{"paper":Ui.PAPER},Vector2.ZERO)
 	panel.add_theme_stylebox_override("panel",box)
 	for field: String in ["speaker","body"]:
 		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		label.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"))
+		Typography.apply_body(label)
 		panel.add_child(label); set(field,label)
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
-	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; body.add_theme_color_override("font_color",Ui.INK)
+	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; body.add_theme_color_override("font_color",UiMaterial.INK)
 	visible=false
 func tick() -> void:
 	if not is_instance_valid(panel): return
@@ -52,7 +74,17 @@ func tick() -> void:
 	elif align_left:panel.position.x=region.position.x
 	speaker.text=str(v.speaker); speaker.add_theme_font_size_override("font_size",metrics.speaker_font)
 	speaker.position=metrics.speaker.position; speaker.size=metrics.speaker.size
-	speaker.add_theme_color_override("font_color",Color("31523a") if v.speaker=="玩家" else Ui.FOCUS)
+	var role_color:Color=Color("924a3b") if v.speaker in ["玩家","我"] else Color("6f503d") if v.speaker=="旁白" else UiMaterial.NAVY
+	speaker.add_theme_color_override("font_color",role_color)
+	panel.accent=role_color
+	panel.pixel=Overlay.pixels(1,physical_scale)
+	panel.rule=Rect2(Vector2(metrics.speaker.position.x,metrics.body_viewport.position.y-panel.pixel*2),Vector2(metrics.body_viewport.size.x,panel.pixel)) if not speaker.text.is_empty() else Rect2()
+	panel.paused=bool(v.get("paused",false))
+	var status_width:float=Overlay.pixels(6,physical_scale)
+	panel.status_rect=Rect2(metrics.speaker.end.x-status_width,metrics.speaker.position.y+Overlay.pixels(4,physical_scale),status_width,Overlay.pixels(6,physical_scale))
+	var speaker_width:float=speaker.get_theme_font("font").get_string_size(speaker.text,HORIZONTAL_ALIGNMENT_LEFT,-1,metrics.speaker_font).x
+	panel.show_status=not speaker.text.is_empty() and v.has("paused") and speaker_width+Overlay.pixels(20,physical_scale)<metrics.speaker.size.x
+	panel.queue_redraw()
 	body.text=str(v.text); body.add_theme_font_size_override("font_size",metrics.body_font)
 	body_scroll.layout_body(metrics.body_viewport,metrics.body.size.y)
 

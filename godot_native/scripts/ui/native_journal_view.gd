@@ -4,6 +4,10 @@ extends VBoxContainer
 signal resume_requested
 signal comparison_requested
 const UI=preload("res://scripts/ui/native_ui_theme.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
+const CampusMaterial=preload("res://scripts/ui/campus_ui_material.gd")
+const PaperPanel=preload("res://scripts/ui/campus_paper_panel.gd")
+const Hardware=preload("res://scripts/ui/interaction_chrome.gd")
 var objective: String
 var detail: String
 var entries: Array=[]
@@ -20,13 +24,16 @@ func _ready() -> void:
 	name="NativeJournal"
 	size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	add_theme_constant_override("separation",12)
-	var panel:=PanelContainer.new()
-	panel.add_theme_stylebox_override("panel",UI.box(Color("eef3db"),Color("72874c"),2,0,Vector2(12,12)))
+	var panel:=PaperPanel.new()
+	panel.add_theme_stylebox_override("panel",CampusMaterial.panel_style("paper",{},Vector2(16,16)))
+	Hardware.set_selected(panel,true)
 	add_child(panel)
 	var current:=VBoxContainer.new();current.add_theme_constant_override("separation",8);panel.add_child(current)
-	current.add_child(_label("当前任务","JournalCurrentHeading",14,Color("526059")))
+	current.add_child(_label("当前任务","JournalCurrentHeading",14,CampusMaterial.WOOD))
 	current.add_child(_label(objective,"JournalObjective",20))
-	if not detail.is_empty(): current.add_child(_label(detail,"JournalNextStep",16))
+	if not detail.is_empty():
+		current.add_child(_label("当前进度","JournalProgressHeading",14,CampusMaterial.WOOD))
+		current.add_child(_label(detail,"JournalNextStep",17))
 	add_child(_button(return_label,"JournalResume",func(): resume_requested.emit()))
 	if comparison_available:
 		add_child(_label("可选 · 整理已见线索","JournalComparisonHeading",14,Color("526059")))
@@ -39,6 +46,7 @@ func _ready() -> void:
 
 func _label(text: String, id: String, font_size: int, color: Color=UI.INK) -> Label:
 	var label:=Label.new();label.name=id;label.text=text
+	Typography.apply_body(label)
 	label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	label.add_theme_font_size_override("font_size",font_size);label.add_theme_color_override("font_color",color)
@@ -46,6 +54,9 @@ func _label(text: String, id: String, font_size: int, color: Color=UI.INK) -> La
 
 func _button(text: String, id: String, action: Callable) -> Button:
 	var button:=Button.new();button.name=id;button.text=text
+	Typography.apply_body(button)
+	var fill:Color=CampusMaterial.NAVY if id=="JournalResume" else CampusMaterial.PAPER
+	UI.apply_button(button,fill,CampusMaterial.PAPER if id=="JournalResume" else CampusMaterial.INK,CampusMaterial.WOOD if id=="JournalResume" else CampusMaterial.PAPER_EDGE,0,1,16,Vector2(14,10))
 	button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	button.custom_minimum_size=Vector2(0,48)
 	button.size_flags_horizontal=Control.SIZE_EXPAND_FILL

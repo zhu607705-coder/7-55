@@ -2,6 +2,7 @@ extends SceneTree
 ## Headless geometry/type regression; not a raster or physical-device review.
 const Pages=preload("res://scripts/ui/chapter3_phone_pages.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
 var checks:=0
 var failures:=0
@@ -25,6 +26,7 @@ func run()->void:
 	var pages=Pages.new()
 	for requested:int in [11,12,13,14,15,16,17,21,25,35]:
 		var text:Label=pages.label("中文正文与时间 07:55",requested)
+		check(text.get_theme_font("font")==Typography.body_font(),"container labels use bundled body font")
 		check(text.get_theme_font_size("font_size")==maxi(15,requested),"requested type retained with caption floor "+str(requested))
 		check(text.get_theme_font_size("font_size")*(366.0/430.0)>=12,"390px mobile text exceeds 12px "+str(requested))
 		text.free()

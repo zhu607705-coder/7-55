@@ -10,6 +10,8 @@ const argument = name => process.argv.find(value => value.startsWith(name + '=')
 const directory = argument('--export');
 if (!directory) throw new Error('Required --export=split-export-directory');
 const required = [
+  'ui_assets/fonts/CampusUISans-Regular.otf',
+  'ui_assets/fonts/OFL.txt',
   'assets/native/canteen_animation/drink_machine_press_4f.png',
   'assets/native/canteen_animation/drink_fountain_body.png',
   'assets/native/canteen_animation/drink_fountain_paddle.png',

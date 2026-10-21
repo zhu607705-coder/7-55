@@ -1,4 +1,5 @@
 extends RefCounted
+const Typography=preload("res://scripts/ui/native_typography.gd")
 ## Native reconstructions of original phone app hierarchies. Source CSS colors and art.
 ## All hotspots emit intents; this builder never changes story state.
 signal action_requested(action_id: String, value: Variant)
@@ -177,6 +178,8 @@ func _panel(root: Control, rect: Rect2, color: Color, border: Color = Color.TRAN
 
 func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color = INK, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
 	var label = Label.new()
+	if fs >= 24: Typography.apply_display(label)
+	else: Typography.apply_body(label)
 	label.position = rect.position
 	label.size = rect.size
 	label.text = text
@@ -191,6 +194,7 @@ func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color
 
 func _button(root: Control, text: String, rect: Rect2, callback: Callable, color: Color = PAPER, ink: Color = INK, radius: int = 0, border: Color = INK) -> Button:
 	var button = Button.new()
+	Typography.apply_body(button)
 	button.position = rect.position
 	button.size = rect.size
 	button.text = text

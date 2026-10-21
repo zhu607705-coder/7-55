@@ -100,7 +100,7 @@ function validatePreset() {
 function validatePackEntries(entries, full = false) {
   assertStoryOnlyPackEntries(entries, campusPayloadIdentity(project));
   for (const entry of entries) if (excluded(entry.path)) throw new Error(`Non-production resource leaked into PCK: ${entry.path}`);
-  const required = ['project.binary', 'scripts/entry.gd', 'scripts/main.gd', 'scripts/state.gd', 'scripts/developer_tools_policy.gd', 'scripts/release_content_policy.gd', 'scenes/entry.tscn', 'scenes/main.tscn', 'data/initial_state.json', 'data/native/prologue-interception.content.json', 'assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf.import'];
+  const required = ['project.binary', 'scripts/entry.gd', 'scripts/main.gd', 'scripts/state.gd', 'scripts/developer_tools_policy.gd', 'scripts/release_content_policy.gd', 'scenes/entry.tscn', 'scenes/main.tscn', 'data/initial_state.json', 'data/native/prologue-interception.content.json', 'assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf.import', 'ui_assets/fonts/CampusUISans-Regular.otf.import', 'ui_assets/fonts/OFL.txt'];
   for (const name of required) if (!entries.some(entry => entry.path === name || entry.path === `${name}.remap`)) throw new Error(`Formal ${full ? 'full-export' : 'boot-core'} dependency absent from PCK: ${name}`);
 }
 function readPck(filename, full = false) {
