@@ -869,7 +869,24 @@ func _layout_modal() -> void:
 			c3_device_panel.global_position=world_rect.position+(world_rect.size-Vector2(960,540)*device_scale)/2
 		return
 	if not is_instance_valid(modal_panel): return
-	modal_panel.size = Vector2(maxf(1,minf(580,size.x-24)),maxf(1,minf(700,size.y-24)))
+	# Generic dialogs fit their contents. The scroll viewport still caps long
+	# records, keeping the close row outside the scrolling body.
+	var dialog_width := maxf(1,minf(580,size.x-24))
+	var dialog_limit := maxf(1,minf(700,size.y-24))
+	var natural_height := dialog_limit
+	var content: VBoxContainer = modal_panel.get_meta("dialog_content",null)
+	var column: VBoxContainer = modal_panel.get_meta("dialog_column",null)
+	if is_instance_valid(content) and is_instance_valid(column):
+		var chrome_height := 32.0
+		var visible_rows := 0
+		for row: Control in column.get_children():
+			if not row.visible: continue
+			visible_rows += 1
+			if row is ScrollContainer: continue
+			chrome_height += row.get_combined_minimum_size().y
+		chrome_height += maxf(0,visible_rows-1)*column.get_theme_constant("separation")
+		natural_height = maxf(180,chrome_height+content.get_combined_minimum_size().y)
+	modal_panel.size = Vector2(dialog_width,minf(dialog_limit,natural_height))
 	modal_panel.position = (size-modal_panel.size)/2
 	_layout_toast()
 
@@ -1239,6 +1256,11 @@ func _modal_base(title: String) -> VBoxContainer:
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_theme_constant_override("separation",10)
 	scroll.add_child(content)
+	panel.set_meta("dialog_content",content)
+	panel.set_meta("dialog_column",box)
+	# Text wrapping settles after width assignment, so recalculate after the
+	# container reports its actual minimum, not from character-count guesses.
+	content.minimum_size_changed.connect(_layout_modal.call_deferred)
 	_layout_modal()
 	modal.grab_focus()
 	_sync_inventory_dock_input()

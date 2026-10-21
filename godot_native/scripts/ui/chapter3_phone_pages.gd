@@ -22,6 +22,10 @@ var page_id: String=""
 const INK=Color("101923")
 const GREEN=Color("24677c")
 const MUTED=Color("59676e")
+# These pages already use the logical 424px phone interior, not the older
+# 378px authored canvas. Keep requested type sizes; never shrink them again.
+# 15px remains above 12px after the 390px shell fit (366 / 430).
+const CAPTION_FONT_SIZE := 15
 
 func _init() -> void:
 	journal_builder.action_requested.connect(_journal_action)
@@ -114,7 +118,7 @@ func label(text: String, size: int=17, color: Color=INK) -> Label:
 	node.text=text
 	node.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	node.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	node.add_theme_font_size_override("font_size",maxi(10,int(round(size*0.8))))
+	node.add_theme_font_size_override("font_size",maxi(CAPTION_FONT_SIZE,size))
 	node.add_theme_color_override("font_color",color)
 	return node
 

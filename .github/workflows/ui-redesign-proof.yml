@@ -38,9 +38,9 @@ jobs:
           GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
       - name: Capture actual desktop and compact interfaces
         run: |
-          mkdir -p "$RUNNER_TEMP/ui-profile"/{data,config,cache,state}
-          export XDG_DATA_HOME="$RUNNER_TEMP/ui-profile/data" XDG_CONFIG_HOME="$RUNNER_TEMP/ui-profile/config"
-          export XDG_CACHE_HOME="$RUNNER_TEMP/ui-profile/cache" XDG_STATE_HOME="$RUNNER_TEMP/ui-profile/state"
+          mkdir -p "/tmp/755-ui-profile"/{data,config,cache,state}
+          export XDG_DATA_HOME="/tmp/755-ui-profile/data" XDG_CONFIG_HOME="/tmp/755-ui-profile/config"
+          export XDG_CACHE_HOME="/tmp/755-ui-profile/cache" XDG_STATE_HOME="/tmp/755-ui-profile/state"
           export GODOT_TEST_USER_DATA_DIR="$XDG_DATA_HOME/SevenFiftyFiveNative"
           mkdir -p "$GODOT_TEST_USER_DATA_DIR"
           export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/ui-proof"
