@@ -29,3 +29,13 @@ The `campus_qizhen_loop` fixture captures its existing authored cinematic, not a
 The latest 梁祝 fan-shadow minigame is absent from the available source. THEATER-1 is reserved configuration only; the existing ticket machine, spotlight and theater-lobby screenshots are not evidence that this missing minigame was adapted. The request for all scenes therefore remains source-limited.
 
 Locked fonts, colors and none/scrim settings are not silently changed to improve screenshot contrast. White text against bright scene artwork remains a user-selected tradeoff, documented rather than replaced with opaque panels.
+
+## Short-landscape follow-up
+
+`e5cc890ca03488ae48ad4adc12b15705c88ab51a` GPU run https://github.com/zhu607705-coder/7-55/actions/runs/39583913318 produced candidate artifact `12339432190` (ZIP SHA-256 `0bb00f3a8d3c2a5377a3d18ba0c6bdf979c6fd264216db967cda145535551d9d`). The actual 568×320 C3 short, long and paused images have been opened and inspected: complete body glyphs are now visible with the locked role font sizes. This closes the preceding half-line rendering defect; it does not imply every full-suite interaction test has passed.
+
+The remaining 15 dialogue captures at e5cc890 were also opened individually: no new body clipping, unexpected wrapping or HUD overlap at 1440/390; Library's restored world framing remains intact. On 390 C3 the dialogue moves down about 56 px within the newly available region, retains the complete source line and does not cover the exit door. No synthetic advance control was added.
+
+## Pointer regression follow-up
+
+Full-suite discovery found a Room204 drag failure when the fixture paused Main processing: the task column's old minimum size could leave a non-overflowing HUD as an oversized pointer blocker until another process tick. The component now settles its own layout and hit filtering from container size signals, without changing furniture input or altering the original test. Room204 drag126/126, food-hall floor tap97/97, and selected layout/pointer1308/1308 pass. The added case performs a single long-to-short update without Main polling and verifies a real pointer reaches the world. The visual styling is unchanged.

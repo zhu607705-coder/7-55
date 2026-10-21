@@ -28,6 +28,9 @@ var mobile_exploration:=false
 var compact_header:HBoxContainer
 var compact_clock:Label
 var compact_location:Label
+var _settle_queued:=false
+var _task_height_budget:=32.0
+var _plaque_bottom_limit:=0.0
 
 func _init() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -57,6 +60,25 @@ func _init() -> void:
 	object_hint=_label(plaque,"interaction","button")
 	object_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	mode=_label(self,"hud","button");mode.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	task_column.minimum_size_changed.connect(_schedule_settle)
+	task_scroll.resized.connect(_schedule_settle)
+	plaque.minimum_size_changed.connect(_schedule_settle)
+
+func _schedule_settle()->void:
+	if _settle_queued:return
+	_settle_queued=true
+	_settle_layout.call_deferred()
+
+func _settle_layout()->void:
+	_settle_queued=false
+	if not is_inside_tree():return
+	# Container minimum sizes settle after text/font/width changes. Do not
+	# depend on Main's next process tick to release a stale input-blocking HUD.
+	task.size.y=minf(_task_height_budget,maxf(32,task_column.get_combined_minimum_size().y+16))
+	task_scroll.mouse_filter=Control.MOUSE_FILTER_STOP if task_column.get_combined_minimum_size().y>task_scroll.size.y+.5 else Control.MOUSE_FILTER_IGNORE
+	var plaque_height:float=plaque.get_combined_minimum_size().y
+	plaque.position.y=clampf(size.y*.5-plaque_height*.5,task.position.y+task.size.y+8,maxf(task.position.y+task.size.y+8,_plaque_bottom_limit-plaque_height-8))
+	task.queue_redraw()
 
 func _label(parent:Node,surface:String,role:String)->Label:
 	var label:=Label.new();label.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -85,6 +107,7 @@ func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,promp
 	var header_height:float=compact_header.get_combined_minimum_size().y if compact else location.get_combined_minimum_size().y+clock.get_combined_minimum_size().y+8
 	var first_goal_budget:float=16+header_height+task_tip.get_combined_minimum_size().y+16+first_line
 	var available_height:=maxf(32,minf(maxf(size.y*.36,first_goal_budget),bottom*s-inset.y-8))
+	_task_height_budget=available_height;_plaque_bottom_limit=bottom*s
 	task.position=inset;task.size=Vector2(width,available_height)
 	task.custom_minimum_size=Vector2.ZERO
 	var minimum:=task_column.get_combined_minimum_size().y+16
@@ -98,4 +121,5 @@ func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,promp
 	plaque.position=Vector2((size.x-plaque_width)/2,clampf(size.y*.5-plaque_height*.5,task.position.y+task.size.y+8,maxf(task.position.y+task.size.y+8,bottom*s-plaque_height-8)))
 	plaque.visible=not prompt.is_empty()
 	mode.position=mode_rect.position*s;mode.size=mode_rect.size*s
+	_schedule_settle()
 	geometry={"task":Rect2(task.position,task.size),"interaction":Rect2(plaque.position,Vector2(plaque_width,plaque_height)),"mode":Rect2(mode.position,mode.size),"extent":Rect2(Vector2.ZERO,size)}

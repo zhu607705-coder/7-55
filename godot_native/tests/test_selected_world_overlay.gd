@@ -58,5 +58,18 @@ func run()->void:
 			await process_frame
 		check(surface.pointer_events==pointer_before if scrolling else surface.pointer_events==pointer_before+1,"real pointer reaches underlying surface only for passive HUD")
 		if scrolling:check(overlay.task_scroll.scroll_vertical>scroll_before,"real wheel scrolls overflowing task without leaking")
+	# A single update after a long goal must self-settle without Main._process
+	# repeatedly calling sync_view. This was the initial Room204 drag blocker.
+	surface.set_process(false)
+	overlay.sync_view(Vector2(390,700),1,"寝室","从寝室门出发","","浅色操作",Rect2(290,0,100,44),630,"07:55")
+	for unused:int in range(8):await process_frame
+	check(overlay.task.size.y<150 and overlay.task_scroll.get_v_scroll_bar().max_value<=overlay.task_scroll.get_v_scroll_bar().page+.5,"single update settles short HUD bounds without polling")
+	check(overlay.task_scroll.mouse_filter==Control.MOUSE_FILTER_IGNORE,"single update clears stale STOP after container layout")
+	var point:Vector2=overlay.task_scroll.get_global_rect().get_center()
+	var before:int=surface.pointer_events
+	var motion:=InputEventMouseMotion.new();motion.position=point;motion.global_position=point;root.push_input(motion,true)
+	for down:bool in [true,false]:
+		var event:=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down;root.push_input(event,true);await process_frame
+	check(surface.pointer_events==before+1,"settled HUD releases real pointer with Main processing stopped")
 	print("SELECTED_WORLD_OVERLAY: ",checks," checks; ",failures," failures; ",worlds.size()," world IDs")
 	quit(1 if failures else 0)
