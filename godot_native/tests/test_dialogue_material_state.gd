@@ -2,6 +2,7 @@ extends SceneTree
 const View=preload("res://scripts/presentation/c3_narrative_view.gd")
 const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
+const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 var checks:=0
 var failures:=0
@@ -24,12 +25,11 @@ func run()->void:
 		for paused:bool in [false,true]:
 			line.paused=paused;view.tick();await process_frame;view.tick()
 			check(view.body.text==line.text and view.speaker.text==who,"source words and speaker unchanged")
-			check(view.panel.paused==paused,"paused graphic follows only snapshot state")
-			check(view.body.get_theme_font("font")==Typography.body_font(),"measured and rendered body font agree")
+			check(line.paused==paused,"presentation never changes paused session state")
+			check(view.body.get_theme_font("font")==Selected.font("dialogue","body"),"measured and rendered body font agree")
 			check(view.mouse_filter==Control.MOUSE_FILTER_IGNORE and view.panel.mouse_filter==Control.MOUSE_FILTER_IGNORE,"narrative remains pointer transparent")
-			check(Rect2(Vector2.ZERO,view.panel.size).encloses(view.panel.rule),"speaker rule remains inside panel")
-			if view.panel.show_status:check(Rect2(Vector2.ZERO,view.panel.size).encloses(view.panel.status_rect),"timed status remains inside panel")
-			check(Ui._contrast(view.speaker.get_theme_color("font_color"),Ui.PAPER)>=4.5,"speaker ink contrast")
+			check(view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"selected none surface has no decorative rule/paper")
+			check(view.speaker.get_theme_color("font_color")==Selected.color("dialogue","heading"),"exact selected speaker color")
 	for who:String in ["系统","旁白","提示","我"]:
 		var notice:Label=Notice.create("完整反馈不包含继续按钮。",who);host.add_child(notice)
 		Notice.layout(notice,350)

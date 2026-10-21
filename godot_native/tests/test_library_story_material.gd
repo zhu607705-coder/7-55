@@ -1,6 +1,7 @@
 extends SceneTree
 const View=preload("res://scripts/presentation/library_story_view.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
+const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 var checks:=0
 var failures:=0
@@ -25,10 +26,9 @@ func run()->void:
 				check(view.body.text==line.snapshot().text and view.speaker.text==who,"source words untouched")
 				check(view.prompt.text==("点击 / 空格 / 回车确认" if confirmation else "点击 / 空格 / 回车继续"),"prompt follows actual source confirmation state")
 				for field:Label in [view.speaker,view.body,view.prompt]:
-					check(field.get_theme_font("font")==Typography.body_font(),"render and layout use actual body font")
-				check(Ui._contrast(view.speaker.get_theme_color("font_color"),Ui.PAPER)>=4.5,"speaker contrast remains readable")
-				check(Rect2(Vector2.ZERO,view.panel.size).encloses(view.panel.rule),"speaker rule bounded")
-				check(not view.panel.rule.intersects(view.body_scroll.get_rect()),"speaker rule never paints body")
+					check(field.get_theme_font("font")==Selected.font("dialogue","heading" if field==view.speaker else "tip" if field==view.prompt else "body"),"render and layout use actual body font")
+				check(view.speaker.get_theme_color("font_color")==Selected.color("dialogue","heading"),"selected heading color")
+				check(view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"no rejected stationery background or rule")
 				check(view.mouse_filter==Control.MOUSE_FILTER_STOP and view.panel.mouse_filter==Control.MOUSE_FILTER_IGNORE,"existing modal pointer ownership retained")
 		view.session=null;view.tick();check(not view.visible,"empty session hides panel")
 		host.free()

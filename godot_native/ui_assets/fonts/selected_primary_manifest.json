@@ -1,0 +1,21 @@
+{
+  "source": "7:55 UI playground user-locked selection 2026-10-21",
+  "primary_files": [
+    {
+      "file": "CampusUISans-Regular.otf",
+      "sha256": "9e57b96aef9b3e7c1bacaa916b0bd90ce7e3da0debc5f9e667b40902d209962e"
+    },
+    {
+      "file": "SelectedSans-Regular.otf",
+      "sha256": "b792130d8639a31f65b4525b0bfe6ba2bb18cb2b7b8ea7c4605b50cb5f38f6c4"
+    },
+    {
+      "file": "SelectedSans-Bold.otf",
+      "sha256": "0f99120de569b60bf41870cb580a07f81f69fb7c5d583c9c120662070c027cee"
+    },
+    {
+      "file": "SelectedBoutique-Regular.ttf",
+      "sha256": "7210391e4252471fbd9b62f65d86f1f7bcdc7f8beb4fc1feeb3ad8b65a0e85e8"
+    }
+  ]
+}

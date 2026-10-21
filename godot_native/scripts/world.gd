@@ -53,6 +53,7 @@ var subtitle := "":
 		subtitle_revision+=1
 var subtitle_left := 0.0
 var font: Font
+var selected_overlay: Control
 var hud_font: Font
 var _last_save := 0.0
 var _manual_sent := false
@@ -126,6 +127,7 @@ func _ready() -> void:
 	worlds = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
 	font = load("res://scripts/ui/native_typography.gd").body_font()
 	hud_font = load("res://scripts/ui/native_typography.gd").body_font()
+	selected_overlay=load("res://scripts/ui/world_selected_overlay.gd").new();add_child(selected_overlay)
 	overflow_feedback=OverflowText.new();overflow_feedback.name="OverflowFeedback";overflow_feedback.z_index=90;add_child(overflow_feedback)
 	var feedback_label:=Label.new();add_child(feedback_label)
 	feedback_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;feedback_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -911,6 +913,7 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		var campus_visible:=exploration_safe_rect()
 		CampusWayfinding.draw_label(canvas,layer_context,font,hud_display_scale(),campus_visible)
 	if capture_mode:
+		if is_instance_valid(selected_overlay):selected_overlay.hide()
 		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
 		return
 	# An authored full-room film owns the image; navigation help must not
@@ -918,34 +921,23 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var narrative:Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
 	var film:bool=is_instance_valid(narrative) and narrative.has_method("owns_world_contract") and narrative.owns_world_contract()
 	if film and subtitle.is_empty():
+		if is_instance_valid(selected_overlay):selected_overlay.hide()
 		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
 		if transition_alpha>0:canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 		return
 	var title: Dictionary = {"dorm_hub":"寝室", "campus_bootstrap":"紫金港校区", "library_interior":"基础图书馆", "canteen_interior":"东食堂", "theater_interior":"剧场", "qizhen_lake":"启真湖", "duan_yongping_temporal_maze":"段永平教学楼", "campus_qizhen_loop":"通往启真湖的路"}
 	var line := _hud_line()
 	var hud := hud_metrics(line)
-	if not film:
-		# Separate mounted signs leave the centre of the world unobscured.
-		var place_width := minf(size.x-hud.mode_rect.size.x-hud.body_gap*2,hud_font.get_string_size(str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,hud.title_font).x+hud.padding*2)
-		CampusMaterial.draw(canvas,Rect2(0,0,maxf(1,place_width),hud.header_height),"placard")
-		CampusMaterial.draw(canvas,hud.mode_rect,"placard")
-		if hud.compact:
-			var mode_text: String="深色观察" if State.d.native.mode == "dark" else "浅色操作"
-			var mode_width: float=hud_font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
-			var baseline: float=(hud.header_height-hud_font.get_height(hud.title_font))/2+hud_font.get_ascent(hud.title_font)
-			canvas.draw_string(hud_font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
-			var mode_baseline: float=(hud.header_height-hud_font.get_height(hud.mode_font))/2+hud_font.get_ascent(hud.mode_font)
-			canvas.draw_string(hud_font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
-		else:
-			canvas.draw_string(hud_font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
-			canvas.draw_string(hud_font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
+	if is_instance_valid(selected_overlay):
+		selected_overlay.visible=not film and transition_alpha<=0
+		selected_overlay.sync_view(size,hud_display_scale(),str(title.get(scene_id,scene_id)),State.objective(),str(nearby.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",hud.mode_rect,hud.body_rect.position.y,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(nearby.get("hud_prompt","")))
 	var body_rect:Rect2=hud.body_rect
-	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0
+	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0 and (not subtitle.is_empty() or guard_capture.active)
 	if film:body_rect.position.y=hud.body_gap
 	var device:Variant=host_node.get("c3_device_panel") if is_instance_valid(host_node) else null
 	var device_feedback:bool=is_instance_valid(device) and device.has_method("owns_feedback_surface") and device.owns_feedback_surface()
 	if device_feedback and is_instance_valid(overflow_feedback): overflow_feedback.hide()
-	if hud.body_height>0 and not device_feedback:
+	if hud.body_height>0 and not device_feedback and (not subtitle.is_empty() or guard_capture.active):
 		CampusMaterial.draw(canvas,body_rect,"paper")
 		if hud.body_overflow and is_instance_valid(overflow_feedback):
 			overflow_feedback.label.text=line;overflow_feedback.label.add_theme_font_size_override("font_size",hud.body_font)

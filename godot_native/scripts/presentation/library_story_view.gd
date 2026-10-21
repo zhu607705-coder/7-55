@@ -1,15 +1,8 @@
 extends Control
 ## One global modal surface across both phone and RPG, matching LibraryStoryOverlay.
-const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
-const UiMaterial=preload("res://scripts/ui/campus_ui_material.gd")
-class StoryPaper extends Panel:
-	var rule:=Rect2()
-	var accent:=Color("263c49")
-	func _draw()->void:
-		if not rule.has_area():return
-		draw_rect(rule,Color("d8cfc0"))
-		draw_rect(Rect2(rule.position,Vector2(minf(24,rule.size.x),rule.size.y)),accent)
+const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
+const DialogueLayout=preload("res://scripts/ui/selected_dialogue_layout.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var body_scroll:ScrollContainer
 const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
@@ -24,17 +17,17 @@ var last_sequence: String=""
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_STOP; focus_mode=Control.FOCUS_ALL
-	panel=StoryPaper.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	var box:=UiMaterial.panel_style("paper",{"paper":Ui.PAPER},Vector2.ZERO)
+	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
+	var box:=StyleBoxEmpty.new()
 	panel.add_theme_stylebox_override("panel",box)
 	for field: String in ["speaker","body","prompt"]:
-		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		Typography.apply_body(label)
 		panel.add_child(label); set(field,label)
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
 	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	body.add_theme_color_override("font_color",Ui.INK)
-	prompt.add_theme_color_override("font_color",Color("544c3d")); prompt.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	Selected.apply_label(body,"dialogue","body")
+	Selected.apply_label(prompt,"dialogue","tip"); prompt.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 	visible=false
 func tick() -> void:
 	visible=session!=null
@@ -53,18 +46,16 @@ func tick() -> void:
 		var minimum_row:float=world.hud_font.get_height(hud.body_font)+hud.body_inset*2
 		var top:float=maxf(region.position.y,shell.world_view.get_global_rect().position.y+(hud.header_height+minimum_row+hud.body_gap*2)*scale)
 		region=Rect2(region.position.x,top,region.size.x,maxf(1,region.end.y-top))
-	var metrics:=Overlay.dialogue(body.get_theme_font("font"),region,1.0,speaker.text,body.text,prompt.text,text_scale)
+	var metrics:=DialogueLayout.metrics(region,1.0,speaker.text,body.text,prompt.text,text_scale)
 	panel.position=metrics.panel.position; panel.size=metrics.panel.size
 	if is_instance_valid(world) and shell.world_frame.is_visible_in_tree() and shell.size.y>shell.size.x:
 		var below_film:float=shell.world_view.get_global_rect().end.y+8
 		if below_film>=region.position.y and below_film+panel.size.y<=region.end.y:panel.position.y=below_film
 	speaker.position=metrics.speaker.position; speaker.size=metrics.speaker.size
 	speaker.add_theme_font_size_override("font_size",metrics.speaker_font)
-	var role_color:Color=Color("924a3b") if v.speaker in ["玩家","我"] else Color("6f503d") if v.speaker=="旁白" else UiMaterial.NAVY
-	speaker.add_theme_color_override("font_color",role_color)
-	panel.accent=role_color
-	panel.rule=Rect2(metrics.speaker.position.x,metrics.body_viewport.position.y-2,metrics.body_viewport.size.x,1) if not speaker.text.is_empty() else Rect2()
-	panel.queue_redraw()
+	DialogueLayout.apply_role(speaker,"heading",metrics.speaker_font)
+	DialogueLayout.apply_role(body,"body",metrics.body_font)
+	DialogueLayout.apply_role(prompt,"tip",metrics.prompt_font)
 	body.add_theme_font_size_override("font_size",metrics.body_font); body_scroll.layout_body(metrics.body_viewport,metrics.body.size.y)
 	prompt.position=metrics.prompt.position; prompt.size=metrics.prompt.size; prompt.add_theme_font_size_override("font_size",metrics.prompt_font)
 	if last_sequence!=str(v.sequenceId): grab_focus(); last_sequence=str(v.sequenceId)

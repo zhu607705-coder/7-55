@@ -3,11 +3,7 @@ extends VBoxContainer
 ## Entries are presentation copies. This view never changes the saved log.
 signal resume_requested
 signal comparison_requested
-const UI=preload("res://scripts/ui/native_ui_theme.gd")
-const Typography=preload("res://scripts/ui/native_typography.gd")
-const CampusMaterial=preload("res://scripts/ui/campus_ui_material.gd")
-const PaperPanel=preload("res://scripts/ui/campus_paper_panel.gd")
-const Hardware=preload("res://scripts/ui/interaction_chrome.gd")
+const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
 var context_texture: Texture2D
 var objective: String
 var detail: String
@@ -24,29 +20,17 @@ func configure(title: String, next_step: String, log: Array, can_compare: bool, 
 func _ready() -> void:
 	name="NativeJournal"
 	size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	add_theme_constant_override("separation",12)
-	var overview:=HBoxContainer.new();overview.name="JournalOverview";overview.add_theme_constant_override("separation",16);add_child(overview)
-	if context_texture!=null:
-		var picture_frame:=PanelContainer.new();picture_frame.name="JournalScenePreview"
-		picture_frame.custom_minimum_size=Vector2(104,104)
-		picture_frame.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
-		picture_frame.add_theme_stylebox_override("panel",CampusMaterial.panel_style("placard",{},Vector2(4,4)))
-		overview.add_child(picture_frame)
-		var picture:=TextureRect.new();picture.texture=context_texture
-		picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-		picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		picture.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
-		picture.mouse_filter=Control.MOUSE_FILTER_IGNORE;picture_frame.add_child(picture)
-	var current:=VBoxContainer.new();current.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	current.add_theme_constant_override("separation",8);overview.add_child(current)
-	current.add_child(_label("当前任务","JournalCurrentHeading",14,CampusMaterial.WOOD))
-	current.add_child(_label(objective,"JournalObjective",20))
+	add_theme_constant_override("separation",8)
+	# JOURNAL-3: one reading column over the retained world, no folder shell,
+	# duplicate scene thumbnail, decorative tabs or invented diary copy.
+	add_child(_label("当前任务","JournalCurrentHeading","tip"))
+	add_child(_label(objective,"JournalObjective","heading"))
 	if not detail.is_empty():
-		current.add_child(_label("当前进度","JournalProgressHeading",14,CampusMaterial.WOOD))
-		current.add_child(_label(detail,"JournalNextStep",17))
+		add_child(_label("当前进度","JournalProgressHeading","tip"))
+		add_child(_label(detail,"JournalNextStep","body"))
 	add_child(_button(return_label,"JournalResume",func(): resume_requested.emit()))
 	if comparison_available:
-		add_child(_label("可选 · 整理已见线索","JournalComparisonHeading",14,Color("526059")))
+		add_child(_label("可选 · 整理已见线索","JournalComparisonHeading","tip"))
 		add_child(_button("打开线索对照","JournalObservationCompare",func(): comparison_requested.emit()))
 	history_toggle=_button("展开历史记录（%d）"%entries.size(),"JournalHistoryToggle",_toggle_history)
 	history_toggle.toggle_mode=true
@@ -54,29 +38,20 @@ func _ready() -> void:
 	history=VBoxContainer.new();history.name="JournalHistory";history.add_theme_constant_override("separation",10)
 	add_child(history);history.hide()
 
-func _label(text: String, id: String, font_size: int, color: Color=UI.INK) -> Label:
+func _label(text: String, id: String, role: String="body") -> Label:
 	var label:=Label.new();label.name=id;label.text=text
-	Typography.apply_body(label)
+	Selected.apply_label(label,"journal",role)
 	label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	label.add_theme_font_size_override("font_size",font_size);label.add_theme_color_override("font_color",color)
 	return label
 
 func _button(text: String, id: String, action: Callable) -> Button:
 	var button:=Button.new();button.name=id;button.text=text
-	Typography.apply_body(button)
-	var fill:Color=CampusMaterial.NAVY if id=="JournalResume" else CampusMaterial.PAPER
-	UI.apply_button(button,fill,CampusMaterial.PAPER if id=="JournalResume" else CampusMaterial.INK,CampusMaterial.WOOD if id=="JournalResume" else CampusMaterial.PAPER_EDGE,0,1,16,Vector2(14,10))
+	Selected.apply_button(button,"journal")
 	button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	button.custom_minimum_size=Vector2(0,48)
-	button.size_flags_horizontal=Control.SIZE_SHRINK_END if id=="JournalResume" else Control.SIZE_EXPAND_FILL
-	if id=="JournalResume": button.custom_minimum_size.x=152
-	else:
-		button.alignment=HORIZONTAL_ALIGNMENT_LEFT
-		for state_name in ["normal","hover","pressed","hover_pressed","disabled"]:
-			var edge:StyleBoxFlat=button.get_theme_stylebox(state_name)
-			edge.set_border_width_all(0);edge.border_width_bottom=1
-			if state_name=="normal": edge.bg_color=Color.TRANSPARENT
+	button.custom_minimum_size=Vector2(maxf(44,ceilf(Selected.font("journal","button").get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,Selected.size("journal","button")).x)+16),44)
+	button.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+	button.alignment=HORIZONTAL_ALIGNMENT_LEFT
 	button.pressed.connect(action)
 	return button
 
@@ -84,9 +59,9 @@ func _toggle_history() -> void:
 	history.visible=history_toggle.button_pressed
 	history_toggle.text=("收起历史记录（%d）" if history.visible else "展开历史记录（%d）")%entries.size()
 	if history.visible and history.get_child_count()==0:
-		if entries.is_empty(): history.add_child(_label("还没有历史记录。","JournalHistoryEmpty",16))
+		if entries.is_empty(): history.add_child(_label("还没有历史记录。","JournalHistoryEmpty"))
 		for index in range(entries.size()-1,-1,-1):
-			history.add_child(_label(str(entries[index].get("text","")),"JournalHistoryRow"+str(index),16))
+			history.add_child(_label(str(entries[index].get("text","")),"JournalHistoryRow"+str(index)))
 	if not history.visible: focus_control.call_deferred("JournalHistoryToggle")
 
 func focus_control(id: String) -> void:

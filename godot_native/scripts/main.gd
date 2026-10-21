@@ -1,4 +1,5 @@
 extends Control
+const SelectedUi=preload("res://scripts/ui/selected_ui_theme.gd")
 ## Native phone and RPG shell. All story changes pass through State.
 var phone: PanelContainer
 var phone_content: VBoxContainer
@@ -333,7 +334,8 @@ func _build_shell() -> void:
 	story_caption.set_process_input(false)
 	voice_player = AudioStreamPlayer.new()
 	add_child(voice_player)
-	mobile_back = _button("手机 · P",_show_phone_surface,Vector2(140,44))
+	mobile_back = preload("res://scripts/ui/world_phone_launcher.gd").new()
+	mobile_back.pressed.connect(_show_phone_surface)
 	mobile_back.name = "WorldPhoneButton"
 	add_child(mobile_back)
 	phone_world_return = _button("返回现场 · Esc",_return_from_phone,Vector2(180,44))
@@ -894,6 +896,13 @@ func _layout_modal() -> void:
 		natural_height = maxf(180,chrome_height+content.get_combined_minimum_size().y)
 	modal_panel.size = Vector2(dialog_width,minf(dialog_limit,natural_height))
 	modal_panel.position = (size-modal_panel.size)/2
+	if modal_panel.get_meta("selected_surface","")=="journal":
+		# Single-page composition. Position/wrapping adapt, locked type stays fixed.
+		modal_panel.size.x=maxf(1,minf(580,size.x*(0.86 if size.x<600 else 0.70)))
+		modal_panel.position=(size-modal_panel.size)/2
+	elif modal_panel.get_meta("selected_surface","")=="dialogue":
+		modal_panel.size.x=maxf(1,minf(580,size.x*(0.86 if size.x<600 else 0.57)))
+		modal_panel.position=Vector2(size.x-modal_panel.size.x-size.x*0.06,(size.y-modal_panel.size.y)/2)
 	_layout_toast()
 
 func _schedule_refresh() -> void:
@@ -1230,11 +1239,18 @@ func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 	modal.theme = NativeUi.make_theme(Typography.body_font(),16,16)
 	modal.z_index = 100
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
-	modal.color = Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76)
+	modal.color = Color.TRANSPARENT if surface.begins_with("selected_") else Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76)
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(modal)
 	var panel: PanelContainer
-	if surface in ["notebook","loose_sheet"]:
+	if surface.begins_with("selected_"):
+		panel = PanelContainer.new()
+		var clear:=StyleBoxEmpty.new()
+		clear.content_margin_left=8;clear.content_margin_right=8
+		clear.content_margin_top=8;clear.content_margin_bottom=8
+		panel.add_theme_stylebox_override("panel",clear)
+		panel.set_meta("selected_surface",surface.trim_prefix("selected_"))
+	elif surface in ["notebook","loose_sheet"]:
 		panel = preload("res://scripts/ui/campus_notebook_panel.gd").new()
 		panel.mode = surface
 	else:
@@ -1265,6 +1281,11 @@ func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 	var close_button := _button("关闭",_close_modal,Vector2(70,44))
 	close_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
+	if surface.begins_with("selected_"):
+		var selected_surface:=surface.trim_prefix("selected_")
+		SelectedUi.apply_label(label,selected_surface,"heading")
+		SelectedUi.apply_button(close_button,selected_surface)
+		box.add_theme_constant_override("separation",8)
 	header.add_child(close_button)
 	modal_notice_slot=Control.new()
 	modal_notice_slot.name="NativeModalNotice"
@@ -1574,7 +1595,7 @@ func _show_world_journal() -> void:
 func _show_journal() -> void:
 	# Keep the destination promised by the mounted journal across rotation.
 	var return_to_world: bool=world_frame.is_visible_in_tree()
-	var box := _modal_base("调查记录","notebook")
+	var box := _modal_base("调查记录","selected_journal")
 	if return_to_world: modal_previous_focus=weakref(world)
 	_refresh_observation_comparison()
 	var current: Dictionary=CanteenObjective.current(State.d)
@@ -2084,11 +2105,14 @@ func _continue_chase_departure(owner: Control) -> void:
 
 func _open_narrative(config: Dictionary) -> void:
 	if not await _content_ready(): return
-	var box := _modal_base(str(config.get("title","7:55")))
+	var box := _modal_base(str(config.get("title","7:55")),"selected_dialogue")
 	var label := _label(str(config.get("text",config.get("body",""))),20)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	SelectedUi.apply_label(label,"dialogue","body")
 	box.add_child(label)
-	box.add_child(_button("继续",func(): _close_modal(); State.act(str(config.get("on_complete","")),{"acknowledged":true})))
+	var advance:=_button("继续",func(): _close_modal(); State.act(str(config.get("on_complete","")),{"acknowledged":true}))
+	SelectedUi.apply_button(advance,"dialogue")
+	box.add_child(advance)
 
 func _on_file_selected(path: String) -> void:
 	if export_mode: _feedback("已导出存档" if State.export_save(path) == OK else "导出失败，进度仍保留。")

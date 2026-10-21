@@ -41,12 +41,12 @@ func run() -> void:
 		root.add_child(entry); await frames()
 		await capture("%dx%d-entry"%[dimensions.x,dimensions.y])
 		entry.queue_free(); await frames()
-		# Candidate-only specimen uses the real shared production components.
+		# Retained legacy components: not the user-selected low-occlusion surfaces.
 		if ResourceLoader.exists("res://tests/ui_design_specimen.gd"):
 			var specimen:Control=load("res://tests/ui_design_specimen.gd").new()
 			root.add_child(specimen);await frames()
-			fixture_note="Shared production typography/material specimen; no campaign state"
-			await capture("%dx%d-ui-specimen"%[dimensions.x,dimensions.y])
+			fixture_note="Legacy unselected phone/device material specimen; not selected HUD/dialogue/journal acceptance"
+			await capture("%dx%d-legacy-component-specimen"%[dimensions.x,dimensions.y])
 			specimen.queue_free();await frames()
 			fixture_note="DEV fixture; not earned campaign completion"
 	shell = load("res://scenes/main.tscn").instantiate()

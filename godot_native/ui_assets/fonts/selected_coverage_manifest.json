@@ -1,0 +1,30 @@
+{
+  "tool": "fonttools 4.61.1",
+  "coverage_inputs": {
+    "CampusUISans-Regular.otf": "9e57b96aef9b3e7c1bacaa916b0bd90ce7e3da0debc5f9e667b40902d209962e",
+    "SelectedSans-Regular.otf": "b792130d8639a31f65b4525b0bfe6ba2bb18cb2b7b8ea7c4605b50cb5f38f6c4",
+    "SelectedSans-Bold.otf": "0f99120de569b60bf41870cb580a07f81f69fb7c5d583c9c120662070c027cee"
+  },
+  "runtime_cjk_count": 1478,
+  "runtime_cjk_sha256": "c276858ccc32c9a9a3616a035fcd712c89f540323520a2d42e2898ceee657423",
+  "faces": [
+    {
+      "file": "SelectedCoverage-Regular.otf",
+      "sha256": "b6ad88f4e3cefd19983153f1215f770fc3751028e4a98fb47107dde11741784a",
+      "source": "NotoSansCJK-Regular.ttc",
+      "source_sha256": "b76b0433203017ca80401b2ee0dd69350349871c4b19d504c34dbdd80541690a",
+      "source_face": 2,
+      "weight": 400,
+      "codepoints": 2419
+    },
+    {
+      "file": "SelectedCoverage-Bold.otf",
+      "sha256": "411841a02166bbf0f8ccb6530cd0adf4aa8b110daeec8ae935ae3251e1689c71",
+      "source": "NotoSansCJK-Bold.ttc",
+      "source_sha256": "faa5f3656a78b2e2d450d27fe8382c778bc2b6bb5ea29c986664a6a435056ceb",
+      "source_face": 2,
+      "weight": 700,
+      "codepoints": 2419
+    }
+  ]
+}

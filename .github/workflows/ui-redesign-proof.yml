@@ -19,12 +19,16 @@ jobs:
         run: |
           cp godot_native/tests/capture_ui_redesign.gd /tmp/capture_ui_redesign.gd
           cp godot_native/tests/capture_phone_symbols.gd /tmp/capture_phone_symbols.gd
+          cp godot_native/tests/capture_selected_worlds.gd /tmp/capture_selected_worlds.gd
+          cp godot_native/tests/capture_selected_dialogues.gd /tmp/capture_selected_dialogues.gd
           if [ '${{ matrix.source }}' = baseline ]; then
             git fetch --depth=1 origin f963d47cbe31e5d799b405e36d4ad68cd97546fa
             git checkout --detach f963d47cbe31e5d799b405e36d4ad68cd97546fa
           fi
           cp /tmp/capture_ui_redesign.gd godot_native/tests/capture_ui_redesign.gd
           cp /tmp/capture_phone_symbols.gd godot_native/tests/capture_phone_symbols.gd
+          cp /tmp/capture_selected_worlds.gd godot_native/tests/capture_selected_worlds.gd
+          cp /tmp/capture_selected_dialogues.gd godot_native/tests/capture_selected_dialogues.gd
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -55,6 +59,15 @@ jobs:
           test -f "$UI_CAPTURE_DIR/captures.json"
           timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_phone_symbols.gd 2>&1 | tee "$UI_CAPTURE_DIR/symbol-render.log"
           test -f "$UI_CAPTURE_DIR/symbol-captures.json"
+          timeout 240 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_selected_worlds.gd 2>&1 | tee "$UI_CAPTURE_DIR/selected-world-render.log"
+          test -f "$UI_CAPTURE_DIR/selected-world-captures.json"
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/ui-proof/dialogues"
+          mkdir -p "$UI_CAPTURE_DIR"
+          timeout 240 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_selected_dialogues.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
+          test -f "$UI_CAPTURE_DIR/captures.json"
+          ! grep -E "SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:" "$UI_CAPTURE_DIR/render.log"
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/ui-proof"
+          ! grep -E "SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:" "$UI_CAPTURE_DIR/selected-world-render.log"
           ! grep -E "SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:" "$UI_CAPTURE_DIR/symbol-render.log"
           ! grep -E "SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:" "$UI_CAPTURE_DIR/render.log"
       - uses: actions/upload-artifact@v4

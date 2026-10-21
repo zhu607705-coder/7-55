@@ -1,3 +1,7 @@
+# Status update: user-selected low-occlusion surfaces
+
+The material/type description below records the earlier structural candidate, not final visual approval. The user subsequently locked five role-specific proposals. See [UI_SELECTED_HANDOFF_20261021.md](UI_SELECTED_HANDOFF_20261021.md) for the current exact type, none/scrim and placement contract. Unselected phone/app/device identities remain scoped rather than receiving a blanket skin.
+
 # Interaction surface map — 2026-10-21
 
 This maps the native game’s existing owners, not a new gameplay state machine.
