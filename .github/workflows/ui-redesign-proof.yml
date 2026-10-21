@@ -1,0 +1,58 @@
+name: Native UI visual proof
+on:
+  push:
+    branches: [codex/campus-ui-system-20261021]
+    paths: ['godot_native/**', '.github/workflows/ui-redesign-proof.yml']
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [baseline, candidate]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve capture harness and select source
+        run: |
+          cp godot_native/tests/capture_ui_redesign.gd /tmp/capture_ui_redesign.gd
+          if [ '${{ matrix.source }}' = baseline ]; then
+            git fetch --depth=1 origin f963d47cbe31e5d799b405e36d4ad68cd97546fa
+            git checkout --detach f963d47cbe31e5d799b405e36d4ad68cd97546fa
+          fi
+          cp /tmp/capture_ui_redesign.gd godot_native/tests/capture_ui_redesign.gd
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install existing pinned native renderer
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      - name: Synchronize and import actual game assets
+        run: |
+          node godot_native/tools/sync_source.mjs
+          GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
+      - name: Capture actual desktop and compact interfaces
+        run: |
+          mkdir -p "$RUNNER_TEMP/ui-profile"/{data,config,cache,state}
+          export XDG_DATA_HOME="$RUNNER_TEMP/ui-profile/data" XDG_CONFIG_HOME="$RUNNER_TEMP/ui-profile/config"
+          export XDG_CACHE_HOME="$RUNNER_TEMP/ui-profile/cache" XDG_STATE_HOME="$RUNNER_TEMP/ui-profile/state"
+          export GODOT_TEST_USER_DATA_DIR="$XDG_DATA_HOME/SevenFiftyFiveNative"
+          mkdir -p "$GODOT_TEST_USER_DATA_DIR"
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/ui-proof"
+          mkdir -p "$UI_CAPTURE_DIR"
+          git rev-parse HEAD > "$UI_CAPTURE_DIR/source-sha.txt"
+          timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_ui_redesign.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
+          test -f "$UI_CAPTURE_DIR/captures.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-proof-${{ matrix.source }}
+          path: |
+            ui-proof/
+            import-report.json
+          if-no-files-found: error
