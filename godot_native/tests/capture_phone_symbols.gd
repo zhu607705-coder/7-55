@@ -19,6 +19,21 @@ func run() -> void:
 			shell.mobile_world=false; shell._refresh(); shell._process(2); await frames(); shell._layout()
 			fixture_note="DEV c2-dorm-exit + musicPlaying; actual source icons; not earned completion"
 			await capture("%dx%d-symbols-%s" % [dimensions.x,dimensions.y,page])
+		if not fixture_checkpoint("c3-interlude-reboot"): quit(1); return
+		state.d.native.scene="";state.d.native.page="phone_home";state.d.native.settings.volume=0
+		await fresh_shell(dimensions)
+		shell.mobile_world=false;shell._refresh();shell._process(2);await frames();shell._layout()
+		var utilities:Script=load("res://scripts/chapters/phone_utilities.gd")
+		var expected:Array=[]
+		for id:String in utilities.normalized_order(state.d.ui.homeAppOrder):
+			if utilities.app_available(state.d,id) and not (id in state.d.ui.hiddenHomeAppIds and utilities.can_remove(state.d,id)):expected.append(id)
+		var actual:Array=[]
+		for button:Button in shell.page_body.find_children("HomeApp_*","Button",true,false):actual.append(str(button.name).trim_prefix("HomeApp_"))
+		require_fixture(actual==expected,"interlude home mounts exact authored available apps and saved order")
+		fixture_note="DEV c3-interlude-reboot source checkpoint; actual authored app eligibility; not earned completion"
+		await capture("%dx%d-symbols-phone-home-interlude" % [dimensions.x,dimensions.y])
+		report.back()["visible_app_ids"]=actual
+		report.back()["visible_app_count"]=actual.size()
 		# Explicit source-checkpoint DEV states: actual phone map, not the world map.
 		for scene_id: String in ["lake-map","weather-complete"]:
 			if not fixture_checkpoint("c3-qizhen-location"): quit(1); return

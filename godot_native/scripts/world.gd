@@ -929,7 +929,9 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		return
 	var line := _hud_line()
 	var hud := hud_metrics(line)
-	_sync_selected_overlay()
+	# Native overlay is synchronized by Main outside CanvasItem drawing.
+	# Standalone world fixtures retain their local presentation path.
+	if not selected_overlay_is_native:_sync_selected_overlay()
 	var body_rect:Rect2=hud.body_rect
 	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0 and (not subtitle.is_empty() or guard_capture.active)
 	if film:body_rect.position.y=hud.body_gap

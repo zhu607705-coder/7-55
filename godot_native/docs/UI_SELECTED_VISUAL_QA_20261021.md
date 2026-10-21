@@ -39,3 +39,9 @@ The remaining 15 dialogue captures at e5cc890 were also opened individually: no 
 ## Pointer regression follow-up
 
 Full-suite discovery found a Room204 drag failure when the fixture paused Main processing: the task column's old minimum size could leave a non-overflowing HUD as an oversized pointer blocker until another process tick. The component now settles its own layout and hit filtering from container size signals, without changing furniture input or altering the original test. Room204 drag126/126, food-hall floor tap97/97, and selected layout/pointer1308/1308 pass. The added case performs a single long-to-short update without Main polling and verifies a real pointer reaches the world. The visual styling is unchanged.
+
+## Full-suite corrections after the pointer follow-up
+
+A theater regression independently reproduced a same-idle deferred-layout loop. The fix schedules at most one settlement on the next process frame, applies the final size once, and removes native UI relayout from world drawing. Repeated resize and long/short changes are checked for eventual inactivity; the engine queue limit is not increased.
+
+The transparent task prose must also yield real world pointer drags. Only the visible scrollbar captures drag; wheel events over overflowing task text scroll it without zoom leakage. Raw touch is scoped to a finger starting on the scrollbar, with platform-emulated mouse deduplication and cancellation when hidden. Original furniture and theater drop/reward assertions remain unchanged. Final same-SHA CI and rendering are required independently of these local checks.

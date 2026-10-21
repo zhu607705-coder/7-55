@@ -19,6 +19,7 @@ var tiyi_presence = TiyiPresence.new()
 const EndingResume = preload("res://scripts/ui/native_ending_resume.gd")
 const CheckinPage = preload("res://scripts/ui/native_checkin_page.gd")
 var checkin_page = CheckinPage.new()
+const LauncherIcons=preload("res://scripts/ui/phone_launcher_icons.gd")
 const HomeArt = preload("res://scripts/ui/phone_home_art.gd")
 const NativeLibrary = preload("res://scripts/ui/native_library_pages.gd")
 var native_library = NativeLibrary.new()
@@ -495,9 +496,12 @@ func _build_home_apps(root: Control) -> void:
 		layout.slots[id]=point
 		var button=HomeButton.new()
 		button.position=point; button.size=Vector2(48,48); button.name="HomeApp_"+id
+		button.tooltip_text=Utilities.LABELS[id];button.accessibility_name=Utilities.LABELS[id]
+		button.focus_mode=Control.FOCUS_ALL
 		button.editable=s.actOne.phase!="prologue"; button.editing=home_editing
-		for mode in ["normal","hover","pressed"]: button.add_theme_stylebox_override(mode,_style(colors[id],INK,0,2))
-		button.add_theme_stylebox_override("focus",_style(Color.TRANSPARENT,Color("4caed2"),0,3))
+		var fill:Color=colors[id] if id=="settings" and s.actOne.phase=="prologue" else Color("253b45")
+		for mode in ["normal","hover","pressed"]: button.add_theme_stylebox_override(mode,_style(fill.lightened(.12) if mode=="hover" else fill.darkened(.12) if mode=="pressed" else fill,INK,0,2))
+		button.add_theme_stylebox_override("focus",_style(Color.TRANSPARENT,Color("e7ecdc"),2,3))
 		root.add_child(button)
 		if id=="settings" and s.actOne.phase=="prologue":
 			# The original source glyph is a separate object. The app frame, label
@@ -510,13 +514,17 @@ func _build_home_apps(root: Control) -> void:
 				# actual glyph rectangle, not the pre-layout requested48px rectangle.
 				root.ready.connect(func(): gear.position=button.position+(button.size-gear.size)/2)
 				if s.ui.autoRotate: _animate_rotation(root,gear,"gear",HOME_GEAR_PICKUP_RECT.get_center())
-		else: _app_icon(button,id)
+		else: LauncherIcons.add_to(button,id)
 		var objective=_home_chapter4_objective() if s.chapterThreeInterlude.completed and s.chapterThreeInterlude.replayUnlocked else {}
 		if not objective.is_empty() and ((objective.id=="study_index" and id=="cc98") or (objective.id!="study_index" and id=="wechat")):
 			_panel(button,Rect2(37,-6,17,17),Color("d72e32"),Color.WHITE,0,2)
 			_label(button,"1",Rect2(37,-6,17,17),10,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 		layout.buttons[id]=button
 		layout.labels[id]=_label(root,Utilities.LABELS[id],Rect2(point+Vector2(-1,53.5),Vector2(50,16)),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
+		var focus_name:Label=layout.labels[id]
+		focus_name.name="LauncherFocusName_"+id;focus_name.hide()
+		button.focus_entered.connect(func():focus_name.show())
+		button.focus_exited.connect(func():focus_name.hide())
 		button.pressed.connect(func():
 			if not button.can_activate(): return
 			if id=="settings" and s.actOne.phase=="prologue": action_requested.emit("c1_gear",null)

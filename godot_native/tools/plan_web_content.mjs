@@ -56,7 +56,7 @@ function classify(name) {
   if (name.startsWith('campuses/buct/')) return 'campus_chaoyang';
   if (/^(scripts|scenes|data)\//.test(name) || name === 'project.binary' || /assets\/rpg\/fonts\//.test(name)) return 'core';
   // Shared UI font and its OFL travel with first paint, not a chapter pack.
-  if (name.startsWith('ui_assets/fonts/')) return 'core';
+  if (name.startsWith('ui_assets/fonts/') || name.startsWith('ui_assets/phone_icons/')) return 'core';
   if (!name.startsWith('assets/')) return null;
   if (/^assets\/audio\/(library-finals)\//.test(name)) return 'chapter2';
   if (/^assets\/audio\/(chapter4)\//.test(name)) return 'chapter4';

@@ -10,6 +10,7 @@ const argument = name => process.argv.find(value => value.startsWith(name + '=')
 const directory = argument('--export');
 if (!directory) throw new Error('Required --export=split-export-directory');
 const required = [
+  ...['messages','sports','campus','settings','album','recovery','voice','forum','controls','clock'].map(id => 'ui_assets/phone_icons/'+id+'.svg'),
   'ui_assets/fonts/CampusUISans-Regular.otf',
   'ui_assets/fonts/OFL.txt',
   'ui_assets/fonts/SelectedSans-Regular.otf',

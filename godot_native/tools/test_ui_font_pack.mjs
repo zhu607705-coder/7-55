@@ -22,6 +22,13 @@ try {
     records.push([logical+'.import',metadata],[target,fs.readFileSync(path.join(project,target))]);
     required.push(logical+'.import',target);
   }
+  for(const id of ['messages','sports','campus','settings','album','recovery','voice','forum','controls','clock']) {
+    const logical='ui_assets/phone_icons/'+id+'.svg';
+    const metadata=fs.readFileSync(path.join(project,logical+'.import'));
+    const target=metadata.toString().match(/path="res:\/\/([^"\n]+)"/)[1];
+    records.push([logical+'.import',metadata],[target,fs.readFileSync(path.join(project,target))]);
+    required.push(logical+'.import',target);
+  }
   for(const filename of licenses) {
     const logical='ui_assets/fonts/'+filename;
     records.push([logical,fs.readFileSync(path.join(project,logical))]);required.push(logical);
@@ -52,5 +59,5 @@ try {
     const include=preset.match(/^include_filter="([^"]+)"/m)[1].split(',');
     for(const filename of licenses) assert.ok(include.includes('ui_assets/fonts/'+filename),'Exact font license explicitly bundled: '+filename);
   }
-  console.log('UI_FONT_PACK: PASS; all six actual font imports/payloads retained in explicit core; three presets include all font licenses; later chapter control still deferred');
+  console.log('UI_FONT_PACK: PASS; all six font and ten phone SVG imports/payloads retained in explicit core; three presets include all font licenses; later chapter control still deferred');
 } finally {fs.rmSync(tmp,{recursive:true,force:true});}

@@ -46,3 +46,11 @@ The next GPU capture must verify the same cases before these fixes are called vi
 Follow-up headless checks: native-layer contract 80/80 (including unchanged camera, viewport size and world rectangle through journal open/close); selected layout 1296/1296; feedback ownership/real touch scrolling/wheel boundaries 98/98; static cross-PR integration 2546/2546. Real rendering remains a separate requirement, not inferred from these checks.
 
 A real pointer regression was also found and fixed: a non-overflowing task column must not swallow authored floor taps. The original food-hall queue pointer/blocked-marker test passes unchanged (97 checks). The task column accepts scrolling only when its content actually overflows. Victory camera/doorway/arrival checks (1640) and reversal/pause checks (42) pass with assertions converted from obsolete world-local text coordinates to the actual native-screen rectangles and the user-selected 14 px role (accessibility scaling preserved).
+
+## Phone launcher refinement (later explicit request)
+
+The phone home launches its existing apps with a consistent set of original 24×24 SVG glyphs in the existing 48×48 phone-local targets. Permanent app-name labels are removed; hover tooltips, keyboard-focus names and accessibility names preserve the actual app names. The original prologue settings gear remains an interactable story object. Notification cards and opened-page titles are not converted into anonymous icons.
+
+The source has ten app IDs, shown conditionally, not six independent routes: `wechat`, `tiyi`, `zjuding`, `settings`, `photos`, `timeline_recovery`→`c35_recovery`, `voice_memos`→`c35_voice`, `cc98`, `control_center`, and currently unavailable `clock`. Campus map remains inside ZJU Ding; there is no invented standalone notes app. Original app order, route callbacks, drag/editing and gear progression remain intact. SVG assets are core boot content and are checked by loading the production dynamic helper from a real PCK in a source-less directory.
+
+The later bottom-pouch and object-led handwritten-journal ideas remain preview directions, not applied replacements for the locked runtime choices.

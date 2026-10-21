@@ -28,6 +28,9 @@ var mobile_exploration:=false
 var compact_header:HBoxContainer
 var compact_clock:Label
 var compact_location:Label
+var _scroll_touch_id:=-1
+var _scroll_touch_point:=Vector2.ZERO
+var _scroll_emulation_until:=0
 var _settle_queued:=false
 var _task_height_budget:=32.0
 var _plaque_bottom_limit:=0.0
@@ -35,6 +38,7 @@ var _plaque_bottom_limit:=0.0
 func _init() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	z_index=85
+	visibility_changed.connect(_clear_hidden_scroll_touch)
 	task=Scrim.new();task.name="SelectedHud2";task.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(task)
 	var material:=StyleBoxFlat.new()
 	material.bg_color=Color.TRANSPARENT
@@ -62,12 +66,15 @@ func _init() -> void:
 	mode=_label(self,"hud","button");mode.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	task_column.minimum_size_changed.connect(_schedule_settle)
 	task_scroll.resized.connect(_schedule_settle)
+	task_scroll.get_v_scroll_bar().changed.connect(_schedule_settle)
 	plaque.minimum_size_changed.connect(_schedule_settle)
 
 func _schedule_settle()->void:
-	if _settle_queued:return
+	if _settle_queued or not is_inside_tree():return
 	_settle_queued=true
-	_settle_layout.call_deferred()
+	# Container signals may fire again during settlement. Never recursively
+	# enqueue in the same idle flush: one-shot next-frame ownership bounds it.
+	get_tree().process_frame.connect(_settle_layout,CONNECT_ONE_SHOT)
 
 func _settle_layout()->void:
 	_settle_queued=false
@@ -75,10 +82,46 @@ func _settle_layout()->void:
 	# Container minimum sizes settle after text/font/width changes. Do not
 	# depend on Main's next process tick to release a stale input-blocking HUD.
 	task.size.y=minf(_task_height_budget,maxf(32,task_column.get_combined_minimum_size().y+16))
-	task_scroll.mouse_filter=Control.MOUSE_FILTER_STOP if task_column.get_combined_minimum_size().y>task_scroll.size.y+.5 else Control.MOUSE_FILTER_IGNORE
+	task_scroll.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var plaque_height:float=plaque.get_combined_minimum_size().y
 	plaque.position.y=clampf(size.y*.5-plaque_height*.5,task.position.y+task.size.y+8,maxf(task.position.y+task.size.y+8,_plaque_bottom_limit-plaque_height-8))
-	task.queue_redraw()
+
+func _clear_hidden_scroll_touch()->void:
+	if is_visible_in_tree() or _scroll_touch_id<0:return
+	var release:=InputEventMouseButton.new();release.position=_scroll_touch_point;release.global_position=_scroll_touch_point;release.button_index=MOUSE_BUTTON_LEFT;release.pressed=false
+	_scroll_touch_id=-1
+	if is_inside_tree():get_viewport().push_input(release,true)
+
+func _input(event:InputEvent)->void:
+	# Text is not a world interaction target. Only the native scrollbar owns
+	# pointer drags; wheel inside overflowing text scrolls without world zoom.
+	var scrollbar:=task_scroll.get_v_scroll_bar()
+	# The project enables platform touch-to-mouse emulation. Our owned finger
+	# already forwards one native drag, so discard its duplicate emulated events.
+	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION and Time.get_ticks_msec()<_scroll_emulation_until and (_scroll_touch_id>=0 or scrollbar.get_global_rect().has_point(event.position)):
+		get_viewport().set_input_as_handled();return
+	if not is_visible_in_tree():return
+	# ScrollBar handles mouse drags natively, but not raw ScreenDrag events.
+	# Translate only a touch that begins on its visible thumb/track; never
+	# capture world touches that began on the transparent text column.
+	if event is InputEventScreenTouch:
+		if event.pressed and _scroll_touch_id<0 and scrollbar.visible and scrollbar.get_global_rect().has_point(event.position):_scroll_touch_id=event.index
+		if event.index!=_scroll_touch_id:return
+		_scroll_touch_point=event.position;_scroll_emulation_until=Time.get_ticks_msec()+100
+		var mouse:=InputEventMouseButton.new();mouse.position=event.position;mouse.global_position=event.position;mouse.button_index=MOUSE_BUTTON_LEFT;mouse.pressed=event.pressed
+		get_viewport().push_input(mouse,true)
+		if not event.pressed:_scroll_touch_id=-1
+		get_viewport().set_input_as_handled();return
+	if event is InputEventScreenDrag and event.index==_scroll_touch_id:
+		_scroll_touch_point=event.position;_scroll_emulation_until=Time.get_ticks_msec()+100
+		var motion:=InputEventMouseMotion.new();motion.position=event.position;motion.global_position=event.position;motion.relative=event.relative;motion.button_mask=MOUSE_BUTTON_MASK_LEFT
+		get_viewport().push_input(motion,true);get_viewport().set_input_as_handled();return
+	if not event is InputEventMouseButton or not event.pressed:return
+	if event.button_index not in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:return
+	var bar:=task_scroll.get_v_scroll_bar()
+	if bar.max_value<=bar.page+.5 or not task_scroll.get_global_rect().has_point(event.position):return
+	task_scroll.scroll_vertical+=int((-1 if event.button_index==MOUSE_BUTTON_WHEEL_UP else 1)*maxf(1,event.factor)*32)
+	get_viewport().set_input_as_handled()
 
 func _label(parent:Node,surface:String,role:String)->Label:
 	var label:=Label.new();label.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -108,13 +151,15 @@ func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,promp
 	var first_goal_budget:float=16+header_height+task_tip.get_combined_minimum_size().y+16+first_line
 	var available_height:=maxf(32,minf(maxf(size.y*.36,first_goal_budget),bottom*s-inset.y-8))
 	_task_height_budget=available_height;_plaque_bottom_limit=bottom*s
-	task.position=inset;task.size=Vector2(width,available_height)
+	task.position=inset
 	task.custom_minimum_size=Vector2.ZERO
 	var minimum:=task_column.get_combined_minimum_size().y+16
-	task.size.y=minf(available_height,maxf(32,minimum));task.queue_redraw()
+	# Apply the final target once; expanding then shrinking every sync causes
+	# container minimum/scrollbar feedback even when all inputs are unchanged.
+	task.size=Vector2(width,minf(available_height,maxf(32,minimum)))
 	# A passive readable HUD must not consume authored world floor taps.
-	# Only actual overflow owns pointer scrolling; labels/columns stay transparent.
-	task_scroll.mouse_filter=Control.MOUSE_FILTER_STOP if task_column.get_combined_minimum_size().y>task_scroll.size.y+.5 else Control.MOUSE_FILTER_IGNORE
+	# Only the scrollbar owns pointer drags; labels/columns stay transparent.
+	task_scroll.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var plaque_width:=minf(420,maxf(1,size.x*.76))
 	plaque.size=Vector2(plaque_width,0)
 	var plaque_height:=plaque.get_combined_minimum_size().y
