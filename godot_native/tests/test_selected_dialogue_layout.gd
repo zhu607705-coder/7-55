@@ -7,7 +7,8 @@ var checks:=0
 var failures:=0
 class Line extends RefCounted:
 	var paused:=false
-	func snapshot()->Dictionary:return {"speaker":"管理员","text":"请保留原始记录，不要遗漏现场线索。","rawText":"请保留原始记录，不要遗漏现场线索。","paused":paused,"requiresConfirmation":false,"sequenceId":"selected_dialogue_test"}
+	var content:="请保留原始记录，不要遗漏现场线索。"
+	func snapshot()->Dictionary:return {"speaker":"管理员","text":content,"rawText":content,"paused":paused,"requiresConfirmation":false,"sequenceId":"selected_dialogue_test"}
 func _initialize()->void:run.call_deferred()
 func check(ok:bool,message:String)->void:
 	checks+=1
@@ -36,6 +37,13 @@ func run()->void:
 			check(view.body.get_theme_constant("outline_size")==0,"no glyph outline")
 			check(view.body.get_theme_constant("shadow_offset_y")==1,"locked shadow remains enabled")
 			check(view.body.text==view.session.snapshot().text,"source words unchanged")
+			view.session.content="原始故事文字保留完整。".repeat(300)
+			view.tick();await process_frame;await process_frame;view.tick()
+			check(view.body_scroll.size.y>=view.body.get_theme_font("font").get_height(14),"overflow viewport preserves at least one complete glyph row")
+			check(view.body_scroll.get_v_scroll_bar().visible,"actual long source label exposes bounded scrolling")
+			view.body_scroll.scroll_vertical=100000
+			await process_frame
+			check(view.body_scroll.scroll_vertical>0 and view.body.text==view.session.content,"actual scroll reaches later preserved text without truncation")
 			view.free()
 		host.free()
 	print("Selected dialogue: ",checks," checks, ",failures," failures")

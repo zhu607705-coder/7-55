@@ -24,7 +24,8 @@ func subtitle_bounds(label: String) -> void:
 	check(panel.position.y>=world_screen(Vector2(0,shell.world.hud_metrics("").header_height)).y,"subtitle clears world header: "+label)
 	var stick:=Rect2(world_screen(controls.stick_rect.position),world_screen(controls.stick_rect.end)-world_screen(controls.stick_rect.position))
 	var interact:=Rect2(world_screen(controls.interact.position),world_screen(controls.interact.end)-world_screen(controls.interact.position))
-	check(not panel.intersects(stick) and not panel.intersects(interact),"subtitle clears movement controls: "+label)
+	if not shell.c3_narrative_host.blocks_input():
+		check(not panel.intersects(stick) and not panel.intersects(interact),"subtitle clears visible movement controls: "+label)
 	var actual:Vector2=view.body.get_theme_font("font").get_multiline_string_size(view.body.text,HORIZONTAL_ALIGNMENT_LEFT,view.body.size.x,view.body.get_theme_font_size("font_size"))
 	check(actual.y<=view.body.size.y+.5 and view.body.get_theme_font_size("font_size")>=14,"full subtitle stays readable without clipping: "+label)
 func advance_to(ms: float) -> void:
