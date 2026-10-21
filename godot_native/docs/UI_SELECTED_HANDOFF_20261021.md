@@ -34,3 +34,15 @@
 - 新截图必须绑定本次提交；之前奶油面板/统一单字族候选不是这次用户锁定方案的视觉验收。
 - 白字/13px 像素正文在明亮场景的可读性是必须实际查看的风险；如不足，报告具体画面，不自行修改用户锁定色值/字号。
 - 梁祝源仍是明确缺口；THEATER-1 配置存在不等于真实梁祝已适配。
+
+## Actual GPU findings and structural follow-up
+
+The first selected-theme capture at `6d94498` (108 candidate PNGs) exposed issues not detected by size-only tests: transparent journal text overlapped exploration prompts; short landscape HUD clipped its objective; C3 dialogue and HUD glyphs still passed through the world's low-resolution texture. These are not accepted visual results.
+
+The follow-up renders selected exploration UI and C3 dialogue in the root viewport at native screen resolution. The pixel-art world retains its own render target and camera. Reading/narrative owners suppress nonessential exploration overlays, and a transparent selected modal suppresses outer exploration chrome without changing visibility-based world bounds. Closing restores presentation. A right-side dialogue no longer reserves its top edge as the bottom edge of the entire world. Existing timed feedback pauses only its presentation countdown while hidden so it is not silently missed. Short-landscape location/time share one row; locked role sizes, colors, spacing, and source objective text remain unchanged.
+
+The next GPU capture must verify the same cases before these fixes are called visually confirmed. This does not resolve the missing latest 梁祝 source.
+
+Follow-up headless checks: native-layer contract 80/80 (including unchanged camera, viewport size and world rectangle through journal open/close); selected layout 1296/1296; feedback ownership/real touch scrolling/wheel boundaries 98/98; static cross-PR integration 2546/2546. Real rendering remains a separate requirement, not inferred from these checks.
+
+A real pointer regression was also found and fixed: a non-overflowing task column must not swallow authored floor taps. The original food-hall queue pointer/blocked-marker test passes unchanged (97 checks). The task column accepts scrolling only when its content actually overflows. Victory camera/doorway/arrival checks (1640) and reversal/pause checks (42) pass with assertions converted from obsolete world-local text coordinates to the actual native-screen rectangles and the user-selected 14 px role (accessibility scaling preserved).

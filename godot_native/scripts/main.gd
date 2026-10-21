@@ -689,6 +689,7 @@ func _layout() -> void:
 			active_game.position=(available-game_viewport*game_scale)/2
 	_layout_modal()
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
+	_sync_selected_world_overlay()
 
 func _activity_owns_scene() -> bool:
 	# Layout adapters opt into one full-scene owner. The shared host opts in
@@ -2192,7 +2193,19 @@ func _on_audio_subtitle(text:String,surface:String,duration_ms:float,tone:String
 		_show_story_caption(text,tone,duration_ms/1000.0,str(metadata.get("speaker","")))
 	else:_feedback(text,tone,maxf(.1,duration_ms/1000.0))
 
+func _sync_selected_world_overlay() -> void:
+	if not is_instance_valid(world) or not is_instance_valid(world_view): return
+	var screen_rect: Rect2 = world_view.get_global_rect()
+	var local_rect := Rect2(get_global_transform_with_canvas().affine_inverse() * screen_rect.position, screen_rect.size / get_global_transform_with_canvas().get_scale())
+	world.sync_selected_overlay_native(self,local_rect)
+	# Transparent reading surfaces own attention, not a new camera/layout.
+	# Preserve visibility-derived world bounds and existing modal input blocking.
+	var reading: bool = is_instance_valid(modal_panel) and modal_panel.has_meta("selected_surface")
+	for chrome: Control in [mobile_back,world_tasks,inventory_handle,inventory_dock]:
+		if is_instance_valid(chrome): chrome.modulate.a=0.0 if reading else 1.0
+
 func _process(delta: float) -> void:
+	_sync_selected_world_overlay()
 	if is_instance_valid(world) and world.chapter4_layers != null:
 		var archive: RefCounted=world.chapter4_layers.archive_motion
 		if archive.stage=="handoff" and (not archive.matches(State.d) or is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document) or not world_frame.is_visible_in_tree()): archive.cancel()

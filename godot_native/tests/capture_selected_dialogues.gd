@@ -58,6 +58,9 @@ func capture_c3(dimensions: Vector2i, longest: bool) -> void:
 	shell._layout(); host.view.tick()
 	require_fixture(host.blocks_input() and not host.blocks_movement(),"timed dialogue preserves interaction/movement split")
 	require_fixture(host.view.body.text == str(session.snapshot().text),"C3 displays exact current source line")
+	if ResourceLoader.exists("res://scripts/ui/selected_ui_theme.gd"):
+		require_fixture(host.view.get_viewport()==root and host.view.get_parent()==host,"C3 selected text renders in native screen viewport")
+		require_fixture(host.view.body.get_theme_font_size("font_size")==14 and host.view.speaker.get_theme_font_size("font_size")==18,"C3 native physical selected sizes without world resampling")
 	require_fixture(host.view.find_children("*","Button",true,false).is_empty(),"automatic C3 dialogue has no invented advance button")
 	var prefix := "%dx%d-c3-" % [dimensions.x,dimensions.y]
 	await capture_dialogue(prefix + ("long" if longest else "short"),host)

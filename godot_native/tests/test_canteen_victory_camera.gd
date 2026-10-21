@@ -63,20 +63,21 @@ func check_subtitle(label: String) -> void:
 		check(host.view.get_parent()==host and host.view.screen_rect.encloses(host.view.panel.get_rect()),"portrait subtitle uses the screen-space gap: "+label)
 		check(not host.view.panel.get_global_rect().intersects(shell.world_view.get_global_rect()),"portrait subtitle does not cover source film: "+label)
 	else:
-		check(Rect2(Vector2.ZERO,shell.world.size).encloses(host.view.panel.get_rect()),"subtitle stays inside canonical surface: "+label)
+		check(shell.world_view.get_global_rect().encloses(host.view.panel.get_global_rect()),"native-screen subtitle stays inside displayed canonical surface: "+label)
 	var body: Label=host.view.body
 	var measured: Vector2=body.get_theme_font("font").get_multiline_string_size(body.text,HORIZONTAL_ALIGNMENT_LEFT,body.size.x,body.get_theme_font_size("font_size"))
 	check(measured.y<=body.size.y+.5,"entire source line fits without clipping: "+label)
-	check(body.get_theme_font_size("font_size")*(1.0 if host.view.screen_rect.has_area() else host.view.display_scale)>=15,"subtitle keeps readable physical font size: "+label)
+	check(host.view.get_viewport()==root and body.get_theme_font_size("font_size")==ceili(14*state.d.native.settings.text_scale),"subtitle uses exact selected native physical font size: "+label)
 	var caption:Rect2=host.view.panel.get_global_rect()
 	var film:Rect2=shell.world_view.get_global_rect()
 	if host.view.get_parent()==shell.world:caption=Rect2(film.position+caption.position*host.view.display_scale,caption.size*host.view.display_scale)
 	var door:Node2D=shell.world.native_canteen.objects.southeast_door
 	var source:=Rect2(door.position+door.top_left,door.dimensions)
 	var local:=Rect2((source.position-shell.world.camera)*shell.world.zoom+shell.world.size/2,source.size*shell.world.zoom)
-	var target:=Rect2(film.position+local.position*host.view.display_scale,local.size*host.view.display_scale)
+	var film_scale:Vector2=film.size/shell.world.size
+	var target:=Rect2(film.position+local.position*film_scale,local.size*film_scale)
 	check(not caption.intersects(target),"source southeast doorway remains clear of dialogue: "+label)
-	var arrival:Vector2=film.position+((Vector2(1380,852)-shell.world.camera)*shell.world.zoom+shell.world.size/2)*host.view.display_scale
+	var arrival:Vector2=film.position+((Vector2(1380,852)-shell.world.camera)*shell.world.zoom+shell.world.size/2)*film_scale
 	check(not caption.grow(8).has_point(arrival),"source exit arrival point remains clear of dialogue: "+label)
 
 func run() -> void:

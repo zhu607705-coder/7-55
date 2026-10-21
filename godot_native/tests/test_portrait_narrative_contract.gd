@@ -17,12 +17,14 @@ func configure(dimensions: Vector2i,scene: String="canteen_interior") -> void:
 	shell.world.set_process(false); shell.c3_narrative_host.set_process(false); shell.c3_scene_host.set_process(false)
 func subtitle_bounds(label: String) -> void:
 	var view: Control=shell.c3_narrative_host.view
-	var panel: Rect2=view.panel.get_rect()
-	var bounds:=Rect2(Vector2.ZERO,shell.world.size)
+	var panel: Rect2=view.panel.get_global_rect()
+	var bounds:Rect2=shell.world_view.get_global_rect()
 	var controls: Dictionary=shell.world.mobile_control_metrics()
 	check(bounds.encloses(panel),"subtitle stays in exploration: "+label)
-	check(panel.position.y>=shell.world.hud_metrics("").header_height,"subtitle clears world header: "+label)
-	check(not panel.intersects(controls.stick_rect) and not panel.intersects(controls.interact),"subtitle clears movement controls: "+label)
+	check(panel.position.y>=world_screen(Vector2(0,shell.world.hud_metrics("").header_height)).y,"subtitle clears world header: "+label)
+	var stick:=Rect2(world_screen(controls.stick_rect.position),world_screen(controls.stick_rect.end)-world_screen(controls.stick_rect.position))
+	var interact:=Rect2(world_screen(controls.interact.position),world_screen(controls.interact.end)-world_screen(controls.interact.position))
+	check(not panel.intersects(stick) and not panel.intersects(interact),"subtitle clears movement controls: "+label)
 	var actual:Vector2=view.body.get_theme_font("font").get_multiline_string_size(view.body.text,HORIZONTAL_ALIGNMENT_LEFT,view.body.size.x,view.body.get_theme_font_size("font_size"))
 	check(actual.y<=view.body.size.y+.5 and view.body.get_theme_font_size("font_size")>=14,"full subtitle stays readable without clipping: "+label)
 func advance_to(ms: float) -> void:
@@ -88,7 +90,7 @@ func run() -> void:
 		state.act("c3_target:canteen-promo-board"); host.tick(0,true)
 		check(host.current!=null and host.current.sequence_id=="canteen_promo" and not host.blocks_movement(),"source promo is an authored camera owner with walking allowed")
 		check(world.size==Vector2(960,540) and not world.mobile_exploration and host.owns_world_contract(),"promo acquires canonical viewport synchronously")
-		check(is_equal_approx(host.view.display_scale,shell.world_frame.scale.x),"first cinematic tick uses actual authored display scale")
+		check(host.view.get_parent()==host and is_equal_approx(host.view.display_scale,1.0),"first cinematic tick paints selected typography in the native screen viewport")
 		advance_to(host.current.duration_ms); await frames()
 		check(world.mobile_exploration and host.current==null,"completed promo returns exploration")
 		# Genuine theater reveal retains its contract through lines and inspector.
