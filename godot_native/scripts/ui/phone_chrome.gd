@@ -1,4 +1,5 @@
 extends Control
+const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
 ## Source-faithful PhoneShell overlay. Mount at (3,3) inside the 430x860 frame.
 ## Read-only presentation: all story/state writes are parent-owned signal handlers.
 signal page_requested(id: String)
@@ -17,7 +18,8 @@ const INVENTORY_BOTTOM_GAP := 16.0
 const INK := Color("222322")
 const RED := Color("c85454")
 const SAVING_GREEN := Color("2d7a52")
-const PIXEL_FONT = preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+const Typography = preload("res://scripts/ui/native_typography.gd")
+static var UI_FONT: Font = Typography.body_font()
 const ITEM_ORDER := ["headphone","waterDrop","wateredHeadphone","reverseGear","slashLine","towerKey","fertilizer","campusCard","pushTriangle","weatherWater","mentorLine","rightArrow","gamepad","occupancyNote","callNumber755","archivedLeaveRule","itemRecognitionReport","bagNonPersonProof","seat022Receipt","libraryPresenceProof","seatReleasePass","cafeteriaWages","greaseTissue","sparklingWater","lemonTea","blackCoffee","badDrink","dailySpecialSparklingWater","pickupTicket0755","canteenRealBun","canteenCluelessSoyMilk","canteenEdgeEgg","canteenUselessCongee","theaterTicketHalfA","theaterTicketHalfB","temporaryTheaterTicket","theaterProgramOpening","theaterProgramSpotlight","theaterProgramFinale","spotlightRemote","fluorescentBrush","decoyPaper","wetProgram","bridgeKeyword","reflectionKeyword","lakeKeyword","reflectionCoordinate","hairDryer","fishingRod","rustedLockerKey","nylonCord","brokenNetFrame","improvisedDipNet","sealedFeedTin","fishFeedPellets","smallCarp","swanMagnet","magneticFishingRod","attendanceRecordPaper","oldClockHourHand","clockPositioningPlate","shortPryBar","universalLubricatingOil","finalMinute"]
 const RASTER_ICONS := {
 	"hairDryer":"res://assets/rpg/props/items/hair_dryer_generated_v01.png",
@@ -215,12 +217,12 @@ func _style(background: Color, border: Color=Color.TRANSPARENT, border_width: in
 	box.shadow_color=shadow_color
 	box.shadow_size=0
 	box.shadow_offset=shadow_offset
-	return box
+	return PixelEdges.configure(box)
 
 func _label(parent: Control, text: String, font_size: int, color: Color=INK) -> Label:
 	var label := TrackedLabel.new()
 	label.text=text
-	label.add_theme_font_override("font",PIXEL_FONT)
+	Typography.apply_body(label)
 	label.add_theme_font_size_override("font_size",font_size)
 	label.add_theme_color_override("font_color",color)
 	label.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -238,7 +240,7 @@ func _make_icon(parent: Control, id: String, extent: float) -> PixelIcon:
 
 func _set_button_style(button: Button, normal: StyleBoxFlat, hover: StyleBoxFlat) -> void:
 	Hardware.apply_states(button,normal,hover)
-	button.add_theme_font_override("font",PIXEL_FONT)
+	Typography.apply_body(button)
 
 func _build() -> void:
 	if _built: return
@@ -347,7 +349,7 @@ func _task_visible() -> bool:
 	return later or not phase in ["friend_message_required","system_required"]
 
 func _text_width(text: String, font_size: int) -> float:
-	return ceilf(PIXEL_FONT.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)
+	return ceilf(UI_FONT.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)
 
 func _refresh_status() -> void:
 	var c4: Dictionary=state.get("chapter4",{})

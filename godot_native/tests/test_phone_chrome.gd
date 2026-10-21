@@ -43,7 +43,7 @@ func run() -> void:
 	check(chrome.inventory_handle.position==Vector2.ZERO and not chrome.inventory_body.visible,"inventory starts collapsed")
 	check(chrome.inventory_count.text=="2","closed badge counts actual ownership")
 	check(chrome.inventory_slots.get_child(0).item_id=="headphone","inventory follows authored order, not item config order")
-	check(chrome.time_label.get_theme_font("font")==Chrome.PIXEL_FONT,"same local Fusion Pixel font")
+	check(chrome.time_label.get_theme_font("font")==preload("res://scripts/ui/native_typography.gd").body_font(),"same shared UI family for status text")
 	check(chrome.time_label.text=="07:55" and chrome.time_trusted,"initial trustworthy 07:55")
 	check(chrome.status_icons.network=="campus_wifi" and chrome.network_label.text=="ZJUWLAN","native wifi arcs and source network name")
 	check(chrome.status_icons.percent==100 and chrome.status_icons.size.x>22,"native battery has dynamic percentage and explicit drawing area")

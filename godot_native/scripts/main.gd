@@ -116,7 +116,7 @@ func _ready() -> void:
 	# Let native audio owners retire their mixer-thread playbacks before exit.
 	get_tree().auto_accept_quit = false
 	get_tree().root.close_requested.connect(_request_quit)
-	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font = load("res://scripts/ui/native_typography.gd").body_font()
 	# Keep the non-phone inherited text size. Phone and modal roles are scoped.
 	theme = NativeUi.make_theme(Typography.body_font(),18,18)
 	_build_shell()
@@ -1254,6 +1254,8 @@ func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 	if surface=="notebook":
 		var title_index:=PanelContainer.new();title_index.name="NotebookPageIndex"
 		title_index.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+		title_index.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+		label.autowrap_mode=TextServer.AUTOWRAP_OFF
 		title_index.add_theme_stylebox_override("panel",CampusMaterial.panel_style("placard",{},Vector2(12,6)))
 		label.add_theme_color_override("font_color",CampusMaterial.PAPER)
 		Typography.apply_body(label);label.add_theme_font_size_override("font_size",18)
@@ -1261,6 +1263,7 @@ func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 		var title_space:=Control.new();title_space.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title_space)
 	else: header.add_child(label)
 	var close_button := _button("关闭",_close_modal,Vector2(70,44))
+	close_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
 	header.add_child(close_button)
 	modal_notice_slot=Control.new()
@@ -1443,7 +1446,7 @@ func _refresh_inventory_dock() -> void:
 		var id:=str(item.id)
 		if not State.d.items.get(id,false): continue
 		if existing.has(id):
-			_style_world_item(existing[id],str(State.d.native.selected_item)==id)
+			_style_world_item(existing[id],str(State.d.native.get("selected_item",""))==id)
 			existing.erase(id)
 			continue
 		var entry: Dictionary = item
@@ -1455,7 +1458,7 @@ func _refresh_inventory_dock() -> void:
 		button.clip_text=true
 		button.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
 		button.alignment=HORIZONTAL_ALIGNMENT_LEFT
-		_style_world_item(button,str(State.d.native.selected_item)==id)
+		_style_world_item(button,str(State.d.native.get("selected_item",""))==id)
 		if is_instance_valid(phone_chrome):
 			var icon: Control=phone_chrome._make_icon(button,id,28)
 			icon.name="WorldItemArtwork"
@@ -1576,7 +1579,7 @@ func _show_journal() -> void:
 	_refresh_observation_comparison()
 	var current: Dictionary=CanteenObjective.current(State.d)
 	var journal:=NativeJournalView.new()
-	if return_to_world: journal.context_texture=world_viewport.get_texture()
+	if return_to_world: journal.context_texture=world.background
 	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),return_to_world)
 	journal.resume_requested.connect(func():
 		_close_modal()

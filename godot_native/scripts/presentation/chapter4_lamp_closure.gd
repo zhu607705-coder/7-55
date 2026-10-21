@@ -6,7 +6,7 @@ signal acknowledged(proof:Dictionary)
 const Sequence=preload("res://scripts/presentation/chapter4_lamp_sequence.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Lamp3D=preload("res://scripts/presentation/chapter4_lamp_3d.gd")
-const SummaryFont=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var SummaryFont: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 const FINAL_MESSAGE="从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！"
 var config:Dictionary={}
 var answers:Dictionary={}
@@ -43,6 +43,7 @@ func configure(value:Dictionary)->void:
 	answers=config.get("selectedAnswers",{}).duplicate()
 	if config.get("answersSaved",false):stage="saved"
 func _ready()->void:
+	theme=Theme.new();theme.default_font=SummaryFont
 	clip_contents=true;mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
 	for key in ["dark","outline","glow","core","leds"]:
 		var path:String="res://assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_"+key+".png"

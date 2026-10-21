@@ -19,7 +19,7 @@ var capture_mode: bool=false
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	lake=load("res://assets/rpg/interiors/qizhen_lake_swan_cove.png")
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	restart()
 
 func restart() -> void:

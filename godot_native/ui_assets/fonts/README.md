@@ -47,8 +47,10 @@ arbitrary player names/imported text.
 Some UI symbols are absent from upstream. The manifest lists them; a consumer
 must provide a suitable fallback or non-font icon. Fusion Pixel covers only some
 of those symbols. No runtime font switch or UI script is part of this artifact.
-Use the new body font first in measured container layouts, retaining the existing
-pixel display font where short labels, clocks and authored metrics require it.
+All normal UI roles now use the same Campus family: body, titles, clocks,
+numerals and buttons. Role names do not select a separate display family.
+The bundled Fusion resource is retained only as an explicit missing-symbol
+fallback, not as a source of normal Chinese/Latin/digit lettering.
 
 Runtime integration uses `native_typography.gd`. Known phone UI symbols absent
 from both bundled fonts are drawn by `native_symbol_icon.gd` as deterministic

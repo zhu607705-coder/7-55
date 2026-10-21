@@ -126,7 +126,8 @@ func map_page(b,root: Control) -> void:
 	var frame:=DropButton.new(); frame.position=Vector2(14,118); frame.size=Vector2(350,392); frame.name="QizhenMapDrop"; frame.focus_mode=Control.FOCUS_NONE
 	frame.add_theme_stylebox_override("normal",b._style(Color("f8fbf8"),Color("214f59"),0,4)); frame.item_dropped.connect(func(item): import_map(b,item)); inner.add_child(frame)
 	b._panel(frame,Rect2(4,4,342,55),INK)
-	b._label(frame,"已接入  %d / 3"%count,Rect2(14,13,169,36),22,Color("ffe27b"))
+	# Reserve the existing collapsed inventory handle gutter; do not move its drag target.
+	b._label(frame,"已接入  %d / 3"%count,Rect2(38,13,145,36),22,Color("ffe27b")).name="QizhenMapCount"
 	b._label(frame,"入口已标记" if solved else "待核对" if count==3 else "收集中",Rect2(194,17,142,29),14,Color("d6f0d9") if solved else Color("c5dcda"),HORIZONTAL_ALIGNMENT_RIGHT)
 	for i in range(ROWS.size()):
 		var row: Array=ROWS[i]; var added: bool=q.mapClueIds.has(row[1]); var owned: bool=b.s.items.get(row[0],false); var y: float=60+i*109

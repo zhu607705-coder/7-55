@@ -1,4 +1,5 @@
 extends Control
+const PixelEdges=preload("res://scripts/ui/pixel_edges.gd")
 ## Source-sized theater device controls. Draft edits use controller intents;
 ## local keypad text is presentation-only and clears on a fresh open.
 signal closed(reason: String)
@@ -65,6 +66,7 @@ func owns_feedback_surface() -> bool:
 
 func configure_layout(viewport: Vector2, compact: bool) -> void:
 	compact_layout=compact
+	display.add_theme_font_size_override("font_size",30 if kind=="code" else 22)
 	for child in get_children():
 		if child is Control and not child.has_meta("desktop_rect"): child.set_meta("desktop_rect",Rect2(child.position,child.size))
 	if not compact:
@@ -79,22 +81,49 @@ func configure_layout(viewport: Vector2, compact: bool) -> void:
 	var extent:=Vector2(minf(viewport.x-24,560 if portrait else 680),minf(viewport.y-24,460 if portrait else 430))
 	compact_board=Rect2((viewport-extent)/2,extent)
 	var start: Vector2=compact_board.position;var w: float=extent.x
+	# Short landscape spends less space between controls, never scales hit targets.
+	# Reserve the authored 48px feedback row plus an 8px gap after actions.
+	var short_landscape:bool=not portrait and extent.y<366
+	var action_y:float=minf(252 if kind=="code" else 250,extent.y-62-8-48) if short_landscape else (252 if kind=="code" else 250)
+	var keypad_y:float=action_y-8-48-52 if short_landscape else 132
+	var keypad_pitch:float=52 if short_landscape else 56
+	var screen_y:float=(84 if kind=="program" else keypad_y-52) if short_landscape else (84 if kind=="program" else 76)
 	_place(title_label,Rect2(start+Vector2(16,14),Vector2(w-32,64 if kind=="program" else 48)))
-	_place(display,Rect2(start+Vector2(16,100 if portrait else 76),Vector2(w-32,64 if portrait else 48)))
+	_place(display,Rect2(start+Vector2(16,100 if portrait else screen_y),Vector2(w-32,64 if portrait else 48)))
 	if kind=="code":
 		var button_width: float=(w-64)/5
 		for index in range(10):
-			_place(controls[str(index)],Rect2(start+Vector2(16+(index%5)*(button_width+8),(192 if portrait else 132)+floori(float(index)/5)*56),Vector2(button_width,48)))
+			_place(controls[str(index)],Rect2(start+Vector2(16+(index%5)*(button_width+8),(192 if portrait else keypad_y)+floori(float(index)/5)*(56 if portrait else keypad_pitch)),Vector2(button_width,48)))
 		var width: float=(w-48)/3
-		for index in range(3): _place(controls[["backspace","submit","close"][index]],Rect2(start+Vector2(16+index*(width+8),344 if portrait else 252),Vector2(width,48)))
+		for index in range(3): _place(controls[["backspace","submit","close"][index]],Rect2(start+Vector2(16+index*(width+8),344 if portrait else action_y),Vector2(width,48)))
 	else:
 		var card_width: float=(w-48)/3
 		var index:=0
 		for id in program_buttons:
-			_place(program_buttons[id],Rect2(start+Vector2(16+index*(card_width+8),212 if portrait else 154),Vector2(card_width,56)));index+=1
+			_place(program_buttons[id],Rect2(start+Vector2(16+index*(card_width+8),212 if portrait else (138 if short_landscape else 154)),Vector2(card_width,56)));index+=1
 		var width: float=(w-56)/4
-		for i in range(4): _place(controls[["undo","clear","submit","close"][i]],Rect2(start+Vector2(16+i*(width+8),334 if portrait else 250),Vector2(width,48)))
+		for i in range(4): _place(controls[["undo","clear","submit","close"][i]],Rect2(start+Vector2(16+i*(width+8),334 if portrait else action_y),Vector2(width,48)))
 	_place(feedback_label,Rect2(start+Vector2(16,extent.y-62),Vector2(w-32,48)))
+	if not portrait and extent.y<340:
+		if kind=="code":display.add_theme_font_size_override("font_size",24)
+		# 568×320: explicit measured rows rather than letting the keypad push
+		# the readout into the heading. All interactive targets remain 44px high.
+		_place(title_label,Rect2(start+Vector2(16,12),Vector2(w-32,32 if kind=="code" else 52)))
+		_place(display,Rect2(start+Vector2(16,48 if kind=="code" else 72),Vector2(w-32,36)))
+		if kind=="code":
+			var key_width:float=(w-64)/5
+			for index in range(10):
+				_place(controls[str(index)],Rect2(start+Vector2(16+(index%5)*(key_width+8),92+floori(float(index)/5)*48),Vector2(key_width,44)))
+			var action_width:float=(w-48)/3
+			for index in range(3):_place(controls[["backspace","submit","close"][index]],Rect2(start+Vector2(16+index*(action_width+8),192),Vector2(action_width,44)))
+		else:
+			var card_width:float=(w-48)/3
+			var index:=0
+			for id in program_buttons:
+				_place(program_buttons[id],Rect2(start+Vector2(16+index*(card_width+8),116),Vector2(card_width,48)));index+=1
+			var action_width:float=(w-56)/4
+			for i in range(4):_place(controls[["undo","clear","submit","close"][i]],Rect2(start+Vector2(16+i*(action_width+8),176),Vector2(action_width,44)))
+		_place(feedback_label,Rect2(start+Vector2(16,244),Vector2(w-32,44)))
 	feedback_label.visible=not feedback_label.text.is_empty()
 	queue_redraw()
 
@@ -117,7 +146,7 @@ func _button(id: String, text: String, point: Vector2, extent: Vector2, action: 
 	for font_state in ["font_color","font_hover_color","font_focus_color","font_pressed_color","font_hover_pressed_color"]: button.add_theme_color_override(font_state,ink)
 	button.add_theme_color_override("font_disabled_color",Color("b7c8d1"))
 	for state:String in ["normal","hover","pressed","hover_pressed","disabled"]:
-		var style:=StyleBoxFlat.new()
+		var style:=StyleBoxFlat.new();PixelEdges.configure(style)
 		var pressed:bool=state in ["pressed","hover_pressed"]
 		style.bg_color=(Color("d5b77b") if state=="hover" else Color("bea16b")) if primary else (Color("374855") if state=="hover" else Color("263642"))
 		if pressed:style.bg_color=Color("aa8d59") if primary else Color("1b2933")
@@ -126,7 +155,7 @@ func _button(id: String, text: String, point: Vector2, extent: Vector2, action: 
 		style.border_width_bottom=1 if pressed else 3
 		# The existing hit rectangles stay exact; depth is painted inward.
 		button.add_theme_stylebox_override(state,style)
-	var focus:=StyleBoxFlat.new();focus.bg_color=Color.TRANSPARENT
+	var focus:=StyleBoxFlat.new();PixelEdges.configure(focus);focus.bg_color=Color.TRANSPARENT
 	focus.border_color=Color("fff2d8");focus.set_border_width_all(2)
 	button.add_theme_stylebox_override("focus",focus)
 	button.pressed.connect(func():
@@ -199,18 +228,18 @@ func _draw() -> void:
 	var extent:=Vector2(560,360) if kind=="code" else Vector2(620,390)
 	var board:Rect2=compact_board if compact_layout else Rect2(CENTER-extent/2,extent)
 	# Equipment, not stationery: thin folded metal case with an inset screen.
-	draw_rect(board,Color("111b24"))
-	draw_rect(Rect2(board.position,Vector2(board.size.x,1)),Color("9a987f"))
-	draw_rect(Rect2(board.position,Vector2(1,board.size.y)),Color("697a80"))
-	draw_rect(Rect2(board.end-Vector2(board.size.x,2),Vector2(board.size.x,2)),Color("070c12"))
-	draw_rect(Rect2(board.end-Vector2(1,board.size.y),Vector2(1,board.size.y)),Color("394b55"))
+	var shell:=StyleBoxFlat.new();PixelEdges.configure(shell,true)
+	shell.bg_color=Color("111b24");shell.border_color=Color("697a80");shell.set_border_width_all(1);shell.border_width_bottom=2
+	draw_style_box(shell,board)
 	for point:Vector2 in [board.position+Vector2(5,5),Vector2(board.end.x-7,board.position.y+5),Vector2(board.position.x+5,board.end.y-7),board.end-Vector2(7,7)]:
 		draw_rect(Rect2(point,Vector2(2,2)),Color("8b8b79"))
 	var screen:=Rect2(display.position,display.size)
-	draw_rect(screen,Color("07131d"))
-	draw_rect(Rect2(screen.position,Vector2(screen.size.x,2)),Color("03080d"))
-	draw_rect(Rect2(screen.position,Vector2(2,screen.size.y)),Color("03080d"))
-	draw_rect(Rect2(screen.end-Vector2(screen.size.x,1),Vector2(screen.size.x,1)),Color("415760"))
+	var recess:=StyleBoxFlat.new();PixelEdges.configure(recess)
+	recess.bg_color=Color("07131d");recess.border_color=Color("03080d");recess.set_border_width_all(1)
+	draw_style_box(recess,screen)
+	draw_rect(Rect2(screen.position+Vector2(4,0),Vector2(screen.size.x-8,2)),Color("03080d"))
+	draw_rect(Rect2(screen.position+Vector2(0,4),Vector2(2,screen.size.y-8)),Color("03080d"))
+	draw_rect(Rect2(screen.end-Vector2(screen.size.x-4,1),Vector2(screen.size.x-8,1)),Color("415760"))
 	if compact_layout and feedback_label.visible:
 		var feedback_rect:=Rect2(feedback_label.position-Vector2(4,2),feedback_label.size+Vector2(8,4))
 		draw_rect(feedback_rect,Color("172a34"))

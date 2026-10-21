@@ -82,7 +82,7 @@ func _ready() -> void:
 	clip_contents=true
 	background=load("res://assets/rpg/interiors/canteen_interior.png")
 	push_sheet=load("res://assets/rpg/player/player_push_cart_sheet.png")
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	title=_label(Vector2(25,13),Vector2(500,32),23)
 	title.text="食堂 · 守住出口"
 	timer=_label(Vector2(25,49),Vector2(750,32),18)

@@ -7,7 +7,7 @@ var elapsed_ms: float=0
 var closed: bool=false
 var read_state: Callable
 var reduced_motion: bool=false
-var source_font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var source_font: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 var viewport3d: SubViewport
 var parts: Node3D
 var camera3d: Camera3D

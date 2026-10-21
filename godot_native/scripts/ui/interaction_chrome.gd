@@ -1,4 +1,5 @@
 extends RefCounted
+const PixelEdges=preload("res://scripts/ui/pixel_edges.gd")
 ## Presentation-only hardware language. Geometry, gestures and permissions belong
 ## to the caller; this helper never connects input or writes gameplay state.
 const INK := Color("233746")
@@ -32,7 +33,7 @@ static func style(fill: Color, border: Color = EDGE, width: int = 1) -> StyleBox
 	box.bg_color = fill
 	box.border_color = border
 	box.set_border_width_all(width)
-	box.set_corner_radius_all(1)
+	PixelEdges.configure(box)
 	box.content_margin_left=0;box.content_margin_right=0
 	box.content_margin_top=0;box.content_margin_bottom=0
 	return box

@@ -60,7 +60,7 @@ var furniture_view_ready:=false
 func setup(owner_world:Control)->void:
 	world=owner_world;name="CanteenIndependentObjects"
 	layout=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/canteen-object-layout.json"))
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	if world!=null:layers=world.chapter3_layers
 	source_space=Node2D.new();source_space.name="SourceCoordinates";add_child(source_space)
 	mode_fiber_view=ModeFiberView.new();mode_fiber_view.z_index=Prop.draw_layer(ModeFiberView.SOURCE_DEPTH);source_space.add_child(mode_fiber_view)

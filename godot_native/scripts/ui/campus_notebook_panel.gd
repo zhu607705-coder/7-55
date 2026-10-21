@@ -1,4 +1,5 @@
 extends PanelContainer
+const PixelEdges=preload("res://scripts/ui/pixel_edges.gd")
 ## Optional investigation-folder silhouette. Presentation only: no inputs or state.
 ## All cover/page detail is inside the fixed content margins; no outside shadow.
 const UiMaterial = preload("res://scripts/ui/campus_ui_material.gd")
@@ -42,9 +43,9 @@ static func commands(dimensions: Vector2, kind: String = "notebook") -> Array[Di
 	var h := dimensions.y
 	var notebook := kind != "loose_sheet"
 	var cover := UiMaterial.NAVY if notebook else Color("b8ae9b")
-	# Two overlapping rects give a 3px stepped silhouette without an outer stroke.
-	result.append({"rect": Rect2(3, 0, w-6, h), "color": cover, "decoration": false})
-	result.append({"rect": Rect2(0, 3, w, h-6), "color": cover, "decoration": false})
+	# Integer stepped cloth/paper corners, entirely within the original bounds.
+	for piece:Rect2 in PixelEdges.silhouette(Rect2(0,0,w,h)):
+		result.append({"rect":piece,"color":cover,"decoration":false})
 	var page_left := 19.0 if notebook else 5.0
 	result.append({"rect": Rect2(page_left+3, 4, w-page_left-10, h-13), "color": UiMaterial.PAPER, "decoration": false})
 	result.append({"rect": Rect2(page_left, 7, w-page_left-4, h-19), "color": UiMaterial.PAPER, "decoration": false})

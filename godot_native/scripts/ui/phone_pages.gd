@@ -1,4 +1,5 @@
 extends RefCounted
+const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 ## Native reconstructions of original phone app hierarchies. Source CSS colors and art.
 ## All hotspots emit intents; this builder never changes story state.
@@ -166,7 +167,7 @@ func _style(color: Color, border: Color = Color.TRANSPARENT, radius: int = 0, wi
 	style.border_color = border
 	style.set_border_width_all(width)
 	style.set_corner_radius_all(radius)
-	return style
+	return PixelEdges.configure(style)
 
 func _panel(root: Control, rect: Rect2, color: Color, border: Color = Color.TRANSPARENT, radius: int = 0, width: int = 0) -> Panel:
 	var panel = Panel.new()
@@ -179,8 +180,7 @@ func _panel(root: Control, rect: Rect2, color: Color, border: Color = Color.TRAN
 
 func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color = INK, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
 	var label = Label.new()
-	if fs >= 24: Typography.apply_display(label)
-	else: Typography.apply_body(label)
+	Typography.apply_body(label)
 	label.position = rect.position
 	label.size = rect.size
 	label.text = text
@@ -191,7 +191,11 @@ func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(label)
-	Symbols.apply(label,text,color,fs)
+	if Symbols.apply(label,text,color,fs):
+		# Invisible source glyph must not impose a fallback-font line-height on
+		# the authored icon rectangle (notably the settings gear's 42px slot).
+		label.add_theme_font_size_override("font_size",1)
+		label.size=rect.size
 	return label
 
 func _button(root: Control, text: String, rect: Rect2, callback: Callable, color: Color = PAPER, ink: Color = INK, radius: int = 0, border: Color = INK) -> Button:
@@ -1961,7 +1965,8 @@ func _app_icon(root: Control, id: String, factor: float = 1.0) -> void:
 			_panel(icon,Rect2(24,24,12,3),Color("343333"))
 		"cc98":
 			var wordmark := _label(icon,"CC98",Rect2(3,8,42,31),19,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-			Typography.apply_display(wordmark)
+			Typography.apply_body(wordmark)
+			wordmark.add_theme_font_size_override("font_size",16)
 			wordmark.autowrap_mode=TextServer.AUTOWRAP_OFF
 			wordmark.name="CC98Wordmark"
 		"settings": _label(icon,"✱",Rect2(3,3,42,42),37,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)

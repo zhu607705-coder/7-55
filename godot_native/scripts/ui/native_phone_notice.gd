@@ -1,7 +1,7 @@
 extends RefCounted
 ## Source phone notification composition from subtitles.css and
 ## SubtitleSpeakerIcon.tsx. Pure presentation: no queue, timing or story state.
-const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+static var FONT: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const UiMaterial=preload("res://scripts/ui/campus_ui_material.gd")

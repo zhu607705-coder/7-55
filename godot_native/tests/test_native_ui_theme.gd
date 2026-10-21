@@ -37,7 +37,7 @@ func run() -> void:
 	for state: String in ["normal","hover","pressed","hover_pressed","disabled"]:
 		var style: StyleBoxFlat = button.get_theme_stylebox(state)
 		check(button.has_theme_stylebox_override(state),"complete state: " + state)
-		check(style.corner_radius_top_left == 0 and style.border_width_left == 3,"app edge and radius stable: " + state)
+		check(style.corner_radius_top_left == 4 and not style.anti_aliasing and style.border_width_left == 3,"shared pixel profile and authored border stable: " + state)
 		check(style.content_margin_left == 14 and style.content_margin_top == 8,"state layout does not jump: " + state)
 		check(style.bg_color.b > style.bg_color.r,"teal app palette retained: " + state)
 		if state != "disabled": check(contrast(Color.WHITE,style.bg_color) >= 4.5,"normal/hover/pressed text readable: " + state)

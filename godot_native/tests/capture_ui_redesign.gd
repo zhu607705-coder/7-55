@@ -41,6 +41,14 @@ func run() -> void:
 		root.add_child(entry); await frames()
 		await capture("%dx%d-entry"%[dimensions.x,dimensions.y])
 		entry.queue_free(); await frames()
+		# Candidate-only specimen uses the real shared production components.
+		if ResourceLoader.exists("res://tests/ui_design_specimen.gd"):
+			var specimen:Control=load("res://tests/ui_design_specimen.gd").new()
+			root.add_child(specimen);await frames()
+			fixture_note="Shared production typography/material specimen; no campaign state"
+			await capture("%dx%d-ui-specimen"%[dimensions.x,dimensions.y])
+			specimen.queue_free();await frames()
+			fixture_note="DEV fixture; not earned campaign completion"
 	shell = load("res://scenes/main.tscn").instantiate()
 	root.add_child(shell)
 	await frames()
@@ -87,6 +95,10 @@ func run() -> void:
 		await capture("%dx%d-short-dialog" % [dimensions.x,dimensions.y])
 		shell._close_modal()
 		await capture_interactions(dimensions)
+	# Short-height landscape validates the device/control budget independently of input hardware.
+	for compact_landscape:Vector2i in [Vector2i(667,375),Vector2i(568,320)]:
+		DisplayServer.window_set_size(compact_landscape);root.size=compact_landscape
+		await capture_interactions(compact_landscape)
 	var file := FileAccess.open(output.path_join("captures.json"),FileAccess.WRITE)
 	if file == null: push_error("Cannot write capture report"); quit(2); return
 	file.store_string(JSON.stringify(report,"\t")); file.close()

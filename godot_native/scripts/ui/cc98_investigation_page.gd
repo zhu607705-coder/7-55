@@ -1,7 +1,8 @@
 extends RefCounted
 ## CC98's existing investigation and four source evidence slots. Layout and local
 ## navigation only: every accepted upload remains an ordinary controller intent.
-const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+const Typography=preload("res://scripts/ui/native_typography.gd")
+static var FONT: Font=Typography.body_font()
 const DropButton=preload("res://scripts/ui/phone_drop_button.gd")
 const Library=preload("res://scripts/chapters/library022.gd")
 const SOURCE="res://data/source/library-finals.content.json"
@@ -23,7 +24,7 @@ func height(text: String,width: float,font_size: int) -> float:
 func label(b,root: Control,text: String,y: float,font_size: int=17,color: Color=Color("222322"),width: float=WIDTH,x: float=LEFT) -> Label:
 	var node: Label=b._label(root,text,Rect2(x,y,width,height(text,width,font_size)),font_size,color)
 	node.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	node.add_theme_font_override("font",FONT)
+	Typography.apply_body(node)
 	return node
 
 func floor_title(row: Dictionary) -> String:

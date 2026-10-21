@@ -67,7 +67,7 @@ func _button(text: String,rect: Rect2,callback: Callable) -> Button:
 	button.pressed.connect(callback); add_child(button); return button
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT); size=Vector2(960,540); mouse_filter=Control.MOUSE_FILTER_STOP
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	if state.is_empty(): setup(config)
 	stage_view=StageView.new();stage_view.name="ModeledTheater";add_child(stage_view)
 	ui_ink=Node2D.new();ui_ink.draw.connect(func():draw_ui(ui_ink));add_child(ui_ink)

@@ -15,7 +15,7 @@ var result_labels: Array[Label]=[]
 var status: Label
 var scan_hint: Label
 var ready_shown: bool=false
-var font: Font=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var font: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 var stamp_art: Texture2D=preload("res://assets/rpg/props/library_front_desk_stamp_v01.png")
 var backpack: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/library-world-source.json")).backpack
 func _label(text: String,rect: Rect2,font_size: int,color: Color=INK) -> Label:

@@ -561,7 +561,7 @@ func _build_ui() -> void:
 	column.add_theme_constant_override("separation",16)
 	menu.add_child(column)
 	instruction = Label.new()
-	if font: instruction.add_theme_font_override("font",font)
+	instruction.add_theme_font_override("font",preload("res://scripts/ui/native_typography.gd").body_font())
 	instruction.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	instruction.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	instruction.add_theme_font_size_override("font_size",19)
@@ -569,15 +569,16 @@ func _build_ui() -> void:
 	start_button = Button.new()
 	start_button.custom_minimum_size.y = 48
 	start_button.pressed.connect(_menu_action)
-	if font: start_button.add_theme_font_override("font",font)
+	start_button.add_theme_font_override("font",preload("res://scripts/ui/native_typography.gd").body_font())
 	column.add_child(start_button)
 	var back := Button.new()
 	back.text = "离开预览"
 	back.custom_minimum_size.y = 42
 	back.pressed.connect(_request_exit)
-	if font: back.add_theme_font_override("font",font)
+	back.add_theme_font_override("font",preload("res://scripts/ui/native_typography.gd").body_font())
 	column.add_child(back)
 	corner_label = Label.new()
+	corner_label.add_theme_font_override("font",preload("res://scripts/ui/native_typography.gd").body_font())
 	corner_label.text = "7:55  /  B"
 	corner_label.position = Vector2(24,20)
 	corner_label.add_theme_font_size_override("font_size",16)
@@ -590,7 +591,7 @@ func _build_ui() -> void:
 	subtitle.add_theme_color_override("font_color",Color("c3c9bf"))
 	subtitle.add_theme_color_override("font_outline_color",Color("0b151c"))
 	subtitle.add_theme_constant_override("outline_size",7)
-	if font: subtitle.add_theme_font_override("font",font)
+	subtitle.add_theme_font_override("font",preload("res://scripts/ui/native_typography.gd").body_font())
 	subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(subtitle)
 

@@ -21,7 +21,7 @@ func run() -> void:
 				check(not geo.heading.intersects(geo.index),"optional page index has its own text region")
 				var marks := UiMaterial.commands(rect,kind,{},header_height)
 				check(marks==UiMaterial.commands(rect,kind,{},header_height),"deterministic draw commands")
-				check(marks.size()<=12,"detail budget remains bounded")
+				check(marks.size()<=16,"detail budget remains bounded")
 				for mark: Dictionary in marks:
 					check(rect.encloses(mark.rect),"decoration never exceeds bounds")
 					if mark.decoration: check(not geo.body.intersects(mark.rect),"decoration leaves body clear")

@@ -1,4 +1,5 @@
 extends RefCounted
+const PixelEdges=preload("res://scripts/ui/pixel_edges.gd")
 ## Deterministic, presentation-only stationery and campus-sign materials.
 ## Draw from a CanvasItem's _draw(). Content and hit areas remain caller-owned.
 ## No textures, text, animation, nodes, inputs, or gameplay state are created.
@@ -53,17 +54,17 @@ static func commands(rect: Rect2, kind: String = "paper", overrides: Dictionary 
 	var marks: Array = []
 	if bounds.size.x<=0 or bounds.size.y<=0: return marks
 	var is_placard := kind == "placard"
-	_mark(marks,bounds,c.navy if is_placard else c.paper,false)
+	for piece:Rect2 in PixelEdges.silhouette(bounds): _mark(marks,piece,c.navy if is_placard else c.paper,false)
 	if not geo.details: return marks
 	var x := bounds.position.x
 	var y := bounds.position.y
 	var w := bounds.size.x
 	var h := bounds.size.y
 	var edge: Color = c.wood if is_placard else c.edge
-	_mark(marks,Rect2(x,y,w,1),edge)
-	_mark(marks,Rect2(x,y+1,1,h-2),edge)
-	_mark(marks,Rect2(x+w-1,y+1,1,h-2),edge)
-	_mark(marks,Rect2(x,y+h-2,w,2),c.wood if is_placard else c.shadow)
+	_mark(marks,Rect2(x+6,y,w-12,1),edge)
+	_mark(marks,Rect2(x,y+6,1,h-12),edge)
+	_mark(marks,Rect2(x+w-1,y+6,1,h-12),edge)
+	_mark(marks,Rect2(x+6,y+h-2,w-12,2),c.wood if is_placard else c.shadow)
 	if is_placard:
 		# Two tiny fixed mounting marks, not free-floating check/badge motifs.
 		_mark(marks,Rect2(x+5,y+5,2,2),c.edge)
@@ -99,7 +100,7 @@ static func panel_style(kind: String = "paper", overrides: Dictionary = {}, padd
 	style.border_color = c.wood if kind == "placard" else c.edge
 	style.set_border_width_all(1)
 	style.border_width_bottom = 2
-	style.set_corner_radius_all(0)
+	PixelEdges.configure(style,true)
 	style.content_margin_left = maxf(0,padding.x)
 	style.content_margin_right = maxf(0,padding.x)
 	style.content_margin_top = maxf(0,padding.y)

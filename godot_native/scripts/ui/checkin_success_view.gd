@@ -42,9 +42,7 @@ func _ready() -> void:
 	name = "CheckinSuccessPresentation"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	size = Vector2(430,820)
-	var font_path = "res://assets/native/checkin/checkin_ui_font_v1.ttf"
-	if ResourceLoader.exists(font_path):
-		theme=Theme.new();theme.default_font=load(font_path)
+	theme=Theme.new();theme.default_font=preload("res://scripts/ui/native_typography.gd").body_font()
 	_label(self,"学在浙大",Rect2(36,48,358,24),14,MUTED).name = "CheckinSuccessApp"
 	_label(self,"课堂签到",Rect2(36,80,358,42),29,INK).name = "CheckinSuccessHeading"
 	# Paper keeps its full size. A growing clipped feed region and a small

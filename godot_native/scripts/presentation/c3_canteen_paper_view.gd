@@ -47,7 +47,7 @@ func _draw_readable(text: String,point: Vector2,width: float,factor: float,alpha
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 func tick(delta_ms: float) -> void:
 	var elapsed_delta: float=maxf(0,delta_ms) if is_finite(delta_ms) else 0.0
 	if session!=null and session.kind=="canteen":

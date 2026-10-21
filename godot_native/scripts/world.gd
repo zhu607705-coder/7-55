@@ -124,7 +124,7 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	focus_mode = Control.FOCUS_ALL
 	worlds = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
-	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font = load("res://scripts/ui/native_typography.gd").body_font()
 	hud_font = load("res://scripts/ui/native_typography.gd").body_font()
 	overflow_feedback=OverflowText.new();overflow_feedback.name="OverflowFeedback";overflow_feedback.z_index=90;add_child(overflow_feedback)
 	var feedback_label:=Label.new();add_child(feedback_label)

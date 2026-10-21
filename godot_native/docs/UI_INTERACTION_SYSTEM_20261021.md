@@ -47,10 +47,10 @@ larger transparent touch target, detail/focus follows the actual `painted_rect`.
 | Family | Existing surfaces | Deliberate form and hierarchy |
 |---|---|---|
 | World | Exploration/location/mode/feedback | Separate small location and mode signs; content-measured feedback rather than a full-width strip. Original world art, camera and authored coordinates stay authoritative. |
-| Investigation folder | Journal, owned items, clue comparison | Bound paper with cloth spine, fixed binding loops and page edges. Current-page index is a real title, not a fake tab. Journal leads with the current scene thumbnail and controller objective; resume is a compact primary action; history and comparison are subordinate. |
+| Investigation folder | Journal, owned items, clue comparison | Bound paper with cloth spine, fixed binding loops and page edges. Current-page index is a real title, not a fake tab. Journal leads with the current scene artwork thumbnail and controller objective; resume is a compact primary action; history and comparison are subordinate. |
 | Evidence sheet | Item inspection | Independent loose sheet, original item image, exact canonical document/observation text and existing use action. No invented stamps, codes or claims. |
 | Dialogue | Library and chapter-three narrative | Speaker/body/prompt hierarchy with measured readable body font. Preserve each host's real timing and advance/pause contract; do not add a universal advance button. |
-| Phone | Existing apps and device chrome | Preserve source app identity and original input rectangles. Hide the full-screen grid; use clean Chinese body text and explicit pixel-display/logo/icon roles. Known unsupported symbols use deterministic pixel primitives, not platform fonts. |
+| Phone | Existing apps and device chrome | Preserve source app identity and original input rectangles. Hide the full-screen grid; use clean Chinese body text and one common title/body/digit family plus explicit bitmap icon roles. Known unsupported symbols use deterministic pixel primitives, not platform fonts. |
 | Physical devices | Theater terminal and room302 studio | Terminal has a metal shell, inset readout and tactile keypad; submit is primary. Studio chooses portrait composition from available geometry, independently of keyboard/touch hardware. Keep original device colors and control mapping. |
 | Utility menus | Control center and file dialog | Save is the primary action; other choices are neutral and reset is explicitly distinguished. Close stays outside long scrolling content. |
 
@@ -86,3 +86,9 @@ Headless checks verify state/geometry, not aesthetic quality. Actual screenshot
 inspection, keyboard/touch end-to-end checks, device-specific layouts and the
 final commit's CI remain independent acceptance gates. The research document
 separates inspected game references from inaccessible user-supplied pages.
+
+## Latest typography and corner direction
+
+All ordinary UI Chinese, Latin text, numerals, headings and buttons now use the same Campus UI Sans instance; size and hierarchy distinguish roles, not a second display family. A bundled symbol-only fallback remains for the documented missing symbols; known phone pictograms use explicit bitmap primitives. No platform font fallback is enabled. Original baked lettering and the endless-stair authored spatial Label3D art remain source artwork, not another HUD family.
+
+Shared controls use small 4px corners and panels 6px, with antialiasing disabled; notebook and primitive shells use integer rectangle steps. These paint profiles do not change hit rectangles or content padding. The actual GPU component specimen is a separate visual gate, not proof supplied by style properties alone.

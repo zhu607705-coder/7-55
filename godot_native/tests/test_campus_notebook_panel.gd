@@ -15,7 +15,7 @@ func run() -> void:
 				check(geo.body==Rect2(32,18,width-50,height-40), "explicit fixed body margins")
 				var marks := Notebook.commands(extent, mode)
 				check(marks==Notebook.commands(extent,mode), "deterministic silhouette")
-				check(marks.size()<=21, "bounded detail density")
+				check(marks.size()<=22, "bounded detail density")
 				for mark: Dictionary in marks:
 					check(geo.bounds.encloses(mark.rect), "all paint within panel bounds")
 					if mark.decoration: check(not geo.body.intersects(mark.rect), "detail never crosses body")
