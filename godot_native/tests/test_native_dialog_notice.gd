@@ -57,7 +57,7 @@ func check_dialog_theme() -> void:
 		if not child.is_visible_in_tree():continue
 		if child is Label and not child.text.is_empty():
 			labels+=1;readable(child,"font_color",base,4.5,"visible native label")
-			check(child.get_theme_font("font")==shell.font,"native label keeps original bundled font")
+			check(child.get_theme_font("font")==load("res://scripts/ui/native_typography.gd").body_font(),"native label uses the shared bundled readable body font")
 		elif child is LineEdit:
 			fields+=1
 			readable(child,"font_color",background(child,"normal",base),4.5,"visible native field")

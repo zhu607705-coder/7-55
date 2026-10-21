@@ -41,7 +41,7 @@ func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	focus_mode=Control.FOCUS_ALL
 	clip_contents=true
-	_font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	_font=preload("res://scripts/ui/native_typography.gd").body_font()
 	film=Film.new();film.presenter=self;add_child(film)
 	caption=Label.new();caption.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER

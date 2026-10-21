@@ -7,6 +7,7 @@ const Session=preload("res://scripts/ui/chapter4_device_session.gd")
 const Model=preload("res://scripts/objects/room302_studio_model.gd")
 const View=preload("res://scripts/objects/room302_studio_view.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
 var session:RefCounted
 var frame:PanelContainer # Compatibility property: no nested panel is created.
 var header:HBoxContainer
@@ -38,7 +39,7 @@ func configure(id:String,state:Dictionary,font:Font=null)->bool:
 	view.studio_event_requested.connect(_event);view.check_requested.connect(_submit)
 	header=HBoxContainer.new();header.add_theme_constant_override("separation",12);add_child(header)
 	title=_label("灯罩抢岗位",21);title.autowrap_mode=TextServer.AUTOWRAP_OFF;title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title)
-	close_button=Button.new();close_button.text="返回房间";close_button.custom_minimum_size=Vector2(112,48);close_button.size_flags_horizontal=Control.SIZE_SHRINK_END
+	close_button=Button.new();Typography.apply_body(close_button);close_button.text="返回房间";close_button.custom_minimum_size=Vector2(112,48);close_button.size_flags_horizontal=Control.SIZE_SHRINK_END
 	Ui.apply_button(close_button,Color("52614b"),Color("f1e7cc"),Color("ad9f78"),4,2,15,Vector2(8,6),Color("edca76"))
 	close_button.pressed.connect(func():if can_close():close_requested.emit());header.add_child(close_button)
 	hint=_label("",14);add_child(hint)
@@ -78,7 +79,7 @@ func _finish_layout()->void:
 	_layout_pending=false
 	if is_inside_tree():_layout()
 func _label(text:String,pixels:int)->Label:
-	var label:=Label.new();label.text=text;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	var label:=Label.new();Typography.apply_body(label);label.text=text;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	label.add_theme_color_override("font_color",Color("243326"));label.add_theme_font_size_override("font_size",pixels);label.mouse_filter=Control.MOUSE_FILTER_IGNORE;return label
 func _editable()->bool:return session!=null and session.editable() and pending_event.is_empty() and (view==null or view.motion.is_empty())
 func _refresh_view()->void:

@@ -1,4 +1,5 @@
 extends Control
+const CampusMaterial = preload("res://scripts/ui/campus_ui_material.gd")
 const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var overflow_feedback:ScrollContainer
@@ -52,6 +53,10 @@ var subtitle := "":
 		subtitle_revision+=1
 var subtitle_left := 0.0
 var font: Font
+var selected_overlay: Control
+var selected_overlay_native_rect:=Rect2()
+var selected_overlay_is_native:=false
+var hud_font: Font
 var _last_save := 0.0
 var _manual_sent := false
 var _last_floor := ""
@@ -122,11 +127,13 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	focus_mode = Control.FOCUS_ALL
 	worlds = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
-	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font = load("res://scripts/ui/native_typography.gd").body_font()
+	hud_font = load("res://scripts/ui/native_typography.gd").body_font()
+	selected_overlay=load("res://scripts/ui/world_selected_overlay.gd").new();add_child(selected_overlay)
 	overflow_feedback=OverflowText.new();overflow_feedback.name="OverflowFeedback";overflow_feedback.z_index=90;add_child(overflow_feedback)
 	var feedback_label:=Label.new();add_child(feedback_label)
 	feedback_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;feedback_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	feedback_label.add_theme_font_override("font",font);feedback_label.add_theme_color_override("font_color",Color("f1f2dc"))
+	load("res://scripts/ui/native_typography.gd").apply_body(feedback_label);feedback_label.add_theme_color_override("font_color",Color("f1f2dc"))
 	overflow_feedback.setup(feedback_label);overflow_feedback.hide()
 	for direction in ["down","up","side","left"]:
 		var frames: Array = []
@@ -509,7 +516,7 @@ func _process(delta: float) -> void:
 		queue_redraw()
 	mode_mix = move_toward(mode_mix,1.0 if State.d.native.mode == "dark" else 0.0,delta*4.5)
 	transition_alpha = maxf(0,transition_alpha-delta*2.0)
-	if subtitle_left > 0:
+	if subtitle_left > 0 and not _exploration_overlay_blocked():
 		subtitle_left -= delta
 		if subtitle_left <= 0:
 			var expired_revision:=subtitle_revision
@@ -724,11 +731,6 @@ func exploration_safe_rect(reserve_controls:bool=false) -> Rect2:
 		# On short landscapes the controls occupy corners, not a full-width
 		# row. Keep enough clear height for both the actor and a nearby target.
 		if controls_top-float(hud.header_height)>=size.y*.5:bottom=minf(bottom,controls_top)
-	if reserve_controls and is_instance_valid(host_node):
-		var narrative:Variant=host_node.get("c3_narrative_host")
-		var view:Variant=narrative.get("view") if is_instance_valid(narrative) else null
-		if is_instance_valid(view) and view.is_visible_in_tree() and view.get_parent()==self:
-			bottom=minf(bottom,view.panel.position.y-8)
 	return Rect2(0,hud.header_height,size.x,maxf(1,bottom-float(hud.header_height)))
 
 func register_object_surface(ids: Array, geometry: Dictionary) -> void:
@@ -904,10 +906,16 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		canvas.draw_set_transform(Vector2.ZERO)
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty(): canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
+	if _exploration_overlay_blocked():
+		if is_instance_valid(selected_overlay):selected_overlay.hide()
+		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
+		if transition_alpha>0:canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
+		return
 	if scene_id=="campus_bootstrap":
 		var campus_visible:=exploration_safe_rect()
 		CampusWayfinding.draw_label(canvas,layer_context,font,hud_display_scale(),campus_visible)
 	if capture_mode:
+		if is_instance_valid(selected_overlay):selected_overlay.hide()
 		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
 		return
 	# An authored full-room film owns the image; navigation help must not
@@ -915,37 +923,67 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var narrative:Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
 	var film:bool=is_instance_valid(narrative) and narrative.has_method("owns_world_contract") and narrative.owns_world_contract()
 	if film and subtitle.is_empty():
+		if is_instance_valid(selected_overlay):selected_overlay.hide()
 		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
 		if transition_alpha>0:canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 		return
-	var title: Dictionary = {"dorm_hub":"寝室", "campus_bootstrap":"紫金港校区", "library_interior":"基础图书馆", "canteen_interior":"东食堂", "theater_interior":"剧场", "qizhen_lake":"启真湖", "duan_yongping_temporal_maze":"段永平教学楼", "campus_qizhen_loop":"通往启真湖的路"}
 	var line := _hud_line()
 	var hud := hud_metrics(line)
-	if not film:
-		canvas.draw_rect(Rect2(0,0,size.x,hud.header_height),Color(.04,.1,.13,.86))
-		if hud.compact:
-			var mode_text: String="深色观察" if State.d.native.mode == "dark" else "浅色操作"
-			var mode_width: float=font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
-			var baseline: float=(hud.header_height-font.get_height(hud.title_font))/2+font.get_ascent(hud.title_font)
-			canvas.draw_string(font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
-			var mode_baseline: float=(hud.header_height-font.get_height(hud.mode_font))/2+font.get_ascent(hud.mode_font)
-			canvas.draw_string(font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
-		else:
-			canvas.draw_string(font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
-			canvas.draw_string(font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
+	# Native overlay is synchronized by Main outside CanvasItem drawing.
+	# Standalone world fixtures retain their local presentation path.
+	if not selected_overlay_is_native:_sync_selected_overlay()
 	var body_rect:Rect2=hud.body_rect
-	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0
+	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0 and (not subtitle.is_empty() or guard_capture.active)
 	if film:body_rect.position.y=hud.body_gap
-	if hud.body_height>0:
-		canvas.draw_rect(body_rect,Color(.02,.08,.12,.88))
+	var device:Variant=host_node.get("c3_device_panel") if is_instance_valid(host_node) else null
+	var device_feedback:bool=is_instance_valid(device) and device.has_method("owns_feedback_surface") and device.owns_feedback_surface()
+	if device_feedback and is_instance_valid(overflow_feedback): overflow_feedback.hide()
+	if hud.body_height>0 and not device_feedback and (not subtitle.is_empty() or guard_capture.active):
+		CampusMaterial.draw(canvas,body_rect,"paper")
 		if hud.body_overflow and is_instance_valid(overflow_feedback):
 			overflow_feedback.label.text=line;overflow_feedback.label.add_theme_font_size_override("font_size",hud.body_font)
-			overflow_feedback.layout_body(Rect2(hud.body_padding,body_rect.position.y+hud.body_inset,size.x-hud.body_padding*2,body_rect.size.y-hud.body_inset*2),hud.body_content_height)
+			overflow_feedback.label.add_theme_color_override("font_color",CampusMaterial.INK)
+			overflow_feedback.layout_body(Rect2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset,body_rect.size.x-hud.body_padding*2,body_rect.size.y-hud.body_inset*2),hud.body_content_height)
 			overflow_feedback.show()
 		else:
-			canvas.draw_multiline_string(font,Vector2(hud.body_padding,body_rect.position.y+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,Color("f1f2dc"))
+			canvas.draw_multiline_string(hud_font,Vector2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset+hud_font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,CampusMaterial.INK)
 	if not film and (touch_controls or mobile_exploration): _draw_touch_controls(canvas)
 	if transition_alpha > 0: canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
+
+func _exploration_overlay_blocked()->bool:
+	if capture_mode or _shell_input_blocked():return true
+	if is_instance_valid(host_node):
+		var frame:Variant=host_node.get("world_frame")
+		if is_instance_valid(frame) and not frame.is_visible_in_tree():return true
+		for key:String in ["c3_narrative_host","library_story_host"]:
+			var owner:Variant=host_node.get(key)
+			if is_instance_valid(owner) and owner.has_method("blocks_input") and owner.blocks_input():return true
+	return false
+
+func sync_selected_overlay_native(parent:Control,rect:Rect2)->void:
+	if not is_instance_valid(selected_overlay):return
+	if selected_overlay.get_parent()!=parent:selected_overlay.reparent(parent,false)
+	selected_overlay_is_native=true
+	selected_overlay_native_rect=rect
+	selected_overlay.position=rect.position
+	selected_overlay.clip_contents=true
+	_sync_selected_overlay()
+
+func _sync_selected_overlay()->void:
+	if not is_instance_valid(selected_overlay):return
+	var blocked:bool=_exploration_overlay_blocked()
+	selected_overlay.visible=not blocked and transition_alpha<=0
+	if blocked:
+		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
+	if not selected_overlay.visible:return
+	var title:Dictionary={"dorm_hub":"寝室","campus_bootstrap":"紫金港校区","library_interior":"基础图书馆","canteen_interior":"东食堂","theater_interior":"剧场","qizhen_lake":"启真湖","duan_yongping_temporal_maze":"段永平教学楼","campus_qizhen_loop":"通往启真湖的路"}
+	var hud:Dictionary=hud_metrics(_hud_line())
+	var display:float=hud_display_scale()
+	var extent:Vector2=selected_overlay_native_rect.size if selected_overlay_is_native else size
+	var mode_rect:Rect2=Rect2(hud.mode_rect.position*display,hud.mode_rect.size*display) if selected_overlay_is_native else hud.mode_rect
+	var bottom:float=hud.body_rect.position.y*display if selected_overlay_is_native else hud.body_rect.position.y
+	selected_overlay.mobile_exploration=mobile_exploration
+	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str(nearby.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(nearby.get("hud_prompt","")))
 
 func _hud_line() -> String:
 	if guard_capture.active:return "保安："+GuardCapture.LINE
@@ -963,7 +1001,7 @@ func hud_display_scale() -> float:
 	return 1.0
 
 func hud_metrics(text: String) -> Dictionary:
-	var hud:=WorldOverlay.hud(font,size,hud_display_scale(),text,mobile_exploration,float(State.d.native.settings.get("text_scale",1.0)))
+	var hud:=WorldOverlay.hud(hud_font,size,hud_display_scale(),text,mobile_exploration,float(State.d.native.settings.get("text_scale",1.0)))
 	var narrative:Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
 	if subtitle.is_empty() and is_instance_valid(narrative) and narrative.blocks_input() and (not narrative.has_method("owns_world_contract") or not narrative.owns_world_contract()):
 		# The dialogue supplies the useful text. Retire idle movement prose so
@@ -974,14 +1012,15 @@ func hud_metrics(text: String) -> Dictionary:
 	# Stack the feedback above the dialogue, converting display coordinates once.
 	if is_instance_valid(host_node):
 		var story:Variant=host_node.get("library_story_host")
-		if is_instance_valid(story) and is_instance_valid(story.view) and story.view.is_visible_in_tree():
-			var bounds:Rect2=story.view.panel.get_global_rect()
-			var surface:Rect2=host_node.world_view.get_global_rect()
-			if bounds.intersects(surface):bottom=minf(bottom,(bounds.position.y-surface.position.y)/hud_display_scale()-hud.body_gap)
+		if subtitle.is_empty() and is_instance_valid(story) and story.blocks_input():
+			hud.body_height=0.0;hud.body_overflow=false
+		# Dialogue 2 is a right-side native-screen overlay, not a full-width
+		# bottom strip. Its top must never become the world's bottom bound.
 	var available:float=maxf(1,bottom-hud.header_height-hud.body_gap)
 	if hud.body_height>available:
 		hud.body_height=available;hud.body_inset=minf(hud.body_inset,maxf(0,(available-1)/2));hud.body_overflow=true
-	hud.body_rect=Rect2(hud.body_gap,maxf(hud.header_height+hud.body_gap,bottom-hud.body_height),size.x-hud.body_gap*2,hud.body_height)
+	var surface_width: float=minf(size.x-hud.body_gap*2,hud.body_width+hud.body_padding*2)
+	hud.body_rect=Rect2((size.x-surface_width)/2,maxf(hud.header_height+hud.body_gap,bottom-hud.body_height),surface_width,hud.body_height)
 	return hud
 
 func hud_mode_rect() -> Rect2:

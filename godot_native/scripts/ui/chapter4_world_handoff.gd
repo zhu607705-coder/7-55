@@ -4,7 +4,7 @@ signal event(action: String,value: Variant)
 const Layers=preload("res://scripts/ui/chapter4_world_layers.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
-var source_font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var source_font: Font=load("res://scripts/ui/native_typography.gd").body_font()
 var layer: RefCounted=Layers.new()
 var config: Dictionary={}
 var read_state: Callable

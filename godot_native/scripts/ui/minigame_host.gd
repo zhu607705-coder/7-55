@@ -63,7 +63,7 @@ const GOLD = Color("f5cd74")
 
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	headline=_label(Vector2(26,14),Vector2(645,33),24)
 	status=_label(Vector2(26,53),Vector2(900,42),18)
 	hint=_label(Vector2(160,394),Vector2(640,53),18)

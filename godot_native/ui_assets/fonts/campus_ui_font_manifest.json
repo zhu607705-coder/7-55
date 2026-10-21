@@ -1,0 +1,2962 @@
+{
+  "family": "Campus UI Sans",
+  "postscript_name": "CampusUISans-Regular",
+  "format": "OpenType CFF (.otf)",
+  "license": "SIL Open Font License 1.1",
+  "source": {
+    "filename": "NotoSansCJK-Regular.ttc",
+    "sha256": "b76b0433203017ca80401b2ee0dd69350349871c4b19d504c34dbdd80541690a",
+    "face_index": 2,
+    "family": "Noto Sans CJK SC",
+    "version": "2.004"
+  },
+  "fonttools_version": "4.61.1",
+  "inputs": [
+    {
+      "path": "src/App.tsx",
+      "sha256": "a10551942e5997d8cd74d0ae43fcb9484e1ba696f240697c5e4c99cf4e0e63a3"
+    },
+    {
+      "path": "src/ErrorBoundary.tsx",
+      "sha256": "5caf91d1b8bfb360711ed3ce4a7414717325b53558442ca3f90bac97f3dba1fa"
+    },
+    {
+      "path": "src/assets/rpg/campus/sectors/manifest.json",
+      "sha256": "408e7c67c00d7b91d60de82521d63b68e2c909122eb97efcfbc3ed95995e61f5"
+    },
+    {
+      "path": "src/assets/rpg/campus/source/zijingang_official_hotspots_reference.json",
+      "sha256": "2ffbadcd52f66df9bca4882b23acc0c045dace6a78ad35e85acb2d1ccc103aec"
+    },
+    {
+      "path": "src/assets/rpg/chapter4-stair/materials/manifest.json",
+      "sha256": "62496fb00dde7878185d337493a469c3c539d716db333e8bade143fad2da0e89"
+    },
+    {
+      "path": "src/assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.manifest.json",
+      "sha256": "64bfd936ec2c7b55faa8fb89fe27010dfd9132e2c9b8aa1f2b366d6dd1bdb303"
+    },
+    {
+      "path": "src/assets/rpg/interiors/finale/finale_environment_manifest.json",
+      "sha256": "b969c4b1e0130c7bd703861611a9cef8e8685ac2fb28c84661ea1e06488ab1aa"
+    },
+    {
+      "path": "src/assets/rpg/npcs/finale/finale_npc_manifest.json",
+      "sha256": "a6a11e51d93d71ecf657a6471ba8d7fe5d0ef54097477310cfdaa5457ba35d52"
+    },
+    {
+      "path": "src/assets/rpg/optimized/manifest.json",
+      "sha256": "f31dd3f55ac433c07d04f033940789256bb353d4e3d3ecb31ce60ebf7eaadf1c"
+    },
+    {
+      "path": "src/assets/rpg/theater/generated/theater_art_manifest.json",
+      "sha256": "bf46738fde460d12b12cc9894c49a109c0eda3befea2dcea814e19431fa747c7"
+    },
+    {
+      "path": "src/components/Chapter4PrologueRuntimeGate.tsx",
+      "sha256": "ccc41689e4caba659e1d11c971e5059933d67be00a3a0f2b769f1ce41143cad7"
+    },
+    {
+      "path": "src/components/ChapterThreeOpeningOverlay.tsx",
+      "sha256": "495ccc44feae71ed606bb3c21486766bc7237c6a1deffe7c562031d14d1f549d"
+    },
+    {
+      "path": "src/components/ChapterThreeOpeningRuntime.ts",
+      "sha256": "6697230d87ffb2fcabe5ae1347dfa792aa2a5cc0e076075728e5758e97e53278"
+    },
+    {
+      "path": "src/components/ControlCenter.tsx",
+      "sha256": "b61e037ea3779d504917fe2843719ca03914afe5d895c3ece7466cead3d1b3dd"
+    },
+    {
+      "path": "src/components/DeveloperChannel.tsx",
+      "sha256": "72b5d893a98973239037b26e73c48968a83f3c9af55493f8e0a3a19c53ff8da1"
+    },
+    {
+      "path": "src/components/GameSubtitleFrame.tsx",
+      "sha256": "bf488e5550ed19bdcd8332cc2c1be748f1631be6a195f261e079d79bcb43b340"
+    },
+    {
+      "path": "src/components/InventoryAcquisitionFeedback.tsx",
+      "sha256": "67eb34bfff7bb2bbb0759f265af94637f0e8fc5fbb28708c3031a4d9876651a1"
+    },
+    {
+      "path": "src/components/InventoryBar.tsx",
+      "sha256": "df8aa4d534b050ffcdf763e3d3313a9d0d002c968f3c582bc91266667f26d244"
+    },
+    {
+      "path": "src/components/InvestigationRing.tsx",
+      "sha256": "a604d9c436a89662ddf87ca340a6ea70f064eb24857f6b18e9d3be58b5ef4b9f"
+    },
+    {
+      "path": "src/components/ItemInspectDialog.tsx",
+      "sha256": "bb16249dacd2e69471327f36ea21a42ed74bb0a8c81e0b3d01d773beb4ecda11"
+    },
+    {
+      "path": "src/components/LibraryStoryOverlay.tsx",
+      "sha256": "8d388a250b6812f6fcb5421e5f798d689c0735157e8eeeba6942a689d8d010f9"
+    },
+    {
+      "path": "src/components/PhoneAppUi.tsx",
+      "sha256": "f3b2749a82254f9bb0762345d8cbbd8e8afd39ce66f980bd43498736df06c639"
+    },
+    {
+      "path": "src/components/PhoneBatteryPrankNotice.tsx",
+      "sha256": "17e5b5f6112fc3f65679667927e01222a8ecb4746ede053e3f9839a47573681e"
+    },
+    {
+      "path": "src/components/PhoneNavButton.tsx",
+      "sha256": "1793c843e1c96bd06c801ecb0b1d436267da3d419ecfb18123e8ebdcc61a831a"
+    },
+    {
+      "path": "src/components/PhoneShell.tsx",
+      "sha256": "6cc6bbe0faa4e3fdef78b541b64355039ce508ac863cfa6e61bbb4f98b7349a6"
+    },
+    {
+      "path": "src/components/PhoneViewport.ts",
+      "sha256": "e01552448a465178167cb7af6fea089e97b6c32d10bf003608c96c590864ee0e"
+    },
+    {
+      "path": "src/components/PixelIcon.tsx",
+      "sha256": "4f39436ee9a07d8a6bc71dd8aea57489eb653e157747c0d3d48a77dfa937ada8"
+    },
+    {
+      "path": "src/components/PresentationLayer.tsx",
+      "sha256": "f16e0e4558cb1cf83ed9349274a638b6b00e14ee1bd352d67a04285b67056c2c"
+    },
+    {
+      "path": "src/components/QizhenJournalCamera.tsx",
+      "sha256": "7fb5b876008d1158fb2dd05cd6c5ba4d50274341c52ca1fdc454f17370ef68cd"
+    },
+    {
+      "path": "src/components/QizhenRecipeFrame.tsx",
+      "sha256": "4ea460dcbed5987961aaf7f7dcf80e04567495cb91465c813ddbb4801bd1a8c7"
+    },
+    {
+      "path": "src/components/QuestClueStrip.tsx",
+      "sha256": "5f4dd8b7997f2a2399ad6aef75304fb7bcf7b0698a0f6e1c45982df0ef59a17b"
+    },
+    {
+      "path": "src/components/RpgClockCrownOverlay.tsx",
+      "sha256": "1e8d41323c7b3692e5ebf1315a76e03f500547fa2256a7d8e05352ccdfdbc76b"
+    },
+    {
+      "path": "src/components/RpgSubtitleLayer.tsx",
+      "sha256": "43262dec33ed4f9ca81d268555aa6bbd84cb36daf2e0583fc6094a7b0ac5990c"
+    },
+    {
+      "path": "src/components/ScenePlaceholder.tsx",
+      "sha256": "a71bd66c27fabd9ed5925bc23c5492357ec0954647d0eccc432a96610327e3da"
+    },
+    {
+      "path": "src/components/StatusBar.tsx",
+      "sha256": "b41464c95fea942f63292b9d44078b0013dc2130bcdedeb9f0f9fa2c52bd469f"
+    },
+    {
+      "path": "src/components/SubtitleSpeakerIcon.tsx",
+      "sha256": "db3249f5cf45f4796bcbbb7d1c24707d8cd71fca87056f431ce77da1470ec342"
+    },
+    {
+      "path": "src/components/ToastLayer.tsx",
+      "sha256": "321df43fb479f9d938f49a374c6f394a931cce365fb558dacd73d201dddf7faf"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourExteriorQuestions.tsx",
+      "sha256": "6940149cdca70ee3af09937f89f787ba3956705e684c5e336fdbf34da15105b4"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+      "sha256": "ba2130d803628a25a3616518d3d8eccd2a71e29eb0f039e1d073b5a8fe46c510"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourMaintenanceDiagnosisGame.tsx",
+      "sha256": "702cc56ccbb148523b7285e1e63f52d13e9c1286bd609907b78ac15194884ce2"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourPowerPanelGame.tsx",
+      "sha256": "0e9ced22a1d062eeabd347ef93d7ef924a7f10fc239399d50807506e25039bbe"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourPuzzlePreview.tsx",
+      "sha256": "e3dd9faccfd1447745a646ffdcdba3be19d4b7fb52341909a3fb4a676008ede1"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourStairPuzzleOverlay.tsx",
+      "sha256": "469d66e438e59945c9cb9797b24e9cf87f230dda05d466a9d489958a28a88561"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourStarLampClosure.tsx",
+      "sha256": "4e9a15a6f81c58102cfe5f8e1b86befbd82932917475384cc4216ede8f5b2510"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourStarLampPlayback.tsx",
+      "sha256": "8b1cedae69dfbbf01ef6977d6a84daaf36c4bcca9b0244bb55ff88b44f111d3b"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourStarLampSequence.ts",
+      "sha256": "a785841fdf4cee28213be69089ed2e8163252366eb0b3e0804431af492a20f61"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourStarLampThreeRenderer.ts",
+      "sha256": "ca4cd8aa529f324844ecc85cec13e428c2b13572bddbd2f0afc1aff151dcca62"
+    },
+    {
+      "path": "src/components/temporal-maze/ChapterFourTransitionOverlay.tsx",
+      "sha256": "b98e1a74b6ca7f66babe4bdd0a49fb0752fb95d9ed58dcf8aa992aa292e0201c"
+    },
+    {
+      "path": "src/components/temporal-maze/ElevatorTrackSyncGame.tsx",
+      "sha256": "5d4d933be3bc2bdb709ae38d40c569d29f561e3f6e35e094567d83908fdf9429"
+    },
+    {
+      "path": "src/components/temporal-maze/WayfindingBoardGame.tsx",
+      "sha256": "3fbb949dc68b167125b1c150b5c9b05b59f77c461a69ac9f9997adf75bb0182d"
+    },
+    {
+      "path": "src/components/useChiptune.ts",
+      "sha256": "c020932c955a33802e5f8b8991495646cbb25f32332cba9bc229f55b9757f5fc"
+    },
+    {
+      "path": "src/components/useMediaQuery.ts",
+      "sha256": "b3666b753c6bb99f56e2dba6cbb4928dda96c2fe47619f362347a515857bc8c7"
+    },
+    {
+      "path": "src/core/ClientCompatibility.ts",
+      "sha256": "827c0f85bf2d370d8681209aa29a58f1e01e99c97d117d91077279c54b7f5759"
+    },
+    {
+      "path": "src/core/ClockTime.ts",
+      "sha256": "1ad06aacf4efad5a3a7aa5a2d8b81b6f4a3020d911a81c467fa6230167cb7eab"
+    },
+    {
+      "path": "src/core/DeveloperInputGate.ts",
+      "sha256": "14865335bd5840d542e8b207785fccdd3ccdd05d029b8571f76444e408c66cbe"
+    },
+    {
+      "path": "src/core/DeveloperSession.ts",
+      "sha256": "0a519d70516734745cb59927ac73c10e0fa36499596b50d463a8f20fde7571cc"
+    },
+    {
+      "path": "src/core/EventBus.ts",
+      "sha256": "641dca08535162d32b3bda055ab64828776f8d5c6cbeccd3642c98c63e322eee"
+    },
+    {
+      "path": "src/core/FeatureAccess.ts",
+      "sha256": "d67339357ddbc7634e68a33c3597f0cdefe0d541cdbeb390ddf854285dbdcf18"
+    },
+    {
+      "path": "src/core/GameState.ts",
+      "sha256": "83a67df784ecad894be4618fbb026b7d57043f748d5e7d36cb0473e4785de662"
+    },
+    {
+      "path": "src/core/IdentityAccess.ts",
+      "sha256": "877b02f5ffacff7cddcb333333ce82d4d355fd51fd99f8f553f3efac2c2beb1b"
+    },
+    {
+      "path": "src/core/NoticeQueue.ts",
+      "sha256": "ede1024aca227e73e2e0492d0ccbd6af68c7c9182ffa3fbbf17616b69916c7fc"
+    },
+    {
+      "path": "src/core/PhoneChargingStation.ts",
+      "sha256": "50cf6303341bd4ce09f3b6830f98beb6e9af4e92e1309ffd6053525033c7b83e"
+    },
+    {
+      "path": "src/core/PhoneHomeApps.ts",
+      "sha256": "70a08a6762b062574c6ab1fc40812591c4ecbc6942d04767b0c32b921671de3a"
+    },
+    {
+      "path": "src/core/QuestModel.ts",
+      "sha256": "c2e239add7edddec260c1dbb248f68494d105a3fdbca5511fbb3c6445fa489a9"
+    },
+    {
+      "path": "src/core/RecordingMode.ts",
+      "sha256": "ea93d64e31268c1a55dee9676a7986da8703f3cfb91c0dbf6bb90949119c3c11"
+    },
+    {
+      "path": "src/core/SaveStore.ts",
+      "sha256": "3f1c56fcbfc7b08f5c28985477e88745f9385c303ebc5c28e04d4b12850dc8ad"
+    },
+    {
+      "path": "src/core/SceneRouter.ts",
+      "sha256": "e879495b00902bc071c1f18bb83dd5ace25588701676b1b00aa55135b32a90af"
+    },
+    {
+      "path": "src/core/StorageKeys.ts",
+      "sha256": "9772aa391363cf404ad3d38785a0624a57ee0bc39f479dbb95bb852885d4894f"
+    },
+    {
+      "path": "src/core/state/JsonSnapshotWriter.ts",
+      "sha256": "72406d03e19fc31dfc7fea51e755120d688940dd6369760a75db9cf395886c2f"
+    },
+    {
+      "path": "src/core/types.ts",
+      "sha256": "79070fe7ac2e14f17eb5bf8285a4e0e9c32952b3374ec164f79f4333f52c6162"
+    },
+    {
+      "path": "src/data/ChapterFourAlumniHonorWall.ts",
+      "sha256": "a3fd09653211ba3083636df3a5be16e91f3aeebf5da86ab92d6224d65b787a27"
+    },
+    {
+      "path": "src/data/ChapterFourInteractionContent.ts",
+      "sha256": "6a827f8a96707455f0042d65376c2164b29df874592f2e63b784072521d1586d"
+    },
+    {
+      "path": "src/data/act-one-bootstrap.content.json",
+      "sha256": "accf3a71db51f7539d22c2c767620a82d07e45776e18ef118d156c51ca22b732"
+    },
+    {
+      "path": "src/data/act-one.audio.generated.json",
+      "sha256": "910ae9f25ec74047de9a9041363bed091ff22075f2ec1e77af7d2ba131d15668"
+    },
+    {
+      "path": "src/data/act-one.audio.json",
+      "sha256": "cbb99b72b6bda16c8fc17d4a848198c3f9510d7c2c3144266b95aedf2cdda06e"
+    },
+    {
+      "path": "src/data/cc98.board-snapshots.json",
+      "sha256": "3e8499ce1c408c98768eb24a1791d7f8e749a37bced9b1a6371e8c79a2987cce"
+    },
+    {
+      "path": "src/data/cc98.posts.json",
+      "sha256": "1ddc337578492eb35da94b71d0b14879cd85869d1c36891ae00bfaf8238e9cf1"
+    },
+    {
+      "path": "src/data/cc98.thread-personas.json",
+      "sha256": "318349a58d2c45358936f8ef368ec8e6196b8052c8a780d207894e0e6ba98c07"
+    },
+    {
+      "path": "src/data/chapter3-canteen.audio.content.json",
+      "sha256": "90380c32241efd9fd83de2305302e66552a59b89c087933a30338b46924d2a3c"
+    },
+    {
+      "path": "src/data/chapter3-canteen.audio.generated.json",
+      "sha256": "30c18dab10b2fe44ee65ed98b73fd4ba286f9529d2f46177a394dc2d8725e580"
+    },
+    {
+      "path": "src/data/chapter3-canteen.audio.json",
+      "sha256": "8e4af8f3cb383b29f2353eab5294b6322596b51e0954e0094d6a892d40ee33a4"
+    },
+    {
+      "path": "src/data/chapter3-canteen.content.json",
+      "sha256": "7275d5f68000b59a14844d991288024e375f5fe95173eb615a46263f5792c55e"
+    },
+    {
+      "path": "src/data/chapter3-interlude-voice-memos.audio.content.json",
+      "sha256": "62a3ca6d83f5626281c5b071655e459f0070ff383a30c236e6400a78f20d5a51"
+    },
+    {
+      "path": "src/data/chapter3-interlude-voice-memos.audio.generated.json",
+      "sha256": "ddbf58c2e3b03631edda675bfd6c00d6bd4db2c8e630a86403c25ed9a837a47a"
+    },
+    {
+      "path": "src/data/chapter3-qizhen-fishing.charts.json",
+      "sha256": "93d3137405241e60d13ed80a6757b10c9a702068fcd2594140639fe96728ce62"
+    },
+    {
+      "path": "src/data/chapter3-qizhen-lake.content.json",
+      "sha256": "820966de831d6129c40579115823887a3f86ce638d28ebe7cc06a5c72f80cbf7"
+    },
+    {
+      "path": "src/data/chapter3-qizhen-sfx.audio.generated.json",
+      "sha256": "a5bb947a101b40bb050521f50bcc5479401215f793d4973fe7a4f546445ccec2"
+    },
+    {
+      "path": "src/data/chapter3-qizhen.audio.content.json",
+      "sha256": "c324260904afdebd61635728b932c0fd7fd664bdbb1142d89485db9f0f42cf3d"
+    },
+    {
+      "path": "src/data/chapter3-qizhen.audio.generated.json",
+      "sha256": "ab520b0956b13cb31c0800a33a5ac2434221b8a3a1dd30bf59fe3575cf19fcca"
+    },
+    {
+      "path": "src/data/chapter3-qizhen.audio.json",
+      "sha256": "a55b9265bc66c1ac3b6ef2a0e8a2cf063ae734b15658629b60dfd1981afba5ce"
+    },
+    {
+      "path": "src/data/chapter3-story-lines.json",
+      "sha256": "44ba1732a86fa10d62228093303fde87eb889ed3ea4bad6ffc48739af05a4c49"
+    },
+    {
+      "path": "src/data/chapter3-story.audio.generated.json",
+      "sha256": "057503389ee89440852d01b969de20d08d16c5469e784d23f6961ecc985dfa31"
+    },
+    {
+      "path": "src/data/chapter3-story.audio.json",
+      "sha256": "22b0fae250782fd97afa3b82918f53303b3bb05f1753065eba76f558dbdd74a8"
+    },
+    {
+      "path": "src/data/chapter3-theater.audio.content.json",
+      "sha256": "f5fb7f5f8cb6416de1ad747303f64c4b0c4942c03f4adf7b8d5aa5d24d4d30a7"
+    },
+    {
+      "path": "src/data/chapter3-theater.audio.generated.json",
+      "sha256": "f8e1dcf74e358fe73ec9ce0383404f745920c23b47a68243eb9dd8389451cb6f"
+    },
+    {
+      "path": "src/data/chapter3-theater.audio.json",
+      "sha256": "f22e61ebf52d5cc2a87ba2e135359fd38079ce72a00ca720cf7c553d19bea470"
+    },
+    {
+      "path": "src/data/chapter3-theater.content.json",
+      "sha256": "64b39d68be3aabc604a9eb32fa99f3362ae9e884fe23f6c45ff902ac09350a50"
+    },
+    {
+      "path": "src/data/chapter3InterludeContent.ts",
+      "sha256": "099bfa8a997737157f0093eab17119094f531fb63958913b92af2459086911c7"
+    },
+    {
+      "path": "src/data/chapter4-755.audio.json",
+      "sha256": "de3b69e0641842f84140a24d0ed6e9553b588c56702e98edfb9c3971329dbeca"
+    },
+    {
+      "path": "src/data/chapter4-755.content.json",
+      "sha256": "889a07673bb83de5812d51c66046745787d84aea27b983efc56a5ecf7cf41d1c"
+    },
+    {
+      "path": "src/data/chapter4-cc98.content.json",
+      "sha256": "ac42beb6465b031a7776126c00ca8ba92928cd90cb35d8f1881bea49ce070b8e"
+    },
+    {
+      "path": "src/data/chapter4-clock.content.json",
+      "sha256": "7088511e1cc6a90c2e07aecd18b5ce3f2013a882e36d122ffeac15a26e0356d6"
+    },
+    {
+      "path": "src/data/chapter4-prologue-h3.asset.json",
+      "sha256": "6c5111684e66937faf46e0a4d3c3991c529d561ae4e05f0ded24ec8d2d4d7e88"
+    },
+    {
+      "path": "src/data/chapter4-prologue-music.audio.content.json",
+      "sha256": "174652cb49a08047d0d73d7c6d6ee46669d6919b5cc67e852389472d356654f2"
+    },
+    {
+      "path": "src/data/chapter4-prologue-music.audio.generated.json",
+      "sha256": "2f88e974edc5ced32463bb0f5269841edb2318ab80787fc8b725fbd30dd56a98"
+    },
+    {
+      "path": "src/data/chapter4-prologue-sfx.audio.content.json",
+      "sha256": "738480d399ba9b996d8f5128a349ade3941154b6cbbc26e4e9772f6e69e7414d"
+    },
+    {
+      "path": "src/data/chapter4-prologue-sfx.audio.generated.json",
+      "sha256": "d03448369a4499fb7bffdefcaad5909f1e263ab1acb1c9cbf4c2b1a7865fdb04"
+    },
+    {
+      "path": "src/data/chapter4-prologue-voice.audio.content.json",
+      "sha256": "efdae96a42cbc4292d7400ba0b643318b9061e46d5168e01a97a967f0b912d77"
+    },
+    {
+      "path": "src/data/chapter4-prologue-voice.audio.generated.json",
+      "sha256": "26372b99d7212a6298e3cfaf458ddea16ac21d6b49c3c7b57ac6ca4ab5df6bd5"
+    },
+    {
+      "path": "src/data/chapter4-prologue.audio.json",
+      "sha256": "43c53ba295c3942f1f45e9e126cecb765e3c990ba21a267c3916d87dd2a22904"
+    },
+    {
+      "path": "src/data/chapter4-temporal-maze.content.json",
+      "sha256": "88b5cf128a6bf5fb52dc955544efc630ce4ddfaca4c570cdc67b85e9faa46f17"
+    },
+    {
+      "path": "src/data/chapter4-temporal-maze.topology.json",
+      "sha256": "d71fe5bd87114ccd6ee96a1ec2d6634d43dad42383779b3da1f9f937b182e9a5"
+    },
+    {
+      "path": "src/data/chapter4-three-floor-maze.layout.json",
+      "sha256": "c21c507e2a3496b101a1aa80b3b95d76471ca33e4b43c2d3b214e09660beaad2"
+    },
+    {
+      "path": "src/data/chapter4-wechat.content.json",
+      "sha256": "337cd8a5a0ac5c4363cd04e61fdab89c28c5e0f678145df4e124f82cb8e080cb"
+    },
+    {
+      "path": "src/data/chapter4PrologueStory.ts",
+      "sha256": "a77146a1f7db617a156162710d082158e7454e7a27a41cad1cc7865c678d2e75"
+    },
+    {
+      "path": "src/data/chapterThreeStory.ts",
+      "sha256": "1a2c4c910a22a7dc5069e3f208ac23e880790e0bb668c25753194f68f36235be"
+    },
+    {
+      "path": "src/data/dialogue.lines.json",
+      "sha256": "7a1f4e6546efcb71f11ccc6fac955d877fce94c53a301ff28bfd2ff0832d226d"
+    },
+    {
+      "path": "src/data/itemCatalog.ts",
+      "sha256": "80f4cffbacc61b7d5a414e3e3e737de11f63fd899718a3751227bad2a5f1ae03"
+    },
+    {
+      "path": "src/data/items.config.json",
+      "sha256": "f080ef1a2485b3f57ecc840ab92f7e795d7aa54af41c903eb72bf8eafaafd4e9"
+    },
+    {
+      "path": "src/data/library-finals.audio.generated.json",
+      "sha256": "832e4a82056b7d9291e9e0b8ceb793265bd1c490585567bef1a169fdebaec3f9"
+    },
+    {
+      "path": "src/data/library-finals.audio.json",
+      "sha256": "2768972edd5b280072fc0b401da9a0438bbd2dabf091e7e774fe97e3a02dd6c0"
+    },
+    {
+      "path": "src/data/library-finals.content.json",
+      "sha256": "e5a17a58e1bbf20fd2497f6d57957c57a947cec119a88f88ac4290b2f244868b"
+    },
+    {
+      "path": "src/data/library-finals.puzzle.json",
+      "sha256": "18e7522eeb283cd241ece2c045a29b7ca9c24cd838d4a9b1861ea014bd6a172a"
+    },
+    {
+      "path": "src/data/library-reservation.config.json",
+      "sha256": "7e0283f310726b71ff1dc7fd1cc554f861b72c75e8658a91089537fa492e5e57"
+    },
+    {
+      "path": "src/data/libraryFinalsStory.ts",
+      "sha256": "e65c2b8bd95e89815ba3823b03027035096cb0516f99c396133e8de5eb07977f"
+    },
+    {
+      "path": "src/data/maps/zijingang-campus-loop-runtime.json",
+      "sha256": "97f431857fa2cd48eee7154786afd5e9d1d249229a0aa145ed67f85312d69d3f"
+    },
+    {
+      "path": "src/data/maps/zijingang-campus-runtime.json",
+      "sha256": "f27ecc3f98a057ac9c16d914f58013db2c0308da9c96cd7ee48ffceac90f7abe"
+    },
+    {
+      "path": "src/data/maps/zijingang-campus-water-overlay.json",
+      "sha256": "2892bde38b2e6a6f27546212cdb8d5dd48ce0fcd07e796a0912d28c086999be6"
+    },
+    {
+      "path": "src/data/maps/zijingang-campus.json",
+      "sha256": "cb25f00fb087763376f7fa2e55e24fda78db706f8bbc7b430d577f1fb30d6917"
+    },
+    {
+      "path": "src/data/phonePhotoCatalog.ts",
+      "sha256": "d660ab63903ea165fde6af0f9fc2edf1e604ee6d09eba68edea49f47f29f39c7"
+    },
+    {
+      "path": "src/data/presentation-cues.ts",
+      "sha256": "01fb04a00e1d3d1a2361d8fe5ddb13bfee9b3f848c9af20e24d2fe8380b783e3"
+    },
+    {
+      "path": "src/data/prologue-interception.content.json",
+      "sha256": "64ff1f31b664749a43d5590bf9464717634c33bdb342386852c9244a91fea778"
+    },
+    {
+      "path": "src/data/pursuit.audio.content.json",
+      "sha256": "a2ba2c60ffd5fd255b281386db6e9462de43f958b9a18b1c3b4157e5998a1ac4"
+    },
+    {
+      "path": "src/data/pursuit.audio.generated.json",
+      "sha256": "2ecbdf6ecf6514a58ee1ddd15b5804ff12756f0d05db8c9b20a1662241d6b4d1"
+    },
+    {
+      "path": "src/data/pursuit.audio.json",
+      "sha256": "ce55f038371578f6047c9ca2a084570654c4b56c9b8f1e46681aadf4c613623b"
+    },
+    {
+      "path": "src/data/scenes.config.json",
+      "sha256": "cde319b33c3d65862f00453ad85274342823d342de2ae3fb7f7b95279ff38f2a"
+    },
+    {
+      "path": "src/data/storyLines.ts",
+      "sha256": "e7ca95296dc398530afbfab6b1d51d42f078e3e2eb82efa2d32dc3bcb6d1de2c"
+    },
+    {
+      "path": "src/data/vo.map.json",
+      "sha256": "b5a75fba9f37f5c86bfb27f5484d8ccfeff5a83deeaba9c6501614b66ded6831"
+    },
+    {
+      "path": "src/demos/campus-map-demo.tsx",
+      "sha256": "a91100176aeab519267fc2da2289e4a8e339c83f7fe71eff66cedd8d40d7886c"
+    },
+    {
+      "path": "src/main.tsx",
+      "sha256": "210e8df81e1ba7881ac212e2f46992e96debec7d3a16eb3d0fe7b496c5a0ed34"
+    },
+    {
+      "path": "src/modules/ActOneBootstrapController.ts",
+      "sha256": "415cf6a30a82556da7ff2dbd24c2135b985d956b65718caf3db0c005212c3981"
+    },
+    {
+      "path": "src/modules/AudioDirector.ts",
+      "sha256": "9581177656176ebceb76cab61840304f24540e92836b7ed4c9e08297d7c322f8"
+    },
+    {
+      "path": "src/modules/CampusWeatherModel.ts",
+      "sha256": "5bd094acd5a5d7dcc6c07247a97c442aa0992645c1d1307d78528e6c554694c0"
+    },
+    {
+      "path": "src/modules/Cc98UnifiedLoginModel.ts",
+      "sha256": "e00d8378ad1c0d8d6aa2534df038965e40e242ee4985915bd1cd0591f1b5b0f0"
+    },
+    {
+      "path": "src/modules/ChapterFourCc98Model.ts",
+      "sha256": "de2893e85a486eb190e6298d8dd6d14960309d1da8555f0a75a4fe21fc200082"
+    },
+    {
+      "path": "src/modules/ChapterFourChaseStairwellModel.ts",
+      "sha256": "6cfe760fd19b5c9d00b8f63fd7b371ca16d74f7b0d3b0c81c69177f3d8450599"
+    },
+    {
+      "path": "src/modules/ChapterFourClosureContract.ts",
+      "sha256": "2207964a4edf632a2257658e23c4e36abb8d1d3967cb8ec184b3a0c02c2d25b2"
+    },
+    {
+      "path": "src/modules/ChapterFourClosureSessionRegistry.ts",
+      "sha256": "39bf8e57f6925447090b41cd879eef199dbe990e039d5efd7534a4a6d1422192"
+    },
+    {
+      "path": "src/modules/ChapterFourElevatorDepthModel.ts",
+      "sha256": "b124a257e811676aee39fe714d8bc5b9264993fd3c2d3d8bdc3156dd918e5a64"
+    },
+    {
+      "path": "src/modules/ChapterFourElevatorFloorInvestigation.ts",
+      "sha256": "69c4a3c8699820f2ed54202bde4c8a46eb6aa2375f8a0eb201647ddf9a6b7314"
+    },
+    {
+      "path": "src/modules/ChapterFourElevatorModel.ts",
+      "sha256": "d9e636d4a2cc5d3ea65831929e58dba3a34ca530e291475c337a18b3be76d1c1"
+    },
+    {
+      "path": "src/modules/ChapterFourEvidenceCausality.ts",
+      "sha256": "bfea1818c259cc303fbf81ae583416a7e4f446cc687fb7259464d746ea556e88"
+    },
+    {
+      "path": "src/modules/ChapterFourExteriorDoorContract.ts",
+      "sha256": "ca19ad51c7a1d3c6f57239ff5697ca99185bcfc326c1a6cfe5889dd649885d55"
+    },
+    {
+      "path": "src/modules/ChapterFourFinalChaseModel.ts",
+      "sha256": "550464d9a6130a72a00fe9235454ea9988e57c6e16fd623ca7fd136f36eddad3"
+    },
+    {
+      "path": "src/modules/ChapterFourGuardModel.ts",
+      "sha256": "84a24dff0cb852c6d8325ca93033d738018d3796f0a475bfe49520183839d66c"
+    },
+    {
+      "path": "src/modules/ChapterFourGuardNavigation.ts",
+      "sha256": "69b8e15b8093362804306b6bf9dd8ca73ead804b1890bc0486043557a840204f"
+    },
+    {
+      "path": "src/modules/ChapterFourGuardPresentationModel.ts",
+      "sha256": "7a807f6efc70864e1d5925d53b6743c082e6890e1b2d0b50fd5833ceba3d5081"
+    },
+    {
+      "path": "src/modules/ChapterFourInsertedPuzzleModel.ts",
+      "sha256": "f3e62525a949b6933662ad9ad971382af7d2503ff870d1e0bfaca3d0a255073e"
+    },
+    {
+      "path": "src/modules/ChapterFourLightGridModel.ts",
+      "sha256": "f80f39ea4b839dc4d19e37c9f21eba1ba7cef4e8015a314e4b37116fc9a56579"
+    },
+    {
+      "path": "src/modules/ChapterFourMazeProjection.ts",
+      "sha256": "e28d8036e239f9f8d2dbfef3efd1cd20a77f640d207dedc3afb8ca57dc790fc4"
+    },
+    {
+      "path": "src/modules/ChapterFourPrologueController.ts",
+      "sha256": "f5aeb50516a9260b5a193daf8bf127b5ccb981da8546a35c875834d88809addb"
+    },
+    {
+      "path": "src/modules/ChapterFourSettingsModel.ts",
+      "sha256": "c91ad42d30969c4f6722766fa29817c8193db9ba928aae149381c57dcda26f66"
+    },
+    {
+      "path": "src/modules/ChapterFourStagePresentation.ts",
+      "sha256": "f5640cd6908e8817d4ed027fe051ab71ce6eb485949e384e6bc508ac86cb6bf1"
+    },
+    {
+      "path": "src/modules/ChapterFourTemporalMazeController.ts",
+      "sha256": "4db7ed1a1d26a24972cc2d19346a413e496fd80633e82f2030daaacc4655153e"
+    },
+    {
+      "path": "src/modules/ChapterFourTimeControlModel.ts",
+      "sha256": "fb6532d89b2f1c64035d5feb2a1eeb7b76354c54ae6b49d2e24cec755a007154"
+    },
+    {
+      "path": "src/modules/ChapterFourTransitionPresentation.ts",
+      "sha256": "8b8fd4d293da1da1486f141a11ed02df084678d06f5b3251bc1d6e217d0345eb"
+    },
+    {
+      "path": "src/modules/ChapterFourVisualHintModel.ts",
+      "sha256": "d75821f2c5eae4b619cd51773e10e693192e4a6b8945e0845fcfd7b8cfd37e7b"
+    },
+    {
+      "path": "src/modules/ChapterFourWechatModel.ts",
+      "sha256": "a04f1c86b95c597ce6ffb490c4f2e94e33f5a85f7914d545d140c7851b859a3e"
+    },
+    {
+      "path": "src/modules/ChapterThreeCanteenController.ts",
+      "sha256": "d1fae47e5ca152bb806929ec92819961e099a07dba4b254ad17bb428251cf277"
+    },
+    {
+      "path": "src/modules/ChapterThreeEvidenceMatrixModel.ts",
+      "sha256": "331475932502af54470b933e420cb43208df99e3274f58300ad8ce96faebde90"
+    },
+    {
+      "path": "src/modules/ChapterThreeInterludeDraftStore.ts",
+      "sha256": "cf2eeef562f5073e4cf2ef1075776c3a0bcb816ac85a93c3f5f6010ce053924b"
+    },
+    {
+      "path": "src/modules/ChapterThreeInterludeModel.ts",
+      "sha256": "d8fce39122f100e0be2feaea12b30b6a97dd100b581cebe63c607d9249fd9eb6"
+    },
+    {
+      "path": "src/modules/ChapterThreePhoneInterludeController.ts",
+      "sha256": "324e20c597d424c986002435c06075a45d2f4223405945db5e85bf5f2fd03633"
+    },
+    {
+      "path": "src/modules/ChapterThreeQizhenLakeController.ts",
+      "sha256": "54d7f471f39f32ccf3053b5e9364015655948db21083370028cad11dbde13722"
+    },
+    {
+      "path": "src/modules/ChapterThreeTheaterController.ts",
+      "sha256": "5d6ef51e91ca6129706b61112d848c92f9b9172f6bcd6687e3090c417609a119"
+    },
+    {
+      "path": "src/modules/CheckinController.ts",
+      "sha256": "2abf6306abfefc3a2e3b7f729866ac1449de2ff361e5e78dfd22c87a2e2befac"
+    },
+    {
+      "path": "src/modules/ClockCalibrationController.ts",
+      "sha256": "6d19e09f2a57c193f5540447aa14ae9f10671effbb1b949e34e6ec634b94310a"
+    },
+    {
+      "path": "src/modules/DeveloperChannel.ts",
+      "sha256": "1bb3808d7a94ec469ba9b5efd01501612db0a0f0d09f4d383a34a03285fe9db9"
+    },
+    {
+      "path": "src/modules/DialogueManager.ts",
+      "sha256": "5f34a8a326f507c489e3749cf68e9db06b14fe639a729bd0c742f325e95f774b"
+    },
+    {
+      "path": "src/modules/DigitCollector.ts",
+      "sha256": "bea0c0487cd08bd446c356a52151beaf2e9ecaf5b7b3cebeadb0d60070b0f5dd"
+    },
+    {
+      "path": "src/modules/FlagController.ts",
+      "sha256": "84c28a7d58b73967ad563ec77040ce31db230c6bf583e065c33b4882d1a31b16"
+    },
+    {
+      "path": "src/modules/GameKit.ts",
+      "sha256": "81927289c05e6ba2ff2ea01922d542423b8534e05b8dcfd5fb49f48d29459538"
+    },
+    {
+      "path": "src/modules/InteractionController.ts",
+      "sha256": "8af125216473a2aee7478e3aed2d056793322ce329f57ce238fdec5f2d5f1dbc"
+    },
+    {
+      "path": "src/modules/InventoryController.ts",
+      "sha256": "315d4e1ae5892fc620209537a88d3d3115da2fc9a43734cce7d001776fffa33b"
+    },
+    {
+      "path": "src/modules/LibraryFinalsController.ts",
+      "sha256": "e655e11c29b4b884bc40538b4405a631c7dd242235c8057ddf2957315d86324f"
+    },
+    {
+      "path": "src/modules/MotionController.ts",
+      "sha256": "c8625a2d1f2aff900e5c592a1f4224a391deb866540ec662aef1c0e894301030"
+    },
+    {
+      "path": "src/modules/NavIntent.ts",
+      "sha256": "3cef26a370c3febba595dfc5eea0da2027e23ff8479d757ed6d94c96d177d1b4"
+    },
+    {
+      "path": "src/modules/NetworkController.ts",
+      "sha256": "340eb5d324b9de5e9636cf9865f64df7fdc5370048de57df8887e4eadfcfe1ff"
+    },
+    {
+      "path": "src/modules/PhoneBatteryController.ts",
+      "sha256": "ab90948c2a1fe36839ea532c995203a7927bf96c2d1dfc13d648e2d1dc588d47"
+    },
+    {
+      "path": "src/modules/PhoneBatteryPrank.ts",
+      "sha256": "921e90b87e27850ed745fbdcd8b07bb8f0036ed92f7fe634879319b9a57818a8"
+    },
+    {
+      "path": "src/modules/PlantController.ts",
+      "sha256": "e1b69f49fe476c338faca7bf1ed6093aadc76b97bc243d6da051a243932b0056"
+    },
+    {
+      "path": "src/modules/PresentationDirector.ts",
+      "sha256": "a169bc6187d5dc2559cb6f18a6f09b01fae6aab68f996659e9f92a49558530a0"
+    },
+    {
+      "path": "src/modules/PresentationRuntime.ts",
+      "sha256": "3e883f0532c783984fdd04ac003be385f410614c13d087592080a0d43a9f7014"
+    },
+    {
+      "path": "src/modules/QizhenFinalAssembly.ts",
+      "sha256": "bd505330c89d2fb78d2d029de85e4935406688fa6d66d738f8c012cc0c214e99"
+    },
+    {
+      "path": "src/modules/QizhenJournalModel.ts",
+      "sha256": "fca5744b908c008f8f2a5b137f65afefeb5a008483a8090ca56381b3ebf39ded"
+    },
+    {
+      "path": "src/modules/QizhenSwanChasePressureModel.ts",
+      "sha256": "8785d157b9ad7cd800ef3d05a910500740a655aff065786acc3eb5dc823f4af2"
+    },
+    {
+      "path": "src/modules/QizhenWeatherControlModel.ts",
+      "sha256": "f36433f98417ea68c973d6aebff680a678307746ac8feb30c16fa3ccc9efff27"
+    },
+    {
+      "path": "src/modules/RhythmFishingEngine.ts",
+      "sha256": "f932c8b08eb653211dd26c4419507d561bedfded5c1adb06eedb0001d42a1a68"
+    },
+    {
+      "path": "src/modules/RpgFullscreen.ts",
+      "sha256": "d5c1f5bc81296afc6783078c48891d2cc24fbdd347c13c23ccc7a1278cd2e4de"
+    },
+    {
+      "path": "src/modules/SaveController.ts",
+      "sha256": "2292ded70f786ed1dfd36071b567e398502eaf882d454a19dc92871184ca41c7"
+    },
+    {
+      "path": "src/modules/Sfx.ts",
+      "sha256": "f72438b76ff9e376df1190d6ffc1ccca524bcd60359edba5a489f839d0d4c1e4"
+    },
+    {
+      "path": "src/modules/VoicePlayer.ts",
+      "sha256": "3b15caf765f6c46814b48588b71b22541e082622a8bc4e84d1f90cd8f0af74f7"
+    },
+    {
+      "path": "src/modules/library-finals/puzzleRules.ts",
+      "sha256": "12bf5806baa9335b64d7999ea08ec20419c90de4587ae3d2d0c38200d195c411"
+    },
+    {
+      "path": "src/scenes/phone/P00_Alarm/index.tsx",
+      "sha256": "5df3ed8d215825b5b67f57cc6b42523c964eaafdaa9dee8ca70cbfed331bc020"
+    },
+    {
+      "path": "src/scenes/phone/P01_Desktop/index.tsx",
+      "sha256": "c4866137d1c4927923d84f76ed1975cc620589979f62ea7d459e4afc6b70f826"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx",
+      "sha256": "14da502a7376739e28dc685e6e2149af7d673ca99c4300bd3cae2cc6a34aa9f4"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx",
+      "sha256": "05b91933d2751134737e78244ffa4b0f7eea448cd928e6aee26e11f828042e14"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+      "sha256": "57243deae1302249cc766eac9c8635dbb974a02896f5388ef43bc4aba4670c7d"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/TheaterProductionArchive.tsx",
+      "sha256": "32c8885dcce8d89952cf5108e50a035810a23eed4c35eea66e6e46297f084c0c"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx",
+      "sha256": "9f0428d6ae9441fb44b9cf8d5fc899fad098e72760b6c379b28bdd867af0007f"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/ThreadPage.tsx",
+      "sha256": "70523cb6b12015398215fe4293f8df7d0c6d030cb47140f06884d6e7fc8d7f6b"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx",
+      "sha256": "449c98fe3b472457ba05a2a68c43057f1a86c1f96478dc8ad2ad1e81d75d9aed"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx",
+      "sha256": "ed2eb2501f6f2389126e5ec7cde2ce4a3d8086cc8f99482f47e0f94972257032"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/cc98Types.ts",
+      "sha256": "bcef9a64ff8a74ca68b7597e7aabf4b523ab2f5b1ceeaded754e386de28c787a"
+    },
+    {
+      "path": "src/scenes/phone/P02_CC98/index.tsx",
+      "sha256": "11b3a2f1da4ffdf5d10383f60e4dc52bce8caad0186587800366090645bf8846"
+    },
+    {
+      "path": "src/scenes/phone/P04_CampusCard/index.tsx",
+      "sha256": "6e44d8b9053b5c880d174233e9a87719d30d57774a38aeef74f32211491e7b66"
+    },
+    {
+      "path": "src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx",
+      "sha256": "08093c0a57aed5ecbb1a87d04ba676a3021fa69b776590b796dbfd5d555c8798"
+    },
+    {
+      "path": "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx",
+      "sha256": "b0410c6358ef033546b47f850cd8ba3070646512e82d9fa9dad64964cb9b9d46"
+    },
+    {
+      "path": "src/scenes/phone/P06_Tiyi/index.tsx",
+      "sha256": "f9718535718e94b6fa3f861030d0a4c2d3b2c17e3a8421207f03a16f46956cb9"
+    },
+    {
+      "path": "src/scenes/phone/P07_Weather/QizhenWeatherCalibration.tsx",
+      "sha256": "6cc4ae68b7bac238fe821e087a34c776f7c12e7c842569fbdc6e359f4f806f26"
+    },
+    {
+      "path": "src/scenes/phone/P07_Weather/QizhenWeatherControlRuntime.ts",
+      "sha256": "140305bd65925f83b4c5a4afc368b737de17f4cbc417ff0c203c9cf6021200d4"
+    },
+    {
+      "path": "src/scenes/phone/P07_Weather/index.tsx",
+      "sha256": "e4d7b5ae7f69d2a64b03f44c502258e52993c4a7eb808f61e06412ba76dfaf80"
+    },
+    {
+      "path": "src/scenes/phone/P08_Settings/index.tsx",
+      "sha256": "b3b613d13cf1fe3f5011fd406d71c28de88bd9d6f6244048b2fb86afe1f044be"
+    },
+    {
+      "path": "src/scenes/phone/P10_Bonsai/index.tsx",
+      "sha256": "7717a9f85090cefa99c0b9bf11c46800612b70449e6c2d18c455b778fca1c9ae"
+    },
+    {
+      "path": "src/scenes/phone/P11_Checkin/index.tsx",
+      "sha256": "1006764f4a6aee8627426da8154804a7f602b1a5adf844c3b9e2ad96f8db32bc"
+    },
+    {
+      "path": "src/scenes/phone/P12_Ending/EndingRuntime.ts",
+      "sha256": "5d2e044e8128018177f29f0a12e5df831a41abd0953c3ac3646cec7332160b2f"
+    },
+    {
+      "path": "src/scenes/phone/P12_Ending/InterceptionModel.ts",
+      "sha256": "c12b3febe3e94c404cef184b8cc570fc58f67e6cbe4c392224b4cec4ed774773"
+    },
+    {
+      "path": "src/scenes/phone/P12_Ending/index.tsx",
+      "sha256": "c1f5b6c3d6d40c188449ddcfef9416b27b8b5dbadeab40cce1c6f79d6ca22ba3"
+    },
+    {
+      "path": "src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx",
+      "sha256": "a5a467e7ebc300c72581251cb4f3f579f7fb157a06c022ad736a17dee5e51b29"
+    },
+    {
+      "path": "src/scenes/phone/P13_PhoneHome/index.tsx",
+      "sha256": "9a06e65bdef77260a911434214512b7632719aab3139c2afb0be07e770dbe73c"
+    },
+    {
+      "path": "src/scenes/phone/P14_Wechat/index.tsx",
+      "sha256": "d51d350fff3808feb835d4d6a6b53e4234d7b92298bb461c61628301cd863a0a"
+    },
+    {
+      "path": "src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts",
+      "sha256": "171338767609000b37854ab8557a46e5fb0db6cb0c95c7fcc9de83a0a9d33f9c"
+    },
+    {
+      "path": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+      "sha256": "16147efaa3450273925ef937bb864a810c003bb7a47620641ffa7a9c6d9c30bb"
+    },
+    {
+      "path": "src/scenes/phone/P15_Zjuding/index.tsx",
+      "sha256": "fb3da7b6780d02ee8085e0c45e337467d0a722da4b3a44f028bf6a37f76e16ce"
+    },
+    {
+      "path": "src/scenes/phone/P18_Photos/index.tsx",
+      "sha256": "3dd3c49ef933a16db8f565d9478d3709057c6e5786a20ff311b1dbebf6c82ff7"
+    },
+    {
+      "path": "src/scenes/phone/P19_Clock/ClockMovement3D.tsx",
+      "sha256": "3277cde334e932ac5b673f13898deb89c0abcf065939460ca5821c04d143feb0"
+    },
+    {
+      "path": "src/scenes/phone/P19_Clock/index.tsx",
+      "sha256": "bee92c0bceb0c1e33233fe502706d8c6712dd9f162873492e48ed22a2eae5429"
+    },
+    {
+      "path": "src/scenes/phone/P20_TimelineRecovery/index.tsx",
+      "sha256": "e7c5b9181d342618a313e659c71414084b200a151941ad34020ad592e090f86d"
+    },
+    {
+      "path": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+      "sha256": "80c6e520ca37819fdacc0d50c8c4f685ae6fe19a9b9e50c66350df16b8654bd2"
+    },
+    {
+      "path": "src/scenes/phone/PhoneScenePreload.ts",
+      "sha256": "d072b87b249e0a3a1b8fb010d33ab4893bf97c5f2d3d4af69bd7a5033c6466fd"
+    },
+    {
+      "path": "src/scenes/phone/registry.tsx",
+      "sha256": "c1d603eafd98127ac26e7b28b61037daed850f198158d7dd6d4f1c78916ee2e5"
+    },
+    {
+      "path": "src/scenes/rpg/BootScene.ts",
+      "sha256": "6535c74791a7441e24cb17d6856e9a085ddad2a81e2d8999c41d0156d8a8770d"
+    },
+    {
+      "path": "src/scenes/rpg/CampusBuildings.ts",
+      "sha256": "27d662707cf3e5da4aaadf48eb26265a66610fc5bf1f2b83dfa84e629b115ea1"
+    },
+    {
+      "path": "src/scenes/rpg/CampusPathfinder.ts",
+      "sha256": "124901c3f137b8490a6e6fc7d1f3fb33107b3440c698de9ff7ebd9d4ff9c5eb2"
+    },
+    {
+      "path": "src/scenes/rpg/CampusWaterLayer.ts",
+      "sha256": "73e721cb74b3f1f549bd4f63d340ff7d8aeb728ecf9cba401b4f26c51334c396"
+    },
+    {
+      "path": "src/scenes/rpg/CanteenBikeTransitionOverlay.tsx",
+      "sha256": "ffb65033c724a7b0621d84f65a22d8a1741065c484f3e6b9344c7870c8611eab"
+    },
+    {
+      "path": "src/scenes/rpg/CanteenChaseOverlay.tsx",
+      "sha256": "12fb7333a5b891b2449816cff3771f4c36c155f908f9933623b3d882a3444d99"
+    },
+    {
+      "path": "src/scenes/rpg/CanteenChaseRuntime.ts",
+      "sha256": "929667881c3ede48d9eea3f9811cf00479c9540a54501749d4d605bf0d53b50d"
+    },
+    {
+      "path": "src/scenes/rpg/CanteenDefenseRuntime.ts",
+      "sha256": "74d99017840872dc501cfe2531fef53dea8b7dad0a127220e0b7ed6292a958d7"
+    },
+    {
+      "path": "src/scenes/rpg/CanteenInteriorModel.ts",
+      "sha256": "90968926a40219eed3063d5ede58cd831141faa04b944aa53164b74b1a29dcdb"
+    },
+    {
+      "path": "src/scenes/rpg/CanteenInteriorScene.ts",
+      "sha256": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb"
+    },
+    {
+      "path": "src/scenes/rpg/Chapter4PrologueOverlay.tsx",
+      "sha256": "d4c45f530dbf33c7bbe89dd3a210b50c551dc5fded4468d6382996f11e111f28"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourChaseStairwellScene.ts",
+      "sha256": "700e11c560876a5bf1b78bd1953e57c598b74e634b7c12045d4b88d7d3b13dc4"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourClockMotion.ts",
+      "sha256": "f670daa9e31f3458738f6654e04e064acb3bdd3549ab3582b0b8274b51f4fad5"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourContextInteractionFlow.ts",
+      "sha256": "b89965a86f8d7d2bef9f3aab61a922ab5ad31314333decbc588197fb4894eaef"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourGuardPresentation.ts",
+      "sha256": "70e936c768f0e2c9e8d8288d789ad52cc81912b389922d06c5a6df64f1c050f6"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourInsertedPuzzleAssets.ts",
+      "sha256": "1da76e77ef2371c9d29bccd956ad354caeb984b4a5176aeb084460ad4842326c"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourPaperPickupPresentation.ts",
+      "sha256": "be2fd6ff60d082087395c413b513ac97f6dfc8bf477b66664eed33ab2ab55243"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourRoom204Model.ts",
+      "sha256": "a63618a1e2e20b76e59a1e9179048f001d828e06fc33e59efc571246d2ea5cca"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourStairAlignmentScene.ts",
+      "sha256": "c666dcfe82564251b3a3ed819cc8a76cbe09b3da3b965ae75e6ca3420447db5e"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourTemporalMazeScene.ts",
+      "sha256": "e8f298e27df6cd3fb67b5b3a9ebe127c49348926f4e1268b997d3abf0c960a99"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourWarmupAssets.ts",
+      "sha256": "232bc34129b070545cc9bb7cd42b1c0b8d6258f2ffc13a6b15c65325152dc1a7"
+    },
+    {
+      "path": "src/scenes/rpg/ChapterFourWarmupLoadPolicy.ts",
+      "sha256": "32c73618bbac8fc238d11571390507bf6a2cb4d388b2075a4e9c1a035f34b88e"
+    },
+    {
+      "path": "src/scenes/rpg/DormHubModel.ts",
+      "sha256": "d52aa145122d8bf2840c9e162eadfd80cc57961cda0ff23b690cb439b238de0f"
+    },
+    {
+      "path": "src/scenes/rpg/DormHubScene.ts",
+      "sha256": "6826f2ecce80f9316f55793ec828e426550a02f8ab83a66e425e5f925d55ad96"
+    },
+    {
+      "path": "src/scenes/rpg/DormRainSoakedPlayerVisual.ts",
+      "sha256": "2fb7c0e690885756fdca724c0d4ebbe0c83a8c850223eafbf6923a51385f5930"
+    },
+    {
+      "path": "src/scenes/rpg/FinaleEnvironmentTextures.ts",
+      "sha256": "3e376746272a14deaed2e3858a455c221707226e2fa681b94596e18679e9916c"
+    },
+    {
+      "path": "src/scenes/rpg/FinaleNpcTextures.ts",
+      "sha256": "fd8a76dbbd6256fc8fb4a6e1dc3de8d0f4e08e0f8b4fe6fea21ceb1ba82e54db"
+    },
+    {
+      "path": "src/scenes/rpg/LakeFishingAudio.ts",
+      "sha256": "fab892635e89d9c746b0f42dbc0fddd1db1e32924025436f4b4b929262fee461"
+    },
+    {
+      "path": "src/scenes/rpg/LakeFishingRitualVisual.ts",
+      "sha256": "ebfee821f98ec2b02c56d1fb727ae7fe52671a50d9bc976b96b9aaf16501c6b4"
+    },
+    {
+      "path": "src/scenes/rpg/LibraryInteriorModel.ts",
+      "sha256": "10a839a3a0840c6e2c3a70d737e222f0c4469e01a143bc069d0aa3e3f0d205cb"
+    },
+    {
+      "path": "src/scenes/rpg/LibraryInteriorScene.ts",
+      "sha256": "cd8a6d543a67c83051d0664e5e4d3c68a71e5a9a36a8ece83c07fbd6114597cb"
+    },
+    {
+      "path": "src/scenes/rpg/LibraryShelfRevealMotion.ts",
+      "sha256": "831b7f6c5cd48b8b20bc07e435bd036fa45895b795d0a11bfb79006c378695e5"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenFishingRhythmLayout.ts",
+      "sha256": "36a703d684af538542cb30c0d63dfb8de6a3ead0bd6d868634acb8b38a89f5e1"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenFishingRhythmModel.ts",
+      "sha256": "dacd01f5ef4c7d7567f0ce35565185c09eee71c51c23a5a259dde7b6669356f8"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenFishingRhythmVisual.ts",
+      "sha256": "0d7aeaa985ba64019497ce75e9f6aaa65a4003f99a5609dd23b8fbd8b4eae728"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenFishingTutorialOverlay.ts",
+      "sha256": "45db964ac44c58746f1d6bf605a670aa5e8a177847b0016e8a322fd89395d70d"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenKayakTextures.ts",
+      "sha256": "9137c8acecff0ff46adadf3895f0fc24bb59b80daa051ebbd2e67b77cad643ae"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenLakeModel.ts",
+      "sha256": "c3dcb8a53effbf911628d036403f75919e33b044eaaf6fcec043f0406167e8e7"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenLakeScene.ts",
+      "sha256": "19a30e182366ae6adc7a54009ef9308d54e28563fb57bf5978e014d41f4a625e"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenLoopScene.ts",
+      "sha256": "3b9c8405e33034b4ef864d87b0461d152fac5a22c37c0cef5293ee2f401fedae"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenLoopWorld.ts",
+      "sha256": "b2cd9077bb81b4e2a349e059b5945a2d82d703305f51848841ff96097af250db"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenRainRescueCinematic.tsx",
+      "sha256": "ed41985370a4148dc7fe8ba3e303f75a3503b7b67eef4671368e8fffe8381631"
+    },
+    {
+      "path": "src/scenes/rpg/QizhenRainRescuePresentation.ts",
+      "sha256": "016b5ae3755f0af457af0faf0be6ba8ea8dbda7165e6661ef59db5404e2ca52f"
+    },
+    {
+      "path": "src/scenes/rpg/RpgAssetLoader.ts",
+      "sha256": "e835bec20f241261e0b861fdd2109bb7eb5b00cbc51b0db737ef8e2271d4a15a"
+    },
+    {
+      "path": "src/scenes/rpg/RpgBridge.ts",
+      "sha256": "792db100a7fd7011a957c374edd5e90d2b7f63a914a1bb71b7c1097ce670189c"
+    },
+    {
+      "path": "src/scenes/rpg/RpgCameraController.ts",
+      "sha256": "d70f3aaba203ef5ed5038df8e8532c770b52a60806f573420e92e5e7e5e3b0c3"
+    },
+    {
+      "path": "src/scenes/rpg/RpgCanvasCoordinates.ts",
+      "sha256": "90e3ea111faff808bd36ebc61f18c3084c21a5f2a78c0982abd7308d3435feda"
+    },
+    {
+      "path": "src/scenes/rpg/RpgControlHints.ts",
+      "sha256": "9f6150703c95266d108847395102aad005db55727d9cf1b965c555c2778ff449"
+    },
+    {
+      "path": "src/scenes/rpg/RpgDecodedImageCache.ts",
+      "sha256": "1de1525a3423e55ab56f7a2ec03b8fc2810a0480955179854644e8879f959566"
+    },
+    {
+      "path": "src/scenes/rpg/RpgGameHost.tsx",
+      "sha256": "9b7b9135bbf0f43cccb50e3fec305f65b26b73d2cd94b3269c0a44b845e071e6"
+    },
+    {
+      "path": "src/scenes/rpg/RpgHudLayout.ts",
+      "sha256": "4622168259b06368a1ee861ce25c3a7744d82cd4d9b8060e40d5a3fd611bd1cc"
+    },
+    {
+      "path": "src/scenes/rpg/RpgInteractionContract.ts",
+      "sha256": "7f68d9fb2c21e2dfaecb989da29ca5c33577dfb59f7aa777b10de9af2ede4a36"
+    },
+    {
+      "path": "src/scenes/rpg/RpgInteriorDoor.ts",
+      "sha256": "64f9aec8a5c1076e6a522b506b551484f8e40ed711b03bccc2b68df9b5925ec7"
+    },
+    {
+      "path": "src/scenes/rpg/RpgInventoryDock.tsx",
+      "sha256": "b41f7e3a0383abbe2f625e7229ee12f386f05c2271c5d6e333a90c8a92626629"
+    },
+    {
+      "path": "src/scenes/rpg/RpgItemUseGuidance.ts",
+      "sha256": "f3fff730060a34d123f39407fb96d881cff8a212578db3a0acabe677d7f07455"
+    },
+    {
+      "path": "src/scenes/rpg/RpgMovementController.ts",
+      "sha256": "970442626ca46aa57014b792f83da486217984af7f2d2a7e59d0ec8d2a768ba0"
+    },
+    {
+      "path": "src/scenes/rpg/RpgPlayerTextures.ts",
+      "sha256": "ae3e21ec65a5400e283bb834fb85e628b93e46dd6d975fc5d7ff90a7bdfcab38"
+    },
+    {
+      "path": "src/scenes/rpg/RpgRealityModeToggle.tsx",
+      "sha256": "1276685094bc73791295a4a9cca875af47cc8003f762e88b0b43b72dda3acd72"
+    },
+    {
+      "path": "src/scenes/rpg/RpgRenderResolution.ts",
+      "sha256": "18ee3c55d4bf95de910548c79cd0a1a6f4bbf824a80f99f9cbacca2225cc3c42"
+    },
+    {
+      "path": "src/scenes/rpg/RpgRuntimeDebug.ts",
+      "sha256": "e6c068e3414d17971eca96f01e4830cbe214e9350bb996e2d104228fafb23205"
+    },
+    {
+      "path": "src/scenes/rpg/RpgRuntimePreload.ts",
+      "sha256": "fa821fd7a18df01dda5cd8730c9cc8f86c4b0d75ef00ca6e0c4b69c372e9d537"
+    },
+    {
+      "path": "src/scenes/rpg/RpgSceneBridgeSubscription.ts",
+      "sha256": "45bf2c7b37739912fc88669550df9973e10ff41906dda54d2ae903e9c8f119c3"
+    },
+    {
+      "path": "src/scenes/rpg/TheaterImpossibleShow.ts",
+      "sha256": "60c5df3f33baed5e88824aebc6c4a55e50d7f0eb5e2b434b157a1256eac4f0f3"
+    },
+    {
+      "path": "src/scenes/rpg/TheaterInteriorModel.ts",
+      "sha256": "4bbab5e08b9c079b2d2928e82c1773d7d731230132d3c6946a21ff89861e97d7"
+    },
+    {
+      "path": "src/scenes/rpg/TheaterInteriorScene.ts",
+      "sha256": "2b041bb08127f781be95457c30de3fa0d95aaed28756588214dcf0f64c20c7a1"
+    },
+    {
+      "path": "src/scenes/rpg/TheaterRuntimeContract.ts",
+      "sha256": "35d3b397104159c8635afa21b09006bbb3da8cd7980b8b40ff1f4bbc58157b95"
+    },
+    {
+      "path": "src/scenes/rpg/TheaterSpotlightModel.ts",
+      "sha256": "404ce9824d0d5bafe663e0325b9c4d475ab86c94bbcf8dea5ecb42765c363a81"
+    },
+    {
+      "path": "src/scenes/rpg/ThreePrimitiveCache.ts",
+      "sha256": "5e91f58612d9e6677e54f432eb45561da987ea62a51a01878bcec4e3f2323fe9"
+    },
+    {
+      "path": "src/scenes/rpg/ZijingangCampusLayout.ts",
+      "sha256": "8118aea8d588284a726cb8e8aca4aacae1327039b4bbeb8aef23004255b28df6"
+    },
+    {
+      "path": "src/scenes/rpg/ZijingangLandmarkAssets.ts",
+      "sha256": "ac422c0ba5788ecbd1439a82d93344fbe45f9d842af467ff8ded5500e264c8cf"
+    },
+    {
+      "path": "src/scenes/rpg/ZijingangTileCampusRuntime.ts",
+      "sha256": "8966e900088cde92d58c2145b563a84cc48aedfbdab6f060ee051f14d321728a"
+    },
+    {
+      "path": "src/scenes/rpg/ZijingangWorld.ts",
+      "sha256": "703e357babe30acc6bb76559b39749a4f676d0f3b8bd5e82108cbf7f236576ec"
+    },
+    {
+      "path": "src/scenes/rpg/ZijingangWorldModel.ts",
+      "sha256": "7694df2314238ea3f167830fee4a8f4ce5bcc0be603e608f82f7aece44243d35"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionDebug.ts",
+      "sha256": "ef468c8f53e9d5e1fefbd754a740ec032520db73d9bbb920619cf8ffc4ed04d6"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionRenderer.ts",
+      "sha256": "581dd4685f49f1727de8625d8ccafc5efc44cc36673bdee68cc9b68f792dbe68"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/CanteenBikeTransitionTimeline.ts",
+      "sha256": "4aae6d57e96c09b681d87f4f74680378d1acafaf358eefd0fe86354e51cb8ea2"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseCampusEnvironment.ts",
+      "sha256": "77ff289ac5084a632cb85bef8cf8f2cbab92e21be838dd825b9e012cc5e7a86c"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseGeometry.ts",
+      "sha256": "6dbe8611c79c7b6b1e07decd70ea5f7ac81ee7c72c26b866ca0b9c8b1b31a271"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseHumanAsset.ts",
+      "sha256": "c68ce0d018f21d7fa0b62b25409e939ee5f149d40a2506e3cb068b69adada7e7"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseHumanPose.ts",
+      "sha256": "028d2a80f3df5ce380aa7422beb0faa53c9c2194bc91ea73d738f152ab8ec1a9"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChasePeople.ts",
+      "sha256": "bad134ed23030ccd0764bbd9592db75fb0fab0ed0255c02897111357acfbf633"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRenderContract.ts",
+      "sha256": "907eee6404523f65036d7f2498bccbc9584b9e7eef88df35d732d3832ec5333a"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRenderer.ts",
+      "sha256": "f1ff73c83ee04ec724601066e73ab3eadf3c6b00eddc7bb7228334cd4a8c634a"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRiderRig.ts",
+      "sha256": "6fff299479bb4639d3590d25770a0a88848c5d8eb6880c56334cf44b9cfb15c3"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseRoute.ts",
+      "sha256": "176f4276783d6c4487fd34ab685c21ac74b770ac590b8080d10b0666ba3a9d47"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseSprites.ts",
+      "sha256": "d7fe42bc166daf419323b5dece61bfda31a4ea43ced741780b60e2daa4ddaa8d"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseStuntModel.ts",
+      "sha256": "b7f6d18bb5d5a72c9d9a6320a3fd849dd2f343118c9aa435d0f9b9a6110965b8"
+    },
+    {
+      "path": "src/scenes/rpg/canteen-chase/ChaseThreeRenderer.ts",
+      "sha256": "748e3996fd5adb0c66f059a3dcdb60bc22b507276d592e91c386915abfc5cec1"
+    },
+    {
+      "path": "src/scenes/rpg/chapter4-prologue/ProloguePortraitAssets.ts",
+      "sha256": "68fe2167fb5b7f866dcf935c3a86b712f992ab693a743e1c01f940816aac935d"
+    },
+    {
+      "path": "src/scenes/rpg/chapter4-prologue/PrologueRenderer.ts",
+      "sha256": "20af91638dab72141ff733bd9b0dfc37bbd9fadbc33942e8387eda757c5a2863"
+    },
+    {
+      "path": "src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts",
+      "sha256": "e3b6798081e4353f45a490605486a4cf45cb84525548d2716ce60954402ba668"
+    },
+    {
+      "path": "src/scenes/rpg/chapter4-prologue/PrologueVisualAssets.ts",
+      "sha256": "1c800808f4329a8a8f957406caf324539707cc7250e4668e8ae8eaf981754f06"
+    },
+    {
+      "path": "src/tools/CanteenChaseDebug.tsx",
+      "sha256": "a906b5598b8b9f58b701ce71a9b34d49c07d5223de4bf2323461d0605415e8c8"
+    },
+    {
+      "path": "src/tools/CanteenCollisionEditor.ts",
+      "sha256": "1db43b23c77d6d0ab8d95ed749871ec4ec3ea4ae0cdee4999945260e6924e6ae"
+    },
+    {
+      "path": "src/tools/ChapterFourCollisionEditor.ts",
+      "sha256": "064f3d068b5e175f81b82f42f25361be7725870b72f90850a7fc024f51334933"
+    },
+    {
+      "path": "src/tools/ChapterFourMonumentStairDemo.ts",
+      "sha256": "b165c891eaee9570dbc402817972304081098d4cd3ed1d5e6138fb8008dbe71d"
+    },
+    {
+      "path": "src/tools/ChapterFourMonumentStairDemoEntry.ts",
+      "sha256": "c68b0026ea98f2017a7697fe430a75b4d0f9297249ed54e0c03de72893907856"
+    },
+    {
+      "path": "src/tools/FinaleEnvironmentDebug.tsx",
+      "sha256": "aa6acdaf18fd6c44a886189aefb10c7faf4c044d512677ce1671557cde5eaf51"
+    },
+    {
+      "path": "src/tools/FinaleNpcDebug.tsx",
+      "sha256": "5b86bb1d1ea2c671b2381ea6e6367f5c40d89f4e4d9fd1b0234fb0c77108ca4e"
+    },
+    {
+      "path": "src/tools/LibraryShelfDebug.ts",
+      "sha256": "2646615f4985471e5c98d9fd54255df5855e8fc925d6748bcac921bcdc372167"
+    },
+    {
+      "path": "src/tools/QizhenLakeCollisionEditor.ts",
+      "sha256": "302da4dd257fd49b8e93dc6104961cc0e69978a1d90151e2429ec142dc3fbc99"
+    },
+    {
+      "path": "src/tools/chapter4-stair/engine.ts",
+      "sha256": "ee3109e85fd58e978ff466c3205c22316f6b8f241ceab8d906a8c8221daf69ec"
+    },
+    {
+      "path": "src/tools/chapter4-stair/levels.ts",
+      "sha256": "5dfe13d3381c751b7227d438caf964262bfd89a7b823a193421ff24386a70428"
+    },
+    {
+      "path": "src/tools/chapter4-stair/pixelStyle.ts",
+      "sha256": "c611ab0020ba873f918630e08cdbc12fecd6781df2dc645b5571f86fd1f6ced5"
+    },
+    {
+      "path": "src/tools/chapter4-stair/playerSprite.ts",
+      "sha256": "5fe4dba720f63813dc09e53ef47959f4db9ac03749be0876318b2b401b0a62bb"
+    },
+    {
+      "path": "src/tools/chapter4-stair/types.ts",
+      "sha256": "d836f0ef77b1244134886c63ed25beef6425cb379491e1d247ff6db5bee0e234"
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "sha256": "bab7d4d3f9475f9b8b6bf972393645b907f852c8bef4cbc5e54a8274f45b5064"
+    },
+    {
+      "path": "godot_native/scripts/audio/endless_stair_guard_foley.gd",
+      "sha256": "04e7aed35157ec4fcb4fe4bc5ff52a81399eacae27cd9410300e7f88040d31b5"
+    },
+    {
+      "path": "godot_native/scripts/canteen_floor_tap.gd",
+      "sha256": "6a6d4c8d5200950b169dc3606776037fda0d4e4b7a4086935038f51a6adad2a2"
+    },
+    {
+      "path": "godot_native/scripts/chapters/c3_base.gd",
+      "sha256": "ae58732a36acabc5c3e129a72eb649cd33f73f7d45e3129339f07512e2319b5d"
+    },
+    {
+      "path": "godot_native/scripts/chapters/c3_interlude.gd",
+      "sha256": "b8e78027e126c32c87358a6bfffe7412a447a4d75f17433bb20ca57e698735fd"
+    },
+    {
+      "path": "godot_native/scripts/chapters/c3_journal.gd",
+      "sha256": "1410cfd8ccf71662c9c720e44a9d48d12ed97675f28713098e0b95addf4a6eff"
+    },
+    {
+      "path": "godot_native/scripts/chapters/c3_lake.gd",
+      "sha256": "58cbf05f5a3256ebbc37d6d10746f9233a2104d8f3defd974a70070406c7bbd1"
+    },
+    {
+      "path": "godot_native/scripts/chapters/c3_lake_world_session.gd",
+      "sha256": "70b3dd77721e6f2cda6026d6f37c53ff8655eace335bce6bbb7518fee64be150"
+    },
+    {
+      "path": "godot_native/scripts/chapters/chapter1_2.gd",
+      "sha256": "c19fe619314a79a42d8a7a1f58f9ba4e400fb2178fe832a1ebe488d8f24d3473"
+    },
+    {
+      "path": "godot_native/scripts/chapters/chapter3.gd",
+      "sha256": "659f7421efdd8eb2ba5776b948ff56026741c7a86279a2eb62306198f7703f90"
+    },
+    {
+      "path": "godot_native/scripts/chapters/chapter4.gd",
+      "sha256": "23bd3fe7108fac577b7a771e8aeba2cc09d951fe2dd597c0bc99d0a61156503e"
+    },
+    {
+      "path": "godot_native/scripts/chapters/library022.gd",
+      "sha256": "ad092eaa13f4fdcca657e5bd6ed11e48cd6bc41d8544907700ee6aa7dd5ccac3"
+    },
+    {
+      "path": "godot_native/scripts/chapters/phone_entry_session.gd",
+      "sha256": "a62243a645ced4d6d077cb849534bb089afacfd07ac4a5a15e66504db7fd451e"
+    },
+    {
+      "path": "godot_native/scripts/chapters/phone_utilities.gd",
+      "sha256": "5c262e1f55c97c7c9fc151f351b86ea960ddf55429c8c04113ce728f2733ec58"
+    },
+    {
+      "path": "godot_native/scripts/character_facing.gd",
+      "sha256": "5136ecfb2ac8e82bb2ea61c373b24de3f4b4e206ad2bd94d3e2fa0ebaee0e215"
+    },
+    {
+      "path": "godot_native/scripts/data/cc98_store.gd",
+      "sha256": "14d637cb4ffc29098c0ce443370ecb3b2a72faccf7c4f9ba457a632770992249"
+    },
+    {
+      "path": "godot_native/scripts/developer_tools_policy.gd",
+      "sha256": "7adbc51fc44d9bcaa0a824466feb9ea5587c245adb39988e00128b7f17ebb6df"
+    },
+    {
+      "path": "godot_native/scripts/entry.gd",
+      "sha256": "0ede67413ce817cc597667945371447e91c6a1489b7bb7716a19950786a0c0b0"
+    },
+    {
+      "path": "godot_native/scripts/games/c3_spotlight.gd",
+      "sha256": "0e0c84668319e6eccf1a977f6d2590538f04de254a4d0fea6e056a68b0095248"
+    },
+    {
+      "path": "godot_native/scripts/games/c3_spotlight_model.gd",
+      "sha256": "96a0e06ad0ddb416b5faee79ac6ad87ff4fdf9e79468ea708b96a7d292975d32"
+    },
+    {
+      "path": "godot_native/scripts/games/c3_weather.gd",
+      "sha256": "2c0238fc16ff18153bd4613df3966c247b04b968e08c9dabc0c5ef90f114f1d3"
+    },
+    {
+      "path": "godot_native/scripts/games/canteen_defense.gd",
+      "sha256": "822126489e65972b83dccc82af07566e530474d2685a6fc32bf53e36ef9db1db"
+    },
+    {
+      "path": "godot_native/scripts/games/canteen_defense_model.gd",
+      "sha256": "b32888eeb30aae85e81c5c1671db6f0e562212a0597e92c18a0d0f9b0b7ec015"
+    },
+    {
+      "path": "godot_native/scripts/games/canteen_defense_view.gd",
+      "sha256": "ad6f99e46aa55f0c6b58aa301100501dcef1e12d2080705c919104fa0d3a973d"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_activity.gd",
+      "sha256": "ca38290b383bb74bfafe721ae1f77295c8e365d23f8d2516e54903306ed5ee1f"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_chase_space.gd",
+      "sha256": "51ad4ffb2af5fb15d16843eba7ef364cad5dc867186967e561797b1c83506ff3"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_chase_space_activity.gd",
+      "sha256": "fbbe0c4970d4f752b6ff6b1299a202a800aea5acfd0074c51feb311803177789"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_chase_stair_model.gd",
+      "sha256": "d631df080cffdbce3ddf88759a184f25c1deacf3439dcc37aab4cca1c458f917"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_endless_stair_model.gd",
+      "sha256": "06cf6e03a086b1024a534ae31674541144f82e4413be34ea04469172f9a1a5f1"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_endless_stair_physics.gd",
+      "sha256": "a80a13d9b3383ce7c6909e85de95cc5cdcd25f3cc891ac8f31f841819d09f642"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_folded_chase_model.gd",
+      "sha256": "47863590ff0b6e6d568bd16438c179650d93b643cb450c662df21ae28560f91d"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_guard_model.gd",
+      "sha256": "401afa79eddb368453db3925efabf40c74fc1deef245ce58f46b2ff9ee81a6e3"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_guard_navigation.gd",
+      "sha256": "b00eb337fc3a2b61659ebe40ef3804a89b44b2bbca7d273961fb5302e63df1d1"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_room204_model.gd",
+      "sha256": "a5ee0d252e5f669fec511e2a67ceaeb2ffd6f90ac111b6fb3a161ede34808f4c"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_side_chase_model.gd",
+      "sha256": "b2bff26a94118d3e53a79449036abd9455e9ee95dcd15cb95b9dd291585166a0"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_stair_assets.gd",
+      "sha256": "e3c67007a42a7a5d07fa947a3950a4a7eef4dcf947c2a8274559c78d323d62ca"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_stair_model.gd",
+      "sha256": "939b90c931e08626153af65e0a8bf888161425f1e18502d6e7f0a6d524f14399"
+    },
+    {
+      "path": "godot_native/scripts/games/chapter4_stairs.gd",
+      "sha256": "a4fe0ba6b45eda3d7b8877434db6459fdb25eac5f15257a441232974890b3781"
+    },
+    {
+      "path": "godot_native/scripts/games/chase_stunt_model.gd",
+      "sha256": "0050a676b6683bb566fa6176f4a8a6ff8613128ab545949a3fb3485daec64db1"
+    },
+    {
+      "path": "godot_native/scripts/games/identity_stamp.gd",
+      "sha256": "86e7636ffc4f9352a8fac3977c134e18dcd4d1d36cbca1e54155f420100a4823"
+    },
+    {
+      "path": "godot_native/scripts/games/kayak_model.gd",
+      "sha256": "6620bdfb89b56fcd0a89e3cd3efed57d71eb5035e2aeda72fb26494b80f180a5"
+    },
+    {
+      "path": "godot_native/scripts/games/prologue_interception.gd",
+      "sha256": "2a64e8a12eac232383a35e30734e57eae80e88d64acfa987f5122aecf9848749"
+    },
+    {
+      "path": "godot_native/scripts/games/prologue_word_model.gd",
+      "sha256": "e933e8ad6ba7e39c67dfdd9565d2627e0989b877a7215063486cff1d089e6c64"
+    },
+    {
+      "path": "godot_native/scripts/games/qizhen_swan_entrance.gd",
+      "sha256": "90ba84c455fe36b27d59a310906413e0f270c3ce1f79ccf6ff82091ccb36b8a1"
+    },
+    {
+      "path": "godot_native/scripts/games/qizhen_swan_motion.gd",
+      "sha256": "8bb90688bc590d87dc02986ddb6eab7cc989672f1550b13577a767eb859a5cfe"
+    },
+    {
+      "path": "godot_native/scripts/games/qizhen_swan_pressure.gd",
+      "sha256": "347fc3e6fc6b1b29e3a03e5dc9d2b1286c3516245a2f8aadf9444326fa0c88a3"
+    },
+    {
+      "path": "godot_native/scripts/games/rhythm_fishing_model.gd",
+      "sha256": "7d68f8ec0f44377d1e30ab4fe5256706226e356ebf5698c91325e040531ef6e0"
+    },
+    {
+      "path": "godot_native/scripts/games/virtual_run.gd",
+      "sha256": "e9a909616447ae7b6d1100cc1ec27dcb7f28ca70a126b6d445a0c9ddfaa9b86f"
+    },
+    {
+      "path": "godot_native/scripts/games/virtual_run_track.gd",
+      "sha256": "61fcff630769a742df1134dffa8bf09b4dc2b7bfb1529940ef6b0d7256f5ebd9"
+    },
+    {
+      "path": "godot_native/scripts/main.gd",
+      "sha256": "aedb85d59eb1e4314a91a0853f995aa2cb61c25df034e9233261e8a2b6e862f5"
+    },
+    {
+      "path": "godot_native/scripts/media/audio_director.gd",
+      "sha256": "de10dab53911e587afbefd8ba2a4ce0ccbb4e26fad7ace189755d93e9c7d70e4"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_battery_prank.gd",
+      "sha256": "7649808c0f66c8309c2b8a74e64085f1072c5bb65c90081326e01de04d3496f6"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_capture_session.gd",
+      "sha256": "8a870a36034a11aaa39b0081804fd160eca0702de2b0c28e3aa23b5e902b8e18"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_charging.gd",
+      "sha256": "cf69213abc6a458ddd657d0a8bb2f17e4274cb3be43e0fd8da5db9104fbe7b64"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_charging_session.gd",
+      "sha256": "5f049b8a3e4961837ec4d86f5aaed4cdd9abcbbaf149e71e4add71c34db0915c"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_charging_view.gd",
+      "sha256": "0a4e817351a7bacac3568ac17a3d81dca3ea1a3bac175d22f33982073fee4936"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_media_host.gd",
+      "sha256": "79bb5c3712e53b13da42d28bf2d9774f89e13b52956fd4aca05d75c485c610a3"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_rain_rescue.gd",
+      "sha256": "efe69cee7c1d558ef9baced1c289f3cad1947f65279053e372507eb0a4b6f73b"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_rain_rescue_model.gd",
+      "sha256": "2536d5621f745ca6a808c3a7390762e067c714154e95fe1470fa506fd53c16b4"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_rain_rescue_native/pose_geometry.gd",
+      "sha256": "7086f88725c7ac4d0a52d0ad14dac5e6ed151b740ce5929195ac110c57d2350f"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_rain_rescue_native/renderer.gd",
+      "sha256": "a709704d547e6f828659b0b4f0b8e816b95d80d35693db059bb4243d2736fbdf"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_rain_rescue_native/timeline.gd",
+      "sha256": "4faa4a6dc25441be5e0f4ddf8d5995ffa4c4f8b73f1618b7baa3e41b07a660cb"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_rain_rescue_session.gd",
+      "sha256": "9e9c17cf0584c0d2d39791ea464e6ebcecc048213f73fbc216ccf897a5488a16"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_swan_entrance.gd",
+      "sha256": "8cc3e936e01d936d963e05732c0a25db53302af3f451a027956b365a9b32e422"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_swan_entrance_session.gd",
+      "sha256": "1e46fa94d6044087b66bb126f747e1945ecb0dbacc141b06fe9cd38db98e358d"
+    },
+    {
+      "path": "godot_native/scripts/media/c3_voice_session.gd",
+      "sha256": "117fe4e75801606661a26c930e71e2e47de68b0f3b85a00946c565fa6fee52fe"
+    },
+    {
+      "path": "godot_native/scripts/media/journal_archive.gd",
+      "sha256": "b726d8b66bf0f6821a7997e88141ae231629446233d78edbd2353630eed57071"
+    },
+    {
+      "path": "godot_native/scripts/media/native_prologue_effects.gd",
+      "sha256": "4ff3f0a11db41a34b4411fd73f70c16480b66f761efd7a31e33cd8b4097a6ba0"
+    },
+    {
+      "path": "godot_native/scripts/mobile_floor_route.gd",
+      "sha256": "c66a09b63d164f9ec0d237f12f1f8535c5a5c6f0f5abb39ca1a88f4288e4231a"
+    },
+    {
+      "path": "godot_native/scripts/objects/canteen_drink_performance.gd",
+      "sha256": "4babf9f84aff26d26f19d4a7519080ae95a6450751566eeb5a5b48a19f4f28ee"
+    },
+    {
+      "path": "godot_native/scripts/objects/canteen_mixer_performance.gd",
+      "sha256": "49fbd2ec5629a6ece8320d09ca8b676f6237a2849cd7fa8acf8d16caab28ca7b"
+    },
+    {
+      "path": "godot_native/scripts/objects/canteen_object_scene.gd",
+      "sha256": "8c1d6b5677150f6308409263af10bd53485041b655c53fad965cceebb845a93a"
+    },
+    {
+      "path": "godot_native/scripts/objects/canteen_scene_object.gd",
+      "sha256": "8f3593dd3fa9eb58e938d8656d0942caa59640cfeea601546168fde0b9f28454"
+    },
+    {
+      "path": "godot_native/scripts/objects/dorm_scene_adapter.gd",
+      "sha256": "814558df95773cebf6b7b292b26ae37abc1726ce5268e73c7ee312971fa41383"
+    },
+    {
+      "path": "godot_native/scripts/objects/kayak_arm.gd",
+      "sha256": "4ed5d6344ba7d2d59b78066d196d288ea6e099e561260482ffde60f3847cbe91"
+    },
+    {
+      "path": "godot_native/scripts/objects/kayak_paddle.gd",
+      "sha256": "b1d693056cd8499422802281d9350c7f5a31ede01162ee36751034caea6a2712"
+    },
+    {
+      "path": "godot_native/scripts/objects/kayak_rig.gd",
+      "sha256": "aabd0be0a13840e9f8e832a63c8677f3c9f85db076d54fcf26b1e2244fbdf60b"
+    },
+    {
+      "path": "godot_native/scripts/objects/kayak_wake.gd",
+      "sha256": "4849af989414afed69924c61f2eadb7cdcdcd279680a54dd84e0b9913c651e9f"
+    },
+    {
+      "path": "godot_native/scripts/objects/kayak_world_adapter.gd",
+      "sha256": "97da33a51a41f360732792df289c7f7267939d7ce9493eb07ff3fdf23694a966"
+    },
+    {
+      "path": "godot_native/scripts/objects/lake_assembly_parts_3d.gd",
+      "sha256": "85d6e2d36564008b48d795ab9cdb0b13c5ab7130a4e61634bfc2df2b70491d2f"
+    },
+    {
+      "path": "godot_native/scripts/objects/room201_press_art.gd",
+      "sha256": "e96fc6116e63eaebc903d9776f27b67a2dd3f23198386c536bc1e37fc45a5e34"
+    },
+    {
+      "path": "godot_native/scripts/objects/room201_press_evidence.gd",
+      "sha256": "699649afb92c10de92eddc8a13983de781c6cd5bad37b01688859a21ed0cadeb"
+    },
+    {
+      "path": "godot_native/scripts/objects/room201_press_model.gd",
+      "sha256": "dd915f96dd3f271e21a9d97160eb22ea3e1b48e80ac71cb5c0c9cdf0d87f4b0b"
+    },
+    {
+      "path": "godot_native/scripts/objects/room201_press_panel.gd",
+      "sha256": "09541ab9b4541156369f2d6ba00b906af1d6e72c1c16e5be246727762c6e45f6"
+    },
+    {
+      "path": "godot_native/scripts/objects/room201_press_view.gd",
+      "sha256": "2ca4b45216d441dc25dbab55aec149ea978cad351f9a3a572f65aeab27213ba7"
+    },
+    {
+      "path": "godot_native/scripts/objects/room204_table.gd",
+      "sha256": "3f0def11d0a16f42fe0cfeecf2328bada620bbaae4f567bc3047f93bba01c17b"
+    },
+    {
+      "path": "godot_native/scripts/objects/room204_table_adapter.gd",
+      "sha256": "ec623a778be33245b0d416b1f2a01a74cd4886c333a05e74c43e146b29492891"
+    },
+    {
+      "path": "godot_native/scripts/objects/room301_archive_art.gd",
+      "sha256": "33119788f3f262d105e4993eb11755e6417fe0bb6b36b6d856a241833ffc16d7"
+    },
+    {
+      "path": "godot_native/scripts/objects/room301_archive_motion.gd",
+      "sha256": "9a0e667688ee08dfe5a2e6aa7163c7663b3c4fcd623ab984ec0ca940cf9c4130"
+    },
+    {
+      "path": "godot_native/scripts/objects/room301_archive_panel.gd",
+      "sha256": "5877c1acd74482435a116b035b4fd303dd6ba17e71e1d1ee625be8f918a82ad0"
+    },
+    {
+      "path": "godot_native/scripts/objects/room301_archive_view.gd",
+      "sha256": "ac79527a6172350064c80b8412bf87666c652250ceba1a181abb3a16724e058f"
+    },
+    {
+      "path": "godot_native/scripts/objects/room302_alignment_motion.gd",
+      "sha256": "e2fadacd82de528cb90344ce678dca6784ac46342184ae1b26bef23156f102e3"
+    },
+    {
+      "path": "godot_native/scripts/objects/room302_scanner_prop.gd",
+      "sha256": "a3ea8477bbeaf76f23b67946c0b964d059f16f2ac9e9d51962204ca8a67ad73d"
+    },
+    {
+      "path": "godot_native/scripts/objects/room302_shade_prop.gd",
+      "sha256": "2f1854134873f5deab310dbf0f8673b8652ecbf1a23b7921d3ff63c8866be6b4"
+    },
+    {
+      "path": "godot_native/scripts/objects/room302_studio_model.gd",
+      "sha256": "4051ff72b254fb3811ad278c1124645640aadb1387518da6d275407dbb0399d6"
+    },
+    {
+      "path": "godot_native/scripts/objects/room302_studio_panel.gd",
+      "sha256": "3b60fef1a65199a479d96aa8d27250d3566e9d4318ed25f5f56e6406b1537266"
+    },
+    {
+      "path": "godot_native/scripts/objects/room302_studio_view.gd",
+      "sha256": "e39a8cf54f382f13f9faf1fc93f2f09f54cacfcb6d027ca2cf1e8228f9483bc4"
+    },
+    {
+      "path": "godot_native/scripts/objects/theater_clue_objects.gd",
+      "sha256": "4a17306e94013512b5eaa50eed8fd9e61786fae13f70972b0bca1ef8c2d0de3b"
+    },
+    {
+      "path": "godot_native/scripts/objects/theater_clue_part.gd",
+      "sha256": "59419058c6493729f492153cbe5d7ed5ee7bf241fc23a42fd8b66a536fbc3f2c"
+    },
+    {
+      "path": "godot_native/scripts/platform/web_content.gd",
+      "sha256": "70e89c303963139d5a690e13af9a009d13d93c4dd03f99cef2813e9caa9f7748"
+    },
+    {
+      "path": "godot_native/scripts/platform/web_display.gd",
+      "sha256": "25ca1ce2677c14aa03b075d4d329d82b0b8ffe467f6a4b743765302e7a7147bd"
+    },
+    {
+      "path": "godot_native/scripts/platform/web_platform.gd",
+      "sha256": "4e09fafd288acc9938311f3024f89b45b836b5827b67d9ba59be1a5a7ba61ecf"
+    },
+    {
+      "path": "godot_native/scripts/player_metrics.gd",
+      "sha256": "14abf315d14143798f2171229e58b90736d25d463f67def249d1ef0682761594"
+    },
+    {
+      "path": "godot_native/scripts/presentation/bonsai_growth_art.gd",
+      "sha256": "ec5a082b2635464a63b1cd73701ad5e1b261ce160c85dbb753de2866bf789404"
+    },
+    {
+      "path": "godot_native/scripts/presentation/bonsai_growth_session.gd",
+      "sha256": "1de3f24e09f8dfedbacf29c5cdf95a0aa9d0d9eef0283420ce83041b3234d9d6"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_admission_feedback.gd",
+      "sha256": "fc46fa61d6075ef0a192e7e80f0f029693648aac55a04fc5f1565632d7afc18d"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_bike_world_view.gd",
+      "sha256": "ea7684c96f043a056b4ae0807903a6e05d66f5a213ef8435e343719cdcbd7fbd"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_canteen_paper_view.gd",
+      "sha256": "9999155dfca3b08c312875989a0515674bd9e45045e98ef3ff48b5c819b914f9"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_defense_effects.gd",
+      "sha256": "99c1c7412e96e68d50adc5a9aca33b0a60d458d24f3f2371f8ee4a76b50e04df"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_door_frames.gd",
+      "sha256": "d37a2684e0529e6fc028692d75396c4bb7ae964f28983e0c583c3d752f0389fc"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_mixer_motion.gd",
+      "sha256": "cd213b457ca6a4a3e2bf1bb8c411cbc8115b9ee87f1ac64a64ac347235b9480f"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_mixer_session.gd",
+      "sha256": "11bc54a82aabf1cff0c67a655d66fb2643c3d5f7220ec8e011ec4f1fd976ce25"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_mode_fiber_view.gd",
+      "sha256": "191c4c8d332974b8d3ccadc80eef22cea9cb9b734bdab253fc0e195eeb8673e8"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_mode_fibers.gd",
+      "sha256": "c0bda99fe2d0aa4ceee7d4074adabb0f6b0110e0ece17cb83a460c210765316f"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_narrative_host.gd",
+      "sha256": "ddfe484d720af357d86eca92fe3b2e597121ac6ddb1de377b0dae1e1427bb7ea"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_narrative_session.gd",
+      "sha256": "20251cb6f983b92bfd9b6356da91580ec06df306af84fb5f0e8e381b0ffa1ac7"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_narrative_view.gd",
+      "sha256": "86460303cf7efee7b353ff14b5b264ef7ced579633e4d435b74dfd1553f24897"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_narrative_world_view.gd",
+      "sha256": "c2d0a36e78372b6d3f5a4028774ccaf41104aa8744b38ccabc731f9acf0c446d"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_opening_view.gd",
+      "sha256": "68dd2be7e3cd184681cedd467f4849d2a840c117e02194df33df406449d349e1"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_paper_art.gd",
+      "sha256": "ec5845b828a3f67fb93e52b3439f3c04618af02a4042cbcb9370353a993911e0"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_pickup_timeline.gd",
+      "sha256": "4abdffa93c417803ab661a216978d8145dd4b82b096b57f84ae69a844087b202"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_pickup_view.gd",
+      "sha256": "c06ac2e300cdbde6d20145655da319b8e138447f006ac3937d38ac6a27b1a723"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_promo_timeline.gd",
+      "sha256": "3e5a14753df623f5b9a48a415ba3594c6467a3e7b0dd19c99bfbabb9dd91ae0c"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_return_stack_pose.gd",
+      "sha256": "ba77f55271fdc74e9ed5e78ebdbc5e0b45b97f8e64b503fa4022e716dfc4fe2d"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_reversal_view.gd",
+      "sha256": "a9afa076d0daf4e456da5c264705b019710770d0d1475dc399eeba076b24426e"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_scene_host.gd",
+      "sha256": "df9e67eb84b6cff7df4cf6b0747af23f684ee69cf3f56abce9decdc1804887f3"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_scene_session.gd",
+      "sha256": "b6832431fb0bf816e08aa4a39ad15c57d31e897dbf8ef0a1ce583f58f53e10b4"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_theater_clue_motion.gd",
+      "sha256": "e13e89a8763597228c8dbfb9dfb143e16efc69e7acd2d8eefdb4042cd5aa3c6e"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_theater_clue_view.gd",
+      "sha256": "c9aa49239b4a151d78b0840305666bd027f8f8456dbb6423c432cfc8730e0932"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_ticket_gate_art.gd",
+      "sha256": "690b2d1be25ae13e7a488313c15d9ea385aa386c885cfa9e32000e969dbf8bd0"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_ticket_gate_view.gd",
+      "sha256": "394ad893cd044be0a10231a402318fbed671492973605738d10001c64a1a6ca6"
+    },
+    {
+      "path": "godot_native/scripts/presentation/c3_tray_frames.gd",
+      "sha256": "ede04bd82a1031c0c124b7af72ccbd257f5268083006f9c753524e674cab4573"
+    },
+    {
+      "path": "godot_native/scripts/presentation/canteen_objective.gd",
+      "sha256": "2c4afa6935f4490c988953386b683625c429b39f040d8730d949393f6fa5ec58"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_chase_space_view.gd",
+      "sha256": "d1613798f6bf2e86d81b631d7c66369b89d5a8a8683f8888922f763cb7b1c8c8"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_chase_stair_view.gd",
+      "sha256": "bb61c005a7e3224da1002abbf809028e90d064f347e640f238e85f168c3e84e8"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd",
+      "sha256": "a453d356f8f75d18a3f419d4289a98427aac6044b80fa4bb7b0be6803223509e"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_folded_chase_view.gd",
+      "sha256": "4a50bde2cb9b72f6133d4253844f77fa76333444bc4cf8a2d972d583f8b1cb36"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_guard_capture.gd",
+      "sha256": "b816a3c098b379336f117b6224c43dd66a047502aee043cba07590738678ad07"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_lamp_3d.gd",
+      "sha256": "ff4846af94f021ef3c5869f91febab2ac1d590bcfbf4202a3d6077b5fb26c542"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_lamp_closure.gd",
+      "sha256": "f6abc79bbf473ee80d7f09953747af93e740db1e5a7a8e6117ce2397e486d704"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chapter4_lamp_sequence.gd",
+      "sha256": "e6e2813f00f47ea028e2160d38688059a78e24a9fa5a0717fbba1f3751894335"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chase3d/source_chase_3d.gd",
+      "sha256": "3b258a843b8373d11b1a5d4c2b486ed444c2547de61d55bdb0cf85a97f39b5f4"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chase3d/source_material_adapter.gd",
+      "sha256": "455dbf9f57bfa0bca313bc9c60c75ba45f29616a31c3f5da554c8e1ad67ca1e5"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chase3d/source_rider.gd",
+      "sha256": "0e32e9401693b7a615161e8432b204573196596a082a4490544156b798109004"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chase_loading.gd",
+      "sha256": "b29c191413f9d29f060f50b1275ea48b588becd3d2ea3766a68402526f0c129d"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chase_transition_3d_presenter.gd",
+      "sha256": "783d895bdda440da2a4b27bd01ced4910989c2165d438751c8e00078649e1ebe"
+    },
+    {
+      "path": "godot_native/scripts/presentation/chase_transition_clock.gd",
+      "sha256": "659182a142c05a2d82d627e29c069fb5c582e18a02188991050f86c066efa64b"
+    },
+    {
+      "path": "godot_native/scripts/presentation/drink_cup_paddle.gd",
+      "sha256": "adf0ed80a694eeb20197bfa11e6730e04fafa5dbd65bdec49064664de727e2b3"
+    },
+    {
+      "path": "godot_native/scripts/presentation/drink_fountain_rig.gd",
+      "sha256": "e0eff27ddd87086f5c96ed9adf0873b3237ab4165c28b9995b0da0d556b2eef2"
+    },
+    {
+      "path": "godot_native/scripts/presentation/drink_machine_press.gd",
+      "sha256": "5085062092fe8212897cf596ec268746ad0867e95a612c86d75601524f340cf0"
+    },
+    {
+      "path": "godot_native/scripts/presentation/endless_stair_beam_clipper.gd",
+      "sha256": "d4bb8ecc59b973e996c364082bdb5623843a3292468b39de2d417d4d6b31ab9f"
+    },
+    {
+      "path": "godot_native/scripts/presentation/endless_stair_gait.gd",
+      "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b"
+    },
+    {
+      "path": "godot_native/scripts/presentation/endless_stair_guard_feedback.gd",
+      "sha256": "5d29c2ab743785d10cc2df9dc4177ec4cc1a862b48a84a445b25aefaed30fdc8"
+    },
+    {
+      "path": "godot_native/scripts/presentation/endless_stair_step_pose.gd",
+      "sha256": "ba3e43f9d106d33c23c5d945be289f3230a515bdf94a3a9ea349bc727b42cfb0"
+    },
+    {
+      "path": "godot_native/scripts/presentation/interior_door_layer.gd",
+      "sha256": "baf406cdb2a927605bc236deb9f90267f0e950f0df31defbf0f04ef2f86ae106"
+    },
+    {
+      "path": "godot_native/scripts/presentation/lake_rod_assembly.gd",
+      "sha256": "4b1f14251022ec631003fc19c63361d32afd17d022861e9ce6dc5ce90c8681e5"
+    },
+    {
+      "path": "godot_native/scripts/presentation/library_stamp_motion.gd",
+      "sha256": "e02bac02dfcb25b24aa0e11b451ee6f99da3e0157565c0f6ed39c905d0088531"
+    },
+    {
+      "path": "godot_native/scripts/presentation/library_story_host.gd",
+      "sha256": "f4c97ffd9d0c7b996122a47ecb82a538be1315769bd381597487dcdf4dac621e"
+    },
+    {
+      "path": "godot_native/scripts/presentation/library_story_session.gd",
+      "sha256": "945e4bda993a0208b385ccbd5374865776aedbcecb8008bd802279d003d2817c"
+    },
+    {
+      "path": "godot_native/scripts/presentation/library_story_view.gd",
+      "sha256": "66b118714ade31b81eeb7286fae70ca986225d46d3f403f708480f244be0b282"
+    },
+    {
+      "path": "godot_native/scripts/presentation/maintenance_cover_motion.gd",
+      "sha256": "526b00a5e31af53e5065bc9236540c2d8126026ba81b7cded5b2187d2275abdb"
+    },
+    {
+      "path": "godot_native/scripts/presentation/observation_comparison_session.gd",
+      "sha256": "e646ce0529ca5d30b9c5ee6f0cfd6bc323926e420e8addef54133701bf513f0a"
+    },
+    {
+      "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd",
+      "sha256": "f3d27f2ab0d623bee9f7cfe5499995d8a55f28d1473530e0bc36097a6d8c0cdc"
+    },
+    {
+      "path": "godot_native/scripts/presentation/qizhen_swan_hop_study.gd",
+      "sha256": "2c95b1daf8c9039cc739d7ff0d8aecf578b4bc13492a03d86154707231ac1671"
+    },
+    {
+      "path": "godot_native/scripts/presentation/qizhen_swan_hop_timeline.gd",
+      "sha256": "66fd0b005b7467a1ba1a48dc2679b32f7e9682a03c29eae9360bf57270230465"
+    },
+    {
+      "path": "godot_native/scripts/presentation/qizhen_swan_swim_study.gd",
+      "sha256": "16c94f78b4a1300f0bac6c9724eb0f3a0e9ca7f14ff2a685d2a8a076bcd6ad07"
+    },
+    {
+      "path": "godot_native/scripts/presentation/qizhen_swan_swim_visual.gd",
+      "sha256": "aa367b03ac06e425031519e1324bbffbbab4639069e322d8ad3da79df780f9ee"
+    },
+    {
+      "path": "godot_native/scripts/presentation/theater_lens.gd",
+      "sha256": "867466e4c9e448cffd4f4163a60ec2077f8bc5d7684080f229beabe9e7b648fe"
+    },
+    {
+      "path": "godot_native/scripts/presentation/theater_stage_ink.gd",
+      "sha256": "812b0fdad26eccd6f3fe8e24a6f1e2ecc2858b095207843671a52a1353d2ba74"
+    },
+    {
+      "path": "godot_native/scripts/presentation/theater_stage_model.gd",
+      "sha256": "fab61480e55b0cd7fe5b97d8108b1d7cc178e6941b5bd3fd34c2e5c499d1bbef"
+    },
+    {
+      "path": "godot_native/scripts/presentation/theater_stage_view.gd",
+      "sha256": "9e1367fbc32be7217d0ff67d0d12b61f9627b3c021000d465aa80ead4a17b5eb"
+    },
+    {
+      "path": "godot_native/scripts/release_content_policy.gd",
+      "sha256": "6eed08a0e782081fbd62bb533efc719caee854fe1d9c3603ba2097f4a9f29112"
+    },
+    {
+      "path": "godot_native/scripts/save_domain_guard.gd",
+      "sha256": "fb648c9035e84f56d052b168fef2567c2df300426e475aa4e1b95a187ac5ea46"
+    },
+    {
+      "path": "godot_native/scripts/save_json_guard.gd",
+      "sha256": "4996239c8db198ac1c15779599c8cf5898a2e4527fa5b584b0d240b93413242d"
+    },
+    {
+      "path": "godot_native/scripts/save_migration.gd",
+      "sha256": "42794bc78d7a0b304b8c3a4e35295ba0928445c1f8b3cef47bc7d86f3ebc4ece"
+    },
+    {
+      "path": "godot_native/scripts/save_normalizer_vm.gd",
+      "sha256": "c1efa4780b39916c8b129a7cb09b0e6efa0c7867c8ca65a7b826e0fdd437d3a4"
+    },
+    {
+      "path": "godot_native/scripts/state.gd",
+      "sha256": "bae280c1592b8ab429906708970945f59c5df6ef3ea49b2affece7f815c6ba43"
+    },
+    {
+      "path": "godot_native/scripts/ui/bonsai_blossom_node.gd",
+      "sha256": "ed94f255aa468f1a917acd499499084fdc03b61d613494b3be90952ba76538d1"
+    },
+    {
+      "path": "godot_native/scripts/ui/bonsai_growth_view.gd",
+      "sha256": "7eba06961416f2ffe60d7a6f3fab8e2585fe01717c8719776809680870709f90"
+    },
+    {
+      "path": "godot_native/scripts/ui/c35_photo_sequence.gd",
+      "sha256": "89f031176454be1c2f9e701976545269ec50f711f526ed7e679823997f734f89"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_canteen_device_panel.gd",
+      "sha256": "c42d5cf30c368b2a64af0c85cb3a2f655b47d8f5c08427f49d463f85b7e1325b"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_evidence_motion.gd",
+      "sha256": "6746673907d5573db345fda5044924c15b6aaec5e3b8566f433ff9cf5ac1b4f9"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_investigation_ring.gd",
+      "sha256": "bfd0f1e1922775653e8c1404f94c5845fd08aa438a67c2ac9381142e61cab038"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_journal_pages.gd",
+      "sha256": "3023871e683e90aeacc42cfb668c5578194a4447734347f0a3db37e66017cab2"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_lake_app_context.gd",
+      "sha256": "52525d10b92f9866dfa480f61540938fb8f417b60a7ff17deb0ef0b6e099d449"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_mixer_panel.gd",
+      "sha256": "0bd489ac1c1755c835fbe465b5c8818886db8a8cd1d6fbbe0e570f99bd1076dc"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_mixer_surface.gd",
+      "sha256": "c7af8fe859d6791df329992ab0e87160b938b28d9144314c5e742f836877f2a0"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_theater_device_panel.gd",
+      "sha256": "3953eb89f8f85070f7217be7f1f0949db84123e55b8a84e8f65de0a1319f7ab4"
+    },
+    {
+      "path": "godot_native/scripts/ui/c3_voice_progress.gd",
+      "sha256": "c8bb3bfddd1d73c07cafc6765a2f5a765144531aa420c6de57821cc0f7161ffa"
+    },
+    {
+      "path": "godot_native/scripts/ui/campus_notebook_panel.gd",
+      "sha256": "3f0208f20af6e5009951e7c9e94adce1719bd91faf0a7ea14736c2fe222352f3"
+    },
+    {
+      "path": "godot_native/scripts/ui/campus_paper_panel.gd",
+      "sha256": "55d325a2ff4c63cf3bbbd594d0e0bfcdd01c6fd035743e783b434bc799541eea"
+    },
+    {
+      "path": "godot_native/scripts/ui/campus_ui_material.gd",
+      "sha256": "ed0790ffcacbfb240c1589f91fe85c38fed8feb81a23640fe41579f5fee3841a"
+    },
+    {
+      "path": "godot_native/scripts/ui/campus_wayfinding.gd",
+      "sha256": "11d3b55b59e02fab4cea0b5732301f079308edb130820a2618e7feff35f182a4"
+    },
+    {
+      "path": "godot_native/scripts/ui/cc98_gamepad_exchange.gd",
+      "sha256": "bd7e573fb4f7da25f155f941f9babe8829e7610e8a5baa9d06ed377b59102e3b"
+    },
+    {
+      "path": "godot_native/scripts/ui/cc98_investigation_page.gd",
+      "sha256": "a36662fe5dbe3eeb7e72afad1ba86cf96112da59e8dea410c522368956874f84"
+    },
+    {
+      "path": "godot_native/scripts/ui/cc98_login_page.gd",
+      "sha256": "1562f1c9f4a497695b8d851fc98aca4502c774468473a5546e9b4ddbbfc3788b"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter3_phone_pages.gd",
+      "sha256": "06bb7b82e367e659c740ee154d7cdb070695c5bbc3f92cb01d12a506b03f88f6"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter3_world_layers.gd",
+      "sha256": "34ee49658e2503b77145952977a7b2c33be5b2ff3da1e5f1bdb456390b2e8a32"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_clock_panel.gd",
+      "sha256": "351864bac89c07380f49adaf861f7ae4bb243a247342e2fcc22fba65ad7c3063"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_device_panel.gd",
+      "sha256": "b3134d5fd3235c29ed7062216459d11f9e6f73a7893825b99296cee2f0c6a4a9"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_device_preview.gd",
+      "sha256": "43a0c41dcafed483a167669631444bbfd696e2b8f33d1071afc4980c31f3a819"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_device_session.gd",
+      "sha256": "305fdaeb2b83c53f97f2789f389da67255324219e7a94f3ebffc590b99dfcbf9"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_elevator_panel.gd",
+      "sha256": "2b7ea7fe989aa5d866e3900a18c9c357aea409c3dd09fc1bc0cde827531a1c31"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_exterior_door.gd",
+      "sha256": "70fe4d6fd9a654d683786ae243ec345f1b8abaef0f811b61cc22712c913e6c48"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_floor_panel.gd",
+      "sha256": "fc2b4cbd15d490fa80c377c28abc2ae41b58304330352c0f9c0d67284a596a51"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_phase_layers.gd",
+      "sha256": "514eee89cfb4ccbc8a4ec0cba60528555c459f449d5c54993f148fab0f5a9ecf"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_power_panel.gd",
+      "sha256": "dfbbc62b81deb29f38adfe2b4ba0366f843a3f7f90120a76b34045a5a4709111"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_world_handoff.gd",
+      "sha256": "92b04b102fc60079a78ba2a1f0bed5b67a4a6a4c509894c68d84826aca30c011"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_world_layers.gd",
+      "sha256": "e7984c105bd075fbc6301af05f70b8280a1d66aa4c77d4592b6cfcc3a790b717"
+    },
+    {
+      "path": "godot_native/scripts/ui/chase_field_view.gd",
+      "sha256": "576f26bfbdfee3c7098175e0fefdfd0f74fee2bc835cde188d7d589d55169beb"
+    },
+    {
+      "path": "godot_native/scripts/ui/checkin_success_view.gd",
+      "sha256": "651d7d6680057d329a78199f3cfa373187fecfa4f5e2f55f56c3b88d2a66f06c"
+    },
+    {
+      "path": "godot_native/scripts/ui/compact_overlay_layout.gd",
+      "sha256": "b54fda30f3d59791037dde8bf1ba8cf6ffe74b35a701660478cc2a4ea1228672"
+    },
+    {
+      "path": "godot_native/scripts/ui/earned_catalog_title.gd",
+      "sha256": "e96a89e1156094adec52a7be88684914c4876eb5221c7e7dd32e9a23fbb0c750"
+    },
+    {
+      "path": "godot_native/scripts/ui/home_app_button.gd",
+      "sha256": "444b5ac211bf80b7ee2209f646a0383e2fffc81d2058644eed030264c0b39c28"
+    },
+    {
+      "path": "godot_native/scripts/ui/interaction_chrome.gd",
+      "sha256": "a056308ba51094aae387d08414d6d249c5b92aba5bc7494d6afbeab35f37d30c"
+    },
+    {
+      "path": "godot_native/scripts/ui/inventory_gesture.gd",
+      "sha256": "1f739816c4e64c9fdbf3a2df713e9dd76816b5db9b146b8d08d719e28e2779d9"
+    },
+    {
+      "path": "godot_native/scripts/ui/inventory_item.gd",
+      "sha256": "97b3bd5bff900121a08231b09fa8834fa7bd5021cc9bcaf1311e02d9e05aaa12"
+    },
+    {
+      "path": "godot_native/scripts/ui/item_hit_region.gd",
+      "sha256": "7c3163ed5df3a0f4552bc00510791ee8f14d316e67d55c16568cccc0eb4cf6e1"
+    },
+    {
+      "path": "godot_native/scripts/ui/kayak_status_view.gd",
+      "sha256": "8576bb638567106839022a6685d983f02d941044a4860276ac6e3ef398d6e792"
+    },
+    {
+      "path": "godot_native/scripts/ui/kayak_visual.gd",
+      "sha256": "57acfa9206f5b9b9e9b5d26961245933d3f01fd68a3db653d2e63ed372cb2b29"
+    },
+    {
+      "path": "godot_native/scripts/ui/lake_fishing_motion.gd",
+      "sha256": "14fa5e7dfdb31587510315b29d91da3ea3955230c4d7c9f9f985f5c0330cc721"
+    },
+    {
+      "path": "godot_native/scripts/ui/lake_fishing_view.gd",
+      "sha256": "4c9c164d8399f5c480777308c3c09cb1a4594018ae5d512ef3934586224c12c4"
+    },
+    {
+      "path": "godot_native/scripts/ui/lake_fishing_water.gd",
+      "sha256": "b9da37d929418ed17d12ef919f227dff2511b4c0f5f5695f73613f8e71d64c23"
+    },
+    {
+      "path": "godot_native/scripts/ui/lake_rod_assembly_view.gd",
+      "sha256": "78e9c2d358ba0e11d3186c531684e2fae6cc9cb0beb33af3f401ff5a7c86bd1c"
+    },
+    {
+      "path": "godot_native/scripts/ui/library_world_layers.gd",
+      "sha256": "048a5942d808e741069f20bc8e2dca11023737f2c2bb2091b58845ee59257f83"
+    },
+    {
+      "path": "godot_native/scripts/ui/minigame_host.gd",
+      "sha256": "c76a6a24823b3d08af62d18297b9493ad009b30f79a483136b32da4fc19fd218"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_checkin_page.gd",
+      "sha256": "3cb32cf4d9dad72969c485e476e2f939ac3b1d07b23cc9b1e5a91f3d6357dd6b"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_ending_resume.gd",
+      "sha256": "91b55eb366ba7ce3b7439d8a94f220ecbf9250152c7ad1d86e53cf5a3902ad21"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_file_dialog_theme.gd",
+      "sha256": "9c3fb1a093c9f4c60eea52ab12d4de39dc6dbb8a6cf64723c3af9b51a7492f6e"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_journal_view.gd",
+      "sha256": "566009c3171685f9c3b01b8516bfcd065f7409126488b81488265b5abaf03173"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_library_pages.gd",
+      "sha256": "357269ff12e163af27a7ed06b37fb892404213f27e2dba52bc8471522d6b690d"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_notice_queue.gd",
+      "sha256": "dd3b536eb3f3b476a60f704714542cd938fe0048b52e2e5bedcd9fd8c05fde2b"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_opening_presentation.gd",
+      "sha256": "3bb4736fae2868c391de05c1761f1103ff2ea326ea002743bcd7547186faa62b"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_phone_notice.gd",
+      "sha256": "e6bcd66d341ae80fd5164061ba2a0e1c5fb4b5d0cb0371fd5e069f3c4979f355"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_symbol_icon.gd",
+      "sha256": "2ea11a3d3dd75de011b2d0d8315229175517d8dd1135236c49e82aa9bcb6e9fe"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_tiyi_identity.gd",
+      "sha256": "f07a66a6bd3320b9881085e856763106bf815b6cc361d6d61f883d12018cbb92"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_tiyi_presence.gd",
+      "sha256": "e0837afe79c6afd80d77e61f5adf0f61064ee3c2140ac7e83686aae28f95b77e"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_typography.gd",
+      "sha256": "4f418119fbf400e06b8c1b1eada17ac3363dfd06239bdd933e3430fb5427357c"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_ui_theme.gd",
+      "sha256": "f8b5048c5adf4e89c879823c15035dd2c635e3be7fb9b030c7fe1f82a0e7fe70"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_weather_icon.gd",
+      "sha256": "4ac5a86e001ab95425a58c7a47f862d59f3268d1f5a5a1fff2d5054a3b63826c"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_zjuding_loading_art.gd",
+      "sha256": "c0ea5539c219ef3e6af66cad7cb79200b258b672dded7ca10f5e89ad7a36c54e"
+    },
+    {
+      "path": "godot_native/scripts/ui/observation_comparison_view.gd",
+      "sha256": "b7f75d27ae6f30fc95dbf00874711c84229868b29d65d758f66544af7752371f"
+    },
+    {
+      "path": "godot_native/scripts/ui/overflow_text.gd",
+      "sha256": "dba52588191e472b33b9a24f6876a0e4749e4729338d7dc695de441c71fd827c"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_chrome.gd",
+      "sha256": "092dfba9ce22c6d956d53b5dc3e33dc536cc15c429495b14b1449c2c641b17a2"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_document_modal.gd",
+      "sha256": "11e86f16df3aad26b00fee5616e358f3043f0c97e4e11ed66956b55f1ffadbbe"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_drop_button.gd",
+      "sha256": "59423c02d752bbe2b31c341141f481aaa3525123700677b8dd9da5eff7e898e8"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_drop_line_edit.gd",
+      "sha256": "c7362aca5f4721855b6761db128bab4a2183fd8738cbf271a1ff6e89bd295fef"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_entry_visual.gd",
+      "sha256": "4f0200e9d5d5cfe1a951e1097cd057f8ac4393fbb45a2249375e733a57a11511"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_home_art.gd",
+      "sha256": "9df6451a19edd4fcc00583b59112955fa2afc87bcb744e90b4fab76e204a7f7c"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_object_pickup.gd",
+      "sha256": "faf8e3e084d0c17fb8c2aa359642f5bda8721a921c6e35f2402ca9e3913f968c"
+    },
+    {
+      "path": "godot_native/scripts/ui/phone_pages.gd",
+      "sha256": "c49fabe17326eab960501102d9e9acb8d763cd0ff8b29064fbb2f5728c1700d2"
+    },
+    {
+      "path": "godot_native/scripts/ui/photo_brightness_session.gd",
+      "sha256": "dca42040e645ac578ee99f705ee11d7087f7231bf1ffce3b91191ae77c17cd78"
+    },
+    {
+      "path": "godot_native/scripts/ui/photo_evidence_surface.gd",
+      "sha256": "8fe1ba4378c2206961b3c5484de0ece477d5d91fde7095432cbd193961c12535"
+    },
+    {
+      "path": "godot_native/scripts/ui/pixel_edges.gd",
+      "sha256": "25fe95a4e1c018437cd8e574792e7d6e209c86da2ad32d75f7b004527e97c519"
+    },
+    {
+      "path": "godot_native/scripts/ui/qizhen_recipe_frame.gd",
+      "sha256": "60d1c0896790dbf9a45eb7865aa838722fcc613ab7742bdd11e2fa3926ecfbc9"
+    },
+    {
+      "path": "godot_native/scripts/ui/qizhen_swan_visual.gd",
+      "sha256": "e034981cf292ebd5133bacc9d45412e7e3340ea1aa2bb7c28d2028a80074edf3"
+    },
+    {
+      "path": "godot_native/scripts/ui/room204_drag_preview.gd",
+      "sha256": "4625db37f00559c5ca9646274b9741c33cdb28698ffaf1bd98e4e797314671a9"
+    },
+    {
+      "path": "godot_native/scripts/ui/tiyi_seven_art.gd",
+      "sha256": "e9099cfac2a5e5c28a66e87fd3ae7f172536593e86df137c80f24ba3939aa992"
+    },
+    {
+      "path": "godot_native/scripts/ui/world_inventory_item.gd",
+      "sha256": "a92b4951247762be28f75d6bcf07fec3b38060a6dba61f8052c2be88b6c7cac7"
+    },
+    {
+      "path": "godot_native/scripts/ui/world_overlay_layout.gd",
+      "sha256": "96257b097b62423ff52b96efc04b81065e892ae3cb7ea5231b15228e9f0d5457"
+    },
+    {
+      "path": "godot_native/scripts/ui/world_viewport_container.gd",
+      "sha256": "1555eca70ca74490bbeec9592b4bc94c1fabd663fa1c3987059ee848e46349c4"
+    },
+    {
+      "path": "godot_native/scripts/world.gd",
+      "sha256": "631749c19ba0be7ef153f0bd3ce0818fe0be5d47f07fc7e7961d09d87ee8a6c3"
+    },
+    {
+      "path": "godot_native/scripts/world_object_picker.gd",
+      "sha256": "105c0c53cb76f1048ecc7c2396bca383115a9e22664caef4819604270f08d9cf"
+    },
+    {
+      "path": "godot_native/data/native/audio-director-source.json",
+      "sha256": "638155654e8da354bf236ecbd73ce30ffc743c8ca16dcc8e81f1e6648661831e"
+    },
+    {
+      "path": "godot_native/data/native/canteen-object-layout.json",
+      "sha256": "56f1d29ee1a6ba8bfa710e4ccd4e534a119164da79647a1a8219b4afc8fbcfe0"
+    },
+    {
+      "path": "godot_native/data/native/chapter3-world-source.json",
+      "sha256": "345906df9af4bdc1edc0c062957e0042087c75ad9e8e3b8509824275708f8615"
+    },
+    {
+      "path": "godot_native/data/native/chapter4-chase-space.json",
+      "sha256": "52b5d600f44d8f0ac46e12669b6926c8605f6a4373cbaea2899b774c5912a857"
+    },
+    {
+      "path": "godot_native/data/native/chapter4-context-source.json",
+      "sha256": "a3fe7ded567e980c0400a76f599c81a3df258d2f57389adcf157b2200d396199"
+    },
+    {
+      "path": "godot_native/data/native/chapter4-device-source.json",
+      "sha256": "de70776c52a60dc6c4c8e7705998cbf42c47d0e8da0cba0a0efeb9039a78c87d"
+    },
+    {
+      "path": "godot_native/data/native/chapter4-endless-stair-b3.json",
+      "sha256": "e486b1ffe612afe6815ef119fcdd6025031db8f6cc321165392540018eea84e1"
+    },
+    {
+      "path": "godot_native/data/native/chapter4-folded-chase.json",
+      "sha256": "cb1167c012ab3980172b7d36d3b7698659f8d758c41715545004ff6253c29912"
+    },
+    {
+      "path": "godot_native/data/native/chapter4-native-source.json",
+      "sha256": "12dfb1edb7dd5994af54ec3eea597a46c1cc4ed9df4d8fde8dc099d8b2213309"
+    },
+    {
+      "path": "godot_native/data/native/item_catalog.json",
+      "sha256": "cdce9440cc78d465954fc3ba3dff5944a00b658aca1f266e7e239e76486a9017"
+    },
+    {
+      "path": "godot_native/data/native/library-world-source.json",
+      "sha256": "a288e34af97f0ebafd1102afeea1daf4d6596063ed5b7c74ea22b47dab68baea"
+    },
+    {
+      "path": "godot_native/data/native/prologue-interception.content.json",
+      "sha256": "64ff1f31b664749a43d5590bf9464717634c33bdb342386852c9244a91fea778"
+    },
+    {
+      "path": "godot_native/data/native/save-domains.json",
+      "sha256": "b1c7a4c6f893564520ca97dede8a8c56dbd9cdda360c313b8697d00dd874121c"
+    },
+    {
+      "path": "godot_native/data/native/save_normalizer.json",
+      "sha256": "352dd40b72e1ee8fdc9cad0cbd5471af9f42ff10068646675e2864e810e11144"
+    }
+  ],
+  "additional_unicode_ranges": [
+    "U+0020-U+024F",
+    "U+2000-U+206F",
+    "U+3000-U+303F",
+    "U+FF00-U+FFEF"
+  ],
+  "requested_codepoints": 2838,
+  "covered_codepoints": 2408,
+  "glyph_count": 4232,
+  "bytes": 899768,
+  "sha256": "9e57b96aef9b3e7c1bacaa916b0bd90ce7e3da0debc5f9e667b40902d209962e",
+  "source_missing_nonwhitespace": [
+    "U+21A7",
+    "U+21B6",
+    "U+21BA",
+    "U+224B",
+    "U+2302",
+    "U+2315",
+    "U+2316",
+    "U+232B",
+    "U+25BE",
+    "U+263E",
+    "U+2659",
+    "U+2699",
+    "U+2708",
+    "U+2709",
+    "U+2726",
+    "U+2731",
+    "U+275A",
+    "U+27F3",
+    "U+2B22"
+  ],
+  "requested_unavailable_codepoints": [
+    "U+007F",
+    "U+0080",
+    "U+0081",
+    "U+0082",
+    "U+0083",
+    "U+0084",
+    "U+0086",
+    "U+0087",
+    "U+0088",
+    "U+0089",
+    "U+008A",
+    "U+008B",
+    "U+008C",
+    "U+008D",
+    "U+008E",
+    "U+008F",
+    "U+0090",
+    "U+0091",
+    "U+0092",
+    "U+0093",
+    "U+0094",
+    "U+0095",
+    "U+0096",
+    "U+0097",
+    "U+0098",
+    "U+0099",
+    "U+009A",
+    "U+009B",
+    "U+009C",
+    "U+009D",
+    "U+009E",
+    "U+009F",
+    "U+0104",
+    "U+0105",
+    "U+0106",
+    "U+0107",
+    "U+0108",
+    "U+0109",
+    "U+010A",
+    "U+010B",
+    "U+010C",
+    "U+010D",
+    "U+010E",
+    "U+010F",
+    "U+0114",
+    "U+0115",
+    "U+0116",
+    "U+0117",
+    "U+0118",
+    "U+0119",
+    "U+011C",
+    "U+011D",
+    "U+011E",
+    "U+011F",
+    "U+0120",
+    "U+0121",
+    "U+0122",
+    "U+0123",
+    "U+0124",
+    "U+0125",
+    "U+0126",
+    "U+0127",
+    "U+012C",
+    "U+012D",
+    "U+012E",
+    "U+012F",
+    "U+0130",
+    "U+0131",
+    "U+0132",
+    "U+0133",
+    "U+0134",
+    "U+0135",
+    "U+0136",
+    "U+0137",
+    "U+0138",
+    "U+0139",
+    "U+013A",
+    "U+013B",
+    "U+013C",
+    "U+013D",
+    "U+013E",
+    "U+013F",
+    "U+0140",
+    "U+0141",
+    "U+0142",
+    "U+0145",
+    "U+0146",
+    "U+0149",
+    "U+014A",
+    "U+014B",
+    "U+0150",
+    "U+0151",
+    "U+0154",
+    "U+0155",
+    "U+0156",
+    "U+0157",
+    "U+0158",
+    "U+0159",
+    "U+015A",
+    "U+015B",
+    "U+015C",
+    "U+015D",
+    "U+015E",
+    "U+015F",
+    "U+0160",
+    "U+0161",
+    "U+0162",
+    "U+0163",
+    "U+0164",
+    "U+0165",
+    "U+0166",
+    "U+0167",
+    "U+016E",
+    "U+016F",
+    "U+0170",
+    "U+0171",
+    "U+0172",
+    "U+0173",
+    "U+0174",
+    "U+0175",
+    "U+0176",
+    "U+0177",
+    "U+0178",
+    "U+0179",
+    "U+017A",
+    "U+017B",
+    "U+017C",
+    "U+017D",
+    "U+017E",
+    "U+017F",
+    "U+0180",
+    "U+0181",
+    "U+0182",
+    "U+0183",
+    "U+0184",
+    "U+0185",
+    "U+0186",
+    "U+0187",
+    "U+0188",
+    "U+0189",
+    "U+018A",
+    "U+018B",
+    "U+018C",
+    "U+018D",
+    "U+018E",
+    "U+018F",
+    "U+0190",
+    "U+0191",
+    "U+0193",
+    "U+0194",
+    "U+0195",
+    "U+0196",
+    "U+0197",
+    "U+0198",
+    "U+0199",
+    "U+019A",
+    "U+019B",
+    "U+019C",
+    "U+019D",
+    "U+019E",
+    "U+019F",
+    "U+01A2",
+    "U+01A3",
+    "U+01A4",
+    "U+01A5",
+    "U+01A6",
+    "U+01A7",
+    "U+01A8",
+    "U+01A9",
+    "U+01AA",
+    "U+01AB",
+    "U+01AC",
+    "U+01AD",
+    "U+01AE",
+    "U+01B1",
+    "U+01B2",
+    "U+01B3",
+    "U+01B4",
+    "U+01B5",
+    "U+01B6",
+    "U+01B7",
+    "U+01B8",
+    "U+01B9",
+    "U+01BA",
+    "U+01BB",
+    "U+01BC",
+    "U+01BD",
+    "U+01BE",
+    "U+01BF",
+    "U+01C0",
+    "U+01C1",
+    "U+01C2",
+    "U+01C3",
+    "U+01C4",
+    "U+01C5",
+    "U+01C6",
+    "U+01C7",
+    "U+01C8",
+    "U+01C9",
+    "U+01CA",
+    "U+01CB",
+    "U+01CC",
+    "U+01DD",
+    "U+01DE",
+    "U+01DF",
+    "U+01E0",
+    "U+01E1",
+    "U+01E2",
+    "U+01E3",
+    "U+01E4",
+    "U+01E5",
+    "U+01E6",
+    "U+01E7",
+    "U+01E8",
+    "U+01E9",
+    "U+01EA",
+    "U+01EB",
+    "U+01EC",
+    "U+01ED",
+    "U+01EE",
+    "U+01EF",
+    "U+01F0",
+    "U+01F1",
+    "U+01F2",
+    "U+01F3",
+    "U+01F4",
+    "U+01F5",
+    "U+01F6",
+    "U+01F7",
+    "U+01FA",
+    "U+01FB",
+    "U+01FC",
+    "U+01FD",
+    "U+01FE",
+    "U+01FF",
+    "U+0200",
+    "U+0201",
+    "U+0202",
+    "U+0203",
+    "U+0204",
+    "U+0205",
+    "U+0206",
+    "U+0207",
+    "U+0208",
+    "U+0209",
+    "U+020A",
+    "U+020B",
+    "U+020C",
+    "U+020D",
+    "U+020E",
+    "U+020F",
+    "U+0210",
+    "U+0211",
+    "U+0212",
+    "U+0213",
+    "U+0214",
+    "U+0215",
+    "U+0216",
+    "U+0217",
+    "U+0218",
+    "U+0219",
+    "U+021A",
+    "U+021B",
+    "U+021C",
+    "U+021D",
+    "U+021E",
+    "U+021F",
+    "U+0220",
+    "U+0221",
+    "U+0222",
+    "U+0223",
+    "U+0224",
+    "U+0225",
+    "U+0226",
+    "U+0227",
+    "U+0228",
+    "U+0229",
+    "U+022A",
+    "U+022B",
+    "U+022C",
+    "U+022D",
+    "U+022E",
+    "U+022F",
+    "U+0230",
+    "U+0231",
+    "U+0232",
+    "U+0233",
+    "U+0234",
+    "U+0235",
+    "U+0236",
+    "U+0237",
+    "U+0238",
+    "U+0239",
+    "U+023A",
+    "U+023B",
+    "U+023C",
+    "U+023D",
+    "U+023E",
+    "U+023F",
+    "U+0240",
+    "U+0241",
+    "U+0242",
+    "U+0243",
+    "U+0244",
+    "U+0245",
+    "U+0246",
+    "U+0247",
+    "U+0248",
+    "U+0249",
+    "U+024A",
+    "U+024B",
+    "U+024C",
+    "U+024D",
+    "U+024E",
+    "U+024F",
+    "U+200B",
+    "U+200C",
+    "U+200D",
+    "U+200E",
+    "U+200F",
+    "U+2017",
+    "U+201B",
+    "U+201F",
+    "U+2023",
+    "U+2024",
+    "U+202A",
+    "U+202B",
+    "U+202C",
+    "U+202D",
+    "U+202E",
+    "U+2031",
+    "U+2034",
+    "U+2036",
+    "U+2037",
+    "U+2038",
+    "U+203D",
+    "U+203E",
+    "U+203F",
+    "U+2040",
+    "U+2041",
+    "U+2043",
+    "U+2044",
+    "U+2045",
+    "U+2046",
+    "U+204A",
+    "U+204B",
+    "U+204C",
+    "U+204D",
+    "U+204E",
+    "U+204F",
+    "U+2050",
+    "U+2052",
+    "U+2053",
+    "U+2054",
+    "U+2055",
+    "U+2056",
+    "U+2057",
+    "U+2058",
+    "U+2059",
+    "U+205A",
+    "U+205B",
+    "U+205C",
+    "U+205D",
+    "U+205E",
+    "U+2060",
+    "U+2061",
+    "U+2062",
+    "U+2063",
+    "U+2064",
+    "U+2065",
+    "U+2066",
+    "U+2067",
+    "U+2068",
+    "U+2069",
+    "U+206A",
+    "U+206B",
+    "U+206C",
+    "U+206D",
+    "U+206E",
+    "U+206F",
+    "U+21A7",
+    "U+21B6",
+    "U+21BA",
+    "U+224B",
+    "U+2302",
+    "U+2315",
+    "U+2316",
+    "U+232B",
+    "U+25BE",
+    "U+263E",
+    "U+2659",
+    "U+2699",
+    "U+2708",
+    "U+2709",
+    "U+2726",
+    "U+2731",
+    "U+275A",
+    "U+27F3",
+    "U+2B22",
+    "U+FF00",
+    "U+FFBF",
+    "U+FFC0",
+    "U+FFC1",
+    "U+FFC8",
+    "U+FFC9",
+    "U+FFD0",
+    "U+FFD1",
+    "U+FFD8",
+    "U+FFD9",
+    "U+FFDD",
+    "U+FFDE",
+    "U+FFDF",
+    "U+FFE7",
+    "U+FFEF"
+  ],
+  "source_cjk_missing": [],
+  "coverage_note": "Static authored runtime only. Arbitrary names, imports and new text require fallback and a rebuild; unsupported symbols are not removed from UI."
+}

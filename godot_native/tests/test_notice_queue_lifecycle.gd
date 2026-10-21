@@ -53,7 +53,7 @@ func run()->void:
 	var line:=SourceLine.new();var library:Control=shell.library_story_host
 	library.current=line;library.view.session=line;library.view.tick();shell._layout();shell._process(8)
 	check(not shell.toast.visible,"library dialogue suspends the generic notice")
-	check(library.view.panel.get_theme_stylebox("panel").bg_color==Ui.PAPER,"library caption is opaque warm paper")
+	check(library.view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"library caption uses selected none background")
 	library.current=null;library.view.session=null;library.view.tick();shell._layout();shell._process(0)
 	check(shell.toast.text=="对白前的通知" and is_equal_approx(shell.toast_time,remaining),"dialogue close resumes exactly the unread lifetime")
 	var c3_view:Control=shell.c3_narrative_host.view
@@ -62,7 +62,7 @@ func run()->void:
 	c3_view.surface_visible=true;c3_view.session=SourceLine.new();c3_view.tick();shell._layout()
 	check(c3_view.is_visible_in_tree(),"C3 pause fixture is actually visible outside the hidden SubViewport")
 	shell._process(6)
-	check(not shell.toast.visible and c3_view.panel.get_theme_stylebox("panel").bg_color==Ui.PAPER,"visible C3 caption also suspends ordinary notices on opaque paper")
+	check(not shell.toast.visible and c3_view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"visible C3 caption still suspends ordinary notices with selected none background")
 	c3_view.session=null;c3_view.tick();shell._layout();shell._process(0)
 	check(shell.toast.text=="对白前的通知" and is_equal_approx(shell.toast_time,remaining),"C3 caption hands back the same unread notice")
 	await reset_phone()

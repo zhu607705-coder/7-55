@@ -1,7 +1,7 @@
 extends Control
 ## Animation design book anchors01–03. This layer reads accepted state only.
 ## It owns no story/proof callbacks, save data, sound or inventory transactions.
-const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+static var FONT: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 const Chrome=preload("res://scripts/ui/phone_chrome.gd")
 const ACTIONS={"c1_absence":{"anchor":"01","flag":"cardZeroTaken","node":"CheckinAbsenceZero","page":"checkin","digit":"0","slot":"d1","duration_ms":360.0},"c1_tiyi_digit":{"anchor":"02","flag":"tiyiCountTaken","node":"TiyiSevenPickupSource","page":"tiyi","digit":"7","slot":"d2","duration_ms":480.0},"c1_rain_drop":{"anchor":"03","flag":"waterDropTaken","node":"HomeCollectibleDropGlyph","page":"phone_home","item":"waterDrop","duration_ms":340.0}}
 var chrome: Control

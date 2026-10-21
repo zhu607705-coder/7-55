@@ -39,7 +39,7 @@ func run() -> void:
 			check(hud.mode_font*scale>=11.99 and hud.body_font*scale>=11.99,"world mode/subtitle physical12px at "+str(dimensions))
 			check(hud.header_height+hud.body_height+hud.body_gap*2<=540.1,"HUD bars remain contained at "+str(dimensions))
 			if hud.compact:
-				var needed: Vector2=world.font.get_multiline_string_size(line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font)
+				var needed: Vector2=world.hud_font.get_multiline_string_size(line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font)
 				check(needed.y+hud.body_inset*2<=hud.body_height+0.1 or (hud.body_overflow and hud.body_content_height>=needed.y),"full feedback fits bar or retained scroll content at "+str(dimensions))
 		check(world.player==player_before and world.camera==camera_before and world.world_size==world_size_before,"HUD metrics do not mutate world geometry")
 		check(Layout.font_size(21,12,scale)*scale>=11.99,"touch captions keep12px physical text without moving controls")

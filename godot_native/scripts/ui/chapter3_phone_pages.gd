@@ -4,6 +4,9 @@ extends RefCounted
 signal action_requested(id: String,value: Variant)
 signal page_requested(page: String)
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
+const UiMaterial=preload("res://scripts/ui/campus_ui_material.gd")
+const PaperPanel=preload("res://scripts/ui/campus_paper_panel.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
 const JournalPages=preload("res://scripts/ui/c3_journal_pages.gd")
 var journal_builder: RefCounted=JournalPages.new()
 const VoiceProgress=preload("res://scripts/ui/c3_voice_progress.gd")
@@ -22,6 +25,10 @@ var page_id: String=""
 const INK=Color("101923")
 const GREEN=Color("24677c")
 const MUTED=Color("59676e")
+# These pages already use the logical 424px phone interior, not the older
+# 378px authored canvas. Keep requested type sizes; never shrink them again.
+# 15px remains above 12px after the 390px shell fit (366 / 430).
+const CAPTION_FONT_SIZE := 15
 
 func _init() -> void:
 	journal_builder.action_requested.connect(_journal_action)
@@ -58,7 +65,7 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 	# The scroll viewport owns width; fixed 396+padding+scrollbar widens the phone.
 	root.custom_minimum_size.x=0
 	root.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	root.add_theme_constant_override("separation",12)
+	root.add_theme_constant_override("separation",16)
 	match page:
 		"c35_recovery": recovery(root)
 		"c35_journal": journal(root)
@@ -76,7 +83,7 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 			old.free()
 	var header: HBoxContainer=HBoxContainer.new()
 	header.custom_minimum_size.y=62
-	header.add_theme_constant_override("separation",8)
+	header.add_theme_constant_override("separation",12)
 	var back: Button=button(header,"‹",func() -> void:
 		if page=="c35_voice": action_requested.emit("c35_voice_exit",null)
 		else: page_requested.emit("phone_home" if page in ["c35_recovery","c3_ticket_post"] else "c35_recovery"))
@@ -89,17 +96,24 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 	heading.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	header.add_child(heading)
 	var labels: Dictionary={"c35_recovery":["RECOVERY 03.5","未同步的七分五十五秒"],"c35_journal":["CC98 小程序","启真湖划船记录"],"c35_photos":["PHOTOS","恢复的项目"],"c35_voice":["VOICE MEMOS","语音备忘录"],"c35_official":["公众号 · 22:40","紫金港楼宇服务"],"c35_messages":["群聊 · 18人","麦斯威夜间自习群"],"c35_network":["浙大钉 · 校园网络","夜间接入记录"],"c3_ticket_post":["CC98 · 校园生活","学生剧《7:55》临时退票"]}
-	heading.add_child(label(labels[page][0],12,MUTED))
+	heading.add_child(display_label(labels[page][0],15,MUTED))
 	heading.add_child(label(labels[page][1],21))
-	root.add_child(header)
-	root.move_child(header,0)
+	var header_paper: PanelContainer=PaperPanel.new()
+	header_paper.name="C35DocumentHeading"
+	header_paper.header_rule=true
+	var header_style:=StyleBoxEmpty.new()
+	header_style.content_margin_bottom=12
+	header_paper.add_theme_stylebox_override("panel",header_style)
+	header_paper.add_child(header)
+	root.add_child(header_paper)
+	root.move_child(header_paper,0)
 	var outer: PanelContainer=PanelContainer.new()
 	outer.set_meta("handles_all_actions",true)
 	outer.set_meta("source_page",true)
 	outer.custom_minimum_size.x=0
 	outer.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	var background: StyleBoxFlat=StyleBoxFlat.new()
-	background.bg_color=Color("d7d9d2") if page in ["c35_recovery","c35_photos","c35_voice"] else Color("f0f0eb")
+	background.bg_color=Color("e4dfd4") if page in ["c35_recovery","c35_photos","c35_voice"] else Color("ece7dd")
 	background.content_margin_left=14
 	background.content_margin_right=14
 	background.content_margin_top=10
@@ -114,25 +128,23 @@ func label(text: String, size: int=17, color: Color=INK) -> Label:
 	node.text=text
 	node.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	node.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	node.add_theme_font_size_override("font_size",maxi(10,int(round(size*0.8))))
+	node.add_theme_font_size_override("font_size",maxi(CAPTION_FONT_SIZE,size))
+	Typography.apply_body(node)
 	node.add_theme_color_override("font_color",color)
 	return node
 
+func display_label(text: String, size: int=15, color: Color=INK) -> Label:
+	var node: Label=label(text,size,color)
+	Typography.apply_display(node)
+	return node
+
 func card(parent: Control,color: Color=Color("eef0e9")) -> VBoxContainer:
-	var panel: PanelContainer=PanelContainer.new()
+	var panel: PanelContainer=PaperPanel.new()
 	panel.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	var style: StyleBoxFlat=StyleBoxFlat.new()
-	style.bg_color=color
-	style.set_corner_radius_all(0)
-	style.border_color=INK
-	style.set_border_width_all(3 if page_id in ["c35_recovery","c35_photos","c35_voice"] else 1)
-	style.shadow_color=Color(0.063,0.098,0.137,0.22)
-	style.shadow_offset=Vector2(4,4)
-	style.shadow_size=0
-	style.content_margin_left=15
-	style.content_margin_right=15
-	style.content_margin_top=15
-	style.content_margin_bottom=15
+	# Neutral sheets share one paper stock. Meaningful selection/playback tints
+	# still come from their callers, and evidence_edge retains state borders.
+	var fill: Color=UiMaterial.PAPER if color in [Color("eef0e9"),Color.WHITE,Color("fffaf3")] else color.lerp(UiMaterial.PAPER,0.55)
+	var style: StyleBoxFlat=UiMaterial.panel_style("paper",{"paper":fill},Vector2(15,15))
 	panel.add_theme_stylebox_override("panel",style)
 	parent.add_child(panel)
 	var box: VBoxContainer=VBoxContainer.new()
@@ -143,6 +155,7 @@ func card(parent: Control,color: Color=Color("eef0e9")) -> VBoxContainer:
 func button(parent: Control,text: String,callback: Callable,accent: bool=false) -> Button:
 	var node: Button=Button.new()
 	node.text=text
+	Typography.apply_body(node)
 	node.custom_minimum_size.y=44
 	node.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	node.size_flags_horizontal=Control.SIZE_EXPAND_FILL
@@ -159,7 +172,7 @@ func navigate(parent: Control,text: String,page: String) -> void:
 	button(parent,text,func() -> void: page_requested.emit(page))
 
 func eyebrow(parent: Control,text: String) -> void:
-	parent.add_child(label(text,12,MUTED))
+	parent.add_child(display_label(text,15,MUTED))
 
 func image_node(path: String,size: Vector2,mirror: bool=false) -> TextureRect:
 	var image: TextureRect=TextureRect.new()
@@ -341,7 +354,7 @@ func photos(root: VBoxContainer) -> void:
 		if selected.has(frame.id): title="%d  %s" % [selected.find(frame.id)+1,title]
 		var select: Button=action(cell,title,"c35_select_photo",frame.id)
 		select.disabled=preview.disabled
-		cell.add_child(label("07:55:23",11,MUTED))
+		cell.add_child(display_label("07:55:23",15,MUTED))
 	var order: VBoxContainer=card(root)
 	order.add_child(label("已选择 %d / 3 张" % selected.size(),17))
 	if state.chapterThreeInterlude.photoSequenceSolved:
@@ -409,8 +422,8 @@ func voice(root: VBoxContainer) -> void:
 		var play: Button=action(controls,"Ⅱ 暂停" if playing else "▶ 继续播放" if paused else "▶  %.1f 秒" % (float(generated.get("durationMs",recording.targetDurationMs))/1000),"c35_listen",recording.id)
 		NativeUi.apply_button(play,Color("c72f3a") if playing else Color("fffaf3"),Color.WHITE if playing else Color("942931"),Color("c72f3a"),0,2,14,Vector2(8,6))
 		if stage=="selection":
-			var keep: Button=action(controls,"✓ 移出候选" if kept else "保留这段" if reviewed else "试听后可选","c35_select_voice",recording.id)
-			NativeUi.apply_button(keep,GREEN if kept else Color("dbe7e2"),Color.WHITE if kept else INK,GREEN,0,2,14,Vector2(8,6))
+			var keep: Button=action(controls,"移出候选" if kept else "保留这段" if reviewed else "试听后可选","c35_select_voice",recording.id)
+			NativeUi.apply_button(keep,UiMaterial.NAVY if kept else UiMaterial.PAPER,UiMaterial.PAPER if kept else INK,UiMaterial.CORAL if kept else UiMaterial.PAPER_EDGE,0,2,15,Vector2(8,6))
 		else:
 			action(controls,"上移","c35_voice_move",{"id":recording.id,"shift":-1}).disabled=selected.find(recording.id)==0
 			action(controls,"下移","c35_voice_move",{"id":recording.id,"shift":1}).disabled=selected.find(recording.id)==selected.size()-1

@@ -1,8 +1,10 @@
 extends RefCounted
 ## Source phone notification composition from subtitles.css and
 ## SubtitleSpeakerIcon.tsx. Pure presentation: no queue, timing or story state.
-const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+static var FONT: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
+const UiMaterial=preload("res://scripts/ui/campus_ui_material.gd")
 const INK=Color("222322")
 const PAPER=Ui.PAPER
 const SPEAKERS={"system":"系统","narrator":"旁白","task":"任务","success":"记录","error":"提示","broadcast":"广播","player":"我","xiaoying":"小影"}
@@ -26,20 +28,20 @@ static func create(text: String="",speaker: String="系统") -> Label:
 	label.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT
 	label.vertical_alignment=VERTICAL_ALIGNMENT_TOP
 	label.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_override("font",FONT)
+	Typography.apply_body(label)
 	label.add_theme_font_size_override("font_size",16)
 	label.add_theme_color_override("font_color",INK)
 	label.add_theme_constant_override("line_spacing",2)
-	var card:=Ui.box(PAPER,INK,2)
+	var card:=UiMaterial.panel_style("paper",{"paper":PAPER},Vector2.ZERO)
 	card.content_margin_left=66; card.content_margin_right=10
 	card.content_margin_top=37; card.content_margin_bottom=8
-	card.shadow_color=Color("775c31",.25); card.shadow_offset=Vector2(2,2); card.shadow_size=0
+	card.border_width_left=3; card.border_color=UiMaterial.PAPER_EDGE
 	label.add_theme_stylebox_override("normal",card)
 	var avatar:=Panel.new(); avatar.name="NoticeAvatar"; avatar.size=Vector2(36,36); avatar.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	avatar.add_theme_stylebox_override("panel",Ui.box(Color.TRANSPARENT,INK,2)); label.add_child(avatar)
+	avatar.add_theme_stylebox_override("panel",Ui.box(Color("e5dece"),UiMaterial.PAPER_EDGE,1)); label.add_child(avatar)
 	var icon:=TextureRect.new(); icon.name="Icon"; icon.position=Vector2(8,8); icon.size=Vector2(20,20); icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE; icon.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST; icon.mouse_filter=Control.MOUSE_FILTER_IGNORE; avatar.add_child(icon)
 	var heading:=Label.new(); heading.name="NoticeSpeaker"; heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	heading.add_theme_font_override("font",FONT); heading.add_theme_font_size_override("font_size",16); heading.add_theme_color_override("font_color",INK)
+	Typography.apply_display(heading); heading.add_theme_font_size_override("font_size",16); heading.add_theme_color_override("font_color",INK)
 	label.add_child(heading)
 	set_message(label,text,speaker)
 	return label
@@ -57,13 +59,24 @@ static func icon_for(speaker: String) -> Texture2D:
 static func set_message(label: Label,text: String,speaker: String="系统") -> void:
 	label.text=text
 	label.visible=not text.is_empty()
-	label.get_node("NoticeSpeaker").text=speaker
+	var heading:Label=label.get_node("NoticeSpeaker")
+	heading.text=speaker
+	var accent:Color=Color("924a3b") if speaker in ["提示","我"] else Color("6f503d") if speaker=="旁白" else UiMaterial.NAVY
+	heading.add_theme_color_override("font_color",accent)
+	# Role hierarchy is visual only; the existing queue owns message order and
+	# lifetime, and avatar/speaker identities remain unchanged.
+	var card:StyleBoxFlat=label.get_theme_stylebox("normal").duplicate()
+	card.border_color=accent
+	card.border_width_top=0;card.border_width_right=0;card.border_width_bottom=1
+	label.add_theme_stylebox_override("normal",card)
 	label.get_node("NoticeAvatar/Icon").texture=icon_for(speaker)
 
 static func layout(label: Label,width: float) -> Vector2:
 	var inner_width:=maxf(24,width-76)
-	var measured:=FONT.get_multiline_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,inner_width,16)
-	var line_count:=maxi(1,ceili(measured.y/FONT.get_height(16)))
+	var font:Font=label.get_theme_font("font")
+	var font_size:int=label.get_theme_font_size("font_size")
+	var measured:=font.get_multiline_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,inner_width,font_size)
+	var line_count:=maxi(1,ceili(measured.y/font.get_height(font_size)))
 	var height:=maxf(69,37+measured.y+maxi(0,line_count-1)*2+8)
 	label.size=Vector2(width,height)
 	label.get_node("NoticeSpeaker").position=Vector2(66,8)

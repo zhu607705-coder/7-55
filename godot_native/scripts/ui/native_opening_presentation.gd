@@ -1,7 +1,7 @@
 extends Node
+static var FONT: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 ## P00/P01 CSS art and motion only. No controller events, audio or progression.
 ## Source: scenes/p00-alarm.css, p01-desktop.css and base.css --ease-* tokens.
-const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 const INK=Color("222322")
 const YELLOW=Color("f5c542")
 const SHAKE_SECONDS:=0.12
@@ -60,6 +60,7 @@ func _process(delta: float) -> void:
 	bell.queue_redraw()
 
 class WakeFlash extends Control:
+	static var FONT:Font=preload("res://scripts/ui/native_typography.gd").body_font()
 	## One runtime-only owner for both text lines. CSS steps(2,end) applies
 	## separately to the two keyframe segments of the original420ms cycle.
 	const CYCLE_SECONDS:=0.42
@@ -123,6 +124,7 @@ class WakeFlash extends Control:
 		if lines.size()>1: _draw_line(lines[1],top+line_height,MARK_SPACING if text=="起床蠢货\n！！！" else 0.0,MARK_SHIFT if text=="起床蠢货\n！！！" else 0.0)
 
 class AlarmClock extends Control:
+	static var FONT:Font=preload("res://scripts/ui/native_typography.gd").body_font()
 	var text: String="07:55"
 	var art_scale:=1.0
 	var logical_font_size:=83.2

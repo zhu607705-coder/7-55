@@ -64,7 +64,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd",
-          "sha256": "09b83c3b3b80f35b2f4bfabbdb774fabb51e437df375699e61ba1d8290c56b41"
+          "sha256": "09b83c3b3b80f35b2f4bfabbdb774fabb51e437df375699e61ba1d8290c56b41",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/chapter4_endless_stair_view.gd.source.txt",
+          "adapted_sha256": "a453d356f8f75d18a3f419d4289a98427aac6044b80fa4bb7b0be6803223509e",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. The original stair_text.ttf remains exclusively on physical Label3D wall lettering; instruction, start/back actions, corner HUD and subtitle share the common UI font."
         },
         {
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd.uid",
@@ -261,8 +264,8 @@
           "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd",
           "sha256": "a2fd233abebb166cec85201e728922516a881d443776c2791e88857343d84537",
           "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_entrance_preview.gd.source.txt",
-          "adapted_sha256": "fd206df4783a548e086a072bd71f656ba49d029c19769bf364b3c9d101937192",
-          "reason": "Preserve PR #144 source bytes while adapting its read-only kayak presentation to the current native RigScene; paper/HUD painter order and original input/physics remain unchanged. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent."
+          "adapted_sha256": "f3d27f2ab0d623bee9f7cfe5499995d8a55f28d1473530e0bc36097a6d8c0cdc",
+          "reason": "Preserve PR #144 source bytes while adapting its read-only kayak presentation to the current native RigScene; paper/HUD painter order and original input/physics remain unchanged. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent. 2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd.uid",
@@ -270,7 +273,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_hop_study.gd",
-          "sha256": "4dae9513de92727658a11ccf07854959b64416b28cde6de0cd8f7f2695f5e738"
+          "sha256": "4dae9513de92727658a11ccf07854959b64416b28cde6de0cd8f7f2695f5e738",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_hop_study.gd.source.txt",
+          "adapted_sha256": "2c95b1daf8c9039cc739d7ff0d8aecf578b4bc13492a03d86154707231ac1671",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_hop_timeline.gd",
@@ -278,7 +284,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_swim_study.gd",
-          "sha256": "ed774938efe5d375b6afeb2f8129717e8081d8618fccd3ae4ecd2ffd8889c78d"
+          "sha256": "ed774938efe5d375b6afeb2f8129717e8081d8618fccd3ae4ecd2ffd8889c78d",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_swim_study.gd.source.txt",
+          "adapted_sha256": "16c94f78b4a1300f0bac6c9724eb0f3a0e9ca7f14ff2a685d2a8a076bcd6ad07",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_swim_visual.gd",

@@ -2,6 +2,9 @@ extends VBoxContainer
 ## Player-directed comparison only. All content is supplied by the earned-card model.
 signal close_requested
 const UI = preload("res://scripts/ui/native_ui_theme.gd")
+const Typography = preload("res://scripts/ui/native_typography.gd")
+const Hardware = preload("res://scripts/ui/interaction_chrome.gd")
+const ItemArt = preload("res://scripts/ui/phone_chrome.gd")
 var session: RefCounted
 var message: Label
 var slots: Array[Button] = []
@@ -20,10 +23,11 @@ func _ready() -> void:
 
 func _label(text: String, size_value: int=16, color: Color=UI.INK) -> Label:
 	var label := Label.new()
+	Typography.apply_body(label)
 	label.text = text
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.add_theme_font_size_override("font_size",size_value)
+	label.add_theme_font_size_override("font_size",maxi(15,size_value))
 	label.add_theme_color_override("font_color",color)
 	return label
 
@@ -34,7 +38,17 @@ func _button(text: String, id: String, action: Callable, selected: bool=false) -
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.custom_minimum_size = Vector2(0,48)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	UI.apply_button(button,Color("e1ebf0") if selected else UI.PAPER,UI.INK,Color("267b9e") if selected else UI.INK,0,2,16,Vector2(10,10))
+	Typography.apply_body(button)
+	button.add_theme_font_size_override("font_size",16)
+	for state_name in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]:
+		button.add_theme_color_override(state_name,Hardware.INK)
+	button.add_theme_color_override("font_disabled_color",Color("6d736f"))
+	var normal := Hardware.style(Color("f5efdf"),Hardware.CORAL if selected else Hardware.EDGE,1)
+	normal.content_margin_left=12; normal.content_margin_right=12
+	normal.content_margin_top=10; normal.content_margin_bottom=10
+	var hover: StyleBoxFlat=normal.duplicate(); hover.bg_color=Color("eee3cd")
+	Hardware.apply_states(button,normal,hover)
+	Hardware.set_selected(button,selected)
 	button.pressed.connect(action)
 	return button
 
@@ -76,16 +90,53 @@ func _render(focus_id: String="") -> void:
 				if session.choose(id): _render("ObservationCompare" if session.can_compare() else "ObservationSlot"+str(session.active_slot)))
 			option.disabled = selected_elsewhere
 			content.add_child(option)
+			_add_option_art(option,entry)
 		add_child(_button("清空选择","ObservationClear",func(): session.clear(); _render("ObservationSlot0")))
 	if not focus_id.is_empty(): call_deferred("_restore_focus",focus_id)
+
+func _item_art(entry: Dictionary, extent: float) -> Control:
+	var id := str(entry.get("id",""))
+	if not id.begins_with("item:"): return null
+	id = id.trim_prefix("item:")
+	if not ItemArt.PIXEL_ICONS.has(id) and not ItemArt.RASTER_ICONS.has(id): return null
+	# Reuse source item art, never an invented symbol or a Main/State instance.
+	var icon := ItemArt.PixelIcon.new()
+	icon.name = "ObservationItemArt_"+id
+	icon.pixels = ItemArt.PIXEL_ICONS.get(id,{})
+	if ItemArt.RASTER_ICONS.has(id): icon.raster = load(ItemArt.RASTER_ICONS[id])
+	icon.custom_minimum_size = Vector2.ONE*extent
+	icon.size = Vector2.ONE*extent
+	return icon
+
+func _add_option_art(option: Button, entry: Dictionary) -> void:
+	var icon := _item_art(entry,32)
+	if icon == null: return
+	for state_name in ["normal","hover","pressed","hover_pressed","disabled"]:
+		var style: StyleBoxFlat = option.get_theme_stylebox(state_name).duplicate()
+		style.content_margin_left = 56
+		option.add_theme_stylebox_override(state_name,style)
+	option.add_child(icon)
+	icon.anchor_top=.5; icon.anchor_bottom=.5
+	icon.offset_left=12; icon.offset_right=44
+	icon.offset_top=-16; icon.offset_bottom=16
 
 func _comparison_card(entry: Dictionary, index: int) -> void:
 	var panel := PanelContainer.new(); panel.name="ObservationCard"+str(index)
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel",UI.box(Color("fffaf0"),Color("87949a"),2,0,Vector2(12,12)))
+	# The containing notebook owns the paper; cards are unboxed content leaves.
+	var leaf := Hardware.style(Color.TRANSPARENT,Hardware.EDGE,0)
+	leaf.border_width_bottom=1
+	leaf.content_margin_left=4; leaf.content_margin_right=4
+	leaf.content_margin_top=8; leaf.content_margin_bottom=16
+	panel.add_theme_stylebox_override("panel",leaf)
 	var box := VBoxContainer.new(); box.add_theme_constant_override("separation",8); panel.add_child(box)
-	box.add_child(_label(str(entry.kind),13,Color("637080")))
-	box.add_child(_label(str(entry.title),18))
+	var heading := HBoxContainer.new(); heading.add_theme_constant_override("separation",12); box.add_child(heading)
+	var icon := _item_art(entry,40)
+	if icon != null: heading.add_child(icon)
+	var titles := VBoxContainer.new(); titles.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	heading.add_child(titles)
+	titles.add_child(_label(str(entry.kind),15,Color("637080")))
+	titles.add_child(_label(str(entry.title),18))
 	var body := _label(str(entry.body),16); body.name="ObservationBody"+str(index); box.add_child(body)
 	add_child(panel)
 

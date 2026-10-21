@@ -113,16 +113,33 @@ func _sync_view_layout() -> void:
 			# Wide desktop films have no letterbox. A bounded left-hand caption
 			# leaves the source southeast exit and its arrival point unobscured.
 			view.align_left=true
-	if view.get_parent()!=parent:
-		view.reparent(parent,false); view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	if world.get("mobile_exploration")==true:
 		var controls: Dictionary=world.mobile_control_metrics()
 		var top: float=float(world.hud_metrics("").header_height)+8
 		var bottom: float=minf(controls.stick_rect.position.y,controls.interact.position.y)-8
+		# Input-owning dialogue hides exploration controls; do not reserve
+		# their invisible strip and clip a 14 px line to half its glyph height.
+		if blocks_input():bottom=float(world.hud_metrics("").body_rect.position.y)-8
 		view.exploration_rect=Rect2(8,top,world.size.x-16,maxf(0,bottom-top))
 	elif parent==world and not owns_world_contract() and world.has_method("exploration_safe_rect"):
 		var safe:Rect2=world.exploration_safe_rect()
 		view.exploration_rect=Rect2(safe.position+Vector2(8,8),safe.size-Vector2(16,16))
+
+	# Dialogue is screen UI, not a texel in the world render target. Preserve
+	# authored safe geometry, but paint selected 18/14 px fonts exactly once.
+	if is_instance_valid(shell) and parent==world:
+		var local_safe:Rect2=view.exploration_rect
+		if not local_safe.has_area():local_safe=Rect2(Vector2(8,8),world.size-Vector2(16,16))
+		var surface:Control=shell.world_view
+		var ratio:Vector2=surface.size/Vector2(shell.world_viewport.size)
+		var to_host:Transform2D=get_global_transform_with_canvas().affine_inverse()*surface.get_global_transform_with_canvas()
+		var start:Vector2=to_host*(local_safe.position*ratio)
+		var finish:Vector2=to_host*(local_safe.end*ratio)
+		view.exploration_rect=Rect2(start,finish-start)
+		parent=self
+	if view.get_parent()!=parent:
+		view.reparent(parent,false);view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	if parent==self:view.display_scale=1.0
 
 func inspector_closed(id: String) -> bool:
 	if current==null or id!="decoyPaper" or not current.mark_inspector_closed(read_state.call(),self): return false

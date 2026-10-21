@@ -1,4 +1,5 @@
 extends Control
+const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
 ## Source-faithful PhoneShell overlay. Mount at (3,3) inside the 430x860 frame.
 ## Read-only presentation: all story/state writes are parent-owned signal handlers.
 signal page_requested(id: String)
@@ -8,6 +9,7 @@ signal task_requested
 signal item_selected(id: String)
 signal items_combined(from_id: String, to_id: String)
 
+const Hardware = preload("res://scripts/ui/interaction_chrome.gd")
 const CONTENT_SIZE := Vector2(424,854)
 const STATUS_HEIGHT := 40.0
 const INVENTORY_TOP_DEFAULT := 240.0
@@ -16,7 +18,8 @@ const INVENTORY_BOTTOM_GAP := 16.0
 const INK := Color("222322")
 const RED := Color("c85454")
 const SAVING_GREEN := Color("2d7a52")
-const PIXEL_FONT = preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+const Typography = preload("res://scripts/ui/native_typography.gd")
+static var UI_FONT: Font = Typography.body_font()
 const ITEM_ORDER := ["headphone","waterDrop","wateredHeadphone","reverseGear","slashLine","towerKey","fertilizer","campusCard","pushTriangle","weatherWater","mentorLine","rightArrow","gamepad","occupancyNote","callNumber755","archivedLeaveRule","itemRecognitionReport","bagNonPersonProof","seat022Receipt","libraryPresenceProof","seatReleasePass","cafeteriaWages","greaseTissue","sparklingWater","lemonTea","blackCoffee","badDrink","dailySpecialSparklingWater","pickupTicket0755","canteenRealBun","canteenCluelessSoyMilk","canteenEdgeEgg","canteenUselessCongee","theaterTicketHalfA","theaterTicketHalfB","temporaryTheaterTicket","theaterProgramOpening","theaterProgramSpotlight","theaterProgramFinale","spotlightRemote","fluorescentBrush","decoyPaper","wetProgram","bridgeKeyword","reflectionKeyword","lakeKeyword","reflectionCoordinate","hairDryer","fishingRod","rustedLockerKey","nylonCord","brokenNetFrame","improvisedDipNet","sealedFeedTin","fishFeedPellets","smallCarp","swanMagnet","magneticFishingRod","attendanceRecordPaper","oldClockHourHand","clockPositioningPlate","shortPryBar","universalLubricatingOil","finalMinute"]
 const RASTER_ICONS := {
 	"hairDryer":"res://assets/rpg/props/items/hair_dryer_generated_v01.png",
@@ -214,12 +217,12 @@ func _style(background: Color, border: Color=Color.TRANSPARENT, border_width: in
 	box.shadow_color=shadow_color
 	box.shadow_size=0
 	box.shadow_offset=shadow_offset
-	return box
+	return PixelEdges.configure(box)
 
 func _label(parent: Control, text: String, font_size: int, color: Color=INK) -> Label:
 	var label := TrackedLabel.new()
 	label.text=text
-	label.add_theme_font_override("font",PIXEL_FONT)
+	Typography.apply_body(label)
 	label.add_theme_font_size_override("font_size",font_size)
 	label.add_theme_color_override("font_color",color)
 	label.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -236,12 +239,8 @@ func _make_icon(parent: Control, id: String, extent: float) -> PixelIcon:
 	return icon
 
 func _set_button_style(button: Button, normal: StyleBoxFlat, hover: StyleBoxFlat) -> void:
-	button.add_theme_stylebox_override("normal",normal)
-	button.add_theme_stylebox_override("hover",hover)
-	button.add_theme_stylebox_override("pressed",hover)
-	button.add_theme_stylebox_override("focus",_style(Color.TRANSPARENT,Color("f0d54e"),2))
-	button.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
-	button.add_theme_font_override("font",PIXEL_FONT)
+	Hardware.apply_states(button,normal,hover)
+	Typography.apply_body(button)
 
 func _build() -> void:
 	if _built: return
@@ -258,11 +257,13 @@ func _build() -> void:
 	if kinds is Dictionary: inspect_kinds=kinds
 	status_bar=Control.new(); status_bar.name="StatusBar"; status_bar.size=Vector2(424,40); status_bar.z_index=40; status_bar.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(status_bar)
 	time_box=Panel.new(); time_box.name="Time"; time_box.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	time_box.add_theme_stylebox_override("panel",_style(Color(1,246/255.0,223/255.0,0.82),INK,2,Color(119/255.0,92/255.0,49/255.0,0.25),Vector2(2,2)))
+	time_box.add_theme_stylebox_override("panel",Hardware.style(Hardware.PAPER,Hardware.EDGE))
 	status_bar.add_child(time_box)
+	# Keep the logical clock and anchor geometry, but no opened-phone clock tile.
+	time_box.hide()
 	time_label=_label(time_box,"07:55",14); time_label.position=Vector2(10,4); time_label.tracking=1.0; time_label.add_theme_color_override("font_color",Color.TRANSPARENT)
 	status_right=Button.new(); status_right.name="ControlCenterTrigger"; status_right.tooltip_text="打开控制中心"
-	_set_button_style(status_right,_style(Color(1,246/255.0,223/255.0,0.82),INK,2,Color(119/255.0,92/255.0,49/255.0,0.25),Vector2(2,2)),_style(Color(1,246/255.0,223/255.0,0.97),INK,2))
+	_set_button_style(status_right,Hardware.style(Hardware.PAPER,Hardware.EDGE),Hardware.style(Color("fffaed"),Hardware.INK))
 	status_right.pressed.connect(func(): page_requested.emit("control_center")); status_bar.add_child(status_right)
 	network_label=_label(status_right,"",11); network_label.tracking=0.5; network_label.add_theme_color_override("font_color",Color.TRANSPARENT)
 	battery_number=_label(status_right,"",11)
@@ -271,14 +272,15 @@ func _build() -> void:
 	five_g.add_theme_stylebox_override("normal",_style(Color.TRANSPARENT,INK,2))
 	status_icons=StatusIcons.new(); status_icons.name="NativeStatusIcons"; status_right.add_child(status_icons)
 	task_button=Button.new(); task_button.name="TaskTrigger"; task_button.z_index=76
-	_set_button_style(task_button,_style(Color(28/255.0,34/255.0,41/255.0,0.96),Color("f2e7c9"),2,Color(0,0,0,0.36),Vector2(2,2)),_style(Color("27394a"),Color("f0d54e"),2))
+	_set_button_style(task_button,Hardware.style(Hardware.TRAY,Hardware.EDGE),Hardware.style(Color("354f5e"),Hardware.CORAL))
 	task_button.tooltip_text="点击查看当前任务和提示"; task_button.pressed.connect(func(): task_requested.emit()); add_child(task_button)
 	task_copy=_label(task_button,"任务",10,Color("fff8e4")); task_copy.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	digit_hint=_label(task_button,"",9,Color("f0d54e")); digit_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	inventory=Control.new(); inventory.name="Inventory"; inventory.position=Vector2(0,240); inventory.z_index=45; inventory.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(inventory)
 	inventory_body=Panel.new(); inventory_body.name="InventoryBody"; inventory_body.mouse_default_cursor_shape=Control.CURSOR_VSIZE
-	var body_style:=_style(Color(38/255.0,40/255.0,48/255.0,0.92),Color("101116"),2,Color(0,0,0,0.35),Vector2(3,4)); body_style.border_width_left=0
+	var body_style:=Hardware.style(Hardware.TRAY,Hardware.EDGE); body_style.border_width_left=0
 	inventory_body.add_theme_stylebox_override("panel",body_style); inventory_body.gui_input.connect(_on_handle_input); inventory.add_child(inventory_body)
+	Hardware.detail(inventory_body,true)
 	inventory_scroll=ScrollContainer.new(); inventory_scroll.name="InventoryScroll"; inventory_scroll.position=Vector2(8,10); inventory_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; inventory_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO; inventory_body.add_child(inventory_scroll)
 	var scrollbar:=inventory_scroll.get_v_scroll_bar(); scrollbar.custom_minimum_size.x=6
 	scrollbar.add_theme_stylebox_override("scroll",_style(Color(16/255.0,17/255.0,22/255.0,0.65)))
@@ -287,6 +289,7 @@ func _build() -> void:
 	inventory_tip=_label(inventory_body,"",11,Color("e8e4d8")); inventory_tip.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; inventory_tip.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	inventory_handle=Button.new(); inventory_handle.name="InventoryHandle"; inventory_handle.mouse_default_cursor_shape=Control.CURSOR_VSIZE
 	inventory_handle.pressed.connect(_toggle_inventory); inventory_handle.gui_input.connect(_on_handle_input); inventory.add_child(inventory_handle)
+	Hardware.detail(inventory_handle,true)
 	var backpack:=_make_icon(inventory_handle,"backpack",26); backpack.name="BackpackIcon"; backpack.position=Vector2(5,10)
 	inventory_arrow=_label(inventory_handle,"›",15,Color("e8e4d8")); inventory_arrow.position=Vector2(5,38); inventory_arrow.size=Vector2(26,15); inventory_arrow.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	inventory_count=_label(inventory_handle,"0",9,Color.WHITE); inventory_count.name="InventoryCount"; inventory_count.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -298,10 +301,10 @@ func _build() -> void:
 	_acquisition_icon=_make_icon(acquisition,"",28); _acquisition_icon.position=Vector2(7,7)
 	for i in 3:
 		var particle:=ColorRect.new(); particle.color=Color("f0d54e"); particle.size=Vector2(6,6); particle.position=[Vector2(-12,4),Vector2(-20,18),Vector2(-8,31)][i]; particle.mouse_filter=Control.MOUSE_FILTER_IGNORE; acquisition.add_child(particle); _flight_particles.append(particle)
-	for target in [time_box,status_right,task_button,inventory_body,inventory_handle,acquisition]:
+	for target in [status_right,task_button,inventory_body,inventory_handle,acquisition]:
 		var shadow:=PixelShadow.new(); shadow.target=target; shadow.z_index=target.z_index; shadow.name=str(target.name)+"Shadow"
-		shadow.offset=Vector2(3,4) if target==inventory_body else (Vector2(3,3) if target in [inventory_handle,acquisition] else Vector2(2,2))
-		shadow.color=Color(119/255.0,92/255.0,49/255.0,0.25) if target in [time_box,status_right] else Color(0,0,0,0.36)
+		shadow.offset=Vector2(1,2) if target in [inventory_body,inventory_handle,acquisition] else Vector2(0,1)
+		shadow.color=Color(0.08,0.12,0.15,0.18)
 		target.get_parent().add_child(shadow); target.get_parent().move_child(shadow,target.get_index())
 	set_process(true)
 
@@ -311,8 +314,9 @@ func refresh(next_state: Dictionary) -> void:
 	var ui: Dictionary=state.get("ui",{})
 	var page:=str(state.get("native",{}).get("page",state.get("currentScene","phone_home")))
 	var bare:=page in ["alarm","desktop","ending"]
-	# The reconstructed check-in app uses a clean paper surface and live type.
-	pixel_grid.visible=page!="checkin"
+	# Material texture belongs behind content, never over text or artwork.
+	# Retain the noninteractive node for lifecycle/stacking compatibility.
+	pixel_grid.visible=false
 	status_bar.visible=not bare
 	task_button.visible=not bare and show_task_bar and _task_visible()
 	_refresh_status()
@@ -347,9 +351,10 @@ func _task_visible() -> bool:
 	return later or not phase in ["friend_message_required","system_required"]
 
 func _text_width(text: String, font_size: int) -> float:
-	return ceilf(PIXEL_FONT.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)
+	return ceilf(UI_FONT.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)
 
 func _refresh_status() -> void:
+	time_box.hide() # Refresh never restores the removed text, border, or placeholder.
 	var c4: Dictionary=state.get("chapter4",{})
 	var active: bool=bool(state.get("chapterThreeInterlude",{}).get("completed",false)) and (c4.get("prologueSeen",false) or c4.get("completed",false) or state.get("rpgScene","")=="duan_yongping_temporal_maze")
 	var seconds:=int(c4.get("phoneStatusTimeSeconds",28523)) if active else 28500
@@ -394,6 +399,7 @@ func _refresh_task() -> void:
 	var show_digits: bool=state.get("actOne",{}).get("phase","prologue")=="prologue" and (state.get("flags",{}).get("codeScattered",false) or any_digit)
 	var width:=136.0 if show_digits else 76.0
 	task_button.position=Vector2((424-width)/2,5); task_button.size=Vector2(width,30)
+	task_copy.add_theme_font_size_override("font_size",10 if show_digits else 14)
 	task_copy.position=Vector2(2,3 if show_digits else 2); task_copy.size=Vector2(width-4,12 if show_digits else 26)
 	digit_hint.visible=show_digits; digit_hint.text="签到码 "+" ".join(known); digit_hint.position=Vector2(2,15); digit_hint.size=Vector2(width-4,11)
 	var objective:=str(state.get("native",{}).get("objective",state.get("objective","")))
@@ -443,10 +449,11 @@ func _refresh_inventory() -> void:
 	inventory_arrow.text="‹" if inventory_open else "›"
 	inventory_handle.tooltip_text="收起物品栏" if inventory_open else "展开物品栏"
 	inventory_handle.position=Vector2(74 if inventory_open else 0,0); inventory_handle.size=Vector2(40 if inventory_open else 38,63)
-	for part in ["normal","hover","pressed"]:
-		var bg:=Color(38/255.0,40/255.0,48/255.0,0.92) if part=="normal" else Color(56/255.0,59/255.0,70/255.0,0.95)
-		var box:=_style(bg,Color("101116"),2,Color(0,0,0,0.35),Vector2(3,3)); box.border_width_left=2 if inventory_open else 0
-		inventory_handle.add_theme_stylebox_override(part,box)
+	var normal:=Hardware.style(Hardware.TRAY,Hardware.EDGE)
+	var hover:=Hardware.style(Color("354f5e"),Hardware.CORAL)
+	normal.border_width_left=1 if inventory_open else 0
+	hover.border_width_left=normal.border_width_left
+	_set_button_style(inventory_handle,normal,hover)
 	inventory_count.text=str(owned.size()); inventory_count.size=Vector2(_text_width(inventory_count.text,9)+12,15); inventory_count.position=Vector2(inventory_handle.size.x-inventory_count.size.x+8,-8)
 	var scroll_before:=inventory_scroll.scroll_vertical
 	if _slot_ids!=owned:
@@ -456,7 +463,7 @@ func _refresh_inventory() -> void:
 			var item: Dictionary=catalog.get(id,{"id":id,"name":id,"desc":""})
 			var slot:=InventorySlot.new(); slot.name="Item_"+id; slot.item_id=id; slot.tooltip_text=str(item.name)+"："+str(item.get("desc",""))
 			slot.custom_minimum_size=Vector2(52,52); slot.size=Vector2(52,52); slot.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
-			_set_button_style(slot,_style(Color("f5c542") if selected_item==id else Color("cfd3d9"),Color("101116"),2),_style(Color("e2e6ec"),Color("101116"),2))
+			_set_button_style(slot,Hardware.style(Hardware.PAPER,Hardware.EDGE),Hardware.style(Color("fffaed"),Hardware.CORAL))
 			inventory_slots.add_child(slot)
 			# Source inset highlights and shadows, inside the 2px ink outline.
 			for edge in [[Rect2(2,2,48,3),Color(1,1,1,0.35)],[Rect2(2,2,3,48),Color(1,1,1,0.35)],[Rect2(2,47,48,3),Color(0,0,0,0.18)],[Rect2(47,2,3,48),Color(0,0,0,0.18)]]:
@@ -467,7 +474,8 @@ func _refresh_inventory() -> void:
 			slot.drag_finished.connect(func(landed: bool): if not landed: get_node("/root/State").feedback.emit("没有落在可使用的物品上，道具仍在物品栏。"))
 			slot.combine_requested.connect(func(from_id: String,to_id: String): items_combined.emit(from_id,to_id))
 	for slot in inventory_slots.get_children():
-		_set_button_style(slot,_style(Color("f5c542") if selected_item==slot.item_id else Color("cfd3d9"),Color("101116"),2),_style(Color("e2e6ec"),Color("101116"),2))
+		_set_button_style(slot,Hardware.style(Color("f3dfc8") if selected_item==slot.item_id else Hardware.PAPER,Hardware.CORAL if selected_item==slot.item_id else Hardware.EDGE),Hardware.style(Color("fffaed"),Hardware.CORAL))
+		Hardware.set_selected(slot,selected_item==slot.item_id)
 	var slots_height:=minf(260,owned.size()*60-8+4)
 	inventory_scroll.size=Vector2(62,slots_height)
 	var tip:=str(catalog.get(selected_item,{}).get("name",""))
@@ -606,6 +614,7 @@ func _set_inventory_painted_rect(rect:Rect2) -> void:
 	# The hit area can be larger than its face. Shadows/focus follow the face,
 	# so transparent hit padding never looks like a floating block above the phone.
 	inventory_handle.set_meta("painted_rect",rect)
+	if inventory_handle.has_node("HardwareDetail"): inventory_handle.get_node("HardwareDetail").queue_redraw()
 	for role:String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 		var original:StyleBox=inventory_handle.get_theme_stylebox(role)
 		if not original is StyleBoxFlat:continue
