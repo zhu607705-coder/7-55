@@ -107,6 +107,12 @@ func build(b,view: Dictionary) -> Control:
 		label(b,root,body,y+12+heading_height+14).name="Cc98ReplyBody_%d" % floor_number
 		var action_y=y+row_height-64
 		if has_catalog_title:
+			# ScrollContainer stores integer offsets. Snap the action's bottom in
+			# its scaled scroll coordinate space so ensure_control_visible does
+			# not leave a fractional bottom edge clipped after font measurement.
+			# The tiny guard prevents float transforms from rounding an exact
+			# integer just below that integer on the 390px viewport.
+			action_y=(ceilf((action_y+48.0)*b.PHONE_SCALE)+0.001)/b.PHONE_SCALE-48.0
 			var feedback=label(b,root,"可在馆藏检索中手动粘贴",action_y,13,MUTED,WIDTH-104,LEFT+104)
 			feedback.name="Cc98CatalogTitleFeedback"
 			var copy: Button=b._button(root,"复制题名",Rect2(LEFT,action_y,92,48),func():
