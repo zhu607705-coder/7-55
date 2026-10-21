@@ -1251,7 +1251,15 @@ func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 	var label := _label(title,NativeUi.FONT_TITLE)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(label)
+	if surface=="notebook":
+		var title_index:=PanelContainer.new();title_index.name="NotebookPageIndex"
+		title_index.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+		title_index.add_theme_stylebox_override("panel",CampusMaterial.panel_style("placard",{},Vector2(12,6)))
+		label.add_theme_color_override("font_color",CampusMaterial.PAPER)
+		Typography.apply_body(label);label.add_theme_font_size_override("font_size",18)
+		title_index.add_child(label);header.add_child(title_index)
+		var title_space:=Control.new();title_space.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title_space)
+	else: header.add_child(label)
 	var close_button := _button("关闭",_close_modal,Vector2(70,44))
 	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
 	header.add_child(close_button)
@@ -1568,6 +1576,7 @@ func _show_journal() -> void:
 	_refresh_observation_comparison()
 	var current: Dictionary=CanteenObjective.current(State.d)
 	var journal:=NativeJournalView.new()
+	if return_to_world: journal.context_texture=world_viewport.get_texture()
 	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),return_to_world)
 	journal.resume_requested.connect(func():
 		_close_modal()
@@ -1687,7 +1696,7 @@ func _show_settings() -> void:
 	))
 	box.add_child(_button("全屏 / 窗口",func(): DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)))
 	if State.developer_tools_available(): box.add_child(_button("DEV · 独立场景检查",_show_developer))
-	box.add_child(_button("保存画面截图",func(): _close_modal(); _capture.call_deferred()))
+	box.add_child(_button("保存画面截图",_capture_after_menu.call_deferred))
 	# Settings are choices, not eight simultaneous primary actions.
 	for action_button in box.get_children():
 		if action_button is Button and action_button != save_progress_button:
@@ -1699,6 +1708,12 @@ func _show_settings() -> void:
 	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
+
+func _capture_after_menu() -> void:
+	# A GUI release is still traversing the pressed button's ancestors.
+	# Defer retiring this menu until dispatch ends, then capture the world.
+	_close_modal()
+	_capture.call_deferred()
 
 func _save_progress() -> void:
 	if is_instance_valid(web_platform): web_platform.request_save()

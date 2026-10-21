@@ -37,6 +37,7 @@ const BonsaiGrowthView = preload("res://scripts/ui/bonsai_growth_view.gd")
 var bonsai_growth = BonsaiGrowthSession.new()
 const APP_HEIGHT = 814.0 * 378.0 / 424.0
 const PHONE_SCALE = 424.0 / 378.0
+const Symbols = preload("res://scripts/ui/native_symbol_icon.gd")
 # One shared destination for the falling glyph and its later accessible pickup.
 const HOME_GEAR_PICKUP_RECT = Rect2(270,360,64,88)
 var control_center_return = "phone_home"
@@ -190,6 +191,7 @@ func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(label)
+	Symbols.apply(label,text,color,fs)
 	return label
 
 func _button(root: Control, text: String, rect: Rect2, callback: Callable, color: Color = PAPER, ink: Color = INK, radius: int = 0, border: Color = INK) -> Button:
@@ -204,6 +206,7 @@ func _button(root: Control, text: String, rect: Rect2, callback: Callable, color
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.pressed.connect(callback)
 	root.add_child(button)
+	Symbols.apply(button,text,ink,20)
 	return button
 
 func _act(root: Control, text: String, rect: Rect2, id: String, value: Variant = null, color: Color = PAPER, ink: Color = INK, radius: int = 0, border: Color = INK) -> Button:
@@ -1956,7 +1959,11 @@ func _app_icon(root: Control, id: String, factor: float = 1.0) -> void:
 			_panel(icon,Rect2(6,6,36,36),Color("fff6e1"),Color("343333"),18,3)
 			_panel(icon,Rect2(23,13,3,13),Color("343333"))
 			_panel(icon,Rect2(24,24,12,3),Color("343333"))
-		"cc98": _label(icon,"CC98",Rect2(3,8,42,31),19,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+		"cc98":
+			var wordmark := _label(icon,"CC98",Rect2(3,8,42,31),19,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+			Typography.apply_display(wordmark)
+			wordmark.autowrap_mode=TextServer.AUTOWRAP_OFF
+			wordmark.name="CC98Wordmark"
 		"settings": _label(icon,"✱",Rect2(3,3,42,42),37,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 		"voice_memos":
 			_panel(icon,Rect2(20,10,9,22),Color.WHITE,Color.TRANSPARENT,5)

@@ -49,3 +49,9 @@ must provide a suitable fallback or non-font icon. Fusion Pixel covers only some
 of those symbols. No runtime font switch or UI script is part of this artifact.
 Use the new body font first in measured container layouts, retaining the existing
 pixel display font where short labels, clocks and authored metrics require it.
+
+Runtime integration uses `native_typography.gd`. Known phone UI symbols absent
+from both bundled fonts are drawn by `native_symbol_icon.gd` as deterministic
+pixel primitives while retaining the control's original text and input owner.
+The font manifest remains a glyph-coverage report, not a report of those vector
+fallbacks. Arbitrary external text can still contain unsupported characters.

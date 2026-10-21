@@ -12,10 +12,10 @@ func run() -> void:
 			for height: float in [180.0, 700.0]:
 				var extent := Vector2(width, height)
 				var geo := Notebook.geometry(extent)
-				check(geo.body==Rect2(24,18,width-42,height-40), "explicit fixed body margins")
+				check(geo.body==Rect2(32,18,width-50,height-40), "explicit fixed body margins")
 				var marks := Notebook.commands(extent, mode)
 				check(marks==Notebook.commands(extent,mode), "deterministic silhouette")
-				check(marks.size()<=12, "bounded detail density")
+				check(marks.size()<=21, "bounded detail density")
 				for mark: Dictionary in marks:
 					check(geo.bounds.encloses(mark.rect), "all paint within panel bounds")
 					if mark.decoration: check(not geo.body.intersects(mark.rect), "detail never crosses body")

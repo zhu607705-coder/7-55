@@ -18,11 +18,13 @@ jobs:
       - name: Preserve capture harness and select source
         run: |
           cp godot_native/tests/capture_ui_redesign.gd /tmp/capture_ui_redesign.gd
+          cp godot_native/tests/capture_phone_symbols.gd /tmp/capture_phone_symbols.gd
           if [ '${{ matrix.source }}' = baseline ]; then
             git fetch --depth=1 origin f963d47cbe31e5d799b405e36d4ad68cd97546fa
             git checkout --detach f963d47cbe31e5d799b405e36d4ad68cd97546fa
           fi
           cp /tmp/capture_ui_redesign.gd godot_native/tests/capture_ui_redesign.gd
+          cp /tmp/capture_phone_symbols.gd godot_native/tests/capture_phone_symbols.gd
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -51,6 +53,9 @@ jobs:
           git rev-parse HEAD > "$UI_CAPTURE_DIR/source-sha.txt"
           timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_ui_redesign.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
           test -f "$UI_CAPTURE_DIR/captures.json"
+          timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_phone_symbols.gd 2>&1 | tee "$UI_CAPTURE_DIR/symbol-render.log"
+          test -f "$UI_CAPTURE_DIR/symbol-captures.json"
+          ! grep -E "SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:" "$UI_CAPTURE_DIR/symbol-render.log"
           ! grep -E "SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:" "$UI_CAPTURE_DIR/render.log"
       - uses: actions/upload-artifact@v4
         if: always()

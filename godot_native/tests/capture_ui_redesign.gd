@@ -172,7 +172,8 @@ func capture_interactions(dimensions: Vector2i) -> void:
 	var session: RefCounted = load("res://scripts/presentation/library_story_session.gd").new(state.d,"library_bag_nonperson_proof_issued",source.sequences.library_bag_nonperson_proof_issued)
 	if require_fixture(session.attach(state.d,shell.library_story_host), "source library dialogue attaches"):
 		shell.library_story_host.current = session; shell.library_story_host.view.session = session
-		shell.library_story_host.view.tick(); shell._layout()
+		shell._layout(); await frames()
+		shell.library_story_host.view.tick()
 		await capture(prefix + "library-dialogue")
 
 	fixture_note = "DEV theater kiosk authored stand + delivered commission; real Space and wrong 0123 submit; not earned completion"

@@ -42,15 +42,47 @@ larger transparent touch target, detail/focus follows the actual `painted_rect`.
   scroll range, item artwork and acquisition path remain the existing code.
 - Screen-wide grid remains hidden; material details do not cover app text.
 
+## Component families and hierarchy
+
+| Family | Existing surfaces | Deliberate form and hierarchy |
+|---|---|---|
+| World | Exploration/location/mode/feedback | Separate small location and mode signs; content-measured feedback rather than a full-width strip. Original world art, camera and authored coordinates stay authoritative. |
+| Investigation folder | Journal, owned items, clue comparison | Bound paper with cloth spine, fixed binding loops and page edges. Current-page index is a real title, not a fake tab. Journal leads with the current scene thumbnail and controller objective; resume is a compact primary action; history and comparison are subordinate. |
+| Evidence sheet | Item inspection | Independent loose sheet, original item image, exact canonical document/observation text and existing use action. No invented stamps, codes or claims. |
+| Dialogue | Library and chapter-three narrative | Speaker/body/prompt hierarchy with measured readable body font. Preserve each host's real timing and advance/pause contract; do not add a universal advance button. |
+| Phone | Existing apps and device chrome | Preserve source app identity and original input rectangles. Hide the full-screen grid; use clean Chinese body text and explicit pixel-display/logo/icon roles. Known unsupported symbols use deterministic pixel primitives, not platform fonts. |
+| Physical devices | Theater terminal and room302 studio | Terminal has a metal shell, inset readout and tactile keypad; submit is primary. Studio chooses portrait composition from available geometry, independently of keyboard/touch hardware. Keep original device colors and control mapping. |
+| Utility menus | Control center and file dialog | Save is the primary action; other choices are neutral and reset is explicitly distinguished. Close stays outside long scrolling content. |
+
+## Input ownership (unchanged)
+
+```text
+exploration ── P ── phone
+    │                │
+    ├─ Tasks ─────── journal ── comparison
+    │                │
+    └─ inventory ── inspect item
+                     │
+        close / Esc ─┴── prior valid focus / world fallback
+
+story or device host owns input → world gestures are blocked
+modal owner closes              → existing owner/focus is restored
+```
+
+These are existing entry points, not newly invented keyboard commands. Source
+story controllers alone issue progress, item consumption and save changes. The
+same feedback event remains owned by its original queue; an active compact
+terminal can suppress only its redundant background rendering.
+
 ## Coverage and limits
 
-This increment redesigns PhoneChrome status/task materials, drawer/slots,
-selection and complete button states. The same helper is available to Main/world
-owners. It does **not** claim every authored app, special device, minigame,
-subtitle or cinematic has been redesigned. Their ownership is mapped above so
-remaining work can preserve semantics. Main/world integration and visual review
-are tracked separately by the integrated redesign task.
+This redesign applies shared type/material/state roles to the existing surfaces
+above. It does not replace source-specific minigame boards, invent a new map,
+rewrite placeholder story content, change world artwork, or claim every
+cinematic has received an aesthetic overhaul. The existing campus-navigation
+app remains an app; the campus-world screenshot is exploration, not a new map UI.
 
 Headless checks verify state/geometry, not aesthetic quality. Actual screenshot
 inspection, keyboard/touch end-to-end checks, device-specific layouts and the
-final commit’s CI remain independent acceptance gates.
+final commit's CI remain independent acceptance gates. The research document
+separates inspected game references from inaccessible user-supplied pages.

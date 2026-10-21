@@ -1598,7 +1598,7 @@
     },
     {
       "path": "godot_native/scripts/main.gd",
-      "sha256": "2c72367e27adfd1f7de4c01e4f4f92bea7523edf30f8b21a660286cf40027d02"
+      "sha256": "5d69c84cdcded733d366d16ffb8effaaabb90d8843cd75d2721d59c8edb87c93"
     },
     {
       "path": "godot_native/scripts/media/audio_director.gd",
@@ -1782,11 +1782,11 @@
     },
     {
       "path": "godot_native/scripts/objects/room302_studio_panel.gd",
-      "sha256": "ba1089cd5a05a8c2896eb4d56be3d97ad07990f41d974d8651237203a0b01702"
+      "sha256": "3b60fef1a65199a479d96aa8d27250d3566e9d4318ed25f5f56e6406b1537266"
     },
     {
       "path": "godot_native/scripts/objects/room302_studio_view.gd",
-      "sha256": "183aa1ea7504a6a215248a08d8922fcb220a107c2016d194bfca1af50a386316"
+      "sha256": "e39a8cf54f382f13f9faf1fc93f2f09f54cacfcb6d027ca2cf1e8228f9483bc4"
     },
     {
       "path": "godot_native/scripts/objects/theater_clue_objects.gd",
@@ -2150,7 +2150,7 @@
     },
     {
       "path": "godot_native/scripts/ui/c3_theater_device_panel.gd",
-      "sha256": "a23e74f9759df502610165c87d9f170bc5c4c753c16bb82fed8a1dbf4caee637"
+      "sha256": "31b3a093438a0d018ccc505f8231ed739726cf0a17e2ab0a8da4d320ef572c49"
     },
     {
       "path": "godot_native/scripts/ui/c3_voice_progress.gd",
@@ -2158,7 +2158,7 @@
     },
     {
       "path": "godot_native/scripts/ui/campus_notebook_panel.gd",
-      "sha256": "155c35851cc950fccdadedc8626df2a28a94651d3d41eaf35b21bb1bb74e77a3"
+      "sha256": "e5cfc7a283d35b2ef384d20a9d481f1b3d6c48c0c8aea26d86a0f83438f36727"
     },
     {
       "path": "godot_native/scripts/ui/campus_paper_panel.gd",
@@ -2318,7 +2318,7 @@
     },
     {
       "path": "godot_native/scripts/ui/native_journal_view.gd",
-      "sha256": "3eb2ec484e90717e77a465cbbec01cadf3939fc86ef284d90cd4375200ba74aa"
+      "sha256": "566009c3171685f9c3b01b8516bfcd065f7409126488b81488265b5abaf03173"
     },
     {
       "path": "godot_native/scripts/ui/native_library_pages.gd",
@@ -2335,6 +2335,10 @@
     {
       "path": "godot_native/scripts/ui/native_phone_notice.gd",
       "sha256": "de0617ebef2469702873c76eba4be542d0cee6c3acf13b194e7c59deca28a2c4"
+    },
+    {
+      "path": "godot_native/scripts/ui/native_symbol_icon.gd",
+      "sha256": "a5aa0dad903802fc827c19ba1a85df02338fb80d09e55dc0d0c16ffe36202997"
     },
     {
       "path": "godot_native/scripts/ui/native_tiyi_identity.gd",
@@ -2398,7 +2402,7 @@
     },
     {
       "path": "godot_native/scripts/ui/phone_pages.gd",
-      "sha256": "16d10b4ba2fb960c566581ff3ec8f1c17308159bf857190ee9e17aeccdb75c46"
+      "sha256": "bb345dcc7095c5b2b7319c8fbb93341830e4ff9741362aa24234bd26ed5a6c12"
     },
     {
       "path": "godot_native/scripts/ui/photo_brightness_session.gd",
@@ -2438,7 +2442,7 @@
     },
     {
       "path": "godot_native/scripts/world.gd",
-      "sha256": "decd677065bff961bca1c3e5569de68a20089d20e67b181e711e49ff832019b1"
+      "sha256": "ecafe57bd853c040fd10e1f11574f6be7db3ecff0d2e16915e168d15d58643c8"
     },
     {
       "path": "godot_native/scripts/world_object_picker.gd",

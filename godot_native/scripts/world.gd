@@ -942,7 +942,10 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var body_rect:Rect2=hud.body_rect
 	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0
 	if film:body_rect.position.y=hud.body_gap
-	if hud.body_height>0:
+	var device:Variant=host_node.get("c3_device_panel") if is_instance_valid(host_node) else null
+	var device_feedback:bool=is_instance_valid(device) and device.has_method("owns_feedback_surface") and device.owns_feedback_surface()
+	if device_feedback and is_instance_valid(overflow_feedback): overflow_feedback.hide()
+	if hud.body_height>0 and not device_feedback:
 		CampusMaterial.draw(canvas,body_rect,"paper")
 		if hud.body_overflow and is_instance_valid(overflow_feedback):
 			overflow_feedback.label.text=line;overflow_feedback.label.add_theme_font_size_override("font_size",hud.body_font)
@@ -981,6 +984,8 @@ func hud_metrics(text: String) -> Dictionary:
 	# Stack the feedback above the dialogue, converting display coordinates once.
 	if is_instance_valid(host_node):
 		var story:Variant=host_node.get("library_story_host")
+		if subtitle.is_empty() and is_instance_valid(story) and story.blocks_input():
+			hud.body_height=0.0;hud.body_overflow=false
 		if is_instance_valid(story) and is_instance_valid(story.view) and story.view.is_visible_in_tree():
 			var bounds:Rect2=story.view.panel.get_global_rect()
 			var surface:Rect2=host_node.world_view.get_global_rect()

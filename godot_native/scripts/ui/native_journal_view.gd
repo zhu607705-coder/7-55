@@ -8,6 +8,7 @@ const Typography=preload("res://scripts/ui/native_typography.gd")
 const CampusMaterial=preload("res://scripts/ui/campus_ui_material.gd")
 const PaperPanel=preload("res://scripts/ui/campus_paper_panel.gd")
 const Hardware=preload("res://scripts/ui/interaction_chrome.gd")
+var context_texture: Texture2D
 var objective: String
 var detail: String
 var entries: Array=[]
@@ -24,7 +25,20 @@ func _ready() -> void:
 	name="NativeJournal"
 	size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	add_theme_constant_override("separation",12)
-	var current:=VBoxContainer.new();current.add_theme_constant_override("separation",8);add_child(current)
+	var overview:=HBoxContainer.new();overview.name="JournalOverview";overview.add_theme_constant_override("separation",16);add_child(overview)
+	if context_texture!=null:
+		var picture_frame:=PanelContainer.new();picture_frame.name="JournalScenePreview"
+		picture_frame.custom_minimum_size=Vector2(104,104)
+		picture_frame.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
+		picture_frame.add_theme_stylebox_override("panel",CampusMaterial.panel_style("placard",{},Vector2(4,4)))
+		overview.add_child(picture_frame)
+		var picture:=TextureRect.new();picture.texture=context_texture
+		picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+		picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		picture.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+		picture.mouse_filter=Control.MOUSE_FILTER_IGNORE;picture_frame.add_child(picture)
+	var current:=VBoxContainer.new();current.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	current.add_theme_constant_override("separation",8);overview.add_child(current)
 	current.add_child(_label("当前任务","JournalCurrentHeading",14,CampusMaterial.WOOD))
 	current.add_child(_label(objective,"JournalObjective",20))
 	if not detail.is_empty():
@@ -55,7 +69,14 @@ func _button(text: String, id: String, action: Callable) -> Button:
 	UI.apply_button(button,fill,CampusMaterial.PAPER if id=="JournalResume" else CampusMaterial.INK,CampusMaterial.WOOD if id=="JournalResume" else CampusMaterial.PAPER_EDGE,0,1,16,Vector2(14,10))
 	button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	button.custom_minimum_size=Vector2(0,48)
-	button.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	button.size_flags_horizontal=Control.SIZE_SHRINK_END if id=="JournalResume" else Control.SIZE_EXPAND_FILL
+	if id=="JournalResume": button.custom_minimum_size.x=152
+	else:
+		button.alignment=HORIZONTAL_ALIGNMENT_LEFT
+		for state_name in ["normal","hover","pressed","hover_pressed","disabled"]:
+			var edge:StyleBoxFlat=button.get_theme_stylebox(state_name)
+			edge.set_border_width_all(0);edge.border_width_bottom=1
+			if state_name=="normal": edge.bg_color=Color.TRANSPARENT
 	button.pressed.connect(action)
 	return button
 
