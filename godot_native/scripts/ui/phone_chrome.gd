@@ -259,6 +259,8 @@ func _build() -> void:
 	time_box=Panel.new(); time_box.name="Time"; time_box.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	time_box.add_theme_stylebox_override("panel",Hardware.style(Hardware.PAPER,Hardware.EDGE))
 	status_bar.add_child(time_box)
+	# Keep the logical clock and anchor geometry, but no opened-phone clock tile.
+	time_box.hide()
 	time_label=_label(time_box,"07:55",14); time_label.position=Vector2(10,4); time_label.tracking=1.0; time_label.add_theme_color_override("font_color",Color.TRANSPARENT)
 	status_right=Button.new(); status_right.name="ControlCenterTrigger"; status_right.tooltip_text="打开控制中心"
 	_set_button_style(status_right,Hardware.style(Hardware.PAPER,Hardware.EDGE),Hardware.style(Color("fffaed"),Hardware.INK))
@@ -299,7 +301,7 @@ func _build() -> void:
 	_acquisition_icon=_make_icon(acquisition,"",28); _acquisition_icon.position=Vector2(7,7)
 	for i in 3:
 		var particle:=ColorRect.new(); particle.color=Color("f0d54e"); particle.size=Vector2(6,6); particle.position=[Vector2(-12,4),Vector2(-20,18),Vector2(-8,31)][i]; particle.mouse_filter=Control.MOUSE_FILTER_IGNORE; acquisition.add_child(particle); _flight_particles.append(particle)
-	for target in [time_box,status_right,task_button,inventory_body,inventory_handle,acquisition]:
+	for target in [status_right,task_button,inventory_body,inventory_handle,acquisition]:
 		var shadow:=PixelShadow.new(); shadow.target=target; shadow.z_index=target.z_index; shadow.name=str(target.name)+"Shadow"
 		shadow.offset=Vector2(1,2) if target in [inventory_body,inventory_handle,acquisition] else Vector2(0,1)
 		shadow.color=Color(0.08,0.12,0.15,0.18)
@@ -352,6 +354,7 @@ func _text_width(text: String, font_size: int) -> float:
 	return ceilf(UI_FONT.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)
 
 func _refresh_status() -> void:
+	time_box.hide() # Refresh never restores the removed text, border, or placeholder.
 	var c4: Dictionary=state.get("chapter4",{})
 	var active: bool=bool(state.get("chapterThreeInterlude",{}).get("completed",false)) and (c4.get("prologueSeen",false) or c4.get("completed",false) or state.get("rpgScene","")=="duan_yongping_temporal_maze")
 	var seconds:=int(c4.get("phoneStatusTimeSeconds",28523)) if active else 28500
