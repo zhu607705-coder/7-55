@@ -4,19 +4,29 @@ var shell: Control
 var state: Node
 var report: Array = []
 var output: String
+var capture_failed := false
+var validate_only := OS.get_environment("UI_CAPTURE_VALIDATE") == "1"
+var fixture_note := "DEV fixture; not earned campaign completion"
 func _initialize() -> void: run.call_deferred()
 func frames(count: int = 6) -> void:
 	for unused in count: await process_frame
 func capture(id: String) -> void:
 	await frames()
+	if validate_only:
+		report.append({"id":id,"fixture":fixture_note,"validation_only":true})
+		return
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	var path := output.path_join(id + ".png")
 	var error := image.save_png(path)
-	report.append({"id":id,"width":image.get_width(),"height":image.get_height(),"error":error})
-	if error != OK: push_error("Screenshot failed: " + path)
+	report.append({"id":id,"width":image.get_width(),"height":image.get_height(),"error":error,"fixture":fixture_note})
+	if error != OK:
+		capture_failed = true
+		push_error("Screenshot failed: " + path)
 func run() -> void:
-	if DisplayServer.get_name() == "headless": quit(2); return
+	if DisplayServer.get_name() == "headless" and not validate_only: quit(2); return
+	# Bound every fixture, including unexpected script failures or render stalls.
+	create_timer(180.0).timeout.connect(func(): push_error("UI capture deadline exceeded"); quit(2))
 	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): quit(2); return
 	Engine.max_fps = 30
 	output = OS.get_environment("UI_CAPTURE_DIR")
@@ -76,10 +86,127 @@ func run() -> void:
 		body.add_child(shell._label("在现场收集证据，再回到这里核对。",17))
 		await capture("%dx%d-short-dialog" % [dimensions.x,dimensions.y])
 		shell._close_modal()
+		await capture_interactions(dimensions)
 	var file := FileAccess.open(output.path_join("captures.json"),FileAccess.WRITE)
+	if file == null: push_error("Cannot write capture report"); quit(2); return
 	file.store_string(JSON.stringify(report,"\t")); file.close()
 	await shell.shutdown()
 	shell.queue_free()
 	await frames()
-	print("UI_CAPTURE_COMPLETE ",report.size())
-	quit(0)
+	print("UI_FIXTURE_VALIDATION_COMPLETE " if validate_only else "UI_CAPTURE_COMPLETE ",report.size())
+	quit(1 if capture_failed else 0)
+
+
+func require_fixture(ok: bool, message: String) -> bool:
+	if not ok:
+		capture_failed = true
+		push_error("UI fixture: " + message)
+	return ok
+
+func fresh_shell(dimensions: Vector2i) -> void:
+	if is_instance_valid(shell):
+		await shell.shutdown()
+		shell.queue_free()
+		await frames(3)
+	root.size = dimensions
+	shell = load("res://scenes/main.tscn").instantiate()
+	root.add_child(shell)
+	shell.mobile_world = true
+	shell._refresh()
+	await frames(6)
+	shell._layout()
+	shell.world.transition_alpha = 0
+	shell.world.queue_redraw()
+
+func fixture_checkpoint(id: String) -> bool:
+	return require_fixture(state.begin_checkpoint(id), "unknown checkpoint " + id)
+
+func press_key(code: Key) -> void:
+	for down in [true,false]:
+		var event := InputEventKey.new()
+		event.keycode = code; event.physical_keycode = code; event.pressed = down
+		root.push_input(event)
+	await frames(4)
+
+func capture_interactions(dimensions: Vector2i) -> void:
+	var prefix := "%dx%d-" % [dimensions.x,dimensions.y]
+	# Each row is a fresh isolated DEV fixture, not a continuous/earned replay.
+	fixture_note = "DEV checkpoint c2-library-gate; actual campus; not earned completion"
+	if not fixture_checkpoint("c2-library-gate"): return
+	await fresh_shell(dimensions)
+	await capture(prefix + "campus-map")
+
+	fixture_note = "DEV c2-dorm-exit + owned headphone/waterDrop; read-only comparison; not earned completion"
+	if not fixture_checkpoint("c2-dorm-exit"): return
+	state.d.items.headphone = true; state.d.items.waterDrop = true
+	await fresh_shell(dimensions)
+	shell._show_observation_comparison()
+	var comparison = shell.observation_comparison_session
+	comparison.clear()
+	var first: bool = comparison.choose("item:headphone")
+	var second: bool = comparison.choose("item:waterDrop")
+	if require_fixture(first and second and comparison.compare() and is_instance_valid(shell.modal), "comparison opens with two source cards"):
+		var view = shell.modal.find_child("ObservationComparison",true,false)
+		if require_fixture(is_instance_valid(view), "comparison renderer exists"):
+			view._render()
+			await capture(prefix + "clue-comparison")
+
+	fixture_note = "DEV c2-occupancy-note + owned occupancyNote; actual inspection; not earned completion"
+	if not fixture_checkpoint("c2-occupancy-note"): return
+	state.d.items.occupancyNote = true
+	await fresh_shell(dimensions)
+	shell._inspect_item_by_id("occupancyNote")
+	if require_fixture(is_instance_valid(shell.modal), "item inspection opens"):
+		await capture(prefix + "item-document")
+
+	fixture_note = "DEV library stamped-proof source session; actual dialogue host; not earned completion"
+	state.d = state.initial()
+	state.d.native.chapter = 2; state.d.native.scene = "library_interior"; state.d.native.page = "phone_home"
+	state.d.runtimeMode = "rpg"; state.d.rpgScene = "library_interior"; state.d.actOne.phase = "complete"
+	state.d.ui.libraryFinalsPhase = "evidence_gathering"
+	state.d.ui.libraryFinalsPuzzle.nonPersonProofStamped = true
+	await fresh_shell(dimensions)
+	shell.library_story_host.set_process(false); shell.world.set_process(false)
+	shell.world.player = Vector2(334,736); shell.world._sync_player(); shell.world._update_camera()
+	var source: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json"))
+	var session: RefCounted = load("res://scripts/presentation/library_story_session.gd").new(state.d,"library_bag_nonperson_proof_issued",source.sequences.library_bag_nonperson_proof_issued)
+	if require_fixture(session.attach(state.d,shell.library_story_host), "source library dialogue attaches"):
+		shell.library_story_host.current = session; shell.library_story_host.view.session = session
+		shell.library_story_host.view.tick(); shell._layout()
+		await capture(prefix + "library-dialogue")
+
+	fixture_note = "DEV theater kiosk authored stand + delivered commission; real Space and wrong 0123 submit; not earned completion"
+	state.d = state.initial()
+	state.d.native.chapter = 3; state.d.native.scene = "theater_interior"; state.d.native.page = "c3_theater"
+	state.d.rpgScene = "theater_interior"; state.d.runtimeMode = "rpg"; state.d.native.mode = "light"
+	state.d.canteenHunt.active = true; state.d.canteenHunt.phase = "tray_search"; state.d.canteenHunt.entryPaperEscaped = true
+	state.d.theaterHunt.active = true; state.d.theaterHunt.phase = "entry_ticket"; state.d.theaterHunt.mode = "light"
+	state.d.theaterHunt.ticketCodeRead = true; state.d.theaterHunt.cc98TicketCommissionPhase = "delivered"
+	var chapter = load("res://scripts/chapters/chapter3.gd").new()
+	var definition: Dictionary = chapter.get_definition("theater_interior","theater_ticket_kiosk",state.d)
+	var stand: Dictionary = definition.get("stand",{"x":definition.x,"y":definition.y})
+	state.d.native.player = {"x":stand.x,"y":stand.y,"scene":"theater_interior"}
+	await fresh_shell(dimensions)
+	shell.world.player = Vector2(stand.x,stand.y); shell.world._sync_player(); shell.world._update_camera(); shell.world._process(0)
+	var found := false
+	for candidate in shell.world.targets:
+		if str(candidate.id) == "theater_ticket_kiosk": shell.world.nearby = candidate; found = true
+	if require_fixture(found, "theater authored target exists"):
+		shell.world.grab_focus()
+		await press_key(KEY_SPACE)
+		if require_fixture(is_instance_valid(shell.c3_device_panel), "Space opens actual theater device"):
+			for digit in [KEY_0,KEY_1,KEY_2,KEY_3]: await press_key(digit)
+			await press_key(KEY_ENTER)
+			if require_fixture(is_instance_valid(shell.c3_device_panel) and state.d.theaterHunt.ticketCodeAttempts == 1, "wrong device submit stays open with feedback"):
+				await capture(prefix + "theater-device-error")
+
+	fixture_note = "DEV c4-755-room204-1850 missing-film lock; actual controller intent; not earned completion"
+	if not fixture_checkpoint("c4-755-room204-1850"): return
+	await fresh_shell(dimensions)
+	state.act("c4_device_media_alignment")
+	await frames(4)
+	if require_fixture(is_instance_valid(shell.modal), "C4 media device mounts"):
+		if require_fixture(shell.modal.session.view_kind() == "locked", "C4 missing-film lock is actual source state"):
+			await capture(prefix + "c4-device-locked")
+	shell._close_modal()
+	fixture_note = "DEV fixture; not earned campaign completion"

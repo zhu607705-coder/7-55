@@ -53,6 +53,7 @@ var subtitle := "":
 		subtitle_revision+=1
 var subtitle_left := 0.0
 var font: Font
+var hud_font: Font
 var _last_save := 0.0
 var _manual_sent := false
 var _last_floor := ""
@@ -124,10 +125,11 @@ func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
 	worlds = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
 	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	hud_font = load("res://scripts/ui/native_typography.gd").body_font()
 	overflow_feedback=OverflowText.new();overflow_feedback.name="OverflowFeedback";overflow_feedback.z_index=90;add_child(overflow_feedback)
 	var feedback_label:=Label.new();add_child(feedback_label)
 	feedback_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;feedback_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	feedback_label.add_theme_font_override("font",font);feedback_label.add_theme_color_override("font_color",Color("f1f2dc"))
+	load("res://scripts/ui/native_typography.gd").apply_body(feedback_label);feedback_label.add_theme_color_override("font_color",Color("f1f2dc"))
 	overflow_feedback.setup(feedback_label);overflow_feedback.hide()
 	for direction in ["down","up","side","left"]:
 		var frames: Array = []
@@ -924,19 +926,19 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var hud := hud_metrics(line)
 	if not film:
 		# Separate mounted signs leave the centre of the world unobscured.
-		var place_width := minf(size.x-hud.mode_rect.size.x-hud.body_gap*2,font.get_string_size(str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,hud.title_font).x+hud.padding*2)
+		var place_width := minf(size.x-hud.mode_rect.size.x-hud.body_gap*2,hud_font.get_string_size(str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,hud.title_font).x+hud.padding*2)
 		CampusMaterial.draw(canvas,Rect2(0,0,maxf(1,place_width),hud.header_height),"placard")
 		CampusMaterial.draw(canvas,hud.mode_rect,"placard")
 		if hud.compact:
 			var mode_text: String="深色观察" if State.d.native.mode == "dark" else "浅色操作"
-			var mode_width: float=font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
-			var baseline: float=(hud.header_height-font.get_height(hud.title_font))/2+font.get_ascent(hud.title_font)
-			canvas.draw_string(font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
-			var mode_baseline: float=(hud.header_height-font.get_height(hud.mode_font))/2+font.get_ascent(hud.mode_font)
-			canvas.draw_string(font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
+			var mode_width: float=hud_font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
+			var baseline: float=(hud.header_height-hud_font.get_height(hud.title_font))/2+hud_font.get_ascent(hud.title_font)
+			canvas.draw_string(hud_font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
+			var mode_baseline: float=(hud.header_height-hud_font.get_height(hud.mode_font))/2+hud_font.get_ascent(hud.mode_font)
+			canvas.draw_string(hud_font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
 		else:
-			canvas.draw_string(font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
-			canvas.draw_string(font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
+			canvas.draw_string(hud_font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
+			canvas.draw_string(hud_font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
 	var body_rect:Rect2=hud.body_rect
 	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0
 	if film:body_rect.position.y=hud.body_gap
@@ -948,7 +950,7 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 			overflow_feedback.layout_body(Rect2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset,body_rect.size.x-hud.body_padding*2,body_rect.size.y-hud.body_inset*2),hud.body_content_height)
 			overflow_feedback.show()
 		else:
-			canvas.draw_multiline_string(font,Vector2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,CampusMaterial.INK)
+			canvas.draw_multiline_string(hud_font,Vector2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset+hud_font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,CampusMaterial.INK)
 	if not film and (touch_controls or mobile_exploration): _draw_touch_controls(canvas)
 	if transition_alpha > 0: canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 
@@ -968,7 +970,7 @@ func hud_display_scale() -> float:
 	return 1.0
 
 func hud_metrics(text: String) -> Dictionary:
-	var hud:=WorldOverlay.hud(font,size,hud_display_scale(),text,mobile_exploration,float(State.d.native.settings.get("text_scale",1.0)))
+	var hud:=WorldOverlay.hud(hud_font,size,hud_display_scale(),text,mobile_exploration,float(State.d.native.settings.get("text_scale",1.0)))
 	var narrative:Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
 	if subtitle.is_empty() and is_instance_valid(narrative) and narrative.blocks_input() and (not narrative.has_method("owns_world_contract") or not narrative.owns_world_contract()):
 		# The dialogue supplies the useful text. Retire idle movement prose so

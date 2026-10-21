@@ -346,7 +346,7 @@ func _build_shell() -> void:
 	world_tasks.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	add_child(world_tasks)
 	file_dialog = FileDialog.new()
-	file_dialog.theme = NativeFileDialogTheme.create(font)
+	file_dialog.theme = NativeFileDialogTheme.create(Typography.body_font())
 	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
 	file_dialog.filters = PackedStringArray(["*.json ; 7:55 存档"])
 	file_dialog.file_selected.connect(_on_file_selected)
@@ -883,7 +883,7 @@ func _layout_modal() -> void:
 	var content: VBoxContainer = modal_panel.get_meta("dialog_content",null)
 	var column: VBoxContainer = modal_panel.get_meta("dialog_column",null)
 	if is_instance_valid(content) and is_instance_valid(column):
-		var chrome_height := 32.0
+		var chrome_height := modal_panel.get_theme_stylebox("panel").get_minimum_size().y
 		var visible_rows := 0
 		for row: Control in column.get_children():
 			if not row.visible: continue
@@ -1218,7 +1218,7 @@ func _invoke_action(action: Dictionary) -> void:
 		_show_form(action)
 	else: State.act(str(action.id),action.get("value"))
 
-func _modal_base(title: String) -> VBoxContainer:
+func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 	_cancel_world_effect()
 	_close_modal(_room302_studio_active())
 	var previous_focus = get_viewport().gui_get_focus_owner()
@@ -1230,13 +1230,18 @@ func _modal_base(title: String) -> VBoxContainer:
 	modal.theme = NativeUi.make_theme(Typography.body_font(),16,16)
 	modal.z_index = 100
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
-	modal.color = Color(0.03,0.06,0.08,0.88)
+	modal.color = Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76)
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(modal)
-	var panel := preload("res://scripts/ui/campus_paper_panel.gd").new()
+	var panel: PanelContainer
+	if surface in ["notebook","loose_sheet"]:
+		panel = preload("res://scripts/ui/campus_notebook_panel.gd").new()
+		panel.mode = surface
+	else:
+		panel = preload("res://scripts/ui/campus_paper_panel.gd").new()
+		panel.add_theme_stylebox_override("panel",CampusMaterial.panel_style("paper"))
 	modal_panel = panel
 	panel.name = "NativeModalPanel"
-	panel.add_theme_stylebox_override("panel",CampusMaterial.panel_style("paper"))
 	modal.add_child(panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation",12)
@@ -1247,7 +1252,9 @@ func _modal_base(title: String) -> VBoxContainer:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(label)
-	header.add_child(_button("关闭",_close_modal,Vector2(70,44)))
+	var close_button := _button("关闭",_close_modal,Vector2(70,44))
+	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
+	header.add_child(close_button)
 	modal_notice_slot=Control.new()
 	modal_notice_slot.name="NativeModalNotice"
 	modal_notice_slot.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -1471,7 +1478,7 @@ func _style_world_item(button: Button, selected: bool) -> void:
 	button.set_meta("selected_item",selected)
 
 func _inspect_item(item: Dictionary) -> void:
-	var box := _modal_base(str(item.name))
+	var box := _modal_base(str(item.name),"loose_sheet")
 	inspected_item_id=str(item.get("id",""))
 	if is_instance_valid(phone_chrome):
 		var artwork_row:=CenterContainer.new()
@@ -1494,8 +1501,9 @@ func _inspect_item(item: Dictionary) -> void:
 	box.add_child(_button("选择使用",func(): State.select_item(str(item.id)); _close_modal()))
 
 func _show_inventory() -> void:
-	var box := _modal_base("物品")
+	var box := _modal_base("物品","notebook")
 	var grid:=GridContainer.new()
+	grid.name="InventoryGrid"
 	grid.columns=2
 	grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	grid.add_theme_constant_override("h_separation",12)
@@ -1522,21 +1530,29 @@ func _show_inventory() -> void:
 		item_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 		item_button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		Typography.apply_body(item_button)
-		NativeUi.apply_button(item_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(10,8))
-		for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
-			item_button.get_theme_stylebox(mode).content_margin_top=48
+
 		if is_instance_valid(phone_chrome):
 			var icon:Control=phone_chrome._make_icon(item_button,item_id,32)
 			icon.set_anchors_preset(Control.PRESET_CENTER_TOP)
 			icon.position=Vector2(-16,10)
-		item_button.selection_requested.connect(func(id: String): State.select_item(id))
+		item_button.selection_requested.connect(func(id: String):
+			State.select_item(id)
+			for slot: Button in grid.get_children(): _style_inventory_card(slot,str(slot.item_id)==id)
+		)
 		item_button.inspection_requested.connect(func(_id: String): _inspect_item(item_entry))
 		grid.add_child(item_button)
+		_style_inventory_card(item_button,str(State.d.native.get("selected_item",""))==item_id)
 	if count == 0: box.add_child(_label("口袋里暂时没有物品。"))
 	for action in State.get_actions("phone_home"):
 		if str(action.id) == "c1_combine" and count >= 2:
 			var combine: Dictionary = action
 			box.add_child(_button("组合物品",func(): _invoke_action(combine)))
+
+func _style_inventory_card(button: Button, selected: bool) -> void:
+	NativeUi.apply_button(button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.CORAL if selected else CampusMaterial.PAPER_EDGE,0,1,16,Vector2(10,8))
+	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
+		button.get_theme_stylebox(mode).content_margin_top=48
+	load("res://scripts/ui/interaction_chrome.gd").set_selected(button,selected)
 
 func _show_world_journal() -> void:
 	# A queued top-row press cannot replace another input owner or a phone page.
@@ -1547,7 +1563,7 @@ func _show_world_journal() -> void:
 func _show_journal() -> void:
 	# Keep the destination promised by the mounted journal across rotation.
 	var return_to_world: bool=world_frame.is_visible_in_tree()
-	var box := _modal_base("调查记录")
+	var box := _modal_base("调查记录","notebook")
 	if return_to_world: modal_previous_focus=weakref(world)
 	_refresh_observation_comparison()
 	var current: Dictionary=CanteenObjective.current(State.d)
@@ -1575,7 +1591,7 @@ func _show_observation_comparison(from_journal: bool=false) -> void:
 	if is_instance_valid(active_game) or State.story_input_locked(): return
 	_refresh_observation_comparison()
 	if not observation_comparison_session.available(): return
-	var box := _modal_base("线索对照")
+	var box := _modal_base("线索对照","notebook")
 	if from_journal:
 		if world_frame.is_visible_in_tree(): modal_previous_focus=weakref(world)
 		var back:=_button("返回调查记录",_show_journal)
@@ -1672,6 +1688,12 @@ func _show_settings() -> void:
 	box.add_child(_button("全屏 / 窗口",func(): DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)))
 	if State.developer_tools_available(): box.add_child(_button("DEV · 独立场景检查",_show_developer))
 	box.add_child(_button("保存画面截图",func(): _close_modal(); _capture.call_deferred()))
+	# Settings are choices, not eight simultaneous primary actions.
+	for action_button in box.get_children():
+		if action_button is Button and action_button != save_progress_button:
+			NativeUi.apply_button(action_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
+			if action_button.text=="重新开始":
+				action_button.add_theme_color_override("font_color",CampusMaterial.CORAL)
 	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"
 	if is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
 	var note := _label(note_text,15,Color("6b756c"))

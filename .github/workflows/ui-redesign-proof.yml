@@ -51,6 +51,7 @@ jobs:
           git rev-parse HEAD > "$UI_CAPTURE_DIR/source-sha.txt"
           timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_ui_redesign.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
           test -f "$UI_CAPTURE_DIR/captures.json"
+          ! grep -E "SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:" "$UI_CAPTURE_DIR/render.log"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

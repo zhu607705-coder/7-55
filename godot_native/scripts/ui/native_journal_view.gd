@@ -24,11 +24,7 @@ func _ready() -> void:
 	name="NativeJournal"
 	size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	add_theme_constant_override("separation",12)
-	var panel:=PaperPanel.new()
-	panel.add_theme_stylebox_override("panel",CampusMaterial.panel_style("paper",{},Vector2(16,16)))
-	Hardware.set_selected(panel,true)
-	add_child(panel)
-	var current:=VBoxContainer.new();current.add_theme_constant_override("separation",8);panel.add_child(current)
+	var current:=VBoxContainer.new();current.add_theme_constant_override("separation",8);add_child(current)
 	current.add_child(_label("当前任务","JournalCurrentHeading",14,CampusMaterial.WOOD))
 	current.add_child(_label(objective,"JournalObjective",20))
 	if not detail.is_empty():

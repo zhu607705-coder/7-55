@@ -1598,7 +1598,7 @@
     },
     {
       "path": "godot_native/scripts/main.gd",
-      "sha256": "52f2a39fbb8848c7511ff5513d6f47dadc0f155fb7fad8c885a0beef93604859"
+      "sha256": "2c72367e27adfd1f7de4c01e4f4f92bea7523edf30f8b21a660286cf40027d02"
     },
     {
       "path": "godot_native/scripts/media/audio_director.gd",
@@ -2038,7 +2038,7 @@
     },
     {
       "path": "godot_native/scripts/presentation/library_story_view.gd",
-      "sha256": "9dc13c87140e7c57ecdac3993c3fc01dabe19f5bbbe0b872700735befb1c927d"
+      "sha256": "66b118714ade31b81eeb7286fae70ca986225d46d3f403f708480f244be0b282"
     },
     {
       "path": "godot_native/scripts/presentation/maintenance_cover_motion.gd",
@@ -2138,7 +2138,7 @@
     },
     {
       "path": "godot_native/scripts/ui/c3_lake_app_context.gd",
-      "sha256": "3808c6b5726b3d2b2cf6e4538d5869184efa753c6fccd1ba101cf74a37161e3d"
+      "sha256": "0e710ab478da3f43cb446ad8aefcf4f9b8d595773853bba3239eb28d38d88c84"
     },
     {
       "path": "godot_native/scripts/ui/c3_mixer_panel.gd",
@@ -2155,6 +2155,10 @@
     {
       "path": "godot_native/scripts/ui/c3_voice_progress.gd",
       "sha256": "c8bb3bfddd1d73c07cafc6765a2f5a765144531aa420c6de57821cc0f7161ffa"
+    },
+    {
+      "path": "godot_native/scripts/ui/campus_notebook_panel.gd",
+      "sha256": "155c35851cc950fccdadedc8626df2a28a94651d3d41eaf35b21bb1bb74e77a3"
     },
     {
       "path": "godot_native/scripts/ui/campus_paper_panel.gd",
@@ -2182,7 +2186,7 @@
     },
     {
       "path": "godot_native/scripts/ui/chapter3_phone_pages.gd",
-      "sha256": "f7c03ee3f8947603d9b2343a7f18aa237956b00942f567cd7eeda48a4d5f5674"
+      "sha256": "06bb7b82e367e659c740ee154d7cdb070695c5bbc3f92cb01d12a506b03f88f6"
     },
     {
       "path": "godot_native/scripts/ui/chapter3_world_layers.gd",
@@ -2314,7 +2318,7 @@
     },
     {
       "path": "godot_native/scripts/ui/native_journal_view.gd",
-      "sha256": "71d30cabf40983bf81dc4c383e2e2be62768c1756063e26809e361a640e678f7"
+      "sha256": "3eb2ec484e90717e77a465cbbec01cadf3939fc86ef284d90cd4375200ba74aa"
     },
     {
       "path": "godot_native/scripts/ui/native_library_pages.gd",
@@ -2358,7 +2362,7 @@
     },
     {
       "path": "godot_native/scripts/ui/observation_comparison_view.gd",
-      "sha256": "63413b47db98f61bff38471c4a2158b99e4995c1e626de16d64c736c4323c49e"
+      "sha256": "b7f75d27ae6f30fc95dbf00874711c84229868b29d65d758f66544af7752371f"
     },
     {
       "path": "godot_native/scripts/ui/overflow_text.gd",
@@ -2426,7 +2430,7 @@
     },
     {
       "path": "godot_native/scripts/ui/world_overlay_layout.gd",
-      "sha256": "60f9f5b6e775012efc162174fc514e7dd7e604bf5b6b3e4ee09f7aac79be04c0"
+      "sha256": "96257b097b62423ff52b96efc04b81065e892ae3cb7ea5231b15228e9f0d5457"
     },
     {
       "path": "godot_native/scripts/ui/world_viewport_container.gd",
@@ -2434,7 +2438,7 @@
     },
     {
       "path": "godot_native/scripts/world.gd",
-      "sha256": "a8e626f3d907cf1b1aa27fa323f56addb4d81487ef6f051fe691a54c64f1f188"
+      "sha256": "decd677065bff961bca1c3e5569de68a20089d20e67b181e711e49ff832019b1"
     },
     {
       "path": "godot_native/scripts/world_object_picker.gd",

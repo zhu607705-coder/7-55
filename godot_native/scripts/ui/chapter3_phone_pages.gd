@@ -422,8 +422,8 @@ func voice(root: VBoxContainer) -> void:
 		var play: Button=action(controls,"Ⅱ 暂停" if playing else "▶ 继续播放" if paused else "▶  %.1f 秒" % (float(generated.get("durationMs",recording.targetDurationMs))/1000),"c35_listen",recording.id)
 		NativeUi.apply_button(play,Color("c72f3a") if playing else Color("fffaf3"),Color.WHITE if playing else Color("942931"),Color("c72f3a"),0,2,14,Vector2(8,6))
 		if stage=="selection":
-			var keep: Button=action(controls,"✓ 移出候选" if kept else "保留这段" if reviewed else "试听后可选","c35_select_voice",recording.id)
-			NativeUi.apply_button(keep,GREEN if kept else Color("dbe7e2"),Color.WHITE if kept else INK,GREEN,0,2,14,Vector2(8,6))
+			var keep: Button=action(controls,"移出候选" if kept else "保留这段" if reviewed else "试听后可选","c35_select_voice",recording.id)
+			NativeUi.apply_button(keep,UiMaterial.NAVY if kept else UiMaterial.PAPER,UiMaterial.PAPER if kept else INK,UiMaterial.CORAL if kept else UiMaterial.PAPER_EDGE,0,2,15,Vector2(8,6))
 		else:
 			action(controls,"上移","c35_voice_move",{"id":recording.id,"shift":-1}).disabled=selected.find(recording.id)==0
 			action(controls,"下移","c35_voice_move",{"id":recording.id,"shift":1}).disabled=selected.find(recording.id)==selected.size()-1
