@@ -27,5 +27,30 @@ func run() -> void:
 	for frame in [-1,0,1,2,3]:
 		paper.frame=frame;paper.queue_redraw()
 		await capture(output.path_join("paper-"+str(frame)+".png"))
+	# Export canonical code-native artwork directly, not a screenshot crop or
+	# background-removal pass. The source generator's contract is 64x50.
+	var export_view := SubViewport.new()
+	export_view.size=Vector2i(64,50)
+	export_view.transparent_bg=true
+	export_view.render_target_update_mode=SubViewport.UPDATE_ALWAYS
+	export_view.canvas_item_default_texture_filter=Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+	root.add_child(export_view)
+	var export_paper: Node2D=load("res://scripts/objects/dorm_practice_paper.gd").new()
+	export_view.add_child(export_paper)
+	export_paper.position=Vector2(32,25)
+	export_paper.set_process(false)
+	for frame in [-1,0,1,2,3]:
+		export_paper.frame=frame
+		export_paper.queue_redraw()
+		for i in range(3):await process_frame
+		await RenderingServer.frame_post_draw
+		var sprite: Image=export_view.get_texture().get_image()
+		if sprite.get_size()!=Vector2i(64,50) or sprite.get_pixel(0,0).a!=0 or sprite.get_pixel(25,20).a<.9:
+			push_error("Canonical paper export size/alpha failed")
+			quit(1);return
+		if sprite.save_png(output.path_join("canonical-paper-"+str(frame)+".png"))!=OK:
+			push_error("Canonical paper export write failed")
+			quit(1);return
+	print("DORM_CANONICAL_ALPHA_EXPORT 5 poses 64x50")
 	print("DORM_CAPTURE_COMPLETE")
 	quit(0)

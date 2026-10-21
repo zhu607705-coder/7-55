@@ -40,3 +40,7 @@ node godot_native/tests/verify_canteen_paper_art_source.mjs
 ```
 
 The dedicated `Dorm modular candidate proof` workflow renders source/candidate comparison, separated objects and all five canonical paper poses using actual Godot 4.6.3 + Xvfb. This is visual review evidence, not production route acceptance.
+
+## Canonical transparent paper export
+
+The proof harness also exports `canonical-paper--1.png` and `canonical-paper-{0,1,2,3}.png` from an actual transparent 64×50 Godot SubViewport, placing the unchanged paper renderer at its original (32,25) origin. These are direct code-native artwork exports, not cropped screenshots, generated reinterpretations, or background removal. Alpha and dimensions are verified before saving. The renderer and original TypeScript generator belong to the existing repository; no new third-party image license is introduced. See `generation-prompts.md` for exact imagegen prompts used only on dorm furniture/background assets.
