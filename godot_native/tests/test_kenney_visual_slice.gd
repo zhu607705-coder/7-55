@@ -26,7 +26,7 @@ func run() -> void:
 	var space=InputEventKey.new();space.keycode=KEY_SPACE;space.pressed=true
 	Input.parse_input_event(space);await process_frame
 	check(scene.inspection_open and scene.observed,"routed Space opens paper")
-	check(scene.selected_overlay.plaque.visible and scene.selected_overlay.object_heading.text=="折起的纸条","confirmed object shows locked plaque")
+	check(scene.selected_overlay.plaque.visible and scene.selected_overlay.object_heading.is_visible_in_tree() and scene.selected_overlay.object_heading.text=="折起的纸条","confirmed object shows locked plaque")
 	check(not scene.tutorial.visible and not scene.selected_overlay.object_hint.visible,"first real interaction dismisses onboarding")
 	var click=InputEventMouseButton.new();click.button_index=MOUSE_BUTTON_LEFT;click.pressed=true
 	click.position=scene.world_to_screen(Vector2(531,1100))

@@ -13,7 +13,6 @@ var actor: CharacterBody2D
 var sprite: Sprite2D
 var camera: Camera2D
 var marker: Node2D
-var hint: Label
 var note: Label
 var title: Label
 var tutorial: Label
@@ -78,7 +77,7 @@ func _ready() -> void:
 	objects=[{"id":"paper","position":Vector2(531,834),"stand":Vector2(531,900),"title":"折起的纸条","node":room.get_node("Canonical0755Paper")},
 		{"id":"lamp","position":lamp.global_position,"stand":Vector2(650,lamp.global_position.y),"title":"桌边的灯","node":lamp}]
 	selected_overlay=LockedOverlay.new();add_child(selected_overlay)
-	hint=selected_overlay.object_heading;note=selected_overlay.object_body
+	note=selected_overlay.object_body
 	title=make_label("调试比较 · 独立样段（不写入正式进度）", "interaction", "tip")
 	tutorial=make_label("方向键移动 · 空格查看 / 收起 · 鼠标点地面或物件", "hud", "tip")
 
@@ -181,7 +180,7 @@ func refresh_focus() -> void:
 		cancel_feedback();focus_id=next
 		if inspection_open:close_inspection()
 	if focus_id.is_empty():
-		marker.active=false;hint.hide();action.disabled=true
+		marker.active=false;action.disabled=true
 	else:
 		var object=get_object(focus_id)
 		marker.position=object.position;marker.active=feedback
