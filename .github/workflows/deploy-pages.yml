@@ -116,6 +116,7 @@ jobs:
           NODE
 
       - name: Generate controller-earned fixture for mobile browser input
+        id: phone_recovery_inputs
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -245,12 +246,16 @@ jobs:
           NODE
 
       - name: Accept actual early charging and two-stage Tiyi phone input
+        # Independent diagnostic gate: an earlier browser failure still fails the job.
+        if: ${{ !cancelled() && steps.phone_recovery_inputs.outcome == 'success' }}
         timeout-minutes: 8
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p godot_native/exports/verification/web_phone_recovery
-          python3 -m http.server 5208 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-qa-site" > godot_native/exports/verification/web_phone_recovery/server.log 2>&1 &
+          mkdir -p "$RUNNER_TEMP/godot-phone-qa-site"
+          ln -s "$GITHUB_WORKSPACE/godot_native/exports/web-release" "$RUNNER_TEMP/godot-phone-qa-site/7-55"
+          python3 -m http.server 5208 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-phone-qa-site" > godot_native/exports/verification/web_phone_recovery/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5208/7-55/build-manifest.json

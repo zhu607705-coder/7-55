@@ -704,7 +704,23 @@ async function mobileWorldCase() {
   check(state(value).actOne.manualControlTested && state(value).actOne.phase === 'movement_ready', 'earned C2 fixture contains the original unlocked movement and exit gates');
   if (!active.touch) {
     const before = value.world.player;
-    await key('ArrowRight', 'ArrowRight', true); await interval(80); await key('ArrowRight', 'ArrowRight', false);
+    // A short wall-clock pulse can begin and end between loaded WASM frames.
+    // Keep real input held only until a fresh engine sample proves movement.
+    const direction = { at: Date.now(), method: 'observedKeyHold', code: 'ArrowRight', startSampleFrame: value.sampleFrame, endSampleFrame: value.sampleFrame, maxMs: 3000, released: false };
+    active.mobileWorld.inputs.push(direction);
+    try {
+      await key('ArrowRight', 'ArrowRight', true);
+      value = await poll(async () => {
+        const next = await snapshot();
+        if (!next || next.sampleFrame <= direction.endSampleFrame) return null;
+        direction.endSampleFrame = next.sampleFrame;
+        active.mobileWorld.samples.push({ at: Date.now(), sampleFrame: next.sampleFrame, world: next.world, facts: mobileFacts(next) });
+        return mobileDistance(before, next.world.player) > 1 ? next : null;
+      }, 'real desktop direction produces movement in a fresh engine sample', direction.maxMs);
+    } finally {
+      await key('ArrowRight', 'ArrowRight', false);
+      direction.finishedAt = Date.now(); direction.released = true;
+    }
     value = await mobileSample(value);
     check(mobileDistance(before, value.world.player) > 1 && worldTarget(value, 'exit_door').distance <= worldTarget(value, 'exit_door').radius, 'desktop direction input moves the actual actor while the earned door remains nearby');
     await press(' ', 'Space');

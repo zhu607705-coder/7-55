@@ -2449,6 +2449,11 @@ func _resume_canteen_defense_after_reset() -> void:
 	if not is_inside_tree(): return
 	_layout()
 	_resume_world_activity()
+	# Closing the import modal can queue focus while the old phone still hides
+	# the world. This reset callback runs after that layout boundary. Keep any
+	# real owner in either viewport; the world helper also guards phone/story UI.
+	if not world_frame.is_visible_in_tree(): world_viewport.gui_release_focus()
+	elif not is_instance_valid(get_viewport().gui_get_focus_owner()) and not is_instance_valid(world_viewport.gui_get_focus_owner()): _focus_world_surface()
 
 func _play_presentation_cue(cue: String) -> void:
 	if is_instance_valid(audio_director): audio_director.cue(cue)
