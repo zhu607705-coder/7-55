@@ -807,7 +807,7 @@ func _present(delta: float) -> void:
 	# Front/back have no dedicated jump atlas. Keep the original identity but
 	# stop playing a complete walking cycle in mid-air: extend, gather, land.
 	# Side-view authored jump cells and planted stair IK retain their ownership.
-	if direction != "side" and not (stair_gait and stair_gait.player_pose.get("active", false)):
+	if direction != "side":
 		if not model.player_grounded:
 			frame = 1 if jump_ticks <= 3 or model.player_velocity.y < -1.0 else 5
 			if jump_ticks <= 3: actor.scale = Vector3(.98, 1.025, 1)

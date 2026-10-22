@@ -36,7 +36,7 @@ func run() -> void:
 		view._present(1.0/60)
 		check(before == var_to_str([view.model.player, view.model.player_velocity, view.model.tick, view.model.player_grounded]), "presentation cannot change jump physics")
 		var facing: String = Model.visible_facing(view.retained_heading, view.camera.global_basis).facing
-		if facing != "side" and not view.stair_gait.player_pose.get("active", false):
+		if facing != "side":
 			if not view.model.player_grounded:
 				airborne += 1
 				coherent = coherent and view.actor.texture in [view.player_frames[facing][1], view.player_frames[facing][5]]
