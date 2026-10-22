@@ -658,6 +658,7 @@ func _start() -> void:
 	_clear_input()
 	jump_ticks = 0
 	land_ticks = 0
+	actor.scale = Vector3.ONE
 	retained_heading = Vector3.RIGHT
 	guard_heading = Vector3.RIGHT
 	follow_center = Vector3(-6,3.4,-1.3)
@@ -802,7 +803,19 @@ func _present(delta: float) -> void:
 	actor.offset = Vector2(0,62)
 	var frame: int = floori(model.tick/7.0)%8
 	if stair_gait: frame = stair_gait.source_frame(false, frame)
-	actor.texture = player_frames[direction][frame if absf(model.player_velocity.x)>.001 else 0]
+	actor.scale = Vector3.ONE
+	# Front/back have no dedicated jump atlas. Keep the original identity but
+	# stop playing a complete walking cycle in mid-air: extend, gather, land.
+	# Side-view authored jump cells and planted stair IK retain their ownership.
+	if direction != "side" and not (stair_gait and stair_gait.player_pose.get("active", false)):
+		if not model.player_grounded:
+			frame = 1 if jump_ticks <= 3 or model.player_velocity.y < -1.0 else 5
+			if jump_ticks <= 3: actor.scale = Vector3(.98, 1.025, 1)
+		elif land_ticks > 0:
+			frame = 1
+			var absorb: float = sin(PI * (7.0-land_ticks) / 7.0)
+			actor.scale = Vector3(1.0 + .04*absorb, 1.0 - .075*absorb, 1)
+	actor.texture = player_frames[direction][frame if absf(model.player_velocity.x)>.001 or not model.player_grounded or land_ticks>0 else 0]
 	if direction=="side" and absf(model.player_velocity.x)<.001: actor.texture=player_frames.idle
 	if direction=="side" and jump_frames.size()==4 and (not model.player_grounded or land_ticks>0) and not (stair_gait and stair_gait.player_pose.get("active", false)):
 		var index: int = 3 if model.player_grounded else (0 if jump_ticks<=2 else (1 if jump_ticks<=7 else 2))
@@ -855,7 +868,9 @@ func _sprite_socket(sprite: Sprite3D, pixel: Vector2) -> Vector3:
 	var x: float = (pixel.x-48)*(-1 if sprite.flip_h else 1)+sprite.offset.x
 	var source_half_height: float = sprite.region_rect.size.y * .5 if sprite.region_enabled else 64.0
 	var y: float = source_half_height-pixel.y+sprite.offset.y
-	return sprite.position+(camera.global_basis.x*x+camera.global_basis.y*y)*sprite.pixel_size
+	# Motion stretch is rooted at the same sole; the held phone/light must
+	# follow the scaled source wrist rather than remain at its unscaled pixel.
+	return sprite.position+(camera.global_basis.x*x*sprite.scale.x+camera.global_basis.y*y*sprite.scale.y)*sprite.pixel_size
 
 func _hand_pixel(guard: bool, direction: String, frame: int) -> Vector2:
 	# Authored from the visible hand/wrist of unchanged 96×128 source cells.

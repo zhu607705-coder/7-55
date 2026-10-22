@@ -36,6 +36,10 @@ jobs:
         run: |
           node godot_native/tools/sync_source.mjs
           GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
+      - name: Verify affected original motion contracts
+        if: matrix.source == 'candidate'
+        run: |
+          GODOT_TEST_REPORT=motion-tests.json node godot_native/tools/validate_native.mjs --filter 'endless_stair_(jump_pose|gait|step_pose|camera_input|integration|presentation|pursuit)|chase3d_(rider_fidelity|world_camera_contacts|view_lifecycle)|chase_asset_provenance'
       - name: Capture identical native motion fixtures
         run: |
           mkdir -p /tmp/755-motion-profile/{data,config,cache,state}
@@ -56,3 +60,4 @@ jobs:
           path: |
             motion-proof/
             import-report.json
+            motion-tests.json
