@@ -1,0 +1,34 @@
+{
+  "kind": "Post-UI source/editor focused regressions; previous production PCK is only a baseline",
+  "priorFailure": "Initial labels exceeded667x375 by6px; tightened short-window gap while preserving44px controls",
+  "stages": [
+    {
+      "test": "test_entry_previews.gd",
+      "status": 0,
+      "durationMs": 2456,
+      "log": "/tmp/codex-755-entry-ui-final-test_entry_previews.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nENTRY_PREVIEWS: 91 checks; 0 failures\n"
+    },
+    {
+      "test": "test_developer_tools_access.gd",
+      "status": 0,
+      "durationMs": 2164,
+      "log": "/tmp/codex-755-entry-ui-final-test_developer_tools_access.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nDEVELOPER_ACCESS_RUNTIME {\"args\":[],\"available\":true,\"debugBinary\":true,\"editorBinary\":true,\"productionFeature\":false}\nDEVELOPER_TOOLS_ACCESS 17 checks; 0 failures\n"
+    },
+    {
+      "test": "test_buct_entry.gd",
+      "status": 0,
+      "durationMs": 28246,
+      "log": "/tmp/codex-755-entry-ui-final-test_buct_entry.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nBUCT_ENTRY: 1236 checks; 0 failures\n"
+    },
+    {
+      "test": "test_all_scripts_parse.gd",
+      "status": 0,
+      "durationMs": 4955,
+      "log": "/tmp/codex-755-entry-ui-final-test_all_scripts_parse.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 731 scripts, 0 failures\n"
+    }
+  ]
+}

@@ -21,6 +21,7 @@ interface PhoneShellProps {
   inputBlocked?: boolean;
   showTaskBar?: boolean;
   showGlobalLayers?: boolean;
+  notificationsBlocked?: boolean;
   onTaskNavigate?: (quest: QuestViewModel) => void;
 }
 
@@ -97,6 +98,7 @@ export function PhoneShell({
   inputBlocked = false,
   showTaskBar = true,
   showGlobalLayers = true,
+  notificationsBlocked = false,
   onTaskNavigate
 }: PhoneShellProps) {
   const [shake, setShake] = useState<"" | "shake" | "shake-strong">("");
@@ -178,7 +180,7 @@ export function PhoneShell({
             <div className="brightness-veil" style={{ opacity: veilOpacity }} aria-hidden="true" />
             <ControlCenter state={state} />
             {showGlobalLayers ? <PresentationLayer events={events} /> : null}
-            {showGlobalLayers ? <ToastLayer events={events} state={state} surface="phone" /> : null}
+            {showGlobalLayers ? <ToastLayer events={events} state={state} surface="phone" blocked={Boolean(dialogueOverlay) || notificationsBlocked} /> : null}
             {dialogueOverlay}
           </section>
         </div>

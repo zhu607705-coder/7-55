@@ -1,0 +1,7 @@
+{
+  "kind": "pre-fix actual Main negative control",
+  "status": 1,
+  "durationMs": 7602,
+  "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nERROR: C4_MAIN: Empty route cannot bypass the existing260ms retry deadline on each frame\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_chapter4_device_main.gd:7)\n       [1] run (res://tests/test_chapter4_guard_repath.gd:32)\n       [2] prepare (res://tests/test_chapter4_device_main.gd:36)\n       [3] frames (res://tests/test_chapter4_device_main.gd:9)\nERROR: C4_MAIN: Empty route is retried when the original260ms deadline elapses\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_chapter4_device_main.gd:7)\n       [1] run (res://tests/test_chapter4_guard_repath.gd:34)\n       [2] prepare (res://tests/test_chapter4_device_main.gd:36)\n       [3] frames (res://tests/test_chapter4_device_main.gd:9)\nGUARD_REPATH_PROFILE {\"from\":[622.125,300.0],\"searchCalls\":18,\"searchUs\":5162104,\"sixInputFramesUs\":2451,\"to\":[602.156982421875,300.0]}\nCHAPTER4_GUARD_REPATH 10 checks; 2 failures\n",
+  "userData": "/Users/zhu/Library/Application Support/755-native-check-gr2jA6/data/SevenFiftyFiveNative"
+}

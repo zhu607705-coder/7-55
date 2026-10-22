@@ -1,0 +1,29 @@
+[
+  {
+    "label": "test_chapter4_phase_world.gd",
+    "exitCode": 0,
+    "elapsedMs": 1397,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCHAPTER4_PHASE_WORLD_TESTS 549 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_world.gd",
+    "passed": true,
+    "exitCode": 0,
+    "elapsedMs": 912,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCHAPTER4_WORLD_TESTS 27 checks; 0 failures\n"
+  },
+  {
+    "label": "test_all_scripts_parse.gd",
+    "passed": true,
+    "exitCode": 0,
+    "elapsedMs": 4839,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 727 scripts, 0 failures\n"
+  },
+  {
+    "label": "test_world_object_picking.gd",
+    "passed": true,
+    "exitCode": 0,
+    "elapsedMs": 5157,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_OBJECT_PICKING: 53 checks; 0 failures\n"
+  }
+]

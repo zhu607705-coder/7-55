@@ -27,6 +27,7 @@ import {
   upsertPhoto
 } from "./QizhenJournalModel";
 import { selectCampusWeather } from "./CampusWeatherModel";
+import { hasQizhenFinalAssemblyMaterials, QIZHEN_FINAL_RIG_PARTS } from "./QizhenFinalAssembly";
 import {
   isValidQizhenWeatherControlSummary,
   type QizhenWeatherControlSummary
@@ -809,6 +810,7 @@ export class ChapterThreeQizhenLakeController {
       if (state.qizhenLake.feedTinRetrieved) return "already_complete";
       this.atomicTransform("improvisedDipNet", "sealedFeedTin", {
         feedTinRetrieved: true,
+        legacyNetMaterialsConsumed: true,
         phase: "tool_chain"
       });
       this.events.emit("qizhen_feed_tin_retrieved");
@@ -833,9 +835,10 @@ export class ChapterThreeQizhenLakeController {
     if (state.qizhenLake.mode !== "light") return "wrong_mode";
     if (state.qizhenLake.magneticRodCombined) return "already_complete";
     const items = new Set(itemIds);
-    const finalParts = ["nylonCord", "brokenNetFrame", "swanMagnet", "fishingRod"] as const;
+    const finalParts = QIZHEN_FINAL_RIG_PARTS;
     if (finalParts.every((itemId) => items.has(itemId))) {
-      if (!finalParts.every((itemId) => state.items[itemId])) return "wrong_item";
+      if (!hasQizhenFinalAssemblyMaterials(state)) return "wrong_item";
+      const consumedParts = finalParts.filter((itemId) => state.items[itemId]);
       this.store.setState((current) => ({
         ...current,
         items: {
@@ -852,12 +855,13 @@ export class ChapterThreeQizhenLakeController {
         qizhenLake: {
           ...current.qizhenLake,
           netCombined: true,
+          legacyNetMaterialsConsumed: false,
           magneticRodCombined: true,
           phase: "paper_capture"
         }
       }));
       this.events.emit("combine_item", {
-        items: [...finalParts],
+        items: consumedParts,
         result: "magneticFishingRod"
       });
       this.events.emit("get_item", { itemId: "magneticFishingRod", sourceScene: "qizhen_lake" });

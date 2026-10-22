@@ -1,0 +1,79 @@
+name: Native cross-PR integration
+
+on:
+  push:
+    branches: [main, godot-version]
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'godot_native/**'
+      - 'examples/qizhen_blender_nearshore/**'
+      - 'examples/legacy_godot_theater/**'
+      - 'samples/qizhen-rain-rescue-native/**'
+      - 'examples/qizhen_playable_chase/**'
+      - 'examples/qizhen_large_world/**'
+      - 'examples/blender_stair_sample/**'
+      - 'scripts/verify-native-pr-integration.mjs'
+      - '.github/workflows/native-pr-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  source-and-formal-handoffs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned official Godot
+        run: |
+          curl --fail --location --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+          sudo install -m 755 "$RUNNER_TEMP/godot/Godot_v4.6.3-stable_linux.x86_64" /usr/local/bin/godot
+      - name: Prepare original production inputs
+        run: |
+          npm ci --ignore-scripts
+          node godot_native/tools/sync_source.mjs
+          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          bash godot_native/tools/convert_media.sh
+      - name: Verify source namespaces and formal presentation handoffs
+        env:
+          PR_INTEGRATION_REPORT: native-pr-integration-report.json
+        run: node scripts/verify-native-pr-integration.mjs --runtime
+      - name: Verify real pointer entry and touch targets
+        run: |
+          set -euo pipefail
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+          sandbox=$(mktemp -d /tmp/755-pr-graphical-XXXXXX)
+          mkdir -p "$sandbox"/{data,config,cache,state}
+          export XDG_DATA_HOME="$sandbox/data" XDG_CONFIG_HOME="$sandbox/config" XDG_CACHE_HOME="$sandbox/cache" XDG_STATE_HOME="$sandbox/state"
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" godot --audio-driver Dummy --path godot_native --script res://tests/test_pr_integration_entry.gd | tee native-pr-entry-graphical.log
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" godot --audio-driver Dummy --path godot_native --resolution 390x844 --script res://tests/test_rain_rescue.gd -- --graphical-touch-skip | tee native-pr-rescue-touch.log
+      - name: Verify source-less packed adapters
+        run: |
+          set -euo pipefail
+          sandbox=$(mktemp -d /tmp/755-pr-pack-XXXXXX)
+          mkdir -p "$sandbox"/{data,config,cache,state,empty}
+          export XDG_DATA_HOME="$sandbox/data" XDG_CONFIG_HOME="$sandbox/config" XDG_CACHE_HOME="$sandbox/cache" XDG_STATE_HOME="$sandbox/state"
+          godot --headless --path godot_native --export-pack 'Linux x86_64' "$sandbox/production.pck"
+          cd "$sandbox/empty"
+          godot --headless --audio-driver Dummy --main-pack "$sandbox/production.pck" --script "$GITHUB_WORKSPACE/godot_native/tools/verify_pr_integration_pck.gd" | tee "$GITHUB_WORKSPACE/native-pr-packed-adapters.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-pr-integration-report
+          path: |
+            native-pr-integration-report.json
+            native-pr-entry-graphical.log
+            native-pr-rescue-touch.log
+            native-pr-packed-adapters.log

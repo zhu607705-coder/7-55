@@ -1,0 +1,65 @@
+[
+  {
+    "label": "test_chapter4_elevator_visibility.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T11:42:59.740Z",
+    "finishedAt": "2026-10-19T11:43:22.635Z",
+    "elapsedMs": 22895,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_ELEVATOR_VISIBILITY 30 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_elevator_source.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T11:43:22.638Z",
+    "finishedAt": "2026-10-19T11:43:23.450Z",
+    "elapsedMs": 812,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_ELEVATOR_SOURCE 72 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_post_stair_return.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T11:43:23.453Z",
+    "finishedAt": "2026-10-19T11:43:23.882Z",
+    "elapsedMs": 429,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_POST_STAIR_RETURN 78 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_elevator_inputs.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T11:42:59.736Z",
+    "finishedAt": "2026-10-19T11:43:48.420Z",
+    "elapsedMs": 48684,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_ELEVATOR_INPUTS: 52 checks; 0 failures\n"
+  },
+  {
+    "label": "test_lake_fishing_focus_return.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T11:43:48.423Z",
+    "finishedAt": "2026-10-19T11:43:51.574Z",
+    "elapsedMs": 3151,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLAKE_FISHING_FOCUS_RETURN: 32 checks; 0 failures\n"
+  },
+  {
+    "label": "test_all_scripts_parse.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T11:43:51.576Z",
+    "finishedAt": "2026-10-19T11:43:56.335Z",
+    "elapsedMs": 4759,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 726 scripts, 0 failures\n"
+  },
+  {
+    "label": "test_lake_main_handoffs.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T11:43:23.884Z",
+    "finishedAt": "2026-10-19T11:44:00.586Z",
+    "elapsedMs": 36702,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLAKE_MAIN_HANDOFF_TEST_SHA256 1a0199060e86aaecab5f210280bbbb163f20e230c170e8a8da207b5d98e1fa82\nRAIN_NATURAL_HANDOFF_MS 19621 observation_ms 24209\nSWAN_NATURAL_HANDOFF_MS 7170 initial_timeline_ms 0.0\nLake Main natural handoffs: 36 checks; 0 failures; mode=headless OS-focus seam\n"
+  }
+]

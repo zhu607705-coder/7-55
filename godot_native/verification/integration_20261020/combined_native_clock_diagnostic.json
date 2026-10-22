@@ -1,0 +1,11 @@
+{
+  "startedAt": "2026-10-19T16:51:22.970Z",
+  "durationMs": 5151,
+  "status": 1,
+  "error": null,
+  "passed": false,
+  "fixture": "/Users/zhu/Library/Application Support/755-c3-media-retest-ZztBtW",
+  "script": "/tmp/codex-755-c3-media-diagnostic.gd",
+  "sourceUnchanged": true,
+  "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nAUDIO_FIRST {\"actual\":0.931999981403351,\"length\":5.19999980926514,\"marks\":true,\"path\":\"res://assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_lake.mp3\",\"session\":{\"clip_id\":\"lake\",\"duration_ms\":5200.0,\"end_ms\":5200.0,\"error\":\"\",\"fallback\":false,\"phase\":\"playing\",\"position_ms\":931.999981403351},\"verified\":931.999981403351}\nAUDIO_AFTER {\"actual\":4.00799989700317,\"heardReady\":false,\"length\":5.19999980926514,\"marks\":true,\"session\":{\"clip_id\":\"lake\",\"duration_ms\":5200.0,\"end_ms\":5200.0,\"error\":\"\",\"fallback\":false,\"phase\":\"playing\",\"position_ms\":4007.99989700317},\"stateHeard\":[],\"verified\":4007.99989700317}\nEXCERPT_REJECT {\"handled\":true,\"message\":\"先试听这段录音。\"}\nERROR: actual AudioStreamPlayer crossed80 percent\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (/tmp/codex-755-c3-media-diagnostic.gd:14)\n       [1] run (/tmp/codex-755-c3-media-diagnostic.gd:46)\n"
+}

@@ -1,0 +1,75 @@
+{
+  "activeClockSeconds": 63.7583333333304,
+  "captures": [
+    {
+      "age": 3.33333333333332,
+      "id": 3,
+      "spawn_time": 13.358333333333,
+      "stage": 0,
+      "time": 16.6916666666664,
+      "word": "等"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 5,
+      "spawn_time": 24.8916666666657,
+      "stage": 1,
+      "time": 28.574999999999,
+      "word": "经度"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 7,
+      "spawn_time": 32.4416666666653,
+      "stage": 1,
+      "time": 36.1249999999986,
+      "word": "纬度"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 9,
+      "spawn_time": 44.3249999999979,
+      "stage": 2,
+      "time": 48.0083333333313,
+      "word": "旁白"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 11,
+      "spawn_time": 51.8749999999975,
+      "stage": 2,
+      "time": 55.5583333333308,
+      "word": "还没"
+    },
+    {
+      "age": 3.68333333333332,
+      "id": 13,
+      "spawn_time": 59.4249999999971,
+      "stage": 2,
+      "time": 63.1083333333304,
+      "word": "说完"
+    }
+  ],
+  "checks": 28,
+  "failures": 0,
+  "initialNoInputContacts": [
+    {
+      "board_angle": 0.0,
+      "demonstration": true,
+      "id": 2,
+      "normal": "(0.0, -1.0)",
+      "point": "(245.7001, 628.95)",
+      "text": "走",
+      "time": 11.8916666666666
+    }
+  ],
+  "minObservedCaptureReadableSeconds": 3.33333333333332,
+  "sourceCardStartY": 294,
+  "spawnIntervalsOnlyMs": [
+    350,
+    1000,
+    1900,
+    700
+  ],
+  "targetTransitSeconds": "3.0 + .35 per character"
+}

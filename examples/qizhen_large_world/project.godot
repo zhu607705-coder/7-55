@@ -1,0 +1,15 @@
+config_version=5
+[application]
+config/name="7:55 · 启真湖大地图地形原型"
+run/main_scene="res://scenes/qizhen_large_world.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="disabled"
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0
+[application/run]
+max_fps=60

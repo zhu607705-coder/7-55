@@ -1,0 +1,238 @@
+{
+  "schema": "755-godot-web-compact-pass-v1",
+  "evidence": {
+    "reportPath": "godot_native/exports/verification/godot_web_accepted_final_full_20261020/web-acceptance.json",
+    "reportSha256": "1bf41dd4e09729f2b2bae93eca5c3931f935357d54ab88d015ad242183465abf",
+    "runnerSha256": "0ad27e2f179c74433e3dcc5fbc4addcb6323304ffe0d42822b063d9c46d0f5f1",
+    "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+    "passed": true,
+    "checksPassed": 242,
+    "checksTotal": 242,
+    "casesPassed": 3,
+    "casesTotal": 3,
+    "startedAt": "2026-10-20T03:04:47.459Z",
+    "completedAt": "2026-10-20T03:09:18.147Z"
+  },
+  "engine": "4.7.2.stable.official",
+  "cases": [
+    {
+      "id": "desktop-1280",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "passed": true,
+      "bootReadyMs": 597,
+      "mainReadyMs": 3319,
+      "renderer": {
+        "webgl2": true,
+        "vendor": "Google Inc. (Apple)",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)"
+      },
+      "documentOverflow": {
+        "x": false,
+        "y": false
+      },
+      "browserErrors": [],
+      "imports": [
+        {
+          "filename": "7-55-godot-save.json",
+          "sha256": "d21a46b682b98c68b8eb7b254e2e55ff5788734f50719d715a5b47498531e5bb",
+          "bytes": 11805,
+          "chapter": 1,
+          "page": "phone_home",
+          "scene": "",
+          "firstAcceptedAt": 1792465500557,
+          "observedAt": 1792465500911,
+          "saveDigest": "25c159f0da18a39df5a127bd2a5420487dd3059a62eadb3c03c9bf802b2b4e43"
+        },
+        {
+          "filename": "after_c1_checkin.json",
+          "sha256": "c2c174b8a63b47e8ad48f638e14e0bb468dc4a8bad8cecb5b4807294c71da501",
+          "bytes": 14207,
+          "chapter": 1,
+          "page": "ending",
+          "scene": "",
+          "firstAcceptedAt": 1792465512554,
+          "observedAt": 1792465512908,
+          "saveDigest": "54751f78669757b12eded048de14a085b01a1ab20b920cae97e0dc4babd2dad3"
+        },
+        {
+          "filename": "after_c2_dorm_exit.json",
+          "sha256": "aa6bef44b64446754a01278661d0e4177e7dd41311896bb7f63c83b820891668",
+          "bytes": 17257,
+          "chapter": 2,
+          "page": "zjuding",
+          "scene": "campus_bootstrap",
+          "firstAcceptedAt": 1792465608130,
+          "observedAt": 1792465608488,
+          "saveDigest": "f2e46f1f922ab4d518bdbec72909efae948343a2b22bce1c7be45c888090dcaf"
+        },
+        {
+          "filename": "after_c3_defense_result.json",
+          "sha256": "fa8b6b39bf85e96a9ace9d37ab6f9d3225d9a343e4aaf2b300b81f349786b004",
+          "bytes": 23780,
+          "chapter": 3,
+          "page": "c3_canteen",
+          "scene": "canteen_interior",
+          "firstAcceptedAt": 1792465615176,
+          "observedAt": 1792465615529,
+          "saveDigest": "cf159a2f02333ec47a220c92d7846db79ecbbe35b85d8b0d4826ef1d726a6196"
+        },
+        {
+          "filename": "after_c3_enter_theater.json",
+          "sha256": "f808d2cdb53063643da1da50a2742f8df944d878207bcfdb8a06c03e503b27d6",
+          "bytes": 23907,
+          "chapter": 3,
+          "page": "c3_theater",
+          "scene": "theater_interior",
+          "firstAcceptedAt": 1792465625758,
+          "observedAt": 1792465626112,
+          "saveDigest": "6c3f1e3f0edf5841f39f34dd8dccdfa04075ec97b411c9786c268802f31c9b76"
+        },
+        {
+          "filename": "after_c3_target_theater_exit.json",
+          "sha256": "caec9e514482edcf5e84701d4f25802e1500f79654a65faebae87a3574feec67",
+          "bytes": 25939,
+          "chapter": 3,
+          "page": "c3_location",
+          "scene": "campus_qizhen_loop",
+          "firstAcceptedAt": 1792465643868,
+          "observedAt": 1792465644223,
+          "saveDigest": "fb7d01aaae615fbe8e8a4d07be3d778016c74d827722602c74942a7ccf968ce1"
+        },
+        {
+          "filename": "action_c4_prologue_end.json",
+          "sha256": "bc675c5d944ff03f7d1c8d625c1266b0ed7ac8dfc280ce88284aefa10b68f361",
+          "bytes": 31665,
+          "chapter": 4,
+          "page": "c4_notes",
+          "scene": "duan_yongping_temporal_maze",
+          "firstAcceptedAt": 1792465670507,
+          "observedAt": 1792465670862,
+          "saveDigest": "aac258d6c3ec2ff9aba712ffbf9b55d3e824d398d9e6a1281742aae79a6201c5"
+        },
+        {
+          "filename": "before_c3_chase_result.json",
+          "sha256": "6dda1e12332316961cac36ef4b47a997696048c9f54630aa1e6dc4f7c7da4771",
+          "bytes": 23727,
+          "chapter": 3,
+          "page": "c3_canteen",
+          "scene": "campus_bootstrap",
+          "firstAcceptedAt": 1792465679178,
+          "observedAt": 1792465679729,
+          "saveDigest": "1fb3c1b33d458b0847982ec6cc8ca9cbdb29daf6b384d9aa98ac08be2843ded5"
+        },
+        {
+          "filename": "after_c35_replay.json",
+          "sha256": "f0890f93c43b688bdb4909d226f35e7921d37c63b2ac127e07342e9ef18a3aa6",
+          "bytes": 31636,
+          "chapter": 3,
+          "page": "c4_notes",
+          "scene": "",
+          "firstAcceptedAt": 1792465696946,
+          "observedAt": 1792465697302,
+          "saveDigest": "9de16e977c8450644efd24d21e4613f43026a1c6069f18d39608b8077cda5c50"
+        }
+      ]
+    },
+    {
+      "id": "desktop-1440",
+      "width": 1440,
+      "height": 900,
+      "touch": false,
+      "passed": true,
+      "bootReadyMs": 689,
+      "mainReadyMs": 3348,
+      "renderer": {
+        "webgl2": true,
+        "vendor": "Google Inc. (Apple)",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)"
+      },
+      "documentOverflow": {
+        "x": false,
+        "y": false
+      },
+      "browserErrors": [],
+      "imports": [
+        {
+          "filename": "7-55-godot-save.json",
+          "sha256": "9e27d7dffc3d55e7de7c4ddcf4c1a8d680c3a021a045c7cb19d9ff4fabcc16f7",
+          "bytes": 11805,
+          "chapter": 1,
+          "page": "phone_home",
+          "scene": "",
+          "firstAcceptedAt": 1792465725887,
+          "observedAt": 1792465726241,
+          "saveDigest": "70542beeedfd17a77e9780ca52a2602323b5fa222d09e4321e081e6f40ebe478"
+        }
+      ]
+    },
+    {
+      "id": "touch-390",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "passed": true,
+      "bootReadyMs": 666,
+      "mainReadyMs": 3348,
+      "renderer": {
+        "webgl2": true,
+        "vendor": "Google Inc. (Apple)",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)"
+      },
+      "documentOverflow": {
+        "x": false,
+        "y": false
+      },
+      "browserErrors": [],
+      "imports": [
+        {
+          "filename": "7-55-godot-save.json",
+          "sha256": "6fc0ff4d0cb0c5c6385a4466157ec4c4d2f5ada76e8fc2ea383634f32aec70b9",
+          "bytes": 11805,
+          "chapter": 1,
+          "page": "phone_home",
+          "scene": "",
+          "firstAcceptedAt": 1792465743862,
+          "observedAt": 1792465744216,
+          "saveDigest": "28a60b20146feaa3bcc252b2ab1315cd65bb651c021aa2c8667ebddfe1ff34c8"
+        },
+        {
+          "filename": "after_c1_checkin.json",
+          "sha256": "c2c174b8a63b47e8ad48f638e14e0bb468dc4a8bad8cecb5b4807294c71da501",
+          "bytes": 14207,
+          "chapter": 1,
+          "page": "ending",
+          "scene": "",
+          "firstAcceptedAt": 1792465748148,
+          "observedAt": 1792465748504,
+          "saveDigest": "da959c8e4ee564c4b9329fac528cf3217fe3eea61ce01e42d795fa85048f14ca"
+        }
+      ]
+    }
+  ],
+  "coverage": [
+    "Real Godot WASM/PCK download and SHA checks; WebGL2 loader, click-to-start, native story entry.",
+    "Alarm/wake/phone input, selected mode, actual new-document reload, portable save download and ordinary file-picker re-import; malformed JSON preserves progress; real PNG download.",
+    "Production developer controls absent, historical developer URL cannot skip chapters; read-only snapshot cannot mutate engine state.",
+    "Original browser localStorage keys preserved byte-for-byte, no automatic overwrite, explicit legacy import and native reload.",
+    "C1 actual clock, stationary failure, same-stage retry, reread pause, six target contacts across three stages, interrupted/released/held keyboard input, real background interruption clearing partial hold, authored handoff to C2.",
+    "390x844 scaled touch drag and cancellation; C2 real world movement; ordinary earned-save imports for C3 canteen, theater, lake approach, early C4 A1 map; each handoff reloads.",
+    "Paid unfinished SourceChase3D renders source meshes; real start, steering, charge/release jump, advancing distance; manual pause survives background; ordinary Exit/save/reload preserve inventory, wallet and unfinished ride.",
+    "Actual C4 OGV and audio clocks grow visibly; loop-aware background test, exact C4 cue timeline alignment, Return/re-entry, ordinary skip still requires task acknowledgement."
+  ],
+  "errors": [],
+  "assetHashes": [
+    {
+      "url": "http://127.0.0.1:5209/7-55/index.wasm",
+      "bytes": 39514754,
+      "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
+    },
+    {
+      "url": "http://127.0.0.1:5209/7-55/index.pck",
+      "bytes": 539428704,
+      "sha256": "de9d88937ef29f5a98de380219d0f7b1c01382e1fa4f0da3064e2e03a1e14454"
+    }
+  ],
+  "counting": "242 checks is this complete run only. Companion runs overlap and must not be added as unique coverage."
+}

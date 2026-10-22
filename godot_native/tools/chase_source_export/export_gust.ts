@@ -1,0 +1,12 @@
+import path from 'node:path';
+import {repositoryRoot,outputDirectory} from './paths';
+import './node_adapter';
+import * as THREE from 'three';
+import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter.js';
+import {ChaseThreeRenderer} from '../../../src/scenes/rpg/canteen-chase/ChaseThreeRenderer';
+import {STUNT_PICKUPS} from '../../../src/scenes/rpg/canteen-chase/ChaseStuntModel';
+import {writeFile} from 'node:fs/promises';
+const renderer:any=Object.create(ChaseThreeRenderer.prototype);renderer.scene=new THREE.Scene();renderer.stuntObjects=new Map();renderer.animationSeconds=0;renderer.rider={group:new THREE.Group()};renderer.bellRing=new THREE.Mesh(new THREE.RingGeometry(1,2),new THREE.MeshBasicMaterial());renderer.trayShield=new THREE.Mesh();
+renderer.updateStuntObjects({distance:100,collectedPickupIds:new Set(),bellPulse:0,shield:false});
+const id=STUNT_PICKUPS.find(x=>x.kind==='gust')!.id,group=renderer.stuntObjects.get(id);group.position.set(0,0,0);group.rotation.set(0,0,0);let index=0;group.traverse((n:any)=>n.name='stunt_gust_'+index++);
+const glb=await new GLTFExporter().parseAsync(group,{binary:true,onlyVisible:false,trs:true});await writeFile(outputDirectory+path.sep+'stunt_gust.glb',Buffer.from(glb as ArrayBuffer));console.log('SOURCE_GUST',glb.byteLength);

@@ -1,0 +1,81 @@
+# 7-55 isolated delivery v1. Include INSIDE the existing HTTPS server {}.
+# Render @@REMOTE_ROOT@@ and @@ROOT_PARENT@@ with deploy_web_server.mjs --dry-run.
+# Keep the existing site's root, / location, TLS certificate and upstreams.
+# Do not expose /7-55 over an IP whose TLS certificate does not match.
+
+location = /7-55 {
+    return 308 /7-55/;
+}
+
+# An atomic current symlink selects only this tiny entry document. It redirects
+# to an immutable release URL before the engine or a chapter download begins.
+location = /7-55/ {
+    alias @@REMOTE_ROOT@@/current/.755-entry.html;
+    default_type text/html;
+    open_file_cache off;
+    error_page 404 =404 @seven55_resource_missing;
+    add_header Cache-Control "no-store" always;
+}
+location = /7-55/index.html {
+    alias @@REMOTE_ROOT@@/current/.755-entry.html;
+    default_type text/html;
+    open_file_cache off;
+    error_page 404 =404 @seven55_resource_missing;
+    add_header Cache-Control "no-store" always;
+}
+location ^~ /7-55/current/ {
+    error_page 404 =404 @seven55_resource_missing;
+    return 404;
+}
+
+# This root applies only to this prefix. A missing chunk must return 404,
+# never the other project's SPA index or a different release's resource.
+location ^~ /7-55/releases/ {
+    root @@ROOT_PARENT@@;
+    index index.html;
+    try_files $uri $uri/ =404;
+    error_page 404 =404 @seven55_resource_missing;
+    autoindex off;
+    types {
+        text/html html;
+        text/javascript js mjs;
+        application/json json;
+        application/wasm wasm;
+        application/octet-stream pck;
+        image/png png;
+        image/svg+xml svg;
+        text/css css;
+    }
+    default_type application/octet-stream;
+    # Release URLs contain a digest of EVERY delivered file. Even index.js and
+    # non-hash PCK names are immutable at these versioned URLs.
+    # Do not mark 404/5xx responses immutable: a failed download must be retryable.
+    add_header Cache-Control "public, max-age=31536000, immutable";
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/javascript application/json application/wasm text/css image/svg+xml;
+    # Optional, only with nginx's http_gzip_static_module and validated .gz files:
+    # gzip_static on;
+    # Optional Brotli requires its module plus validated .br files; do not enable
+    # an unavailable module. PCK media is already compressed; benchmark first.
+
+    location ~ /\. { return 404; }
+    location ~ \.(?:html|json)$ {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache" always;
+    }
+}
+
+# Prevent the existing site's catch-all / route serving HTML at accidental game
+# resource paths. Only the exact entry and immutable releases above are public.
+location ^~ /7-55/ {
+    error_page 404 =404 @seven55_resource_missing;
+    return 404;
+}
+location @seven55_resource_missing {
+    recursive_error_pages off;
+    default_type text/plain;
+    add_header Cache-Control "no-store" always;
+    return 404 "7:55 resource not found\n";
+}

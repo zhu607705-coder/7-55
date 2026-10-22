@@ -1,0 +1,101 @@
+[
+  {
+    "label": "test_chapter4_chase_space_integration.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:16:28.442Z",
+    "finishedAt": "2026-10-19T12:16:31.678Z",
+    "elapsedMs": 3236,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nHIGH_REFRESH_CHASE 20783 frames; 548 proof points\nCHAPTER4_CHASE_SPACE_INTEGRATION 160 checks; 0 failures\n"
+  },
+  {
+    "label": "test_activity_focus_return.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:16:28.437Z",
+    "finishedAt": "2026-10-19T12:16:41.005Z",
+    "elapsedMs": 12568,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nACTIVITY_FOCUS_RETURN: 54 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_elevator_visibility.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:16:41.007Z",
+    "finishedAt": "2026-10-19T12:17:03.884Z",
+    "elapsedMs": 22877,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_ELEVATOR_VISIBILITY 30 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_elevator_source.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:17:03.887Z",
+    "finishedAt": "2026-10-19T12:17:04.712Z",
+    "elapsedMs": 825,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_ELEVATOR_SOURCE 72 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_post_stair_return.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:17:04.714Z",
+    "finishedAt": "2026-10-19T12:17:05.147Z",
+    "elapsedMs": 433,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_POST_STAIR_RETURN 78 checks; 0 failures\n"
+  },
+  {
+    "label": "test_canteen_defense_resume.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:17:05.148Z",
+    "finishedAt": "2026-10-19T12:17:09.062Z",
+    "elapsedMs": 3914,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCANTEEN_DEFENSE_RESUME: 34 checks; 0 failures; controller_starts=7\n"
+  },
+  {
+    "label": "test_native_chase_integration.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:17:09.064Z",
+    "finishedAt": "2026-10-19T12:17:11.798Z",
+    "elapsedMs": 2734,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_CHASE_INTEGRATION: 97 checks; 0 failures\n"
+  },
+  {
+    "label": "test_lake_fishing_focus_return.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:17:11.800Z",
+    "finishedAt": "2026-10-19T12:17:15.032Z",
+    "elapsedMs": 3232,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLAKE_FISHING_FOCUS_RETURN: 32 checks; 0 failures\n"
+  },
+  {
+    "label": "test_chapter4_elevator_inputs.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:16:31.680Z",
+    "finishedAt": "2026-10-19T12:17:20.278Z",
+    "elapsedMs": 48598,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nC4_ELEVATOR_INPUTS: 54 checks; 0 failures\n"
+  },
+  {
+    "label": "test_all_scripts_parse.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:17:20.281Z",
+    "finishedAt": "2026-10-19T12:17:25.052Z",
+    "elapsedMs": 4771,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 727 scripts, 0 failures\n"
+  },
+  {
+    "label": "test_lake_main_handoffs.gd",
+    "passed": true,
+    "exitCode": 0,
+    "startedAt": "2026-10-19T12:17:15.035Z",
+    "finishedAt": "2026-10-19T12:17:51.711Z",
+    "elapsedMs": 36676,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLAKE_MAIN_HANDOFF_TEST_SHA256 1a0199060e86aaecab5f210280bbbb163f20e230c170e8a8da207b5d98e1fa82\nRAIN_NATURAL_HANDOFF_MS 19617 observation_ms 24254\nSWAN_NATURAL_HANDOFF_MS 7173 initial_timeline_ms 50.0\nLake Main natural handoffs: 36 checks; 0 failures; mode=headless OS-focus seam\n"
+  }
+]

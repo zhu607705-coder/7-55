@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { validateChapter4H3Build } from "./verify-chapter4-h3-build.mjs";
 
 const EXPECTED_PHASES = [
   "opening_handoff",
@@ -229,10 +230,6 @@ const task7RuntimeSourcePaths = Object.freeze({
   )),
   overlay: fileURLToPath(new URL(
     "../src/scenes/rpg/Chapter4PrologueOverlay.tsx",
-    import.meta.url
-  )),
-  viteConfig: fileURLToPath(new URL(
-    "../vite.config.ts",
     import.meta.url
   )),
   viteEnv: fileURLToPath(new URL(
@@ -541,7 +538,6 @@ function validateTask7RuntimeSources(errors) {
   const sources = readTask7RuntimeSources(errors);
   const timeline = sources.timeline ?? "";
   const overlay = sources.overlay ?? "";
-  const viteConfig = sources.viteConfig ?? "";
   const viteEnv = sources.viteEnv ?? "";
   const app = sources.app ?? "";
   const prologueGate = sources.prologueGate ?? "";
@@ -610,26 +606,6 @@ function validateTask7RuntimeSources(errors) {
     || !/<canvas/.test(overlay)
     || !/prefersReducedMotion/.test(overlay)) {
     errors.push("Task 7 overlay must play the silent H3 asset through a single-file-safe source and preserve the canvas fallback");
-  }
-  if (!/const\s+CHAPTER4_H3_EMBEDDED_QUERY\s*=\s*["']chapter4-h3-embedded["']\s*;/.test(viteConfig)
-    || !/const\s+CHAPTER4_H3_BASE64_CHUNK_SIZE\s*=\s*256\s*\*\s*1024\s*;/.test(viteConfig)
-    || !/defineConfig,\s*normalizePath,\s*type\s+Plugin/.test(viteConfig)
-    || !/const\s+CHAPTER4_H3_SOURCE_PATH\s*=\s*normalizePath\(resolve\([\s\S]*?["']src\/assets\/rpg\/cinematics\/chapter4-prologue\/chapter35_to_chapter4_h3_transition\.mp4["'][\s\S]*?\)\)\s*;/.test(viteConfig)
-    || !/function\s+embedChapter4H3AsChunks\(\):\s*Plugin\s*\{/.test(viteConfig)
-    || !/name:\s*["']embed-chapter4-h3-as-chunks["'][\s\S]*?apply:\s*["']build["'][\s\S]*?enforce:\s*["']pre["'][\s\S]*?load\(id\)/.test(viteConfig)
-    || !/const\s+filePath\s*=\s*normalizePath\(id\.slice\(0,\s*queryIndex\)\)\s*;/.test(viteConfig)
-    || !/query\.has\(CHAPTER4_H3_EMBEDDED_QUERY\)/.test(viteConfig)
-    || !/filePath\s*!==\s*CHAPTER4_H3_SOURCE_PATH/.test(viteConfig)
-    || !/this\.addWatchFile\(filePath\)/.test(viteConfig)
-    || !/readFileSync\(filePath\)\.toString\(["']base64["']\)/.test(viteConfig)
-    || !/for\s*\(let\s+offset\s*=\s*0;\s*offset\s*<\s*base64\.length;\s*offset\s*\+=\s*CHAPTER4_H3_BASE64_CHUNK_SIZE\)/.test(viteConfig)
-    || !/chunks\.push\(base64\.slice\(offset,\s*offset\s*\+\s*CHAPTER4_H3_BASE64_CHUNK_SIZE\)\)/.test(viteConfig)
-    || !/kind:\s*["']embedded_chunks["'][\s\S]*?chunks/.test(viteConfig)
-    || !viteConfig.includes('mimeType: "video/mp4; codecs=\\"avc1.640028\\""')
-    || (viteConfig.match(/embedChapter4H3AsChunks\(\)/g) ?? []).length !== 2
-    || !/plugins:\s*\[\s*losslessRuntimeAssets\(import\.meta\.dirname,\s*true\),\s*embedChapter4H3AsChunks\(\),\s*react\(\),\s*viteSingleFile/.test(viteConfig)
-    || !/\}\s*:\s*\{\s*plugins:\s*\[losslessRuntimeAssets\(import\.meta\.dirname,\s*false\),\s*react\(\)\]/.test(viteConfig)) {
-    errors.push("Task 7 single-file build must pre-embed only the queried H3 MP4 as independent 256KiB base64 chunks while normal Vite keeps the direct asset URL");
   }
   if (!/declare\s+module\s+["']\*\?chapter4-h3-embedded["']/.test(viteEnv)
     || !/const\s+source:\s*string\s*\|\s*\{[\s\S]*?kind:\s*["']embedded_chunks["'];[\s\S]*?chunks:\s*string\[\];[\s\S]*?\}/.test(viteEnv)
@@ -2623,6 +2599,11 @@ assert.equal(content.room204.groups.length, 4);
 assert(content.room204.groups.every((group) => group.mappings.length === 3));
 validateTask7H3Asset(errors);
 validateTask7RuntimeSources(errors);
+try {
+  await validateChapter4H3Build();
+} catch (error) {
+  errors.push(`Task 7 H3 build contract: ${error instanceof Error ? error.message : String(error)}`);
+}
 if (errors.length > 0) {
   console.error(`Chapter 4 7:55 story validation failed (${errors.length} error${errors.length === 1 ? "" : "s"}):`);
   errors.forEach((error) => console.error(`- ${error}`));

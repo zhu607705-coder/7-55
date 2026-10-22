@@ -4,7 +4,25 @@ The repository uses dependency-light executable contract validators rather than 
 
 Assertion counts are diagnostic output only. They do not represent line, branch, interaction, or user-journey coverage.
 
-## Canonical entry points
+## Native migration validation (2026-10-10)
+
+The sections below describe Web validation. On `godot-version`,
+`.github/workflows/godot-native-ci.yml` separately pins Godot 4.6.3, synchronizes
+source assets/state, checks deterministic catalogs, converts media, runs
+`node godot_native/tools/validate_native.mjs` and compares native replay traces
+with selected original TypeScript models. Follow `godot_native/README.md` on that
+branch for local prerequisites. Shared source/controller changes require relevant
+checks in both runtimes; native-only presentation work does not require a Web port.
+
+Web CI ignores Markdown/docs-only changes; native CI triggers on its listed native
+and shared-source paths, or manual dispatch. Pages still builds `dist` from `main`.
+This documentation correction changes no CI triggers or required checks. Native
+Linux headless tests, cross-exported Windows artifacts and emulated touch checks do
+not establish Windows execution, physical phone acceptance or full visual/manual
+chapter parity. Preserve the native audit's remaining gaps; assertion totals are
+not acceptance evidence by themselves.
+
+## Canonical Web entry points
 
 | Command | Use it when | Scope |
 | --- | --- | --- |
@@ -17,7 +35,7 @@ The suite catalog and execution order live in `scripts/run-validation-suite.mjs`
 
 ## Blocking validation layers
 
-Every pull request and every non-documentation push to `main` runs `npm run validate:release`, which contains the following layers.
+Every non-documentation pull request and every non-documentation push to `main` runs `npm run validate:release`, which contains the following layers.
 
 ### Critical gameplay behavior
 
@@ -48,6 +66,12 @@ After the offline single file is built and structurally verified, `scripts/verif
 - the Chapter 4 opening RPG checkpoint at `1440 × 900`;
 - valid, non-trivial screenshots with the requested dimensions;
 - distinct screenshots for distinct checkpoints.
+
+The Chapter 4 screenshot waits for its `entry` warmup to be ready, the actual map and input to be live, and the blocking prologue overlay to leave. A canvas alone is insufficient; later `transport` preloading may continue in the background.
+
+Chapter 3 and Chapter 4 states are external test fixtures, normalized through the real `SaveStore.save`/`load` transaction and placed in an isolated browser profile before boot. The production application loads them as ordinary version-35 saves; the smoke does not add a product test hook or use a checkpoint URL to establish progress. Every case also supplies a conflicting `devCheckpoint` URL and sends both developer keyboard shortcuts, asserting that the URL cannot change the loaded chapter and no developer panel or controller hook appears. Development entry remains limited to Vite development mode and its existing path restriction.
+
+A fourth case boots a valid CC98 save with all eight legacy QA session records. It verifies that production removes only these temporary records, hides CC98 maintenance, persists the real exit button's transition to the phone home screen, and retains that transition after an actual reload. State-write tests separately construct the store before cleanup, prove the stale marker blocks subsequent saves, and verify that cleanup neither writes formal save bytes nor restores the QA backup.
 
 The DOM is intentionally not dumped because serializing the 258 MB inline script would test browser-output throughput instead of game rendering. `verify:single` owns the HTML, title, inline-script, inline-style, and embedded-resource structure checks; the browser smoke owns visual boot and route differentiation for the same artifact. Together they prove offline-bundle startup and routing in Chromium. They do not establish full playthrough correctness, pixel-level visual equivalence, audio audibility, or Firefox and WebKit compatibility.
 

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="160" viewBox="0 0 128 160" shape-rendering="crispEdges">
+<!-- Hull underside: same authored silhouette and palette, a new native vector layer. -->
+<path fill="#452d20" d="M64 4 82 20 88 48 86 116 78 144 64 156 50 144 42 116 40 48 46 20Z"/>
+<path fill="#a94c27" d="M64 8 78 22 83 49 81 114 74 139 64 150 54 139 47 114 45 49 50 22Z"/>
+<path fill="#da7635" d="M64 14 73 26 78 51 76 111 70 133 64 141 58 133 52 111 50 51 55 26Z"/>
+<path fill="#efa357" d="M62 19 67 25 69 124 64 142 61 123Z"/>
+<path fill="#9c472d" d="M51 54 57 50 57 115 53 110Z"/>
+<path fill="#efb16b" d="M74 52 78 58 76 103 72 111Z"/>
+</svg>

@@ -1,0 +1,66 @@
+{
+  "kind": "unified-activity-terminal-keyboard-focus-repair",
+  "timestamp": "2026-10-19T12:18:27.959092+00:00",
+  "gitHead": "37ee523dc7ca1b6e121a9e0d720ecc1a8d4b904e",
+  "uncommittedIntegration": true,
+  "changedSourceAndTests": [
+    "godot_native/scripts/main.gd",
+    "godot_native/tests/test_chapter4_elevator_inputs.gd",
+    "godot_native/tests/test_chapter4_chase_space_integration.gd",
+    "godot_native/tests/test_activity_focus_return.gd"
+  ],
+  "productionChange": "Main regular success defers existing guarded world focus after authoritative callback and layout; cancellation keeps dedicated type=chase focus and otherwise defers the same guarded helper. No focus guard, authority, proof, state, timing or routing change.",
+  "negativeControl": {
+    "report": "activity_focus_before.json",
+    "checks": 214,
+    "failures": 18,
+    "confirmed": "Prologue completion/cancel, stair Return and defense Exit fail focus/first Space at both viewports; fixed-size actual mouse chase Return releases owner but focus/first Space fail. Phone/modal competition guards already pass.",
+    "inputHarnessHistory": [
+      "activity_focus_first_input_probe.json",
+      "activity_focus_second_input_probe.json",
+      "activity_focus_keyboard_control.json"
+    ],
+    "historyNote": "Earlier chase mouse probes used an unspecified root size and did not activate Return; retained as input-fixture history, not production bug evidence. Escape comparison passed before the fix because keyboard exit never transferred root focus to a Button."
+  },
+  "finalValidation": {
+    "report": "activity_focus_final.json",
+    "stages": 11,
+    "failures": 0,
+    "behaviorChecks": 647,
+    "parsedScripts": 727,
+    "sourceReport": "activity_focus_source.json",
+    "sourceChecks": 2418,
+    "sourceFailures": 0,
+    "gitDiffCheck": "PASS"
+  },
+  "coverage": [
+    "Actual mouse chase Return -> no focus/map repair -> first root Space issues a distinct real chase owner.",
+    "Prologue-preview successful/Return terminals, actual original defense Exit, source stair controls Return at 1440x900 and390x844; no presentation config fabricates a formal result.",
+    "Successful/cancelled terminal competing phone/modal navigation retains the destination owner. Guard itself remains unchanged.",
+    "Real elevator button/Space route and natural timed A3 arrival; read-only get_targets scanner visibility assertion restored.",
+    "Existing dedicated C3 chase loading/departure/arrival focus, canteen defense resume, fishing focus and rain/swan natural handoffs retain their regressions."
+  ],
+  "limits": [
+    "Headless root GUI events with isolated profiles; lake natural handoffs retain their existing headless OS-focus seam. This is not manual full-game, audio or hardware acceptance.",
+    "This is a focused rerun after the last source changes, not a full native aggregate or full release rerun.",
+    "No Git commit/stage/push, packaging, or repository documentation changes by this agent."
+  ],
+  "inputs": [
+    {
+      "path": "godot_native/scripts/main.gd",
+      "sha256": "114e1b9d85e8ad481234206203dbc2c36e6f3bbd5c2c12abde3601e8249ec696"
+    },
+    {
+      "path": "godot_native/tests/test_chapter4_elevator_inputs.gd",
+      "sha256": "4efe0497b25f93f604fcda67ef314e49f88c8ea8bc1abc564feb67858987a90f"
+    },
+    {
+      "path": "godot_native/tests/test_chapter4_chase_space_integration.gd",
+      "sha256": "a6fbb4342967c4f274612a60f3461ed31f23a7138a4cd24cc947d1cf46e453f1"
+    },
+    {
+      "path": "godot_native/tests/test_activity_focus_return.gd",
+      "sha256": "88ade77f8c955595cac1dfeadc8d68cf97299131180cc441edcf4d073eeee85b"
+    }
+  ]
+}

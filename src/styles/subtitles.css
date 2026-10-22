@@ -1,16 +1,16 @@
 /* Subtitle structure and typography are shared; phone surfaces use notification cards. */
 :root {
-  --subtitle-ink: #fcf7e8;
-  --subtitle-panel: rgba(24, 33, 34, 0.84);
-  --subtitle-border: rgba(214, 204, 169, 0.48);
+  --subtitle-ink: #263b37;
+  --subtitle-panel: #f1ecdf;
+  --subtitle-border: #89968a;
   --subtitle-size: 16px;
   --subtitle-leading: 1.6;
-  --subtitle-text-shadow: 0 1px 0 #111b1c;
-  --subtitle-avatar-cutout: #233032;
+  --subtitle-text-shadow: none;
+  --subtitle-avatar-cutout: #f1ecdf;
 }
 
 .game-subtitle-frame[class] {
-  --subtitle-accent: #dccb8e;
+  --subtitle-accent: #4d6858;
   background: var(--subtitle-panel);
   border: 1px solid var(--subtitle-border);
   border-radius: 0;
@@ -31,12 +31,12 @@
 }
 .game-subtitle-frame[class]::before,
 .game-subtitle-frame[class]::after { content: none; }
-.game-subtitle-frame.subtitle-tone-system { --subtitle-accent: #edb3ab; }
-.game-subtitle-frame.subtitle-tone-player { --subtitle-accent: #acd2df; }
-.game-subtitle-frame.subtitle-tone-success { --subtitle-accent: #bcdbb2; }
-.game-subtitle-frame.subtitle-tone-error { --subtitle-accent: #f4b2a2; }
-.game-subtitle-frame.subtitle-tone-broadcast { --subtitle-accent: #e8ca8b; }
-.game-subtitle-frame.subtitle-tone-seat { --subtitle-accent: #b8d0b4; }
+.game-subtitle-frame.subtitle-tone-system { --subtitle-accent: #86524a; }
+.game-subtitle-frame.subtitle-tone-player { --subtitle-accent: #32616b; }
+.game-subtitle-frame.subtitle-tone-success { --subtitle-accent: #456740; }
+.game-subtitle-frame.subtitle-tone-error { --subtitle-accent: #8a4438; }
+.game-subtitle-frame.subtitle-tone-broadcast { --subtitle-accent: #79602c; }
+.game-subtitle-frame.subtitle-tone-seat { --subtitle-accent: #48674d; }
 
 .game-subtitle-frame[class] .game-subtitle-content {
   align-items: start;
@@ -122,6 +122,28 @@
 .toast-layer .px-toast { margin: 0; max-width: 100%; position: relative; width: fit-content; }
 .subtitle-layer--phone .px-toast { width: 100%; }
 
+/* Story text occupies a reading lane; ordinary notifications wait above apps. */
+.dialogue-caption-layer {
+  bottom: 108px;
+  left: 50%;
+  max-width: 760px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+  width: calc(100% - 220px);
+  z-index: 28;
+}
+.dialogue-caption-layer.subtitle-layer--phone {
+  bottom: 96px;
+  left: 16px;
+  max-width: none;
+  right: 16px;
+  transform: none;
+  width: auto;
+  z-index: 70;
+}
+.dialogue-caption-layer .story-caption { margin: 0; width: 100%; }
+
 .rpg-subtitle-layer {
   bottom: var(--rpg-subtitle-bottom, 108px);
   display: flex;
@@ -151,7 +173,7 @@
 }
 
 .game-subtitle-frame[class] button {
-  background: rgba(24, 33, 34, 0.9);
+  background: #e6dfce;
   border: 1px solid var(--subtitle-border);
   border-radius: 0;
   box-shadow: none;
@@ -164,7 +186,7 @@
   min-height: 32px;
   padding: 4px 9px;
 }
-.game-subtitle-frame[class] button:focus-visible { outline: 2px solid #dccb8e; outline-offset: 3px; }
+.game-subtitle-frame[class] button:focus-visible { outline: 2px solid #4d6858; outline-offset: 3px; }
 
 .zju-system-dialogue-layer { background: transparent; cursor: pointer; outline: none; z-index: 100; }
 .zju-system-dialogue.game-subtitle-frame { bottom: 80px; display: block; left: 20px; right: 20px; }
@@ -222,19 +244,16 @@
 .phone-frame .game-subtitle-frame .game-subtitle-copy { display: grid; gap: 3px; }
 .phone-frame .game-subtitle-avatar { background: transparent; border: var(--notification-border); border-radius: 0; height: 36px; width: 36px; }
 .phone-frame .game-subtitle-avatar svg { height: 20px; width: 20px; }
-.phone-frame .library-story-overlay { inset: 0; padding: 52px 16px 16px; place-items: start stretch; position: absolute; }
+.phone-frame .library-story-overlay { inset: 0; padding: 52px 16px 96px; place-items: end stretch; position: absolute; }
 .phone-frame .library-story-dialogue.game-subtitle-frame { max-width: none; min-width: 0; width: 100%; }
 .phone-frame .zju-system-dialogue.game-subtitle-frame,
-.phone-frame .bottom-narration.game-subtitle-frame,
-.phone-frame .ending-game-subtitle.game-subtitle-frame,
-.phone-frame .ending-dialogue.game-subtitle-frame {
+.phone-frame .bottom-narration.game-subtitle-frame {
   bottom: auto;
   left: 16px;
   margin: 0;
   right: 16px;
   top: 52px;
 }
-.phone-frame .ending-game-subtitle.game-subtitle-frame { top: 84px; }
 
 /* Mobile RPG and cinematic captions use the same notification composition in their safe zones. */
 @media (max-width: 700px) {
@@ -272,3 +291,17 @@
   .game-subtitle-frame.is-line-entering .game-subtitle-content,
   .game-subtitle-frame.is-timed .game-subtitle-content { animation: none; opacity: 1; }
 }
+
+/* A narrative reading strip has a speaker line, rather than a notification avatar. */
+.dialogue-caption-layer .story-caption {
+  background: #f1ecdf;
+  border: 1px solid #89968a;
+  border-left: 4px solid #627a6b;
+  box-shadow: none;
+  padding: 12px 16px;
+}
+.dialogue-caption-layer .game-subtitle-frame[class] .game-subtitle-content { display: block; grid-template-columns: minmax(0, 1fr); }
+.dialogue-caption-layer .game-subtitle-avatar { display: none; }
+.dialogue-caption-layer .game-subtitle-frame[class] .game-subtitle-copy { display: grid; gap: 5px; grid-template-columns: minmax(0, 1fr); }
+.dialogue-caption-layer .game-subtitle-frame[class] .game-subtitle-speaker { color: #4d6858; font-size: 14px; }
+.dialogue-caption-layer .game-subtitle-frame[class] .game-subtitle-text { color: #263b37; font-size: 16px; }

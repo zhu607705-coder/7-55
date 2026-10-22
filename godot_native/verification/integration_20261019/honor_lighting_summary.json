@@ -1,0 +1,42 @@
+{
+  "kind": "native-c4-honor-wall-night-illumination",
+  "timestamp": "2026-10-19T13:00:46.909849+00:00",
+  "gitHead": "e9dcd316d072e2f20378b91437cc7047a3006998",
+  "uncommittedIntegration": true,
+  "cause": "Daylight portrait textures were drawn after pre-darkened night plates, reality-mode wash and blackout zone masks, so they bypassed the wall illumination. Runtime gold frames also used their ungraded color.",
+  "fix": "Tint the portrait, matte and runtime frame from local wall/painted-image luminance and hue in the actual current plate, only for night/evening/blackout states. Replay existing reality-mode crossfade and blackout masks only where dynamic portrait pixels replaced the wall. Keep depth, picker and all authored interactions.",
+  "caching": "Texture get_image/decompress happens only on the first unseen resource_path. Local illumination samples are cached by current plate path plus target id. Repeated draws/mode switches perform cache lookups and small existing Canvas draws, with no repeated readback or wall sampling.",
+  "sourceAssetsModified": false,
+  "sourceAndTests": [
+    "godot_native/scripts/world.gd",
+    "godot_native/scripts/ui/chapter4_phase_layers.gd",
+    "godot_native/tests/test_chapter4_phase_world.gd"
+  ],
+  "validationReport": "/tmp/codex-755-honor-lighting-final.json",
+  "validation": {
+    "phaseAndLightingChecks": 549,
+    "phaseScope": "All A1/A2/A3, four night/evening/blackout and two daylight states, both reality modes; raw face highlights compared to actual neighboring wall pixels, real Canvas draw calls, state invariance and20 authored biography consumers/reads. A2 has no honor portraits and remains empty.",
+    "worldChecks": 27,
+    "parsedScripts": 727,
+    "gitDiffCheck": "PASS"
+  },
+  "limits": [
+    "Headless Canvas commands and real texture pixel checks are automated evidence. Root computer-use reload/visual acceptance is separate.",
+    "No claim that the existing high-CPU process or slow CUA screenshot was caused by this change; that process predates the new renderer.",
+    "No gameplay, collision, door/progression gate, main/focus, source asset, Git or packaging changes in this repair."
+  ],
+  "inputs": [
+    {
+      "path": "godot_native/scripts/world.gd",
+      "sha256": "5b3da7038e64ee0e95681fe502056ad139a57ba14158756fe30d27fa45163812"
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_phase_layers.gd",
+      "sha256": "514eee89cfb4ccbc8a4ec0cba60528555c459f449d5c54993f148fab0f5a9ecf"
+    },
+    {
+      "path": "godot_native/tests/test_chapter4_phase_world.gd",
+      "sha256": "95c6ebbc0d6bf3bdf83018fa9a92be4e77d8541714b179d1dfbb4238c0375800"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "checks": 20,
+  "events": [
+    {
+      "id": "prologue_blackout_started",
+      "payload": {
+        "durationMs": 7000
+      }
+    },
+    {
+      "id": "prologue_narrator_intro",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_paused",
+      "payload": {}
+    }
+  ],
+  "failures": 7,
+  "observations": [
+    {
+      "check": "ordinary startup owns root keyboard focus",
+      "collected": [],
+      "pass": true,
+      "phase": "blackout",
+      "stages": 0
+    },
+    {
+      "check": "source blackout leads to readable semantic fragments",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "real root keyboard moves the physical error window",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "window movement changes its visible and physical tilt",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "real review control opens the complete authored clue",
+      "collected": [],
+      "pass": false,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "reading a clue cannot move, expire or punish words",
+      "collected": [],
+      "pass": false,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "closing review restores root gameplay focus",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "touching empty space does not teleport the window",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "a different finger cannot steal a window drag",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "root touch drag moves the actual rendered window",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "touch cancellation releases ownership and stops stale drag movement",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "Escape pauses the semantic game through root input",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "pause freezes the word simulation",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "pointer Continue restores keyboard ownership",
+      "collected": [],
+      "pass": false,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "missing a real required word reaches a branch without fabricated proof",
+      "collected": [],
+      "pass": false,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "real branch Continue retains the current stage and collection",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "branch Continue immediately restores root focus",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "real root keyboard selection earns all three semantic stages",
+      "collected": [],
+      "pass": false,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "completion requires exactly six authored word captures through actual contact",
+      "collected": [],
+      "pass": false,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "readable finding and interception are longer than three endpoint checks",
+      "collected": [],
+      "pass": false,
+      "phase": "intercept",
+      "stages": 0
+    }
+  ],
+  "results": []
+}

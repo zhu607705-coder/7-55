@@ -1,0 +1,4749 @@
+{
+  "canvas_size": [
+    950,
+    1656
+  ],
+  "source": "assets/approved-changping.png",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "campus": "北京化工大学昌平校区",
+  "scope": "53 visible core-campus building/gate and explicitly neutral context groups. Original sports fields, water, remote woodland, paths and ground remain static. Only the bounded south-gate-to-library route is playable; no campus-wide traversal or survey accuracy is claimed.",
+  "paving_samples": [
+    [
+      547,
+      1477
+    ],
+    [
+      752,
+      838
+    ]
+  ],
+  "objects": [
+    {
+      "id": "dorm_nw_01",
+      "name": "西北宿舍带 01",
+      "anchor": [
+        110,
+        299
+      ],
+      "silhouette": [
+        [
+          79,
+          268
+        ],
+        [
+          139,
+          269
+        ],
+        [
+          140,
+          283
+        ],
+        [
+          137,
+          299
+        ],
+        [
+          80,
+          298
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            79.7,
+            289
+          ],
+          [
+            138.88,
+            289
+          ],
+          [
+            137,
+            299
+          ],
+          [
+            80,
+            298
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        79,
+        268,
+        140,
+        299
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_nw_02",
+      "name": "西北宿舍带 02",
+      "anchor": [
+        181,
+        304
+      ],
+      "silhouette": [
+        [
+          149,
+          270
+        ],
+        [
+          162,
+          272
+        ],
+        [
+          168,
+          268
+        ],
+        [
+          177,
+          270
+        ],
+        [
+          185,
+          267
+        ],
+        [
+          204,
+          270
+        ],
+        [
+          213,
+          277
+        ],
+        [
+          211,
+          304
+        ],
+        [
+          151,
+          301
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            150.55,
+            294
+          ],
+          [
+            211.74,
+            294
+          ],
+          [
+            211,
+            304
+          ],
+          [
+            151,
+            301
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        149,
+        267,
+        213,
+        304
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_nw_03",
+      "name": "西北宿舍带 03",
+      "anchor": [
+        109,
+        341
+      ],
+      "silhouette": [
+        [
+          78,
+          307
+        ],
+        [
+          139,
+          308
+        ],
+        [
+          140,
+          341
+        ],
+        [
+          78,
+          340
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            78.0,
+            331
+          ],
+          [
+            139.7,
+            331
+          ],
+          [
+            140,
+            341
+          ],
+          [
+            78,
+            340
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        78,
+        307,
+        140,
+        341
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_nw_04",
+      "name": "西北宿舍带 04",
+      "anchor": [
+        186,
+        350
+      ],
+      "silhouette": [
+        [
+          150,
+          308
+        ],
+        [
+          218,
+          312
+        ],
+        [
+          221,
+          346
+        ],
+        [
+          198,
+          350
+        ],
+        [
+          195,
+          341
+        ],
+        [
+          151,
+          342
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            150.94,
+            340
+          ],
+          [
+            220.47,
+            340
+          ],
+          [
+            221,
+            346
+          ],
+          [
+            198,
+            350
+          ],
+          [
+            195,
+            341
+          ],
+          [
+            151,
+            342
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        150,
+        308,
+        221,
+        350
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_north_low_annex",
+      "name": "北宿舍带中间附楼",
+      "anchor": [
+        147,
+        398
+      ],
+      "silhouette": [
+        [
+          92,
+          375
+        ],
+        [
+          123,
+          375
+        ],
+        [
+          130,
+          369
+        ],
+        [
+          145,
+          377
+        ],
+        [
+          159,
+          370
+        ],
+        [
+          188,
+          373
+        ],
+        [
+          201,
+          379
+        ],
+        [
+          202,
+          398
+        ],
+        [
+          159,
+          398
+        ],
+        [
+          151,
+          389
+        ],
+        [
+          119,
+          393
+        ],
+        [
+          108,
+          390
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            105.87,
+            388
+          ],
+          [
+            201.47,
+            388
+          ],
+          [
+            202,
+            398
+          ],
+          [
+            159,
+            398
+          ],
+          [
+            151,
+            389
+          ],
+          [
+            119,
+            393
+          ],
+          [
+            108,
+            390
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        92,
+        369,
+        202,
+        398
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_01",
+      "name": "西侧宿舍组 01",
+      "anchor": [
+        107,
+        473
+      ],
+      "silhouette": [
+        [
+          79,
+          410
+        ],
+        [
+          137,
+          411
+        ],
+        [
+          138,
+          442
+        ],
+        [
+          119,
+          444
+        ],
+        [
+          119,
+          427
+        ],
+        [
+          98,
+          428
+        ],
+        [
+          96,
+          450
+        ],
+        [
+          118,
+          451
+        ],
+        [
+          124,
+          462
+        ],
+        [
+          121,
+          473
+        ],
+        [
+          80,
+          467
+        ],
+        [
+          76,
+          452
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            123.73,
+            463
+          ],
+          [
+            121,
+            473
+          ],
+          [
+            80,
+            467
+          ],
+          [
+            78.93,
+            463
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        76,
+        410,
+        138,
+        473
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_02",
+      "name": "西侧宿舍组 02",
+      "anchor": [
+        183,
+        477
+      ],
+      "silhouette": [
+        [
+          153,
+          414
+        ],
+        [
+          214,
+          417
+        ],
+        [
+          215,
+          456
+        ],
+        [
+          204,
+          477
+        ],
+        [
+          151,
+          466
+        ],
+        [
+          151,
+          452
+        ],
+        [
+          194,
+          454
+        ],
+        [
+          197,
+          433
+        ],
+        [
+          153,
+          433
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            209.24,
+            467
+          ],
+          [
+            204,
+            477
+          ],
+          [
+            155.82,
+            467
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        151,
+        414,
+        215,
+        477
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_03",
+      "name": "西侧宿舍组 03",
+      "anchor": [
+        108,
+        560
+      ],
+      "silhouette": [
+        [
+          78,
+          485
+        ],
+        [
+          136,
+          486
+        ],
+        [
+          140,
+          518
+        ],
+        [
+          121,
+          519
+        ],
+        [
+          121,
+          504
+        ],
+        [
+          98,
+          504
+        ],
+        [
+          96,
+          527
+        ],
+        [
+          128,
+          529
+        ],
+        [
+          132,
+          560
+        ],
+        [
+          78,
+          550
+        ],
+        [
+          75,
+          532
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            130.71,
+            550
+          ],
+          [
+            132,
+            560
+          ],
+          [
+            78,
+            550
+          ],
+          [
+            78.0,
+            550
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        75,
+        485,
+        140,
+        560
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_04",
+      "name": "西侧宿舍组 04",
+      "anchor": [
+        173,
+        562
+      ],
+      "silhouette": [
+        [
+          153,
+          488
+        ],
+        [
+          200,
+          491
+        ],
+        [
+          200,
+          545
+        ],
+        [
+          191,
+          562
+        ],
+        [
+          146,
+          552
+        ],
+        [
+          146,
+          534
+        ],
+        [
+          180,
+          535
+        ],
+        [
+          180,
+          507
+        ],
+        [
+          153,
+          508
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            196.29,
+            552
+          ],
+          [
+            191,
+            562
+          ],
+          [
+            146,
+            552
+          ],
+          [
+            146.0,
+            552
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        146,
+        488,
+        200,
+        562
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_05",
+      "name": "西侧宿舍组 05",
+      "anchor": [
+        103,
+        633
+      ],
+      "silhouette": [
+        [
+          76,
+          568
+        ],
+        [
+          134,
+          567
+        ],
+        [
+          134,
+          600
+        ],
+        [
+          117,
+          601
+        ],
+        [
+          118,
+          586
+        ],
+        [
+          94,
+          586
+        ],
+        [
+          93,
+          613
+        ],
+        [
+          127,
+          615
+        ],
+        [
+          128,
+          633
+        ],
+        [
+          75,
+          628
+        ],
+        [
+          72,
+          609
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            127.44,
+            623
+          ],
+          [
+            128,
+            633
+          ],
+          [
+            75,
+            628
+          ],
+          [
+            74.21,
+            623
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        72,
+        567,
+        134,
+        633
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_06",
+      "name": "西侧宿舍组 06",
+      "anchor": [
+        178,
+        604
+      ],
+      "silhouette": [
+        [
+          150,
+          570
+        ],
+        [
+          203,
+          574
+        ],
+        [
+          205,
+          604
+        ],
+        [
+          151,
+          602
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            150.75,
+            594
+          ],
+          [
+            204.33,
+            594
+          ],
+          [
+            205,
+            604
+          ],
+          [
+            151,
+            602
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        150,
+        570,
+        205,
+        604
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_07",
+      "name": "西侧宿舍组 07",
+      "anchor": [
+        103,
+        719
+      ],
+      "silhouette": [
+        [
+          75,
+          646
+        ],
+        [
+          130,
+          646
+        ],
+        [
+          137,
+          677
+        ],
+        [
+          118,
+          679
+        ],
+        [
+          116,
+          663
+        ],
+        [
+          91,
+          663
+        ],
+        [
+          91,
+          694
+        ],
+        [
+          128,
+          696
+        ],
+        [
+          131,
+          719
+        ],
+        [
+          74,
+          717
+        ],
+        [
+          69,
+          698
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            129.7,
+            709
+          ],
+          [
+            131,
+            719
+          ],
+          [
+            74,
+            717
+          ],
+          [
+            71.89,
+            709
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        69,
+        646,
+        137,
+        719
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_w_08",
+      "name": "西侧宿舍组 08",
+      "anchor": [
+        174,
+        728
+      ],
+      "silhouette": [
+        [
+          149,
+          650
+        ],
+        [
+          204,
+          654
+        ],
+        [
+          205,
+          707
+        ],
+        [
+          196,
+          728
+        ],
+        [
+          144,
+          720
+        ],
+        [
+          143,
+          699
+        ],
+        [
+          181,
+          702
+        ],
+        [
+          182,
+          674
+        ],
+        [
+          148,
+          672
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            200.29,
+            718
+          ],
+          [
+            196,
+            728
+          ],
+          [
+            144,
+            720
+          ],
+          [
+            143.9,
+            718
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        143,
+        650,
+        205,
+        728
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_mid_annex",
+      "name": "西侧中段附楼",
+      "anchor": [
+        176,
+        827
+      ],
+      "silhouette": [
+        [
+          150,
+          751
+        ],
+        [
+          168,
+          748
+        ],
+        [
+          198,
+          750
+        ],
+        [
+          201,
+          803
+        ],
+        [
+          195,
+          827
+        ],
+        [
+          154,
+          821
+        ],
+        [
+          152,
+          796
+        ],
+        [
+          158,
+          779
+        ],
+        [
+          150,
+          777
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            197.5,
+            817
+          ],
+          [
+            195,
+            827
+          ],
+          [
+            154,
+            821
+          ],
+          [
+            153.68,
+            817
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        150,
+        748,
+        201,
+        827
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_garden_pavilion",
+      "name": "西侧小庭院构筑物",
+      "anchor": [
+        100,
+        794
+      ],
+      "silhouette": [
+        [
+          89,
+          755
+        ],
+        [
+          111,
+          755
+        ],
+        [
+          111,
+          764
+        ],
+        [
+          99,
+          764
+        ],
+        [
+          99,
+          780
+        ],
+        [
+          111,
+          780
+        ],
+        [
+          111,
+          794
+        ],
+        [
+          88,
+          790
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            88.17,
+            784
+          ],
+          [
+            111.0,
+            784
+          ],
+          [
+            111,
+            794
+          ],
+          [
+            88,
+            790
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        88,
+        755,
+        111,
+        794
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_tiny_hall",
+      "name": "西侧绿地附房",
+      "anchor": [
+        98,
+        846
+      ],
+      "silhouette": [
+        [
+          73,
+          819
+        ],
+        [
+          114,
+          820
+        ],
+        [
+          123,
+          830
+        ],
+        [
+          118,
+          846
+        ],
+        [
+          72,
+          838
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            72.11,
+            836
+          ],
+          [
+            121.12,
+            836
+          ],
+          [
+            118,
+            846
+          ],
+          [
+            72,
+            838
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        72,
+        819,
+        123,
+        846
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_sw_01",
+      "name": "西南宿舍带 01",
+      "anchor": [
+        98,
+        910
+      ],
+      "silhouette": [
+        [
+          73,
+          867
+        ],
+        [
+          128,
+          869
+        ],
+        [
+          131,
+          897
+        ],
+        [
+          119,
+          910
+        ],
+        [
+          66,
+          901
+        ],
+        [
+          66,
+          885
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            128.23,
+            900
+          ],
+          [
+            119,
+            910
+          ],
+          [
+            66,
+            901
+          ],
+          [
+            66.0,
+            900
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        66,
+        867,
+        131,
+        910
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_sw_02",
+      "name": "西南宿舍带 02",
+      "anchor": [
+        176,
+        906
+      ],
+      "silhouette": [
+        [
+          147,
+          868
+        ],
+        [
+          204,
+          871
+        ],
+        [
+          207,
+          901
+        ],
+        [
+          148,
+          906
+        ],
+        [
+          144,
+          894
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            206.5,
+            896
+          ],
+          [
+            207,
+            901
+          ],
+          [
+            148,
+            906
+          ],
+          [
+            144.67,
+            896
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        144,
+        868,
+        207,
+        906
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_sw_03",
+      "name": "西南宿舍带 03",
+      "anchor": [
+        98,
+        980
+      ],
+      "silhouette": [
+        [
+          66,
+          922
+        ],
+        [
+          131,
+          924
+        ],
+        [
+          128,
+          942
+        ],
+        [
+          124,
+          980
+        ],
+        [
+          67,
+          977
+        ],
+        [
+          65,
+          960
+        ],
+        [
+          109,
+          961
+        ],
+        [
+          109,
+          943
+        ],
+        [
+          68,
+          942
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            125.05,
+            970
+          ],
+          [
+            124,
+            980
+          ],
+          [
+            67,
+            977
+          ],
+          [
+            66.18,
+            970
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        65,
+        922,
+        131,
+        980
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_sw_04",
+      "name": "西南宿舍带 04",
+      "anchor": [
+        179,
+        993
+      ],
+      "silhouette": [
+        [
+          150,
+          923
+        ],
+        [
+          207,
+          926
+        ],
+        [
+          208,
+          977
+        ],
+        [
+          189,
+          993
+        ],
+        [
+          187,
+          946
+        ],
+        [
+          150,
+          946
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            200.88,
+            983
+          ],
+          [
+            189,
+            993
+          ],
+          [
+            188.57,
+            983
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        150,
+        923,
+        208,
+        993
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_sw_05",
+      "name": "西南宿舍带 05",
+      "anchor": [
+        102,
+        1072
+      ],
+      "silhouette": [
+        [
+          67,
+          995
+        ],
+        [
+          132,
+          997
+        ],
+        [
+          142,
+          1007
+        ],
+        [
+          140,
+          1031
+        ],
+        [
+          84,
+          1023
+        ],
+        [
+          83,
+          1072
+        ],
+        [
+          63,
+          1063
+        ],
+        [
+          62,
+          1033
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            83.2,
+            1062
+          ],
+          [
+            83,
+            1072
+          ],
+          [
+            63,
+            1063
+          ],
+          [
+            62.97,
+            1062
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        62,
+        995,
+        142,
+        1072
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "dorm_sw_06",
+      "name": "西南宿舍带 06",
+      "anchor": [
+        190,
+        1081
+      ],
+      "silhouette": [
+        [
+          155,
+          997
+        ],
+        [
+          219,
+          1001
+        ],
+        [
+          225,
+          1077
+        ],
+        [
+          210,
+          1081
+        ],
+        [
+          207,
+          1024
+        ],
+        [
+          156,
+          1024
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            224.53,
+            1071
+          ],
+          [
+            225,
+            1077
+          ],
+          [
+            210,
+            1081
+          ],
+          [
+            209.47,
+            1071
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        155,
+        997,
+        225,
+        1081
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lake_west_hall",
+      "name": "湖西南横楼",
+      "anchor": [
+        271,
+        913
+      ],
+      "silhouette": [
+        [
+          237,
+          876
+        ],
+        [
+          305,
+          876
+        ],
+        [
+          305,
+          905
+        ],
+        [
+          301,
+          913
+        ],
+        [
+          237,
+          908
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            237.0,
+            903
+          ],
+          [
+            305.0,
+            903
+          ],
+          [
+            305,
+            905
+          ],
+          [
+            301,
+            913
+          ],
+          [
+            237,
+            908
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        237,
+        876,
+        305,
+        913
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lake_west_courtyard",
+      "name": "湖西南庭院楼",
+      "anchor": [
+        290,
+        1001
+      ],
+      "silhouette": [
+        [
+          260,
+          926
+        ],
+        [
+          277,
+          927
+        ],
+        [
+          279,
+          933
+        ],
+        [
+          318,
+          927
+        ],
+        [
+          321,
+          951
+        ],
+        [
+          315,
+          959
+        ],
+        [
+          282,
+          955
+        ],
+        [
+          279,
+          973
+        ],
+        [
+          314,
+          975
+        ],
+        [
+          314,
+          1001
+        ],
+        [
+          259,
+          991
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            259.0,
+            991
+          ],
+          [
+            314.0,
+            991
+          ],
+          [
+            314,
+            1001
+          ],
+          [
+            259,
+            991
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        259,
+        926,
+        321,
+        1001
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "hill_south_block",
+      "name": "山南侧方院楼",
+      "anchor": [
+        390,
+        343
+      ],
+      "silhouette": [
+        [
+          362,
+          278
+        ],
+        [
+          416,
+          282
+        ],
+        [
+          419,
+          317
+        ],
+        [
+          413,
+          343
+        ],
+        [
+          362,
+          341
+        ],
+        [
+          361,
+          307
+        ],
+        [
+          376,
+          307
+        ],
+        [
+          377,
+          294
+        ],
+        [
+          361,
+          293
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            387,
+            291
+          ],
+          [
+            409,
+            291
+          ],
+          [
+            410,
+            310
+          ],
+          [
+            391,
+            310
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            415.31,
+            333
+          ],
+          [
+            413,
+            343
+          ],
+          [
+            362,
+            341
+          ],
+          [
+            361.76,
+            333
+          ]
+        ],
+        [
+          [
+            388.89,
+            300
+          ],
+          [
+            409.47,
+            300
+          ],
+          [
+            410,
+            310
+          ],
+          [
+            391,
+            310
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        361,
+        278,
+        419,
+        343
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "north_sports_hall",
+      "name": "北运动场南侧大厅",
+      "anchor": [
+        679,
+        539
+      ],
+      "silhouette": [
+        [
+          634,
+          454
+        ],
+        [
+          694,
+          435
+        ],
+        [
+          724,
+          518
+        ],
+        [
+          670,
+          539
+        ],
+        [
+          650,
+          522
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            649,
+            501
+          ],
+          [
+            708,
+            482
+          ],
+          [
+            723,
+            519
+          ],
+          [
+            670,
+            539
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        634,
+        435,
+        724,
+        539
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "north_sports_west_shelter",
+      "name": "北球场西侧小构筑物",
+      "anchor": [
+        516,
+        325
+      ],
+      "silhouette": [
+        [
+          496,
+          303
+        ],
+        [
+          529,
+          294
+        ],
+        [
+          536,
+          313
+        ],
+        [
+          503,
+          325
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            499.82,
+            315
+          ],
+          [
+            530.5,
+            315
+          ],
+          [
+            503,
+            325
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        496,
+        294,
+        536,
+        325
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "west_court_south_block",
+      "name": "西球场南侧方楼",
+      "anchor": [
+        266,
+        639
+      ],
+      "silhouette": [
+        [
+          241,
+          578
+        ],
+        [
+          291,
+          579
+        ],
+        [
+          294,
+          616
+        ],
+        [
+          285,
+          639
+        ],
+        [
+          243,
+          635
+        ],
+        [
+          237,
+          610
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            258,
+            568
+          ],
+          [
+            270,
+            568
+          ],
+          [
+            271,
+            581
+          ],
+          [
+            258,
+            581
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            288.91,
+            629
+          ],
+          [
+            285,
+            639
+          ],
+          [
+            243,
+            635
+          ],
+          [
+            241.56,
+            629
+          ]
+        ],
+        [
+          [
+            258.0,
+            571
+          ],
+          [
+            270.23,
+            571
+          ],
+          [
+            271,
+            581
+          ],
+          [
+            258,
+            581
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        237,
+        568,
+        294,
+        639
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "teaching_2",
+      "name": "第二教学楼",
+      "anchor": [
+        468,
+        720
+      ],
+      "silhouette": [
+        [
+          403,
+          620
+        ],
+        [
+          510,
+          599
+        ],
+        [
+          516,
+          622
+        ],
+        [
+          407,
+          645
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            403,
+            620
+          ],
+          [
+            424,
+            622
+          ],
+          [
+            443,
+            677
+          ],
+          [
+            421,
+            684
+          ],
+          [
+            409,
+            652
+          ]
+        ],
+        [
+          [
+            493,
+            605
+          ],
+          [
+            513,
+            600
+          ],
+          [
+            532,
+            682
+          ],
+          [
+            508,
+            690
+          ]
+        ],
+        [
+          [
+            421,
+            678
+          ],
+          [
+            524,
+            657
+          ],
+          [
+            532,
+            686
+          ],
+          [
+            424,
+            720
+          ]
+        ],
+        [
+          [
+            454,
+            633
+          ],
+          [
+            474,
+            629
+          ],
+          [
+            485,
+            672
+          ],
+          [
+            464,
+            677
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            424,
+            699
+          ],
+          [
+            523,
+            679
+          ],
+          [
+            532,
+            691
+          ],
+          [
+            427,
+            721
+          ]
+        ],
+        [
+          [
+            414,
+            645
+          ],
+          [
+            434,
+            641
+          ],
+          [
+            448,
+            686
+          ],
+          [
+            427,
+            690
+          ]
+        ],
+        [
+          [
+            501,
+            624
+          ],
+          [
+            519,
+            620
+          ],
+          [
+            533,
+            680
+          ],
+          [
+            514,
+            687
+          ]
+        ]
+      ],
+      "shadow_polygons": [
+        [
+          [
+            398,
+            631
+          ],
+          [
+            403,
+            622
+          ],
+          [
+            416,
+            681
+          ],
+          [
+            424,
+            721
+          ],
+          [
+            411,
+            724
+          ],
+          [
+            399,
+            679
+          ]
+        ]
+      ],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        403,
+        599,
+        532,
+        720
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. Building identity and position corroborated against official map; two courtyard gaps remain static.",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "activity_centre",
+      "name": "大学生活动中心",
+      "anchor": [
+        302,
+        730
+      ],
+      "silhouette": [
+        [
+          245,
+          657
+        ],
+        [
+          275,
+          652
+        ],
+        [
+          289,
+          668
+        ],
+        [
+          307,
+          657
+        ],
+        [
+          351,
+          641
+        ],
+        [
+          360,
+          697
+        ],
+        [
+          345,
+          730
+        ],
+        [
+          304,
+          716
+        ],
+        [
+          291,
+          701
+        ],
+        [
+          271,
+          718
+        ],
+        [
+          250,
+          693
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            251,
+            689
+          ],
+          [
+            271,
+            703
+          ],
+          [
+            286,
+            693
+          ],
+          [
+            306,
+            706
+          ],
+          [
+            346,
+            720
+          ],
+          [
+            345,
+            731
+          ],
+          [
+            304,
+            718
+          ],
+          [
+            290,
+            705
+          ],
+          [
+            270,
+            721
+          ],
+          [
+            251,
+            706
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        245,
+        641,
+        360,
+        730
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "museum",
+      "name": "校史馆",
+      "anchor": [
+        296,
+        816
+      ],
+      "silhouette": [
+        [
+          279,
+          747
+        ],
+        [
+          305,
+          746
+        ],
+        [
+          321,
+          757
+        ],
+        [
+          320,
+          782
+        ],
+        [
+          306,
+          816
+        ],
+        [
+          277,
+          801
+        ],
+        [
+          270,
+          780
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            270,
+            780
+          ],
+          [
+            289,
+            790
+          ],
+          [
+            315,
+            785
+          ],
+          [
+            306,
+            816
+          ],
+          [
+            277,
+            804
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        270,
+        746,
+        321,
+        816
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "library",
+      "name": "图书馆",
+      "anchor": [
+        568,
+        806
+      ],
+      "silhouette": [
+        [
+          538,
+          709
+        ],
+        [
+          588,
+          699
+        ],
+        [
+          599,
+          705
+        ],
+        [
+          618,
+          759
+        ],
+        [
+          609,
+          777
+        ],
+        [
+          591,
+          778
+        ],
+        [
+          578,
+          795
+        ],
+        [
+          577,
+          806
+        ],
+        [
+          518,
+          805
+        ],
+        [
+          517,
+          759
+        ],
+        [
+          519,
+          737
+        ],
+        [
+          537,
+          731
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            518,
+            781
+          ],
+          [
+            573,
+            780
+          ],
+          [
+            577,
+            805
+          ],
+          [
+            518,
+            805
+          ]
+        ],
+        [
+          [
+            581,
+            753
+          ],
+          [
+            611,
+            745
+          ],
+          [
+            618,
+            761
+          ],
+          [
+            609,
+            778
+          ],
+          [
+            591,
+            778
+          ],
+          [
+            578,
+            796
+          ]
+        ]
+      ],
+      "shadow_polygons": [
+        [
+          [
+            514,
+            734
+          ],
+          [
+            520,
+            733
+          ],
+          [
+            518,
+            779
+          ],
+          [
+            518,
+            804
+          ],
+          [
+            509,
+            800
+          ],
+          [
+            506,
+            765
+          ]
+        ]
+      ],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        517,
+        699,
+        618,
+        806
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. Glass/skylight roof remains source textured. The concave southeast entrance court is excluded from body; not a large bounding rectangle.",
+      "outside_depicted_campus": false,
+      "depth_regions": [
+        {
+          "name": "WestFacade",
+          "baseline": 805,
+          "clip": [
+            [
+              0,
+              0
+            ],
+            [
+              579,
+              0
+            ],
+            [
+              579,
+              1656
+            ],
+            [
+              0,
+              1656
+            ]
+          ]
+        },
+        {
+          "name": "EastFacade",
+          "baseline": 778,
+          "clip": [
+            [
+              579,
+              0
+            ],
+            [
+              950,
+              0
+            ],
+            [
+              950,
+              1656
+            ],
+            [
+              579,
+              1656
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wenli_building",
+      "name": "文理楼",
+      "anchor": [
+        711,
+        838
+      ],
+      "silhouette": [
+        [
+          673,
+          743
+        ],
+        [
+          749,
+          747
+        ],
+        [
+          750,
+          768
+        ],
+        [
+          676,
+          765
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            672,
+            744
+          ],
+          [
+            690,
+            746
+          ],
+          [
+            691,
+            816
+          ],
+          [
+            670,
+            818
+          ],
+          [
+            665,
+            789
+          ]
+        ],
+        [
+          [
+            733,
+            750
+          ],
+          [
+            751,
+            749
+          ],
+          [
+            757,
+            810
+          ],
+          [
+            740,
+            821
+          ]
+        ],
+        [
+          [
+            672,
+            798
+          ],
+          [
+            752,
+            801
+          ],
+          [
+            757,
+            824
+          ],
+          [
+            678,
+            838
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            670,
+            809
+          ],
+          [
+            751,
+            812
+          ],
+          [
+            756,
+            833
+          ],
+          [
+            680,
+            840
+          ]
+        ],
+        [
+          [
+            668,
+            770
+          ],
+          [
+            685,
+            772
+          ],
+          [
+            688,
+            811
+          ],
+          [
+            670,
+            815
+          ]
+        ],
+        [
+          [
+            738,
+            764
+          ],
+          [
+            752,
+            763
+          ],
+          [
+            757,
+            808
+          ],
+          [
+            742,
+            813
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        665,
+        743,
+        757,
+        838
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_northwest_wing",
+      "name": "实验组团北部西翼",
+      "anchor": [
+        585,
+        931
+      ],
+      "silhouette": [
+        [
+          574,
+          864
+        ],
+        [
+          601,
+          865
+        ],
+        [
+          597,
+          914
+        ],
+        [
+          593,
+          931
+        ],
+        [
+          569,
+          927
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            569.48,
+            921
+          ],
+          [
+            595.35,
+            921
+          ],
+          [
+            593,
+            931
+          ],
+          [
+            569,
+            927
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        569,
+        864,
+        601,
+        931
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_north_row",
+      "name": "实验组团北横楼",
+      "anchor": [
+        672,
+        913
+      ],
+      "silhouette": [
+        [
+          600,
+          865
+        ],
+        [
+          743,
+          872
+        ],
+        [
+          742,
+          900
+        ],
+        [
+          711,
+          913
+        ],
+        [
+          601,
+          901
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            734.85,
+            903
+          ],
+          [
+            711,
+            913
+          ],
+          [
+            619.33,
+            903
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        600,
+        865,
+        743,
+        913
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_northeast_wing",
+      "name": "实验组团北部东翼",
+      "anchor": [
+        728,
+        963
+      ],
+      "silhouette": [
+        [
+          723,
+          885
+        ],
+        [
+          745,
+          879
+        ],
+        [
+          744,
+          923
+        ],
+        [
+          733,
+          963
+        ],
+        [
+          711,
+          955
+        ],
+        [
+          717,
+          922
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            735.75,
+            953
+          ],
+          [
+            733,
+            963
+          ],
+          [
+            711,
+            955
+          ],
+          [
+            711.36,
+            953
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        711,
+        879,
+        745,
+        963
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_north_south_row",
+      "name": "实验组团北部南横楼",
+      "anchor": [
+        652,
+        949
+      ],
+      "silhouette": [
+        [
+          597,
+          914
+        ],
+        [
+          715,
+          921
+        ],
+        [
+          710,
+          949
+        ],
+        [
+          595,
+          942
+        ],
+        [
+          588,
+          933
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            711.79,
+            939
+          ],
+          [
+            710,
+            949
+          ],
+          [
+            595,
+            942
+          ],
+          [
+            592.67,
+            939
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        588,
+        914,
+        715,
+        949
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_southwest_wing",
+      "name": "实验组团南部西翼",
+      "anchor": [
+        578,
+        1069
+      ],
+      "silhouette": [
+        [
+          568,
+          970
+        ],
+        [
+          593,
+          971
+        ],
+        [
+          588,
+          1046
+        ],
+        [
+          585,
+          1069
+        ],
+        [
+          562,
+          1062
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            562.2,
+            1059
+          ],
+          [
+            586.3,
+            1059
+          ],
+          [
+            585,
+            1069
+          ],
+          [
+            562,
+            1062
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        562,
+        970,
+        593,
+        1069
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_south_north_row",
+      "name": "实验组团南部北横楼",
+      "anchor": [
+        646,
+        1006
+      ],
+      "silhouette": [
+        [
+          593,
+          970
+        ],
+        [
+          702,
+          981
+        ],
+        [
+          698,
+          1006
+        ],
+        [
+          590,
+          995
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            699.6,
+            996
+          ],
+          [
+            698,
+            1006
+          ],
+          [
+            599.82,
+            996
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        590,
+        970,
+        702,
+        1006
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_southeast_wing",
+      "name": "实验组团南部东翼",
+      "anchor": [
+        698,
+        1075
+      ],
+      "silhouette": [
+        [
+          704,
+          981
+        ],
+        [
+          722,
+          986
+        ],
+        [
+          707,
+          1044
+        ],
+        [
+          697,
+          1075
+        ],
+        [
+          675,
+          1061
+        ],
+        [
+          687,
+          1025
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            700.23,
+            1065
+          ],
+          [
+            697,
+            1075
+          ],
+          [
+            681.29,
+            1065
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        675,
+        981,
+        722,
+        1075
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "lab_south_row",
+      "name": "实验组团南横楼",
+      "anchor": [
+        634,
+        1062
+      ],
+      "silhouette": [
+        [
+          590,
+          1021
+        ],
+        [
+          678,
+          1025
+        ],
+        [
+          678,
+          1062
+        ],
+        [
+          589,
+          1050
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            678.0,
+            1052
+          ],
+          [
+            678,
+            1062
+          ],
+          [
+            603.83,
+            1052
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        589,
+        1021,
+        678,
+        1062
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "mechanical_information_a",
+      "name": "机电信息楼 A 座",
+      "anchor": [
+        835,
+        1010
+      ],
+      "silhouette": [
+        [
+          780,
+          875
+        ],
+        [
+          892,
+          880
+        ],
+        [
+          894,
+          907
+        ],
+        [
+          798,
+          904
+        ],
+        [
+          793,
+          928
+        ],
+        [
+          775,
+          920
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            874,
+            891
+          ],
+          [
+            894,
+            892
+          ],
+          [
+            895,
+            996
+          ],
+          [
+            879,
+            1010
+          ],
+          [
+            869,
+            993
+          ]
+        ],
+        [
+          [
+            776,
+            944
+          ],
+          [
+            875,
+            965
+          ],
+          [
+            884,
+            994
+          ],
+          [
+            869,
+            1006
+          ],
+          [
+            775,
+            977
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            776,
+            961
+          ],
+          [
+            878,
+            981
+          ],
+          [
+            885,
+            1002
+          ],
+          [
+            869,
+            1010
+          ],
+          [
+            776,
+            980
+          ]
+        ],
+        [
+          [
+            878,
+            910
+          ],
+          [
+            896,
+            911
+          ],
+          [
+            896,
+            993
+          ],
+          [
+            879,
+            1010
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        775,
+        875,
+        895,
+        1010
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. Verified against 2026 official source: west-opening U. Open courtyard remains static; not copied from unbuilt masterplan.",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "main_building",
+      "name": "第一教学楼",
+      "anchor": [
+        520,
+        1199
+      ],
+      "silhouette": [
+        [
+          397,
+          1125
+        ],
+        [
+          415,
+          1110
+        ],
+        [
+          430,
+          1131
+        ],
+        [
+          451,
+          1147
+        ],
+        [
+          478,
+          1158
+        ],
+        [
+          506,
+          1168
+        ],
+        [
+          533,
+          1169
+        ],
+        [
+          558,
+          1163
+        ],
+        [
+          587,
+          1151
+        ],
+        [
+          612,
+          1134
+        ],
+        [
+          622,
+          1120
+        ],
+        [
+          642,
+          1140
+        ],
+        [
+          633,
+          1157
+        ],
+        [
+          615,
+          1171
+        ],
+        [
+          590,
+          1185
+        ],
+        [
+          562,
+          1193
+        ],
+        [
+          536,
+          1199
+        ],
+        [
+          506,
+          1197
+        ],
+        [
+          477,
+          1193
+        ],
+        [
+          450,
+          1183
+        ],
+        [
+          426,
+          1168
+        ],
+        [
+          409,
+          1149
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            424,
+            1098
+          ],
+          [
+            486,
+            1099
+          ],
+          [
+            497,
+            1102
+          ],
+          [
+            621,
+            1106
+          ],
+          [
+            621,
+            1134
+          ],
+          [
+            546,
+            1131
+          ],
+          [
+            544,
+            1125
+          ],
+          [
+            427,
+            1124
+          ]
+        ],
+        [
+          [
+            486,
+            1100
+          ],
+          [
+            540,
+            1103
+          ],
+          [
+            547,
+            1197
+          ],
+          [
+            484,
+            1197
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            404,
+            1137
+          ],
+          [
+            422,
+            1151
+          ],
+          [
+            445,
+            1169
+          ],
+          [
+            473,
+            1180
+          ],
+          [
+            504,
+            1187
+          ],
+          [
+            534,
+            1189
+          ],
+          [
+            562,
+            1184
+          ],
+          [
+            589,
+            1175
+          ],
+          [
+            613,
+            1163
+          ],
+          [
+            635,
+            1146
+          ],
+          [
+            636,
+            1160
+          ],
+          [
+            615,
+            1174
+          ],
+          [
+            589,
+            1189
+          ],
+          [
+            561,
+            1196
+          ],
+          [
+            535,
+            1201
+          ],
+          [
+            504,
+            1199
+          ],
+          [
+            475,
+            1194
+          ],
+          [
+            448,
+            1185
+          ],
+          [
+            424,
+            1171
+          ],
+          [
+            407,
+            1152
+          ]
+        ],
+        [
+          [
+            428,
+            1118
+          ],
+          [
+            619,
+            1125
+          ],
+          [
+            618,
+            1140
+          ],
+          [
+            431,
+            1133
+          ]
+        ]
+      ],
+      "shadow_polygons": [
+        [
+          [
+            420,
+            1098
+          ],
+          [
+            424,
+            1098
+          ],
+          [
+            428,
+            1123
+          ],
+          [
+            419,
+            1125
+          ],
+          [
+            398,
+            1138
+          ],
+          [
+            393,
+            1127
+          ]
+        ]
+      ],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        397,
+        1098,
+        642,
+        1199
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. Front crescent, rear horizontal bar and central spine are separate UV polygons. The west and east courtyard holes are never included as building pixels.",
+      "outside_depicted_campus": false,
+      "depth_regions": [
+        {
+          "name": "WestArc",
+          "baseline": 1175,
+          "clip": [
+            [
+              0,
+              0
+            ],
+            [
+              468,
+              0
+            ],
+            [
+              468,
+              1656
+            ],
+            [
+              0,
+              1656
+            ]
+          ]
+        },
+        {
+          "name": "FrontArc",
+          "baseline": 1199,
+          "clip": [
+            [
+              468,
+              0
+            ],
+            [
+              566,
+              0
+            ],
+            [
+              566,
+              1656
+            ],
+            [
+              468,
+              1656
+            ]
+          ]
+        },
+        {
+          "name": "EastArc",
+          "baseline": 1178,
+          "clip": [
+            [
+              566,
+              0
+            ],
+            [
+              950,
+              0
+            ],
+            [
+              950,
+              1656
+            ],
+            [
+              566,
+              1656
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gymnasium",
+      "name": "体育馆",
+      "anchor": [
+        372,
+        1435
+      ],
+      "silhouette": [
+        [
+          291,
+          1358
+        ],
+        [
+          322,
+          1325
+        ],
+        [
+          368,
+          1287
+        ],
+        [
+          399,
+          1272
+        ],
+        [
+          435,
+          1295
+        ],
+        [
+          452,
+          1327
+        ],
+        [
+          443,
+          1355
+        ],
+        [
+          417,
+          1391
+        ],
+        [
+          382,
+          1425
+        ],
+        [
+          365,
+          1435
+        ],
+        [
+          325,
+          1416
+        ],
+        [
+          295,
+          1389
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            294,
+            1373
+          ],
+          [
+            329,
+            1397
+          ],
+          [
+            366,
+            1418
+          ],
+          [
+            386,
+            1405
+          ],
+          [
+            420,
+            1378
+          ],
+          [
+            448,
+            1339
+          ],
+          [
+            445,
+            1361
+          ],
+          [
+            419,
+            1395
+          ],
+          [
+            384,
+            1430
+          ],
+          [
+            366,
+            1438
+          ],
+          [
+            325,
+            1418
+          ],
+          [
+            296,
+            1393
+          ]
+        ]
+      ],
+      "shadow_polygons": [
+        [
+          [
+            286,
+            1359
+          ],
+          [
+            292,
+            1353
+          ],
+          [
+            296,
+            1387
+          ],
+          [
+            326,
+            1411
+          ],
+          [
+            365,
+            1431
+          ],
+          [
+            361,
+            1442
+          ],
+          [
+            319,
+            1425
+          ],
+          [
+            286,
+            1397
+          ]
+        ]
+      ],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        291,
+        1272,
+        452,
+        1435
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "south_gate",
+      "name": "南门",
+      "anchor": [
+        506,
+        1479
+      ],
+      "silhouette": [
+        [
+          468,
+          1461
+        ],
+        [
+          482,
+          1461
+        ],
+        [
+          482,
+          1478
+        ],
+        [
+          469,
+          1478
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            528,
+            1460
+          ],
+          [
+            545,
+            1462
+          ],
+          [
+            545,
+            1479
+          ],
+          [
+            528,
+            1477
+          ]
+        ],
+        [
+          [
+            480,
+            1466
+          ],
+          [
+            531,
+            1466
+          ],
+          [
+            531,
+            1476
+          ],
+          [
+            480,
+            1476
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            470,
+            1472
+          ],
+          [
+            481,
+            1472
+          ],
+          [
+            481,
+            1480
+          ],
+          [
+            470,
+            1480
+          ]
+        ],
+        [
+          [
+            531,
+            1472
+          ],
+          [
+            544,
+            1473
+          ],
+          [
+            544,
+            1481
+          ],
+          [
+            531,
+            1480
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        468,
+        1460,
+        545,
+        1479
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. Only gate support feet collide; central passage stays traversable below the source gate beam.",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "stadium_east_annex_1",
+      "name": "西南球场东侧附楼 01",
+      "anchor": [
+        241,
+        1120
+      ],
+      "silhouette": [
+        [
+          211,
+          1099
+        ],
+        [
+          265,
+          1100
+        ],
+        [
+          271,
+          1120
+        ],
+        [
+          214,
+          1118
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            212.74,
+            1110
+          ],
+          [
+            268.0,
+            1110
+          ],
+          [
+            271,
+            1120
+          ],
+          [
+            214,
+            1118
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        211,
+        1099,
+        271,
+        1120
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "stadium_east_annex_2",
+      "name": "西南球场东侧附楼 02",
+      "anchor": [
+        244,
+        1144
+      ],
+      "silhouette": [
+        [
+          214,
+          1120
+        ],
+        [
+          272,
+          1121
+        ],
+        [
+          274,
+          1144
+        ],
+        [
+          215,
+          1142
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            214.64,
+            1134
+          ],
+          [
+            273.13,
+            1134
+          ],
+          [
+            274,
+            1144
+          ],
+          [
+            215,
+            1142
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        214,
+        1120,
+        274,
+        1144
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "stadium_southeast_service",
+      "name": "西南球场东南服务楼",
+      "anchor": [
+        234,
+        1325
+      ],
+      "silhouette": [
+        [
+          214,
+          1284
+        ],
+        [
+          245,
+          1285
+        ],
+        [
+          254,
+          1305
+        ],
+        [
+          241,
+          1325
+        ],
+        [
+          216,
+          1316
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            215.94,
+            1315
+          ],
+          [
+            247.5,
+            1315
+          ],
+          [
+            241,
+            1325
+          ],
+          [
+            216,
+            1316
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        214,
+        1284,
+        254,
+        1325
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "stadium_south_service",
+      "name": "西南球场南侧附楼",
+      "anchor": [
+        210,
+        1373
+      ],
+      "silhouette": [
+        [
+          190,
+          1316
+        ],
+        [
+          218,
+          1333
+        ],
+        [
+          240,
+          1344
+        ],
+        [
+          230,
+          1373
+        ],
+        [
+          209,
+          1367
+        ],
+        [
+          180,
+          1347
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            182,
+            1338
+          ],
+          [
+            212,
+            1354
+          ],
+          [
+            235,
+            1359
+          ],
+          [
+            232,
+            1374
+          ],
+          [
+            208,
+            1369
+          ],
+          [
+            181,
+            1350
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        180,
+        1316,
+        240,
+        1373
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": false
+    },
+    {
+      "id": "context_ne_hall",
+      "name": "东北邻接建筑（归属未核）",
+      "anchor": [
+        802,
+        215
+      ],
+      "silhouette": [
+        [
+          753,
+          188
+        ],
+        [
+          772,
+          190
+        ],
+        [
+          774,
+          181
+        ],
+        [
+          794,
+          184
+        ],
+        [
+          795,
+          194
+        ],
+        [
+          844,
+          187
+        ],
+        [
+          852,
+          199
+        ],
+        [
+          850,
+          214
+        ],
+        [
+          804,
+          215
+        ],
+        [
+          799,
+          207
+        ],
+        [
+          756,
+          209
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            755.43,
+            205
+          ],
+          [
+            851.2,
+            205
+          ],
+          [
+            850,
+            214
+          ],
+          [
+            804,
+            215
+          ],
+          [
+            799,
+            207
+          ],
+          [
+            756,
+            209
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        753,
+        181,
+        852,
+        215
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_house",
+      "name": "东侧邻接房屋（归属未核）",
+      "anchor": [
+        793,
+        278
+      ],
+      "silhouette": [
+        [
+          775,
+          256
+        ],
+        [
+          793,
+          245
+        ],
+        [
+          809,
+          254
+        ],
+        [
+          811,
+          275
+        ],
+        [
+          781,
+          278
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            778.27,
+            268
+          ],
+          [
+            810.33,
+            268
+          ],
+          [
+            811,
+            275
+          ],
+          [
+            781,
+            278
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        775,
+        245,
+        811,
+        278
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_east_courtyard",
+      "name": "东侧邻接院落（归属未核）",
+      "anchor": [
+        812,
+        327
+      ],
+      "silhouette": [
+        [
+          771,
+          292
+        ],
+        [
+          811,
+          292
+        ],
+        [
+          812,
+          319
+        ],
+        [
+          788,
+          327
+        ],
+        [
+          775,
+          320
+        ]
+      ],
+      "visual_polygons": [
+        [
+          [
+            821,
+            288
+          ],
+          [
+            842,
+            286
+          ],
+          [
+            854,
+            315
+          ],
+          [
+            841,
+            325
+          ],
+          [
+            822,
+            314
+          ]
+        ]
+      ],
+      "footprints": [
+        [
+          [
+            774.57,
+            317
+          ],
+          [
+            811.93,
+            317
+          ],
+          [
+            812,
+            319
+          ],
+          [
+            788,
+            327
+          ],
+          [
+            775,
+            320
+          ]
+        ],
+        [
+          [
+            854.0,
+            315
+          ],
+          [
+            854,
+            315
+          ],
+          [
+            841,
+            325
+          ],
+          [
+            823.73,
+            315
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        771,
+        286,
+        854,
+        327
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    },
+    {
+      "id": "context_northeast_roof",
+      "name": "东北画幅邻楼（归属未核）",
+      "anchor": [
+        900,
+        127
+      ],
+      "silhouette": [
+        [
+          873,
+          90
+        ],
+        [
+          893,
+          93
+        ],
+        [
+          894,
+          85
+        ],
+        [
+          923,
+          88
+        ],
+        [
+          928,
+          117
+        ],
+        [
+          908,
+          127
+        ],
+        [
+          877,
+          117
+        ]
+      ],
+      "visual_polygons": [],
+      "footprints": [
+        [
+          [
+            877.0,
+            117
+          ],
+          [
+            928.0,
+            117
+          ],
+          [
+            928,
+            117
+          ],
+          [
+            908,
+            127
+          ],
+          [
+            877,
+            117
+          ]
+        ]
+      ],
+      "shadow_polygons": [],
+      "cleanplate": "",
+      "repair_mode": "native_paving_tiles_approximate",
+      "source_box": [
+        873,
+        85,
+        928,
+        127
+      ],
+      "trace_confidence": "manual_source_trace",
+      "trace_notes": "Roof/facade polygons follow original source pixels; hidden ground and ground-foot physics are approximate game geometry, not surveyed plans. ",
+      "outside_depicted_campus": true
+    }
+  ]
+}

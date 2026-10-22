@@ -1,0 +1,5006 @@
+{
+  "checks": 7746,
+  "failures": 0,
+  "fixed_state_start_exit_paths": 0,
+  "local_paths": [
+    "B_START>B_LOWER_LOW",
+    "B_START>B_LOWER_LOW>B_LOWER_HIGH",
+    "B_LOWER_LOW>B_LOWER_HIGH",
+    "B_MID_LIFT_HIGH>B_UPPER_LOW",
+    "B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH",
+    "B_UPPER_LOW>B_UPPER_HIGH",
+    "B_HIGH_ISLAND>B_EXIT_SLIDE",
+    "B_HIGH_ISLAND>B_EXIT_SLIDE>B_EXIT",
+    "B_EXIT_SLIDE>B_EXIT",
+    "B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND",
+    "B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND",
+    "B_UPPER_HIGH>B_HIGH_ISLAND",
+    "B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE",
+    "B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE>B_EXIT",
+    "B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE",
+    "B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE>B_EXIT",
+    "B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE",
+    "B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE>B_EXIT",
+    "B_MID_LIFT_LOW>B_MID_LIFT_HIGH",
+    "B_MID_LIFT_LOW>B_MID_LIFT_HIGH>B_UPPER_LOW",
+    "B_MID_LIFT_LOW>B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH",
+    "B_MID_LIFT_LOW>B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND",
+    "B_MID_LIFT_LOW>B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE",
+    "B_MID_LIFT_LOW>B_MID_LIFT_HIGH>B_UPPER_LOW>B_UPPER_HIGH>B_HIGH_ISLAND>B_EXIT_SLIDE>B_EXIT",
+    "B_START>B_LOWER_LOW>B_LOWER_HIGH>B_MID_LIFT_LOW",
+    "B_LOWER_LOW>B_LOWER_HIGH>B_MID_LIFT_LOW",
+    "B_LOWER_HIGH>B_MID_LIFT_LOW"
+  ],
+  "max_degree": 2,
+  "real_renderer_rejections": 1248,
+  "state_rows": [
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 24,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 0,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 24,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 1,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 24,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 2,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_lower_stair_lift",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 0,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 18,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 6,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 1,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 0
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 13,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span,b_link_upper_stair_island",
+      "undirected_paths": 24,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 1
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 2
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 0,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 9,
+      "values": {
+        "b_exit_slide": 1,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_east"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "south_west"
+    },
+    {
+      "topology": "b_edge_island_slide,b_edge_landing_upper,b_edge_lift_landing,b_edge_lower_span,b_edge_slide_exit,b_edge_start_lower,b_edge_upper_span",
+      "undirected_paths": 12,
+      "values": {
+        "b_exit_slide": 2,
+        "b_lower_stair": 3,
+        "b_mid_lift": 2,
+        "b_upper_stair": 3
+      },
+      "view": "top_oblique"
+    }
+  ],
+  "states": 432,
+  "topologies": [
+    {
+      "edges": [
+        "b_edge_landing_upper",
+        "b_edge_lower_span",
+        "b_edge_start_lower",
+        "b_edge_upper_span"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 0,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_east"
+      },
+      "states": 168,
+      "undirected_paths": 6
+    },
+    {
+      "edges": [
+        "b_edge_island_slide",
+        "b_edge_landing_upper",
+        "b_edge_lower_span",
+        "b_edge_slide_exit",
+        "b_edge_start_lower",
+        "b_edge_upper_span"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 2,
+          "b_lower_stair": 0,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_east"
+      },
+      "states": 84,
+      "undirected_paths": 9
+    },
+    {
+      "edges": [
+        "b_edge_landing_upper",
+        "b_edge_lower_span",
+        "b_edge_start_lower",
+        "b_edge_upper_span",
+        "b_link_upper_stair_island"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 0,
+          "b_mid_lift": 0,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      },
+      "states": 16,
+      "undirected_paths": 9
+    },
+    {
+      "edges": [
+        "b_edge_island_slide",
+        "b_edge_landing_upper",
+        "b_edge_lower_span",
+        "b_edge_slide_exit",
+        "b_edge_start_lower",
+        "b_edge_upper_span",
+        "b_link_upper_stair_island"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 2,
+          "b_lower_stair": 0,
+          "b_mid_lift": 0,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      },
+      "states": 8,
+      "undirected_paths": 18
+    },
+    {
+      "edges": [
+        "b_edge_landing_upper",
+        "b_edge_lift_landing",
+        "b_edge_lower_span",
+        "b_edge_start_lower",
+        "b_edge_upper_span"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 0,
+          "b_mid_lift": 2,
+          "b_upper_stair": 0
+        },
+        "view": "south_east"
+      },
+      "states": 88,
+      "undirected_paths": 9
+    },
+    {
+      "edges": [
+        "b_edge_island_slide",
+        "b_edge_landing_upper",
+        "b_edge_lift_landing",
+        "b_edge_lower_span",
+        "b_edge_slide_exit",
+        "b_edge_start_lower",
+        "b_edge_upper_span"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 2,
+          "b_lower_stair": 0,
+          "b_mid_lift": 2,
+          "b_upper_stair": 0
+        },
+        "view": "south_east"
+      },
+      "states": 44,
+      "undirected_paths": 12
+    },
+    {
+      "edges": [
+        "b_edge_landing_upper",
+        "b_edge_lift_landing",
+        "b_edge_lower_span",
+        "b_edge_start_lower",
+        "b_edge_upper_span",
+        "b_link_upper_stair_island"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 0,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      },
+      "states": 8,
+      "undirected_paths": 13
+    },
+    {
+      "edges": [
+        "b_edge_island_slide",
+        "b_edge_landing_upper",
+        "b_edge_lift_landing",
+        "b_edge_lower_span",
+        "b_edge_slide_exit",
+        "b_edge_start_lower",
+        "b_edge_upper_span",
+        "b_link_upper_stair_island"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 2,
+          "b_lower_stair": 0,
+          "b_mid_lift": 2,
+          "b_upper_stair": 1
+        },
+        "view": "top_oblique"
+      },
+      "states": 4,
+      "undirected_paths": 24
+    },
+    {
+      "edges": [
+        "b_edge_landing_upper",
+        "b_edge_lower_span",
+        "b_edge_start_lower",
+        "b_edge_upper_span",
+        "b_link_lower_stair_lift"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 0,
+          "b_lower_stair": 3,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_west"
+      },
+      "states": 8,
+      "undirected_paths": 9
+    },
+    {
+      "edges": [
+        "b_edge_island_slide",
+        "b_edge_landing_upper",
+        "b_edge_lower_span",
+        "b_edge_slide_exit",
+        "b_edge_start_lower",
+        "b_edge_upper_span",
+        "b_link_lower_stair_lift"
+      ],
+      "example": {
+        "values": {
+          "b_exit_slide": 2,
+          "b_lower_stair": 3,
+          "b_mid_lift": 0,
+          "b_upper_stair": 0
+        },
+        "view": "south_west"
+      },
+      "states": 4,
+      "undirected_paths": 12
+    }
+  ],
+  "topology_count": 10,
+  "unique_directed_local_paths": 54,
+  "unique_undirected_local_paths": 27
+}

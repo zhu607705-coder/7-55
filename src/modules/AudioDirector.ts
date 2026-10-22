@@ -324,6 +324,8 @@ export class AudioDirector {
     events.emit("toast", {
       text: storyLine.subtitleZh,
       tone: toastTone(storyLine.kind, storyLine.speaker),
+      presentationRole: storyLine.kind === "task" ? "notification" : "dialogue",
+      speaker: storyLine.speaker,
       durationMs: textFeedbackDuration(storyLine.subtitleZh)
     });
   }
@@ -412,6 +414,8 @@ export class AudioDirector {
       events.emit("toast", {
         text: narration.subtitleZh,
         tone: toastTone(narration.kind, narration.speaker),
+        presentationRole: narration.kind === "task" ? "notification" : "dialogue",
+        speaker: narration.speaker,
         durationMs: durationMs + 450
       });
     }

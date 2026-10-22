@@ -1,0 +1,80 @@
+{
+  "schema": "buct-changping-library-validation-v1",
+  "status": "passed_native_GPU_and_bounded_manual_review",
+  "base_pull_request": 129,
+  "base_commit": "dabe1efa13ebf1a77dfab0326ae76f2351c4ee69",
+  "body_sha256": "01a017d632f699907b1a56ba927373420b92062aa40a486e2564edef9171be16",
+  "source_guard": {
+    "checks": 10,
+    "failures": 0
+  },
+  "native": {
+    "checks": 1016,
+    "failures": 0,
+    "collision_max_residual_source_px": 0.083,
+    "four_way_radius3_stops": true,
+    "recess_collision_clear": true,
+    "roof_and_unbuilt_route_closed": true,
+    "repeat_scene_release": true
+  },
+  "accepted_student": {
+    "checks": 86,
+    "failures": 0,
+    "guide_ticks": 759,
+    "animation_ticks": 575,
+    "boundary_violations": 0
+  },
+  "GPU": {
+    "checks": 17,
+    "failures": 0,
+    "same_imported_production_texture": true,
+    "depth_poses": 5,
+    "alpha_support_difference": 0,
+    "max_channel_delta_8bit": 1,
+    "actual_student_contact_pairs": 4
+  },
+  "manual": {
+    "method": "Real mouse and keyboard on native Godot. The unshipped initial-pose driver supplied no inputs.",
+    "glass_roof_selects_library": true,
+    "escape_closes_information": true,
+    "unobstructed_transparent_recess_does_not_select": true,
+    "movement_source_y": [
+      816,
+      829.2001,
+      816
+    ],
+    "released_keys_return_to_idle": true,
+    "entry_return_and_reentry": true,
+    "reentry_original_spawn": [
+      515,
+      1510
+    ],
+    "first_campus_released": true,
+    "excluded_probe": "One second alpha-empty point lay under the screen-space landmark Button; opening its information was ordinary Button behavior."
+  },
+  "exit_comparison": {
+    "original_manual_driver_exit_code": 0,
+    "original_manual_driver_warning": "ObjectDB instances leaked at exit. Original evidence retained; no exact leak cause claimed.",
+    "driver_free_official_sequence": [
+      "official chooser",
+      "Changping south gate",
+      "chooser",
+      "Changping south gate",
+      "normal quit"
+    ],
+    "driver_free_exit_code": 0,
+    "driver_free_error_ObjectDB_RID_warnings": 0,
+    "environment_warning": "VSync mode unsupported by the llvmpipe display driver",
+    "production_code_unchanged_between_runs": true
+  },
+  "ground_repair": {
+    "added": false,
+    "reason": "Actual arrival, east recess and contact captures showed no clear old-wall double image or bright patch requiring repainting."
+  },
+  "not_tested": [
+    "new exported package",
+    "physical mobile GPU",
+    "complete story gameplay"
+  ],
+  "runtime_bytes_unchanged_after_native_tests": true
+}

@@ -1,0 +1,22 @@
+{
+  "copied": [
+    {
+      "name": "save.json",
+      "sha256": "7f796ec1f475a1b49abb2358e0fb38e92d9b93a47ef2325b0564bc5230c96416",
+      "same": true
+    },
+    {
+      "name": "save.previous.json",
+      "sha256": "be5fce65bce7efb2a86c8af836cdab33da8a0f68d06b6f2e8e3194128200b19b",
+      "same": true
+    }
+  ],
+  "source": "/Users/zhu/Library/Application Support/755-native-check-7ZNfry/data/SevenFiftyFiveNative",
+  "target": "/Users/zhu/Library/Application Support/755-native-check-8VlFbS/data/SevenFiftyFiveNative",
+  "at": "2026-10-19T15:14:17.638333+00:00",
+  "position": {
+    "chapter": 1.0,
+    "page": "wechat",
+    "scene": ""
+  }
+}

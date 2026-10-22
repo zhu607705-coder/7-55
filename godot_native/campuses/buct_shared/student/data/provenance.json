@@ -1,0 +1,561 @@
+{
+  "date_utc": "2026-10-12",
+  "method": "Reference-guided image generation and measured native atlas registration",
+  "scope": "User-requested BUCT student concept for native campus demos; not an official uniform, endorsement or named real person",
+  "source_pixels": "Accepted original PNG bytes, unmodified",
+  "private_generation_records": "Retained in the user source package; private conversation links and service file identities are intentionally not published",
+  "outputs": [
+    {
+      "file": "assets/student-four-directions.png",
+      "sha256": "41bb77696eee6a91e64e56c432aab35b31576565edd3330ac6ac21bcd0a63f82",
+      "canvas_size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "down",
+          "state": "idle",
+          "frame_index": 0,
+          "region": [
+            217,
+            14,
+            252,
+            571
+          ]
+        },
+        {
+          "direction": "left",
+          "state": "idle",
+          "frame_index": 0,
+          "region": [
+            838,
+            14,
+            196,
+            580
+          ]
+        },
+        {
+          "direction": "right",
+          "state": "idle",
+          "frame_index": 0,
+          "region": [
+            225,
+            635,
+            195,
+            579
+          ]
+        },
+        {
+          "direction": "up",
+          "state": "idle",
+          "frame_index": 0,
+          "region": [
+            787,
+            638,
+            249,
+            559
+          ]
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-right-v1.png",
+      "sha256": "0b8a792e8541d9008685420d507f49c650a4ddd5a84766037f1697d7303f2a09",
+      "canvas_size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 0,
+          "region": [
+            113,
+            16,
+            243,
+            405
+          ],
+          "phase": 0.0,
+          "source_frame": 0
+        },
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 1,
+          "region": [
+            577,
+            16,
+            191,
+            411
+          ],
+          "phase": 0.125,
+          "source_frame": 1
+        },
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 2,
+          "region": [
+            1021,
+            16,
+            198,
+            411
+          ],
+          "phase": 0.25,
+          "source_frame": 2
+        },
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 4,
+          "region": [
+            115,
+            460,
+            246,
+            400
+          ],
+          "phase": 0.5,
+          "source_frame": 4
+        },
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 5,
+          "region": [
+            573,
+            460,
+            186,
+            395
+          ],
+          "phase": 0.625,
+          "source_frame": 5
+        },
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 6,
+          "region": [
+            1020,
+            460,
+            190,
+            400
+          ],
+          "phase": 0.75,
+          "source_frame": 6
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-precontact-a.png",
+      "sha256": "2c06116c5980b38ebfdf135e7aa574932b674c310037c1235d1016481576d986",
+      "canvas_size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 3,
+          "region": [
+            374,
+            70,
+            592,
+            1063
+          ],
+          "phase": 0.375,
+          "source_phase": "far_leg_precontact_near_leg_support"
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-precontact-b-sheet.png",
+      "sha256": "ab6c5152bcd685577f04e708c47b7cce07974e15d29badd619c87cca6ce4da99",
+      "canvas_size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "right",
+          "state": "walk",
+          "frame_index": 7,
+          "region": [
+            851,
+            139,
+            487,
+            784
+          ],
+          "phase": 0.875,
+          "source_phase": "near_leg_precontact_far_leg_support"
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-left-v1.png",
+      "sha256": "872b031ed5883a75d38c134a35c95987e965c51228de3bc6c569d4ed6e50dd92",
+      "canvas_size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 0,
+          "region": [
+            100,
+            14,
+            235,
+            411
+          ],
+          "phase": 0.0,
+          "source_frame": 0
+        },
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 1,
+          "region": [
+            594,
+            14,
+            179,
+            413
+          ],
+          "phase": 0.125,
+          "source_frame": 1
+        },
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 2,
+          "region": [
+            1041,
+            14,
+            157,
+            408
+          ],
+          "phase": 0.25,
+          "source_frame": 2
+        },
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 3,
+          "region": [
+            1421,
+            14,
+            244,
+            401
+          ],
+          "phase": 0.375,
+          "source_frame": 3
+        },
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 4,
+          "region": [
+            105,
+            454,
+            253,
+            398
+          ],
+          "phase": 0.5,
+          "source_frame": 4
+        },
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 6,
+          "region": [
+            1026,
+            454,
+            174,
+            408
+          ],
+          "phase": 0.75,
+          "source_frame": 6
+        },
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 7,
+          "region": [
+            1415,
+            455,
+            249,
+            402
+          ],
+          "phase": 0.875,
+          "source_frame": 7
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-down-v1.png",
+      "sha256": "0c80f6c55b99e73964f132505b813649c478a1c66f5ed98177eac594eaa03c0d",
+      "canvas_size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 0,
+          "region": [
+            129,
+            9,
+            200,
+            431
+          ],
+          "phase": 0.0,
+          "source_frame": 0
+        },
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 1,
+          "region": [
+            568,
+            10,
+            197,
+            425
+          ],
+          "phase": 0.125,
+          "source_frame": 1
+        },
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 2,
+          "region": [
+            1007,
+            10,
+            202,
+            418
+          ],
+          "phase": 0.25,
+          "source_frame": 2
+        },
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 3,
+          "region": [
+            1451,
+            10,
+            199,
+            430
+          ],
+          "phase": 0.375,
+          "source_frame": 3
+        },
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 4,
+          "region": [
+            126,
+            455,
+            204,
+            422
+          ],
+          "phase": 0.5,
+          "source_frame": 4
+        },
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 6,
+          "region": [
+            1005,
+            453,
+            202,
+            417
+          ],
+          "phase": 0.75,
+          "source_frame": 6
+        },
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 7,
+          "region": [
+            1455,
+            455,
+            200,
+            416
+          ],
+          "phase": 0.875,
+          "source_frame": 7
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-left-phase5.png",
+      "sha256": "220c91bf417715ffb47e3d9df13b885c71f881dbed2647591ed9c4677de35369",
+      "canvas_size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "left",
+          "state": "walk",
+          "frame_index": 5,
+          "region": [
+            349,
+            33,
+            543,
+            1148
+          ],
+          "phase": 0.625
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-down-phase5.png",
+      "sha256": "bad68805f99376a15877fd45774e0f3164d024693619782e1817312010d2e1cb",
+      "canvas_size": [
+        1230,
+        1278
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "down",
+          "state": "walk",
+          "frame_index": 5,
+          "region": [
+            341,
+            26,
+            568,
+            1180
+          ],
+          "phase": 0.625
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-up-v1.png",
+      "sha256": "fde2b48ef81a12027add9dbcf4bf24e0fddb0b43530504dcec605ce22bee7e26",
+      "canvas_size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "up",
+          "state": "walk",
+          "frame_index": 0,
+          "region": [
+            1025,
+            16,
+            174,
+            403
+          ],
+          "phase": 0.0,
+          "source_frame": 2
+        },
+        {
+          "direction": "up",
+          "state": "walk",
+          "frame_index": 1,
+          "region": [
+            134,
+            16,
+            181,
+            409
+          ],
+          "phase": 0.16666666666666666,
+          "source_frame": 0
+        },
+        {
+          "direction": "up",
+          "state": "walk",
+          "frame_index": 3,
+          "region": [
+            1016,
+            460,
+            175,
+            398
+          ],
+          "phase": 0.5,
+          "source_frame": 6
+        },
+        {
+          "direction": "up",
+          "state": "walk",
+          "frame_index": 4,
+          "region": [
+            576,
+            16,
+            173,
+            404
+          ],
+          "phase": 0.6666666666666666,
+          "source_frame": 1
+        },
+        {
+          "direction": "up",
+          "state": "walk",
+          "frame_index": 5,
+          "region": [
+            580,
+            459,
+            177,
+            401
+          ],
+          "phase": 0.8333333333333334,
+          "source_frame": 5
+        }
+      ]
+    },
+    {
+      "file": "assets/student-walk-up-opposite-passing.png",
+      "sha256": "a4d25785d6cad19aaa26a22d3b2afed0df2368fef43a5fba32a060b016ebacfe",
+      "canvas_size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "accepted_frames": [
+        {
+          "direction": "up",
+          "state": "walk",
+          "frame_index": 2,
+          "region": [
+            377,
+            50,
+            498,
+            1116
+          ],
+          "phase": 0.3333333333333333
+        }
+      ]
+    }
+  ],
+  "unused_phases": [
+    "Right walk source sheet cells 3 and 7 are near-duplicate contact poses and are not runtime phases",
+    "Precontact supplement uses only its registered right-hand pose; rejected left-hand pose is not rendered",
+    "Up sheet near-duplicate contact cells 3, 4 and 7 are not runtime phases; six genuine phases are used"
+  ],
+  "limits": [
+    "Foot anchors and common per-sheet body scales are manually registered visual estimates",
+    "Distance-driven gait is not a claim of measured zero-slip biomechanics",
+    "Eight rendered seconds or hundreds of renderer frames do not imply hundreds of unique artwork poses",
+    "Only the two-tree Chaoyang pilot consumes this character in this change"
+  ]
+}

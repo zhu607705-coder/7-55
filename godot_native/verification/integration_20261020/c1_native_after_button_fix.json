@@ -1,0 +1,61 @@
+{
+  "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-zMd1xG",
+  "userData": "/Users/zhu/Library/Application Support/755-native-check-zMd1xG/data/SevenFiftyFiveNative",
+  "project": "/Users/zhu/Library/Application Support/755-native-check-zMd1xG/workspace/godot_native",
+  "stages": [
+    {
+      "script": "res://tests/test_prologue_words.gd",
+      "startedAt": "2026-10-19T16:36:44.350Z",
+      "durationMs": 438,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROLOGUE_WORD_MODEL: 28 checks; 0 failures\n"
+    },
+    {
+      "script": "res://tests/test_prologue_focus_input.gd",
+      "startedAt": "2026-10-19T16:36:44.788Z",
+      "durationMs": 817,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_PROLOGUE_FOCUS_INPUT: 37 checks; 0 failures\n"
+    },
+    {
+      "script": "res://tests/test_prologue_audio.gd",
+      "startedAt": "2026-10-19T16:36:45.606Z",
+      "durationMs": 3240,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_PROLOGUE_AUDIO checks=32 errors=0\n"
+    },
+    {
+      "script": "res://tests/test_early_games.gd",
+      "startedAt": "2026-10-19T16:36:48.847Z",
+      "durationMs": 821,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nEARLY_GAMES_TESTS: 16 passed; 0 failed\n"
+    },
+    {
+      "script": "res://tests/test_full_campaign.gd",
+      "startedAt": "2026-10-19T16:36:49.668Z",
+      "durationMs": 105763,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCONTINUOUS CAMPAIGN chapters=[1, 2, 3, 4] failures=0\nWARNING: Nodes with non-equal opposite anchors will have their size overridden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().\n     at: _set_size (scene/gui/control.cpp:1519)\n     GDScript backtrace (most recent call first):\n         [0] return_to_hall (res://tests/campaign_chapter4.gd:150)\n         [1] campaign (res://tests/campaign_chapter4.gd:93)\n         [2] act (res://tests/campaign_chapter4.gd:161)\n         [3] drain_effects (res://tests/campaign_chapter4.gd:234)\n"
+    },
+    {
+      "script": "res://tests/test_all_scripts_parse.gd",
+      "startedAt": "2026-10-19T16:38:35.431Z",
+      "durationMs": 4966,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 736 scripts, 0 failures\n"
+    }
+  ]
+}

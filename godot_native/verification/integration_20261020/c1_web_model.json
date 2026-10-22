@@ -1,0 +1,29 @@
+{
+  "checks": 52,
+  "failures": [],
+  "negativeControl": {
+    "fixtureSha256": "971d56b6b770e1c4bf3335781225f56bb97245b47983f53226af3fe15cd9d654",
+    "effectiveFailures": [
+      "old endpoint position awards contact without any swept collision",
+      "old later endpoint ignores an earlier real contact at center",
+      "old implementation cannot retain semantic missing targets"
+    ],
+    "source": "exact old path and terminal predicate executed"
+  },
+  "runs": [
+    {
+      "name": "normal-continuous-input",
+      "elapsedMs": 59100,
+      "recoveries": 0,
+      "completedStages": 3
+    }
+  ],
+  "sourceHashes": {
+    "src/data/prologue-interception.content.json": "64ff1f31b664749a43d5590bf9464717634c33bdb342386852c9244a91fea778",
+    "src/scenes/phone/P12_Ending/InterceptionModel.ts": "c12b3febe3e94c404cef184b8cc570fc58f67e6cbe4c392224b4cec4ed774773",
+    "src/scenes/phone/P12_Ending/index.tsx": "c1f5b6c3d6d40c188449ddcfef9416b27b8b5dbadeab40cce1c6f79d6ca22ba3",
+    "src/scenes/phone/P12_Ending/EndingRuntime.ts": "5d2e044e8128018177f29f0a12e5df831a41abd0953c3ac3646cec7332160b2f",
+    "src/styles/scenes/p12-ending.css": "0ef9114b2d07316c32bada1bdcd423570c9b2237819b773050dc4b6795018bcf"
+  },
+  "passed": true
+}

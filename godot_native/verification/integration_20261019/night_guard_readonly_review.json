@@ -1,0 +1,97 @@
+{
+  "reviewedAtUtc": "2026-10-19T13:48:58.483498+00:00",
+  "headBeforePatchCommit": "e9dcd316d072e2f20378b91437cc7047a3006998",
+  "scope": "Read-only review of frozen seven-file night illumination and guard performance patch; no source, Git or runtime mutation and no full-suite rerun.",
+  "result": "no_confirmed_blocking_findings",
+  "files": [
+    {
+      "path": "godot_native/scripts/games/chapter4_guard_navigation.gd",
+      "sha256": "b00eb337fc3a2b61659ebe40ef3804a89b44b2bbca7d273961fb5302e63df1d1",
+      "matchesFrozenSummary": true
+    },
+    {
+      "path": "godot_native/scripts/world.gd",
+      "sha256": "d275eb1bc22888c6bfa67d2a3cd72e23f96581973b9a25e6fedb17925f655fda",
+      "matchesFrozenSummary": true
+    },
+    {
+      "path": "godot_native/tests/test_chapter4_guard_navigation.gd",
+      "sha256": "5877d414bf407761acc2bf25378c88cbb5b86f43f7e721315087107620dad64a",
+      "matchesFrozenSummary": true
+    },
+    {
+      "path": "godot_native/tests/test_chapter4_guard_repath.gd",
+      "sha256": "dab927c69b57e513fc7d6e0fa3cdc48e953132fff32519b0743aab8fa0c556a4",
+      "matchesFrozenSummary": true
+    },
+    {
+      "path": "godot_native/tests/fixtures/chapter4_guard_navigation_baseline.gd.source.txt",
+      "sha256": "9fdd07012a8216eaf2dc4548955a121eb9cdd9ffe02c400b80ec49acc4f074dc",
+      "matchesFrozenSummary": true
+    },
+    {
+      "path": "godot_native/scripts/ui/chapter4_phase_layers.gd",
+      "sha256": "514eee89cfb4ccbc8a4ec0cba60528555c459f449d5c54993f148fab0f5a9ecf",
+      "matchesFrozenSummary": true
+    },
+    {
+      "path": "godot_native/tests/test_chapter4_phase_world.gd",
+      "sha256": "95c6ebbc0d6bf3bdf83018fa9a92be4e77d8541714b179d1dfbb4238c0375800",
+      "matchesFrozenSummary": true
+    }
+  ],
+  "oldNavigationOracle": {
+    "commit": "e9dcd316d072e2f20378b91437cc7047a3006998",
+    "path": "godot_native/scripts/games/chapter4_guard_navigation.gd",
+    "fixture": "godot_native/tests/fixtures/chapter4_guard_navigation_baseline.gd.source.txt",
+    "sha256": "9fdd07012a8216eaf2dc4548955a121eb9cdd9ffe02c400b80ec49acc4f074dc",
+    "exactRawBytes": true
+  },
+  "guardEvidence": {
+    "summary": "/tmp/codex-755-guard-perf-final.json",
+    "stages": 7,
+    "behaviorChecks": 495,
+    "parseScripts": 729,
+    "failures": 0,
+    "directedSourceEdges": 127412,
+    "finalStagesAllSucceeded": true,
+    "negativeOriginalNavigation": "/tmp/codex-755-guard-nav-negative.json",
+    "negativeOriginalRepath": "/tmp/codex-755-guard-repath-negative.json",
+    "negativeFinalExactRepath": "/tmp/codex-755-guard-repath-final-negative.json",
+    "staticIntegrityReport": "/tmp/codex-755-guard-crosspr-static.json",
+    "staticChecks": 2419,
+    "staticFailures": 0
+  },
+  "nightEvidence": {
+    "summary": "/tmp/codex-755-honor-lighting-summary.json",
+    "report": "/tmp/codex-755-honor-lighting-final.json",
+    "lightingPhaseChecks": 549,
+    "worldChecks": 27,
+    "pickerChecks": 53,
+    "historicalParsedScripts": 727,
+    "finalCompositionParsedScripts": 729,
+    "nightLayerAndTestHashUnchanged": true,
+    "worldDiffFromNightReportIsExactlyGuardRetryPredicate": true,
+    "interpretation": "The earlier night-only world SHA differs from final world because of the independently verified one-line guard retry change. Restoring only that old predicate reproduces the exact recorded night world SHA; all rendering additions are byte-identical."
+  },
+  "analysis": [
+    "Absolute-nearest shortcut preserves ascending-id ties and falls back to the original full scan if its nearest cell is blocked or its sampled line is rejected; early invalid-foot rejection is equivalent to the original line endpoint sample.",
+    "Directed fixed-grid edge keys cannot alias inside the current graph and are cleared on every setup. Production rebuilds navigation on floor/attempt/kind and collision hash changes; continuous line sampling, A* ordering and smoothing remain unchanged.",
+    "Initial guard search still occurs immediately because both kind/floor/attempt reset and navigation reconstruction set retry time to zero. Empty route retry is now limited by the original260ms deadline; reaching a finite waypoint still allows immediate replanning.",
+    "Night image/matte/runtime frame shading is presentation-only; both reality modes keep authored biography target and controller dispatch. Existing mode crossfade/blackout masks are replayed only over replaced portrait pixels. Texture and illumination sampling is cached by stable resource paths and target id."
+  ],
+  "upcomingValidation": {
+    "gdStages": 377,
+    "expectedTotalNativeStages": 416,
+    "newAutoEnumeratedTests": [
+      "test_chapter4_guard_navigation.gd",
+      "test_chapter4_guard_repath.gd"
+    ],
+    "requiresNewFrozenCommitPackagesAndExactHeadCI": true
+  },
+  "limits": [
+    "Focused automated headless evidence does not replace root computer-use night visual and DEV112 walking/Space acceptance.",
+    "The specific previously observed25-second GUI instance is not uniquely attributed to guard navigation; separate old-code measurements and negative controls demonstrate the fixed expensive path/retry behavior.",
+    "Linux/Godot4.6.3 evidence from e9dcd316 predates this patch and must not be reused as final exact-head evidence."
+  ]
+}

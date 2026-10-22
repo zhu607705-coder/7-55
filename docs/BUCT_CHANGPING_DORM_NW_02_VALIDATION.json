@@ -1,0 +1,326 @@
+{
+  "schema": "buct_dorm_nw_02_local_acceptance_v1",
+  "status": "accepted_local_scope",
+  "remaining_gates": [],
+  "scope": "One original-anchor whole connected RGBA building in the default sixth region; four clear outer roof/facade points and actual normal-render central-step review",
+  "native_original_size": [
+    1536,
+    1024
+  ],
+  "source_anchor": [
+    181,
+    304
+  ],
+  "source_and_original_physical_geometry_unchanged": true,
+  "geometry_registration": {
+    "status": "candidate_pending_actual_render",
+    "image_scale": 0.045974172656300834,
+    "origin_world": [
+      145.14586122730466,
+      260.43823651364585
+    ],
+    "rms_source_px": 1.1049868280554698,
+    "max_source_px": 1.3035451259950372,
+    "independent_body_gpu_bytes": 9967612,
+    "original_collision_footprint_retained": [
+      [
+        [
+          150.5500030517578,
+          294
+        ],
+        [
+          211.74000549316406,
+          294
+        ],
+        [
+          211,
+          304
+        ],
+        [
+          151,
+          301
+        ]
+      ]
+    ],
+    "fifth_point_original_diagnostic_kept": true
+  },
+  "retained_five_point_diagnostic": {
+    "schema": "buct_dorm_nw_02_v1_sparse_visual_registration_diagnostic",
+    "status": "diagnostic_only_not_registration_acceptance",
+    "source": "approved-changping.png",
+    "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+    "candidate": "generated/dorm-nw-02-body-v1-original.png",
+    "candidate_png_sha256": "d158aa040e081ddd98a3b05bc6ef9895cc5089a508da27add78c4a13a6235690",
+    "fit": "source_xy = uniform_scale * raw_xy + translation; no rotation, no nonuniform warp",
+    "uniform_scale": 0.04572750202955054,
+    "translation_source_xy": [
+      144.52760644779974,
+      260.97075360659187
+    ],
+    "rms_source_px": 2.067166967926194,
+    "max_source_px": 3.617048983109146,
+    "points": [
+      {
+        "name": "left_back_roof_outer_corner",
+        "generated_xy": [
+          83,
+          213
+        ],
+        "source_xy": [
+          149.5,
+          269.5
+        ],
+        "predicted_source_xy": [
+          148.32298911625244,
+          270.71071153888613
+        ],
+        "error_source_px": 1.6885428780022806,
+        "source_point_uncertainty_px_approx": 1.0
+      },
+      {
+        "name": "central_highest_back_roof_corner",
+        "generated_xy": [
+          748,
+          151
+        ],
+        "source_xy": [
+          175.5,
+          269.5
+        ],
+        "predicted_source_xy": [
+          178.73177796590355,
+          267.875606413054
+        ],
+        "error_source_px": 3.617048983109146,
+        "source_point_uncertainty_px_approx": 1.0
+      },
+      {
+        "name": "right_back_roof_outer_corner",
+        "generated_xy": [
+          1428,
+          213
+        ],
+        "source_xy": [
+          210.5,
+          271.5
+        ],
+        "predicted_source_xy": [
+          209.8264793459979,
+          270.71071153888613
+        ],
+        "error_source_px": 1.037596427429713,
+        "source_point_uncertainty_px_approx": 1.0
+      },
+      {
+        "name": "left_visible_facade_lower_corner",
+        "generated_xy": [
+          135,
+          774
+        ],
+        "source_xy": [
+          150.5,
+          296.5
+        ],
+        "predicted_source_xy": [
+          150.70081922178906,
+          296.363840177464
+        ],
+        "error_source_px": 0.24262699172392055,
+        "source_point_uncertainty_px_approx": 1.0
+      },
+      {
+        "name": "right_visible_facade_lower_corner",
+        "generated_xy": [
+          1430,
+          850
+        ],
+        "source_xy": [
+          211.5,
+          298.5
+        ],
+        "predicted_source_xy": [
+          209.917934350057,
+          299.83913033170984
+        ],
+        "error_source_px": 2.0727280974683677,
+        "source_point_uncertainty_px_approx": 1.0
+      }
+    ],
+    "notes": [
+      "All targets are visible roof/facade pixels; source mask, old silhouette and physical footprints were not fit targets.",
+      "Low-resolution source corner positions are uncertain by approximately one source pixel; roof step is the largest residual and sparse fitting does not resolve its exact geometry.",
+      "No inferred floor count or survey identity. No raw generated pixels changed.",
+      "Whole-building alpha composite is clean; the apparent broad beige haze in RGB preview is alpha-zero RGB, not visible background. Alpha252/253 body is valid under shader solid_threshold .97. Existing cutoff .04 suppresses distant alpha1..9 residue.",
+      "RMS 2/max3 strict point-target check is not met by these manually selected centres, but the excess is close to source uncertainty. Parent must decide whether to accept that uncertainty or use the sole joint geometry revision."
+    ]
+  },
+  "alpha": {
+    "candidate_sha256": "d158aa040e081ddd98a3b05bc6ef9895cc5089a508da27add78c4a13a6235690",
+    "status": "alpha_inspection_only; whole_body_geometry_not_yet_accepted",
+    "original_rgba_unmodified": true,
+    "body_alpha252_253_use_existing_solid_threshold": 0.97,
+    "actual_composite_inspection": "next-dorm-nw-02-contract/dorm-v1-alpha-composite-inspection-NOT-GENERATION.png",
+    "composite_sha256": "86cf9d543c54d78afa897e5dfe5fef52933d9d1cc28b535c1ec98b181cfa805c",
+    "transparent_rgb_fog_is_not_an_opaque_background": true,
+    "effective_shader_alpha_cutoff": 0.04,
+    "alpha_ge_10_pixels_further_than_10_raw_px_from_alpha_ge247": 3,
+    "alpha_ge_10_pixels_further_than_20_raw_px_from_alpha_ge247": 0,
+    "no_alpha_regeneration_requested": true
+  },
+  "tests": {
+    "native_smoke": {
+      "authority": {
+        "blocker_sha": "a786d613f45bf048c82ebe16203f33c37d038bd7f6c0e4f0b2464b319102ca1f",
+        "physical_records": 150,
+        "physics_sha": "790f010de7614d6bb41ca817f379cb73d9a7585f5de31f2d5cacc2129e69527c",
+        "source_data_sha": "084806b58e5b29f7d16d08826f52cecb97fcae8e14a338ed4fbc327412096795",
+        "visitor_position": "(515.0, 1510.0)",
+        "visitor_scale": "(1.0, 1.0)",
+        "walk_sha": "9d028c413e664bbd6ca07e5f37919e2d7301dd63925ff45759e50d15fdd2576f"
+      },
+      "diagnostics": {
+        "active": true,
+        "automatic_camera_streaming": false,
+        "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+        "east_neighbor_active": true,
+        "independent_bodies": 1,
+        "independent_body_gpu_bytes": 9967612,
+        "native_original_detail_density": 4.88566627859472,
+        "new_collision_bodies": 0,
+        "new_foreground_owners": 0,
+        "new_gpu_texture_bytes": 6204069,
+        "owned_east_strip_gpu_bytes": 524284,
+        "region_ground_foreground_seam_ownership_gpu_bytes": 6204069,
+        "region_residency_limit": 6,
+        "runtime_grid_texels_per_source_pixel": 4,
+        "shared_hd_owner_active": true,
+        "stable_retained_new_cpu_rgba_bytes": 0,
+        "total_new_gpu_texture_bytes": 16171681,
+        "unverified_original_body_ids": [
+          "dorm_nw_01",
+          "dorm_nw_03",
+          "dorm_nw_04",
+          "dorm_north_low_annex",
+          "dorm_w_01",
+          "dorm_w_02",
+          "hill_south_block"
+        ],
+        "validation_rgba_buffer_bytes": 4194304,
+        "world_shadow_owner_count": 0,
+        "world_shadow_polygon_count": 0
+      },
+      "failures": [],
+      "scope": "Seven minimal startup/physics/body/residency checks; no GPU, full matrix or new playability claim",
+      "status": "passed"
+    },
+    "default_smoke": {
+      "captures": [
+        {
+          "file": "dorm-nw-02-default-normal-engine.png",
+          "native_size": [
+            1280,
+            720
+          ]
+        },
+        {
+          "file": "changping-six-regions-one-new-body-full-engine.png",
+          "native_size": [
+            950,
+            1656
+          ]
+        }
+      ],
+      "default_region_active": true,
+      "diagnostics": {
+        "active": true,
+        "automatic_camera_streaming": false,
+        "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+        "east_neighbor_active": true,
+        "independent_bodies": 1,
+        "independent_body_gpu_bytes": 9967612,
+        "native_original_detail_density": 4.88566627859472,
+        "new_collision_bodies": 0,
+        "new_foreground_owners": 0,
+        "new_gpu_texture_bytes": 6204069,
+        "owned_east_strip_gpu_bytes": 524284,
+        "region_ground_foreground_seam_ownership_gpu_bytes": 6204069,
+        "region_residency_limit": 6,
+        "runtime_grid_texels_per_source_pixel": 4,
+        "shared_hd_owner_active": true,
+        "stable_retained_new_cpu_rgba_bytes": 0,
+        "total_new_gpu_texture_bytes": 16171681,
+        "unverified_original_body_ids": [
+          "dorm_nw_01",
+          "dorm_nw_03",
+          "dorm_nw_04",
+          "dorm_north_low_annex",
+          "dorm_w_01",
+          "dorm_w_02",
+          "hill_south_block"
+        ],
+        "validation_rgba_buffer_bytes": 4194304,
+        "world_shadow_owner_count": 0,
+        "world_shadow_polygon_count": 0
+      },
+      "display_server": "X11",
+      "manual_gameplay": false,
+      "scope": "Actual default single-body startup and two normal rendered views; ambiguous central roof-step point reviewed visually, no ownership matrix or manual gameplay claim",
+      "status": "passed",
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)"
+    }
+  },
+  "visual_review": {
+    "reviewed_at_utc": "2026-10-14T09:18:12Z",
+    "body_visual_passed": true,
+    "central_roof_step_visually_consistent": true,
+    "manual_gameplay": false,
+    "exit_code": 0,
+    "window_closed": true,
+    "heavy_slot_released": true,
+    "evidence": [
+      "dorm-nw-02-default-normal-engine.png",
+      "changping-six-regions-one-new-body-full-engine.png",
+      "operator-terminal-exit.jpg",
+      "../../next-dorm-nw-02-contract/dorm-nw-02-inspection-coordinate-grid-NOT-GENERATION.png"
+    ],
+    "observations": [
+      "At the normal game maximum zoom 2.8, the complete connected dorm roof, full south facade and end walls are visible in the original location.",
+      "The central roof step is broadly consistent with the source topology. The low-resolution source does not establish exact rear parapet or equipment detail.",
+      "No visible pale alpha halo surrounds this object in the actual native rendered scene; the previously exposed transparent RGB is not visible.",
+      "The adjacent eastern road remains visibly continuous with no obvious building intrusion.",
+      "Neighboring original low-resolution fallback buildings remain noticeably softer, some with rectangular legacy ground collars."
+    ],
+    "limitations": [
+      "This review covers two automatically captured default scene views, not manual movement, clicking or gameplay.",
+      "Central rear roof detail remains a low-resolution source uncertainty; this is not proof of exact pixel-level roof reconstruction.",
+      "The whole campus is not fully high-definition; accepted terrain regions and the new dorm coexist with legacy buildings and unreplaced areas.",
+      "Native X11 rendering used Mesa llvmpipe. The log includes a V-Sync unsupported warning, not a runtime error."
+    ],
+    "additional_generation_or_engine_runs": false
+  },
+  "independent_body_gpu_bytes": 9967612,
+  "new_physics_or_foreground": 0,
+  "manual_gameplay": false,
+  "hardware_vram_measured": false,
+  "generation_requests": 1,
+  "joint_revisions_used": 0,
+  "publication": {
+    "uploaded": false,
+    "merged": false,
+    "target": "godot-version",
+    "base_dependency": "72fcafd285dd388eed2735be71b60fa23f428548"
+  },
+  "artifacts": {
+    "original_rgba_library_file_id": "libfile_f80436b125908191a2a74a2ba377c1b6",
+    "normal_engine_library_file_id": "libfile_8869a815cb848191b26597d8dabac3f0",
+    "full_engine_library_file_id": "libfile_f53f499084308191b83d1bf04c4d0683"
+  },
+  "evidence_sha256": {
+    "qa/dorm-nw-02-default-smoke/default-smoke-result.json": "b14866a185c4dfe2bdb1c430d1c91b041199ae5e9af3834601e4ee42ece50b95",
+    "qa/dorm-nw-02-default-smoke/operator-independent-review.json": "9d1263ed0dacdc4062f37fe43dd81c50619c0d77f080c4d3d2d47f413074e00f",
+    "qa/dorm-nw-02-default-smoke/dorm-nw-02-default-normal-engine.png": "5ff0f0e38c428bd18218a7083767670a3cd59fbe5879e1b50d25eb5c005d08bb",
+    "qa/dorm-nw-02-default-smoke/changping-six-regions-one-new-body-full-engine.png": "03ff215b4c8c70c2efa551b30b7dd6107d2e4a1bb104225ffbe501f8e95d2499",
+    "qa/dorm-nw-02-native/dorm-nw-02-native-smoke-result.json": "3f0579174c7046f5736cde12d5181c5fbee815464341920e9c802ff5aa2b4d7f",
+    "generated/dorm-nw-02-body-v1-original.png": "d158aa040e081ddd98a3b05bc6ef9895cc5089a508da27add78c4a13a6235690"
+  }
+}

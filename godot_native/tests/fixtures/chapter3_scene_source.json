@@ -1,0 +1,291 @@
+{
+  "source": "src/components/ChapterThreeOpeningOverlay.tsx:createOpeningBeats",
+  "normal": [
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 0
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 1
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 2
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1240,
+      "lineIndex": 3
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1336,
+      "lineIndex": 4
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 5
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 6
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1480,
+      "lineIndex": 7
+    },
+    {
+      "phase": "record_scan",
+      "durationMs": 1350,
+      "lineIndex": null,
+      "caption": "短暂加载后："
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1720,
+      "lineIndex": 8
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 9
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1432,
+      "lineIndex": 10
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 11
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 12
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1624,
+      "lineIndex": 13
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 14
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1288,
+      "lineIndex": 15
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1432,
+      "lineIndex": 16
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 17
+    },
+    {
+      "phase": "mode_unlock",
+      "durationMs": 1700,
+      "lineIndex": null,
+      "caption": "获得功能：外观模式切换"
+    },
+    {
+      "phase": "mode_explanation",
+      "durationMs": 1200,
+      "lineIndex": 18
+    },
+    {
+      "phase": "mode_explanation",
+      "durationMs": 1384,
+      "lineIndex": 19
+    },
+    {
+      "phase": "paper_burst",
+      "durationMs": 1000,
+      "lineIndex": null,
+      "caption": "纸条突然从 022 座位详情页弹出，贴着图书馆窗缝飞走。"
+    },
+    {
+      "phase": "exit_observation",
+      "durationMs": 900,
+      "lineIndex": null,
+      "caption": "切到深色模式，看到纸条脚印通向出口。"
+    },
+    {
+      "phase": "cart_clear",
+      "durationMs": 900,
+      "lineIndex": null,
+      "caption": "切回浅色模式，发现出口被书车挡住。"
+    },
+    {
+      "phase": "route_confirm",
+      "durationMs": 600,
+      "lineIndex": null,
+      "caption": "再次切到深色模式，确认脚印通向食堂。"
+    },
+    {
+      "phase": "arrival",
+      "durationMs": 1300,
+      "lineIndex": null,
+      "caption": "离开图书馆，在校园里继续追踪纸条。"
+    }
+  ],
+  "reduced": [
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 0
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 1
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 2
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1240,
+      "lineIndex": 3
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1336,
+      "lineIndex": 4
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 5
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1200,
+      "lineIndex": 6
+    },
+    {
+      "phase": "conversation",
+      "durationMs": 1480,
+      "lineIndex": 7
+    },
+    {
+      "phase": "record_scan",
+      "durationMs": 850,
+      "lineIndex": null,
+      "caption": "短暂加载后："
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1720,
+      "lineIndex": 8
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 9
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1432,
+      "lineIndex": 10
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 11
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 12
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1624,
+      "lineIndex": 13
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 14
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1288,
+      "lineIndex": 15
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1432,
+      "lineIndex": 16
+    },
+    {
+      "phase": "record_escape",
+      "durationMs": 1200,
+      "lineIndex": 17
+    },
+    {
+      "phase": "mode_unlock",
+      "durationMs": 1050,
+      "lineIndex": null,
+      "caption": "获得功能：外观模式切换"
+    },
+    {
+      "phase": "mode_explanation",
+      "durationMs": 1200,
+      "lineIndex": 18
+    },
+    {
+      "phase": "mode_explanation",
+      "durationMs": 1384,
+      "lineIndex": 19
+    },
+    {
+      "phase": "paper_burst",
+      "durationMs": 850,
+      "lineIndex": null,
+      "caption": "纸条突然从 022 座位详情页弹出，贴着图书馆窗缝飞走。"
+    },
+    {
+      "phase": "exit_observation",
+      "durationMs": 850,
+      "lineIndex": null,
+      "caption": "切到深色模式，看到纸条脚印通向出口。"
+    },
+    {
+      "phase": "cart_clear",
+      "durationMs": 850,
+      "lineIndex": null,
+      "caption": "切回浅色模式，发现出口被书车挡住。"
+    },
+    {
+      "phase": "route_confirm",
+      "durationMs": 500,
+      "lineIndex": null,
+      "caption": "再次切到深色模式，确认脚印通向食堂。"
+    },
+    {
+      "phase": "arrival",
+      "durationMs": 900,
+      "lineIndex": null,
+      "caption": "离开图书馆，在校园里继续追踪纸条。"
+    }
+  ]
+}

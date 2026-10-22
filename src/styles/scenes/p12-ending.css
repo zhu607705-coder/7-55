@@ -1,5 +1,95 @@
 /* ---------- P12 结局 ---------- */
 
+/* Scene coordinates remain 430×820; PhoneShell uniformly scales the whole phone. */
+.ending-scene.ending-text-discovery { height: 100%; top: 0; }
+.phone-frame .ending-text-discovery .ending-intercept-field {
+  left: 50%; right: auto; top: 40px; bottom: auto;
+  width: 430px; height: 820px; transform-origin: top center;
+  border: 0;
+  background: none;
+  pointer-events: none;
+}
+.ending-text-discovery .ending-field-grid {
+  left: 18px; right: 18px; top: 270px; bottom: 76px;
+  border: 1px solid #3d2930;
+}
+.phone-frame .ending-text-discovery .ending-game-subtitle.game-subtitle-frame {
+  top: 124px; bottom: auto; max-height: 102px; min-height: 0;
+  overflow: auto;
+}
+.phone-frame .ending-text-discovery .ending-game-subtitle.game-subtitle-frame,
+.phone-frame .ending-text-discovery .ending-dialogue.game-subtitle-frame {
+  background: #f2ead8; color: #29261f; border: 1px solid #9e927a;
+  border-radius: 0; box-shadow: none; padding: 10px 12px;
+  display: block; font-size: 16px; line-height: 1.55;
+}
+.phone-frame .ending-text-discovery .ending-game-subtitle.game-subtitle-frame::before,
+.phone-frame .ending-text-discovery .ending-game-subtitle.game-subtitle-frame::after,
+.phone-frame .ending-text-discovery .ending-dialogue.game-subtitle-frame::before,
+.phone-frame .ending-text-discovery .ending-dialogue.game-subtitle-frame::after { content: none; }
+.phone-frame .ending-text-discovery .game-subtitle-speaker {
+  display: block; color: #6c5e47; font-size: 11px; font-weight: 700;
+  line-height: 1.4; letter-spacing: .08em; margin: 0 0 4px; padding: 0;
+}
+.phone-frame .ending-text-discovery .ending-game-subtitle > span,
+.phone-frame .ending-text-discovery .ending-dialogue > span {
+  display: block; color: #29261f; font-size: 16px; line-height: 1.55;
+}
+.phone-frame .ending-text-discovery .game-subtitle-avatar { display: none; }
+.ending-text-discovery .ending-clue-lane {
+  position: absolute; top: 238px; left: 18px; right: 18px;
+  z-index: 10; display: grid; grid-template-columns: 1fr auto; gap: 4px 8px;
+}
+.ending-clue-lane p { margin: 0; min-height: 30px; font-size: 21px; line-height: 1.35; color: #fff3d2; }
+.ending-clue-trail { grid-column: 1 / -1; min-height: 16px; font-size: 11px; line-height: 1.35; color: #a8a4a7; }
+.ending-clue-lane button { padding: 4px 7px; font-size: 11px; min-height: 32px; background: #1b1b22; color: #ded8d8; border: 1px solid #60545e; }
+.ending-clue-lane button:disabled { opacity: .5; }
+.ending-text-discovery .ending-intercept-hud { top: 54px; }
+.ending-text-discovery .ending-word-body {
+  position: absolute; display: grid; place-items: center; box-sizing: border-box;
+  color: #f5ece0; background: #17161d; border: 1px solid #81747b;
+  font: 400 24px/1.1 sans-serif; padding: 0 16px; white-space: nowrap;
+  pointer-events: none; z-index: 5;
+}
+.ending-text-discovery .ending-word-body.is-retained { border-color: #f4d497; color: #fff3d2; }
+.ending-text-discovery .ending-geo-error-board {
+  width: 164px; height: 58px; box-sizing: border-box; bottom: auto;
+  padding: 3px 6px; gap: 1px; border-width: 2px; pointer-events: auto;
+}
+.ending-text-discovery .ending-geo-error-board:disabled { opacity: 1; }
+.ending-text-discovery .ending-error-title { min-height: 12px; }
+.ending-text-discovery .ending-error-title small { font-size: 9px; }
+.ending-text-discovery .ending-geo-error-board > strong { font-size: 13px; }
+.ending-text-discovery .ending-error-coordinates { font-size: 9px; }
+.ending-text-discovery .ending-word-contact {
+  position: absolute; width: 26px; height: 26px; border: 3px solid #f45b65;
+  border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 9;
+}
+.ending-text-discovery .ending-word-assist {
+  position: absolute; height: 10px; width: 34px; border: 1px dashed #e3cc93;
+  transform: translate(-50%, -50%); opacity: .6; pointer-events: none; z-index: 4;
+}
+.ending-text-discovery .narrator-orb.is-lock-target { pointer-events: auto; }
+.ending-text-discovery .ending-intercept-failed,
+.ending-text-discovery .ending-clue-review {
+  position: absolute; top: 328px; left: 26px; right: 26px; transform: none;
+  padding: 18px 16px; max-height: 420px; overflow: auto; background: #f4eddc;
+  border: 2px solid #9b8b6b; color: #29261f; z-index: 15; pointer-events: auto;
+  display: grid; gap: 12px; text-align: left; font-size: 16px; line-height: 1.5;
+}
+.ending-text-discovery .ending-intercept-failed h2,
+.ending-text-discovery .ending-clue-review h2 { font-size: 21px; margin: 0; color: #5c342e; }
+.ending-text-discovery .ending-clue-review p { margin: 0; }
+.ending-text-discovery .ending-intercept-failed p { color: #29261f; }
+.ending-text-discovery .ending-clue-review small,
+.ending-text-discovery .ending-intercept-failed small { color: #6f604b; font-size: 12px; }
+.ending-text-discovery .ending-intercept-failed button,
+.ending-text-discovery .ending-clue-review button {
+  min-height: 44px; padding: 8px 12px; background: #e1d5bb; border: 1px solid #8e7c61; color: #2e2921; box-shadow: none;
+}
+.ending-text-discovery .ending-retained-words { font-size: 13px; color: #67543b; }
+.ending-text-discovery .ending-control-hint { bottom: 28px; }
+
 .ending-scene {
   background:
     radial-gradient(circle at 50% 38%, rgba(105, 11, 26, 0.18), transparent 36%),

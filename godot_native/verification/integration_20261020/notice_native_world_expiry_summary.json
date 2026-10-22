@@ -1,0 +1,55 @@
+{
+  "schema": "755-world-notice-expiry-summary-v1",
+  "completedAt": "2026-10-19T17:17:04.739054+00:00",
+  "workspace": "/tmp/codex-755-c1-ui",
+  "productionFrozen": true,
+  "productionSha256": {
+    "godot_native/scripts/main.gd": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b",
+    "godot_native/scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023"
+  },
+  "newTestSha256": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b",
+  "changes": [
+    "World natural-expiry signal includes the exact subtitle assignment revision and text; Main acknowledges only the queue item it displayed",
+    "Main synchronizes actual World reading time and never subtracts delta again for a world notice",
+    "Main no longer leaves its World instance connected directly to State.feedback; standalone World retains its existing fallback",
+    "Direct external clear or same-text replacement is not an expiry acknowledgement; unread content resumes after the foreign owner releases"
+  ],
+  "finalFocused": {
+    "stageCount": 4,
+    "checks": 152,
+    "failures": 0,
+    "byTest": {
+      "test_world_notice_ownership.gd": 19,
+      "test_notice_queue_lifecycle.gd": 32,
+      "test_world_overlay_integration.gd": 89,
+      "test_world_presentation_lifecycle.gd": 12
+    },
+    "report": "/tmp/codex-755-world-expiry-patch/final-focused.json",
+    "sha256": "7af90a036c24cf6b671af2211cd2ed9a2f1a698ac1e88f40340c0b1edf605768",
+    "sourceUnchanged": true
+  },
+  "oldProductionNegative": {
+    "sameFinalTest": "test_world_notice_ownership.gd",
+    "checks": 19,
+    "failures": 13,
+    "status": 1,
+    "limits": "Several later assertions share the same stuck FIFO root cause; not 13 independent production bugs. No parse or runner errors."
+  },
+  "earlierNaturalExpiryNegative": {
+    "report": "/tmp/codex-755-world-presentation-prototype.json",
+    "checks": 12,
+    "failures": 3,
+    "rootCause": "World clears subtitle when it reaches zero before Main sees the final6.93889e-17 remainder; the prior text-equality sync then never finishes current"
+  },
+  "runnerCorrection": {
+    "path": "/tmp/codex-755-world-expiry-patch/isolation-prefix-guard-failed.json",
+    "qualification": "Initial final runner used a sandbox prefix rejected by the existing isolation guard. It stopped at that guard before running product assertions. Corrected the external runner prefix only; not an effective product negative."
+  },
+  "limits": [
+    "Full419 original round remains416PASS/3FAIL; this focused delta is separate, not a repeated complete suite",
+    "Native agent owns the final19-stage broader delta and its runtime fingerprints",
+    "Headless source/editor native4.7.2 tests are not immutable PCK or OS/physical mobile acceptance",
+    "New Main nested81 rerun is tracked separately and has no independent bounds assertion",
+    "No progression, collision, audio assets, voice clock, State controller or save schema was changed by this fix"
+  ]
+}

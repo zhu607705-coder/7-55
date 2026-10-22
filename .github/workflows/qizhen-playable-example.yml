@@ -1,0 +1,28 @@
+name: Qizhen playable chase example
+on:
+  pull_request:
+    paths:
+      - 'examples/qizhen_playable_chase/**'
+      - '.github/workflows/qizhen-playable-example.yml'
+permissions:
+  contents: read
+jobs:
+  isolated-example:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install official Godot 4.6.3
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Import the isolated project
+        run: godot --headless --editor --path examples/qizhen_playable_chase --import --quit
+      - name: Run six official example suites
+        run: |
+          set -euo pipefail
+          for suite in test_paddling test_paddling_cadence test_paddling_cadence_matrix test_paddling_geometry test_playable_chase_model test_playable_chase_inputs; do
+            godot --headless --audio-driver Dummy --path examples/qizhen_playable_chase --script "res://tests/${suite}.gd"
+          done

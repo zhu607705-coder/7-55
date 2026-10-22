@@ -1,0 +1,29 @@
+{
+  "schema": "native-local-feedback-followup-v1",
+  "baseCommit": "49332ec51eaf118554a949105ec6fef13dbbd8b3",
+  "startedAt": "2026-10-20T01:33:07.989Z",
+  "updatedAt": "2026-10-20T01:33:10.648Z",
+  "rows": [
+    {
+      "script": "test_native_local_feedback_ownership.gd",
+      "passed": false,
+      "status": 1,
+      "signal": null,
+      "error": null,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_LOCAL_FEEDBACK_OWNERSHIP: 142 checks; 2 failures\nERROR: actual order dialogue retires its own old observation result before rendering\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_c3_devices_controls.gd:16)\n       [1] run (res://tests/test_native_local_feedback_ownership.gd:54)\n       [2] click (res://tests/test_c3_devices_controls.gd:25)\n       [3] frames (res://tests/test_c3_devices_controls.gd:18)\nERROR: visible order dialogue has no leftover local feedback HUD row\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (res://tests/test_c3_devices_controls.gd:16)\n       [1] run (res://tests/test_native_local_feedback_ownership.gd:55)\n       [2] click (res://tests/test_c3_devices_controls.gd:25)\n       [3] frames (res://tests/test_c3_devices_controls.gd:18)\n",
+      "fixture": "/Users/zhu/Library/Application Support/755-native-check-local-feedback-EiE0CW",
+      "durationMs": 2656,
+      "log": "/tmp/codex-755-local-feedback-pre-retirement/godot_native/exports/verification/local_feedback_20261020/pre-retirement-negative-test_native_local_feedback_ownership.gd.log"
+    }
+  ],
+  "sourceBefore": {
+    "scripts/main.gd": "7f6d681273237046d34b4fde26f8fc232b8e3d5d03f1640604870fa8b8d57ee8",
+    "scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023",
+    "tests/test_native_local_feedback_ownership.gd": "5fe11a87fddd271bd3cdd0d741380bacd83658962feee8388a608a9fa173def1"
+  },
+  "sourceAfter": {
+    "scripts/main.gd": "7f6d681273237046d34b4fde26f8fc232b8e3d5d03f1640604870fa8b8d57ee8",
+    "scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023",
+    "tests/test_native_local_feedback_ownership.gd": "5fe11a87fddd271bd3cdd0d741380bacd83658962feee8388a608a9fa173def1"
+  }
+}

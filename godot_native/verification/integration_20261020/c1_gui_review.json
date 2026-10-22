@@ -1,0 +1,120 @@
+{
+  "schema": "755-c1-cua-review-v1",
+  "recordedAt": "2026-10-19T16:42:57.933297+00:00",
+  "reviewDateLocal": "2026-10-20",
+  "reportedBy": "root agent performing actual computer use",
+  "launcher": "Godot Project Manager → Run; isolated 7:55 text-interception DEBUG project, restarted after button fix",
+  "status": "Partial actual GUI acceptance; final Main/world source restarted normally and is paused at stage1 complete clue. Earlier4/6 evidence retained as historical; full manual ending and mouse drag remain unproven",
+  "regressionFound": {
+    "issue": "Per-frame hide/show of native controls swallowed a real press-release spanning frames",
+    "oldAutomatedGap": "The original 35-check root-input test used same-frame down/up and missed the GUI defect",
+    "strengthenedNegative": "20 checks /7 intended failures",
+    "fixedInput": "37 checks /0 failures",
+    "fixedFocusedStages": 6,
+    "productionFix": "Removed the per-frame blanket hide before assigning each control visible state"
+  },
+  "observedAfterRestart": [
+    "Real review open/close control works",
+    "Failure Continue resumes the current stage",
+    "R opens/closes reading with input restored",
+    "Holding A for about260ms visibly moved the error window left",
+    "Captured 等 and reached stage2",
+    "Retained 经度; after a 方向-related wrong-target prompt, Continue kept 经度 and required only 纬度",
+    "Captured 纬度 and entered stage3",
+    "Captured 旁白:4 of6 target texts total, then paused in stage3 review"
+  ],
+  "currentObservedState": {
+    "stage": 1,
+    "completedStages": 0,
+    "currentRetained": [],
+    "totalRetainedTargets": 0,
+    "readingPaused": true,
+    "fullStageClueVisible": true,
+    "afterNaturalMiss": true
+  },
+  "notClaimed": [
+    "CUA mouse drag was attempted but movement was not observed, so manual mouse dragging is not accepted as passed",
+    "No actual GUI completion of the last two fragments, final1400ms hold, four dialogue lines and whiteout is claimed here",
+    "Headless engine Viewport keyboard/touch/pointer-button and geometry regressions are separate automated evidence, not a replacement for physical input acceptance",
+    "The original native419 round ended416PASS/3FAIL; final22 distinct targeted stages passed separately. No once-green full419/420 run, new artifact or complete manual ending is claimed"
+  ],
+  "screenshotsArchived": false,
+  "nativeButtonSourceSha256": "f481f96a50090035e5aa6e6f5e15405ededd1e05f6cca356490e95c04638e663",
+  "additionalAutomatedMouseEvidence": {
+    "report": "c1_native_viewport_mouse_drag.json",
+    "checks": 6,
+    "failures": 0,
+    "method": "Engine Viewport MouseButton/MouseMotion events across real frames; no direct model/position writes",
+    "limitation": "Not actual CUA or human mouse evidence"
+  },
+  "dialogueDisplayPolicyReview": {
+    "kind": "Source/approved-ledger clarification, not an actual GUI ending completion claim",
+    "crossRuntimeVerbatimParity": false,
+    "decision": "Retain each runtime own existing four-line sequence; do not revert previously adopted native Chinese adaptations",
+    "ledger": "godot_native/docs/CHINESE_TEXT_REVISION_20261018.md",
+    "mapping": "godot_native/data/zh_text_revisions.json",
+    "adopted": {
+      "table-prologue_narrator_caught": "accepted",
+      "table-player-threat": "accepted with adaptation",
+      "table-prologue_narrator_bargain": "accepted"
+    },
+    "playerSilentWindowsMsEach": 1100,
+    "reason": "Existing two player lines were shortened to fit their fixed silent windows without shifting the later bargain voice cue",
+    "englishAudioAndOffsets": "Existing English recordings and cue offsets retained",
+    "notANewBugOrMissingMerge": true
+  },
+  "additionalAutomatedMainEvidence": {
+    "summary": "c1_native_main_nested_input_after_expiry_summary.json",
+    "earnedSeedChecks": 43,
+    "earnedSeedFailures": 0,
+    "viewportChecks": 81,
+    "viewportFailures": 0,
+    "viewports": [
+      "1440x900",
+      "390x844",
+      "667x375"
+    ],
+    "method": "Legitimate earned pending-C1 save in an independent receipt profile; ordinary story and resume pointer activation; real Main nested game with root Viewport-global mouse/touch input across actual frames",
+    "sourceUnchanged": true,
+    "probeSha256": "c940bf567a622d449398f17f36e7392eed06b010296bc726a17b62d29c0bdb0b",
+    "limitations": [
+      "Source/editor runtime with production feature; not an immutable release executable",
+      "Not actual OS or CUA pointer input",
+      "Does not complete the remaining manual C1 ending acceptance",
+      "Seed save and external diagnostic script are not archived"
+    ],
+    "qualification": "Rerun after final Main/world expiry and State-feedback ownership fix; earlier81 report retained as pre-expiry historical evidence"
+  },
+  "historicalObservedStateBeforeFinalNoticeRestart": {
+    "stage": 3,
+    "completedStages": 2,
+    "currentRetained": [
+      "旁白"
+    ],
+    "totalRetainedTargets": 4,
+    "readingPaused": true
+  },
+  "historicalGuiObservationQualification": "The existing four retained targets and stage3 review are historical actual GUI evidence from before the final notice expiry/ownership revision; they are retained and are not the latest paused state.",
+  "latestFinalSourceRestart": {
+    "reportedBy": "Root actual computer use",
+    "method": "Normal Cmd+Q, Godot Project Manager selects words project, one Run, then Project Manager closed",
+    "sourceSha256": {
+      "godot_native/scripts/main.gd": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b",
+      "godot_native/scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023"
+    },
+    "ordinaryRoute": "Main story entry -> Ending Resume Continue",
+    "checkinResultPreserved": true,
+    "localWordSessionRestartedFromZero": true,
+    "observed": [
+      "Initial target naturally missed",
+      "R opens complete first-stage clue",
+      "Current pause is stage1 full-clue review for the user"
+    ],
+    "notClaimed": [
+      "Final remaining words,1400ms hold,dialogue and whiteout were not completed in this latest GUI run",
+      "Earlier four-target GUI evidence is preserved as historical, not replayed on this final source",
+      "CUA mouse drag and physical-touch acceptance are still not established"
+    ]
+  },
+  "updatedAt": "2026-10-19T17:27:21.066840+00:00"
+}

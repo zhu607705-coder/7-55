@@ -5,6 +5,7 @@ import { ITEM_META, PixelIcon } from "../../components/PixelIcon";
 import type { EventBus } from "../../core/EventBus";
 import type { GameState, ItemId, RpgSceneId } from "../../core/types";
 import { isPaperItem } from "../../data/itemCatalog";
+import { hasQizhenFinalAssemblyMaterials, hasQizhenLegacyNetMaterials, QIZHEN_FINAL_RIG_PARTS } from "../../modules/QizhenFinalAssembly";
 import { clientToRpgCanvasPoint } from "./RpgCanvasCoordinates";
 import { selectRpgItemUseGuidance } from "./RpgItemUseGuidance";
 
@@ -89,13 +90,6 @@ const RPG_DOCK_ORDER: readonly ItemId[] = [
   "finalMinute"
 ];
 
-const QIZHEN_FINAL_RIG_PARTS = Object.freeze([
-  "nylonCord",
-  "brokenNetFrame",
-  "swanMagnet",
-  "fishingRod"
-] as const satisfies readonly ItemId[]);
-
 export function isRpgInventoryFeedbackItemId(
   items: GameState["items"],
   value: unknown
@@ -136,7 +130,8 @@ export function RpgInventoryDock({
   const qizhenFinalRigReady = runtimeScene === "qizhen_lake"
     && !state.items.magneticFishingRod
     && !state.qizhenLake.magneticRodCombined
-    && QIZHEN_FINAL_RIG_PARTS.every((itemId) => state.items[itemId]);
+    && hasQizhenFinalAssemblyMaterials(state);
+  const qizhenLegacyAssembly = hasQizhenLegacyNetMaterials(state);
 
   useEffect(() => {
     if (!drag || state.items[drag.itemId]) return;
@@ -366,7 +361,7 @@ export function RpgInventoryDock({
       </div>
       {qizhenFinalRigReady ? (
         <div className="rpg-inventory-assembly" role="group" aria-label="四件材料组合">
-          <p>四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿</p>
+          <p>{qizhenLegacyAssembly ? "绳和网框已用于旧抄网，装上磁铁与钓竿即可完成组装。" : "四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿"}</p>
           <button type="button" aria-label="组合四件材料" onClick={combineQizhenFinalRig}>
             组合四件材料
           </button>

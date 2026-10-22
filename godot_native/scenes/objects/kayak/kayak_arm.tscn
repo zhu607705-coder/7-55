@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/objects/kayak_arm.gd" id="1"]
+[node name="Arm" type="Node2D"]
+script=ExtResource("1")
+[node name="ShoulderPivot" type="Node2D" parent="."]
+
+[node name="Outline" type="Line2D" parent="ShoulderPivot"]
+points=PackedVector2Array(0, 0, 12, 0)
+width=9
+default_color=Color(0.28627450980392155, 0.23137254901960785, 0.19607843137254902, 1)
+antialiased=true
+
+[node name="Skin" type="Line2D" parent="ShoulderPivot"]
+points=PackedVector2Array(0, 0, 12, 0)
+width=6
+default_color=Color(0.8980392156862745, 0.7215686274509804, 0.5686274509803921, 1)
+antialiased=true
+
+[node name="ElbowPivot" type="Node2D" parent="ShoulderPivot"]
+position=Vector2(12,0)
+
+[node name="Outline" type="Line2D" parent="ShoulderPivot/ElbowPivot"]
+points=PackedVector2Array(0, 0, 12, 0)
+width=9
+default_color=Color(0.28627450980392155, 0.23137254901960785, 0.19607843137254902, 1)
+antialiased=true
+
+[node name="Skin" type="Line2D" parent="ShoulderPivot/ElbowPivot"]
+points=PackedVector2Array(0, 0, 12, 0)
+width=6
+default_color=Color(0.8980392156862745, 0.7215686274509804, 0.5686274509803921, 1)
+antialiased=true
+
+[node name="Hand" type="Node2D" parent="ShoulderPivot/ElbowPivot"]
+position=Vector2(12,0)
+
+[node name="Palm" type="Polygon2D" parent="ShoulderPivot/ElbowPivot/Hand"]
+polygon=PackedVector2Array(-3, -3, 3, -3, 3, 3, -3, 3)
+color=Color(0.8980392156862745, 0.7215686274509804, 0.5686274509803921, 1)
+
+[node name="Grip" type="Marker2D" parent="ShoulderPivot/ElbowPivot/Hand"]

@@ -1,0 +1,439 @@
+{
+  "checks": 37,
+  "events": [
+    {
+      "id": "prologue_blackout_started",
+      "payload": {
+        "durationMs": 7000
+      }
+    },
+    {
+      "id": "prologue_narrator_intro",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_paused",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_resumed",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_paused",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_resumed",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_paused",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_resumed",
+      "payload": {}
+    },
+    {
+      "id": "prologue_error_intercept_missed",
+      "payload": {
+        "maxMisses": 3,
+        "misses": 1
+      }
+    },
+    {
+      "id": "prologue_error_intercepted",
+      "payload": {
+        "blockedCount": 1,
+        "requiredBlocks": 3
+      }
+    },
+    {
+      "id": "prologue_error_intercepted",
+      "payload": {
+        "blockedCount": 2,
+        "requiredBlocks": 3
+      }
+    },
+    {
+      "id": "prologue_error_intercepted",
+      "payload": {
+        "blockedCount": 3,
+        "requiredBlocks": 3
+      }
+    },
+    {
+      "id": "prologue_error_lock_ready",
+      "payload": {
+        "requiredHoldMs": 1400
+      }
+    },
+    {
+      "id": "prologue_playback_paused",
+      "payload": {}
+    },
+    {
+      "id": "prologue_playback_resumed",
+      "payload": {}
+    },
+    {
+      "id": "prologue_narrator_caught",
+      "payload": {
+        "blockedCount": 3,
+        "lockHeldMs": 1400.0
+      }
+    },
+    {
+      "id": "prologue_narrator_bargain",
+      "payload": {}
+    },
+    {
+      "id": "prologue_white_burst",
+      "payload": {}
+    }
+  ],
+  "failures": 0,
+  "observations": [
+    {
+      "check": "ordinary startup owns root keyboard focus",
+      "collected": [],
+      "pass": true,
+      "phase": "blackout",
+      "stages": 0
+    },
+    {
+      "check": "source blackout leads to readable semantic fragments",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "real root keyboard moves the physical error window",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "window movement changes its visible and physical tilt",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "real review control opens the complete authored clue",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "reading a clue cannot move, expire or punish words",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "closing review restores root gameplay focus",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "R reopens the clue after a real cross-frame button click",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "R closes the clue and retains root gameplay focus",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "touching empty space does not teleport the window",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "a different finger cannot steal a window drag",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "root touch drag moves the actual rendered window",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "touch cancellation releases ownership and stops stale drag movement",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "Escape pauses the semantic game through root input",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "pause freezes the word simulation",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "pointer Continue restores keyboard ownership",
+      "collected": [],
+      "pass": true,
+      "phase": "deploy",
+      "stages": 0
+    },
+    {
+      "check": "missing a real required word reaches a branch without fabricated proof",
+      "collected": [],
+      "pass": true,
+      "phase": "failed",
+      "stages": 0
+    },
+    {
+      "check": "real branch Continue retains the current stage and collection",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "branch Continue immediately restores root focus",
+      "collected": [],
+      "pass": true,
+      "phase": "intercept",
+      "stages": 0
+    },
+    {
+      "check": "real root keyboard selection earns all three semantic stages",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "lock",
+      "stages": 3
+    },
+    {
+      "check": "completion requires exactly six authored word captures through actual contact",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "lock",
+      "stages": 3
+    },
+    {
+      "check": "readable finding and interception are longer than three endpoint checks",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "lock",
+      "stages": 3
+    },
+    {
+      "check": "short root Space hold resets without completing",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "lock",
+      "stages": 3
+    },
+    {
+      "check": "pausing a hold clears the held input",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "lock",
+      "stages": 3
+    },
+    {
+      "check": "source hold threshold remains exactly 1400ms",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "lock",
+      "stages": 3
+    },
+    {
+      "check": "root Space completes the earned lock after resume",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "caught",
+      "stages": 3
+    },
+    {
+      "check": "all four source dialogue lines still precede completion",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "caught",
+      "stages": 3
+    },
+    {
+      "check": "ordinary completion emits the original proof exactly once",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "viewport preserves the source aspect ratio at (390.0, 780.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "source viewport fits entirely within (390.0, 780.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "scaled pointer geometry matches the drawn board at (390.0, 780.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "viewport preserves the source aspect ratio at (800.0, 820.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "source viewport fits entirely within (800.0, 820.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "scaled pointer geometry matches the drawn board at (800.0, 820.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "viewport preserves the source aspect ratio at (320.0, 640.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "source viewport fits entirely within (320.0, 640.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    },
+    {
+      "check": "scaled pointer geometry matches the drawn board at (320.0, 640.0)",
+      "collected": [
+        "旁白",
+        "还没",
+        "说完"
+      ],
+      "pass": true,
+      "phase": "whiteout",
+      "stages": 3
+    }
+  ],
+  "results": [
+    {
+      "dialogueCount": 4,
+      "failed": false,
+      "interceptedCount": 3,
+      "lockHeldMs": 1400.0,
+      "whiteoutCompleted": true
+    }
+  ]
+}

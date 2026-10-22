@@ -1,0 +1,32 @@
+{
+  "source_project": "buct-changping-student-map",
+  "base_commit": "88a4f2c45a70d3a7d052fd6f66bc30c27bba1d47",
+  "base_tree": "0f94289863c37a52d2f60fae88e5b1b36f748f13",
+  "source_canvas": [
+    950,
+    1656
+  ],
+  "scope": "Complete original Changping map, existing bounded south gate / First Teaching / library route; legacy UV groups, no new genuine building, no interiors",
+  "legacy_object_groups": 53,
+  "genuine_buildings_added": 0,
+  "student_shared_directory": "campuses/buct_shared/student",
+  "preserved_sources": [
+    {
+      "file": "assets/approved-changping.png",
+      "sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+      "matches_original": true
+    },
+    {
+      "file": "data/layers.json",
+      "sha256": "663f585e4e13c4660ad8abf7354f5bd66c58ead657eaa139b67002f889b0bf88",
+      "matches_original": true
+    },
+    {
+      "file": "data/playable_route.json",
+      "sha256": "7042e3511177177b9db1501b587c0593376302cf707b22bf96b110d74d6fb7c6",
+      "matches_original": true
+    }
+  ],
+  "shared_student_manifest_sha256": "02626eea7e3d9989102e0148a664d2036decb2775f507da72e61692f736f4941",
+  "shared_student_file_count": 15
+}

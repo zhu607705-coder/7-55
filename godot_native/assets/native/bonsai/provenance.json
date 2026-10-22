@@ -1,0 +1,28 @@
+{
+  "purpose": "Presentation-only native bonsai opening, with exact original final art",
+  "original_endpoint": "src/assets/ui/bonsai_bloom.png",
+  "assets": [
+    {
+      "file": "flower_opening_24.png",
+      "source_name": "紫花绽放像素动画图集.png",
+      "history": "Existing project art supplied on 2026-10-07; copied unchanged",
+      "sha256": "123f71c288293a0601b6fb91bf5c2f32530e829fcf9f9a31d098eb6996efaf8f",
+      "usage": "Lossless runtime 6x4 cell crops and connected-component isolation; 24 distinct poses"
+    },
+    {
+      "file": "flower_closed_reference.png",
+      "source_name": "复古像素窗台紫花绽放.png",
+      "history": "Existing project art supplied on 2026-10-07; copied unchanged",
+      "sha256": "0e5883f024953d7c9953db717679ceadce11b640b7eec0f71f9dc37bafa9dcf3",
+      "usage": "Only the top closed-corolla crop is used as the anticipation pose"
+    },
+    {
+      "file": "flower_clean_backing.png",
+      "history": "Built-in image generation edit on 2026-10-11 using the original bonsai_bloom.png as reference",
+      "sha256": "146f5adbc0afa2d3a8085216386506d1167d5b4e8a6bdceb4cc5974068cbedb3",
+      "usage": "Only four blossom-region patches are sampled; original source retained everywhere else and at completion",
+      "prompt": "Remove ONLY the four large open purple flower heads, every purple petal and golden stamen. Keep the green sepals and stems at their present coordinates. Reconstruct the warm window/building background behind top/side flowers and green foliage behind the front flower. Keep the two small unopened side buds, pot, shelf, camera, pixel texture, colors and text unchanged. No residual purple fragments or ghost flowers. A second corrective edit removed invented large green calyx heads; only the original narrow stem tips and ordinary background/foliage were retained beneath the removed blossoms."
+    }
+  ],
+  "not_used": "The recovered full-scene 1450-4250 captures contain blended side flowers and were not used as playback frames."
+}

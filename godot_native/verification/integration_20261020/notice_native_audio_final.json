@@ -1,0 +1,59 @@
+[
+  {
+    "label": "test_all_scripts_parse.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:25:24.211Z",
+    "finishedAt": "2026-10-19T16:25:28.839Z",
+    "durationMs": 4628,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-wN4M0E/workspace/godot_native",
+      "--script",
+      "res://tests/test_all_scripts_parse.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 736 scripts, 0 failures\n"
+  },
+  {
+    "label": "test_audio_director.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:25:28.841Z",
+    "finishedAt": "2026-10-19T16:25:32.097Z",
+    "durationMs": 3256,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-XbIi66/workspace/godot_native",
+      "--script",
+      "res://tests/test_audio_director.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_AUDIO_DIRECTOR checks=4646 errors=0\n"
+  },
+  {
+    "label": "test_notice_queue_lifecycle.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:25:32.099Z",
+    "finishedAt": "2026-10-19T16:25:34.038Z",
+    "durationMs": 1939,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-KG0Kb7/workspace/godot_native",
+      "--script",
+      "res://tests/test_notice_queue_lifecycle.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNOTICE_QUEUE_LIFECYCLE: 24 checks; 0 failures\n"
+  }
+]

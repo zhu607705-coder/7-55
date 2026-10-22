@@ -1,0 +1,451 @@
+{
+  "schema": "755-combined-native-acceptance-v1",
+  "status": "Scoped native acceptance complete: original419=416pass/3fail retained; final22 distinct targeted stages pass after explicit runtime/test delta",
+  "updatedAt": "2026-10-19T17:22:29.775886+00:00",
+  "workspace": "/tmp/codex-755-c1-ui",
+  "baseCommit": "9dbaa14472985097801a5c676022c06326ac7297",
+  "canonicalReadOnlyHead": "31068cd1857581e7ae66f618ac902ee6fd5f280a",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "node": "v22.23.3",
+  "baselineFull": {
+    "stages": 419,
+    "passed": 416,
+    "failed": 3,
+    "runnerExitStatus": 1,
+    "startedAt": "2026-10-19T16:38:47.639Z",
+    "completedAt": "2026-10-19T17:09:45.426Z",
+    "gdEnumerated": 380,
+    "parseScripts": 736,
+    "sourceCatalogsPassed": 15,
+    "report": {
+      "path": "/tmp/codex-755-combined-native-tests-fixed.json",
+      "sha256": "023c97732e03d361ad37b48ce781c498a8b734382129e8f7c732f4d00bd7e1c4",
+      "bytes": 384249
+    },
+    "log": {
+      "path": "/tmp/codex-755-combined-native-tests-fixed.log",
+      "sha256": "e966d77946127c535b2c158472d0f513dd271decf8dcaa5e40d7c154c2a1e49d",
+      "bytes": 20054
+    },
+    "failedStages": [
+      {
+        "label": "test_chapter3_media.gd",
+        "status": null,
+        "signal": "SIGTERM",
+        "durationMs": 169483,
+        "outputFile": "/tmp/codex-755-combined-failed-test_chapter3_media.gd.log"
+      },
+      {
+        "label": "test_chapter3_phone_ui.gd",
+        "status": 1,
+        "signal": null,
+        "durationMs": 19857,
+        "outputFile": "/tmp/codex-755-combined-failed-test_chapter3_phone_ui.gd.log"
+      },
+      {
+        "label": "test_world_presentation_lifecycle.gd",
+        "status": 1,
+        "signal": null,
+        "durationMs": 1839,
+        "outputFile": "/tmp/codex-755-combined-failed-test_world_presentation_lifecycle.gd.log"
+      }
+    ]
+  },
+  "baselineInputs": {
+    "before": {
+      "path": "/tmp/codex-755-combined-native-input-fixed-before.json",
+      "sha256": "19e7f056dbce4fd791d2a12e7052af02e7969b48b48d7ab9575fa2854e23b172",
+      "bytes": 1133970
+    },
+    "after": {
+      "path": "/tmp/codex-755-combined-native-input-fixed-after.json",
+      "sha256": "713ae0145e570bdcec10c05f5e4b7f74db178b89445adfb8a9b78a41af4fbe6d",
+      "bytes": 1137188
+    },
+    "nativeInputCount": 3592,
+    "nativeInputStartSha256": "ca00159c140aaad63ea2cb35d1877dd63075063fae9b61b7d8673b04794ff8af",
+    "nativeInputEndSha256": "ca00159c140aaad63ea2cb35d1877dd63075063fae9b61b7d8673b04794ff8af",
+    "nativeInputsUnchanged": true,
+    "runtimeCount": 2660,
+    "runtimeStartSha256": "bd461c886975f187814948f713bdff153e7b116cedb17a5886ac73b7eb81bb18",
+    "runtimeEndSha256": "bd461c886975f187814948f713bdff153e7b116cedb17a5886ac73b7eb81bb18",
+    "runtimeUnchangedDuringFull": true
+  },
+  "testOnlyCorrections": [
+    {
+      "path": "godot_native/tests/test_chapter3_media.gd",
+      "beforeSha256": "cc3978daa4bb52692d62475ac37badff763161c2ab230155366f691c8a10df47",
+      "afterSha256": "2f90173ccb1460d8c04cb9cb61d39b08b1f61fda5f6b2b36a6c8785739cbe336",
+      "originalBackup": "/tmp/codex-755-combined-original-test_chapter3_media.gd",
+      "prototype": "/tmp/codex-755-c3-media-fixed.gd"
+    },
+    {
+      "path": "godot_native/tests/test_chapter3_phone_ui.gd",
+      "beforeSha256": "4c3e0a88db0f89ba4f2e82e39eb4909c3e6b8dff50266c4493e543b50d350006",
+      "afterSha256": "04f9d36c97dba659427a047ecd11c6a8c577e0ee6de5c9b6cab83d69ab8625cd",
+      "originalBackup": "/tmp/codex-755-combined-original-test_chapter3_phone_ui.gd",
+      "prototype": "/tmp/codex-755-c3-phone-ui-fixed.gd"
+    },
+    {
+      "path": "godot_native/tests/test_world_presentation_lifecycle.gd",
+      "beforeSha256": "8f6b8468bbe393c9ef4bb182c258dac5d1ad1e86317314c78ccc625ea38b52ec",
+      "afterSha256": "9118b02c03088f7ea73f976a20e2d482320818d7eea8298dca179111949044ce",
+      "originalBackup": "/tmp/codex-755-combined-original-test_world_presentation_lifecycle.gd",
+      "prototype": "/tmp/codex-755-world-presentation-fixed.gd"
+    }
+  ],
+  "audioDiagnosis": {
+    "realSourcePlaybackSecondsAtFixedWait": 4.00799989700317,
+    "requiredEightyPercentSeconds": 4.16,
+    "marksHeardStillValid": true,
+    "detail": {
+      "path": "/tmp/codex-755-c3-media-diagnostic.json",
+      "sha256": "bc9f28beb5597c288ed069173e452f82cd5b931dbd9237b45006ebbc9689b33d",
+      "bytes": 1417
+    },
+    "scope": "Tests waited wall time sooner than actual AudioServer playback. Production heard evidence correctly rejected the excerpt."
+  },
+  "negativeControls": {
+    "earlyStopAndPause": {
+      "path": "/tmp/codex-755-c3-clock-negative-controls.json",
+      "sha256": "f1b21a71e112567194f42fc0eec91485b7b225fed18e5a7da70db8ac1014f1bf",
+      "bytes": 2655
+    },
+    "worldQueueBeforeExpiryFix": {
+      "path": "/tmp/codex-755-world-presentation-pre-expiry-fix-negative.json",
+      "sha256": "b70756010e79a78f0e2155ac6109f51cc0cb511781ca5db503893a0a348b8e04",
+      "bytes": 2249
+    },
+    "worldDetail": "Real world expiry clears text before Main synchronizes remaining; queue retains tiny positive residue and never promotes second notice. Production repair is separately owned by crosspr, not disguised as test-only.",
+    "audioCaseCount": 3,
+    "allAudioCasesCaughtByHeardAssertion": true,
+    "worldOldProductionNegative": {
+      "sameFinalTest": "test_world_notice_ownership.gd",
+      "checks": 19,
+      "failures": 13,
+      "status": 1,
+      "limits": "Several later assertions share the same stuck FIFO root cause; not 13 independent production bugs. No parse or runner errors."
+    },
+    "worldOldProductionEvidence": {
+      "path": "/tmp/codex-755-world-expiry-patch/final-focused.json",
+      "sha256": "7af90a036c24cf6b671af2211cd2ed9a2f1a698ac1e88f40340c0b1edf605768",
+      "bytes": 8197
+    },
+    "guardOnlyFailedAttempt": {
+      "path": "/tmp/codex-755-world-expiry-patch/isolation-prefix-guard-failed.json",
+      "qualification": "Initial final runner used a sandbox prefix rejected by the existing isolation guard. It stopped at that guard before running product assertions. Corrected the external runner prefix only; not an effective product negative."
+    },
+    "guardFailureCountsAsNegative": false,
+    "scope": "Three real early-stop/pause scenarios remain unsuccessful without genuine80-percent evidence. World old production fails19checks/13 expected assertions and the earlier natural-expiry test12/3; downstream failures share causes and are not independent bug counts."
+  },
+  "focusedDelta": {
+    "status": "passed",
+    "ownStages": 19,
+    "ownFailed": 0,
+    "runnerExitStatus": 0,
+    "firstStartedAt": "2026-10-19T17:16:07.554Z",
+    "completedAt": "2026-10-19T17:21:00.798Z",
+    "report": {
+      "path": "/tmp/codex-755-combined-native-delta.json",
+      "sha256": "141d6805672926b96551dcd0b5b32425f67f304e975f07dfb0c0cd8cd245cdbf",
+      "bytes": 16900
+    },
+    "log": {
+      "path": "/tmp/codex-755-combined-native-delta.log",
+      "sha256": "d543f5e4851bc569de71869abfbf3319785c0227185deee645850edcf3cf1cf9",
+      "bytes": 651
+    },
+    "stages": [
+      {
+        "label": "Native startup",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:16:07.554Z",
+        "finishedAt": "2026-10-19T17:16:09.494Z",
+        "durationMs": 1940
+      },
+      {
+        "label": "test_all_scripts_parse.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:16:09.497Z",
+        "finishedAt": "2026-10-19T17:16:14.319Z",
+        "durationMs": 4822
+      },
+      {
+        "label": "test_chapter3_media.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:16:14.321Z",
+        "finishedAt": "2026-10-19T17:16:26.374Z",
+        "durationMs": 12053
+      },
+      {
+        "label": "test_chapter3_phone_ui.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:16:26.377Z",
+        "finishedAt": "2026-10-19T17:16:45.759Z",
+        "durationMs": 19382
+      },
+      {
+        "label": "test_cohesion_controls.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:16:45.762Z",
+        "finishedAt": "2026-10-19T17:16:50.162Z",
+        "durationMs": 4400
+      },
+      {
+        "label": "test_full_campaign.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:16:50.165Z",
+        "finishedAt": "2026-10-19T17:18:36.734Z",
+        "durationMs": 106569
+      },
+      {
+        "label": "test_native_chase_integration.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:36.737Z",
+        "finishedAt": "2026-10-19T17:18:39.564Z",
+        "durationMs": 2827
+      },
+      {
+        "label": "test_native_dialog_notice.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:39.566Z",
+        "finishedAt": "2026-10-19T17:18:43.678Z",
+        "durationMs": 4112
+      },
+      {
+        "label": "test_native_prologue_effects.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:43.683Z",
+        "finishedAt": "2026-10-19T17:18:45.797Z",
+        "durationMs": 2114
+      },
+      {
+        "label": "test_native_opening_source_ui.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:43.681Z",
+        "finishedAt": "2026-10-19T17:18:46.510Z",
+        "durationMs": 2829
+      },
+      {
+        "label": "test_native_window_close.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:46.512Z",
+        "finishedAt": "2026-10-19T17:18:48.347Z",
+        "durationMs": 1835
+      },
+      {
+        "label": "test_portrait_narrative_contract.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:48.350Z",
+        "finishedAt": "2026-10-19T17:18:51.484Z",
+        "durationMs": 3134
+      },
+      {
+        "label": "test_prologue_words.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:51.490Z",
+        "finishedAt": "2026-10-19T17:18:52.016Z",
+        "durationMs": 526
+      },
+      {
+        "label": "test_prologue_focus_input.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:51.488Z",
+        "finishedAt": "2026-10-19T17:18:52.403Z",
+        "durationMs": 915
+      },
+      {
+        "label": "test_prologue_audio.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:51.486Z",
+        "finishedAt": "2026-10-19T17:18:54.836Z",
+        "durationMs": 3350
+      },
+      {
+        "label": "test_virtual_run_main_lifecycle.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:54.838Z",
+        "finishedAt": "2026-10-19T17:18:59.266Z",
+        "durationMs": 4428
+      },
+      {
+        "label": "test_world_presentation_lifecycle.gd",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:18:59.269Z",
+        "finishedAt": "2026-10-19T17:19:01.099Z",
+        "durationMs": 1830
+      },
+      {
+        "label": "Chapter 1 autosave and Continue persistence",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:19:01.101Z",
+        "finishedAt": "2026-10-19T17:19:05.095Z",
+        "durationMs": 3994
+      },
+      {
+        "label": "Chapter 4 late Continue persistence",
+        "status": 0,
+        "failed": false,
+        "startedAt": "2026-10-19T17:19:05.097Z",
+        "finishedAt": "2026-10-19T17:21:00.798Z",
+        "durationMs": 115701
+      }
+    ],
+    "additionalOwnerReport": {
+      "path": "/tmp/codex-755-native-world-notice-summary.json",
+      "sha256": "6471816700d6188eab44f6630804611a667fe85cc935a3981a481f8ea655471c",
+      "bytes": 2998
+    },
+    "additionalOwnerFocusedReport": {
+      "path": "/tmp/codex-755-world-expiry-patch/final-focused.json",
+      "sha256": "7af90a036c24cf6b671af2211cd2ed9a2f1a698ac1e88f40340c0b1edf605768",
+      "bytes": 8197
+    },
+    "additionalPositiveStages": 4,
+    "overlapLabel": "test_world_presentation_lifecycle.gd",
+    "distinctFinalStageCount": 22,
+    "finalParseScripts": 737,
+    "semantics": "19 official filtered stages plus4 crosspr stages, with world lifecycle duplicated once =22 different stages. Assertion totals are not branch or journey coverage."
+  },
+  "supplementalInput": {
+    "isolatedGameMouse": {
+      "path": "/tmp/codex-755-c1-real-mouse-drag.json",
+      "sha256": "3fc12061db005220b29f8bc170fa1439b7706f1853d20a6ba87be664049aaff7",
+      "bytes": 1200
+    },
+    "nestedMain81PreExpiry": {
+      "path": "/tmp/codex-755-c1-main-nested-input/summary.json",
+      "sha256": "08b2e6e2ed11c25afe7f45934f45b47f7174334dc44d30995829b1d24d44b91d",
+      "bytes": 39489
+    },
+    "nestedMainFinal": {
+      "path": "/tmp/codex-755-c1-main-nested-input-after-expiry/summary.json",
+      "sha256": "2c7a4da74a63b82a3d2c70b41357be342bb2171717396e8c6ad426294b0a7ae8",
+      "bytes": 39872
+    },
+    "finalNestedViewportChecks": 81,
+    "finalLegitimateEarnedSeedChecks": 43,
+    "finalNestedSourceUnchanged": true,
+    "scope": "Three real Main nested transform/Viewport input sizes with production behavior. No independent full-bounds acceptance or operating-system CUA drag success is claimed."
+  },
+  "sourceFreshness": {
+    "path": "/tmp/codex-755-combined-source-freshness.json",
+    "sha256": "0a213932b46b8dd62f5de399848ec7d8b246015f05b84e369f8e36eeade7f6e9",
+    "bytes": 3694
+  },
+  "initialInterruptedBeforeButtonFix": {
+    "path": "/tmp/codex-755-combined-native-interrupted-before-ui-fix.meta.json",
+    "sha256": "fabba46b804404fb420f3f298495b7ce187a7bf917bf5717ef8dd1f788a60a05",
+    "bytes": 332
+  },
+  "limitations": [
+    "This is macOS source-editor validation, not Linux Godot4.6.3 CI or physical mobile-device acceptance.",
+    "Real Viewport input probes are automated and do not prove that CUA.drag emitted operating-system motion.",
+    "No Git mutation, canonical changes, GUI launch, PCK or ZIP construction was performed by this acceptance task."
+  ],
+  "acceptanceMeaning": "The original419 failure statuses remain immutable. Final source was validated with a targeted delta, not a second complete419/420-stage run. No final PCK/ZIP or remoteCI claim is made here.",
+  "runtimeDelta": {
+    "changes": [
+      {
+        "path": "godot_native/scripts/main.gd",
+        "beforeSha256": "27effb4b3e709cab54aacb4c68293e88b5f6986c814568ec5f0128eddcde05c3",
+        "afterSha256": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b"
+      },
+      {
+        "path": "godot_native/scripts/world.gd",
+        "beforeSha256": "d275eb1bc22888c6bfa67d2a3cd72e23f96581973b9a25e6fedb17925f655fda",
+        "afterSha256": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023"
+      },
+      {
+        "path": "godot_native/tests/test_chapter3_media.gd",
+        "beforeSha256": "cc3978daa4bb52692d62475ac37badff763161c2ab230155366f691c8a10df47",
+        "afterSha256": "2f90173ccb1460d8c04cb9cb61d39b08b1f61fda5f6b2b36a6c8785739cbe336"
+      },
+      {
+        "path": "godot_native/tests/test_chapter3_phone_ui.gd",
+        "beforeSha256": "4c3e0a88db0f89ba4f2e82e39eb4909c3e6b8dff50266c4493e543b50d350006",
+        "afterSha256": "04f9d36c97dba659427a047ecd11c6a8c577e0ee6de5c9b6cab83d69ab8625cd"
+      },
+      {
+        "path": "godot_native/tests/test_world_notice_ownership.gd",
+        "beforeSha256": null,
+        "afterSha256": "04e4d32abfe57e97ac090c7808a6746903d4b42132a71e6305be60440b1ce73b"
+      },
+      {
+        "path": "godot_native/tests/test_world_presentation_lifecycle.gd",
+        "beforeSha256": "8f6b8468bbe393c9ef4bb182c258dac5d1ad1e86317314c78ccc625ea38b52ec",
+        "afterSha256": "9118b02c03088f7ea73f976a20e2d482320818d7eea8298dca179111949044ce"
+      }
+    ],
+    "productionChangedFiles": [
+      "godot_native/scripts/main.gd",
+      "godot_native/scripts/world.gd"
+    ],
+    "testOnlyCorrectedFiles": [
+      "godot_native/tests/test_chapter3_media.gd",
+      "godot_native/tests/test_chapter3_phone_ui.gd",
+      "godot_native/tests/test_world_presentation_lifecycle.gd"
+    ],
+    "newTest": "godot_native/tests/test_world_notice_ownership.gd",
+    "explanation": [
+      "World natural-expiry signal includes the exact subtitle assignment revision and text; Main acknowledges only the queue item it displayed",
+      "Main synchronizes actual World reading time and never subtracts delta again for a world notice",
+      "Main no longer leaves its World instance connected directly to State.feedback; standalone World retains its existing fallback",
+      "Direct external clear or same-text replacement is not an expiry acknowledgement; unread content resumes after the foreign owner releases"
+    ],
+    "fullSourceParseWas": 736,
+    "finalSourceParseIs": 737,
+    "finalMandatoryEnumerationWouldBe": 420
+  },
+  "finalInputs": {
+    "head": "9dbaa14472985097801a5c676022c06326ac7297",
+    "headTree": "4e44ba4238563de0d1fe38fb2dab5dd42b0e5205",
+    "dirtyDiffSha256": "792291de4e73d5f4633b06731e33829166652ead8deef34799e65c08e7f7617c",
+    "wholeFileManifestAtEnd": "4666df96315d11904905b2f4088fa9e5ac637ef3b09ca2e638a7e4a5da83b5ba",
+    "nativeInputCount": 3593,
+    "nativeInputBeforeSha256": "24ca124f6846ff932475c273988577f89ff69bb74611e3b960c42cf1d281b19b",
+    "nativeInputAfterSha256": "24ca124f6846ff932475c273988577f89ff69bb74611e3b960c42cf1d281b19b",
+    "nativeInputUnchangedDuringDelta": true,
+    "nativeRuntimeCount": 2660,
+    "runtimeBeforeSha256": "bc7c077fc5f5f2c03b6765fa27240fe34ebdee82f02e395a4250fe175e792056",
+    "runtimeAfterSha256": "bc7c077fc5f5f2c03b6765fa27240fe34ebdee82f02e395a4250fe175e792056",
+    "runtimeUnchangedDuringDelta": true,
+    "inputBeforeReport": {
+      "path": "/tmp/codex-755-combined-native-delta-before.json",
+      "sha256": "b3a41807679f042a6d875c943ebff337aff72b54ab68c69019890a4f8bd1bd83",
+      "bytes": 1137615
+    },
+    "inputAfterReport": {
+      "path": "/tmp/codex-755-combined-native-delta-after.json",
+      "sha256": "1d2f580413e2244adee42c1b2afb8472e579be8391067e35a5ae50ba19728606",
+      "bytes": 1139460
+    },
+    "productionSha256": {
+      "godot_native/scripts/main.gd": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b",
+      "godot_native/scripts/world.gd": "1a08dfd09838a500e93dbeb9405ca7f15454213f71b84717121f420cd8bea023"
+    }
+  },
+  "archive": {
+    "rawIgnoredDirectory": "godot_native/exports/verification/c1_20261020/",
+    "smallEvidenceDirectory": "godot_native/verification/integration_20261020/",
+    "packages": "Pending root commit and artifact rebuild; older PCK/ZIP do not contain this candidate."
+  }
+}

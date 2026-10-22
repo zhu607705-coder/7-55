@@ -1,10 +1,13 @@
 # P12 序章结算
 
-- Scene ID: `ending`
-- Entry: P11 签到成功红闪后
-- Required state: `checkinDone === true`
-- Sequence: `7s` 黑屏 → 经纬度错误框部署 → `2200 / 1900 / 1650ms` 三条多段折返轨迹拦截 → `1400ms` 按住锁定 → 对话 → 白色连闪 → 手机主页
-- Controls: pointer drag, `A/D`, left/right arrows; final lock accepts pointer hold, `Space`, and `Enter`
-- Failure: three misses open a retry state; retry restarts the error-window game without replaying the seven-second blackout
-- Runtime inspection: `window.render_game_to_text().endingGame`
-- Controller gate: `completeNarratorIntervention()` validates three interceptions and the full hold before chapter progression
+- Scene ID: `ending`; entry remains P11 check-in success, requiring controller-owned `checkinDone`.
+- Sequence: original 7s blackout → 1.5s error-window deployment → three text-discovery stages → original 1400ms hold → original four dialogue lines → white burst → phone home.
+- Authored clues come from `src/data/prologue-interception.content.json`. Stage 1 retains `等`; stage 2 retains both `经度` and `纬度` in either order; stage 3 retains `旁白 / 还没 / 说完` in original sentence order. The six real text contacts map to three existing controller proof gates. Reading or waiting never completes a stage.
+- Each stage first shows four readable clue fragments. The previous two remain visible; complete clues can be reread at any time. Rereading and failure prompts freeze word bodies, spawn timing, and penalties. Missing a clue is not a failure.
+- The original error window is the movable object. Pointer/touch drag and `A/D` or arrows move it continuously at at most 440 logical px/s. Text cards and the actual 164×58 window collide as oriented rectangles with swept continuous collision tests. The red circle marks a real contact briefly; it is not the moving game object. The first passive background scrape demonstrates the window without granting progress or penalizing an untouched window.
+- Unblocked background words leave safely. A wrong word, wrong sentence order, or escaped target freezes the same instant. Hints first explain the cause, then reveal the draggable title bar and relationship, then name missing/next text and offer optional landing assistance. `继续这一段` preserves completed stages and already retained words, removes unsafe old bodies, and respawns only missing targets. Failures have no restart limit and never auto-pass.
+- The deterministic model test completes after about 59.1s of simulated model time, excluding the original 7s blackout and 1.5s deployment. This is neither human play time nor a forced minimum or automatic timer gate. The browser driver's 64.2s counter covers its main loop only and excludes deliberately injected failure advances. The visible area uses one uniformly scaled 430×820 model below the reserved top 40px; PhoneShell still owns the outer 430×860 phone.
+- The final lock accepts pointer hold, `Space`, or `Enter`; release, cancellation, blur, or hidden page cancels a partial hold. Hidden pages pause active word motion. Unmount clears the scene snapshot and restores the previous clock hook.
+- Presentation model state is runtime-only. `ActOneBootstrapController.completeNarratorIntervention()` remains the progression authority and receives the existing `{ interceptedCount: 3, lockHeldMs: 1400, failed: false }` proof only after actual play and the authored ending.
+- Runtime inspection: `window.render_game_to_text().endingGame.interception`. It reports model coordinates, words, retained/missing text, semantic phase and failure reason; it is not a mutation API.
+- Verification: `node scripts/verify-prologue-interception.mjs` exercises collision geometry, semantic ordering, retained progress and real movement. `node scripts/verify-prologue-interception-browser.mjs` drives actual keyboard, touch, pointer cancellation, reread/continue buttons, hidden-tab pause, scaled phone layouts and controller handoff. It enters through an externally generated, real SaveStore envelope, verifies ordinary completion is saved and retained by a real reload, and runs the fixed pre-change scene in memory as an effective negative control. It adds no product route or dependency.

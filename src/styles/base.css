@@ -12,7 +12,7 @@
   --paper: #fff6df;
   --paper-2: #fff0cc;
   --ink: #222322;
-  --notification-background: rgba(255, 248, 226, 0.85);
+  --notification-background: #fff8e2;
   --notification-border: 2px solid var(--ink);
   --notification-shadow: 2px 2px 0 var(--shadow-warm);
   --notification-padding: 8px 10px;

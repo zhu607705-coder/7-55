@@ -1,0 +1,97 @@
+{
+  "source": "OpenAI built-in image_gen",
+  "image": "rescue_pose_atlas_v02.png",
+  "width": 1774,
+  "height": 887,
+  "transparent": true,
+  "frames": [
+    {
+      "name": "teacher_relaxed",
+      "region_xywh": [
+        115,
+        10,
+        215,
+        438
+      ],
+      "runtime_mirror_x": false
+    },
+    {
+      "name": "teacher_offer_towel",
+      "region_xywh": [
+        527,
+        16,
+        370,
+        428
+      ],
+      "runtime_mirror_x": false
+    },
+    {
+      "name": "officer_relaxed",
+      "region_xywh": [
+        1008,
+        9,
+        218,
+        439
+      ],
+      "runtime_mirror_x": false
+    },
+    {
+      "name": "officer_help_up",
+      "region_xywh": [
+        1398,
+        52,
+        355,
+        388
+      ],
+      "runtime_mirror_x": false
+    },
+    {
+      "name": "player_towel_walk_left_step",
+      "region_xywh": [
+        98,
+        444,
+        233,
+        425
+      ],
+      "runtime_mirror_x": true
+    },
+    {
+      "name": "player_towel_walk_right_step",
+      "region_xywh": [
+        543,
+        445,
+        233,
+        423
+      ],
+      "runtime_mirror_x": false
+    },
+    {
+      "name": "player_water_grip_left",
+      "region_xywh": [
+        955,
+        463,
+        331,
+        406
+      ],
+      "runtime_mirror_x": false
+    },
+    {
+      "name": "player_ledge_pull_left",
+      "region_xywh": [
+        1447,
+        453,
+        270,
+        416
+      ],
+      "runtime_mirror_x": true
+    }
+  ],
+  "notes": [
+    "Measured each separate silhouette; use region_xywh instead of equal grid cells.",
+    "Teacher and officer relaxed poses have both arms naturally lowered; their separate towel/helping poses are present.",
+    "Source walk poses both advance the screen-left leg. Runtime mirror the left_step frame to produce the requested opposite anatomical foot phases; right_step remains unmirrored.",
+    "Source ledge-pull pose faces right; runtime mirror it to face left.",
+    "No generated rain, water, rope, ring or background. Subject exterior is alpha-transparent.",
+    "Original atlas and all scripts remain unchanged."
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "schema": "online-pages-acceptance-v1",
+  "completedAt": "2026-10-20T01:22:29.137Z",
+  "url": "https://zhu607705-coder.github.io/7-55/",
+  "deployment": {
+    "run": "39352126258",
+    "attempt": 1,
+    "commit": "49332ec51eaf118554a949105ec6fef13dbbd8b3",
+    "tree": "02b2e823f38553bc30978e8655d9c485288de7f1",
+    "githubDeploymentId": "7188961801",
+    "status": "success",
+    "deploymentMetadataVerification": "Root and crosspr independently confirmed GitHub success/head; this agent verified actual live content below."
+  },
+  "passed": true,
+  "artifactIdentity": {
+    "plainUrlNoCacheBust": true,
+    "index": {
+      "testedAt": "2026-10-20T01:15:46.155Z",
+      "url": "https://zhu607705-coder.github.io/7-55/",
+      "cacheBust": false,
+      "actualSha256": "9f6be1bf6f9d9a2c25ea69f6f2bc907c6dc9466f376279156f2b9058469afde0",
+      "expectedSha256": "9f6be1bf6f9d9a2c25ea69f6f2bc907c6dc9466f376279156f2b9058469afde0",
+      "exactHtmlMatch": true,
+      "refs": [
+        "/7-55/assets/index-5oLwAG-H.js",
+        "/7-55/assets/index-Dh73s3lL.css"
+      ]
+    },
+    "code": {
+      "files": 9,
+      "bytes": 5626926,
+      "allSha256Match": true,
+      "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/code-artifact-identity.json"
+    },
+    "scope": "HTML and complete decompressed bodies of all nine emitted JS/CSS files match tested Pages staging.436asset reachability/header checks and representative Range prefixes cover remaining media/images; no claim of hashing every full remote media body."
+  },
+  "http": {
+    "checks": 876,
+    "failures": 0,
+    "assets": 436,
+    "localDiagnosticCount": 887,
+    "onlineCountExplanation": "11 compressed HEAD responses correctly omit comparison with uncompressed local content-length, yielding876checks. This is not dropped reachability/MIME/Range coverage.",
+    "range206ExactPrefix": true,
+    "etag304": true,
+    "missingAssetStatus": 404,
+    "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/http-report.json"
+  },
+  "productionSmoke": {
+    "initialCases": 4,
+    "passed": true,
+    "network": [
+      {
+        "id": "cc98-stale-session",
+        "responses": 32,
+        "httpErrors": 0,
+        "loadFailures": 0,
+        "runtimeExceptions": 0,
+        "consoleErrors": 0,
+        "saveReload": {
+          "action": "actual CC98 exit button",
+          "savedScene": "phone_home",
+          "realReloadRetained": true
+        }
+      },
+      {
+        "id": "phone-mobile",
+        "responses": 4,
+        "httpErrors": 0,
+        "loadFailures": 0,
+        "runtimeExceptions": 0,
+        "consoleErrors": 0,
+        "saveReload": null
+      },
+      {
+        "id": "theater-rpg",
+        "responses": 98,
+        "httpErrors": 0,
+        "loadFailures": 0,
+        "runtimeExceptions": 0,
+        "consoleErrors": 0,
+        "saveReload": null
+      },
+      {
+        "id": "chapter4-rpg",
+        "responses": 13,
+        "httpErrors": 0,
+        "loadFailures": 0,
+        "runtimeExceptions": 0,
+        "consoleErrors": 0,
+        "saveReload": null
+      }
+    ],
+    "c4InitialScreenshotWasOnlyPrewarm": true,
+    "c4ActualMapSupplement": {
+      "passed": true,
+      "waitMs": 11953,
+      "entryWarmup": {
+        "status": "ready",
+        "assets": 31,
+        "loaded": 31,
+        "failedUrls": []
+      },
+      "scene": "duan_yongping_temporal_maze",
+      "input": {
+        "gameEnabled": true,
+        "sceneEnabled": true,
+        "keyboardEnabled": true,
+        "keys": {
+          "up": false,
+          "down": false,
+          "left": false,
+          "right": false,
+          "interact": false
+        }
+      },
+      "overlayGone": true,
+      "noRetryClick": true,
+      "backgroundPhase": {
+        "phase": "transport",
+        "status": "loading",
+        "loaded": 7,
+        "assets": 40
+      },
+      "network": [
+        {
+          "id": "chapter4-rpg",
+          "responses": 193,
+          "httpErrors": 0,
+          "loadFailures": 0,
+          "runtimeExceptions": 0,
+          "consoleErrors": 0,
+          "saveReload": null
+        }
+      ],
+      "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/c4-ready/browser-smoke.json",
+      "timeScope": "11.953s is this new-browser-profile observation, not a performance promise; background transport preload is allowed to continue."
+    }
+  },
+  "c1": {
+    "checks": 24,
+    "failures": 0,
+    "passed": true,
+    "threeStagesSixTargets": true,
+    "hold1400": true,
+    "originalExchangeAndWhiteout": true,
+    "ordinarySaveRealReload": true,
+    "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/c1/browser-report.json",
+    "clockScope": "Existing advanceTime controls deterministic simulation; not human solve time or real-time audio audibility."
+  },
+  "screenshotCleanup": {
+    "count": 10,
+    "actuallyViewed": true,
+    "deleted": true,
+    "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/screenshot-cleanup.json"
+  },
+  "sourceOrDeploymentMutationByThisAgent": false,
+  "trackedWorktreeClean": true,
+  "evidence": [
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/index-identity.json",
+      "sha256": "3cb2b6df19efc6aa2598ed5a809d39bc9fa01c8e0a67272a85342cc8ed3e6cd6"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/normal-index-headers.txt",
+      "sha256": "19e7908dc225e300b6014f1d7df8d510bc0f5fd5fb915fbbddaca7661b43a499"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/code-artifact-identity.json",
+      "sha256": "78bc8614391fac06e61693b5d8d3b588ca5041ab19a171ff60aa02afffed15b6"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/http-report.json",
+      "sha256": "8827198d4928212854c4a6dce6fadf0e8887f90939e24e5c2e07dbcf3d1f39e2"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/smoke/browser-smoke.json",
+      "sha256": "5762210d5054316180afd50041df57511db0ed412be57f3a6c25940efccebfa4"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/c1/browser-report.json",
+      "sha256": "bec3bf9860f5355e7a211833c73036ecf50a4e51265759bb6ad44ed80ab89f24"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/c4-ready/browser-smoke.json",
+      "sha256": "d1bd75cb6fe7a136a7effb5a2fe3e0f507e6c078c701e1959372c3116b68a9c0"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/c4-ready/actual-c4-readiness.json",
+      "sha256": "da392a950fceac7310aaa58d3904cc3d16db153ebe26f1b5179b3f2ade94b7bb"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/online_49332ec5/screenshot-cleanup.json",
+      "sha256": "0f5adcfa858b29163acb98ff965f1f8c5fce9f1328d47e23262f7fead8c25d06"
+    }
+  ],
+  "limits": [
+    "Chromium desktop and emulated touch only; no new Firefox/WebKit or physical-device acceptance.",
+    "C3/C4 states are independent externally normalized SaveStore fixtures; not a natural continuous full C1-to-C4 campaign.",
+    "The old smoke early-canvas readiness weakness is preserved explicitly; targeted C4 readiness is additional evidence.",
+    "Native CI failures are separately being fixed in another worktree per root; these are retained-Web-only deployment results."
+  ]
+}

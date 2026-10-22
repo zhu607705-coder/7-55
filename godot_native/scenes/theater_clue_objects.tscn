@@ -1,0 +1,91 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/theater_clue_objects.gd" id="1_scene"]
+[ext_resource type="Script" path="res://scripts/objects/theater_clue_part.gd" id="2_part"]
+[ext_resource type="Texture2D" path="res://assets/rpg/theater/generated/icons/item_fluorescent_brush.png" id="3_brush"]
+[ext_resource type="Texture2D" path="res://assets/rpg/theater/generated/paper/paper_flight_0.png" id="4_paper"]
+[ext_resource type="Texture2D" path="res://assets/rpg/theater/generated/paper/paper_fluorescent.png" id="5_marked"]
+
+[ext_resource type="Shader" path="res://scripts/objects/theater_paper_contact.gdshader" id="6_contact"]
+
+[sub_resource type="ShaderMaterial" id="Material_unmarked"]
+resource_local_to_scene = true
+shader = ExtResource("6_contact")
+shader_parameter/reveal = 0.0
+shader_parameter/unmarked = true
+
+[sub_resource type="ShaderMaterial" id="Material_marked"]
+resource_local_to_scene = true
+shader = ExtResource("6_contact")
+shader_parameter/reveal = 0.0
+shader_parameter/unmarked = false
+
+[node name="TheaterClueObjects" type="Node2D"]
+visible = false
+z_index = 1
+texture_filter = 1
+script = ExtResource("1_scene")
+
+[node name="VisibleSurface" type="Control" parent="."]
+layout_mode = 0
+mouse_filter = 2
+clip_contents = true
+
+[node name="Objects" type="Node2D" parent="VisibleSurface"]
+
+[node name="TicketHalf" type="Node2D" parent="VisibleSurface/Objects"]
+script = ExtResource("2_part")
+part = "ticket"
+metadata/source_target_id = "theater_poster"
+
+[node name="LiftedCorner" type="Polygon2D" parent="VisibleSurface/Objects/TicketHalf"]
+color = Color(1, 0.945, 0.773, 1)
+
+[node name="OilMask" type="Node2D" parent="VisibleSurface/Objects"]
+script = ExtResource("2_part")
+part = "oil"
+metadata/source_target_id = "theater_poster"
+
+[node name="Tissue" type="Node2D" parent="VisibleSurface/Objects"]
+script = ExtResource("2_part")
+part = "tissue"
+metadata/source_item_id = "greaseTissue"
+
+[node name="Contact" type="Marker2D" parent="VisibleSurface/Objects/Tissue"]
+
+[node name="VentBrush" type="Sprite2D" parent="VisibleSurface/Objects"]
+texture = ExtResource("3_brush")
+centered = false
+offset = Vector2(-22, -46)
+metadata/source_target_id = "theater_backstage_vent"
+metadata/source_item_id = "fluorescentBrush"
+
+[node name="BristleContact" type="Marker2D" parent="VisibleSurface/Objects/VentBrush"]
+
+[node name="Powder" type="Node2D" parent="VisibleSurface/Objects"]
+script = ExtResource("2_part")
+part = "powder"
+
+[node name="Paper" type="Node2D" parent="VisibleSurface/Objects"]
+
+[node name="FoldPivot" type="Marker2D" parent="VisibleSurface/Objects/Paper"]
+
+[node name="UnmarkedLeft" type="Polygon2D" parent="VisibleSurface/Objects/Paper"]
+material = SubResource("Material_unmarked")
+texture = ExtResource("4_paper")
+uv = PackedVector2Array(0, 0, 46, 0, 46, 64, 0, 64)
+
+[node name="UnmarkedRight" type="Polygon2D" parent="VisibleSurface/Objects/Paper"]
+material = SubResource("Material_unmarked")
+texture = ExtResource("4_paper")
+uv = PackedVector2Array(46, 0, 64, 0, 64, 64, 46, 64)
+
+[node name="MarkedLeft" type="Polygon2D" parent="VisibleSurface/Objects/Paper"]
+material = SubResource("Material_marked")
+texture = ExtResource("5_marked")
+uv = PackedVector2Array(0, 0, 46, 0, 46, 64, 0, 64)
+
+[node name="MarkedRight" type="Polygon2D" parent="VisibleSurface/Objects/Paper"]
+material = SubResource("Material_marked")
+texture = ExtResource("5_marked")
+uv = PackedVector2Array(46, 0, 64, 0, 64, 64, 46, 64)

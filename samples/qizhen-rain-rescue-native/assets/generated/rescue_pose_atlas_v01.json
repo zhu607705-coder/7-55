@@ -1,0 +1,124 @@
+{
+  "source": "OpenAI built-in image_gen",
+  "image": "rescue_pose_atlas_v01.png",
+  "width": 1447,
+  "height": 1087,
+  "layout": "4 columns by 3 rows, approximate spacing; use measured region_xywh, not uniform cells",
+  "transparent": true,
+  "frames": [
+    {
+      "name": "player_seated_balance",
+      "region_xywh": [
+        39,
+        32,
+        301,
+        316
+      ]
+    },
+    {
+      "name": "player_falling_right",
+      "region_xywh": [
+        365,
+        69,
+        360,
+        267
+      ]
+    },
+    {
+      "name": "player_floating",
+      "region_xywh": [
+        743,
+        70,
+        389,
+        266
+      ]
+    },
+    {
+      "name": "player_grip_rim",
+      "region_xywh": [
+        1175,
+        28,
+        226,
+        326
+      ]
+    },
+    {
+      "name": "player_crouched_wet",
+      "region_xywh": [
+        49,
+        396,
+        230,
+        307
+      ]
+    },
+    {
+      "name": "player_towel_stand",
+      "region_xywh": [
+        423,
+        362,
+        212,
+        355
+      ]
+    },
+    {
+      "name": "teacher_reach_right",
+      "region_xywh": [
+        722,
+        371,
+        361,
+        342
+      ]
+    },
+    {
+      "name": "teacher_pull_left",
+      "region_xywh": [
+        1118,
+        370,
+        297,
+        341
+      ]
+    },
+    {
+      "name": "officer_reach_left",
+      "region_xywh": [
+        32,
+        728,
+        333,
+        332
+      ]
+    },
+    {
+      "name": "officer_pull_left",
+      "region_xywh": [
+        408,
+        728,
+        294,
+        332
+      ]
+    },
+    {
+      "name": "towel",
+      "region_xywh": [
+        763,
+        803,
+        295,
+        205
+      ]
+    },
+    {
+      "name": "life_ring",
+      "region_xywh": [
+        1126,
+        751,
+        293,
+        292
+      ]
+    }
+  ],
+  "notes": [
+    "RGBA alpha validated: 924110 fully transparent pixels; ring center fully transparent; most opaque subject pixels are alpha 252\u2013253.",
+    "Teacher pull pose faces left; horizontal mirror for pulling toward right.",
+    "Floating full-body pose needs scene water masking for head-above-water appearance.",
+    "Shapes and identities visually inspected, no scenery, labels, grid or ground. Some faint isolated alpha flecks exist outside main silhouettes."
+  ]
+}

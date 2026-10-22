@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="84" viewBox="-40 -44 80 84">
+<!-- Source: TheaterInteriorScene.createChargingStation procedural cabinet retrofit.
+     Wood body stays in the original map; live battery fill/phone use native Control. -->
+<rect x="-31" y="-42" width="62" height="18" fill="#172f32" stroke="#96d9c8" stroke-width="2"/>
+<!-- Exact 充电 glyph outlines from the approved Fusion Pixel source font. -->
+<path d="M1100 900V800H500V700H400V800H0V900H500V1000H600V900ZM300 700H400V600H300ZM700 700H800V600H700ZM200 100H300V0H200ZM200 -100H0V0H200ZM1100 -100H700V400H400V100H300V400H100V500H200V600H300V500H800V600H900V500H1000V300H900V400H800V0H1000V200H1100Z" transform="translate(-13.000000 -28.125000) scale(0.01083333 -0.01083333)" fill="#d4f7e6"/>
+<path d="M500 300H800V500H500ZM400 500H100V300H400ZM400 200H0V900H400V1000H500V900H900V200H500V0H400ZM500 600H800V800H500ZM400 800H100V600H400ZM1000 200H1100V-100H500V0H1000Z" transform="translate(0.000000 -28.125000) scale(0.01083333 -0.01083333)" fill="#d4f7e6"/>
+<rect x="-28" y="-17" width="56" height="52" fill="#142d30" stroke="#71897f" stroke-width="2"/>
+<rect x="-15" y="-11" width="28" height="12" fill="none" stroke="#c5e8da" stroke-width="2"/><path d="M14-8H17V-2H14Z" fill="#c5e8da"/>
+<path d="M-20 8H-10V13H-20ZM10 8H20V13H10Z" fill="#9db2ad"/>
+<path d="M-18 9H-12V11H-18ZM12 9H18V11H12Z" fill="#091717"/>
+<path d="M-15 13V25H-22V18M15 13V25H8V18" stroke="#a1c1b5" stroke-width="2" fill="none"/>
+</svg>

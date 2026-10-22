@@ -38,7 +38,7 @@ import {
 } from "./scenes/rpg/RpgRuntimePreload";
 import { Chapter4PrologueRuntimeGate } from "./components/Chapter4PrologueRuntimeGate";
 
-const DEVELOPER_TOOLS_ENABLED = import.meta.env.BASE_URL !== "/7-55/";
+const DEVELOPER_TOOLS_ENABLED = import.meta.env.DEV && import.meta.env.BASE_URL !== "/7-55/";
 const DeveloperChannel = DEVELOPER_TOOLS_ENABLED
   ? lazy(async () => ({ default: (await import("./components/DeveloperChannel")).DeveloperChannel }))
   : null;
@@ -499,7 +499,7 @@ export function App() {
               </Suspense>
             </section>
             <PresentationLayer events={eventBus} />
-            <ToastLayer events={eventBus} state={state} surface={activeSurface === "phone" ? "phone" : "rpg"} />
+            <ToastLayer events={eventBus} state={state} surface={activeSurface === "phone" ? "phone" : "rpg"} blocked={libraryStoryVisible || showChapterTwoIntro} />
             <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface={activeSurface === "phone" ? "phone" : "rpg"} />
             {chapterIntro}
             {!libraryStoryUsesPhone ? libraryStoryLayer : null}
@@ -525,7 +525,7 @@ export function App() {
           />
         </Suspense>
         <PresentationLayer events={eventBus} />
-        <ToastLayer events={eventBus} state={state} surface="rpg" />
+        <ToastLayer events={eventBus} state={state} surface="rpg" blocked={libraryStoryVisible || showChapterTwoIntro} />
         <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface="rpg" />
         {chapterIntro}
         {!libraryStoryUsesPhone ? libraryStoryLayer : null}
@@ -541,7 +541,7 @@ export function App() {
 
   return (
     <Chapter4PrologueRuntimeGate key={developerCheckpointEpoch} store={gameStore} events={eventBus}>
-      <PhoneShell state={state} router={router} events={eventBus} dialogueOverlay={libraryStoryUsesPhone ? libraryStoryLayer : null} inputBlocked={developerChannelOpen} onTaskNavigate={navigateFromTask}>
+      <PhoneShell state={state} router={router} events={eventBus} dialogueOverlay={libraryStoryUsesPhone ? libraryStoryLayer : null} notificationsBlocked={showChapterTwoIntro} inputBlocked={developerChannelOpen} onTaskNavigate={navigateFromTask}>
         <Suspense fallback={<div role="status">加载中…</div>}>
           <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
         </Suspense>

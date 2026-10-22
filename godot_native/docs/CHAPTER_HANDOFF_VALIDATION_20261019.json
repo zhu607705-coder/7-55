@@ -1,0 +1,116 @@
+{
+  "baselineCommit": "0cfa162c60882fa2c0b32228389c86fea5eb3a5d",
+  "baselineTree": "a6fe32610e22dfb6f16dae9209896a5252cfdd3b",
+  "validationDateShanghai": "2026-10-19",
+  "nativeFocused": [
+    {
+      "script": "test_c3_handoff_persistence.gd",
+      "checks": 28,
+      "failures": 0
+    },
+    {
+      "script": "test_chapter3_narrative.gd",
+      "checks": 143,
+      "failures": 0
+    },
+    {
+      "script": "test_chapter3_narrative_shell.gd",
+      "checks": 25,
+      "failures": 0
+    },
+    {
+      "script": "test_save_domain_guard.gd",
+      "checks": 1014,
+      "failures": 0
+    },
+    {
+      "script": "test_save_integration.gd",
+      "checks": 1805,
+      "failures": 0
+    },
+    {
+      "script": "test_bike_chase_reentry.gd",
+      "checks": 29,
+      "failures": 0
+    },
+    {
+      "script": "test_canteen_victory_pose.gd",
+      "checks": 739,
+      "failures": 0
+    },
+    {
+      "script": "test_canteen_victory_camera.gd",
+      "checks": 1640,
+      "failures": 0
+    },
+    {
+      "script": "test_replay_world_handoff.gd",
+      "checks": 30,
+      "failures": 0
+    },
+    {
+      "script": "test_chapter4_clock_reentry.gd",
+      "checks": 30,
+      "failures": 0
+    },
+    {
+      "script": "test_chapter4_closure_save_mode.gd",
+      "checks": 27,
+      "failures": 0
+    },
+    {
+      "script": "test_zh_audio_compatibility.gd",
+      "checks": 498,
+      "failures": 0
+    }
+  ],
+  "nativeFocusedTotal": 6008,
+  "campaign": {
+    "checks": 885,
+    "failures": 0,
+    "chapters": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "manualPlaythrough": false
+  },
+  "formalEntry": {
+    "checks": 125,
+    "failures": 0,
+    "independentProcesses": 9,
+    "scenarios": [
+      "escape",
+      "admission",
+      "theater_intro"
+    ],
+    "stages": [
+      "interrupt",
+      "complete",
+      "reload"
+    ],
+    "devSeeds": false,
+    "testClock": true,
+    "headless": true
+  },
+  "web": {
+    "quick": "4/4 passed",
+    "critical": "24/24 passed",
+    "release": "32/35 passed; incomplete",
+    "singleFileBuild": "killed status 137 twice",
+    "singleFileVerification": "blocked: missing demo after build termination",
+    "browserSmoke": "blocked: missing demo after build termination"
+  },
+  "nativeAggregate": "not run locally; existing CI owns aggregate",
+  "visualAudioHardwareAcceptance": "not performed",
+  "preservedRawFailures": [
+    "baseline-escape.log",
+    "baseline-admission.log",
+    "focused/test_chapter3_narrative.gd.log",
+    "focused/test_canteen_victory_pose.gd.log",
+    "focused/test_canteen_victory_camera.gd.log",
+    "web-release.log",
+    "web-single-retry.log"
+  ]
+}

@@ -1,0 +1,21 @@
+.godot/
+exports/
+*.log
+# Recreated byte-for-byte from tracked original source by tools/sync_source.mjs.
+assets/*
+!assets/native/
+!assets/native_755/
+!assets/derived/
+assets/derived/*
+!assets/derived/chase_transition_3d/
+data/source/
+.screenshots/
+
+# Godot-generated import metadata is rebuilt from portable source assets.
+*.import
+# Untracked script UIDs are generated on a clean import as well. Existing
+# committed UIDs stay tracked; new path-based scripts need no random UID input.
+*.uid
+# GLB import extracts these embedded textures; authored tracked textures remain
+# tracked and are still included in Web and native exports.
+assets/native/stair_b/*_pixel_albedo.png

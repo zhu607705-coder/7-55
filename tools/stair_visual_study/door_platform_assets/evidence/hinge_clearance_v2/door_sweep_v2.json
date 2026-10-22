@@ -1,0 +1,18 @@
+{
+  "sweep_degrees": 91,
+  "fixed_obstacle_configurations": 217,
+  "moving_leaf_and_joinery_meshes": 49,
+  "epsilon_m": 0.0001,
+  "penetrations_by_direction": {
+    "-1": {
+      "Door fixed jamb -1": {
+        "first_degree": 5,
+        "last_degree": 90,
+        "samples": 86
+      }
+    },
+    "1": {}
+  },
+  "positive_open_leaf_joinery_penetrations": {},
+  "excluded_contacts": "hinge knuckles/straps are intentional mechanical joints"
+}

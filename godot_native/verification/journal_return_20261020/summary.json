@@ -1,0 +1,992 @@
+{
+  "schema": "755-journal-world-return-delivery-v1",
+  "date": "2026-10-20",
+  "sourceBase": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+  "sourceDirty": true,
+  "sourceInputSha256": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+  "manifest": {
+    "path": "godot_native/exports/web-display-journal-return-20261020/build-manifest.json",
+    "bytes": 46613,
+    "sha256": "b2ef1ca46e2e099c3d138457d3a6754c568fedf63c3c13450fc98407bb757953"
+  },
+  "change": "Only explicit Journal return persists rpg before the original retained-activity admission. Update three obsolete assertions and strengthen real disk save/reset/load for both surfaces. Ordinary C2 phone Journal and story authority remain unchanged.",
+  "nativeFailureTriage": {
+    "receipt": {
+      "path": "godot_native/exports/verification/ci_a251_20261020/canteen-early-triage-receipt.json",
+      "bytes": 5826,
+      "sha256": "9a1dce506fa850086a702f20584e94bbd9d6623baa7fc6c7b904bfe247a60f13"
+    },
+    "data": {
+      "schema": "755-native-ci-two-failure-triage-v1",
+      "completedAt": "2026-10-20T10:46:30.556435+00:00",
+      "ci": {
+        "runId": 39402404110,
+        "jobId": 118560070246,
+        "head": "641b95ecbadb3702f76551bf4537d57db3097d04",
+        "engine": "Godot4.6.3 official Linux",
+        "failedStep": 9,
+        "logPath": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_a251_20261020/native-641-job.log",
+        "logSHA256": "1cd953a66306421d0623d9b98dcec657dbd58db755f8f1e66a55d9eed3900e23"
+      },
+      "findings": [
+        {
+          "test": "test_early_games.gd",
+          "ciPassedChecks": 14,
+          "ciFailedChecks": 2,
+          "exactErrors": [
+            "error and red flash lead to blackout",
+            "blackout leads to same error-window board"
+          ],
+          "cause": "Old test tick3.3 assumed shorter success phase. Accepted independent receipt now lastsSuccessPresentation.DURATION3.8 before originalerror1.9/red.35/blackout7.",
+          "fix": "Test only: check presentation still present before DURATION, enterserror afterward; separately check error and red, retaining original blackout, deploy, words, hold and dialogue assertions."
+        },
+        {
+          "test": "test_canteen_defense_resume.gd",
+          "ciChecks": 34,
+          "ciFailedChecks": 1,
+          "exactError": "PORTRAIT EXPLORATION: portrait reload stays on requested phone page",
+          "cause": "Fixture explicitly runtimeMode=rpg/native.scene=canteen_interior yet old compact expectationforcedphone. Currentcontract restores saved surface at all viewports.",
+          "fix": "Keep original assertions; add actual isolated ordinarysave→resetmemory→load for rpg andphone, assert rpg exactlyone session/no pickup replay; phone no start untilactualTasksReturn."
+        },
+        {
+          "runtime": "Main JournalResume callback",
+          "cause": "New bidirectional tests revealed explicit TasksReturn displayedworld and admittedsession while leaving saved runtimeMode=phone. Later reload/import returnedphone. Separate genuine persistence gap, not merely oldtest.",
+          "fixOwner": "root",
+          "fix": "Root changed only explicitjournalreturn callback to set/save rpg before original_show_world_mobile. Addedtest verifies actualmode plusphase/items/wallet unchanged and normaldiskreload restoresworld/exactlyonesession; no fixtureassignment masks this."
+        }
+      ],
+      "sourceBindings": [
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/tests/test_canteen_defense_resume.gd",
+          "sha256": "af06db0d9b6a55a60a0be0d438c018759d9d3571d007077a99bb19af15026a27",
+          "editedByThisAgent": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/tests/test_early_games.gd",
+          "sha256": "1b738cbff6a5fc69ad14ef83bdfff3e5bd9595ae4760a85c73d229c8b8bde007",
+          "editedByThisAgent": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/scripts/main.gd",
+          "sha256": "c17cfd29d2dcb204355b0c378665ba18fceeec868382ffc0998430775dc01a51",
+          "editedByThisAgent": false
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/scripts/games/prologue_interception.gd",
+          "sha256": "2a64e8a12eac232383a35e30734e57eae80e88d64acfa987f5122aecf9848749",
+          "editedByThisAgent": false
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/scripts/ui/checkin_success_view.gd",
+          "sha256": "bf1f4b48c67b27e16970d8cde25564f1705e4d6bfef596822e0b1d953a562023",
+          "editedByThisAgent": false
+        }
+      ],
+      "reports": [
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_a251_20261020/canteen-early-fix-test.json",
+          "sha256": "23e97b9caccc1c50db9d5144eb3f8f08533de7a0b641d91a587388ec8fb789e9",
+          "stages": [
+            {
+              "label": "test_canteen_defense_resume.gd",
+              "failed": false,
+              "status": 0,
+              "durationMs": 4321,
+              "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCANTEEN_DEFENSE_RESUME: 43 checks; 0 failures; controller_starts=8\n"
+            },
+            {
+              "label": "test_early_games.gd",
+              "failed": false,
+              "status": 0,
+              "durationMs": 921,
+              "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nEARLY_GAMES_TESTS: 20 passed; 0 failed\n"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_a251_20261020/canteen-final-test.json",
+          "sha256": "55ffe42abe305c19be9b3400ead5a1c213dc9593d552f2db1af9f8a4e5ae6bf6",
+          "stages": [
+            {
+              "label": "test_canteen_defense_resume.gd",
+              "failed": false,
+              "status": 0,
+              "durationMs": 4319,
+              "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCANTEEN_DEFENSE_RESUME: 43 checks; 0 failures; controller_starts=8\n"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_a251_20261020/canteen-journal-runtime-final.json",
+          "sha256": "c45ae6eb32830c1687ff4f08b2415c850c5ed6b9ef78f228518c8d8cb30454b5",
+          "stages": [
+            {
+              "label": "test_canteen_defense_resume.gd",
+              "failed": false,
+              "status": 0,
+              "durationMs": 4808,
+              "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCANTEEN_DEFENSE_RESUME: 50 checks; 0 failures; controller_starts=9\n"
+            }
+          ]
+        }
+      ],
+      "finalCanteenPassed": true,
+      "earlyPassedOnUnchangedGameSources": true,
+      "limitations": [
+        "Targeted isolatedlocalGodot4.7.2 checks only; does not relabel failedLinux4.6.3 whole-suite asgreen.",
+        "Newruntimecallback requires affected validation andnewPagesexportidentity; existinga251browserproofdoesnotincludeit.",
+        "No import/build/export, commit, push, merge, or userChrome interaction performed by this agent."
+      ]
+    }
+  },
+  "bikeEvidence": {
+    "receipt": {
+      "path": "godot_native/exports/verification/ci_a251_20261020/bike-reentry-receipt.json",
+      "bytes": 2769,
+      "sha256": "d5cd49e8e8c4fd21ba46beacad6e46cc2ed7f4a874db412a676b596d74160d44"
+    },
+    "data": {
+      "schema": "755-bike-reentry-surface-regression-v1",
+      "baseCommit": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+      "scope": "Uncommitted working-tree bike test and parent-owned explicit journal-return callback, isolated native validator; not a result for published a251 or Linux CI. No stage/commit/push.",
+      "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+      "passed": true,
+      "checks": 35,
+      "failures": 0,
+      "controllerStarts": 8,
+      "durationMs": 5976,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nBIKE_CHASE_REENTRY: 35 checks; 0 failures; starts=8\n",
+      "files": {
+        "godot_native/tests/test_bike_chase_reentry.gd": {
+          "bytes": 7415,
+          "sha256": "ad76eed2bb9e52d381036ab676f03a862db4c2883c20449f7b36bab0bc760db1"
+        },
+        "godot_native/scripts/main.gd": {
+          "bytes": 124281,
+          "sha256": "c17cfd29d2dcb204355b0c378665ba18fceeec868382ffc0998430775dc01a51"
+        },
+        "godot_native/tests/test_canteen_defense_resume.gd": {
+          "bytes": 9078,
+          "sha256": "af06db0d9b6a55a60a0be0d438c018759d9d3571d007077a99bb19af15026a27"
+        }
+      },
+      "reports": {
+        "bike-reentry-final.json": {
+          "bytes": 671,
+          "sha256": "34205a6049746069d2080a89c5f008b2dba57391987f7abbcbb3625fb418c8d4"
+        },
+        "bike-reentry-final.json.meta.json": {
+          "bytes": 1806,
+          "sha256": "6872263cad7d424190e7d1f11e5846f4959de6c417fdda8c4aefd1c782ca2717"
+        },
+        "bike-reentry-attempt1-fail.json": {
+          "bytes": 1369,
+          "sha256": "256a3cdf35473b2983eda9795ff600a438851972a91435339b89cf78450cdebc"
+        },
+        "bike-reentry-attempt2.json": {
+          "bytes": 671,
+          "sha256": "ae807782d5ab115295143cd4467064d8c188297d08eaff5825760578b02afe3c"
+        }
+      },
+      "history": [
+        {
+          "report": "bike-reentry-attempt1-fail.json",
+          "reason": "Ordinary explicit phone save then Tasks Return remained runtimeMode phone before parent callback fix; follow-on import failed and nil exit awaited. Owned child terminated after error; preserved as failed."
+        },
+        {
+          "report": "bike-reentry-attempt2.json",
+          "reason": "Parent explicit journal-return callback + isolation guard passed before final explicit runtimeMode/items/wallet assertions were added."
+        }
+      ],
+      "coverage": [
+        "Actual save_game/load_game for compact rpg and phone surfaces with validator",
+        "RPG reload restores exactly one chase; explicit phone waits for Tasks Return",
+        "Tasks Return persists rpg and retains scene, phase, payment, wallet, all items",
+        "Normal portable export/import retains exactly one chase",
+        "Original no-repayment, pause/resize/session identity, explicit Exit, unpaid/completed/other-scene/modal negative controls retained"
+      ],
+      "observedAt": "2026-10-20T10:46:08.900175+00:00"
+    }
+  },
+  "independentReview": {
+    "receipt": {
+      "path": "godot_native/exports/verification/ci_a251_20261020/journal-final-readonly-review.json",
+      "bytes": 2460,
+      "sha256": "d7daeb714ffbf7f19170f615f2168c110c4b875e96fd8995bab5590fc07104f5"
+    },
+    "data": {
+      "schema": "755-readonly-journal-final-review-v1",
+      "observedAt": "2026-10-20T10:48:31Z",
+      "baseCommit": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+      "diffSha256": "d283a200723da1dff57a4b33b272bb650dcd4e128a2f649b3b000b793ce7c92a",
+      "files": {
+        "godot_native/scripts/main.gd": "c17cfd29d2dcb204355b0c378665ba18fceeec868382ffc0998430775dc01a51",
+        "godot_native/tests/test_bike_chase_reentry.gd": "ad76eed2bb9e52d381036ab676f03a862db4c2883c20449f7b36bab0bc760db1",
+        "godot_native/tests/test_canteen_defense_resume.gd": "af06db0d9b6a55a60a0be0d438c018759d9d3571d007077a99bb19af15026a27",
+        "godot_native/tests/test_early_games.gd": "1b738cbff6a5fc69ad14ef83bdfff3e5bd9595ae4760a85c73d229c8b8bde007"
+      },
+      "conclusion": "No blocking finding in the four-file diff. Runtime condition is unchanged; only explicit existing world Return writes rpg before same activity admission. Ordinary Chapter2 phone Journal only closes its modal. Existing modal close/admission guards, progress, items and wallet paths remain unchanged.",
+      "validation": "Read-only review only, no reruns. Earlier isolated bike final: 35 checks/0 failures. Current dirty callback/test files are not the a251 CI tree.",
+      "remainingBoundary": "Linux full native suite and actual browser release of this four-file patch remain separate gates. State.save_game write failure remains handled as in existing explicit phone Return, not a new durable-persistence proof.",
+      "ci": [
+        {
+          "commit": "641b95ecbadb3702f76551bf4537d57db3097d04",
+          "runId": 39402404110,
+          "jobId": 118560070246,
+          "status": "completed",
+          "conclusion": "failure",
+          "failedStep": "Import, parse, and test native runtime",
+          "stepStartedAt": "2026-10-20T09:42:14Z",
+          "stepCompletedAt": "2026-10-20T10:34:32Z",
+          "jobCompletedAt": "2026-10-20T10:34:35Z",
+          "failures": [
+            "test_bike_chase_reentry.gd",
+            "test_canteen_defense_resume.gd",
+            "test_early_games.gd"
+          ],
+          "laterGpuExportParity": "skipped"
+        },
+        {
+          "commit": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+          "runId": 39408237931,
+          "jobId": 118579327345,
+          "status": "in_progress",
+          "conclusion": null,
+          "currentStep": "Import, parse, and test native runtime",
+          "stepStartedAt": "2026-10-20T10:30:54Z",
+          "scope": "Historical a251 source lacks the current four-file fix; cannot inherit prior candidate or local test results."
+        }
+      ]
+    }
+  },
+  "affectedNativeShellRegression": {
+    "receipt": {
+      "path": "godot_native/exports/verification/journal_return_20261020/native-focused-summary.json",
+      "bytes": 2972,
+      "sha256": "9d386a092d9ab6a958d11711ed07c613e133009574cbfb6ed052cc144485a191"
+    },
+    "data": {
+      "schema": "755-journal-return-native-focused-summary-v1",
+      "completedAt": "2026-10-20T10:49:23.778660+00:00",
+      "passed": true,
+      "stageCount": 9,
+      "jobs": 4,
+      "engine": "Godot4.7.2 official macOS",
+      "filter": "Native startup|test_native_surface|test_shell_layout|test_shell_input|test_web_display_scale|test_web_platform",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/journal_return_20261020/native-focused.json",
+        "sha256": "e393e71d77868adbd51168c07fe2872baf9fc92c977a6965f967228831876b03"
+      },
+      "sourceBinding": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/journal_return_20261020/native-focused-source-binding.json",
+        "sha256": "097eb20df89dc86869be5f9b4a9a283345d4564d15f7aba812c960f617bd6afd",
+        "unchangedDuringRun": true,
+        "fileCount": 15
+      },
+      "stages": [
+        {
+          "label": "Native startup",
+          "status": 0,
+          "failed": false,
+          "durationMs": 1694,
+          "summaryLines": []
+        },
+        {
+          "label": "test_native_surface_gestures.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 2890,
+          "summaryLines": [
+            "NATIVE_SURFACE_GESTURES: 81 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_native_surface_narrative.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 2383,
+          "summaryLines": [
+            "NATIVE_SURFACE_NARRATIVE: 39 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_native_surface_save.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 8776,
+          "summaryLines": [
+            "NATIVE_SURFACE_SAVE: 232 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_native_surface_modes.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 11465,
+          "summaryLines": [
+            "NATIVE_SURFACE_MODES: 442 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_shell_input.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 1510,
+          "summaryLines": [
+            "Native shell input: 2 checks, 0 errors"
+          ]
+        },
+        {
+          "label": "test_shell_layout.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 1608,
+          "summaryLines": [
+            "Native shell layout tests: PASS (0 failures)"
+          ]
+        },
+        {
+          "label": "test_web_display_scale.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 721,
+          "summaryLines": [
+            "WEB DISPLAY SCALE PASS: 45 checks"
+          ]
+        },
+        {
+          "label": "test_web_platform.gd",
+          "status": 0,
+          "failed": false,
+          "durationMs": 1596,
+          "summaryLines": [
+            "WEB_PLATFORM: 18 checks; 0 failures"
+          ]
+        }
+      ],
+      "sourceModifiedByThisAgent": false,
+      "importOrBuildRepeated": false,
+      "limitations": [
+        "Nine targeted native stages only; does not claim complete native CI or browser acceptance.",
+        "Previously passed bike/canteen/early tests are separate reports, not repeated or counted here."
+      ]
+    }
+  },
+  "previousLayoutPublication": {
+    "commit": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+    "pagesRun": 39408229772,
+    "cloudSourceInput": "a57bd628cf7f52a10e02e6149e43725e45358cf16698b80c082595e20fd375d0",
+    "cloudManifestSha256": "b93740c0cf1a461b7719d32509d5ca696ba21e89578c2f9482fc0f72243fd967",
+    "ciCases": 6,
+    "ciAssertions": 737,
+    "onlineDpr2Assertions": 54,
+    "onlineReportSha256": "61c05a90bd937b2a6fc7620ac8d223b8702d9d5ac7a3e41f269e234549568d81",
+    "scope": "Prior layout only. This does not prove the subsequent Journal persistence change."
+  },
+  "serverDeployment": "Deferred by user; no more SSH identity requests or deployment attempts for this task.",
+  "limitations": [
+    "Local Godot4.7.2 focused validation only, not a successful full Linux4.6.3 native suite.",
+    "Old641 native run failed, and a251 native run does not contain this fix. GPU/export/parity skipped after old failure.",
+    "The new committed Linux Web/CI/deployment must have its own exact identity and results.",
+    "No full human campaign, physical mobile hardware, minimum browser or human audibility claim."
+  ],
+  "sourceSyncAndVerifyOnly": {
+    "assets": 719,
+    "sourceInputUnchanged": true
+  },
+  "sourceDifference": {
+    "sourceChanges": [
+      {
+        "path": "scripts/main.gd",
+        "before": {
+          "path": "scripts/main.gd",
+          "bytes": 124026,
+          "sha256": "80ab18c80323fdc393234fd9b07271e4ae051de78c615cf09e4b2f36a8d31300"
+        },
+        "after": {
+          "path": "scripts/main.gd",
+          "bytes": 124281,
+          "sha256": "c17cfd29d2dcb204355b0c378665ba18fceeec868382ffc0998430775dc01a51"
+        }
+      }
+    ],
+    "deferredPacksByteIdentical": 19,
+    "wasmByteIdentical": true,
+    "oldLocalSource": "fe92dec948c44e644f747d5df4f7ffc6c3e0a6b7f5bd474aba568e42ac1f0597",
+    "newLocalSource": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+    "scope": "Local packages only; cloud identities remain separate."
+  },
+  "localWebCanteenDpr3": {
+    "receipt": {
+      "path": "godot_native/exports/verification/journal_return_20261020/browser-canteen-dpr3-attempt1/summary.json",
+      "bytes": 7895,
+      "sha256": "795d09187118f9fb4019a88ecdc719ea1999f2cea5f8675787de54f81b77bf0c"
+    },
+    "data": {
+      "schema": "755-journal-browser-canteen-summary-v1",
+      "frozenAt": "2026-10-20T10:56:33.426598+00:00",
+      "passed": true,
+      "checks": 35,
+      "artifact": {
+        "dir": "/Users/zhu/Downloads/755/godot_native/exports/web-display-journal-return-20261020",
+        "manifestSha256": "b2ef1ca46e2e099c3d138457d3a6754c568fedf63c3c13450fc98407bb757953",
+        "sourceCommit": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+        "sourceInputSha256": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+        "sourceDirty": true
+      },
+      "viewport": {
+        "css": {
+          "width": 390,
+          "height": 844
+        },
+        "dpr": 3,
+        "backing": {
+          "width": 1170,
+          "height": 2532
+        },
+        "drawingBuffer": {
+          "width": 1170,
+          "height": 2532
+        }
+      },
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/journal_return_20261020/browser-canteen-dpr3-attempt1/journal-canteen-acceptance.json",
+        "sha256": "1f1b71ee98958643013451b8c803491f22bd8b87e79368415dc372b4198b8634"
+      },
+      "cleanup": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/journal_return_20261020/browser-canteen-dpr3-attempt1/cleanup-receipt.json",
+        "sha256": "7cd49bdb585eaf335243865c937e2044922d82687a03bf8644c6307de24b47c2",
+        "removedPNGs": 5,
+        "profileCleaned": true,
+        "ownServer5229Stopped": true
+      },
+      "earnedImport": [
+        {
+          "filename": "before_c3_defense_result.json",
+          "sha256": "68740fbe2b30040db737725348f6394c3fccf809c80f9f50760b8b8fdbef3460",
+          "bytes": 23512,
+          "chapter": 3,
+          "page": "c3_canteen",
+          "scene": "canteen_interior",
+          "firstAcceptedAt": 1792493633718,
+          "observedAt": 1792493634093,
+          "saveDigest": "1a0292d264f8607ebe95f6939a8f89537c6a89b7413ccdb39f90f60ce2146cc8"
+        }
+      ],
+      "actualPath": [
+        "ordinary Start and earned portable picker import",
+        "exit_blocking defense shown",
+        "actual Exit keeps activity exited",
+        "WorldPhoneButton returnsphone_home",
+        "phone TaskTrigger opens journal",
+        "actual JournalResume returns defense and commitsruntimeMode=rpg",
+        "actual Exit then settings SaveNativeProgress",
+        "exact native tokenACK and independent readonlyIDB primarySHA",
+        "newdocument reload entersrpg and showsonevisibledefensestart/exitpair"
+      ],
+      "preservedEvidence": {
+        "phase": "exit_blocking",
+        "items": {
+          "archivedLeaveRule": false,
+          "attendanceRecordPaper": false,
+          "badDrink": false,
+          "bagNonPersonProof": false,
+          "blackCoffee": false,
+          "bridgeKeyword": false,
+          "brokenNetFrame": false,
+          "cafeteriaWages": true,
+          "callNumber755": false,
+          "campusCard": true,
+          "canteenCluelessSoyMilk": false,
+          "canteenEdgeEgg": false,
+          "canteenRealBun": false,
+          "canteenUselessCongee": false,
+          "clockPositioningPlate": false,
+          "dailySpecialSparklingWater": false,
+          "decoyPaper": false,
+          "fertilizer": false,
+          "finalMinute": false,
+          "fishFeedPellets": false,
+          "fishingRod": false,
+          "fluorescentBrush": false,
+          "gamepad": false,
+          "greaseTissue": true,
+          "hairDryer": false,
+          "headphone": false,
+          "improvisedDipNet": false,
+          "itemRecognitionReport": false,
+          "lakeKeyword": false,
+          "lemonTea": false,
+          "libraryPresenceProof": false,
+          "magneticFishingRod": false,
+          "mentorLine": false,
+          "nylonCord": false,
+          "occupancyNote": false,
+          "oldClockHourHand": false,
+          "pickupTicket0755": false,
+          "pushTriangle": false,
+          "reflectionCoordinate": false,
+          "reflectionKeyword": false,
+          "reverseGear": false,
+          "rightArrow": false,
+          "rustedLockerKey": false,
+          "sealedFeedTin": false,
+          "seat022Receipt": false,
+          "seatReleasePass": false,
+          "shortPryBar": false,
+          "slashLine": false,
+          "smallCarp": false,
+          "sparklingWater": false,
+          "spotlightRemote": false,
+          "swanMagnet": false,
+          "temporaryTheaterTicket": false,
+          "theaterProgramFinale": false,
+          "theaterProgramOpening": false,
+          "theaterProgramSpotlight": false,
+          "theaterTicketHalfA": false,
+          "theaterTicketHalfB": false,
+          "towerKey": false,
+          "universalLubricatingOil": false,
+          "waterDrop": false,
+          "wateredHeadphone": false,
+          "weatherWater": false,
+          "wetProgram": false
+        },
+        "wallet": {
+          "campusCardCents": 0,
+          "cashCents": 200
+        }
+      },
+      "saveReceipt": {
+        "acknowledgedDigest": "bf0584bef6aced21163d09ff8333b5eea5274cb70e867770f1bf5cd009d9e418",
+        "digest": "bf0584bef6aced21163d09ff8333b5eea5274cb70e867770f1bf5cd009d9e418",
+        "error": "",
+        "observedDigest": "bf0584bef6aced21163d09ff8333b5eea5274cb70e867770f1bf5cd009d9e418",
+        "pending": false,
+        "startedMs": 29788,
+        "token": 4
+      },
+      "restoredRuntimeMode": "rpg",
+      "restoredActiveGame": {
+        "paused": false,
+        "rect": {
+          "height": 844,
+          "width": 390,
+          "x": 0,
+          "y": 0
+        },
+        "running": false,
+        "script": "res://scripts/games/canteen_defense.gd"
+      },
+      "readyFamilies": [
+        "chapter2",
+        "chapter3"
+      ],
+      "readyPacks": [
+        {
+          "id": "chapter2_001",
+          "status": "ready"
+        },
+        {
+          "id": "chapter2_002",
+          "status": "ready"
+        },
+        {
+          "id": "chapter2_003",
+          "status": "ready"
+        },
+        {
+          "id": "chapter2_004",
+          "status": "ready"
+        },
+        {
+          "id": "chapter3_001",
+          "status": "ready"
+        },
+        {
+          "id": "chapter3_002",
+          "status": "ready"
+        },
+        {
+          "id": "chapter3_003",
+          "status": "ready"
+        },
+        {
+          "id": "chapter3_004",
+          "status": "ready"
+        },
+        {
+          "id": "chapter3_005",
+          "status": "ready"
+        },
+        {
+          "id": "chapter3_006",
+          "status": "ready"
+        },
+        {
+          "id": "chapter35_001",
+          "status": "missing"
+        },
+        {
+          "id": "chapter35_002",
+          "status": "missing"
+        },
+        {
+          "id": "chapter35_003",
+          "status": "missing"
+        },
+        {
+          "id": "chapter35_004",
+          "status": "missing"
+        },
+        {
+          "id": "chapter4_001",
+          "status": "missing"
+        },
+        {
+          "id": "chapter4_002",
+          "status": "missing"
+        },
+        {
+          "id": "chapter4_003",
+          "status": "missing"
+        },
+        {
+          "id": "chapter4_004",
+          "status": "missing"
+        },
+        {
+          "id": "chapter4_005",
+          "status": "missing"
+        }
+      ],
+      "errors": [],
+      "runtimeErrors": [],
+      "httpErrors": [],
+      "controlledFaults": {
+        "families": [
+          "chapter35",
+          "chapter35",
+          "chapter35",
+          "chapter35",
+          "chapter4",
+          "chapter4",
+          "chapter4",
+          "chapter4",
+          "chapter4"
+        ],
+        "urls": [
+          "http://127.0.0.1:5229/content/chapter35_001-e3513e57fbe83add.pck",
+          "http://127.0.0.1:5229/content/chapter35_002-89f0a64887cd0ffe.pck",
+          "http://127.0.0.1:5229/content/chapter35_003-2674253065682884.pck",
+          "http://127.0.0.1:5229/content/chapter35_004-409da7523865ee1f.pck",
+          "http://127.0.0.1:5229/content/chapter4_001-e7e9bf6d023b29d8.pck",
+          "http://127.0.0.1:5229/content/chapter4_002-97521ee01b1bf500.pck",
+          "http://127.0.0.1:5229/content/chapter4_003-7ecd7f242347a1a4.pck",
+          "http://127.0.0.1:5229/content/chapter4_004-67ef1f3e3df46bee.pck",
+          "http://127.0.0.1:5229/content/chapter4_005-1859ea48bcc79039.pck"
+        ]
+      },
+      "limitations": [
+        "One isolatedChromium390x844 emulatedDPR3 locallyserved frozen36baexport; not physicaldevice orproduction deployment.",
+        "No gameplaywin orwholecampaignacceptance. No injectedmode,progression orwritebridge.",
+        "Browser observesoneactiveGame andonevisiblestart/exitpair; exactcontrollersessioncount is independentlyprovedbynativecanteen50 checks.",
+        "Chapter2/3tenpacksallowed; Chapter35/4wereintentionallyblocked tobounddownloads."
+      ],
+      "sourceModified": false,
+      "importOrBuildRepeated": false
+    }
+  },
+  "localWebBikeDpr2": {
+    "receipt": {
+      "path": "godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt2/receipt.json",
+      "bytes": 8550,
+      "sha256": "99331141a81a150910fc7f3b564e881557f0757918d94c00dcd2bcb83a5ce028"
+    },
+    "data": {
+      "schema": "755-c3-journal-return-receipt-v1",
+      "candidate": {
+        "sourceCommit": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+        "sourceDirty": true,
+        "sourceInputSha256": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+        "manifestSha256": "b2ef1ca46e2e099c3d138457d3a6754c568fedf63c3c13450fc98407bb757953",
+        "mainSourceSha256": "c17cfd29d2dcb204355b0c378665ba18fceeec868382ffc0998430775dc01a51"
+      },
+      "passed": true,
+      "checks": 41,
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt2/online-acceptance.json",
+        "bytes": 271584,
+        "sha256": "4f24d5b7b4e89977009d7cd4ac10807f134c7d959c890c09d62267da93aff87d"
+      },
+      "runner": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt2/runner-source.mjs",
+        "bytes": 28633,
+        "sha256": "607fc1f93222f50c7d4bbd3f9b9dc7524231cb80248629d53a3a6e35d39babc1"
+      },
+      "helper": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt2/codex-755-cache-cdp-helper.mjs",
+        "bytes": 1297,
+        "sha256": "502f29bad8f28670ae90a1626978de77679425f30efa6482565e4d677f9cc8dd"
+      },
+      "cleanup": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt2/cleanup-receipt.json",
+        "bytes": 2407,
+        "sha256": "2a80b3e4c938f14d9f0f784688052025de43abf75cee17e53980b1b69acf2b71"
+      },
+      "displayTarget": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 2,
+        "touch": false
+      },
+      "limitations": [
+        "Focused ordinary C3 activity/phone Journal return and durable reload only; not a full campaign or physical-device acceptance.",
+        "Required chapter2 and chapter3 families are allowed because WebContent.required_families requires both for a validated C3 state; chapter35 and chapter4 remain precisely blocked.",
+        "No progress injection, developer scene jump, simulated save receipt, clock acceleration or product mutation."
+      ],
+      "note": "All four native PNGs reviewed individually: original3D scene clearly renders at ready, Journal current task and Return visible, JournalResume and actual fresh-document reload both retain original3D ready scene. No clipping or blank viewport observed.",
+      "startedAt": "2026-10-20T10:55:11.577Z",
+      "completedAt": "2026-10-20T10:56:27.653Z",
+      "flow": [
+        "ordinary earned picker import",
+        "real SourceChase3D353 meshes ready and presented",
+        "Exit",
+        "WorldPhoneButton→actual phone",
+        "TaskTrigger→JournalResume",
+        "persisted rpg and original unfinished3D activity",
+        "Exit→SaveNativeProgress exact durable ACK and readonly IDB primary SHA",
+        "actual new document→same rpg/chasing/scene/items/wallet",
+        "final Exit"
+      ],
+      "layout": [
+        {
+          "label": "phone before Journal",
+          "geometry": {
+            "width": 1440,
+            "height": 900,
+            "dpr": 2,
+            "canvas": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900,
+              "pixelWidth": 2880,
+              "pixelHeight": 1800
+            },
+            "overflowX": false,
+            "overflowY": false
+          },
+          "viewport": {
+            "height": 900,
+            "width": 1440,
+            "x": 0,
+            "y": 0
+          },
+          "phone": {
+            "height": 818,
+            "width": 409,
+            "x": 515.5,
+            "y": 64
+          }
+        }
+      ],
+      "necessaryPacks": {
+        "reason": "WebContent.required_families includes chapter2 and chapter3 for a validated C3 save; both are necessary for activity admission.",
+        "allowed": [
+          {
+            "id": "chapter2_001",
+            "family": "chapter2",
+            "file": "content/chapter2_001-9afb4122fbc73a6f.pck",
+            "bytes": 23999312,
+            "sha256": "9afb4122fbc73a6fe724733e4692e60b9d3a3d018e1c311640dab6563b93dce9"
+          },
+          {
+            "id": "chapter2_002",
+            "family": "chapter2",
+            "file": "content/chapter2_002-c780119fb3c91549.pck",
+            "bytes": 23996588,
+            "sha256": "c780119fb3c9154952671eefcbfed703a759ee1e60261f58c97705603d2c9a3f"
+          },
+          {
+            "id": "chapter2_003",
+            "family": "chapter2",
+            "file": "content/chapter2_003-b3fc302ecf8ba99a.pck",
+            "bytes": 23996216,
+            "sha256": "b3fc302ecf8ba99a8355fdb79c5df01771de5c05f9f9345dea80408063237956"
+          },
+          {
+            "id": "chapter2_004",
+            "family": "chapter2",
+            "file": "content/chapter2_004-fb001d1c8c6c40c9.pck",
+            "bytes": 23581980,
+            "sha256": "fb001d1c8c6c40c91e45c08d52542c2f9b4aeaee62fabca629525a6a5fd280df"
+          },
+          {
+            "id": "chapter3_001",
+            "family": "chapter3",
+            "file": "content/chapter3_001-3c18e66aebba6682.pck",
+            "bytes": 23999236,
+            "sha256": "3c18e66aebba6682ac9e2a9f32588b7e51a0310ee6ccfad4762640b48a13c7bc"
+          },
+          {
+            "id": "chapter3_002",
+            "family": "chapter3",
+            "file": "content/chapter3_002-aee0542e3b91277f.pck",
+            "bytes": 23998576,
+            "sha256": "aee0542e3b91277f5d4704c2fd20e9e54796ef5199ffb79271b4332d7008edf9"
+          },
+          {
+            "id": "chapter3_003",
+            "family": "chapter3",
+            "file": "content/chapter3_003-31d255e06cd2569f.pck",
+            "bytes": 23998444,
+            "sha256": "31d255e06cd2569f4d5e2dd2f8aead0e941fd696eac8eab6b8c1540015c34043"
+          },
+          {
+            "id": "chapter3_004",
+            "family": "chapter3",
+            "file": "content/chapter3_004-a27ddbeb04771381.pck",
+            "bytes": 23997228,
+            "sha256": "a27ddbeb04771381449195cc62c9d7a210141cc415bbb04f981275e34053b4f7"
+          },
+          {
+            "id": "chapter3_005",
+            "family": "chapter3",
+            "file": "content/chapter3_005-3a8dec56e0b4043b.pck",
+            "bytes": 23993276,
+            "sha256": "3a8dec56e0b4043b69ed2d687aa0072f7a6c13cf4fd5c5071b10930d982e970a"
+          },
+          {
+            "id": "chapter3_006",
+            "family": "chapter3",
+            "file": "content/chapter3_006-93740b9cc1ab993f.pck",
+            "bytes": 2115772,
+            "sha256": "93740b9cc1ab993fdf534274cc9dcd1176ce6afe53b2720ffc1ea15226a4d58d"
+          }
+        ],
+        "blocked": [
+          {
+            "id": "chapter35_001",
+            "family": "chapter35",
+            "file": "content/chapter35_001-e3513e57fbe83add.pck",
+            "bytes": 23999408,
+            "sha256": "e3513e57fbe83add8decbb926cecf8e61434a8e87d88c960baac20069c549695"
+          },
+          {
+            "id": "chapter35_002",
+            "family": "chapter35",
+            "file": "content/chapter35_002-89f0a64887cd0ffe.pck",
+            "bytes": 23998868,
+            "sha256": "89f0a64887cd0ffe51070f0e0869a97194d1d9f2d208d6678ba8c831e066957c"
+          },
+          {
+            "id": "chapter35_003",
+            "family": "chapter35",
+            "file": "content/chapter35_003-2674253065682884.pck",
+            "bytes": 23998052,
+            "sha256": "26742530656828848a345d3e60f37d035a00e492849a9e1e1e312e10974ceb0e"
+          },
+          {
+            "id": "chapter35_004",
+            "family": "chapter35",
+            "file": "content/chapter35_004-409da7523865ee1f.pck",
+            "bytes": 4163612,
+            "sha256": "409da7523865ee1f1c64968361b0a7e66239936fbe228db20100b26fae67b5a3"
+          },
+          {
+            "id": "chapter4_001",
+            "family": "chapter4",
+            "file": "content/chapter4_001-e7e9bf6d023b29d8.pck",
+            "bytes": 23999420,
+            "sha256": "e7e9bf6d023b29d8590669b099f34bfba8df16613e15d623c0cd2d501ef49cf9"
+          },
+          {
+            "id": "chapter4_002",
+            "family": "chapter4",
+            "file": "content/chapter4_002-97521ee01b1bf500.pck",
+            "bytes": 23998704,
+            "sha256": "97521ee01b1bf500e4ba55be11463a5a41b43c1445d97097ae144004b5a78f54"
+          },
+          {
+            "id": "chapter4_003",
+            "family": "chapter4",
+            "file": "content/chapter4_003-7ecd7f242347a1a4.pck",
+            "bytes": 23998332,
+            "sha256": "7ecd7f242347a1a454ff16fcb0f1dc4ba9f6020b15722e9207cd4741000a2843"
+          },
+          {
+            "id": "chapter4_004",
+            "family": "chapter4",
+            "file": "content/chapter4_004-67ef1f3e3df46bee.pck",
+            "bytes": 23998048,
+            "sha256": "67ef1f3e3df46beeea843f6227aa7455c1435d3c723a69ff6a7c92e27562698e"
+          },
+          {
+            "id": "chapter4_005",
+            "family": "chapter4",
+            "file": "content/chapter4_005-1859ea48bcc79039.pck",
+            "bytes": 14928216,
+            "sha256": "1859ea48bcc79039e5a7f4c687a469488baf80841c761e9e537b10c1edce1371"
+          }
+        ],
+        "allowedBytes": 217676628
+      },
+      "nonControlledErrors": [],
+      "controlledBlockedAttempts": 11,
+      "fullCampaignClaimed": false
+    }
+  },
+  "localWebBikeFirstAttemptFailure": {
+    "receipt": {
+      "path": "godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt1/receipt.json",
+      "sha256": "05a4d53b40de49319cdd1caf17b1a16869878b3439b5e947343402232f727da2"
+    },
+    "data": {
+      "schema": "755-c3-journal-return-receipt-v1",
+      "candidate": {
+        "sourceCommit": "a2517a6aa85218ace37eb452b9fa14d1a7d3cb6e",
+        "sourceDirty": true,
+        "sourceInputSha256": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+        "manifestSha256": "b2ef1ca46e2e099c3d138457d3a6754c568fedf63c3c13450fc98407bb757953",
+        "mainSourceSha256": "c17cfd29d2dcb204355b0c378665ba18fceeec868382ffc0998430775dc01a51"
+      },
+      "passed": false,
+      "checks": 13,
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt1/online-acceptance.json",
+        "bytes": 170294,
+        "sha256": "f3486d8ba07fe6b4324770b01a2f689b0e830894a72783689d71f77e431200bc"
+      },
+      "runner": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt1/runner-source.mjs",
+        "bytes": 28635,
+        "sha256": "d39d860dfe48f1689802e21adccd469487f4a234ee9bf1e1c06be298d65537d1"
+      },
+      "helper": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt1/codex-755-cache-cdp-helper.mjs",
+        "bytes": 1297,
+        "sha256": "502f29bad8f28670ae90a1626978de77679425f30efa6482565e4d677f9cc8dd"
+      },
+      "cleanup": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c3_journal_chase_dpr2_36ba_20261020/attempt1/cleanup-receipt.json",
+        "bytes": 1496,
+        "sha256": "68f7d6dcd8f20ea4a122bf73d2efcb217e5982017340566f72f741d6d58fa8df"
+      },
+      "displayTarget": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 2,
+        "touch": false
+      },
+      "limitations": [
+        "Focused ordinary C3 activity/phone Journal return and durable reload only; not a full campaign or physical-device acceptance.",
+        "Required chapter2 and chapter3 families are allowed because WebContent.required_families requires both for a validated C3 state; chapter35 and chapter4 remain precisely blocked.",
+        "No progress injection, developer scene jump, simulated save receipt, clock acceleration or product mutation."
+      ],
+      "note": "Harness used obsolete desktop phone-button text; actual WorldPhoneButton was visible and working. This is preserved as a failed harness attempt, not a product acceptance.",
+      "startedAt": "2026-10-20T10:53:33.525Z",
+      "completedAt": "2026-10-20T10:54:43.352Z"
+    }
+  }
+}

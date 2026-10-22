@@ -1,0 +1,70 @@
+{
+  "baseCommit": "cacb5a7255e215074d2e62dc2b0a556e3468b691",
+  "runtimeSha256": "7f7c1196282ed0cc64d04a8aa21d7a4a0ab29f2b6159749a5c8a49ded4338ca4",
+  "runtimeFileCount": 1058,
+  "productionHashStable": true,
+  "scope": "Two runtime files: exact original badDrink self-drop circle and active-side-phase controller guard",
+  "aggregate": {
+    "stages": 179,
+    "failures": 0,
+    "singleCleanFinalRun": true,
+    "reportSha256": "5db3f7034a9c610d4f89c157e06c7fb1aa1a275d4bfda622240a31b77d0d4b32"
+  },
+  "focused": {
+    "integratedOrdinaryFailedSaveChecks": 417,
+    "isolatedTotalChecks": 5158,
+    "oldRuntimeNegativeFailures": 71
+  },
+  "export": {
+    "Linux": "passed",
+    "Windows": "build_only_passed",
+    "packedCampaignChecks": 795,
+    "nativeOnlyInitialChecks": 25,
+    "nativeOnlyReloadChecks": 21,
+    "failures": 0,
+    "sourceTreeUsed": false,
+    "webRuntimePacked": false,
+    "nodeRequired": false,
+    "artifacts": [
+      {
+        "name": "7-55-native.exe",
+        "bytes": 638870960,
+        "sha256": "57b4f090bd26f9fd56799e8241a0415a19fe8bf7389d059a68bdfc21b1ef533e"
+      },
+      {
+        "name": "7-55-native.pck",
+        "bytes": 534211492,
+        "sha256": "0ff167a1adf6106df0f16c03644114762297adf8ea9b99c5374bf1992b668f7b"
+      },
+      {
+        "name": "7-55-native.x86_64",
+        "bytes": 71075864,
+        "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+      }
+    ]
+  },
+  "actualInput": {
+    "source": "430: same failed save, missed drop retains item with original guidance, player drop consumes once, first dialogue line visible and both lines recorded, normal completion and retry objective",
+    "release": "1180×812 standalone: physical player drop, source dialogue, unchanged canteen facts/wallet, normalSave/close",
+    "physicalMobileTested": false,
+    "humanListeningVerified": false,
+    "formalAcceptancePromotion": false
+  },
+  "guiImages": [
+    {
+      "path": "exported-before-self-use.png",
+      "bytes": 636978,
+      "sha256": "7c6cdbce79b26f801feef8dc84b43247f250d77514b704f50ab2e2466d46496e"
+    },
+    {
+      "path": "exported-self-use-dialogue.png",
+      "bytes": 553359,
+      "sha256": "fcc51c419d7eee63b5827a9a89b941d03c94eb8ee08f0c75c26ce4c67f87074e"
+    },
+    {
+      "path": "exported-self-use-finished.png",
+      "bytes": 635683,
+      "sha256": "a320d4bbe583fda9168a9d96067c0632dab660c161baf42ff032d8241b460b92"
+    }
+  ]
+}

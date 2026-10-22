@@ -1,0 +1,367 @@
+{
+  "status": "candidate_not_production",
+  "source": "src/assets/rpg/interiors/dorm_hub.png",
+  "source_sha256": "361f857e028b5d03defdaba9befd1e3ac0462133ca48a73f4e24c623a8db7519",
+  "projection": "strict overhead; nearest sampling; uniform transforms only",
+  "source_dimensions": [
+    941,
+    1672
+  ],
+  "atlas_dimensions": [
+    941,
+    1671
+  ],
+  "registration": {
+    "translation": [
+      66,
+      65
+    ],
+    "uniform_scale": 0.9,
+    "note": "Generated extraction is not pixel-identical; review before production collision replacement."
+  },
+  "furniture": [
+    {
+      "id": "bed_upper",
+      "region": [
+        25,
+        40,
+        223,
+        564
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "bed_lower",
+      "region": [
+        25,
+        604,
+        223,
+        343
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "sink_unverified",
+      "region": [
+        24,
+        947,
+        226,
+        232
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "shelf_upper",
+      "region": [
+        248,
+        130,
+        109,
+        251
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "shelf_lower",
+      "region": [
+        248,
+        1088,
+        110,
+        232
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "cabinet",
+      "region": [
+        396,
+        180,
+        186,
+        211
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "bin",
+      "region": [
+        588,
+        220,
+        94,
+        125
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "chair_1",
+      "region": [
+        684,
+        181,
+        58,
+        220
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "chair_2",
+      "region": [
+        684,
+        452,
+        58,
+        230
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "chair_3",
+      "region": [
+        684,
+        771,
+        58,
+        222
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "chair_4",
+      "region": [
+        684,
+        1060,
+        58,
+        228
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "desk_1",
+      "region": [
+        742,
+        129,
+        168,
+        274
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "desk_2",
+      "region": [
+        742,
+        403,
+        168,
+        307
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "desk_3",
+      "region": [
+        742,
+        710,
+        168,
+        291
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "desk_4",
+      "region": [
+        742,
+        1001,
+        168,
+        318
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "storage",
+      "region": [
+        750,
+        1319,
+        160,
+        227
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "backpack",
+      "region": [
+        665,
+        1380,
+        90,
+        141
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    },
+    {
+      "id": "balcony_plant",
+      "region": [
+        44,
+        1380,
+        95,
+        202
+      ],
+      "pivot": "bottom_center",
+      "collision": "region inset by 5px per edge; candidate only"
+    }
+  ],
+  "loose_props": [
+    {
+      "id": "lamp_blue",
+      "region": [
+        65,
+        75,
+        245,
+        265
+      ]
+    },
+    {
+      "id": "lamp_green",
+      "region": [
+        370,
+        85,
+        225,
+        255
+      ]
+    },
+    {
+      "id": "laptop",
+      "region": [
+        659,
+        86,
+        234,
+        259
+      ]
+    },
+    {
+      "id": "open_book",
+      "region": [
+        960,
+        143,
+        243,
+        199
+      ]
+    },
+    {
+      "id": "mug_blue",
+      "region": [
+        103,
+        423,
+        197,
+        208
+      ]
+    },
+    {
+      "id": "mug_white",
+      "region": [
+        395,
+        429,
+        176,
+        193
+      ]
+    },
+    {
+      "id": "green_book",
+      "region": [
+        685,
+        440,
+        188,
+        181
+      ]
+    },
+    {
+      "id": "red_book",
+      "region": [
+        985,
+        430,
+        178,
+        191
+      ]
+    },
+    {
+      "id": "pencil",
+      "region": [
+        115,
+        738,
+        145,
+        147
+      ]
+    },
+    {
+      "id": "pen",
+      "region": [
+        401,
+        707,
+        146,
+        189
+      ]
+    },
+    {
+      "id": "books",
+      "region": [
+        700,
+        695,
+        162,
+        223
+      ]
+    },
+    {
+      "id": "plant",
+      "region": [
+        973,
+        677,
+        217,
+        240
+      ]
+    },
+    {
+      "id": "clipboard",
+      "region": [
+        100,
+        953,
+        181,
+        233
+      ]
+    },
+    {
+      "id": "yellow_note",
+      "region": [
+        404,
+        1002,
+        151,
+        168
+      ]
+    }
+  ],
+  "canonical_paper": {
+    "source": "scripts/presentation/c3_paper_art.gd",
+    "consumers": [
+      "c3_pickup_view.gd",
+      "c3_narrative_world_view.gd",
+      "c3_canteen_paper_view.gd",
+      "canteen_defense.gd"
+    ],
+    "semantics": "Practice-only read-only object; not a story reward, yellow desk note, theater paper, or chapter4 sign-in paper."
+  },
+  "sink": "Appearance inferred only from existing game plate. Real-world dorm layout unverified.",
+  "remaining": [
+    "Sink towel and soap remain baked into sink assembly.",
+    "Bed ladders remain part of bed assemblies.",
+    "Wall/window/door remain in noninteractive clean plate.",
+    "No production integration or saved-state changes."
+  ]
+}

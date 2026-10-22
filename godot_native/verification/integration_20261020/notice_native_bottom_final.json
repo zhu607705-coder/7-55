@@ -1,0 +1,78 @@
+[
+  {
+    "label": "test_all_scripts_parse.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:26:14.510Z",
+    "finishedAt": "2026-10-19T16:26:19.355Z",
+    "durationMs": 4845,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-JaQ2ES/workspace/godot_native",
+      "--script",
+      "res://tests/test_all_scripts_parse.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 736 scripts, 0 failures\n"
+  },
+  {
+    "label": "test_native_dialog_notice.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:26:19.358Z",
+    "finishedAt": "2026-10-19T16:26:23.385Z",
+    "durationMs": 4027,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-aDjcC3/workspace/godot_native",
+      "--script",
+      "res://tests/test_native_dialog_notice.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPICKER BOUNDS desktop [P: (320.0, 180.0), S: (800.0, 540.0)] intrinsic=(516.0, 186.0)\nPICKER BOUNDS live resize (390, 844) [P: (8.0, 152.0), S: (374.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS live resize (430, 860) [P: (8.0, 160.0), S: (414.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS live resize (1440, 900) [P: (320.0, 180.0), S: (800.0, 540.0)] intrinsic=(516.0, 186.0)\nPICKER BOUNDS (390, 844) [P: (8.0, 152.0), S: (374.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS (430, 860) [P: (8.0, 160.0), S: (414.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS (1440, 900) [P: (320.0, 180.0), S: (800.0, 540.0)] intrinsic=(516.0, 186.0)\nNATIVE_DIALOG_NOTICE: 572 checks; 0 failures\n"
+  },
+  {
+    "label": "test_native_opening_source_ui.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:26:23.387Z",
+    "finishedAt": "2026-10-19T16:26:26.218Z",
+    "durationMs": 2831,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-Ft7KWW/workspace/godot_native",
+      "--script",
+      "res://tests/test_native_opening_source_ui.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nOPENING physical (390, 844): button=15.2758951742182px; notice=13.6186046600342px\nOPENING physical (430, 860): button=16.9453916398306px; notice=15.1069765090942px\nOPENING physical (1280, 720): button=14.2741968669589px; notice=12.7255811691284px\nOPENING physical (1440, 900): button=17.9470899470899px; notice=16.0px\nOpening source UI: 552 checks, 0 failures\n"
+  },
+  {
+    "label": "test_notice_queue_lifecycle.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:26:26.221Z",
+    "finishedAt": "2026-10-19T16:26:28.243Z",
+    "durationMs": 2022,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-sbYNXY/workspace/godot_native",
+      "--script",
+      "res://tests/test_notice_queue_lifecycle.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNOTICE_QUEUE_LIFECYCLE: 26 checks; 0 failures\n"
+  }
+]

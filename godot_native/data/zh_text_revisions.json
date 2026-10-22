@@ -1,0 +1,2988 @@
+{
+  "version": 1,
+  "baseCommit": "c47a8465bfea51310069979c79d7d0465d1eaed8",
+  "sourceDocumentSha256": "025917ed7f80cd7c992b0ec979465efcc226822e84486695a535fc96222e3fe1",
+  "revisions": [
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "wake_narration"
+      ],
+      "oldText": "你没有5分钟了，但你很有勇气",
+      "newText": "早八快上课了。不得不说，你还敢赖床，心理素质真硬。",
+      "recordIds": [
+        "T07773"
+      ],
+      "proposalId": "table-wake_narration",
+      "key": "wake_narration"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        0,
+        "subtitle_zh"
+      ],
+      "oldText": "你没有5分钟了，但你很有勇气",
+      "newText": "早八快上课了。不得不说，你还敢赖床，心理素质真硬。",
+      "recordIds": [
+        "T00458"
+      ],
+      "proposalId": "table-wake_narration",
+      "key": "wake_narration"
+    },
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "wake_flash"
+      ],
+      "oldText": "起床蠢货！！！",
+      "newText": "还睡？！早八要迟到了！！",
+      "recordIds": [
+        "T07774"
+      ],
+      "proposalId": "table-wake_flash",
+      "key": "wake_flash"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        1,
+        "subtitle_zh"
+      ],
+      "oldText": "起床蠢货！！！",
+      "newText": "还睡？！早八要迟到了！！",
+      "recordIds": [
+        "T00460"
+      ],
+      "proposalId": "table-wake_flash",
+      "key": "wake_flash"
+    },
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "xy_attack"
+      ],
+      "oldText": "等等等等，你想翘课？没门！我不会让你签上的！",
+      "newText": "等等——人还在被窝里就想隔空签到？想得美！这分我今天扣定了！",
+      "recordIds": [
+        "T07775"
+      ],
+      "proposalId": "table-xy_attack",
+      "key": "xy_attack"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        2,
+        "subtitle_zh"
+      ],
+      "oldText": "等等等等，你想翘课？没门！我不会让你签上的！",
+      "newText": "等等——人还在被窝里就想隔空签到？想得美！这分我今天扣定了！",
+      "recordIds": [
+        "T00462"
+      ],
+      "proposalId": "table-xy_attack",
+      "key": "xy_attack"
+    },
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "xy_laugh"
+      ],
+      "oldText": "找你的数字去吧哈哈哈",
+      "newText": "签到码给你拆碎咯，慢慢找去吧哈哈哈！",
+      "recordIds": [
+        "T07776"
+      ],
+      "proposalId": "table-xy_laugh",
+      "key": "xy_laugh"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        3,
+        "subtitle_zh"
+      ],
+      "oldText": "找你的数字去吧哈哈哈",
+      "newText": "签到码给你拆碎咯，慢慢找去吧哈哈哈！",
+      "recordIds": [
+        "T00464"
+      ],
+      "proposalId": "table-xy_laugh",
+      "key": "xy_laugh"
+    },
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "sys_balance"
+      ],
+      "oldText": "余额暂时不足以购买尊严",
+      "newText": "校园卡余额：0.06元。这点钱连起床气都买不起。",
+      "recordIds": [
+        "T07777"
+      ],
+      "proposalId": "table-sys_balance",
+      "key": "sys_balance"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        4,
+        "subtitle_zh"
+      ],
+      "oldText": "余额暂时不足以购买尊严",
+      "newText": "校园卡余额：0.06元。这点钱连起床气都买不起。",
+      "recordIds": [
+        "T00466"
+      ],
+      "proposalId": "table-sys_balance",
+      "key": "sys_balance"
+    },
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "sys_net_try"
+      ],
+      "oldText": "校园网已经尽力了，你也是",
+      "newText": "ZJUWLAN 正在疯狂转圈。它尽力了，你也尽力了。",
+      "recordIds": [
+        "T07778"
+      ],
+      "proposalId": "table-sys_net_try",
+      "key": "sys_net_try"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        5,
+        "subtitle_zh"
+      ],
+      "oldText": "校园网已经尽力了，你也是",
+      "newText": "ZJUWLAN 正在疯狂转圈。它尽力了，你也尽力了。",
+      "recordIds": [
+        "T00468"
+      ],
+      "proposalId": "table-sys_net_try",
+      "key": "sys_net_try"
+    },
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "tiyi_47"
+      ],
+      "oldText": "就差一次，真绝望",
+      "newText": "体艺打卡：47/48次。离及格永远只差最后一次，经典的绝望。",
+      "recordIds": [
+        "T07780"
+      ],
+      "proposalId": "table-tiyi_47",
+      "key": "tiyi_47"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        7,
+        "subtitle_zh"
+      ],
+      "oldText": "就差一次，真绝望",
+      "newText": "体艺打卡：47/48次。离及格永远只差最后一次，经典的绝望。",
+      "recordIds": [
+        "T00472"
+      ],
+      "proposalId": "table-tiyi_47",
+      "key": "tiyi_47"
+    },
+    {
+      "sourceFile": "vo.map.json",
+      "path": [
+        "lines",
+        "gear_pickup"
+      ],
+      "oldText": "哈，一个废齿轮",
+      "newText": "哟，从设置图标上抠下来一个生锈的齿轮？",
+      "recordIds": [
+        "T07781"
+      ],
+      "proposalId": "table-gear_pickup",
+      "key": "gear_pickup"
+    },
+    {
+      "sourceFile": "dialogue.lines.json",
+      "path": [
+        8,
+        "subtitle_zh"
+      ],
+      "oldText": "哈，一个废齿轮",
+      "newText": "哟，从设置图标上抠下来一个生锈的齿轮？",
+      "recordIds": [
+        "T00474"
+      ],
+      "proposalId": "table-gear_pickup",
+      "key": "gear_pickup"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "prologue_narrator_intro",
+        "subtitleZh"
+      ],
+      "oldText": "噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。我想你只好乖乖起来滚去上课了。祝你好运，孩子！我要走了！",
+      "newText": "噗……不好意思啊，没忍住。签到又报错了！看来你只能认命爬起来去教室解释了。祝你好运咯，同学，我下班了！",
+      "recordIds": [
+        "T00401"
+      ],
+      "proposalId": "table-prologue_narrator_intro",
+      "key": "prologue_narrator_intro"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "prologue_narrator_caught",
+        "subtitleZh"
+      ],
+      "oldText": "嘿！你到底在干什么？放开我！",
+      "newText": "喂！你拽我弹窗干什么？！快松手！要未响应了！",
+      "recordIds": [
+        "T00409"
+      ],
+      "proposalId": "table-prologue_narrator_caught",
+      "key": "prologue_narrator_caught"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "prologue_narrator_bargain",
+        "subtitleZh"
+      ],
+      "oldText": "哦，好吧，好吧！但你先把手放开！",
+      "newText": "行行行！算你狠！我帮你想办法还不行吗？先把手指挪开！",
+      "recordIds": [
+        "T00411"
+      ],
+      "proposalId": "table-prologue_narrator_bargain",
+      "key": "prologue_narrator_bargain"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_system_found_intro",
+        "subtitleZh"
+      ],
+      "oldText": "哦，该死。你赢了，孩子。",
+      "newText": "……服了你了。为了不陪你一起蓝屏，我认栽。",
+      "recordIds": [
+        "T00413"
+      ],
+      "proposalId": "table-act2_system_found_intro",
+      "key": "act2_system_found_intro"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_system_confession",
+        "subtitleZh"
+      ],
+      "oldText": "我得说实话了，我没有修改记录权限",
+      "newText": "但丑话说在前头，我只是个前端提示音，没有直接篡改教务考勤的权限。",
+      "recordIds": [
+        "T00423"
+      ],
+      "proposalId": "table-act2_system_confession",
+      "key": "act2_system_confession"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_system_friend",
+        "subtitleZh"
+      ],
+      "oldText": "但我有一个朋友她或许能做到",
+      "newText": "不过……我在图书馆有个老熟人，她手里有底层接口，或许能帮你把时间改回去。",
+      "recordIds": [
+        "T00425"
+      ],
+      "proposalId": "table-act2_system_friend",
+      "key": "act2_system_friend"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_system_library",
+        "subtitleZh"
+      ],
+      "oldText": "如果我们还想要平时分，就得去图书馆找她",
+      "newText": "想保住你的平时分，现在就得去基础馆一楼找她。",
+      "recordIds": [
+        "T03274"
+      ],
+      "proposalId": "table-act2_system_library",
+      "key": "act2_system_library"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_system_inventory_demand",
+        "subtitleZh"
+      ],
+      "oldText": "行。把你的道具栏拿出来。",
+      "newText": "来，先把你的道具栏调出来，咱们准备动身。",
+      "recordIds": [
+        "T00415"
+      ],
+      "proposalId": "table-act2_system_inventory_demand",
+      "key": "act2_system_inventory_demand"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_system_inventory_missing",
+        "subtitleZh"
+      ],
+      "oldText": "等等，你的道具栏呢？你总不能指望我空手干活！",
+      "newText": "……等等，你连道具栏都没加载？你不会指望我徒手给你黑进系统吧！",
+      "recordIds": [
+        "T00417"
+      ],
+      "proposalId": "table-act2_system_inventory_missing",
+      "key": "act2_system_inventory_missing"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_system_departure",
+        "subtitleZh"
+      ],
+      "oldText": "你找到了，那就太好了，我们出发吧！",
+      "newText": "总算找着了。行，那赶紧操作你床上的身体出门吧！",
+      "recordIds": [
+        "T00421"
+      ],
+      "proposalId": "table-act2_system_departure",
+      "key": "act2_system_departure"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act1_locked_entry",
+        "subtitleZh"
+      ],
+      "oldText": "很好，你打开了游戏。现在请先去申请操作自己。",
+      "newText": "……好吧，看来你不仅没起床，连自己身体的控制权都还没登录。先去认证一下身份吧。",
+      "recordIds": [
+        "T00387"
+      ],
+      "proposalId": "table-act1_locked_entry",
+      "key": "act1_locked_entry"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_character_cannot_hear",
+        "subtitleZh"
+      ],
+      "oldText": "他听不到你说话。现在的他连一个能回应的名字都没有。",
+      "newText": "别戳他了，他听不见。没绑定姓名和学号之前，他就是个没加载完的默认建模。",
+      "recordIds": [
+        "T00428"
+      ],
+      "proposalId": "table-act2_character_cannot_hear",
+      "key": "act2_character_cannot_hear"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act1_identity_verified",
+        "subtitleZh"
+      ],
+      "oldText": "登录成功。这个角色终于有名字了，仍然没联网。",
+      "newText": "学号核验通过。好消息：你想起自己叫什么了。坏消息：你的身体还没联网。",
+      "recordIds": [
+        "T00389"
+      ],
+      "proposalId": "table-act1_identity_verified",
+      "key": "act1_identity_verified"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act1_phone_linked",
+        "subtitleZh"
+      ],
+      "oldText": "电话接通。用学号当电话号码，很有校园特色。",
+      "newText": "信号接通了。拿学号当手机号拨通自己，也就这破系统干得出来。",
+      "recordIds": [
+        "T00391"
+      ],
+      "proposalId": "table-act1_phone_linked",
+      "key": "act1_phone_linked"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_push_triangle_collected",
+        "subtitleZh"
+      ],
+      "oldText": "获得道具：三角形。",
+      "newText": "拆下来一个播放键三角。再去天气页接滴雨水试试？",
+      "recordIds": [
+        "T00434"
+      ],
+      "proposalId": "table-act2_push_triangle_collected",
+      "key": "act2_push_triangle_collected"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_weather_water_collected",
+        "subtitleZh"
+      ],
+      "oldText": "获得道具：天气水滴。",
+      "newText": "雨水到手。去看看导师头像旁边那根卡死的竖线，泡软了应该能抠下来。",
+      "recordIds": [
+        "T00436"
+      ],
+      "proposalId": "table-act2_weather_water_collected",
+      "key": "act2_weather_water_collected"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_mentor_line_stuck",
+        "subtitleZh"
+      ],
+      "oldText": "那条竖线粘住了。看来导师头像也有自己的排版要求。",
+      "newText": "这根分割线焊得死死的。毕竟是导师的对话框，连排版都透着一股压迫感。",
+      "recordIds": [
+        "T00438"
+      ],
+      "proposalId": "table-act2_mentor_line_stuck",
+      "key": "act2_mentor_line_stuck"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_right_arrow_assembled",
+        "subtitleZh"
+      ],
+      "oldText": "一个三角形加一条竖线。现在你有了一支能把东西向右移的箭头。",
+      "newText": "三角加横杆，拼成右移箭头了。去看看你的余额小数点能不能往右挪挪？",
+      "recordIds": [
+        "T00440"
+      ],
+      "proposalId": "table-act2_right_arrow_assembled",
+      "key": "act2_right_arrow_assembled"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_gamepad_purchase_rejected",
+        "subtitleZh"
+      ],
+      "oldText": "你只有零点零六元。卖家拒绝了你分一百期付款的方案。",
+      "newText": "全身上下六分钱，还想跟98卖家分一百期买手柄？人家直接把你拒了。",
+      "recordIds": [
+        "T00444"
+      ],
+      "proposalId": "table-act2_gamepad_purchase_rejected",
+      "key": "act2_gamepad_purchase_rejected"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_balance_shifted",
+        "subtitleZh"
+      ],
+      "oldText": "小数点向右移动了两位。六分钱暂时获得了六元钱的尊严。",
+      "newText": "小数点右移两位！0.06 秒变 6.00 元——趁财务系统还没反应过来，赶紧去98把二手手柄付了！",
+      "recordIds": [
+        "T00442"
+      ],
+      "proposalId": "table-act2_balance_shifted",
+      "key": "act2_balance_shifted"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act1_movement_enabled",
+        "subtitleZh"
+      ],
+      "oldText": "锻炼开始。恭喜，你现在被允许步行。",
+      "newText": "体艺打卡启动！恭喜，你终于获得了在自己寝室里合法走路的权限。",
+      "recordIds": [
+        "T00395"
+      ],
+      "proposalId": "table-act1_movement_enabled",
+      "key": "act1_movement_enabled"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "act2_exit_ready",
+        "subtitleZh"
+      ],
+      "oldText": "现在可以出门了。",
+      "newText": "走吧，去基础图书馆一楼，找 022 号座位！",
+      "recordIds": [
+        "T00446"
+      ],
+      "proposalId": "table-act2_exit_ready",
+      "key": "act2_exit_ready"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        0,
+        "subtitleZh"
+      ],
+      "oldText": "系统：它可能只是来体验一下排队，很多东西在食堂都会排队。",
+      "newText": "系统：连一张逃跑的异常纸条，进了浙大食堂都得老老实实排队。",
+      "recordIds": [
+        "T02098"
+      ],
+      "proposalId": "table-c3_canteen_queue_system",
+      "key": "c3_canteen_queue_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        2,
+        "subtitleZh"
+      ],
+      "oldText": "系统：它看起来不像纸条会吃的东西，虽然纸条也不该吃东西。",
+      "newText": "系统：这包子连馅儿都是实的，藏不进纸条。再说了，纸条也不吃碳水。",
+      "recordIds": [
+        "T02100"
+      ],
+      "proposalId": "table-c3_canteen_bun_system",
+      "key": "c3_canteen_bun_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        3,
+        "subtitleZh"
+      ],
+      "oldText": "系统：不是，是一份比较真实的早饭。",
+      "newText": "系统：没有线索，只有碳水。恭喜你获得了一份平平无奇的早饭。",
+      "recordIds": [
+        "T02101"
+      ],
+      "proposalId": "table-c3_canteen_breakfast_system",
+      "key": "c3_canteen_breakfast_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        4,
+        "subtitleZh"
+      ],
+      "oldText": "系统：纸包鸡。我知道的至少前两个字很有嫌疑。",
+      "newText": "系统：“纸包鸡”。听名字，前两个字就跟我们的目标很有缘分。",
+      "recordIds": [
+        "T02102"
+      ],
+      "proposalId": "table-c3_canteen_paper_chicken_system",
+      "key": "c3_canteen_paper_chicken_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        5,
+        "subtitleZh"
+      ],
+      "oldText": "系统：一份线索。鸡只是包装。",
+      "newText": "系统：我们要的是外面那层纸，里面的鸡肉纯属赠品。",
+      "recordIds": [
+        "T02103"
+      ],
+      "proposalId": "table-c3_canteen_packaging_system",
+      "key": "c3_canteen_packaging_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        6,
+        "subtitleZh"
+      ],
+      "oldText": "系统：这份粥很热，但线索很冷。",
+      "newText": "系统：粥还烫嘴，但线索已经断了。换个窗口找找吧。",
+      "recordIds": [
+        "T02104"
+      ],
+      "proposalId": "table-c3_canteen_cold_clue_system",
+      "key": "c3_canteen_cold_clue_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        7,
+        "subtitleZh"
+      ],
+      "oldText": "系统：请不要拓展世界观。",
+      "newText": "系统：打住，别在这种地方强行发散思维。",
+      "recordIds": [
+        "T02105"
+      ],
+      "proposalId": "table-c3_canteen_worldview_system",
+      "key": "c3_canteen_worldview_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        8,
+        "subtitleZh"
+      ],
+      "oldText": "纸条撞回食堂，掉下一点蓝光。",
+      "newText": "纸条撞回食堂，抖落了一地蓝色的数据残影。",
+      "recordIds": [
+        "T02106"
+      ],
+      "proposalId": "table-c3_canteen_paper_impact_narrator",
+      "key": "c3_canteen_paper_impact_narrator"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        9,
+        "subtitleZh"
+      ],
+      "oldText": "纸条急了，它开始不尊重取餐流程。",
+      "newText": "纸条急眼了，决定直接插队硬闯取餐口！",
+      "recordIds": [
+        "T02107"
+      ],
+      "proposalId": "table-c3_canteen_paper_angry_narrator",
+      "key": "c3_canteen_paper_angry_narrator"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        10,
+        "subtitleZh"
+      ],
+      "oldText": "系统：自助服务发展到这一步，我有点害怕。",
+      "newText": "系统：现在的食堂自助取餐，已经进化到全自动打架了吗？",
+      "recordIds": [
+        "T02108"
+      ],
+      "proposalId": "table-c3_canteen_self_service_system",
+      "key": "c3_canteen_self_service_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        12,
+        "subtitleZh"
+      ],
+      "oldText": "系统：你正在以“没吃早饭的人类速度”移动。",
+      "newText": "系统：靠你这两条没吃早饭的腿，是追不上风的。找辆共享单车吧。",
+      "recordIds": [
+        "T02112"
+      ],
+      "proposalId": "table-c3_bike_human_speed_system",
+      "key": "c3_bike_human_speed_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        13,
+        "subtitleZh"
+      ],
+      "oldText": "系统：它没有绩点负担。",
+      "newText": "系统：人家只是一张纸，可没有挂科扣绩点的心理负担，当然飞得快。",
+      "recordIds": [
+        "T02114"
+      ],
+      "proposalId": "table-c3_bike_gpa_system",
+      "key": "c3_bike_gpa_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        14,
+        "subtitleZh"
+      ],
+      "oldText": "系统：这句话在本游戏里出现频率太高了。",
+      "newText": "系统：“余额不足”这四个字，今天真是刻进你DNA里了。先去帮阿姨收盘子赚钱吧。",
+      "recordIds": [
+        "T02116"
+      ],
+      "proposalId": "table-c3_bike_no_money_system",
+      "key": "c3_bike_no_money_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        15,
+        "subtitleZh"
+      ],
+      "oldText": "旁白：失败得很慷慨。",
+      "newText": "旁白：摔得十分干脆，连体面都没留。",
+      "recordIds": [
+        "T02117"
+      ],
+      "proposalId": "table-c3_theater_failure_narrator",
+      "key": "c3_theater_failure_narrator"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        16,
+        "subtitleZh"
+      ],
+      "oldText": "系统：台上的顺序改过，印刷版未必跟得上。",
+      "newText": "系统：彩排临时改过场次顺序，纸质节目单早就过时了。得看现场的痕迹。",
+      "recordIds": [
+        "T02118"
+      ],
+      "proposalId": "table-c3_theater_logic_system",
+      "key": "c3_theater_logic_system"
+    },
+    {
+      "sourceFile": "chapter3-theater.content.json",
+      "path": [
+        "program",
+        "wrongDialogue",
+        1
+      ],
+      "oldText": "系统：台上的顺序改过，印刷版未必跟得上。",
+      "newText": "系统：彩排临时改过场次顺序，纸质节目单早就过时了。得看现场的痕迹。",
+      "recordIds": [
+        "T01004"
+      ],
+      "proposalId": "table-c3_theater_logic_system",
+      "key": "c3_theater_logic_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        17,
+        "subtitleZh"
+      ],
+      "oldText": "系统：先翻过来看。",
+      "newText": "系统：别高兴得太早，把纸条翻过来看看背面。",
+      "recordIds": [
+        "T02119"
+      ],
+      "proposalId": "table-c3_theater_celebrate_system",
+      "key": "c3_theater_celebrate_system"
+    },
+    {
+      "sourceFile": "chapter3-theater.content.json",
+      "path": [
+        "spotlight",
+        "endingDialogue",
+        1
+      ],
+      "oldText": "系统：先翻过来看。",
+      "newText": "系统：别高兴得太早，把纸条翻过来看看背面。",
+      "recordIds": [
+        "T01031"
+      ],
+      "proposalId": "table-c3_theater_celebrate_system",
+      "key": "c3_theater_celebrate_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        18,
+        "subtitleZh"
+      ],
+      "oldText": "系统：替身有编号。原件去向不在节目单里。",
+      "newText": "系统：背面印着剧社的道具编号。这是张舞台替身，真家伙早就趁乱溜出剧场了。",
+      "recordIds": [
+        "T02120"
+      ],
+      "proposalId": "table-c3_theater_substitute_system",
+      "key": "c3_theater_substitute_system"
+    },
+    {
+      "sourceFile": "chapter3-theater.content.json",
+      "path": [
+        "spotlight",
+        "endingDialogue",
+        4
+      ],
+      "oldText": "系统：替身有编号。原件去向不在节目单里。",
+      "newText": "系统：背面印着剧社的道具编号。这是张舞台替身，真家伙早就趁乱溜出剧场了。",
+      "recordIds": [
+        "T01034"
+      ],
+      "proposalId": "table-c3_theater_substitute_system",
+      "key": "c3_theater_substitute_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        19,
+        "subtitleZh"
+      ],
+      "oldText": "系统：不知道。它这次没有沿路掉纸屑。",
+      "newText": "系统：跟丢了。这次它学精了，沿路半点蓝光都没漏。",
+      "recordIds": [
+        "T02121"
+      ],
+      "proposalId": "table-c3_qizhen_no_trail_system",
+      "key": "c3_qizhen_no_trail_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        20,
+        "subtitleZh"
+      ],
+      "oldText": "系统：老办法，发个论坛问问。",
+      "newText": "系统：遇事不决上 98。发个悬赏帖，让全校的夜猫子帮你找。",
+      "recordIds": [
+        "T02122"
+      ],
+      "proposalId": "table-c3_qizhen_forum_system",
+      "key": "c3_qizhen_forum_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        21,
+        "subtitleZh"
+      ],
+      "oldText": "系统：CC98 提供了一个非常精确的范围：不是厕所。",
+      "newText": "系统：98 老哥给出了极其严谨的排除法：至少没飞进厕所。",
+      "recordIds": [
+        "T02123"
+      ],
+      "proposalId": "table-c3_qizhen_cc98_system",
+      "key": "c3_qizhen_cc98_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        22,
+        "subtitleZh"
+      ],
+      "oldText": "系统：意思是它现在比我们更艺术。",
+      "newText": "系统：馆藏线索指向湖岸与倒影……看来这张纸条还挺讲究意境。",
+      "recordIds": [
+        "T02124"
+      ],
+      "proposalId": "table-c3_qizhen_catalog_system",
+      "key": "c3_qizhen_catalog_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        23,
+        "subtitleZh"
+      ],
+      "oldText": "系统：恭喜，你完成了一次校园级猜谜。",
+      "newText": "系统：三条线索拼齐——目标锁定，启真湖！",
+      "recordIds": [
+        "T02125"
+      ],
+      "proposalId": "table-c3_qizhen_map_system",
+      "key": "c3_qizhen_map_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        24,
+        "subtitleZh"
+      ],
+      "oldText": "系统：准确来说，是在倒影里。",
+      "newText": "系统：它没泡在水里，是卡在湖面的倒影图层里了。",
+      "recordIds": [
+        "T02126"
+      ],
+      "proposalId": "table-c3_qizhen_reflection_system",
+      "key": "c3_qizhen_reflection_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        25,
+        "subtitleZh"
+      ],
+      "oldText": "系统：对不会游泳的人来说区别很大。",
+      "newText": "系统：别想不开往水里跳，你体艺游泳课还没修呢。找船过去。",
+      "recordIds": [
+        "T02127"
+      ],
+      "proposalId": "table-c3_qizhen_swimming_system",
+      "key": "c3_qizhen_swimming_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        26,
+        "subtitleZh"
+      ],
+      "oldText": "系统：它又消失了。",
+      "newText": "系统：水波一晃，它又缩回深色倒影里了。",
+      "recordIds": [
+        "T02128"
+      ],
+      "proposalId": "table-c3_qizhen_gone_system",
+      "key": "c3_qizhen_gone_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        27,
+        "subtitleZh"
+      ],
+      "oldText": "系统：通常这里不应该有给我们指指路的牌子吗？",
+      "newText": "系统：岸边那块旧指示牌木头不错，拆下来正好当右船桨使。",
+      "recordIds": [
+        "T02129"
+      ],
+      "proposalId": "table-c3_qizhen_sign_system",
+      "key": "c3_qizhen_sign_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        28,
+        "subtitleZh"
+      ],
+      "oldText": "系统：这就是它躲藏的地方，哈",
+      "newText": "系统：锁定坐标了！它就猫在这片倒影底下。",
+      "recordIds": [
+        "T02130"
+      ],
+      "proposalId": "table-c3_qizhen_hiding_system",
+      "key": "c3_qizhen_hiding_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        30,
+        "subtitleZh"
+      ],
+      "oldText": "系统：就是这个假的",
+      "newText": "系统：把刚才在剧场抓到的那张假替身挂在鱼钩上！",
+      "recordIds": [
+        "T02132"
+      ],
+      "proposalId": "table-c3_qizhen_fake_system",
+      "key": "c3_qizhen_fake_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        31,
+        "subtitleZh"
+      ],
+      "oldText": "系统：因为它不能接受别人替它逃跑。",
+      "newText": "系统：一个占了三天座位的老赖，绝对容不下冒牌货顶替它的位置。",
+      "recordIds": [
+        "T02133"
+      ],
+      "proposalId": "table-c3_qizhen_ego_system",
+      "key": "c3_qizhen_ego_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        32,
+        "subtitleZh"
+      ],
+      "oldText": "系统：你只是让湖更有氛围了。",
+      "newText": "系统：偏了！你这杆甩下去，除了惊起两圈水波啥也没钓着。",
+      "recordIds": [
+        "T02134"
+      ],
+      "proposalId": "table-c3_qizhen_atmosphere_system",
+      "key": "c3_qizhen_atmosphere_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        33,
+        "subtitleZh"
+      ],
+      "oldText": "系统：还在嘲笑你的倒影。",
+      "newText": "系统：瞧见没，水底下的正主正隔着倒影看你笑话呢。对准点！",
+      "recordIds": [
+        "T02135"
+      ],
+      "proposalId": "table-c3_qizhen_taunt_system",
+      "key": "c3_qizhen_taunt_system"
+    },
+    {
+      "sourceFile": "chapter3-story-lines.json",
+      "path": [
+        "lines",
+        36,
+        "subtitleZh"
+      ],
+      "oldText": "系统：能抓了！",
+      "newText": "系统：趁现在，按住它！",
+      "recordIds": [
+        "T02138"
+      ],
+      "proposalId": "table-c3_qizhen_grab_system",
+      "key": "c3_qizhen_grab_system"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "prologue_narrator_intro",
+        "subtitleSegmentsZh",
+        0
+      ],
+      "oldText": "噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。",
+      "newText": "噗……不好意思啊，没忍住。签到又报错了！",
+      "recordIds": [
+        "T00402"
+      ],
+      "proposalId": "table-prologue_narrator_intro"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "prologue_narrator_intro",
+        "subtitleSegmentsZh",
+        1
+      ],
+      "oldText": "我想你只好乖乖起来滚去上课了。",
+      "newText": "看来你只能认命爬起来去教室解释了。",
+      "recordIds": [
+        "T00403"
+      ],
+      "proposalId": "table-prologue_narrator_intro"
+    },
+    {
+      "sourceFile": "act-one-bootstrap.content.json",
+      "path": [
+        "audioNarration",
+        "prologue_narrator_intro",
+        "subtitleSegmentsZh",
+        2
+      ],
+      "oldText": "祝你好运，孩子！我要走了！",
+      "newText": "祝你好运咯，同学，我下班了！",
+      "recordIds": [
+        "T00404"
+      ],
+      "proposalId": "table-prologue_narrator_intro"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        0,
+        "text"
+      ],
+      "oldText": "这里就是图书馆？",
+      "newText": "这就是基础馆？你说的那个朋友在哪？",
+      "recordIds": [
+        "T03304"
+      ],
+      "proposalId": "library-entered-1",
+      "key": "library_story_library_entered_01"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        1,
+        "text"
+      ],
+      "oldText": "她最后留下入馆记录的地方。",
+      "newText": "在入馆闸机最后的登记记录里。她一直待在一层书库。",
+      "recordIds": [
+        "T03306"
+      ],
+      "proposalId": "library-entered-2",
+      "key": "library_story_library_entered_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        2,
+        "text"
+      ],
+      "oldText": "你朋友是管理员？",
+      "newText": "她是这里的图书管理员？",
+      "recordIds": [
+        "T03308"
+      ],
+      "proposalId": "library-entered-3",
+      "key": "library_story_library_entered_03"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        3,
+        "text"
+      ],
+      "oldText": "她不管馆内秩序。",
+      "newText": "不是。她不管借书，也不在教职工名册里。",
+      "recordIds": [
+        "T03310"
+      ],
+      "proposalId": "library-entered-4",
+      "key": "library_story_library_entered_04"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        4,
+        "text"
+      ],
+      "oldText": "馆长？",
+      "newText": "那是谁？总不能是馆长吧。",
+      "recordIds": [
+        "T03312"
+      ],
+      "proposalId": "library-entered-5",
+      "key": "library_story_library_entered_05"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        7,
+        "text"
+      ],
+      "oldText": "一个座位，一层书库 022。",
+      "newText": "是一层书库的 022 号座位。",
+      "recordIds": [
+        "T03318"
+      ],
+      "proposalId": "library-entered-6",
+      "key": "library_story_library_entered_08"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        8,
+        "text"
+      ],
+      "oldText": "……",
+      "newText": "……你是说，你的朋友是一张桌子？",
+      "recordIds": [
+        "T03320"
+      ],
+      "proposalId": "library-entered-7",
+      "key": "library_story_library_entered_09"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        9,
+        "text"
+      ],
+      "oldText": "上次见面时，她就在 022。",
+      "newText": "准确地说，是绑定在 022 号座位上的旧版选座终端。上次系统升级前，全校的考勤与选座时间戳都归她管。",
+      "recordIds": [
+        "T03322"
+      ],
+      "proposalId": "library-entered-8",
+      "key": "library_story_library_entered_10"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        10,
+        "text"
+      ],
+      "oldText": "以前？",
+      "newText": "那直接过去找她就行？",
+      "recordIds": [
+        "T03324"
+      ],
+      "proposalId": "library-entered-9",
+      "key": "library_story_library_entered_11"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        11,
+        "text"
+      ],
+      "oldText": "这张记录没有固定时长。先去闸机核对入馆时间。",
+      "newText": "她的入馆记录停在三天前，一直没签退。先刷闸机进去看看情况。",
+      "recordIds": [
+        "T03326"
+      ],
+      "proposalId": "library-entered-10",
+      "key": "library_story_library_entered_12"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupied_seat_found",
+        1,
+        "text"
+      ],
+      "oldText": "022 被一个书包占着，桌上的纸条写着“主人马上回来”。",
+      "newText": "022 号座位上赫然盘踞着一个鼓鼓囊囊的书包，上面贴着一张便签纸：“本人离开三分钟，马上回来”。",
+      "recordIds": [
+        "T03330"
+      ],
+      "proposalId": "library-occupied-2",
+      "key": "library_story_library_occupied_seat_found_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupied_seat_found",
+        2,
+        "text"
+      ],
+      "oldText": "它把座位占了。",
+      "newText": "……被占座了。而且一个书包怎么连选座终端的屏幕都挡死了？",
+      "recordIds": [
+        "T03332"
+      ],
+      "proposalId": "library-occupied-3",
+      "key": "library_story_library_occupied_seat_found_03"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupied_seat_found",
+        3,
+        "text"
+      ],
+      "oldText": "先别碰。去 CC98 查三分钟离座的规则。",
+      "newText": "别硬拽！馆内选座系统判定它还在“三分钟暂离保护期”内，强行挪动会触发警报。去 CC98 搜搜怎么破这个死循环。",
+      "recordIds": [
+        "T03334"
+      ],
+      "proposalId": "library-occupied-4",
+      "key": "library_story_library_occupied_seat_found_04"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        0,
+        "text"
+      ],
+      "oldText": "旧版离座规则找到了。",
+      "newText": "755 号书架背面的旧版《三分钟离座法》找到了。",
+      "recordIds": [
+        "T03346"
+      ],
+      "proposalId": "library-rule-1",
+      "key": "library_story_library_archived_rule_recovered_01"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        1,
+        "text"
+      ],
+      "oldText": "坏消息？",
+      "newText": "看你这语气，流程很阴间？",
+      "recordIds": [
+        "T03348"
+      ],
+      "proposalId": "library-rule-2",
+      "key": "library_story_library_archived_rule_recovered_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        2,
+        "text"
+      ],
+      "oldText": "它要求三项证明。",
+      "newText": "非常官僚。要想强制清退超时占座物，必须集齐三份纸质证明：",
+      "recordIds": [
+        "T03350"
+      ],
+      "proposalId": "library-rule-3",
+      "key": "library_story_library_archived_rule_recovered_03"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        5,
+        "text"
+      ],
+      "oldText": "座位小票、到馆证明、书包非本人证明。",
+      "newText": "第一，你本人的到馆时间证明；第二，022 座位的小票；第三……“该书包不是人类”的身份核验公章。",
+      "recordIds": [
+        "T03356"
+      ],
+      "proposalId": "library-rule-4",
+      "key": "library_story_library_archived_rule_recovered_06"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        3,
+        "text"
+      ],
+      "oldText": "书包还要核验身份？",
+      "newText": "……？我要去向图书馆证明一个双肩包不是人？！",
+      "recordIds": [
+        "T03352"
+      ],
+      "proposalId": "library-rule-5",
+      "key": "library_story_library_archived_rule_recovered_04"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        4,
+        "text"
+      ],
+      "oldText": "规则只认已经留下的材料。",
+      "newText": "因为在后台数据库里，这个书包已经连续刷了三天全勤，系统默认它是模范读者。",
+      "recordIds": [
+        "T03354"
+      ],
+      "proposalId": "library-rule-6",
+      "key": "library_story_library_archived_rule_recovered_05"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_front_desk_proof_request",
+        0,
+        "text"
+      ],
+      "oldText": "请说明要处理的物品。",
+      "newText": "同学你好，办什么业务？",
+      "recordIds": [
+        "T03360"
+      ],
+      "proposalId": "library-frontdesk-1",
+      "key": "library_story_library_front_desk_proof_request_01"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_front_desk_proof_request",
+        1,
+        "text"
+      ],
+      "oldText": "022 的占座书包。",
+      "newText": "我想举报 022 号座位的占座书包。",
+      "recordIds": [
+        "T03362"
+      ],
+      "proposalId": "library-frontdesk-2",
+      "key": "library_story_library_front_desk_proof_request_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_front_desk_proof_request",
+        2,
+        "text"
+      ],
+      "oldText": "请先提交书包非本人证明。",
+      "newText": "清退占座需先提交《占用物非本人证明》。",
+      "recordIds": [
+        "T03364"
+      ],
+      "proposalId": "library-frontdesk-3",
+      "key": "library_story_library_front_desk_proof_request_03"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_front_desk_proof_request",
+        3,
+        "text"
+      ],
+      "oldText": "书包也要做身份核验？",
+      "newText": "不是，它就是个帆布包，你抬头看一眼不就知道了？",
+      "recordIds": [
+        "T03366"
+      ],
+      "proposalId": "library-frontdesk-4",
+      "key": "library_story_library_front_desk_proof_request_04"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_front_desk_proof_request",
+        4,
+        "text"
+      ],
+      "oldText": "系统里，它目前登记为座位使用者。",
+      "newText": "不好意思，选座系统只认公章，不认肉眼。在系统里它有合法占座权。",
+      "recordIds": [
+        "T03368"
+      ],
+      "proposalId": "library-frontdesk-5",
+      "key": "library_story_library_front_desk_proof_request_05"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_bag_nonperson_proof_issued",
+        0,
+        "text"
+      ],
+      "oldText": "盖章完成。书包不再算 022 的使用者。",
+      "newText": "公章盖好了。“书包不具备自然人学籍”核验通过。",
+      "recordIds": [
+        "T03370"
+      ],
+      "proposalId": "library-stamp-1",
+      "key": "library_story_library_bag_nonperson_proof_issued_01"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_bag_nonperson_proof_issued",
+        1,
+        "text"
+      ],
+      "oldText": "我今天跑的证明比上课还多。",
+      "newText": "为了赶一节早八，我今天办的证明比退学手续还全。",
+      "recordIds": [
+        "T03372"
+      ],
+      "proposalId": "library-stamp-2",
+      "key": "library_story_library_bag_nonperson_proof_issued_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_evidence_set_completed",
+        0,
+        "text"
+      ],
+      "oldText": "好了，证据齐了。现在图书馆会处理了吧？",
+      "newText": "三份证明终于跑齐了，现在能把书包清走了吧？",
+      "recordIds": [
+        "T03384"
+      ],
+      "proposalId": "library-evidence-1",
+      "key": "library_story_cc98_evidence_set_completed_01"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_evidence_set_completed",
+        1,
+        "text"
+      ],
+      "oldText": "还差公开确认。图书馆 App 只读取十大帖的四位热度口令。",
+      "newText": "还差最后一步“舆论监督”。用四位受理口令完成确认，帖子冲上 CC98 十大第一，清退入口才会开放。",
+      "recordIds": [
+        "T03386"
+      ],
+      "proposalId": "library-evidence-2",
+      "key": "library_story_cc98_evidence_set_completed_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_evidence_set_completed",
+        2,
+        "text"
+      ],
+      "oldText": "bd 到底是什么？",
+      "newText": "还要我去发帖控评？那个“bd”又是什么？",
+      "recordIds": [
+        "T03388"
+      ],
+      "proposalId": "library-evidence-3",
+      "key": "library_story_cc98_evidence_set_completed_03"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_evidence_set_completed",
+        3,
+        "text"
+      ],
+      "oldText": "bd 是“帮顶”。在一条数字回复上点 bd，数字就会按顺序写入口令。",
+      "newText": "98 黑话，“帮顶”的意思。你按证据栏的顺序给那几层带数字的楼层点 bd，楼层的数字就会拼成四位受理口令。",
+      "recordIds": [
+        "T03390"
+      ],
+      "proposalId": "library-evidence-4",
+      "key": "library_story_cc98_evidence_set_completed_04"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_backpack_evicted",
+        0,
+        "text"
+      ],
+      "oldText": "请占座物品离开 022。",
+      "newText": "022 号座位清退申请已通过。请占座物品立即离开座位。",
+      "recordIds": [
+        "T03398"
+      ],
+      "proposalId": "library-evicted-1",
+      "key": "library_story_library_backpack_evicted_01"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_backpack_evicted",
+        1,
+        "text"
+      ],
+      "oldText": "如需认领，请前往失物招领。",
+      "newText": "逾期未领的书包将移交失物招领处。",
+      "recordIds": [
+        "T03400"
+      ],
+      "proposalId": "library-evicted-2",
+      "key": "library_story_library_backpack_evicted_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_backpack_evicted",
+        2,
+        "text"
+      ],
+      "oldText": "主人马上回来。",
+      "newText": "本人……马上回来。",
+      "recordIds": [
+        "T03402"
+      ],
+      "proposalId": "library-evicted-3",
+      "key": "library_story_library_backpack_evicted_03"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_backpack_evicted",
+        3,
+        "text"
+      ],
+      "oldText": "什么时候？",
+      "newText": "你到底什么时候回来？",
+      "recordIds": [
+        "T03404"
+      ],
+      "proposalId": "library-evicted-4",
+      "key": "library_story_library_backpack_evicted_04"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_backpack_evicted",
+        5,
+        "text"
+      ],
+      "oldText": "纸条上的这句话已经留了三天。",
+      "newText": "别信它。这张纸条上的“三分钟”，已经在这儿卡了整整三天了。",
+      "recordIds": [
+        "T03408"
+      ],
+      "proposalId": "library-evicted-6",
+      "key": "library_story_library_backpack_evicted_06"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        0,
+        "text"
+      ],
+      "oldText": "你终于坐下了。",
+      "newText": "……呼，压死我了。你终于坐下了。",
+      "recordIds": [
+        "T03542"
+      ],
+      "proposalId": "library-022-1",
+      "key": "library_story_library_friend_contacted_01"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        1,
+        "text"
+      ],
+      "oldText": "你就是系统的朋友？",
+      "newText": "你就是系统说的那个朋友？",
+      "recordIds": [
+        "T03544"
+      ],
+      "proposalId": "library-022-2",
+      "key": "library_story_library_friend_contacted_02"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        2,
+        "text"
+      ],
+      "oldText": "她以前不在座位上。",
+      "newText": "好久不见。你以前可不会被一个帆布包封印三天。",
+      "recordIds": [
+        "T03546"
+      ],
+      "proposalId": "library-022-3",
+      "key": "library_story_library_friend_contacted_03"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        3,
+        "text"
+      ],
+      "oldText": "你以前也不在红圈里。",
+      "newText": "你以前也不会为了保一个迟到学生的平时分，亲自跑来求我。",
+      "recordIds": [
+        "T03548"
+      ],
+      "proposalId": "library-022-4",
+      "key": "library_story_library_friend_contacted_04"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        4,
+        "text"
+      ],
+      "oldText": "先查签到记录。能修改吗？",
+      "newText": "少叙旧了，快帮他查查今天早八的签到记录，还能从后台改回 07:55 吗？",
+      "recordIds": [
+        "T03550"
+      ],
+      "proposalId": "library-022-5",
+      "key": "library_story_library_friend_contacted_05"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        5,
+        "text"
+      ],
+      "oldText": "我先查。",
+      "newText": "稍等，我调一下日志……",
+      "recordIds": [
+        "T03552"
+      ],
+      "proposalId": "library-022-6",
+      "key": "library_story_library_friend_contacted_06"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        6,
+        "text"
+      ],
+      "oldText": "可以改吗？",
+      "newText": "有戏吗？",
+      "recordIds": [
+        "T03554"
+      ],
+      "proposalId": "library-022-7",
+      "key": "library_story_library_friend_contacted_07"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        7,
+        "text"
+      ],
+      "oldText": "查完了。签到记录离开了原页面。",
+      "newText": "糟了。你的签到记录不在教务服务器里——它被刚才书包上那张便签纸粘走了！",
+      "recordIds": [
+        "T03556"
+      ],
+      "proposalId": "library-022-8",
+      "key": "library_story_library_friend_contacted_08"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        8,
+        "text"
+      ],
+      "oldText": "它夹在一张纸条里，记录停在 07:55。",
+      "newText": "那张写着“马上回来”的纸条在座位上卡了太久，变成了吞噬时间的异常缓存。它把你的签到时间锁死在 07:55，刚才趁书包被清退，顺着网线溜出去了。",
+      "recordIds": [
+        "T03558"
+      ],
+      "proposalId": "library-022-10",
+      "key": "library_story_library_friend_contacted_09"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        9,
+        "text"
+      ],
+      "oldText": "纸条往哪去了？",
+      "newText": "那它往哪跑了？我怎么一点没看见？",
+      "recordIds": [
+        "T03560"
+      ],
+      "proposalId": "library-022-11",
+      "key": "library_story_library_friend_contacted_10"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        10,
+        "text"
+      ],
+      "oldText": "它不在浅色操作能看见的位置。",
+      "newText": "在正常的浅色界面下，你当然看不见底层缓存的溢出轨迹。",
+      "recordIds": [
+        "T03562"
+      ],
+      "proposalId": "library-022-12",
+      "key": "library_story_library_friend_contacted_11"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        12,
+        "text"
+      ],
+      "oldText": "说明白一点。",
+      "newText": "直接把权限开给他吧，别卖关子了。",
+      "recordIds": [
+        "T03566"
+      ],
+      "proposalId": "library-022-13",
+      "key": "library_story_library_friend_contacted_13"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        13,
+        "text"
+      ],
+      "oldText": "切到深色观察，能看见纸条留下的痕迹。",
+      "newText": "我帮你解锁了“深色观察”模式。切到深色界面，你就能看见纸条残留的蓝光轨迹了。",
+      "recordIds": [
+        "T03568"
+      ],
+      "proposalId": "library-022-14",
+      "key": "library_story_library_friend_contacted_14"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        14,
+        "text"
+      ],
+      "oldText": "这就是暗色模式？",
+      "newText": "这不就是手机的暗黑模式吗？",
+      "recordIds": [
+        "T03570"
+      ],
+      "proposalId": "library-022-15",
+      "key": "library_story_library_friend_contacted_15"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        15,
+        "text"
+      ],
+      "oldText": "这是它在系统里的名称。",
+      "newText": "在你们眼里是护眼模式，在我们眼里是底层调试视图。",
+      "recordIds": [
+        "T03572"
+      ],
+      "proposalId": "library-022-16",
+      "key": "library_story_library_friend_contacted_16"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        16,
+        "text"
+      ],
+      "oldText": "先追痕迹，别让纸条离开视野。",
+      "newText": "蓝光动了！快追，别让那张纸条跑出图书馆！",
+      "recordIds": [
+        "T03574"
+      ],
+      "proposalId": "library-022-17",
+      "key": "library_story_library_friend_contacted_17"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        18,
+        "text"
+      ],
+      "oldText": "它会说话了？！",
+      "newText": "卧槽，纸条成精说话了？！",
+      "recordIds": [
+        "T03578"
+      ],
+      "proposalId": "library-022-19",
+      "key": "library_story_library_friend_contacted_19"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "dialogue022",
+        19,
+        "text"
+      ],
+      "oldText": "它把原来的话留在纸条上了。",
+      "newText": "那不是它在说话，是原主人三天前留下的语音残影！快追！",
+      "recordIds": [
+        "T03580"
+      ],
+      "proposalId": "library-022-20",
+      "key": "library_story_library_friend_contacted_20"
+    },
+    {
+      "sourceFile": "chapter3-canteen.content.json",
+      "path": [
+        "drinks",
+        "badDrinkConsumed",
+        0
+      ],
+      "oldText": "玩家：这也能卖？",
+      "newText": "玩家：呕……食堂这是把板蓝根倒进气泡水里了？！",
+      "recordIds": [
+        "T02729"
+      ],
+      "proposalId": "canteen-drink-1"
+    },
+    {
+      "sourceFile": "chapter3-canteen.content.json",
+      "path": [
+        "drinks",
+        "badDrinkConsumed",
+        1
+      ],
+      "oldText": "系统：你已完成试饮。无退款项目。",
+      "newText": "系统：恭喜你成为今日第一位勇士。试饮无工伤补贴。",
+      "recordIds": [
+        "T02730"
+      ],
+      "proposalId": "canteen-drink-2"
+    },
+    {
+      "sourceFile": "chapter3-canteen.content.json",
+      "path": [
+        "drinks",
+        "queueShiftDialogue",
+        0
+      ],
+      "oldText": "玩家：他们怎么都退了？",
+      "newText": "玩家：前面排队的怎么全散了？",
+      "recordIds": [
+        "T02735"
+      ],
+      "proposalId": "canteen-drink-3"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "locationSearch",
+        "dialogue",
+        0
+      ],
+      "oldText": "玩家：它去哪了？",
+      "newText": "玩家：剧场外面连个鬼影都没有，它往哪边飞了？",
+      "recordIds": [
+        "T01265"
+      ],
+      "proposalId": "lake-search-1"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "locationSearch",
+        "dialogue",
+        2
+      ],
+      "oldText": "玩家：追了一路，还得发帖寻物。",
+      "newText": "玩家：追了大半个校园，不会还要我发帖寻物吧？",
+      "recordIds": [
+        "T01267"
+      ],
+      "proposalId": "lake-search-3"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "locationSearch",
+        "cc98",
+        "system"
+      ],
+      "oldText": "系统：论坛线索指向湖区和桥。",
+      "newText": "系统：论坛目击帖缩小了范围：就在有桥的水域附近。",
+      "recordIds": [
+        "T01273"
+      ],
+      "proposalId": "lake-search-5"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "locationSearch",
+        "cc98",
+        "player"
+      ],
+      "oldText": "玩家：继续找能区分地点的信息。",
+      "newText": "玩家：有桥有水……范围还是太大了，还得找点能对上地点的线索。",
+      "recordIds": [
+        "T01274"
+      ],
+      "proposalId": "lake-search-6"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "locationSearch",
+        "catalog",
+        "player"
+      ],
+      "oldText": "玩家：需要在湖面倒影里确认位置。",
+      "newText": "玩家：馆藏记录写着“当前页码只出现在倒影中”……看来得找个能照出倒影的湖面。",
+      "recordIds": [
+        "T01286"
+      ],
+      "proposalId": "lake-search-7"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "locationSearch",
+        "map",
+        "player"
+      ],
+      "oldText": "玩家：前往启真湖。",
+      "newText": "玩家：逆风扩散的水纹……走，去启真湖！",
+      "recordIds": [
+        "T01297"
+      ],
+      "proposalId": "lake-search-9"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "locationSearch",
+        "map",
+        "system"
+      ],
+      "oldText": "系统：已建立湖区入口。",
+      "newText": "系统：已在地图上标出启真湖码头。",
+      "recordIds": [
+        "T01298"
+      ],
+      "proposalId": "lake-search-10"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "dock",
+        "intro",
+        0
+      ],
+      "oldText": "玩家：小码头有一艘皮划艇。",
+      "newText": "玩家：码头边拴着一艘皮划艇，但船上连桨都没有。",
+      "recordIds": [
+        "T01299"
+      ],
+      "proposalId": "lake-search-11"
+    },
+    {
+      "sourceFile": "chapter3-qizhen-lake.content.json",
+      "path": [
+        "dock",
+        "intro",
+        2
+      ],
+      "oldText": "玩家：先完成上船平衡。",
+      "newText": "玩家：得先踩稳了跨上去，别一脚踩翻进湖里。",
+      "recordIds": [
+        "T01301"
+      ],
+      "proposalId": "lake-search-13"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.paper_flight",
+        0,
+        "text"
+      ],
+      "oldText": "现场画面已同步。异常签到纸正在飞向公告栏。",
+      "newText": "视野已同步！那张签到纸条正往大厅公告栏上撞，快抓住它！",
+      "recordIds": [
+        "T04833"
+      ],
+      "proposalId": "chapter4-opening-1"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.paper_caught",
+        0,
+        "text"
+      ],
+      "oldText": "抓到了。",
+      "newText": "——抓到了！这下看你还往哪跑！",
+      "recordIds": [
+        "T04834"
+      ],
+      "proposalId": "chapter4-opening-2"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.paper_caught",
+        1,
+        "text"
+      ],
+      "oldText": "正在提交签到记录……",
+      "newText": "正在将签到纸条写入教务考勤服务器……",
+      "recordIds": [
+        "T04835"
+      ],
+      "proposalId": "chapter4-opening-3"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.external_time_rejected",
+        0,
+        "text"
+      ],
+      "oldText": "提交失败。外部时间：22:45。",
+      "newText": "……提交失败。当前外部标准时间：22:45。",
+      "recordIds": [
+        "T04836"
+      ],
+      "proposalId": "chapter4-opening-4"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.external_time_rejected",
+        1,
+        "text"
+      ],
+      "oldText": "签到截止时间：07:55。",
+      "newText": "早八考勤截止时间：07:55。超时 14 小时 50 分钟，系统拒绝接收。",
+      "recordIds": [
+        "T04837"
+      ],
+      "proposalId": "chapter4-opening-5"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.external_time_rejected",
+        2,
+        "text"
+      ],
+      "oldText": "手机上还写着 07:55:23。",
+      "newText": "怎么可能 22:45？！你看我手机屏幕，上面明明还停在 07:55:23！",
+      "recordIds": [
+        "T04838"
+      ],
+      "proposalId": "chapter4-opening-6"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.external_time_rejected",
+        3,
+        "text"
+      ],
+      "oldText": "手机上的时间没更新。现在已经是 22:45。",
+      "newText": "那是你手机被纸条卡死的本地时间。为了追这张纸，你从早八一路跑到了熄灯清楼。",
+      "recordIds": [
+        "T04839"
+      ],
+      "proposalId": "chapter4-opening-7"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "opening.external_time_rejected",
+        4,
+        "text"
+      ],
+      "oldText": "记录找回来了，迟到还在。补材料不附送补时间。",
+      "newText": "你的签到记录确实找回来了，但那节早八……十四个小时前就已经下课了。",
+      "recordIds": [
+        "T04840"
+      ],
+      "proposalId": "chapter4-opening-8"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "hall_clock.first_inspection",
+        0,
+        "text"
+      ],
+      "oldText": "旧钟能被拨动，但指针不会按你的动作走。",
+      "newText": "大厅这座旧钟还连着本楼的授时线。可它缺了指针，拨起来也不听使唤。",
+      "recordIds": [
+        "T04841"
+      ],
+      "proposalId": "chapter4-opening-11"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "hall_clock.first_inspection",
+        1,
+        "text"
+      ],
+      "oldText": "这是好消息？",
+      "newText": "你是说……把它修好，再拨回 07:55，教学楼就会以为现在还是早上？",
+      "recordIds": [
+        "T04842"
+      ],
+      "proposalId": "chapter4-opening-12"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "hall_clock.first_inspection",
+        2,
+        "text"
+      ],
+      "oldText": "它还在出错。",
+      "newText": "既然补材料不送时间，咱们就试着把这栋楼的时间拧回早八！先看看它到底坏在哪。",
+      "recordIds": [
+        "T04843"
+      ],
+      "proposalId": "chapter4-opening-13"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "hall_clock.first_pull",
+        0,
+        "text"
+      ],
+      "oldText": "时间源已切换：大厅旧钟。",
+      "newText": "已将本楼时间源强制切换为：大厅旧钟！",
+      "recordIds": [
+        "T04844"
+      ],
+      "proposalId": "chapter4-opening-14"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "classroom104.chalk_residual",
+        0,
+        "text"
+      ],
+      "oldText": "黑板已经擦净，残留笔画仍按书写顺序逐段出现。首尾相差 7 分 55 秒。",
+      "newText": "104 教室的黑板明明擦干净了，但深色模式下，早八的粉笔字还在按笔画顺序重现……第一笔和最后一笔，刚好相差 7 分 55 秒。",
+      "recordIds": [
+        "T04848"
+      ],
+      "proposalId": "chapter4-finale-1"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "classroom104.chalk_residual",
+        1,
+        "text"
+      ],
+      "oldText": "人都下课了，这里还没写完。",
+      "newText": "人都走空了一整天，黑板上的时间还困在早八没下课。",
+      "recordIds": [
+        "T04849"
+      ],
+      "proposalId": "chapter4-finale-2"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "classroom105.terminal_replay",
+        0,
+        "text"
+      ],
+      "oldText": "讲台回放停在 07:47:05，教室记录显示 07:55:00。本地画面延迟 7 分 55 秒。",
+      "newText": "105 讲台的录播终端停在 07:47:05，教室记录却是 07:55:00。这段回放整整慢了 7 分 55 秒。",
+      "recordIds": [
+        "T04850"
+      ],
+      "proposalId": "chapter4-finale-3"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "blackout.minute_stolen",
+        0,
+        "text"
+      ],
+      "oldText": "时间校准至 07:54。",
+      "newText": "时针与齿轮啮合完毕。当前大厅旧钟已回调至——07:54！",
+      "recordIds": [
+        "T04882"
+      ],
+      "proposalId": "chapter4-finale-5"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "blackout.minute_stolen",
+        1,
+        "text"
+      ],
+      "oldText": "差一分钟。",
+      "newText": "等等，怎么停在 07:54 了？还差最后一分钟！",
+      "recordIds": [
+        "T04883"
+      ],
+      "proposalId": "chapter4-finale-6"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "blackout.minute_stolen",
+        2,
+        "text"
+      ],
+      "oldText": "纸条把最后一分钟带走了。定位结果：阶梯教室。",
+      "newText": "是那张纸条！它趁刚才断电，把分针的黄铜卡簧和最后一分钟拆走，躲进二楼 202 阶梯教室了！",
+      "recordIds": [
+        "T04884"
+      ],
+      "proposalId": "chapter4-finale-7"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "chase.started",
+        0,
+        "text"
+      ],
+      "oldText": "同学，站住。离旧钟远一点。",
+      "newText": "那边的同学，站住！大半夜趴在大厅钟底下干什么呢？！",
+      "recordIds": [
+        "T04885"
+      ],
+      "proposalId": "chapter4-finale-8"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "chase.arrived",
+        0,
+        "text"
+      ],
+      "oldText": "门闩已落下，保安被挡在 202 门外。",
+      "newText": "防盗门闩落下了，保安暂时进不来。",
+      "recordIds": [
+        "T04891"
+      ],
+      "proposalId": "chapter4-finale-9"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "lecture.final_minute_recovered",
+        0,
+        "text"
+      ],
+      "oldText": "不跑了？",
+      "newText": "（喘气）这下三面都是墙……你不跑了？",
+      "recordIds": [
+        "T04892"
+      ],
+      "proposalId": "chapter4-finale-10"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "lecture.final_minute_recovered",
+        2,
+        "text"
+      ],
+      "oldText": "它回来了。",
+      "newText": "它不挣扎了。这句“马上回来”困了它三天，现在终于有人替它把时间走完了。",
+      "recordIds": [
+        "T04894"
+      ],
+      "proposalId": "chapter4-finale-13"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "lecture.recovered_result",
+        0,
+        "text"
+      ],
+      "oldText": "黄铜分针组件和签到纸条都已取回。",
+      "newText": "黄铜分针组件与 07:55 签到纸条，已全部收回！",
+      "recordIds": [
+        "T04895"
+      ],
+      "proposalId": "chapter4-finale-14"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "morning.entry",
+        0,
+        "text"
+      ],
+      "oldText": "门厅旧钟已到 07:55。",
+      "newText": "分针归位——铛！大厅旧钟已精准停在 07:55！",
+      "recordIds": [
+        "T04896"
+      ],
+      "proposalId": "chapter4-finale-15"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "frontDesk.morning_checkin",
+        0,
+        "text"
+      ],
+      "oldText": "现在是 07:55。校园卡放到左侧读卡器，签到纸放入右侧纸槽。",
+      "newText": "同学早啊，现在是 07:55。刷卡放左边，纸质签到条塞右边槽里就行。",
+      "recordIds": [
+        "T04863"
+      ],
+      "proposalId": "chapter4-finale-16"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "morning.checkin_success",
+        0,
+        "text"
+      ],
+      "oldText": "签到成功。时间：07:55。地点：段永平教学楼 A1。状态：本人来过。",
+      "newText": "叮——签到成功！时间：07:55。地点：段永平教学楼 A1。状态：本人来过。",
+      "recordIds": [
+        "T04897"
+      ],
+      "proposalId": "chapter4-finale-17"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "morning.checkin_success",
+        1,
+        "text"
+      ],
+      "oldText": "现在算准时吗？",
+      "newText": "……折腾了一整天，我这到底算准时，还是算迟到了十四个小时？",
+      "recordIds": [
+        "T04898"
+      ],
+      "proposalId": "chapter4-finale-18"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "morning.checkin_success",
+        2,
+        "text"
+      ],
+      "oldText": "从时间角度，算。",
+      "newText": "只要教务系统写着 07:55，你就是准时的。恭喜你，保住了平时分。",
+      "recordIds": [
+        "T04899"
+      ],
+      "proposalId": "chapter4-finale-19"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "exterior.closure",
+        1,
+        "text"
+      ],
+      "oldText": "这次真的结束了？",
+      "newText": "这次……是真的结束了吧？不会再有纸条飞出来了吧？",
+      "recordIds": [
+        "T04901"
+      ],
+      "proposalId": "chapter4-finale-21"
+    },
+    {
+      "sourceFile": "chapter4-755.content.json",
+      "path": [
+        "dialogues",
+        "exterior.closure",
+        2,
+        "text"
+      ],
+      "oldText": "结束了，签到记录已归档。",
+      "newText": "结束了。07:55 的异常记录已彻底归档——去吃早饭吧，同学。",
+      "recordIds": [
+        "T04902"
+      ],
+      "proposalId": "chapter4-finale-22"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        24,
+        "body"
+      ],
+      "oldText": "刚从东侧绕出来。教学区北侧的人行道还能连续走，东侧车流已经堵成两段。",
+      "newText": "避雷！刚从东边杀出来，东侧车道已经堵成贪吃蛇了，赶时间的直接走教学区北侧人行道，那边一路通畅！",
+      "recordIds": [
+        "T06604"
+      ],
+      "proposalId": "forum-p01-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        24,
+        "threadReplies",
+        0,
+        "text"
+      ],
+      "oldText": "17:41 出考场，17:44 还在北口。东边四排车没动，北侧多走两分钟能过。",
+      "newText": "17:41出考场，东边四排小黄车纹丝不动，果断绕北侧，多走两分钟但完全不卡。",
+      "recordIds": [
+        "T06611"
+      ],
+      "proposalId": "forum-p01-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        24,
+        "threadReplies",
+        2,
+        "text"
+      ],
+      "oldText": "二南门口横着停的共享单车还在。北口靠左走，别贴着那辆车。",
+      "newText": "二南门口有辆横着停的共享单车挡道，过北口记得靠左绕行，别蹭上去！",
+      "recordIds": [
+        "T06619"
+      ],
+      "proposalId": "forum-p01-2"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        25,
+        "body"
+      ],
+      "oldText": "离座超过三分钟后，原座位会重新开放。完成校园卡核验后，可在选座页申请恢复一次。",
+      "newText": "逆天，现在基础馆选座离座超过三分钟直接释放座位？刚才去接个水回来号没了，还得刷校园卡重新申请恢复一次。",
+      "recordIds": [
+        "T06637"
+      ],
+      "proposalId": "forum-p02-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        25,
+        "threadReplies",
+        3,
+        "text"
+      ],
+      "oldText": "我去接水 2 分 59 秒，回到门口刚好三分钟。座位已经换号。",
+      "newText": "接水 2 分 59 秒，狂奔回门口刚好三分钟，眼睁睁看着屏幕换人，防不胜防。",
+      "recordIds": [
+        "T06652"
+      ],
+      "proposalId": "forum-p02-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        25,
+        "threadReplies",
+        2,
+        "text"
+      ],
+      "oldText": "022 桌上的书包三天没动。它比大多数人更符合“长期使用”这一项。",
+      "newText": "笑死，普通人接水三分钟号没了，一层 022 那个书包贴张“离开三分钟”的条子硬是焊在座位上三天没动，建议直接给书包发毕业证。",
+      "recordIds": [
+        "T03279"
+      ],
+      "proposalId": "forum-p02-2"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        26,
+        "body"
+      ],
+      "oldText": "资料按课程、教师和年份建立索引。搜索时只记得两个字也能定位到对应目录。",
+      "newText": "整理了一波历年课程资料索引，搜两个字就能出目录，求加精bd！",
+      "recordIds": [
+        "T06666"
+      ],
+      "proposalId": "forum-p03-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        26,
+        "threadReplies",
+        0,
+        "text"
+      ],
+      "oldText": "文件名写成“最终版5真的最终版”的那份，能不能把交稿时间也写进文件名。",
+      "newText": "求求大家交作业别再命名“最终版5打死不改版”了，找起来两眼一黑。",
+      "recordIds": [
+        "T06673"
+      ],
+      "proposalId": "forum-p03-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        26,
+        "threadReplies",
+        2,
+        "text"
+      ],
+      "oldText": "高数目录里的图书馆规则别删，022 这次要靠它确认座位。",
+      "newText": "提醒一下，高数目录底下夹着的那份旧版《三分钟离座法》千万别删，听说治 022 那个钉子户书包全靠它了。",
+      "recordIds": [
+        "T03283"
+      ],
+      "proposalId": "forum-p03-2"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        27,
+        "body"
+      ],
+      "oldText": "实测可以。余额不会影响身份校验，系统仍然要求完整走完验证流程。",
+      "newText": "实测汇报！校园卡只剩 0.06元 也能刷图书馆闸机做身份核验！只要不花钱打印，六分钱也是有合法身份的！",
+      "recordIds": [
+        "T06694"
+      ],
+      "proposalId": "forum-p04-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        27,
+        "threadReplies",
+        1,
+        "text"
+      ],
+      "oldText": "刷卡声很响，余额数字很小。旁边排队的人全听见了。",
+      "newText": "草，刚才在闸机前“滴”得超大声，屏幕蹦出个 0.06，后面排队的学妹憋笑憋得好辛苦。",
+      "recordIds": [
+        "T06705"
+      ],
+      "proposalId": "forum-p04-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        27,
+        "threadReplies",
+        3,
+        "text"
+      ],
+      "oldText": "从求是潮骑去充值点再回来，比这次校验本身久。",
+      "newText": "六分钱战神，连去求是潮充值的电瓶车费都不够，但用来过门禁足够了。",
+      "recordIds": [
+        "T06713"
+      ],
+      "proposalId": "forum-p04-2"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        28,
+        "body"
+      ],
+      "oldText": "体艺记录显示四十七次通行，实际过程是在求是潮两侧反复寻找能走的缝隙。",
+      "newText": "体艺App显示我今天通行了 47次，其实我只是在求是潮门口堵车，围着同一辆单车疯狂找缝钻……",
+      "recordIds": [
+        "T06727"
+      ],
+      "proposalId": "forum-p05-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        28,
+        "threadReplies",
+        0,
+        "text"
+      ],
+      "oldText": "从 17:28 到 17:42，我绕同一辆车四十七次。打印队都没它绕得久。",
+      "newText": "好家伙，从 17:28 绕到 17:42，原地鬼打墙十来分钟，步数全进账了，人还在原地没挪窝。",
+      "recordIds": [
+        "T06734"
+      ],
+      "proposalId": "forum-p05-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        28,
+        "threadReplies",
+        5,
+        "text"
+      ],
+      "oldText": "记录有效。位移反复发生，终点未到。这条路线该单列。",
+      "newText": "还差最后一次满48次是吧？经典的卡47次定律。",
+      "recordIds": [
+        "T06754"
+      ],
+      "proposalId": "forum-p05-2"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        0,
+        "body"
+      ],
+      "oldText": "桌面上摊着好几件事，越想一起做越动不了。现在打算只写三项：回一条必要消息、整理十分钟资料、按时去吃饭。还有人用过更小的清单吗？",
+      "newText": "三个DDL加一份实验报告同时糊脸上，盯着电脑发呆半小时一个字没敲出来……算了，今天能把早饭吃了、回导师一条消息就算成功，摆烂了家人们。",
+      "recordIds": [
+        "T06196"
+      ],
+      "proposalId": "forum-mood-room-01-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        0,
+        "threadReplies",
+        0,
+        "text"
+      ],
+      "oldText": "先写一件完成后能立刻划掉的小事，别把清单当成新的压力。",
+      "newText": "先去食堂干饭！在寝室多坐五分钟只会多刷五分钟手机，别问我怎么知道的。",
+      "recordIds": [
+        "T06203"
+      ],
+      "proposalId": "forum-mood-room-01-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        0,
+        "threadReplies",
+        1,
+        "text"
+      ],
+      "oldText": "去食堂这一项保留。先离开桌面五分钟，回来再看下一项。",
+      "newText": "我先把To-Do List第一条写成“打开Word”，划掉那一刻成就感拉满ac01。",
+      "recordIds": [
+        "T06207"
+      ],
+      "proposalId": "forum-mood-room-01-2"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        1,
+        "body"
+      ],
+      "oldText": "下午投完一份材料，之后每隔几分钟就去看一次邮箱。明知道这么快不会有结果，还是控制不住。想把提醒关掉，又怕错过消息。",
+      "newText": "下午刚给老师发完套磁/申请邮件，现在每隔三分钟就忍不住点开浙大邮箱刷一次，手机快被我刷没电了，救命，怎么戒掉这个毛病……",
+      "recordIds": [
+        "T06213"
+      ],
+      "proposalId": "forum-mood-room-02-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        1,
+        "threadReplies",
+        0,
+        "text"
+      ],
+      "oldText": "给邮箱设两个固定查看时段，其他时间把页面关掉。我把时间写在日历里会更容易执行。",
+      "newText": "把邮箱通知关了去睡一觉吧，薛定谔的回复，你不看它的时候老师才回得快。",
+      "recordIds": [
+        "T06220"
+      ],
+      "proposalId": "forum-mood-room-02-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        1,
+        "threadReplies",
+        1,
+        "text"
+      ],
+      "oldText": "投递回执留好就够了。下一步应由对方完成，反复刷新不会改变材料状态。",
+      "newText": "只要已发送里有记录就稳了，你就算把F5按穿，老师该摸鱼还是在摸鱼。",
+      "recordIds": [
+        "T06224"
+      ],
+      "proposalId": "forum-mood-room-02-2"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        12,
+        "body"
+      ],
+      "oldText": "坐下后发现周围的人全在复习我完全没学过的内容。我还坚持记了两行笔记，直到有人问我是哪门课的才看见日期。",
+      "newText": "人在大西区，刚坐下发现周围同学全在狂背我完全没见过的公式，我还硬着头皮抄了两行板书，结果旁边的老哥幽幽问我一句：“同学，你也来考微积分重修？”——低头一看课表，我的课是明天的……",
+      "recordIds": [
+        "T06400"
+      ],
+      "proposalId": "forum-smile-room-01-0"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        12,
+        "threadReplies",
+        0,
+        "text"
+      ],
+      "oldText": "我更进一步，听完半节才发现自己没有选这门课。",
+      "newText": "哈哈哈哈哈哈甚至还认真记了两行笔记，感天动地！",
+      "recordIds": [
+        "T06407"
+      ],
+      "proposalId": "forum-smile-room-01-1"
+    },
+    {
+      "sourceFile": "cc98.posts.json",
+      "path": [
+        12,
+        "threadReplies",
+        1,
+        "text"
+      ],
+      "oldText": "下次先看门口的课表。你至少提前到了。",
+      "newText": "不亏，四舍五入相当于提前一天预习了下学期的重修内容（逃。",
+      "recordIds": [
+        "T06411"
+      ],
+      "proposalId": "forum-smile-room-01-2"
+    }
+  ],
+  "nativeRevisions": [
+    {
+      "sourceFile": "chapter4-native-source.json",
+      "path": [
+        "prologue",
+        "subtitles",
+        1,
+        "text"
+      ],
+      "oldText": "湖面没有留下它。夜风把它送进了仍然亮着灯的教学楼。",
+      "newText": "湖水没有留住它。晚风裹着那张纸条，一路吹进了还亮着灯的段永平教学楼。",
+      "recordIds": [
+        "T04266"
+      ],
+      "proposalId": "chapter4-prologue-2"
+    },
+    {
+      "sourceFile": "chapter4-native-source.json",
+      "path": [
+        "prologue",
+        "subtitles",
+        2,
+        "text"
+      ],
+      "oldText": "小心，刚拖过。那张纸往里去了。",
+      "newText": "哎同学当心脚下，刚拖的地！你追的那张纸片往大厅里头飞了。",
+      "recordIds": [
+        "T04268"
+      ],
+      "proposalId": "chapter4-prologue-3"
+    },
+    {
+      "sourceFile": "chapter4-native-source.json",
+      "path": [
+        "prologue",
+        "subtitles",
+        3,
+        "text"
+      ],
+      "oldText": "同学，北教要清楼了，请收好东西。",
+      "newText": "同学，北教马上二十三点清楼了啊，拿完东西赶紧出来！",
+      "recordIds": [
+        "T04270"
+      ],
+      "proposalId": "chapter4-prologue-4"
+    }
+  ]
+}

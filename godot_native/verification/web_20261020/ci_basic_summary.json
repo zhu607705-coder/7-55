@@ -1,0 +1,58 @@
+{
+  "schema": "755-godot-web-compact-pass-v1",
+  "evidence": {
+    "reportPath": "godot_native/exports/verification/godot_web_accepted_ci_20261020/web-acceptance.json",
+    "reportSha256": "9eb4e23171fb78410863dc0723c5df4935f2e5f0107d3142510d3bd4eb32103b",
+    "runnerSha256": "d4e5036943dc7650e0bb20d8bec249fe3c6ebb553902c010d883021077dafd6a",
+    "sourceInputSha256": "0dfafbba30cbe89fb356b9cb861af192450a3c54ac8f5133fc466d9a40b9be62",
+    "passed": true,
+    "checksPassed": 106,
+    "checksTotal": 106,
+    "casesPassed": 3,
+    "casesTotal": 3,
+    "startedAt": "2026-10-20T02:56:05.361Z",
+    "completedAt": "2026-10-20T02:57:07.520Z"
+  },
+  "scope": "CI-equivalent browser gate on the accepted artifact, actual /7-55/ subpath; basic startup/input/save/download/reimport/rejection at all three viewports. No earned chapter fixtures or background-media long cases.",
+  "cases": [
+    {
+      "id": "desktop-1280",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "passed": true,
+      "renderer": {
+        "webgl2": true,
+        "vendor": "Google Inc. (Google)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+      }
+    },
+    {
+      "id": "desktop-1440",
+      "width": 1440,
+      "height": 900,
+      "touch": false,
+      "passed": true,
+      "renderer": {
+        "webgl2": true,
+        "vendor": "Google Inc. (Google)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+      }
+    },
+    {
+      "id": "touch-390",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "passed": true,
+      "renderer": {
+        "webgl2": true,
+        "vendor": "Google Inc. (Google)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+      }
+    }
+  ],
+  "runnerDifference": "The retained earlier runner is identified by its own SHA. Later runner changes correct the early-C4 fixture, settle/assert bike reload preconditions, bound CDP/screenshot waits, and add durability diagnostics. Do not label the CI basic run as executed by the later runner.",
+  "assetHashesMatchFullRun": true,
+  "screenshotCleanupReceipt": "godot_native/exports/verification/godot_web_accepted_ci_20261020/screenshot-cleanup.json"
+}

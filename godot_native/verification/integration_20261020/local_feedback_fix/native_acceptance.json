@@ -1,0 +1,161 @@
+{
+  "schema": "755-native-local-feedback-compact-v1",
+  "baseCommit": "49332ec51eaf118554a949105ec6fef13dbbd8b3",
+  "status": "focused-pass-remote-native-ci-not-rerun",
+  "completedAt": "2026-10-20T01:35:10.071782Z",
+  "scope": [
+    {
+      "path": "godot_native/scripts/main.gd",
+      "beforeSha256": "a6513d7e3a2c5cbb4e9f06615f25541f989a15c6f39f459b832dafb8e342472b",
+      "afterSha256": "fb3a779d792d827efcf3a1b87c3fd8f00ed02dce7e660330a7698e9eac0c9eb7"
+    },
+    {
+      "path": "godot_native/tests/test_lake_pursuit_feedback.gd",
+      "beforeSha256": "7182bf68ed10a95b009a4674d17b97e3b4b8364c22561700ad97516e8193529f",
+      "afterSha256": "4c16875a0823bec7413bdde67a3fb3e3994e0efeabb093641fdf28372ab5560d"
+    },
+    {
+      "path": "godot_native/tests/test_mixer_layer_separation.gd",
+      "beforeSha256": "fc3f415716a93a17d50c3d20b0f90e9cd11ba260d30c0ffd704f6a2f653c7e42",
+      "afterSha256": "bc69f1fe9ce57c63d66f3c04fad970be9d670d53d340f09c0143b897dc1886a6"
+    },
+    {
+      "path": "godot_native/tests/test_native_local_feedback_ownership.gd",
+      "beforeSha256": null,
+      "afterSha256": "5fe11a87fddd271bd3cdd0d741380bacd83658962feee8388a608a9fa173def1"
+    }
+  ],
+  "positive": {
+    "gdStages": 12,
+    "behaviorStages": 11,
+    "behaviorChecks": 9021,
+    "behaviorFailures": 0,
+    "parseScripts": 738,
+    "parseFailures": 0,
+    "sourceCatalogStages": 15,
+    "sourceSnapshotsSha256": "e14af7b4439f29dbe15e14bb6b7620ec50074f6a141247c2db50dbb05b693eba",
+    "sourceSnapshotsEqual": true,
+    "rawReportSha256": "6df12e23ce32fb31761b156e20dda83a9808f9da762e36829038eb193341aaef",
+    "sourceCatalogReportSha256": "aafee58ad9bf68ebb4bcf11080927b40358ce1d934f160e5d8d05b638a1e2d14",
+    "rows": [
+      {
+        "script": "test_lake_pursuit_feedback.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "LAKE_PURSUIT_FEEDBACK: 16 checks; 0 failures"
+      },
+      {
+        "script": "test_native_local_feedback_ownership.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "NATIVE_LOCAL_FEEDBACK_OWNERSHIP: 142 checks; 0 failures"
+      },
+      {
+        "script": "test_mixer_layer_separation.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "MIXER_LAYER_SEPARATION 1000 checks; 0 failures"
+      },
+      {
+        "script": "test_compact_device_navigation.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "Compact device navigation: 1170 checks, 0 failures"
+      },
+      {
+        "script": "test_notice_queue_lifecycle.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "NOTICE_QUEUE_LIFECYCLE: 32 checks; 0 failures"
+      },
+      {
+        "script": "test_world_notice_ownership.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "WORLD_NOTICE_OWNERSHIP: 19 checks; 0 failures"
+      },
+      {
+        "script": "test_all_scripts_parse.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "Complete native script graph: 738 scripts, 0 failures"
+      },
+      {
+        "script": "test_world_presentation_lifecycle.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "World presentation/input lifecycle checks: 12; failures: 0"
+      },
+      {
+        "script": "test_c3_handoff_persistence.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "C3_HANDOFF_PERSISTENCE 28 checks; 0 failures"
+      },
+      {
+        "script": "test_world_overlay_integration.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "WORLD_OVERLAY_INTEGRATION: 89 checks; 0 failures"
+      },
+      {
+        "script": "test_c3_canteen_devices_controls.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "C3 canteen routed controls: 3552 checks, 0 failures"
+      },
+      {
+        "script": "test_c3_devices_controls.gd",
+        "passed": true,
+        "status": 0,
+        "assertionSummary": "C3 local device actual controls/source checks: 2961 checks, 0 failures"
+      }
+    ]
+  },
+  "negative": {
+    "old493SameFinalTests": {
+      "ownership": "136 checks / 10 assertion failures",
+      "lake": "16 / 5",
+      "mixer": "1000 / 20",
+      "sourceAndTestHashesStable": true,
+      "infrastructureFailure": false
+    },
+    "preRetirement7f6SameFinalOwnershipTest": {
+      "checks": 142,
+      "assertionFailures": 2,
+      "fingerprint": "own stale observation subtitle and HUD survive actual accepted-order narrative handoff",
+      "infrastructureFailure": false
+    }
+  },
+  "baselinePreserved": {
+    "linux4_6_3CiRun": "39296134465",
+    "local4_7_2ReproductionFailures": [
+      30,
+      6,
+      9,
+      5
+    ],
+    "originalCiRedNotReclassified": true
+  },
+  "invalidDiagnostics": {
+    "initialOwnedInference": "explicit bool fixed after 738-script parse found 2 dependent failures",
+    "abortedBatches": [
+      "handoff-fixed",
+      "final-v2"
+    ],
+    "classification": "not behavioral pass or effective negative"
+  },
+  "reports": {
+    "acceptancePath": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/acceptance.json",
+    "acceptanceSha256": "64cfbe98ad2d194093caf2b8b6894abf0acda0a91acc05784f44d50396fa8b37",
+    "positive": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/retirement-final.json",
+    "old493Negative": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/negative-old493.json",
+    "preRetirementNegative": "/tmp/codex-755-native-local-feedback/godot_native/exports/verification/local_feedback_20261020/negative-pre-retirement.json"
+  },
+  "limits": [
+    "This is focused native delta validation, not a fresh full 419/420-stage green run.",
+    "No latest-head remote CI, production PCK/ZIP, CUA or physical-device claim.",
+    "Web release remains independent at 49332ec5.",
+    "Boundary hint clock concern is a deferred static note; no production change or confirmed reproduction in this scope."
+  ]
+}

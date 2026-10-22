@@ -1,0 +1,126 @@
+{
+  "schema": "buct_conservative_source_fallback_mask_v1",
+  "size": [
+    256,
+    256
+  ],
+  "sha256": "fd4a8ffbf9b930d7ed69005c14c6104b017236c59a7133650b2bce46eed61da8",
+  "encoding": "owner_index_u8",
+  "owner_ids": [
+    "dorm_nw_01",
+    "dorm_nw_02",
+    "dorm_nw_03",
+    "dorm_nw_04",
+    "dorm_north_low_annex",
+    "dorm_w_01",
+    "dorm_w_02",
+    "hill_south_block"
+  ],
+  "owner_counts": {
+    "0": 50808,
+    "1": 1014,
+    "2": 2956,
+    "3": 1092,
+    "4": 3950,
+    "5": 3256,
+    "6": 408,
+    "7": 936,
+    "8": 1116
+  },
+  "roi_xywh": [
+    118,
+    167,
+    256,
+    256
+  ],
+  "core_xywh": [
+    130,
+    179,
+    232,
+    232
+  ],
+  "conservative_full_box_padding_source_pixels": 4,
+  "retained_rectangles": [
+    {
+      "owner_index": 1,
+      "id": "dorm_nw_01",
+      "conservative_source_xyxy": [
+        118,
+        264,
+        144,
+        303
+      ]
+    },
+    {
+      "owner_index": 2,
+      "id": "dorm_nw_02",
+      "conservative_source_xyxy": [
+        145,
+        263,
+        217,
+        308
+      ]
+    },
+    {
+      "owner_index": 3,
+      "id": "dorm_nw_03",
+      "conservative_source_xyxy": [
+        118,
+        303,
+        144,
+        345
+      ]
+    },
+    {
+      "owner_index": 4,
+      "id": "dorm_nw_04",
+      "conservative_source_xyxy": [
+        146,
+        304,
+        225,
+        354
+      ]
+    },
+    {
+      "owner_index": 5,
+      "id": "dorm_north_low_annex",
+      "conservative_source_xyxy": [
+        118,
+        365,
+        206,
+        402
+      ]
+    },
+    {
+      "owner_index": 6,
+      "id": "dorm_w_01",
+      "conservative_source_xyxy": [
+        118,
+        406,
+        142,
+        423
+      ]
+    },
+    {
+      "owner_index": 7,
+      "id": "dorm_w_02",
+      "conservative_source_xyxy": [
+        147,
+        410,
+        219,
+        423
+      ]
+    }
+  ],
+  "shared_band_source_xywh": [
+    350,
+    167,
+    24,
+    256
+  ],
+  "shared_hill_ownership_matches_existing_north_large_exactly": true,
+  "shared_source_mask_sha256": "8586ca0dee5d621c3b73d22640237aff47b128be38e295712f6ca04ea465f75b",
+  "mask_terrain_core_source_cells": 42600,
+  "mask_fallback_core_source_cells": 11224,
+  "acceptance": "Preparation only. Conservative boxes include original ground; all nonzero pixels are source fallback, never HD credit. Existing visual and collision owners are not changed."
+}

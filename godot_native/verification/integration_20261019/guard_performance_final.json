@@ -1,0 +1,61 @@
+{
+  "kind": "Focused guard performance equivalence + actual Main input verification; isolated profiles",
+  "stages": [
+    {
+      "test": "test_chapter4_guard_navigation.gd",
+      "status": 0,
+      "durationMs": 25460,
+      "log": "/tmp/codex-755-guard-final-test_chapter4_guard_navigation.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nGUARD_EDGE_DIFFERENTIAL A1 43660\nGUARD_EDGE_DIFFERENTIAL A2 45426\nGUARD_EDGE_DIFFERENTIAL A3 38326\nGUARD_NAV_TIMINGS [{\"coldUs\":235,\"floor\":\"A1\",\"nodes\":1,\"originalUs\":231,\"target\":[590.0,612.0],\"warmUs\":250},{\"coldUs\":674,\"floor\":\"A1\",\"nodes\":0,\"originalUs\":298711,\"target\":[624.0,420.0],\"warmUs\":674},{\"coldUs\":901,\"floor\":\"A1\",\"nodes\":0,\"originalUs\":297703,\"target\":[622.125,331.6875],\"warmUs\":886},{\"coldUs\":123859,\"floor\":\"A1\",\"nodes\":17,\"originalUs\":431047,\"target\":[1001.0,214.0],\"warmUs\":38597},{\"coldUs\":150,\"floor\":\"A2\",\"nodes\":1,\"originalUs\":146,\"target\":[590.0,612.0],\"warmUs\":136},{\"coldUs\":369,\"floor\":\"A2\",\"nodes\":1,\"originalUs\":382,\"target\":[624.0,420.0],\"warmUs\":373},{\"coldUs\":493,\"floor\":\"A2\",\"nodes\":1,\"originalUs\":497,\"target\":[622.125,331.6875],\"warmUs\":515},{\"coldUs\":45506,\"floor\":\"A2\",\"nodes\":29,\"originalUs\":200308,\"target\":[1001.0,214.0],\"warmUs\":13177},{\"coldUs\":373,\"floor\":\"A3\",\"nodes\":1,\"originalUs\":367,\"target\":[590.0,612.0],\"warmUs\":369},{\"coldUs\":33172,\"floor\":\"A3\",\"nodes\":6,\"originalUs\":559005,\"target\":[624.0,420.0],\"warmUs\":10219},{\"coldUs\":26388,\"floor\":\"A3\",\"nodes\":6,\"originalUs\":515276,\"target\":[622.125,331.6875],\"warmUs\":15949},{\"coldUs\":200,\"floor\":\"A3\",\"nodes\":0,\"originalUs\":427239,\"target\":[1001.0,214.0],\"warmUs\":187}]\nCHAPTER4_GUARD_NAVIGATION 173 checks; 0 failures\n",
+      "userData": "/Users/zhu/Library/Application Support/755-native-check-NW0moO/data/SevenFiftyFiveNative"
+    },
+    {
+      "test": "test_chapter4_guard_repath.gd",
+      "status": 0,
+      "durationMs": 1889,
+      "log": "/tmp/codex-755-guard-final-test_chapter4_guard_repath.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nGUARD_REPATH_PROFILE {\"from\":[622.125,300.0],\"searchCalls\":3,\"searchUs\":2597,\"sixInputFramesUs\":2612,\"to\":[559.724853515625,300.0]}\nCHAPTER4_GUARD_REPATH 10 checks; 0 failures\n",
+      "userData": "/Users/zhu/Library/Application Support/755-native-check-hAJocj/data/SevenFiftyFiveNative"
+    },
+    {
+      "test": "test_chapter4_guard.gd",
+      "status": 0,
+      "durationMs": 430,
+      "log": "/tmp/codex-755-guard-final-test_chapter4_guard.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCHAPTER4_GUARD_TESTS 17 checks; 0 failures\n",
+      "userData": "/Users/zhu/Library/Application Support/755-native-check-eJzBcn/data/SevenFiftyFiveNative"
+    },
+    {
+      "test": "test_world_guard.gd",
+      "status": 0,
+      "durationMs": 1406,
+      "log": "/tmp/codex-755-guard-final-test_world_guard.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWorld guard integration: 71 checks, 0 errors\n",
+      "userData": "/Users/zhu/Library/Application Support/755-native-check-gtnOKU/data/SevenFiftyFiveNative"
+    },
+    {
+      "test": "test_chapter4_guard_capture.gd",
+      "status": 0,
+      "durationMs": 1686,
+      "log": "/tmp/codex-755-guard-final-test_chapter4_guard_capture.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCHAPTER4_GUARD_CAPTURE 64 checks; 0 failures\n",
+      "userData": "/Users/zhu/Library/Application Support/755-native-check-1OOSvh/data/SevenFiftyFiveNative"
+    },
+    {
+      "test": "test_chapter4_chase_space_integration.gd",
+      "status": 0,
+      "durationMs": 3054,
+      "log": "/tmp/codex-755-guard-final-test_chapter4_chase_space_integration.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nHIGH_REFRESH_CHASE 20783 frames; 548 proof points\nCHAPTER4_CHASE_SPACE_INTEGRATION 160 checks; 0 failures\n",
+      "userData": "/Users/zhu/Library/Application Support/755-native-check-viCZ1Q/data/SevenFiftyFiveNative"
+    },
+    {
+      "test": "test_all_scripts_parse.gd",
+      "status": 0,
+      "durationMs": 4416,
+      "log": "/tmp/codex-755-guard-final-test_all_scripts_parse.gd.log",
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 729 scripts, 0 failures\n",
+      "userData": "/Users/zhu/Library/Application Support/755-native-check-FTsRxB/data/SevenFiftyFiveNative"
+    }
+  ]
+}

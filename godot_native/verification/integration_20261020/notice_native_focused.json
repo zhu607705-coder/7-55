@@ -1,0 +1,321 @@
+[
+  {
+    "label": "test_all_scripts_parse.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:14.036Z",
+    "finishedAt": "2026-10-19T16:19:18.857Z",
+    "durationMs": 4821,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-1U6WDm/workspace/godot_native",
+      "--script",
+      "res://tests/test_all_scripts_parse.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 736 scripts, 0 failures\n"
+  },
+  {
+    "label": "test_audio_director.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:18.860Z",
+    "finishedAt": "2026-10-19T16:19:22.081Z",
+    "durationMs": 3221,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-6HWXbC/workspace/godot_native",
+      "--script",
+      "res://tests/test_audio_director.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_AUDIO_DIRECTOR checks=4646 errors=0\n"
+  },
+  {
+    "label": "test_chapter3_narrative_shell.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:22.084Z",
+    "finishedAt": "2026-10-19T16:19:24.141Z",
+    "durationMs": 2057,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-Lf1dk4/workspace/godot_native",
+      "--script",
+      "res://tests/test_chapter3_narrative_shell.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nChapter 3 narrative shell: 25 checks, 0 failures\n"
+  },
+  {
+    "label": "test_library_rule_action.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:24.143Z",
+    "finishedAt": "2026-10-19T16:19:28.191Z",
+    "durationMs": 4048,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-BksWaE/workspace/godot_native",
+      "--script",
+      "res://tests/test_library_rule_action.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLIBRARY_RULE_ACTION: 234 checks; 0 failures; geometry=[{\"button\":\"[P: (58.47169, 529.9586), S: (301.6989, 45.82769)]\",\"repeat\":0,\"scroll\":\"[P: (14.55349, 115.6), S: (360.893, 692.8465)]\",\"viewport\":\"(390, 844)\",\"visible\":true},{\"button\":\"[P: (58.47169, 529.9586), S: (301.6989, 45.82769)]\",\"repeat\":1,\"scroll\":\"[P: (14.55349, 115.6), S: (360.893, 692.8465)]\",\"viewport\":\"(390, 844)\",\"visible\":true},{\"button\":\"[P: (58.47169, 529.9586), S: (301.6989, 45.82769)]\",\"repeat\":2,\"scroll\":\"[P: (14.55349, 115.6), S: (360.893, 692.8465)]\",\"viewport\":\"(390, 844)\",\"visible\":true},{\"button\":\"[P: (69.89204, 543.2976), S: (320.6581, 48.70757)]\",\"repeat\":0,\"scroll\":\"[P: (23.21395, 102.9), S: (383.5721, 736.386)]\",\"viewport\":\"(430, 860)\",\"visible\":true},{\"button\":\"[P: (69.89204, 543.2976), S: (320.6581, 48.70757)]\",\"repeat\":1,\"scroll\":\"[P: (23.21395, 102.9), S: (383.5721, 736.386)]\",\"viewport\":\"(430, 860)\",\"visible\":true},{\"button\":\"[P: (69.89204, 543.2976), S: (320.6581, 48.70757)]\",\"repeat\":2,\"scroll\":\"[P: (23.21395, 102.9), S: (383.5721, 736.386)]\",\"viewport\":\"(430, 860)\",\"visible\":true},{\"button\":\"[P: (567.4315, 567.9401), S: (337.1444, 51.21181)]\",\"repeat\":0,\"scroll\":\"[P: (518.3535, 104.9), S: (403.293, 774.2465)]\",\"viewport\":\"(1440, 900)\",\"visible\":true},{\"button\":\"[P: (567.4315, 567.9401), S: (337.1444, 51.21181)]\",\"repeat\":1,\"scroll\":\"[P: (518.3535, 104.9), S: (403.293, 774.2465)]\",\"viewport\":\"(1440, 900)\",\"visible\":true},{\"button\":\"[P: (567.4315, 567.9401), S: (337.1444, 51.21181)]\",\"repeat\":2,\"scroll\":\"[P: (518.3535, 104.9), S: (403.293, 774.2465)]\",\"viewport\":\"(1440, 900)\",\"visible\":true}]\n"
+  },
+  {
+    "label": "test_library_story_sequences.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:28.194Z",
+    "finishedAt": "2026-10-19T16:19:31.942Z",
+    "durationMs": 3748,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-bk3U2U/workspace/godot_native",
+      "--script",
+      "res://tests/test_library_story_sequences.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nLibrary story sequences: 718 checks, 0 errors; 12 sequences /53 authored lines\n"
+  },
+  {
+    "label": "test_narrative_readability.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:31.944Z",
+    "finishedAt": "2026-10-19T16:19:32.492Z",
+    "durationMs": 548,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-eTtyyM/workspace/godot_native",
+      "--script",
+      "res://tests/test_narrative_readability.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNarrative readability: 30 checks / 0 failures\n"
+  },
+  {
+    "label": "test_native_dialog_notice.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:32.494Z",
+    "finishedAt": "2026-10-19T16:19:36.565Z",
+    "durationMs": 4071,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-WCZ1ep/workspace/godot_native",
+      "--script",
+      "res://tests/test_native_dialog_notice.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPICKER BOUNDS desktop [P: (320.0, 180.0), S: (800.0, 540.0)] intrinsic=(516.0, 186.0)\nPICKER BOUNDS live resize (390, 844) [P: (8.0, 152.0), S: (374.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS live resize (430, 860) [P: (8.0, 160.0), S: (414.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS live resize (1440, 900) [P: (320.0, 180.0), S: (800.0, 540.0)] intrinsic=(516.0, 186.0)\nPICKER BOUNDS (390, 844) [P: (8.0, 152.0), S: (374.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS (430, 860) [P: (8.0, 160.0), S: (414.0, 540.0)] intrinsic=(368.0, 176.0)\nPICKER BOUNDS (1440, 900) [P: (320.0, 180.0), S: (800.0, 540.0)] intrinsic=(516.0, 186.0)\nNATIVE_DIALOG_NOTICE: 572 checks; 0 failures\n"
+  },
+  {
+    "label": "test_native_opening_source_ui.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:36.567Z",
+    "finishedAt": "2026-10-19T16:19:39.367Z",
+    "durationMs": 2800,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-lbN0P0/workspace/godot_native",
+      "--script",
+      "res://tests/test_native_opening_source_ui.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nOPENING physical (390, 844): button=15.2758951742182px; notice=13.6186046600342px\nOPENING physical (430, 860): button=16.9453916398306px; notice=15.1069765090942px\nOPENING physical (1280, 720): button=14.2741968669589px; notice=12.7255811691284px\nOPENING physical (1440, 900): button=17.9470899470899px; notice=16.0px\nOpening source UI: 552 checks, 0 failures\n"
+  },
+  {
+    "label": "test_native_surface_narrative.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:39.369Z",
+    "finishedAt": "2026-10-19T16:19:41.588Z",
+    "durationMs": 2219,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-Hi3yxD/workspace/godot_native",
+      "--script",
+      "res://tests/test_native_surface_narrative.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_SURFACE_NARRATIVE: 39 checks; 0 failures\n"
+  },
+  {
+    "label": "test_notice_queue_lifecycle.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:41.590Z",
+    "finishedAt": "2026-10-19T16:19:43.523Z",
+    "durationMs": 1933,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-RwvEa6/workspace/godot_native",
+      "--script",
+      "res://tests/test_notice_queue_lifecycle.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNOTICE_QUEUE_LIFECYCLE: 22 checks; 0 failures\n"
+  },
+  {
+    "label": "test_phone_loading_notice_layout.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:43.525Z",
+    "finishedAt": "2026-10-19T16:19:46.559Z",
+    "durationMs": 3034,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-Lkjozd/workspace/godot_native",
+      "--script",
+      "res://tests/test_phone_loading_notice_layout.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPhone loading/notice layout: 170 checks, 0 failures\n"
+  },
+  {
+    "label": "test_portrait_narrative_contract.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:46.561Z",
+    "finishedAt": "2026-10-19T16:19:49.688Z",
+    "durationMs": 3127,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-Zbfejm/workspace/godot_native",
+      "--script",
+      "res://tests/test_portrait_narrative_contract.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNARRATIVE_MEASURE (390, 844) world=(370.0, 712.0) panel=[P: (8.0, 517.0), S: (354.0, 69.0)] controls=[P: (12.0, 594.0), S: (100.0, 100.0)] font=15\nNARRATIVE_MEASURE (430, 860) world=(410.0, 728.0) panel=[P: (8.0, 533.0), S: (394.0, 69.0)] controls=[P: (12.0, 610.0), S: (100.0, 100.0)] font=15\nNARRATIVE_MEASURE (844, 390) world=(824.0, 314.0) panel=[P: (32.0, 119.0), S: (760.0, 69.0)] controls=[P: (12.0, 196.0), S: (100.0, 100.0)] font=15\nPORTRAIT_NARRATIVE_CONTRACT: 1261 checks; 0 failures\n"
+  },
+  {
+    "label": "test_room302_studio_main.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:49.690Z",
+    "finishedAt": "2026-10-19T16:19:56.598Z",
+    "durationMs": 6908,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-VcBHFo/workspace/godot_native",
+      "--script",
+      "res://tests/test_room302_studio_main.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nROOM302_STUDIO_MAIN: 80 checks; 0 failures\n"
+  },
+  {
+    "label": "test_virtual_run_main_lifecycle.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:56.601Z",
+    "finishedAt": "2026-10-19T16:20:01.014Z",
+    "durationMs": 4413,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-Rt0VmH/workspace/godot_native",
+      "--script",
+      "res://tests/test_virtual_run_main_lifecycle.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nVIRTUAL_RUN_MAIN: 36 checks; 0 failures\nWARNING: Nodes with non-equal opposite anchors will have their size overridden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().\n     at: _set_size (scene/gui/control.cpp:1519)\n     GDScript backtrace (most recent call first):\n         [0] prepare (res://tests/test_virtual_run_main_lifecycle.gd:30)\n         [1] run (res://tests/test_virtual_run_main_lifecycle.gd:42)\nWARNING: Nodes with non-equal opposite anchors will have their size overridden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().\n     at: _set_size (scene/gui/control.cpp:1519)\n     GDScript backtrace (most recent call first):\n         [0] prepare (res://tests/test_virtual_run_main_lifecycle.gd:30)\n         [1] frames (res://tests/test_virtual_run_controls.gd:21)\nWARNING: Nodes with non-equal opposite anchors will have their size overridden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().\n     at: _set_size (scene/gui/control.cpp:1519)\n     GDScript backtrace (most recent call first):\n         [0] prepare (res://tests/test_virtual_run_main_lifecycle.gd:30)\n         [1] frames (res://tests/test_virtual_run_controls.gd:21)\nWARNING: Nodes with non-equal opposite anchors will have their size overridden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().\n     at: _set_size (scene/gui/control.cpp:1519)\n     GDScript backtrace (most recent call first):\n         [0] prepare (res://tests/test_virtual_run_main_lifecycle.gd:30)\n         [1] frames (res://tests/test_virtual_run_controls.gd:21)\n"
+  },
+  {
+    "label": "test_voice_completion.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:19:56.603Z",
+    "finishedAt": "2026-10-19T16:20:01.421Z",
+    "durationMs": 4818,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-0IFF4y/workspace/godot_native",
+      "--script",
+      "res://tests/test_voice_completion.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nVOICE_COMPLETION 18 checks; 0 failures\n"
+  },
+  {
+    "label": "test_world_overlay_integration.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:20:01.424Z",
+    "finishedAt": "2026-10-19T16:20:03.941Z",
+    "durationMs": 2517,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-da6ZCC/workspace/godot_native",
+      "--script",
+      "res://tests/test_world_overlay_integration.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWORLD_OVERLAY_INTEGRATION: 89 checks; 0 failures\n"
+  },
+  {
+    "label": "Native Chinese/audio text contract",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:20:03.944Z",
+    "finishedAt": "2026-10-19T16:20:03.999Z",
+    "durationMs": 55,
+    "command": "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+    "args": [
+      "/private/tmp/codex-755-c1-ui/godot_native/tests/verify_zh_audio_contract.mjs"
+    ],
+    "output": "Native Chinese/audio contract: protected source hash unchanged; 37 legacy mappings; 35 revised voice references; display-only, silence, collision and frozen-timing checks passed.\n"
+  }
+]

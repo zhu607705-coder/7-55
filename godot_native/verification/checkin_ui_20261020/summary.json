@@ -1,0 +1,1656 @@
+{
+  "schema": "755-checkin-ui-acceptance-summary-v2",
+  "draft": false,
+  "status": "local_candidate_scoped_acceptance_pass_publication_separate",
+  "createdAt": "2026-10-20T09:16:22.662293+00:00",
+  "notAPublicationReceipt": true,
+  "countingRule": "Each report is scoped to its actual package/source, fixtures, inputs and timestamps. Never add old/new/rerun/browser/native assertion counts as unique features or a whole-campaign acceptance.",
+  "currentCandidate": {
+    "sourceInputSha256": "57595430cebde1495058eb4d9ca7dc845374db8512d2921aff35b29549cd8216",
+    "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+    "baseTree": "abd91d38ca788a9fe4858f46c3c6ecf5d007dad9",
+    "sourceDirty": true,
+    "runtime": "godot-web",
+    "engine": "4.7.2.stable.official",
+    "exportDirectory": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-compatible-20261020",
+    "buildManifest": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-compatible-20261020/build-manifest.json",
+      "bytes": 48823,
+      "sha256": "577b8ec9e76e9848525e556eaf1181db7a01cf57de4094b093181b841189e3fe"
+    },
+    "contentManifest": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-compatible-20261020/content-manifest.json",
+      "bytes": 4807,
+      "sha256": "8ca6d6b189e9e85fcfef97b17019bf4fd90c4c4e7c7c33b6d540911181d2c642"
+    },
+    "contentInventory": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-compatible-20261020/content-inventory.json",
+      "bytes": 688871,
+      "sha256": "d78abc4ca6e4b6c59b4bc2b78e0d30d5cc9b1b8ec72f14cc462e98d246bf9b0c"
+    },
+    "sourceInputs": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-compatible-20261020/source-inputs.json",
+      "bytes": 274741,
+      "sha256": "1d3f03158cb3f281ca5aa6688a0cd92ff8a28cbf58ee521c30521f230a2824c4"
+    },
+    "production": true,
+    "storyOnly": true,
+    "chapterShortcuts": false,
+    "scope": "Exact575 local artifact. Native gameplay/media evidence retains its actual earlier package identities; engine/loader/cache have new actual browser evidence. A clean CI build and online publication remain separate."
+  },
+  "finalDelta": {
+    "earlierSourceInputSha256": "d6682f42f2a46581431f09a271331549081e658f3ed61cc4f99be97d12980e15",
+    "laterSourceInputSha256": "44a5b7d735ed8bfa5b32516b1f1c85386ea710dcd9cf74b522ca3c4244d9b85b",
+    "earlierBuildManifest": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-20261020/build-manifest.json",
+      "bytes": 48014,
+      "sha256": "28f0f0d08c6cd589b50225baa943956c925308b737f03a3ed83d5644513f2b0d"
+    },
+    "deferredPacks": 19,
+    "allDeferredRecordsByteIdentical": true,
+    "coreByteDelta": 1088,
+    "scope": "Root changed C1 draw wrapping/chips in the later package. Packages are not identical. View-specific identity and final smoke evidence limit transfer claims."
+  },
+  "evidenceScopes": {
+    "checkinPrinting": {
+      "status": "focused_pass",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_story_cache_web_20261020/web-acceptance.json",
+        "bytes": 220476,
+        "sha256": "a920e370dc6c3ac149d0e0f75c60db8ba5a0176ada552bc52a379261f1e55df4"
+      },
+      "sourceInputSha256": "d6682f42f2a46581431f09a271331549081e658f3ed61cc4f99be97d12980e15",
+      "passed": true,
+      "assertions": 93,
+      "caseCount": 2,
+      "cases": [
+        {
+          "id": "desktop-430",
+          "passed": true,
+          "width": 430,
+          "height": 860,
+          "touch": false
+        },
+        {
+          "id": "touch-390",
+          "passed": true,
+          "width": 390,
+          "height": 844,
+          "touch": true
+        }
+      ],
+      "runnerSha256": "34ad7d1403f131a55cccd268d3f4c8042e91aef244326970d9af17d0f4cadecb",
+      "failedAssertions": [],
+      "scope": "Actual ordinary correct/rejected check-in, top-slot feed/monochrome live stamp/brief finish, pause/resume, manual/auto/error/reload/reduced motion at logical430 and scaled390. Captured d668, not the complete later package.",
+      "notAdditive": true,
+      "previewVerification": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_story_cache_web_20261020/preview-verification.json",
+        "bytes": 5361,
+        "sha256": "30e23871b89ad60b326867e0c0288ae931ea3abc262a527f696204a5ee7cdc0e"
+      },
+      "cleanup": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_story_cache_web_20261020/cleanup-receipt.json",
+        "bytes": 241367,
+        "sha256": "76deaa4dd319dfa5a7b93e3131f5aa21e3fd2b71664bd337ae414a5d9395683a"
+      },
+      "captureMetadata": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_story_cache_web_20261020/preview-recording.json",
+        "bytes": 144097,
+        "sha256": "30d6098ead132707f9501893f729d797d723bb2c3e07141284aebe5b231b5db1"
+      },
+      "compatibleViewOnly": {
+        "laterSourceInputSha256": "44a5b7d735ed8bfa5b32516b1f1c85386ea710dcd9cf74b522ca3c4244d9b85b",
+        "compiledViewPath": "scripts/ui/checkin_success_view.gdc",
+        "compiledViewBytes": 7097,
+        "compiledViewSha256": "1c570d227f406476a7d9f553199eee956018e10f2670dda9914098c7ca1b5433",
+        "remapSha256": "96efa2cc6b1d0a4b86096e3fcc1743407df9ec98cce83ae5d2320d9e03885814",
+        "scope": "Read both actual core PCKs and matched this view and remap byte identity. The complete packages differ; this video records d668, not a new whole-package browser acceptance of 44a5."
+      }
+    },
+    "finalC1NarratorAndHandoff": {
+      "status": "focused_pass",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/narrator_card_final_web_20261020/web-acceptance.json",
+        "bytes": 135948,
+        "sha256": "ff057a7f8c8bfca482395beaf4b691336317eca96cb7e295083ae0240c24abf2"
+      },
+      "sourceInputSha256": "44a5b7d735ed8bfa5b32516b1f1c85386ea710dcd9cf74b522ca3c4244d9b85b",
+      "passed": true,
+      "assertions": 27,
+      "caseCount": 1,
+      "cases": [
+        {
+          "id": "desktop-430",
+          "passed": true,
+          "width": 430,
+          "height": 860,
+          "touch": false
+        }
+      ],
+      "runnerSha256": "1e362307ed735c37c44634afa6a856a280055c87fc412f81ed2b34f98ab567b3",
+      "failedAssertions": [],
+      "scope": "Exact44a5 final27: six-word interactions/held lock/visibility release/authored C2 handoff and actual durable reload; corrected instruction card layout observed.",
+      "notAdditive": true
+    },
+    "earlierNarratorSeparateScope": {
+      "status": "retired_intermediate_same_suite",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/narrator_card_story_cache_web_20261020/web-acceptance.json",
+        "bytes": 135895,
+        "sha256": "ecb8779bb7333a7a9a5dcb6870163409ab17f98dfd0a613ff590119ad9f74db6"
+      },
+      "sourceInputSha256": "d6682f42f2a46581431f09a271331549081e658f3ed61cc4f99be97d12980e15",
+      "passed": true,
+      "assertions": 27,
+      "caseCount": 1,
+      "cases": [
+        {
+          "id": "desktop-430",
+          "passed": true,
+          "width": 430,
+          "height": 860,
+          "touch": false
+        }
+      ],
+      "runnerSha256": "1e362307ed735c37c44634afa6a856a280055c87fc412f81ed2b34f98ab567b3",
+      "failedAssertions": [],
+      "scope": "d668 intermediate27 retained separately.",
+      "notAdditive": true
+    },
+    "c1ToC2AndSurfaces": {
+      "status": "intermediate_behavior_evidence",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/boundary_lock_f245_web_20261020/web-acceptance.json",
+        "bytes": 174321,
+        "sha256": "75c80e23d6b2bd409fcc036d2c147050a70ae9963b928d190cf53dcfe2a6011e"
+      },
+      "sourceInputSha256": "f245dbad4c10a879d6e47b3ca15493f8a0939802cc74b9b1875fbe46d5b6b853",
+      "passed": true,
+      "assertions": 87,
+      "caseCount": 1,
+      "cases": [
+        {
+          "id": "desktop-1280",
+          "passed": true,
+          "width": 1280,
+          "height": 720,
+          "touch": false
+        }
+      ],
+      "runnerSha256": "90c135fdd58596c1159d67d4289639e23475d623c30bb064a198e010a1624b78",
+      "failedAssertions": [],
+      "scope": "f245 intermediate87: ordinary checkin through three semantic stages/held lock/dialogue/whiteout to C2 friend/system/dorm card/movement_required; 1280 and390 explicit phone/world saves+real new-document reload both directions. Not a final44a5 replay.",
+      "notAdditive": true,
+      "review": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/boundary_lock_f245_web_20261020/frozen-review.json",
+        "bytes": 8060,
+        "sha256": "c6ebf1ec8432db6e44f6ff1941a9bab83fabb42bd40b0f7f6e4e7e9fb0a948b7"
+      },
+      "cleanup": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/boundary_lock_f245_web_20261020/cleanup-receipt.json",
+        "bytes": 5108,
+        "sha256": "51b16d864d9854826c4a4f477e3ef1eb3c8ba29b7d6f1b481ca83e58e96bd63e"
+      }
+    },
+    "chapter35To4": {
+      "summary": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/summary.json",
+        "bytes": 11195,
+        "sha256": "b71d9be1f329ca719ec9d0f02812ec4f7f1ba4937575832a3bf689f3168b86e8"
+      },
+      "visualReviewCleanup": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/visual-review-and-cleanup.json",
+        "bytes": 5099,
+        "sha256": "4ec4055621a7450b4375d88f9bb86f1d6b19a7b00aa1ed6667d5fd21a301c6f5"
+      },
+      "runs": [
+        {
+          "name": "attempt1",
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/attempt1/acceptance.json",
+          "sha256": "b91899d6de3426bcccc7b6728924ec39b36483ef6d1c4328d69a0f14af72e23f",
+          "passed": false,
+          "checkCount": 2,
+          "error": "Error: Cannot scroll to 发布收尾并保存时间\n    at click (file:///private/tmp/codex-755-c35-browser-acceptance.mjs:28:918)\n    at async run (file:///private/tmp/codex-755-c35-browser-acceptance.mjs:42:209)\n    at async file:///private/tmp/codex-755-c35-browser-acceptance.mjs:63:5",
+          "scope": "See individual report",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "failedRequests": 0
+        },
+        {
+          "name": "attempt2",
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/attempt2/acceptance.json",
+          "sha256": "3030f91ee633889abdb4b76a6a73e6772c5dd1dda3c4bd99aacbacfd67ea64e0",
+          "passed": true,
+          "checkCount": 7,
+          "error": null,
+          "scope": "matrix",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "failedRequests": 0
+        },
+        {
+          "name": "attempt3",
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/attempt3/acceptance.json",
+          "sha256": "de4c767857035ce390599b90ad0eed189ac8df2e13e1e2fb2038eed06d35d5ec",
+          "passed": true,
+          "checkCount": 8,
+          "error": null,
+          "scope": "Complete real recovered film and C4 A1 handoff",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "failedRequests": 0
+        },
+        {
+          "name": "attempt4",
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/attempt4/acceptance.json",
+          "sha256": "04e50d8547797347a53a332f63ed642cc9f82c4c1740b5f5de61e5da929ce3b7",
+          "passed": true,
+          "checkCount": 5,
+          "error": null,
+          "scope": "Physical paper pickup and clock inspection/world modal/return",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "failedRequests": 0
+        },
+        {
+          "name": "attempt5",
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/attempt5/acceptance.json",
+          "sha256": "0d4d41d262705a976f095bb5bd35a5c41305482fb5f8f4959211bb0b3a09d33e",
+          "passed": true,
+          "checkCount": 7,
+          "error": null,
+          "scope": "confirmed",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "failedRequests": 0
+        },
+        {
+          "name": "final44a5",
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35_browser_20261020/final44a5/acceptance.json",
+          "sha256": "f2f12058c3ce0e4b2e284d6093f957a399246e08711162287ce7e7b581d267cf",
+          "passed": true,
+          "checkCount": 5,
+          "error": null,
+          "scope": "final lightweight C35/C4 smoke",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "failedRequests": 0
+        }
+      ],
+      "firstAttemptFailure": "Runner used a conservative bottom safe-zone threshold that excluded the still-visible journal submit button. Only the /tmp runner was corrected; the failed attempt and image hash remain in evidence. Gameplay was resumed via the same isolated persistent profile.",
+      "acceptedBehavior": [
+        "Empty and partial evidence expose no comparison result/replay",
+        "Four evidence classes are earned through ordinary journal/photos/messages/network plus real continuous audio UI playback",
+        "Matrix names the actually saved wrong candidate and correct destination selection remains refused until that candidate is corrected",
+        "Confirmed compact matrix preserves the consistent selected record and exposes replay only after full evidence/exclusions/destination",
+        "Real recovered movie completed on Godot clock; playback alone did not commit C4 until explicit task acknowledgement",
+        "Acknowledged C4 paper-flight, physical paper pickup, seven-second closeup, physical approach to old clock, clock inspection and world panel close retained the RPG surface",
+        "Final build lightweight ordinary imports preserve unconfirmed/confirmed/C4 earned state, and actual keyboard movement works in the restored world"
+      ],
+      "componentDifferenceEvidence": {
+        "deferredPacks": 19,
+        "allDeferredIdentitiesEqual": true,
+        "components": [
+          {
+            "path": "scripts/ui/chapter3_phone_pages.gd",
+            "before": "979df2c0c6f036157e0cd1580c8bc7a5f9ffedd991e5ad0572d01de8d0ae5e75",
+            "after": "979df2c0c6f036157e0cd1580c8bc7a5f9ffedd991e5ad0572d01de8d0ae5e75",
+            "unchanged": true
+          },
+          {
+            "path": "scripts/ui/c3_investigation_ring.gd",
+            "before": "bfd0f1e1922775653e8c1404f94c5845fd08aa438a67c2ac9381142e61cab038",
+            "after": "bfd0f1e1922775653e8c1404f94c5845fd08aa438a67c2ac9381142e61cab038",
+            "unchanged": true
+          },
+          {
+            "path": "scripts/media/c3_voice_session.gd",
+            "before": "117fe4e75801606661a26c930e71e2e47de68b0f3b85a00946c565fa6fee52fe",
+            "after": "117fe4e75801606661a26c930e71e2e47de68b0f3b85a00946c565fa6fee52fe",
+            "unchanged": true
+          },
+          {
+            "path": "scripts/chapters/c3_interlude.gd",
+            "before": "b8e78027e126c32c87358a6bfffe7412a447a4d75f17433bb20ca57e698735fd",
+            "after": "b8e78027e126c32c87358a6bfffe7412a447a4d75f17433bb20ca57e698735fd",
+            "unchanged": true
+          },
+          {
+            "path": "scripts/chapters/chapter4.gd",
+            "before": "23bd3fe7108fac577b7a771e8aeba2cc09d951fe2dd597c0bc99d0a61156503e",
+            "after": "23bd3fe7108fac577b7a771e8aeba2cc09d951fe2dd597c0bc99d0a61156503e",
+            "unchanged": true
+          },
+          {
+            "path": "scripts/ui/chapter4_world_handoff.gd",
+            "before": "1d87d66c412895fc2fddb45e3ec7994237e682085ec25410de18e16557b2638d",
+            "after": "1d87d66c412895fc2fddb45e3ec7994237e682085ec25410de18e16557b2638d",
+            "unchanged": true
+          },
+          {
+            "path": "scripts/main.gd",
+            "before": "c0d84deb7a9819e89b856b267aa39f5011f68958f4f5ba6e0cd6a8c8db988bb4",
+            "after": "c0d84deb7a9819e89b856b267aa39f5011f68958f4f5ba6e0cd6a8c8db988bb4",
+            "unchanged": true
+          }
+        ]
+      },
+      "scope": "Full scoped C3.5 evidence/movie/physical paper/clock behavior on d668, plus exact final44a5 five-check smoke. Attempts overlap and must not be totaled as unique checks.",
+      "notClaimed": [
+        "No fresh human four-chapter playthrough",
+        "No physical mobile-device validation",
+        "No human audio audibility proof",
+        "Final package did not replay the unchanged 43-second movie; its unchanged controllers/media were proved on d668 and the final handoff/state was independently smoke-tested"
+      ]
+    },
+    "storyOnlyArtifactAndNativeEntry": {
+      "summary": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/story_only_20261020/summary.json",
+        "bytes": 4318,
+        "sha256": "1d499cdb3fb45839114fec3d6d9220da7069986e826e8847c415320e05ebb015"
+      },
+      "actualSourceInputSha256": "d6682f42f2a46581431f09a271331549081e658f3ed61cc4f99be97d12980e15",
+      "scope": "Actual d66820PCK/2282entry exclusion and source-less45 entry/features. Oldc8385campus entries incl100anonymous rejected. Not a browser test or a fresh45 rerun on44a5."
+    },
+    "ciColdStaticTransport": {
+      "status": "focused_pass",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/web_ci_static_transport_20261020/web-acceptance.json",
+        "bytes": 453588,
+        "sha256": "66b5a1f106ff190d65b29b4058822957f478e34c628465e9090d93d7b4213d31"
+      },
+      "sourceInputSha256": "d6682f42f2a46581431f09a271331549081e658f3ed61cc4f99be97d12980e15",
+      "passed": true,
+      "assertions": 492,
+      "caseCount": 1,
+      "cases": [
+        {
+          "id": "desktop-1280",
+          "passed": true,
+          "width": 1280,
+          "height": 720,
+          "touch": false
+        }
+      ],
+      "runnerSha256": "d6e17f81fcc67acee02eecf9176c3003f2b6d5a8f69ee8fb81f80dbd5aed0173",
+      "failedAssertions": [],
+      "scope": "d668 only: actual fresh Chromium basic phone input/durable save/readonly IDB/reload. All91 cold boot.bin have HTTP200/CDP response-byte hash proof; all91 boot plus19 deferred resources independently fetched and matched to manifest/local. Does not substitute for the pending resumability/real-host cache gate.",
+      "notAdditive": true,
+      "coldBootChunks": 91,
+      "independentlyFetchedTransportAssets": 110,
+      "rawOriginalPckWasmClaimedAsHttpDownloads": false,
+      "frozenRunner": {
+        "path": "/Users/zhu/Downloads/755/godot_native/tools/verify_web_export.mjs",
+        "bytes": 80617,
+        "sha256": "d6e17f81fcc67acee02eecf9176c3003f2b6d5a8f69ee8fb81f80dbd5aed0173"
+      }
+    },
+    "cacheAndResume": {
+      "status": "current_candidate_focused_pass",
+      "summary": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/cache_restart_d668_44a5_20261020/summary.json",
+        "bytes": 24606,
+        "sha256": "01c4f74161bfc24d386bb34348d4cd64514506182059c8ba5d9bf8f99b4cca68"
+      },
+      "plainHttp": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/cache_restart_d668_44a5_20261020/attempt5-compatible-plain/cache-restart-acceptance.json",
+        "bytes": 546599,
+        "sha256": "5383ad2ad63cf7489e938be5d3668d7522738cec618de6d078110d3adc78f510",
+        "passed": true,
+        "assertions": 16,
+        "sourceInputSha256": null,
+        "cases": [
+          {
+            "id": "plain-http-fixed",
+            "passed": true
+          }
+        ]
+      },
+      "gzipRecovery": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/cache_restart_d668_44a5_20261020/attempt6-compatible-gzip/cache-restart-acceptance.json",
+        "bytes": 254402,
+        "sha256": "c0ffa037c88f6f358ec1f92e9684b521b5fd689c472b57aeda644dccd4466efb",
+        "passed": true,
+        "assertions": 4,
+        "sourceInputSha256": null,
+        "cases": []
+      },
+      "cleanup": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/cache_restart_d668_44a5_20261020/profile-cleanup-receipt.json",
+        "bytes": 1969,
+        "sha256": "6e7a3494027b132428b5e1efa5cd13f4de31bb6d142a6fab936e0af23fc89f5e"
+      },
+      "scope": "Current575: real insecure HTTP3-block interruption→88missing requests→whole-browser warm restart zero boot/WASM/PCK requests; ordinary alarm interaction. Genuine old3MiB deferred prefix triggers compressed206 browser rejection→exactly one complete gzip200→native SHA/mount. Earlier secure/upgrade/identity206 are separate earlier scopes and earlier failures remain false.",
+      "persistentBootBytesReused": 94158426,
+      "notAdditive": true
+    },
+    "finalCiBrowserTransport": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_final_compatible_20261020_attempt3/web-acceptance.json",
+      "bytes": 858207,
+      "sha256": "3ff2bee48baecf2b7516d0f41bab6c62a41602f3314fbdb9d451a51d193849e5",
+      "passed": true,
+      "assertions": 566,
+      "sourceInputSha256": "57595430cebde1495058eb4d9ca7dc845374db8512d2921aff35b29549cd8216",
+      "cases": [
+        {
+          "id": "desktop-1280",
+          "passed": true
+        },
+        {
+          "id": "desktop-1440",
+          "passed": true
+        },
+        {
+          "id": "touch-390",
+          "passed": true
+        }
+      ],
+      "status": "focused_pass",
+      "scope": "Current575 real Chromium3-viewports:91 actual boot chunks independently hashed, ordinary input/audio state/save/IDB/reload;110 declared transport responses verified. No human audibility or physical-phone claim.",
+      "reviewSummary": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_final_compatible_20261020/summary.json",
+        "sha256": "3ff5a95cf9b9d230a5246700b68e5ec002025533d7b1aa96d6772fe7a91b50f5"
+      }
+    },
+    "ciInspectorFailureHistory": {
+      "first": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_final_compatible_20261020/web-acceptance.json",
+        "bytes": 225181,
+        "sha256": "70203d34b484ee3d5867deaf079b6c0ba2a49ad39966dab07d998c9f95fa1bd6"
+      },
+      "meaning": "RealHTTP200 no-cache responses arrived; one inspector body was evicted before independent hash inspection. This failed attempt remains failed; do not relabel it a product pass.",
+      "finalVerifier": {
+        "path": "/Users/zhu/Downloads/755/godot_native/tools/verify_web_export.mjs",
+        "bytes": 80853,
+        "sha256": "8e3a98a9ba2a67b981403e382d0c01b53756037bb1d861caac3edd36aecdc06e"
+      }
+    }
+  },
+  "nativeScopes": [
+    {
+      "report": {
+        "path": "/tmp/codex-755-checkin-ink-native-20261020.json",
+        "bytes": 5428,
+        "sha256": "723362ca759e84777a60bb527e1a4adb7cad9f332754479cafb7a701333d3372"
+      },
+      "scope": "Earlier pure-ink view native tests; separate source-era scope.",
+      "allStagesPassed": true,
+      "stages": [
+        {
+          "label": "Godot asset import and editor parse",
+          "failed": false,
+          "status": 0,
+          "summaryLines": []
+        },
+        {
+          "label": "test_checkin_success_presentation.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "CHECKIN_SUCCESS_PRESENTATION: 36 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_words.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "PROLOGUE_WORD_MODEL: 28 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_focus_input.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "NATIVE_PROLOGUE_FOCUS_INPUT: 37 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_audio.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": []
+        }
+      ],
+      "sourceMetadata": {
+        "path": "/tmp/codex-755-checkin-ink-native-20261020.json.meta.json",
+        "bytes": 2720,
+        "sha256": "7fea5fb63afc2387380a02b902d99d32d5a43718ff61eefe4921bd1e2431d931"
+      }
+    },
+    {
+      "report": {
+        "path": "/tmp/codex-755-final-story-cache-native-20261020.json",
+        "bytes": 6016,
+        "sha256": "5ba972fcb6349bc0ec484f2161b84bb762bf1a0a5aa49964c0970c4dadd3deb6"
+      },
+      "scope": "Root recorded story/cache native checks; inspect sidecar for exact dirty source.",
+      "allStagesPassed": true,
+      "stages": [
+        {
+          "label": "Godot asset import and editor parse",
+          "failed": false,
+          "status": 0,
+          "summaryLines": []
+        },
+        {
+          "label": "test_checkin_success_presentation.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "CHECKIN_SUCCESS_PRESENTATION: 36 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_words.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "PROLOGUE_WORD_MODEL: 28 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_focus_input.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "NATIVE_PROLOGUE_FOCUS_INPUT: 43 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_audio.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": []
+        }
+      ],
+      "sourceMetadata": {
+        "path": "/tmp/codex-755-final-story-cache-native-20261020.json.meta.json",
+        "bytes": 5066,
+        "sha256": "93fedd68a946a93bbce84cd48840aaf13cd53196958e3c3d13ff063a75e1fd32"
+      }
+    },
+    {
+      "report": {
+        "path": "/tmp/codex-755-final-card-wrap-native-20261020.json",
+        "bytes": 5048,
+        "sha256": "b6a033e0dcb47e6ddff69af008d4e803b79aba560061245e14c564bf4be4b6ab"
+      },
+      "scope": "Final C1 card wrapping regression; native checks do not substitute for browser behavior.",
+      "allStagesPassed": true,
+      "stages": [
+        {
+          "label": "Godot asset import and editor parse",
+          "failed": false,
+          "status": 0,
+          "summaryLines": []
+        },
+        {
+          "label": "test_checkin_success_presentation.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "CHECKIN_SUCCESS_PRESENTATION: 36 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_words.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "PROLOGUE_WORD_MODEL: 28 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_focus_input.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "NATIVE_PROLOGUE_FOCUS_INPUT: 43 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_prologue_audio.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": []
+        }
+      ],
+      "sourceMetadata": {
+        "path": "/tmp/codex-755-final-card-wrap-native-20261020.json.meta.json",
+        "bytes": 5156,
+        "sha256": "cd533020cb07e38cd16e884fe7bd54c6b3f9f25e72df0fca23b88b2ddd7dc82f"
+      }
+    },
+    {
+      "report": {
+        "path": "/tmp/codex-755-interlude-matrix-native-20261020.json",
+        "bytes": 678,
+        "sha256": "9449fd91fe2033430eeb17a3fa9eee9e673bee793d5b7b5620e82d1ba4edb5fa"
+      },
+      "scope": "C3.5 empty/partial/full matrix UI/source contracts77.",
+      "allStagesPassed": true,
+      "stages": [
+        {
+          "label": "test_interlude_retry_controls.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "INTERLUDE_RETRY_CONTROLS 77 checks; 0 failures"
+          ]
+        }
+      ],
+      "sourceMetadata": {
+        "path": "/tmp/codex-755-interlude-matrix-native-20261020.json.meta.json",
+        "bytes": 2824,
+        "sha256": "a44a700654d258d0dc8d202b8cdafda7b286befa6166f88bad7cfddeaaa897a3"
+      }
+    },
+    {
+      "report": {
+        "path": "/tmp/codex-755-surface-contracts-native-20261020.json",
+        "bytes": 3595,
+        "sha256": "71859d71d86240bf50cf22f2bd1034bf8ab384c15161d95e5ce12fb2aabbaba9"
+      },
+      "scope": "Four viewport explicit phone/rpg disk persistence, gestures/narrative/C2 navigation.",
+      "allStagesPassed": true,
+      "stages": [
+        {
+          "label": "test_chapter2_scene_navigation.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "Chapter2 scene navigation: 90 checks, 0 failures"
+          ]
+        },
+        {
+          "label": "test_native_surface_gestures.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "NATIVE_SURFACE_GESTURES: 81 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_native_surface_narrative.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "NATIVE_SURFACE_NARRATIVE: 39 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_native_surface_save.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "NATIVE_SURFACE_SAVE: 232 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_native_surface_modes.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "NATIVE_SURFACE_MODES: 442 checks; 0 failures"
+          ]
+        }
+      ],
+      "sourceMetadata": {
+        "path": "/tmp/codex-755-surface-contracts-native-20261020.json.meta.json",
+        "bytes": 3346,
+        "sha256": "9641d360318594fa271681130446e82ebe8438e29d0adcadb514c8c07ef2ba84"
+      }
+    },
+    {
+      "report": {
+        "path": "/tmp/codex-755-story-only-source-native-20261020.json",
+        "bytes": 2751,
+        "sha256": "33d6e2b5da5a4f8e0f4419659bd24eb18aeccf3fdffe37925b798216f3986481"
+      },
+      "scope": "Source/editor BUCT research entry1236, previews91, developer21, content69; proves research retained, not production feature.",
+      "allStagesPassed": true,
+      "stages": [
+        {
+          "label": "test_buct_entry.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "BUCT_ENTRY: 1236 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_developer_tools_access.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "DEVELOPER_TOOLS_ACCESS 21 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_entry_previews.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "ENTRY_PREVIEWS: 91 checks; 0 failures"
+          ]
+        },
+        {
+          "label": "test_web_content.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "WEB_CONTENT: 69 checks; 0 failures"
+          ]
+        }
+      ],
+      "sourceMetadata": {
+        "path": "/tmp/codex-755-story-only-source-native-20261020.json.meta.json",
+        "bytes": 4546,
+        "sha256": "4f77e8647fd65cd18ac92e1d02f62e337fc571129d0d3ce4793ab51dcb0d2bb3"
+      }
+    },
+    {
+      "report": {
+        "path": "/tmp/codex-755-story-only-developer-native-20261020.json",
+        "bytes": 829,
+        "sha256": "bcd7ba1f90f508ea9ecebc769c47708c561482658d196013a455fbffa3ccfb04"
+      },
+      "scope": "Developer-policy final source rerun21; production export proof is separate45.",
+      "allStagesPassed": true,
+      "stages": [
+        {
+          "label": "test_developer_tools_access.gd",
+          "failed": false,
+          "status": 0,
+          "summaryLines": [
+            "DEVELOPER_TOOLS_ACCESS 21 checks; 0 failures"
+          ]
+        }
+      ],
+      "sourceMetadata": {
+        "path": "/tmp/codex-755-story-only-developer-native-20261020.json.meta.json",
+        "bytes": 4576,
+        "sha256": "a79078300e66e5a22e158c16de9ac5c38e14bdadbef758e9189d798f719f6b21"
+      }
+    }
+  ],
+  "historicalScopes": {
+    "legacy6dac": {
+      "status": "retired_user_rejected_gem_presentation",
+      "sourceInputSha256": "6dac3fc0d9943197429a4e45f7d6558fc2017a0f7c57607f77620a60ec5113cf",
+      "originalRecordArchive": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_native_20261020/summary-before-printer-revision.json",
+        "bytes": 27351,
+        "sha256": "6831413221dee741b4bddcc2d7c69875f63cfe6e8aa17ceadce5de966b396082"
+      },
+      "recordedCandidate": {
+        "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+        "baseTree": "abd91d38ca788a9fe4858f46c3c6ecf5d007dad9",
+        "sourceInputSha256": "6dac3fc0d9943197429a4e45f7d6558fc2017a0f7c57607f77620a60ec5113cf",
+        "sourceDirty": true,
+        "runtime": "Godot Web",
+        "engine": "4.7.2.stable.official",
+        "exportManifest": {
+          "path": "godot_native/exports/web-checkin-review-final-20261020/build-manifest.json",
+          "bytes": 8913,
+          "sha256": "4048a35134d842b4c84aaf7d41291f5307452536e79e54887e72438c77fedd67"
+        },
+        "contentManifest": {
+          "path": "godot_native/exports/web-checkin-review-final-20261020/content-manifest.json",
+          "bytes": 6344,
+          "sha256": "71b2b1accfa50f538c8df4b8e6dc9e169f9d75e19013730d453282661d5bda06"
+        },
+        "acceptanceMeaning": "Focused acceptance of an uncommitted candidate. This file does not claim a clean tested commit, push, GitHub deployment or server installation."
+      },
+      "recordedBrowser": {
+        "passed": true,
+        "checks": 75,
+        "report": {
+          "path": "godot_native/exports/verification/checkin_success_web_final_20261020/web-acceptance.json",
+          "bytes": 81654,
+          "sha256": "d8584bfdd338a0e2ae56534b3e2af52121a58e0617d8ccb40ebc11cbdb846432"
+        },
+        "review": {
+          "path": "godot_native/exports/verification/checkin_success_review_final_20261020.json",
+          "bytes": 38872,
+          "sha256": "08b4dd18a7ea47ea33658eb74c23d12b05a75f54d58f14a5a7ec446597f9604e"
+        },
+        "runner": {
+          "path": "godot_native/exports/verification/checkin_success_web_final_20261020/runner-source.mjs",
+          "bytes": 85499,
+          "sha256": "545b8871d347ec2ba99517fdc000a742260f59922f935070934c6624dbf23bc3"
+        },
+        "sourceInputSha256": "6dac3fc0d9943197429a4e45f7d6558fc2017a0f7c57607f77620a60ec5113cf",
+        "cases": [
+          {
+            "id": "desktop-430",
+            "width": 430,
+            "height": 860,
+            "touchEmulated": false,
+            "passed": true,
+            "errors": [],
+            "renderer": {
+              "webgl2": true,
+              "vendor": "Google Inc. (Google)",
+              "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+            }
+          },
+          {
+            "id": "touch-390",
+            "width": 390,
+            "height": 844,
+            "touchEmulated": true,
+            "passed": true,
+            "errors": [],
+            "renderer": {
+              "webgl2": true,
+              "vendor": "Google Inc. (Google)",
+              "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+            }
+          }
+        ],
+        "scope": [
+          "Actual Godot WASM/PCK from the frozen final source6dac export via owned headless Chromium profiles.",
+          "430x860 and touch-emulated 390x844 page layout, actual shared back navigation then re-entry, empty disabled submission, visible wrong-code rejection without duplicate global notice.",
+          "Actual correct submit, native success receipt/seal, Escape pause and pointer Resume/Continue on desktop, automatic success handoff on touch.",
+          "Accepted check-in facts remain unchanged through coordinate error and blackout; ordinary real reload retains ending without replaying success.",
+          "Explicit ordinary portable-save setting-only reduced_motion variation retains every earned story fact; actual Main handoff renders static receipt at two real elapsed points then Continue."
+        ],
+        "limitations": [
+          "Focused checks overlap the previous source989 run and must not be summed as unique coverage.",
+          "Final run does not repeat the 19-second fresh scatter or full seven-second word-game flow; prior source989 evidence remains separately bound.",
+          "No physical phone, full manual four-chapter campaign, other browser engine or human audio audibility claim.",
+          "Reduced-motion coverage uses an explicit validated setting-only save variation, not a product toggle.",
+          "This is a dirty candidate export acceptance, not evidence of a new GitHub deployment or a clean accepted commit."
+        ]
+      },
+      "recordedNativeRuns": [
+        {
+          "id": "page_initial",
+          "scope": "Earlier page-only design; before modern font and final Main refinements.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-page-native-20261020.json",
+            "bytes": 1323,
+            "sha256": "91f41a46e7cef608150b1f2afb42dbaa07762f9d3eb72aeacd1c0331f7a794bd"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-page-native-20261020.json.meta.json",
+            "bytes": 1670,
+            "sha256": "e9f6f4fcf295788bdbe61bf3448219b9646922fde277e11483b6fbbdd7222188"
+          },
+          "startedAt": "2026-10-20T06:53:41.876Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "5c55501a3277405179f6801753cf1b95c5015a87018ff5bd13b3a1f7abccc667",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "test_phone_library_login.gd",
+              "passed": true,
+              "checks": 135,
+              "durationMs": 4392,
+              "resultLine": "PHONE_LIBRARY_LOGIN_TESTS: 135 checks; 0 failures"
+            },
+            {
+              "label": "test_phone_pages.gd",
+              "passed": true,
+              "checks": 30,
+              "durationMs": 1771,
+              "resultLine": "PHONE_PAGE_TESTS: 30 layouts checked; 0 failures"
+            }
+          ]
+        },
+        {
+          "id": "navigation_initial",
+          "scope": "Earlier page-only return navigation; overlapping later inline run.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-page-navigation-20261020.json",
+            "bytes": 663,
+            "sha256": "18e9e9f490fb47e65dbf937c75cfb8cd99a1789c27b829535e3e14df9b1a95aa"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-page-navigation-20261020.json.meta.json",
+            "bytes": 1620,
+            "sha256": "0927380bdf42e1dfa14a7ee0cb9f01ea9de4bd4154b54273d26a5f2ccef80399"
+          },
+          "startedAt": "2026-10-20T06:54:58.862Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "c5b2ad3f9692da026119f5624e45c1f8ed7f98fdd48175c81f97326fde96d6c6",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "test_phone_navigation.gd",
+              "passed": true,
+              "checks": 197,
+              "durationMs": 22472,
+              "resultLine": "PHONE_NAVIGATION_TESTS: 197 checks; 0 failures"
+            }
+          ]
+        },
+        {
+          "id": "initial_import",
+          "scope": "Initial success implementation import/parse; superseded by font-v2 import for the font change.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-import-20261020.json",
+            "bytes": 4920,
+            "sha256": "58995d362a54267559bb9e2196c8b5ac202699d654df953a1fa4f220f076b3e9"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-import-20261020.json.meta.json",
+            "bytes": 2044,
+            "sha256": "dd20e0a5dfad59400087aaa2c6e1ed233b4332f0e43ba66608a6a4872f7e92a3"
+          },
+          "startedAt": "2026-10-20T07:04:14.985Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "646737306ad27040c6f3e68837bd6e7039d80ec385846679aa42e533a6876f36",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "Godot asset import and editor parse",
+              "passed": true,
+              "checks": null,
+              "durationMs": 3023,
+              "resultLine": null
+            }
+          ]
+        },
+        {
+          "id": "success_prologue",
+          "scope": "Success presentation plus preserved prologue audio, focus/input and word model.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-targeted-native-20261020.json",
+            "bytes": 2663,
+            "sha256": "61e739a2218bba4353471b30dc705feeb3e33d935e46a0156afa86965bfbb234"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-targeted-native-20261020.json.meta.json",
+            "bytes": 2258,
+            "sha256": "1b01c42f937dc0320ea1c6fd39a6b4d7990b0c3cbee34713868ca398547b9de6"
+          },
+          "startedAt": "2026-10-20T07:06:10.088Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "80737145f40e790456c337f4b89a245b2b860d0807156a9ae5819686b23dded2",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "test_checkin_success_presentation.gd",
+              "passed": true,
+              "checks": 32,
+              "durationMs": 1054,
+              "resultLine": "CHECKIN_SUCCESS_PRESENTATION: 32 checks; 0 failures"
+            },
+            {
+              "label": "test_prologue_audio.gd",
+              "passed": true,
+              "checks": 32,
+              "durationMs": 3385,
+              "resultLine": "NATIVE_PROLOGUE_AUDIO checks=32 errors=0"
+            },
+            {
+              "label": "test_prologue_focus_input.gd",
+              "passed": true,
+              "checks": 37,
+              "durationMs": 880,
+              "resultLine": "NATIVE_PROLOGUE_FOCUS_INPUT: 37 checks; 0 failures"
+            },
+            {
+              "label": "test_prologue_words.gd",
+              "passed": true,
+              "checks": 28,
+              "durationMs": 455,
+              "resultLine": "PROLOGUE_WORD_MODEL: 28 checks; 0 failures"
+            }
+          ]
+        },
+        {
+          "id": "pickup_anchors",
+          "scope": "All three existing acquisition anchors after capturing source font. Before final charset-only nav additions.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-anchors-newfont-20261020.json",
+            "bytes": 2041,
+            "sha256": "86fb42b1b1edbcccb067526c8ab046cd84c523c5f6c4f4b613dbe329b3c34264"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-anchors-newfont-20261020.json.meta.json",
+            "bytes": 2170,
+            "sha256": "7270926384b0152fbbda780a15e921089763b29c6cf72dfb2d6a4f19a53da6a9"
+          },
+          "startedAt": "2026-10-20T07:06:51.023Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "80737145f40e790456c337f4b89a245b2b860d0807156a9ae5819686b23dded2",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "test_phone_anchor03_water.gd",
+              "passed": true,
+              "checks": 379,
+              "durationMs": 3381,
+              "resultLine": "PHONE_ANCHOR03: 379 checks; 0 failures; one design anchor"
+            },
+            {
+              "label": "test_phone_anchor01_absence.gd",
+              "passed": true,
+              "checks": 298,
+              "durationMs": 3485,
+              "resultLine": "PHONE_ANCHOR01: 298 checks; 0 failures; one design anchor"
+            },
+            {
+              "label": "test_phone_anchor02_tiyi.gd",
+              "passed": true,
+              "checks": 343,
+              "durationMs": 4203,
+              "resultLine": "PHONE_ANCHOR02: 343 checks; 0 failures; one design anchor"
+            }
+          ]
+        },
+        {
+          "id": "font_v2_import",
+          "scope": "Godot import/parse after second font charset revision adds shared navigation symbols.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-fontv2-import-20261020.json",
+            "bytes": 3294,
+            "sha256": "1ae332f2aa5cb0b30befef116d67df01df299290f87c0567946e376fbfd0ce2b"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-fontv2-import-20261020.json.meta.json",
+            "bytes": 2250,
+            "sha256": "d17a96fa0f9cc5b1deded92087273ed195e1a8be581bc0e5265caf954451abeb"
+          },
+          "startedAt": "2026-10-20T07:13:15.671Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "81f11ee6f6eddeda229e1234e01e89db42ac3da7a5392c1200824b2b22851587",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "Godot asset import and editor parse",
+              "passed": true,
+              "checks": null,
+              "durationMs": 2785,
+              "resultLine": null
+            }
+          ]
+        },
+        {
+          "id": "inline_error",
+          "scope": "Success, library/check-in input and navigation after local-only rejected-input feedback refinement.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-inline-native-20261020.json",
+            "bytes": 2021,
+            "sha256": "854d6d1344af7601edf1a6749d120f53b7105c8b7d07061654c3aa5f7dcaf468"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-inline-native-20261020.json.meta.json",
+            "bytes": 2334,
+            "sha256": "a2bc57cbcd464c41e0dac93bf16bad1a113edf85b6cdd2862af32a49d76812b4"
+          },
+          "startedAt": "2026-10-20T07:16:44.687Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "578531dcdd8422127594ec4c891efd0768c2f72f13dca5ab6fc3a486d6a56b76",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "test_checkin_success_presentation.gd",
+              "passed": true,
+              "checks": 32,
+              "durationMs": 1174,
+              "resultLine": "CHECKIN_SUCCESS_PRESENTATION: 32 checks; 0 failures"
+            },
+            {
+              "label": "test_phone_library_login.gd",
+              "passed": true,
+              "checks": 135,
+              "durationMs": 4440,
+              "resultLine": "PHONE_LIBRARY_LOGIN_TESTS: 135 checks; 0 failures"
+            },
+            {
+              "label": "test_phone_navigation.gd",
+              "passed": true,
+              "checks": 197,
+              "durationMs": 22582,
+              "resultLine": "PHONE_NAVIGATION_TESTS: 197 checks; 0 failures"
+            }
+          ]
+        },
+        {
+          "id": "final_shell",
+          "scope": "Shared chrome and notice/loading layout after scoped check-in grid presentation adjustment.",
+          "report": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-final-shell-20261020.json",
+            "bytes": 1415,
+            "sha256": "1a2e003df41738b9ee0a6291d4131f3cfcfe74facb13ea266d2bfc90ff431392"
+          },
+          "metadata": {
+            "path": "godot_native/exports/verification/checkin_native_20261020/codex-755-checkin-final-shell-20261020.json.meta.json",
+            "bytes": 2372,
+            "sha256": "753e767c301a5bb8897387c7c15eb366c1a29220decdf74aa87f59d67173baed"
+          },
+          "startedAt": "2026-10-20T07:20:07.460Z",
+          "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+          "worktreeDiffSha256": "b5bb6e151c1fbe51f4779bf8be7b6b8ef7c5fa331c2433ddf4314cb423bf9fd2",
+          "sourceInputSha256": null,
+          "sourceBindingNote": "Native report records exact worktree diff and time, not the later Web export sourceInput fingerprint. Do not label all these runs as final source6dac.",
+          "stages": [
+            {
+              "label": "test_phone_chrome.gd",
+              "passed": true,
+              "checks": 60,
+              "durationMs": 1686,
+              "resultLine": "Native phone chrome tests: PASS (60 checks; 0 failures)"
+            },
+            {
+              "label": "test_phone_loading_notice_layout.gd",
+              "passed": true,
+              "checks": 170,
+              "durationMs": 3155,
+              "resultLine": "Phone loading/notice layout: 170 checks, 0 failures"
+            }
+          ]
+        }
+      ],
+      "recordedDeliveryMeasurement": {
+        "initialPayloadBytes": 95391122,
+        "totalPayloadBytes": 581977273,
+        "coreBytes": 55542568,
+        "wasmBytes": 39514754,
+        "deferredPacks": 25,
+        "deferredBytes": 485775160,
+        "entryCount": 2667,
+        "coreEntries": 1009,
+        "exactCoverageDeclaredByVerifiedManifest": true,
+        "allPayloadFilesVerified": 35,
+        "payloadReceipt": {
+          "path": "godot_native/exports/verification/checkin_native_20261020/final-export-payload-verification.json",
+          "bytes": 8407,
+          "sha256": "91a5b91a73554ac2a1e2619fd2169596d37ea5adc298482b7339855d713ce1f1"
+        },
+        "meaning": "Measured uncompressed delivery bytes for this local candidate; not a public network latency or quick-first-load guarantee."
+      },
+      "recordedPreview": {
+        "sourceInputSha256": "6dac3fc0d9943197429a4e45f7d6558fc2017a0f7c57607f77620a60ec5113cf",
+        "archive": {
+          "path": "godot_native/exports/verification/checkin_success_web_final_20261020/preview-final-source6dac.mp4",
+          "bytes": 165703,
+          "sha256": "991b1b03deca7b9dbf7788999e22f104873c503d065e140898498b1e5e9bcb7b"
+        },
+        "userPreview": {
+          "path": "/Users/zhu/.codex/visualizations/2026/10/19/01a15309-b0c1-7870-bc0b-f00a3e00cade/checkin_success_preview_20261020.mp4",
+          "bytes": 165703,
+          "sha256": "991b1b03deca7b9dbf7788999e22f104873c503d065e140898498b1e5e9bcb7b"
+        },
+        "verification": {
+          "path": "godot_native/exports/verification/checkin_success_web_final_20261020/preview-verification.json",
+          "bytes": 1421,
+          "sha256": "383ad0b7287ff1eb88ca5add832ef3991464fad8cca5d8c026c9d85af9adb618"
+        },
+        "frameCount": 286,
+        "width": 390,
+        "height": 844,
+        "durationSeconds": 4.786,
+        "audio": "not recorded"
+      },
+      "reason": "User rejected the floating card/stamp and later the green gemstone design. These completed checks remain historical evidence of their own bytes, not current presentation acceptance.",
+      "referenceNote": "Original nested paths/hashes are preserved as recorded; original art provenance and gem were relocated below. The archived original summary is immutable."
+    },
+    "legacy989": {
+      "status": "retired_user_rejected_gem_presentation",
+      "recordedScope": {
+        "sourceInputSha256": "98938482709ae54f2148c41b9ce45d57ea7a037efc4663fbd9715cc5689e48d5",
+        "sourceDirty": true,
+        "checks": 94,
+        "passed": true,
+        "report": {
+          "path": "godot_native/exports/verification/checkin_success_web_retry_20261020/web-acceptance.json",
+          "bytes": 98981,
+          "sha256": "6299c3bb4b75bbafd25b9a439a51fe349acbb9831e5817f5d3f39c1da2930b0b"
+        },
+        "review": {
+          "path": "godot_native/exports/verification/checkin_success_review_source989_20261020.json",
+          "bytes": 54317,
+          "sha256": "c91887c37b152ee581dab569c9c0c1b8fe342e81128a0d9083abd7d95ac3a5c6"
+        },
+        "runner": {
+          "path": "godot_native/exports/verification/checkin_success_web_retry_20261020/runner-source.mjs",
+          "bytes": 85695,
+          "sha256": "dae35149447a9ea77962d123603fb3c5ad1eb1d8af71817e190084db462a69cf"
+        },
+        "scope": [
+          "Earlier frozen source989 package only. It includes ordinary fresh friend scatter and source-zero pickup, plus the longer blackout/word-game transition flow.",
+          "Final source6dac does not repeat the fresh scatter and full seven-second word-game flow; nav glyph, inline error and grid refinements are accepted by the separate final 75-check run."
+        ],
+        "ordinaryZeroPickupProof": {
+          "path": "godot_native/exports/verification/checkin_success_web_20261020/desktop-430-zero-proof.json",
+          "bytes": 5650,
+          "sha256": "b1b679ba8c68e093efeb5de295e93245982a38bf296fc50926831b82efda6ad5"
+        },
+        "preservedFirstHarnessFailure": {
+          "report": {
+            "path": "godot_native/exports/verification/checkin_success_web_20261020/web-acceptance.json",
+            "bytes": 79232,
+            "sha256": "512f0ca1642b1b6729ca9be9f51f15a426788ee33faa5c65229eba062b7f38e8"
+          },
+          "passed": false,
+          "reason": "Temporary harness assumed Zjuding hub instead of retained learn tab after the successful ordinary zero pickup; no controller result injection."
+        },
+        "archivedVideo": {
+          "path": "godot_native/exports/verification/checkin_success_web_retry_20261020/preview-source989.mp4",
+          "bytes": 178771,
+          "sha256": "772488f7edef2d8c2dd57243e8946ca7f5ef593f8171ec10856c19c82b24c941"
+        },
+        "oldVideoOutputNote": "The earlier review original video.output pathname was replaced by the final preview; use this separately hashed source989 archive for the earlier video.",
+        "notAdditiveWithFinalChecks": true
+      },
+      "notAdditiveWithAnyCurrentScope": true
+    },
+    "gemPrinterA7": {
+      "status": "user_rejected_not_delivered",
+      "sourceInputSha256": "a7a009d006762016f54bb6a5d4b227cd39d4dbbead09fbcb6f26d999540652e3",
+      "reports": [
+        {
+          "status": "historical_failed_or_incomplete",
+          "report": {
+            "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_print_web_20261020/web-acceptance.json",
+            "bytes": 46699,
+            "sha256": "52f686dee5f6e16a81ebb910dde34557b7961d31052dfe13bdb80d7ff96d1dc0"
+          },
+          "sourceInputSha256": "a7a009d006762016f54bb6a5d4b227cd39d4dbbead09fbcb6f26d999540652e3",
+          "passed": false,
+          "assertions": 40,
+          "caseCount": 1,
+          "cases": [
+            {
+              "id": "desktop-430",
+              "passed": true,
+              "width": 430,
+              "height": 860,
+              "touch": false
+            }
+          ],
+          "runnerSha256": "c9bdbcb206a6779356f5fa36b123bca08febd46d2795c2e7d105103b15ca06c3",
+          "failedAssertions": [],
+          "scope": "Historical incomplete gem printer attempt; not accepted.",
+          "notAdditive": true
+        },
+        {
+          "status": "historical_user_interrupted",
+          "report": {
+            "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_print_web_retry_20261020/web-acceptance.json",
+            "bytes": 47449,
+            "sha256": "44cef84f03eeaaa11522a983a02a9d6766d34ae9ab87981974eed42ea04ff9d7"
+          },
+          "sourceInputSha256": "a7a009d006762016f54bb6a5d4b227cd39d4dbbead09fbcb6f26d999540652e3",
+          "passed": false,
+          "assertions": 40,
+          "caseCount": 1,
+          "cases": [
+            {
+              "id": "desktop-430",
+              "passed": true,
+              "width": 430,
+              "height": 860,
+              "touch": false
+            }
+          ],
+          "runnerSha256": "25f946c73558a58100011dd4db737717aa47319c3ddefc82346ecde893d82fd3",
+          "failedAssertions": [],
+          "scope": "Historical retry interrupted after user rejected the gem; not accepted.",
+          "notAdditive": true
+        }
+      ],
+      "reason": "Thermal feed mechanism retained later; gemstone/gold-rim check removed. Neither run is a delivery acceptance."
+    },
+    "pureInkC8": {
+      "status": "retired_superseded_pure_ink_candidate",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_ink_web_20261020/web-acceptance.json",
+        "bytes": 93116,
+        "sha256": "5968002d18408b00a9ef39325d0b51eabe5379127ebe6da8bc5d5255eb677643"
+      },
+      "sourceInputSha256": "c8d03d94ecf4c9873e12cce12121dd54753481a542d9d36fc4d9cb15b2a605ea",
+      "passed": true,
+      "assertions": 91,
+      "caseCount": 2,
+      "cases": [
+        {
+          "id": "desktop-430",
+          "passed": true,
+          "width": 430,
+          "height": 860,
+          "touch": false
+        },
+        {
+          "id": "touch-390",
+          "passed": true,
+          "width": 390,
+          "height": 844,
+          "touch": true
+        }
+      ],
+      "runnerSha256": "66080fc5d64ca2cd8195cc00c948943a53d779ab87698ba6735dcdf3b4a5828b",
+      "failedAssertions": [],
+      "scope": "Historical pure-ink printer focused91; superseded by story-only/cache93. Does not include later surface/matrix/cache fixes.",
+      "notAdditive": true
+    },
+    "c8SurfaceFailure": {
+      "status": "retired_known_surface_failure",
+      "report": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/c1_c2_browser_c8d03_20261020/web-acceptance.json",
+        "bytes": 135467,
+        "sha256": "f148ea608dfd38993ab5ae8df69cf4bccc7620e934ec90989c0546cc9b823691"
+      },
+      "sourceInputSha256": "c8d03d94ecf4c9873e12cce12121dd54753481a542d9d36fc4d9cb15b2a605ea",
+      "passed": false,
+      "assertions": 34,
+      "caseCount": 1,
+      "cases": [
+        {
+          "id": "desktop-1280",
+          "passed": false,
+          "width": 1280,
+          "height": 720,
+          "touch": false
+        }
+      ],
+      "runnerSha256": "3e54f0c787e3a7f4540c73bfa47ab6f6053f7d1598c19426af3cff83ca4d5ae4",
+      "failedAssertions": [
+        "return-to-phone save restores the phone surface rather than the retained dorm"
+      ],
+      "scope": "Old c8 actual C1-to-C2 reached movement_required but failed saved-phone restoration. Keep original33/34, never relabel green.",
+      "notAdditive": true
+    }
+  },
+  "font": {
+    "revision": "v2-add-shared-navigation-symbols",
+    "asset": {
+      "path": "godot_native/assets/native/checkin/checkin_ui_font_v1.ttf",
+      "bytes": 99252,
+      "sha256": "29a417404e05fa00173364154187f1343372abe775ea85202b928343bfda7d16"
+    },
+    "provenance": {
+      "path": "godot_native/assets/native/checkin/checkin_ui_font_v1_provenance.json",
+      "bytes": 5594,
+      "sha256": "4ecf43347540238dc404f9296f06b1c0b306f374cdfe61702adb785fc8b4e6e8"
+    },
+    "review": {
+      "path": "godot_native/exports/verification/checkin_font_20261020/font-preview-review-v2.json",
+      "bytes": 1521,
+      "sha256": "ee84b7ebe4ce37d5e72a6073582289acf0e397c1f27652f1da0d80b8bd0bec5e"
+    },
+    "charset": {
+      "path": "godot_native/assets/native/checkin/checkin_ui_font_v1_charset.txt",
+      "bytes": 376,
+      "sha256": "236f35419f9e37527ef01c2bc1cc1b5b423b5db6e8181218e0c66dacfc47691c"
+    },
+    "license": {
+      "path": "godot_native/assets/native/checkin/CHECKIN_FONT_OFL.txt",
+      "bytes": 4378,
+      "sha256": "729605bc3063014beada9b80cb5c8971e5788c1088c3e30ad893ad65ad61cadd"
+    },
+    "requiredCodepoints": 189,
+    "outputCmapCodepoints": 190,
+    "missingCodepoints": [],
+    "filenameNote": "The second charset revision retains the original v1 filename. Shared U+2039 back and U+00D7 close are present.",
+    "scope": "Optional local theme only for native_checkin_page and checkin_success_view; other game fonts remain unchanged"
+  },
+  "art": {
+    "generation": "Existing built-in image_gen paper art; no claim of new web Gemini generation.",
+    "paper": {
+      "path": "/Users/zhu/Downloads/755/godot_native/assets/native/checkin/checkin_receipt_v1.png",
+      "bytes": 1408976,
+      "sha256": "6b9c327dc07ad1b3fdabef7fd4b46200f3131b44fbc4ad1196e4584ae0408301"
+    },
+    "currentProvenance": {
+      "path": "/Users/zhu/Downloads/755/godot_native/assets/native/checkin/provenance.json",
+      "bytes": 1655,
+      "sha256": "7f675371f1a659992f087e65d07e2aa6f8e581493914b5a9d9cf8ff6050ce49d"
+    },
+    "stamp": "Live monochrome text and outline, one brief ink finish. No gemstone PNG/preload in current active art.",
+    "retiredGem": {
+      "status": "retired_user_rejected_do_not_display_as_current",
+      "image": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_rejected_gem_20261020/checkin_seal_v1.png",
+        "bytes": 1435827,
+        "sha256": "6e0054f129bbebb76137ed367992f68c1fd1a533518fbde3cad620e3f0cd309d"
+      },
+      "originalProvenance": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_rejected_gem_20261020/original-generation-provenance.json",
+        "bytes": 2986,
+        "sha256": "138b5b22921dc02cc7193ba0ccb4c261727dc14a78c2b2b119564de5d708f47f"
+      },
+      "retirement": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_rejected_gem_20261020/retirement.json",
+        "bytes": 225,
+        "sha256": "5ee5f80b7be237e242df2eee6b730b9d971abebd29e05aed1587d6838257e48f"
+      },
+      "relocatedOriginalActivePaths": [
+        "godot_native/assets/native/checkin/checkin_seal_v1.png",
+        "godot_native/assets/native/checkin/provenance.json (original2986B version)"
+      ]
+    }
+  },
+  "deliveryMeasurement": {
+    "initialPayloadBytes": 94510548,
+    "hostedTotalPayloadBytes": 594117133,
+    "logicalPayloadBytes": 499958707,
+    "core": {
+      "file": "index.pck",
+      "bytes": 54643672,
+      "sha256": "4085546791173cbf9403a799f6b3f29612403b8e7a4f226d2a32d4ac2d4fd317"
+    },
+    "wasm": {
+      "file": "index.wasm",
+      "bytes": 39514754,
+      "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
+    },
+    "bootChunks": 91,
+    "bootChunkBytes": 94158426,
+    "bootChunkLimitBytes": 1048576,
+    "deferredPacks": 19,
+    "deferredBytes": 404759288,
+    "coreEntries": 1009,
+    "fullEntries": 2282,
+    "contentLoader": {
+      "file": "content-loader.js",
+      "sha256": "7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d",
+      "url": "content-loader.js?v=7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d"
+    },
+    "meaning": "Hosted total counts retained original PCK/WASM plus duplicate static boot files. Logical payload removes that duplicate. Initial payload counts boot chunks once; no claim that static splitting itself reduces raw initial bytes. BUCT was previously on-demand, so its removal reduces total deployed optional content, not an81MB first-paint saving.",
+    "localTimingSeparateScope": {
+      "sourceInputSha256": "d6682f42f2a46581431f09a271331549081e658f3ed61cc4f99be97d12980e15",
+      "coldBootReadyMs": 3295,
+      "scope": "Loopback Chromium measured cold ready3295ms. Not an online network speed or physical-phone result."
+    },
+    "engineLoader": {
+      "file": "index.js",
+      "sha256": "649986c2276d830baa17cd1774a4bb192fc929186e040394b4fc728a350919cd",
+      "url": "index.js?v=649986c2276d830baa17cd1774a4bb192fc929186e040394b4fc728a350919cd"
+    }
+  },
+  "preview": {
+    "actualSourceInputSha256": "d6682f42f2a46581431f09a271331549081e658f3ed61cc4f99be97d12980e15",
+    "video": {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/19/01a15309-b0c1-7870-bc0b-f00a3e00cade/checkin_print_story_cache_preview_20261020.mp4",
+      "bytes": 145428,
+      "sha256": "8f856be92317b1e8471ddcd37af33cc52fdd4a97e00df50c066059f548edd44b"
+    },
+    "verification": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_story_cache_web_20261020/preview-verification.json",
+      "bytes": 5361,
+      "sha256": "30e23871b89ad60b326867e0c0288ae931ea3abc262a527f696204a5ee7cdc0e"
+    },
+    "cleanup": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/checkin_story_cache_web_20261020/cleanup-receipt.json",
+      "bytes": 241367,
+      "sha256": "76deaa4dd319dfa5a7b93e3131f5aa21e3fd2b71664bd337ae414a5d9395683a"
+    },
+    "frames": 338,
+    "width": 390,
+    "height": 844,
+    "durationSeconds": 5.637638,
+    "maxPTSDeviationMicroseconds": 0,
+    "audio": "not recorded",
+    "compatibleViewOnly": {
+      "laterSourceInputSha256": "44a5b7d735ed8bfa5b32516b1f1c85386ea710dcd9cf74b522ca3c4244d9b85b",
+      "compiledViewPath": "scripts/ui/checkin_success_view.gdc",
+      "compiledViewBytes": 7097,
+      "compiledViewSha256": "1c570d227f406476a7d9f553199eee956018e10f2670dda9914098c7ca1b5433",
+      "remapSha256": "96efa2cc6b1d0a4b86096e3fcc1743407df9ec98cce83ae5d2320d9e03885814",
+      "scope": "Read both actual core PCKs and matched this view and remap byte identity. The complete packages differ; this video records d668, not a new whole-package browser acceptance of 44a5."
+    },
+    "cleanupComplete": true,
+    "sourceMediaHashesRetained": 359,
+    "derivedContactSheetHashesMissing": 11,
+    "cleanupLimitation": "First cleanup removed inspected media, then stopped at nonempty preview-frames because Godot had generated .import sidecars. Source hashes recovered from the unchanged original capture/browser records. No missing derived hash is invented.",
+    "currentCompatibility": {
+      "sourceInputSha256": "57595430cebde1495058eb4d9ca7dc845374db8512d2921aff35b29549cd8216",
+      "evidence": {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_final_compatible_20261020/payload-difference-44a5-to-57595430.json",
+        "bytes": 129237,
+        "sha256": "4b3d403a0828d93f0af7b426007fd6cbc277515c8bab34ab1bc6aeb147ffc185"
+      },
+      "scope": "The compiled receipt view remains identical; the retained clip still records d668, not a new575 browser recording."
+    }
+  },
+  "limitations": [
+    "Dirty local artifact evidence, not a clean tested commit or a publishing receipt.",
+    "Chromium/SwiftShader and headless native scopes do not prove baseline Safari/Firefox/physical phones or a fresh manual four-chapter campaign.",
+    "Reduced motion remains a validated setting-only portable-save variation. No audible audio claim from the silent clip.",
+    "Current93 check-in video captures d668; exact same compiled success view in44a5 is a segment identity, not whole-package identity.",
+    "Older75/94/91/87 suites, native reruns and492 transport assertions remain separate overlapping scopes.",
+    "Eleven internal derived review-sheet hashes were not persisted before inspected files were deleted. All359 source-media hashes remain in original frozen recording/browser records; video PTS/decode metadata remain.",
+    "Current cache tests use controlled own HTTP and Chromium; actual live production download timing is separate. Browser may evict app storage under quota/user settings; no explicit cache TTL is imposed.",
+    "Native scene payload compatibility does not certify new engine or loader bytes; those are tested separately. Clean CI/media export identities may differ from this dirty local package.",
+    "This summary is not a publication receipt. Deployment/remote commit status is recorded separately in the PR and live build manifest."
+  ],
+  "referenceIntegrity": {
+    "checkedAt": "2026-10-20T09:16:22.667667+00:00",
+    "verifiedDistinctArtifacts": 55,
+    "note": "All refs produced in this draft were read and hashed. Nested legacy original records preserve their old path strings as historical records; retired gem/provenance relocation is explicit. Captured PNG/JPEG paths intentionally retired are described by their cleanup receipts.",
+    "explicitArtifactRefsVerified": true,
+    "rootFinalArtifacts": [
+      {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-compatible-20261020/build-manifest.json",
+        "bytes": 48823,
+        "sha256": "577b8ec9e76e9848525e556eaf1181db7a01cf57de4094b093181b841189e3fe"
+      },
+      {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/cache_restart_d668_44a5_20261020/summary.json",
+        "bytes": 24606,
+        "sha256": "01c4f74161bfc24d386bb34348d4cd64514506182059c8ba5d9bf8f99b4cca68"
+      },
+      {
+        "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_final_compatible_20261020/payload-difference-44a5-to-57595430.json",
+        "bytes": 129237,
+        "sha256": "4b3d403a0828d93f0af7b426007fd6cbc277515c8bab34ab1bc6aeb147ffc185"
+      },
+      {
+        "path": "/Users/zhu/Downloads/755/godot_native/tools/web_audio_compat.mjs",
+        "bytes": 4004,
+        "sha256": "2df20e0489bb259ea265cf884a7933f8d1de2a96f34b36c326de9b27d32bb805"
+      },
+      {
+        "path": "/Users/zhu/Downloads/755/godot_native/tools/verify_web_export.mjs",
+        "bytes": 80853,
+        "sha256": "8e3a98a9ba2a67b981403e382d0c01b53756037bb1d861caac3edd36aecdc06e"
+      }
+    ]
+  },
+  "missingEvidence": [
+    {
+      "scope": "internal derived review contact sheets",
+      "count": 11,
+      "meaning": "Hashes were not persisted before inspected temporary files were deleted; source capture hashes, silent MP4 and exact PTS/decode evidence remain."
+    },
+    {
+      "scope": "cache/resume/real-host acceptance",
+      "status": "pending_root_result",
+      "meaning": "Do not infer from the successful basic cold-transport gate."
+    }
+  ],
+  "reviewedAt": "2026-10-20T09:35:12.044809+00:00",
+  "preCompatibilityCandidate": {
+    "sourceInputSha256": "44a5b7d735ed8bfa5b32516b1f1c85386ea710dcd9cf74b522ca3c4244d9b85b",
+    "baseCommit": "a3598adf7c25bcb55b6bf440c15aa79c38d0c4ea",
+    "baseTree": "abd91d38ca788a9fe4858f46c3c6ecf5d007dad9",
+    "sourceDirty": true,
+    "runtime": "godot-web",
+    "engine": "4.7.2.stable.official",
+    "exportDirectory": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-final-20261020",
+    "buildManifest": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-final-20261020/build-manifest.json",
+      "bytes": 48065,
+      "sha256": "6ac9f25486ae165f6203419b4362186e5349eba277044739f9346ac041d35272"
+    },
+    "contentManifest": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-final-20261020/content-manifest.json",
+      "bytes": 4807,
+      "sha256": "dc21b385006cde698340f84e4fe4134aacac33412e248f5e9215e82e7fa4963d"
+    },
+    "contentInventory": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-final-20261020/content-inventory.json",
+      "bytes": 688871,
+      "sha256": "4bedfca53aac651795d9c602b1ed723f3b2ce55833c836df59d009053854e3d7"
+    },
+    "sourceInputs": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-story-cache-final-20261020/source-inputs.json",
+      "bytes": 274580,
+      "sha256": "d43e96f7440ae1c6bea4fa59fc17424123a7d13c9e0b783c37beb916f648661e"
+    },
+    "production": true,
+    "storyOnly": true,
+    "chapterShortcuts": false,
+    "scope": "The exact final44a5 artifact metadata. Full acceptance is composed of explicitly scoped evidence below and still awaits root cache result."
+  },
+  "engineCacheCompatibilityDelta": {
+    "report": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/ci_final_compatible_20261020/payload-difference-44a5-to-57595430.json",
+      "bytes": 129237,
+      "sha256": "4b3d403a0828d93f0af7b426007fd6cbc277515c8bab34ab1bc6aeb147ffc185"
+    },
+    "scope": "Actual21 resource files:19 deferred packs and WASM byte-identical. Core1009 entries:1008 payloads identical; uid_cache serialization differs but1012 UID/path mappings match. Whole core/package byte identity is not claimed.",
+    "engineAudioCompatibility": {
+      "id": "755-godot-4.7.2-position-worklet-capability-v1",
+      "engine": "4.7.2.stable.official",
+      "file": "index.js",
+      "sourceSha256": "33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba",
+      "sha256": "649986c2276d830baa17cd1774a4bb192fc929186e040394b4fc728a350919cd",
+      "replacements": 1,
+      "playback": "Stream",
+      "missingWorkletMixer": "upstream-ScriptProcessor"
+    },
+    "engineLoader": {
+      "file": "index.js",
+      "sha256": "649986c2276d830baa17cd1774a4bb192fc929186e040394b4fc728a350919cd",
+      "url": "index.js?v=649986c2276d830baa17cd1774a4bb192fc929186e040394b4fc728a350919cd"
+    },
+    "contentLoader": {
+      "file": "content-loader.js",
+      "sha256": "7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d",
+      "url": "content-loader.js?v=7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d"
+    }
+  },
+  "serverDelivery": {
+    "dryRun": {
+      "path": "/private/tmp/codex-755-final-cache-server-dryrun-20261020.json",
+      "bytes": 4239,
+      "sha256": "9e891cf33bd4603deac627983688e9071b130c23eb62285d3ba84ea661733322"
+    },
+    "actualDeployment": false,
+    "reason": "Read-only SSH public-key authentication rejected again. No upload or configuration change."
+  },
+  "remoteDeliveryContext": {
+    "observedAt": "2026-10-20T09:35:00Z",
+    "originalPr153": "merged, original candidate ref deleted by external state change",
+    "actualBaseBranch": "godot-version",
+    "actualBaseCommit": "8ad4136b94c83faaaa820235f73cfe4ec6041cfe",
+    "mainUnchanged": "39ccde029b0cd25a6011739a4e4f98f8c898b2c3",
+    "deliveryPlan": "Child of actual8ad base on same previously authorized Pages candidate branch; new follow-up PR. No rewrite of merged PR153."
+  }
+}

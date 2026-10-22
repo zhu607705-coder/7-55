@@ -1,9 +1,10 @@
-name: Deploy GitHub Pages
+name: Deploy Godot Web to GitHub Pages
 
 on:
   push:
     branches:
       - main
+      - codex/godot-complete-20261019
   workflow_dispatch:
 
 permissions:
@@ -17,8 +18,9 @@ concurrency:
 
 jobs:
   build:
-    name: Build web game
+    name: Build Godot Web game
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -26,27 +28,107 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.23.3
           cache: npm
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+      - name: Install locked build-time source tools
+        run: npm ci --ignore-scripts --no-audit --no-fund
 
-      - name: Build production game
-        run: npm run build
-        env:
-          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+      - name: Install pinned official Godot and Web export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-web"
+          cd "$RUNNER_TEMP/godot-web"
+          curl --fail --location --retry 3 --output Godot_v4.7.2-stable_linux.x86_64.zip https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          curl --fail --location --retry 3 --output Godot_v4.7.2-stable_export_templates.tpz https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          # SHA-512 values from the official 4.7.2-stable SHA512-SUMS.txt.
+          printf '%s\n' \
+            '9aa00f7a605200940bce3027a567b782f49bd8e940dd06ae9e987bd65aee1b1467edd56ed84fcdcbdd44354bf613bdbb4e5d2913e925850368e150c59ed54c65  Godot_v4.7.2-stable_linux.x86_64.zip' \
+            'ca4d71c4d7b81dfc15d1a98baa07534aa95b03fdda78a0075b06672e1648d2e5f40980c9adc28d23e1b92e732ee7bf3461997aa804af74ec2fcd7a93ccb84079  Godot_v4.7.2-stable_export_templates.tpz' \
+            | sha512sum --check --strict
+          unzip -q Godot_v4.7.2-stable_linux.x86_64.zip -d editor
+          sudo install editor/Godot_v4.7.2-stable_linux.x86_64 /usr/local/bin/godot
+          unzip -q Godot_v4.7.2-stable_export_templates.tpz 'templates/version.txt' 'templates/web_nothreads_release.zip' -d unpacked
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          cp unpacked/templates/version.txt unpacked/templates/web_nothreads_release.zip "$HOME/.local/share/godot/export_templates/4.7.2.stable/"
+          godot --version
+
+      - name: Install media converter
+        run: |
+          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+
+      - name: Build actual production Godot HTML, WebAssembly and PCK
+        run: node godot_native/tools/build_web.mjs
+
+      - name: Check content transport and lossless pack partition
+        run: |
+          node godot_native/tools/test_web_content_loader.mjs
+          node godot_native/tools/test_web_resource_cache.mjs
+          node godot_native/tools/test_web_boot_chunks.mjs
+          node godot_native/tools/test_web_audio_compat.mjs --export=godot_native/exports/web-release
+          node godot_native/tests/verify_web_save_transport.mjs
+          node godot_native/tools/test_partition_web_pack.mjs
+          node godot_native/tests/verify_web_content_boot_assets.mjs --export=godot_native/exports/web-release
+          node godot_native/tests/verify_web_story_only_export.mjs --export=godot_native/exports/web-release
+
+      - name: Check immutable build provenance
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const m = JSON.parse(fs.readFileSync('godot_native/exports/web-release/build-manifest.json'));
+          if (m.sourceCommit !== process.env.GITHUB_SHA || m.sourceDirty || m.runtime !== 'godot-web' || !m.production || !m.storyOnly || m.threads || m.chapterShortcuts) throw Error('Unverified Godot release provenance');
+          if (m.bootChunks?.schema !== '755-boot-chunks-v1') throw Error('Missing resumable boot chunks');
+          if (m.delivery !== 'chapter-content-packs' || !m.content?.exactCoverage || m.initialPayloadBytes > 100_000_000 || m.content.packs < 1) throw Error('Missing staged content delivery or initial payload budget exceeded');
+          console.log(JSON.stringify({ commit: m.sourceCommit, inputs: m.sourceInputSha256, initialPayloadBytes: m.initialPayloadBytes, payloadBytes: m.totalPayloadBytes, pack: m.pack, content: m.content }, null, 2));
+          NODE
+
+      - name: Accept actual Godot Web input and persisted reload at Pages subpath
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-qa-site"
+          ln -s "$GITHUB_WORKSPACE/godot_native/exports/web-release" "$RUNNER_TEMP/godot-qa-site/7-55"
+          python3 -m http.server 5207 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-qa-site" > "$RUNNER_TEMP/godot-web-http.log" 2>&1 &
+          godot_web_http_pid=$!
+          trap 'kill "$godot_web_http_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5207/7-55/build-manifest.json
+          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5207/7-55/ \
+            --export-dir godot_native/exports/web-release \
+            --output godot_native/exports/verification/web_ci \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000
+
+      - name: Preserve build evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: godot-web-build-evidence
+          path: |
+            godot_native/exports/web-release/build-manifest.json
+            godot_native/exports/web-release/source-inputs.json
+            godot_native/exports/web-release/pack-inventory.json
+            godot_native/exports/web-release/content-manifest.json
+            godot_native/exports/web-release/content-inventory.json
+            godot_native/exports/verification/godot-web-build/*.log
+            godot_native/exports/verification/web_ci/*.json
+          if-no-files-found: warn
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: godot_native/exports/web-release
 
   deploy:
-    name: Publish web game
+    name: Publish Godot Web game
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

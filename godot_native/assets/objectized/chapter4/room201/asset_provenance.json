@@ -1,0 +1,100 @@
+{
+  "provenance": "Generated for this game in ChatGPT web from the reviewed Room201 concept; these are additional assets, not replacements for the original source catalog.",
+  "reviewed_concept_sha256": "4bbb76ebd13d00d69728f8817db848d8f8a94acb6c768c6e82e48cbaaa7af451",
+  "preservation": "All imported PNG bytes are unchanged from the generated files. Runtime atlas sampling and uniform transforms provide separate native parts.",
+  "motion": "Three poses are authored in native scene transforms from the inspected up layer: idle, lever-down/contact, release/rebound. Generated down attempts shifted the fixed pivot and are excluded from runtime; no generated rebound is claimed.",
+  "alpha_policy": "Moving-layer pixels with alpha below4/255 are discarded at render time; the transparent sheet interior alpha is retained.",
+  "assets": [
+    {
+      "file": "calibration_carriage.png",
+      "sha256": "158090f9e60267dece70ac7a411c63e606e4d826a48ba9492eade541f6e5a4c2",
+      "bytes": 754558,
+      "canvas": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_at_least_4_bounds": [
+        447,
+        336,
+        770,
+        623
+      ]
+    },
+    {
+      "file": "press_linkage_up.png",
+      "sha256": "7125345a5d3dbc50a3b958ba3f3e6943c9381c1336b40e599829a57225b2b13a",
+      "bytes": 830415,
+      "canvas": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_at_least_4_bounds": [
+        668,
+        19,
+        1481,
+        417
+      ]
+    },
+    {
+      "file": "pressure_wheel.png",
+      "sha256": "9d2bccc1e709e8b8a812fbe3451f6949045163d2799c74ccd17a1d7a4ec1e22e",
+      "bytes": 939574,
+      "canvas": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_at_least_4_bounds": [
+        865,
+        225,
+        1351,
+        722
+      ]
+    },
+    {
+      "file": "rail_knobs.png",
+      "sha256": "a9a44207b7b6300717ab85221e696d46a2df060a32d80d5b5d1308b332b6d269",
+      "bytes": 691706,
+      "canvas": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_at_least_4_bounds": [
+        546,
+        228,
+        1026,
+        754
+      ]
+    },
+    {
+      "file": "stationary_workbench.png",
+      "sha256": "9a73bda0fc2bdf87d3e34ba9053eb26c95b3c24b6c528400698af951fb457c60",
+      "bytes": 2130748,
+      "canvas": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "alpha_at_least_4_bounds": null
+    },
+    {
+      "file": "transparent_clock_sheet.png",
+      "sha256": "304ad4a33828443b0c03aa502f2320610afbc6e22b1ee5520ae27d5d84eefc89",
+      "bytes": 652462,
+      "canvas": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_at_least_4_bounds": [
+        510,
+        376,
+        749,
+        581
+      ]
+    }
+  ]
+}

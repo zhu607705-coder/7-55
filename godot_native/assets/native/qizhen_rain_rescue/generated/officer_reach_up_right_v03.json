@@ -1,0 +1,55 @@
+{
+  "source": "OpenAI built-in image_gen",
+  "image": "officer_reach_up_right_v03.png",
+  "width": 1254,
+  "height": 1254,
+  "transparent": true,
+  "region_xywh": [
+    294,
+    160,
+    797,
+    1016
+  ],
+  "main_alpha_bounds_xyxy": [
+    302,
+    168,
+    1083,
+    1168
+  ],
+  "anchors_source_xy": {
+    "torso_center_approx": [
+      615,
+      640
+    ],
+    "two_palms_midpoint_approx": [
+      983,
+      255
+    ],
+    "foot_ground_midpoint_approx": [
+      604,
+      1155
+    ]
+  },
+  "anchors_region_xy": {
+    "torso_center_approx": [
+      321,
+      480
+    ],
+    "two_palms_midpoint_approx": [
+      689,
+      95
+    ],
+    "foot_ground_midpoint_approx": [
+      310,
+      995
+    ]
+  },
+  "notes": [
+    "Single full-body navy officer with both empty hands extending up-right; both feet, hands and cap are complete.",
+    "No ring, rope, water, ground, background or extra character.",
+    "At 70 px full sampling-region display height, torso-to-palms offset is approximately (+25.4,-26.5) px.",
+    "Palms are clearly separated from the face. Slightly flexed knees and planted feet.",
+    "Main silhouette bounds measured at alpha > 8. Extremely faint alpha specks outside the main silhouette are excluded by the supplied sampling region.",
+    "No prior atlas or code was changed."
+  ]
+}

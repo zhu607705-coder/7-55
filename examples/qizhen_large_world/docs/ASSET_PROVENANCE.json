@@ -1,0 +1,122 @@
+{
+  "scope": "Standalone actor, paddling and font resources reused from the earlier project/prototype. No map or dock geometry is reused.",
+  "license_notice": "The font retains its bundled SIL OFL. Reused project artwork and scripts retain their existing rights; this document does not grant a new license. Official ZJU photos/maps are reference links only; no source raster is distributed.",
+  "files": [
+    {
+      "file": "assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+      "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc",
+      "repository_source": {
+        "path": "src/assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt",
+        "commit": "2c8cc05ed9297a4040c2e0916351bd9d57ee3a15",
+        "git_blob": "5d2297721f59af944158680288e8cbbe50367658"
+      },
+      "byte_identical_to_repository_blob": true
+    },
+    {
+      "file": "assets/paddling/torso.svg",
+      "sha256": "77930840d81bff32f77901f47cc4b2ce0fe4ad3347f4781d7f50bc205099cb93",
+      "source_snapshot": "Standalone docking/paddling polish, 2026-10-17; copied unchanged into the reviewed large-world source archive",
+      "byte_identical_to_reviewed_archive": true
+    },
+    {
+      "file": "assets/paddling/legs.svg",
+      "sha256": "f58ab40e2c75d034fe24cba921e4ec13ef178d352fecd06e7dfc85ea2a698c9c",
+      "repository_source": {
+        "path": "examples/qizhen_playable_chase/assets/paddling/legs.svg",
+        "commit": "7ec8f23b7e5e7c4af171752277624966cda3b1ec",
+        "git_blob": "3ce8582ceb4057c763442150efc49f0aab56e9ba"
+      },
+      "byte_identical_to_repository_blob": true
+    },
+    {
+      "file": "assets/paddling/hand_grip.svg",
+      "sha256": "4189ba25593b16ff3eb7d758767468eb476d7bfa8512513f6e7c904e703ce4c8",
+      "source_snapshot": "Standalone docking/paddling polish, 2026-10-17; copied unchanged into the reviewed large-world source archive",
+      "byte_identical_to_reviewed_archive": true
+    },
+    {
+      "file": "assets/paddling/hand_palm.svg",
+      "sha256": "0841d55e821030679d9849891da072036472ac777919453a8e19835220f7e979",
+      "source_snapshot": "Standalone docking/paddling polish, 2026-10-17; copied unchanged into the reviewed large-world source archive",
+      "byte_identical_to_reviewed_archive": true
+    },
+    {
+      "file": "assets/paddling/hull.svg",
+      "sha256": "d0dd30a776c8c898b0ba02ecdc3704f565f1277326bb8b808c3d33151db11c25",
+      "repository_source": {
+        "path": "examples/qizhen_playable_chase/assets/paddling/hull.svg",
+        "commit": "7ec8f23b7e5e7c4af171752277624966cda3b1ec",
+        "git_blob": "99eceb1c77bb970abd26b5668c88093967d9f4fc"
+      },
+      "byte_identical_to_repository_blob": true
+    },
+    {
+      "file": "assets/paddling/head.svg",
+      "sha256": "fc5b41bc1c76170db9a5fa693675c428879bb8c15e63ad11ca03994c27100d7d",
+      "repository_source": {
+        "path": "examples/qizhen_playable_chase/assets/paddling/head.svg",
+        "commit": "7ec8f23b7e5e7c4af171752277624966cda3b1ec",
+        "git_blob": "9f6a34f4bc4a679497301b063742c534032da5ed"
+      },
+      "byte_identical_to_repository_blob": true
+    },
+    {
+      "file": "assets/paddling/waist.svg",
+      "sha256": "860e651862b2a0f17b959176181bda9d7eaca17293f6f92a0a231016b6d29133",
+      "source_snapshot": "Standalone docking/paddling polish, 2026-10-17; copied unchanged into the reviewed large-world source archive",
+      "byte_identical_to_reviewed_archive": true
+    },
+    {
+      "file": "assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08",
+      "repository_source": {
+        "path": "src/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+        "commit": "2c8cc05ed9297a4040c2e0916351bd9d57ee3a15",
+        "git_blob": "4532a4e4e79fe810be58422d40bbc363aa607777"
+      },
+      "byte_identical_to_repository_blob": true
+    },
+    {
+      "file": "assets/native/chapter3/black_swan_swim_atlas_v2.png",
+      "sha256": "0f857be684db0cdf8446610469a0cfe0c32a4a9d2ee7ed7b1bbd745dd244c34c",
+      "repository_source": {
+        "path": "examples/qizhen_playable_chase/assets/native/chapter3/black_swan_swim_atlas_v2.png",
+        "commit": "7ec8f23b7e5e7c4af171752277624966cda3b1ec",
+        "git_blob": "6e47d0524b01f0baf4f6be9bbebcbed44dc65495"
+      },
+      "byte_identical_to_repository_blob": true
+    },
+    {
+      "file": "assets/paddling/source/original_kayak.svg",
+      "sha256": "ddb765363d5450722d7460edd2673e92b553c93b480aebe535030c576e9ddf84",
+      "repository_source": {
+        "path": "src/assets/rpg/qizhen/source/kayak_overhead_frame_a.svg",
+        "commit": "2c8cc05ed9297a4040c2e0916351bd9d57ee3a15",
+        "git_blob": "cb4fec116944abd4c198b64303aca3d614510fa0"
+      },
+      "byte_identical_to_repository_blob": true
+    },
+    {
+      "file": "scripts/presentation/kayak_rig.gd",
+      "sha256": "2dda61a19b077f175484fe95b16c9c77268b699a0e99a6eeeb84419842f2e1a8",
+      "source_snapshot": "Standalone docking/paddling polish, 2026-10-17; copied unchanged into the reviewed large-world source archive",
+      "byte_identical_to_reviewed_archive": true
+    },
+    {
+      "file": "scripts/presentation/kayak_stroke_timeline.gd",
+      "sha256": "ffa3619b80174253a0e9b96344089d9f9b776bd9f43bb12409a4d48525c4d8a3",
+      "source_snapshot": "Standalone docking/paddling polish, 2026-10-17; copied unchanged into the reviewed large-world source archive",
+      "byte_identical_to_reviewed_archive": true
+    },
+    {
+      "file": "scripts/presentation/qizhen_swan_swim_visual.gd",
+      "sha256": "aa367b03ac06e425031519e1324bbffbbab4639069e322d8ad3da79df780f9ee",
+      "repository_source": {
+        "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_swim_visual.gd",
+        "commit": "7ec8f23b7e5e7c4af171752277624966cda3b1ec",
+        "git_blob": "599d78236ff951d7c2e24febe16fd4437c9e9b0d"
+      },
+      "byte_identical_to_repository_blob": true
+    }
+  ]
+}

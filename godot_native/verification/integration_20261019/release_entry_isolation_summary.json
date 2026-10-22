@@ -1,0 +1,218 @@
+{
+  "createdAt": "2026-10-19T15:44:51.113270+00:00",
+  "scope": "Release developer entry isolation + stale Web QA-session cleanup; no C1 redesign or native runtime change in the final Web-only round",
+  "sourceFiles": [
+    {
+      "path": "src/main.tsx",
+      "sha256": "210e8df81e1ba7881ac212e2f46992e96debec7d3a16eb3d0fe7b496c5a0ed34"
+    },
+    {
+      "path": "src/App.tsx",
+      "sha256": "febe2a13d2bb2f5d473890bb20d53cb253e7b7e8a87e98fc12932ff00d5f6eb4"
+    },
+    {
+      "path": "src/core/DeveloperSession.ts",
+      "sha256": "0a519d70516734745cb59927ac73c10e0fa36499596b50d463a8f20fde7571cc"
+    },
+    {
+      "path": "scripts/verify-state-write-policy.mjs",
+      "sha256": "517716bf2635e476f791d055479bfe8e7ff4819e137af19125acb12a344c1662"
+    },
+    {
+      "path": "scripts/verify-browser-smoke.mjs",
+      "sha256": "7158f67b576eee5cbdd5c9d7103cc28ab2b920c19c576205430632df90e9e84a"
+    },
+    {
+      "path": "godot_native/export_presets.cfg",
+      "sha256": "7babd9b74a8a0a79c45b3f7650e86a451091eb8a7380065b0fc209084f95cfdb"
+    },
+    {
+      "path": "godot_native/tools/verify_pr_integration_pck.gd",
+      "sha256": "4455c17c44dbb328be39665a2f767c33c4c8475143f27ff1db93e0fb81842982"
+    },
+    {
+      "path": "godot_native/campuses/buct_haidian/scripts/playable_campus.gd",
+      "sha256": "a9a598c7e4308ef4e9cc63539e6c2400166f38d5b365e9b9d3f5de39c7a94094"
+    }
+  ],
+  "finalWebOnlyChangedFiles": [
+    "src/main.tsx",
+    "src/core/DeveloperSession.ts",
+    "scripts/verify-state-write-policy.mjs",
+    "scripts/verify-browser-smoke.mjs"
+  ],
+  "nativeFilesUnchangedFromPriorStage": true,
+  "policy": "Production bootstrap clears exactly8 known sessionStorage QA keys, including source/backup; no QA backup restoration or localStorage writes. Source development applies existing checkpoints as before.",
+  "esmInitializationOrder": "GameState singleton hydrates from the real SaveStore localStorage envelope before main bootstrap; active QA flags do not choose a QA backup or suppress hydration normalization. The canWrite function reads sessionStorage at each later notification, so cleanup before React mount restores ordinary autosave.",
+  "web": {
+    "releasePassed": true,
+    "releaseValidators": 36,
+    "releaseElapsedMs": 84798,
+    "releaseLog": "/tmp/codex-755-stale-session-release.log",
+    "completeReleaseRunsThisFinalFix": 1,
+    "realSaveBoundaryTests": 13,
+    "realSaveBoundaryPassed": true,
+    "realSaveBoundaryLog": "/tmp/codex-755-stale-session-state-tests.log",
+    "boundaryEvidence": [
+      "Stale active/source and all8keys seeded before real createPersistentGameStore; hydration uses the valid formal battery73/initial scene, not QA backup battery9/ending.",
+      "Required hydration persistence is observed before cleanup. Old active flag demonstrably blocks subsequent normal snapshot writes.",
+      "Cleanup leaves formal save bytes identical, removes all known QA session keys, preserves an unrelated session preference, makes CC98 active/mode access return null.",
+      "A later ordinary snapshot update persists battery71, which survives real SaveStore.load."
+    ],
+    "staleSessionNegativeControl": {
+      "artifact": "production demo with entry gate but without legacy-session cleanup",
+      "log": "/tmp/codex-755-stale-session-negative.log",
+      "failedAsExpected": true,
+      "failure": "cc98-stale-session: Ordinary CC98 exit was not persisted: a stale developer session must not suppress formal saves",
+      "screenshot": "/tmp/codex-755-stale-session-negative/cc98-stale-session.png",
+      "meaning": "A real click returned to phone_home while the formal persisted scene stayedcc98; the screenshot also exposes the legacy Edit control."
+    },
+    "positiveBrowser": {
+      "passed": true,
+      "artifact": "demo/index.html",
+      "developerEntryPolicy": "production rejects URL and keyboard checkpoint entry",
+      "fixtureMethod": "External CDP storage initialization using SaveStore.save/load validated envelopes; no product QA hook",
+      "results": [
+        {
+          "id": "cc98-stale-session",
+          "surface": "phone",
+          "bytes": 146259,
+          "width": 390,
+          "height": 844,
+          "sha256": "d76a6ce63700694e1865e1d436c5a2a3e7c903d3349b76ef39b6a1422063ef88",
+          "fixture": "c2-cc98-upload",
+          "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+          "saveVersion": 35,
+          "saveSha256": "2a9be4a53aeebc3a9b36d41dc4ceba938c5e5191ef388cd1bde48313944f3cff",
+          "expectedRoute": {
+            "runtimeMode": "phone",
+            "rpgScene": "campus_bootstrap",
+            "currentScene": "cc98",
+            "chapter": "chapter_two"
+          },
+          "devUrlRejected": true,
+          "ctrlAndMetaShiftDRejected": true,
+          "productControllerExposed": false,
+          "staleDeveloperSessionCleared": true,
+          "cc98MaintenanceHidden": true,
+          "persistence": {
+            "action": "actual CC98 exit button",
+            "savedScene": "phone_home",
+            "realReloadRetained": true
+          }
+        },
+        {
+          "id": "phone-mobile",
+          "surface": "phone",
+          "bytes": 303804,
+          "width": 390,
+          "height": 844,
+          "sha256": "3dde85ffe2fb7983fe837c2e1df7609fb26311341f1360fa19d0f58274a4e7a9",
+          "fixture": "initial",
+          "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+          "saveVersion": 35,
+          "saveSha256": "89d6470cdd39c310d44c2d3c6c6dae3cace4ccd9bd98878beeae7a3bc98d5387",
+          "expectedRoute": {
+            "runtimeMode": "phone",
+            "rpgScene": "campus_bootstrap",
+            "currentScene": "alarm",
+            "chapter": "chapter_one"
+          },
+          "devUrlRejected": true,
+          "ctrlAndMetaShiftDRejected": true,
+          "productControllerExposed": false,
+          "staleDeveloperSessionCleared": true,
+          "cc98MaintenanceHidden": true
+        },
+        {
+          "id": "theater-rpg",
+          "surface": "rpg",
+          "bytes": 951657,
+          "width": 1440,
+          "height": 900,
+          "sha256": "5b8ec630220c3b4ac7a0eb9f1112e71dd9c11946d89453890ec90613352382d5",
+          "fixture": "c3-theater-entry",
+          "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+          "saveVersion": 35,
+          "saveSha256": "695981afb29bee26811a4cc65e1c782c7cf878d9b095fd644db35d8742bad8f3",
+          "expectedRoute": {
+            "runtimeMode": "rpg",
+            "rpgScene": "theater_interior",
+            "currentScene": "phone_home",
+            "chapter": "chapter_three"
+          },
+          "devUrlRejected": true,
+          "ctrlAndMetaShiftDRejected": true,
+          "productControllerExposed": false,
+          "staleDeveloperSessionCleared": true,
+          "cc98MaintenanceHidden": true
+        },
+        {
+          "id": "chapter4-rpg",
+          "surface": "rpg",
+          "bytes": 822823,
+          "width": 1440,
+          "height": 900,
+          "sha256": "95e53389dd6ce889274b729e41c9b93564bee290b560f4c1131db0e3584a8c9e",
+          "fixture": "c4-755-opening",
+          "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+          "saveVersion": 35,
+          "saveSha256": "e7ea25e74cc1acab5ffeb3396bb1f6145e0464781848dd1439bcb68344ad83bf",
+          "expectedRoute": {
+            "runtimeMode": "rpg",
+            "rpgScene": "duan_yongping_temporal_maze",
+            "currentScene": "phone_home",
+            "chapter": "chapter_four"
+          },
+          "devUrlRejected": true,
+          "ctrlAndMetaShiftDRejected": true,
+          "productControllerExposed": false,
+          "staleDeveloperSessionCleared": true,
+          "cc98MaintenanceHidden": true
+        }
+      ]
+    },
+    "positiveBrowserReport": "/tmp/codex-755-stale-session-positive/browser-smoke.json",
+    "browserCases": 4,
+    "visualInspection": "Viewed old/new390x844 CC98 captures: legacy More/Edit controls removed in the new product. Previous phone/theater/C4 captures were also viewed.",
+    "browserMeaning": "All4 cases preload old8QA markers plus ordinary valid save fixtures; conflicting URL/Ctrl+Shift+D/Meta+Shift+D are rejected. CC98 uses the actual exit button, verifies saved phone_home, reloads without re-seeding, and retains phone_home/chapter2.",
+    "testNotes": [
+      "First unit fixture used numeric phoneBattery; corrected to the actual object.percent contract before the13tests passed. No product bug was inferred from that fixture error."
+    ]
+  },
+  "builtWebArtifact": {
+    "path": "demo/index.html",
+    "bytes": 241866480,
+    "sha256": "d7e56b56c61c2a1a3b878bef5ab4c0982bb5a5187a716ffca7a7de97ec0d7441"
+  },
+  "priorStage": {
+    "createdAt": "2026-10-19T15:11:13.756484+00:00",
+    "oldDevUrlNegativeControl": {
+      "artifact": "previous demo before rebuilding with the new DEV compile gate",
+      "failedAsExpected": true,
+      "log": "/tmp/codex-755-release-dev-negative.log",
+      "meaning": "Existing production dev URL jumps to C4; the new smoke catches the original defect."
+    },
+    "oldThreeCaseBrowserReport": "/tmp/codex-755-release-dev-positive/browser-smoke.json",
+    "oldReleaseLog": "/tmp/codex-755-release-dev-release.log",
+    "oldNativeEvidence": {
+      "sourceHaidianPassed": true,
+      "sourceHaidianSummary": [
+        "HAIDIAN_GENUINE_CAMPUS PASS checks=72 ticks=516 illegal=0 errors=[]"
+      ],
+      "sourceHaidianReport": "/tmp/codex-755-release-haidian-tests.json",
+      "realProductionPackIndependentReport": "/tmp/codex-755-release-production-pck-report.json",
+      "externalHaidianProbe": "/tmp/codex-755-production-haidian-probe.gd",
+      "productionResultReportedByRunner": "same source-less production PCK:20 integration/18 access/5 seed/4 boot/11 Haidian; all PASS; formal exports not replaced"
+    },
+    "limitation": "Previous production PCK was before the latest native entry styling; current native validation is owned byroot/native_validation_finish."
+  },
+  "validationTotalsNote": "36 validators,13 boundary tests and4 browser cases are different units and are not added as one coverage count.",
+  "limits": [
+    "No full release rerun beyond the single final-fix run, no full gameplay claim, no physical mobile/Firefox/WebKit acceptance.",
+    "No production save files, root runtime source, Git or GUI operations modified by this Web-only fix.",
+    "Video work remains stopped."
+  ],
+  "sourceFrozen": true,
+  "gitMutation": false
+}

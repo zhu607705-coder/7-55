@@ -1,0 +1,6 @@
+.godot/
+*.import
+*.avi
+*.mp4
+*.jsonl
+test-output/

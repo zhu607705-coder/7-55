@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-10-19T15:38:13.874965+00:00",
+  "method": "computer use / native Godot Project Manager Run once; manager quit, one game left running",
+  "profile": "isolated release-behavior playtest; original player profile untouched",
+  "engine": "Godot 4.7.2 editor binary, production feature enabled in isolated project",
+  "isReleaseExecutable": false,
+  "entryObserved": {
+    "mainButton": "进入主线故事",
+    "campusGroup": "独立校园漫游",
+    "campusNote": "不影响主线进度",
+    "campusButtons": 3,
+    "prototypeCatalogueVisible": false
+  },
+  "continuedSavedState": "未完成的拦截 / 签到码已提交 / 这段交涉尚未完成",
+  "actionsNotPerformed": [
+    "new game",
+    "retry",
+    "chapter jump",
+    "restoring an earlier save over current progress"
+  ],
+  "inputFollowup": "The later F10 attempt returned frontmostApplicationChanged. It is not evidence of settings UI after this restart. Earlier production GUI and source-less PCK tests verify settings/developer isolation separately.",
+  "sourceSha256": {
+    "godot_native/scripts/entry.gd": "1a287a9dde8c1315548b8e7a3f15186c2b9839068f0ab3f520a80c84e8902212",
+    "godot_native/scripts/main.gd": "2d6b300dc90ef86628fd4c4ecba660538035b842c76bb119b7b01917599931cb",
+    "godot_native/scripts/state.gd": "bae280c1592b8ab429906708970945f59c5df6ef3ea49b2affece7f815c6ba43",
+    "godot_native/scripts/developer_tools_policy.gd": "7adbc51fc44d9bcaa0a824466feb9ea5587c245adb39988e00128b7f17ebb6df"
+  }
+}

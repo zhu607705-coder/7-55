@@ -1,0 +1,3 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+BLENDER_SAMPLE_TEST {"checks":259,"failures":0,"imported_meshes":36,"max_render_collision_height_error_m":0.000100612640380859,"min_gap_m":3.75595855712891,"physics":"Original baseline route + height model; exact GLB ray checks are QA only, not new runtime movement","required_jumps":1,"sample_duration_s":11.4166666666667,"stand_bar_ray_m":0.377000025629997,"stand_gap_ray_m":1.0,"triangles":24480,"visible_coarse_meshes":0,"win_ticks":685}

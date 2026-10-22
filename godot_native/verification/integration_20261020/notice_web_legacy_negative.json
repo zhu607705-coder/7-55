@@ -1,0 +1,186 @@
+{
+  "kind": "isolated actual source component harness; not a production campaign or physical mobile device",
+  "legacy": true,
+  "checks": 31,
+  "failures": [
+    "Burst shows exactly one notification",
+    "Fifth event cannot evict first unread notification",
+    "Second notification gets its own turn",
+    "Scene-owned UI hides ordinary notifications",
+    "Blocked time cannot expire the unread remainder",
+    "Authored speech appears immediately in its caption lane",
+    "Notifications wait while the actual narrator is identified",
+    "Story caption stays in the lower reading lane inside the phone",
+    "Reading panel is opaque rather than black glass",
+    "Short story text uses the reading strip width rather than a hidden avatar column",
+    "Real document.hidden hides the active notification",
+    "Real hidden-tab interval longer than original deadline does not consume the first notice",
+    "Foreground resumes the unread remainder rather than restarting the full 2200ms",
+    "Same-EventBus remount keeps the first unread notification",
+    "Unmounted time is paused and remount restores only the unread remainder",
+    "Phone-to-RPG keyed component replacement retains the same FIFO owner",
+    "Surface remount does not restart or consume unseen notification time",
+    "Second queued notice survives the actual unmount and surface remount",
+    "Third queued notice keeps FIFO order after remount",
+    "Mobile story caption stays below status area and above lower phone controls",
+    "Scaled story text keeps its full logical reading width"
+  ],
+  "infrastructureError": null,
+  "browserExceptions": [],
+  "evidence": {
+    "ownerAssertions": {
+      "method": "Exact current App/PhoneShell ownership clauses, combined with real component blocked-lifetime behavior below",
+      "appSha256": "a10551942e5997d8cd74d0ae43fcb9484e1ba696f240697c5e4c99cf4e0e63a3",
+      "phoneSha256": "6cc6bbe0faa4e3fdef78b541b64355039ce508ac863cfa6e61bbb4f98b7349a6"
+    },
+    "desktop": {
+      "phone": {
+        "x": 349.59375,
+        "y": 40,
+        "w": 430,
+        "h": 860
+      },
+      "caption": null,
+      "notice": {
+        "x": 368.59375,
+        "y": 95,
+        "w": 392,
+        "h": 74.1875
+      },
+      "text": null,
+      "captionBackground": null,
+      "documentOverflow": false,
+      "logicalPhone": {
+        "w": 430,
+        "h": 860
+      }
+    },
+    "visibility": {
+      "before": {
+        "now": 486.29999999701977,
+        "hidden": false,
+        "notices": [
+          "系统保留甲",
+          "系统保留乙",
+          "系统保留丙"
+        ],
+        "noticeDurations": [
+          2200,
+          1100,
+          1100
+        ],
+        "captions": []
+      },
+      "hidden": {
+        "now": 508.5,
+        "hidden": true,
+        "notices": [
+          "系统保留甲",
+          "系统保留乙",
+          "系统保留丙"
+        ],
+        "noticeDurations": [
+          2200,
+          1100,
+          1100
+        ],
+        "captions": []
+      },
+      "resumed": {
+        "now": 3056.7999999970198,
+        "hidden": false,
+        "notices": [],
+        "noticeDurations": [],
+        "captions": []
+      },
+      "hiddenWaitMs": 2500
+    },
+    "remount": {
+      "unmountedWaitMs": 1900,
+      "remounted": {
+        "now": 2593,
+        "hidden": false,
+        "notices": [],
+        "noticeDurations": [],
+        "captions": []
+      },
+      "surfaceReplaced": {
+        "now": 2636.4000000059605,
+        "hidden": false,
+        "notices": [],
+        "noticeDurations": [],
+        "captions": []
+      },
+      "second": {
+        "now": 2828.2999999970198,
+        "hidden": false,
+        "notices": [],
+        "noticeDurations": [],
+        "captions": []
+      },
+      "third": {
+        "now": 3959,
+        "hidden": false,
+        "notices": [],
+        "noticeDurations": [],
+        "captions": []
+      }
+    },
+    "mobileNotice": {
+      "phone": {
+        "x": -0.0031280517578125,
+        "y": 76,
+        "w": 352.5999755859375,
+        "h": 705.2000122070312
+      },
+      "caption": null,
+      "notice": {
+        "x": 15.576871871948242,
+        "y": 121.0999984741211,
+        "w": 321.4399719238281,
+        "h": 60.83374786376953
+      },
+      "text": null,
+      "captionBackground": null,
+      "documentOverflow": false,
+      "logicalPhone": {
+        "w": 430,
+        "h": 860
+      }
+    },
+    "mobileCaption": {
+      "phone": {
+        "x": -0.0031280517578125,
+        "y": 76,
+        "w": 352.5999755859375,
+        "h": 705.2000122070312
+      },
+      "caption": null,
+      "notice": {
+        "x": 15.576871871948242,
+        "y": 121.0999984741211,
+        "w": 321.4399719238281,
+        "h": 60.83374786376953
+      },
+      "text": null,
+      "captionBackground": null,
+      "documentOverflow": false,
+      "logicalPhone": {
+        "w": 430,
+        "h": 860
+      }
+    }
+  },
+  "fixture": {
+    "path": "scripts/fixtures/notice-presentation/toast-before-queue.tsx.source.txt",
+    "sha256": "160b6e4360988941e1e5d39185b30fa567e71d6b6214adff02cd9f60d9ef7e32",
+    "transformCount": 1
+  },
+  "passed": false,
+  "negativeReproduced": true,
+  "limits": [
+    "App owner checks are source assertions plus real blocked component behavior, not a full chapter-transition campaign.",
+    "Phone/RPG replacement uses the actual ToastLayer with the same EventBus in an isolated host, not the entire RpgGameHost.",
+    "Audio event timing is checked; real audio-device playback and human reading acceptance remain separate."
+  ]
+}

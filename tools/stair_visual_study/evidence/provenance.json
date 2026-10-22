@@ -1,0 +1,8 @@
+{
+  "base_commit": "913bd512c19c70e842461e0357091dca3635d389",
+  "original_model_sha256": "939b90c931e08626153af65e0a8bf888161425f1e18502d6e7f0a6d524f14399",
+  "source_json_sha256": "b22fbf7a8796bb0b0f646a433a2d482e5bd959ded485b7be805f1e8d56312362",
+  "view_images_unchanged_after_camera_metadata_fix": true,
+  "fixed_architecture_style_superseded": true,
+  "formal_runtime_modified": false
+}

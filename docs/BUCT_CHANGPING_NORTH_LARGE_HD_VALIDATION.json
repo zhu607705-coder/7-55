@@ -1,0 +1,229 @@
+{
+  "schema": "buct_changping_north_large_local_acceptance_v1",
+  "status": "accepted_local_scope",
+  "accepted_scope": "One default-enabled northern HD terrain region; original geometry, roads, visitor and original two rejected/absent RGBA buildings retained",
+  "remaining_gates": [],
+  "tests": {
+    "native": {
+      "checks": 91,
+      "failures": [],
+      "scope": "real candidate headless lifecycle/ownership/source-geometry only; no visual or GPU acceptance",
+      "old_regions_and_road_regression_checks": 245,
+      "final_default_sensitive_old_checks": 140,
+      "road_physics_ticks_latest": 2099
+    },
+    "gpu": {
+      "checks": 29,
+      "failures": [],
+      "actual_display_server": "X11",
+      "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "software_opengl": true,
+      "scope": "Existing complete-core source/backing proof reused; final default only two-view smoke"
+    },
+    "default_smoke": {
+      "captures": [
+        {
+          "file": "north-large-default-engine.png",
+          "native_size": [
+            1536,
+            1024
+          ]
+        },
+        {
+          "file": "changping-five-regions-default-full-engine.png",
+          "native_size": [
+            950,
+            1656
+          ]
+        }
+      ],
+      "default_region_active": true,
+      "diagnostics": {
+        "active": true,
+        "automatic_camera_streaming": false,
+        "cap_scope": "region ground, shadow, shared strip, body-ownership mask and leaf masks; independent bodies are separately counted",
+        "independent_bodies": 0,
+        "independent_body_gpu_bytes": 0,
+        "lower_neighbors_active": [
+          true,
+          true
+        ],
+        "native_original_detail_density": 3.97222075532963,
+        "new_collision_bodies": 0,
+        "new_foreground_owners": 0,
+        "new_gpu_texture_bytes": 9689195,
+        "owned_lower_strip_gpu_bytes": 1169520,
+        "owned_lower_strip_texels_per_source_pixel": 5,
+        "region_ground_foreground_seam_ownership_gpu_bytes": 9689195,
+        "region_residency_limit": 6,
+        "runtime_grid_texels_per_source_pixel": 4,
+        "shared_hd_owner_active": true,
+        "stable_retained_new_cpu_rgba_bytes": 0,
+        "total_new_gpu_texture_bytes": 9689195,
+        "unverified_original_body_ids": [
+          "hill_south_block",
+          "north_sports_west_shelter"
+        ],
+        "validation_rgba_buffer_bytes": 6291456,
+        "world_shadow_owner_count": 0,
+        "world_shadow_polygon_count": 0
+      },
+      "display_server": "X11",
+      "manual_gameplay": false,
+      "scope": "Actual default startup and two normal rendered views only; prior 29-check GPU proof reused",
+      "status": "passed",
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)"
+    }
+  },
+  "gpu_records": [
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_delta": 0,
+        "tested_pixels": 84096,
+        "max_channel_delta": 0
+      },
+      "fixture": "unaccepted_original_bodies_remain_exact"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 1255396,
+        "max_delta": 255,
+        "tested_pixels": 1256064,
+        "max_channel_delta": 255
+      },
+      "fixture": "magenta_backing_control"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_delta": 0,
+        "tested_pixels": 1256064,
+        "max_channel_delta": 0
+      },
+      "fixture": "entire_owner_zero_core_source_poison"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_delta": 0,
+        "tested_pixels": 1572864,
+        "max_channel_delta": 0
+      },
+      "fixture": "hidden_upper_restores_exact_lower_render"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_delta": 0,
+        "tested_pixels": 1572864,
+        "max_channel_delta": 0
+      },
+      "fixture": "uninstall_restores_exact_predecessor"
+    },
+    {
+      "comparison": {
+        "changed_pixels": 0,
+        "max_delta": 0,
+        "tested_pixels": 1572864,
+        "max_channel_delta": 0
+      },
+      "fixture": "reverse_installation_order"
+    }
+  ],
+  "coverage": {
+    "previous_core_source_pixels": 186624,
+    "new_logical_core_source_pixels": 83520,
+    "unaccepted_original_body_core_source_pixels": 5016,
+    "new_hd_terrain_core_source_pixels": 78504,
+    "total_hd_terrain_core_source_pixels": 265128,
+    "canvas_source_pixels": 1573200,
+    "changping_hd_terrain_core_percent": 16.852784134248665,
+    "haidian_hd_terrain_core_percent": 0,
+    "chaoyang_hd_terrain_core_percent": 0
+  },
+  "allocation": {
+    "new_region_layer_bytes": 9689195,
+    "all_five_region_layer_bytes": 46079237,
+    "new_independent_building_bytes": 0,
+    "scope": "Exact logical imported texture+mip counts, not measured hardware VRAM"
+  },
+  "original_authority": {
+    "source_png_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+    "physics_records": 150,
+    "walkable_polygons": 83,
+    "new_physics_records": 0
+  },
+  "known_visual_followups": [
+    "Whole Hill and shelter RGBA are still rejected or absent; conservative original source envelopes retained",
+    "Top/left/right original-low-resolution transition and local brighter hill texture remain visible in full view; contiguous ground-first acceptance is not whole-map color/style polish",
+    "No new-region manual walking or hardware-GPU performance claims"
+  ],
+  "registration": {
+    "schema": "buct_uniform_ground_registration_v1",
+    "native_original_size": [
+      1536,
+      1024
+    ],
+    "runtime_grid_size": [
+      1536,
+      1024
+    ],
+    "runtime_grid_texels_per_source_pixel": 4,
+    "effective_native_detail_density": 3.9722207553296323,
+    "uniform_raw_to_source_scale": 0.2517483447158051,
+    "raw_origin_source_world": [
+      349.8530690426254,
+      167.60493548518747
+    ],
+    "rotation_degrees": 0,
+    "anisotropic_scale": false,
+    "deformation": false,
+    "physics_or_source_map_transformed": false,
+    "diagnostic_fit_points": 12,
+    "rms_image_fit_source_px": 0.9590672850044749,
+    "max_image_fit_source_px": 1.7869650269575503,
+    "diagnostic_note": "Gradient landmark consistency, not surveying or completed GPU acceptance",
+    "input_composite_sha256": "65ddd9cf598ca598d742b840da0e6d71fa1164503adab9780b0ec48447cfff46",
+    "runtime_png_sha256": "d9ce70c347ecb2a2d62c4393e2c696f32a3a0d4b0c1faa4156d3f02d55232bb7",
+    "runtime_rgba_sha256": "1e41812d1dac462577bb4b922704ee86d22283378277a639a197818de17a582a",
+    "fill_gutter_policy": "Any unsampled raw border lies within <=2 source-pixel discarded outer collar, outside core; not counted HD"
+  },
+  "manual_new_region_gameplay": false,
+  "hardware_performance_measured": false,
+  "whole_campus_complete": false,
+  "all_three_campuses_complete": false,
+  "publication": {
+    "target_branch": "godot-version",
+    "base_dependency": "72fcafd285dd388eed2735be71b60fa23f428548",
+    "merged": false,
+    "uploaded": false
+  },
+  "artifacts": {
+    "originals_backup_library_file_id": "libfile_de3ec07dbaa08191a830e8417d98e086",
+    "default_close_library_file_id": "libfile_0796ec1fbc6c8191a917a8341bc3565d",
+    "default_full_library_file_id": "libfile_4f76dc39c15c8191941ddee11e807495"
+  },
+  "raw_evidence": {
+    "qa/north-large-gpu/north-large-gpu-result.json": {
+      "sha256": "25b40fa7d4a450c9ac758f4fc6acffa40e4fa427cfae6e8e030e94dcd909e0ab",
+      "bytes": 1769
+    },
+    "qa/v4-default-native/additional-v4-native-result.json": {
+      "sha256": "69bcd89dd6e20c231a8c1eafd92aa06a889fbe8a6907ac0d6efbe9d695a284a8",
+      "bytes": 2313
+    },
+    "qa/north-large-default-smoke/default-smoke-result.json": {
+      "sha256": "77b2cd5e311c5dd6a30b8cb6a92761408734313c03712e32b3d178d6cfb32a4e",
+      "bytes": 1638
+    },
+    "qa/north-large-default-smoke/north-large-default-engine.png": {
+      "sha256": "50605d4cac60ef2cb5d5aea546edc80040f11531a90628211ec8ddd27d73730d",
+      "bytes": 3229160
+    },
+    "qa/north-large-default-smoke/changping-five-regions-default-full-engine.png": {
+      "sha256": "34e496fbdaafc01deb15ebfb5281747a02b03febec552006243ca1cefaeb1aa2",
+      "bytes": 3722654
+    }
+  }
+}

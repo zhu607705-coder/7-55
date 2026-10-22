@@ -1,0 +1,244 @@
+{
+  "schema": "buct_registered_hd_region_v2",
+  "id": "north_adjacent",
+  "quality_approved": true,
+  "approval_scope": "Source-scale geometry and coherent candidate artwork accepted for native validation; GPU/lifecycle acceptance is reported separately.",
+  "source_sha256": "f92a8de6ef703bab4b2e471a49acc082dd4d128d264d99d3ed1818fdb0c93707",
+  "roi_xywh": [
+    630,
+    399,
+    240,
+    240
+  ],
+  "core_xywh": [
+    642,
+    411,
+    216,
+    216
+  ],
+  "runtime_size": [
+    1200,
+    1200
+  ],
+  "ground_asset": "res://campuses/buct_changping/assets/north_hd_ground.png",
+  "ground_rgba_sha256": "9cd2e3d9f4b11a957b1aa199466d359d5091e4989d584b7ac6c50624229d6213",
+  "ground_png_sha256": "cf27670553b536138d33d4fae397c7c48444aaf06907d9bbeb951559d4783b9e",
+  "source_body_ownership": {
+    "asset": "res://campuses/buct_changping/data/north_hd_body_ownership.r8.bin",
+    "sha256": "9521898a09f24eeecfe714dc3ce46580e498270df15e88874fdc73e614c2a624",
+    "size": [
+      240,
+      240
+    ]
+  },
+  "shared_overlap": {
+    "neighbor_node": "WenliHighDetailRegion",
+    "rect": [
+      630,
+      615,
+      240,
+      24
+    ],
+    "sample_size": [
+      1200,
+      122
+    ],
+    "unfeathered_strip_asset": "res://campuses/buct_changping/assets/north_wenli_shared_hd_strip.png",
+    "rgba_sha256": "a9a075b5e77135d82100ce24893151ca46ae925e70b57d4037ed6f7669546f83",
+    "raw_source_sha256": "73744c50370cebbcaa0bb6fd5d010370e8b844309a63dadea1e2504c0e8c5ab3",
+    "resampling": "Uniform 1254->1200 Lanczos; source y615..627 restored from original v1. Existing accepted same-source core rows60..121 x60..1139 retained exactly. Last2 rows are sampling gutter, not extra coverage.",
+    "ownership": "North region is the sole opaque owner inside shared band while legacy Wenli is active. Smoothstep RGB mix of two high-detail sources; no old low-resolution source rim in the shared core."
+  },
+  "independent_buildings": [
+    {
+      "id": "north_sports_hall",
+      "registration": "res://campuses/buct_changping/data/north_sports_hall_registration.json",
+      "legacy_visual_names": [
+        "SourcePixelSilhouette"
+      ],
+      "underlay_names": [
+        "CleanUnderlay_north_sports_hall"
+      ]
+    }
+  ],
+  "shadow": null,
+  "foreground": [
+    {
+      "id": "north_road_crown_01",
+      "rect": [
+        674,
+        551,
+        20,
+        24
+      ],
+      "baseline_y": 570.0,
+      "alpha_asset": "res://campuses/buct_changping/data/north_road_crown_01.r8.bin",
+      "alpha_sha256": "e3e45e65e5438937bb2996dc74ac856d34e4e5e38653891b46be966c18715072",
+      "nonzero_alpha_texels": 4040,
+      "source_canopy_envelope": [
+        [
+          679,
+          558
+        ],
+        [
+          683,
+          555
+        ],
+        [
+          687,
+          555
+        ],
+        [
+          691,
+          558
+        ],
+        [
+          693,
+          562
+        ],
+        [
+          691,
+          566
+        ],
+        [
+          687,
+          569
+        ],
+        [
+          682,
+          569
+        ],
+        [
+          678,
+          565
+        ]
+      ],
+      "alpha_policy": "Hand-bounded same-HD canopy groups, leaf chroma/shape alpha only; road and low-saturation ground shadow excluded. No tree trunk or collision inferred.",
+      "depth_basis": "Visible lower local canopy edge; only approved road feet participate in proof."
+    },
+    {
+      "id": "north_road_crown_02",
+      "rect": [
+        686,
+        568,
+        22,
+        24
+      ],
+      "baseline_y": 586.0,
+      "alpha_asset": "res://campuses/buct_changping/data/north_road_crown_02.r8.bin",
+      "alpha_sha256": "d641ec807744da202da5cec3ee6efdc413367bd7ba9e2f1e63dbd298dae91761",
+      "nonzero_alpha_texels": 4868,
+      "source_canopy_envelope": [
+        [
+          690,
+          574
+        ],
+        [
+          694,
+          570
+        ],
+        [
+          699,
+          570
+        ],
+        [
+          704,
+          574
+        ],
+        [
+          706,
+          579
+        ],
+        [
+          703,
+          584
+        ],
+        [
+          698,
+          586
+        ],
+        [
+          692,
+          583
+        ],
+        [
+          689,
+          578
+        ]
+      ],
+      "alpha_policy": "Hand-bounded same-HD canopy groups, leaf chroma/shape alpha only; road and low-saturation ground shadow excluded. No tree trunk or collision inferred.",
+      "depth_basis": "Visible lower local canopy edge; only approved road feet participate in proof."
+    },
+    {
+      "id": "north_road_crown_03",
+      "rect": [
+        695,
+        591,
+        22,
+        24
+      ],
+      "baseline_y": 611.0,
+      "alpha_asset": "res://campuses/buct_changping/data/north_road_crown_03.r8.bin",
+      "alpha_sha256": "79f2074028c2afc4d7d7e9c2c9d0fd67faefa9cdeb0e5635462d38b72684a18e",
+      "nonzero_alpha_texels": 4509,
+      "source_canopy_envelope": [
+        [
+          699,
+          597
+        ],
+        [
+          704,
+          593
+        ],
+        [
+          710,
+          594
+        ],
+        [
+          715,
+          598
+        ],
+        [
+          716,
+          602
+        ],
+        [
+          713,
+          607
+        ],
+        [
+          708,
+          611
+        ],
+        [
+          703,
+          608
+        ],
+        [
+          699,
+          604
+        ]
+      ],
+      "alpha_policy": "Hand-bounded same-HD canopy groups, leaf chroma/shape alpha only; road and low-saturation ground shadow excluded. No tree trunk or collision inferred.",
+      "depth_basis": "Visible lower local canopy edge; only approved road feet participate in proof."
+    }
+  ],
+  "provenance": {
+    "raw_v1_sha256": "37747cb27e55eeb0ed4a57c70aad785e448c839237db8b080157d3aab9d5d174",
+    "raw_size": [
+      1254,
+      1254
+    ],
+    "uniform_world_scale": 0.19138755980861244,
+    "raw_original_preserved": true,
+    "v2_local_revision": "Rejected in full, including both permission masks; v2 did not reliably soften road paint. No v2 pixel used in production."
+  },
+  "limits": [
+    "Only this adjacent240x240 source region is enhanced; whole-campus coverage remains partial.",
+    "Some existing pale road traces are artistically strengthened in generated art; they are not verified traffic markings.",
+    "Hidden under-building ground is inferred.",
+    "No independent building cast shadow is claimed because the old object has no source-owned shadow polygon.",
+    "Three local canopy groups are foreground only; they add no collision or grass access.",
+    "Runtime residency admission is bounded; automatic camera streaming remains unimplemented."
+  ]
+}

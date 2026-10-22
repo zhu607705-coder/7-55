@@ -1,0 +1,30 @@
+{
+  "source": "/Users/zhu/Library/Application Support/755-native-check-7ZNfry/data/SevenFiftyFiveNative/save.json",
+  "sourceSha256": "f9ef66fa92b6eba3e066de8898208ba5c37f7f7aa85bb00f8745b7c39b4c06dd",
+  "results": [
+    {
+      "label": "fresh-input",
+      "ok": true,
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "fresh-restart-continue",
+      "ok": true,
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "copied-input",
+      "ok": true,
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "copied-restart-continue",
+      "ok": true,
+      "status": 0,
+      "error": null
+    }
+  ]
+}

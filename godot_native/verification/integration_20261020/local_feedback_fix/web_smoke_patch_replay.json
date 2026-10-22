@@ -1,0 +1,210 @@
+{
+  "schema": "c4-smoke-patch-replay-v1",
+  "startedAt": "2026-10-20T01:28:48.091Z",
+  "sourceCommit": "49332ec51eaf118554a949105ec6fef13dbbd8b3",
+  "patch": {
+    "path": "/tmp/codex-755-smoke-c4-ready.patch",
+    "sha256": "e4b4bf3db7250c81e7e555fb7a71cc03f55261fbfb72f0d640d473c8a3f45a2d"
+  },
+  "externalPatchApplication": {
+    "workspace": "/tmp/codex-755-smoke-patch-PwWgAC",
+    "status": 0,
+    "paths": [
+      "scripts/verify-browser-smoke.mjs",
+      "docs/TESTING.md"
+    ],
+    "trackedScriptBeforeSha256": "7158f67b576eee5cbdd5c9d7103cc28ab2b920c19c576205430632df90e9e84a",
+    "patchedScriptSha256": "1c61e5f9a158e4b4adbf8adac95c09c65f47ece43769fe3eac57430eaa9e4aed"
+  },
+  "candidate": {
+    "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/smoke_patch_replay/candidate.mjs",
+    "sha256": "b35b87a3afe960b8f099ed268d806c34442147502709ca7d39f70d082ebcdc58",
+    "onlyCodeAdaptation": {
+      "from": "const root = path.resolve(fileURLToPath(new URL(\"..\", import.meta.url)));",
+      "to": "const root = \"/Users/zhu/Downloads/755\";",
+      "reason": "The external ignored-file location has a different import.meta.url parent. Existing esbuild imports resolve naturally via canonical ancestor node_modules; no import, port, URL, fixture, assertion or runtime logic was otherwise adapted."
+    }
+  },
+  "sourceArtifactsBefore": {
+    "demo": "2fd8f9cad637481a8bce55c4c0398394af8ca271a863f622c1eecb1d7942f331",
+    "dist": "6bbe59c98d152e5bc5b367b056707c3633b3af6094b45eff7ce71434753a7587"
+  },
+  "run": {
+    "command": [
+      "/private/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+      "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/smoke_patch_replay/candidate.mjs"
+    ],
+    "env": {
+      "BROWSER_SMOKE_ARTIFACT_DIR": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/smoke_patch_replay/artifacts"
+    },
+    "expectedArtifact": "canonical frozen demo/index.html served by unchanged Vite preview --mode demo at127.0.0.1:4173",
+    "status": 0,
+    "error": null,
+    "durationMs": 44259
+  },
+  "stages": {
+    "patchApply": true,
+    "syntax": true
+  },
+  "passed": true,
+  "browserReport": {
+    "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/smoke_patch_replay/artifacts/browser-smoke.json",
+    "sha256": "16b6f54f935a16e4b1873d8f130b8a2e4e5205463b11179622bef76bd1efc7a1",
+    "passed": true,
+    "artifact": "demo/index.html",
+    "developerEntryPolicy": "production rejects URL and keyboard checkpoint entry",
+    "fixtureMethod": "External CDP storage initialization using SaveStore.save/load validated envelopes; no product QA hook",
+    "results": [
+      {
+        "id": "cc98-stale-session",
+        "surface": "phone",
+        "bytes": 146259,
+        "width": 390,
+        "height": 844,
+        "sha256": "d76a6ce63700694e1865e1d436c5a2a3e7c903d3349b76ef39b6a1422063ef88",
+        "fixture": "c2-cc98-upload",
+        "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+        "saveVersion": 35,
+        "saveSha256": "a1a9217ae46a7eab2a7f45be16c5527a405a8c90de0162192ba7c8cd2bfc0774",
+        "expectedRoute": {
+          "runtimeMode": "phone",
+          "rpgScene": "campus_bootstrap",
+          "currentScene": "cc98",
+          "chapter": "chapter_two"
+        },
+        "devUrlRejected": true,
+        "ctrlAndMetaShiftDRejected": true,
+        "productControllerExposed": false,
+        "staleDeveloperSessionCleared": true,
+        "cc98MaintenanceHidden": true,
+        "persistence": {
+          "action": "actual CC98 exit button",
+          "savedScene": "phone_home",
+          "realReloadRetained": true
+        }
+      },
+      {
+        "id": "phone-mobile",
+        "surface": "phone",
+        "bytes": 303804,
+        "width": 390,
+        "height": 844,
+        "sha256": "3dde85ffe2fb7983fe837c2e1df7609fb26311341f1360fa19d0f58274a4e7a9",
+        "fixture": "initial",
+        "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+        "saveVersion": 35,
+        "saveSha256": "02601b7480bb7d1b9937a62f1291b3a4b4f86ecfe54e7a283a28241b63c03436",
+        "expectedRoute": {
+          "runtimeMode": "phone",
+          "rpgScene": "campus_bootstrap",
+          "currentScene": "alarm",
+          "chapter": "chapter_one"
+        },
+        "devUrlRejected": true,
+        "ctrlAndMetaShiftDRejected": true,
+        "productControllerExposed": false,
+        "staleDeveloperSessionCleared": true,
+        "cc98MaintenanceHidden": true
+      },
+      {
+        "id": "theater-rpg",
+        "surface": "rpg",
+        "bytes": 941858,
+        "width": 1440,
+        "height": 900,
+        "sha256": "df3e107e66c3785098ab665d4e8d1f381f35b5fd10b904607a64ba50960641a0",
+        "fixture": "c3-theater-entry",
+        "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+        "saveVersion": 35,
+        "saveSha256": "4d9b4770d5022ae62b45641ed98e5cdaffa3e8a8efe6a88c99f9ba93bd60d612",
+        "expectedRoute": {
+          "runtimeMode": "rpg",
+          "rpgScene": "theater_interior",
+          "currentScene": "phone_home",
+          "chapter": "chapter_three"
+        },
+        "devUrlRejected": true,
+        "ctrlAndMetaShiftDRejected": true,
+        "productControllerExposed": false,
+        "staleDeveloperSessionCleared": true,
+        "cc98MaintenanceHidden": true
+      },
+      {
+        "id": "chapter4-rpg",
+        "surface": "rpg",
+        "bytes": 822742,
+        "width": 1440,
+        "height": 900,
+        "sha256": "a198fcdc63b632a494425b0f43429db5f36c2c476c564326523d45a1b757fddf",
+        "fixture": "c4-755-opening",
+        "fixtureSource": "external factory → SaveStore.save/load → ordinary persisted envelope",
+        "saveVersion": 35,
+        "saveSha256": "3abed0e616203611897cbb6abda068e47a7631a360d5a6392f7afa6ad0003b8f",
+        "expectedRoute": {
+          "runtimeMode": "rpg",
+          "rpgScene": "duan_yongping_temporal_maze",
+          "currentScene": "phone_home",
+          "chapter": "chapter_four"
+        },
+        "devUrlRejected": true,
+        "ctrlAndMetaShiftDRejected": true,
+        "productControllerExposed": false,
+        "staleDeveloperSessionCleared": true,
+        "cc98MaintenanceHidden": true,
+        "chapter4Readiness": {
+          "waitedMs": 2884,
+          "scene": "duan_yongping_temporal_maze",
+          "input": {
+            "gameEnabled": true,
+            "sceneEnabled": true,
+            "keyboardEnabled": true,
+            "keys": {
+              "up": false,
+              "down": false,
+              "left": false,
+              "right": false,
+              "interact": false
+            }
+          },
+          "entry": {
+            "sceneId": "duan_yongping_temporal_maze",
+            "phase": "entry",
+            "status": "ready",
+            "strategy": "immediate",
+            "moduleReady": true,
+            "assetCount": 31,
+            "loadedCount": 31,
+            "reusedCount": 6,
+            "failedUrls": [],
+            "estimatedTransferBytes": 6217850,
+            "measuredTransferBytes": 0,
+            "estimatedDecodedBytes": 1228800,
+            "elapsedMs": 263.59999999403954,
+            "degradationReason": null,
+            "transferMeasurement": "estimated",
+            "warmedAssetCount": 31,
+            "failedAssetCount": 0,
+            "constrainedNetwork": false,
+            "lowMemory": false,
+            "startedAtMs": 4249.4000000059605,
+            "completedAtMs": 4513
+          },
+          "prologueOverlayVisible": false
+        }
+      }
+    ]
+  },
+  "sourceArtifactsAfter": {
+    "demo": "2fd8f9cad637481a8bce55c4c0398394af8ca271a863f622c1eecb1d7942f331",
+    "dist": "6bbe59c98d152e5bc5b367b056707c3633b3af6094b45eff7ce71434753a7587"
+  },
+  "artifactBytesUnchanged": true,
+  "trackedWorktreeClean": true,
+  "completedAt": "2026-10-20T01:29:32.489Z",
+  "cleanup": {
+    "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/deployment_20261020/smoke_patch_replay/screenshot-and-process-cleanup.json",
+    "sha256": "063abb856f9fc3b065ed6f32caf15ca5261bdd64729ac6857ab4e01ba98aa1d8",
+    "screenshotsViewedAndDeleted": 4,
+    "preview4173Stopped": true
+  }
+}

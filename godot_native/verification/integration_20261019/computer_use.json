@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-19T09:18:37.499887+00:00",
+  "method": "CUA native app GUI, not CLI substitution",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "blender": "5.2.2 LTS",
+  "blenderGui": "Opened examples/qizhen_blender_nearshore/source/qizhen_north_bank.blend and framed all source geometry; source not saved",
+  "godotGui": [
+    "Loaded entry.tscn in editor and ran game",
+    "Alarm start/dismiss -> wake -> animated revised wake text -> phone_home -> WeChat -> friend",
+    "Folded-stair preview: start, held D movement, return preview menu, return entry",
+    "Single current process after closing old duplicate: real automatic save updated phone_home, then WeChat 15%; app Quit -> relaunch via Finder -> Continue restored WeChat 15%",
+    "Window resized from 1440x900 client to approximately 392x846 client: phone frame retained 1:2, current app and task bar contained"
+  ],
+  "saveIsolation": "Dedicated custom user directory under 755-native-check-7ZNfry; formal player saves untouched",
+  "uiInterference": "Old duplicate instance and shared data hot update first caused an outdated in-memory validator; fresh-process CUA and four-process C1 regression confirmed current writeback/Continue",
+  "dot": "No Dot browser provider available in current computer-use inventory",
+  "manualFullChapters": false,
+  "physicalMobile": false
+}

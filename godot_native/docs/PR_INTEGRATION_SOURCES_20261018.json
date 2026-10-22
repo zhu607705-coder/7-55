@@ -1,0 +1,1751 @@
+{
+  "schema": 1,
+  "base": "2c8cc05ed9297a4040c2e0916351bd9d57ee3a15",
+  "purpose": "Exact PR source preservation and independent project-root compatibility, not proof of formal gameplay parity",
+  "sources": [
+    {
+      "pr": 143,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/143",
+      "head": "f9ecd18d290528ff311e96310bde9bc195230a18",
+      "project_root": "godot_native",
+      "role": "isolated_twelve_flight_preview",
+      "source_files": [
+        {
+          "path": "godot_native/assets/native/endless_stair_b3/FONT_LICENSE.txt",
+          "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+        },
+        {
+          "path": "godot_native/assets/native/endless_stair_b3/provenance.json",
+          "sha256": "2f319039ae87c65c804f4428c0ee22702f558a600dd1aec786b842664fc35ebc"
+        },
+        {
+          "path": "godot_native/assets/native/endless_stair_b3/stair_text.ttf",
+          "sha256": "b48b95ec7329d6ade2187d779f5618950963bd7d25178fe4f0d253db9c68044a"
+        },
+        {
+          "path": "godot_native/data/native/chapter4-endless-stair-b3.json",
+          "sha256": "e486b1ffe612afe6815ef119fcdd6025031db8f6cc321165392540018eea84e1"
+        },
+        {
+          "path": "godot_native/docs/ENDLESS_STAIR_B3_PREVIEW.md",
+          "sha256": "0e7cd6be1b142db59b3a2c9074d94c5eec10d841bc7bf2e451a6eada95fc2f4e"
+        },
+        {
+          "path": "godot_native/docs/ENDLESS_STAIR_CAMERA_INPUT.md",
+          "sha256": "18d04373b142fc423a5596dd37006053349a7942c69a462f32f6d808d863c58a"
+        },
+        {
+          "path": "godot_native/scenes/chapter4_endless_stair_preview.tscn",
+          "sha256": "c25586c8d08a6c1a3c9e1225665c0cb4cb94c44bf2f2281010d259e3c8ba57e1"
+        },
+        {
+          "path": "godot_native/scripts/audio/endless_stair_guard_foley.gd",
+          "sha256": "04e7aed35157ec4fcb4fe4bc5ff52a81399eacae27cd9410300e7f88040d31b5"
+        },
+        {
+          "path": "godot_native/scripts/audio/endless_stair_guard_foley.gd.uid",
+          "sha256": "ba1f7c84f62f8a4e8fd9f12baecca71a51c15942b81f88827f31d8ca0878cfc9"
+        },
+        {
+          "path": "godot_native/scripts/games/chapter4_endless_stair_model.gd",
+          "sha256": "06cf6e03a086b1024a534ae31674541144f82e4413be34ea04469172f9a1a5f1"
+        },
+        {
+          "path": "godot_native/scripts/games/chapter4_endless_stair_model.gd.uid",
+          "sha256": "df6aaea57b630ff26ae37b8b9f5f0463a2fbcd9d2d22fa0abe9c9954b3aba545"
+        },
+        {
+          "path": "godot_native/scripts/games/chapter4_endless_stair_physics.gd",
+          "sha256": "a80a13d9b3383ce7c6909e85de95cc5cdcd25f3cc891ac8f31f841819d09f642"
+        },
+        {
+          "path": "godot_native/scripts/games/chapter4_endless_stair_physics.gd.uid",
+          "sha256": "5882a7b93fcf65ec17926da4e44d3b31e9122950d4b190174af1bd37b20267cd"
+        },
+        {
+          "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd",
+          "sha256": "09b83c3b3b80f35b2f4bfabbdb774fabb51e437df375699e61ba1d8290c56b41",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/chapter4_endless_stair_view.gd.source.txt",
+          "adapted_sha256": "5bf666830b3d8e2345ecd11fdc6b56ad5edd90f354371fe9d6f2e020bf09d8e2",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. The original stair_text.ttf remains exclusively on physical Label3D wall lettering; instruction, start/back actions, corner HUD and subtitle share the common UI font. 2026-10-22 PR #159 motion-only adaptation: reuse original front/back frames for takeoff/gather/descent and seven-tick landing recovery across facing changes; held-phone sockets follow the same original pixels. Verified against unchanged physics/model/sole contacts by 11 native stages and matched actual renders at a4b5a67 (run 39748220942). No camera, input, source texture, story or save changes."
+        },
+        {
+          "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd.uid",
+          "sha256": "7b60484c4263c2cee4f0c645c3d36fa6881920bef4769ceae1eabc13793f6f38"
+        },
+        {
+          "path": "godot_native/scripts/presentation/endless_stair_beam_clipper.gd",
+          "sha256": "d4bb8ecc59b973e996c364082bdb5623843a3292468b39de2d417d4d6b31ab9f"
+        },
+        {
+          "path": "godot_native/scripts/presentation/endless_stair_beam_clipper.gd.uid",
+          "sha256": "64c7bac967f349ea4ca0d1b506c56b5e33ff6c64510efb826d6fa50d2a740206"
+        },
+        {
+          "path": "godot_native/scripts/presentation/endless_stair_gait.gd",
+          "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/endless_stair_gait.gd.source.txt",
+          "adapted_sha256": "37c09b942464c73ced569621880a082a9781bccd3e615d7931930b4f54cfe227",
+          "reason": "2026-10-22 PR #159 motion-only adaptation: continue landing recovery through front/back-to-side turns by compressing only original upper pixels toward the pelvis, preserving independently solved shoe contacts and shared gait phase. Include recovery in mesh cache identity so stopping cannot freeze the deformation. Original PR #143 bytes remain verified in the scoped snapshot; runtime changes passed 11 native stages and matched actual renders at a4b5a67 (run 39748220942)."
+        },
+        {
+          "path": "godot_native/scripts/presentation/endless_stair_guard_feedback.gd",
+          "sha256": "5d29c2ab743785d10cc2df9dc4177ec4cc1a862b48a84a445b25aefaed30fdc8"
+        },
+        {
+          "path": "godot_native/scripts/presentation/endless_stair_guard_feedback.gd.uid",
+          "sha256": "ba828d035493e5160f75140ebb720367a1f0b969be3760edb40f90122b98c286"
+        },
+        {
+          "path": "godot_native/scripts/presentation/endless_stair_step_pose.gd",
+          "sha256": "ba3e43f9d106d33c23c5d945be289f3230a515bdf94a3a9ea349bc727b42cfb0"
+        },
+        {
+          "path": "godot_native/tests/benchmark_endless_stair.gd",
+          "sha256": "44060f0f259c6ec78f47cf95aef0c4603dc901ebd4a2758b468f1a455bfd77ab"
+        },
+        {
+          "path": "godot_native/tests/benchmark_endless_stair.gd.uid",
+          "sha256": "afc4c71d9ae517320ebdddd5b651a474a8f4e01771b3c14f9eb920acb43e1708"
+        },
+        {
+          "path": "godot_native/tests/benchmark_endless_stair_view.gd",
+          "sha256": "e79ef201311a3a4b2a44a0fc2338734eb53a49db94a0b65a43aaa095ef5cd9be"
+        },
+        {
+          "path": "godot_native/tests/benchmark_endless_stair_view.gd.uid",
+          "sha256": "c7741c13f4502ed7437b39113ec1fd9cdf5f5c711f76b36faaa1395f63000f2c"
+        },
+        {
+          "path": "godot_native/tests/capture_endless_stair.gd",
+          "sha256": "9f693b19f238ad2695a8db9a5513a66c40ad24afc651951fd5fdbbcaa235d753"
+        },
+        {
+          "path": "godot_native/tests/capture_endless_stair.gd.uid",
+          "sha256": "6ff2a8f873f5ef028f1b940f89483b8683a969749cb00c01388ae8c7b04bea37"
+        },
+        {
+          "path": "godot_native/tests/capture_endless_stair_camera_input.gd",
+          "sha256": "e4c75a00486e8566e2c899451e0b36603aa5d161df75987620be0a92db49cd1f"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_beam.gd",
+          "sha256": "e53764675646a094ef774f0cff4579f2d08431987c34e3ca273ebe885f017bb6"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_beam.gd.uid",
+          "sha256": "61569d45e764b8dfec4482b06fc4c685f890fb5db66c4bc0ce7efb79f34cff82"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_camera_input.gd",
+          "sha256": "794bdef52e0bd3430286073631c56a86033c0554cf53dfb6af1299f336ff1ae8"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_feedback.gd",
+          "sha256": "6b4a25e9c2be560cf6099ac34554e45ffa9f2164c2f4772eb77defb950f8a253"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_feedback.gd.uid",
+          "sha256": "20e25234951d7b84f40f8252b3b87f30cb6948f17e7788bd556ffb4d783ed655"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_gait.gd",
+          "sha256": "bb60e2c050c2edde6c04da1a63e1d2d8a183d9233b06a703d2f8a89172de5fd2"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_integration.gd",
+          "sha256": "5282999dd00f1a670288c0c6e339638bb2a70bbadf7cebe1ab07ed425837b787",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/test_endless_stair_integration.gd.source.txt",
+          "adapted_sha256": "571029dbf8b964f7895f896bd4d172ff6cd31da2fc01b3e919cfa1f29b2c1aec",
+          "reason": "Retain the original PR #143 bytes in a verified snapshot while adapting only native test-save isolation for macOS and Linux; gameplay and prototype progression remain unchanged."
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_presentation.gd",
+          "sha256": "ad4d1a745dc51442f65342e26ce43600b6934a6d14ac2095558b3dbf31c5bf91"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_presentation.gd.uid",
+          "sha256": "1d5e1e1f0be4d967c29f22912b84531950f086b1d0f59df979c41f2882b535b9"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_pursuit.gd",
+          "sha256": "5f4ef0fd4b3408876d51068f3138b5894571b9a7cb6ba33bb3463bef1ff65432"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_pursuit.gd.uid",
+          "sha256": "fcf8a393a1da1041f37ea7228c27a9cf441cb05a716766510155d69d107b0275"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_route.gd",
+          "sha256": "c36de29645b4072c01741a1cdf046002ef75bc305e41cb0c525eb3d2705be0dc"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_route.gd.uid",
+          "sha256": "bf3a2068343975a7f19720fae52c51d3f7b0444a926823d2cac30eb8bf1f1f96"
+        },
+        {
+          "path": "godot_native/tests/test_endless_stair_step_pose.gd",
+          "sha256": "25c6658c0c301525df526d90bfe94b3b40ad78d6be7f50c2578b7e875a32db93"
+        },
+        {
+          "path": "godot_native/tools/test_endless_stair.mjs",
+          "sha256": "987bcc8ac4297d113cd2d16b84f6f5d528beb017335c11de98d1e2aca65a60b7",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/test_endless_stair.mjs.source.txt",
+          "adapted_sha256": "eebcb65dcae744bd5440750dc6d1742f5428e77950ad0f9af16e81934d78a17d",
+          "reason": "Retain the original PR #143 bytes in a verified snapshot while adapting only native test-save isolation for macOS and Linux; gameplay and prototype progression remain unchanged."
+        }
+      ]
+    },
+    {
+      "pr": 144,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/144",
+      "head": "7d9e68895787b79a9fc170e7099b20066a21bbb8",
+      "project_root": "godot_native",
+      "role": "formal_presentation_adapter_and_isolated_studies",
+      "source_files": [
+        {
+          "path": "godot_native/assets/native/chapter3/black_swan_entrance_atlas.png",
+          "sha256": "a617f1df5b7bc0f930ce13cbda19023c946a66799aae2252aa22be7fdaa571ef"
+        },
+        {
+          "path": "godot_native/assets/native/chapter3/black_swan_hop_keyframes_v3.png",
+          "sha256": "b9aa12d7d74b4b175b89d95c113a5b9616f3b4a9f34a8644dd45e1bab4caf94c"
+        },
+        {
+          "path": "godot_native/assets/native/chapter3/black_swan_swim_atlas_v2.png",
+          "sha256": "0f857be684db0cdf8446610469a0cfe0c32a4a9d2ee7ed7b1bbd745dd244c34c"
+        },
+        {
+          "path": "godot_native/assets/native/chapter3/swan_cove_gate_cleanplate.png",
+          "sha256": "770515377f1d14c7c09aabc53c310dfd23c7c9ec1ebf64f85fc3ca2a31eb823b"
+        },
+        {
+          "path": "godot_native/docs/QIZHEN_SWAN_ENTRANCE.md",
+          "sha256": "7f5cdca47bd81ee17346c9cbe21db2231ad427e13d010962d8ca5d723310e438"
+        },
+        {
+          "path": "godot_native/docs/QIZHEN_SWAN_ENTRANCE_VALIDATION.json",
+          "sha256": "e36898e33761692a73cc765efc0c78a8c9d5ed7b79fb02af12cab91b6d274de6"
+        },
+        {
+          "path": "godot_native/docs/QIZHEN_SWAN_HOP_STUDY.md",
+          "sha256": "8ca8a82df7d992bf6587511bb88a2bbd43d4dab6c552df736f2d34c1a5995536"
+        },
+        {
+          "path": "godot_native/docs/QIZHEN_SWAN_SWIM_STUDY.md",
+          "sha256": "6ddb4dcedbb5c6d41104e0c2e0d7581623c7f98c0a8216b3d7f5842ae5dabcc6"
+        },
+        {
+          "path": "godot_native/scenes/qizhen_swan_entrance_preview.tscn",
+          "sha256": "54f68e01c2ba9e974e075a6abb57ce76b3a79c3929dfa79f3dc549ce05383576"
+        },
+        {
+          "path": "godot_native/scenes/qizhen_swan_hop_study.tscn",
+          "sha256": "1354a957b744e80b6556e254b29100fc731dfbbae96b8b076ba42632dfbcc4db"
+        },
+        {
+          "path": "godot_native/scenes/qizhen_swan_swim_study.tscn",
+          "sha256": "dd9f462d9e5cd337855651bfbb7c49ff783a2132d4ae4f449b436452d28cf9d0"
+        },
+        {
+          "path": "godot_native/scripts/games/qizhen_swan_entrance.gd",
+          "sha256": "90ba84c455fe36b27d59a310906413e0f270c3ce1f79ccf6ff82091ccb36b8a1"
+        },
+        {
+          "path": "godot_native/scripts/games/qizhen_swan_entrance.gd.uid",
+          "sha256": "689dfee560632b5d300b4be5235d7ce2dbf63919dce31bf07645593d99200dc5"
+        },
+        {
+          "path": "godot_native/scripts/games/qizhen_swan_motion.gd",
+          "sha256": "8bb90688bc590d87dc02986ddb6eab7cc989672f1550b13577a767eb859a5cfe"
+        },
+        {
+          "path": "godot_native/scripts/games/qizhen_swan_motion.gd.uid",
+          "sha256": "a9820eb2961901fd664816efe44822a777d76c98708ffdc7e243c00987eae520"
+        },
+        {
+          "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd",
+          "sha256": "a2fd233abebb166cec85201e728922516a881d443776c2791e88857343d84537",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_entrance_preview.gd.source.txt",
+          "adapted_sha256": "f3d27f2ab0d623bee9f7cfe5499995d8a55f28d1473530e0bc36097a6d8c0cdc",
+          "reason": "Preserve PR #144 source bytes while adapting its read-only kayak presentation to the current native RigScene; paper/HUD painter order and original input/physics remain unchanged. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent. 2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
+        },
+        {
+          "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd.uid",
+          "sha256": "d8343f9372430e008899f0300795bc0782f6f41c0c9b4635442d3946f494b222"
+        },
+        {
+          "path": "godot_native/scripts/presentation/qizhen_swan_hop_study.gd",
+          "sha256": "4dae9513de92727658a11ccf07854959b64416b28cde6de0cd8f7f2695f5e738",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_hop_study.gd.source.txt",
+          "adapted_sha256": "2c95b1daf8c9039cc739d7ff0d8aecf578b4bc13492a03d86154707231ac1671",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
+        },
+        {
+          "path": "godot_native/scripts/presentation/qizhen_swan_hop_timeline.gd",
+          "sha256": "66fd0b005b7467a1ba1a48dc2679b32f7e9682a03c29eae9360bf57270230465"
+        },
+        {
+          "path": "godot_native/scripts/presentation/qizhen_swan_swim_study.gd",
+          "sha256": "ed774938efe5d375b6afeb2f8129717e8081d8618fccd3ae4ecd2ffd8889c78d",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_swim_study.gd.source.txt",
+          "adapted_sha256": "16c94f78b4a1300f0bac6c9724eb0f3a0e9ca7f14ff2a685d2a8a076bcd6ad07",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
+        },
+        {
+          "path": "godot_native/scripts/presentation/qizhen_swan_swim_visual.gd",
+          "sha256": "aa367b03ac06e425031519e1324bbffbbab4639069e322d8ad3da79df780f9ee"
+        },
+        {
+          "path": "godot_native/tests/capture_qizhen_swan_compact.gd",
+          "sha256": "db77a1607e896ad5ca7379c346a340eeaca5b3fb39c7d941d862b2b026ad3e6a"
+        },
+        {
+          "path": "godot_native/tests/capture_qizhen_swan_entrance.gd",
+          "sha256": "547fd8297ebd4f3e8fb91a82ffe06aa1c7a902bbe5d17c2fe4992bf86aab073d"
+        },
+        {
+          "path": "godot_native/tests/capture_qizhen_swan_entrance.gd.uid",
+          "sha256": "5f1fecacf7437e8b1d9d9a6a50360b792581b504f825e5431a8ca8e89a746e52"
+        },
+        {
+          "path": "godot_native/tests/capture_qizhen_swan_hop.gd",
+          "sha256": "2ac02c2a1bf533f376287ac3969b2e44e3c283237ee62e214c600629278e98c7"
+        },
+        {
+          "path": "godot_native/tests/capture_qizhen_swan_swim.gd",
+          "sha256": "b9a69190cad268de3b5b41fcdcafc72989dda3282775ac462514406b32b2e384"
+        },
+        {
+          "path": "godot_native/tests/test_qizhen_swan_entrance.gd",
+          "sha256": "173e53a2ce62f4907243c845270da6259ecc3d1764efcba304982bf5d0376625",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/test_qizhen_swan_entrance.gd.source.txt",
+          "adapted_sha256": "87756baebdb91bbab1202618b992c7a11007f7214f6d49fa1131c6c8ecc7000d",
+          "reason": "Preserve PR #144 source bytes while exercising actual draw frames and native kayak ownership, model pose sampling, replay reuse and child cleanup. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent."
+        },
+        {
+          "path": "godot_native/tests/test_qizhen_swan_hop.gd",
+          "sha256": "7a6c7986e7e4428b3f7d302a7787f07569ced20a2d7195d325e2d81de35bd75c"
+        },
+        {
+          "path": "godot_native/tests/test_qizhen_swan_motion.gd",
+          "sha256": "a69211c5e73dce80b996cb685c004192523e7a83afa068301f023183bce284e4"
+        },
+        {
+          "path": "godot_native/tests/test_qizhen_swan_motion.gd.uid",
+          "sha256": "769cf0776dd76fb6c095a63113b8f2c7f171311622fb1ef47a4f0507e1ec82f9"
+        },
+        {
+          "path": "godot_native/tests/test_qizhen_swan_swim.gd",
+          "sha256": "ed53db938b197e6bf349217f250106d2e3c4326bac62ae1471d8983bdaa903e2"
+        },
+        {
+          "path": "godot_native/tools/package_swan_entrance.py",
+          "sha256": "8c0e6e83e8fa373127558df652d64c827ad68daca664e06ecf8699c193755a2a",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/package_swan_entrance.py.source.txt",
+          "adapted_sha256": "ba94d658635604b832c9278cdeba9725821a0730458ece95b11a3c6eeba01a37",
+          "reason": "Preserve PR #144 source bytes while including the native kayak rig scenes, scripts and textures required by the adapted self-contained preview."
+        }
+      ]
+    },
+    {
+      "pr": 145,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/145",
+      "head": "65f07d8c02643b4b0b87fb35d821e227682d3318",
+      "project_root": "samples/qizhen-rain-rescue-native",
+      "role": "formal_presentation_adapter_and_isolated_sample",
+      "source_files": [
+        {
+          "path": "samples/qizhen-rain-rescue-native/.gitignore",
+          "sha256": "3662787b967b341051ca9b963129b2a6033f0aaa95afea8eecf773a4aa1107e5"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/README.md",
+          "sha256": "347065ff886fc154ea37b390672feb6106506a8cb7dbb13e700daad49dd6e1b6"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/font.ttf",
+          "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/atlas_regions.json",
+          "sha256": "2337e95dd29d64f4b270bc4f5aa53695669229f32e0047bc32ce10942193852e"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/officer_reach_up_right_v03.json",
+          "sha256": "ed934535490f2037ff463457024823f71e49e64c0db664955f5a4e418fb31568"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/officer_reach_up_right_v03.png",
+          "sha256": "4aeeb6e387f47fab1c9e8739a3b39be43d75e274b85c138a9d527809dbd9c917"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/officer_reach_up_right_v03.prompt.txt",
+          "sha256": "b81c73f857d0893ef4480e91e79863ff8477d3398427e600b4a31c8c58db0a6c"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v01.json",
+          "sha256": "39331a396371456cfec7d248a4e920e2203de654e33342aba6e9471b1f91e27a"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v01.png",
+          "sha256": "e84be30df5581dbfa5961be46d21071e149759033def0c238d483f4ac42f96b5"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v01.prompt.txt",
+          "sha256": "4d5e42c906279a436ae1505d5a8cb57a3f28bff6cea4eebd93b599b0e1219ff0"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v02.json",
+          "sha256": "0ac16c8ab219b1ac1584e722e884251f2e9fa9e54052f0d76758516969c21b81"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v02.png",
+          "sha256": "ce36e46511d5f79f11451b402ae06f879ef5646f169e708738040cb239de1645"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v02.prompt.txt",
+          "sha256": "f97682004d9fe80599b78142bfc23772ee4af6d73eec4e746b452b73ac0733f6"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/kayak_hull.svg",
+          "sha256": "b0efda9723787304b337d4119e2a006ac03fdfb22dd3db55cc5a11734882bf06"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/kayak_upturned.svg",
+          "sha256": "f4f2c4b7a4bd7351b3384995719670785ea611e0ab829bf3fb1f6f6eaf0ee029"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/lake_rain.png",
+          "sha256": "735d05847189ece155e50de2f51c52b3411ad73130ab35e73a41896588637699"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+          "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/licenses/ark-pixel.txt",
+          "sha256": "8080ca8194383ad39d8d7c308bcf387c6d4879622aae57876b386f4e5a085f72"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/licenses/cubic-11.txt",
+          "sha256": "bdd640c94530f5845de621089875aefcaec17585dbd4dab191c97118539bf92f"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/licenses/galmuri.txt",
+          "sha256": "9ff00566e64a6f1609b197f5eb982f14e50a050edaf0ed588fef4f5aabaea8a9"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/officer.png",
+          "sha256": "183820b808dc7ea801cb878687aa6537c34225910569b37a421ed4755d5d346e"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/player_down.png",
+          "sha256": "ab29c2e04c8ca5a165ede053b0b879be695adb41971c820bc67dbdf4c36f6fd9"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/assets/player_side.png",
+          "sha256": "75f2f28b9e64ca18d993546b37a6c801df940f702d5b56888924b92fe552a819"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/docs/ASSET_LICENSES.md",
+          "sha256": "45d6ce728c09977557446ba073206d5f85f79f709d467234bdc82434ce1c4cbb"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/docs/ASSET_PROVENANCE.md",
+          "sha256": "c9e7ce96532adc4a58e030b053d7edc0b18147b40ae407b470833100ee9f2de8"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/docs/INTEGRATION_CONTRACT.md",
+          "sha256": "328e55e2d67aaaabff4f738b011650271f531e8822c4aed7ddbbfa8c60e5054a"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/docs/VALIDATION.md",
+          "sha256": "bdfa0d9f1cda90cc0aa6edf217d002ff6830b97d2e6753db68d965954f00c528"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/project.godot",
+          "sha256": "1b689030ea105cb77b70d046905c0a98c996c9e2404ead25e483c2daff6427cc"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/scenes/rain_rescue_preview.tscn",
+          "sha256": "bfa1db5c62945aa1e4e742b22e4c8fb92b25e75ce76b58cd8b6ed4fa008bea23"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/scripts/rain_rescue_preview.gd",
+          "sha256": "a9757caddad7c0d50520749ecf3a2704fc5563495b88de5a654f6d54f050ab38"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/scripts/rescue_pose_geometry.gd",
+          "sha256": "7086f88725c7ac4d0a52d0ad14dac5e6ed151b740ce5929195ac110c57d2350f"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/scripts/rescue_timeline.gd",
+          "sha256": "ac3e0f5fbf5827a2aca2c9023ae042d4998d6d6f900d6312a00e54700e8877f9"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/scripts/viewport_frame.gd",
+          "sha256": "2730a005bc0dc3848f4f0afec2c6f5d2bac93932345df58acc5bdbd661407055"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/tests/capture_layouts.gd",
+          "sha256": "2dfa9325926c4150014b44927d24527ce3d653dd30ce1b808774b2b431519322"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/tests/capture_rescue.gd",
+          "sha256": "37c8b0a1ac5c2e9fea341e04afda5e005fa497aa0f4dd8be77aa6869d8821271"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/tests/test_rescue.gd",
+          "sha256": "11cc427a1ac76a5fa1de763eaf10e601742785a566f9e299a35574606e222862"
+        },
+        {
+          "path": "samples/qizhen-rain-rescue-native/tests/test_rescue_input.gd",
+          "sha256": "3704aa8e6cac9cb6025973bf02b2159e3d563b4e9aa2206ab039e3b12ec0d8a6"
+        }
+      ]
+    },
+    {
+      "pr": 146,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/146",
+      "head": "7ec8f23b7e5e7c4af171752277624966cda3b1ec",
+      "project_root": "examples/qizhen_playable_chase",
+      "role": "isolated_legacy_channel_playable",
+      "source_files": [
+        {
+          "path": ".github/workflows/qizhen-playable-example.yml",
+          "sha256": "e11c9185099ec3e3d33c465307c5bccf52aef7e23ef343ec563367bf416e6f70"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/.gitignore",
+          "sha256": "222c6925c1e8c1074e0ba2608e6395592fcfe1370d4a662ee0af1a4b4d3a5100"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/README.md",
+          "sha256": "ad914a557e9d60f65e05dc0169a48835f200c024738104793ef0d734e4f64c88"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/SOURCE_SHA256.json",
+          "sha256": "c36e04de1d924e54a2a3231492a5ae7825c127bb16f08225e3f6f6e83515cf91"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/audio/chapter3-qizhen/sfx/fx_qizhen_mist_spray.mp3",
+          "sha256": "14bbe1e15a36d7310d28a8b30c065866ffd4445445b48c32ce6e2d289e7d7db5"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/audio/chapter3-qizhen/sfx/fx_qizhen_mist_spray.mp3.import",
+          "sha256": "3059f12eb838f8b852defbed8315e963a05b3c685c5bfd645e3122d4b94eb2ad"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/audio/chapter3-qizhen/sfx/fx_qizhen_paper_release.mp3",
+          "sha256": "bcfacb27e144327e4e1f8fd6f648500e9e78e0b6cc9ef9a4efcbe3d19bd54dae"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/audio/chapter3-qizhen/sfx/fx_qizhen_paper_release.mp3.import",
+          "sha256": "b5a4f693bb6f089eccf7032f1dbad54b8e983067e22bb560f6b1c872c001fbb4"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+          "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/black_swan_entrance_atlas.png",
+          "sha256": "a617f1df5b7bc0f930ce13cbda19023c946a66799aae2252aa22be7fdaa571ef"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/black_swan_entrance_atlas.png.import",
+          "sha256": "8c5e3d9f46fc43347563b7f2ab7f6057837c7ec916a431d5cf9f8693ca4339e7"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/black_swan_hop_keyframes_v3.png",
+          "sha256": "b9aa12d7d74b4b175b89d95c113a5b9616f3b4a9f34a8644dd45e1bab4caf94c"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/black_swan_hop_keyframes_v3.png.import",
+          "sha256": "a7de2b4b639981a5f63fed7f1322074b1337155d039e1f729739dc9057dc2187"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/black_swan_swim_atlas_v2.png",
+          "sha256": "0f857be684db0cdf8446610469a0cfe0c32a4a9d2ee7ed7b1bbd745dd244c34c"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/black_swan_swim_atlas_v2.png.import",
+          "sha256": "47a4ea877dc73752f2067098149d05c9884d7a8a7ddf22956bb8a7a54a5c9e97"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/swan_cove_gate_cleanplate.png",
+          "sha256": "770515377f1d14c7c09aabc53c310dfd23c7c9ec1ebf64f85fc3ca2a31eb823b"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/native/chapter3/swan_cove_gate_cleanplate.png.import",
+          "sha256": "d190c3b993e04ee68bb7aaacee68e7c94d44dd4451b7cb56821e7e26d72e5356"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/head.svg",
+          "sha256": "fc5b41bc1c76170db9a5fa693675c428879bb8c15e63ad11ca03994c27100d7d"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/head.svg.import",
+          "sha256": "a135cd0041d23bbb0d430f92a4a98205800930a79836ee7fb847bc6110aff8d0"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/hull.svg",
+          "sha256": "d0dd30a776c8c898b0ba02ecdc3704f565f1277326bb8b808c3d33151db11c25"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/hull.svg.import",
+          "sha256": "6c50d54a22dd32b0dbc06f96fe29c57446a615b894c6460c43aa2940ee92e421"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/legs.svg",
+          "sha256": "f58ab40e2c75d034fe24cba921e4ec13ef178d352fecd06e7dfc85ea2a698c9c"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/legs.svg.import",
+          "sha256": "d56abfd85bd0b0e7c240fc5aa9efbe81acb71aeafa58d82846ea1079b11c801a"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/source/original_kayak.svg",
+          "sha256": "ddb765363d5450722d7460edd2673e92b553c93b480aebe535030c576e9ddf84"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/source/original_kayak.svg.import",
+          "sha256": "4921a5c0cc0da2dd614a1d6610461ba1aad9f90eba6185225761b5570bdc9250"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/torso.svg",
+          "sha256": "7a266f0f038da1504209033a20051e76e4014aff742bdfadc8cfefd1e0edc69b"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/paddling/torso.svg.import",
+          "sha256": "8e0a5d19018fa633c2b0e251d94c02776111b759d4ef1db92e13cb0762271cf5"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+          "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf.import",
+          "sha256": "55c2d268aa6f823be590137e8d39924ad857939e980cd64e254adfb79789dad4"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt",
+          "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/interiors/qizhen_lake_channel.png",
+          "sha256": "6c30a174aba3d26269c79671db14f77c701fddbf1b94bd16fb37a91950ef39d3"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/interiors/qizhen_lake_channel.png.import",
+          "sha256": "f427d4c6b1ba42cb1d6f6974b35f05ec0502ca0aa10e198d7fd0c4ef08261e81"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/interiors/qizhen_lake_open_water.png",
+          "sha256": "da1fb9f66960af061e194643ed4b7d72095a6cd0b28f3102c9e1a0520d33d72e"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/interiors/qizhen_lake_open_water.png.import",
+          "sha256": "e601aa4e2b6b10ab87e08ef7354d55427481c6db193176a9c2939af88bac12f5"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/interiors/qizhen_lake_swan_cove.png",
+          "sha256": "061faeef570be075c284449d289493025ffcbd13306487211409d2b21fda8912"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/interiors/qizhen_lake_swan_cove.png.import",
+          "sha256": "e63c3f28851d6842c158637883cda7efcdcf738dec76b965b78ddb0384dccae8"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/qizhen/kayak_overhead_frame_a.png",
+          "sha256": "0a9def5e6db8ef8bf6367ef26a4404bb6358f6df8b66a4668d512eaa8782a7df"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/qizhen/kayak_overhead_frame_a.png.import",
+          "sha256": "fb378e3d81cb15c0fe973fff65f81e75f1fa5a1b9a7b6b365b81fa34407248b1"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/qizhen/kayak_overhead_frame_b.png",
+          "sha256": "c4e7bb36259a6a268e4908264ccd323cfe732b71d12ab6aad5cf8f88489ce667"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/assets/rpg/qizhen/kayak_overhead_frame_b.png.import",
+          "sha256": "08fa5af132d548da1c83210961c45b4984347be13897b666d083075ae0a483c5"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/data/worlds.json",
+          "sha256": "2b39114d585d0f7b45b4537f227e318f564031b636773388c3fedb626c35757c"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_ACCEPTANCE.md",
+          "sha256": "bea2c2bad43b56696ee2796cb574db9154203996c213112f2c230d6229723f05"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_DUAL_ROUTE_REPLAY_LOG.txt",
+          "sha256": "69007c6b1309904ae3e94f5cb180dd7742927f646995d7da807979d2a9f214f8"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_INDEPENDENT_AUDIT.md",
+          "sha256": "bcd0c1b42237dd94e7824b8384d24a9df24b2e47b3f31cb5c2c505d5c6d4086b"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_INDEPENDENT_INPUT_LOG.txt",
+          "sha256": "60ef861fab25bba190604165920f5be2d28cd5c6bb5cc271d3b467b6f770ca6f"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_INDEPENDENT_MODEL_LOG.txt",
+          "sha256": "69007c6b1309904ae3e94f5cb180dd7742927f646995d7da807979d2a9f214f8"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_INDEPENDENT_RESULTS.json",
+          "sha256": "69a0a2fc7927982fdb88b5dc90783b818d6a2a75f79efd7d5cc5ce46d445a3c1"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_MANUAL_REPLAY_LOG.txt",
+          "sha256": "9f8a201d95605930b4725aedd16cbda549b37f60937e47957a6a82511dd88fb8"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_MODEL.md",
+          "sha256": "7366189c0107401405c878541c5917094f79825d8ed349d57b4457a178cc89e0"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_MODEL_TEST_LOG.txt",
+          "sha256": "69007c6b1309904ae3e94f5cb180dd7742927f646995d7da807979d2a9f214f8"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_MODEL_TEST_RESULTS.json",
+          "sha256": "361bbe5a1585870e6b6701fc702a797514ea1dd73f70a80b5958fab469cc6f00"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_PERFORMANCE.json",
+          "sha256": "59c1bcf19de95e738497316b503a196f435a8a32fe28c875d23f07c7157b731c"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_RELEASE_TEST_PADDLING.txt",
+          "sha256": "1754f37c535701405b4a27cec12670229403dc002ea47c1f523a55dcb6322ac0"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_RELEASE_TEST_PADDLING_CADENCE.txt",
+          "sha256": "305b8af8e6982bbbf807e7f13fa4d30928bb42e70d4ba45ed02c410b7140d2ef"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_RELEASE_TEST_PADDLING_CADENCE_MATRIX.txt",
+          "sha256": "917af714c5536a32359c7d34cf4154af94de3a998e881cf9480ca4334e83ec3f"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_RELEASE_TEST_PADDLING_GEOMETRY.txt",
+          "sha256": "02be1a1a35f154524f19864464c77a926d86d2de577e781581d094c2d0b2cdfd"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_RELEASE_TEST_PLAYABLE_CHASE_INPUTS.txt",
+          "sha256": "60ef861fab25bba190604165920f5be2d28cd5c6bb5cc271d3b467b6f770ca6f"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_RELEASE_TEST_PLAYABLE_CHASE_MODEL.txt",
+          "sha256": "69007c6b1309904ae3e94f5cb180dd7742927f646995d7da807979d2a9f214f8"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/docs/PLAYABLE_CHASE_RELEASE_VALIDATION.json",
+          "sha256": "d5c1f9c90b81f20e2a10c393e1f16b6c81533b7345b9ae07a989ad2399dabc5f"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/project.godot",
+          "sha256": "1a9af489b69ff1831d8d588851d95656c6fd147255ac8f3b3afc539a3bc551a9"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scenes/qizhen_paddling_study.tscn",
+          "sha256": "5d63a2d1e031d2b49b2d6114c7ddfbf3de37814075c7e741f84c172bf3ba708a"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scenes/qizhen_playable_chase.tscn",
+          "sha256": "b0c67be03b88516b57f7d3dae3b692e1f6a60d220adcd86d02a831f707c52d4d"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scenes/qizhen_swan_entrance_preview.tscn",
+          "sha256": "54f68e01c2ba9e974e075a6abb57ce76b3a79c3929dfa79f3dc549ce05383576"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/kayak_model.gd",
+          "sha256": "6620bdfb89b56fcd0a89e3cd3efed57d71eb5035e2aeda72fb26494b80f180a5"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/kayak_model.gd.uid",
+          "sha256": "773e4ba8259c319da1006da6887bf9eb10f0f6ca5536f85182fdabcb82fceb8d"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/qizhen_playable_chase.gd",
+          "sha256": "d31db331ce0b9376e9e0612d6b31808bd9b8e26d6b7b830540260bb971cf9a0a"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/qizhen_playable_chase.gd.uid",
+          "sha256": "6b46e27a2d5064e81c7130aecd52e5b4bc2253d9f3f9ed265fd8a6e142c4a362"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/qizhen_swan_entrance.gd",
+          "sha256": "90ba84c455fe36b27d59a310906413e0f270c3ce1f79ccf6ff82091ccb36b8a1"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/qizhen_swan_entrance.gd.uid",
+          "sha256": "3634ff21ff20113dd28598fffd3df0d641d500922316a5b188c84006b82fb5f0"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/qizhen_swan_motion.gd",
+          "sha256": "8bb90688bc590d87dc02986ddb6eab7cc989672f1550b13577a767eb859a5cfe"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/games/qizhen_swan_motion.gd.uid",
+          "sha256": "559f71ae14d81d7dc7201f6c2b94a08dcbb81420966a6817f9d61f7d745ed528"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/kayak_rig.gd",
+          "sha256": "f5af5d9656eac6236e02c80cabed5ee696fbf7ab3cb106ce22aa9079e4fb9a02"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/kayak_rig.gd.uid",
+          "sha256": "f4785780eee5b82dd3e8f43f56d834de7758f674b898b7e6fd007e8a19caccc4"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/kayak_stroke_timeline.gd",
+          "sha256": "90f7cdfb1c1106a51dfc32fac9c92834cb3f745c98c44e57f8f0393470ce0944"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/kayak_stroke_timeline.gd.uid",
+          "sha256": "f394494356c88b9e5541e2a4049439449e5efdaf00364c6d2cb219a7ec4595aa"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_chase_swan_actor.gd",
+          "sha256": "03c821265c39d53a92d46d31567438ef856b2915f0c69e4aacaa9cea4129a224"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_chase_swan_actor.gd.uid",
+          "sha256": "2936794831cfdcd9c16635afb59f9752f4f333c1b97668b3b4e77812d4b2a7b4"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_paddling_study.gd",
+          "sha256": "3701b71a7155b2ac03883fec47170f4d4b44b029b795076bef43626d78e9b091"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_paddling_study.gd.uid",
+          "sha256": "e9b44efd5ad64b127446a52d4ca0de7fc31ca4ddfe8dd6f273b993b59df02f34"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_playable_chase_view.gd",
+          "sha256": "476aef66e2c665f2656ed301832a2a9744dab40dafb39e2505dc3b0edf0b8029"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_playable_chase_view.gd.uid",
+          "sha256": "056e2edfc188610742e69ff6d46a7e4e909d11dafc1c2bc39ef28722e3cb6601"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_entrance_preview.gd",
+          "sha256": "2c580f9e67656001fdd126ca5eb9f2da1cdfa5b6d45ec342f801a50c7bf7bdcc"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_entrance_preview.gd.uid",
+          "sha256": "6f9b822bf271f6a3d7a640a6b590dec21cfcc20a2e8af48d4765f829c94d9064"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_hop_study.gd",
+          "sha256": "4dae9513de92727658a11ccf07854959b64416b28cde6de0cd8f7f2695f5e738"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_hop_study.gd.uid",
+          "sha256": "9fe67d7c41677a1c91c378c9c04b77ee4994c2c2193747801b3e20e074b87a9a"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_hop_timeline.gd",
+          "sha256": "66fd0b005b7467a1ba1a48dc2679b32f7e9682a03c29eae9360bf57270230465"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_hop_timeline.gd.uid",
+          "sha256": "670ddd51312ec75014023a385377e9b987293b5716123e029ced7ff86afb8fcf"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_swim_visual.gd",
+          "sha256": "aa367b03ac06e425031519e1324bbffbbab4639069e322d8ad3da79df780f9ee"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/presentation/qizhen_swan_swim_visual.gd.uid",
+          "sha256": "446545ed8f4e03c0a90aa1bbc05afa51a9028f06483156406ed513632ed4b1b0"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/ui/kayak_visual.gd",
+          "sha256": "db849a4798e2c880de9b47806c9ea42cba53f0316249e85df61b5efd5e953a27"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/scripts/ui/kayak_visual.gd.uid",
+          "sha256": "681430f8556f443e1ed1ccd9f4df568506a02f8d55c2002a592b76ce3cebcfbb"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/benchmark_playable_chase.gd",
+          "sha256": "35f92824f9066b69bd1f8da311df9e7e681c96ae009bc3ff877f3ef8bdb2dc9e"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/benchmark_playable_chase.gd.uid",
+          "sha256": "e914425c10cae2e2947977f3c7bdc9cfc7f990fda4938a4bddda522be7dfaa52"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/capture_playable_layouts.gd",
+          "sha256": "5eabadc1c99905381c78bf5432c56ca921d364a702060ba7667eafba3242722c"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/fixtures/playable_lower_automated_input.json",
+          "sha256": "c606fdb6b471024255cff9f71c3676aea62b76e34261cfc1ad004cb534eeca6c"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/fixtures/playable_upper_manual_input.json",
+          "sha256": "e9acc07ef0ac711f1cdb5c18f834c850e0a4e229a1db6a4c805f6ef79ad180a1"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling.gd",
+          "sha256": "a7bcfa11bea5614137a2f775767279f393eba2ec32be7c7747ac9c3020ef242a"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling.gd.uid",
+          "sha256": "9f6466bd232bba15d98b299ab00ca16d3b125d791627a15b21ae2fc2c70112fe"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling_cadence.gd",
+          "sha256": "9a9ecc1185f087a763316ea5b2a6ddf3581f61374f6773cefcaffe6b3c09ad8e"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling_cadence.gd.uid",
+          "sha256": "1db87ee33ca6086cbfc15d6c8138bc724257697e8a784273e1e7466e06853925"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling_cadence_matrix.gd",
+          "sha256": "acdf0c87b66446c506f42b32db466b2ece9bc513cfd0e7e483a32ffac1290aca"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling_cadence_matrix.gd.uid",
+          "sha256": "ed4192084f8ff2f2d4211de6c9e3b35ab9603398d277f68f3ce2f9c6d4c5bfea"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling_geometry.gd",
+          "sha256": "7d60fb72deaf49f8e428c5e8c4b83383c9163b1e23378d1f858465c20820300f"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_paddling_geometry.gd.uid",
+          "sha256": "b2743c015b95ef2fedcc0c4fe0708a2642227c0e25cba516c2f2dffbf7e50918"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_playable_chase_inputs.gd",
+          "sha256": "d68f54ef56ea083ee52a01457867d7dbd6cced49cc2823fc1d1791153509c73e"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_playable_chase_inputs.gd.uid",
+          "sha256": "db24fd5edb8efc1705b8f66f86a47850a67c81d99b27f063461dd8638411d636"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_playable_chase_model.gd",
+          "sha256": "d3cf754b4050f31804e57c5f39b9b70fc5cf5b1ed164393f597c56ad2c53d548"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/tests/test_playable_chase_model.gd.uid",
+          "sha256": "40cbdf9c1cc02365e165a9c747e61c46f3aa6fd051ac658f32d0a30232bb8583"
+        },
+        {
+          "path": "examples/qizhen_playable_chase/打开说明.txt",
+          "sha256": "9b3640d15c39a50e1e516a39815070043650e05a2a26fc23b448e43eb4eac561"
+        }
+      ]
+    },
+    {
+      "pr": 147,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/147",
+      "head": "9a1ca38cec283dbd73dde4e84f108e6711e8944e",
+      "project_root": "examples/qizhen_large_world",
+      "role": "isolated_large_world_prototype",
+      "source_files": [
+        {
+          "path": ".github/workflows/qizhen-large-world-example.yml",
+          "sha256": "c9e9f4cb7f647db3a6b1320eca113f80b331425ea87cba545bde47b96fda2559"
+        },
+        {
+          "path": "examples/qizhen_large_world/.gitignore",
+          "sha256": "ff6a301d63e549693a2eace9028252d5f46da6a92549ffa13f8224d26194388d"
+        },
+        {
+          "path": "examples/qizhen_large_world/README.md",
+          "sha256": "acd2256a3d189e55a0243f1246a044b1a54569875b31ea1d0bc1f13b2ce4da67"
+        },
+        {
+          "path": "examples/qizhen_large_world/SOURCE_SHA256.json",
+          "sha256": "e8254812ae0307ac0b4977a6b16499902e85e231a4ea6e2a8cf494b17e1ed0ca"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+          "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/native/chapter3/black_swan_swim_atlas_v2.png",
+          "sha256": "0f857be684db0cdf8446610469a0cfe0c32a4a9d2ee7ed7b1bbd745dd244c34c"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/hand_grip.svg",
+          "sha256": "4189ba25593b16ff3eb7d758767468eb476d7bfa8512513f6e7c904e703ce4c8"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/hand_palm.svg",
+          "sha256": "0841d55e821030679d9849891da072036472ac777919453a8e19835220f7e979"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/head.svg",
+          "sha256": "fc5b41bc1c76170db9a5fa693675c428879bb8c15e63ad11ca03994c27100d7d"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/hull.svg",
+          "sha256": "d0dd30a776c8c898b0ba02ecdc3704f565f1277326bb8b808c3d33151db11c25"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/legs.svg",
+          "sha256": "f58ab40e2c75d034fe24cba921e4ec13ef178d352fecd06e7dfc85ea2a698c9c"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/source/original_kayak.svg",
+          "sha256": "ddb765363d5450722d7460edd2673e92b553c93b480aebe535030c576e9ddf84"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/torso.svg",
+          "sha256": "77930840d81bff32f77901f47cc4b2ce0fe4ad3347f4781d7f50bc205099cb93"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/paddling/waist.svg",
+          "sha256": "860e651862b2a0f17b959176181bda9d7eaca17293f6f92a0a231016b6d29133"
+        },
+        {
+          "path": "examples/qizhen_large_world/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+          "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/ASSET_PROVENANCE.json",
+          "sha256": "49af5544efbd2148c9598c631776f2b246719cc1b172798457ff87731c938a2a"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/INDEPENDENT_AUDIT.md",
+          "sha256": "bd95d1f876889938130ba8494250ccdb610b7520b2e65676defd67ef60d23932"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/INDEPENDENT_AUDIT_RESULTS.json",
+          "sha256": "5e0da1cfb106543b6a8f2ec380bae396d6752cd30250871d15f77ec7b4e1b7ec"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/INPUT_CAMERA_NATIVE_REPLAY_20261018.json",
+          "sha256": "1082b1da8af9eb192ac50ec240c0a83e58fdfb69154326e19503ac83729629f9"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/INPUT_CAMERA_TEST_RESULTS_20261018.json",
+          "sha256": "1efb10c4140b5a0712c73a7c10dfd8fa0a758b35a627cc8b1960c6832fe08295"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/INPUT_CAMERA_VERIFICATION_20261018.md",
+          "sha256": "4172cd104a949163597512e1f12582dd34bab1ada9de70c9bf1dd29006ab30be"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/NATIVE_CAPTURE.md",
+          "sha256": "ac49b722dbed0a631ab9fdbc7bb92f1e5d6387ab27b194da7227c8cce7e53f7b"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/NATIVE_CAPTURE_RESULT.json",
+          "sha256": "7ba69059a7e7c5b402f142933e0ba0c98de3bcae036896f916aceaec2092e86f"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/PERFORMANCE.json",
+          "sha256": "bbf7504ee710d8d0447f49ccb4d50f0544ed587619c0c4134a3d343ce7524e11"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/PUBLICATION.md",
+          "sha256": "06fda596f8e3528ea2a111b3aa372c9ab6e6b7972653abb844add2356035e5c9"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/REFERENCE_AND_SCOPE.md",
+          "sha256": "4aeecbda384cd33d798348b8dbcbc44c0ed0997440ef475923ec861a9f145e8a"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/REFERENCE_GEOMETRY.json",
+          "sha256": "08b8d7500e60e39cc0e789e46eb2468da067b17b61fcf4f8c7abb5c721f93a7e"
+        },
+        {
+          "path": "examples/qizhen_large_world/docs/ROUTE_RESULT.json",
+          "sha256": "991acabae6ebc1b596cc458b0d285e4b632d8b66a5d7b63618eb995b1130ad6b"
+        },
+        {
+          "path": "examples/qizhen_large_world/project.godot",
+          "sha256": "1e1fa59337dd785dabd3eef01f30b44761a2d97886826e3e81bcbf49d974e52c"
+        },
+        {
+          "path": "examples/qizhen_large_world/scenes/qizhen_large_world.tscn",
+          "sha256": "dd760cfc54ab5601b288dac2d50c80bb8bf9718c5a067da3bf968dc290472150"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/games/lake_geometry.gd",
+          "sha256": "d1ea15f66a9f1716099815fb424ffd4c541597d22c14289dfc95227727a87352"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/games/lake_geometry.gd.uid",
+          "sha256": "385743270428d5f8a75196df5a04b11b4b31deb1d75f8f8a2d120957620b811b"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/games/large_world_model.gd",
+          "sha256": "b27afeacd6b78597e47fb6c57b346a9a279b5f3d2c01f107255f5056aeb6fbd4"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/games/large_world_model.gd.uid",
+          "sha256": "2685ff80b2998b96bc152d40c6ed1f91b52b3b8871c59c27e43b7d9324eba9af"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/kayak_rig.gd",
+          "sha256": "f982cf40db7e162025f1e5df6dae5d3f5eb7e63f0f73934059ee656fffff8a67"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/kayak_rig.gd.uid",
+          "sha256": "d76922da579a5c7bee125137d15058690fe3900ec09dd9e29e66d2fe5e75463d"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/kayak_stroke_timeline.gd",
+          "sha256": "13d7013d5ae4cac8fb376f2ac6b6805f0ea034f67630a2789d5141dac604a47f"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/kayak_stroke_timeline.gd.uid",
+          "sha256": "8de638fb6f562ed8d759cf64e25ead1c1df1356957406f058c0e78ee67289cff"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/qizhen_large_world.gd",
+          "sha256": "2202eafae90895238df32ad69f8018f87f89b4a7773912d0cd769b636020b2c8"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/qizhen_large_world.gd.uid",
+          "sha256": "8cb1d24fe41aea7c331075be368ffa50f2287033e8e76ed4e22bd8fb1b2cee67"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/qizhen_swan_swim_visual.gd",
+          "sha256": "aa367b03ac06e425031519e1324bbffbbab4639069e322d8ad3da79df780f9ee"
+        },
+        {
+          "path": "examples/qizhen_large_world/scripts/presentation/qizhen_swan_swim_visual.gd.uid",
+          "sha256": "9356843b934983da6466662fdfed2f98aa52459ae205634cb23cc694aa476979"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/audit_large_world.gd",
+          "sha256": "e8754252b2dce3c7c5d3d66eddd99d91bf72d1ac8f83fb330c9804bddc9ab62c"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/audit_large_world.gd.uid",
+          "sha256": "eb17773bf20bc1b897ad07533416d4da2cc30d7f283b459939908fd16e3be230"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/benchmark_runtime.gd",
+          "sha256": "e058a9ec58d372cf92de782a6b7827cf93e1248b66e3c2f5fb0b2e6ab3feaf1c"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/benchmark_runtime.gd.uid",
+          "sha256": "51259bcf20659554ce5074fca73ac33de76cf23ff4e9722807170818db17a200"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_full_route.gd",
+          "sha256": "071431ec33dd4240b9e5f929ec85a64880a2375902f48a3cd7e1268089e4bbf3"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_full_route.gd.uid",
+          "sha256": "32af12fb1ea4edd03fd0022c26098df495990c9f0e57bfcae66417b4c778b256"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_input_layouts.gd",
+          "sha256": "1ed6e5ab8f0d1448971a01248b52e9e994d1922f5c0d5f2de736f1ec802df15b"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_input_layouts.gd.uid",
+          "sha256": "74359583706841aa50d7d7f566b666d8234700ef6486df3c2354d76d2b35a2d0"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_input_replay.gd",
+          "sha256": "11f76510b60aaa640410fab74cecd6c721a3dfb3246f161cb614ea21cbcebfce"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_input_replay.gd.uid",
+          "sha256": "299661a7d60612007372faec89964fb0f2f90e472771565bc0f94bbcfc953585"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_stills.gd",
+          "sha256": "bcf84d45fc6e401e0f0328e119c73abf1091bdc685d0b2eafd81531738e222c5"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/capture_stills.gd.uid",
+          "sha256": "3418ce0c693b59307b4442336053374cd546f3109b270eea28baaef019273ede"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/reproduce_pause_regression.gd",
+          "sha256": "aac2caf4cb9e880270ba92fa44c92ccd1f6e837a0afd514c55b1c8ef3372de3b"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/reproduce_pause_regression.gd.uid",
+          "sha256": "0234389084f74cfa2a6e72c99b6c0806c5083529a3b8b0a6e2da49f6f16164fe"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/route_driver.gd",
+          "sha256": "20af65938162febfb9ff8a9c6f49d0e2415fd3ca38ad7d878db39fecbce453d1"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/route_driver.gd.uid",
+          "sha256": "1d9c332b3733ad6ee5ab9949ed721bddb1fe4d36f7a790e6f615967f9aab0e91"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/test_input_camera.gd",
+          "sha256": "2561f940848cca0891330015c6b89e5bce536722d59b98f18cb3d20247d92f34"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/test_input_camera.gd.uid",
+          "sha256": "15edcf811351153f7e97c97577d66648224c5316aef54ad3d7ef7066955fc047"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/test_large_world.gd",
+          "sha256": "791bab7f0b4c0e1b3497df0bb799101cfec8aaa64bc2e9bb23f25916b09e2952"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/test_large_world.gd.uid",
+          "sha256": "e5a2376544a45184ed2d303303b2df78ed0b03552af11609d876db844b26f6ae"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/test_route_30hz.gd",
+          "sha256": "83b487af7fd005be1050f9bad903e71b24337a06c03e90fc2186f824e0f4e94b"
+        },
+        {
+          "path": "examples/qizhen_large_world/tests/test_route_30hz.gd.uid",
+          "sha256": "1aa674a171a81b83b5665e0ab3b696fee04803bb72a5d66ae193d7542bb869f9"
+        },
+        {
+          "path": "examples/qizhen_large_world/打开说明.txt",
+          "sha256": "68047d3939909add1d8d076fb1f016a97e55914b4ddd7cf5f5604d567f30e36d"
+        }
+      ]
+    },
+    {
+      "pr": 148,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/148",
+      "head": "9f8f7c56f9b4c7449b06c5f1f77b7347924fdb93",
+      "project_root": "examples/blender_stair_sample/preview",
+      "role": "isolated_two_flight_blender_sample",
+      "source_files": [
+        {
+          "path": ".github/workflows/blender-stair-sample.yml",
+          "sha256": "1068ca344e171aa4318fc29ed9c35b7b841809f560004677e117e7554e7b76e0"
+        },
+        {
+          "path": "examples/blender_stair_sample/ASSET_LICENSES.md",
+          "sha256": "844fde35f7e01accd3fd1ed059abafca344a733e67e6d12a9b3f24de4e09e581"
+        },
+        {
+          "path": "examples/blender_stair_sample/README.md",
+          "sha256": "a94df6218705ed693e49e960f7d6424e3e23630ba446b0dfe65a67008e60d167"
+        },
+        {
+          "path": "examples/blender_stair_sample/docs/PROPOSED_PUBLICATION.md",
+          "sha256": "a4a4c88721330e863779ba2792f93e2ff9ab3cb72e39119c9d472499ae4c65b6"
+        },
+        {
+          "path": "examples/blender_stair_sample/docs/PROPOSED_PUBLICATION_FILES.txt",
+          "sha256": "ff97e9e195b319735491724ee3226a345421c18ca7c10309f31980a3bfd963f6"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/concrete.png",
+          "sha256": "597f7cce29e6a8a20009a2b7b7b95cdd5d98ec5dc5c35d9a564e62af2c7f8db0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/concrete.png.import",
+          "sha256": "b514fc6129466f2cd2453f615e1a7e1534bdbff376dfe0c8f5e3ab7083b49a84"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/dado.png",
+          "sha256": "348e3672b8db138f62be7d6effe8b9467b0259d6fa0ea8c8dabb7a427594a89a"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/dado.png.import",
+          "sha256": "d1dba2cd6dcda0134ee1d2913443c548a2d97b8f1007027bd638ce14b56493aa"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/door.png",
+          "sha256": "813e3f2f3e16e3f50f4ac1dd15a968740d34bfe1481506516c2aee7b70387a4d"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/door.png.import",
+          "sha256": "5be8c1a359e576aafde373b58e817246bf4981d3c96d2cf8265e40767e79eeb6"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/plaster.png",
+          "sha256": "cb19bea32c7757ac2c60f2f8de3007be04d9cb98f5228422a51ab1146e95b440"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/plaster.png.import",
+          "sha256": "86a917b5b078b940fda6dcf083271e6bce147c1d8ae7b4e756dbab0be489e7ce"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_manifest.json",
+          "sha256": "7d0f69b6020eb865a286db2827f3a83cf7f6ac8af0d644151dd267ebbab067ba"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample.glb",
+          "sha256": "77cae3927b454e221a488a4a273fdccc6f95ed2ef47a19d27237201bdea8d934"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample.glb.import",
+          "sha256": "4f6b59792557244cbaecf5a66e203592b947bdef832bf31883c4daaf5b1aea89",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr148/stairwell_sample.glb.import.source.txt",
+          "adapted_sha256": "5903636eeb493b0af30bddd4c6c8a4760e04ab17570dfeeb0dd46ae6ffdbcb0e",
+          "reason": "Preserve PR #148 import metadata while recording the Godot 4.7.2 importer defaults added during the verified preview import: mesh-library node naming false, surface deduplication true and glTF texture-map mode 0. The authored GLB bytes remain unchanged."
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_concrete.png",
+          "sha256": "597f7cce29e6a8a20009a2b7b7b95cdd5d98ec5dc5c35d9a564e62af2c7f8db0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_concrete.png.import",
+          "sha256": "93b0a6da6936f7478abbc734b8873ef39f9587a6c1384895269b6089653f0ef6"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_dado.png",
+          "sha256": "348e3672b8db138f62be7d6effe8b9467b0259d6fa0ea8c8dabb7a427594a89a"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_dado.png.import",
+          "sha256": "2eabba11f7091dca8a300cc550ee171c4652dcd78b8ff103fdc9fe1be1e90ec5"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_door.png",
+          "sha256": "813e3f2f3e16e3f50f4ac1dd15a968740d34bfe1481506516c2aee7b70387a4d"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_door.png.import",
+          "sha256": "0aea6a1be5e887bdab5c78e044b373593887885a97bac12c2fde7fadd16eb5c1"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_plaster.png",
+          "sha256": "cb19bea32c7757ac2c60f2f8de3007be04d9cb98f5228422a51ab1146e95b440"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/blender/stairwell_sample_plaster.png.import",
+          "sha256": "7afc43a965c53ee2d9e332d7caf12ae64dbe4590dd03f5854aa1d7fa266f52ac"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/native/endless_stair_b3/FONT_LICENSE.txt",
+          "sha256": "849f4ea9c214fa4ac3593b770c699f387534b11ce671264c1b10d85bdcb5997b"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/native/endless_stair_b3/provenance.json",
+          "sha256": "2f319039ae87c65c804f4428c0ee22702f558a600dd1aec786b842664fc35ebc"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/native/endless_stair_b3/stair_text.ttf",
+          "sha256": "b48b95ec7329d6ade2187d779f5618950963bd7d25178fe4f0d253db9c68044a"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/native/endless_stair_b3/stair_text.ttf.import",
+          "sha256": "ad0fffa06bf8c3e04935328affbd1395b215a314c277fc9a46c40256a3c8788a"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/npcs/finale/guard_walk_8frame.png",
+          "sha256": "21a66a9887295dd6d00bbce8acf18b637cf4b0364248b7cb83994e8de7c84da2"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/npcs/finale/guard_walk_8frame.png.import",
+          "sha256": "e63e02839ced30bb95d4ba3c9e708e77d3f077435c9d04a9878c09063aacf6ea"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/npcs/finale/guard_walk_down_8frame.png",
+          "sha256": "f27adc541f0b73f669163d1e4e2e15dec4349a1b07f10069e6cfa875dabe0dc1"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/npcs/finale/guard_walk_down_8frame.png.import",
+          "sha256": "7b8ee806838e3425a07a25fdb3f14054bb8d3e66c34bce58b098d255258b9bc2"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/npcs/finale/guard_walk_up_8frame.png",
+          "sha256": "2649d5abba5a7b8c34fad580c8f1148f858b9cdebd639dea2c44c460273bc423"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/npcs/finale/guard_walk_up_8frame.png.import",
+          "sha256": "788ffb7111e9fa2891793a2b6865f757e67106c4aa0ae7f7215a4bc30fde1f9b"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_0.png",
+          "sha256": "ab29c2e04c8ca5a165ede053b0b879be695adb41971c820bc67dbdf4c36f6fd9"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_0.png.import",
+          "sha256": "6a0e02cdd61481f3ae4f53814e935176c810f98cb4b2b90951796a9ee41c4f26"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_1.png",
+          "sha256": "5f5e0d3f3fbd1cf5a45fc7da9526da555d93461748cb91fc768a9cdb56dc36d0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_1.png.import",
+          "sha256": "fc693b3504b34165ef12705d00e9028caa76885cf993835de475c684c422e270"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_2.png",
+          "sha256": "703d15dd937a50e69e7b544537a26a87be3ffb0795f72e7133b85f969c7dd31c"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_2.png.import",
+          "sha256": "74f2cae96dbc94c955d88fe2980a9abba6c517f82976e54f677bf6d5a0109c82"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_3.png",
+          "sha256": "716bccbdb08ce82a34964d11a4697dc8141a4c889661202123ce42db1fda2b01"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_3.png.import",
+          "sha256": "3b0589624c4cca288915817ba6235ec2f0e2b8a2cd78dccdad91ddec8c4fc17c"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_4.png",
+          "sha256": "ea7c316ff586fd5ff692cb324f140555beda475dc3ad23130c8664bcc9c4db21"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_4.png.import",
+          "sha256": "7e477422cfee159147dc0621a646ec7d145b161d201bd11403bc52da371a0099"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_5.png",
+          "sha256": "00aa6145b664027e51c7ac9a47ff39f89875a5524b36a8fa0f36ea247cadad47"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_5.png.import",
+          "sha256": "f67e3a54a2e24ddb032006c524676eae4542ebbd5b5ab5ccb448f487dd1ac7b6"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_6.png",
+          "sha256": "ed9828f50e51aa3ebd3fdc7cb75f91d742150bc83d70dd18812852cff25c7626"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_6.png.import",
+          "sha256": "5e62ff38aa37ff3acb17da3e9360d1276a8b1ee534312105a588adb34850d7a3"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_7.png",
+          "sha256": "43cd462beaa782a2afa4720114dc1365cbf4a24d731d4121b7ddb8804d05809f"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_down_7.png.import",
+          "sha256": "89b239a33f8b6ed6608942e241441fc3c9f5104fb989783da3ebe9f350e72514"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_0.png",
+          "sha256": "75f2f28b9e64ca18d993546b37a6c801df940f702d5b56888924b92fe552a819"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_0.png.import",
+          "sha256": "5612e28a37a675c6a7dc6ae144c90da1ca2010d9a762b5677e7d4104de23e5f0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_1.png",
+          "sha256": "97126037c035c7ce85981985f3439f2efd777d8a886eeeeaccb64e3f34102c5b"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_1.png.import",
+          "sha256": "08590effd3c6a05cf040757b5818411f29e07c52b49b4ed09c517f5e3b7148b7"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_2.png",
+          "sha256": "9f2c99d04063a315b8a7500534496741dca9bc5fb99aad847f41008f93ef8ab5"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_2.png.import",
+          "sha256": "5203953e74962ab914898b0d25d797e88418f3f40ea3e48c030f6f9e24fceb65"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_3.png",
+          "sha256": "640abc30e5f590b327a9402207355b2b20cf099b5a896ded8e11c699576d4ef4"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_3.png.import",
+          "sha256": "3e024b9186ed564fa2e56313a43d612e7425ecd39c2b3e7e3e22297633f96add"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_4.png",
+          "sha256": "b7fe78005d62a21c0de08b898ccc08b190b0ac061b237ff8af7349347e8bbd18"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_4.png.import",
+          "sha256": "cf58508741833e9da35e28c9317714d9f2e4735bcd8857ad5fcfb24dc4096b71"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_5.png",
+          "sha256": "58eaa07bc0d0278aa385f0d5ef75de7f08416ad667399f015af28e0a6a42ed45"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_5.png.import",
+          "sha256": "108bda3b42d52264227364833c26e50134d127bc69ffa1d3dcdbe8ae9fbc7a7a"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_6.png",
+          "sha256": "3486c76fd81eee7af8dcdfd1e19162c05fedc435a5221193d25294ede08d60f9"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_6.png.import",
+          "sha256": "209d25ff208a11ce3bca8001866b8238a0b285b2dc6ef2e3d6f8c4e8f5762d0c"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_7.png",
+          "sha256": "be86a6be40fa970273c7337994cefd0466d143eda24ac9a3c3027f578ae92096"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_7.png.import",
+          "sha256": "f5636e1412d6e84456849f21d11308de3357b07492d82a772ac43983661540d0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_idle.png",
+          "sha256": "21c1f8a73cada7886f9c9b1147ae77e4cc81b37fcb09d4e103923f03818b9cfe"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_side_idle.png.import",
+          "sha256": "549e94da509308d0829a16b50ad207b981bfe08adc17dacfbfa071925dee97ef"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_0.png",
+          "sha256": "00b0bb17d1351f9c79318e7921bc12f922d2c4b1b21f974d4b869d1424aaf50e"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_0.png.import",
+          "sha256": "fa904e67677911ab846f462678a33d6860c3ede8855e870107eb200769d0981e"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_1.png",
+          "sha256": "877c199373c4c5f212996ee6c2ab8d2b5811de00a5fbbf9c1999a353cab36881"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_1.png.import",
+          "sha256": "9f4058fc8c6cad7f3ed57a7d1588bcd9775c82ab174e65a15ed8f97dd3e7d033"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_2.png",
+          "sha256": "de1ab6f397b16ce6548e43dc1f84336b74073d977c4ac71b63399a755e6674b1"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_2.png.import",
+          "sha256": "ed0babe1f063e6127b6b63d65570e357c640b5d5b23d942c423edb7e67cd0da6"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_3.png",
+          "sha256": "0f445447978221edb9e220311304f56c98925749574d9fa9aeedb79293a1f48e"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_3.png.import",
+          "sha256": "5c8b3e903a4e09ff8bacad2cecc3e551bad6ccd228f4501d682bb43ded633454"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_4.png",
+          "sha256": "a408b697cb390f86ae3429b44b33b8ea6c229f4e481b8d0f69b8f6b02f7121ef"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_4.png.import",
+          "sha256": "4d98bb6312deddb4517a9011734e3afb1bd9fc1b000cfad9c8b4c831ed82be4f"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_5.png",
+          "sha256": "f664855d1cfab0770571aa88519b220865dec1196900fad096ccebfdae7df454"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_5.png.import",
+          "sha256": "3c3355d348d5147ec909585b905f788138b7ab9691283ad7160e3e5833fc0351"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_6.png",
+          "sha256": "62c370f6e70f41e5c4cd02c50cf6d6a38bb7bbca791ad0bef2da94e06962a938"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_6.png.import",
+          "sha256": "533b5fab5a6cdf4a80cf47217a8682fb721e4c0db4448c1f161855e95b4b5922"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_7.png",
+          "sha256": "479a3748ce52532fdb4e81955004a15ee76bb8916eb5e6995723a7ad896f6aa4"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/assets/rpg/player/player_up_7.png.import",
+          "sha256": "ac76665e8c9c83dda966cb16cc30560f3d60c2381e6c82f3ffb5c0297de60f17"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/data/native/chapter4-endless-stair-b3.json",
+          "sha256": "29bf7112b924cdd07baf98b8f203dbe22c5659a0584135d2d9fba36d4881cea9"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/project.godot",
+          "sha256": "9c94c512bd83baf55264e07ce339006a30517567737d3740c59f95cbbf7b4fd0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scenes/chapter4_endless_stair_preview.tscn",
+          "sha256": "c25586c8d08a6c1a3c9e1225665c0cb4cb94c44bf2f2281010d259e3c8ba57e1"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/audio/endless_stair_guard_foley.gd",
+          "sha256": "04e7aed35157ec4fcb4fe4bc5ff52a81399eacae27cd9410300e7f88040d31b5"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/audio/endless_stair_guard_foley.gd.uid",
+          "sha256": "7a6b43127e0e11081e050496b26a52386e07f1132d659b39c0dfa515c8c5fc20"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/games/chapter4_endless_stair_model.gd",
+          "sha256": "06cf6e03a086b1024a534ae31674541144f82e4413be34ea04469172f9a1a5f1"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/games/chapter4_endless_stair_model.gd.uid",
+          "sha256": "f200f98d57d89fd3184119169b9cd3a0f2e205a77e4d2525872c87f6ec531a5d"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/games/chapter4_endless_stair_physics.gd",
+          "sha256": "a80a13d9b3383ce7c6909e85de95cc5cdcd25f3cc891ac8f31f841819d09f642"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/games/chapter4_endless_stair_physics.gd.uid",
+          "sha256": "ede7ff85a0afe7d6742aef036016afe930340c1328e422e1cbf66b7e038e9d05"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/chapter4_endless_stair_view.gd",
+          "sha256": "40cea90cb8ea0eaca496ba9efb733d9833c53d90cdefa147769fd50b0c3287f9"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/chapter4_endless_stair_view.gd.uid",
+          "sha256": "03d79c430889585e775da8fd90f21e8cedbbdc3810b49b850a28b9fc2540ef61"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_beam_clipper.gd",
+          "sha256": "d4bb8ecc59b973e996c364082bdb5623843a3292468b39de2d417d4d6b31ab9f"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_beam_clipper.gd.uid",
+          "sha256": "740491d4deb3dfb78aa4266d448fc1ba2d73f6b6f5b4ea9b377242c611c6a0ac"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_gait.gd",
+          "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_gait.gd.uid",
+          "sha256": "4df7b6d543b2711d93201347c9d5841fe8f2743aecc7aaa41833a6cd2551aab2"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_guard_feedback.gd",
+          "sha256": "5d29c2ab743785d10cc2df9dc4177ec4cc1a862b48a84a445b25aefaed30fdc8"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_guard_feedback.gd.uid",
+          "sha256": "c325c67e0945279b47c358559cc52cb474d9027922b069a280efbec342884787"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_step_pose.gd",
+          "sha256": "ba3e43f9d106d33c23c5d945be289f3230a515bdf94a3a9ea349bc727b42cfb0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/scripts/presentation/endless_stair_step_pose.gd.uid",
+          "sha256": "2d85d40179332a156b5433954f751bf707e894084cc715a544ff55a1205f8998"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/benchmark_endless_stair.gd",
+          "sha256": "44060f0f259c6ec78f47cf95aef0c4603dc901ebd4a2758b468f1a455bfd77ab"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/benchmark_endless_stair.gd.uid",
+          "sha256": "25b105c6f7735afd32afd040d37b779c423c5e63eaf1600deee7d1da0a75f2d0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/benchmark_endless_stair_view.gd",
+          "sha256": "e79ef201311a3a4b2a44a0fc2338734eb53a49db94a0b65a43aaa095ef5cd9be"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/benchmark_endless_stair_view.gd.uid",
+          "sha256": "6426cef14c24ebaea18c617a16743395e4fd0e00ef9e4b5132abdd1aca5146be"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/capture_blender_sample.gd",
+          "sha256": "954c8b02732976b32905bc7dc5c76c43233389a60e06a6cd6e36e42005b5bdc0"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/capture_blender_sample.gd.uid",
+          "sha256": "36c7ba2688f265a4e8a90d8f93582a9afe096cae43806bf9d7409a2d1d317ae2"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/inspect_blender_sample.gd",
+          "sha256": "4bcdba23be06b0190b6f1848e02ed3aa428eabf43ab9af1dc8a2e6b89b9e06b5"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/inspect_blender_sample.gd.uid",
+          "sha256": "0ed9efcc2c2f35c7752498f0e5d3373231d47996d78f8a66329e7bd263345f3e"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/test_blender_sample.gd",
+          "sha256": "aa176bb951367808715a82c468c5f3aa3bc44fbf642c2b9086abb6ac2eecd44b"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/test_blender_sample.gd.uid",
+          "sha256": "21be9bbdbc91cea87fe7e610e31394bb1c9cab91934a21c8ff4d59ce71895880"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/test_blender_sample_camera_input.gd",
+          "sha256": "716be9c6d04f2ebc0f1ee7b643a2a5feaf5557701e08938b3c44b53b6da572a9"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/test_blender_sample_camera_input.gd.uid",
+          "sha256": "2b24bd01db881b24a6c8a9d8081105f002a50d5b7df0406c0044f9a3685883fa"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/test_endless_stair_beam.gd",
+          "sha256": "e53764675646a094ef774f0cff4579f2d08431987c34e3ca273ebe885f017bb6"
+        },
+        {
+          "path": "examples/blender_stair_sample/preview/tests/test_endless_stair_beam.gd.uid",
+          "sha256": "f10b3a9dd424ec7160c41577c289868ece88d6c49dfb30f82475186808697c55"
+        },
+        {
+          "path": "examples/blender_stair_sample/source/build_stair_sample.py",
+          "sha256": "5b1ca72f2b75bbda0958f6d1db09ce3d23d24e5ea44d8b45d271cb4830ab5009"
+        },
+        {
+          "path": "examples/blender_stair_sample/source/stairwell_sample.blend",
+          "sha256": "a6a49d601d3b6bea4e4e28e66cb0b8ff71fe77f7557e3e1a2c6295415ce6c521"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/capture-final.json",
+          "sha256": "56c1660037de4e2397e8eb3d9e499c86a38d6c52357508ae6a0328d5e36856fb"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/files.json",
+          "sha256": "6be1971da95b7cb2e4006a994eb542bf10be124f6c5271bd96f4f95accddd052"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/model_budget.json",
+          "sha256": "3c0bc9d75fcb94787951d1f087c4718c8aa15edb03e235301616c2e29f33b242"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/package_validation.json",
+          "sha256": "fb08087e180682e094ec68bab6b1c82a2b1bc5a0d9af19635857c1da06000f14"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/runtime_benchmark.json",
+          "sha256": "015ad53116be8ca29816a448d0b74681ee52a4cfdc9d0c497c005e60cf4ddf1d"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/test-beam.log",
+          "sha256": "22eb32d2b85a67b7dfed02c4dc8e9e64da088800b14716ad312d94b27c3e004f"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/test-camera-input.log",
+          "sha256": "65efe9f4ef8c782f3dcbcb4ce8c7a85e95cbabb25d19693706095d4125cfdc44"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/test-sample.log",
+          "sha256": "c1d85ed937aa33cfca6e00a7983059957cc2cf78fc6e6c6e31375162769a5563"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/verification.json",
+          "sha256": "3a59b77e58722f93922179c574471b7c88937745611ba2d64f312c3fe4966848"
+        },
+        {
+          "path": "examples/blender_stair_sample/verification/video-probe-final.json",
+          "sha256": "cd14b9af5c672526af03fed98e20b2fb4e270b5e84a477ac8e99f52841ec9c83"
+        }
+      ]
+    }
+  ]
+}

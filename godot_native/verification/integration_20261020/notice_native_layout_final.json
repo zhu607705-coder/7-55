@@ -1,0 +1,21 @@
+[
+  {
+    "label": "test_notice_queue_lifecycle.gd",
+    "status": 0,
+    "failed": false,
+    "signal": null,
+    "error": null,
+    "startedAt": "2026-10-19T16:27:02.221Z",
+    "finishedAt": "2026-10-19T16:27:04.263Z",
+    "durationMs": 2042,
+    "command": "/Applications/Godot.app/Contents/MacOS/Godot",
+    "args": [
+      "--headless",
+      "--path",
+      "/Users/zhu/Library/Application Support/755-native-check-9QrfHj/workspace/godot_native",
+      "--script",
+      "res://tests/test_notice_queue_lifecycle.gd"
+    ],
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNOTICE_QUEUE_LIFECYCLE: 32 checks; 0 failures\n"
+  }
+]

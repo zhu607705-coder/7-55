@@ -1,0 +1,30 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+GRID {"cadence":0.18,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.2,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.25,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.3,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.36,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.5,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.6,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.72,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.9,"extended_old_stroke":0,"fps":30,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.18,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.2,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.25,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.3,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.36,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.5,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.6,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.72,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.9,"extended_old_stroke":0,"fps":60,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.18,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.2,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.25,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.3,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.36,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.5,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.6,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.72,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+GRID {"cadence":0.9,"extended_old_stroke":0,"fps":120,"intents":20,"same_side_repeats":0,"started":20}
+CADENCE_MATRIX {"cases":27,"checks":81,"failures":0}

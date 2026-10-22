@@ -1,0 +1,38 @@
+[
+  {
+    "script": "/tmp/codex-755-c3-media-stopped-negative.gd",
+    "expected": "actual AudioStreamPlayer crossed80 percent",
+    "scenario": "Stop the real AudioStreamPlayer after 1.2s/pause/resume, before eighty percent; no heard evidence and no excerpt access.",
+    "fixture": "/Users/zhu/Library/Application Support/755-c3-clock-negative-gDwVi0",
+    "startedAt": "2026-10-19T16:53:54.177Z",
+    "durationMs": 1936,
+    "status": 1,
+    "error": null,
+    "caught": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nERROR: actual AudioStreamPlayer crossed80 percent\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (/tmp/codex-755-c3-media-stopped-negative.gd:14)\n       [1] run (/tmp/codex-755-c3-media-stopped-negative.gd:48)\n"
+  },
+  {
+    "script": "/tmp/codex-755-c3-media-paused-negative.gd",
+    "expected": "actual AudioStreamPlayer crossed80 percent",
+    "scenario": "Pause the controller-issued actual playback below eighty percent; waiting cannot invent heard evidence.",
+    "fixture": "/Users/zhu/Library/Application Support/755-c3-clock-negative-xfCdkq",
+    "startedAt": "2026-10-19T16:53:56.116Z",
+    "durationMs": 1842,
+    "status": 1,
+    "error": null,
+    "caught": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nERROR: actual AudioStreamPlayer crossed80 percent\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (/tmp/codex-755-c3-media-paused-negative.gd:14)\n       [1] run (/tmp/codex-755-c3-media-paused-negative.gd:48)\n"
+  },
+  {
+    "script": "/tmp/codex-755-c3-phone-stopped-negative.gd",
+    "expected": "real AudioStreamPlayer crossed80 percent for CLIP D7",
+    "scenario": "Stop the real UI-initiated first clip immediately; selection cannot unlock by wall-clock time.",
+    "fixture": "/Users/zhu/Library/Application Support/755-c3-clock-negative-Mej8K2",
+    "startedAt": "2026-10-19T16:53:57.960Z",
+    "durationMs": 1349,
+    "status": 1,
+    "error": null,
+    "caught": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nERROR: real AudioStreamPlayer crossed80 percent for CLIP D7\n   at: push_error (core/variant/variant_utility.cpp:1023)\n   GDScript backtrace (most recent call first):\n       [0] check (/tmp/codex-755-c3-phone-stopped-negative.gd:9)\n       [1] run (/tmp/codex-755-c3-phone-stopped-negative.gd:63)\n       [2] await_actual_heard (/tmp/codex-755-c3-phone-stopped-negative.gd:121)\n"
+  }
+]

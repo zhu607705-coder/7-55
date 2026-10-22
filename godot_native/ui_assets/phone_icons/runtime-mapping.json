@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Original SVG line drawings created for this 7:55 task; no third-party icon art, emoji, or font glyphs.",
+  "geometry": {
+    "viewBox": "0 0 24 24",
+    "strokeWidth": 1.6,
+    "linecap": "round",
+    "linejoin": "round",
+    "fill": "none"
+  },
+  "runtimeAppIds": {
+    "wechat": "messages.svg",
+    "tiyi": "sports.svg",
+    "zjuding": "campus.svg",
+    "settings": "settings.svg",
+    "photos": "album.svg",
+    "timeline_recovery": "recovery.svg",
+    "voice_memos": "voice.svg",
+    "cc98": "forum.svg",
+    "control_center": "controls.svg",
+    "clock": "clock.svg"
+  },
+  "notes": [
+    "Runtime routes remain existing app IDs; do not add standalone notes app.",
+    "map.svg is available for map within zjuding.",
+    "notes.svg belongs to the website demo only.",
+    "Keep story gear object and click/drop behavior unchanged.",
+    "SVG can be scaled to 32px inside 48px native button; retain accessible name separately."
+  ]
+}

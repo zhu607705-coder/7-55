@@ -1,0 +1,32 @@
+[
+  {
+    "label": "earned-campaign",
+    "ok": true,
+    "status": 0,
+    "error": null
+  },
+  {
+    "label": "stairs-1280x720",
+    "ok": true,
+    "status": 0,
+    "error": null
+  },
+  {
+    "label": "stairs-390x844",
+    "ok": true,
+    "status": 0,
+    "error": null
+  },
+  {
+    "label": "chase-1280x720",
+    "ok": true,
+    "status": 0,
+    "error": null
+  },
+  {
+    "label": "chase-390x844",
+    "ok": true,
+    "status": 0,
+    "error": null
+  }
+]

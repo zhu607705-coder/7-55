@@ -1,0 +1,465 @@
+{
+  "schema": "755-bounded-save-sync-release-evidence-v1",
+  "updatedAt": "2026-10-20T11:38:06.209013+00:00",
+  "status": "local-validation-complete-clean-ci-pending",
+  "baseCommit": "c1528f89d4f014c5222d9f559efb41b0a01335d8",
+  "publishedAtObservation": {
+    "commit": "a2517a6a",
+    "candidateC152Deployed": false,
+    "reason": "Pages39411755479 browser gate failed; Publish job skipped."
+  },
+  "failedCandidate": {
+    "commit": "c1528f89d4f014c5222d9f559efb41b0a01335d8",
+    "runId": 39411755479,
+    "runUrl": "https://github.com/zhu607705-coder/7-55/actions/runs/39411755479",
+    "sourceInputSha256": "ff88e9fe5b23e255afc916eedca19eeec710513fed696a5949ce62bafc5c20a5",
+    "sourceDirty": false,
+    "completedAssertions": 173,
+    "enteredCases": 4,
+    "cases": [
+      {
+        "id": "desktop-1280",
+        "passed": true
+      },
+      {
+        "id": "desktop-1440",
+        "passed": true
+      },
+      {
+        "id": "touch-390",
+        "passed": true
+      },
+      {
+        "id": "retina-1440",
+        "passed": false
+      }
+    ],
+    "failure": {
+      "case": "retina-1440",
+      "cssWidth": 1440,
+      "cssHeight": 900,
+      "dpr": 2,
+      "currentNativeDigest": "764fe4bb93cc4e96d4617cf9b7cc14f21e73ca967c1a7b5861ff7f9dab73f6db",
+      "receipt": {
+        "acknowledgedDigest": "42efec34db343925f8ef2dc6e980aef62f7f66a80e6b6f6698e1cedbe839ff56",
+        "digest": "764fe4bb93cc4e96d4617cf9b7cc14f21e73ca967c1a7b5861ff7f9dab73f6db",
+        "error": "timeout",
+        "observedDigest": "42efec34db343925f8ef2dc6e980aef62f7f66a80e6b6f6698e1cedbe839ff56",
+        "pending": false,
+        "startedMs": 22227,
+        "token": 6
+      },
+      "visibleFeedback": "保存未完成·重试",
+      "missingDiagnostics": [
+        "No independent IDB read was completed: waitForPersistedSave failed before that step.",
+        "Before/after save tokens and per-frame long tasks were not captured by this verifier.",
+        "Failure PNG bytes were not included by the CI evidence artifact paths; only its report hash exists here."
+      ]
+    },
+    "receipt": {
+      "path": "godot_native/exports/verification/pages_run_39411755479/receipt.json",
+      "bytes": 18108,
+      "sha256": "a9e34a4ae00545e5edf4774d48db76715d83c40aff84efcd31fa54b246cb7ec3"
+    },
+    "rawBrowserReport": {
+      "path": "godot_native/exports/verification/pages_run_39411755479/extracted/verification/web_ci/web-acceptance.json",
+      "bytes": 932166,
+      "sha256": "5327361cd92472b0134ccf2be388abddf863c6dce76215d35749ee5b8ab605cb"
+    },
+    "readonlyAnalysis": {
+      "path": "godot_native/exports/verification/pages_run_39411755479/save-readonly-triage-analysis.json",
+      "bytes": 8816,
+      "sha256": "da819e461e1a5232cc6d4682a33e83effe0b0703d3ccda412b80256ebc985d41"
+    },
+    "preservedAsFailure": true
+  },
+  "change": {
+    "purpose": "Bounded recovery when an official filesystem sync request has not yielded exact durable bytes; not a proven diagnosis of the failed CI.",
+    "officialApi": "JavaScriptBridge.force_fs_sync",
+    "intervalMs": 500,
+    "originalWatchdogMs": 20000,
+    "maxRequestsIncludingInitial": 40,
+    "runtimeClock": "Time.get_ticks_msec()",
+    "preserved": [
+      "Current token",
+      "Expected file SHA-256",
+      "Attempt startedMs",
+      "Original JS20s watchdog",
+      "Only State writes save content",
+      "Engine owns IndexedDB writes",
+      "Actual readonly bytes and current-token exact SHA ACK",
+      "Failure feedback and beforeunload guard"
+    ],
+    "stopConditions": [
+      "pending false after success or failure",
+      "transport disposed",
+      "original deadline reached",
+      "request cap reached"
+    ],
+    "diagnostics": {
+      "syncRequests": "Official request count, not commit count",
+      "lastSyncMs": "Monotonic time of latest official request"
+    }
+  },
+  "verifierDiagnostics": {
+    "source": "godot_native/tools/verify_web_export.mjs",
+    "sha256": "48700c399c44f5982a3775703971aa4282d7c4b13d16bfefd929e046d01ec596",
+    "changes": [
+      "Record saveAttempts with current receipt, digest and elapsed time, bounded to160 changed observations per wait.",
+      "On failure, record independent readonly failureDisk before rethrowing original error.",
+      "Record FILE_DATA timestampMs alongside actual SHA-256 and byte length."
+    ],
+    "unchanged": [
+      "Original exact durable receipt acceptance",
+      "Independent IDB SHA equality assertion",
+      "Real new-document reload assertion",
+      "Product20s deadline",
+      "No game save retry or database writes by the verifier"
+    ]
+  },
+  "sourceBindings": [
+    {
+      "path": "godot_native/scripts/platform/web_platform.gd",
+      "priorC152SHA256": "002fc5fa80e595a09749873eeb277ba53d1332908adf1750306cf68cc7b85d72",
+      "sha256": "4e09fafd288acc9938311f3024f89b45b836b5827b67d9ba59be1a5a7ba61ecf"
+    },
+    {
+      "path": "godot_native/tests/test_web_save_persistence.gd",
+      "priorC152SHA256": "67ca5b9e057a48c6eef1b69abec4a96bc71134877f9bb8d8fb3439e5792c6196",
+      "sha256": "cfd41cbe91e861659d7049eee9885527828d5321c961ca539ce675d889185950"
+    }
+  ],
+  "completedValidation": {
+    "native": {
+      "passed": true,
+      "checks": 35,
+      "originalChecksRetained": 20,
+      "addedChecks": 15,
+      "engine": "Godot4.7.2 macOS, isolated native profile",
+      "report": {
+        "path": "godot_native/exports/verification/save_sync_renewal_20261020/native-focused.json",
+        "bytes": 654,
+        "sha256": "1273b88c46d474f907c9287235741cc51042cb9044f87876e6192c63a0705e92"
+      }
+    },
+    "transport": {
+      "passed": true,
+      "checks": 39,
+      "originalAssertionsRetained": true,
+      "scope": "Real unchanged private JS transport; deterministic readonly mocked IndexedDB/timers.",
+      "report": {
+        "path": "godot_native/exports/verification/save_sync_renewal_20261020/transport-focused.json",
+        "bytes": 4956,
+        "sha256": "03d7bc2d7fdbd5e11b8a2e7c6ddd2ecb885530b42280ecb7b5b6eeaaf3703c6c"
+      }
+    },
+    "independentReview": {
+      "blockingFindings": [],
+      "reviewedFiles": {
+        "godot_native/scripts/platform/web_platform.gd": "4e09fafd288acc9938311f3024f89b45b836b5827b67d9ba59be1a5a7ba61ecf",
+        "godot_native/tests/test_web_save_persistence.gd": "cfd41cbe91e861659d7049eee9885527828d5321c961ca539ce675d889185950"
+      },
+      "receipt": {
+        "path": "godot_native/exports/verification/save_sync_renewal_20261020/independent-readonly-review.json",
+        "bytes": 1695,
+        "sha256": "43fd70c1f0dbe26d6639e43e50cf90f39edeb859752ab3df99bbd13ea911f503"
+      }
+    }
+  },
+  "independentNegativeControl": {
+    "passed": true,
+    "checks": 18,
+    "scope": "Deterministic algorithm negative control: actual unmodified exported IDBFS syncfs/getLocalSet/getRemoteSet/reconcile/load/store code and real isolated Chromium IndexedDB, with a controlled local FS adapter assigning timestamps and content. This is not a full Godot filesystem run and does not prove that the failed Pages CI had equal timestamps.",
+    "finding": "Actual official IDBFS can skip changed bytes when local and stored timestamps are equal; repeated syncs retain the old bytes.",
+    "implication": "This recovery alone does not solve an equal-mtime case. The failed CI did not record mtime, so collision is not established as its cause.",
+    "receipt": {
+      "path": "godot_native/exports/verification/idbfs_reconcile_negative_control_20261020/receipt.json",
+      "bytes": 10360,
+      "sha256": "ad3fafa4674b15f8b0c70eec2d8f68c6c6ac12cdcef6c72c6dd573784c1aa662"
+    }
+  },
+  "olderArtifactDiagnostics": {
+    "sourceInputSha256": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+    "didReproduceTimeout": false,
+    "scope": "Single local retina1440 DPR2 with4x CDP CPU throttling. Complete official basic runner and assertions retained; added pre-document read-only IDB wrappers, detached snapshot samples, rAF/longtask observers and failure-side independent IDB read. Product export and repository unchanged. This diagnostic does not supersede the failed clean Linux c152 run.",
+    "receipt": {
+      "path": "godot_native/exports/verification/retina_idb_36ba_diagnostic_20261020/attempt1/receipt.json",
+      "bytes": 28788,
+      "sha256": "74fdfac16b1827b32f42fc25b93674fa34548ca2fedd4183d1f9d00bfce53e88"
+    },
+    "fsTimingTrace": {
+      "path": "godot_native/exports/verification/retina_fs_36ba_diagnostic_20261020/attempt1/idb-timing-trace.json",
+      "bytes": 302037,
+      "sha256": "407c7fab95b39f4ac28cc86edde605640116b44e66d54a7811035e0853758543"
+    },
+    "limits": [
+      "Instrumented older36ba artifact is a distinct scope.",
+      "Local success does not replace the failed Linux CI generation or prove a root cause."
+    ]
+  },
+  "newArtifact": {
+    "directory": "godot_native/exports/web-save-sync-20261020",
+    "sourceCommit": "c1528f89d4f014c5222d9f559efb41b0a01335d8",
+    "sourceDirty": true,
+    "sourceInputSha256": "02d7c7b5288cf580c2523dea47f6a17355dbc607f8a26bee9c056d0a4aa7b8ac",
+    "buildManifestSha256": "ef2f683abe58be4c17207f3826cfec422b7e5b79c7fc271aa74748b878b998d3",
+    "initialPayloadBytes": 94512972,
+    "acceptance": {
+      "sixViewportRealInputSaveReload": {
+        "status": "passed",
+        "checks": 737,
+        "cases": [
+          {
+            "id": "desktop-1280",
+            "width": 1280,
+            "height": 720,
+            "touch": false,
+            "dpr": 1,
+            "passed": true
+          },
+          {
+            "id": "desktop-1440",
+            "width": 1440,
+            "height": 900,
+            "touch": false,
+            "dpr": 1,
+            "passed": true
+          },
+          {
+            "id": "touch-390",
+            "width": 390,
+            "height": 844,
+            "touch": true,
+            "dpr": 1,
+            "passed": true
+          },
+          {
+            "id": "retina-1440",
+            "width": 1440,
+            "height": 900,
+            "touch": false,
+            "dpr": 2,
+            "passed": true
+          },
+          {
+            "id": "retina-touch-390",
+            "width": 390,
+            "height": 844,
+            "touch": true,
+            "dpr": 3,
+            "passed": true
+          },
+          {
+            "id": "desktop-1920",
+            "width": 1920,
+            "height": 1080,
+            "touch": false,
+            "dpr": 1,
+            "passed": true
+          }
+        ],
+        "elapsedMs": 142325,
+        "scope": "Local immutable02d7 export under six isolated Chromium viewport/DPR cases; each exact native/readonlyIDB ACK and real new-document reload passed.",
+        "report": {
+          "path": "godot_native/exports/verification/save_sync_renewal_20261020/browser-basic-attempt1/web-acceptance.json",
+          "sha256": "0415f2db0a9c47db730524360f201f7596d577304932f189bf3c25bffc3982fb"
+        },
+        "receipt": {
+          "path": "godot_native/exports/verification/save_sync_renewal_20261020/browser-basic-attempt1/receipt.json",
+          "sha256": "53f5f7004f2386204fce6bc2488934b36c45ef528b89212ecea127c96f20e752"
+        },
+        "runnerSha256": "48700c399c44f5982a3775703971aa4282d7c4b13d16bfefd929e046d01ec596",
+        "ordinaryExplicitSyncRequests": [
+          {
+            "case": "desktop-1280",
+            "requestsObserved": [
+              1
+            ]
+          },
+          {
+            "case": "desktop-1440",
+            "requestsObserved": [
+              1
+            ]
+          },
+          {
+            "case": "touch-390",
+            "requestsObserved": [
+              1
+            ]
+          },
+          {
+            "case": "retina-1440",
+            "requestsObserved": [
+              1
+            ]
+          },
+          {
+            "case": "retina-touch-390",
+            "requestsObserved": [
+              1
+            ]
+          },
+          {
+            "case": "desktop-1920",
+            "requestsObserved": [
+              1
+            ]
+          }
+        ],
+        "recoveryProof": false,
+        "reason": "Ordinary local cases used only the initial sync request, so they do not prove that a renewed request recovered a dropped flush.",
+        "screenshotsReviewedAndRemoved": 6
+      },
+      "singleDroppedFlushBrowserControl": {
+        "status": "controlled-recovery-demonstrated",
+        "samplingRounds": 1,
+        "scope": "One isolated retina1440 DPR2 CPU4x ordinaryC1 mode-toggle then explicitSave; test engine omits exactly one eligible new-byte officialGodotFS.sync after baseline exactACK/idle. All later original calls pass through unchanged. No FS/DB write, fakeACK, secondwriter, extraSave, product timeout, game-state injection or product file change. Diagnostic only, not release acceptance.",
+        "comparison": {
+          "path": "godot_native/exports/verification/single_flush_comparison_20261020/receipt.json",
+          "bytes": 1283,
+          "sha256": "1360d71bacca13c820c845713c85ef4c60912ce6dd41d604ed2a5005754d6908"
+        },
+        "instrumentation": {
+          "originalEngineSha256": "649986c2276d830baa17cd1774a4bb192fc929186e040394b4fc728a350919cd",
+          "instrumentedEngineSha256": "6ce274f332e5803d47a279a2e4f1b7d5d87feeb25d5942d67e32f9464800c78e",
+          "testOnly": true,
+          "sameInstrumentedEngineInBothCases": true,
+          "releaseEngineWasNotModified": true
+        },
+        "old": {
+          "sourceInputSha256": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+          "receipt": {
+            "path": "godot_native/exports/verification/single_flush_36ba_20261020/attempt1/receipt.json",
+            "bytes": 6417,
+            "sha256": "4e08ebe87668468d5210b46b15fc0a97a9cbf2caa07abd89db9ab53b6c304e3b"
+          },
+          "rawReport": {
+            "path": "godot_native/exports/verification/single_flush_36ba_20261020/attempt1/online-acceptance.json",
+            "bytes": 150404,
+            "sha256": "63a25dd95609482effe458bafb5702c17c46d5ef837fdb402e9aa908478d4df5"
+          },
+          "saveAccepted": false,
+          "currentNativeSha256": "622bd48c1cddf65300b0bd8dfc1f120782ec430308074c3d33e580f490342e69",
+          "durablePrimarySha256": "0466cf5d0858f1fd0adc41e797b7ac91166549722a0eac3dd6034ff20836a1c3",
+          "productWatcherError": "timeout",
+          "observationWindowMs": 31247,
+          "diagnosticRunPassed": false,
+          "newDocumentVerified": false,
+          "harnessErrors": [
+            "Error: CDP timeout Page.navigate\n    at Timeout._onTimeout (file:///private/tmp/codex-755-cache-cdp-helper.mjs:6:184)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)"
+          ],
+          "navigationLimitation": "Post-fault Page.navigate timed out; no dialog event was captured, so beforeunload causation remains unproven. No old reload acceptance is claimed.",
+          "cleanup": {
+            "path": "godot_native/exports/verification/single_flush_36ba_20261020/attempt1/cleanup-receipt.json",
+            "bytes": 648,
+            "sha256": "387fc717caff5a1c835a13a5d5fc18678740be8300d0e0932222c4a0d3f66e85"
+          }
+        },
+        "new": {
+          "sourceInputSha256": "02d7c7b5288cf580c2523dea47f6a17355dbc607f8a26bee9c056d0a4aa7b8ac",
+          "receipt": {
+            "path": "godot_native/exports/verification/single_flush_02d7_20261020/attempt1/receipt.json",
+            "bytes": 6152,
+            "sha256": "0edfbbeb86e220c864d5741e7f1bb45c3592dac83ebfa9156757fd52b31c4c4d"
+          },
+          "rawReport": {
+            "path": "godot_native/exports/verification/single_flush_02d7_20261020/attempt1/online-acceptance.json",
+            "bytes": 192220,
+            "sha256": "935ba20cc370048976c0d9666e95eb9b37aeeb0ac8fa78f2a6dc291b8e9200d7"
+          },
+          "checks": 27,
+          "saveAccepted": true,
+          "observationWindowMs": 6149,
+          "saveReceipt": {
+            "acknowledgedDigest": "c548204b5dfd2ca751acc85238d9b5a0a9dabefa5de389eb74020514f31c6415",
+            "digest": "c548204b5dfd2ca751acc85238d9b5a0a9dabefa5de389eb74020514f31c6415",
+            "error": "",
+            "lastSyncMs": 23389,
+            "observedDigest": "c548204b5dfd2ca751acc85238d9b5a0a9dabefa5de389eb74020514f31c6415",
+            "pending": false,
+            "startedMs": 19571,
+            "syncRequests": 8,
+            "token": 6
+          },
+          "durablePrimarySha256": "c548204b5dfd2ca751acc85238d9b5a0a9dabefa5de389eb74020514f31c6415",
+          "newDocument": {
+            "completed": true,
+            "loadedCurrentGeneration": true,
+            "loadedDigest": "c548204b5dfd2ca751acc85238d9b5a0a9dabefa5de389eb74020514f31c6415"
+          },
+          "harnessErrors": [],
+          "cleanup": {
+            "path": "godot_native/exports/verification/single_flush_02d7_20261020/attempt1/cleanup-receipt.json",
+            "bytes": 1209,
+            "sha256": "1601d3c0e2bbc85ae89d1b65e92d809a2cdcfc1f712361274535d139f552f244"
+          }
+        },
+        "conclusion": "Under one controlled omitted flush and the unchanged20s watchdog, bounded official re-requests recovered exact native/IDB bytes and actual new-document continuation.",
+        "limits": [
+          "This diagnostic mechanism comparison does not identify the cause of the original clean Linux CI c152 failure.",
+          "The temporary instrumented engine is not release-byte acceptance.",
+          "No additional Save click, State/IDB writer, fake ACK, game state injection or clock/deadline change was used.",
+          "Old and new failures/results remain separate; the old navigation harness error is retained."
+        ]
+      },
+      "newCleanLinuxCI": {
+        "status": "not-run"
+      },
+      "deployed": false,
+      "plainHTTPNoWebCrypto": {
+        "status": "passed",
+        "checks": 16,
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 2
+        },
+        "capabilities": [
+          {
+            "secureContext": false,
+            "hasSubtle": false,
+            "hasIDB": true,
+            "dpr": 2,
+            "timeOrigin": 1792495885409.3
+          },
+          {
+            "secureContext": false,
+            "hasSubtle": false,
+            "hasIDB": true,
+            "dpr": 2,
+            "timeOrigin": 1792495893175.8
+          }
+        ],
+        "scope": "Actual ordinary fresh alarm/home/mode/Save/native exact ACK/independent Node-hashed readonly IDB/new-document restoration. No game state bridge writes, faults, save-import fixtures, virtual time, deadline truncation, or full transport/cache-suite claim.",
+        "explicitSaveElapsedMs": 116,
+        "explicitSaveSyncRequests": 1,
+        "receipt": {
+          "path": "godot_native/exports/verification/save_sync_plain_http_20261020/receipt.json",
+          "sha256": "322e6a7c206d14e532d888e559da9b8b5e13619f91a43328c9517017018927cc"
+        },
+        "recoveryProof": false,
+        "excludedClaims": [
+          "No inherited old three-boot cache acceptance.",
+          "One-request ordinary success is not a renewed-flush recovery proof."
+        ]
+      }
+    }
+  },
+  "limitations": [
+    "No finding claims that bounded renewal is the root-cause fix for Pages39411755479.",
+    "Native35 and transport39 do not substitute for actual engine Web save/reload.",
+    "Six-case and plain-HTTP ordinary validation passed; a controlled omitted-flush comparison demonstrates recovery. New clean Linux CI and deployment remain pending."
+  ],
+  "frozenAt": "2026-10-20T11:38:06.209013+00:00",
+  "localPackageComparisonNote": {
+    "scope": "Root compared the two local manifests, not new clean Linux artifact identities.",
+    "previousSourceInputSha256": "36ba439187bfb9b4988f54a112dfec661489db6c42be84f074c47a36253ca0e3",
+    "currentSourceInputSha256": "02d7c7b5288cf580c2523dea47f6a17355dbc607f8a26bee9c056d0a4aa7b8ac",
+    "sameDeferredPackCount": 19,
+    "sameWasmSHA256": true,
+    "coreResourceCount": 1011,
+    "fullResourceCount": 2284,
+    "limit": "Do not inherit local byte identities or source provenance into a later clean Linux build."
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "sourcePullRequest": "https://github.com/zhu607705-coder/7-55/pull/145",
+  "nativeDurationMs": 12350,
+  "verification": "node godot_native/tests/verify_rain_rescue_native_source.mjs",
+  "records": [
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/font.ttf",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/font.ttf",
+      "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/atlas_regions.json",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/atlas_regions.json",
+      "sha256": "2337e95dd29d64f4b270bc4f5aa53695669229f32e0047bc32ce10942193852e"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/officer_reach_up_right_v03.json",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/officer_reach_up_right_v03.json",
+      "sha256": "ed934535490f2037ff463457024823f71e49e64c0db664955f5a4e418fb31568"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/officer_reach_up_right_v03.png",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/officer_reach_up_right_v03.png",
+      "sha256": "4aeeb6e387f47fab1c9e8739a3b39be43d75e274b85c138a9d527809dbd9c917"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/officer_reach_up_right_v03.prompt.txt",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/officer_reach_up_right_v03.prompt.txt",
+      "sha256": "b81c73f857d0893ef4480e91e79863ff8477d3398427e600b4a31c8c58db0a6c"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v01.json",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/rescue_pose_atlas_v01.json",
+      "sha256": "39331a396371456cfec7d248a4e920e2203de654e33342aba6e9471b1f91e27a"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v01.png",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/rescue_pose_atlas_v01.png",
+      "sha256": "e84be30df5581dbfa5961be46d21071e149759033def0c238d483f4ac42f96b5"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v01.prompt.txt",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/rescue_pose_atlas_v01.prompt.txt",
+      "sha256": "4d5e42c906279a436ae1505d5a8cb57a3f28bff6cea4eebd93b599b0e1219ff0"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v02.json",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/rescue_pose_atlas_v02.json",
+      "sha256": "0ac16c8ab219b1ac1584e722e884251f2e9fa9e54052f0d76758516969c21b81"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v02.png",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/rescue_pose_atlas_v02.png",
+      "sha256": "ce36e46511d5f79f11451b402ae06f879ef5646f169e708738040cb239de1645"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/generated/rescue_pose_atlas_v02.prompt.txt",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/generated/rescue_pose_atlas_v02.prompt.txt",
+      "sha256": "f97682004d9fe80599b78142bfc23772ee4af6d73eec4e746b452b73ac0733f6"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/kayak_hull.svg",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/kayak_hull.svg",
+      "sha256": "b0efda9723787304b337d4119e2a006ac03fdfb22dd3db55cc5a11734882bf06"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/kayak_upturned.svg",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/kayak_upturned.svg",
+      "sha256": "f4f2c4b7a4bd7351b3384995719670785ea611e0ab829bf3fb1f6f6eaf0ee029"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/lake_rain.png",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/lake_rain.png",
+      "sha256": "735d05847189ece155e50de2f51c52b3411ad73130ab35e73a41896588637699"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/licenses/FUSION_PIXEL_FONT_OFL.txt",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/licenses/FUSION_PIXEL_FONT_OFL.txt",
+      "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/licenses/ark-pixel.txt",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/licenses/ark-pixel.txt",
+      "sha256": "8080ca8194383ad39d8d7c308bcf387c6d4879622aae57876b386f4e5a085f72"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/licenses/cubic-11.txt",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/licenses/cubic-11.txt",
+      "sha256": "bdd640c94530f5845de621089875aefcaec17585dbd4dab191c97118539bf92f"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/licenses/galmuri.txt",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/licenses/galmuri.txt",
+      "sha256": "9ff00566e64a6f1609b197f5eb982f14e50a050edaf0ed588fef4f5aabaea8a9"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/officer.png",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/officer.png",
+      "sha256": "183820b808dc7ea801cb878687aa6537c34225910569b37a421ed4755d5d346e"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/player_down.png",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/player_down.png",
+      "sha256": "ab29c2e04c8ca5a165ede053b0b879be695adb41971c820bc67dbdf4c36f6fd9"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/assets/player_side.png",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/player_side.png",
+      "sha256": "75f2f28b9e64ca18d993546b37a6c801df940f702d5b56888924b92fe552a819"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/scripts/rain_rescue_preview.gd",
+      "production": "godot_native/scripts/media/c3_rain_rescue_native/renderer.gd",
+      "source_sha256": "a9757caddad7c0d50520749ecf3a2704fc5563495b88de5a654f6d54f050ab38",
+      "production_sha256": "a709704d547e6f828659b0b4f0b8e816b95d80d35693db059bb4243d2736fbdf",
+      "mode": "adapted-drawing-only",
+      "reason": "2026-10-21 UI-only font adaptation: title/caption drawing now uses the shared bundled Campus UI body font through native_typography.body_font(). Source renderer, original font asset/license, authored geometry, caption text, timeline and input/progression ownership are unchanged."
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/scripts/rescue_timeline.gd",
+      "production": "godot_native/scripts/media/c3_rain_rescue_native/timeline.gd",
+      "source_sha256": "ac3e0f5fbf5827a2aca2c9023ae042d4998d6d6f900d6312a00e54700e8877f9",
+      "production_sha256": "4faa4a6dc25441be5e0f4ddf8d5995ffa4c4f8b73f1618b7baa3e41b07a660cb",
+      "mode": "static-geometry-only"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/scripts/rescue_pose_geometry.gd",
+      "production": "godot_native/scripts/media/c3_rain_rescue_native/pose_geometry.gd",
+      "source_sha256": "7086f88725c7ac4d0a52d0ad14dac5e6ed151b740ce5929195ac110c57d2350f",
+      "production_sha256": "7086f88725c7ac4d0a52d0ad14dac5e6ed151b740ce5929195ac110c57d2350f",
+      "mode": "byte-copy"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/docs/ASSET_LICENSES.md",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/ASSET_LICENSES.md",
+      "sha256": "45d6ce728c09977557446ba073206d5f85f79f709d467234bdc82434ce1c4cbb"
+    },
+    {
+      "source": "samples/qizhen-rain-rescue-native/docs/ASSET_PROVENANCE.md",
+      "production": "godot_native/assets/native/qizhen_rain_rescue/ASSET_PROVENANCE.md",
+      "sha256": "c9e7ce96532adc4a58e030b053d7edc0b18147b40ae407b470833100ee9f2de8"
+    }
+  ],
+  "nativeSourceOffsetMs": 2650,
+  "nativeSourceDurationMs": 15000,
+  "continuation": "The production route already shows wind and capsize; begin native drawing at the exact SPLASH boundary, whose phase is hold_hull. Keep source geometry/art unchanged.",
+  "compactEmbedding": "The production renderer exposes its unchanged current caption and can suppress only its own footer text. The outer presenter wraps the same words in the existing footer at 14–16 physical pixels; original sample bytes, desktop drawing and scene geometry stay unchanged."
+}

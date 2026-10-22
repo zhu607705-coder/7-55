@@ -1,0 +1,221 @@
+{
+  "fixtureRoot": "/Users/zhu/Library/Application Support/755-native-check-tpWGKN",
+  "userData": "/Users/zhu/Library/Application Support/755-native-check-tpWGKN/data/SevenFiftyFiveNative",
+  "project": "/Users/zhu/Library/Application Support/755-native-check-tpWGKN/workspace/godot_native",
+  "stages": [
+    {
+      "script": "res://tests/test_prologue_words.gd",
+      "startedAt": "2026-10-19T16:21:47.160Z",
+      "durationMs": 448,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPROLOGUE_WORD_MODEL: 28 checks; 0 failures\n"
+    },
+    {
+      "script": "res://tests/test_prologue_focus_input.gd",
+      "startedAt": "2026-10-19T16:21:47.609Z",
+      "durationMs": 742,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_PROLOGUE_FOCUS_INPUT: 35 checks; 0 failures\n"
+    },
+    {
+      "script": "res://tests/test_early_games.gd",
+      "startedAt": "2026-10-19T16:21:48.351Z",
+      "durationMs": 833,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nEARLY_GAMES_TESTS: 16 passed; 0 failed\n"
+    },
+    {
+      "script": "res://tests/test_prologue_audio.gd",
+      "startedAt": "2026-10-19T16:21:49.184Z",
+      "durationMs": 3241,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_PROLOGUE_AUDIO checks=32 errors=0\n"
+    },
+    {
+      "script": "res://tests/test_chapter1_2.gd",
+      "startedAt": "2026-10-19T16:21:52.426Z",
+      "durationMs": 449,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCHAPTER1_2_TESTS: 87 checks; 0 failures\n"
+    },
+    {
+      "script": "res://tests/test_native_prologue_effects.gd",
+      "startedAt": "2026-10-19T16:21:52.875Z",
+      "durationMs": 2022,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_PROLOGUE_EFFECTS 86 checks; 0 failures\n"
+    },
+    {
+      "script": "res://tests/test_cohesion_controls.gd",
+      "startedAt": "2026-10-19T16:21:54.898Z",
+      "durationMs": 4438,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCOHESION_CONTROLS: 144 checks, 0 failures\n"
+    },
+    {
+      "script": "res://tests/test_full_campaign.gd",
+      "startedAt": "2026-10-19T16:21:59.336Z",
+      "durationMs": 106463,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCONTINUOUS CAMPAIGN chapters=[1, 2, 3, 4] failures=0\nWARNING: Nodes with non-equal opposite anchors will have their size overridden after _ready(). \nIf you want to set size, change the anchors or consider using set_deferred().\n     at: _set_size (scene/gui/control.cpp:1519)\n     GDScript backtrace (most recent call first):\n         [0] return_to_hall (res://tests/campaign_chapter4.gd:150)\n         [1] campaign (res://tests/campaign_chapter4.gd:93)\n         [2] act (res://tests/campaign_chapter4.gd:161)\n         [3] drain_effects (res://tests/campaign_chapter4.gd:234)\n"
+    },
+    {
+      "script": "res://tests/test_all_scripts_parse.gd",
+      "startedAt": "2026-10-19T16:23:45.799Z",
+      "durationMs": 4810,
+      "status": 0,
+      "error": null,
+      "passed": true,
+      "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nComplete native script graph: 736 scripts, 0 failures\n"
+    }
+  ],
+  "schemaVersion": 2,
+  "completedAt": "2026-10-19T16:26:48.947611+00:00",
+  "scope": "Native C1 word-interception in isolated worktree only; no Git mutation or GUI launch. Shared Main/notice files owned by another agent.",
+  "baseCommit": "9dbaa14472985097801a5c676022c06326ac7297",
+  "sourceFiles": {
+    "godot_native/scripts/games/prologue_interception.gd": "7c59baeacf6e0e10179699fb218e4c3ddba89e294223f9ea29bf8e6529c1a1ba",
+    "godot_native/scripts/games/prologue_word_model.gd": "e933e8ad6ba7e39c67dfdd9565d2627e0989b877a7215063486cff1d089e6c64",
+    "godot_native/data/native/prologue-interception.content.json": "64ff1f31b664749a43d5590bf9464717634c33bdb342386852c9244a91fea778",
+    "godot_native/tools/sync_source.mjs": "05f5774986ecfb623cd70f18d22d8c0bc182099d20f33146ba9280ebf883c90b",
+    "godot_native/tests/prologue_word_driver.gd": "b0810e54e4929df1a33b9b3ccff947cc8d5179380989d12cbe8b3836a7621c2f",
+    "godot_native/tests/test_prologue_words.gd": "7d7f5ed497cbefdd51aa5a0b2f9d8db55e7adada0ceda4390e88cbd7fa5b9883",
+    "godot_native/tests/test_prologue_focus_input.gd": "dbf52508a41a45f5b83a009d0b8d4ea319f78339c0129b45a811b85e9fcc8f19",
+    "godot_native/tests/test_early_games.gd": "7fb7c7d6576474249d7cd167f6b1e83a481652c054cdd2cff409a26829b9cee7",
+    "godot_native/tests/test_prologue_audio.gd": "2f51b7fd76b179cbc202bd1361c2304a2464108a25834cfa8fd78de7e0631521",
+    "godot_native/tests/test_full_campaign.gd": "dd7fbf58ad83db05480b2069b0b5f0f64108d80faee172d9154fd3df38238d26"
+  },
+  "authoredJsonSha256": "64ff1f31b664749a43d5590bf9464717634c33bdb342386852c9244a91fea778",
+  "wordDataExact": true,
+  "negativeControlsReport": "/tmp/codex-755-c1-negative-controls.json",
+  "negativeControlsCaught": 6,
+  "readabilityReport": "/tmp/codex-755-c1-word-readability.json",
+  "minObservedCaptureReadableSeconds": 3.33333333333332,
+  "controllerContract": "6 distinct semantic word captures -> 3 completed stages, original 1400ms hold + 4 dialogue lines + whiteout; save schema unchanged.",
+  "counts": {
+    "wordModel": 28,
+    "rootInput": 35,
+    "earlyGames": 16,
+    "audio": 32,
+    "chapter1_2": 87,
+    "originalEffects": 86,
+    "endingRecovery": 144,
+    "continuousCampaignChapters": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "parseScripts": 736
+  },
+  "notYetProven": [
+    "Physical human touchscreen acceptance",
+    "Current candidate Linux Godot 4.6.3 execution",
+    "GUI visual acceptance of the new game (no GUI launched)"
+  ],
+  "priorFailuresAndCorrections": [
+    "Initial isolated worktree lacked generated source JSON/assets. Existing JSON and read-only source assets were made available in this worktree; its own import cache was cloned and .import sidecars localized. Canonical source/cache is no longer used for new runs.",
+    "A local semantic fixture reused a velocity after reflection; reset the independent input fixture velocity.",
+    "Legacy endpoint tests were replaced with genuine word/window collision input. The campaign driver originally preferred one coordinate name despite unordered stage semantics, then moved under a later target before an earlier background word had passed. The driver now selects any missing unordered word and avoids the visible earlier background. Product semantic gates were retained."
+  ],
+  "fixturePreparation": {
+    "generatedSourceJson": "Copied existing generated JSON into isolated worktree; no regeneration of unrelated media.",
+    "assets": "Initially missing source assets were linked for read-only tests, then all links were localized as independent APFS clone files before handoff, including .import sidecars. A future normal source sync cannot write through those links into canonical assets.",
+    "isolatedImportCache": "/tmp/codex-755-c1-ui/godot_native/.godot",
+    "localizedMediaFiles": 733,
+    "completedAt": "2026-10-19T16:28:06.124951+00:00"
+  },
+  "zeroFailureTimingReport": "/tmp/codex-755-c1-zero-failure-timing.json",
+  "zeroFailureTiming": {
+    "captures": [
+      {
+        "age": 3.27499999999999,
+        "id": 1,
+        "spawn_time": 7.55000000000003,
+        "stage": 0,
+        "time": 10.825,
+        "word": "等"
+      },
+      {
+        "age": 3.68333333333332,
+        "id": 3,
+        "spawn_time": 19.0249999999994,
+        "stage": 1,
+        "time": 22.7083333333327,
+        "word": "经度"
+      },
+      {
+        "age": 3.68333333333332,
+        "id": 5,
+        "spawn_time": 26.5749999999989,
+        "stage": 1,
+        "time": 30.2583333333323,
+        "word": "纬度"
+      },
+      {
+        "age": 3.68333333333332,
+        "id": 7,
+        "spawn_time": 38.4583333333316,
+        "stage": 2,
+        "time": 42.1416666666649,
+        "word": "旁白"
+      },
+      {
+        "age": 3.68333333333332,
+        "id": 9,
+        "spawn_time": 46.0083333333312,
+        "stage": 2,
+        "time": 49.6916666666645,
+        "word": "还没"
+      },
+      {
+        "age": 3.68333333333332,
+        "id": 11,
+        "spawn_time": 53.5583333333307,
+        "stage": 2,
+        "time": 57.2416666666641,
+        "word": "说完"
+      }
+    ],
+    "hint": {},
+    "kind": "local-scene-clock-ordinary-pointer-intents-not-manual-play",
+    "minimumReadableSeconds": 3.27499999999999,
+    "passed": true,
+    "result": [
+      {
+        "dialogueCount": 4,
+        "failed": false,
+        "interceptedCount": 3,
+        "lockHeldMs": 1400.0,
+        "whiteoutCompleted": true
+      }
+    ],
+    "sourceHoldMs": 1400.0,
+    "sourceTargetTransitSeconds": "3.0+.35*word.length",
+    "spawnSchedulingIntervalsMs": [
+      350,
+      1000,
+      1900,
+      700
+    ],
+    "totalSceneSeconds": 80.06,
+    "wordModelSeconds": 57.891666666664,
+    "zeroFailures": true
+  }
+}

@@ -1,5 +1,6 @@
 import type { ChapterId, GameState, QuestStep, QuestViewModel, SceneId } from "./types";
 import { selectFeatureAccess } from "./FeatureAccess";
+import { hasQizhenLegacyNetMaterials } from "../modules/QizhenFinalAssembly";
 import canteenContent from "../data/chapter3-canteen.content.json";
 import theaterContent from "../data/chapter3-theater.content.json";
 import qizhenContent from "../data/chapter3-qizhen-lake.content.json";
@@ -436,8 +437,12 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
       ]);
     }
     return task("combine_final_rig", "在物品栏组合四件材料", [
-      "尼龙绳、断裂网框、天鹅磁铁与钓竿集齐后，点击物品栏的“组合四件材料”。",
-      "这些材料可以按任意顺序获取，组合前会一直保留。"
+      hasQizhenLegacyNetMaterials(state)
+        ? "绳和网框已经用于旧抄网；在物品栏装上磁铁与钓竿，完成原来的四件组装。"
+        : "尼龙绳、断裂网框、天鹅磁铁与钓竿集齐后，点击物品栏的“组合四件材料”。",
+      hasQizhenLegacyNetMaterials(state)
+        ? "已经使用的绳和网框不用重新取得。"
+        : "这些材料可以按任意顺序获取，组合前会一直保留。"
     ]);
   }
   if (lake.phase === "swan_exchange") {

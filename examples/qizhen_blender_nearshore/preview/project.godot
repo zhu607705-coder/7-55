@@ -1,0 +1,15 @@
+config_version=5
+[application]
+config/name="7:55 · 启真湖 Blender 近岸样段"
+run/main_scene="res://scenes/blender_lake_sample.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="disabled"
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0
+[application/run]
+max_fps=60

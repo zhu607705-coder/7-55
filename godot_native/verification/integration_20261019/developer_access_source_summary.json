@@ -1,0 +1,46 @@
+{
+  "kind": "Developer tools production denial; source regressions only until real PCK acceptance",
+  "ownedFiles": {
+    "godot_native/scripts/developer_tools_policy.gd": "7adbc51fc44d9bcaa0a824466feb9ea5587c245adb39988e00128b7f17ebb6df",
+    "godot_native/scripts/state.gd": "bae280c1592b8ab429906708970945f59c5df6ef3ea49b2affece7f815c6ba43",
+    "godot_native/scripts/main.gd": "21ba83a317b2eab898dc7b393738c8a5809233e44dbd0fe56746495e449be8f3",
+    "godot_native/scripts/entry.gd": "7fd678b903d923d833ef137bef4c5463549036861ffa696905272f67e72742b0",
+    "godot_native/tests/test_developer_tools_access.gd": "c9eb94a9ad0bc3c9b0aa4d31fdcbb4120e563c27ad5a3c21399f5232cd02586e"
+  },
+  "policy": "DeveloperTools.available() returns !OS.has_feature(755_production) && OS.is_debug_build(); no CLI/env/save enable override",
+  "scope": [
+    "State startup --fresh gated; begin_preview/checkpoint/catalogue gated before mutation/signals",
+    "Main DEV UI, direct methods, CtrlShiftD/G and QA startup args guarded; F10 settings, F12 screenshot and story controllers retained",
+    "Entry prototype catalogue not created in production; preview and example entry methods guarded; --story remains normal entrance"
+  ],
+  "sourceValidation": {
+    "report": "/tmp/codex-755-developer-source-report.json",
+    "behavioralChecks": 1377,
+    "scriptParseChecks": 731,
+    "stages": 8,
+    "failures": 0,
+    "sourceOracleChecks": 5,
+    "sourceIntegrityChecks": 2424,
+    "sourceIntegrityReport": "/tmp/codex-755-developer-crosspr-static.json",
+    "actualRuntime": {
+      "editorBinary": true,
+      "debugBinary": true,
+      "productionFeature": false,
+      "developerAvailable": true
+    }
+  },
+  "freshPositive": "Real State.import_save persists only volume=.37 in isolated profile; source --fresh process starts at initial .6",
+  "pendingRealProductionPck": [
+    "Require exported755_production feature with editor binary and still deny policy",
+    "Real entry Continue + root CtrlShiftD/G, direct State calls have no jump, snapshot mutation or signals",
+    "QA --checkpoint/--preview/--page/--fresh/--screenshot must not bypass chooser or saved formal state",
+    "Real --fresh must preserve settings-only .37 seed from a prior production process"
+  ],
+  "explicitlyNotClaimed": [
+    "Source editor tests are not release tests",
+    "No full campaign or physical mobile acceptance"
+  ],
+  "trailingWhitespaceIssues": [],
+  "noGitMutation": true,
+  "noPackageExportByThisAgent": true
+}

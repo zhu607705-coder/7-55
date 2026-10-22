@@ -1,0 +1,4 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+INTRO HOLD {"elapsed":2.0,"input_count":5,"inputs":[{"alternating":false,"reverse":false,"side":"left","tick":0,"time":0.0},{"alternating":true,"reverse":false,"side":"right","tick":54,"time":0.45},{"alternating":true,"reverse":false,"side":"left","tick":110,"time":0.916666666666667},{"alternating":true,"reverse":false,"side":"right","tick":164,"time":1.36666666666667},{"alternating":true,"reverse":false,"side":"left","tick":220,"time":1.83333333333333}],"position":"(1308.454, 343.8704)"}
+{"checks":94,"failures":[],"suite":"AUTOMATED independent playable input audit"}

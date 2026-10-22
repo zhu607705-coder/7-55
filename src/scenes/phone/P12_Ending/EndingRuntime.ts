@@ -1,4 +1,5 @@
 import { cloneSerializable } from "../../../core/ClientCompatibility";
+import type { FailureReason, InterceptionPhase, WordBody } from "./InterceptionModel";
 
 export type EndingRuntimePhase =
   | "blackout"
@@ -18,7 +19,7 @@ export interface EndingRuntimeSnapshot {
   blockedCount: number;
   requiredBlocks: 3;
   misses: number;
-  maxMisses: 3;
+  maxMisses: number | null;
   attempt: number;
   paddle: { xPercent: number; widthPercent: number };
   narratorOrb: { xPercent: number; yPercent: number } | null;
@@ -26,6 +27,11 @@ export interface EndingRuntimeSnapshot {
   lockRequiredMs: 1400;
   paused: boolean;
   feedback: "blocked" | "missed" | "round_failed" | null;
+  interception: {
+    stage: number; phase: InterceptionPhase; collected: string[]; missing: string[];
+    clueIndex: number; failures: number; failureReason: FailureReason | null;
+    boardX: number; boardY: number; boardAngle: number; words: WordBody[];
+  };
 }
 
 let currentSnapshot: EndingRuntimeSnapshot | null = null;
