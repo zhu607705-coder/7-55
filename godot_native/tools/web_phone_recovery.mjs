@@ -18,12 +18,29 @@ export async function phoneRecoveryCase(h) {
     await h.clickControl(name, 'name');
   };
   const page = name => h.poll(async () => (await read()).state.native.page === name, `phone page ${name}`);
+  async function ensurePhoneSurface() {
+    // An earned C2 save restores the world even while native.page remembers an
+    // app. Open the actual phone through its shipped world button, not that field.
+    if ((await read()).world.visible) await click('WorldPhoneButton');
+    const value = await h.poll(async () => {
+      const current = await read();
+      return !current.world.visible && current.visibleControls.some(c => c.name === 'ControlCenterTrigger') ? current : null;
+    }, 'ordinary world-to-phone navigation exposes the phone surface');
+    h.check(!value.world.visible, `${h.id}: actual phone surface is visible before phone inventory and launcher input`);
+  }
   async function closeInventory() {
     if (!(await read()).state.ui.inventoryOpen) return;
     // Earned saves can legitimately leave the existing inventory open. Close it
     // through its own handle, never click launcher buttons underneath its panel.
+    await h.poll(async () => {
+      const value = await read();
+      return !value.world.visible && value.visibleControls.some(c => c.name === 'InventoryHandle');
+    }, 'open phone inventory exposes its visible handle');
     await click('InventoryHandle');
-    await h.poll(async () => !(await read()).state.ui.inventoryOpen, 'ordinary inventory close clears launcher occlusion');
+    await h.poll(async () => {
+      const value = await read();
+      return !value.world.visible && !value.state.ui.inventoryOpen;
+    }, 'ordinary inventory close clears launcher occlusion');
   }
   async function home() {
     for (let i = 0; i < 3; i++) {
@@ -110,6 +127,7 @@ export async function phoneRecoveryCase(h) {
   evidence.coverage.push('C1 WiFi refusal then cellular earns 7', 'app navigation has no fixed battery cost');
 
   await h.importSave(path.join(h.fixtureDir, 'before_c2_tiyi_update.json'));
+  await ensurePhoneSurface();
   await closeInventory();
   await home(); await network('campus_wifi'); await network('cellular');
   await click('HomeApp_tiyi'); await page('tiyi'); await shot('tiyi-old-client'); await page('phone_home');

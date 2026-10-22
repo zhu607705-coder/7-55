@@ -706,10 +706,11 @@ async function mobileWorldCase() {
     const before = value.world.player;
     // A short wall-clock pulse can begin and end between loaded WASM frames.
     // Keep real input held only until a fresh engine sample proves movement.
-    const direction = { at: Date.now(), method: 'observedKeyHold', code: 'ArrowRight', startSampleFrame: value.sampleFrame, endSampleFrame: value.sampleFrame, maxMs: 3000, released: false };
+    // The earned actor stands beside the right door jamb: move toward its centre.
+    const direction = { at: Date.now(), method: 'observedKeyHold', code: 'ArrowLeft', startSampleFrame: value.sampleFrame, endSampleFrame: value.sampleFrame, maxMs: 3000, released: false };
     active.mobileWorld.inputs.push(direction);
     try {
-      await key('ArrowRight', 'ArrowRight', true);
+      await key('ArrowLeft', 'ArrowLeft', true);
       value = await poll(async () => {
         const next = await snapshot();
         if (!next || next.sampleFrame <= direction.endSampleFrame) return null;
@@ -718,7 +719,7 @@ async function mobileWorldCase() {
         return mobileDistance(before, next.world.player) > 1 ? next : null;
       }, 'real desktop direction produces movement in a fresh engine sample', direction.maxMs);
     } finally {
-      await key('ArrowRight', 'ArrowRight', false);
+      await key('ArrowLeft', 'ArrowLeft', false);
       direction.finishedAt = Date.now(); direction.released = true;
     }
     value = await mobileSample(value);
