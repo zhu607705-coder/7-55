@@ -89,6 +89,10 @@ func make_button(text: String,callback: Callable) -> Button:
 func layout() -> void:
 	if not is_instance_valid(screen):return
 	var space:=Vector2(maxf(180,size.x-32),maxf(120,size.y-146))
+	var height:=480 if pixel_mode else 540
+	var width:=854 if pixel_mode else 960
+	if space.x<space.y:width=maxi(roundi(height*2.0/3.0),roundi(height*space.x/space.y))
+	view.size=Vector2i(width,height)
 	var ratio:=float(view.size.x)/view.size.y
 	var h:=minf(space.y,space.x/ratio)
 	screen.size=Vector2(h*ratio,h);screen.position=(size-screen.size)/2
@@ -109,7 +113,7 @@ func screen_to_world(point: Vector2) -> Vector2:
 func position_labels() -> void:
 	if not is_instance_valid(hint):return
 	var p:=world_to_screen(marker.position)
-	hint.position=Vector2(clampf(p.x-hint.size.x*.5,12,maxf(12,size.x-hint.size.x-12)),clampf(p.y+30,90,size.y-80))
+	hint.position=Vector2(clampf(p.x-hint.size.x-28,12,maxf(12,size.x-hint.size.x-12)),clampf(p.y-8,90,size.y-80))
 	note.position=Vector2(clampf(p.x+30,12,maxf(12,size.x-note.size.x-12)),clampf(p.y-52,90,size.y-100))
 func _physics_process(delta: float) -> void:
 	if note_open:
@@ -123,6 +127,7 @@ func _physics_process(delta: float) -> void:
 		actor.velocity=direction.limit_length()*150.0
 		var previous:=actor.position
 		actor.move_and_slide()
+		actor.position=actor.position.clamp(Vector2(20,20),Vector2(921,1652))
 		if pointer_walk and actor.position.distance_to(previous)<.1:
 			blocked_time+=delta
 			if blocked_time>.3:pointer_walk=false;blocked_time=0.0

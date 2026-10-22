@@ -11,6 +11,7 @@ func run() -> void:
 	scene.set_physics_process(false)
 	root.size=Vector2i(390,844);scene.layout();await process_frame
 	check(scene.screen.size.x<=390 and scene.screen.size.y<=844,"compact scene fits window")
+	check(scene.screen.size.y>500,"portrait world is not a tiny landscape strip")
 	check(scene.mouse_filter==Control.MOUSE_FILTER_IGNORE,"root passes world clicks")
 	for button in [scene.comparison,scene.pixel_button,scene.reset_button,scene.action]:
 		check(button.focus_mode==Control.FOCUS_NONE,"toolbar cannot steal Space")
@@ -26,7 +27,7 @@ func run() -> void:
 	check(scene.note_open and scene.observed,"routed Space opens paper")
 	var click=InputEventMouseButton.new();click.button_index=MOUSE_BUTTON_LEFT;click.pressed=true
 	click.position=scene.screen.position+scene.screen.size*.5
-	scene._unhandled_input(click)
+	Input.parse_input_event(click);await process_frame
 	check(not scene.note_open and scene.pointer_walk,"floor navigation dismisses open note")
 	scene.pointer_walk=false;scene.interact()
 	scene.interact();check(not scene.note_open,"repeat main action closes paper")
