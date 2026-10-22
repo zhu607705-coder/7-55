@@ -2,12 +2,13 @@ extends "res://tests/test_chapter4_device_main.gd"
 ## Real Main/root input with an explicitly source-seeded A3 checkpoint.
 const ArchiveMotion=preload("res://scripts/objects/room301_archive_motion.gd")
 var archive_submits:=0
+var fixture_state:Dictionary
 func prepare_archive(dimensions:Vector2i)->void:
 	if is_instance_valid(shell):
 		await shell.shutdown();shell.queue_free();await frames(3)
 	# Reuse the recorded native A3 elevator route. Remove only the archive
 	# result so this test must earn it through the original solver again.
-	state_node.d=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/room302_earned_film_entry.json")).state
+	state_node.d=fixture_state.duplicate(true)
 	state_node.d.chapter4.factIds.erase(ArchiveMotion.FACT)
 	state_node.d.runtimeMode="rpg";state_node.developer_mode=true
 	root.size=dimensions
@@ -44,6 +45,9 @@ func run()->void:
 		quit(2)
 		return
 	state_node=root.get_node("State");state_node.developer_mode=true
+	fixture_state=preload("res://tests/legacy_room_fixture.gd").read(state_node,"res://tests/fixtures/room302_earned_film_entry.json",check)
+	if fixture_state.is_empty():
+		quit(1);return
 	state_node.action_completed.connect(func(action:String,_a:Dictionary,_b:Dictionary,_c:Dictionary):if action=="c4_solve_archive_index":archive_submits+=1)
 	for dimensions:Vector2i in [Vector2i(1280,720),Vector2i(390,844)]:
 		await prepare_archive(dimensions)
