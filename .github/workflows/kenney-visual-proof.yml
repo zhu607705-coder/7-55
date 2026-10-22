@@ -42,6 +42,7 @@ jobs:
           timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 1440x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_kenney_visual_slice.gd 2>&1 | tee visual-proof/render.log
           test -f visual-proof/01-baseline.png
           test -f visual-proof/05-compact-layout.png
+          test -f visual-proof/07-locked-journal-desktop.png
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Capture failed:' visual-proof/render.log
       - uses: actions/upload-artifact@v4
         if: always()

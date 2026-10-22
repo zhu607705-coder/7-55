@@ -43,7 +43,7 @@ func run() -> void:
 	var old_zoom:float=scene.camera.zoom.x
 	scene.toggle_pixels();check(scene.view.size.y==480,"optional 480 render")
 	check(is_equal_approx(scene.camera.zoom.x/old_zoom,480.0/540),"field of view preserved")
-	check(scene.note.get_parent()==scene,"UI outside low resolution viewport")
+	check(not scene.view.is_ancestor_of(scene.note),"UI outside low resolution viewport")
 	for point in [Vector2(.123,9.8),Vector2(-1.2,25.8),Vector2(431.1,932.7)]:
 		var snap:Vector2=scene.snapped_camera(point,scene.camera.zoom.x)*scene.camera.zoom.x
 		check(snap.is_equal_approx(snap.round()),"camera aligns to render pixels")
@@ -59,6 +59,10 @@ func run() -> void:
 		scene.pointer_target=target;scene.pointer_walk=true
 		for i in range(120):scene._physics_process(1.0/60);await physics_frame
 	check(scene.focus_id=="lamp","lamp reached through actual furniture collisions")
+	scene.toggle_journal();check(scene.journal.get_script().resource_path.ends_with("native_journal_view.gd"),"real locked journal component")
+	check(scene.selected_overlay.get_script().resource_path.ends_with("world_selected_overlay.gd"),"real HUD2 and interaction1 component")
+	check(scene.selected_overlay.object_heading.get_theme_font_size("font_size")==18,"locked interaction heading role")
+	scene.close_journal()
 	scene.reset_trial();check(scene.actor.position==Vector2(531,1000) and not scene.observed and not scene.lamp_on,"reset clears only trial")
 	check(state_before==(JSON.stringify(root.get_node("State").d)),"no story state mutation")
 	scene.queue_free();await process_frame

@@ -23,4 +23,7 @@ func run() -> void:
 	scene.toggle_pixels();await capture(output.path_join("04-480-comparison.png"))
 	DisplayServer.window_set_size(Vector2i(390,844));root.size=Vector2i(390,844)
 	await capture(output.path_join("05-compact-layout.png"))
+	scene.toggle_journal();await capture(output.path_join("06-locked-journal.png"))
+	DisplayServer.window_set_size(Vector2i(1280,900));root.size=Vector2i(1280,900)
+	await capture(output.path_join("07-locked-journal-desktop.png"))
 	print("KENNEY_VISUAL_CAPTURE_COMPLETE");quit(0)

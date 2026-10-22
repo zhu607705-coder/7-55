@@ -2,6 +2,8 @@ extends Control
 ## Isolated reference experiment. Never invokes State actions or saves.
 const Room = preload("res://scenes/objects/dorm_modular_candidate.tscn")
 const SelectedTheme = preload("res://scripts/ui/selected_ui_theme.gd")
+const LockedOverlay = preload("res://scripts/ui/world_selected_overlay.gd")
+const LockedJournal = preload("res://scripts/ui/native_journal_view.gd")
 const ActorArt = preload("res://assets/rpg/player/player_down_0.png")
 var view: SubViewport
 var screen: TextureRect
@@ -18,6 +20,10 @@ var comparison: Button
 var pixel_button: Button
 var reset_button: Button
 var action: Button
+var journal_button: Button
+var selected_overlay: Control
+var journal: VBoxContainer
+var journal_open := false
 var focus_id := ""
 var observed := false
 var lamp_on := false
@@ -70,13 +76,15 @@ func _ready() -> void:
 	var lamp: Sprite2D=room.get_node("Furnishings/desk_2/lamp_green_4")
 	objects=[{"id":"paper","position":Vector2(531,834),"stand":Vector2(531,900),"title":"折起的纸条","node":room.get_node("Canonical0755Paper")},
 		{"id":"lamp","position":lamp.global_position,"stand":Vector2(650,lamp.global_position.y),"title":"桌边的灯","node":lamp}]
-	title=make_label("寝室 · 独立练习", "hud", "heading")
+	selected_overlay=LockedOverlay.new();add_child(selected_overlay)
+	hint=selected_overlay.object_heading;note=selected_overlay.object_body
+	title=make_label("调试比较 · 独立样段", "interaction", "tip")
 	tutorial=make_label("方向键移动 · 空格查看 / 收起 · 鼠标点地面或物件", "hud", "tip")
-	hint=make_label("", "interaction", "body")
-	note=make_label("", "journal", "tip");note.hide()
+
 	comparison=make_button("反馈：开",toggle_feedback)
 	pixel_button=make_button("渲染：540",toggle_pixels)
 	reset_button=make_button("重来",reset_trial)
+	journal_button=make_button("查看手记",toggle_journal)
 	action=make_button("查看",interact)
 	resized.connect(layout);layout();refresh_focus()
 
@@ -96,14 +104,17 @@ func layout() -> void:
 	var ratio:=float(view.size.x)/view.size.y
 	var h:=minf(space.y,space.x/ratio)
 	screen.size=Vector2(h*ratio,h);screen.position=(size-screen.size)/2
-	title.position=Vector2(20,12)
+	title.position=Vector2(20,8)
 	tutorial.position=Vector2(20,size.y-62)
 	tutorial.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	tutorial.size=Vector2(maxf(120,size.x-150),50)
 	tutorial.visible=not tutorial_done
-	comparison.position=Vector2(maxf(12,size.x-320),40)
-	pixel_button.position=Vector2(maxf(110,size.x-212),40)
-	reset_button.position=Vector2(maxf(210,size.x-104),40)
+	var buttons=[comparison,pixel_button,reset_button,journal_button]
+	var slot:=minf(108,(size.x-32)/4)
+	for index in range(buttons.size()):
+		buttons[index].custom_minimum_size.x=0;buttons[index].size=Vector2(slot-8,36)
+		buttons[index].position=Vector2(16+index*slot,30)
+	if is_instance_valid(journal):layout_journal()
 	action.position=Vector2(size.x-116,size.y-46)
 	position_labels()
 func world_to_screen(point: Vector2) -> Vector2:
@@ -111,12 +122,29 @@ func world_to_screen(point: Vector2) -> Vector2:
 func screen_to_world(point: Vector2) -> Vector2:
 	return view.canvas_transform.affine_inverse()*((point-screen.position)*Vector2(view.size)/screen.size)
 func position_labels() -> void:
-	if not is_instance_valid(hint):return
-	var p:=world_to_screen(marker.position)
-	hint.position=Vector2(clampf(p.x-hint.size.x-28,12,maxf(12,size.x-hint.size.x-12)),clampf(p.y-8,90,size.y-80))
-	note.position=Vector2(clampf(p.x+30,12,maxf(12,size.x-note.size.x-12)),clampf(p.y-52,90,size.y-100))
+	if not is_instance_valid(selected_overlay):return
+	selected_overlay.position=screen.position
+	var prompt: String=get_object(focus_id).get("title","")
+	selected_overlay.sync_view(screen.size,1.0,"寝室 · 练习","观察纸条和桌灯；不写入正式进度。",prompt,"",Rect2(),screen.size.y,"", "纸面上写着 0755。" if note_open else "")
+	selected_overlay.object_hint.visible=not tutorial_done
+	selected_overlay.visible=not journal_open
+func toggle_journal() -> void:
+	if journal_open:close_journal();return
+	close_note();pointer_walk=false;keyboard=Vector2.ZERO;held_keys.clear()
+	journal=LockedJournal.new()
+	var entries: Array=[]
+	if observed:entries.append({"text":"练习记录：查看过纸条。"})
+	journal.configure("观察寝室物件", "已查看纸条。" if observed else "尚未查看纸条。",entries,false,true)
+	journal.resume_requested.connect(close_journal)
+	add_child(journal);journal_open=true;layout_journal();position_labels()
+func layout_journal() -> void:
+	journal.size=Vector2(minf(420,size.x-48),0)
+	journal.position=Vector2((size.x-journal.size.x)/2,maxf(90,screen.position.y+40))
+func close_journal() -> void:
+	if is_instance_valid(journal):journal.queue_free()
+	journal=null;journal_open=false;position_labels()
 func _physics_process(delta: float) -> void:
-	if note_open:
+	if note_open or journal_open:
 		actor.velocity=Vector2.ZERO
 	else:
 		var direction=keyboard
@@ -160,11 +188,12 @@ func get_object(id: String) -> Dictionary:
 		if object.id==id:return object
 	return {}
 func interact() -> void:
+	if journal_open:close_journal();return
 	if focus_id.is_empty():return
 	pointer_walk=false
 	if focus_id=="paper":
 		if note_open:close_note();return
-		observed=true;note_open=true;note.text="纸角折过两次。\n0755 还留在上面。";note.show()
+		observed=true;note_open=true
 		pulse(get_object("paper").node)
 	else:
 		lamp_on=not lamp_on
@@ -191,7 +220,7 @@ func toggle_pixels() -> void:
 	camera.zoom=Vector2.ONE*(.8*view.size.y/540.0)
 	pixel_button.text="渲染：480" if pixel_mode else "渲染：540";layout()
 func reset_trial() -> void:
-	cancel_feedback();close_note();observed=false;lamp_on=false;pointer_walk=false;held_keys.clear();keyboard=Vector2.ZERO
+	cancel_feedback();close_note();close_journal();observed=false;lamp_on=false;pointer_walk=false;held_keys.clear();keyboard=Vector2.ZERO
 	actor.position=Vector2(531,1000);logical_camera=actor.position;camera.position=logical_camera
 	get_object("lamp").node.modulate=Color.WHITE;refresh_focus()
 func _notification(what: int) -> void:
@@ -205,8 +234,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			pointer_walk=false
 		if event.pressed and not event.echo and event.keycode==KEY_SPACE:
 			interact();get_viewport().set_input_as_handled()
-		if event.pressed and event.keycode==KEY_ESCAPE:close_note();pointer_walk=false
+		if event.pressed and event.keycode==KEY_ESCAPE:close_note();close_journal();pointer_walk=false
 	if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
+		if journal_open:return
 		if not Rect2(screen.position,screen.size).has_point(event.position):return
 		var point=screen_to_world(event.position)
 		for object in objects:
