@@ -106,6 +106,8 @@ jobs:
         run: |
           node godot_native/tests/test_web_acceptance_bundle.mjs
           node godot_native/tests/test_web_acceptance_workflow.mjs
+          node godot_native/tests/test_web_browser_lifecycle.mjs
+          node godot_native/tests/test_web_save_diagnostics.mjs
           node godot_native/tools/test_web_content_loader.mjs
           node godot_native/tools/test_web_resource_cache.mjs
           node godot_native/tools/test_web_boot_chunks.mjs

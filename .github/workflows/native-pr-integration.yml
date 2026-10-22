@@ -45,7 +45,7 @@ jobs:
         run: |
           npm ci --ignore-scripts
           node godot_native/tools/sync_source.mjs
-          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg)
           bash godot_native/tools/convert_media.sh
       - name: Verify source namespaces and formal presentation handoffs
         env:

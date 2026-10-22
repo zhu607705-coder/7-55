@@ -163,10 +163,121 @@ async function clickControl(nameOrText, match = 'either') {
   await clickPoint(point); await interval(350);
 }
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
-async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = false) {
+// Diagnostic only: one fixed-key readonly transaction, never a save/sync API.
+// Its own bounded lifetime does not alter either acceptance deadline.
+function readOnlySaveProbe(identity) {
+  const result = { ...identity, database: '/userfs', key: '/userfs/SevenFiftyFiveNative/save.json', timings: {} };
+  const mark = phase => { result.timings[phase] = { wallMs: Date.now(), monotonicMs: performance.now() }; };
+  mark('started'); result.documentHidden = document.hidden;
+  return new Promise(resolve => {
+    let db, finished = false;
+    const expired = () => performance.now() - result.timings.started.monotonicMs >= 8000;
+    const closeConnection = reason => {
+      if (!db) return;
+      db.close(); db = undefined; mark('closeRequested'); result.closeReason = reason;
+    };
+    const finish = error => {
+      if (finished) return;
+      finished = true; clearTimeout(timer); closeConnection('diagnostic-finished');
+      if (error) result.error = String(error.message || error);
+      mark('finished'); resolve(result);
+    };
+    const timer = setTimeout(() => finish('diagnostic read limit'), 8000);
+    try {
+      mark('openIssued');
+      const open = indexedDB.open(result.database);
+      // Never create or upgrade the backing store as a side effect of diagnosis.
+      open.onupgradeneeded = () => { open.transaction.abort(); finish('unexpected database upgrade'); };
+      open.onerror = () => finish(open.error || 'database open failed');
+      open.onsuccess = () => {
+        if (finished) { open.result.close(); return; }
+        db = open.result; mark('openSucceeded');
+        if (expired()) { finish('diagnostic read limit'); return; }
+        try {
+          const tx = db.transaction('FILE_DATA', 'readonly'); mark('transactionCreated');
+          const get = tx.objectStore('FILE_DATA').get(result.key); mark('getIssued');
+          get.onsuccess = () => { if (!finished) { mark('getSucceeded'); if (expired()) finish('diagnostic read limit'); } };
+          get.onerror = () => finish(get.error || 'get failed');
+          tx.onerror = () => finish(tx.error || 'transaction failed');
+          tx.onabort = () => finish(tx.error || 'transaction aborted');
+          tx.oncomplete = async () => {
+            if (finished) return;
+            mark('transactionCompleted'); closeConnection('read-transaction-completed');
+            if (expired()) { finish('diagnostic read limit'); return; }
+            try {
+              const value = get.result, raw = value?.contents;
+              if (raw == null) { result.missing = true; finish(); return; }
+              const bytes = raw instanceof ArrayBuffer ? new Uint8Array(raw) : ArrayBuffer.isView(raw) ? new Uint8Array(raw.buffer, raw.byteOffset, raw.byteLength) : null;
+              if (!bytes || bytes.byteLength > 8 * 1024 * 1024) throw new Error('unsupported stored bytes');
+              result.bytes = bytes.byteLength;
+              // This is MEMFS file mtime, NOT a database commit timestamp.
+              result.fileMtimeMs = value.timestamp instanceof Date ? value.timestamp.getTime() : null;
+              mark('hashStarted');
+              const digest = await crypto.subtle.digest('SHA-256', bytes);
+              if (finished) return;
+              if (expired()) { finish('diagnostic read limit'); return; }
+              result.sha256 = Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, '0')).join('');
+              mark('hashCompleted'); finish();
+            } catch (error) { finish(error); }
+          };
+        } catch (error) { finish(error); }
+      };
+    } catch (error) { finish(error); }
+  });
+}
+function createSaveDiagnostics(session, attempt, previousToken, isCurrentSession, now = Date.now) {
+  const diagnostics = attempt.diagnostics = { schema: '755-readonly-save-diagnostics-v1', probes: [] };
+  let generation, pending, stopped = false;
+  const sent = new Set();
+  const stop = reason => {
+    if (stopped) return;
+    stopped = true; diagnostics.stoppedAt = now(); diagnostics.stopReason = reason;
+    if (pending?.status === 'pending') pending.status = 'unfinished-at-stop';
+  };
+  const observe = value => {
+    if (stopped) return;
+    if (!isCurrentSession()) { stop('session-changed'); return; }
+    const receipt = value?.savePersistence;
+    if (!receipt || receipt.token <= previousToken || !Number.isSafeInteger(receipt.token) || !/^[a-f0-9]{64}$/.test(receipt.digest || '')) return;
+    generation ||= { token: receipt.token, targetDigest: receipt.digest };
+    if (generation.token !== receipt.token || generation.targetDigest !== receipt.digest) { stop('save-generation-changed'); return; }
+    const reason = receipt.error === 'timeout' ? 'after-production-timeout' : receipt.pending && now() - attempt.beganAt >= 10000 ? 'slow-pending' : '';
+    if (!reason || pending || sent.has(reason) || diagnostics.probes.length >= 2) return;
+    sent.add(reason);
+    const row = { ...generation, reason, eligibleAt: reason === 'slow-pending' ? attempt.beganAt + 10000 : now(), dispatchedAt: now(), status: 'pending', sampleFrame: value.sampleFrame, documentHidden: value.documentHidden };
+    diagnostics.probes.push(row); pending = row;
+    // A captured CDP session, no global active lookup and no awaited work in poll.
+    // No scheduling timer: existing receipt polling alone triggers at most 2 reads.
+    Promise.resolve().then(() => {
+      if (stopped || !isCurrentSession()) return null;
+      return session.cdp.send('Runtime.evaluate', { expression: `(${readOnlySaveProbe.toString()})(${JSON.stringify(generation)})`, returnByValue: true, awaitPromise: true }, 9000);
+    }).then(response => {
+      if (stopped) return;
+      if (!isCurrentSession()) { stop('session-changed'); return; }
+      if (response?.exceptionDetails) throw new Error(response.exceptionDetails.text || 'diagnostic evaluate failed');
+      const value = response?.result?.value;
+      if (!value || value.token !== row.token || value.targetDigest !== row.targetDigest) throw new Error('diagnostic identity mismatch');
+      row.result = value; row.status = value.error ? 'diagnostic-error' : 'complete'; row.receivedAt = now();
+      // close() requests closure; an errored/timed-out readonly transaction may
+      // still be completing. Do not schedule another diagnostic in that case.
+      if (value.error) { stop('diagnostic-read-failed'); return; }
+      pending = null;
+    }).catch(error => {
+      if (stopped) return;
+      if (!isCurrentSession()) { stop('session-changed'); return; }
+      row.status = 'diagnostic-error'; row.error = error.message; row.receivedAt = now();
+      // A CDP timeout cannot prove the browser read ended. Never stack another.
+      stop('diagnostic-operation-failed');
+    });
+  };
+  return { observe, stop };
+}
+async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = false, saveInputBeganAt = null) {
   const began = Date.now();
-  const attempt = { label, beganAt: began, previousToken, visibleSuccess, observations: [] };
+  const attempt = { label, beganAt: began, saveInputBeganAt, previousToken, visibleSuccess, observations: [] };
   (active.saveAttempts ||= []).push(attempt);
+  const session = active;
+  const diagnostics = createSaveDiagnostics(session, attempt, previousToken, () => active === session);
   let observed = '';
   let saved;
   try { saved = await poll(async () => {
@@ -174,21 +285,23 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
     const identity = JSON.stringify([receipt, value?.saveDigest]);
     if (identity !== observed && attempt.observations.length < 160) {
       observed = identity;
-      attempt.observations.push({ elapsedMs: Date.now() - began, receipt, currentDigest: value?.saveDigest });
+      attempt.observations.push({ elapsedMs: Date.now() - began, receipt, currentDigest: value?.saveDigest, sampleFrame: value?.sampleFrame, documentHidden: value?.documentHidden });
     }
+    diagnostics.observe(value);
     if (!receipt || receipt.token <= previousToken) return null;
     if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);
     const visible = !visibleSuccess || controls(value).some(c => c.name === 'SaveNativeProgress' && c.text === '已保存' && !c.disabled);
     return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;
   }, `${label}: current native save has an exact durable receipt`, 30000);
   } catch (error) {
+    diagnostics.stop('wait-failed');
     attempt.failedAt = Date.now();
     // A readonly backing-store sample diagnoses a failed receipt without
     // accepting it, retrying a game save, or extending the original watchdog.
     try { attempt.failureDisk = await readPersistentSaveEntries(); }
     catch (readError) { attempt.failureDisk = { error: readError.message }; }
     throw error;
-  }
+  } finally { diagnostics.stop('wait-finished'); }
   const disk = await readPersistentSaveEntries(); const primary = disk.entries.find(e => e.key.endsWith('/save.json'));
   attempt.completedAt = Date.now(); attempt.disk = disk;
   check(primary?.sha256 === saved.saveDigest, `${label}: independent readonly IndexedDB primary matches the current native save`, { elapsedMs: Date.now() - began, receipt: saved.savePersistence, primary, diskReadMs: disk.readDurationMs });
@@ -196,8 +309,9 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
 }
 async function saveProgressAndWait(label) {
   const before = await snapshot();
+  const saveInputBeganAt = Date.now();
   await clickControl('SaveNativeProgress', 'name');
-  return waitForPersistedSave(label, before.savePersistence?.token ?? -1, true);
+  return waitForPersistedSave(label, before.savePersistence?.token ?? -1, true, saveInputBeganAt);
 }
 async function startStory(reload = false) {
   if (reload) await waitForPersistedSave(`${active.id} before actual reload`);
@@ -459,13 +573,14 @@ async function durabilityCase() {
 }
 async function readPersistentSaveEntries() {
   return evaluate(`(async()=>{
-    const started=performance.now(), databases=await indexedDB.databases(), entries=[];
+    const started=performance.now(), readStartedAt=Date.now(), databases=await indexedDB.databases(), entries=[],stores=[];
     for(const meta of databases){
       if(!meta.name)continue;
       const db=await new Promise((resolve,reject)=>{const request=indexedDB.open(meta.name);request.onupgradeneeded=()=>request.transaction.abort();request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
       try{
         if(!db.objectStoreNames.contains('FILE_DATA'))continue;
         const rows=await new Promise((resolve,reject)=>{const tx=db.transaction('FILE_DATA','readonly'),store=tx.objectStore('FILE_DATA'),keys=store.getAllKeys(),values=store.getAll();tx.oncomplete=()=>resolve(keys.result.map((key,i)=>({key,value:values.result[i]})));tx.onerror=()=>reject(tx.error);});
+        stores.push({database:meta.name,store:'FILE_DATA',keyCount:rows.length});
         for(const row of rows){
           if(!/save.*\\.json$/i.test(String(row.key)))continue;
           const raw=row.value?.contents;
@@ -477,7 +592,7 @@ async function readPersistentSaveEntries() {
         }
       }finally{db.close()}
     }
-    return{readDurationMs:performance.now()-started,entries};
+    return{readStartedAt,readCompletedAt:Date.now(),readDurationMs:performance.now()-started,stores,entries};
   })()`);
 }
 async function durabilitySwitchCase() {
@@ -852,16 +967,94 @@ async function mobileWorldCase() {
   active.mobileWorld.coverage.push('real joystick movement only', 'far tap and arrival never interact', 'near direct tap without facing', 'single reversible lamp toggle', 'bottom plaque', 'drag is not tap', 'cancel and new gesture', 'single-owner multitouch', 'stick then inventory', 'settings and journal gates', 'real browser blur', ...(active.id === 'touch-390' ? ['landscape resize'] : []));
 }
 
+// Observe immediately after spawn, before any await. 'exit' is not 'close':
+// Node may still have open stdio, and the browser may still hold its profile.
+function createBrowserLifecycle(ownedTemp) {
+  const evidence = { spawnRequestedAt: Date.now(), pid: null, ownedTemp, events: [] };
+  let child = null, closed = false;
+  const waiting = new Set();
+  const event = (type, details = {}) => { const row = { type, at: Date.now(), ...details }; evidence.events.push(row); return row; };
+  return {
+    evidence, get child() { return child; }, get closed() { return closed; },
+    attach(process) {
+      if (child) throw new Error('Browser lifecycle already attached');
+      child = process; evidence.pid = process.pid ?? null;
+      process.once('spawn', () => { evidence.spawnedAt = event('spawn', { pid: process.pid }).at; evidence.pid = process.pid; });
+      process.once('exit', (code, signal) => { evidence.exitedAt = event('exit', { code, signal }).at; });
+      process.on('error', error => event('error', { message: error.message, code: error.code || null }));
+      process.once('close', (code, signal) => {
+        closed = true; evidence.closedAt = event('close', { code, signal }).at;
+        for (const notify of waiting) notify();
+      });
+    },
+    waitForClose(milliseconds) {
+      if (closed) return Promise.resolve(true);
+      return new Promise(resolve => {
+        const notify = () => { clearTimeout(timer); waiting.delete(notify); resolve(true); };
+        const timer = setTimeout(() => { waiting.delete(notify); resolve(false); }, milliseconds);
+        waiting.add(notify);
+      });
+    }
+  };
+}
+async function cleanupBrowserLifecycle(lifecycle, { remove = rm, termWaitMs = 2000, killWaitMs = 3000 } = {}) {
+  const details = lifecycle.evidence.cleanup = { startedAt: Date.now(), signals: [] };
+  const signal = name => {
+    const row = { signal: name, at: Date.now() }; details.signals.push(row);
+    try { row.sent = lifecycle.child.kill(name); } catch (error) { row.error = error.message; }
+  };
+  try {
+    if (lifecycle.child && !lifecycle.closed) {
+      if (lifecycle.evidence.exitedAt === undefined) signal('SIGTERM');
+      if (!await lifecycle.waitForClose(termWaitMs)) {
+        if (lifecycle.evidence.exitedAt === undefined) signal('SIGKILL');
+        if (!await lifecycle.waitForClose(killWaitMs)) throw new Error('Browser did not close; owned temporary directory retained');
+      }
+    }
+    // Only the unique mkdtemp directory created by this case is removable.
+    const directory = path.resolve(lifecycle.evidence.ownedTemp);
+    if (path.dirname(directory) !== path.resolve(tmpdir()) || !/^755-godot-web-browser-.+/.test(path.basename(directory))) throw new Error('Refusing cleanup outside an owned browser temporary directory');
+    details.removeStartedAt = Date.now();
+    await remove(directory, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    details.removedAt = Date.now();
+  } catch (error) { details.error = { message: error.message, code: error.code || null }; throw error; }
+  finally { details.finishedAt = Date.now(); }
+}
+async function finishBrowserCase({ lifecycle, caseRecord, primaryError, bootBodyJobs = [], cdp, persistEvidence, cleanupOptions }) {
+  caseRecord.browserLifecycle = lifecycle.evidence;
+  let firstError;
+  const failure = (stage, error) => {
+    firstError ||= error;
+    (caseRecord.cleanupErrors ||= []).push({ stage, message: error.message, code: error.code || null, stack: error.stack || String(error) });
+    if (caseRecord.passed) caseRecord.functionalPassedBeforeCleanup = true;
+    caseRecord.passed = false;
+    if (!caseRecord.error) caseRecord.error = error.stack || String(error);
+  };
+  await Promise.allSettled(bootBodyJobs);
+  try { cdp?.close(); } catch (error) { failure('cdp-close', error); }
+  try { await cleanupBrowserLifecycle(lifecycle, cleanupOptions); } catch (error) { failure('browser-cleanup', error); }
+  // A removal error must not skip persistence of the original game evidence.
+  try { await persistEvidence(); } catch (error) { failure('persist-evidence', error); }
+  // The caller's existing catch/finally rethrows its original functional error.
+  if (!primaryError && firstError) throw firstError;
+}
+
 async function browserCase(id, width, height, touch, dpr = 1) {
   const temp = await mkdtemp(path.join(tmpdir(), '755-godot-web-browser-')); const profile = path.join(temp, 'profile'); const errors = []; const network = new Map(); const responses = new Map();
-  const child = spawn(chrome, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--disable-extensions', '--disable-sync', '--disable-default-apps', ...chromeArgs, `--window-size=${width},${height}`, '--force-device-scale-factor=1', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] }); let stderr = ''; child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-10000); });
-  active = { id, width, height, touch, dpr, child, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
-  if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
-  let result;
+  const lifecycle = createBrowserLifecycle(temp); let stderr = '';
+  active = { id, width, height, touch, dpr, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') };
+  let result, primaryError;
   try {
-    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts'); const port = portFile.split('\n')[0]; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-    active.targetId = targets.find(t => t.type === 'page').id;
-    active.cdp = await connect(targets.find(t => t.type === 'page').webSocketDebuggerUrl, ({ method, params }) => {
+    const child = spawn(chrome, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--disable-extensions', '--disable-sync', '--disable-default-apps', ...chromeArgs, `--window-size=${width},${height}`, '--force-device-scale-factor=1', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
+    lifecycle.attach(child); active.child = child;
+    child.stderr?.on('data', chunk => { stderr = (stderr + chunk).slice(-10000); });
+    await mkdir(active.downloadDir);
+    if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
+    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts'); const port = portFile.split('\n')[0]; lifecycle.evidence.portFileObservedAt = Date.now(); lifecycle.evidence.port = port; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+    const target = targets.find(t => t.type === 'page');
+    active.targetId = target.id;
+    if (target.id && target.webSocketDebuggerUrl) lifecycle.evidence.portReadyAt = Date.now();
+    active.cdp = await connect(target.webSocketDebuggerUrl, ({ method, params }) => {
       if (method === 'Runtime.exceptionThrown') errors.push({ type: 'pageerror', ...params.exceptionDetails });
       if (method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(params.type)) { const text = params.args.map(a => a.value ?? a.description ?? '').join(' '); if (params.type === 'error' || /SCRIPT ERROR|Parse Error|Failed to load|ERROR:/.test(text)) errors.push({ type: params.type, text }); }
       if (method === 'Network.requestWillBeSent') {
@@ -925,8 +1118,12 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     check(await evaluate("(()=>{const s=window.__GODOT_755__.snapshot(),old=s.state.native.chapter;s.state.native.chapter=999;return window.__GODOT_755__.snapshot().state.native.chapter===old})()"), 'returned browser snapshot is a detached copy');
     report.cases.push({ id, width, height, touch, dpr, passed: true, ...result, coldBoot: active.coldBoot, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, mobileWorld: active.mobileWorld, phoneRecovery: active.phoneRecovery, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
     report.network.push(...network.values());
-  } catch (e) { report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, mobileWorld: active.mobileWorld, phoneRecovery: active.phoneRecovery, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
-  finally { if (report.cases.at(-1)?.id === id) report.cases.at(-1).saveAttempts = active.saveAttempts || []; await Promise.allSettled(active.bootBodyJobs); active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
+  } catch (e) { primaryError = e; if (!lifecycle.child) lifecycle.evidence.spawnSynchronousError = e.message; report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, mobileWorld: active.mobileWorld, phoneRecovery: active.phoneRecovery, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
+  finally {
+    const caseRecord = report.cases.at(-1);
+    caseRecord.saveAttempts = active.saveAttempts || [];
+    await finishBrowserCase({ lifecycle, caseRecord, primaryError, bootBodyJobs: active.bootBodyJobs, cdp: active.cdp, persistEvidence: persist });
+  }
 }
 try {
   const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280') && (!['mobile-world', 'phone-recovery'].includes(scenarios) || ['desktop-1280', 'touch-390', 'retina-touch-390'].includes(id)));
