@@ -4,6 +4,7 @@ const Room = preload("res://scenes/objects/dorm_modular_candidate.tscn")
 const SelectedTheme = preload("res://scripts/ui/selected_ui_theme.gd")
 const LockedOverlay = preload("res://scripts/ui/world_selected_overlay.gd")
 const LockedJournal = preload("res://scripts/ui/native_journal_view.gd")
+const CAMERA_OFFSET = Vector2(0,-120)
 const ActorArt = preload("res://assets/rpg/player/player_down_0.png")
 var view: SubViewport
 var screen: TextureRect
@@ -32,7 +33,7 @@ var pixel_mode := false
 var reduced_motion := false
 var note_open := false
 var tween: Tween
-var logical_camera := Vector2(500, 1000)
+var logical_camera := Vector2(531,1000)+CAMERA_OFFSET
 var held_keys: Dictionary = {}
 var keyboard := Vector2.ZERO
 var pointer_target := Vector2.ZERO
@@ -78,7 +79,7 @@ func _ready() -> void:
 		{"id":"lamp","position":lamp.global_position,"stand":Vector2(650,lamp.global_position.y),"title":"桌边的灯","node":lamp}]
 	selected_overlay=LockedOverlay.new();add_child(selected_overlay)
 	hint=selected_overlay.object_heading;note=selected_overlay.object_body
-	title=make_label("调试比较 · 独立样段", "interaction", "tip")
+	title=make_label("调试比较 · 独立样段（不写入正式进度）", "interaction", "tip")
 	tutorial=make_label("方向键移动 · 空格查看 / 收起 · 鼠标点地面或物件", "hud", "tip")
 
 	comparison=make_button("反馈：开",toggle_feedback)
@@ -125,9 +126,12 @@ func position_labels() -> void:
 	if not is_instance_valid(selected_overlay):return
 	selected_overlay.position=screen.position
 	var prompt: String=get_object(focus_id).get("title","")
-	selected_overlay.sync_view(screen.size,1.0,"寝室 · 练习","观察纸条和桌灯；不写入正式进度。",prompt,"",Rect2(),screen.size.y,"", "纸面上写着 0755。" if note_open else "")
-	selected_overlay.object_hint.visible=not tutorial_done
+	selected_overlay.sync_view(screen.size,1.0,"寝室 · 练习","查看纸条，再试着开关桌灯。",prompt,"",Rect2(),screen.size.y,"", "纸面上写着 0755。" if note_open else "")
+	selected_overlay.object_hint.visible=not tutorial_done and not note_open
 	selected_overlay.visible=not journal_open
+	tutorial.visible=not tutorial_done and not journal_open
+	action.visible=not journal_open
+	journal_button.text="收起手记" if journal_open else "查看手记"
 func toggle_journal() -> void:
 	if journal_open:close_journal();return
 	close_note();pointer_walk=false;keyboard=Vector2.ZERO;held_keys.clear()
@@ -162,7 +166,7 @@ func _physics_process(delta: float) -> void:
 		else:blocked_time=0.0
 		if direction.length_squared()>0:
 			tutorial_done=true;tutorial.hide()
-	logical_camera=logical_camera.lerp(actor.position,1.0-exp(-7.0*delta))
+	logical_camera=logical_camera.lerp(actor.position+CAMERA_OFFSET,1.0-exp(-7.0*delta))
 	camera.position=snapped_camera(logical_camera,camera.zoom.x) if pixel_mode else logical_camera
 	refresh_focus();position_labels()
 static func snapped_camera(point: Vector2,zoom: float) -> Vector2:
@@ -190,6 +194,7 @@ func get_object(id: String) -> Dictionary:
 func interact() -> void:
 	if journal_open:close_journal();return
 	if focus_id.is_empty():return
+	tutorial_done=true;tutorial.hide()
 	pointer_walk=false
 	if focus_id=="paper":
 		if note_open:close_note();return
@@ -220,8 +225,8 @@ func toggle_pixels() -> void:
 	camera.zoom=Vector2.ONE*(.8*view.size.y/540.0)
 	pixel_button.text="渲染：480" if pixel_mode else "渲染：540";layout()
 func reset_trial() -> void:
-	cancel_feedback();close_note();close_journal();observed=false;lamp_on=false;pointer_walk=false;held_keys.clear();keyboard=Vector2.ZERO
-	actor.position=Vector2(531,1000);logical_camera=actor.position;camera.position=logical_camera
+	cancel_feedback();close_note();close_journal();observed=false;lamp_on=false;tutorial_done=false;pointer_walk=false;held_keys.clear();keyboard=Vector2.ZERO
+	actor.position=Vector2(531,1000);logical_camera=actor.position+CAMERA_OFFSET;camera.position=logical_camera
 	get_object("lamp").node.modulate=Color.WHITE;refresh_focus()
 func _notification(what: int) -> void:
 	if what==NOTIFICATION_APPLICATION_FOCUS_OUT:

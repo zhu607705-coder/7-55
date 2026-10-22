@@ -25,8 +25,9 @@ func run() -> void:
 	var space=InputEventKey.new();space.keycode=KEY_SPACE;space.pressed=true
 	Input.parse_input_event(space);await process_frame
 	check(scene.note_open and scene.observed,"routed Space opens paper")
+	check(not scene.tutorial.visible and not scene.selected_overlay.object_hint.visible,"first real interaction dismisses onboarding")
 	var click=InputEventMouseButton.new();click.button_index=MOUSE_BUTTON_LEFT;click.pressed=true
-	click.position=scene.screen.position+scene.screen.size*.5
+	click.position=scene.world_to_screen(Vector2(531,1100))
 	Input.parse_input_event(click);await process_frame
 	check(not scene.note_open and scene.pointer_walk,"floor navigation dismisses open note")
 	scene.pointer_walk=false;scene.interact()
@@ -60,6 +61,7 @@ func run() -> void:
 		for i in range(120):scene._physics_process(1.0/60);await physics_frame
 	check(scene.focus_id=="lamp","lamp reached through actual furniture collisions")
 	scene.toggle_journal();check(scene.journal.get_script().resource_path.ends_with("native_journal_view.gd"),"real locked journal component")
+	check(not scene.action.visible and not scene.tutorial.visible,"journal hides unrelated world actions")
 	check(scene.selected_overlay.get_script().resource_path.ends_with("world_selected_overlay.gd"),"real HUD2 and interaction1 component")
 	check(scene.selected_overlay.object_heading.get_theme_font_size("font_size")==18,"locked interaction heading role")
 	scene.close_journal()

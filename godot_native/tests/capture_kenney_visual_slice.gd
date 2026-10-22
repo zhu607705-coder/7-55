@@ -13,12 +13,12 @@ func run() -> void:
 	DisplayServer.window_set_size(Vector2i(1280,900));root.size=Vector2i(1280,900)
 	var scene=load("res://scenes/kenney_visual_slice.tscn").instantiate();root.add_child(scene)
 	await process_frame
-	scene.actor.position=Vector2(531,900);scene.logical_camera=scene.actor.position;scene.camera.position=scene.actor.position
+	scene.actor.position=Vector2(531,900);scene.logical_camera=scene.actor.position+scene.CAMERA_OFFSET;scene.camera.position=scene.logical_camera
 	scene.refresh_focus();scene.toggle_feedback()
 	await capture(output.path_join("01-baseline.png"))
 	scene.toggle_feedback();scene.interact()
 	await capture(output.path_join("02-paper-feedback.png"))
-	scene.close_note();scene.actor.position=scene.get_object("lamp").stand;scene.logical_camera=scene.actor.position;scene.camera.position=scene.actor.position;scene.refresh_focus();scene.interact()
+	scene.close_note();scene.actor.position=scene.get_object("lamp").stand;scene.logical_camera=scene.actor.position+scene.CAMERA_OFFSET;scene.camera.position=scene.logical_camera;scene.refresh_focus();scene.interact()
 	await capture(output.path_join("03-lamp-feedback.png"))
 	scene.toggle_pixels();await capture(output.path_join("04-480-comparison.png"))
 	DisplayServer.window_set_size(Vector2i(390,844));root.size=Vector2i(390,844)
