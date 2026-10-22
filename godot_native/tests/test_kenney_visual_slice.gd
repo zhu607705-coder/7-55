@@ -15,13 +15,15 @@ func run() -> void:
 	for button in [scene.comparison,scene.pixel_button,scene.reset_button,scene.action]:
 		check(button.focus_mode==Control.FOCUS_NONE,"toolbar cannot steal Space")
 	root.size=Vector2i(1280,900);scene.layout();await process_frame
-	var state_before: String=JSON.stringify(root.get_node("State").d) if "d" in root.get_node("State") else ""
+	var state_before: String=JSON.stringify(root.get_node("State").d)
 	check(scene.room.get_node("Furnishings").get_child_count()==18,"18 objects retained")
 	check(scene.view.size==Vector2i(960,540),"baseline resolution unchanged")
 	check(scene.sprite.texture.resource_path.ends_with("player_down_0.png"),"source actor retained")
 	scene.actor.position=Vector2(531,900);scene.refresh_focus()
 	check(scene.focus_id=="paper","paper reachable")
-	scene.interact();check(scene.note_open and scene.observed,"paper opens")
+	var space=InputEventKey.new();space.keycode=KEY_SPACE;space.pressed=true
+	Input.parse_input_event(space);await process_frame
+	check(scene.note_open and scene.observed,"routed Space opens paper")
 	var click=InputEventMouseButton.new();click.button_index=MOUSE_BUTTON_LEFT;click.pressed=true
 	click.position=scene.screen.position+scene.screen.size*.5
 	scene._unhandled_input(click)
@@ -57,6 +59,6 @@ func run() -> void:
 		for i in range(120):scene._physics_process(1.0/60);await physics_frame
 	check(scene.focus_id=="lamp","lamp reached through actual furniture collisions")
 	scene.reset_trial();check(scene.actor.position==Vector2(531,1000) and not scene.observed and not scene.lamp_on,"reset clears only trial")
-	check(state_before==(JSON.stringify(root.get_node("State").d) if "d" in root.get_node("State") else ""),"no story state mutation")
+	check(state_before==(JSON.stringify(root.get_node("State").d)),"no story state mutation")
 	scene.queue_free();await process_frame
 	print("KENNEY_SLICE_CHECKS ",checks," FAILURES ",failures);quit(1 if failures else 0)

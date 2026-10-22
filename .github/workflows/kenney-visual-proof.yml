@@ -17,12 +17,14 @@ jobs:
       - name: Install pinned official Godot
         run: |
           curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  /tmp/godot.zip" | sha256sum --check
           unzip -q /tmp/godot.zip -d /tmp/godot
           sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
           command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
       - name: Import and test isolated visual slice
         run: |
           node godot_native/tools/sync_source.mjs
+          mkdir -p godot_native/.godot
           GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
           mkdir -p /tmp/visual-profile/{data,config,cache,state}
           export XDG_DATA_HOME=/tmp/visual-profile/data XDG_CONFIG_HOME=/tmp/visual-profile/config XDG_CACHE_HOME=/tmp/visual-profile/cache XDG_STATE_HOME=/tmp/visual-profile/state
