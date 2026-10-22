@@ -49,7 +49,7 @@ func _ready() -> void:
 	clip_contents=true
 	texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 	officer_contact=load("res://assets/native/qizhen_rain_rescue/generated/officer_reach_up_right_v03.png")
-	font=load("res://assets/native/qizhen_rain_rescue/font.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	lake=load("res://assets/native/qizhen_rain_rescue/lake_rain.png")
 	hull=load("res://assets/native/qizhen_rain_rescue/kayak_hull.svg")
 	underside=load("res://assets/native/qizhen_rain_rescue/kayak_upturned.svg")

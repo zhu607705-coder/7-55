@@ -1,7 +1,8 @@
 extends RefCounted
 ## CC98's existing investigation and four source evidence slots. Layout and local
 ## navigation only: every accepted upload remains an ordinary controller intent.
-const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+const Typography=preload("res://scripts/ui/native_typography.gd")
+static var FONT: Font=Typography.body_font()
 const DropButton=preload("res://scripts/ui/phone_drop_button.gd")
 const Library=preload("res://scripts/chapters/library022.gd")
 const SOURCE="res://data/source/library-finals.content.json"
@@ -23,7 +24,7 @@ func height(text: String,width: float,font_size: int) -> float:
 func label(b,root: Control,text: String,y: float,font_size: int=17,color: Color=Color("222322"),width: float=WIDTH,x: float=LEFT) -> Label:
 	var node: Label=b._label(root,text,Rect2(x,y,width,height(text,width,font_size)),font_size,color)
 	node.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	node.add_theme_font_override("font",FONT)
+	Typography.apply_body(node)
 	return node
 
 func floor_title(row: Dictionary) -> String:
@@ -106,6 +107,12 @@ func build(b,view: Dictionary) -> Control:
 		label(b,root,body,y+12+heading_height+14).name="Cc98ReplyBody_%d" % floor_number
 		var action_y=y+row_height-64
 		if has_catalog_title:
+			# ScrollContainer stores integer offsets. Snap the action's bottom in
+			# its scaled scroll coordinate space so ensure_control_visible does
+			# not leave a fractional bottom edge clipped after font measurement.
+			# The tiny guard prevents float transforms from rounding an exact
+			# integer just below that integer on the 390px viewport.
+			action_y=(ceilf((action_y+48.0)*b.PHONE_SCALE)+0.001)/b.PHONE_SCALE-48.0
 			var feedback=label(b,root,"可在馆藏检索中手动粘贴",action_y,13,MUTED,WIDTH-104,LEFT+104)
 			feedback.name="Cc98CatalogTitleFeedback"
 			var copy: Button=b._button(root,"复制题名",Rect2(LEFT,action_y,92,48),func():

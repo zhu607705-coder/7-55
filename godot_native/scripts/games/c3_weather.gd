@@ -20,7 +20,7 @@ var row_centers: Array=[175.0,265.0,355.0]
 var presentation_scale: float=-1
 var compact_presentation: bool=false
 var layout_label_size:=Vector2.ZERO
-const FONT=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var FONT: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 func setup(_config: Dictionary) -> void: pass
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)

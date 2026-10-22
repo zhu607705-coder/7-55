@@ -247,7 +247,7 @@ func _build_overlay() -> void:
 	var center := CenterContainer.new(); margin.add_child(center)
 	_card = PanelContainer.new(); _card.add_theme_stylebox_override("panel", Ui.box(Color("fff9ec"), Color("b9b0a0"), 1, 12, Vector2(24, 24))); center.add_child(_card)
 	var column := VBoxContainer.new(); column.add_theme_constant_override("separation", 18); _card.add_child(column)
-	var font := load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf") as Font
+	var font := preload("res://scripts/ui/native_typography.gd").body_font() as Font
 	_card.theme = Ui.make_theme(font, 18, 18)
 	var title := Label.new(); title.text = "正在准备下一段旅程"; title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; title.add_theme_color_override("font_color", Color("263c34")); column.add_child(title)
 	_detail = Label.new(); _detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; _detail.add_theme_font_size_override("font_size", 15); _detail.add_theme_color_override("font_color", Color("52645b")); column.add_child(_detail)

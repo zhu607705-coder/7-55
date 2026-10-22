@@ -1,4 +1,5 @@
 extends RefCounted
+const PixelEdges=preload("res://scripts/ui/pixel_edges.gd")
 ## Presentation-only shared primitives. Authored app palettes, fonts, sizes and
 ## world art remain local. Source: base.css and ui-motion-typography-standard.md.
 const FONT_MICRO := 9
@@ -22,7 +23,7 @@ static func box(fill: Color, border: Color = Color.TRANSPARENT, width: int = 0, 
 	style.bg_color = fill
 	style.border_color = border
 	style.set_border_width_all(width)
-	style.set_corner_radius_all(radius)
+	PixelEdges.configure(style,radius>4)
 	# Explicit margins prevent border-dependent or inherited minimum-size jumps.
 	style.content_margin_left = padding.x
 	style.content_margin_right = padding.x

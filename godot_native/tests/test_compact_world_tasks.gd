@@ -37,7 +37,7 @@ func check_top_row() -> void:
 	observations.append({"viewport":str(current_size),"tasks":str(tasks.get_global_rect()),"back":str(shell.mobile_back.get_global_rect()),"bag":str(shell.inventory_handle.get_global_rect()),"world":str(shell.world_frame.get_global_rect()),"bag_open":shell.compact_inventory_open})
 func check_theme() -> void:
 	var button:Button=shell.world_tasks
-	check(button.get_theme_font("font")==shell.font and button.get_theme_font_size("font_size")==18,"Tasks inherits the existing world top-row typography")
+	check(button.get_theme_font("font")==load("res://scripts/ui/native_typography.gd").body_font() and button.get_theme_font_size("font_size")==16,"Tasks uses the shared readable body role at 16px")
 	var reference:StyleBoxFlat=button.get_theme_stylebox("normal")
 	for name in ["hover","pressed","hover_pressed","disabled"]:
 		var style:StyleBoxFlat=button.get_theme_stylebox(name)

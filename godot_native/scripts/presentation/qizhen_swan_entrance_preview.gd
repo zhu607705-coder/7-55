@@ -50,7 +50,7 @@ func _ready() -> void:
 	lake_plate = load("res://assets/rpg/interiors/qizhen_lake_swan_cove.png")
 	swan_atlas = load("res://assets/native/chapter3/black_swan_entrance_atlas.png")
 	gate_cleanplate = load("res://assets/native/chapter3/swan_cove_gate_cleanplate.png")
-	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font = preload("res://scripts/ui/native_typography.gd").body_font()
 	zone = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds.qizhen_lake.zones.swan_cove
 	obstacles = zone.kayakCollisions.duplicate(true)
 	# Open only the illustrated west gate; retain the other source fence solids.

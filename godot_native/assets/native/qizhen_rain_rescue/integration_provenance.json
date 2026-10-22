@@ -112,8 +112,9 @@
       "source": "samples/qizhen-rain-rescue-native/scripts/rain_rescue_preview.gd",
       "production": "godot_native/scripts/media/c3_rain_rescue_native/renderer.gd",
       "source_sha256": "a9757caddad7c0d50520749ecf3a2704fc5563495b88de5a654f6d54f050ab38",
-      "production_sha256": "d4e3d4ed3fa46103b948de62e66adde6f9195833c226952db59cf1a935ba282e",
-      "mode": "adapted-drawing-only"
+      "production_sha256": "a709704d547e6f828659b0b4f0b8e816b95d80d35693db059bb4243d2736fbdf",
+      "mode": "adapted-drawing-only",
+      "reason": "2026-10-21 UI-only font adaptation: title/caption drawing now uses the shared bundled Campus UI body font through native_typography.body_font(). Source renderer, original font asset/license, authored geometry, caption text, timeline and input/progression ownership are unchanged."
     },
     {
       "source": "samples/qizhen-rain-rescue-native/scripts/rescue_timeline.gd",

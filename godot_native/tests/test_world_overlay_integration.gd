@@ -46,12 +46,16 @@ func run()->void:
 		shell._show_world_mobile();shell._layout_toast()
 		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,.04),"handoff preserves a notice's final40ms without extending it")
 		world.subtitle_left=3.25
+		var unread_text:String=world.subtitle
+		var unread_seconds:float=float(shell.notice_queue.current.remaining)
 		var view:Control=shell.library_story_host.view
 		view.session=SourceLine.new();shell.library_story_host.current=view.session;view.tick();shell._layout();await frames(2);view.tick()
 		var hud:Dictionary=world.hud_metrics(world._hud_line())
 		var surface:Rect2=shell.world_view.get_global_rect()
 		var feedback_rect:=Rect2(surface.position+hud.body_rect.position*world.hud_display_scale(),hud.body_rect.size*world.hud_display_scale())
-		check(not feedback_rect.intersects(view.panel.get_global_rect()),"earned feedback and library dialogue never overlap")
+		world._sync_selected_overlay()
+		check(world._exploration_overlay_blocked() and not world.overflow_feedback.visible and not world.selected_overlay.visible,"native right-side dialogue suppresses exploration help rather than cropping the world")
+		check(shell.notice_queue.current.get("text","")==unread_text and is_equal_approx(float(shell.notice_queue.current.get("remaining",-1)),unread_seconds),"suppressed queued feedback retains its original text and unread lifetime in the queue owner")
 		check(view.body.get_theme_font("font").get_multiline_string_size(view.body.text,HORIZONTAL_ALIGNMENT_LEFT,view.body.size.x,view.body.get_theme_font_size("font_size")).y<=view.body.size.y,"full library line is visible")
 		view.session=null;shell.library_story_host.current=null;view.tick();shell._layout();await frames(2)
 		world.subtitle="";world._update_camera()
@@ -67,7 +71,9 @@ func run()->void:
 			var stacked:Dictionary=world.hud_metrics(world.subtitle)
 			var shown:Rect2=shell.world_view.get_global_rect()
 			var stacked_rect:=Rect2(shown.position+stacked.body_rect.position*world.hud_display_scale(),stacked.body_rect.size*world.hud_display_scale())
-			check(not stacked_rect.intersects(view.panel.get_global_rect()),"enlarged Library dialogue and full feedback share a disjoint budget")
+			world._sync_selected_overlay()
+			check(not world.overflow_feedback.visible and not world.selected_overlay.visible,"enlarged right-side dialogue has exclusive text ownership")
+			check(is_equal_approx(stacked.body_rect.end.y,world.size.y-stacked.body_gap),"right-side dialogue never turns its top into the world bottom")
 			view.session=null;shell.library_story_host.current=null;view.tick();shell._layout();world.queue_redraw();await frames(2)
 			var large:Dictionary=world.hud_metrics(world.subtitle)
 			var controls:Dictionary=world.mobile_control_metrics()

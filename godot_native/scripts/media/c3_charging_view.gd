@@ -1,6 +1,6 @@
 extends Control
 ## Pixel phone close-up. Input-transparent and state-read-only; no wall clock.
-const PIXEL_FONT = preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var PIXEL_FONT: Font = preload("res://scripts/ui/native_typography.gd").body_font()
 const PANEL_SIZE := Vector2(248, 138)
 const INSERT_MS := 180.0
 const DURATION_MS := 2200.0

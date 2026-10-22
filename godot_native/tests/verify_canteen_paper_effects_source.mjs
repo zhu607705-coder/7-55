@@ -79,7 +79,7 @@ assert.doesNotMatch(effects,/run\.\w+\s*=(?!=)|\b(?:randf|randi|seed|randomize)\
 if(process.env.CANTEEN_EFFECTS_SOURCE_ONLY!=='1'){
  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'canteen-paper-effects-check-'));
  try{
-  for(const relative of ['scripts/presentation/c3_paper_art.gd','scripts/presentation/c3_canteen_paper_view.gd','scripts/presentation/c3_scene_session.gd','scripts/presentation/library_story_session.gd','scripts/presentation/c3_defense_effects.gd','scripts/games/canteen_defense_model.gd','tests/test_canteen_paper_effects.gd','tests/fixtures/canteen_defense.json']){
+  for(const relative of ['scripts/ui/native_typography.gd','ui_assets/fonts/CampusUISans-Regular.otf','ui_assets/fonts/OFL.txt','assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf','assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt','scripts/presentation/c3_paper_art.gd','scripts/presentation/c3_canteen_paper_view.gd','scripts/presentation/c3_scene_session.gd','scripts/presentation/library_story_session.gd','scripts/presentation/c3_defense_effects.gd','scripts/games/canteen_defense_model.gd','tests/test_canteen_paper_effects.gd','tests/fixtures/canteen_defense.json']){
    const target=path.join(temp,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,'godot_native',relative),target);
   }
   for(const relative of ['data/worlds.json','data/source/chapter3-canteen.content.json']){
@@ -89,6 +89,22 @@ if(process.env.CANTEEN_EFFECTS_SOURCE_ONLY!=='1'){
   const dump=path.join(temp,'effects.json');
   const isolated=createNativeTestSandbox(temp);
   const env={...isolated.env,CANTEEN_EFFECTS_DUMP:dump};
+  // This is a fresh minimal project, not the main checkout's imported cache.
+  // Keep the actual view's shared-font closure and licenses, then import it.
+  const imported=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',isolated.project,'--editor','--import','--quit'],{encoding:'utf8',timeout:60000,env});
+  const importOutput=(imported.stdout||'')+(imported.stderr||'');
+  assert.ifError(imported.error);assert.equal(imported.status,0,importOutput);assert.doesNotMatch(importOutput,/SCRIPT ERROR|Parse Error|ERROR:/);
+  fs.writeFileSync(path.join(temp,'tests/font_fixture_check.gd'),`extends SceneTree
+func _initialize() -> void:
+ var face=load("res://scripts/ui/native_typography.gd").body_font()
+ assert(face.base_font!=null and face.base_font.get_data().size()>0)
+ assert(face.fallbacks.size()==1 and face.fallbacks[0]!=null)
+ print("CANTEEN_FONT_FIXTURE_READY")
+ quit()
+`);
+  const fontCheck=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',isolated.project,'--script','res://tests/font_fixture_check.gd','--quit-after','8'],{encoding:'utf8',timeout:30000,env});
+  const fontOutput=(fontCheck.stdout||'')+(fontCheck.stderr||'');
+  assert.ifError(fontCheck.error);assert.equal(fontCheck.status,0,fontOutput);assert.doesNotMatch(fontOutput,/SCRIPT ERROR|Parse Error|ERROR:/);assert.match(fontOutput,/CANTEEN_FONT_FIXTURE_READY/);
   const result=spawnSync(process.env.GODOT_BIN||'godot',['--headless','--path',isolated.project,'--script','res://tests/test_canteen_paper_effects.gd','--quit-after','8'],{encoding:'utf8',timeout:30000,env});
   const output=(result.stdout||'')+(result.stderr||'');process.stdout.write(output);assert.ifError(result.error);assert.equal(result.status,0);assert.doesNotMatch(output,/SCRIPT ERROR|Parse Error/);assert.match(output,/CANTEEN_PAPER_EFFECTS \d+ checks; 0 failures/);
   const native=JSON.parse(fs.readFileSync(dump,'utf8'));

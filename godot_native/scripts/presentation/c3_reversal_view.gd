@@ -3,7 +3,7 @@ extends RefCounted
 var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/chapter3-world-source.json"))
 var words: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter3-theater.content.json"))
 var textures: Dictionary={}
-var font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var font: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 func texture(key: String) -> Texture2D:
 	if not textures.has(key): textures[key]=load(str(source.assets[key]))
 	return textures[key]

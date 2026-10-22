@@ -24,7 +24,7 @@ func run() -> void:
 			var player:Vector2=world.player
 			world.subtitle=line;world.subtitle_left=60;world.queue_redraw();await frames(2)
 			var hud:Dictionary=world.hud_metrics(line)
-			var needed:float=world.font.get_multiline_string_size(line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font).y+hud.body_inset*2
+			var needed:float=world.hud_font.get_multiline_string_size(line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font).y+hud.body_inset*2
 			var controls:Dictionary=world.mobile_control_metrics()
 			var bar:=Rect2(hud.body_gap,world.size.y-hud.body_gap-hud.body_height,world.size.x-hud.body_gap*2,hud.body_height)
 			check(world.subtitle==line and (hud.body_height>=needed or hud.body_overflow),"complete feedback is retained in measured or scrollable bar: "+str(id))
