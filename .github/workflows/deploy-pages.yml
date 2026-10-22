@@ -9,6 +9,8 @@ on:
       - 'src/core/**'
       - 'package.json'
       - 'package-lock.json'
+      - 'scripts/ensure-ci-media-tools.mjs'
+      - 'scripts/test-ci-media-tools.mjs'
       - '.github/workflows/deploy-pages.yml'
   push:
     branches:
@@ -97,7 +99,8 @@ jobs:
 
       - name: Install media converter
         run: |
-          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          node scripts/test-ci-media-tools.mjs
+          node scripts/ensure-ci-media-tools.mjs
 
       - name: Build actual production Godot HTML, WebAssembly and PCK
         run: node godot_native/tools/build_web.mjs
