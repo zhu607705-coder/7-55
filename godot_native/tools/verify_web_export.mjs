@@ -261,14 +261,22 @@ async function importSave(filename) {
   const completed = await snapshot();
   active.imports.push({ filename: path.basename(filename), sha256: hash(bytes), bytes: bytes.length, chapter: expected.chapter, page: expected.page, scene: expected.scene, firstAcceptedAt, observedAt: Date.now(), saveDigest: completed.saveDigest }); return completed;
 }
-async function freshCase() {
+async function freshCase(entryOnly = false) {
+  // Focused input scenarios still cold-boot and enter through ordinary controls.
+  // The separate default gate retains the complete generic persistence baseline.
+  if (entryOnly) active.fresh = { scope: 'cold-boot-to-phone-only', persistenceBaselineRepeated: false, recording: true, inputs: [], startedAt: Date.now() };
   const start = await startStory(); check(state(start.snapshot).native.page === 'alarm', `${active.id}: fresh story starts at alarm`);
   await clickControl('开始游戏'); await poll(async () => state(await snapshot())?.native.alarm_ringing, 'real alarm start');
   active.mediaObservations.push({ phase: 'alarm-ringing', audio: (await snapshot()).audio, video: (await snapshot()).video });
   await clickControl('关闭'); await poll(async () => state(await snapshot())?.native.page === 'desktop', 'real alarm dismiss');
   await clickControl('……再睡5分钟……'); await poll(async () => state(await snapshot())?.native.wake_warned, 'real wake warning');
   await clickControl('进入手机主界面'); await poll(async () => state(await snapshot())?.native.page === 'phone_home', 'real phone home');
-  await assertLayout(active.id); await settings();
+  const geometry = await assertLayout(active.id);
+  if (entryOnly) {
+    active.fresh.recording = false; active.fresh.completedAt = Date.now();
+    return { bootReadyMs: start.bootReadyMs, mainReadyMs: start.mainReadyMs, geometry };
+  }
+  await settings();
   const evidence = value => ({ page: state(value)?.native?.page, chapter: state(value)?.native?.chapter, mode: state(value)?.native?.mode, flags: state(value)?.flags, saveDigest: value?.saveDigest });
   const s = await snapshot(); const beforeMode = state(s).native.mode; const toggle = controls(s).find(c => c.text.startsWith('当前：')); check(!!toggle, 'mode toggle states current and destination');
   active.fresh = { recording: true, inputs: [], before: evidence(s) };
@@ -640,7 +648,8 @@ async function streamingCase() {
 const mobileDistance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const inRect = (point, rect, inset = 0) => point.x >= rect.x + inset && point.y >= rect.y + inset && point.x <= rect.x + rect.width - inset && point.y <= rect.y + rect.height - inset;
 const mobileFacts = value => JSON.stringify({ scene: state(value).native.scene, phase: state(value).actOne.phase, props: state(value).native.dorm_props, items: state(value).items, wallet: state(value).wallet, dormPropActions: value.world?.input?.dormPropActions });
-const lampOn = value => !!state(value).native.dorm_props.lamp_03_on;
+// Production creates dorm_props on the first real prop action; absent lamps are off.
+const lampOn = value => !!state(value).native.dorm_props?.lamp_03_on;
 const worldTarget = (value, id = 'desk_03') => value.world.input.targets.find(target => target.id === id);
 async function mobileSample(previous, delay = 300) {
   await interval(delay);
@@ -887,7 +896,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
     if (scenarios === 'streaming') await prepareStreamingFault();
-    result = await freshCase();
+    result = await freshCase(['mobile-world', 'phone-recovery'].includes(scenarios));
     if (scenarios === 'mobile-world') await mobileWorldCase();
     else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
