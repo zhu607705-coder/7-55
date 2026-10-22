@@ -9,6 +9,7 @@ const CanteenFloorTap = preload("res://scripts/canteen_floor_tap.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
 const CharacterFacing = preload("res://scripts/character_facing.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
+const InventoryGesture = preload("res://scripts/ui/inventory_gesture.gd")
 const KayakObject = preload("res://scripts/objects/kayak_world_adapter.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 ## Source-pixel exploration surface. No story facts are authored by rendering.
@@ -101,6 +102,10 @@ var touch_controls := false
 var mobile_exploration := false
 var mobile_touch_roles: Dictionary={}
 var mobile_mouse_control := false
+var mobile_mouse_gesture: Dictionary = {}
+var mobile_confirmed_target_id := ""
+var mobile_confirmed_world_key := ""
+const MOBILE_TAP_SLOP := 10.0
 var capture_mode := false
 var host_node: Control
 var touch_points: Dictionary = {}
@@ -198,6 +203,7 @@ func refresh_world() -> void:
 	if key == world_key and pending_teleport == Vector2.INF:
 		queue_redraw()
 		return
+	if mobile_exploration: cancel_exploration_gestures()
 	_cancel_table_drag()
 	object_picker.clear()
 	_cancel_floor_route()
@@ -427,7 +433,7 @@ func _try_interact(target: Dictionary = {}) -> void:
 	if presentation_actor_hidden or _interaction_presentation_blocks() or _shell_input_blocked(): return
 	if target.is_empty(): target = nearby
 	if target.is_empty():
-		subtitle = "靠近可交互的物品后点交互。" if mobile_exploration else "靠近可交互的物品后按空格。"; subtitle_left = 2.4; return
+		subtitle = "靠近可交互的物品后直接点按物品。" if mobile_exploration else "靠近可交互的物品后按空格。"; subtitle_left = 2.4; return
 	if scene_id=="library_interior" and library_layers!=null and library_layers.backpack_eviction_active() and str(target.get("action","")) in ["lib_sit","lib_dialogue_open"]: return
 	var distance := _distance(target)
 	var limit := float(target.get("radius",100)) * (.5 if scene_id == "dorm_hub" else 1.0)
@@ -439,6 +445,8 @@ func _try_interact(target: Dictionary = {}) -> void:
 	var required_item := str(target.get("item",""))
 	if not required_item.is_empty() and str(State.d.native.selected_item) != required_item:
 		State.feedback.emit("请先从物品栏选择对应物品。"); return
+	if mobile_exploration:
+		mobile_confirmed_target_id=str(target.get("id","")); mobile_confirmed_world_key=world_key
 	var action: String=str(target.get("action",target.get("id","")))
 	var library_scan: bool=scene_id=="library_interior" and action=="lib_scan"
 	# A refused identity check must not rotate the player toward the desk.
@@ -492,13 +500,22 @@ func _process(delta: float) -> void:
 		_cancel_guard_capture()
 		return
 	delta=minf(delta,.05)
+	# Inventory owns a shared touch/native drag before individual controls route
+	# events. It may consume another finger's release, so retire world motion
+	# at acquisition instead of waiting for a release that cannot reach us.
+	if mobile_exploration and _inventory_owns_pointer(): cancel_exploration_gestures()
 	if not kayak_mouse_gesture.is_empty() and not _kayak_mouse_valid(): kayak_mouse_gesture.clear()
 	if _floor_feedback_left>0:
 		_floor_feedback_left=maxf(0,_floor_feedback_left-delta)
 		if _floor_feedback_left==0 and _floor_route.is_empty(): _floor_goal=Vector2.INF; _floor_status=""
 	if not _floor_route.is_empty() and (not mobile_exploration or capture_mode or presentation_actor_hidden or not is_visible_in_tree() or get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging() or not _floor_transform_current()): _cancel_floor_route()
-	if not is_visible_in_tree() or scene_id.is_empty() or capture_mode: return
-	if is_instance_valid(host_node) and not host_node.world_frame.is_visible_in_tree(): _cancel_floor_route(); return
+	if not is_visible_in_tree() or scene_id.is_empty() or capture_mode:
+		if mobile_exploration: cancel_exploration_gestures()
+		return
+	if is_instance_valid(host_node) and not host_node.world_frame.is_visible_in_tree():
+		if mobile_exploration: cancel_exploration_gestures()
+		else: _cancel_floor_route()
+		return
 	if chapter3_layers!=null:
 		chapter3_layers.narrative_session=host_node.c3_narrative_host.current if is_instance_valid(host_node) and is_instance_valid(host_node.c3_narrative_host) else null
 		chapter3_layers.tick(delta,State.d)
@@ -536,7 +553,10 @@ func _process(delta: float) -> void:
 	if _shell_input_blocked():
 		if mobile_exploration: cancel_exploration_gestures()
 		return
-	if is_instance_valid(shell) and is_instance_valid(shell.get("world_effect")) and shell.world_effect.get_meta("blocks_input",false): _cancel_floor_route(); return
+	if is_instance_valid(shell) and is_instance_valid(shell.get("world_effect")) and shell.world_effect.get_meta("blocks_input",false):
+		if mobile_exploration: cancel_exploration_gestures()
+		else: _cancel_floor_route()
+		return
 	var focus := host_node.get_viewport().gui_get_focus_owner() if is_instance_valid(host_node) else get_viewport().gui_get_focus_owner()
 	var axis := Vector2.ZERO
 	if focus is LineEdit or focus is TextEdit: _cancel_floor_route()
@@ -723,14 +743,11 @@ func _update_camera() -> void:
 	# collision and input transforms stay unchanged; only framing moves.
 	camera=WorldOverlay.camera_for_safe_rect(player,pan_offset,size,world_size,zoom,Rect2(Vector2.ZERO,size) if capture_mode or font==null or authored else exploration_safe_rect(true))
 
-func exploration_safe_rect(reserve_controls:bool=false) -> Rect2:
+func exploration_safe_rect(_reserve_controls:bool=false) -> Rect2:
 	var hud:=hud_metrics(_hud_line())
+	# The thumb pad overlays one corner of the world. It never reserves a
+	# full-width row or moves the camera as if there were a separate control bar.
 	var bottom:float=hud.body_rect.position.y
-	if reserve_controls and mobile_exploration and not kayak:
-		var controls_top:float=mobile_control_metrics().stick_rect.position.y-8
-		# On short landscapes the controls occupy corners, not a full-width
-		# row. Keep enough clear height for both the actor and a nearby target.
-		if controls_top-float(hud.header_height)>=size.y*.5:bottom=minf(bottom,controls_top)
 	return Rect2(0,hud.header_height,size.x,maxf(1,bottom-float(hud.header_height)))
 
 func register_object_surface(ids: Array, geometry: Dictionary) -> void:
@@ -983,14 +1000,24 @@ func _sync_selected_overlay()->void:
 	var mode_rect:Rect2=Rect2(hud.mode_rect.position*display,hud.mode_rect.size*display) if selected_overlay_is_native else hud.mode_rect
 	var bottom:float=hud.body_rect.position.y*display if selected_overlay_is_native else hud.body_rect.position.y
 	selected_overlay.mobile_exploration=mobile_exploration
-	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str(nearby.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(nearby.get("hud_prompt","")))
+	var label_target:Dictionary=_mobile_confirmed_target() if mobile_exploration else nearby
+	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str(label_target.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(label_target.get("hud_prompt","")))
+
+func _mobile_confirmed_target() -> Dictionary:
+	if mobile_confirmed_target_id.is_empty(): return {}
+	if mobile_confirmed_world_key==world_key and not _interaction_presentation_blocks() and not _shell_input_blocked():
+		for target:Dictionary in targets:
+			if str(target.get("id",""))==mobile_confirmed_target_id and _distance(target)<=float(target.get("radius",100))*(.5 if scene_id=="dorm_hub" else 1.0): return target
+	mobile_confirmed_target_id=""; mobile_confirmed_world_key=""
+	return {}
 
 func _hud_line() -> String:
 	if guard_capture.active:return "保安："+GuardCapture.LINE
 	if not subtitle.is_empty(): return subtitle
-	if not nearby.is_empty(): return ("交互 · " if mobile_exploration else "空格 · ")+str(nearby.get("hud_prompt",nearby.get("label","")))
+	var label_target:Dictionary=_mobile_confirmed_target() if mobile_exploration else nearby
+	if not label_target.is_empty(): return ("点按物品 · " if mobile_exploration else "空格 · ")+str(label_target.get("hud_prompt",label_target.get("label","")))
 	if kayak: return "点按或上划左桨 / 右桨前进 · 下划后退" if mobile_exploration else "A / D 左右划桨 · S + 划桨后退"
-	return "摇杆移动 · 交互 · 拖动空白处查看" if mobile_exploration else "WASD 移动  /  空格 交互  /  滚轮 缩放"
+	return "摇杆移动 · 点按附近物品 · 拖动空白处查看" if mobile_exploration else "WASD 移动  /  空格 交互  /  滚轮 缩放"
 
 func hud_display_scale() -> float:
 	# The world lives in a SubViewport; its local transform cannot see the
@@ -1340,12 +1367,13 @@ func _notification(what: int) -> void:
 	elif what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree(): _cancel_table_drag()
 	elif what==NOTIFICATION_RESIZED: _cancel_table_drag()
 	# Desktop clicks and compact gestures share the same focus-loss boundary.
-	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT: cancel_exploration_gestures()
+	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT or (mobile_exploration and (what==NOTIFICATION_RESIZED or (what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree()))): cancel_exploration_gestures()
 
 func cancel_exploration_gestures() -> void:
 	_cancel_table_drag()
 	touch_axis=Vector2.ZERO; touch_points.clear(); mobile_touch_roles.clear(); mobile_mouse_control=false; move_target=Vector2.INF
-	kayak_mouse_gesture.clear()
+	kayak_mouse_gesture.clear(); mobile_mouse_gesture.clear()
+	mobile_confirmed_target_id=""; mobile_confirmed_world_key=""
 	_cancel_floor_route()
 
 func kayak_paddle_rects() -> Dictionary:
@@ -1418,12 +1446,88 @@ func handle_root_kayak_pointer(event: InputEvent) -> bool:
 	return true
 
 func mobile_control_metrics() -> Dictionary:
-	# Physical-pixel controls occupy a reserved strip above the subtitle.
+	# Screen-space thumb pad, painted over the lower-left world corner. The
+	# existing feedback surface can lift this one hit area, never the whole map.
 	var body: Dictionary=hud_metrics(_hud_line())
-	var bottom: float=body.body_rect.position.y-12
+	var bottom: float=minf(size.y-12,body.body_rect.position.y-12)
 	var radius:=50.0
-	var center:=Vector2(62,bottom-radius)
-	return {"stick":center,"radius":radius,"stick_rect":Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),"interact":Rect2(size.x-78,bottom-60,60,60)}
+	var center:=Vector2(62,maxf(float(body.header_height)+radius,bottom-radius))
+	# Keep the key for existing geometry consumers; no confirmation button is
+	# drawn or hit-tested. Object taps submit the ordinary proximity-gated action.
+	return {"stick":center,"radius":radius,"stick_rect":Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),"interact":Rect2()}
+
+func _inventory_owns_pointer() -> bool:
+	if is_instance_valid(InventoryGesture.touch_owner()): return true
+	if not is_inside_tree() or not get_tree().root.gui_is_dragging(): return false
+	var data:Variant=get_tree().root.gui_get_drag_data()
+	return data is Dictionary and data.get("kind","")=="inventory_item"
+
+func _mobile_pointer_context() -> Array:
+	return [world_key,size,host_node.world_view.get_global_rect() if is_instance_valid(host_node) else get_global_rect()]
+
+func _mobile_pointer_valid(context: Array) -> bool:
+	if not mobile_exploration or not is_visible_in_tree() or capture_mode or _scene_presentation_blocks() or _shell_input_blocked() or _inventory_owns_pointer(): return false
+	if is_instance_valid(host_node):
+		if not is_instance_valid(host_node.world_frame) or not host_node.world_frame.is_visible_in_tree(): return false
+		if is_instance_valid(host_node.get("world_effect")) and host_node.world_effect.get_meta("blocks_input",false): return false
+	return context==_mobile_pointer_context()
+
+func _mobile_local_from_root(point: Vector2) -> Vector2:
+	if not is_instance_valid(host_node): return get_global_transform_with_canvas().affine_inverse()*point
+	var view: Control=host_node.world_view
+	var pixel:Vector2=view.get_global_transform_with_canvas().affine_inverse()*point
+	pixel*=Vector2(get_viewport().size)/Vector2(maxf(1,view.size.x),maxf(1,view.size.y))
+	return get_global_transform_with_canvas().affine_inverse()*pixel
+
+func handle_root_exploration_pointer(event: InputEvent) -> bool:
+	# Acquisition remains with GUI routing, so an inventory/modal press can
+	# never become world input. Only an already-owned pointer is captured here.
+	var gesture:Dictionary={}
+	if event is InputEventScreenTouch or event is InputEventScreenDrag:
+		if event is InputEventScreenTouch and event.pressed: return false
+		if not mobile_touch_roles.has(event.index): return false
+		gesture=mobile_touch_roles[event.index]
+	elif event is InputEventMouseButton or event is InputEventMouseMotion:
+		if mobile_mouse_gesture.is_empty(): return false
+		if event is InputEventMouseButton and (event.button_index!=MOUSE_BUTTON_LEFT or event.pressed): return false
+		gesture=mobile_mouse_gesture
+	else: return false
+	if not _mobile_pointer_valid(gesture.context):
+		cancel_exploration_gestures(); return true
+	# Native furniture/inventory drags retain their own root release path.
+	if gesture.role=="furniture" or get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging():
+		if event is InputEventScreenTouch and not event.pressed: mobile_touch_roles.erase(event.index)
+		return false
+	var copy:InputEvent=event.duplicate()
+	copy.position=_mobile_local_from_root(event.position)
+	if copy is InputEventMouse: copy.global_position=copy.position
+	_mobile_exploration_input(copy)
+	return true
+
+func _mobile_stick_owned() -> bool:
+	if mobile_mouse_control: return true
+	for gesture:Dictionary in mobile_touch_roles.values():
+		if gesture.role=="stick": return true
+	return false
+
+func _mobile_furniture_at(local:Vector2) -> bool:
+	return chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and not chapter4_layers.pick_drag((local-size/2)/zoom+camera,State.d).is_empty()
+
+func _mobile_gesture(role:String,point:Vector2) -> Dictionary:
+	var target:Dictionary=_pick_target((point-size/2)/zoom+camera) if role=="pan" else {}
+	return {"role":role,"start":point,"last":point,"panned":false,"context":_mobile_pointer_context(),"target_id":str(target.get("id",""))}
+
+func _mobile_finish_tap(gesture:Dictionary,point:Vector2) -> void:
+	if gesture.panned or point.distance_to(gesture.start)>MOBILE_TAP_SLOP or not Rect2(Vector2.ZERO,size).has_point(point): return
+	if gesture.role=="mode":
+		if hud_mode_rect().has_point(point) and not _interaction_presentation_blocks(): State.toggle_mode()
+		return
+	if gesture.role!="pan": return
+	# A held joystick may move the camera under another finger. Confirm only
+	# the same visible object, never whichever object happened to slide beneath.
+	var target:Dictionary=_pick_target((point-size/2)/zoom+camera)
+	if str(target.get("id",""))!=str(gesture.target_id): return
+	_mobile_floor_tap(point)
 
 func _mobile_pan(delta: Vector2) -> void:
 	_cancel_floor_route()
@@ -1434,46 +1538,60 @@ func _mobile_pan(delta: Vector2) -> void:
 
 func _mobile_exploration_input(event: InputEvent) -> bool:
 	# Emulated mouse events cannot repeat a finger tap or turn a pan into walking.
-	if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device==-1: return true
+	if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device==InputEvent.DEVICE_ID_EMULATION: return true
 	var metrics:=mobile_control_metrics()
 	if event is InputEventKey and event.pressed: _cancel_floor_route()
 	if event is InputEventMouseButton and event.pressed: _cancel_floor_route()
 	if event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_RIGHT or event.button_mask & MOUSE_BUTTON_MASK_MIDDLE):
 		_mobile_pan(event.relative); accept_event(); return true
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
-		if not event.pressed and mobile_mouse_control:
-			mobile_mouse_control=false; touch_axis=Vector2.ZERO; accept_event(); return true
-		if event.pressed and not kayak and metrics.stick_rect.has_point(event.position):
-			mobile_mouse_control=true; touch_axis=_touch_axis_at(event.position); accept_event(); return true
-		if event.pressed and not kayak and metrics.interact.has_point(event.position): _try_interact(); accept_event(); return true
-		if event.pressed and not kayak and not hud_mode_rect().has_point(event.position):
-			_mobile_floor_tap(event.position); accept_event(); return true
-	if event is InputEventMouseMotion and mobile_mouse_control:
-		touch_axis=_touch_axis_at(event.position); accept_event(); return true
+		if event.pressed:
+			if kayak: return false
+			if not mobile_mouse_gesture.is_empty(): accept_event(); return true
+			if _mobile_furniture_at(event.position): return false
+			var role:String="mode" if hud_mode_rect().has_point(event.position) else "stick" if metrics.stick_rect.has_point(event.position) and not _mobile_stick_owned() else "ignored" if metrics.stick_rect.has_point(event.position) else "pan"
+			mobile_mouse_gesture=_mobile_gesture(role,event.position)
+			mobile_mouse_control=role=="stick"
+			if mobile_mouse_control: touch_axis=_touch_axis_at(event.position)
+			grab_focus()
+		elif not mobile_mouse_gesture.is_empty():
+			var gesture:Dictionary=mobile_mouse_gesture; mobile_mouse_gesture={}
+			if mobile_mouse_control: mobile_mouse_control=false; touch_axis=Vector2.ZERO
+			elif _mobile_pointer_valid(gesture.context): _mobile_finish_tap(gesture,event.position)
+		accept_event(); return true
+	if event is InputEventMouseMotion and not mobile_mouse_gesture.is_empty():
+		var gesture:Dictionary=mobile_mouse_gesture
+		if gesture.role=="stick": touch_axis=_touch_axis_at(event.position)
+		elif gesture.role=="pan" and (gesture.panned or event.position.distance_to(gesture.start)>MOBILE_TAP_SLOP):
+			gesture.panned=true; _mobile_pan(event.position-gesture.last)
+		elif event.position.distance_to(gesture.start)>MOBILE_TAP_SLOP: gesture.panned=true
+		gesture.last=event.position
+		accept_event(); return true
 	if event is InputEventScreenTouch:
 		touch_controls=true
 		if event.pressed:
 			_cancel_floor_route()
-			var role: String="mode" if hud_mode_rect().has_point(event.position) else "interact" if not kayak and metrics.interact.has_point(event.position) else "stick" if not kayak and metrics.stick_rect.has_point(event.position) else "paddle" if kayak and event.position.y>minf(size.y-180,kayak_paddle_rects().left.position.y) else "pan"
-			mobile_touch_roles[event.index]={"role":role,"start":event.position,"last":event.position,"panned":false}
-			if role=="mode" and not _interaction_presentation_blocks(): State.toggle_mode()
-			elif role=="interact": _try_interact()
-			elif role=="stick": touch_axis=_touch_axis_at(event.position)
+			if mobile_touch_roles.has(event.index): accept_event(); return true
+			var role:String="mode" if hud_mode_rect().has_point(event.position) else "stick" if not kayak and metrics.stick_rect.has_point(event.position) and not _mobile_stick_owned() else "ignored" if not kayak and metrics.stick_rect.has_point(event.position) else "paddle" if kayak and event.position.y>minf(size.y-180,kayak_paddle_rects().left.position.y) else "furniture" if _mobile_furniture_at(event.position) else "pan"
+			mobile_touch_roles[event.index]=_mobile_gesture(role,event.position)
+			if role=="stick": touch_axis=_touch_axis_at(event.position)
+			grab_focus()
 		elif mobile_touch_roles.has(event.index):
-			var gesture: Dictionary=mobile_touch_roles[event.index]
-			if gesture.role=="stick": touch_axis=Vector2.ZERO
-			elif not event.canceled:
-				if gesture.role=="paddle": State.lake_world_stroke(self,"left" if gesture.start.x<size.x/2 else "right",event.position.y-gesture.start.y>24)
-				elif gesture.role=="pan" and not gesture.panned:
-					_mobile_floor_tap(event.position)
+			var gesture:Dictionary=mobile_touch_roles[event.index]
+			# Retire ownership before any controller callback can open/close UI.
 			mobile_touch_roles.erase(event.index)
+			if gesture.role=="stick": touch_axis=Vector2.ZERO
+			elif not event.canceled and _mobile_pointer_valid(gesture.context):
+				if gesture.role=="paddle": State.lake_world_stroke(self,"left" if gesture.start.x<size.x/2 else "right",event.position.y-gesture.start.y>24)
+				else: _mobile_finish_tap(gesture,event.position)
 		accept_event(); return true
 	if event is InputEventScreenDrag:
 		if mobile_touch_roles.has(event.index):
-			var gesture: Dictionary=mobile_touch_roles[event.index]
+			var gesture:Dictionary=mobile_touch_roles[event.index]
 			if gesture.role=="stick": touch_axis=_touch_axis_at(event.position)
-			elif gesture.role=="pan" and (gesture.panned or event.position.distance_to(gesture.start)>10):
+			elif gesture.role=="pan" and (gesture.panned or event.position.distance_to(gesture.start)>MOBILE_TAP_SLOP):
 				gesture.panned=true; _mobile_pan(event.position-gesture.last)
+			elif gesture.role!="paddle" and event.position.distance_to(gesture.start)>MOBILE_TAP_SLOP: gesture.panned=true
 			gesture.last=event.position
 		accept_event(); return true
 	return false
@@ -1482,7 +1600,7 @@ func _touch_axis_at(point: Vector2) -> Vector2:
 	if mobile_exploration:
 		var metrics:=mobile_control_metrics()
 		var difference: Vector2=point-metrics.stick
-		if not metrics.stick_rect.grow(16).has_point(point) or difference.length()<10: return Vector2.ZERO
+		if difference.length()<10: return Vector2.ZERO
 		return difference.normalized()
 	var origin := Vector2(90,size.y-140)
 	var difference := point-origin
@@ -1494,11 +1612,11 @@ func _draw_touch_controls(canvas: CanvasItem=null) -> void:
 	if canvas==null: canvas=self
 	if mobile_exploration and not kayak:
 		var metrics:=mobile_control_metrics()
-		canvas.draw_circle(metrics.stick,metrics.radius,Color(.02,.10,.13,.66))
+		canvas.draw_circle(metrics.stick,metrics.radius,Color(.02,.10,.13,.24))
+		canvas.draw_arc(metrics.stick,metrics.radius-1,0,TAU,48,Color(.84,.88,.74,.34),1.0,true)
 		for direction in [Vector2.LEFT,Vector2.RIGHT,Vector2.UP,Vector2.DOWN]:
-			canvas.draw_circle(metrics.stick+direction*32,10,Color(.84,.88,.74,.72))
-		canvas.draw_circle(metrics.interact.get_center(),30,Color(.02,.10,.13,.76))
-		canvas.draw_string(font,metrics.interact.position+Vector2(8,37),"交互",HORIZONTAL_ALIGNMENT_CENTER,44,16,Color.WHITE)
+			canvas.draw_circle(metrics.stick+direction*32,4,Color(.84,.88,.74,.36))
+		canvas.draw_circle(metrics.stick+touch_axis*24,17,Color(.84,.88,.74,.46 if touch_axis!=Vector2.ZERO else .30))
 		return
 	var caption_font := CompactOverlay.font_size(22 if kayak else 21,12,hud_display_scale())
 	if kayak:

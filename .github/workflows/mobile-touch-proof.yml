@@ -1,0 +1,51 @@
+name: Native mobile touch proof
+on:
+  push:
+    branches: [codex/mobile-touch-controls-20261022]
+    paths: ['godot_native/**', '.github/workflows/mobile-touch-proof.yml']
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned official renderer
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo 'd0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      - name: Import actual assets and run routed touch regression
+        run: |
+          node godot_native/tools/sync_source.mjs
+          GODOT_TEST_REPORT=mobile-touch-test-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse|test_mobile_direct_touch.gd|test_portrait_exploration.gd|test_mobile_world_feedback.gd|test_mobile_floor_room204_drag.gd|test_inventory_touch_ownership.gd|test_collapsed_inventory_focus.gd'
+      - name: Capture actual compact game viewport and existing overlays
+        run: |
+          set -euo pipefail
+          sandbox=$(mktemp -d /tmp/755-mobile-touch-XXXXXX)
+          mkdir -p "$sandbox"/{data,config,cache,state}
+          export XDG_DATA_HOME="$sandbox/data" XDG_CONFIG_HOME="$sandbox/config"
+          export XDG_CACHE_HOME="$sandbox/cache" XDG_STATE_HOME="$sandbox/state"
+          export GODOT_TEST_USER_DATA_DIR="$sandbox/data/SevenFiftyFiveNative"
+          mkdir -p "$GODOT_TEST_USER_DATA_DIR"
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/mobile-touch-proof"
+          mkdir -p "$UI_CAPTURE_DIR"
+          git rev-parse HEAD > "$UI_CAPTURE_DIR/source-sha.txt"
+          timeout 240 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_mobile_direct_touch.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
+          test -f "$UI_CAPTURE_DIR/mobile-touch-captures.json"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:|^ERROR:' "$UI_CAPTURE_DIR/render.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-touch-proof
+          path: |
+            mobile-touch-proof/
+            mobile-touch-test-report.json
+            mobile-touch-test-report.json.meta.json
+          if-no-files-found: error
