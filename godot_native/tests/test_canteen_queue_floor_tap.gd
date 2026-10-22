@@ -75,11 +75,26 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	check(w.collisions==geometry and story()==before and actions.size()==action_count,"route changes no geometry, story, inventory, wallet or interaction")
 	await snapshot(str(records.size())+"-arrived")
 	records.append({"root":str(at),"input":"touch" if using_touch else "mouse","start":str(start),"raw":str(raw),"resolved":str(expected),"snapPixels":raw.distance_to(expected)*w.zoom,"waypoints":waypoints,"final":str(w.player),"frames":count,"planningUs":planning_us,"edges":w._floor_planner.edge_checks,"candidates":w._canteen_floor_tap.candidate_count})
-func replay_approach() -> void:
+func replay_approach(using_touch: bool=false) -> void:
 	await reset_route()
 	await arrive(source_screen(BOARD+Metrics.FOOT_CENTER_OFFSET),BOARD+Metrics.FOOT_CENTER_OFFSET)
-	root_tap(world_screen(shell.world.mobile_control_metrics().interact.get_center()));await frames(2)
+	# Direct object taps replace the removed confirm button. Resolve the same
+	# authored board through the production painted picker, not State.act or a
+	# widened interaction radius, then retain the original missing-item result.
+	var board:Dictionary={}
+	for candidate:Dictionary in shell.world.targets:
+		if str(candidate.id)=="canteen-promo-board":board=candidate;break
+	check(not board.is_empty(),"recorded approach exposes original promo-board target")
+	if board.is_empty():return
+	var point:Vector2=shell.world._target_point(board)
+	check(shell.world._pick_target(point).get("id","")=="canteen-promo-board","direct tap hits actual painted board rather than a removed UI button")
+	check(shell.world._distance(board)<=float(board.radius),"direct board tap remains within unchanged source proximity")
+	check(state.d.native.mode=="light" and board.get("item","")=="dailySpecialSparklingWater" and state.d.native.selected_item!=board.item,"source board retains its real light-mode item requirement")
+	var before:=story();var count:=actions.size();var position:Vector2=shell.world.player
+	root_tap(source_screen(point),using_touch);await frames(2)
 	check(shell.world.subtitle=="请先从物品栏选择对应物品。","recorded board interaction retains source item requirement")
+	check(story()==before and actions.size()==count,"missing-item object tap does not change story, inventory, wallet or dispatch an action")
+	check(shell.world.player==position and shell.world._floor_route.is_empty(),"missing-item object tap does not become a floor route")
 	# Fix only the unsaved animation phase for a repeatable empty-floor approach.
 	shell.world.set_process(false);shell.world.chapter3_layers.clock_ms=0;shell.world.queue_redraw();await frames(2)
 	check(shell.world._pick_target(QUEUE_START+Metrics.FOOT_CENTER_OFFSET).is_empty(),"fixture approach floor has no transient NPC pick")
@@ -121,7 +136,7 @@ func run() -> void:
 	state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))
 	state.feedback.connect(func(line):feedback.append(line))
 	for using_touch in [false,true]:
-		await replay_approach()
+		await replay_approach(using_touch)
 		var request:=source_screen(NEAR_WALL)
 		var raw:=source_at(request);var goal:=raw-Metrics.FOOT_CENTER_OFFSET
 		check(raw.distance_to(NEAR_WALL)<.002,"live root projection retains original source request")

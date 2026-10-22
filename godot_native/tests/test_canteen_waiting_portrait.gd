@@ -16,7 +16,9 @@ func waiting_fixture(dimensions: Vector2i) -> void:
 	check(shell.world.size.y>=600 if dimensions.y>dimensions.x else shell.world.size.y>=300,"waiting fills useful viewport height")
 	check(Vector2(shell.world_viewport.size)==shell.world.size,"waiting viewport projection matches controls")
 	var controls:Dictionary=shell.world.mobile_control_metrics()
-	check(controls.interact.size.x>=44 and controls.interact.size.y>=44 and controls.stick_rect.size==Vector2(100,100),"waiting exposes practical touch controls")
+	check(not controls.interact.has_area() and controls.stick_rect.size==Vector2(100,100),"waiting exposes practical movement control without a separate confirm button")
+	check(Rect2(Vector2.ZERO,shell.world.size).encloses(controls.stick_rect),"waiting joystick stays inside the rendered game viewport")
+	check(shell.world.exploration_safe_rect(true)==shell.world.exploration_safe_rect(),"waiting does not reserve a full-width strip for its joystick")
 	check(not state.d.canteenHunt.entryPaperEscaped and shell.world.targets.is_empty(),"waiting grants neither receipt nor device targets")
 	print("WAITING_MEASURE ",dimensions," world=",shell.world.size," scale=",shell.world_frame.scale," player=",shell.world.player)
 func hold_direction(direction: Vector2,steps: int,probe:=true) -> void:
