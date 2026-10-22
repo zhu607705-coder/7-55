@@ -165,7 +165,32 @@ func mode(r,wanted: String) -> void:
 	r.check(r.state.d.chapter4.mode==wanted,"C4 mode intent " + wanted)
 
 func puzzle(r,id: String,value: Dictionary) -> void:
-	await act(r,"c4_device_"+id)
+	var request: Dictionary=await act(r,"c4_device_"+id)
+	if id in ["power_topology","evacuation_route"]:
+		r.game=r.make_game(request)
+		if r.game==null:return
+		var fixture: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/progressive-transport-solutions.json"))
+		for action: String in fixture.puzzles[id].actions:
+			if action=="continue":
+				if not press(r,r.game,"下一拍"):return
+			else:
+				var key: int={"up":KEY_UP,"down":KEY_DOWN,"left":KEY_LEFT,"right":KEY_RIGHT}[action]
+				for down: bool in [true,false]:
+					var event:=InputEventKey.new();event.keycode=key;event.physical_keycode=key;event.pressed=down
+					r.root.push_input(event,true);await r.process_frame
+		if not r.check(r.game.state.get("complete",false) and r.game_results.is_empty(),"Three physical stages reach final exit without early controller fact "+id):return
+		if not press(r,r.game,"提交记录"):return
+		if not r.check(r.game_results.size()==1,"Final actual button submits one replay proof "+id):return
+		var replay: Dictionary=load("res://scripts/games/progressive_transport_model.gd").replay(id,r.game_results[0].actions)
+		var expected: Dictionary=value.duplicate(true)
+		if id=="power_topology":
+			for edge: String in replay.get("controllerValue",{}):
+				if not expected.has(edge):expected[edge]="off"
+		r.check(replay.get("valid",false) and replay.get("completed",false) and replay.get("controllerValue",{})==expected,"Physical route derives original source device value "+id)
+		r.check(r.chapter4.extra.puzzles[id].factId in r.state.d.chapter4.factIds,"authored device solution "+id)
+		r.trace.append({"nativeActivity":"progressive_transport","puzzleId":id,"proof":r.game_results[0].duplicate(true)})
+		free_game(r)
+		return
 	if id=="media_alignment":
 		# Use the same legal object intents as the studio; no checkpoint/fact seed.
 		for event: Dictionary in [

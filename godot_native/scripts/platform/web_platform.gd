@@ -455,9 +455,11 @@ func read_snapshot() -> Dictionary:
 				game.nativeChaseView["meshInstances"] = view.viewport3d.find_children("*", "MeshInstance3D", true, false).size() if is_instance_valid(view.viewport3d) else 0
 	var world: Dictionary = {}
 	if is_instance_valid(shell.world):
-		world = _properties(shell.world, ["scene_id", "player", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby"])
+		world = _properties(shell.world, ["scene_id", "player", "camera", "zoom", "size", "mobile_exploration", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby"])
 		world["visible"] = shell.world_frame.is_visible_in_tree()
 		world["rect"] = _rect(shell.world_view.get_global_rect())
+		if shell.world.has_method("mobile_control_metrics") and world.get("mobile_exploration",false):
+			world["touchControls"] = _json_value(shell.world.mobile_control_metrics())
 	var save := FileAccess.get_file_as_string(state.SAVE_PATH) if FileAccess.file_exists(state.SAVE_PATH) else ""
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})

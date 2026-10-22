@@ -3,6 +3,8 @@ const Session = preload("res://scripts/ui/chapter4_device_session.gd")
 const Preview = preload("res://scripts/ui/chapter4_device_preview.gd")
 const DevicePanel = preload("res://scripts/ui/chapter4_device_panel.gd")
 const Chapter = preload("res://scripts/chapters/chapter4.gd")
+const TransportProof=preload("res://tests/helpers/progressive_transport_proof.gd")
+const TransportModel=preload("res://scripts/games/progressive_transport_model.gd")
 var checks := 0
 var failures := 0
 var fixture: Dictionary
@@ -18,6 +20,7 @@ func check(value: bool, message: String) -> void:
 func initial(id: String, mode: String = "light", film: bool = true) -> Dictionary:
 	var state: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/initial_state.json"))
 	state.native = {"chapter":4,"mode":mode,"page":"c4_device","scene":"duan_yongping_temporal_maze","c4_context":id}
+	state.runtimeMode="rpg";state.rpgScene="duan_yongping_temporal_maze"
 	state.chapter4.prologueSeen = true
 	state.chapter4.phase = "room204_restore"
 	state.chapter4.timeState = "1850_evening"
@@ -94,6 +97,9 @@ func run() -> void:
 
 func test_model(entry: Dictionary) -> void:
 	var id: String = entry.id
+	if id in Session.PHYSICAL_PUZZLES:
+		test_physical_model(entry)
+		return
 	var controller := Chapter.new()
 	var state := initial(id)
 	var session := Session.new()
@@ -146,7 +152,7 @@ func test_model(entry: Dictionary) -> void:
 	check(session.draft == dark_draft,id+" dark has no draft mutation")
 
 func test_bounds() -> void:
-	for id: String in ["duty_board","evacuation_route"]:
+	for id: String in ["duty_board"]:
 		var session := Session.new()
 		session.open(id,initial(id))
 		check(not session.move_card(0,-1) and not session.move_card(session.draft[session.order_key()].size()-1,1),id+" order endpoints bounded")
@@ -166,11 +172,11 @@ func test_bounds() -> void:
 			check(session.draft[session.axis_key()][key] == source.ranges[id][key][1],id+" upper bound "+key)
 	var topology := Session.new()
 	topology.open("power_topology",initial("power_topology"))
-	for edge: String in source.edges: topology.toggle_edge(edge)
-	check(topology.draft.powerEdges.size() == 5 and topology.can_submit(),"Topology cannot exceed exactly five edges")
-	topology.toggle_edge(source.edges.keys()[0])
-	check(not topology.can_submit(),"Topology under five disables submission")
-	check(topology.toggle_edge(source.edges.keys()[5]),"Deselect permits replacement edge")
+	var topology_before: Dictionary=topology.draft.duplicate(true)
+	for edge: String in source.edges: check(not topology.toggle_edge(edge),"Legacy edge control cannot bypass physical topology: "+edge)
+	check(topology.draft==topology_before and not topology.can_submit(),"Physical topology has no editable final-answer draft")
+	var evacuation:=Session.new();evacuation.open("evacuation_route",initial("evacuation_route"))
+	check(not evacuation.move_card(0,1) and not evacuation.can_submit(),"Legacy route sorting cannot bypass physical route")
 	var archive := Session.new()
 	archive.open("archive_index",initial("archive_index"))
 	check(not archive.choose("floor","A9"),"Archive rejects unbounded option")
@@ -189,16 +195,19 @@ func test_authority_gates() -> void:
 			var state := initial(id)
 			var session := Session.new()
 			session.open(id,state)
-			configure_answer(session,entry.correct)
+			if id not in Session.PHYSICAL_PUZZLES: configure_answer(session,entry.correct)
 			var request: Dictionary = session.begin_submit()
+			var controller := Chapter.new()
+			var physical_config: Dictionary={}
+			if id in Session.PHYSICAL_PUZZLES:
+				physical_config=controller.dispatch(state,request.action,request.value).get("game",{})
 			earn_media_studio_layout(state,Chapter.new())
 			match gate:
 				"phase": state.chapter4.phase = "maintenance_repair"
 				"floor": state.chapter4.floor = "A2" if source.assets[id].floor != "A2" else "A1"
 				"mode": state.chapter4.mode = "dark"
 				"context": state.native.c4_context = "clock"
-			var controller := Chapter.new()
-			var result: Dictionary = controller.dispatch(state,request.action,request.value)
+			var result: Dictionary = controller.dispatch(state,"c4_puzzle_trace",TransportProof.proof(physical_config)) if id in Session.PHYSICAL_PUZZLES else controller.dispatch(state,request.action,request.value)
 			session.resolve(request.serial,state,result)
 			check(not session.completed and not entry.factId in state.chapter4.factIds,id+" controller preserves "+gate+" gate")
 			check(not session.compatible(state),id+" session detects stale "+gate)
@@ -244,6 +253,9 @@ func configure_panel_answer(panel: Control, answer: Dictionary) -> void:
 				node.pressed.emit()
 
 func test_panel(entry: Dictionary, dimensions: Vector2i) -> void:
+	if entry.id in Session.PHYSICAL_PUZZLES:
+		await test_physical_panel(entry,dimensions)
+		return
 	root.size = dimensions
 	var state := initial(entry.id)
 	var panel := DevicePanel.new()
@@ -287,6 +299,73 @@ func test_panel(entry: Dictionary, dimensions: Vector2i) -> void:
 	root.remove_child(panel)
 	panel.queue_free()
 	await process_frame
+
+func test_physical_model(entry: Dictionary) -> void:
+	var id: String=entry.id
+	var state:=initial(id);var controller:=Chapter.new();var session:=Session.new()
+	check(session.open(id,state),id+" restores authenticated source context")
+	check(session.draft==source.defaults and session.view_kind()=="activity",id+" unfinished old save offers actual activity with fresh local state")
+	var before:=JSON.stringify(state)
+	check(not session.editable() and not session.can_submit() and not session.move_card(0,1) and not session.toggle_edge(source.edges.keys()[0]),id+" legacy final-answer controls cannot edit or submit")
+	check(JSON.stringify(state)==before,id+" local resume view cannot write state")
+	# Retain the independently executed TSX projection oracle, although these two
+	# native devices now earn that exact domain value through object movement.
+	for pair: Array in [[entry.wrong,entry.previewWrong],[entry.correct,entry.previewCorrect]]:
+		var draft: Dictionary=source.defaults.duplicate(true)
+		if id=="power_topology":draft.powerEdges=pair[0].edgeIds.duplicate()
+		else:draft.evacuationOrder=pair[0].order.duplicate()
+		check_projection(Preview.project(id,draft,source),pair[1])
+	var expected: Dictionary=session.controller_value(entry.correct)
+	controller.dispatch(state,"c4_solve_"+id,expected)
+	check(not entry.factId in state.chapter4.factIds,id+" exact original source answer alone is rejected")
+	var request:=session.begin_submit()
+	check(request.action=="c4_device_"+id and request.value.is_empty(),id+" restored panel requests the world activity without an answer")
+	check(session.begin_submit().is_empty() and not session.close(),id+" rapid launch and close are blocked while pending")
+	var issued: Dictionary=controller.dispatch(state,request.action,request.value)
+	check(issued.has("game") and not issued.has("page"),id+" controller opens one physical surface")
+	check(session.resolve(request.serial,state,issued) and not session.completed,id+" opening activity never infers solved from handled response")
+	var proof:=TransportProof.proof(issued.get("game",{}))
+	var replay: Dictionary=TransportModel.replay(id,proof.get("actions",[]))
+	check(replay.get("valid",false) and replay.get("completed",false) and replay.get("controllerValue",{})==expected,id+" actual three-stage trace derives exact original source oracle")
+	controller.dispatch(state,"c4_puzzle_trace",proof);session.update_authority(state)
+	check(session.completed and entry.factId in state.chapter4.factIds and session.view_kind()=="completed",id+" only original controller fact completes restored panel")
+	before=JSON.stringify(state);controller.dispatch(state,"c4_puzzle_trace",proof)
+	check(JSON.stringify(state)==before,id+" duplicate proof cannot alter completed state")
+	check(session.begin_submit().is_empty() and session.close(),id+" completed panel closes without replay or draft mutation")
+	check(session.open(id,state) and session.completed and session.draft==source.defaults,id+" old completed save remains completed without a new gate")
+	state=initial(id);session.open(id,state);session.close();session.open(id,JSON.parse_string(JSON.stringify(state)))
+	check(session.view_kind()=="activity" and session.draft==source.defaults and not session.completed,id+" unfinished ordinary save resets local board and retains resume action")
+	state.chapter4.mode="dark";session.open(id,state)
+	check(session.view_kind()=="observation" and not session.can_submit(),id+" observation does not require a prior light action")
+
+func test_physical_panel(entry: Dictionary,dimensions: Vector2i) -> void:
+	root.size=dimensions
+	var state:=initial(entry.id);var panel:=DevicePanel.new()
+	check(panel.configure(entry.id,state,font),entry.id+" restored physical panel configures")
+	root.add_child(panel)
+	for i in range(7):await process_frame
+	check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(panel.frame.get_global_rect()),entry.id+" restore frame contained "+str(dimensions))
+	check(panel.frame.get_global_rect().encloses(panel.submit_button.get_global_rect()),entry.id+" restore action contained "+str(dimensions))
+	check(panel.scroll.get_h_scroll_bar().max_value<=panel.scroll.get_h_scroll_bar().page+1,entry.id+" restore view has no horizontal overflow")
+	check(panel.preview==null and panel.find_children("edge_*","Button",true,false).is_empty() and panel.find_children("up_*","Button",true,false).is_empty(),entry.id+" no old answer checklist or order buttons")
+	for node in panel.find_children("*","Button",true,false):
+		check(node.size.y>=43.9 and node.get_theme_font_size("font_size")>=14,entry.id+" restore target remains readable and touchable "+node.name)
+	var requests: Array=[]
+	panel.submit_requested.connect(func(action: String,value: Dictionary,serial: int):requests.append({"action":action,"value":value,"serial":serial}))
+	panel.submit_button.pressed.emit();panel.submit_button.pressed.emit()
+	check(requests.size()==1 and requests[0].action=="c4_device_"+entry.id and requests[0].value.is_empty(),entry.id+" real restore action launches once and submits no solution")
+	var controller:=Chapter.new()
+	var issued: Dictionary=controller.dispatch(state,requests[0].action,requests[0].value)
+	panel.resolve_submission(requests[0].serial,state,issued)
+	check(issued.has("game") and not panel.session.completed and not entry.factId in state.chapter4.factIds,entry.id+" launching is not completion")
+	controller.dispatch(state,"c4_puzzle_trace",TransportProof.proof(issued.get("game",{})))
+	panel.sync_authority(state)
+	check(panel.session.completed and panel.submit_button.text=="返回现场",entry.id+" only actual replay fact makes source panel read-only")
+	var closed: Array=[false]
+	panel.close_requested.connect(func():closed[0]=true)
+	panel.submit_button.pressed.emit()
+	check(closed[0],entry.id+" completed restore view explicitly returns")
+	panel.dispose_session();root.remove_child(panel);panel.queue_free();await process_frame
 
 func check_projection(actual: Dictionary, expected: Dictionary) -> void:
 	for key: String in expected:
