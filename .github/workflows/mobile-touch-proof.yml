@@ -1,7 +1,7 @@
 name: Native mobile touch proof
 on:
   push:
-    branches: [codex/mobile-touch-controls-20261022]
+    branches: [codex/mobile-touch-controls-20261022, codex/mobile-bottom-hint-20261022]
     paths: ['godot_native/**', '.github/workflows/mobile-touch-proof.yml']
 permissions:
   contents: read

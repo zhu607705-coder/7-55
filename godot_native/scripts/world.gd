@@ -999,9 +999,13 @@ func _sync_selected_overlay()->void:
 	var extent:Vector2=selected_overlay_native_rect.size if selected_overlay_is_native else size
 	var mode_rect:Rect2=Rect2(hud.mode_rect.position*display,hud.mode_rect.size*display) if selected_overlay_is_native else hud.mode_rect
 	var bottom:float=hud.body_rect.position.y*display if selected_overlay_is_native else hud.body_rect.position.y
+	# Main already excludes the inventory and device safe area from this world.
+	# Idle navigation prose is not painted: let the confirmed mobile plaque use
+	# the real lower edge instead of reserving an invisible feedback strip.
+	var plaque_bottom:float=extent.y if mobile_exploration and subtitle.is_empty() and not guard_capture.active else -1.0
 	selected_overlay.mobile_exploration=mobile_exploration
 	var label_target:Dictionary=_mobile_confirmed_target() if mobile_exploration else nearby
-	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str(label_target.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(label_target.get("hud_prompt","")))
+	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str(label_target.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(label_target.get("hud_prompt","")),plaque_bottom)
 
 func _mobile_confirmed_target() -> Dictionary:
 	if mobile_confirmed_target_id.is_empty(): return {}
