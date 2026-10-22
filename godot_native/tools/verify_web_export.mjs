@@ -789,8 +789,10 @@ async function mobileWorldCase() {
   // The reverse ownership order is important: inventory handles some pointer
   // releases before Main, so movement must stop as soon as its gesture owns input.
   await clickControl('WorldInventoryHandle', 'name'); value = await mobileSample(value);
-  const item = controls(value).find(control => control.itemId === 'campusCard' && !control.disabled);
-  check(!!item, `${active.id}: the existing earned inventory item is available through the real bag UI`);
+  // The world item inherits inventory_item.gd; the probe's exact-script itemId
+  // field only describes base phone items. Use the shipped world control name.
+  const item = controls(value).find(control => control.name === 'WorldItem_campusCard' && !control.disabled);
+  check(!!item && state(value).items.campusCard === true && value.world.visible && state(value).ui.inventoryOpen && item.rect.width >= 44 && item.rect.height >= 44 && inRect({ x: item.rect.x, y: item.rect.y }, value.viewport) && inRect({ x: item.rect.x + item.rect.width, y: item.rect.y + item.rect.height }, value.viewport), `${active.id}: the existing earned inventory item is available through the real bag UI`, { owned: state(value).items.campusCard, item, viewport: value.viewport });
   const heldStick = await stickStart(value, { x: -1, y: 0 });
   value = await assertStickHeld(value, 'inventory acquisition interruption');
   const itemPoint = await renderPoint({ x: item.rect.x + item.rect.width / 2, y: item.rect.y + item.rect.height / 2 }, value);
