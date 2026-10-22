@@ -1,0 +1,52 @@
+name: Kenney visual borrowing proof
+on:
+  push:
+    branches: [codex/kenney-visual-slice-20261022]
+    paths: ['godot_native/**', '.github/workflows/kenney-visual-proof.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned official Godot
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      - name: Import and test isolated visual slice
+        run: |
+          node godot_native/tools/sync_source.mjs
+          GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
+          mkdir -p /tmp/visual-profile/{data,config,cache,state}
+          export XDG_DATA_HOME=/tmp/visual-profile/data XDG_CONFIG_HOME=/tmp/visual-profile/config XDG_CACHE_HOME=/tmp/visual-profile/cache XDG_STATE_HOME=/tmp/visual-profile/state
+          timeout 90 godot --headless --path godot_native --script res://tests/test_kenney_visual_slice.gd | tee slice-test.log
+          grep 'FAILURES 0' slice-test.log
+          godot --headless --path godot_native --script res://tests/test_dorm_modular.gd
+          godot --headless --path godot_native --script res://tests/test_selected_ui_theme.gd
+      - name: Capture actual renderer
+        run: |
+          set -o pipefail
+          mkdir -p visual-proof /tmp/visual-profile/{data,config,cache,state}
+          export XDG_DATA_HOME=/tmp/visual-profile/data XDG_CONFIG_HOME=/tmp/visual-profile/config XDG_CACHE_HOME=/tmp/visual-profile/cache XDG_STATE_HOME=/tmp/visual-profile/state
+          export KENNEY_CAPTURE_DIR="$GITHUB_WORKSPACE/visual-proof"
+          git rev-parse HEAD > visual-proof/source-sha.txt
+          timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 1440x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_kenney_visual_slice.gd 2>&1 | tee visual-proof/render.log
+          test -f visual-proof/01-baseline.png
+          test -f visual-proof/05-compact-layout.png
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Capture failed:' visual-proof/render.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kenney-visual-proof
+          path: |
+            visual-proof/
+            import-report.json
+            slice-test.log
+          if-no-files-found: error
