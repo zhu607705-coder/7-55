@@ -18,7 +18,7 @@
     },
     {
       "path": "src/modules/LibraryFinalsController.ts",
-      "sha256": "e655e11c29b4b884bc40538b4405a631c7dd242235c8057ddf2957315d86324f"
+      "sha256": "3f30ebb64484b64d7a8ebca81386be3b416fc3d0e1ec9806f40a2564c947c9f1"
     },
     {
       "path": "src/modules/AudioDirector.ts",
