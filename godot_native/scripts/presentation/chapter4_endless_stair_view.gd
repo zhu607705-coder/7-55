@@ -813,7 +813,7 @@ func _present(delta: float) -> void:
 			if jump_ticks <= 3: actor.scale = Vector3(.98, 1.025, 1)
 		elif land_ticks > 0:
 			frame = 1
-			var absorb: float = sin(PI * (7.0-land_ticks) / 7.0)
+			var absorb: float = float(land_ticks) / 7.0
 			actor.scale = Vector3(1.0 + .04*absorb, 1.0 - .075*absorb, 1)
 	actor.texture = player_frames[direction][frame if absf(model.player_velocity.x)>.001 or not model.player_grounded or land_ticks>0 else 0]
 	if direction=="side" and absf(model.player_velocity.x)<.001: actor.texture=player_frames.idle

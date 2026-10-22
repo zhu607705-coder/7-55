@@ -33,6 +33,7 @@ jobs:
           sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
           command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
       - name: Synchronize and import original resources
+        id: import
         run: |
           node godot_native/tools/sync_source.mjs
           GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
@@ -41,6 +42,7 @@ jobs:
         run: |
           GODOT_TEST_REPORT=motion-tests.json node godot_native/tools/validate_native.mjs --filter 'endless_stair_(jump_pose|gait|step_pose|camera_input|integration|presentation|pursuit)|chase3d_(rider_fidelity|world_camera_contacts|view_lifecycle)|chase_asset_provenance'
       - name: Capture identical native motion fixtures
+        if: always() && steps.import.outcome == 'success'
         run: |
           mkdir -p /tmp/755-motion-profile/{data,config,cache,state}
           export XDG_DATA_HOME=/tmp/755-motion-profile/data XDG_CONFIG_HOME=/tmp/755-motion-profile/config

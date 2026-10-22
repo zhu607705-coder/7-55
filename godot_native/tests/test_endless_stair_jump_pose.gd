@@ -41,7 +41,16 @@ func run() -> void:
 				airborne += 1
 				coherent = coherent and view.actor.texture in [view.player_frames[facing][1], view.player_frames[facing][5]]
 				if view.actor.texture == view.player_frames[facing][5]: gathered += 1
-			if view.land_ticks > 0 and view.actor.scale.y < .99: absorbed += 1
+		if view.land_ticks > 0:
+			if view.actor.scale.y < .99:
+				absorbed += 1
+			elif view.actor.region_enabled:
+				var compressed: Vector2 = view.stair_gait.warp_pixel(Vector2(48,22),false)
+				var remaining: int = view.land_ticks
+				view.land_ticks = 0
+				var relaxed: Vector2 = view.stair_gait.warp_pixel(Vector2(48,22),false)
+				view.land_ticks = remaining
+				if compressed.y > relaxed.y + .2: absorbed += 1
 		if view.actor.scale != Vector3.ONE:
 			var pixel := Vector2(28, 89) if facing == "up" else Vector2(67, 91)
 			var expected: Vector3 = view.actor.position + (view.camera.global_basis.x * ((pixel.x-48)*view.actor.scale.x) + view.camera.global_basis.y*((126-pixel.y)*view.actor.scale.y))*view.actor.pixel_size
