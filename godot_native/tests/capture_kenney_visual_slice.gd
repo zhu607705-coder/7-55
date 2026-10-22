@@ -16,9 +16,11 @@ func run() -> void:
 	scene.actor.position=Vector2(531,900);scene.logical_camera=scene.actor.position+scene.CAMERA_OFFSET;scene.camera.position=scene.logical_camera
 	scene.refresh_focus();scene.toggle_feedback()
 	await capture(output.path_join("01-baseline.png"))
-	scene.toggle_feedback();scene.interact()
+	scene.toggle_feedback();await capture(output.path_join("08-near-unconfirmed.png"))
+	scene.interact()
 	await capture(output.path_join("02-paper-feedback.png"))
-	scene.close_note();scene.actor.position=scene.get_object("lamp").stand;scene.logical_camera=scene.actor.position+scene.CAMERA_OFFSET;scene.camera.position=scene.logical_camera;scene.refresh_focus();scene.interact()
+	scene.close_inspection();await capture(output.path_join("09-after-close.png"))
+	scene.actor.position=scene.get_object("lamp").stand;scene.logical_camera=scene.actor.position+scene.CAMERA_OFFSET;scene.camera.position=scene.logical_camera;scene.refresh_focus();scene.interact()
 	await capture(output.path_join("03-lamp-feedback.png"))
 	scene.toggle_pixels();await capture(output.path_join("04-480-comparison.png"))
 	DisplayServer.window_set_size(Vector2i(390,844));root.size=Vector2i(390,844)

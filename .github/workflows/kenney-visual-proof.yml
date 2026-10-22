@@ -43,6 +43,8 @@ jobs:
           test -f visual-proof/01-baseline.png
           test -f visual-proof/05-compact-layout.png
           test -f visual-proof/07-locked-journal-desktop.png
+          test -f visual-proof/08-near-unconfirmed.png
+          test -f visual-proof/09-after-close.png
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Capture failed:' visual-proof/render.log
       - uses: actions/upload-artifact@v4
         if: always()

@@ -31,7 +31,7 @@ var lamp_on := false
 var feedback := true
 var pixel_mode := false
 var reduced_motion := false
-var note_open := false
+var inspection_open := false
 var tween: Tween
 var logical_camera := Vector2(531,1000)+CAMERA_OFFSET
 var held_keys: Dictionary = {}
@@ -125,16 +125,17 @@ func screen_to_world(point: Vector2) -> Vector2:
 func position_labels() -> void:
 	if not is_instance_valid(selected_overlay):return
 	selected_overlay.position=screen.position
-	var prompt: String=get_object(focus_id).get("title","")
-	selected_overlay.sync_view(screen.size,1.0,"寝室 · 练习","查看纸条，再试着开关桌灯。",prompt,"",Rect2(),screen.size.y,"", "纸面上写着 0755。" if note_open else "")
-	selected_overlay.object_hint.visible=not tutorial_done and not note_open
+	var prompt: String=get_object(focus_id).get("title","") if inspection_open else ""
+	var detail: String=("纸面上写着 0755。" if focus_id=="paper" else ("灯已经点亮。" if lamp_on else "灯已关闭。")) if inspection_open else ""
+	selected_overlay.sync_view(screen.size,1.0,"寝室 · 练习","查看纸条，再试着开关桌灯。",prompt,"",Rect2(),screen.size.y,"", detail)
+	selected_overlay.object_hint.visible=not tutorial_done and not inspection_open
 	selected_overlay.visible=not journal_open
 	tutorial.visible=not tutorial_done and not journal_open
-	action.visible=not journal_open
+	action.visible=inspection_open and not journal_open
 	journal_button.text="收起手记" if journal_open else "查看手记"
 func toggle_journal() -> void:
 	if journal_open:close_journal();return
-	close_note();pointer_walk=false;keyboard=Vector2.ZERO;held_keys.clear()
+	close_inspection();pointer_walk=false;keyboard=Vector2.ZERO;held_keys.clear()
 	journal=LockedJournal.new()
 	var entries: Array=[]
 	if observed:entries.append({"text":"练习记录：查看过纸条。"})
@@ -148,7 +149,7 @@ func close_journal() -> void:
 	if is_instance_valid(journal):journal.queue_free()
 	journal=null;journal_open=false;position_labels()
 func _physics_process(delta: float) -> void:
-	if note_open or journal_open:
+	if inspection_open or journal_open:
 		actor.velocity=Vector2.ZERO
 	else:
 		var direction=keyboard
@@ -178,30 +179,32 @@ func refresh_focus() -> void:
 		if distance<best:next=object.id;best=distance
 	if next!=focus_id:
 		cancel_feedback();focus_id=next
-		if note_open:close_note()
+		if inspection_open:close_inspection()
 	if focus_id.is_empty():
 		marker.active=false;hint.hide();action.disabled=true
 	else:
 		var object=get_object(focus_id)
 		marker.position=object.position;marker.active=feedback
-		hint.text=object.title;hint.show();action.disabled=false
+		action.disabled=false
 	marker.warm=lamp_on and focus_id=="lamp";marker.queue_redraw()
-	action.text="收起" if note_open else ("开 / 关灯" if focus_id=="lamp" else "查看")
+	action.text="收起"
+	position_labels()
 func get_object(id: String) -> Dictionary:
 	for object in objects:
 		if object.id==id:return object
 	return {}
 func interact() -> void:
 	if journal_open:close_journal();return
+	refresh_focus()
 	if focus_id.is_empty():return
+	if inspection_open:close_inspection();return
 	tutorial_done=true;tutorial.hide()
 	pointer_walk=false
 	if focus_id=="paper":
-		if note_open:close_note();return
-		observed=true;note_open=true
+		observed=true;inspection_open=true
 		pulse(get_object("paper").node)
 	else:
-		lamp_on=not lamp_on
+		inspection_open=true;lamp_on=not lamp_on
 		get_object("lamp").node.modulate=Color(1.12,1.08,.9) if lamp_on else Color.WHITE
 		pulse(get_object("lamp").node)
 	refresh_focus();position_labels()
@@ -215,8 +218,8 @@ func cancel_feedback() -> void:
 	if tween and tween.is_valid():tween.kill()
 	for object in objects:
 		if is_instance_valid(object.node):object.node.self_modulate=Color.WHITE
-func close_note() -> void:
-	note_open=false;note.hide()
+func close_inspection() -> void:
+	inspection_open=false;position_labels()
 func toggle_feedback() -> void:
 	feedback=not feedback;comparison.text="反馈：开" if feedback else "反馈：关";cancel_feedback();refresh_focus()
 func toggle_pixels() -> void:
@@ -225,7 +228,7 @@ func toggle_pixels() -> void:
 	camera.zoom=Vector2.ONE*(.8*view.size.y/540.0)
 	pixel_button.text="渲染：480" if pixel_mode else "渲染：540";layout()
 func reset_trial() -> void:
-	cancel_feedback();close_note();close_journal();observed=false;lamp_on=false;tutorial_done=false;pointer_walk=false;held_keys.clear();keyboard=Vector2.ZERO
+	cancel_feedback();close_inspection();close_journal();observed=false;lamp_on=false;tutorial_done=false;pointer_walk=false;held_keys.clear();keyboard=Vector2.ZERO
 	actor.position=Vector2(531,1000);logical_camera=actor.position+CAMERA_OFFSET;camera.position=logical_camera
 	get_object("lamp").node.modulate=Color.WHITE;refresh_focus()
 func _notification(what: int) -> void:
@@ -234,12 +237,13 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		if event.keycode in [KEY_UP,KEY_DOWN,KEY_LEFT,KEY_RIGHT]:
+			if event.pressed and inspection_open:close_inspection()
 			held_keys[event.keycode]=event.pressed
 			keyboard=Vector2(float(held_keys.get(KEY_RIGHT,false))-float(held_keys.get(KEY_LEFT,false)),float(held_keys.get(KEY_DOWN,false))-float(held_keys.get(KEY_UP,false)))
 			pointer_walk=false
 		if event.pressed and not event.echo and event.keycode==KEY_SPACE:
 			interact();get_viewport().set_input_as_handled()
-		if event.pressed and event.keycode==KEY_ESCAPE:close_note();close_journal();pointer_walk=false
+		if event.pressed and event.keycode==KEY_ESCAPE:close_inspection();close_journal();pointer_walk=false
 	if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
 		if journal_open:return
 		if not Rect2(screen.position,screen.size).has_point(event.position):return
@@ -247,6 +251,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		for object in objects:
 			if point.distance_to(object.position)<52:
 				if focus_id==object.id:interact()
-				else:close_note();pointer_target=object.stand;pointer_walk=true
+				else:close_inspection();pointer_target=object.stand;pointer_walk=true
 				return
-		pointer_target=point;pointer_walk=true;close_note()
+		pointer_target=point;pointer_walk=true;close_inspection()
