@@ -8,6 +8,7 @@ import { playSfx } from "../../../modules/Sfx";
 import { playVo } from "../../../modules/VoicePlayer";
 import { ActOneVirtualRun } from "./ActOneVirtualRun";
 import { RouteAuditPanel } from "./RouteAuditPanel";
+import { tiyiUpdateRequired, tiyiUpdateInstalled } from "../../../modules/TiyiAccessModel";
 import "../../../styles/library-v2-phone.css";
 
 const CRASH_DELAY_MS = 3000;
@@ -22,6 +23,7 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
   const [phase, setPhase] = useState<"loading" | "main" | "crashing">("loading");
   const [virtualRunOpen, setVirtualRunOpen] = useState(false);
   const [entryAllowed] = useState(() => kit.network.canOpenTiyi());
+  const [updateBlocked] = useState(() => tiyiUpdateRequired(state) && !tiyiUpdateInstalled(state));
   const { flags } = state;
   const finalsPhase = state.ui.libraryFinalsPhase;
   const finalsPuzzle = state.ui.libraryFinalsPuzzle;
@@ -35,12 +37,14 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
       () => {
         if (!entryAllowed) {
           setPhase("crashing");
-          playSfx("12_");
-          const crashes = kit.flags.bumpTiyiCrash();
-          events.emit("tiyi_crashed", { crashes });
+          if (!updateBlocked) playSfx("12_");
+          const crashes = updateBlocked ? 0 : kit.flags.bumpTiyiCrash();
+          if (!updateBlocked) events.emit("tiyi_crashed", { crashes });
           exitTimer = window.setTimeout(() => {
             router.goTo("phone_home");
-            if (crashes >= 3) {
+            if (updateBlocked) {
+              kit.flags.toast("旧客户端未能启动。请到微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。");
+            } else if (crashes >= 3) {
               playVo("sys_net_try", {
                 subtitle: true,
                 onEnded: () => playVo("sys_no_money", { subtitle: true, tone: "xiaoying" })
@@ -60,7 +64,7 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
       window.clearTimeout(timer);
       if (exitTimer !== null) window.clearTimeout(exitTimer);
     };
-  }, [entryAllowed, router, events]);
+  }, [entryAllowed, updateBlocked, router, events]);
 
   function collectSeven() {
     if (flags.tiyiCountTaken) {
@@ -94,6 +98,7 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
     return (
       <section className={`app-screen tiyi-loading ${phase === "crashing" ? "is-crashing" : ""}`} aria-label="浙大体艺加载中">
         <img className="app-bg" src={tiyiLoadingUrl} alt="" aria-hidden="true" />
+        {updateBlocked ? <div className="tiyi-outdated-blank" aria-hidden="true" /> : null}
         <span className="loading-dots" aria-hidden="true">
           <i />
           <i />

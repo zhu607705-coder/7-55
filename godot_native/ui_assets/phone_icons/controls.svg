@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e7ecdc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v5 M5 12v9 M12 3v11 M12 18v3 M19 3v3 M19 10v11"/><rect x="3" y="8" width="4" height="4" rx="1"/><rect x="10" y="14" width="4" height="4" rx="1"/><rect x="17" y="6" width="4" height="4" rx="1"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 34 31">
+  <!-- Source: styles/scenes/p13-phone-home.css .control and ::before/::after. Pseudo-elements are content-box: 20x22 plus 3px borders gives 26x28 outer boxes. The purple app background is not duplicated here. -->
+  <g fill="none" stroke="#fff" stroke-width="3">
+    <rect id="panel-one" x="3.5" y="3.5" width="23" height="25"/>
+    <rect id="panel-two" x="7.5" y="3.5" width="23" height="25"/>
+  </g>
+</svg>

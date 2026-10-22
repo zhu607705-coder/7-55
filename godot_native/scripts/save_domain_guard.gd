@@ -34,7 +34,7 @@ const ARRAY_ENUMS := {
 ## Source SaveStore rangedIntegerOr domains. Do not invent ceilings for source
 ## counters whose normalizer only requires nonnegative integers.
 const INTEGER_RANGES := {
- "phoneBattery.percent":[1,100], "actOne.pushTriangleTapCount":[0,3], "actOne.cc98Login.revealedHintCount":[0,3],
+ "phoneBattery.percent":[0,100], "actOne.pushTriangleTapCount":[0,3], "actOne.cc98Login.revealedHintCount":[0,3],
  "canteenHunt.blockHits":[0,3], "canteenHunt.chaseBestLives":[0,3], "theaterHunt.spotlightRound":[0,3], "qizhenLake.reflectionRound":[0,3],
  "clockCalibration.displayedSeconds":[0,86399], "clockCalibration.targetSeconds":[0,86399], "clockCalibration.phaseLockHits":[0,3],
  "chapterThreeInterlude.windowStartSeconds":[0,86399], "chapterThreeInterlude.windowEndSeconds":[0,86399],

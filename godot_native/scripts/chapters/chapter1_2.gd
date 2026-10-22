@@ -1,7 +1,9 @@
 extends RefCounted
 ## Native chapter-one and movement-prelude authority. Presentation never grants facts.
 const Utilities = preload("res://scripts/chapters/phone_utilities.gd")
+const TiyiAccess = preload("res://scripts/chapters/tiyi_access.gd")
 var utilities = Utilities.new()
+var home_desk = preload("res://scripts/chapters/home_desk.gd").new()
 const Library022 = preload("res://scripts/chapters/library022.gd")
 const MOVEMENT_PHASES = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"]
 var library = Library022.new()
@@ -17,7 +19,8 @@ func phone_entry_session(s: Dictionary) -> RefCounted:
 	return entry_session
 
 func _tiyi_entry_allowed(s: Dictionary) -> bool:
-	return entry_session.entry_allowed if is_same(entry_session.owner,s) and entry_session.family=="tiyi" else s.networkMode=="cellular"
+	if TiyiAccess.needs_update(s): return false
+	return entry_session.entry_allowed if is_same(entry_session.owner,s) and entry_session.family=="tiyi" else TiyiAccess.allowed(s)
 
 
 func _content(name: String) -> Dictionary:
@@ -103,6 +106,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 		"checkin": return {"title":"学在浙大 · 校务签到", "body":"本周缺勤 0 次\n请输入四位签到码\n签到需使用校园网"}
 		"ending": return {"title":"经度与纬度不存在", "body":"坐标系统无法确认你的到场记录。"}
 		"tiyi":
+			if TiyiAccess.needs_update(s): return {"title":"浙大体艺", "body":"旧客户端未能启动。\n请到微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。", "art":"ui/tiyi_loading.png"}
 			if not _tiyi_entry_allowed(s): return {"title":"浙大体艺", "body":"正在连接……\n校园网已经尽力了，你也是。", "art":"ui/tiyi_loading.png"}
 			return {"title":"浙大体艺", "body":"课外锻炼　47\n运动记录\n" + ("10:00 / 3.00km / 03′20″" if s.actOne.exerciseStarted else "尚无有效课外锻炼记录"), "art":"ui/tiyi_main.png"}
 		"bonsai": return {"title":"盆栽", "body":"开花了？！" if s.flags.flowerBloomed else "它绝对不会开花。\n水分、光照、养分各缺不得。", "art":"ui/bonsai_bloom.png" if s.flags.flowerBloomed else "ui/bonsai_bud.png"}
@@ -150,6 +154,11 @@ func actions(page: String, s: Dictionary) -> Array:
 			if s.actOne.phase == "friend_message_required": return [_action("c2_friend_exchange", "回复朋友")]
 			var out: Array = []
 			if _movement(s) and not s.actOne.mentorLineReleased: out.append(_action("c2_mentor", "对导师头像使用道具", "choice", _owned(s)))
+			if TiyiAccess.update_required(s):
+				var stage: String=str(s.actOne.get("tiyiUpdateStage","not_started"))
+				if stage=="not_started": out.append(_action("c2_tiyi_discover", "浙大体育与艺术 · 联系我们"))
+				elif stage=="official_entry_found": out.append(_action("c2_tiyi_acquire", "模拟扫码获取更新"))
+				elif stage=="package_ready": out.append(_action("c2_tiyi_install", "安装更新"))
 			return out
 		"system_chat":
 			if s.actOne.phase == "system_required": return [_action("c2_confront_system", "询问道具栏")]
@@ -198,6 +207,8 @@ func _owned(s: Dictionary) -> Array:
 	return values
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
+	var desk_result: Dictionary = home_desk.dispatch(s, action, value)
+	if not desk_result.is_empty(): return desk_result
 	phone_entry_session(s)
 	var utility_result = utilities.dispatch(s,action,value)
 	if not utility_result.is_empty(): return utility_result
@@ -215,7 +226,7 @@ func _control(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			if not modes.has(str(value)): return _ok("请选择有效网络。")
 			if s.networkMode != modes[str(value)]:
 				s.networkMode = modes[str(value)]
-				s.phoneBattery.percent = maxi(1, int(s.phoneBattery.percent) - 1)
+				s.phoneBattery.percent = mini(int(s.phoneBattery.percent), maxi(1, int(s.phoneBattery.percent) - 1))
 			return _ok("网络已切换。")
 		"c1_brightness":
 			if not str(value).is_valid_float(): return _ok("请输入 0 至 100 的亮度。")
@@ -237,9 +248,11 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 		if action=="c1_tiyi_crash":
 			if entry_session.elapsed_ms<3000 or entry_session.crash_recorded: return _ok("")
 			entry_session.crash_recorded=true
+			if entry_session.tiyi_update_blocked: return _ok("")
 			s.flags.tiyiCrashCount+=1
 			return _ok("",{"presentation":["native_tiyi_crash"]})
 		if entry_session.elapsed_ms<3620 or not entry_session.crash_recorded: return _ok("")
+		if entry_session.tiyi_update_blocked: return _page(s,"phone_home","旧客户端未能启动。请到微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。")
 		var result:=_page(s,"phone_home","「浙大体艺」已停止运行。" if s.flags.tiyiCrashCount==1 else "「浙大体艺」又双叒停止运行了。" if s.flags.tiyiCrashCount==2 else "")
 		if s.flags.tiyiCrashCount>=3: result.presentation=["native_tiyi_crash_taunt"]
 		return result
@@ -464,12 +477,29 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			a.characterNamed = true
 			a.identityVerified = true
 			return _ok("姓名和学号一致。很好，他现在知道自己是谁了。")
+		"c2_tiyi_discover", "c2_tiyi_acquire", "c2_tiyi_install":
+			if not TiyiAccess.update_required(s): return _ok("当前无需重新安装体艺客户端。")
+			var stage: String=str(a.get("tiyiUpdateStage","not_started"))
+			if TiyiAccess.installed(s): return _ok("更新已安装，请重新进入浙大体艺。")
+			if action=="c2_tiyi_discover":
+				if stage=="not_started": a.tiyiUpdateStage="official_entry_found"
+				return _ok("已找到浙大体育与艺术的下载卡。这里只模拟获取与安装，不会下载真实应用。")
+			if action=="c2_tiyi_acquire":
+				if stage=="package_ready": return _ok("更新包已就绪，等待安装。")
+				if stage!="official_entry_found": return _ok("请先从公众号底部的「联系我们」打开下载卡。")
+				if s.networkMode=="offline": return _ok("需要联网才能获取更新包。")
+				a.tiyiUpdateStage="package_ready"
+				return _ok("模拟扫码完成，更新包已就绪。安装后再进入浙大体艺。")
+			if stage!="package_ready": return _ok("请先从官方入口获取更新包。")
+			a.tiyiUpdateStage="installed"
+			return _ok("更新已安装，请重新进入浙大体艺。")
 		"c2_exercise":
-			if not _movement(s) or not a.characterNamed or not _tiyi_entry_allowed(s): return _ok("需要有效身份和移动数据连接。")
+			if TiyiAccess.needs_update(s): return _ok("请先从「浙大体育与艺术」公众号的「联系我们」获取更新并安装。")
+			if not _movement(s) or not a.characterNamed or not _tiyi_entry_allowed(s) or not TiyiAccess.allowed(s): return _ok("需要有效身份和移动数据连接。")
 			if a.exerciseStarted: return _ok("锻炼记录已经同步。")
 			return _ok("", {"game":{"script":"res://scripts/games/virtual_run.gd","on_success":"c2_exercise_result","title":"虚拟定位跑步","viewport":[430,820]}})
 		"c2_exercise_result":
-			if not _movement(s) or not a.characterNamed or not value is Dictionary: return _ok("本次锻炼无效。")
+			if not _movement(s) or not a.characterNamed or not TiyiAccess.allowed(s) or not value is Dictionary: return _ok("本次锻炼无效。请确认身份、客户端更新和移动数据连接。")
 			if value.get("failed", true) or int(value.get("points", 0)) != 10 or int(value.get("distanceMeters", 0)) != 3000 or int(value.get("elapsedSeconds", 0)) != 600: return _ok("必须依次完成十个定位点。")
 			a.exerciseStarted = true
 			return _ok("10:00 / 3.00km / 03′20″\n锻炼记录已同步。")

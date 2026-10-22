@@ -1,3 +1,4 @@
+import { PutPhoneOnDesk } from "../P01_Desktop/EarlyDeskCharging";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import zjudingUrl from "../../../assets/ui/zjuding.png";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
@@ -615,6 +616,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
 
   return (
     <main className={`phone ${homeEditing ? "is-home-editing" : ""}`.trim()} aria-label="像素风浙大首页">
+      <PutPhoneOnDesk state={state} router={router} events={events} />
       <div className="background" aria-hidden="true">
         <div className="cloud c1" />
         <div className="cloud c2" />

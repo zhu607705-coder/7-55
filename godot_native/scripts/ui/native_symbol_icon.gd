@@ -11,6 +11,37 @@ const PATTERNS := {
 	"⌫": ["...######","..#.....#",".#.#..#.#","#...##..#",".#.#..#.#","..#.....#","...######"],
 	"⬢": ["..#####..",".#######.","#########","#########","#########",".#######.","..#####.."]
 }
+class WifiMark extends Control:
+	## Role-specific port of shell.css .cc-wifi-icon: two arcs and one dot.
+	## The source's vibration glyph is also ≋, so never alias that text to Wi-Fi.
+	const SOURCE_SIZE := Vector2(38,38)
+	# Absolute children use the bubble's padding box, inside its 2px border.
+	const ARC_RECTS := [Rect2(8,9,22,18),Rect2(12.5,15,13,11)]
+	const DOT_RECT := Rect2(16.5,23,5,5)
+	var ink := Color("222322")
+	func _init() -> void:
+		name="SourceWifiIcon"
+		mouse_filter=Control.MOUSE_FILTER_IGNORE
+		focus_mode=Control.FOCUS_NONE
+	func _draw() -> void:
+		var factor := minf(size.x/SOURCE_SIZE.x,size.y/SOURCE_SIZE.y)
+		var origin := (size-SOURCE_SIZE*factor)/2
+		for rect: Rect2 in ARC_RECTS:
+			var points:=PackedVector2Array()
+			var radius:=rect.size/2-Vector2(1.5,1.5)
+			for index in range(33):
+				# Only the top border is ink; the other three CSS borders are transparent.
+				var angle:=PI*1.25+PI*.5*index/32.0
+				points.append(origin+(rect.get_center()+Vector2(cos(angle)*radius.x,sin(angle)*radius.y))*factor)
+			draw_polyline(points,ink,3*factor,true)
+		draw_rect(Rect2(origin+DOT_RECT.position*factor,DOT_RECT.size*factor),ink)
+
+static func add_wifi(control: Control, rect: Rect2) -> Control:
+	var mark:=WifiMark.new()
+	mark.position=rect.position;mark.size=rect.size
+	control.add_child(mark)
+	return mark
+
 class SymbolMark extends Control:
 	var rows: Array=[]
 	var ink := Color.WHITE

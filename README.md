@@ -4,7 +4,7 @@
 
 《7:55》Godot 原生游戏与保留的网页版本。
 
-全量整合审阅候选位于 [`codex/godot-complete-20261019`](https://github.com/zhu607705-coder/7-55/tree/codex/godot-complete-20261019)。打开
+正式 Godot 主线现为 [`main`](https://github.com/zhu607705-coder/7-55/tree/main)，不是旧的 React 主线快照。当前统一引擎与 Web 模板基线为 **Godot 4.7.1**；剩余改动集中在 [PR #161](https://github.com/zhu607705-coder/7-55/pull/161)，分支来源、版本边界及验收见 [整合记录](godot_native/docs/BRANCH_CONSOLIDATION.md)。打开
 [`godot_native/project.godot`](godot_native/project.godot)，或在 Mac 上双击
 [`godot_native/启动游戏.command`](godot_native/启动游戏.command)。当前整合、PR 来源和实测边界见
 [`godot_native/docs/FULL_INTEGRATION_20261019.md`](godot_native/docs/FULL_INTEGRATION_20261019.md)。
@@ -20,10 +20,10 @@ npm run native:validate
 自带 `assets/` 与 `data/source/` 的原生源码包可直接打开，无需 Node。
 `npm run native:package` 生成这种自包含源码包；`npm run build` 和 `npm run web:build`
 继续生成网页版本。开发边界见 [AGENTS.md](AGENTS.md)，详细原生说明见
-[原生 README](godot_native/README.md)。远端 #105 与原有分支的合并状态不由本地候选改变。
+[原生 README](godot_native/README.md)。#105、#155–#160 已由外部合入对应主线；保留旧分支不代表其代码尚未整合。
 本轮推送范围、提交映射和后续验收边界见 [推送验收记录](godot_native/docs/PUSH_ACCEPTANCE_20261019.md)。
 
-当前 Web 项目使用 Vite、TypeScript、React、Zustand、
+保留的 Web 行为参考项目使用 Vite、TypeScript、React、Zustand、
 Phaser 和 Three.js。React / TypeScript 负责手机端、共享状态、控制器、存档、任务、
 道具和表现层；Phaser 负责校园地图与横屏 RPG 内景；第四章错位楼梯是
 唯一经过批准的 Three.js 场景。

@@ -1,7 +1,7 @@
 {
   "sourceCommit": "39ccde029b0cd25a6011739a4e4f98f8c898b2c3",
-  "assetCount": 719,
-  "totalBytes": 626168607,
+  "assetCount": 721,
+  "totalBytes": 626525838,
   "assets": [
     {
       "path": "assets/anim/.gitkeep",
@@ -3457,6 +3457,16 @@
       "path": "assets/ui/dorm_room.png",
       "bytes": 1909884,
       "sha256": "ebacd393ad9ed7689776a1ffb8eef1c8b31f500ea7b5b8e48587b6abfce6fe95"
+    },
+    {
+      "path": "assets/ui/home_charging_dock.png",
+      "bytes": 356451,
+      "sha256": "e26c177a1faa870a0a6b95f641e0fc635125e3cfc48abe283f87f14342f2009e"
+    },
+    {
+      "path": "assets/ui/home_charging_dock.source.md",
+      "bytes": 780,
+      "sha256": "bf25fcb5645af0aecf63b9efa6adabd07f0e0f9c5d5d6490a60ca4fadf7a3e6d"
     },
     {
       "path": "assets/ui/library_avatar.png",

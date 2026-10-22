@@ -233,6 +233,12 @@ func beginning() -> void:
 	await system_dialogue()
 	await step("c2_identify",{"name":"林星宇","student_id":"3250100755"})
 	await step("c1_network","移动数据")
+	await show_phone("wechat")
+	await step("c2_tiyi_discover")
+	await step("c2_tiyi_acquire")
+	await step("c2_tiyi_install")
+	check(state.d.actOne.tiyiUpdateStage=="installed" and not state.d.actOne.exerciseStarted,"official update installed without granting exercise")
+	await show_phone("tiyi")
 	game=make_game(await step("c2_exercise"))
 	if game==null: return
 	for i in range(10): game.target.pressed.emit()

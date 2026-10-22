@@ -4,23 +4,34 @@ The repository uses dependency-light executable contract validators rather than 
 
 Assertion counts are diagnostic output only. They do not represent line, branch, interaction, or user-journey coverage.
 
-## Native migration validation (2026-10-10)
+## Godot and retained-source validation (2026-10-22)
 
-The sections below describe Web validation. On `godot-version`,
-`.github/workflows/godot-native-ci.yml` separately pins Godot 4.6.3, synchronizes
-source assets/state, checks deterministic catalogs, converts media, runs
-`node godot_native/tools/validate_native.mjs` and compares native replay traces
-with selected original TypeScript models. Follow `godot_native/README.md` on that
-branch for local prerequisites. Shared source/controller changes require relevant
-checks in both runtimes; native-only presentation work does not require a Web port.
+`main` now contains the Godot integration after the external merge of #105.
+`.github/workflows/godot-native-ci.yml` pins Godot 4.7.1, synchronizes source
+assets/state, checks catalogs, converts media, runs `validate_native.mjs`, and
+checks selected original TypeScript models plus the registered GPU/PCK/replay
+stages. Follow `godot_native/README.md` for prerequisites. Shared source/controller
+changes require relevant checks in both runtimes.
 
-Web CI ignores Markdown/docs-only changes; native CI triggers on its listed native
-and shared-source paths, or manual dispatch. Pages still builds `dist` from `main`.
-This documentation correction changes no CI triggers or required checks. Native
-Linux headless tests, cross-exported Windows artifacts and emulated touch checks do
-not establish Windows execution, physical phone acceptance or full visual/manual
-chapter parity. Preserve the native audit's remaining gaps; assertion totals are
-not acceptance evidence by themselves.
+The sections below describe the retained Web-source validators; they do not prove
+that the production Godot WASM game works. `deploy-pages.yml` builds the actual
+Godot 4.7.1 Web export with matching verified templates. Its PR path builds and
+accepts the export without configuring or deploying Pages. Production publication
+remains a separate guarded job for allowed release refs. The unchanged initial
+payload and deferred-pack budgets are 100,000,000 and 24,000,000 bytes.
+
+For the branch-consolidation candidate, the real-browser gate retains the ordinary
+six-case acceptance, adds three `mobile-world` cases (including portrait/landscape
+and DPR 1/3), and runs the existing deferred-transport failure/retry scenario.
+Fixtures come from the native campaign controller recorder, with exact SHA and
+scope recorded. Constructing these fixtures is not a browser four-chapter playthrough.
+See `godot_native/docs/BRANCH_CONSOLIDATION.md` and each exact-head CI artifact for
+what actually ran; adding a gate is not a passing result.
+
+Native Linux headless tests, cross-exported Windows artifacts and emulated touch
+checks do not establish Windows execution, physical phone acceptance or full
+visual/manual chapter parity. Keep historical evidence under its original engine
+and SHA; assertion totals alone are not acceptance evidence.
 
 ## Canonical Web entry points
 

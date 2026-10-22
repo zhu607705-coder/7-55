@@ -11,6 +11,8 @@ func check(ok: bool,label: String) -> void:
 func run() -> void:
 	var state=root.get_node("State"); state.developer_mode=false; state.d=state.initial()
 	state.d.native.chapter=2; state.d.actOne.phase="complete"; state.d.networkMode="cellular"; state.d.ui.libraryFinalsPhase="evidence_gathering"
+	var controller=load("res://scripts/chapters/chapter1_2.gd").new()
+	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(state.d,intent)
 	state.d.ui.libraryFinalsPuzzle.investigationOpened=true; state.get_phone_entry_session()
 	var helper=Builder.new().tiyi_presence
 	helper._sync(state.d.ui.libraryFinalsPuzzle)

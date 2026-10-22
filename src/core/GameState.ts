@@ -120,6 +120,7 @@ export function createInitialGameState(): GameState {
       inventoryRecovered: false,
       characterPromptSeen: false,
       characterNamed: false,
+      tiyiUpdateStage: "not_started",
       exerciseStarted: false,
       pushTriangleTapCount: 0,
       pushTriangleTaken: false,
@@ -364,6 +365,7 @@ export function createInitialGameState(): GameState {
       finalCode: null
     },
     ui: {
+      homeDeskReturnScene: null,
       controlCenterOpen: false,
       autoRotate: false,
       musicPlaying: false,

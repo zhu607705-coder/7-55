@@ -21,6 +21,8 @@ func fresh() -> Dictionary:
 	state.native={"chapter":2,"scene":"campus_bootstrap","page":"phone_home","mode":"light","settings":{}}
 	state.actOne.phase="complete"; state.actOne.cc98Login.authenticated=true; state.networkMode="campus_wifi"
 	state.ui.libraryFinalsPhase="library_route_unlocked"; state.items.rightArrow=true
+	var controller=load("res://scripts/chapters/chapter1_2.gd").new()
+	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(state,intent)
 	return state
 func act(action: String,value: Variant=null) -> Dictionary: return library.dispatch(s,action,value)
 func play(id: String) -> void:

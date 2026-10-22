@@ -16,7 +16,7 @@ import {
 
 const argument = process.argv.find(value => value.startsWith('--engine-script='));
 const exportArgument = process.argv.find(value => value.startsWith('--export='));
-if (!argument && !exportArgument) throw new Error('Pass --export=<actual export directory> or --engine-script=<official or compatibility-patched 4.7.2 index.js>');
+if (!argument && !exportArgument) throw new Error('Pass --export=<actual export directory> or --engine-script=<official or compatibility-patched 4.7.1 index.js>');
 const filename = argument ? path.resolve(argument.slice('--engine-script='.length)) : path.resolve(exportArgument.slice('--export='.length), 'index.js');
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 let original = fs.readFileSync(filename, 'utf8');
@@ -32,6 +32,7 @@ try {
   pass(() => assert.equal(result.source.replace(GUARDED_POSITION_WORKLET_INIT, POSITION_WORKLET_INIT), original));
   pass(() => assert.doesNotThrow(() => new vm.Script(result.source)));
   pass(() => assert.throws(() => transformWebAudioSource(original, '4.8.stable.official'), /pinned/));
+  pass(() => assert.throws(() => transformWebAudioSource(original, '4.7.2.stable.official'), /pinned/));
   pass(() => assert.throws(() => transformWebAudioSource(original + '\n', AUDIO_COMPAT_ENGINE), /differs from the pinned official/));
   pass(() => assert.throws(() => transformWebAudioSource(original.replace(POSITION_WORKLET_INIT, ''), AUDIO_COMPAT_ENGINE), /exactly one/));
   pass(() => assert.throws(() => transformWebAudioSource(original + POSITION_WORKLET_INIT, AUDIO_COMPAT_ENGINE), /exactly one/));
@@ -39,6 +40,7 @@ try {
   fs.writeFileSync(path.join(directory, 'index.js'), original);
   const provenance = applyWebAudioCompatibility(directory, AUDIO_COMPAT_ENGINE);
   pass(() => assert.deepEqual(verifyWebAudioCompatibility(directory, provenance, AUDIO_COMPAT_ENGINE), result.provenance));
+  pass(() => assert.throws(() => verifyWebAudioCompatibility(directory, provenance, '4.7.2.stable.official'), /pinned/));
   pass(() => assert.throws(() => verifyWebAudioCompatibility(directory, { ...provenance, sourceSha256: '0'.repeat(64) }, AUDIO_COMPAT_ENGINE), /provenance/));
   pass(() => assert.throws(() => verifyWebAudioCompatibility(directory, { ...provenance, extra: true }, AUDIO_COMPAT_ENGINE), /provenance/));
   fs.appendFileSync(path.join(directory, 'index.js'), '\n');

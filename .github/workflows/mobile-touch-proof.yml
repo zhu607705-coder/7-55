@@ -25,7 +25,8 @@ jobs:
       - name: Import actual assets and run routed touch regression
         run: |
           node godot_native/tools/sync_source.mjs
-          GODOT_TEST_REPORT=mobile-touch-test-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse|test_mobile_direct_touch.gd|test_portrait_exploration.gd|test_mobile_world_feedback.gd|test_mobile_floor_room204_drag.gd|test_inventory_touch_ownership.gd|test_collapsed_inventory_focus.gd'
+          GODOT_TEST_REPORT=mobile-touch-test-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse|Native phone icon source parity|test_phone_symbol_icons.gd|test_phone_launcher_icons.gd|test_phone_chrome.gd|test_mobile_direct_touch.gd|test_portrait_exploration.gd|test_mobile_world_feedback.gd|test_mobile_floor_room204_drag.gd|test_inventory_touch_ownership.gd|test_collapsed_inventory_focus.gd'
+          node godot_native/tools/test_phone_icon_pack.mjs
       - name: Capture actual compact game viewport and existing overlays
         run: |
           set -euo pipefail
@@ -41,12 +42,31 @@ jobs:
           timeout 240 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_mobile_direct_touch.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
           test -f "$UI_CAPTURE_DIR/mobile-touch-captures.json"
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:|^ERROR:' "$UI_CAPTURE_DIR/render.log"
+      - name: Capture restored source phone icons separately
+        run: |
+          set -euo pipefail
+          sandbox=$(mktemp -d /tmp/755-phone-icons-XXXXXX)
+          mkdir -p "$sandbox"/{data,config,cache,state}
+          export XDG_DATA_HOME="$sandbox/data" XDG_CONFIG_HOME="$sandbox/config"
+          export XDG_CACHE_HOME="$sandbox/cache" XDG_STATE_HOME="$sandbox/state"
+          export GODOT_TEST_USER_DATA_DIR="$sandbox/data/SevenFiftyFiveNative"
+          mkdir -p "$GODOT_TEST_USER_DATA_DIR"
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/phone-icon-proof"
+          export PHONE_ICON_SOURCE_REQUIRED=1
+          mkdir -p "$UI_CAPTURE_DIR"
+          git rev-parse HEAD > "$UI_CAPTURE_DIR/source-sha.txt"
+          godot --version > "$UI_CAPTURE_DIR/engine-version.txt"
+          timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_phone_symbols.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
+          test -f "$UI_CAPTURE_DIR/symbol-captures.json"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:|^ERROR:' "$UI_CAPTURE_DIR/render.log"
+          node -e 'const fs=require("node:fs");const rows=JSON.parse(fs.readFileSync("phone-icon-proof/symbol-captures.json","utf8"));if(rows.length!==27||rows.some(x=>x.validation_only||x.error!==0))throw Error("Expected27 actual DEV-fixture PNG captures, not earned-campaign or headless proof");for(const r of rows)if(!fs.existsSync("phone-icon-proof/"+r.id+".png"))throw Error(r.id);'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: mobile-touch-proof
           path: |
             mobile-touch-proof/
+            phone-icon-proof/
             mobile-touch-test-report.json
             mobile-touch-test-report.json.meta.json
           if-no-files-found: error

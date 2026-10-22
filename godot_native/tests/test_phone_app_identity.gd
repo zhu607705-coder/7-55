@@ -24,6 +24,11 @@ func frames():
 	for i in 3:await process_frame
 func fixture(kind:String,state:Dictionary,view:Dictionary={},presence_audit:bool=false):
 	var b=Candidate.new();b.s=state.duplicate(true)
+	# Existing identity cases observe an already updated client, not its installer.
+	if kind=="tiyi" and load("res://scripts/chapters/tiyi_access.gd").update_required(b.s):
+		var controller=load("res://scripts/chapters/chapter1_2.gd").new()
+		b.s.native.page="wechat"
+		for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(b.s,intent)
 	var expected: Dictionary=expected_cases[fixture_index];fixture_index+=1
 	b.s.native.page="tiyi" if kind=="tiyi" else "weather"
 	b.entry_session.route(b.s);b.entry_session.advance(1400)

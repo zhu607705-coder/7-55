@@ -1,5 +1,6 @@
 import type { EventBus } from "../core/EventBus";
 import type { GameStore, NetworkMode } from "../core/types";
+import { canAccessTiyi } from "./TiyiAccessModel";
 
 export class NetworkController {
   constructor(
@@ -21,9 +22,9 @@ export class NetworkController {
     return this.store.getState().networkMode;
   }
 
-  /** 浙大体艺只有流量能进：其他网络加载 3 秒后闪退。 */
+  /** 首次保留流量谜题；外出锻炼阶段还须完成游戏内客户端更新。 */
   canOpenTiyi(): boolean {
-    return this.getMode() === "cellular";
+    return canAccessTiyi(this.store.getState());
   }
 
   /** CC98 仅允许通过校园网访问。 */

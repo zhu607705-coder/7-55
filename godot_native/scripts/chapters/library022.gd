@@ -1,4 +1,5 @@
 extends RefCounted
+const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
 ## Current LibraryFinalsController + puzzle JSON, excluding retired archaeology route.
 const EVIDENCE = {"archived_leave_rule":"archivedLeaveRule", "bag_non_person_proof":"bagNonPersonProof", "seat_022_receipt":"seat022Receipt", "library_presence_proof":"libraryPresenceProof"}
 const RECOVERY = ["bag_non_person_proof", "seat_022_receipt", "library_presence_proof"]
@@ -412,6 +413,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			_unique(p.libraryVisitedPoints,"seat_022")
 			return _ok("右移箭头把小票推出夹缝。获得 022 座位小票。")
 		"lib_audit_value":
+			if not TiyiAccess.allowed(s): return _ok("")
 			if phase!="evidence_gathering" or not p.investigationOpened or not value is Dictionary: return _ok("")
 			var fields={"arrival":["auditArrivalMinutes",0,12],"notice":["auditPublicNoticeFloor",1,63],"proofs":["auditProofCount",1,5]}
 			var field=str(value.get("field",""))
@@ -426,7 +428,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			var source_field={"arrival":"arrivalMinutes","notice":"publicNoticeFloor","proofs":"proofCount"}[field]
 			return _ok("",{"presentation":{"cueId":"tiyi_audit_value_changed","payload":{"field":source_field,"value":int(number)}}})
 		"lib_audit":
-			if s.networkMode != "cellular": return _ok("浙大体艺需要移动数据。")
+			if not TiyiAccess.allowed(s): return _ok("请确认体艺更新已安装，并使用移动数据重新进入。")
 			if phase != "evidence_gathering" or not p.investigationOpened or not p.entranceRecordRead or not p.archivedRuleRead or p.presenceProofCollected: return _ok("缺少门禁记录、论坛公示或旧版规则。")
 			if value is Dictionary: value = [str(value.get("arrival","")),str(value.get("notice","")),str(value.get("proofs",""))]
 			var parts: Array = value if value is Array else Array(str(value).replace("/"," ").replace(","," ").replace("，"," ").split(" ",false))

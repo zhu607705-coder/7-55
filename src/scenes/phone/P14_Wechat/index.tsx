@@ -14,6 +14,8 @@ import {
 } from "../../../modules/ChapterFourWechatModel";
 import type { ChapterThreeInterludeRouteMessageId } from "../../../modules/ChapterThreePhoneInterludeController";
 import { selectChapterThreeInterludeViewModel } from "../../../modules/ChapterThreeInterludeModel";
+import { tiyiUpdateRequired } from "../../../modules/TiyiAccessModel";
+import "../../../styles/scenes/tiyi-update.css";
 
 type ChapterFourChatView = "official" | "group" | "archive" | "friend" | null;
 
@@ -175,6 +177,7 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
  * 斜线谜题：自动旋转开启 → 斜线一端掉落挂在框上 → 点剩余端 3 次 → 整条掉落成道具。
  */
 export function WechatScene({ state, router, events }: SceneComponentProps) {
+  const [tiyiOfficialOpen, setTiyiOfficialOpen] = useState(false);
   const [openedFriend, setOpenedFriend] = useState(() =>
     consumeFriendChatIntent(),
   );
@@ -755,6 +758,42 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
       ? "half"
       : "full";
 
+  if (tiyiOfficialOpen && tiyiUpdateRequired(state)) {
+    const stage = state.actOne.tiyiUpdateStage;
+    return (
+      <section className="wechat-scene tiyi-official-page" aria-label="浙大体育与艺术公众号">
+        <header className="wx-header">
+          <PhoneNavButton kind="back" label="返回微信消息列表" onClick={() => setTiyiOfficialOpen(false)} />
+          <h1>浙大体育与艺术</h1>
+        </header>
+        <main className="tiyi-update-content">
+          <small>公众号</small>
+          <p>在底部「联系我们」查看体艺下载卡。</p>
+          {stage !== "not_started" ? (
+            <article className="tiyi-update-card" aria-label="体艺下载卡">
+              <h2>浙大体艺 APP</h2>
+              <small>游戏内更新</small>
+              <p>仅模拟扫码、获取和安装。<br />不调用设备权限，不下载真实应用。</p>
+              {stage === "official_entry_found" ? (
+                <><button type="button" onClick={() => {
+                  if (!kit.actOne.acquireTiyiUpdate()) kit.flags.toast("需要联网才能获取更新包。");
+                }}>模拟扫码获取更新</button><small>需要网络连接</small></>
+              ) : stage === "package_ready" ? (
+                <><p>更新包已就绪</p><button type="button" onClick={() => kit.actOne.installTiyiUpdate()}>安装更新</button></>
+              ) : (
+                <><p>更新已安装</p><button type="button" onClick={() => router.goTo("phone_home")}>返回桌面，重新进入体艺</button></>
+              )}
+            </article>
+          ) : null}
+        </main>
+        <nav className="tiyi-official-menu" aria-label="公众号服务菜单">
+          <span>修读办法</span><span>场馆预约</span>
+          <button type="button" onClick={() => kit.actOne.discoverTiyiUpdate()}>联系我们</button>
+        </nav>
+      </section>
+    );
+  }
+
   return (
     <section className="wechat-scene" aria-label="微信">
       {chapterFourChatView ? renderChapterFourChat() : !openedFriend ? (
@@ -774,6 +813,12 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
           <div className="wx-device-tip">已登录 2 台设备 ›</div>
 
           <ul className="wx-rows">
+            {tiyiUpdateRequired(state) && !chapterFourWechat.active && !state.qizhenLake.active ? (
+              <li><button type="button" className="wx-row" onClick={() => setTiyiOfficialOpen(true)}>
+                <span className="wx-avatar wx-official-avatar" aria-hidden="true">体艺</span>
+                <span className="wx-row-main"><strong>浙大体育与艺术</strong><em>公众号 · 联系我们</em></span>
+              </button></li>
+            ) : null}
             {chapterFourWechat.active ? (
               <>
                 <li>

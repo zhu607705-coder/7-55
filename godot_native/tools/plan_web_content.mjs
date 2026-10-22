@@ -68,6 +68,11 @@ function classify(name) {
   if (/^assets\/(objectized\/chapter4|native\/(stair_b|endless_stair_b3|canruo))\//.test(name)) return 'chapter4';
   if (/^assets\/native\/(qizhen_rain_rescue|lake_assembly|kayak)\//.test(name)) return 'chapter35';
   if (/^assets\/native\/(canteen_objects|mixer|chapter3|canteen_animation|canteen_door)\//.test(name)) return 'chapter3';
+  // Review-only dorm atlases are not the production first-chapter room. Keep
+  // their original bytes in the first deferred retained-source bucket, like
+  // unused player sheets below. This does not activate a preview in the story.
+  // Source/native preview builds remain complete and do not use this planner.
+  if (name.startsWith('assets/native/dorm_modular/')) return 'chapter2';
   if (/^assets\/native\/(bonsai|dorm_cabinet)\//.test(name)) return 'core';
   if (/^assets\/rpg\/(campus|landmarks)\//.test(name)) return /loop_panorama/.test(name) ? 'chapter35' : 'chapter2';
   if (/^assets\/rpg\/(portraits|chapter4-stair)\//.test(name)) return 'chapter4';
@@ -251,7 +256,7 @@ for (const family of summaries.filter(group => group.id !== 'core' && group.coun
   for (const entry of sorted) {
     // PCKPacker also writes file alignment and a path/hash directory. Reserve
     // 128 bytes per entry plus its UTF-8 path and a 256-byte pack header, which
-    // is greater than the 4.7.2 format's 32-byte alignment/directory overhead.
+    // is greater than the supported PCK format's 32-byte alignment/directory overhead.
     const budgetBytes = entry.bytes + Buffer.byteLength(entry.path, 'utf8') + 128;
     if (budgetBytes + 256 > chunkLimitBytes) throw new Error(`Resource exceeds ${chunkLimitBytes}-byte content chunk budget: ${entry.path} (${entry.bytes}); split/convert the authored resource explicitly`);
     current = bins.find(bin => bin.estimatedPackBytes + budgetBytes <= chunkLimitBytes);

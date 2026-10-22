@@ -1,4 +1,5 @@
 import type { GameState } from "./types";
+import { selectFeatureAccess } from "./FeatureAccess";
 
 // Source-pixel position of the small cabinet left of the theater entrance.
 // The scene, proximity prompt and battery controller share this one target.
@@ -13,6 +14,22 @@ export const THEATER_CHARGING_STATION = {
   proximity: 46,
   requiredMode: "light"
 } as const;
+
+// The C1 physical desk is not the phone wallpaper or a later dorm/map station.
+export const HOME_DESK_CHARGING_STATION = { id: "home_desk_charging_station", label: "桌面充电座" } as const;
+
+export function isHomeDeskContext(state: GameState): boolean {
+  return state.runtimeMode === "phone" && state.actOne.phase === "prologue"
+    && selectFeatureAccess(state).chapter === "chapter_one" && !state.flags.checkinDone;
+}
+
+export function canReturnToHomeDesk(state: GameState): boolean {
+  return isHomeDeskContext(state) && !state.ui.controlCenterOpen;
+}
+
+export function checkHomeDeskChargingStation(state: GameState): ChargingRejection | null {
+  return canReturnToHomeDesk(state) && state.currentScene === "desktop" ? null : "no_power_source";
+}
 
 export const PHONE_CHARGING_DURATION_MS = 2200;
 export const PHONE_BATTERY_RECHARGE_PERCENT = 45;

@@ -1,1 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e7ecdc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-5 3v-3H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z M7 9h10 M7 13h6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 42 34">
+  <!-- Source: P13_PhoneHome/index.tsx wechat-icon; styles/scenes/p13-phone-home.css .wechat-icon/.bubble/.eye; styles/base.css green token. Inner glyph only; original 42x34 CSS geometry, fitted to the existing 24px native slot. -->
+  <rect id="bubble-one" x="0" y="4" width="29" height="21" rx="10.5" fill="#fff"/>
+  <rect id="bubble-two" x="18" y="12" width="24" height="18" rx="9" fill="#fff" opacity="0.95"/>
+  <g fill="#61b58c">
+    <rect id="eye-1" x="8" y="12" width="4" height="4"/>
+    <rect id="eye-2" x="18" y="12" width="4" height="4"/>
+    <rect id="eye-3" x="26" y="19" width="4" height="4"/>
+    <rect id="eye-4" x="33" y="19" width="4" height="4"/>
+  </g>
+</svg>

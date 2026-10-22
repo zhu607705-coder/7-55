@@ -78,6 +78,7 @@ if(!fs.existsSync(path.join(project,'assets/rpg/fonts/fusion_pixel_12px_proporti
 await run('Native save isolation',[path.join(project,'tests/verify_native_test_sandbox.mjs')],process.execPath);
 await run('Godot asset import and editor parse',['--headless','--path',project,'--editor','--import','--quit']);
 await run('Native Chinese text revisions',[path.join(project,'tests/verify_zh_text_revisions.mjs')],process.execPath);
+await run('Native phone icon source parity',[path.join(project,'tests/verify_phone_icon_source.mjs')],process.execPath);
 await run('Native startup',['--headless','--path',project,'--quit-after','15','--','--fresh']);
 // These authored regressions generate the fixtures consumed later in the suite.
 // Complete surrounding readers first, then run each producer alone in source order.
@@ -102,6 +103,8 @@ for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-direc
 }
 for(const relative of ['tests/verify_source_model_parity.mjs','tests/verify_canteen_defense_source.mjs','tests/verify_canteen_pickup_source.mjs','tests/verify_canteen_paper_art_source.mjs','tests/verify_canteen_paper_effects_source.mjs','tests/verify_canteen_victory_source.mjs','tests/verify_lake_branch_source.mjs'])await run('Source oracle '+relative,[path.join(project,relative)],process.execPath);
 await run('Phone entry source contracts', [path.join(project,'tests/verify_phone_entry_source.py')], 'python3');
+await run('Tiyi two-stage source model', [path.join(project,'../scripts/verify-tiyi-update-model.mjs')], process.execPath);
+await run('Phone battery source model', [path.join(project,'../scripts/verify-phone-battery-model.mjs')], process.execPath);
 await run('Photo brightness source lifecycle', [path.join(project,'tests/verify_photo_consumer_source.mjs')],process.execPath);
 await run('Tiyi presence source setter', [path.join(project,'tests/export_tiyi_presence_source.mjs'),'--check'],process.execPath);
 await run('Tiyi presence source CLI', [path.join(project,'tests/verify_tiyi_oracle_cli.mjs')],process.execPath);

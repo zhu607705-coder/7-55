@@ -100,6 +100,9 @@ var last_vehicle := ""
 var pan_offset := Vector2.ZERO
 var touch_controls := false
 var mobile_exploration := false
+# The Web observer reads geometry already computed by normal drawing/input.
+# It must not call the HUD path, which also retires stale confirmed labels.
+var mobile_control_observation: Dictionary = {}
 var mobile_touch_roles: Dictionary={}
 var mobile_mouse_control := false
 var mobile_mouse_gesture: Dictionary = {}
@@ -1458,7 +1461,10 @@ func mobile_control_metrics() -> Dictionary:
 	var center:=Vector2(62,maxf(float(body.header_height)+radius,bottom-radius))
 	# Keep the key for existing geometry consumers; no confirmation button is
 	# drawn or hit-tested. Object taps submit the ordinary proximity-gated action.
-	return {"stick":center,"radius":radius,"stick_rect":Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),"interact":Rect2()}
+	var metrics := {"stick":center,"radius":radius,"stick_rect":Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),"interact":Rect2()}
+	if mobile_exploration and is_visible_in_tree():
+		mobile_control_observation={"frame":Engine.get_process_frames(),"world_key":world_key,"size":size,"display_scale":hud_display_scale(),"metrics":metrics}
+	return metrics
 
 func _inventory_owns_pointer() -> bool:
 	if is_instance_valid(InventoryGesture.touch_owner()): return true

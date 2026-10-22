@@ -4,7 +4,7 @@
 
 ## 固定工具与本地构建
 
-使用官方非 .NET **Godot 4.7.2 stable**，以及同版官方 `web_nothreads_release.zip`。Linux/Windows 导出预设保持不变。Web 预设使用已有的 Compatibility 渲染器、WebGL 2、单线程和 `755_production,755_web,755_story_only` 特征。GitHub Pages 无需配置 COOP/COEP，也不安装缓存整个游戏的 service worker。
+使用官方非 .NET **Godot 4.7.1 stable**，以及同版官方 `web_nothreads_release.zip`。Linux/Windows 导出预设保持不变。Web 预设使用已有的 Compatibility 渲染器、WebGL 2、单线程和 `755_production,755_web,755_story_only` 特征。GitHub Pages 无需配置 COOP/COEP，也不安装缓存整个游戏的 service worker。
 
 从仓库根目录运行：
 
@@ -41,7 +41,7 @@ node godot_native/tools/build_web.mjs --verify-only
 
 构建对导出 HTML 中的 `content-loader.js` 和 `index.js` 地址加入各自实际脚本的完整 SHA-256 查询参数，并记录 `contentLoader`、`engineLoader`；`--verify-only` 逐项核对，避免新 HTML 命中仍在缓存有效期内的旧加载器或引擎脚本。源码模板及源输入摘要仍保留真实内容。
 
-固定的官方 4.7.2 引擎脚本在通用音频初始化中无条件加载 Sample 位置 Worklet，普通 HTTP 缺少 `audioWorklet` 时会在选择音频驱动前抛错。本项目已经使用 Stream 播放，构建工具只为这一个可选加载增加能力检查，使引擎继续选择其自带的 ScriptProcessor 驱动。`web_audio_compat.mjs` 要求官方原始脚本的精确 SHA-256、单一匹配和精确输出摘要，并记录 `engineAudioCompatibility`；模板发生变化时拒绝猜测性修补。验证模式还原后比较官方原始摘要。没有伪造 Worklet、静音替代或修改 WASM。参见 [固定版本的音频初始化](https://github.com/godotengine/godot/blob/4.7.2-stable/platform/web/js/libs/library_godot_audio.js) 和 [原有 Web 驱动回退](https://github.com/godotengine/godot/blob/4.7.2-stable/platform/web/audio_driver_web.cpp)。
+固定的官方 4.7.1 引擎脚本在通用音频初始化中无条件加载 Sample 位置 Worklet，普通 HTTP 缺少 `audioWorklet` 时会在选择音频驱动前抛错。本项目已经使用 Stream 播放，构建工具只为这一个可选加载增加能力检查，使引擎继续选择其自带的 ScriptProcessor 驱动。`web_audio_compat.mjs` 要求官方原始脚本的精确 SHA-256、单一匹配和精确输出摘要，并记录 `engineAudioCompatibility`；模板发生变化时拒绝猜测性修补。验证模式还原后比较官方原始摘要。没有伪造 Worklet、静音替代或修改 WASM。参见 [固定版本的音频初始化](https://github.com/godotengine/godot/blob/4.7.1-stable/platform/web/js/libs/library_godot_audio.js) 和 [原有 Web 驱动回退](https://github.com/godotengine/godot/blob/4.7.1-stable/platform/web/audio_driver_web.cpp)。
 
 `totalPayloadBytes` 计入托管的原文件和块文件，反映实际站点空间；`logicalPayloadBytes` 去除这份重复副本；`initialPayloadBytes` 按浏览器使用的块计算，避免把原文件重复计入首次传输。这些静态字节统计不代替真实网络计时、压缩传输量或内存验收。
 
@@ -88,14 +88,14 @@ Godot 4.7.2 的文件关闭回调和 `force_fs_sync()` 只是登记待同步，�
 
 ## GitHub Pages
 
-`.github/workflows/deploy-pages.yml` 仅由 `main` 和已获用户明确授权的 `codex/godot-complete-20261019` 推送或手动启动。构建使用锁定依赖、官方 Godot/模板的固定 SHA-512 校验、源素材同步、影片转换、真实 Godot export、产物/来源校验。随后在真实 `/7-55/` HTTP 子路径，用 Linux Chrome/SwiftShader 执行 `tools/verify_web_export.mjs`：六个桌面/手机视口与 DPR 场景、真实输入、音频状态、IndexedDB 刷新恢复、正式无跳转、WASM/PCK HTTP SHA-256 校验通过后，才上传 `godot_native/exports/web-release/`。不调用根 `npm run build`，不上传 `dist/`。这项 CI 为实际 Chromium gate，不代替 Gecko/WebKit 和人工媒体验收。
+`.github/workflows/deploy-pages.yml` 为相关 PR 提供仅构建/验收的路径：build 只有 contents:read，PR 不配置 Pages、不上传 Pages 整包、不部署，且与生产并发组隔离。发布仍只由原有 `main`、`codex/godot-complete-20261019` 推送或这些分支的手动运行进入受保护的 deploy job；合入 main 会触发这条既有发布链。构建使用锁定依赖、官方 Godot/模板的固定 SHA-512 校验、源素材同步、影片转换、真实 Godot export、产物/来源校验。随后在真实 `/7-55/` HTTP 子路径，用 Linux Chrome/SwiftShader 执行 `tools/verify_web_export.mjs`：六个桌面/手机视口与 DPR 场景、真实输入、音频状态、IndexedDB 刷新恢复、正式无跳转、WASM/PCK HTTP SHA-256 校验通过后，才上传 `godot_native/exports/web-release/`。不调用根 `npm run build`，不上传 `dist/`。这项 CI 为实际 Chromium gate，不代替 Gecko/WebKit 和人工媒体验收。
 
-GitHub `github-pages` 环境的发布分支权限继续限于原来允许的 `main` 和这一唯一候选分支。此次工作不拓展部署权限、不合并迁移 PR、不宣称 Godot 替代发布已经正式验收。
+GitHub `github-pages` 环境的发布分支权限继续限于原来允许的 `main` 和这一唯一候选分支。本轮不拓展发布分支权限；相关历史 PR 的外部合并事实见 [当前整合记录](BRANCH_CONSOLIDATION.md)。PR 构建通过不等于已经部署；历史 4.7.2 证据不作为新 4.7.1 验收。
 
 官方参考：
 
 - [Godot Web 导出与平台限制](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html)
 - [Godot 自定义 HTML shell](https://docs.godotengine.org/en/stable/tutorials/platform/web/customizing_html5_shell.html)
 - [Godot 4.7 Web 导出预设实现](https://github.com/godotengine/godot/blob/4.7-stable/platform/web/export/export_plugin.cpp)
-- [Godot 4.7.2 官方下载与校验文件](https://github.com/godotengine/godot-builds/releases/tag/4.7.2-stable)
+- [Godot 4.7.1 官方下载与校验文件](https://github.com/godotengine/godot-builds/releases/tag/4.7.1-stable)
 - [GitHub Pages 容量限制](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
