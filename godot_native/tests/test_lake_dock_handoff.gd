@@ -13,6 +13,12 @@ func officer(layer: RefCounted,s: Dictionary) -> Dictionary:
 	for entry: Dictionary in layer.entries(s):
 		if entry.id=="qizhen_dock_safety_officer": return entry
 	return {}
+func simulate_confirmation_for_hud_unit(world: Control,target: Dictionary) -> void:
+	# This World-only fixture has no Main/input routing. Seed post-confirmation
+	# presentation state explicitly; real pointer dispatch is tested separately
+	# by test_mobile_direct_touch.gd. This helper performs no interaction/action.
+	world.mobile_confirmed_target_id=str(target.get("id",""))
+	world.mobile_confirmed_world_key=world.world_key
 func run() -> void:
 	var state: Node=root.get_node("State"); state.developer_mode=true
 	var lake:=Lake.new(); var s: Dictionary=state.initial()
@@ -98,12 +104,34 @@ func run() -> void:
 	check(officer(layer,s).is_empty(),"source teacher target hides after boarding")
 	s.qizhenLake.vehicle="on_foot";s.qizhenLake.zone="channel"
 	check(officer(layer,s).is_empty(),"teacher does not leak into another zone")
-	var world: Control=load("res://scripts/world.gd").new();world.nearby={"label":"小码头登船边","hud_prompt":"从小码头上船"}
+	var hud_state:Dictionary=s.duplicate(true)
+	hud_state.native.mode="light";hud_state.native.selected_item="";hud_state.qizhenLake.zone="dock"
+	var hud_before:String=JSON.stringify(hud_state)
+	var world: Control=load("res://scripts/world.gd").new()
+	world.scene_id="qizhen_lake";world.world_key="qizhen_lake:dock"
+	world.targets=lake.targets("qizhen_lake",hud_state)
+	var hud_board:Dictionary={}
+	for candidate:Dictionary in world.targets:
+		if candidate.id=="qizhen_dock_board":hud_board=candidate;break
+	check(not hud_board.is_empty() and hud_board.get("hud_prompt","")=="从小码头上船","HUD fixture uses real light-mode dock target and source context")
+	world.nearby=hud_board;world.player=world._target_point(hud_board)
 	check(world._hud_line()=="空格 · 从小码头上船","desktop HUD uses contextual action")
 	world.mobile_exploration=true
-	check(world._hud_line()=="交互 · 从小码头上船","touch HUD uses same action")
-	world.nearby={"label":"未改动目标"}
-	check(world._hud_line()=="交互 · 未改动目标","other targets retain label fallback")
+	check(world._mobile_confirmed_target().is_empty() and not world._hud_line().contains("从小码头上船"),"nearby mobile board has no automatic contextual plaque")
+	simulate_confirmation_for_hud_unit(world,hud_board)
+	check(world._hud_line()=="点按物品 · 从小码头上船","confirmed touch HUD uses same contextual action before label")
+	var fallback:Dictionary={"id":"hud_label_fallback","position":[710,650],"radius":64,"label":"未改动目标"}
+	world.targets=[fallback];world.nearby=fallback;world.player=world._target_point(fallback)
+	check(world._mobile_confirmed_target().is_empty() and not world._hud_line().contains("未改动目标"),"changing to another nearby target does not transfer confirmation")
+	simulate_confirmation_for_hud_unit(world,fallback)
+	check(world._hud_line()=="点按物品 · 未改动目标","confirmed other targets retain label fallback")
+	world.player+=Vector2(float(fallback.radius)+1,0)
+	check(not world._hud_line().contains("未改动目标") and world.mobile_confirmed_target_id.is_empty() and world.mobile_confirmed_world_key.is_empty(),"leaving original interaction radius clears confirmed mobile plaque")
+	world.player=world._target_point(fallback)
+	check(not world._hud_line().contains("未改动目标"),"returning nearby does not automatically restore cleared plaque")
+	world.mobile_exploration=false
+	check(world._hud_line()=="空格 · 未改动目标","desktop label fallback remains available without mobile confirmation")
+	check(JSON.stringify(hud_state)==hud_before,"HUD confirmation presentation fixture changes no game facts")
 	world.free()
 	print("LAKE_DOCK_HANDOFF: ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)
