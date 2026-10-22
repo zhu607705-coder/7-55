@@ -66,8 +66,8 @@
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd",
           "sha256": "09b83c3b3b80f35b2f4bfabbdb774fabb51e437df375699e61ba1d8290c56b41",
           "original_snapshot": "godot_native/docs/source_snapshots/pr143/chapter4_endless_stair_view.gd.source.txt",
-          "adapted_sha256": "a453d356f8f75d18a3f419d4289a98427aac6044b80fa4bb7b0be6803223509e",
-          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. The original stair_text.ttf remains exclusively on physical Label3D wall lettering; instruction, start/back actions, corner HUD and subtitle share the common UI font."
+          "adapted_sha256": "5bf666830b3d8e2345ecd11fdc6b56ad5edd90f354371fe9d6f2e020bf09d8e2",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. The original stair_text.ttf remains exclusively on physical Label3D wall lettering; instruction, start/back actions, corner HUD and subtitle share the common UI font. 2026-10-22 PR #159 motion-only adaptation: reuse original front/back frames for takeoff/gather/descent and seven-tick landing recovery across facing changes; held-phone sockets follow the same original pixels. Verified against unchanged physics/model/sole contacts by 11 native stages and matched actual renders at a4b5a67 (run 39748220942). No camera, input, source texture, story or save changes."
         },
         {
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd.uid",
@@ -83,7 +83,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/endless_stair_gait.gd",
-          "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b"
+          "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/endless_stair_gait.gd.source.txt",
+          "adapted_sha256": "37c09b942464c73ced569621880a082a9781bccd3e615d7931930b4f54cfe227",
+          "reason": "2026-10-22 PR #159 motion-only adaptation: continue landing recovery through front/back-to-side turns by compressing only original upper pixels toward the pelvis, preserving independently solved shoe contacts and shared gait phase. Include recovery in mesh cache identity so stopping cannot freeze the deformation. Original PR #143 bytes remain verified in the scoped snapshot; runtime changes passed 11 native stages and matched actual renders at a4b5a67 (run 39748220942)."
         },
         {
           "path": "godot_native/scripts/presentation/endless_stair_guard_feedback.gd",
