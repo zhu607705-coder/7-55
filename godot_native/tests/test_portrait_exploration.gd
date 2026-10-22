@@ -91,7 +91,7 @@ func fixture(dimensions: Vector2i) -> void:
 		var hud:Dictionary=shell.world.hud_metrics("找到入口，继续向前。")
 		check(hud.title_font>=18 and hud.body_font>=14 and hud.mode_rect.size.y>=44,"physical HUD fonts and mode touch target meet mobile floor")
 		var controls:Dictionary=shell.world.mobile_control_metrics()
-		check(controls.interact.size.x>=44 and controls.interact.size.y>=44 and controls.stick_rect.size.x>=100,"physical movement and interaction controls remain useful")
+		check(not controls.interact.has_area() and controls.stick_rect.size.x>=100,"movement stays useful; object taps do not need a separate confirm button")
 		var actor:Rect2=shell.world.PlayerMetrics.visual_rect(shell.world.player,shell.world.display_scale_at(shell.world.player))
 		check(actor.size.y*shell.world.zoom>=70,"dorm actor renders at least70 physical pixels high")
 		print("MEASURE ",dimensions," world=",shell.world.size," actor=",actor.size*shell.world.zoom," HUD=",hud.title_font,"/",hud.body_font," mode=",hud.mode_rect.size," action=",controls.interact.size)

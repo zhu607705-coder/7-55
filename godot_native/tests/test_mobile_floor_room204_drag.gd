@@ -66,6 +66,8 @@ func run() -> void:
 				if index==1: point=start+Vector2(0,-18)
 				motion(point,point-previous,MOUSE_BUTTON_MASK_LEFT);previous=point;await frames(1)
 			check(dragging(),"held pointer starts actual native furniture drag "+case_name)
+			w._process(0)
+			check(dragging(),"world process preserves already-owned native furniture drag "+case_name)
 			check(state.d.chapter4.room204Placements.is_empty(),"held drag cannot commit before release "+case_name)
 			mouse(end,false);await frames(4)
 			check(not dragging(),"release ends native drag "+case_name)

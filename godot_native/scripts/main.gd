@@ -626,20 +626,23 @@ func _layout() -> void:
 	border.content_margin_top=margin; border.content_margin_bottom=margin
 	if compact:
 		world_frame.scale = Vector2.ONE
-		var scene_rect := Rect2(8,64,available.x-16,available.y-72)
-		mobile_back.position = Vector2(8,8)
+		var insets := _world_safe_insets()
+		var safe_origin := Vector2(insets.x,insets.y)
+		var safe_extent := available-Vector2(insets.x+insets.z,insets.y+insets.w)
+		var scene_rect := Rect2(safe_origin+Vector2(8,64),safe_extent-Vector2(16,72))
+		mobile_back.position = safe_origin+Vector2(8,8)
 		if available.x>available.y:
-			var tray_width := minf(288,available.x*.35) if compact_inventory_open else 196.0
-			inventory_handle.position=Vector2(available.x-tray_width-8,8)
+			var tray_width := minf(288,safe_extent.x*.35) if compact_inventory_open else 196.0
+			inventory_handle.position=safe_origin+Vector2(safe_extent.x-tray_width-8,8)
 			inventory_handle.size=Vector2(tray_width,44)
-			inventory_dock.position=Vector2(available.x-tray_width-8,64)
+			inventory_dock.position=safe_origin+Vector2(safe_extent.x-tray_width-8,64)
 			inventory_dock.size=Vector2(tray_width,76)
 			if inventory_dock.visible: scene_rect.size.x-=tray_width+8
 		else:
-			inventory_handle.position=Vector2(12,available.y-56)
-			inventory_handle.size=Vector2(available.x-24,44)
-			inventory_dock.position=Vector2(12,available.y-140)
-			inventory_dock.size=Vector2(available.x-24,76)
+			inventory_handle.position=safe_origin+Vector2(12,safe_extent.y-56)
+			inventory_handle.size=Vector2(safe_extent.x-24,44)
+			inventory_dock.position=safe_origin+Vector2(12,safe_extent.y-140)
+			inventory_dock.size=Vector2(safe_extent.x-24,76)
 			if inventory_handle.visible: scene_rect.size.y=(inventory_dock.position.y if inventory_dock.visible else inventory_handle.position.y)-8-scene_rect.position.y
 		world_frame.position=scene_rect.position
 		world_extent=scene_rect.size-Vector2.ONE*4
@@ -662,7 +665,7 @@ func _layout() -> void:
 		var world_scale := minf((available.x-24)/980.0,maxf(1,bottom-64)/560.0)
 		world_frame.scale=Vector2.ONE*world_scale
 		world_frame.position=Vector2((available.x-980*world_scale)/2,64+(bottom-64-560*world_scale)/2)
-	var tasks_right: float = inventory_handle.position.x-8 if available.x>available.y and inventory_handle.visible else available.x-mobile_back.position.x
+	var tasks_right: float = inventory_handle.position.x-8 if available.x>available.y and inventory_handle.visible else (available.x-_world_safe_insets().z-8 if compact else available.x-mobile_back.position.x)
 	world_tasks.position=Vector2(tasks_right-84,mobile_back.position.y)
 	world_tasks.size=Vector2(84,44)
 	# A hidden phone mode retains the world viewport/camera as well as its actor.
@@ -1115,6 +1118,7 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 		return false
 	_cancel_world_effect()
 	var previous_focus = get_viewport().gui_get_focus_owner()
+	_cancel_surface_gestures()
 	modal_previous_focus = weakref(previous_focus) if previous_focus != null else null
 	modal = device
 	modal_panel = device.frame
@@ -1199,6 +1203,24 @@ func _restore_room302_shell() -> void:
 	if size != restore["size"]: _layout()
 	world_viewport.gui_disable_input = bool(restore.world_input_disabled)
 
+func _world_safe_insets() -> Vector4:
+	# Native screens expose physical safe bounds; the existing conversion maps
+	# them to root UI units. WebDisplay already makes the root CSS-sized.
+	if not OS.has_feature("web"): return _room302_safe_insets()
+	var encoded: Variant=JavaScriptBridge.eval("""(() => {
+		const probe = document.createElement('div');
+		probe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)';
+		document.body.appendChild(probe);
+		const css = getComputedStyle(probe);
+		const values = [css.paddingLeft, css.paddingTop, css.paddingRight, css.paddingBottom].map(value => parseFloat(value) || 0);
+		probe.remove();
+		return JSON.stringify(values);
+	})()""",true)
+	if not encoded is String: return Vector4.ZERO
+	var values: Variant=JSON.parse_string(encoded)
+	if not values is Array or values.size()!=4: return Vector4.ZERO
+	return Vector4(maxf(0,float(values[0])),maxf(0,float(values[1])),maxf(0,float(values[2])),maxf(0,float(values[3])))
+
 func _room302_safe_insets() -> Vector4:
 	# Unsupported desktop/headless backends return an empty safe area. Convert
 	# a platform screen-space area into this window's unscaled UI coordinates.
@@ -1232,6 +1254,7 @@ func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 	_cancel_world_effect()
 	_close_modal(_room302_studio_active())
 	var previous_focus = get_viewport().gui_get_focus_owner()
+	_cancel_surface_gestures()
 	modal_previous_focus = weakref(previous_focus) if previous_focus != null else null
 	modal = ColorRect.new()
 	modal.name = "NativeModalOverlay"
@@ -1321,8 +1344,9 @@ func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
 func _input(event: InputEvent) -> void:
 	_room302_observe_input(event)
 	_sync_inventory_dock_input()
-	if not _room302_studio_active() and is_instance_valid(world) and world.handle_root_kayak_pointer(event):
-		get_viewport().set_input_as_handled(); return
+	if not _room302_studio_active() and is_instance_valid(world):
+		if world.handle_root_kayak_pointer(event) or world.handle_root_exploration_pointer(event):
+			get_viewport().set_input_as_handled(); return
 	if not is_instance_valid(modal) or not event is InputEventKey or not event.pressed: return
 	if modal.has_method("handle_key") and modal.handle_key(event):
 		get_viewport().set_input_as_handled();return
@@ -1351,6 +1375,7 @@ func _input(event: InputEvent) -> void:
 func _close_modal(force_studio: bool = false) -> void:
 	if not (force_studio and _room302_studio_active()) and is_instance_valid(modal) and modal.has_method("can_close") and not modal.can_close(): return
 	if _room302_studio_active(): room302_studio.cancel_input()
+	if is_instance_valid(modal) and is_instance_valid(world): world.cancel_exploration_gestures()
 	if is_instance_valid(modal) and modal.has_method("dispose_session"): modal.dispose_session()
 	var closing_device: Control=c3_device_panel
 	c3_device_panel=null
@@ -1388,6 +1413,7 @@ func _open_c3_device(kind: String) -> void:
 	# A world device returns keyboard control to its originating SubViewport,
 	# rather than a stale phone/root focus owner after Escape.
 	modal_previous_focus=weakref(world)
+	_cancel_surface_gestures()
 	modal=Control.new()
 	modal.name="C3WorldDeviceOverlay"
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1423,6 +1449,9 @@ func _show_apps() -> void:
 	State.open_page("phone_home")
 
 func _toggle_world_inventory() -> void:
+	# Opening the bag cancels movement, not the handle's keyboard focus.
+	if is_instance_valid(world): world.cancel_exploration_gestures()
+	for button in inventory_buttons.get_children(): button.cancel_gesture()
 	compact_inventory_open=not compact_inventory_open
 	_layout()
 	# A collapsed bag returns Space to the world; opening keeps its keyboard

@@ -35,7 +35,7 @@ func run() -> void:
 			check(Rect2(Vector2.ZERO,world.size).encloses(bar),"full feedback bar is inside viewport")
 			check(Rect2(0,hud.header_height,world.size.x,world.size.y-hud.header_height).encloses(controls.stick_rect),"movement hit area stays beneath header after growth")
 			check(not controls.stick_rect.intersects(bar) and not controls.interact.intersects(bar),"grown feedback never covers world controls")
-			check(controls.interact.size.x>=44 and controls.interact.size.y>=44 and controls.stick_rect.size.x>=100,"touch target floors survive feedback growth")
+			check(not controls.interact.has_area() and controls.stick_rect.size.x>=100,"movement target floor survives feedback growth; separate confirm stays removed")
 			if id in ["generated_regression","opening.external_time_rejected"]:
 				var thumb:Vector2=world_screen(controls.stick+Vector2(-32,0))
 				touch(thumb,true);await frames(2)
