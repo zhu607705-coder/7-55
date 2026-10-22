@@ -1,4 +1,5 @@
 extends Control
+const SelectedUi=preload("res://scripts/ui/selected_ui_theme.gd")
 ## Native phone and RPG shell. All story changes pass through State.
 var phone: PanelContainer
 var phone_content: VBoxContainer
@@ -89,6 +90,7 @@ var media_host: Node
 var world_effect: Control
 var battery_prank: Control
 var capture_busy := false
+var checkin_feedback_depth := 0
 var audio_director: Node
 var c3_scene_host: Control
 var library_story_host: Control
@@ -102,6 +104,8 @@ const PhotoBrightnessSession = preload("res://scripts/ui/photo_brightness_sessio
 var photo_brightness_session = PhotoBrightnessSession.new()
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const Typography = preload("res://scripts/ui/native_typography.gd")
+const CampusMaterial = preload("res://scripts/ui/campus_ui_material.gd")
 const NativeFileDialogTheme = preload("res://scripts/ui/native_file_dialog_theme.gd")
 const INK := Color("14212a")
 const PAPER := Color("f4f1e8")
@@ -113,9 +117,9 @@ func _ready() -> void:
 	# Let native audio owners retire their mixer-thread playbacks before exit.
 	get_tree().auto_accept_quit = false
 	get_tree().root.close_requested.connect(_request_quit)
-	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font = load("res://scripts/ui/native_typography.gd").body_font()
 	# Keep the non-phone inherited text size. Phone and modal roles are scoped.
-	theme = NativeUi.make_theme(font,18,18)
+	theme = NativeUi.make_theme(Typography.body_font(),18,18)
 	_build_shell()
 	phone.minimum_size_changed.connect(_schedule_layout)
 	State.changed.connect(_schedule_refresh)
@@ -199,7 +203,7 @@ func _build_shell() -> void:
 	chapter_label = _label("7:55",NativeUi.FONT_DISPLAY,Color("e9eed7"))
 	add_child(chapter_label)
 	phone = PanelContainer.new()
-	phone.theme = NativeUi.make_theme(font)
+	phone.theme = NativeUi.make_theme(Typography.body_font(),16,16)
 	var phone_border := _box(PAPER,Color("0d0c0a"),0,3)
 	phone_border.content_margin_left = 3
 	phone_border.content_margin_right = 3
@@ -273,7 +277,7 @@ func _build_shell() -> void:
 				phone_chrome.refresh(State.d)
 		)
 	world_frame = PanelContainer.new()
-	var world_border := _box(Color("0c151e"),Color("527779"),12,2)
+	var world_border := _box(Color("0c151e"),CampusMaterial.WOOD,0,1)
 	world_border.content_margin_left=10
 	world_border.content_margin_right=10
 	world_border.content_margin_top=10
@@ -301,7 +305,7 @@ func _build_shell() -> void:
 		# Main queues State feedback; a standalone world retains its fallback.
 		State.feedback.disconnect(world._receive_feedback)
 	inventory_dock = PanelContainer.new()
-	inventory_dock.add_theme_stylebox_override("panel",_box(Color("1e3038"),Color("62787d"),8))
+	inventory_dock.add_theme_stylebox_override("panel",CampusMaterial.panel_style("placard",{},Vector2(14,10)))
 	add_child(inventory_dock)
 	var inventory_row := HBoxContainer.new()
 	inventory_dock.add_child(inventory_row)
@@ -330,7 +334,8 @@ func _build_shell() -> void:
 	story_caption.set_process_input(false)
 	voice_player = AudioStreamPlayer.new()
 	add_child(voice_player)
-	mobile_back = _button("手机 · P",_show_phone_surface,Vector2(140,44))
+	mobile_back = preload("res://scripts/ui/world_phone_launcher.gd").new()
+	mobile_back.pressed.connect(_show_phone_surface)
 	mobile_back.name = "WorldPhoneButton"
 	add_child(mobile_back)
 	phone_world_return = _button("返回现场 · Esc",_return_from_phone,Vector2(180,44))
@@ -343,7 +348,7 @@ func _build_shell() -> void:
 	world_tasks.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	add_child(world_tasks)
 	file_dialog = FileDialog.new()
-	file_dialog.theme = NativeFileDialogTheme.create(font)
+	file_dialog.theme = NativeFileDialogTheme.create(Typography.body_font())
 	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
 	file_dialog.filters = PackedStringArray(["*.json ; 7:55 存档"])
 	file_dialog.file_selected.connect(_on_file_selected)
@@ -363,6 +368,8 @@ func _compact_button(text: String, callback: Callable) -> Button:
 
 func _label(text: String, font_size: int = 18, color: Color = INK) -> Label:
 	var label := Label.new()
+	if font_size >= 24: Typography.apply_display(label)
+	else: Typography.apply_body(label)
 	label.text = text
 	label.add_theme_font_size_override("font_size",font_size)
 	label.add_theme_color_override("font_color",color)
@@ -370,6 +377,8 @@ func _label(text: String, font_size: int = 18, color: Color = INK) -> Label:
 
 func _button(text: String, call: Callable, minimum: Vector2 = Vector2(0,48)) -> Button:
 	var button := Button.new()
+	Typography.apply_body(button)
+	NativeUi.apply_button(button,CampusMaterial.NAVY,CampusMaterial.PAPER,CampusMaterial.WOOD,2,1,16,Vector2(12,8),CampusMaterial.PAPER)
 	button.text = text
 	button.custom_minimum_size = minimum
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -388,9 +397,9 @@ func _has_world_scene() -> bool:
 	return not str(State.d.get("native",{}).get("scene","")).is_empty()
 
 func _restore_shell_surface() -> void:
-	# Desktop resumes the saved world; the prologue has no world and stays on
-	# its authored phone. Compact sessions retain their explicit view choice.
-	mobile_world = _has_world_scene() and str(State.d.get("runtimeMode","phone")) == "rpg" and (mobile_world or not _uses_compact_layout())
+	# Explicit phone/world returns persist this choice at every viewport size.
+	# A save without a world still keeps the prologue on its authored phone.
+	mobile_world = _has_world_scene() and str(State.d.get("runtimeMode","phone")) == "rpg"
 
 func _surface_navigation_blocked(ignore_world_presentation: bool=false) -> bool:
 	if is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(active_game) or bool(State.d.ui.controlCenterOpen) or capture_busy: return true
@@ -423,12 +432,15 @@ func _show_phone_surface() -> void:
 	world_page_origin_scene = ""
 	mobile_world = false
 	# Keep the existing world-to-phone homepage route and its app lifecycle.
+	State.d.runtimeMode = "phone"
 	State.open_page("phone_home")
 	_layout()
 	phone_world_return.grab_focus()
 
 func _return_from_phone() -> void:
 	if not _has_world_scene() or _surface_navigation_blocked(): return
+	State.d.runtimeMode = "rpg"
+	State.save_game()
 	_show_world_mobile()
 
 func _focus_world_surface() -> void:
@@ -581,7 +593,11 @@ func _layout() -> void:
 	if not has_world: mobile_world = false
 	var phone_top := 64.0 if has_world else 18.0
 	var phone_space := available - Vector2(24,phone_top + 18)
-	var phone_scale := maxf(.1,minf(1.0,minf(phone_space.y / 860.0,phone_space.x / 430.0)))
+	# WebDisplay expresses this viewport in CSS-sized logical pixels. Let large
+	# browser windows use the available height instead of stopping at 430x860;
+	# the authored phone and every anchored hit area still scale together.
+	var fit_scale := maxf(.1,minf(phone_space.y / 860.0,phone_space.x / 430.0))
+	var phone_scale := fit_scale
 	phone.scale = Vector2.ONE * phone_scale
 	phone.size = Vector2(430,860)
 	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
@@ -673,6 +689,7 @@ func _layout() -> void:
 			active_game.position=(available-game_viewport*game_scale)/2
 	_layout_modal()
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
+	_sync_selected_world_overlay()
 
 func _activity_owns_scene() -> bool:
 	# Layout adapters opt into one full-scene owner. The shared host opts in
@@ -861,8 +878,32 @@ func _layout_modal() -> void:
 			c3_device_panel.global_position=world_rect.position+(world_rect.size-Vector2(960,540)*device_scale)/2
 		return
 	if not is_instance_valid(modal_panel): return
-	modal_panel.size = Vector2(maxf(1,minf(580,size.x-24)),maxf(1,minf(700,size.y-24)))
+	# Generic dialogs fit their contents. The scroll viewport still caps long
+	# records, keeping the close row outside the scrolling body.
+	var dialog_width := maxf(1,minf(580,size.x-24))
+	var dialog_limit := maxf(1,minf(700,size.y-24))
+	var natural_height := dialog_limit
+	var content: VBoxContainer = modal_panel.get_meta("dialog_content",null)
+	var column: VBoxContainer = modal_panel.get_meta("dialog_column",null)
+	if is_instance_valid(content) and is_instance_valid(column):
+		var chrome_height := modal_panel.get_theme_stylebox("panel").get_minimum_size().y
+		var visible_rows := 0
+		for row: Control in column.get_children():
+			if not row.visible: continue
+			visible_rows += 1
+			if row is ScrollContainer: continue
+			chrome_height += row.get_combined_minimum_size().y
+		chrome_height += maxf(0,visible_rows-1)*column.get_theme_constant("separation")
+		natural_height = maxf(180,chrome_height+content.get_combined_minimum_size().y)
+	modal_panel.size = Vector2(dialog_width,minf(dialog_limit,natural_height))
 	modal_panel.position = (size-modal_panel.size)/2
+	if modal_panel.get_meta("selected_surface","")=="journal":
+		# Single-page composition. Position/wrapping adapt, locked type stays fixed.
+		modal_panel.size.x=maxf(1,minf(580,size.x*(0.86 if size.x<600 else 0.70)))
+		modal_panel.position=(size-modal_panel.size)/2
+	elif modal_panel.get_meta("selected_surface","")=="dialogue":
+		modal_panel.size.x=maxf(1,minf(580,size.x*(0.86 if size.x<600 else 0.57)))
+		modal_panel.position=Vector2(size.x-modal_panel.size.x-size.x*0.06,(size.y-modal_panel.size.y)/2)
 	_layout_toast()
 
 func _schedule_refresh() -> void:
@@ -1187,7 +1228,7 @@ func _invoke_action(action: Dictionary) -> void:
 		_show_form(action)
 	else: State.act(str(action.id),action.get("value"))
 
-func _modal_base(title: String) -> VBoxContainer:
+func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
 	_cancel_world_effect()
 	_close_modal(_room302_studio_active())
 	var previous_focus = get_viewport().gui_get_focus_owner()
@@ -1196,16 +1237,28 @@ func _modal_base(title: String) -> VBoxContainer:
 	modal.name = "NativeModalOverlay"
 	modal.focus_mode = Control.FOCUS_ALL
 	modal.mouse_filter = Control.MOUSE_FILTER_STOP
-	modal.theme = NativeUi.make_theme(font)
+	modal.theme = NativeUi.make_theme(Typography.body_font(),16,16)
 	modal.z_index = 100
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
-	modal.color = Color(0.03,0.06,0.08,0.88)
+	modal.color = Color.TRANSPARENT if surface.begins_with("selected_") else Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76)
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(modal)
-	var panel := PanelContainer.new()
+	var panel: PanelContainer
+	if surface.begins_with("selected_"):
+		panel = PanelContainer.new()
+		var clear:=StyleBoxEmpty.new()
+		clear.content_margin_left=8;clear.content_margin_right=8
+		clear.content_margin_top=8;clear.content_margin_bottom=8
+		panel.add_theme_stylebox_override("panel",clear)
+		panel.set_meta("selected_surface",surface.trim_prefix("selected_"))
+	elif surface in ["notebook","loose_sheet"]:
+		panel = preload("res://scripts/ui/campus_notebook_panel.gd").new()
+		panel.mode = surface
+	else:
+		panel = preload("res://scripts/ui/campus_paper_panel.gd").new()
+		panel.add_theme_stylebox_override("panel",CampusMaterial.panel_style("paper"))
 	modal_panel = panel
 	panel.name = "NativeModalPanel"
-	panel.add_theme_stylebox_override("panel",NativeUi.box(NativeUi.PAPER,NativeUi.INK,NativeUi.EDGE,0,Vector2(16,16)))
 	modal.add_child(panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation",12)
@@ -1215,8 +1268,26 @@ func _modal_base(title: String) -> VBoxContainer:
 	var label := _label(title,NativeUi.FONT_TITLE)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(label)
-	header.add_child(_button("关闭",_close_modal,Vector2(70,44)))
+	if surface=="notebook":
+		var title_index:=PanelContainer.new();title_index.name="NotebookPageIndex"
+		title_index.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+		title_index.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+		label.autowrap_mode=TextServer.AUTOWRAP_OFF
+		title_index.add_theme_stylebox_override("panel",CampusMaterial.panel_style("placard",{},Vector2(12,6)))
+		label.add_theme_color_override("font_color",CampusMaterial.PAPER)
+		Typography.apply_body(label);label.add_theme_font_size_override("font_size",18)
+		title_index.add_child(label);header.add_child(title_index)
+		var title_space:=Control.new();title_space.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title_space)
+	else: header.add_child(label)
+	var close_button := _button("关闭",_close_modal,Vector2(70,44))
+	close_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
+	if surface.begins_with("selected_"):
+		var selected_surface:=surface.trim_prefix("selected_")
+		SelectedUi.apply_label(label,selected_surface,"heading")
+		SelectedUi.apply_button(close_button,selected_surface)
+		box.add_theme_constant_override("separation",8)
+	header.add_child(close_button)
 	modal_notice_slot=Control.new()
 	modal_notice_slot.name="NativeModalNotice"
 	modal_notice_slot.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -1231,6 +1302,11 @@ func _modal_base(title: String) -> VBoxContainer:
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_theme_constant_override("separation",10)
 	scroll.add_child(content)
+	panel.set_meta("dialog_content",content)
+	panel.set_meta("dialog_column",box)
+	# Text wrapping settles after width assignment, so recalculate after the
+	# container reports its actual minimum, not from character-count guesses.
+	content.minimum_size_changed.connect(_layout_modal.call_deferred)
 	_layout_modal()
 	modal.grab_focus()
 	_sync_inventory_dock_input()
@@ -1392,6 +1468,7 @@ func _refresh_inventory_dock() -> void:
 		var id:=str(item.id)
 		if not State.d.items.get(id,false): continue
 		if existing.has(id):
+			_style_world_item(existing[id],str(State.d.native.get("selected_item",""))==id)
 			existing.erase(id)
 			continue
 		var entry: Dictionary = item
@@ -1399,8 +1476,15 @@ func _refresh_inventory_dock() -> void:
 		button.name="WorldItem_"+id
 		button.item_id = id
 		button.text = str(item.name)
-		button.custom_minimum_size = Vector2(86,48)
-		button.add_theme_font_size_override("font_size",14)
+		button.custom_minimum_size = Vector2(126,48)
+		button.clip_text=true
+		button.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+		button.alignment=HORIZONTAL_ALIGNMENT_LEFT
+		_style_world_item(button,str(State.d.native.get("selected_item",""))==id)
+		if is_instance_valid(phone_chrome):
+			var icon: Control=phone_chrome._make_icon(button,id,28)
+			icon.name="WorldItemArtwork"
+			icon.position=Vector2(8,10)
 		button.gestures=inventory_gestures
 		button.can_combine=func(from_id: String,to_id: String) -> bool:
 			return world_frame.is_visible_in_tree() and not _inventory_dock_input_blocked() and bool(State.d.items.get(from_id,false)) and bool(State.d.items.get(to_id,false))
@@ -1419,9 +1503,22 @@ func _refresh_inventory_dock() -> void:
 		button.queue_free()
 	_sync_inventory_dock_input()
 
+func _style_world_item(button: Button, selected: bool) -> void:
+	Typography.apply_body(button)
+	NativeUi.apply_button(button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.CORAL if selected else CampusMaterial.PAPER_EDGE,0,2 if selected else 1,14,Vector2(8,6))
+	for state: String in ["normal","hover","pressed","hover_pressed","disabled"]:
+		button.get_theme_stylebox(state).content_margin_left=42
+	button.set_meta("selected_item",selected)
+
 func _inspect_item(item: Dictionary) -> void:
-	var box := _modal_base(str(item.name))
+	var box := _modal_base(str(item.name),"loose_sheet")
 	inspected_item_id=str(item.get("id",""))
+	if is_instance_valid(phone_chrome):
+		var artwork_row:=CenterContainer.new()
+		artwork_row.custom_minimum_size.y=84
+		box.add_child(artwork_row)
+		var icon:Control=phone_chrome._make_icon(artwork_row,inspected_item_id,56)
+		icon.custom_minimum_size=Vector2(56,56)
 	var catalog = JSON.parse_string(FileAccess.get_file_as_string("res://data/native/item_catalog.json"))
 	var entry: Dictionary = catalog.get(str(item.id),{}) if catalog is Dictionary else {}
 	var document: Dictionary = entry.get("document",{})
@@ -1437,7 +1534,14 @@ func _inspect_item(item: Dictionary) -> void:
 	box.add_child(_button("选择使用",func(): State.select_item(str(item.id)); _close_modal()))
 
 func _show_inventory() -> void:
-	var box := _modal_base("物品")
+	var box := _modal_base("物品","notebook")
+	var grid:=GridContainer.new()
+	grid.name="InventoryGrid"
+	grid.columns=2
+	grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation",12)
+	grid.add_theme_constant_override("v_separation",12)
+	box.add_child(grid)
 	var catalog = State.content("items.config.json")
 	var metadata: Dictionary = {}
 	if catalog is Dictionary: metadata = catalog.get("items",catalog)
@@ -1455,18 +1559,33 @@ func _show_inventory() -> void:
 		item_entry["name"] = label
 		var item_button=load("res://scripts/ui/inventory_item.gd").new()
 		item_button.text=label; item_button.item_id=item_id; item_button.gestures=inventory_gestures; item_button.allow_drag=false
-		item_button.custom_minimum_size=Vector2(0,44)
-		item_button.selection_requested.connect(func(id: String): State.select_item(id))
+		item_button.custom_minimum_size=Vector2(0,94)
+		item_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		item_button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		Typography.apply_body(item_button)
+
+		if is_instance_valid(phone_chrome):
+			var icon:Control=phone_chrome._make_icon(item_button,item_id,32)
+			icon.set_anchors_preset(Control.PRESET_CENTER_TOP)
+			icon.position=Vector2(-16,10)
+		item_button.selection_requested.connect(func(id: String):
+			State.select_item(id)
+			for slot: Button in grid.get_children(): _style_inventory_card(slot,str(slot.item_id)==id)
+		)
 		item_button.inspection_requested.connect(func(_id: String): _inspect_item(item_entry))
-		box.add_child(item_button)
-		var desc := _label(str(item.get("desc",item.get("description",item.get("intro","")))),16)
-		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		box.add_child(desc)
+		grid.add_child(item_button)
+		_style_inventory_card(item_button,str(State.d.native.get("selected_item",""))==item_id)
 	if count == 0: box.add_child(_label("口袋里暂时没有物品。"))
 	for action in State.get_actions("phone_home"):
 		if str(action.id) == "c1_combine" and count >= 2:
 			var combine: Dictionary = action
 			box.add_child(_button("组合物品",func(): _invoke_action(combine)))
+
+func _style_inventory_card(button: Button, selected: bool) -> void:
+	NativeUi.apply_button(button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.CORAL if selected else CampusMaterial.PAPER_EDGE,0,1,16,Vector2(10,8))
+	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
+		button.get_theme_stylebox(mode).content_margin_top=48
+	load("res://scripts/ui/interaction_chrome.gd").set_selected(button,selected)
 
 func _show_world_journal() -> void:
 	# A queued top-row press cannot replace another input owner or a phone page.
@@ -1477,15 +1596,22 @@ func _show_world_journal() -> void:
 func _show_journal() -> void:
 	# Keep the destination promised by the mounted journal across rotation.
 	var return_to_world: bool=world_frame.is_visible_in_tree()
-	var box := _modal_base("调查记录")
+	var box := _modal_base("调查记录","selected_journal")
 	if return_to_world: modal_previous_focus=weakref(world)
 	_refresh_observation_comparison()
 	var current: Dictionary=CanteenObjective.current(State.d)
 	var journal:=NativeJournalView.new()
+	if return_to_world: journal.context_texture=world.background
 	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),return_to_world)
 	journal.resume_requested.connect(func():
 		_close_modal()
-		if return_to_world or _is_canteen_defense_entry() or _is_bike_chase_entry(): _show_world_mobile()
+		if return_to_world or _is_canteen_defense_entry() or _is_bike_chase_entry():
+			# This is an explicit scene return, so persist the same destination as
+			# the phone's Return control before admitting the retained activity.
+			if str(State.d.get("runtimeMode","phone"))!="rpg":
+				State.d.runtimeMode="rpg"
+				State.save_game()
+			_show_world_mobile()
 	)
 	journal.comparison_requested.connect(func(): _show_observation_comparison(true))
 	box.add_child(journal)
@@ -1499,7 +1625,7 @@ func _show_observation_comparison(from_journal: bool=false) -> void:
 	if is_instance_valid(active_game) or State.story_input_locked(): return
 	_refresh_observation_comparison()
 	if not observation_comparison_session.available(): return
-	var box := _modal_base("线索对照")
+	var box := _modal_base("线索对照","notebook")
 	if from_journal:
 		if world_frame.is_visible_in_tree(): modal_previous_focus=weakref(world)
 		var back:=_button("返回调查记录",_show_journal)
@@ -1510,6 +1636,18 @@ func _show_observation_comparison(from_journal: bool=false) -> void:
 	comparison.close_requested.connect(_close_modal)
 	box.add_child(comparison)
 	comparison.call_deferred("_restore_focus","ObservationSlot0")
+
+func _fit_choice_popup(choice: OptionButton) -> void:
+	# Native PopupMenu does not wrap option lines. Measure the actual bundled
+	# face instead of assuming the narrower pixel font used by the old shell.
+	var popup := choice.get_popup()
+	var face := Typography.body_font()
+	var longest := 1.0
+	for index in choice.item_count:
+		longest = maxf(longest,face.get_string_size(choice.get_item_text(index),HORIZONTAL_ALIGNMENT_LEFT,-1,16).x)
+	var font_size := clampi(floori(16.0*maxf(1,size.x-56)/longest),12,16)
+	popup.add_theme_font_override("font",face)
+	popup.add_theme_font_size_override("font_size",font_size)
 
 func _show_form(action: Dictionary) -> void:
 	var box := _modal_base(str(action.get("label","输入")))
@@ -1529,6 +1667,8 @@ func _show_form(action: Dictionary) -> void:
 				dropdown.add_item(str(option.get("label",option.get("id",""))) if option is Dictionary else str(option))
 				values.append(option.get("id",option.get("value")) if option is Dictionary else option)
 			box.add_child(dropdown)
+			_fit_choice_popup(dropdown)
+			dropdown.get_popup().about_to_popup.connect(func(): _fit_choice_popup(dropdown))
 			editors[key] = {"node":dropdown,"options":values}
 		else:
 			var input := LineEdit.new()
@@ -1581,12 +1721,24 @@ func _show_settings() -> void:
 	))
 	box.add_child(_button("全屏 / 窗口",func(): DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)))
 	if State.developer_tools_available(): box.add_child(_button("DEV · 独立场景检查",_show_developer))
-	box.add_child(_button("保存画面截图",func(): _close_modal(); _capture.call_deferred()))
+	box.add_child(_button("保存画面截图",_capture_after_menu.call_deferred))
+	# Settings are choices, not eight simultaneous primary actions.
+	for action_button in box.get_children():
+		if action_button is Button and action_button != save_progress_button:
+			NativeUi.apply_button(action_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
+			if action_button.text=="重新开始":
+				action_button.add_theme_color_override("font_color",CampusMaterial.CORAL)
 	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"
 	if is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
 	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
+
+func _capture_after_menu() -> void:
+	# A GUI release is still traversing the pressed button's ancestors.
+	# Defer retiring this menu until dispatch ends, then capture the world.
+	_close_modal()
+	_capture.call_deferred()
 
 func _save_progress() -> void:
 	if is_instance_valid(web_platform): web_platform.request_save()
@@ -1837,7 +1989,12 @@ func _open_game_now(config: Dictionary) -> void:
 	if active_game.has_method("configure_canteen_scene"):
 		active_game.configure_canteen_scene(world.native_canteen,world.chapter3_layers,world.player,world.camera,world.zoom)
 	if active_game.has_method("setup"): active_game.setup(config)
-	elif active_game.has_method("start"): active_game.start(config)
+	elif active_game.has_method("start"):
+		var start_config:Dictionary=config
+		if config.get("type","")=="interception":
+			start_config=config.duplicate(true)
+			start_config["reduced_motion"]=bool(State.d.native.settings.get("reduced_motion",false))
+		active_game.start(start_config)
 	if _activity_owns_scene(): mobile_world=true
 	_layout()
 
@@ -1949,11 +2106,14 @@ func _continue_chase_departure(owner: Control) -> void:
 
 func _open_narrative(config: Dictionary) -> void:
 	if not await _content_ready(): return
-	var box := _modal_base(str(config.get("title","7:55")))
+	var box := _modal_base(str(config.get("title","7:55")),"selected_dialogue")
 	var label := _label(str(config.get("text",config.get("body",""))),20)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	SelectedUi.apply_label(label,"dialogue","body")
 	box.add_child(label)
-	box.add_child(_button("继续",func(): _close_modal(); State.act(str(config.get("on_complete","")),{"acknowledged":true})))
+	var advance:=_button("继续",func(): _close_modal(); State.act(str(config.get("on_complete","")),{"acknowledged":true}))
+	SelectedUi.apply_button(advance,"dialogue")
+	box.add_child(advance)
 
 func _on_file_selected(path: String) -> void:
 	if export_mode: _feedback("已导出存档" if State.export_save(path) == OK else "导出失败，进度仍保留。")
@@ -2012,6 +2172,7 @@ func _show_local_world_feedback(message:String)->bool:
 	return true
 
 func _feedback(message: String,tone: String="system",duration_override:float=-1) -> void:
+	if checkin_feedback_depth>0 and str(State.d.native.page)=="checkin" and phone_builder!=null and phone_builder.checkin_page.owns_feedback(message):return
 	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
 	if _room302_studio_active():modal.set_feedback(message);return
 	if _virtual_run_owns_feedback(message) or _scene_owns_feedback(message):return
@@ -2032,7 +2193,19 @@ func _on_audio_subtitle(text:String,surface:String,duration_ms:float,tone:String
 		_show_story_caption(text,tone,duration_ms/1000.0,str(metadata.get("speaker","")))
 	else:_feedback(text,tone,maxf(.1,duration_ms/1000.0))
 
+func _sync_selected_world_overlay() -> void:
+	if not is_instance_valid(world) or not is_instance_valid(world_view): return
+	var screen_rect: Rect2 = world_view.get_global_rect()
+	var local_rect := Rect2(get_global_transform_with_canvas().affine_inverse() * screen_rect.position, screen_rect.size / get_global_transform_with_canvas().get_scale())
+	world.sync_selected_overlay_native(self,local_rect)
+	# Transparent reading surfaces own attention, not a new camera/layout.
+	# Preserve visibility-derived world bounds and existing modal input blocking.
+	var reading: bool = is_instance_valid(modal_panel) and modal_panel.has_meta("selected_surface")
+	for chrome: Control in [mobile_back,world_tasks,inventory_handle,inventory_dock]:
+		if is_instance_valid(chrome): chrome.modulate.a=0.0 if reading else 1.0
+
 func _process(delta: float) -> void:
+	_sync_selected_world_overlay()
 	if is_instance_valid(world) and world.chapter4_layers != null:
 		var archive: RefCounted=world.chapter4_layers.archive_motion
 		if archive.stage=="handoff" and (not archive.matches(State.d) or is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document) or not world_frame.is_visible_in_tree()): archive.cancel()
@@ -2281,6 +2454,12 @@ func _on_phone_action(id: String,value: Variant) -> void:
 		"native_save_tools": _show_settings(); return
 		"native_save_now": _save_progress(); return
 		"native_reset_progress": State.new_game(); return
+	if id=="c1_checkin" and value!=null:
+		# Keep the accepted controller/log result; the form owns wrong-code copy.
+		checkin_feedback_depth+=1
+		State.act(id,value)
+		checkin_feedback_depth-=1
+		return
 	if value==null:
 		var page: String="control_center" if State.d.ui.controlCenterOpen else str(State.d.native.page)
 		for action in State.get_actions(page):

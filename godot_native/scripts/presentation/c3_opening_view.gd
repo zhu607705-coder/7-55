@@ -17,7 +17,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	clip_contents=true
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	backdrop=load("res://assets/rpg/interiors/library_interior.png")
 	subtitle=Label.new(); subtitle.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	subtitle.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

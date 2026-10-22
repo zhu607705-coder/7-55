@@ -62,7 +62,7 @@ func _ready() -> void:
 		filtered.diffuse_texture = actor_textures[key]
 		filtered.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		actor_textures[key] = filtered
-	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font = preload("res://scripts/ui/native_typography.gd").body_font()
 	var state := get_node_or_null("/root/State")
 	if state: reduced_motion = bool(state.d.native.settings.get("reduced_motion",false))
 	water_lens=ColorRect.new(); water_lens.name="FishingWaterLens"

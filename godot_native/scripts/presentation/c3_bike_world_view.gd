@@ -7,7 +7,7 @@ const DRAW: Array=[{"method":"strokeCircle","args":[20,42,17],"style":{"width":5
 
 var image: Image
 var texture: ImageTexture
-var font: Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+var font: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 var worlds: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
 func active(s: Dictionary) -> bool:
 	return str(s.native.scene)=="campus_bootstrap" and bool(s.canteenHunt.active) and str(s.canteenHunt.phase)=="chase_ready"

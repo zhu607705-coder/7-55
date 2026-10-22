@@ -1,6 +1,8 @@
 extends Control
 ## Non-modal source subtitles: dialogue locks interaction, never ordinary walking.
-const Ui=preload("res://scripts/ui/native_ui_theme.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
+const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
+const DialogueLayout=preload("res://scripts/ui/selected_dialogue_layout.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var body_scroll:ScrollContainer
 const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
@@ -20,14 +22,14 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	var box:=Ui.box(Ui.PAPER,Ui.INK,Ui.EDGE)
+	var box:=StyleBoxEmpty.new()
 	panel.add_theme_stylebox_override("panel",box)
 	for field: String in ["speaker","body"]:
-		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		label.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"))
+		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		Typography.apply_body(label)
 		panel.add_child(label); set(field,label)
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
-	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; body.add_theme_color_override("font_color",Ui.INK)
+	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; Selected.apply_label(body,"dialogue","body")
 	visible=false
 func tick() -> void:
 	if not is_instance_valid(panel): return
@@ -43,16 +45,15 @@ func tick() -> void:
 	elif not region.has_area():
 		var margin:=Overlay.pixels(8,display_scale)
 		region=Rect2(margin,margin,size.x-margin*2,size.y-margin*2)
-	# A camera-owned room keeps its right-hand exit lane unobscured even
-	# when a medium desktop is too narrow to supply a separate letterbox.
-	if align_left and not screen_rect.has_area():region.size.x*=.65
-	var metrics:=Overlay.dialogue(body.get_theme_font("font"),region,physical_scale,str(v.speaker),str(v.text),"",text_scale)
+	# Existing safe region is retained; selected layout owns right-side alignment.
+	var metrics:=DialogueLayout.metrics(region,physical_scale,str(v.speaker),str(v.text),"",text_scale)
 	panel.position=metrics.panel.position; panel.size=metrics.panel.size
 	if screen_rect.has_area():panel.position.y=screen_rect.position.y
-	elif align_left:panel.position.x=region.position.x
+
 	speaker.text=str(v.speaker); speaker.add_theme_font_size_override("font_size",metrics.speaker_font)
 	speaker.position=metrics.speaker.position; speaker.size=metrics.speaker.size
-	speaker.add_theme_color_override("font_color",Color("31523a") if v.speaker=="玩家" else Ui.FOCUS)
+	DialogueLayout.apply_role(speaker,"heading",metrics.speaker_font)
+	DialogueLayout.apply_role(body,"body",metrics.body_font)
 	body.text=str(v.text); body.add_theme_font_size_override("font_size",metrics.body_font)
 	body_scroll.layout_body(metrics.body_viewport,metrics.body.size.y)
 

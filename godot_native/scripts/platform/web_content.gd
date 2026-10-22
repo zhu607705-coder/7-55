@@ -3,6 +3,7 @@ extends Node
 signal blocking_changed(blocking: bool)
 signal content_changed
 const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "campus_shared", "campus_chaoyang", "campus_haidian", "campus_changping"]
+const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
 var _host: Variant
 var _callback: JavaScriptObject
@@ -80,14 +81,14 @@ func _configure_manifest(value: Dictionary, host: Variant) -> bool:
 	var families: Dictionary = {}
 	var files: Dictionary = {str(value.core.file): true}
 	for item: Variant in value.packs:
-		if not item is Dictionary or not _valid_id(item.get("id")) or item.id == "core" or item.get("family") not in FAMILIES or not _valid_file(item) or packs.has(item.id) or files.has(item.file): return false
+		if not item is Dictionary or not _valid_id(item.get("id")) or item.id == "core" or not ReleaseContent.family_available(item.get("family")) or not _valid_file(item) or packs.has(item.id) or files.has(item.file): return false
 		packs[item.id] = {"id": item.id, "family": item.family, "file": item.file, "bytes": int(item.bytes), "sha256": item.sha256, "status": "missing", "error": ""}
 		if not families.has(item.family): families[item.family] = []
 		families[item.family].append(item.id)
 		files[item.file] = true
 	var seen: Dictionary = {}
 	for family: Variant in value.backgroundOrder:
-		if not family is String or family not in FAMILIES or seen.has(family): return false
+		if not ReleaseContent.family_available(family) or seen.has(family): return false
 		seen[family] = true
 	_packs = packs
 	_families = families
@@ -134,12 +135,14 @@ func ensure_state(snapshot: Dictionary) -> bool:
 	return await ensure_families(required_families(snapshot))
 
 func ensure_families(families: Array) -> bool:
+	# Admission precedes the native monolithic fallback as well: loading a Web
+	# story-only PCK with a native editor binary must not reopen stripped content.
+	for family: Variant in families:
+		if not ReleaseContent.family_available(family): return false
 	if not _enabled: return true
 	if not _fatal_error.is_empty():
 		_show_fatal()
 		return false
-	for family: Variant in families:
-		if not family is String or family not in FAMILIES: return false
 	var ids := _required_ids(families)
 	if _ids_ready(ids): return true
 	_next_waiter += 1
@@ -244,7 +247,7 @@ func _build_overlay() -> void:
 	var center := CenterContainer.new(); margin.add_child(center)
 	_card = PanelContainer.new(); _card.add_theme_stylebox_override("panel", Ui.box(Color("fff9ec"), Color("b9b0a0"), 1, 12, Vector2(24, 24))); center.add_child(_card)
 	var column := VBoxContainer.new(); column.add_theme_constant_override("separation", 18); _card.add_child(column)
-	var font := load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf") as Font
+	var font := preload("res://scripts/ui/native_typography.gd").body_font() as Font
 	_card.theme = Ui.make_theme(font, 18, 18)
 	var title := Label.new(); title.text = "正在准备下一段旅程"; title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; title.add_theme_color_override("font_color", Color("263c34")); column.add_child(title)
 	_detail = Label.new(); _detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; _detail.add_theme_font_size_override("font_size", 15); _detail.add_theme_color_override("font_color", Color("52645b")); column.add_child(_detail)

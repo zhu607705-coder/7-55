@@ -10,6 +10,16 @@ const argument = name => process.argv.find(value => value.startsWith(name + '=')
 const directory = argument('--export');
 if (!directory) throw new Error('Required --export=split-export-directory');
 const required = [
+  ...['messages','sports','campus','settings','album','recovery','voice','forum','controls','clock'].map(id => 'ui_assets/phone_icons/'+id+'.svg'),
+  'ui_assets/fonts/CampusUISans-Regular.otf',
+  'ui_assets/fonts/OFL.txt',
+  'ui_assets/fonts/SelectedSans-Regular.otf',
+  'ui_assets/fonts/SelectedSans-Bold.otf',
+  'ui_assets/fonts/SelectedCoverage-Regular.otf',
+  'ui_assets/fonts/SelectedCoverage-Bold.otf',
+  'ui_assets/fonts/SelectedBoutique-Regular.ttf',
+  'ui_assets/fonts/SELECTED_NOTO_LICENSE.txt',
+  'ui_assets/fonts/SELECTED_BOUTIQUE_OFL.txt',
   'assets/native/canteen_animation/drink_machine_press_4f.png',
   'assets/native/canteen_animation/drink_fountain_body.png',
   'assets/native/canteen_animation/drink_fountain_paddle.png',

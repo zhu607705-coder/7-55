@@ -1,0 +1,923 @@
+{
+  "schema": "755-web-display-delivery-evidence-v1",
+  "date": "2026-10-20",
+  "runtime": "independent Godot Web",
+  "sourceCommitBase": "641b95ecbadb3702f76551bf4537d57db3097d04",
+  "sourceDirty": true,
+  "sourceInputSha256": "fe92dec948c44e644f747d5df4f7ffc6c3e0a6b7f5bd474aba568e42ac1f0597",
+  "scope": "High-DPI CSS layout and Web phone fit only. Retains physical rendering density, authored logical ratios, controller/save state. This local candidate evidence does not claim a later clean Linux build or a completed deployment.",
+  "baselineDiagnosis": {
+    "path": "godot_native/exports/verification/viewport_size_641_dpr_20261020/summary.json",
+    "bytes": 14804,
+    "sha256": "b56db33336e0875ca2df8bf8d8be5fd6c0d40be94eee5223f03cf3b3062e043d"
+  },
+  "localSixViewportBrowser": {
+    "schema": "755-web-display-six-case-acceptance-v1",
+    "candidateSourceInputSha256": "fe92dec948c44e644f747d5df4f7ffc6c3e0a6b7f5bd474aba568e42ac1f0597",
+    "manifest": {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/web_display_scale_browser_20261020/accepted-build-manifest.json",
+      "bytes": 46695,
+      "sha256": "ca41207b4efb36ff98354d3f4c436261f8d79d0f701363115003bccaa8a5f414"
+    },
+    "contentManifest": {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/web_display_scale_browser_20261020/accepted-content-manifest.json",
+      "bytes": 4807,
+      "sha256": "454d81f8735c20735599a711c59435b4ce335cc7fcce01ba32854345402e92e3"
+    },
+    "report": {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/web_display_scale_browser_20261020/web-acceptance.json",
+      "bytes": 1493522,
+      "sha256": "ce9a75cb4e8e40f2d4ddda3b2aca3300f39aabdb4622935e1f98c1c2b2ab6b0d"
+    },
+    "frozenRunner": {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/web_display_scale_browser_20261020/runner-source.mjs",
+      "bytes": 82236,
+      "sha256": "4fdd5c0ee71fa9c6aab0db2ef6c922ed08e602a5d7c4c3e1649dc15458738b23"
+    },
+    "cleanup": {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/web_display_scale_browser_20261020/cleanup-receipt.json",
+      "bytes": 3586,
+      "sha256": "a6fbac21de71be5cceda9395fcc5e47ebb1180b8f5928884a0fa1be170c5714b"
+    },
+    "passed": true,
+    "assertions": 737,
+    "browserCases": 6,
+    "independentHTTPTransportFiles": 110,
+    "matrix": [
+      {
+        "id": "desktop-1280",
+        "dpr": 1,
+        "cssViewport": [
+          1280,
+          720
+        ],
+        "backing": [
+          1280,
+          720
+        ],
+        "logicalViewport": {
+          "height": 720,
+          "width": 1280,
+          "x": 0,
+          "y": 0
+        },
+        "phoneRect": {
+          "height": 684,
+          "width": 342,
+          "x": 469,
+          "y": 18
+        },
+        "passed": true,
+        "actualColdChunks": 91,
+        "realReloadRetainsExactState": true,
+        "ordinaryPortableReimport": true,
+        "invalidImportPreservesState": true,
+        "downloadedPNGDimensions": [
+          1280,
+          720
+        ],
+        "runtimeOrNetworkErrors": []
+      },
+      {
+        "id": "desktop-1440",
+        "dpr": 1,
+        "cssViewport": [
+          1440,
+          900
+        ],
+        "backing": [
+          1440,
+          900
+        ],
+        "logicalViewport": {
+          "height": 900,
+          "width": 1440,
+          "x": 0,
+          "y": 0
+        },
+        "phoneRect": {
+          "height": 864,
+          "width": 432,
+          "x": 504,
+          "y": 18
+        },
+        "passed": true,
+        "actualColdChunks": 91,
+        "realReloadRetainsExactState": true,
+        "ordinaryPortableReimport": true,
+        "invalidImportPreservesState": true,
+        "downloadedPNGDimensions": [
+          1440,
+          900
+        ],
+        "runtimeOrNetworkErrors": []
+      },
+      {
+        "id": "touch-390",
+        "dpr": 1,
+        "cssViewport": [
+          390,
+          844
+        ],
+        "backing": [
+          390,
+          844
+        ],
+        "logicalViewport": {
+          "height": 844,
+          "width": 390,
+          "x": 0,
+          "y": 0
+        },
+        "phoneRect": {
+          "height": 732,
+          "width": 366,
+          "x": 12,
+          "y": 56
+        },
+        "passed": true,
+        "actualColdChunks": 91,
+        "realReloadRetainsExactState": true,
+        "ordinaryPortableReimport": true,
+        "invalidImportPreservesState": true,
+        "downloadedPNGDimensions": [
+          390,
+          844
+        ],
+        "runtimeOrNetworkErrors": []
+      },
+      {
+        "id": "retina-1440",
+        "dpr": 2,
+        "cssViewport": [
+          1440,
+          900
+        ],
+        "backing": [
+          2880,
+          1800
+        ],
+        "logicalViewport": {
+          "height": 900,
+          "width": 1440,
+          "x": 0,
+          "y": 0
+        },
+        "phoneRect": {
+          "height": 864,
+          "width": 432,
+          "x": 504,
+          "y": 18
+        },
+        "passed": true,
+        "actualColdChunks": 91,
+        "realReloadRetainsExactState": true,
+        "ordinaryPortableReimport": true,
+        "invalidImportPreservesState": true,
+        "downloadedPNGDimensions": [
+          2880,
+          1800
+        ],
+        "runtimeOrNetworkErrors": []
+      },
+      {
+        "id": "retina-touch-390",
+        "dpr": 3,
+        "cssViewport": [
+          390,
+          844
+        ],
+        "backing": [
+          1170,
+          2532
+        ],
+        "logicalViewport": {
+          "height": 844,
+          "width": 390,
+          "x": 0,
+          "y": 0
+        },
+        "phoneRect": {
+          "height": 732,
+          "width": 366,
+          "x": 12,
+          "y": 56
+        },
+        "passed": true,
+        "actualColdChunks": 91,
+        "realReloadRetainsExactState": true,
+        "ordinaryPortableReimport": true,
+        "invalidImportPreservesState": true,
+        "downloadedPNGDimensions": [
+          1170,
+          2532
+        ],
+        "runtimeOrNetworkErrors": []
+      },
+      {
+        "id": "desktop-1920",
+        "dpr": 1,
+        "cssViewport": [
+          1920,
+          1080
+        ],
+        "backing": [
+          1920,
+          1080
+        ],
+        "logicalViewport": {
+          "height": 1080,
+          "width": 1920,
+          "x": 0,
+          "y": 0
+        },
+        "phoneRect": {
+          "height": 1044,
+          "width": 522,
+          "x": 699,
+          "y": 18
+        },
+        "passed": true,
+        "actualColdChunks": 91,
+        "realReloadRetainsExactState": true,
+        "ordinaryPortableReimport": true,
+        "invalidImportPreservesState": true,
+        "downloadedPNGDimensions": [
+          1920,
+          1080
+        ],
+        "runtimeOrNetworkErrors": []
+      }
+    ],
+    "command": "node godot_native/tools/verify_web_export.mjs --url=http://127.0.0.1:5227/ --export-dir=godot_native/exports/web-display-scale-20261020 --output=godot_native/exports/verification/web_display_scale_browser_20261020 --scenarios=basic --only=all --boot-timeout=180000",
+    "startedAt": "2026-10-20T10:17:14.200Z",
+    "completedAt": "2026-10-20T10:19:41.021Z",
+    "durationSeconds": 146.821,
+    "scope": "Local isolated Chromium six-viewport real fresh alarm/home/mode/save exact durable ACK and readonly IDB, reload, portable file operations, real CSS and high-density canvas geometry, unchanged strict transport SHA proof. No source edits, rebuild or assertion weakening.",
+    "limitations": [
+      "This local146.821s run is distinct from the future CI run and does not predict cloud performance or change its12min timeout.",
+      "No earned chapter fixtures were supplied; no full C1/C2/C3.5 campaign, RPG playthrough or success-animation claim from these737 assertions.",
+      "DPR2/3 emulate density in isolated Chromium, not physical device or Gecko/WebKit acceptance.",
+      "Native root Window/input/fractional-scale tests and historical package checks remain separately scoped; counts are not added as new unique features."
+    ],
+    "serviceCleanup": {
+      "own5227Stopped": true,
+      "ownChromiumProfilesCleanedByRunner": true,
+      "userChromeUntouched": true
+    }
+  },
+  "nativeTargeted": {
+    "report": {
+      "path": "/tmp/codex-755-viewport-targeted-20261020.json",
+      "bytes": 5455,
+      "sha256": "51376563dd12a81d74b5409dc040f9115bff4032966ec694bff15798f80e8d59"
+    },
+    "passed": true,
+    "stages": [
+      {
+        "label": "Native startup",
+        "failed": false,
+        "durationMs": 2111,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\n"
+      },
+      {
+        "label": "test_native_surface_gestures.gd",
+        "failed": false,
+        "durationMs": 3072,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nMEASURE (390, 844) world=(370.0, 628.0) actor=(71.75999, 95.67999) HUD=18/15 mode=(76.0, 44.0) action=(60.0, 60.0)\nMEASURE (430, 860) world=(410.0, 644.0) actor=(71.75999, 95.67999) HUD=18/15 mode=(76.0, 44.0) action=(60.0, 60.0)\nNATIVE_SURFACE_GESTURES: 81 checks; 0 failures\n"
+      },
+      {
+        "label": "test_native_surface_narrative.gd",
+        "failed": false,
+        "durationMs": 2351,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_SURFACE_NARRATIVE: 39 checks; 0 failures\n"
+      },
+      {
+        "label": "test_native_surface_save.gd",
+        "failed": false,
+        "durationMs": 9246,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_SURFACE_SAVE: 232 checks; 0 failures\n"
+      },
+      {
+        "label": "test_native_surface_modes.gd",
+        "failed": false,
+        "durationMs": 11658,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNATIVE_SURFACE_MODES: 442 checks; 0 failures\n"
+      },
+      {
+        "label": "test_shell_layout.gd",
+        "failed": false,
+        "durationMs": 1682,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nNative shell layout tests: PASS (0 failures)\n"
+      },
+      {
+        "label": "test_web_display_scale.gd",
+        "failed": false,
+        "durationMs": 740,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWEB DISPLAY SCALE PASS: 45 checks\n"
+      },
+      {
+        "label": "test_web_platform.gd",
+        "failed": false,
+        "durationMs": 1749,
+        "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nWEB_PLATFORM: 18 checks; 0 failures\n"
+      }
+    ]
+  },
+  "sourceSync": {
+    "assets": 719,
+    "verifyOnlySourceInputUnchanged": true
+  },
+  "limitations": [
+    "Chromium density emulation does not prove physical phones, minimum browser versions or Gecko/WebKit.",
+    "No full manual chapter campaign, human audio acceptance or native full-suite claim.",
+    "Prior 641b95ec Linux/online evidence remains separate; a subsequent Pages run must validate its own committed build."
+  ],
+  "localFocusedInteraction": {
+    "receipt": {
+      "path": "godot_native/exports/verification/hidpi_display_fe92_web_20261020/summary.json",
+      "bytes": 19206,
+      "sha256": "7e1a0dd896cc1b3564c8437bdcc929ba5b65955af3fbc12dc78894104788c3db"
+    },
+    "summary": {
+      "schema": "755-web-display-scale-focused-summary-v1",
+      "generatedAt": "2026-10-20T10:26:35.284032+00:00",
+      "artifact": {
+        "dir": "/Users/zhu/Downloads/755/godot_native/exports/web-display-scale-20261020",
+        "manifestSha256": "ca41207b4efb36ff98354d3f4c436261f8d79d0f701363115003bccaa8a5f414",
+        "sourceCommit": "641b95ecbadb3702f76551bf4537d57db3097d04",
+        "sourceInputSha256": "fe92dec948c44e644f747d5df4f7ffc6c3e0a6b7f5bd474aba568e42ac1f0597",
+        "sourceDirty": true
+      },
+      "focusedScopePassed": true,
+      "allAttemptsPassed": false,
+      "acceptedCheckCount": 144,
+      "comparisonChecks": [
+        {
+          "ok": true,
+          "label": "same CSS1440 DPR1/DPR2 actual rendered phone geometry identical",
+          "normal": {
+            "x": 503.99999999999994,
+            "y": 18,
+            "width": 432,
+            "height": 864
+          },
+          "retina": {
+            "x": 503.99999999999994,
+            "y": 18,
+            "width": 432,
+            "height": 864
+          }
+        },
+        {
+          "ok": true,
+          "label": "same CSS1440 DPR1/DPR2 selected keypad/nav control CSS rectangles identical"
+        }
+      ],
+      "attempts": [
+        {
+          "attempt": "attempt1",
+          "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt1/hidpi-acceptance.json",
+          "sha256": "a11fe2153781462cdcfc1d70b45f80f553b58933ad90f8db8b14d773a76c2a11",
+          "passed": false,
+          "completedChecks": 50,
+          "allCompletedChecksPassed": true,
+          "errors": [
+            "Error: Timeout live DPR transition 0.8\n    at poll (file:///private/tmp/codex-755-hidpi-focused-web.mjs:18:329)\n    at async file:///private/tmp/codex-755-hidpi-focused-web.mjs:132:1036"
+          ],
+          "runtimeErrors": [],
+          "note": "50 completed checks passed, then harness DPR===0.8 comparison timed out; snapshot logical1440x900 and1152x720 PNG preserved. Retry records measured0.800000011920929."
+        },
+        {
+          "attempt": "attempt2",
+          "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt2/hidpi-acceptance.json",
+          "sha256": "398276a13f693f17a3a3860cb44fcb7e2b3ee3c3d422f58ed29913af79442811",
+          "passed": false,
+          "completedChecks": 86,
+          "allCompletedChecksPassed": true,
+          "errors": [
+            "Error: CDP timeout Page.navigate\n    at Timeout._onTimeout (file:///private/tmp/codex-755-cache-cdp-helper.mjs:6:184)\n    at listOnTimeout (node:internal/timers:585:17)\n    at process.processTimers (node:internal/timers:521:7)"
+          ],
+          "runtimeErrors": [],
+          "note": "86 completed checks passed, including dynamicDPR and full desktopC2save/reload. Final run false due CDPPage.navigate timeout entering nextviewport; no runtime errors and no assertion failure."
+        },
+        {
+          "attempt": "attempt3-large",
+          "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt3-large/hidpi-acceptance.json",
+          "sha256": "1dc1bbfb488fee15b86734e73170fdf56bc6f3417e861adf170513ff140cd2e7",
+          "passed": true,
+          "completedChecks": 22,
+          "allCompletedChecksPassed": true,
+          "errors": [],
+          "runtimeErrors": [],
+          "note": "22/22PASS on fresh isolated1920viewport."
+        },
+        {
+          "attempt": "attempt4-touch",
+          "report": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt4-touch/hidpi-acceptance.json",
+          "sha256": "8b870b86fe166df5e7d2feb69e562d10e1fbf7875656daace85bd3d8aae21187",
+          "passed": true,
+          "completedChecks": 36,
+          "allCompletedChecksPassed": true,
+          "errors": [],
+          "runtimeErrors": [],
+          "note": "36/36PASS on fresh isolated390DPR3; real joystick movement and durable phone restore."
+        }
+      ],
+      "measurements": [
+        {
+          "id": "1440x900-dpr1",
+          "browser": {
+            "dpr": 1,
+            "inner": {
+              "width": 1440,
+              "height": 900
+            },
+            "canvasCSS": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "backing": {
+              "width": 1440,
+              "height": 900
+            },
+            "drawingBuffer": {
+              "width": 1440,
+              "height": 900
+            },
+            "timeOrigin": 1792491645872.7
+          },
+          "viewport": {
+            "height": 900,
+            "width": 1440,
+            "x": 0,
+            "y": 0
+          },
+          "phoneCSS": {
+            "x": 503.99999999999994,
+            "y": 18,
+            "width": 432,
+            "height": 864
+          }
+        },
+        {
+          "id": "1440x900-dpr2",
+          "browser": {
+            "dpr": 2,
+            "inner": {
+              "width": 1440,
+              "height": 900
+            },
+            "canvasCSS": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "backing": {
+              "width": 2880,
+              "height": 1800
+            },
+            "drawingBuffer": {
+              "width": 2880,
+              "height": 1800
+            },
+            "timeOrigin": 1792491662009.2
+          },
+          "viewport": {
+            "height": 900,
+            "width": 1440,
+            "x": 0,
+            "y": 0
+          },
+          "phoneCSS": {
+            "x": 503.99999999999994,
+            "y": 18,
+            "width": 432,
+            "height": 864
+          }
+        },
+        {
+          "id": "live1440-dpr1.25",
+          "browser": {
+            "dpr": 1.25,
+            "inner": {
+              "width": 1440,
+              "height": 900
+            },
+            "canvasCSS": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "backing": {
+              "width": 1800,
+              "height": 1125
+            },
+            "drawingBuffer": {
+              "width": 1800,
+              "height": 1125
+            },
+            "timeOrigin": 1792491662009.2
+          },
+          "viewport": {
+            "height": 900,
+            "width": 1440,
+            "x": 0,
+            "y": 0
+          },
+          "phoneCSS": {
+            "x": 503.99999999999994,
+            "y": 18,
+            "width": 432,
+            "height": 864
+          }
+        },
+        {
+          "id": "live1440-dpr0.8",
+          "browser": {
+            "dpr": 0.800000011920929,
+            "inner": {
+              "width": 1440,
+              "height": 900
+            },
+            "canvasCSS": {
+              "x": 0,
+              "y": 0,
+              "width": 1439,
+              "height": 899
+            },
+            "backing": {
+              "width": 1152,
+              "height": 720
+            },
+            "drawingBuffer": {
+              "width": 1152,
+              "height": 720
+            },
+            "timeOrigin": 1792491662009.2
+          },
+          "viewport": {
+            "height": 900,
+            "width": 1440,
+            "x": 0,
+            "y": 0
+          },
+          "phoneCSS": {
+            "x": 503.65,
+            "y": 17.98,
+            "width": 431.7,
+            "height": 863.04
+          }
+        },
+        {
+          "id": "live1440-dpr2",
+          "browser": {
+            "dpr": 2,
+            "inner": {
+              "width": 1440,
+              "height": 900
+            },
+            "canvasCSS": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "backing": {
+              "width": 2880,
+              "height": 1800
+            },
+            "drawingBuffer": {
+              "width": 2880,
+              "height": 1800
+            },
+            "timeOrigin": 1792491662009.2
+          },
+          "viewport": {
+            "height": 900,
+            "width": 1440,
+            "x": 0,
+            "y": 0
+          },
+          "phoneCSS": {
+            "x": 503.99999999999994,
+            "y": 18,
+            "width": 432,
+            "height": 864
+          }
+        },
+        {
+          "id": "1920x1080-dpr1",
+          "browser": {
+            "dpr": 1,
+            "inner": {
+              "width": 1920,
+              "height": 1080
+            },
+            "canvasCSS": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "backing": {
+              "width": 1920,
+              "height": 1080
+            },
+            "drawingBuffer": {
+              "width": 1920,
+              "height": 1080
+            },
+            "timeOrigin": 1792491832773.2
+          },
+          "viewport": {
+            "height": 1080,
+            "width": 1920,
+            "x": 0,
+            "y": 0
+          },
+          "phoneCSS": {
+            "x": 699,
+            "y": 18,
+            "width": 522,
+            "height": 1044
+          }
+        },
+        {
+          "id": "390x844-dpr3",
+          "browser": {
+            "dpr": 3,
+            "inner": {
+              "width": 390,
+              "height": 844
+            },
+            "canvasCSS": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844
+            },
+            "backing": {
+              "width": 1170,
+              "height": 2532
+            },
+            "drawingBuffer": {
+              "width": 1170,
+              "height": 2532
+            },
+            "timeOrigin": 1792491867522.2
+          },
+          "viewport": {
+            "height": 844,
+            "width": 390,
+            "x": 0,
+            "y": 0
+          },
+          "phoneCSS": {
+            "x": 12,
+            "y": 56.00000000000001,
+            "width": 366,
+            "height": 732
+          }
+        }
+      ],
+      "durableC2Evidence": {
+        "desktop1440Dpr2": {
+          "movement": {
+            "direction": "ArrowRight",
+            "previous": {
+              "x": 2550,
+              "y": 650
+            },
+            "now": {
+              "x": 2653.37475585938,
+              "y": 650
+            }
+          },
+          "retained": {
+            "x": 2653.37475585938,
+            "y": 650
+          },
+          "resumed": {
+            "x": 2653.37475585938,
+            "y": 650
+          },
+          "receipt": {
+            "acknowledgedDigest": "163dec82783688744efc892440f7ca5bf1047276a5cd0d96d1763e13ac4e1628",
+            "digest": "163dec82783688744efc892440f7ca5bf1047276a5cd0d96d1763e13ac4e1628",
+            "error": "",
+            "observedDigest": "163dec82783688744efc892440f7ca5bf1047276a5cd0d96d1763e13ac4e1628",
+            "pending": false,
+            "startedMs": 24586,
+            "token": 9
+          },
+          "reloadMainMs": 7772
+        },
+        "touch390Dpr3": {
+          "movement": {
+            "direction": "ArrowRight",
+            "previous": {
+              "x": 2550,
+              "y": 650
+            },
+            "now": {
+              "x": 2653.9658203125,
+              "y": 652.77880859375
+            }
+          },
+          "retained": {
+            "x": 2653.9658203125,
+            "y": 652.77880859375
+          },
+          "resumed": {
+            "x": 2653.9658203125,
+            "y": 652.77880859375
+          },
+          "receipt": {
+            "acknowledgedDigest": "6682eddd03174312eb2dc0e84e9c1943a9d2decd891b866739a02d531f0c541d",
+            "digest": "6682eddd03174312eb2dc0e84e9c1943a9d2decd891b866739a02d531f0c541d",
+            "error": "",
+            "observedDigest": "6682eddd03174312eb2dc0e84e9c1943a9d2decd891b866739a02d531f0c541d",
+            "pending": false,
+            "startedMs": 20375,
+            "token": 8
+          },
+          "reloadMainMs": 7515
+        }
+      },
+      "actualInputScope": [
+        "0798 keypad entries and real delete clicks/touches update local rendered draft only; no check-in submission or domain advancement is synthesized.",
+        "Same-document DPR2→1.25→0.8→2 preserves CSS viewport and anchored real click/delete. Actual Chromium0.8 reported0.800000011920929; tolerance1e-6 only for measured density.",
+        "Ordinary earned after_c2_dorm_exit import through shipped picker; real ArrowRight atDPR2 and real held visible joystick atDPR3 move actual native actor.",
+        "Actual map→phone button, explicit SaveNativeProgress with exact native receipt+independent readonly IDB primarySHA, actual new-document reload, phone surface preserved; actual return-world restores identical source coordinates."
+      ],
+      "limitations": [
+        "Isolated Chromium emulated DPR1/2/3, not physical device hardware or other engines.",
+        "Actual prior earned portable saves are imported through shipped UI. No writable bridge, progression injection, or fake game clock.",
+        "Locally served immutable export. No claim about live site speed, deployment or full campaign.",
+        "Only boot and required Chapter2 resources are allowed; other families intentionally blocked.",
+        "The parent-owned formal verifier737checks/6cases and native tests are separate evidence; not included in this check count.",
+        "Attempt2 browser/session became unresponsive to Page.navigate between completedDPR2 and next1920scenario. No product patch was made. Fresh isolated1920 and390DPR3 executions completed; this navigation/session failure is retained and not labelled a pass.",
+        "The first attempt failed a harness strict float equality at0.8. It is not overwritten or relabelled as a successful run.",
+        "Current focused check-in screenshots include existing transient low-battery notice after importing earned low-battery saves; this is preserved actual UI, not a new display-scale defect."
+      ],
+      "screenshots": [
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt1/1440x900-dpr1-checkin-entered.png",
+          "bytes": 48510,
+          "sha256": "c404423fd7831d931b7bda12f6a09f56bda690d10ef94cfc1b030e39d89e58a5",
+          "width": 1440,
+          "height": 900,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt1/1440x900-dpr1-entry.png",
+          "bytes": 10761,
+          "sha256": "3bdf38a6d2cfe0b957bfb1109bd79c3b78023c8459f80d0a03230d09b7e04aa5",
+          "width": 1440,
+          "height": 900,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt1/1440x900-dpr2-checkin-entered.png",
+          "bytes": 107091,
+          "sha256": "c7a33334d4fe745e4d3819f4051fa5e81186b81daba2c107476da021478f1fb9",
+          "width": 2880,
+          "height": 1800,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt1/1440x900-dpr2-entry.png",
+          "bytes": 26292,
+          "sha256": "d883e32c5dc9ea7d879ef6a50a9f739e35a35906e60e741418a2e072d7e1af25",
+          "width": 2880,
+          "height": 1800,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt1/failure.png",
+          "bytes": 50574,
+          "sha256": "cc89c77e8907ff4b1d4b1532883bb2bf570eb90de2d826d1d802dbdeed376dcd",
+          "width": 1152,
+          "height": 720,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt2/1440x900-dpr1-checkin-entered.png",
+          "bytes": 48507,
+          "sha256": "3efc7320ce75cf6432475c77ba12a26b668374f04b7e53cf901aae06aaa44737",
+          "width": 1440,
+          "height": 900,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt2/1440x900-dpr1-entry.png",
+          "bytes": 10761,
+          "sha256": "3bdf38a6d2cfe0b957bfb1109bd79c3b78023c8459f80d0a03230d09b7e04aa5",
+          "width": 1440,
+          "height": 900,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt2/1440x900-dpr2-c2-world-moved.png",
+          "bytes": 964734,
+          "sha256": "bda245ee1f5cf90c047fbf21de4d30c38789708a95dc6f5c74695f62dd8de8c2",
+          "width": 2880,
+          "height": 1800,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt2/1440x900-dpr2-checkin-entered.png",
+          "bytes": 107093,
+          "sha256": "e03e0eb1109c3cd97d2d43317429759ebacac6ae91c49df8f3ee7bd7a7615480",
+          "width": 2880,
+          "height": 1800,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt2/1440x900-dpr2-entry.png",
+          "bytes": 26292,
+          "sha256": "d883e32c5dc9ea7d879ef6a50a9f739e35a35906e60e741418a2e072d7e1af25",
+          "width": 2880,
+          "height": 1800,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt2/1440x900-dpr2-phone-reloaded.png",
+          "bytes": 198708,
+          "sha256": "fd44be618436cde59df50ef2a9d5479572743069ba1347d839c1e4f99c6a9f8c",
+          "width": 2880,
+          "height": 1800,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt3-large/1920x1080-dpr1-checkin-entered.png",
+          "bytes": 56535,
+          "sha256": "7f4cda83fe77c48656d24512ab1f4adecd579f55fc2e12f5d28f364d012d6bce",
+          "width": 1920,
+          "height": 1080,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt3-large/1920x1080-dpr1-entry.png",
+          "bytes": 13475,
+          "sha256": "93cd0b42b01edd6d56fba2f3ebb651c41dbc710ed04da7699c8c0b17eff0769a",
+          "width": 1920,
+          "height": 1080,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt4-touch/390x844-dpr3-c2-world-moved.png",
+          "bytes": 542698,
+          "sha256": "f363f734116ce2be78a152ef4941d0004a549ee728e6aa8f0f31eb69106e82a1",
+          "width": 1170,
+          "height": 2532,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt4-touch/390x844-dpr3-checkin-entered.png",
+          "bytes": 112198,
+          "sha256": "5b95ac76da30c7b67ec6b6436c96426ff3c79b2d15c24eb45e10e4022ca9f492",
+          "width": 1170,
+          "height": 2532,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt4-touch/390x844-dpr3-entry.png",
+          "bytes": 19870,
+          "sha256": "d133711e79d3296d6dc127d9c5d2be6a1af8e3db7cb1eac026b48dc47903b5e4",
+          "width": 1170,
+          "height": 2532,
+          "individuallyVisuallyReviewed": true
+        },
+        {
+          "path": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/attempt4-touch/390x844-dpr3-phone-reloaded.png",
+          "bytes": 155552,
+          "sha256": "ce2dde3fe307b9990263a0051776c2dce0ca2297df639c2ed3ee69d96444895e",
+          "width": 1170,
+          "height": 2532,
+          "individuallyVisuallyReviewed": true
+        }
+      ],
+      "cleanupReceipt": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/cleanup-receipt.json",
+      "trackedFilesModifiedByThisAgent": false,
+      "ownBrowserProfilesCleaned": true,
+      "ownServer5222Stopped": true,
+      "cleanup": {
+        "receipt": "/Users/zhu/Downloads/755/godot_native/exports/verification/hidpi_display_fe92_web_20261020/cleanup-receipt.json",
+        "sha256": "31e91a7c53d38000a64ce29ad13017196165231aa0b4cadc8510a498d3793f5e",
+        "screenshotsRemoved": 17,
+        "allImagesIndividuallyReviewedBy": "checkin_acceptance",
+        "remainingPNG": 0,
+        "profilesCleaned": true,
+        "ownServer5222Stopped": true
+      },
+      "frozenAt": "2026-10-20T10:26:57.993006+00:00"
+    }
+  },
+  "roundingNote": "At dynamic measured DPR0.800000011920929 the engine retains logical1440x900/backing1152x720; canvas CSS rounds to1439x899, phone CSS431.7x863.04. This subpixel/one-pixel rounding is preserved in raw evidence, not claimed as bit-identical CSS geometry."
+}

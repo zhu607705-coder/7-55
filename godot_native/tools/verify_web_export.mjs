@@ -36,7 +36,7 @@ function artifactLocation(assetUrl, pageUrl = url, rootDirectory = exportDir) {
 if (args.includes('--self-test-paths')) {
   const base = 'http://127.0.0.1:5211/7-55/';
   const root = '/tmp/755-artifact-path-unit';
-  const examples = [['index.wasm', 'index.wasm'], ['content/chapter2_001-abcd.pck', 'content/chapter2_001-abcd.pck']];
+  const examples = [['index.wasm', 'index.wasm'], ['content/chapter2_001-abcd.pck', 'content/chapter2_001-abcd.pck'], ['boot/index-wasm-0001-abcd.bin', 'boot/index-wasm-0001-abcd.bin']];
   for (const [resource, expected] of examples) {
     const actual = artifactLocation(new URL(resource, base).href, base, root);
     if (actual.relativePath !== expected || actual.local !== path.join(root, expected)) throw new Error('Artifact path self-test failed');
@@ -77,6 +77,66 @@ async function connect(wsUrl, onEvent) {
   return { send(method, params = {}, timeoutMs = 30000) { return new Promise((resolve, reject) => { const id = ++sequence; const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout ${method}`)); }, timeoutMs); pending.set(id, { resolve, reject, timer }); ws.send(JSON.stringify({ id, method, params })); }); }, close() { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP closed')); } pending.clear(); ws.close(); } };
 }
 let active;
+let delivery;
+async function prepareDeliveryEvidence() {
+  const base = new URL('.', url);
+  async function manifest(name) {
+    const response = await fetch(new URL(name, base), { cache: 'no-cache' });
+    check(response.status === 200, `actual HTTP ${name} is available`);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (exportDir) check(await shaFile(path.join(exportDir, name)) === hash(bytes), `HTTP ${name} matches the accepted export`);
+    return { value: JSON.parse(bytes), sha256: hash(bytes) };
+  }
+  const build = await manifest('build-manifest.json');
+  const content = await manifest('content-manifest.json');
+  const value = build.value, chunks = value.bootChunks;
+  check(value.runtime === 'godot-web' && value.storyOnly === true && Array.isArray(value.files), 'actual build manifest declares the independent story-only release');
+  check(content.value.schema === '755-web-content-v1' && Array.isArray(content.value.packs) && content.value.packs.every(pack => !pack.family.startsWith('campus_')), 'actual delivery includes story content without research campus families');
+  check(chunks?.schema === '755-boot-chunks-v1' && chunks.chunkBytes === 1048576 && JSON.stringify(Object.keys(chunks.resources || {}).sort()) === '["index.pck","index.wasm"]', 'actual delivery declares both statically chunked boot resources');
+  const files = new Map(value.files.map(file => [file.path, file]));
+  check(files.size === value.files.length, 'actual build file identities are unique');
+  const transport = [];
+  const bootByUrl = new Map();
+  const originalUrls = new Set();
+  for (const name of ['index.pck', 'index.wasm']) {
+    const resource = chunks.resources[name], full = files.get(name);
+    check(full && resource.file === name && Number.isSafeInteger(resource.bytes) && resource.bytes > 0 && /^[a-f0-9]{64}$/.test(resource.sha256) && resource.bytes === full.bytes && resource.sha256 === full.sha256 && Array.isArray(resource.chunks) && resource.chunks.length === Math.ceil(resource.bytes / chunks.chunkBytes), `boot resource matches its original full artifact identity: ${name}`);
+    if (name === 'index.pck') check(resource.file === content.value.core.file && resource.bytes === content.value.core.bytes && resource.sha256 === content.value.core.sha256, 'chunked boot core matches the content coordinator manifest');
+    originalUrls.add(new URL(name, base).href);
+    let offset = 0;
+    for (const chunk of resource.chunks) {
+      const assetUrl = new URL(chunk.file, base).href;
+      const { relativePath } = artifactLocation(assetUrl);
+      const listed = files.get(relativePath);
+      if (!relativePath.startsWith('boot/') || !relativePath.endsWith('.bin') || chunk.offset !== offset || chunk.bytes !== Math.min(chunks.chunkBytes, resource.bytes - offset) || !/^[a-f0-9]{64}$/.test(chunk.sha256) || !listed || listed.bytes !== chunk.bytes || listed.sha256 !== chunk.sha256 || bootByUrl.has(assetUrl)) throw new Error(`Invalid boot chunk coverage or identity: ${name}:${offset}`);
+      const record = { ...chunk, resource: name, role: 'boot-chunk', url: assetUrl };
+      bootByUrl.set(assetUrl, record); transport.push(record); offset += chunk.bytes;
+    }
+    check(offset === resource.bytes, `boot chunk map exactly covers ${name}`);
+  }
+  for (const pack of content.value.packs) {
+    const assetUrl = new URL(pack.file, base).href;
+    const { relativePath } = artifactLocation(assetUrl);
+    const listed = files.get(relativePath);
+    if (!relativePath.startsWith('content/') || !relativePath.endsWith('.pck') || !listed || listed.bytes !== pack.bytes || listed.sha256 !== pack.sha256) throw new Error(`Deferred PCK identity differs from build: ${pack.file}`);
+    transport.push({ ...pack, role: 'deferred-pck', url: assetUrl });
+  }
+  check(new Set(transport.map(asset => asset.url)).size === transport.length, 'actual boot and deferred transport paths have no duplicates');
+  const evidence = { buildManifestSha256: build.sha256, contentManifestSha256: content.sha256, bootResources: chunks.resources, transportFiles: transport.map(({ role, resource, file, url, bytes, sha256 }) => ({ role, resource, file, url, bytes, sha256 })), originalArtifactsRetained: [...originalUrls], originalArtifactsClaimedAsBrowserDownloads: false };
+  report.delivery = evidence;
+  return { build: value, content: content.value, bootByUrl, originalUrls, transport, evidence };
+}
+async function verifyColdBoot(start) {
+  await poll(() => [...delivery.bootByUrl.keys()].every(url => active.bootResponses.some(record => record.url === url && record.requestAt >= start && !record.pending)), 'every actual cold boot chunk has an independently inspected browser response', bootTimeout);
+  for (const name of ['index.pck', 'index.wasm']) {
+    const expected = [...delivery.bootByUrl.values()].filter(chunk => chunk.resource === name);
+    const rows = expected.map(chunk => ({ ...active.bootResponses.find(record => record.url === chunk.url && record.requestAt >= start), expectedBytes: chunk.bytes, expectedSha256: chunk.sha256 }));
+    check(rows.every(record => record.status === 200 && !record.fromDiskCache && !record.fromServiceWorker && !record.range && !record.error && record.bytes === record.expectedBytes && record.sha256 === record.expectedSha256), `${active.id}: cold ${name} loads entirely from real HTTP 200 static chunks with verified response bytes`, rows);
+  }
+  const originals = active.requests.filter(request => request.at >= start && delivery.originalUrls.has(request.url));
+  check(originals.length === 0, `${active.id}: cold chunk transport does not fetch the original PCK or WASM`, originals);
+  active.coldBoot = { startedAt: start, verifiedAt: Date.now(), responses: active.bootResponses.filter(record => record.requestAt >= start).map(record => ({ ...record })), originalHttpRequests: originals, engineProof: 'Boot readiness is followed by the real Enter entry action and ordinary fresh-game pointer/touch input in this case.' };
+}
 async function evaluate(expression) { const result = await active.cdp.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }); if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text); return result.result.value; }
 async function snapshot() { return evaluate('window.__GODOT_755__?.snapshot?.() ?? null'); }
 const state = value => value?.state;
@@ -95,14 +155,32 @@ async function clickControl(nameOrText, match = 'either') {
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
 async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = false) {
   const began = Date.now();
-  const saved = await poll(async () => {
+  const attempt = { label, beganAt: began, previousToken, visibleSuccess, observations: [] };
+  (active.saveAttempts ||= []).push(attempt);
+  let observed = '';
+  let saved;
+  try { saved = await poll(async () => {
     const value = await snapshot(); const receipt = value?.savePersistence;
+    const identity = JSON.stringify([receipt, value?.saveDigest]);
+    if (identity !== observed && attempt.observations.length < 160) {
+      observed = identity;
+      attempt.observations.push({ elapsedMs: Date.now() - began, receipt, currentDigest: value?.saveDigest });
+    }
     if (!receipt || receipt.token <= previousToken) return null;
     if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);
     const visible = !visibleSuccess || controls(value).some(c => c.name === 'SaveNativeProgress' && c.text === '已保存' && !c.disabled);
     return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;
   }, `${label}: current native save has an exact durable receipt`, 30000);
+  } catch (error) {
+    attempt.failedAt = Date.now();
+    // A readonly backing-store sample diagnoses a failed receipt without
+    // accepting it, retrying a game save, or extending the original watchdog.
+    try { attempt.failureDisk = await readPersistentSaveEntries(); }
+    catch (readError) { attempt.failureDisk = { error: readError.message }; }
+    throw error;
+  }
   const disk = await readPersistentSaveEntries(); const primary = disk.entries.find(e => e.key.endsWith('/save.json'));
+  attempt.completedAt = Date.now(); attempt.disk = disk;
   check(primary?.sha256 === saved.saveDigest, `${label}: independent readonly IndexedDB primary matches the current native save`, { elapsedMs: Date.now() - began, receipt: saved.savePersistence, primary, diskReadMs: disk.readDurationMs });
   return saved;
 }
@@ -116,6 +194,7 @@ async function startStory(reload = false) {
   const start = Date.now(); await active.cdp.send(reload ? 'Page.reload' : 'Page.navigate', reload ? { ignoreCache: true } : { url: active.url || url });
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
+  if (!reload && !active.coldBoot) await verifyColdBoot(start);
   if (active.streaming) {
     const deferred = active.requests.filter(request => request.at >= start && active.deferredUrls.has(request.url));
     check(deferred.length === 0, `${active.id}: initial engine/first-chapter stage never requests deferred packs`, deferred);
@@ -136,11 +215,18 @@ async function startStory(reload = false) {
   return { snapshot: s, bootReadyMs, mainReadyMs: Date.now() - start };
 }
 async function assertLayout(label) {
-  const geometry = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas'),r=c.getBoundingClientRect();return{width:innerWidth,height:innerHeight,canvas:{x:r.x,y:r.y,width:r.width,height:r.height},overflowX:document.documentElement.scrollWidth>innerWidth,overflowY:document.documentElement.scrollHeight>innerHeight};})()`);
+  const geometry = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas'),r=c.getBoundingClientRect();return{width:innerWidth,height:innerHeight,dpr:devicePixelRatio,canvas:{x:r.x,y:r.y,width:r.width,height:r.height,pixelWidth:c.width,pixelHeight:c.height},overflowX:document.documentElement.scrollWidth>innerWidth,overflowY:document.documentElement.scrollHeight>innerHeight};})()`);
   check(!geometry.overflowX && !geometry.overflowY, `${label}: no document overflow`, geometry);
   check(geometry.canvas.width > 0 && geometry.canvas.height > 0 && geometry.canvas.x >= -1 && geometry.canvas.y >= -1 && geometry.canvas.x + geometry.canvas.width <= geometry.width + 1 && geometry.canvas.y + geometry.canvas.height <= geometry.height + 1, `${label}: canvas fits viewport`);
   const s = await snapshot(); const phone = s.phoneRect || s.viewport?.phoneRect;
-  if (phone) check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
+  check(Math.abs(geometry.dpr - active.dpr) < .01, `${label}: actual browser pixel ratio matches the test`, geometry);
+  check(Math.abs(s.viewport.width - geometry.canvas.width) <= 2 && Math.abs(s.viewport.height - geometry.canvas.height) <= 2, `${label}: logical Godot layout uses CSS dimensions on high-density screens`, { viewport: s.viewport, geometry });
+  check(Math.abs(geometry.canvas.pixelWidth - geometry.canvas.width * geometry.dpr) <= 2 && Math.abs(geometry.canvas.pixelHeight - geometry.canvas.height * geometry.dpr) <= 2, `${label}: high-density rendering keeps the full backing resolution`, geometry);
+  if (phone) {
+    check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
+    check(phone.x >= 0 && phone.y >= 0 && phone.x + phone.width <= s.viewport.width + 1 && phone.y + phone.height <= s.viewport.height + 1, `${label}: phone and its hit areas stay inside the logical viewport`, phone);
+    check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
+  }
   return geometry;
 }
 async function settings() { await press('F10'); await poll(async () => controls(await snapshot()).some(c => c.text === '导入存档'), 'settings opened'); }
@@ -215,7 +301,8 @@ async function portableSaveCase() {
   const rejectedAfter = await snapshot(); check(rejectedAfter.saveDigest === rejectedBefore.saveDigest && JSON.stringify(state(rejectedAfter)) === JSON.stringify(state(rejectedBefore)), 'malformed file preserves actual native state and saved bytes', { beforeSaveDigest: rejectedBefore.saveDigest, afterSaveDigest: rejectedAfter.saveDigest, beforeStateSha256: hash(JSON.stringify(state(rejectedBefore))), afterStateSha256: hash(JSON.stringify(state(rejectedAfter))) });
   await press('Escape'); await interval(350); await settings(); await clickControl('保存画面截图');
   const pngName = await poll(async () => (await readdir(active.downloadDir)).find(f => f.endsWith('.png')), 'ordinary screenshot PNG download'); const png = await readFile(path.join(active.downloadDir, pngName));
-  check(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) && png.readUInt32BE(16) === active.width && png.readUInt32BE(20) === active.height, 'downloaded Godot screenshot is PNG at the actual viewport dimensions');
+  const screenshotCanvas = await canvasGeometry();
+  check(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) && png.readUInt32BE(16) === screenshotCanvas.pixelWidth && png.readUInt32BE(20) === screenshotCanvas.pixelHeight, 'downloaded Godot screenshot preserves the actual high-density backing dimensions', screenshotCanvas);
   active.portable.roundTripImported = true; active.portable.invalidFileRejectedWithoutChanges = true; active.portable.screenshot = { filename: pngName, bytes: png.length, sha256: hash(png), width: png.readUInt32BE(16), height: png.readUInt32BE(20) };
 }
 async function legacyCase() {
@@ -368,7 +455,7 @@ async function readPersistentSaveEntries() {
           const bytes=raw instanceof Uint8Array?raw:new Uint8Array(raw),text=new TextDecoder().decode(bytes);
           let envelope;try{envelope=JSON.parse(text)}catch{continue}
           const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');
-          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,mode:envelope.state?.native?.mode,flags:envelope.state?.flags,canteenPhase:envelope.state?.canteenHunt?.phase});
+          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,timestampMs:row.value.timestamp instanceof Date?row.value.timestamp.getTime():null,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,mode:envelope.state?.native?.mode,flags:envelope.state?.flags,canteenPhase:envelope.state?.canteenHunt?.phase});
         }
       }finally{db.close()}
     }
@@ -538,10 +625,10 @@ async function streamingCase() {
   console.log('desktop-1280: earned C2 file import, visible failure/retry, full-family map recovery and cache-only real reload passed');
 }
 
-async function browserCase(id, width, height, touch) {
+async function browserCase(id, width, height, touch, dpr = 1) {
   const temp = await mkdtemp(path.join(tmpdir(), '755-godot-web-browser-')); const profile = path.join(temp, 'profile'); const errors = []; const network = new Map(); const responses = new Map();
   const child = spawn(chrome, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--disable-extensions', '--disable-sync', '--disable-default-apps', ...chromeArgs, `--window-size=${width},${height}`, '--force-device-scale-factor=1', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] }); let stderr = ''; child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-10000); });
-  active = { id, width, height, touch, child, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
+  active = { id, width, height, touch, dpr, child, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
   if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
   let result;
   try {
@@ -550,11 +637,23 @@ async function browserCase(id, width, height, touch) {
       if (method === 'Runtime.exceptionThrown') errors.push({ type: 'pageerror', ...params.exceptionDetails });
       if (method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(params.type)) { const text = params.args.map(a => a.value ?? a.description ?? '').join(' '); if (params.type === 'error' || /SCRIPT ERROR|Parse Error|Failed to load|ERROR:/.test(text)) errors.push({ type: params.type, text }); }
       if (method === 'Network.requestWillBeSent') {
-        const request = { requestId: params.requestId, url: params.request.url, at: Date.now(), phase: active.faultPhase || '', controlled: active.controlledBlockedUrls.has(params.request.url) };
+        const request = { requestId: params.requestId, url: params.request.url, at: Date.now(), range: params.request.headers.Range || params.request.headers.range || '', phase: active.faultPhase || '', controlled: active.controlledBlockedUrls.has(params.request.url) };
         active.requests.push(request); active.requestsById.set(params.requestId, request);
       }
-      if (method === 'Network.responseReceived') responses.set(params.requestId, { url: params.response.url, status: params.response.status, mimeType: params.response.mimeType, fromDiskCache: params.response.fromDiskCache || false });
-      if (method === 'Network.loadingFinished' && responses.has(params.requestId)) network.set(responses.get(params.requestId).url, { ...responses.get(params.requestId), encodedDataLength: params.encodedDataLength });
+      if (method === 'Network.responseReceived') responses.set(params.requestId, { url: params.response.url, status: params.response.status, mimeType: params.response.mimeType, fromDiskCache: params.response.fromDiskCache || false, fromServiceWorker: params.response.fromServiceWorker || false });
+      if (method === 'Network.loadingFinished' && responses.has(params.requestId)) {
+        const response = responses.get(params.requestId);
+        network.set(response.url, { ...response, encodedDataLength: params.encodedDataLength });
+        if (delivery.bootByUrl.has(response.url)) {
+          const request = active.requestsById.get(params.requestId);
+          const row = { ...response, requestId: params.requestId, requestAt: request?.at ?? 0, range: request?.range ?? '', encodedDataLength: params.encodedDataLength, pending: true };
+          active.bootResponses.push(row);
+          active.bootBodyJobs.push(active.cdp.send('Network.getResponseBody', { requestId: params.requestId }).then(result => {
+            const bytes = Buffer.from(result.body, result.base64Encoded ? 'base64' : 'utf8');
+            row.bytes = bytes.length; row.sha256 = hash(bytes); row.pending = false;
+          }).catch(error => { row.error = error.message; row.pending = false; }));
+        }
+      }
       if (method === 'Network.loadingFailed' && !params.canceled) {
         const request = active.requestsById.get(params.requestId);
         const failure = { type: 'network', requestId: params.requestId, url: request?.url || '', phase: request?.phase || '', errorText: params.errorText, blockedReason: params.blockedReason || '' };
@@ -565,7 +664,10 @@ async function browserCase(id, width, height, touch) {
         else errors.push(failure);
       }
     });
-    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable'); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 });
+    // Retain the complete ~94 MB cold boot response set while the inspector
+    // hashes real response bodies, even when local export I/O delays CDP.
+    // This changes observation capacity only; HTTP/hash/cache checks stay strict.
+    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
     if (scenarios === 'streaming') await prepareStreamingFault();
     result = await freshCase(); await portableSaveCase();
@@ -577,28 +679,32 @@ async function browserCase(id, width, height, touch) {
       if (scenarios === 'durability-switch') await durabilitySwitchCase();
       if (scenarios === 'streaming') await streamingCase();
     } else if (touch && scenarios === 'all') await c1Case(false);
-    const resources = [...network.values()].filter(n => /\.(wasm|pck)(?:$|\?)/.test(n.url)); check(resources.some(n => /\.wasm(?:$|\?)/.test(n.url) && n.status === 200), `${id}: actual engine WASM loaded over HTTP`); check(resources.some(n => /\.pck(?:$|\?)/.test(n.url) && n.status === 200), `${id}: actual Godot PCK loaded over HTTP`);
+    const transportUrls = new Set(delivery.transport.map(asset => asset.url));
+    const resources = [...network.values()].filter(record => transportUrls.has(record.url));
+    check(active.coldBoot?.responses.length === delivery.bootByUrl.size, `${id}: actual Godot engine boot and ordinary input used the verified complete static boot chunk set`, { chunks: active.coldBoot?.responses.length, expected: delivery.bootByUrl.size, freshInput: active.fresh?.inputs });
     check(![...network.values()].some(n => n.status >= 400), `${id}: no failed HTTP resources`, [...network.values()].filter(n => n.status >= 400));
     check(errors.length === 0, `${id}: no page, runtime, script or uncancelled network errors`, errors);
     const renderer = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas');const gl=c.getContext('webgl2');if(!gl)return{webgl2:false};const e=gl.getExtension('WEBGL_debug_renderer_info');return{webgl2:true,vendor:e?gl.getParameter(e.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR),renderer:e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER)};})()`);
     check(renderer.webgl2, `${id}: actual WebGL2 context available`, renderer);
     check(await evaluate("JSON.stringify(Object.keys(window.__GODOT_755__))") === '["snapshot"]', 'production browser bridge exposes only a read operation');
     check(await evaluate("(()=>{const s=window.__GODOT_755__.snapshot(),old=s.state.native.chapter;s.state.native.chapter=999;return window.__GODOT_755__.snapshot().state.native.chapter===old})()"), 'returned browser snapshot is a detached copy');
-    report.cases.push({ id, width, height, touch, passed: true, ...result, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
+    report.cases.push({ id, width, height, touch, dpr, passed: true, ...result, coldBoot: active.coldBoot, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
     report.network.push(...network.values());
-  } catch (e) { report.cases.push({ id, width, height, touch, passed: false, result, error: e.stack || String(e), fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
-  finally { active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
+  } catch (e) { report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
+  finally { if (report.cases.at(-1)?.id === id) report.cases.at(-1).saveAttempts = active.saveAttempts || []; await Promise.allSettled(active.bootBodyJobs); active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
 }
 try {
-  const selected = [['desktop-1280', 1280, 720, false], ['desktop-1440', 1440, 900, false], ['touch-390', 390, 844, true]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280'));
+  const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280'));
   check(selected.length > 0, 'at least one requested viewport selected');
+  delivery = await prepareDeliveryEvidence();
   for (const selectedCase of selected) await browserCase(...selectedCase);
-  const resources = new Map(report.network.filter(n => /\.(wasm|pck)(?:$|\?)/.test(n.url)).map(n => [n.url, n])); report.assets = [];
-  for (const resource of resources.values()) {
+  report.assets = [];
+  for (const resource of delivery.transport) {
     const { relativePath, local } = artifactLocation(resource.url);
-    const response = await fetch(resource.url); check(response.ok, `asset independently fetched: ${resource.url}`); const h = createHash('sha256'); let bytes = 0; for await (const chunk of response.body) { h.update(chunk); bytes += chunk.length; } const sha256 = h.digest('hex');
+    const response = await fetch(resource.url, { cache: 'no-cache' }); check(response.status === 200, `transport asset independently fetched in full: ${relativePath}`); const h = createHash('sha256'); let bytes = 0; for await (const chunk of response.body) { h.update(chunk); bytes += chunk.length; } const sha256 = h.digest('hex');
+    check(bytes === resource.bytes && sha256 === resource.sha256, `independent HTTP transport bytes match the actual manifest: ${relativePath}`, { bytes, sha256, expectedBytes: resource.bytes, expectedSha256: resource.sha256 });
     if (local) { check(existsSync(local), `export artifact exists: ${relativePath}`); check(await shaFile(local) === sha256, `HTTP bytes match actual Godot export: ${relativePath}`); }
-    report.assets.push({ url: resource.url, relativePath, bytes, sha256, local });
+    report.assets.push({ url: resource.url, relativePath, role: resource.role, resource: resource.resource, bytes, sha256, local, observedInBrowser: report.network.some(record => record.url === resource.url) });
   }
   report.passed = report.cases.every(c => c.passed) && report.checks.every(c => c.ok);
 } catch (e) { report.errors.push(e.stack || String(e)); process.exitCode = 1; }

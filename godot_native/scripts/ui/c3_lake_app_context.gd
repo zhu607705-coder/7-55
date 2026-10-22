@@ -126,7 +126,8 @@ func map_page(b,root: Control) -> void:
 	var frame:=DropButton.new(); frame.position=Vector2(14,118); frame.size=Vector2(350,392); frame.name="QizhenMapDrop"; frame.focus_mode=Control.FOCUS_NONE
 	frame.add_theme_stylebox_override("normal",b._style(Color("f8fbf8"),Color("214f59"),0,4)); frame.item_dropped.connect(func(item): import_map(b,item)); inner.add_child(frame)
 	b._panel(frame,Rect2(4,4,342,55),INK)
-	b._label(frame,"已接入  %d / 3"%count,Rect2(14,13,169,36),22,Color("ffe27b"))
+	# Reserve the existing collapsed inventory handle gutter; do not move its drag target.
+	b._label(frame,"已接入  %d / 3"%count,Rect2(38,13,145,36),22,Color("ffe27b")).name="QizhenMapCount"
 	b._label(frame,"入口已标记" if solved else "待核对" if count==3 else "收集中",Rect2(194,17,142,29),14,Color("d6f0d9") if solved else Color("c5dcda"),HORIZONTAL_ALIGNMENT_RIGHT)
 	for i in range(ROWS.size()):
 		var row: Array=ROWS[i]; var added: bool=q.mapClueIds.has(row[1]); var owned: bool=b.s.items.get(row[0],false); var y: float=60+i*109
@@ -176,7 +177,16 @@ func weather_card(b,root: Control) -> void:
 		if selected=="hairDryer": weather_feedback=""; b.action_requested.emit("c3_weather_start",null)
 		elif not selected.is_empty(): fail.call("当前道具无法送风 · 请改用寝室吹风机")
 		else: weather_feedback="道具栏已展开 · 拖入吹风机，键盘可按空格选中"; b.action_requested.emit("c3_weather_inventory",null))
-	b._label(card,"✓" if complete else "+",Rect2(15,21,42,49),31,Color("37704a") if complete else b.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+	if complete:
+		# Show the actual connected object, not a green completion badge.
+		var device:=TextureRect.new();device.name="WeatherConnectedDevice"
+		device.texture=load(Chrome.RASTER_ICONS.hairDryer)
+		device.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+		device.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		device.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+		device.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		device.position=Vector2(15,21);device.size=Vector2(42,49);card.add_child(device)
+	else: b._label(card,"+",Rect2(15,21,42,49),31,b.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
 	var title: String="湖区状态已更新" if complete else "接入寝室吹风机" if q.weatherAdjustmentRequested and b.s.items.hairDryer else "缺少可用设备" if q.weatherAdjustmentRequested else "暂无湖区记录"
 	var detail: String="返回码头确认"+(" · 最少 %d 次校正"%q.weatherControlBestMoves if q.weatherControlBestMoves>0 else "") if complete else weather_feedback if available and not weather_feedback.is_empty() else "从左侧道具栏拖到此接口" if available else "先检查寝室书桌" if q.weatherAdjustmentRequested else "完成码头检查后再查看"
 	b._label(card,title,Rect2(69,10,263,37),18,INK)

@@ -1,6 +1,9 @@
 extends "res://tests/test_canteen_defense_resume.gd"
 var chase_starts:=0
 func run() -> void:
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
+		push_error("Bike chase reentry checks require an isolated test user directory")
+		quit(2);return
 	state=root.get_node("State");state.developer_mode=true
 	imported=state.initial();imported.native.chapter=3;imported.native.page="phone_home";imported.native.scene="campus_bootstrap"
 	imported.runtimeMode="rpg";imported.rpgScene="campus_bootstrap";imported.canteenHunt.active=true
@@ -27,10 +30,29 @@ func run() -> void:
 		check(is_instance_valid(shell.active_game) and chase_starts==count+1,"ordinary Tasks Return restores interrupted paid chase")
 		check(state.d.wallet.cashCents==0 and state.d.items.greaseTissue and not state.d.items.cafeteriaWages and state.d.canteenHunt.bikePaid,"reentry never pays again or alters retained items")
 		await tap(shell.active_game.exit_button)
-	defense_fixture();var count:=chase_starts;await new_main(Vector2i(430,860))
-	check(not is_instance_valid(shell.active_game) and shell.phone.visible and chase_starts==count,"portrait reload retains phone until explicit scene Return")
+	var count:=chase_starts
+	# Compact startup restores the persisted surface, just like desktop. Exercise
+	# the ordinary save reader rather than deriving that choice from page/width.
+	for saved_mode: String in ["rpg","phone"]:
+		await close_main();defense_fixture();state.d.runtimeMode=saved_mode
+		state.developer_mode=false
+		var saved: bool=state.save_game()
+		state.d=state.initial()
+		var restored: bool=state.load_game()
+		state.developer_mode=true
+		check(saved and restored and state.d.runtimeMode==saved_mode and state.d.native.scene=="campus_bootstrap" and state.d.canteenHunt.phase=="chasing","ordinary compact save/load preserves explicit "+saved_mode+" surface and chasing checkpoint")
+		count=chase_starts;await new_main(Vector2i(430,860))
+		if saved_mode=="rpg":
+			check(is_instance_valid(shell.active_game) and shell.active_game.mode=="chase" and shell.mobile_world and not shell.phone.visible and chase_starts==count+1,"portrait RPG reload restores exactly one saved chase")
+			check(state.d.wallet.cashCents==0 and state.d.items.greaseTissue and not state.d.items.cafeteriaWages and state.d.canteenHunt.bikePaid,"portrait RPG reload retains payment and story items")
+			if is_instance_valid(shell.active_game):await tap(shell.active_game.exit_button)
+		else:
+			check(not is_instance_valid(shell.active_game) and shell.phone.visible and not shell.mobile_world and chase_starts==count,"portrait explicit phone reload waits for scene Return")
+	var return_facts: Dictionary={"scene":state.d.native.scene,"phase":state.d.canteenHunt.phase,"paid":state.d.canteenHunt.bikePaid,"items":JSON.stringify(state.d.items),"wallet":JSON.stringify(state.d.wallet)}
 	shell._show_journal();await frames();await click(shell.find_child("JournalResume",true,false));await frames(4)
 	check(is_instance_valid(shell.active_game) and chase_starts==count+1,"portrait Tasks Return restores source chasing owner")
+	check(state.d.runtimeMode=="rpg","portrait Tasks Return persists the explicit RPG destination")
+	check(state.d.native.scene==return_facts.scene and state.d.canteenHunt.phase==return_facts.phase and state.d.canteenHunt.bikePaid==return_facts.paid and JSON.stringify(state.d.items)==return_facts.items and JSON.stringify(state.d.wallet)==return_facts.wallet,"portrait Tasks Return retains scene phase payment wallet and every item")
 	await tap(shell.active_game.exit_button)
 	var exported: String="user://bike-chase-reentry.json";check(state.export_save(exported)==OK,"normal save exports chasing state")
 	for cycle in range(2):

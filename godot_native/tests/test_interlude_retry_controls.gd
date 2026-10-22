@@ -31,10 +31,56 @@ func key(code:Key):
 	for down in [true,false]:
 		var e=InputEventKey.new();e.keycode=code;e.physical_keycode=code;e.pressed=down;root.push_input(e,true);await frames(1)
 	await frames()
+func has_text(node:Node,text:String)->bool:
+	if node is Label and text in node.text:return true
+	for child in node.get_children():
+		if has_text(child,text):return true
+	return false
+func matrix_fixture_checks():
+	# Explicit presentation fixtures: these views earn no evidence or campaign proof.
+	var pages=load("res://scripts/ui/chapter3_phone_pages.gd").new()
+	for evidence:Array in [[],["journal_start"],["journal_start","photo_direction"]]:
+		var fixture:Dictionary=state.d.duplicate(true)
+		fixture.chapterThreeInterlude.recoveryOpened=true
+		fixture.chapterThreeInterlude.evidenceIds=evidence.duplicate()
+		var before:String=JSON.stringify(fixture)
+		var view:Control=pages.build("c35_recovery",{},fixture)
+		check(view.find_child("C35EvidenceMatrix",true,false)==null,"partial evidence cannot expose the four-source matrix: "+str(evidence.size()))
+		check(not has_text(view,"段永平教学楼") and not has_text(view,"22:45:00") and find_button(view,"开始回放")==null,"partial evidence cannot reveal destination, unresolved endpoint or replay: "+str(evidence.size()))
+		check(has_text(view,"22:37:05")==evidence.has("journal_start"),"only the earned journal start is restored: "+str(evidence.size()))
+		check(JSON.stringify(fixture)==before,"building the partial recovery view never writes evidence")
+		view.free()
+	var fixture:Dictionary=state.d.duplicate(true)
+	var interlude:Dictionary=fixture.chapterThreeInterlude
+	interlude.recoveryOpened=true
+	interlude.evidenceIds=["journal_start","photo_direction","network_destination","broadcast_end"]
+	interlude.photoSequenceSolved=true;interlude.voiceSequenceSolved=true
+	interlude.officialNoticeSaved=true;interlude.routeScreenshotSaved=true;interlude.networkRecordRead=true
+	interlude.networkRecordId="record_theater_hall"
+	var before:String=JSON.stringify(fixture)
+	var view:Control=pages.build("c35_recovery",{},fixture)
+	check(view.find_child("C35EvidenceMatrix",true,false)!=null and has_text(view,"CC98 × 照片") and has_text(view,"录音 × 网络"),"all four earned classes reveal the original cross-source comparisons")
+	check(has_text(view,"22:44:31 · 剧场前厅") and not has_text(view,"22:44:57"),"matrix reports the saved candidate without replacing it with the correct record")
+	check(find_button(view,"段永平教学楼")==null and find_button(view,"开始回放")==null,"matrix visibility does not bypass old-time exclusions or destination selection")
+	check(JSON.stringify(fixture)==before,"matrix reconstruction is read-only")
+	view.free()
+	interlude.rejectedDecoyIds=["canteen_0755","theater_0832","status_clock_075523"]
+	interlude.statusClockMarkedUntrusted=true
+	view=pages.build("c35_recovery",{},fixture)
+	check(has_text(view,"自动恢复的时间线") and find_button(view,"段永平教学楼")!=null and find_button(view,"开始回放")==null,"original completed-exclusion gate still opens only destination choices")
+	view.free()
+	interlude.networkRecordId="record_0755";interlude.destinationId="duan_yongping_a1";interlude.phase="destination_verified"
+	before=JSON.stringify(fixture)
+	view=pages.build("c35_recovery",{},fixture)
+	check(has_text(view,"22:44:57 · 北教学区 A 区") and has_text(view,"路径记录已恢复") and has_text(view,"回放会从启真湖最后一帧开始，并在已确认地点结束。"),"verified destination restores the original replay explanation and selected record")
+	check(find_button(view,"开始回放")!=null and not interlude.replayUnlocked,"accepted path exposes the existing replay action without executing it")
+	check(JSON.stringify(fixture)==before,"the confirmed-path card does not write replay or story state")
+	view.free()
 func run():
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	state.d.native.chapter=3;state.d.native.scene="";state.d.native.page="c35_recovery";state.d.runtimeMode="phone";state.d.qizhenLake.phase="complete";state.d.qizhenLake.active=true
 	root.size=Vector2i(390,844)
+	matrix_fixture_checks()
 	main=load("res://scenes/main.tscn").instantiate();root.add_child(main);await frames()
 	await click("打开恢复工具");await click("查看划船帖")
 	await click("安全返航");check(not state.d.chapterThreeInterlude.evidenceIds.has("journal_start"),"summary draft is not publication")

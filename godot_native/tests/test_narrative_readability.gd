@@ -18,7 +18,7 @@ func run() -> void:
 		view.display_scale=factor; view.tick(); await process_frame; view.tick(); await process_frame
 		check(not view.body_scroll.get_v_scroll_bar().visible,"short subtitle has no spurious scrollbar at width "+str(physical_width))
 		check(Rect2(Vector2.ZERO,view.size).encloses(Rect2(view.panel.position,view.panel.size)),"panel stays in source world at width "+str(physical_width))
-		check(view.body.get_theme_font_size("font_size")*factor>=14.99,"body is at least15 physical pixels at width "+str(physical_width))
+		check(view.body.get_theme_font_size("font_size")*factor>=13.99,"selected body is at least14 physical pixels at width "+str(physical_width))
 		check(view.speaker.get_theme_font_size("font_size")*factor>=12.99,"speaker is at least13 physical pixels at width "+str(physical_width))
 		var actual: Vector2=view.body.get_theme_font("font").get_multiline_string_size(view.body.text,HORIZONTAL_ALIGNMENT_LEFT,view.body.size.x,view.body.get_theme_font_size("font_size"))
 		check(actual.y<=view.body.size.y+.5,"wrapped source line fits without clipping at width "+str(physical_width))

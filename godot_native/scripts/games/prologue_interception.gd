@@ -4,6 +4,8 @@ signal finished(result: Dictionary)
 signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
 const WordModel=preload("res://scripts/games/prologue_word_model.gd")
+const SuccessPresentation=preload("res://scripts/ui/checkin_success_view.gd")
+const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const DIALOGUE=["旁白：喂！你拽我弹窗干什么？！快松手！要未响应了！", "玩家：帮我补签到！", "玩家：不帮就一起死机！", "旁白：行行行！算你狠！我帮你想办法还不行吗？先把手指挪开！"]
 const INK=Color("354243")
 const PAPER=Color("f6efdc")
@@ -37,17 +39,29 @@ var pointer_id=-99
 var drag_offset=0.0
 var show_landing=false
 var lock_from=Vector2(215,605)
+var success_view:Control
+var success_continue:Button
+var reduced_motion=false
+var lock_help_button:Button
+var lock_help_open=false
+var lock_release_count=0
 
 func _ready()->void:
 	var source=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/act-one-bootstrap.content.json"))
 	if source is Dictionary:intro_segments=source.get("audioNarration",{}).get("prologue_narrator_intro",{}).get("subtitleSegmentsZh",[])
 	content=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/prologue-interception.content.json"))
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;grab_focus()
+	success_view=SuccessPresentation.new();add_child(success_view)
 	retry=_button("继续当前阶段",_retry)
 	resume_button=_button("继续",_resume)
 	review_button=_button("重看完整线索",func():_review(true))
 	close_review=_button("继续寻找",func():_review(false))
 	help_button=_button("显示落点帮助",func():show_landing=not show_landing;queue_redraw())
+	success_continue=_button("继续",_continue_success)
+	success_continue.name="CheckinSuccessContinue"
+	NativeUi.apply_button(success_continue,Color("f8f8ef"),Color("193f38"),Color("b9cbbd"),24,1,14,Vector2(12,6),Color("193f38"))
+	lock_help_button=_button("键盘帮助",_toggle_lock_help)
+	lock_help_button.name="NarratorLockKeyboardHelp"
 	get_tree().root.focus_exited.connect(_pause)
 	_reset_session()
 
@@ -64,11 +78,35 @@ func _reset_session()->void:
 
 func start(request:Dictionary)->void:
 	config=request;done=false;paused=false;dialogue_index=0;hold_ms=0;intro_elapsed_ms=0
+	lock_help_open=false;lock_release_count=0
+	reduced_motion=bool(request.get("reduced_motion",false))
 	_reset_session();_clear_input();_switch("blackout" if request.get("resume",false) else "success")
+
+func _continue_success()->void:
+	# This only advances a local visual beat, never the chapter or interception proof.
+	if phase!="success" or paused or done:return
+	_switch("error");grab_focus()
 
 func _clear_input()->void:
 	left_held=false;right_held=false;dragging=false;pointer_id=-99;holding=false
 	session.stop_pointer()
+
+func _toggle_lock_help()->void:
+	if phase!="lock" or paused or done:return
+	lock_help_open=not lock_help_open
+	lock_help_button.text="收起键盘帮助" if lock_help_open else "键盘帮助"
+	grab_focus();queue_redraw()
+
+func _release_lock()->void:
+	if holding and hold_ms>0 and hold_ms<1400:lock_release_count+=1
+	holding=false;hold_ms=0
+
+func _lock_feedback()->String:
+	if holding and hold_ms>0:return "旁白还在挣扎，那个字却慢慢稳了下来。"
+	if lock_release_count>=3:return "它每次刚安静下来，旁白就趁空隙溜走。"
+	if lock_release_count==2:return "刚才碰到时，那个字停了一下。"
+	if lock_release_count==1:return "差一点，话头又溜走了。"
+	return "旁白像是要把最后半句话带走。"
 
 func _pause()->void:
 	if paused or done:return
@@ -98,6 +136,7 @@ func _retry()->void:
 
 func _switch(next:String)->void:
 	phase=next;elapsed=0
+	if is_instance_valid(success_view):success_view.visible=phase=="success"
 	match phase:
 		"blackout":presentation_requested.emit("prologue_blackout_started",{"durationMs":7000})
 		"deploy":presentation_requested.emit("prologue_narrator_intro",{})
@@ -113,14 +152,18 @@ func _layout_controls()->void:
 	display_scale=minf(size.x/430.0,size.y/820.0)
 	field=Rect2((size-Vector2(430,820)*display_scale)/2,Vector2(430,820)*display_scale)
 	var visible_game=phase in ["deploy","intercept","failed"]
-	for button:Button in [retry,resume_button,review_button,close_review,help_button]:
+	for button:Button in [retry,resume_button,review_button,close_review,help_button,success_continue,lock_help_button]:
 		button.scale=Vector2.ONE*display_scale
+	success_view.position=field.position;success_view.scale=Vector2.ONE*display_scale
+	success_view.visible=phase=="success"
+	success_continue.visible=phase=="success" and not paused
+	lock_help_button.visible=phase=="lock" and not paused
 	retry.visible=phase=="failed" and not paused and not session.reviewing
 	resume_button.visible=paused
 	review_button.visible=visible_game and not paused and not session.reviewing
 	close_review.visible=visible_game and session.reviewing and not paused
 	help_button.visible=phase=="failed" and int(session.hint.get("tier",0))>=3 and not paused and not session.reviewing
-	for item:Array in [[retry,Rect2(86,568,258,48)],[resume_button,Rect2(115,460,200,48)],[review_button,Rect2(118,768,194,38)],[close_review,Rect2(86,618,258,48)],[help_button,Rect2(86,514,258,38)]]:
+	for item:Array in [[retry,Rect2(86,568,258,48)],[resume_button,Rect2(115,460,200,48)],[review_button,Rect2(118,768,194,38)],[close_review,Rect2(86,618,258,48)],[help_button,Rect2(86,514,258,38)],[success_continue,Rect2(125,704,180,48)],[lock_help_button,Rect2(118,704,194,42)]]:
 		var rect:Rect2=item[1];item[0].position=field.position+rect.position*display_scale;item[0].size=rect.size
 
 func _sync()->void:
@@ -128,7 +171,9 @@ func _sync()->void:
 
 func _process(delta:float)->void:
 	_layout_controls()
-	if paused or done:queue_redraw();return
+	if paused or done:
+		if phase=="success":success_view.pose(elapsed,reduced_motion,paused)
+		queue_redraw();return
 	var dt=clampf(delta,0,.25)
 	elapsed+=dt
 	if phase in ["deploy","intercept","failed"]:
@@ -147,7 +192,7 @@ func _process(delta:float)->void:
 	else:
 		match phase:
 			"success":
-				if elapsed>=.9:_switch("error")
+				if elapsed>=SuccessPresentation.DURATION:_switch("error")
 			"error":
 				if elapsed>=1.9:_switch("red")
 			"red":
@@ -169,6 +214,7 @@ func _process(delta:float)->void:
 				if elapsed>=.7:
 					done=true
 					finished.emit({"interceptedCount":blocks,"lockHeldMs":hold_ms,"failed":false,"dialogueCount":4,"whiteoutCompleted":true})
+	if phase=="success":success_view.pose(elapsed,reduced_motion,paused)
 	queue_redraw()
 
 func _logical(point:Vector2)->Vector2:return (point-field.position)/maxf(.0001,display_scale)
@@ -180,11 +226,14 @@ func _gui_input(event:InputEvent)->void:
 	if paused:return
 	if event is InputEventKey and not event.echo:
 		var code=event.physical_keycode if event.physical_keycode else event.keycode
-		if code in [KEY_A,KEY_LEFT]:left_held=event.pressed;accept_event()
+		if code in [KEY_SPACE,KEY_ENTER] and phase=="success":
+			if event.pressed:_continue_success()
+			accept_event()
+		elif code in [KEY_A,KEY_LEFT]:left_held=event.pressed;accept_event()
 		elif code in [KEY_D,KEY_RIGHT]:right_held=event.pressed;accept_event()
 		elif code in [KEY_SPACE,KEY_ENTER] and phase=="lock":
-			holding=event.pressed
-			if not holding:hold_ms=0
+			if event.pressed:holding=true
+			else:_release_lock()
 			accept_event()
 		elif code==KEY_ESCAPE and event.pressed:_pause();accept_event()
 		elif code==KEY_R and event.pressed and phase in ["deploy","intercept","failed"]:_review(not session.reviewing);accept_event()
@@ -213,8 +262,9 @@ func _pointer_move(point:Vector2)->void:
 
 func _pointer_end(id:int)->void:
 	if id!=pointer_id:return
-	pointer_id=-99;dragging=false;holding=false;session.stop_pointer()
-	if phase=="lock":hold_ms=0
+	pointer_id=-99;dragging=false;session.stop_pointer()
+	if phase=="lock":_release_lock()
+	else:holding=false
 
 func _pointer(point:Vector2,down:bool)->void:
 	if down:
@@ -222,18 +272,51 @@ func _pointer(point:Vector2,down:bool)->void:
 		else:_pointer_begin(point,-1)
 	else:_pointer_end(-1)
 
-func _text(text:String,y:float,color:Color=INK,font_size:int=20,width:float=386)->void:
+func _text(text:String,y:float,color:Color=INK,font_size:int=20,width:float=386,balanced:bool=false)->void:
 	var font=get_theme_default_font();var lines:Array=[]
 	for paragraph:String in text.split("\n"):
 		var line=""
+		var limit=width
+		if balanced:
+			var full_width=font.get_string_size(paragraph,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x
+			var line_count=maxi(1,ceili(full_width/width))
+			if line_count>1:limit=minf(width,full_width/line_count+font_size*.5)
 		for i:int in paragraph.length():
 			var next=line+paragraph.substr(i,1)
-			if font.get_string_size(next,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x>width and not line.is_empty():lines.append(line);line=paragraph.substr(i,1)
+			var closing=paragraph.substr(i,1) in "，。！？；：、）】》”’…"
+			if font.get_string_size(next,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x>limit and not line.is_empty() and not (balanced and closing):lines.append(line);line=paragraph.substr(i,1)
 			else:line=next
 		lines.append(line)
 	for i:int in lines.size():
 		var measured=font.get_string_size(lines[i],HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x
 		draw_string(font,Vector2((430-measured)/2,y+i*(font_size+8)),lines[i],HORIZONTAL_ALIGNMENT_LEFT,-1,font_size,color)
+
+func _narration_card(text:String,y:float,height:float,speaker:String,font_size:int=20)->void:
+	# A paper dialogue lane gives the authored line a clear entry point without
+	# covering the word arena or adding a second system-message surface.
+	var box=Rect2(22,y,386,height)
+	draw_rect(Rect2(box.position+Vector2(3,4),box.size),Color("354243",.20))
+	draw_rect(box,Color("fcf6e6"));draw_rect(box,INK,false,2)
+	draw_line(Vector2(38,y+36),Vector2(392,y+36),Color("cdc4ae"),1)
+	_text(speaker,y+24,Color("697268"),14)
+	_text(text,y+64,INK,font_size,348,true)
+
+func _retained_words(y:float)->void:
+	# Keep each earned word intact; these are records of actual contacts, not
+	# advance answers or another puzzle-completion authority.
+	var font=get_theme_default_font();var width=0.0;var words:Array=[]
+	for capture:Dictionary in session.captures:
+		var word=str(capture.word)
+		var extent=font.get_string_size(word,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+16
+		words.append({"word":word,"width":extent});width+=extent
+	width+=maxi(0,words.size()-1)*6
+	_text("已留下",y-16,Color("697268"),14)
+	var x=(430-width)/2
+	for word:Dictionary in words:
+		draw_rect(Rect2(x,y,word.width,34),Color("f8f3e5"))
+		draw_rect(Rect2(x,y,word.width,34),Color("b6b7a8"),false,1)
+		draw_string(font,Vector2(x+8,y+23),word.word,HORIZONTAL_ALIGNMENT_LEFT,-1,17,INK)
+		x+=word.width+6
 
 func _word(text:String,center:Vector2,extent:Vector2,angle:float,color:Color=PAPER)->void:
 	var polygon=WordModel.polygon(center,extent/2,angle)
@@ -279,7 +362,7 @@ func _draw()->void:
 		if phase=="whiteout" or int(elapsed*18)%2==0:draw_rect(Rect2(Vector2.ZERO,size),Color.WHITE)
 		return
 	draw_set_transform(field.position,0,Vector2.ONE*display_scale)
-	if phase=="success":_text("签　到",369,INK,44)
+	if phase=="success":pass # Independent child objects render the accepted receipt.
 	elif phase=="error":
 		draw_rect(Rect2(30,330,370,140),PAPER);_text("经度与纬度不存在",400,INK,25)
 	else:
@@ -289,7 +372,7 @@ func _draw()->void:
 			# Original voiced narration owns this lane; puzzle fragments never add speech.
 			if intro_segments.size()>=3 and intro_elapsed_ms<8500:
 				var index=2 if intro_elapsed_ms>=6800 else 1 if intro_elapsed_ms>=3400 else 0
-				_text(str(intro_segments[index]),109,INK,16)
+				_narration_card(str(intro_segments[index]),98,112,"旁白",18)
 			if not session.captures.is_empty():_text("已留下："+" · ".join(session.captures.map(func(c):return c.word)),219,INK,17)
 			draw_rect(WordModel.ARENA,Color("ece7d9"));draw_rect(WordModel.ARENA,Color("b6b7a8"),false,2)
 			_text("字句还在向外走",732,Color("787b70"),14)
@@ -317,10 +400,18 @@ func _draw()->void:
 				_text("刚才这一下",313,Color("963f4b"),24)
 				_text(hint_text(),344,INK,17)
 		elif phase=="lock":
+			_narration_card(_lock_feedback(),110,126,"眼前的字",20)
 			var center=_lock_center()
 			draw_circle(center,55,Color("ad414a"));draw_arc(center,62,-PI/2,-PI/2+TAU*hold_ms/1400,60,Color("a8782b"),5)
-			_text("按住旁白圆圈\n或持续按住空格 / Enter 1.4 秒\n松开会重新计时",532,INK,20)
-		elif phase=="caught":_text(DIALOGUE[dialogue_index],390,INK,20)
+			var struggle=sin(elapsed*(24 if holding else 5))*(3.0*(1.0-hold_ms/1400) if holding else 1.3)
+			var font=get_theme_default_font();var glyph_width=font.get_string_size("话",HORIZONTAL_ALIGNMENT_LEFT,-1,32).x
+			draw_string(font,center+Vector2(-glyph_width/2+struggle,11),"话",HORIZONTAL_ALIGNMENT_LEFT,-1,32,PAPER)
+			if elapsed>=.55 and not session.captures.is_empty():_retained_words(520)
+			if lock_help_open:_text("空格 / Enter 与触碰圆圈等效。\n按键状态会同步到这个字。",624,Color("637067"),15)
+		elif phase=="caught":
+			var line:String=DIALOGUE[dialogue_index]
+			var colon=line.find("：")
+			_narration_card(line.substr(colon+1),286,206,line.left(colon),23)
 	if paused:
 		draw_rect(Rect2(30,300,370,230),PAPER);_text("已暂停",380,INK,28)
 	draw_set_transform(Vector2.ZERO)

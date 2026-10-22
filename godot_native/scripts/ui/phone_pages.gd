@@ -1,4 +1,6 @@
 extends RefCounted
+const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
 ## Native reconstructions of original phone app hierarchies. Source CSS colors and art.
 ## All hotspots emit intents; this builder never changes story state.
 signal action_requested(action_id: String, value: Variant)
@@ -17,6 +19,7 @@ var tiyi_presence = TiyiPresence.new()
 const EndingResume = preload("res://scripts/ui/native_ending_resume.gd")
 const CheckinPage = preload("res://scripts/ui/native_checkin_page.gd")
 var checkin_page = CheckinPage.new()
+const LauncherIcons=preload("res://scripts/ui/phone_launcher_icons.gd")
 const HomeArt = preload("res://scripts/ui/phone_home_art.gd")
 const NativeLibrary = preload("res://scripts/ui/native_library_pages.gd")
 var native_library = NativeLibrary.new()
@@ -36,6 +39,7 @@ const BonsaiGrowthView = preload("res://scripts/ui/bonsai_growth_view.gd")
 var bonsai_growth = BonsaiGrowthSession.new()
 const APP_HEIGHT = 814.0 * 378.0 / 424.0
 const PHONE_SCALE = 424.0 / 378.0
+const Symbols = preload("res://scripts/ui/native_symbol_icon.gd")
 # One shared destination for the falling glyph and its later accessible pickup.
 const HOME_GEAR_PICKUP_RECT = Rect2(270,360,64,88)
 var control_center_return = "phone_home"
@@ -164,7 +168,7 @@ func _style(color: Color, border: Color = Color.TRANSPARENT, radius: int = 0, wi
 	style.border_color = border
 	style.set_border_width_all(width)
 	style.set_corner_radius_all(radius)
-	return style
+	return PixelEdges.configure(style)
 
 func _panel(root: Control, rect: Rect2, color: Color, border: Color = Color.TRANSPARENT, radius: int = 0, width: int = 0) -> Panel:
 	var panel = Panel.new()
@@ -177,6 +181,7 @@ func _panel(root: Control, rect: Rect2, color: Color, border: Color = Color.TRAN
 
 func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color = INK, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
 	var label = Label.new()
+	Typography.apply_body(label)
 	label.position = rect.position
 	label.size = rect.size
 	label.text = text
@@ -187,10 +192,16 @@ func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(label)
+	if Symbols.apply(label,text,color,fs):
+		# Invisible source glyph must not impose a fallback-font line-height on
+		# the authored icon rectangle (notably the settings gear's 42px slot).
+		label.add_theme_font_size_override("font_size",1)
+		label.size=rect.size
 	return label
 
 func _button(root: Control, text: String, rect: Rect2, callback: Callable, color: Color = PAPER, ink: Color = INK, radius: int = 0, border: Color = INK) -> Button:
 	var button = Button.new()
+	Typography.apply_body(button)
 	button.position = rect.position
 	button.size = rect.size
 	button.text = text
@@ -200,6 +211,7 @@ func _button(root: Control, text: String, rect: Rect2, callback: Callable, color
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.pressed.connect(callback)
 	root.add_child(button)
+	Symbols.apply(button,text,ink,20)
 	return button
 
 func _act(root: Control, text: String, rect: Rect2, id: String, value: Variant = null, color: Color = PAPER, ink: Color = INK, radius: int = 0, border: Color = INK) -> Button:
@@ -484,9 +496,12 @@ func _build_home_apps(root: Control) -> void:
 		layout.slots[id]=point
 		var button=HomeButton.new()
 		button.position=point; button.size=Vector2(48,48); button.name="HomeApp_"+id
+		button.tooltip_text=Utilities.LABELS[id];button.accessibility_name=Utilities.LABELS[id]
+		button.focus_mode=Control.FOCUS_ALL
 		button.editable=s.actOne.phase!="prologue"; button.editing=home_editing
-		for mode in ["normal","hover","pressed"]: button.add_theme_stylebox_override(mode,_style(colors[id],INK,0,2))
-		button.add_theme_stylebox_override("focus",_style(Color.TRANSPARENT,Color("4caed2"),0,3))
+		var fill:Color=colors[id] if id=="settings" and s.actOne.phase=="prologue" else Color("253b45")
+		for mode in ["normal","hover","pressed"]: button.add_theme_stylebox_override(mode,_style(fill.lightened(.12) if mode=="hover" else fill.darkened(.12) if mode=="pressed" else fill,INK,0,2))
+		button.add_theme_stylebox_override("focus",_style(Color.TRANSPARENT,Color("e7ecdc"),2,3))
 		root.add_child(button)
 		if id=="settings" and s.actOne.phase=="prologue":
 			# The original source glyph is a separate object. The app frame, label
@@ -499,13 +514,17 @@ func _build_home_apps(root: Control) -> void:
 				# actual glyph rectangle, not the pre-layout requested48px rectangle.
 				root.ready.connect(func(): gear.position=button.position+(button.size-gear.size)/2)
 				if s.ui.autoRotate: _animate_rotation(root,gear,"gear",HOME_GEAR_PICKUP_RECT.get_center())
-		else: _app_icon(button,id)
+		else: LauncherIcons.add_to(button,id)
 		var objective=_home_chapter4_objective() if s.chapterThreeInterlude.completed and s.chapterThreeInterlude.replayUnlocked else {}
 		if not objective.is_empty() and ((objective.id=="study_index" and id=="cc98") or (objective.id!="study_index" and id=="wechat")):
 			_panel(button,Rect2(37,-6,17,17),Color("d72e32"),Color.WHITE,0,2)
 			_label(button,"1",Rect2(37,-6,17,17),10,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 		layout.buttons[id]=button
 		layout.labels[id]=_label(root,Utilities.LABELS[id],Rect2(point+Vector2(-1,53.5),Vector2(50,16)),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
+		var focus_name:Label=layout.labels[id]
+		focus_name.name="LauncherFocusName_"+id;focus_name.hide()
+		button.focus_entered.connect(func():focus_name.show())
+		button.focus_exited.connect(func():focus_name.hide())
 		button.pressed.connect(func():
 			if not button.can_activate(): return
 			if id=="settings" and s.actOne.phase=="prologue": action_requested.emit("c1_gear",null)
@@ -1952,7 +1971,12 @@ func _app_icon(root: Control, id: String, factor: float = 1.0) -> void:
 			_panel(icon,Rect2(6,6,36,36),Color("fff6e1"),Color("343333"),18,3)
 			_panel(icon,Rect2(23,13,3,13),Color("343333"))
 			_panel(icon,Rect2(24,24,12,3),Color("343333"))
-		"cc98": _label(icon,"CC98",Rect2(3,8,42,31),19,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+		"cc98":
+			var wordmark := _label(icon,"CC98",Rect2(3,8,42,31),19,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+			Typography.apply_body(wordmark)
+			wordmark.add_theme_font_size_override("font_size",16)
+			wordmark.autowrap_mode=TextServer.AUTOWRAP_OFF
+			wordmark.name="CC98Wordmark"
 		"settings": _label(icon,"✱",Rect2(3,3,42,42),37,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 		"voice_memos":
 			_panel(icon,Rect2(20,10,9,22),Color.WHITE,Color.TRANSPARENT,5)

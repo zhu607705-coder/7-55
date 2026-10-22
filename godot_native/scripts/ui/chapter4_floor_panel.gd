@@ -18,6 +18,7 @@ var font: Font
 var detail: Label
 var records: Label
 var primary: Button
+var close_button: Button
 var layout_pending:=false
 var instructions: Label
 func configure(value: Dictionary,state_reader: Callable,pixel_font: Font) -> bool:
@@ -31,7 +32,7 @@ func configure(value: Dictionary,state_reader: Callable,pixel_font: Font) -> boo
 	var body=VBoxContainer.new();body.add_theme_constant_override("separation",12);frame.add_child(body)
 	var header=HBoxContainer.new();body.add_child(header)
 	var title=label("主电梯 · 选择楼层",22,Color("f7f1dc"));title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title)
-	var close=button("× 离开",func():close_requested.emit());close.custom_minimum_size.x=92;header.add_child(close)
+	close_button=button("× 离开",func():close_requested.emit());close_button.custom_minimum_size.x=92;header.add_child(close_button)
 	body.add_child(label("当前："+config.fromFloor.substr(1)+"F · "+FLOORS[config.fromFloor][0],17,Color("79d4db")))
 	var scroll=ScrollContainer.new();scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(scroll)
 	var content=VBoxContainer.new();content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;content.add_theme_constant_override("separation",10);scroll.add_child(content)
@@ -89,6 +90,8 @@ func dispose_session() -> void:
 func _exit_tree() -> void:dispose_session()
 func handle_key(event: InputEventKey) -> bool:
 	if not live or submitted or not event.pressed or event.echo:return false
+	# Focused Leave must not turn Enter into travel or Space into record review.
+	if close_button.has_focus() and event.keycode in [KEY_ENTER,KEY_KP_ENTER,KEY_SPACE]:return false
 	if event.keycode in [KEY_UP,KEY_DOWN]:choose(choices[posmod(choices.find(selected)+(-1 if event.keycode==KEY_UP else 1),choices.size())]);return true
 	if event.keycode in [KEY_ENTER,KEY_KP_ENTER]:submit();return true
 	if event.keycode==KEY_SPACE:toggle_records();return true
