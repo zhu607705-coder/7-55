@@ -73,13 +73,18 @@ func run() -> void:
 		await reload_surface(viewport,false)
 		await click(shell.mobile_back)
 		check(shell.phone.visible and state.d.runtimeMode=="phone","phone return remains available after reloading the world")
-		# Reproduce an outer scroll offset while a scene's return affordance is
-		# present. Refresh preserves it; an actual new destination resets it.
+		# Home now fits without the removed return footer. Explicitly provide
+		# tall inner content to exercise the shell's overflow ownership contract.
+		# Keep it on the body container so same-page rebuilds retain the fixture.
+		var natural_minimum: Vector2 = shell.page_body.custom_minimum_size
+		shell.page_body.custom_minimum_size.y = shell.phone_scroll.size.y + 120
+		await frames()
 		shell.phone_scroll.scroll_vertical = 50; await frames()
 		var scrolled: int = shell.phone_scroll.scroll_vertical
 		check(scrolled > 0, "fixture really has outer phone overflow")
 		state.changed.emit(); await frames()
 		check(shell.phone_scroll.scroll_vertical == scrolled, "same-page refresh preserves outer scroll")
+		shell.page_body.custom_minimum_size = natural_minimum
 		state.open_page("wechat"); await frames(10)
 		check(shell.phone_scroll.scroll_vertical == 0, "new app resets previous outer scroll")
 		state.open_page("phone_home"); await frames(10)

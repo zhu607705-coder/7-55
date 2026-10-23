@@ -3,10 +3,16 @@ extends "res://tests/test_portrait_exploration.gd"
 ## world collision/movement, and the controller's original timeline capability.
 var receipts:=0
 var handoffs:=0
+func on_cinematic_started() -> void:
+	handoffs+=1
+	check(shell.world.size==Vector2(960,540) and not shell.world.mobile_exploration,"canonical surface restored synchronously before camera sample")
 func waiting_fixture(dimensions: Vector2i) -> void:
 	root.size=dimensions;shell.size=Vector2(dimensions)
 	check(state.begin_checkpoint("c3-canteen-entry"),"source canteen entry checkpoint loads")
 	shell.mobile_world=true;shell.compact_inventory_open=false;shell._refresh();await frames()
+	check(is_instance_valid(shell.c3_scene_host),"entering the canteen creates its deferred scene host")
+	if not shell.c3_scene_host.cinematic_started.is_connected(on_cinematic_started):
+		shell.c3_scene_host.cinematic_started.connect(on_cinematic_started)
 	shell.world.set_process(false);shell.c3_scene_host.set_process(false)
 	shell.c3_scene_host.tick(0,true);await frames()
 	check(shell.c3_scene_host.current!=null and shell.c3_scene_host.current.status=="waiting","approach owns original waiting session")
@@ -43,13 +49,10 @@ func run() -> void:
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
-	shell.c3_scene_host.set_process(false);shell.world.set_process(false)
+	check(shell.c3_scene_host==null,"early chapters do not allocate the later canteen scene host")
+	shell.world.set_process(false)
 	state.action_completed.connect(func(action,_a,_b,_c):
 		if action=="c3_entry_paper_complete":receipts+=1
-	)
-	shell.c3_scene_host.cinematic_started.connect(func():
-		handoffs+=1
-		check(shell.world.size==Vector2(960,540) and not shell.world.mobile_exploration,"canonical surface restored synchronously before camera sample")
 	)
 	for dimensions in [Vector2i(390,844),Vector2i(430,860),Vector2i(844,390)]:
 		await waiting_fixture(dimensions)
