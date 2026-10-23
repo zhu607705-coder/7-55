@@ -12,7 +12,11 @@ func check(ok:bool,name:String,detail:Variant=null):
 	checks.append({"pass":ok,"name":name,"detail":detail})
 	if not ok:push_error(name)
 func find_button(node:Node,text:String)->Button:
-	if node is Button and text in node.text:return node
+	if node is Button and not node is OptionButton:
+		if text in node.text:return node
+		if node.get_meta("intent","")=="c35_select_route" and text in ["选择","已选"] and node.get_meta("route_selected",false)==(text=="已选"):return node
+		if text=="‹" and node.name=="PhoneAppBack":return node
+		if node.name=={"录音线索":"C35Source_voice","照片线索":"C35Source_photo","消息线索":"C35Source_chat","网络记录":"C35Source_network"}.get(text,""):return node
 	for child in node.get_children():
 		var found=find_button(child,text)
 		if found!=null:return found
@@ -20,14 +24,31 @@ func find_button(node:Node,text:String)->Button:
 func click(text:String,scope_text:String=""):
 	var scope=main.page_body if scope_text.is_empty() else find_card(main.page_body.get_child(0),scope_text)
 	var button=find_button(scope,text) if scope!=null else null
+	if button==null and scope!=null:
+		for option:OptionButton in scope.find_children("*","OptionButton",true,false):
+			for index:int in range(option.item_count):
+				if text in option.get_item_text(index):
+					await reveal(option);option.grab_focus()
+					var shift:int=index-option.selected
+					await key(KEY_SPACE)
+					for step:int in absi(shift):await key(KEY_DOWN if shift>0 else KEY_UP)
+					await key(KEY_ENTER)
+					button=find_button(scope,"确认排除" if not scope_text.is_empty() else "确认地点")
 	check(button!=null and not button.disabled,"enabled actual control: "+text)
 	if button==null or button.disabled:return
-	main.phone_scroll.ensure_control_visible(button);await frames()
+	await reveal(button)
 	var point=button.get_global_rect().get_center()
 	check(main.phone_scroll.get_global_rect().has_point(point),"visible hit area: "+text)
 	for down in [true,false]:
 		var e=InputEventMouseButton.new();e.button_index=MOUSE_BUTTON_LEFT;e.button_mask=MOUSE_BUTTON_MASK_LEFT if down else 0;e.pressed=down;e.position=point;e.global_position=point;root.push_input(e,true);await frames(1)
 	await frames()
+func reveal(control:Control):
+	var owner=control.get_parent()
+	while owner!=null:
+		if owner is ScrollContainer:owner.ensure_control_visible(control)
+		owner=owner.get_parent()
+	await frames()
+
 func key(code:Key):
 	for down in [true,false]:
 		var e=InputEventKey.new();e.keycode=code;e.physical_keycode=code;e.pressed=down;root.push_input(e,true);await frames(1)
@@ -54,9 +75,9 @@ func run():
 	# Only window focus is injected for a headless host; real audio and Controls run.
 	main.media_host.setup(func()->Dictionary:
 		var snapshot=main._read_runtime_state();snapshot.native.host.focused=focused;return snapshot)
-	await click("打开恢复工具");await click("查看划船帖");await click("安全返航");await click("发布收尾并保存时间");await click("返回记录恢复")
+	await click("开始恢复");await click("查看划船帖");await click("安全返航");await click("发布收尾并保存时间");await back()
 	await click("录音线索")
-	await click("试听后可选","CLIP D7")
+	check(find_button(find_card(main.page_body,"CLIP D7"),"试听后可选").disabled,"unreviewed audio has an unavailable keep control")
 	check(state.d.native.get("c35_voice_selection",[]).is_empty(),"unreviewed clip cannot enter selection")
 	await click("▶","CLIP D7");await create_timer(.6).timeout
 	check(main.media_host.current!=null and main.media_host.current.phase=="playing","actual audio starts from visible native control")
@@ -103,12 +124,12 @@ func run():
 	await click("保存通知");await click("麦斯威夜间自习群")
 	await click("选择","203 还开着吗");await click("选择","刚看见保安");await click("保存路线截图")
 	check(not state.d.chapterThreeInterlude.routeScreenshotSaved,"wrong route pair remains unresolved")
-	await click("选择","东边入口已经封了")
+	check(find_button(find_card(main.page_body,"东边入口已经封了"),"选择").disabled,"full route selection disables a third candidate")
 	check(state.d.native.c35_route_selection.size()==2 and not state.d.native.c35_route_selection.has("east_closed"),"route selection limit preserves existing pair")
 	await click("已选","203 还开着吗");await click("已选","刚看见保安")
 	await click("选择","我在西侧看见保洁推车");await click("选择","东边入口已经封了");await click("保存路线截图")
 	check(state.d.chapterThreeInterlude.routeScreenshotSaved,"route pair accepted in reverse selection order")
-	await back();await click("网络记录");await create_timer(1.6).timeout;await frames()
+	await back();await back();await click("网络记录");await create_timer(1.6).timeout;await frames()
 	for record in ["22:44:31","22:43:11","22:44:12"]:
 		await click("保存候选记录",record)
 		check(find_button(find_card(main.page_body.get_child(0),record),"已保存")!=null,"candidate marker updates: "+record)
@@ -119,7 +140,7 @@ func run():
 	var options=main.page_body.find_children("*","OptionButton",true,false)
 	for i in 3:
 		options=main.page_body.find_children("*","OptionButton",true,false)
-		main.phone_scroll.ensure_control_visible(options[i]);await frames();options[i].grab_focus()
+		await reveal(options[i]);options[i].grab_focus()
 		await key(KEY_SPACE);await key(KEY_DOWN);await key(KEY_ENTER)
 	check(controller.interlude.filtered_records(state.d).size()==1,"three keyboard-operated filters isolate one candidate")
 	check(state.d.chapterThreeInterlude==before,"filter operations do not advance evidence")

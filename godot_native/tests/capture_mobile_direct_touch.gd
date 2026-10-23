@@ -6,7 +6,7 @@ var capture_records: Array = []
 var validate_only := OS.get_environment("UI_CAPTURE_VALIDATE") == "1"
 func shot(id: String, note: String) -> void:
 	shell.world.queue_redraw(); await frames(8)
-	var record: Dictionary = {"id":id,"fixture":note,"dimensions":str(root.size),"world_rect":str(shell.world_view.get_global_rect()),"stick_rect":str(shell.world.mobile_control_metrics().stick_rect),"confirmed_plaque":shell.world.selected_overlay.plaque.visible,"lamp_on":lamp(),"axis":str(shell.world.touch_axis),"validation_only":validate_only}
+	var record: Dictionary = {"id":id,"fixture":note,"dimensions":str(root.size),"world_rect":str(shell.world_view.get_global_rect()),"gesture_area":str(shell.world.mobile_control_metrics().gestureArea),"confirmed_plaque":shell.world.selected_overlay.plaque.visible,"lamp_on":lamp(),"axis":str(shell.world.touch_axis),"validation_only":validate_only}
 	if shell.world.selected_overlay.plaque.is_visible_in_tree():
 		assert_mobile_plaque_at_bottom(id)
 		var plaque:Rect2=shell.world.selected_overlay.plaque.get_global_rect()
@@ -38,17 +38,13 @@ func run() -> void:
 		touch(point,true); touch(point,false); await frames()
 		check(lamp() and action_count()==count+1,"capture uses successful actual controller lamp tap")
 		await shot(prefix+"-02-direct-tap","Same fixture; root finger tap toggled source lamp once, no joystick confirm")
-		touch(stick_point(),true,3); await frames()
-		check(shell.world.touch_axis.x>.5,"capture shows a held real movement intent")
-		await shot(prefix+"-03-joystick-held","Root touch owns lower-left joystick; movement tick frozen only for deterministic screenshot")
-		touch(stick_point(),false,3); await frames()
+		touch(held_point(),true,3); await frames()
+		check(shell.world.direct_gestures.has_active(),"capture holds an actual scene press without dispatch")
+		await shot(prefix+"-03-scene-press-held","Root touch owns a visible scene press; no fixed joystick; animation frozen for deterministic screenshot")
+		touch(held_point(),false,3,true); await frames()
 		if prefix in ["portrait","landscape-safearea"]:
-			shell._toggle_world_inventory(); await frames()
-			check(not shell.world.selected_overlay.plaque.visible,"inventory layout change clears the previous confirmation")
-			point=visible_pick();count=action_count()
-			touch(point,true);touch(point,false);await frames()
-			check(action_count()==count+1,"expanded inventory capture reconfirms the actual nearby object through root touch")
-			await shot(prefix+"-04-existing-inventory","Existing inventory expanded; fresh root object tap confirms bottom plaque above unchanged inventory")
+			await frames()
+			await shot(prefix+"-04-existing-inventory","Existing inline inventory; same source scene; no world resize")
 			shell._show_journal(); await frames()
 			await shot(prefix+"-05-existing-journal","Existing locked JOURNAL-3 owns input; world pointer ownership canceled")
 			shell._close_modal(); await frames()

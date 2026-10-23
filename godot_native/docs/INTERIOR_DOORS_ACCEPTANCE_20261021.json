@@ -1,0 +1,485 @@
+{
+  "schema": "7-55-interior-doors-acceptance-v1",
+  "completedAt": "2026-10-20T17:23:24.589014+00:00",
+  "status": "pass",
+  "artifact": {
+    "build": "exports/web-library-theater-tiled-20261021",
+    "url": "http://127.0.0.1:5237/",
+    "sourceInputSha256": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+    "engine": "4.7.2.stable.official",
+    "manifestSha256": "d9d12e7fd7a953932a9b6ced5f6ff9a7924e0ae247fc709cf5a5bbe1acae9391",
+    "sourceCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "sourceDirty": true,
+    "note": "Accepted dirty-worktree production artifact is identified by sourceInputSha256, not sourceCommit alone."
+  },
+  "browserSummary": {
+    "profiles": 9,
+    "assertions": 204,
+    "failures": 0,
+    "consolePageGodotNetworkErrors": 0,
+    "profilesByScope": {
+      "doors_and_visible_handoff": 6,
+      "first_dorm_touch": 3
+    }
+  },
+  "browserProfiles": [
+    {
+      "engine": "firefox",
+      "viewport": [
+        1280,
+        720
+      ],
+      "input": "real mouse/keyboard",
+      "scope": "doors_and_visible_handoff",
+      "passed": true,
+      "assertions": 30,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-final-firefox/report.json",
+      "reportSha256": "655b719a13e1f5d79f75dc85c33e2427f4aac92b4b861cff58277cdca93c6c80",
+      "gpuCapabilities": {
+        "maxTextureSize": 8192
+      },
+      "actualHandoffVisibility": {
+        "brightScenePixelFraction": 0.7738908683624992,
+        "sampledPixels": 532128,
+        "elapsedAfterControllerMs": 67,
+        "timingBasis": "elapsed after the readonly snapshot first reported original controller handoff; not original-action wall-clock time"
+      }
+    },
+    {
+      "engine": "firefox",
+      "viewport": [
+        844,
+        390
+      ],
+      "input": "real canvas touchscreen.tap",
+      "scope": "doors_and_visible_handoff",
+      "passed": true,
+      "assertions": 30,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-final-firefox/report.json",
+      "reportSha256": "655b719a13e1f5d79f75dc85c33e2427f4aac92b4b861cff58277cdca93c6c80",
+      "gpuCapabilities": {
+        "maxTextureSize": 8192
+      },
+      "actualHandoffVisibility": {
+        "brightScenePixelFraction": 0.7439374325782093,
+        "sampledPixels": 185400,
+        "elapsedAfterControllerMs": 35,
+        "timingBasis": "elapsed after the readonly snapshot first reported original controller handoff; not original-action wall-clock time"
+      }
+    },
+    {
+      "engine": "firefox",
+      "viewport": [
+        844,
+        390
+      ],
+      "input": "real canvas touchscreen.tap",
+      "scope": "first_dorm_touch",
+      "passed": true,
+      "assertions": 8,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-first-touch-firefox/report.json",
+      "reportSha256": "57d0fbd0571b33bf7f96d82be70e8d9354c7f1229d22be0e70a56e65597563ac"
+    },
+    {
+      "engine": "chromium",
+      "viewport": [
+        1280,
+        720
+      ],
+      "input": "real mouse/keyboard",
+      "scope": "doors_and_visible_handoff",
+      "passed": true,
+      "assertions": 30,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-final-chromium/report.json",
+      "reportSha256": "593514b5e0e367100a5f4df45f7b2516239a45cd9dfb3e46c3eb8965b462b7b5",
+      "gpuCapabilities": {
+        "maxTextureSize": 16384
+      },
+      "actualHandoffVisibility": {
+        "brightScenePixelFraction": 0.7211986589692706,
+        "sampledPixels": 532128,
+        "elapsedAfterControllerMs": 145,
+        "timingBasis": "elapsed after the readonly snapshot first reported original controller handoff; not original-action wall-clock time"
+      }
+    },
+    {
+      "engine": "chromium",
+      "viewport": [
+        844,
+        390
+      ],
+      "input": "real canvas touchscreen.tap",
+      "scope": "doors_and_visible_handoff",
+      "passed": true,
+      "assertions": 30,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-final-chromium/report.json",
+      "reportSha256": "593514b5e0e367100a5f4df45f7b2516239a45cd9dfb3e46c3eb8965b462b7b5",
+      "gpuCapabilities": {
+        "maxTextureSize": 16384
+      },
+      "actualHandoffVisibility": {
+        "brightScenePixelFraction": 0.7443635382955771,
+        "sampledPixels": 185400,
+        "elapsedAfterControllerMs": 86,
+        "timingBasis": "elapsed after the readonly snapshot first reported original controller handoff; not original-action wall-clock time"
+      }
+    },
+    {
+      "engine": "chromium",
+      "viewport": [
+        844,
+        390
+      ],
+      "input": "real canvas touchscreen.tap",
+      "scope": "first_dorm_touch",
+      "passed": true,
+      "assertions": 8,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-first-touch-chromium/report.json",
+      "reportSha256": "88bbb86fa75149202695e889b5788ab00289ff137d1533c6bcc58987728c7175"
+    },
+    {
+      "engine": "webkit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "input": "real mouse/keyboard",
+      "scope": "doors_and_visible_handoff",
+      "passed": true,
+      "assertions": 30,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-final-webkit/report.json",
+      "reportSha256": "051103ab4975e0afac681bf9951b9a70087785924e40d4a178a53c11bba28514",
+      "gpuCapabilities": {
+        "maxTextureSize": 16384
+      },
+      "actualHandoffVisibility": {
+        "brightScenePixelFraction": 0.8407638763605749,
+        "sampledPixels": 532128,
+        "elapsedAfterControllerMs": 314,
+        "timingBasis": "elapsed after the readonly snapshot first reported original controller handoff; not original-action wall-clock time"
+      }
+    },
+    {
+      "engine": "webkit",
+      "viewport": [
+        844,
+        390
+      ],
+      "input": "real canvas touchscreen.tap",
+      "scope": "doors_and_visible_handoff",
+      "passed": true,
+      "assertions": 30,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-final-webkit/report.json",
+      "reportSha256": "051103ab4975e0afac681bf9951b9a70087785924e40d4a178a53c11bba28514",
+      "gpuCapabilities": {
+        "maxTextureSize": 16384
+      },
+      "actualHandoffVisibility": {
+        "brightScenePixelFraction": 0.8596548004314994,
+        "sampledPixels": 185400,
+        "elapsedAfterControllerMs": 285,
+        "timingBasis": "elapsed after the readonly snapshot first reported original controller handoff; not original-action wall-clock time"
+      }
+    },
+    {
+      "engine": "webkit",
+      "viewport": [
+        844,
+        390
+      ],
+      "input": "real canvas touchscreen.tap",
+      "scope": "first_dorm_touch",
+      "passed": true,
+      "assertions": 8,
+      "errors": [],
+      "report": "exports/verification/library_theater_rebuild_20261021/tiled-first-touch-webkit/report.json",
+      "reportSha256": "7daf382a205e4d5006da9ef4bb0cc298b9a0d63992473dc0edbfd264f01d7359"
+    }
+  ],
+  "browserContracts": [
+    "Actual production Godot engine and ordinary file-picker import; no developer intent/write bridge.",
+    "Unread library record blocks both real keyboard body and direct floor routing around either south exterior wall.",
+    "Far library record click/tap physically walks within the original interaction radius, opens the original record page, and only its actual confirmation grants access.",
+    "Real input crosses the earned source door in both directions; selected clear-floor return point avoids the record/exit affordances and keeps the library scene.",
+    "Occupied library and theatre positions survive actual durable browser save acknowledgment, page reload and ordinary Continue without relocation or body overlap.",
+    "Actual actor approach opens theatre leaves; walking out of the source sensor closes them.",
+    "Actual theatre departure pauses under F10; ordinary scene import cancels without a stale action; actual Close resumes and the original exit controller commits exactly once after physical traversal.",
+    "Fresh connected-gamepad fixture begins with manualControlTested=false; actual first map touch moves the real body, commits the original c2_manual_input transition only to reservation_briefing_required, and leaves the exit locked.",
+    "The actual controller-owned theatre handoff must show a non-black rendered panorama after content readiness; seven source textures are loaded at <=2048 physical pixels and fit the measured WebGL limit. No fixed800ms frame is treated as scene readiness."
+  ],
+  "nativeSummary": {
+    "tests": 7,
+    "checks": 963,
+    "failures": 0
+  },
+  "nativeTests": [
+    {
+      "test": "test_chapter3_narrative_shell.gd",
+      "checks": 25,
+      "passed": true,
+      "summary": "Chapter 3 narrative shell: 25 checks, 0 failures",
+      "report": "exports/verification/interior_doors_20261020/tiled-world-final-native.json",
+      "reportSha256": "3fb4cd4795bde1b658b9bd724e6f578b379afb5d85ad6d881415b07814d16d31"
+    },
+    {
+      "test": "test_direct_dorm_first_move.gd",
+      "checks": 107,
+      "passed": true,
+      "summary": "DIRECT_DORM_FIRST_MOVE: 107 checks; 0 failures",
+      "report": "exports/verification/interior_doors_20261020/tiled-world-final-native.json",
+      "reportSha256": "3fb4cd4795bde1b658b9bd724e6f578b379afb5d85ad6d881415b07814d16d31"
+    },
+    {
+      "test": "test_direct_library_entry_main.gd",
+      "checks": 406,
+      "passed": true,
+      "summary": "DIRECT_LIBRARY_ENTRY_MAIN: 406 checks; 0 failures",
+      "report": "exports/verification/interior_doors_20261020/tiled-world-final-native.json",
+      "reportSha256": "3fb4cd4795bde1b658b9bd724e6f578b379afb5d85ad6d881415b07814d16d31"
+    },
+    {
+      "test": "test_direct_world_input.gd",
+      "checks": 104,
+      "passed": true,
+      "summary": "DIRECT_WORLD_INPUT: 104 checks; 0 failures",
+      "report": "exports/verification/interior_doors_20261020/tiled-world-final-native.json",
+      "reportSha256": "3fb4cd4795bde1b658b9bd724e6f578b379afb5d85ad6d881415b07814d16d31"
+    },
+    {
+      "test": "test_interior_door_collision.gd",
+      "checks": 107,
+      "passed": true,
+      "summary": "INTERIOR_DOOR_COLLISION: 107 checks, 0 failures",
+      "report": "exports/verification/interior_doors_20261020/tiled-world-final-native.json",
+      "reportSha256": "3fb4cd4795bde1b658b9bd724e6f578b379afb5d85ad6d881415b07814d16d31"
+    },
+    {
+      "test": "test_theater_departure_main.gd",
+      "checks": 203,
+      "passed": true,
+      "summary": "THEATER_DEPARTURE_MAIN: 203 checks; 0 failures",
+      "report": "exports/verification/interior_doors_20261020/tiled-world-final-native.json",
+      "reportSha256": "3fb4cd4795bde1b658b9bd724e6f578b379afb5d85ad6d881415b07814d16d31"
+    },
+    {
+      "test": "test_tiled_world_background.gd",
+      "checks": 11,
+      "passed": true,
+      "summary": "TILED_WORLD_BACKGROUND: 11 checks; 0 failures",
+      "report": "exports/verification/interior_doors_20261020/tiled-world-final-native.json",
+      "reportSha256": "3fb4cd4795bde1b658b9bd724e6f578b379afb5d85ad6d881415b07814d16d31"
+    }
+  ],
+  "productionFreeze": {
+    "receipt": "exports/verification/library_theater_rebuild_20261021/production-freeze-final.json",
+    "sha256": "db1bdfd4dc3882a4e6dad97ad17b5c2082faa6cad200fda96ed82f2fa4ff0556",
+    "files": {
+      "scripts/world.gd": "7229d6cb8d4006aceb14d5a76b2d7942d0293247af4954aff870e7b3350b3bb0",
+      "scripts/presentation/source_tiled_texture.gd": "8d5cadfe28662f0e1b19676ba8b872f8f8b8d297f3ff6f7e06282eb0cb9a9c46",
+      "scripts/presentation/source_tiled_view.gd": "eeacb9683ed3dcde8fc71f0ee5d72a3ff10216fad37ad8dc6809a6de1b0e9283",
+      "scripts/main.gd": "7cbf01441cb150620787d40801ddc303adc5a160fb067e3a1c6a8ae68324a48d",
+      "scripts/platform/web_platform.gd": "359b8c334f31746d6357fdc6a598cc395aaa70893055b467ecaabf12dd64191d",
+      "scripts/presentation/library_entrance_door.gd": "490f7b10242f59e62e25b712b449105dfa649d422e39e5d66142ce54b31a7d0a",
+      "scripts/presentation/interior_door_layer.gd": "fee4212d3f52476c730b663b08aa0e764b9637d1ec7cc6f05578f8e205281d0c",
+      "scripts/presentation/theater_departure.gd": "5007f3608af6c31d41c770e6e59976ce8ae50b50e4f34f352be2967e70fe9dd7",
+      "scripts/direct_world_gestures.gd": "113060c17411a62ed2abb3db7f03b13b0feb6057aebcd811f07e32348d517f8e",
+      "scripts/target_approach.gd": "88998e7e4a8df3ed4eeacb544e9fa23ceab5141dad47fc895f154a323f0b8f0b",
+      "scripts/ui/world_overlay_layout.gd": "3da0865f871d70b5bb1a3c4e0575153fc05371591122a210db1d923e0881a73f",
+      "scripts/objects/kayak_world_adapter.gd": "8aa3b9ff33f24e80baeac394e744a2b90e83a62b812b305ac069c452c9e00a5e",
+      "scripts/ui/chapter3_world_layers.gd": "b400cec123d8b181dd03eedd3c95b4a31b82f43f7219685e43f9a3b8eba63a70",
+      "data/native/library-entrance-geometry.json": "4abe41d0a0af3959822eaa31d5a61cc3c79bcffc0a297c21b735db36b4bcee5c",
+      "data/native/campus-loop-panorama-tiles.json": "7831b4a72157a86c3d0bf9f9effe0fc883288a732216e5dc25ab3b457a97be72"
+    }
+  },
+  "resolvedFindings": [
+    {
+      "finding": "Library actor was repainted over by the original central foreground floor crop.",
+      "repair": "Keep fixed sides and the real upper header as foreground; moving leaves alone own the central aperture.",
+      "evidence": "Final original-root entry/return406 checks plus final occupied/open browser screenshots; root reviewed full-size images."
+    },
+    {
+      "finding": "A true closed-door bypass existed outside the painted south wall.",
+      "observedArtifact": "v2 sourceInputSha256 05db46916cda0f3222cabe7367d7b106e75b4fea5c37e156ea159d59d40f69e5",
+      "reproduction": {
+        "start": [
+          715,
+          792.5
+        ],
+        "route": [
+          [
+            705,
+            847.875
+          ],
+          [
+            657,
+            847.875
+          ],
+          [
+            452,
+            817.875
+          ],
+          [
+            452,
+            664.75
+          ],
+          [
+            505,
+            642.75
+          ],
+          [
+            715,
+            641.5
+          ]
+        ],
+        "recordRead": false,
+        "leafProgress": 0
+      },
+      "repair": "Two measured fixed wall bases [8,828,521,25] and [986,828,507,25]; central x529..986 stays open. Original furniture, glass, turnstiles, controllers and source data remain unchanged.",
+      "layout": "data/native/library-entrance-geometry.json",
+      "proof": "Real body wall-stop and direct routing negatives at 824x314/960x540/390x844 from y792.5 and842; final browser coarse negatives on all three engines."
+    },
+    {
+      "finding": "Removing the virtual joystick exposed a fresh-game first-touch deadlock: _manual_sent was required before the first touch could produce that fact.",
+      "repair": "Use the existing controlsInstalled && movementEnabled controller facts to permit direct floor input; original c2_manual_input still owns the first-displacement fact.",
+      "proof": "Native107 checks over390x844/844x390/1280x720 including pre-install negative, original gamepad action, first movement, reservation rejection and earned original exit; final three-engine real first-touch Web24 checks."
+    },
+    {
+      "finding": "Fine-pointer far-entity clicks did not physically approach the target.",
+      "repair": "Reuse the same body-aware planner and original interaction radius; exact pending target/state/scene/mode/phase ownership retires on cancel, modal, drag, resize, focus or new input.",
+      "proof": "Direct-world104 checks including fine real mouse approach/body/speed/one original action; root modal cancellation and final fine browser record-page chain."
+    },
+    {
+      "finding": "Firefox rendered the theatre-to-Qizhen panorama as persistent black after the original controller handoff.",
+      "measuredCause": "Actual Firefox MAX_TEXTURE_SIZE8192; source panorama width13668. All content was ready; source background remained black at0/2/8/20/30s with bright-scene fraction0.011763754 and only actor/UI visible.",
+      "repair": "Seven lossless source-pixel tiles, each <=2048 physical dimension, with one-pixel neighboring gutters and the original13668x1084 source coordinate system. World base and foreground-region drawing and the generic c3_location narrative-art consumer use the explicit adapter.",
+      "delivery": "Original oversized native panorama is excluded from the final Web pack; chapter35 tiles replace it without duplicate download. Original checked-in source, map, walkability, collision and controller data stay unchanged.",
+      "reconstruction": {
+        "sourceFile": "src/assets/rpg/campus/zijingang_campus_loop_panorama.png",
+        "sourceSha256": "504b0fdc6e846a2e5b4214b327a93c03b720b6ea7e48acbfa7804acbdd56cfb6",
+        "decodedSourceSha256": "a8dc2b6018b588a7d72866028722081921ab7c27067b12e54dae158243812115",
+        "reconstructedPixelSha256": "a8dc2b6018b588a7d72866028722081921ab7c27067b12e54dae158243812115",
+        "maxPhysicalDimension": 2048,
+        "tileCount": 7
+      },
+      "proof": "New native World11 checks plus actual final three-engine fine/coarse handoffs: measured GPU capability, loaded bounded textures and screenshot scene pixels beyond actor/UI."
+    }
+  ],
+  "retainedSourceDifference": {
+    "literalSeatCheckpoint": [
+      1180,
+      500
+    ],
+    "reason": "Its foot y524.375..539 intersects the original reading_south_rail at y534..562; the new south walls are at y828.",
+    "resolution": "Original source checkpoint and rail remain unchanged. Existing World _find_safe handles scene entry; test then ordinary validates/save-load restores the recovered actual actor and proves real keyboard displacement.",
+    "proof": "test_interior_door_collision.gd107/0",
+    "validatedOperatingStands": [
+      [
+        548,
+        355
+      ],
+      [
+        1255,
+        480
+      ],
+      [
+        700,
+        623
+      ],
+      [
+        827,
+        591
+      ]
+    ],
+    "preservedSourceSpawns": [
+      "library_entrance",
+      "library_front_desk",
+      "library_shelf_755"
+    ]
+  },
+  "fixtureScope": {
+    "method": "Retained controller checkpoints and ordinary validated portable saves. Spatial fixtures are declared; first-dorm fixture performs original c2_use_gamepad before production export/import.",
+    "indexes": [
+      "exports/verification/interior_doors_20261020/fixtures/fixture-index.json",
+      "exports/verification/interior_doors_20261020/fixtures/library-spatial-fixture-index.json",
+      "exports/verification/interior_doors_20261020/fixtures/dorm-first-touch-fixture-index.json"
+    ],
+    "claim": "Does not claim an earned complete campaign or physical-device acceptance."
+  },
+  "rejectedCandidate": {
+    "sourceInputSha256": "7273e5a3ebb70c6240c7cdcf672ae2f8a349d47f65af834aaffdfe80b81274a8",
+    "status": "rejected-by-Firefox-continuity",
+    "localDoorAndInputAssertionsPassed": 192,
+    "reason": "Passing controller/input assertions did not prove the new scene background was visible. Full visual acceptance was rejected after bounded30s verification.",
+    "archivedLedger": "exports/verification/interior_doors_20261020/interior-doors-candidate-7273-rejected.json",
+    "archivedLedgerSha256": "32a59abdd3b4818948c0c16d93780db45b435a825e1e640e26abb2c34e236f86",
+    "assessment": "exports/verification/interior_doors_20261020/web-final-firefox-handoff-diagnostic/assessment.json",
+    "assessmentSha256": "54dda84853473cdbbf3901630e2e6473be556ae03ceee6dfd0ace5e177842b5b",
+    "rawReportsAndFixtures": "Retained unchanged; failure screenshots are not reclassified as pass."
+  },
+  "retainedFailures": {
+    "policy": "All failed raw reports and fixtures retained. Passing cases are selected explicitly; no failed reports rewritten as pass.",
+    "directories": [
+      "web-v2-direct-pilot",
+      "web-final-chromium-attempt1",
+      "web-final-firefox-attempt1",
+      "web-final-chromium-mobile-attempt2",
+      "web-final-chromium-mobile-attempt3",
+      "web-final-chromium-mobile-attempt4",
+      "web-final-firefox-mobile-attempt2",
+      "web-final-firefox-mobile-attempt3",
+      "web-final-webkit-mobile-attempt1"
+    ],
+    "probeCorrections": [
+      "Return foot801.6875 initially exceeded the full-foot visible-floor bound by about3.95px; after camera movement it selected the legitimate nearby exit affordance. Final source floor715790 keeps the complete foot visible and outside both target affordances, with explicit library-scene/no-lib_exit assertions.",
+      "Theatre point930761 overlapped actor pixels; point930715 intersected the original ticket-reader fixture. Final source floor836747 was native body/picker/path validated before all three coarse profiles passed. No production collider was weakened."
+    ]
+  },
+  "visualReview": {
+    "status": "pass",
+    "completedAt": "2026-10-20T17:26:09.762030+00:00",
+    "rootReviewed": [
+      "full-size final library closed/open and occupied theatre Continue",
+      "full-size corrected Firefox fine and coarse theatre-to-Qizhen handoff; background, actor, road continuity and no seam holes"
+    ],
+    "contactReview": {
+      "oldCandidateStageImages": 104,
+      "finalStageImages": 60,
+      "boundedNegativeFrames": 5,
+      "contactSheets": 8,
+      "findings": "Final library/theatre poses match visible geometry; corrected panoramas are non-black in all browser profiles. The rejected predecessor retained its explicit persistent-black finding."
+    },
+    "qaPngCleanup": {
+      "removedOwnedStagePng": 169,
+      "removedOwnedContactPng": 8,
+      "sourceOrGeneratedReferenceAssetsRemoved": 0,
+      "retainedEvidence": "Raw successful and failed reports, negative-control content/pixel metrics, fixtures, scripts and all screenshot SHA256/dimensions indexes.",
+      "indexes": [
+        {
+          "path": "exports/verification/interior_doors_20261020/qa-contact-review/index.json",
+          "sha256": "51487c99ce8a94c29939d28179bfaccc02b7f4f0661e647adecedf1237a8ddd5",
+          "stageImages": 109,
+          "contactSheets": 5
+        },
+        {
+          "path": "exports/verification/library_theater_rebuild_20261021/qa-contact-review/index.json",
+          "sha256": "9397e0198ec773cc74a3b12e8426ccd897dac3724b023bb9776a280e046806aa",
+          "stageImages": 60,
+          "contactSheets": 3
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Automated browser-engine and native root-event coverage; no physical iOS/Android device claim.",
+    "Declared original checkpoints and production-validated save fixtures prove physical and controller contracts; not an earned complete campaign run.",
+    "Earlier7273 candidate is rejected and must not be deployed as the accepted artifact."
+  ]
+}

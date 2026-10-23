@@ -45,7 +45,7 @@ export function createBootChunks(directory) {
   return result;
 }
 
-export function verifyBootChunks(directory, manifest) {
+export function verifyBootChunks(directory, manifest, { verifiedCompressedFiles = [] } = {}) {
   if (!manifest || manifest.schema !== BOOT_CHUNK_SCHEMA || manifest.chunkBytes !== BOOT_CHUNK_BYTES
     || !manifest.resources || JSON.stringify(Object.keys(manifest.resources).sort()) !== JSON.stringify(resources.slice().sort())) throw new Error('Invalid static boot chunk manifest');
   const declared = new Set();
@@ -77,10 +77,12 @@ export function verifyBootChunks(directory, manifest) {
     } finally { fs.closeSync(fd); }
     if (offset !== resource.bytes || reassembled.digest('hex') !== resource.sha256) throw new Error(`Reassembled boot resource SHA-256/coverage differs: ${name}`);
   }
+  const allowed = new Set(verifiedCompressedFiles.filter(file => file.startsWith('boot/')));
+  if ([...allowed].some(file => !file.endsWith('.gz') || !declared.has(file.slice(0, -3)))) throw new Error('Compressed boot companion has no original chunk');
   const actual = fs.readdirSync(path.join(directory, 'boot'), { withFileTypes: true }).map(item => {
     if (!item.isFile() || item.isSymbolicLink()) throw new Error(`Unexpected boot chunk entry: ${item.name}`);
     return `boot/${item.name}`;
-  }).sort();
+  }).filter(file => !allowed.has(file)).sort();
   if (JSON.stringify(actual) !== JSON.stringify([...declared].sort())) throw new Error('Unlisted or missing static boot chunk file');
   return { schema: BOOT_CHUNK_SCHEMA, files: declared.size, bytes: chunkBytes, exactCoverage: true, resourceCount: resources.length };
 }

@@ -17,8 +17,9 @@ func frames(count:int=3)->void:
 func install(value:Dictionary)->void:
 	state.d=value.duplicate(true);state.story_reset.emit();state.changed.emit()
 	shell._show_world_mobile();shell._refresh();await frames()
-	shell.world.set_process(false);shell.c3_scene_host.set_process(false)
-	shell.c3_narrative_host.set_process(false);shell.library_story_host.set_process(false)
+	shell.world.set_process(false)
+	for host in [shell.c3_scene_host,shell.c3_narrative_host,shell.library_story_host]:
+		if is_instance_valid(host):host.set_process(false)
 	shell.world._process(0)
 func run()->void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated profile")

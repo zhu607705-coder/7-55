@@ -40,3 +40,27 @@ func configure_view(origin: Vector2,zoom: float) -> void:
 		"strokeAgeMs":(model.elapsed-model.last_stroke)*1000,"alpha":presentation.alpha
 	})
 	before_pass.queue_redraw();after_pass.queue_redraw()
+
+func paddle_input_bounds(side:String)->Rect2:
+	if not active or not is_instance_valid(rig) or side not in ["left","right"]:return Rect2()
+	var paddle:Node2D=rig.get_node("BodyRoll/"+side.capitalize()+"Paddle")
+	var transform:Transform2D=world.get_global_transform_with_canvas().affine_inverse()*paddle.get_global_transform_with_canvas()
+	var shaft:Line2D=paddle.get_node("ShaftOutline")
+	var points:PackedVector2Array=[]
+	for index:int in range(1,shaft.points.size()):points.append(transform*shaft.points[index])
+	var blade:Polygon2D=paddle.get_node("BladePivot/Blade")
+	var blade_transform:Transform2D=world.get_global_transform_with_canvas().affine_inverse()*blade.get_global_transform_with_canvas()
+	for point:Vector2 in blade.polygon:points.append(blade_transform*point)
+	var area:=Rect2(points[0],Vector2.ZERO)
+	for point:Vector2 in points:area=area.expand(point)
+	return area.grow(maxf(6.0,14.0/maxf(.01,world.hud_display_scale())))
+
+func visible_input_bounds()->Rect2:
+	if not active or not is_instance_valid(rig):return Rect2()
+	var result:Rect2=paddle_input_bounds("left").merge(paddle_input_bounds("right"))
+	for path:String in ["BodyRoll/Hull","BodyRoll/SeatedPlayer"]:
+		var sprite:Sprite2D=rig.get_node(path)
+		var transform:Transform2D=world.get_global_transform_with_canvas().affine_inverse()*sprite.get_global_transform_with_canvas()
+		var area:Rect2=sprite.get_rect()
+		for point:Vector2 in [area.position,Vector2(area.end.x,area.position.y),area.end,Vector2(area.position.x,area.end.y)]:result=result.expand(transform*point)
+	return result

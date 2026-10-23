@@ -18,7 +18,7 @@ func pose_snapshot(view: Control) -> String:
 	return var_to_str(value)
 func run() -> void:
 	var view:=View.new();view.asset_directory="res://assets/native_755/ride/"
-	check(view.configure({"render_width":960,"live_shadows":false}),"configure before enter-tree")
+	check(view.configure({"render_width":960,"live_shadows":false,"rebuilt_campus":false}),"configure original reference before enter-tree")
 	view.size=Vector2(430,500);root.add_child(view);await process_frame
 	check(view.ready3d and view.failure_reason.is_empty(),"all source resources loaded")
 	check(not view.configure({}),"configure cannot rebuild an active world")
@@ -57,4 +57,19 @@ func run() -> void:
 	view.update_view(model,.25,false);check(snapshot(model)==before,"post-dispose update inert")
 	view.dispose();await process_frame
 	check(not is_instance_valid(view),"owned viewport/world freed after dispose")
+	# Exercise the production scenery with the exact same rider and simulation.
+	view=View.new();view.asset_directory="res://assets/native_755/ride/";view.configure({"live_shadows":false});root.add_child(view);await process_frame
+	model=Model.new()
+	for distance: float in [0,187,188,376,377,565,566,754,0]:
+		model.distance=distance;model.tick+=120;before=snapshot(model)
+		view.update_view(model,1.0/60,false)
+		check(snapshot(model)==before,"rebuilt scenery leaves the source model unchanged at "+str(distance))
+		check(is_instance_valid(view.campus_environment) and view.chunks.is_empty(),"production uses only rebuilt campus environment")
+		check(view.campus_environment.chunks.size()<=6,"campus meshes remain bounded while moving and retrying")
+		check(view.campus_environment.find_children("*","CollisionObject3D",true,false).is_empty(),"scenery cannot add hidden ride collisions")
+		var surfaces: int=0
+		for chunk: Node3D in view.campus_environment.chunks.values():surfaces+=chunk.get_child_count()
+		check(surfaces<150,"static campus meshes batch by palette within draw budget")
+		await process_frame
+	view.dispose();await process_frame
 	print("SOURCE_VIEW_LIFECYCLE checks=",checks," failures=",failures);quit(1 if failures else 0)

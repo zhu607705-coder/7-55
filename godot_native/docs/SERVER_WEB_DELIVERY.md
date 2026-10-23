@@ -62,7 +62,7 @@ node godot_native/tools/deploy_web_server.mjs \
 
 可指定 `--host 已有别名`、`--identity /absolute/existing/key`、`--port 22`。预检只读取机器 CPU 数、物理内存、空闲磁盘、路径所有者/权限、现有 current 链接及 `nginx -T` 的结果；为避免泄露其他项目配置，不输出完整 `nginx -T`。SSH 认证失败时不会上传或改变权限。
 
-管理员需要将 dry-run 输出的 `nginxConfiguration`，或替换 [Nginx 示例](../deploy/nginx-755.conf.example) 的两个路径占位符后，**原样 include 到正确的既有 HTTPS `server {}` 内**。示例只定义 `/7-55/` 及其 releases 路由，保留现有根站、TLS 和上游。它配置 WebAssembly MIME、可选 gzip、入口 `no-store`、HTML/JSON `no-cache`、不可变版本资源长期缓存，以及缺少资源返回 404。入口关闭 open-file cache，避免 current 切换后继续发送旧入口；独立缺失资源 handler 阻止既有 SPA 的 `error_page 404` 回退到 HTML，并给失败请求 `no-store`，不把 404 缓存一年。路由和文件检查语义参见 [Nginx core 文档](https://nginx.org/en/docs/http/ngx_http_core_module.html#try_files)，压缩类型参见 [Nginx gzip 文档](https://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip_types)。默认不压缩 PCK；启用 `.gz`/Brotli 前需同时具备模块和经过摘要登记的预压缩文件。
+管理员需要将 dry-run 输出的 `nginxConfiguration`，或替换 [Nginx 示例](../deploy/nginx-755.conf.example) 的两个路径占位符后，**原样 include 到正确的既有 HTTPS `server {}` 内**。示例只定义 `/7-55/` 及其 releases 路由，保留现有根站、TLS 和上游。它配置 WebAssembly MIME、已核验的静态 gzip 协商、入口 `no-store`、HTML/JSON `no-cache`、不可变版本资源长期缓存，以及缺少资源返回 404。入口关闭 open-file cache，避免 current 切换后继续发送旧入口；独立缺失资源 handler 阻止既有 SPA 的 `error_page 404` 回退到 HTML，并给失败请求 `no-store`，不把 404 缓存一年。路由和文件检查语义参见 [Nginx core 文档](https://nginx.org/en/docs/http/ngx_http_core_module.html#try_files)，压缩类型参见 [Nginx gzip 文档](https://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip_types)。需要目标 Nginx 提供 [`http_gzip_static_module`](https://nginx.org/en/docs/http/ngx_http_gzip_static_module.html)；构建只为达到至少 4 KiB 且 10% 节省的文件生成 `.gz`，并在 `build-manifest.json.transportCompression` 登记原件与 gzip 的长度、摘要。没有伴随文件的资源仍提供原件；未启用 Brotli。
 
 配置安装与 `nginx -t`、reload 由管理员明确执行，本工具不执行。正式部署要求同一用户的只读 `nginx -T` 成功，且包含与 dry-run 完全匹配的隔离配置，避免无法证明路由归属时覆盖既有站点。若此用户无读取测试所需权限，应由管理员准备可读的安全配置/日志路径或使用已有合适管理身份，不应直接扩大整个 `/etc/nginx` 的权限。
 
@@ -109,6 +109,22 @@ node godot_native/tools/deploy_web_server.mjs \
 - 按正式 browser acceptance 覆盖真实输入、章节衔接、便携存档导入导出、IndexedDB 刷新恢复、音视频后台暂停和三视口布局。
 
 从 GitHub Pages 迁移到服务器是浏览器 origin 变化，浏览器不会将旧 origin 的 IndexedDB/localStorage 自动交给新站。使用游戏现有的普通存档导出/导入流程迁移；不要尝试跨域读取或静默改写旧站存档。
+
+2026-10-23 的示例还为 `releases/<release-id>/boot/index-wasm-<序号>-<摘要>.bin` 精确路由设置 `application/wasm`，使现有 gzip 类型规则覆盖实际启动块；PCK 块和其他 `.bin` 不匹配。38 个实际 WASM 块的本机 level-1 gzip 测量为39.51 → 11.48 MB。配置已做离线匹配/负控与 dry-run 检查，仍须目标主机 `nginx -t` 和实际传输验收；本轮未部署服务器。
+
+## 静态 gzip 与本机验收（2026-10-23）
+
+`tools/web_precompress.mjs` 生成 gzip level 6 伴随文件，并逐项验证解压字节与原件一致。`tools/serve_web.mjs` 启动时核验构建收据，然后根据 `Accept-Encoding` 协商；响应保留原始 MIME，给出实际传输长度、`Content-Encoding: gzip`、`Vary: Accept-Encoding` 和按表示区分的 ETag。未声明 gzip 的客户端继续使用原件。不能把 `.gz` 文件大小当作解压后的 Godot 资源大小。
+
+```sh
+node godot_native/tools/serve_web.mjs --directory=godot_native/exports/<verified-export> --port=5241
+```
+
+默认只绑定 `127.0.0.1`。指定 `--host` 才会更改监听地址。带 gzip 的 Range 请求返回完整 200，加载器按既有逻辑丢弃旧前缀后校验完整字节；未压缩的视频保留 Range/206 寻址。Nginx 示例仅对启动块、PCK、脚本等传输路由使用 [`max_ranges 0`](https://nginx.org/en/docs/http/ngx_http_core_module.html#max_ranges)，不改变视频路由。
+
+真实本机 HTTP 对 38 个当前 Godot 4.7.1 WASM 块的验证结果为 39,513,091 → 10,216,700 字节；解压后每块长度与 SHA-256 均匹配原构建。此结果衡量传输字节，不代表所有网络或设备的启动时间。工具另有 49 项 HTTP/损坏收据/路径保护验收：`node godot_native/tools/test_web_precompress.mjs`。
+
+GitHub Pages 不提供项目自定义的 gzip 伴随文件协商规则，上传 `.gz` 不等于网站会使用它。原始文件继续保证 Pages 可用，但这次压缩收益以本机 Node 服务或配置了静态 gzip 的服务器为准。生产 Nginx 仍须目标主机 `nginx -t` 和实际 HTTP 检查；本次没有连接或修改远端服务器。
 
 ## 本次工具验证的范围
 

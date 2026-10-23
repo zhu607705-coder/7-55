@@ -102,7 +102,7 @@ func run() -> void:
 		check(shell.phone.visible and state.d.ui.controlCenterOpen,"Control Center owns input")
 		state.d.ui.controlCenterOpen=false; shell._refresh_control_center(); await frames()
 		await click(shell.phone_world_return); exclusive("world")
-		await click(shell.inventory_handle)
+		check(not shell.inventory_handle.visible,"inline items have no bag-toggle icon")
 		check(shell.inventory_dock.visible,"single world inventory opens")
 		check(Rect2(Vector2.ZERO,Vector2(view)).encloses(shell.inventory_dock.get_global_rect()),"inventory stays inside viewport")
 		# Rotation changes geometry only, including a phone opened over a world.

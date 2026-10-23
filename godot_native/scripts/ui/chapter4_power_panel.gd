@@ -7,7 +7,8 @@ const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const ORDER=["hall","west_corridor","bakery_back_area","classroom_zone","east_corridor"]
 const POS={"hall":Vector2(.50,.13),"west_corridor":Vector2(.20,.41),"east_corridor":Vector2(.80,.41),"bakery_back_area":Vector2(.28,.84),"classroom_zone":Vector2(.72,.84)}
 const CELLS={"hall":Vector2(2,1),"west_corridor":Vector2(1,2),"east_corridor":Vector2(3,2),"bakery_back_area":Vector2(1,3),"classroom_zone":Vector2(3,3)}
-const ART=preload("res://assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_power_panel_states_v01.png")
+const ART_PATH="res://assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_power_panel_states_v01.png"
+var art:Texture2D
 var frame:PanelContainer
 var row:HBoxContainer
 var fixture:Control
@@ -39,9 +40,9 @@ class Cabinet extends Control:
 	var owner_panel:Control
 	func _draw():
 		var picture:=Rect2(Vector2.ZERO,Vector2(142,130))
-		var cell:=Vector2(ART.get_size())/2
+		var cell:=Vector2(owner_panel.art.get_size())/2
 		# Source JSX keeps the unlit open frame and overlays live switch lamps.
-		draw_texture_rect_region(ART,picture,Rect2(Vector2(cell.x,0),cell))
+		draw_texture_rect_region(owner_panel.art,picture,Rect2(Vector2(cell.x,0),cell))
 		for zone:Dictionary in owner_panel.grid_data.zones:
 			var on:bool=(owner_panel.mask&(1<<int(zone.bit)))!=0
 			var center:=Vector2(142*.602,130*(.327+int(zone.bit)*.1025))
@@ -53,6 +54,7 @@ func configure(state:Dictionary,contract:Dictionary,pixel_font:Font,reader:Calla
 	for zone:Dictionary in contract.zones:zones[str(zone.id)]=zone
 	for id:String in ORDER:
 		if not zones.has(id):return false
+	if art==null: art=load(ART_PATH)
 	mask=int(state.chapter4.lightGrid.mask)
 	color=Color(.008,.028,.05,.78);mouse_filter=Control.MOUSE_FILTER_STOP;set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);theme=Ui.font_theme(font)
 	frame=PanelContainer.new();frame.add_theme_stylebox_override("panel",Ui.box(Color("142327"),Color("6d8991"),3,3,Vector2(22,22)));add_child(frame)

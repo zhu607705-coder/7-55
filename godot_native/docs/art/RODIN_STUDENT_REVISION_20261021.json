@@ -1,0 +1,32 @@
+{
+  "schema": "755-rodin-asset-batch-v1",
+  "date": "2026-10-21",
+  "provider": "Hyper3D / Rodin",
+  "authorization": "User requested a revised face, more geometry, sneakers and ZJU campus-merch apparel, using the previously selected Rodin account.",
+  "maxCredits": 1,
+  "expectedCreditsPerAsset": 1,
+  "sourceReferences": [
+    "https://detail.youzan.com/show/goods/newest?from_source=gbox_seo&kdt_id=44216704",
+    "https://www.zju.edu.cn/572/main.htm"
+  ],
+  "referenceUse": "Original fictional adult character generated with imagegen. University circular seal will be applied accurately from the official source after mesh generation. Store clothing is a reference, not a claim of exact product replication.",
+  "assets": [
+    {
+      "id": "campus_student_v2",
+      "referenceImage": "reference/campus_student_v2_reference.png",
+      "purpose": "User requested a refined young face, real athletic sneakers, more face geometry and a back university seal.",
+      "request": {
+        "tier": "Gen-2.5-Extreme-High",
+        "mesh_mode": "Quad",
+        "quality": "high",
+        "quad_normal": true,
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "high",
+        "TAPose": true,
+        "is_symmetric": "symmetric",
+        "seed": 7552
+      }
+    }
+  ]
+}

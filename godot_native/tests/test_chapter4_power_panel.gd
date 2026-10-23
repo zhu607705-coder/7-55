@@ -17,7 +17,9 @@ func run():
  if script==null:quit(1);return
  var content:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter4-755.content.json"))
  fixture={"native":{"scene":"duan_yongping_temporal_maze","c4_context":"power"},"chapter4":{"floor":"A1","mode":"light","phase":"blackout_light_grid","lightGrid":{"mask":6,"locked":false}}}
- subject=script.new();check(subject.configure(fixture,content.lightGrid,load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"),func():return fixture),"Original earned power context accepted")
+ subject=script.new();check(subject.art==null,"Unopened cabinet does not decode its atlas")
+ check(subject.configure(fixture,content.lightGrid,load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"),func():return fixture),"Original earned power context accepted")
+ check(subject.art!=null,"Opening the accepted cabinet loads its original atlas")
  subject.toggle_requested.connect(func(id:String):toggles.append(id))
  subject.lock_requested.connect(func():locks+=1)
  subject.close_requested.connect(func():closes+=1)

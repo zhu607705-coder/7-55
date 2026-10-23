@@ -1,0 +1,134 @@
+{
+  "schema": "755-shoulder-multiview-review-v1",
+  "date": "2026-10-21",
+  "status": "reference family and reconstructed rig candidate for visual review; not promoted to release",
+  "replacesRejectedArt": "RODIN_CAMPUS_ACCEPTANCE_20261021.json",
+  "userCorrection": "Missing shoulders and triangular upper back; reference-to-model mismatch; adjacent campus scenery rejected",
+  "rootCauseEvidence": {
+    "before": "../../exports/review/shoulder-v3-20261021/v2_raw_vs_bad_pose.jpg",
+    "after": "../../exports/review/shoulder-v3-20261021/v3_raw_vs_pose.jpg",
+    "finding": "v2 unposed mesh retains shoulders; legacy generic chest-relative shoulder anchors lower its shoulder girdle during riding. Hiding back print does not remove failure.",
+    "correction": "rest-derived shoulder/head offsets, supported spine/neck/clavicles, parent-first bone posing"
+  },
+  "references": {
+    "tool": "built-in image_gen",
+    "prompts": "reference/student_v3/prompts.json",
+    "identity": "reference/student_v3/front.png",
+    "mainElevations": [
+      "front",
+      "back",
+      "left",
+      "right"
+    ],
+    "supplementary": [
+      "top",
+      "bottom"
+    ],
+    "topBottomLimitation": "Top is closer to plan after retry; bottom remains a low-angle view rather than exact orthographic. Neither was submitted to Rodin.",
+    "posedBack": "reference/student_v3/cycling_back.png",
+    "posedBackPurpose": "normal shoulder caps, broad upper-back plane, light scapular protraction, elbow/grip alignment, sweatshirt folds, restrained round seal; rig review reference, not unposed reconstruction input",
+    "poseReferenceLimitations": "Image-generated bicycle geometry and emblem are concept references; official runtime emblem remains the byte-exact source file.",
+    "images": [
+      {
+        "path": "back.png",
+        "bytes": 1738444,
+        "sha256": "5bac89a8811381c6fa15d92fcccfd08202ade30b05e213e162e4e017279da0bd"
+      },
+      {
+        "path": "bottom.png",
+        "bytes": 1741110,
+        "sha256": "568406e5b20d2d93692154f2dc34a747e1b896598a7f2821a61855d932b66251"
+      },
+      {
+        "path": "bottom_draft.png",
+        "bytes": 1827143,
+        "sha256": "d3faa3ea575dbc2090ea07db5191f0f9e93177727328cc5dc7810c24af109a8e"
+      },
+      {
+        "path": "cycling_back.png",
+        "bytes": 2055905,
+        "sha256": "f42d9c71179ec7bc5b26c514788391906f16efe22ee2ec2d62a4b7e9c1efc1c9"
+      },
+      {
+        "path": "front.png",
+        "bytes": 1769822,
+        "sha256": "3a42a63fe8252471b46e1f3c5a8e25f9e4596808284412f136e940c8a74b8cfe"
+      },
+      {
+        "path": "left.png",
+        "bytes": 1675386,
+        "sha256": "71dae9bbacde745594535d80a3f31115f4d9f789b695d21b7ce4725381c03033"
+      },
+      {
+        "path": "right.png",
+        "bytes": 1629526,
+        "sha256": "4cbdc016e3989ad8512f9b773d7dcaf1c2ec8163d2ef78c61c9664517a417ffa"
+      },
+      {
+        "path": "top.png",
+        "bytes": 1750629,
+        "sha256": "3981a9dabd079ff09605dc1da2c07194411b5062517a127e18274650f657f0a2"
+      },
+      {
+        "path": "top_draft.png",
+        "bytes": 1770471,
+        "sha256": "d8f76a6d294ccad113cb3e7d563bb5fee454d216ba72dca152e8f76ab07ac4e9"
+      }
+    ]
+  },
+  "reconstruction": {
+    "task": "26899c58-2061-42f4-8167-1bfd33d1b43c",
+    "inputImages": 4,
+    "imageLabels": [
+      "F",
+      "B",
+      "L",
+      "R"
+    ],
+    "credits": 1,
+    "balanceBefore": 220,
+    "balanceAfter": 219,
+    "rawSourceSha256": "c2fe16b755079a362afb7abc1ffba83b63297959259c0bd6e94248103b42cd0e",
+    "candidate": "reference/student_v3/candidate/campus_student_rigged.glb",
+    "unposedCandidate": "reference/student_v3/candidate/campus_student_unrigged.glb",
+    "triangles": 88694,
+    "vertices": 44326,
+    "bones": 19,
+    "unweightedVertices": 0,
+    "maxWeights": 4,
+    "boneProfileReference": "https://docs.godotengine.org/en/stable/classes/class_skeletonprofilehumanoid.html",
+    "profileUse": "19-bone body subset with project names; not a claim of all56 standard bones or a complete finger rig"
+  },
+  "validation": {
+    "nativeRegressions": {
+      "passed": true,
+      "stages": 2,
+      "report": "../../exports/review/shoulder-v3-20261021/native-regression.json",
+      "scope": "active15-bone backward compatibility, full pedal/steer contacts, anatomical spacing, mount/dismount and source camera clock"
+    },
+    "candidateContact": {
+      "passed": true,
+      "checks": 8,
+      "report": "../../exports/review/shoulder-v3-20261021/candidate-contact.json",
+      "maxContactError": 2.940158811e-05,
+      "scope": "actual19-bone candidate pedal/steer contacts and limb/girdle dimensions, including intentionally collapsed-shoulder negative control"
+    },
+    "quickValidators": 5,
+    "godotImport": "passed with no parsed ERROR or SCRIPT ERROR",
+    "gui": "unposed/posed v3 compared in Godot through computer use at1440x900 without the rejected adjacent scenery"
+  },
+  "delivery": {
+    "candidateOnly": true,
+    "activeCharacterGLBReplaced": false,
+    "webExportRebuilt": false,
+    "publicDeployment": false,
+    "gitMutation": false,
+    "rejectedSceneryRegenerated": false
+  },
+  "remaining": [
+    "final front/profile face identity comparison",
+    "pose/back shape aesthetic review against new cycling_back reference",
+    "physical target-device and browser export acceptance after candidate promotion",
+    "replace rejected adjacent campus scenery in its own art batch"
+  ]
+}

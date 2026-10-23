@@ -53,7 +53,7 @@ func run() -> void:
 	for i in 45:host._process(.05)
 	check(host.subtitle.is_empty(),"hint expires after original duration during clear-water recovery")
 	for extent: Vector2 in [Vector2(370,712),Vector2(410,728)]:
-		host.size=extent;host.mobile_exploration=true;host.subtitle=original
+		host.size=extent;host.mobile_exploration=true;host.subtitle=original;host._update_camera()
 		var hud: Dictionary=host.hud_metrics(original)
 		var footer:=Rect2(hud.body_gap,extent.y-hud.body_gap-hud.body_height,extent.x-hud.body_gap*2,hud.body_height)
 		var needed: Vector2=host.font.get_multiline_string_size(original,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font)
@@ -61,13 +61,16 @@ func run() -> void:
 		for rectangle: Rect2 in host.kayak_paddle_rects().values():
 			check(not rectangle.intersects(footer),"expanded original hint leaves visible paddle targets clear")
 		s.native.settings.text_scale=3.0
+		host._update_camera()
 		var enlarged:Dictionary=host.hud_metrics(original)
 		for rectangle:Rect2 in host.kayak_paddle_rects().values():
-			check(not rectangle.intersects(enlarged.body_rect) and rectangle.position.y>=enlarged.header_height,"enlarged hint preserves visible paddle targets below header")
+			check(not rectangle.intersects(enlarged.body_rect) and rectangle.position.y>=enlarged.header_height and rectangle.size.x>=28 and rectangle.size.y>=28,"enlarged hint preserves actual paddle input targets below header")
 			var down:=InputEventScreenTouch.new();down.index=7;down.position=rectangle.get_center();down.pressed=true
 			host._mobile_exploration_input(down)
-			check(host.mobile_touch_roles.get(7,{}).get("role","")=="paddle","relocated visible paddle retains its touch input owner")
+			check(str(host.direct_gestures.pointers.get(7,{}).get("role","")).begins_with("paddle_"),"actual moving paddle retains its own touch input owner")
+			var input_count:int=host.kayak.inputs.size()
 			down.pressed=false;down.canceled=true;host._mobile_exploration_input(down)
+			check(not host.direct_gestures.has_active() and host.kayak.inputs.size()==input_count,"cancelled physical paddle touch has no stroke or lingering owner")
 		s.native.settings.text_scale=1.0
 	host.free();await process_frame
 	print("KAYAK_BOUNDARY_FEEDBACK: ",checks," checks; ",failures," failures")

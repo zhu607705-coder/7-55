@@ -33,10 +33,12 @@ func build(page: String, view: Dictionary, s: Dictionary) -> Control:
 	outer.add_child(root)
 	var header: HBoxContainer=HBoxContainer.new()
 	root.add_child(header)
-	button(header,"‹",func() -> void:
+	var back := button(header,"‹",func() -> void:
 		if page=="c3_journal_camera": action_requested.emit("c3_journal_close",null)
 		else: page_requested.emit("phone_home")
 	)
+	back.name="JournalBack"
+	back.set_meta("phone_nav_kind","back" if page=="c3_journal_camera" else "exit")
 	var heading: VBoxContainer=VBoxContainer.new()
 	heading.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	header.add_child(heading)

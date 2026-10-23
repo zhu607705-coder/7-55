@@ -119,12 +119,12 @@ func run() -> void:
 	world.mobile_exploration=true
 	check(world._mobile_confirmed_target().is_empty() and not world._hud_line().contains("从小码头上船"),"nearby mobile board has no automatic contextual plaque")
 	simulate_confirmation_for_hud_unit(world,hud_board)
-	check(world._hud_line()=="点按物品 · 从小码头上船","confirmed touch HUD uses same contextual action before label")
+	check(world._hud_line()=="点物件 · 从小码头上船","confirmed touch HUD uses same contextual action before label")
 	var fallback:Dictionary={"id":"hud_label_fallback","position":[710,650],"radius":64,"label":"未改动目标"}
 	world.targets=[fallback];world.nearby=fallback;world.player=world._target_point(fallback)
 	check(world._mobile_confirmed_target().is_empty() and not world._hud_line().contains("未改动目标"),"changing to another nearby target does not transfer confirmation")
 	simulate_confirmation_for_hud_unit(world,fallback)
-	check(world._hud_line()=="点按物品 · 未改动目标","confirmed other targets retain label fallback")
+	check(world._hud_line()=="点物件 · 未改动目标","confirmed other targets retain label fallback")
 	world.player+=Vector2(float(fallback.radius)+1,0)
 	check(not world._hud_line().contains("未改动目标") and world.mobile_confirmed_target_id.is_empty() and world.mobile_confirmed_world_key.is_empty(),"leaving original interaction radius clears confirmed mobile plaque")
 	world.player=world._target_point(fallback)

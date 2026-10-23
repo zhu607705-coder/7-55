@@ -1,0 +1,114 @@
+{
+  "sourceSha256": "fcfde9ff9e07ece8a54f451bd4bc1d37ab89847bcc0b14d563312c90f205c18f",
+  "bonePoints": {
+    "Hips": [
+      0,
+      1.51,
+      0
+    ],
+    "Torso": [
+      0,
+      1.96,
+      0
+    ],
+    "Head": [
+      0,
+      2.46,
+      0
+    ],
+    "ShoulderL": [
+      -0.3,
+      2.18,
+      -0.04
+    ],
+    "ElbowL": [
+      -0.49,
+      1.82,
+      -0.03
+    ],
+    "WristL": [
+      -0.62,
+      1.4,
+      0
+    ],
+    "HipL": [
+      -0.16,
+      1.51,
+      0
+    ],
+    "KneeL": [
+      -0.16,
+      0.82,
+      0
+    ],
+    "FootL": [
+      -0.16,
+      0.15,
+      0
+    ],
+    "ShoulderR": [
+      0.3,
+      2.18,
+      -0.04
+    ],
+    "ElbowR": [
+      0.49,
+      1.82,
+      -0.03
+    ],
+    "WristR": [
+      0.62,
+      1.4,
+      0
+    ],
+    "HipR": [
+      0.16,
+      1.51,
+      0
+    ],
+    "KneeR": [
+      0.16,
+      0.82,
+      0
+    ],
+    "FootR": [
+      0.16,
+      0.15,
+      0
+    ]
+  },
+  "boneParents": {
+    "Hips": null,
+    "Torso": "Hips",
+    "Head": "Torso",
+    "ShoulderL": "Torso",
+    "ElbowL": "ShoulderL",
+    "WristL": "ElbowL",
+    "HipL": "Hips",
+    "KneeL": "HipL",
+    "FootL": "KneeL",
+    "ShoulderR": "Torso",
+    "ElbowR": "ShoulderR",
+    "WristR": "ElbowR",
+    "HipR": "Hips",
+    "KneeR": "HipR",
+    "FootR": "KneeR"
+  },
+  "vertices": 45302,
+  "sourceVertices": 51620,
+  "coincidentVerticesWelded": 6318,
+  "triangles": 90612,
+  "heatUnweightedVertices": 0,
+  "unweightedVertices": 0,
+  "maxWeights": 4,
+  "surfaceWeightRepairs": [],
+  "normalizationScale": 1.487472776890476,
+  "groundPivot": [
+    0,
+    0,
+    0
+  ],
+  "front": "-Z in Godot",
+  "skeleton": "Blender heat weights -> glTF Skin -> Godot Skeleton3D",
+  "status": "import candidate; visual deformation and contact acceptance still required"
+}

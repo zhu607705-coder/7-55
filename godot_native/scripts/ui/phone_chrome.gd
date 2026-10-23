@@ -10,6 +10,7 @@ signal item_selected(id: String)
 signal items_combined(from_id: String, to_id: String)
 
 const Hardware = preload("res://scripts/ui/interaction_chrome.gd")
+const Palette = preload("res://scripts/ui/phone_palette.gd")
 const CONTENT_SIZE := Vector2(424,854)
 const STATUS_HEIGHT := 40.0
 const INVENTORY_TOP_DEFAULT := 240.0
@@ -157,6 +158,7 @@ var network_label: Label
 var battery_number: Label
 var saving_label: Label
 var five_g: Label
+var status_background: ColorRect
 var status_icons: StatusIcons
 var task_button: Button
 var task_copy: Label
@@ -256,14 +258,16 @@ func _build() -> void:
 	var kinds: Variant=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/item_catalog.json"))
 	if kinds is Dictionary: inspect_kinds=kinds
 	status_bar=Control.new(); status_bar.name="StatusBar"; status_bar.size=Vector2(424,40); status_bar.z_index=40; status_bar.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(status_bar)
+	status_background=ColorRect.new();status_background.name="StatusBackground";status_background.size=Vector2(424,40);status_background.mouse_filter=Control.MOUSE_FILTER_IGNORE;status_bar.add_child(status_background)
 	time_box=Panel.new(); time_box.name="Time"; time_box.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	time_box.add_theme_stylebox_override("panel",Hardware.style(Hardware.PAPER,Hardware.EDGE))
+	time_box.add_theme_stylebox_override("panel",StyleBoxEmpty.new())
 	status_bar.add_child(time_box)
 	# Keep the logical clock and anchor geometry, but no opened-phone clock tile.
 	time_box.hide()
-	time_label=_label(time_box,"07:55",14); time_label.position=Vector2(10,4); time_label.tracking=1.0; time_label.add_theme_color_override("font_color",Color.TRANSPARENT)
+	time_label=_label(time_box,"07:55",14); time_label.position=Vector2(10,4); time_label.tracking=0.5; time_label.add_theme_color_override("font_color",INK)
 	status_right=Button.new(); status_right.name="ControlCenterTrigger"; status_right.tooltip_text="打开控制中心"
-	_set_button_style(status_right,Hardware.style(Hardware.PAPER,Hardware.EDGE),Hardware.style(Color("fffaed"),Hardware.INK))
+	_set_button_style(status_right,_style(Color.TRANSPARENT),_style(Color(0.2,0.3,0.35,0.06)))
+	status_right.add_theme_stylebox_override("disabled",_style(Color.TRANSPARENT))
 	status_right.pressed.connect(func(): page_requested.emit("control_center")); status_bar.add_child(status_right)
 	network_label=_label(status_right,"",11); network_label.tracking=0.5; network_label.add_theme_color_override("font_color",Color.TRANSPARENT)
 	battery_number=_label(status_right,"",11)
@@ -272,10 +276,11 @@ func _build() -> void:
 	five_g.add_theme_stylebox_override("normal",_style(Color.TRANSPARENT,INK,2))
 	status_icons=StatusIcons.new(); status_icons.name="NativeStatusIcons"; status_right.add_child(status_icons)
 	task_button=Button.new(); task_button.name="TaskTrigger"; task_button.z_index=76
-	_set_button_style(task_button,Hardware.style(Hardware.TRAY,Hardware.EDGE),Hardware.style(Color("354f5e"),Hardware.CORAL))
+	_set_button_style(task_button,_style(Color.TRANSPARENT),_style(Color(0.2,0.3,0.35,0.06)))
+	task_button.add_theme_stylebox_override("disabled",_style(Color.TRANSPARENT))
 	task_button.tooltip_text="点击查看当前任务和提示"; task_button.pressed.connect(func(): task_requested.emit()); add_child(task_button)
-	task_copy=_label(task_button,"任务",10,Color("fff8e4")); task_copy.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	digit_hint=_label(task_button,"",9,Color("f0d54e")); digit_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	task_copy=_label(task_button,"任务",10,Palette.INK); task_copy.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	digit_hint=_label(task_button,"",9,Palette.ACCENT); digit_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	inventory=Control.new(); inventory.name="Inventory"; inventory.position=Vector2(0,240); inventory.z_index=45; inventory.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(inventory)
 	inventory_body=Panel.new(); inventory_body.name="InventoryBody"; inventory_body.mouse_default_cursor_shape=Control.CURSOR_VSIZE
 	var body_style:=Hardware.style(Hardware.TRAY,Hardware.EDGE); body_style.border_width_left=0
@@ -301,7 +306,7 @@ func _build() -> void:
 	_acquisition_icon=_make_icon(acquisition,"",28); _acquisition_icon.position=Vector2(7,7)
 	for i in 3:
 		var particle:=ColorRect.new(); particle.color=Color("f0d54e"); particle.size=Vector2(6,6); particle.position=[Vector2(-12,4),Vector2(-20,18),Vector2(-8,31)][i]; particle.mouse_filter=Control.MOUSE_FILTER_IGNORE; acquisition.add_child(particle); _flight_particles.append(particle)
-	for target in [status_right,task_button,inventory_body,inventory_handle,acquisition]:
+	for target in [inventory_body,inventory_handle,acquisition]:
 		var shadow:=PixelShadow.new(); shadow.target=target; shadow.z_index=target.z_index; shadow.name=str(target.name)+"Shadow"
 		shadow.offset=Vector2(1,2) if target in [inventory_body,inventory_handle,acquisition] else Vector2(0,1)
 		shadow.color=Color(0.08,0.12,0.15,0.18)
@@ -318,6 +323,9 @@ func refresh(next_state: Dictionary) -> void:
 	# Retain the noninteractive node for lifecycle/stacking compatibility.
 	pixel_grid.visible=false
 	status_bar.visible=not bare
+	var white_phone := page=="wechat" or page=="c3_ticket_post" or page.begins_with("c35_") or (page=="photos" and _reading_inventory_anchor())
+	status_background.color=Palette.CHROME if white_phone else Color("f4f1e8")
+	if page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false):status_background.color=Palette.SURFACE
 	task_button.visible=not bare and show_task_bar and _task_visible()
 	_refresh_status()
 	_refresh_task()
@@ -334,6 +342,7 @@ func refresh(next_state: Dictionary) -> void:
 	inventory_open=bool(ui.get("inventoryOpen",false))
 	selected_item=str(ui.get("selectedItem","") if ui.get("selectedItem")!=null else "")
 	inventory.visible=not bare and not owned.is_empty() and not (state.get("flags",{}).get("checkinDone",false) and not state.get("actOne",{}).get("inventoryRecovered",false))
+	if page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false):inventory.hide()
 	var signature:=str(owned)+"|"+str(inventory_open)+"|"+selected_item
 	if signature!=_inventory_signature:
 		_inventory_signature=signature
@@ -354,7 +363,7 @@ func _text_width(text: String, font_size: int) -> float:
 	return ceilf(UI_FONT.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)
 
 func _refresh_status() -> void:
-	time_box.hide() # Refresh never restores the removed text, border, or placeholder.
+	time_box.show() # Plain system clock; no bordered tile or trust prose in the status strip.
 	var c4: Dictionary=state.get("chapter4",{})
 	var active: bool=bool(state.get("chapterThreeInterlude",{}).get("completed",false)) and (c4.get("prologueSeen",false) or c4.get("completed",false) or state.get("rpgScene","")=="duan_yongping_temporal_maze")
 	var seconds:=int(c4.get("phoneStatusTimeSeconds",28523)) if active else 28500
@@ -362,29 +371,28 @@ func _refresh_status() -> void:
 	var clock:="%02d:%02d" % [seconds/3600,(seconds%3600)/60]
 	if active: clock += ":%02d" % [seconds%60]
 	time_trusted=not active or bool(c4.get("phoneStatusTimeTrusted",false))
-	time_label.text=clock+(" 不可信" if not time_trusted else "")
+	time_label.text=clock
 	time_label.tooltip_text="" if time_trusted else "状态时间已冻结，等待旧钟成为时间来源"
 	time_label.size=Vector2(_text_width(time_label.text,14)+time_label.text.length(),20)
-	time_box.position=Vector2(18,9); time_box.size=Vector2(time_label.size.x+20,28)
+	time_box.position=Vector2(18,6); time_box.size=Vector2(time_label.size.x+20,28)
 	var network:=str(state.get("networkMode","campus_wifi"))
 	var percent:=clampf(float(state.get("phoneBattery",{}).get("percent",100)),0,100)
 	var saving:=bool(state.get("phoneBattery",{}).get("lowPowerMode",false))
 	network_label.text={"campus_wifi":"ZJUWLAN","cellular":"流量"}.get(network,"无服务")
-	network_label.position=Vector2(10,5); network_label.size=Vector2(_text_width(network_label.text,11)+network_label.text.length()*0.5,20)
-	var x:=10+network_label.size.x+7
-	status_icons.network=network; status_icons.network_x=x
+	network_label.hide() # Carrier names belong in Control Center, not a boxed status button.
+	var x := 6.0
+	status_icons.network=network;status_icons.network_x=x
 	five_g.visible=network=="cellular"
-	if network=="campus_wifi": x+=18+7
-	elif network=="cellular":
-		x+=18+7; five_g.position=Vector2(x,7); five_g.size=Vector2(_text_width("5G",9)+8,17); x+=five_g.size.x+7
-	battery_number.text="%d%%" % int(percent); battery_number.position=Vector2(x,5); battery_number.size=Vector2(_text_width(battery_number.text,11),20)
-	battery_number.add_theme_color_override("font_color",RED if percent<=20 else INK); x+=battery_number.size.x
+	if network in ["campus_wifi","cellular"]:x+=25
+	if network=="cellular":
+		five_g.position=Vector2(x,8);five_g.size=Vector2(22,17);x+=26
+	battery_number.text="%d%%" % int(percent);battery_number.position=Vector2(x,5);battery_number.size=Vector2(_text_width(battery_number.text,11),20)
+	battery_number.add_theme_color_override("font_color",RED if percent<=20 else INK);x+=battery_number.size.x
 	saving_label.visible=saving
-	if saving:
-		saving_label.position=Vector2(x+2,5); saving_label.size=Vector2(9,20); x+=11
-	x+=7; status_icons.battery_x=x; status_icons.percent=percent
-	status_right.size=Vector2(x+22+10,30); status_right.position=Vector2(424-14-status_right.size.x,8)
-	status_icons.size=status_right.size; status_icons.queue_redraw()
+	if saving:saving_label.position=Vector2(x+2,5);saving_label.size=Vector2(9,20);x+=11
+	x+=7;status_icons.battery_x=x;status_icons.percent=percent
+	status_right.size=Vector2(x+24+8,36);status_right.position=Vector2(424-14-status_right.size.x,2)
+	status_icons.size=status_right.size;status_icons.queue_redraw()
 	status_right.tooltip_text="打开控制中心，当前电量 %d%%%s" % [int(percent),"，低电量模式已开启" if saving else ""]
 
 func _refresh_task() -> void:
@@ -399,8 +407,12 @@ func _refresh_task() -> void:
 	var show_digits: bool=state.get("actOne",{}).get("phase","prologue")=="prologue" and (state.get("flags",{}).get("codeScattered",false) or any_digit)
 	var width:=136.0 if show_digits else 76.0
 	task_button.position=Vector2((424-width)/2,5); task_button.size=Vector2(width,30)
+	var page := str(state.get("native",{}).get("page",""))
+	if page.begins_with("c35_") or (page=="photos" and state.get("qizhenLake",{}).get("phase","")=="complete" and not state.get("chapterThreeInterlude",{}).get("completed",false)):
+		task_button.position=Vector2(354,48);task_button.size=Vector2(56,44);width=56
+		task_button.visible=task_button.visible and not (page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false))
 	task_copy.add_theme_font_size_override("font_size",10 if show_digits else 14)
-	task_copy.position=Vector2(2,3 if show_digits else 2); task_copy.size=Vector2(width-4,12 if show_digits else 26)
+	task_copy.position=Vector2(2,3 if show_digits else 2); task_copy.size=Vector2(width-4,12 if show_digits else task_button.size.y-4)
 	digit_hint.visible=show_digits; digit_hint.text="签到码 "+" ".join(known); digit_hint.position=Vector2(2,15); digit_hint.size=Vector2(width-4,11)
 	var objective:=str(state.get("native",{}).get("objective",state.get("objective","")))
 	if not objective.is_empty() and not _last_objective.is_empty() and objective!=_last_objective: _task_update_started=Time.get_ticks_msec()/1000.0
@@ -512,7 +524,6 @@ func _inspect_inventory_item(id: String) -> void:
 	inspect_requested.emit(catalog.get(id,{"id":id,"name":id}))
 
 func _on_handle_input(event: InputEvent) -> void:
-	if _reading_inventory_anchor() and not inventory_open: return
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			_bar_dragging=true; _bar_moved=false; _bar_drag_start=get_global_mouse_position().y; _bar_top_start=inventory_top
@@ -578,37 +589,19 @@ func _layout_inventory_anchor() -> void:
 	inventory_arrow.visible=true;inventory_handle.mouse_default_cursor_shape=Control.CURSOR_VSIZE
 	icon.position=Vector2(5,10)
 	inventory_count.position=Vector2(inventory_handle.size.x-inventory_count.size.x+8,-8)
-	if inventory_open or not _reading_inventory_anchor():return
-	var factor:float=maxf(.001,get_global_transform().get_scale().x)
-	var edge:float=44.0/factor
-	var gap_left:float=time_box.position.x+time_box.size.x+8
-	var gap_right:float=task_button.position.x-8
-	var header_face:bool=false
-	if get_global_position().x>=52:
-		inventory.position.x=-(edge+8/factor)
-		inventory_handle.size=Vector2(edge,maxf(edge,63))
-	elif gap_right-gap_left>=edge:
-		# The existing empty header gap provides a44px control without reducing
-		# the authored app canvas, wrapping clue text or covering its scroll area.
-		inventory.position=Vector2((gap_left+gap_right-edge)/2,40-edge)
-		inventory_handle.size=Vector2(edge,edge)
-		inventory_arrow.visible=false;header_face=true
-	elif get_global_position().y>=52:
-		inventory.position=Vector2((CONTENT_SIZE.x-edge)/2,-edge-8/factor)
-		inventory_handle.size=Vector2(edge,edge);inventory_arrow.visible=false
-	else:
-		return
+	if inventory_open:return
+	# A collapsed drawer is always attached to the left side. Vertical dragging
+	# changes only its bounded y; it never becomes a navigation-bar control.
+	var factor: float=maxf(.001,get_global_transform().get_scale().x)
+	var edge: float=maxf(38,28.0/factor)
+	inventory_handle.size=Vector2(edge,maxf(63,44.0/factor))
 	inventory.size=inventory_handle.size
-	inventory_handle.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
-	icon.position=Vector2((inventory_handle.size.x-26)/2,8 if inventory_arrow.visible else (inventory_handle.size.y-26)/2)
-	inventory_count.position=Vector2(maxf(1,inventory_handle.size.x-inventory_count.size.x-2),1)
-	if header_face:
-		var painted:Rect2=Rect2((edge-38)/2,5-inventory.position.y,38,30)
-		_set_inventory_painted_rect(painted)
-		icon.position=painted.position+Vector2(6,2)
-		inventory_count.position=painted.position+Vector2(maxf(1,painted.size.x-inventory_count.size.x-2),1)
-	else:
-		_set_inventory_painted_rect(Rect2(Vector2.ZERO,inventory_handle.size))
+	if _reading_inventory_anchor() and get_global_position().x>=edge*factor+8:
+		inventory.position.x=-edge
+	inventory_handle.mouse_default_cursor_shape=Control.CURSOR_VSIZE
+	icon.position=Vector2((edge-26)/2,10)
+	inventory_count.position=Vector2(edge-inventory_count.size.x+8,-8)
+	_set_inventory_painted_rect(Rect2(Vector2.ZERO,inventory_handle.size))
 
 func _set_inventory_painted_rect(rect:Rect2) -> void:
 	# The hit area can be larger than its face. Shadows/focus follow the face,

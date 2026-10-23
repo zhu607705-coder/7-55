@@ -1,0 +1,30 @@
+{
+  "schema": "755-offline-art-tools-v1",
+  "runtimeDependency": false,
+  "globalPathModification": false,
+  "tools": [
+    {
+      "name": "spritefusion-pixel-snapper",
+      "repository": "https://github.com/Hugo-Dz/spritefusion-pixel-snapper",
+      "commit": "02f9315d73d3219274d17767b36d9a231a6b1f4b",
+      "license": "MIT",
+      "role": "grid-and-palette-reconstruction",
+      "installSubdirectory": "pixel-snapper",
+      "binary": "bin/spritefusion-pixel-snapper",
+      "macosArm64BuildSha256": "4ba6c3a6d868fffa72c8e2285653c907dfdd4b6e792b41518c78c6744fd49b18",
+      "cargoLockSha256": "d349974f31866473e88270dc9b2ad19c3e2e3711c8e2756151be18fb24a5e60f",
+      "constraints": ["Use positional color count32 before the fixed palette; default16 would discard detail first.", "Pixel-size override does not guarantee exact output dimensions or aspect ratio.", "Do not overwrite calibrated map geometry or source art with elastic output."]
+    },
+    {
+      "name": "spritefusion-sprite-normals",
+      "repository": "https://github.com/Hugo-Dz/spritefusion-sprite-normals",
+      "commit": "d14b06726cabab09c68a403ce2e684a52efbfe4c",
+      "license": "MIT",
+      "role": "normal-map-generation-only",
+      "installSubdirectory": "sprite-normals",
+      "binary": "bin/spritefusion-sprite-normals",
+      "macosArm64BuildSha256": "254a19ccba03b519fe93d306f02a3435dbe0763ca050872d8113816bcfa23ebd",
+      "constraints": ["Does not align pixel grids or change the source palette.", "Generate normals after final color/alpha/grid acceptance, frame by frame.", "Normal maps are linear data; preserve frame layout and alpha. Do not map them to the art palette."]
+    }
+  ]
+}

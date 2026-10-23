@@ -1,0 +1,42 @@
+{
+  "source": "art_source/ending_resume_20261022/terminal_original.png",
+  "asset": "assets/native/ending_resume/terminal_signal_20261022.png",
+  "mode": "built-in image_gen; deterministic nearest-grid and palette normalization",
+  "sourceSha256": "5233cc980e8f896b2712f0ca169d139ff943c33d6d832211284c9780607237f3",
+  "assetSha256": "cc63f28f0f1596d88826a9401b4c35c6c18b0a001e69031f3f6d834ac6e8db02",
+  "sourceSize": [
+    1536,
+    1024
+  ],
+  "nativeSize": [
+    756,
+    504
+  ],
+  "authoredUiSize": [
+    378,
+    252
+  ],
+  "palette": [
+    "070B10",
+    "0B1219",
+    "202B35",
+    "344452",
+    "526B7A",
+    "7993A1",
+    "9AD9EF",
+    "DBEDF4",
+    "F4EAD5",
+    "D8C7A0",
+    "9A514A",
+    "44332D",
+    "70503B",
+    "A9BCC2",
+    "294553",
+    "809BA9"
+  ],
+  "uniqueColors": 16,
+  "prompt": "docs/art/prompts/ending_resume_terminal_20261022.txt",
+  "normalizer": "tools/prepare_ending_resume_art.py",
+  "runtimeRole": "non-authoritative static illustration; no baked interface text",
+  "pillowVersion": "12.3.0"
+}

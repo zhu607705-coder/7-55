@@ -1,0 +1,383 @@
+{
+  "schema": "755-object-continuity-acceptance-v1",
+  "date": "2026-10-23",
+  "createdAt": "2026-10-23T06:59:10.161831+00:00",
+  "status": "Scoped local preview accepted; upstream error integration is a separate subsequent task.",
+  "sourceCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "sourceDirty": true,
+  "sourceInputSha256": "bd57b24e71dce2a897380d5bf23d9ebfea068ecadee5e64be5722661fcccd6a2",
+  "engine": "4.7.1.stable.official",
+  "engineBuild": "4.7.1.stable.official.a13da4feb",
+  "scope": {
+    "font": "Apply accepted Morning Note0.1.1 Latin/numeral design consistently to native UI and loading-shell WOFF2. Preserve original glyph matrices and controller/input ownership.",
+    "libraryFix": "An acquired archivedLeaveRule could lose its ordinary reading entry after leaving the first reader. Conditional LibraryApp_rule and lib_open_rule now reopen the original reader from the library app, including after leaving the building.",
+    "libraryAuthority": "lib_read_rule remains the explicit reading submission. Reopening grants no read fact, call number or item, and never recreates an uploaded/consumed rule.",
+    "continuity": "Focused library, canteen and Qizhen review of ordinary entry/re-entry, source gates, item consume/retain, failures, phone/world returns, handoffs and persistence.",
+    "objects": [
+      "Library printer: independent mechanism/paper response to the original lib_printer action.",
+      "Canteen point-of-sale: independent paper, roller and lip; original accepted order grants the ticket before its optional animation.",
+      "Qizhen dock locker: independent measured roll-up leaves; the existing controller consumes rustedLockerKey and grants nylonCord."
+    ],
+    "objectAuthority": "Presentation only; no extra progression gate, inventory authority, saved animation clock or changed collision. Re-entry/replacement saves settle from validated facts."
+  },
+  "font": {
+    "family": "755 Morning Note",
+    "version": "0.1.1",
+    "glyphCount": 1823,
+    "originalGridGlyphs": 137,
+    "derivedGlyphs": 1686,
+    "originalSourceSha256": "9dcdd2edb533fba834f7618ed08b24c6c7d0a9f533290401c321f12767cfeec8",
+    "charsetSha256": "0d3993f16987a040da373660da4e6ca6806c3abc07b72c16050f3473155dac25",
+    "coverageChange": "Removed obsolete derived U+2295 from static coverage; original137 matrices unchanged. This is not a fully original Chinese family.",
+    "manifest": {
+      "file": "/Users/zhu/Downloads/755/godot_native/ui_assets/fonts/morning_note_manifest.json",
+      "sha256": "f2ac06ca3150ec508339e17514e166014d7b71beec36878d769847fe68ad4956"
+    },
+    "files": [
+      {
+        "file": "godot_native/ui_assets/fonts/MorningNote-Regular.ttf",
+        "bytes": 416616,
+        "sha256": "7a90f1a996c6e5b124644fc12bac9f8c41f13976f767d3ac5a75f0e796a6e2ae",
+        "weight": 400
+      },
+      {
+        "file": "godot_native/art_source/fonts/morning_note_v1/web/MorningNote-Regular.woff2",
+        "bytes": 88264,
+        "sha256": "25869fa273fb0667b29288c98908b2bf3197769717e977750f43404e88c21a49",
+        "weight": 400
+      },
+      {
+        "file": "godot_native/ui_assets/fonts/MorningNote-Medium.ttf",
+        "bytes": 405808,
+        "sha256": "65af16b6339e3714376554d31e02c919934e799475081da53bffa0157b494cdc",
+        "weight": 500
+      },
+      {
+        "file": "godot_native/art_source/fonts/morning_note_v1/web/MorningNote-Medium.woff2",
+        "bytes": 88428,
+        "sha256": "6b8d62e155c58b37831c08c54fbb841b3c80187249b2f9e97ca8d1e9300d0510",
+        "weight": 500
+      }
+    ],
+    "licenses": "SIL-OFL-1.1 for combined font binaries; Apache-2.0 original glyph source; upstream notices retained",
+    "coverageReceipt": {
+      "file": "/Users/zhu/Library/Application Support/755-tools/verification/cross-scene-continuity-20261023/library-printer/font-coverage-final-receipt.json",
+      "sha256": "5d018c889255b3d54453b2bc1bbec3d08ff099baaffd3948faf1af67025697d6"
+    }
+  },
+  "validation": {
+    "nativeScopes": [
+      {
+        "scope": "final_integrated",
+        "stages": 21,
+        "passed": true,
+        "report": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/native-integrated-final.json",
+          "sha256": "3348d5e9cf41550c3f4f401ee81e2fd614450904c8027d776fa25d33a9fa9193"
+        },
+        "labels": [
+          "Godot asset import and editor parse",
+          "test_canteen_drink_handoff.gd",
+          "test_canteen_drink_performance.gd",
+          "test_canteen_queue_floor_tap.gd",
+          "test_canteen_return_stack.gd",
+          "test_canteen_receipt_performance.gd",
+          "test_chapter3_world_layers.gd",
+          "test_direct_library_entry_main.gd",
+          "test_lake_dock_handoff.gd",
+          "test_lake_shell_input.gd",
+          "test_library_object_rebuild.gd",
+          "test_library_printer_object.gd",
+          "test_library_rule_action.gd",
+          "test_library_reveal_handoff.gd",
+          "test_library_stamp_motion.gd",
+          "test_library_stamp_story_gate.gd",
+          "test_library_world_layers.gd",
+          "test_native_typography.gd",
+          "test_prologue_character_flow.gd",
+          "test_qizhen_locker_object.gd",
+          "test_unified_typography.gd"
+        ]
+      },
+      {
+        "scope": "existing_animation",
+        "stages": 10,
+        "passed": true,
+        "report": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/existing-animation-regression.json",
+          "sha256": "3524ef74c9cf6413bcab7186174a2bd8948f669fe900501d390a1d56721313a7"
+        },
+        "labels": [
+          "test_canteen_drink_handoff.gd",
+          "test_canteen_drink_performance.gd",
+          "test_library_stamp_facing.gd",
+          "test_library_stamp_motion.gd",
+          "test_library_stamp_paper.gd",
+          "test_library_stamp_story_gate.gd",
+          "test_room201_press_art.gd",
+          "test_room201_press_authority.gd",
+          "test_room201_press_input.gd",
+          "test_room201_press_main.gd"
+        ]
+      },
+      {
+        "scope": "library_resolved",
+        "stages": 20,
+        "passed": true,
+        "report": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/native-final.json",
+          "sha256": "c0e183ca5f10212057fd8b969dade857b2d521a16c6a75b0d0e342ea3e143f34"
+        },
+        "labels": [
+          "Godot asset import and editor parse",
+          "test_direct_library_entry_main.gd",
+          "test_interior_door_layer.gd",
+          "test_interior_door_collision.gd",
+          "test_library_catalog_repeat.gd",
+          "test_library_entry_flow.gd",
+          "test_library_object_rebuild.gd",
+          "test_library_return_to_scene.gd",
+          "test_library_recovery_feedback_readability.gd",
+          "test_library_recovery_feedback.gd",
+          "test_library_stamp_motion.gd",
+          "test_library_stamp_facing.gd",
+          "test_library_rule_action.gd",
+          "test_library_reveal_handoff.gd",
+          "test_library_story_material.gd",
+          "test_library_stamp_paper.gd",
+          "test_library_stamp_story_gate.gd",
+          "test_library_story_sequences.gd",
+          "test_library_world_layers.gd",
+          "test_phone_library_login.gd"
+        ]
+      },
+      {
+        "scope": "qizhen_continuity",
+        "stages": 14,
+        "passed": true,
+        "report": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/qizhen-continuity-20261023/audit.json",
+          "sha256": "2e4cea24fb8bfb796ba61de04151fdb7244e6df322cf07e30abf963e8b10dd27"
+        },
+        "finding": "No new reproducible reachable progression block found in the reviewed paths."
+      },
+      {
+        "scope": "canteen_continuity",
+        "stages": 17,
+        "passed": true,
+        "report": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/canteen-continuity-20261023/audit-summary.json",
+          "sha256": "3152a52dfb7278b67ba8973ab2c014f16dbc78cc7bbe1f58acf60d56db169d84"
+        },
+        "finding": "No new reproducible progression block found in the reviewed paths."
+      }
+    ],
+    "aggregation": "Stages and checks overlap across reports. They are separate scoped evidence, not an additive full-game coverage total.",
+    "objectReceipts": [
+      {
+        "id": "library_printer",
+        "receipt": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/cross-scene-continuity-20261023/library-printer/printer-object-receipt.json",
+          "sha256": "fe514aee64e8732c038f931a5b56bc386dfd47c8dea915cdf5f114f865bdc713"
+        }
+      },
+      {
+        "id": "canteen_receipt_printer",
+        "receipt": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/canteen-continuity-20261023/receipt-acceptance.json",
+          "sha256": "190e38ad9f5393ecd251a99aa681380a51279e4d312c0e875a91764fdf7381c9"
+        }
+      },
+      {
+        "id": "qizhen_dock_locker",
+        "receipt": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/qizhen-object-20261023/receipt.json",
+          "sha256": "9600754ebf5d0193287d481791c8d21317316d07c51367504d90a7fc33bfa603"
+        }
+      }
+    ],
+    "browser": {
+      "runtime": "Actual Godot WebAssembly export in Chromium with emulated viewport/touch/DPR profiles",
+      "reports": [
+        {
+          "scope": "library desktop",
+          "scenario": "library",
+          "checks": 526,
+          "passed": true,
+          "completedAt": "2026-10-23T06:45:42.470Z",
+          "profiles": [
+            {
+              "id": "desktop-1440",
+              "width": 1440,
+              "height": 900,
+              "touch": false,
+              "dpr": 1,
+              "passed": true
+            }
+          ],
+          "report": {
+            "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/browser-final-library-desktop/web-acceptance.json",
+            "sha256": "a733cc39bb26164eaebb8371f7f64751d7904af9da72f62d31780222543e41fb"
+          }
+        },
+        {
+          "scope": "library touch",
+          "scenario": "library",
+          "checks": 528,
+          "passed": true,
+          "completedAt": "2026-10-23T06:45:44.070Z",
+          "profiles": [
+            {
+              "id": "touch-390",
+              "width": 390,
+              "height": 844,
+              "touch": true,
+              "dpr": 1,
+              "passed": true
+            }
+          ],
+          "report": {
+            "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/browser-final-library-touch/web-acceptance.json",
+            "sha256": "2e6b4a9a8890af3f4dc8c2eb9003f7d4b3a3e1a8cc5fc44bf26dc0d7a9bc8f8b"
+          }
+        },
+        {
+          "scope": "boot font failure",
+          "scenario": "boot-font-failure",
+          "checks": 493,
+          "passed": true,
+          "completedAt": "2026-10-23T06:45:07.812Z",
+          "profiles": [
+            {
+              "id": "retina-touch-390",
+              "width": 390,
+              "height": 844,
+              "touch": true,
+              "dpr": 3,
+              "passed": true
+            }
+          ],
+          "report": {
+            "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/browser-final-font-failure/web-acceptance.json",
+            "sha256": "c2947e7f60ce23c763dd3aaaab1e1df5bdab0589783e3d1a8de564f7d5343ecf"
+          }
+        },
+        {
+          "scope": "library handoff plus phone/map round trip",
+          "scenario": "library",
+          "checks": 531,
+          "passed": true,
+          "completedAt": "2026-10-23T06:49:56.763Z",
+          "profiles": [
+            {
+              "id": "touch-390",
+              "width": 390,
+              "height": 844,
+              "touch": true,
+              "dpr": 1,
+              "passed": true
+            }
+          ],
+          "report": {
+            "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/browser-final-handoff-touch/web-acceptance.json",
+            "sha256": "8024a3c1fed6b0a0e2824161f712643a0b5e7fcf58d970996bbb679319fcb02e"
+          }
+        }
+      ],
+      "reportChecksTotal": 2078,
+      "meaning": "2078 counts checks across these four reports, including repeated artifact/boot assertions; it is not unique gameplay coverage.",
+      "libraryRoute": "Controller-earned library fixtures imported through the shipped picker, ordinary input, unread-rule recovery, final conversation handoff, IndexedDB persistence and reload; final touch report also checks phone/map round trip.",
+      "fontFailure": "Both declared boot WOFF2 requests fail without blocking engine readiness or game entry."
+    },
+    "nativeGpu": "Actual Godot4.7.1 OpenGL4.1 Metal Compatibility on Apple M4 Max. Object receipts distinguish actual-size views, diagnostic magnification, local prerequisite fixtures and root-input routes.",
+    "actualPack": {
+      "passed": true,
+      "fullEntries": 2525,
+      "coreEntries": 1167,
+      "requiredCoreResources": 26,
+      "anonymousPayloadNegativeControls": 4,
+      "report": {
+        "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/final-core-assets.log",
+        "sha256": "10dece7c29dc337acdc0580078c3c89b8077aa75241c81b2cf349290690cb1fa"
+      }
+    },
+    "verifyOnly": {
+      "passed": true,
+      "report": {
+        "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/web-object-final-verify.log",
+        "sha256": "25ee110e43a815e82b548bd00ec34ceca90fa31b2dd93ce3873959cb375f2558"
+      }
+    },
+    "runtimeHashSnapshots": {
+      "before": {
+        "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/runtime-before-final-validation.json",
+        "sha256": "addee0ef4e1bd5f01a781da5b1daabac5cf02f65cf9c143b9af9897dfc5c776b"
+      },
+      "after": {
+        "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/runtime-after-final-validation.json",
+        "sha256": "addee0ef4e1bd5f01a781da5b1daabac5cf02f65cf9c143b9af9897dfc5c776b"
+      },
+      "equal": true
+    },
+    "retainedFailures": {
+      "initialNative": {
+        "report": {
+          "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/native-initial.json",
+          "sha256": "a4ae1d4dfcb4a757b99403d8bb1313ceebf5be9bed1546fe4db5262448461823"
+        },
+        "completedStages": 7,
+        "failedStages": 2,
+        "disposition": "Interrupted/failed initial evidence retained; the resolved20-stage report and final21-stage integration above are the passing evidence."
+      },
+      "policy": "Earlier failed browser invocations, isolated-fixture prerequisites, teardown failures and object capture diagnostics remain distinct from the passing final reports."
+    }
+  },
+  "delivery": {
+    "export": "godot_native/exports/web-object-continuity-final-20261023",
+    "buildManifest": {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/web-object-continuity-final-20261023/build-manifest.json",
+      "sha256": "bbd0ea145d3d8f6d1750784c301b2b59b8f85fdbb187a6e46e6567809defd0dc"
+    },
+    "contentManifest": {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/web-object-continuity-final-20261023/content-manifest.json",
+      "sha256": "e2556552deb681150be6bc3ac6a67652e18cb25cc8e5973c9c531849628368f1"
+    },
+    "initialPayloadBytes": 96024222,
+    "firstLoadBudgetBytes": 100000000,
+    "fullPackEntries": 2525,
+    "corePackEntries": 1167,
+    "deferredPacks": 21,
+    "fullPackSha256": "fa65d516f0e5018160602d6403a9b3e29ed86afefbd20c33eaac211927613a47",
+    "corePackSha256": "b18c4aed2e0b1757f9fe7356cdc4ef5905917233a2c18fac6b3f373553b81b0f",
+    "localPreview": "http://127.0.0.1:5241/",
+    "previewPid": 75475,
+    "httpManifestVerified": true,
+    "existingGameNotReloaded": true,
+    "previewSwitchReceipt": {
+      "file": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/preview-switch.json",
+      "sha256": "dcc348bf5b21f41ab67137c4b79e086f822b04cbbcf795f12161910d38232df7"
+    },
+    "fontSpecimen": "http://127.0.0.1:5243/art_source/fonts/morning_note_v1/specimen.html#latin-study",
+    "remotePublished": false,
+    "committed": false,
+    "pushed": false
+  },
+  "cleanup": {
+    "status": "Complete: 43 temporary PNGs hashed and removed; three deliberate review copies retained; 51 completed owned native profiles removed; owned QA5242 stopped. Earlier failed logs/reports retained.",
+    "owner": "root",
+    "fontSpecimen5243": "Retained.",
+    "sourcePolicy": "No new backup, stash or direct user-save write for this stage.",
+    "evidence": [
+      "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/screenshot-cleanup.json",
+      "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/native-sandbox-cleanup.json",
+      "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/qa-server-stopped.json"
+    ]
+  },
+  "boundaries": [
+    "Chromium emulation and native GPU fixtures do not establish physical-phone acceptance.",
+    "No fresh Safari/Firefox or complete manual campaign was performed for this scope.",
+    "Focused native and object fixtures do not replace browser acceptance; browser library/font reports do not prove every canteen or Qizhen route.",
+    "The frozen export/source identities above precede the newly requested upstream error-branch integration.",
+    "No remote release, commit or push of this stage is represented by this receipt."
+  ]
+}

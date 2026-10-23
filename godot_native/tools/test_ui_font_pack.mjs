@@ -11,12 +11,11 @@ import {fileURLToPath} from 'node:url';
 const project=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'755-ui-font-pack-'));
 try {
-  const fonts=['CampusUISans-Regular.otf','SelectedSans-Regular.otf','SelectedSans-Bold.otf','SelectedCoverage-Regular.otf','SelectedCoverage-Bold.otf','SelectedBoutique-Regular.ttf'];
-  const licenses=['OFL.txt','SELECTED_NOTO_LICENSE.txt','SELECTED_BOUTIQUE_OFL.txt'];
+  const fonts=['ui_assets/fonts/MorningNote-Regular.ttf','ui_assets/fonts/MorningNote-Medium.ttf','assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf'];
+  const licenses=['ui_assets/fonts/OFL.txt','ui_assets/fonts/MORNING_NOTE_OFL.txt','assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt'];
   const records=[['project.binary',Buffer.from('controlled ownership fixture, not a PCK')]];
   const required=[];
-  for(const filename of fonts) {
-    const logical='ui_assets/fonts/'+filename;
+  for(const logical of fonts) {
     const metadata=fs.readFileSync(path.join(project,logical+'.import'));
     const target=metadata.toString().match(/path="res:\/\/([^"\n]+)"/)[1];
     records.push([logical+'.import',metadata],[target,fs.readFileSync(path.join(project,target))]);
@@ -29,8 +28,7 @@ try {
     records.push([logical+'.import',metadata],[target,fs.readFileSync(path.join(project,target))]);
     required.push(logical+'.import',target);
   }
-  for(const filename of licenses) {
-    const logical='ui_assets/fonts/'+filename;
+  for(const logical of licenses) {
     records.push([logical,fs.readFileSync(path.join(project,logical))]);required.push(logical);
   }
   records.push(['assets/rpg/interiors/library_fixture.png',Buffer.from('deferred chapter-two fixture')]);
@@ -55,9 +53,9 @@ try {
   const presets=fs.readFileSync(path.join(project,'export_presets.cfg'),'utf8').split(/(?=\[preset\.\d+\]\n)/).filter(p=>p.startsWith('[preset.'));
   assert.equal(presets.length,3);
   for(const preset of presets) {
-    assert.match(preset,/export_filter="all_resources"/,'Recognized OTF resource exported');
+    assert.match(preset,/export_filter="all_resources"/,'Recognized font resources are exported');
     const include=preset.match(/^include_filter="([^"]+)"/m)[1].split(',');
-    for(const filename of licenses) assert.ok(include.includes('ui_assets/fonts/'+filename),'Exact font license explicitly bundled: '+filename);
+    for(const logical of licenses) assert.ok(include.includes(logical),'Exact font license explicitly bundled: '+logical);
   }
-  console.log('UI_FONT_PACK: PASS; all six font and ten phone SVG imports/payloads retained in explicit core; three presets include all font licenses; later chapter control still deferred');
+  console.log('UI_FONT_PACK: PASS; project Regular/Medium, explicit symbol fallback and ten phone SVG imports/payloads retained in core; three presets include all related font licenses; later chapter control still deferred');
 } finally {fs.rmSync(tmp,{recursive:true,force:true});}

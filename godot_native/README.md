@@ -2,9 +2,15 @@
 
 This is an independent Godot migration of the existing game. It uses Godot Controls and Canvas rendering, with the same controllers available to native executables and a standalone Godot WebAssembly export. Original React/Phaser source and build tools remain available at repository root as a separate behavioral reference.
 
+Original project source code is licensed under [Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for attribution and the third-party license boundary; Godot, dependencies, fonts and assets retain their own terms.
+
 The browser delivery uses pinned Godot 4.7.1 Web templates and the production `Web production` preset. It loads a first-chapter core, then downloads verified chapter packs in the background. See [Godot Web build and release](docs/GODOT_WEB_RELEASE.md), [content packs](docs/WEB_CONTENT_BUILD.md), [server deployment](docs/SERVER_WEB_DELIVERY.md), [browser acceptance](docs/WEB_EXPORT_ACCEPTANCE.md), and [browser storage/media boundaries](docs/WEB_PLATFORM_BRIDGE.md). A native test pass does not replace actual browser acceptance; touch emulation does not replace physical-device testing.
 
 **Status:** playable native migration under verification, not feature-complete and not a release candidate. Authored story/data/assets are retained, but native behavior, layouts, save compatibility and end-to-end chapter progression require the acceptance work recorded in `docs/INDEPENDENT_PARITY_AUDIT.md`. A rendered page or a chapter action list is not evidence of gameplay parity.
+
+The 2026-10-23 local integration contains merged upstream PR161/162 while preserving the local dense character flow, original app art, inline inventory and direct touch movement. Its [integration receipt](docs/UPSTREAM161_LOCAL_INTEGRATION_20261023.json) identifies the backed-up changes, exact engine/export, full native attempt plus affected-stage reruns, actual browser input and remaining manual/device gaps. Local uncommitted work was not uploaded.
+
+The current UI font is [晨札像素 / 755 Morning Note](docs/MORNING_NOTE_FONT_LIBRARY.md): editable24-grid glyphs, separate Regular400/Medium500 faces, an interactive specimen and reproducible TTF/WOFF2 builds. The [first-library receipt](docs/MORNING_NOTE_ACCEPTANCE_20261023.json) separates original glyphs from OFL-derived coverage; the [current Latin/numeral revision receipt](docs/MORNING_NOTE_LATIN_ACCEPTANCE_20261023.json) records the62 redrawn glyphs and actual desktop/touch rendering. See also the [review of obsolete font-test assumptions](docs/FONT_TEST_REVIEW_20261023.md).
 
 ## 2026-10-19 integrated candidate
 
@@ -26,6 +32,8 @@ The dock exercise does not award story items or become a required chapter gate.
 4. The portable source package includes the native Ogg/Theora movies. For a fresh Git checkout, run `bash godot_native/tools/convert_media.sh` with ffmpeg installed. Both original MP4s remain unchanged.
 
 Controls: P opens the phone from the world; Esc returns after child dialogs are closed; WASD/arrows move; Space interacts; mouse selects phone controls; scroll wheel zooms the world; right-drag pans; lake kayak uses alternating A/D strokes (hold S to reverse); Ctrl+Shift+D opens isolated DEV checkpoints. Preview mode does not overwrite formal saves. Phone geometry is 430×860. Desktop exploration fits the original 960×540 world to the available area; compact exploration adapts to portrait/landscape. Phone and world are separate visible modes. See `docs/NATIVE_CHAPTER4_ENTRY_FLOW.md`.
+
+On touch devices, tap clear floor to walk and tap a visible object to approach it along the collision path and use the original interaction. Two fingers pan/zoom the map; the visible kayak paddles accept strokes. There is no permanent movement pad or interaction button. The optional theater rehearsal uses dragged props and a tappable lamp; hold a prop to observe, tap with two fingers to undo, or hold with two fingers to open the rehearsal sheet. Phone apps remain portrait; the Web export offers landscape when entering a map or landscape activity. Unsupported orientation APIs retain manual rotation and portrait continuation. DEV shortcuts are absent from production exports.
 
 ## Validation
 

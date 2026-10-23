@@ -1,0 +1,179 @@
+{
+  "schema": "755-liangzhu-photo-research/v1",
+  "researchDate": "2026-10-21",
+  "status": "two-real-photo-originals-verified-reference-only",
+  "scope": "只读网页、原图可访问性与舞台视觉研究；仅新增本记录和验证目录中的原字节参考照片。未改代码、加载版本、已有冻结文档或音频。",
+  "conclusion": {
+    "usablePhotoPages": 2,
+    "originalPhotosDownloaded": 2,
+    "zju2026PerformancePhotosVerified": false,
+    "zjuBoundary": "给定浙大页面只核实活动海报与安排。本轮没有找到能确认是2026年6月7日浙大学生越剧社该场演出的正式现场照片，不能将以下其他版本照片标成浙大现场。",
+    "fanBoundary": "两张已查看原图都没有可确认的展开折扇或化蝶动作。折扇转承、扇舞化蝶的依据来自文化和旅游部艺术司的另一篇官方报道，不由这两张静图推断。"
+  },
+  "zjuNotice": {
+    "page": "https://www.zju.edu.cn/2026/0515/c79825a3163003/page.htm",
+    "title": "越剧诞生120周年纪念暨浙江大学学生越剧社2026年度大戏《梁祝》",
+    "publisher": "浙江大学；页面来源字段为公共体育与艺术部",
+    "pageHttpStatus": 200,
+    "pageBytes": 33674,
+    "verifiedFields": {
+      "published": "2026-05-15",
+      "scheduledPerformance": "2026年6月7日18:30",
+      "venue": "紫金港校区剧场"
+    },
+    "image": "https://www.zju.edu.cn/_upload/article/images/82/0c/e1efc1ab49d5bfa8e8be81f2d590/4008db13-116b-427d-98a4-858d415e3193.png",
+    "imageClass": "活动海报，非本轮已验证演出现场照片",
+    "evidence": "读取官方HTML的f3/f4/from及正文img。正文只有该海报；另一个_visitcount图片是隐藏计数器，排除。",
+    "allowedResearchUse": "校园活动身份、剧目名称与剧场语境；不证明实际舞美、演员造型、演出发生或舞台动作。"
+  },
+  "referencePhotos": [
+    {
+      "id": "hk-lcsd-shanghai-yueju-liangzhu-2015",
+      "page": "https://www.info.gov.hk/gia/general/201511/06/P201511050730_photo_1092411.htm",
+      "contextPage": "https://www.info.gov.hk/gia/general/201511/06/P201511050730.htm",
+      "pageTitle": "上海越劇院呈獻越劇流派精髓（附圖）",
+      "publisher": "香港特别行政区政府新闻公报；康乐及文化事务署节目",
+      "published": "2015-11-06",
+      "authority": "官方节目发布及所附剧目照片",
+      "caption": "《梁山伯與祝英台》。",
+      "originalUrlInPage": "http://gia.info.gov.hk/general/201511/06/P201511050730_photo_1092411.JPG",
+      "verifiedOriginalUrl": "https://gia.info.gov.hk/general/201511/06/P201511050730_photo_1092411.JPG",
+      "access": {
+        "pageHttpStatus": 200,
+        "pageEncoding": "Big5；通用网页提取器报编码错误，使用公开HTML正确解码核实",
+        "originalHttpStatus": 200,
+        "contentType": "image/jpeg",
+        "dimensions": [800, 580],
+        "bytes": 72856,
+        "sha256": "eb768a949d28abeab14add8b7f710b84682800ece331bb39c39a47d2e5ae1c78",
+        "localPath": "godot_native/exports/verification/liangzhu_performance_20261021/reference/hk_lcsd_shanghai_yueju_liangzhu_2015_original.jpg",
+        "downloadedUnedited": true,
+        "originalWatermarksOrCreditsRemoved": false,
+        "visuallyInspected": true
+      },
+      "photoClass": "真实舞台人物/布景照片，作为2015节目公告附图；原文未给该图拍摄日期、地点及具体场次，不能称为2015香港当晚现场。",
+      "visibleEvidence": {
+        "performance": "两位人物呈坐姿；左侧人物持卷状物，右侧手持细杆状物。表情和手势是一帧姿态，不能推出连续动作。",
+        "scenery": "中央木制小桌、台上琥珀色灯形物与笔具；后方冷蓝色湖岸、树影及横栏式景片。",
+        "costume": "红色与浅蓝色长袍形成双人区分；白色宽水袖、刺绣边饰、冠帽轮廓。",
+        "fanOrButterfly": "本图未见可确认的展开折扇或蝶形效果。"
+      },
+      "inferenceNotFact": [
+        "卷状物、笔具及并坐可以启发原创同窗段落，但官方图注没有把该帧命名为同窗共读。",
+        "不能由这一帧认定衣袖运动方向、唱段、节奏、舞台灯光变化或扇子开合顺序。"
+      ],
+      "use": "参考双人留白、中央实体小桌、衣袖轮廓与冷景暖物的层次；重新设计匿名角色、装饰纹样、景片位置和镜头。",
+      "rightsRecord": "该图页未显示开放素材许可；记录来源并仅作研究参考，不将去脸后的原照片默认视为可直接发布素材。"
+    },
+    {
+      "id": "commons-loutaihui-20191025",
+      "page": "https://commons.wikimedia.org/wiki/File:%E6%A2%81%E5%B1%B1%E4%BC%AF%E4%B8%8E%E7%A5%9D%E8%8B%B1%E5%8F%B0.%E6%A5%BC%E5%8F%B0%E4%BC%9A145528.jpg",
+      "stablePage": "https://commons.wikimedia.org/w/index.php?title=File:%E6%A2%81%E5%B1%B1%E4%BC%AF%E4%B8%8E%E7%A5%9D%E8%8B%B1%E5%8F%B0.%E6%A5%BC%E5%8F%B0%E4%BC%9A145528.jpg&oldid=659508822",
+      "pageTitle": "File:梁山伯与祝英台.楼台会145528.jpg",
+      "publisher": "Wikimedia Commons摄影者自行发布；不是浙大或院团官方账号",
+      "authorAsListed": "Augustohai",
+      "sourceAsListed": "Own work",
+      "dateAsListed": "2019-10-25 14:55:30",
+      "authority": "摄影者原始照片页面及其文件记录；场次名来自文件标题，未独立核实演出团体或完整节目单",
+      "verifiedOriginalUrl": "https://upload.wikimedia.org/wikipedia/commons/5/51/%E6%A2%81%E5%B1%B1%E4%BC%AF%E4%B8%8E%E7%A5%9D%E8%8B%B1%E5%8F%B0.%E6%A5%BC%E5%8F%B0%E4%BC%9A145528.jpg",
+      "access": {
+        "pageHttpStatus": 200,
+        "originalHttpStatus": 200,
+        "contentType": "image/jpeg",
+        "dimensions": [2715, 1809],
+        "bytes": 2703972,
+        "sha256": "d7789ceda4d553fad85c4aa5cfa4eabb9a329b606902d938daa2501fff42d88e",
+        "localPath": "godot_native/exports/verification/liangzhu_performance_20261021/reference/commons_loutaihui_20191025_augustohai_original.jpg",
+        "downloadedUnedited": true,
+        "originalWatermarksOrCreditsRemoved": false,
+        "visuallyInspected": true
+      },
+      "photoClass": "真实舞台照片；文件标题标注楼台会。不是浙大2026演出证据。",
+      "visibleEvidence": {
+        "performance": "两位人物靠近构成斜向高低关系，一位抬手；近景可见舞台麦克风。不能由嘴形还原台词或唱腔。",
+        "scenery": "前景两道木栏；雕花立边、红柱、花鸟屏风与右侧茶桌，桌上有壶与小杯状器物。",
+        "costume": "粉白衣与明蓝衣、宽白袖、立领和冠饰轮廓；原服装有较繁复绣纹。",
+        "fanOrButterfly": "本帧没有可确认的展开扇或蝶形舞台装置。"
+      },
+      "inferenceNotFact": [
+        "栏杆可以启发原创前后遮挡层，但不能把该构图或独特屏风直接当作浙大舞美复原。",
+        "不凭面部判断角色身份，也不把静止抬手姿态写成已经验证的完整动作或节拍。"
+      ],
+      "use": "参考远近遮挡、双人姿态与衣袖剪影；原创栏杆、茶桌、屏风和匿名像素人物，删除最终创作中的可识别肖像细节而不改研究原图。",
+      "licenseAsListed": {
+        "name": "CC BY-SA 4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "record": "原页面要求署名、许可链接、变更说明及相同或兼容许可；本记录不把授权条件等同于匿名处理。正式成品计划为重新设计，而非直接编辑发布此照片。"
+      }
+    }
+  ],
+  "fanToButterflyEvidence": {
+    "page": "https://www.mct.gov.cn/whzx/bnsj/yss/201111/t20111128_752015.html",
+    "title": "新版《梁祝》化蝶起舞演绎越剧经典",
+    "publisher": "文化和旅游部网站，艺术司",
+    "pageHttpStatus": 200,
+    "publishedAsShown": "2009-10-26 11:13",
+    "dateBoundary": "URL含201111迁移路径；采用正文显示的2009发布日期，不把迁移目录当演出年份。",
+    "verifiedEvent": "报道浙江小百花越剧团10月12日至14日在北京长安大戏院演出新版《梁山伯与祝英台》。",
+    "verifiedInterpretation": "官方正文明确指出折扇承担段落转承，末段扇舞转成蝶舞；可据此确认以扇喻蝶是已有演出语汇。",
+    "notVerified": "本页未提供可用舞台照片或连续动作时间码；不能据此称某一照片、扇位、开合次数或秒数是该场真实编舞。",
+    "audio": "未下载、转录、复用任何真实唱段、演出录音或《梁祝》配乐。"
+  },
+  "additionalPhotoPagesChecked": [
+    {
+      "page": "https://m.cflac.org.cn/sylb/202507/t20250709_1347443.html",
+      "title": "上海越剧院携经典剧目《红楼梦》《梁山伯与祝英台》晋京演出",
+      "publisher": "中国文艺网/中国艺术报，2025-07-09",
+      "pageHttpStatus": 200,
+      "captionBoundary": "首张图注为范傅版《梁山伯与祝英台》；第二张明确是《红楼梦》，排除。",
+      "originalResolvedFromHtml": "https://m.cflac.org.cn/sylb/202507/W020250709504049402944.jpg",
+      "originalAccess": "m与www同路径原图均实测HTTP404；本轮没有成功查看/下载该照片，不用于可见布景判断。",
+      "textUse": "报道支持十八相送中的写意过桥、对井照影，但不复制原唱词，也不推断精确表演时间。"
+    },
+    {
+      "page": "https://news.pku.edu.cn/xwzh/5e14cbe09920440f99e8fd601eb5e2fe.htm",
+      "title": "上海越剧院《家》《梁山伯与祝英台》在讲堂上演",
+      "publisher": "北京大学新闻网，2024-04-25，信息来源会议中心",
+      "pageAccess": "搜索索引可读演后报道与剧照图注；直接请求返回200但仅85字节验证页，无正文图片，原图未核实。",
+      "use": "候选校园演出背景记录；本轮不当作已查看照片或浙大2026现场。"
+    },
+    {
+      "page": "https://music.china.com.cn/2021-01/04/content_41415179.htm",
+      "title": "新版《梁祝》元旦亮相 飞翔一千四百年的蝴蝶翩跹而至",
+      "candidateImage": "https://music.china.com.cn/images/2021-01/04/d33f4b9e-d28e-4af3-8f86-b1814bfc1658.jpg",
+      "access": "搜索图片可见相关描述；HTTPS原图请求遇主机名证书不匹配，HTTP返回403。未绕过证书检查，未下载或把搜索描述当作亲自查看的原图。",
+      "use": "保留后续核实线索，不作为本轮可上传参考或成品素材。"
+    }
+  ],
+  "originalCutsceneDirection": {
+    "status": "原创建议，非已验证真实演出分镜或已实现代码",
+    "beats": [
+      {
+        "id": "study-tableau",
+        "suggestedDurationSeconds": 4,
+        "action": "两位匿名人物围绕实体书桌形成并坐或对位，袖口与卷册先建立日常尺度。",
+        "evidenceType": "受官方照片中的桌、卷册和并坐姿态启发；把它命名为开场同窗段是原创安排。"
+      },
+      {
+        "id": "separate-and-answer",
+        "suggestedDurationSeconds": 5,
+        "action": "两人拉开一步空间，收拢的扇形道具作转承，身体与袖子先有停顿再回应。",
+        "evidenceType": "官方报道支持折扇转承的一般语汇；此位置、停顿、步幅与时长均为新设计。"
+      },
+      {
+        "id": "paired-wings",
+        "suggestedDurationSeconds": 5,
+        "action": "两把扇由低位开成左右呼应的翼形，以少量分段动作形成双蝶意象，再回到稳定舞台画面。",
+        "evidenceType": "以MCT已报道扇舞化蝶作为主题依据；不声称是任何演员的实际编舞、扇位序列或真实节拍。"
+      }
+    ],
+    "timingBoundary": "4/5/5秒仅为可调整游戏节拍，没有观看连续舞台视频、没有测量真实演出速度，静图不能建立时间码。",
+    "compositionPolicy": [
+      "最终重新设计匿名人物；不用原演员脸、可识别面妆、声音、专属冠饰或一比一服装绣纹。研究原图保持原字节和原有水印。",
+      "照片仅供服装、道具与层次研究；最终使用既定正交斜俯视、16逻辑tile、同一像素格和32色板，不把正面照片裁片直接贴入游戏舞台。",
+      "保留可见实体桌、栏、帘与人物之间的遮挡；舞台与演员使用同一坐标和比例，角色小脸不做夜间肖像高亮。",
+      "取通用木桌、长袍、水袖、扇与前景栏杆语汇，重新安排数量、位置、纹样及镜头，避免复刻单张照片的整幅构图。",
+      "不嵌入原始照片或真实唱段音频，不制造浙大或院团为游戏背书的说法；剧情、奖励、存档及完成事实仍由原控制器决定。"
+    ]
+  }
+}

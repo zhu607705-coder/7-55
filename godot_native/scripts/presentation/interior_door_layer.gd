@@ -1,5 +1,7 @@
 extends RefCounted
-## Source RpgInteriorDoor.ts double-fold leaves. Presentation only; no save facts.
+## Source RpgInteriorDoor.ts double-fold motion and source-pixel leaf footprints.
+## The layer owns no save facts, departure permission, or chapter completion.
+const Metrics=preload("res://scripts/player_metrics.gd")
 var worlds: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json"))
 const PHASES=["tray_search","drink_mix","menu_order","pickup_search","chase_ready"]
 var scene_id: String=""
@@ -16,10 +18,12 @@ var source_rects: Array[Rect2]=[]
 var texture: Texture2D
 var spec: Dictionary={}
 var transitioning: bool=false
+var departure_held:bool=false
+var departure_clock_owned:bool=false
 
 func configure(id: String,reduced: bool=false) -> void:
 	scene_id=id; progress=0; visual_progress=0; from_progress=0; target_progress=0
-	from_visual=0; elapsed_ms=0; sensor_open=false; transitioning=false; source_rects.clear(); texture=null; spec={}
+	from_visual=0; elapsed_ms=0; sensor_open=false; transitioning=false; departure_held=false; departure_clock_owned=false; source_rects.clear(); texture=null; spec={}
 	if id=="canteen_interior":
 		spec=worlds.worlds.canteen_interior.constants.CANTEEN_SOUTHEAST_EXIT_DOOR
 		opening=bounds(spec.opening)
@@ -33,6 +37,34 @@ func configure(id: String,reduced: bool=false) -> void:
 		source_rects.assign([Rect2(0,0,88,70),Rect2(88,0,88,70)])
 		texture=load("res://assets/rpg/interiors/theater_center_exit_closed_v03.png")
 		duration_ms=120 if reduced else 520
+
+func restore(state:Dictionary)->void:
+	# A new scene/ordinary Continue derives a settled pose from the actual
+	# restored actor. No animation timer, door flag or callback enters the save.
+	if scene_id!="theater_interior":return
+	var p:Dictionary=state.get("native",{}).get("player",{})
+	var point:=Vector2(p.get("x",0),p.get("y",0))
+	sensor_open=absf(point.x-836)<124 and point.y>776 or _occupied(point)
+	progress=1.0 if sensor_open else 0.0;visual_progress=progress
+	from_progress=progress;from_visual=progress;target_progress=progress;transitioning=false
+
+func begin_departure(owned_clock:bool=false)->bool:
+	if scene_id!="theater_interior":return false
+	departure_held=true;departure_clock_owned=owned_clock;sensor_open=true;set_open(true);return true
+
+func cancel_departure()->void:
+	departure_held=false;departure_clock_owned=false
+
+func _occupied(point:Vector2)->bool:
+	return scene_id=="theater_interior" and Rect2(opening.position.x,opening.end.y-20,opening.size.x,28).intersects(Metrics.foot_rect(point))
+
+func collision_rects()->Array[Rect2]:
+	var out:Array[Rect2]=[]
+	if scene_id!="theater_interior" or progress>=1.0:return out
+	# The physical base follows each visible leaf's horizontal extent. A single
+	# full-width threshold would allow walking through a partially open leaf.
+	for leaf:Rect2 in leaf_rects():out.append(Rect2(leaf.position.x,opening.end.y-12,leaf.size.x,12))
+	return out
 
 static func bounds(value: Dictionary) -> Rect2:
 	return Rect2(value.left,value.top,value.right-value.left,value.bottom-value.top)
@@ -65,8 +97,11 @@ func tick(delta: float,state: Dictionary,story_session: RefCounted=null) -> void
 		var dx: float=absf(point.x-836)
 		if not sensor_open and dx<124 and point.y>776: desired=true
 		elif sensor_open and (dx>156 or point.y<746): desired=false
+		if departure_held or _occupied(point):desired=true
+		if _occupied(point) and target_progress<1.0:
+			progress=1.0;visual_progress=1.0;from_progress=1.0;from_visual=1.0;target_progress=1.0;transitioning=false
 	sensor_open=desired; set_open(desired)
-	advance(delta*1000)
+	if not departure_held or not departure_clock_owned:advance(delta*1000)
 
 func advance(ms: float) -> void:
 	if not transitioning: return

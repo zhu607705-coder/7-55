@@ -105,7 +105,7 @@ func run() -> void:
 	await frames(3)
 	check(not is_instance_valid(completed_rig),"normal presentation completion frees its entire native rig")
 	check(not is_instance_valid(shell.world_effect) and shell.world_viewport.gui_get_focus_owner()==shell.world,"one tree exit returns world keyboard focus")
-	check(actor.inputs.is_empty() and shell.world.touch_points.is_empty() and shell.world.kayak_mouse_gesture.is_empty(),"no held input transfers to the channel")
+	check(actor.inputs.is_empty() and not shell.world.direct_gestures.has_active() and shell.world.touch_axis==Vector2.ZERO and shell.world.kayak_mouse_gesture.is_empty(),"no held input transfers to the channel")
 	for frame in range(600):
 		if frame%8==0: key(KEY_A if (frame/8)%2==0 else KEY_D)
 		shell.world._process(1.0/60)
@@ -143,7 +143,7 @@ func run() -> void:
 	for i in range(180): effect._process(.05); shell.world._process(.05)
 	effect.skip_intro()
 	check(dismissals.is_empty() and effect.timeline.elapsed==paused_at and shell.world.lake_session.elapsed==0 and effect.get_meta("blocks_input",false),"focus loss freezes presentation and formal chase/grace while retaining the blocker")
-	check(effect.pointer_owners.is_empty() and shell.world.touch_points.is_empty(),"focus suspension discards held gestures")
+	check(effect.pointer_owners.is_empty() and not shell.world.direct_gestures.has_active() and shell.world.touch_axis==Vector2.ZERO and shell.world.kayak_mouse_gesture.is_empty(),"focus suspension discards all world and presentation gestures")
 	effect._notification(Control.NOTIFICATION_WM_WINDOW_FOCUS_IN)
 	var focused_reader: Callable=effect.read_state
 	effect.read_state=func() -> Dictionary:

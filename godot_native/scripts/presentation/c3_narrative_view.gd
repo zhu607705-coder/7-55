@@ -45,10 +45,10 @@ func tick() -> void:
 	elif not region.has_area():
 		var margin:=Overlay.pixels(8,display_scale)
 		region=Rect2(margin,margin,size.x-margin*2,size.y-margin*2)
-	# Existing safe region is retained; selected layout owns right-side alignment.
+	# Use the same bottom safe edge in exploration and authored film letterboxes.
 	var metrics:=DialogueLayout.metrics(region,physical_scale,str(v.speaker),str(v.text),"",text_scale)
 	panel.position=metrics.panel.position; panel.size=metrics.panel.size
-	if screen_rect.has_area():panel.position.y=screen_rect.position.y
+	if align_left:panel.position.x=region.position.x
 
 	speaker.text=str(v.speaker); speaker.add_theme_font_size_override("font_size",metrics.speaker_font)
 	speaker.position=metrics.speaker.position; speaker.size=metrics.speaker.size

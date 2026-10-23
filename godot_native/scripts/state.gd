@@ -162,6 +162,7 @@ func act(action: String, value: Variant = null) -> Dictionary:
 	return {"handled":false,"message":"这个操作暂时不可用。"}
 
 func _accept_result(action: String,previous_state: Dictionary,result: Dictionary) -> Dictionary:
+	var ephemeral: bool=action in ["c3_rehearsal_begin","c3_rehearsal_result","c3_rehearsal_cancel","c3_chest_begin","c3_chest_inspect","c3_chest_place","c3_chest_turn","c3_chest_open","c3_chest_cancel"] and result.get("ephemeral",false)==true
 	var previous_page: String=str(previous_state.native.page)
 	var previous_network: String=str(previous_state.networkMode)
 	var previous_battery: int=int(previous_state.phoneBattery.percent)
@@ -172,11 +173,13 @@ func _accept_result(action: String,previous_state: Dictionary,result: Dictionary
 	if result.has("scene"):
 		d.native.scene=str(result.scene); d.rpgScene=str(result.scene)
 		d.runtimeMode="rpg" if not str(result.scene).is_empty() else "phone"
-	get_phone_entry_session()
+	if not ephemeral: get_phone_entry_session()
 	if not str(result.get("message","")).is_empty():
-		_record(str(result.message)); feedback.emit(str(result.message))
+		if not ephemeral: _record(str(result.message))
+		feedback.emit(str(result.message))
 	if result.has("page"): _consume_scene_open(previous_page,str(d.native.page))
-	save_game(); changed.emit()
+	if not ephemeral:
+		save_game(); changed.emit()
 	if result.get("teleport") is Array: world_teleport.emit(result.teleport)
 	if result.get("media") is Dictionary: media_requested.emit(result.media)
 	if result.get("world_effect") is Dictionary: world_effect_requested.emit(result.world_effect)
@@ -228,6 +231,10 @@ func story_input_locked() -> bool:
 
 func _invalidate_progressive_activities() -> void:
 	for module in modules:
+		if module.has_method("invalidate_chest_mechanism"):
+			module.invalidate_chest_mechanism()
+		if module.has_method("invalidate_rehearsal_session"):
+			module.invalidate_rehearsal_session()
 		if module.has_method("invalidate_progressive_session"):
 			module.invalidate_progressive_session()
 	var lake = lake_module()
@@ -245,6 +252,14 @@ func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
 		var lake = lake_module()
 		if lake != null and lake.has_method("cancel_logistics_session"):
 			return lake.cancel_logistics_session(value.get("session"))
+	elif action == "c3_rehearsal_cancel":
+		for module in modules:
+			if module.has_method("cancel_rehearsal_session"):
+				return module.cancel_rehearsal_session(value.get("session"))
+	elif action == "c3_chest_cancel":
+		for module in modules:
+			if module.has_method("cancel_chest_mechanism"):
+				return module.cancel_chest_mechanism(value.get("session"))
 	return false
 
 func open_page(page: String) -> void:

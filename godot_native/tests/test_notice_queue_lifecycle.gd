@@ -23,11 +23,18 @@ func click(control:Control)->void:
 func reset_phone()->void:
 	state.d=state.initial();state.d.native.page="phone_home";state.story_reset.emit();shell._refresh();shell.mobile_world=false;shell._layout();await frames()
 	shell.set_process(false);shell.audio_director.set_process(false);shell.audio_director.reset()
-	for host in [shell.c3_narrative_host,shell.c3_scene_host,shell.library_story_host]:host.set_process(false)
+	for host in [shell.c3_narrative_host,shell.c3_scene_host,shell.library_story_host]:
+		if is_instance_valid(host):host.set_process(false)
 	shell.world.set_process(false)
 func run()->void:
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial();state.d.native.page="phone_home"
 	root.size=Vector2i(430,860);shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames(5)
+	# These notice fixtures exercise previously visited dialogue surfaces.
+	# Visit their owning content before resetting to the phone; initial Main
+	# intentionally has no later-story hosts anymore.
+	state.begin_checkpoint("c3-canteen-entry");shell._refresh();await frames()
+	state.d=state.initial();state.d.native.chapter=2;state.d.native.scene="library_interior"
+	state.d.ui.libraryFinalsPhase="evidence_gathering";shell._refresh();await frames()
 	await reset_phone()
 	shell._feedback("第一条通知");shell._feedback("第二条通知");shell._feedback("第二条通知")
 	check(shell.toast.text=="第一条通知","burst preserves the currently read message")

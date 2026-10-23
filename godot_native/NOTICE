@@ -1,0 +1,17 @@
+7:55
+Copyright 2026 7:55 contributors.
+
+Original project source code is licensed under the Apache License, Version 2.0.
+See LICENSE for the complete terms.
+
+Third-party code, engines, fonts, media, models, and other assets retain their
+own copyright and license notices. This project license does not replace those
+terms or grant rights to third-party trademarks and likenesses.
+
+Godot Engine retains its MIT license and third-party notices, recorded in
+ godot_native/docs/GODOT_ENGINE_LICENSE.txt and
+ godot_native/docs/GODOT_THIRDPARTY_NOTICES.txt in the source repository.
+Font license texts remain alongside the fonts, including ui_assets/fonts/
+inside the native project and src/assets/rpg/fonts/licenses/ in the repository.
+Asset provenance and additional terms are recorded in ASSETS.md and the
+asset-specific license and provenance files. Existing notices must be retained.

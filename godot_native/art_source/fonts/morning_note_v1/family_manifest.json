@@ -1,0 +1,99 @@
+{
+  "schema": "755-morning-note-family-v1",
+  "family": "755 Morning Note",
+  "familyZh": "晨札像素",
+  "version": "0.1.1",
+  "emGrid": 24,
+  "baseline": 20,
+  "unitsPerEm": 1536,
+  "format": "TrueType orthogonal pixel contours",
+  "latinMetrics": {
+    "cap_height": 16,
+    "x_height": 12,
+    "digit_advance": 12
+  },
+  "files": [
+    {
+      "file": "MorningNote-Regular.ttf",
+      "family": "755 Morning Note",
+      "style": "Regular",
+      "weight": 400,
+      "bytes": 416616,
+      "sha256": "7a90f1a996c6e5b124644fc12bac9f8c41f13976f767d3ac5a75f0e796a6e2ae",
+      "woff2Bytes": 88264,
+      "woff2Sha256": "25869fa273fb0667b29288c98908b2bf3197769717e977750f43404e88c21a49"
+    },
+    {
+      "file": "MorningNote-Medium.ttf",
+      "family": "755 Morning Note",
+      "style": "Medium",
+      "weight": 500,
+      "bytes": 405808,
+      "sha256": "65af16b6339e3714376554d31e02c919934e799475081da53bffa0157b494cdc",
+      "woff2Bytes": 88428,
+      "woff2Sha256": "6b8d62e155c58b37831c08c54fbb841b3c80187249b2f9e97ca8d1e9300d0510"
+    }
+  ],
+  "glyphCount": 1823,
+  "originalGridGlyphs": 137,
+  "derivedGlyphs": 1686,
+  "charsetSha256": "0d3993f16987a040da373660da4e6ca6806c3abc07b72c16050f3473155dac25",
+  "requiredAuthoredHanziMissing": [],
+  "unsupportedNonHanzi": [
+    "U+224B",
+    "U+2302",
+    "U+232B",
+    "U+2726",
+    "U+2731",
+    "U+275A",
+    "U+27F3",
+    "U+2B22"
+  ],
+  "originCounts": {
+    "OFL-Fusion-Pixel-grid-derivative": 25,
+    "OFL-Noto-CJK-grid-derivative": 1661,
+    "original-manual-grid": 137
+  },
+  "originalSource": {
+    "file": "art_source/fonts/morning_note_v1/original_glyphs.json",
+    "sha256": "9dcdd2edb533fba834f7618ed08b24c6c7d0a9f533290401c321f12767cfeec8"
+  },
+  "derivativeSources": [
+    {
+      "file": "godot_native/ui_assets/fonts/SelectedCoverage-Regular.otf",
+      "sha256": "b6ad88f4e3cefd19983153f1215f770fc3751028e4a98fb47107dde11741784a",
+      "license": "SIL-OFL-1.1"
+    },
+    {
+      "file": "godot_native/ui_assets/fonts/SelectedCoverage-Bold.otf",
+      "sha256": "411841a02166bbf0f8ccb6530cd0adf4aa8b110daeec8ae935ae3251e1689c71",
+      "license": "SIL-OFL-1.1"
+    },
+    {
+      "file": "src/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08",
+      "license": "SIL-OFL-1.1"
+    }
+  ],
+  "derivativeRecipe": {
+    "rasterPixels": 22,
+    "threshold": 112,
+    "mediumBoldBlend": 0.55,
+    "systemFonts": false
+  },
+  "license": "SIL-OFL-1.1 for combined font binaries; Apache-2.0 original glyph source; upstream notices retained",
+  "coverageBoundary": "Static authored game text plus original glyph source. Future wording requires coverage validation; unsupported user input uses the explicit bundled Fusion fallback, never an OS font.",
+  "rendering": {
+    "antialiasing": "none",
+    "msdf": false,
+    "subpixelPositioning": "disabled",
+    "textureFilter": "nearest",
+    "scaleAware": true
+  },
+  "builder": {
+    "file": "tools/build_morning_note_font.py",
+    "sha256": "d412754e661335b77068129136bc6dc570f8820b7014df3d2313ed9c45ed0300",
+    "fonttools": "4.61.1",
+    "pillow": "11.3.0"
+  }
+}

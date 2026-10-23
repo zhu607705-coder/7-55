@@ -7,9 +7,22 @@ const BOARD_Y=658.0
 const BOARD_SPEED=440.0
 const MAX_TILT=PI/30.0
 const STEP=1.0/120.0
-const CARD_HEIGHT=48.0
+const CARD_HEIGHT=92.0
+const GLYPH_GRID=20
+const GLYPH_CELL=4.0
+const LETTER_GAP=5.0
+const WORD_PADDING=16.0
 const FONT_SIZE=24
-const SPAWN_INTERVAL=1.9
+const SPAWN_INTERVAL=.95
+const FALL_SPEED=360.0
+const STAGE_SPEED_INCREASE=30.0
+const FIRST_SPAWN_DELAY=.35
+const DEMONSTRATION_DELAY=.28
+const RETRY_DELAY=.70
+const STAGE_TRANSITION=.28
+# Authored word-stream beats, not a wall-clock completion gate. All other
+# beats emit existing decoys; each real target still requires real contact.
+const TARGET_BEATS=[[5],[2,6],[2,6,13]]
 var stages:Array=[]
 var widths:Dictionary={}
 var stage=0
@@ -38,6 +51,13 @@ var serial=0
 var transition_left=0.0
 var last_move=0.0
 var events:Array=[]
+var reading_time_scale=1.0
+var beat_index=0
+var released_words:Array=[]
+var retry_pending=false
+
+static func word_size(text:String)->Vector2:
+	return Vector2(text.length()*GLYPH_GRID*GLYPH_CELL+maxi(0,text.length()-1)*LETTER_GAP,GLYPH_GRID*GLYPH_CELL)
 
 func setup(content:Dictionary,measured_widths:Dictionary={}) -> void:
 	stages=content.get("stages",[]).duplicate(true)
@@ -46,6 +66,7 @@ func setup(content:Dictionary,measured_widths:Dictionary={}) -> void:
 	clue_elapsed=0;board_x=215;board_target=215;board_angle=0;board_velocity=0
 	moved_distance=0;total_misses=0;stage_misses=0;hint={};contacts=[];captures=[];clock=0;accumulator=0
 	spawn_clock=0;spawn_index=0;target_serial=0;serial=0;transition_left=0;last_move=0;events=[]
+	beat_index=0;released_words=[];retry_pending=false
 
 func current() -> Dictionary:
 	return stages[mini(stage,stages.size()-1)] if not stages.is_empty() else {}
@@ -55,20 +76,26 @@ func missing() -> Array:
 
 func clue_duration() -> float:
 	var total=0.0
-	for fragment:String in current().get("fragments",[]):total+=maxf(1.8,fragment.length()*.18)
+	for fragment:String in current().get("fragments",[]):total+=maxf(.9,fragment.length()*.09)*reading_time_scale
 	return total
+
+func spawn_interval() -> float:
+	return SPAWN_INTERVAL
+
+func fall_speed() -> float:
+	return FALL_SPEED+stage*STAGE_SPEED_INCREASE
 
 func clue_index() -> int:
 	var remaining=clue_elapsed
 	var fragments:Array=current().get("fragments",[])
 	for index:int in fragments.size():
-		remaining-=maxf(1.8,str(fragments[index]).length()*.18)
+		remaining-=maxf(.9,str(fragments[index]).length()*.09)*reading_time_scale
 		if remaining<0:return index
 	return maxi(0,fragments.size()-1)
 
 func begin_search() -> void:
 	if phase!="clue":return
-	phase="search";spawn_clock=SPAWN_INTERVAL-.35;spawn_index=0
+	phase="search";spawn_clock=spawn_interval()-FIRST_SPAWN_DELAY;spawn_index=0
 	events.append({"kind":"search_started","stage":stage})
 
 func set_target(value:float) -> void:
@@ -83,7 +110,8 @@ func set_review(value:bool) -> void:
 
 func continue_stage() -> void:
 	if phase!="hint":return
-	phase="search";hint={};cards.clear();spawn_index=0;target_serial=0;spawn_clock=SPAWN_INTERVAL-.7
+	phase="search";hint={};cards.clear();spawn_clock=spawn_interval()-RETRY_DELAY
+	retry_pending=true
 	board_target=board_x;board_velocity=0;accumulator=0
 	events.append({"kind":"continued","stage":stage,"collected":collected.duplicate()})
 
@@ -115,10 +143,11 @@ func _tick(dt:float,direction:float) -> void:
 		if transition_left<=0:
 			if completed_stages>=stages.size():phase="complete";return
 			stage+=1;collected=[];stage_misses=0;phase="clue";clue_elapsed=0;cards.clear();spawn_clock=0;spawn_index=0;target_serial=0
+			beat_index=0;released_words=[];retry_pending=false
 			return
 	spawn_clock+=dt
-	if transition_left<=0 and spawn_clock>=SPAWN_INTERVAL and cards.size()<2:
-		_spawn();spawn_clock=SPAWN_INTERVAL-1.0 if stage==0 and spawn_index==1 and total_misses==0 else 0
+	if transition_left<=0 and spawn_clock>=spawn_interval() and cards.size()<2:
+		_spawn();spawn_clock=spawn_interval()-DEMONSTRATION_DELAY if stage==0 and spawn_index==1 and total_misses==0 else 0
 	for card:Dictionary in cards.duplicate():
 		if phase!="search":break
 		if card.resolved:
@@ -133,27 +162,40 @@ func _tick(dt:float,direction:float) -> void:
 func _spawn() -> void:
 	var wanted=missing()
 	if wanted.is_empty():return
-	var target=spawn_index%2==0
-	var word:String
-	if target:
-		var targets:Array=current().get("targets",[])
-		while targets[target_serial%targets.size()] in collected:target_serial+=1
-		word=str(targets[target_serial%targets.size()]);target_serial+=1
+	var target=false
+	var word=""
+	var beat=beat_index
+	var retry_words=wanted.filter(func(value):return value in released_words)
+	if current().get("ordered",false):retry_words=retry_words.filter(func(value):return value==wanted[0])
+	if retry_pending and not retry_words.is_empty():
+		# A miss repeats an already introduced missing word, never the whole deck
+		# and never a not-yet-introduced future target.
+		target=true;word=str(retry_words[0])
 	else:
+		var slots:Array=TARGET_BEATS[mini(stage,TARGET_BEATS.size()-1)]
+		var slot=slots.find(beat_index)
+		if slot>=0:
+			word=str(current().targets[slot]);target=word in wanted
+		elif beat_index>int(slots.back()) and spawn_index%2==0:
+			target=true;word=str(wanted[0])
+		beat_index+=1
+	retry_pending=false
+	if not target:
 		var background:Array=current().get("distractors",[])
-		word=str(background[(spawn_index/2 as int)%background.size()])
+		word=str(background[beat%background.size()])
+	if target and not word in released_words:released_words.append(word)
 	serial+=1
-	var width=maxf(64,float(widths.get(word,word.length()*24))+32)
-	var target_from_left=(int(spawn_index/2)%2)==0
-	var from_left=target_from_left if target else not target_from_left
-	var demonstration=stage==0 and spawn_index==1 and total_misses==0
+	var width=maxf(64,float(widths.get(word,word_size(word).x))+WORD_PADDING)
+	var from_left=(target_serial%2)==0 if target else (beat%2)==0
+	if target:target_serial+=1
+	var demonstration=stage==0 and beat==0 and not target and total_misses==0
 	var lane:float=ARENA.position.x+width/2+4 if from_left else ARENA.end.x-width/2-4
 	if demonstration:lane=215
 	var center=Vector2(lane,294)
-	# A word remains readable for at least 3s + .35s per character before contact.
-	var readable=3.0+.35*word.length()
-	var travel=BOARD_Y-BOARD_SIZE.y/2-CARD_HEIGHT/2-center.y
-	var velocity=Vector2(0.0 if demonstration else 4.0 if from_left else -4.0,travel/readable)
+	# Reaction-critical motion remains unchanged. The opening harmless rebound
+	# teaches the same real solid window before the first target arrives.
+	var fall=460.0 if demonstration else fall_speed()
+	var velocity=Vector2(0.0 if demonstration else 4.0 if from_left else -4.0,fall)
 	cards.append({"id":serial,"text":word,"target":target,"demonstration":demonstration,"position":center,"size":Vector2(width,CARD_HEIGHT),"angle":deg_to_rad(-3 if from_left else 3),"velocity":velocity,"resolved":false,"life":.65,"age":0.0})
 	spawn_index+=1
 	events.append({"kind":"spawn","id":serial,"text":word})
@@ -201,24 +243,27 @@ func _on_contact(card:Dictionary) -> void:
 	if transition_left>0:return
 	var wanted:Array=current().get("targets",[])
 	if not card.text in wanted:
-		# A passive initial graze demonstrates the real solid window, not a choice.
-		if not card.get("demonstration",false) or moved_distance>=6:_fail("meaning",card)
+		# The first real rebound teaches the solid window without punishing
+		# exploration. All later decoys still reject a wrong interception.
+		if not card.get("demonstration",false):_fail("meaning",card)
 		return
+	if not card.text in released_words:released_words.append(card.text)
 	if card.text in collected:return
 	if current().get("ordered",false) and card.text!=wanted[collected.size()]:_fail("order",card);return
 	collected.append(card.text)
 	captures.append({"stage":stage,"id":card.id,"word":card.text,"age":card.age,"spawn_time":clock-card.age,"time":clock})
 	events.append({"kind":"collected","word":card.text,"stage":stage})
 	if missing().is_empty():
-		completed_stages+=1;transition_left=.65
+		completed_stages+=1;transition_left=STAGE_TRANSITION
 		events.append({"kind":"stage_complete","completed":completed_stages})
 
 func _fail(reason:String,card:Dictionary) -> void:
 	if phase!="search":return
 	total_misses+=1;stage_misses+=1;phase="hint";board_target=board_x;board_velocity=0
 	var next_word=str(missing()[0]) if not missing().is_empty() else ""
-	var width=maxf(64,float(widths.get(next_word,next_word.length()*24))+32)
-	var landing=ARENA.position.x+width/2+4+4*(3.0+.35*next_word.length())
+	var width=maxf(64,float(widths.get(next_word,word_size(next_word).x))+WORD_PADDING)
+	var travel=BOARD_Y-BOARD_SIZE.y/2-CARD_HEIGHT/2-294
+	var landing=ARENA.position.x+width/2+4+4*travel/fall_speed()
 	hint={"reason":reason,"tier":mini(3,stage_misses),"word":card.text,"missing":missing(),"landing_x":landing}
 	events.append({"kind":"miss","misses":total_misses,"hint":hint.duplicate(true)})
 

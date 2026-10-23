@@ -1,0 +1,42 @@
+{
+  "schema": "755-lazy-loading-evidence-v1",
+  "measuredSource": "80859ae6e59d7df48210b9967df2750d9aa07e88352d04fdb0fb2d407c17ece1",
+  "evidence": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-lazy-20261023/real-browser-performance/summary.json",
+      "sha256": "a692193c509a197e4cc5373c26b79df1c0a8d692e5e66fa5c15b11d4ad335b78",
+      "passed": null,
+      "checks": 0
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-lazy-20261023/web-streaming-final2/web-acceptance.json",
+      "sha256": "c05cc0ca5a9d51ffad160ffaf3ba543e39c46fa7ff6f38ef8dab14e0e910dd7c",
+      "passed": true,
+      "checks": 1048
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-lazy-20261023/web-library-ready/web-acceptance.json",
+      "sha256": "f79a99bd8418258b279194a967b552c5ff84c0c0f5b7bec28ffbbe94c8e7e1cd",
+      "passed": true,
+      "checks": 885
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/phone-exit-auth-20261023/web-ready-desktop/web-acceptance.json",
+      "sha256": "4a19fe125a383a48d3a7b469a8f0a266a3ecadf07a03e410ed5710cb54d2fc9b",
+      "passed": true,
+      "checks": 869
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/phone-exit-auth-20261023/web-ready-mobile/web-acceptance.json",
+      "sha256": "13e299c7d3c2e4e34be7e74d50fec7315a6b81e5142f77734789348decd1bc04",
+      "passed": true,
+      "checks": 870
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/learn-rebuild-20261023/illustration-bounds.json",
+      "sha256": "f007761178be587ae55dfc032fd6e5570b070783099d6f53ad3debac3164a643",
+      "passed": true,
+      "checks": null
+    }
+  ]
+}

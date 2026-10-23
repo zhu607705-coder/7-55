@@ -60,10 +60,12 @@ func run() -> void:
 	check(entry(entries,"ticket_reader").point==Vector2(907,732),"reader procedural visual source point")
 	check(entries.filter(func(e:Dictionary)->bool:return str(e.id).begins_with("program_")).is_empty(),"program scraps are not shown before admission")
 	collisions=layer.adjusted_collisions([],s)
-	check(collisions.size()==3 and collisions[0].top==633 and collisions[1].top==650,"original unshifted fixture collisions plus admission gate")
+	var rack_count:int=1 if layer.texture(layer.REHEARSAL_RACK_ASSET)!=null else 0
+	check(collisions.size()==3+rack_count and collisions[0].top==633 and collisions[1].top==650,"original unshifted fixture collisions plus admission gate and optional side-wing rack")
+	check(collisions.filter(func(box:Dictionary)->bool:return str(box.id)=="c3_dynamic_rehearsal_rack").size()==rack_count,"side-wing rack is registered once without changing original fixtures")
 	s.theaterHunt.admitted=true; s.theaterHunt.phase="program_search"; layer.sync(s); entries=layer.entries(s)
 	check(entry(entries,"ticket_inspector").asset.ends_with("ticket_inspector_scan_front.png"),"successful admission swaps original scan sprite")
-	check(layer.adjusted_collisions([],s).size()==2,"admission removes only source gate barrier")
+	check(layer.adjusted_collisions([],s).size()==2+rack_count,"admission removes only source gate barrier")
 	check(entries.filter(func(e:Dictionary)->bool:return str(e.id).begins_with("program_")).size()==3,"three source program pieces available only program_search")
 	for id: String in ["opening","spotlight","finale"]:
 		check(entry(entries,"program_"+id).size==Vector2(48,48) and not entry(entries,"program_"+id).glow,"source48px program art and light visibility")

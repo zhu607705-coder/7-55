@@ -25,11 +25,11 @@ static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:b
 	var measured:=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_CENTER,width,body_font)
 	var inset:=pixels(8,s)
 	var content_height:=measured.y
-	var height:=maxf(pixels(44,s),content_height+inset*2)
-	var header:=maxf(pixels(44,s),font.get_height(title_font)+pixels(10,s))
-	# Preserve a useful world strip and the real touch targets. Unusually
-	# long/enlarged messages retain their text in a bounded scroll surface.
-	var budget:=minf(extent.y-header-pixels(124 if touch else 16,s),maxf(font.get_height(body_font)+inset*2,extent.y-header-pixels(188 if touch else 72,s)))
+	var height:=maxf(pixels(44 if touch else 34,s),content_height+inset*2)
+	var header:=maxf(pixels(44 if touch else 32,s),font.get_height(title_font)+pixels(10,s))
+	# A long caption keeps the scene usable. Its complete text remains in the
+	# existing scroll surface instead of taking over the visible map.
+	var budget:=minf(extent.y/3.0,extent.y-header-pixels(96,s))
 	budget=maxf(inset*2+1,budget)
 	var overflow:=height>budget
 	if overflow:

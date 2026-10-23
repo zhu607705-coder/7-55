@@ -1,0 +1,273 @@
+{
+  "schema": "755-art-direction-opening-acceptance-v1",
+  "status": "first-art-batch-local-candidate-accepted",
+  "verifiedAt": "2026-10-21T01:54:22.652Z",
+  "build": {
+    "directory": "exports/web-pixel-opening-v2-20261021",
+    "runtime": "godot-web",
+    "engine": "4.7.2.stable.official",
+    "sourceBaseCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "sourceBaseTree": "1c1c403d1336bb0f794bfa9b4461196b66ef0709",
+    "sourceWasDirty": true,
+    "sourceInputSha256": "9248cb39938e51bb0d17b5123b11554aa584bef164df2231e8473e5204c6839e",
+    "manifestSha256": "58dabaccd02bdbdd0473551c3ccd6df74a5d28cb1288215c8cdb8cdd5befe29e",
+    "initialPayloadBytes": 94754929,
+    "localUrl": "http://127.0.0.1:5240/"
+  },
+  "artDirection": {
+    "bible": {
+      "path": "docs/art/ART_BIBLE.md",
+      "sha256": "3c8f25cd5a9a4be76ac7bde2abb1de84dc03707a275d4f200101396532d728db",
+      "scope": "Global rules locked for new/rebuilt assets; existing resources migrate by audited batches."
+    },
+    "policy": {
+      "path": "docs/art/art_direction_v1.json",
+      "sha256": "825ea11183db7f347eb429ea6684abf4622a06f0ac17b0a2b7aefa8e7c7090d8",
+      "scope": "16x16 logical tile,24x32 character frame,32-color palette, fixed proportions/occlusion, preserved camera and source-coordinate exceptions."
+    },
+    "tools": {
+      "path": "tools/art_tools.lock.json",
+      "sha256": "ed530f88a435ab385eca5bf9a1f0ebf14e3cc620deb3ecd948712a01106960fe",
+      "scope": "Official pinned MIT tools, persistent isolated CLI installs; normal maps are not pixel-grid conversion."
+    },
+    "sourceGeneration": {
+      "path": "docs/OPENING_WEB_DESIGN_20261021.json",
+      "sha256": "0fd0a87142f0ca3714a8ddb9bc7b15dbb4590d5d380334fdf6e202e41aa2174e",
+      "scope": "Actual authorized webpage references, generation attempts, master download, pixel normalization and adopted frontend."
+    },
+    "batch": "Opening only adopted. Player/props/icons remain original pending frame-aware redraw; no whole-project uniformity claim."
+  },
+  "openingArt": {
+    "source": "web/boot_art/morning_room.webp",
+    "file": "boot-art/morning_room.fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa.webp",
+    "url": "boot-art/morning_room.fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa.webp",
+    "bytes": 7004,
+    "sha256": "fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa",
+    "logicalDimensions": [
+      160,
+      160
+    ],
+    "sourceDimensions": [
+      640,
+      640
+    ],
+    "sourceScale": 4,
+    "visibleColors": 19,
+    "uniformSourceBlocks": 25600,
+    "offPaletteColors": 0,
+    "fullViewport": true,
+    "raster": {
+      "path": "exports/verification/art_direction_20261021/opening-final-raster-audit-v2.json",
+      "sha256": "6f899343523d2f5780ca7a31cecc3436be6b33e1b015790871c9ac6ed4b574f0",
+      "scope": "Actual lossless WebP decoded and all4x4 blocks, alpha, dimensions, budget and locked palette checked."
+    },
+    "negativeControl": {
+      "path": "exports/verification/art_direction_20261021/negative-one-pixel-audit-v2.json",
+      "sha256": "41e8762033c07af062aeaebc2c36baef6d08a837308d36146cf358cb811959ef",
+      "scope": "An intentionally changed single off-grid/off-palette pixel is rejected."
+    },
+    "checker": {
+      "path": "tools/audit_pixel_art.mjs",
+      "sha256": "62549592e7dd487f00b575980b483ffdcb4b355208ca5397289ff1cbcc3799aa",
+      "scope": "Read-only source audit; cannot approve perspective/collision or infer authored clusters."
+    }
+  },
+  "validation": {
+    "computerUse": {
+      "path": "exports/verification/boot_intro_design_20261021/computer-use.json",
+      "sha256": "5dbb38fe4cea612aa4c09e7da6d3493a75fd1f925da43dc6504ef4adf9771119",
+      "scope": "Actual user Chrome opening inspected at1920x960 window; left ready for review, no manual full-campaign claim."
+    },
+    "actualBrowser": {
+      "cases": 20,
+      "checks": 421,
+      "reports": [
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/chromium-success/report.json",
+          "sha256": "d104506da386904af5335e71db27ce1bfe7985feaea1217cbc33ad8796decc3c",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "chromium",
+          "mode": "success",
+          "cases": 6,
+          "checks": 102
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/chromium-slow/report.json",
+          "sha256": "9e45a19fd61be81d25c6ef81458dec0a16063c72d0c76115842c5bbaaead8819",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "chromium",
+          "mode": "slow",
+          "cases": 1,
+          "checks": 27
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/chromium-reduced/report.json",
+          "sha256": "d503ed24e2c00eecd17007f19cc3dfb68b954c083652b25da5180be4ea3c4b38",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "chromium",
+          "mode": "success",
+          "cases": 1,
+          "checks": 20
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/chromium-fault/report.json",
+          "sha256": "7c81cae4e26f4ee44c30a59122aaa7c83d8e869d9e7c212444a56ed844963833",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "chromium",
+          "mode": "fault",
+          "cases": 1,
+          "checks": 18
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/chromium-art-hang/report.json",
+          "sha256": "477b606b71a226852dbb4a108f1414900ec8058b7fff2679fc204e18d8c01c83",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "chromium",
+          "mode": "art-hang",
+          "cases": 1,
+          "checks": 21
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/chromium-art-404/report.json",
+          "sha256": "2eba18cda34f998aff99a0718ea85c9a72a5b1e4994f52ed29c3143391e07cb4",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "chromium",
+          "mode": "art-404",
+          "cases": 1,
+          "checks": 21
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/firefox-success/report.json",
+          "sha256": "544dadce14e24797667000ef2635cc05137400a57dbec9860afcf8331e143407",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "firefox",
+          "mode": "success",
+          "cases": 3,
+          "checks": 66
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/webkit-success/report.json",
+          "sha256": "59d725ada85aa28e0fcb41b5d4f0d0e2367b90baa94ca0cdb5846c1d569fff1d",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "webkit",
+          "mode": "success",
+          "cases": 3,
+          "checks": 66
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/firefox-reduced-mobile/report.json",
+          "sha256": "d368818f28ca849e3015073b18735efdfe15be2e545074713560a7390f177500",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "firefox",
+          "mode": "success",
+          "cases": 1,
+          "checks": 25
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/webkit-reduced-mobile/report.json",
+          "sha256": "1af24d8a1b30bda1f29579d811fcda7bfaf67d87185c38f7a7fcffeb117e97e0",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "webkit",
+          "mode": "success",
+          "cases": 1,
+          "checks": 25
+        },
+        {
+          "path": "exports/verification/boot_intro_design_20261021/actual-v2-corrected/chromium-background-cli-no-defaults/report.json",
+          "sha256": "f77dda65d513c9cb9416ce825d8d6d56e0d4f694ec12516d729a5cb39e4c25a4",
+          "scope": "Actual Godot browser; ordinary HTML entry and native story entry, then strict native Main snapshot.",
+          "engine": "chromium",
+          "mode": "background",
+          "cases": 1,
+          "checks": 30
+        }
+      ]
+    },
+    "foundation": {
+      "path": "exports/verification/boot_intro_design_20261021/actual-v2/foundation-retina390/web-acceptance.json",
+      "sha256": "b4e7a6feb7122e3be32d63edb0b56967f0e1ec3be34bb34cc0d5a73aa58f19ee",
+      "scope": "Actual DPR3 mobile touch input, exact save acknowledgement/IndexedDB bytes, fresh-document reload/Continue, portable saves and malformed import rejection.",
+      "cases": 1,
+      "checks": 506
+    },
+    "dom": {
+      "path": "exports/verification/boot_intro_design_20261021/native-boot-stage-final.json",
+      "sha256": "fe6f1eafff583c9883fd5a0ef3ffe51b95307c05aa00512abff8a6231fa7496c",
+      "scope": "Actual validate_native entrypoint:44 boot presentation/ownership checks."
+    },
+    "uiFixture": {
+      "path": "exports/verification/phone_legibility_20261021/opening-pixel-ui-calibration-final/report.json",
+      "sha256": "b0d8dec8d3c371defdfad8b8b05190d7abfb19b7ea13d20d19f93ce3d8800a85",
+      "scope": "Separate stub-engine UI rendering:7 viewports154 checks, fonts16/14/16, minimum contrast4.81568. Not included in actual Godot case counts."
+    },
+    "artifactIntegrity": {
+      "path": "exports/verification/boot_intro_design_20261021/boot-art-integrity.json",
+      "sha256": "23e9cdb106e9b168136d2446bc3b42f277fcc9efc835613d5e92ac2f391b956b",
+      "scope": "Full APFS export clone:valid,one-byte tamper,missing image,extra image,restored;5 checks passed."
+    },
+    "runtimeDelta": {
+      "path": "exports/verification/boot_intro_design_20261021/artifact-delta-proof.json",
+      "sha256": "11006d35ffc1c1277053befe933253573679b73a4f663a0c3da77354dc0093a5",
+      "scope": "20 deferred packs andWASM byte-identical to accepted phone baseline;1041/1042 core entries identical. Only UID cache serialization order differs;1047 normalized UID mappings identical. Source controllers/assets unchanged."
+    },
+    "uidMappings": {
+      "path": "exports/verification/boot_intro_design_20261021/uid-cache-comparison.json",
+      "sha256": "ca1ac80a5ee3192ef6c20bd28c76fe0381e215813c24522eb404c3017a6e320c",
+      "scope": "Full actual binary cache parsed using official4.7.2 format; no missing/added mappings."
+    }
+  },
+  "globalAudit": {
+    "normalMapPilot": {
+      "path": "exports/verification/art_direction_20261021/normals-installation.json",
+      "sha256": "cdd83448063426cfacfbf674a565bf7d11fda43dce693f4a90312c0442ec1b3c",
+      "scope": "Official pinned isolated CLI;9 own-fixture assertions including exact alpha,dimensions,normal vectors and channel convention. Not integrated into runtime materials."
+    },
+    "inventory": {
+      "path": "exports/verification/art_direction_20261021/active-art-inventory.json",
+      "sha256": "eb005280df460e8cd40200a0d415da37131e05a6ef26bdf04f716a9cea317037",
+      "scope": "539 production-source entries classified as runtime-reference, unproved delivery, reference art, or nonvisual data. Based on frozen phone-v2 PCK baseline, not this browser-only image."
+    },
+    "batches": {
+      "path": "exports/verification/art_direction_20261021/batch-plan.json",
+      "sha256": "50ddd68d73b1468137efb3078bfeeda644f29737f3c7ad8cc8e41283c2096e94",
+      "scope": "Nine planned batches. B0 diagnostic complete; final browser opening is separately adopted here. No automatic overwrite of maps or sprites."
+    },
+    "tools": {
+      "path": "exports/verification/pixel_snapper_20261021/INSTALL_AND_DIAGNOSTICS_20261021.json",
+      "sha256": "66b061eb1aeb667ad7b68a6c09ae1c2d98d33cd5df874dccafbfe807742ed9d2",
+      "scope": "Pixel Snapper locked build/5 unit tests and15 diagnostic outputs; sprite dimensions/alpha mismatches retained."
+    }
+  },
+  "qaCalibration": {
+    "reason": "Initial runner incorrectly waited for Main immediately after HTML entry; actual engine was correctly showing its native story-entry chooser. Two ordinary Enter actions are required by the existing source. Product keyboard handling was not changed.",
+    "retained": [
+      "actual-v2/chromium-success/report.json",
+      "actual-v2/firefox-success/report.json",
+      "actual-v2/chromium-enter-diagnostic/report.json",
+      "actual-v2/firefox-enter-diagnostic/report.json"
+    ],
+    "background": "Earlier driver-focused tab/minimize attempts did not produce native hidden state. Passing native-window case is listed separately; no document.hidden override is accepted."
+  },
+  "reviewArtifacts": [
+    {
+      "path": "exports/review/pixel-opening-20261021/desktop.png",
+      "sha256": "853b6d02765844bcecea478f1d784cde7a68095746deef6dea87f21b9c89d9e0",
+      "scope": "Reviewed actual Chromium1280 ready screen; explicit final preview."
+    },
+    {
+      "path": "exports/review/pixel-opening-20261021/mobile.png",
+      "sha256": "a3c7eafbe2c8b5507799560cbd8cea4fec98813c2fb94667bc2af53978c56074",
+      "scope": "Reviewed actual Chromium390x844 ready screen; explicit final preview."
+    }
+  ],
+  "limits": [
+    "Latest actual browser engines and simulated mobile metrics/input; physical Android/iPhone and historical minimum browsers not accepted.",
+    "No fresh complete manual campaign in this batch; underlying game content/controller delta has separate byte and baseline evidence.",
+    "Global art migration is ongoing; reference images and collision masks are not blindly recolored or distorted."
+  ],
+  "delivery": {
+    "publicDeploymentPerformed": false,
+    "serverDeploymentPerformed": false,
+    "gitCommitOrPushPerformed": false
+  }
+}

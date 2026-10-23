@@ -69,7 +69,10 @@ func build(b,view: Dictionary) -> Control:
 	b._panel(root,Rect2(LEFT-8,y,WIDTH+16,summary_height),Color.WHITE,Color("d1d6dc"),0,1)
 	label(b,root,summary,y+12).name="Cc98InvestigationSummary"
 	y+=summary_height+12
-	var upload_jump: Button=b._button(root,"楼主证据上传区 ↓",Rect2(LEFT,y,WIDTH,44),func():
+	b._button(root,"阅读回复 ↓",Rect2(LEFT,y,151,44),func():
+		var target=root.get_node_or_null("Cc98ThreadReplies")
+		if target: scroll_to(target),Color("e7eef1"),BLUE).name="Cc98RepliesJump"
+	var upload_jump: Button=b._button(root,"楼主证据上传区 ↓",Rect2(LEFT+161,y,154,44),func():
 		var target=root.get_node_or_null("Cc98EvidenceUploader")
 		if target: scroll_to(target),Color("e7eef1"),BLUE)
 	upload_jump.name="Cc98EvidenceJump"
@@ -89,6 +92,7 @@ func build(b,view: Dictionary) -> Control:
 			if target: scroll_to(target),Color("e7eef1"),BLUE).name="Cc98BdRepliesJump"
 		y+=60
 	var bd=BD_POSTS
+	var replies_anchor=Control.new();replies_anchor.name="Cc98ThreadReplies";replies_anchor.position=Vector2(LEFT,y);replies_anchor.size=Vector2(WIDTH,1);replies_anchor.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.add_child(replies_anchor)
 	for row: Dictionary in view.get("rows",[]):
 		var floor_number=int(str(row.get("title","")).get_slice(" ",0))
 		if bd.has(floor_number) and not show_bd: continue

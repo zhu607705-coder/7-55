@@ -24,8 +24,7 @@ func reset(dims: Vector2i=Vector2i(430,860)) -> void:
  root.size=dims;shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames();shell._show_world_mobile();shell._layout();await frames();shell.set_process(false);shell.world.set_process(false)
 func count() -> int:return shell.world.kayak.inputs.size()
 func center(side: String) -> Vector2:
- var size: Vector2=shell.world.size
- return screen(Vector2(120 if side=="left" else size.x-120,size.y-130))
+ return screen(shell.world.kayak_paddle_rects()[side].get_center())
 func run() -> void:
  if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
  state=root.get_node("State");state.developer_mode=false
@@ -34,11 +33,11 @@ func run() -> void:
   for side: String in ["left","right"]:
    var p:=center(side);var n:=count()
    await mouse(p,true);check(count()==n,"press waits for release "+side+str(dims))
-   await mouse(p,false);check(count()==n+1,"painted button release strokes once "+side+str(dims))
+   await mouse(p,false);check(count()==n+1,"actual moving paddle release strokes once "+side+str(dims))
    check(count()>n and shell.world.kayak.inputs[-1].side==side and shell.world.kayak.inputs[-1].direction=="forward","correct source side and ordinary forward stroke")
   var n:=count();await mouse(center("left"),false);check(count()==n,"duplicate release has no effect")
-  var center_gap:=screen(Vector2(shell.world.size.x/2,shell.world.size.y-130))
-  await mouse(center_gap,true);await mouse(center_gap,false);check(count()==n,"gap between painted paddles is not an extra button")
+  var center_gap:=screen((shell.world.player-shell.world.camera)*shell.world.zoom+shell.world.size/2)
+  await mouse(center_gap,true);await mouse(center_gap,false);check(count()==n,"hull between real paddles is not an extra stroke target")
  await reset()
  var p:=center("left");await mouse(p,true);await motion(p+Vector2(0,45));await mouse(p+Vector2(0,45),false)
  check(count()==1 and shell.world.kayak.last_direction=="reverse","downward drag keeps existing reverse semantics")
@@ -57,23 +56,25 @@ func run() -> void:
  await mouse(center("left"),false);check(count()==0,"blocking world presentation cancels old pointer")
  shell.world_effect.free();shell.world_effect=null
  # A real finger has an existing native route; emulated mouse must not duplicate it.
- var start:=Vector2(120,shell.world.size.y-130);var touch:=InputEventScreenTouch.new();touch.index=7;touch.position=start;touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
+ var start:Vector2=shell.world.kayak_paddle_rects().left.get_center();var touch:=InputEventScreenTouch.new();touch.index=7;touch.position=start;touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
  n=count();await mouse(screen(start),true,-1);await mouse(screen(start),false,-1);check(count()==n,"touch-emulated mouse grants no paddle")
  await mouse(screen(start),true);await mouse(screen(start),false);check(count()==n,"real mouse cannot steal a finger-owned same-side paddle")
  touch=touch.duplicate();touch.pressed=false;shell.world_viewport.push_input(touch,true);await frames()
  check(count()==n+1 and shell.world.kayak.last_side=="left","existing finger route still strokes exactly once")
  p=center("right");n=count();await mouse(p,true)
- touch=InputEventScreenTouch.new();touch.index=9;touch.position=Vector2(shell.world.size.x-120,shell.world.size.y-130);touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
+ touch=InputEventScreenTouch.new();touch.index=9;touch.position=shell.world.kayak_paddle_rects().right.get_center();touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
  touch=touch.duplicate();touch.pressed=false;shell.world_viewport.push_input(touch,true);await frames()
  check(count()==n,"finger cannot steal a mouse-owned same-side paddle")
  await mouse(p,false);check(count()==n+1 and shell.world.kayak.last_side=="right","original owner releases once after competing pointer")
  touch=InputEventScreenTouch.new();touch.index=11;touch.position=start;touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames();n=count()
  touch=touch.duplicate();touch.pressed=false;touch.canceled=true;shell.world_viewport.push_input(touch,true);await frames()
  check(count()==n,"native finger cancellation remains neutral")
- await reset(Vector2i(1180,812));var hidden:=center("left");await mouse(hidden,true);await mouse(hidden,false)
- check(count()==0,"desktop hidden controls do not steal ordinary water clicks")
+ await reset(Vector2i(1180,812));var retired_corner:=screen(Vector2(120,shell.world.size.y-130));await mouse(retired_corner,true);await mouse(retired_corner,false)
+ check(count()==0,"retired fixed corner region does not act as an invisible desktop paddle")
+ await mouse(center("left"),true);await mouse(center("left"),false)
+ check(count()==1 and shell.world.kayak.last_side=="left","desktop clicks the same real moving paddle without a separate touch UI")
  shell.world.touch_controls=true;await mouse(center("left"),true);await mouse(center("left"),false)
- check(count()==1 and shell.world.kayak.last_side=="left","visible touch-capability fallback also works at desktop width")
+ check(count()==2 and shell.world.kayak.last_side=="left","touch-capable desktop retains exactly the same physical paddle geometry")
  check(shell.world.lake_session.status=="running" and state.d.qizhenLake.capsizeCount==0,"input fixtures retain controller proof and no invented failure")
  await shell.shutdown();shell.free();await frames()
  print("LAKE_PADDLE_POINTER: ",checks," checks; ",failures," failures")

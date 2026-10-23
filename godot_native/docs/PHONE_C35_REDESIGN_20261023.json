@@ -1,0 +1,1917 @@
+{
+  "schema": "755-c35-phone-ui-verification-v1",
+  "date": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "baseCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "workingTree": "Local uncommitted implementation; prior work retained. No push or release.",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "sourceFiles": {
+    "scripts/ui/chapter3_phone_pages.gd": "09fae34d6224bc95e796c77e3d75783a4716a05015599727c1e29413cca0e1df",
+    "scripts/ui/phone_app_frame.gd": "36d5554bf511bb8747fba5991dfcb91aeb9c96ea74782a377ced6243b1b50c1b",
+    "scripts/ui/phone_chrome.gd": "0558347e4d87e812d08b4add32113e3d5e30e5f43e89b8b22794c9a311b8d16a",
+    "scripts/ui/phone_pages.gd": "ecf6705d1140700bc040b6d62eed8a83c249545d396de72e7ef09b61e4a3b152",
+    "tools/plan_web_content.mjs": "6ea6f5bc872b8a78e89e1442970b2dd9f87df234426163488351a26f530546ed",
+    "tests/test_c35_app_frame.gd": "d86ff68f0e7db5dc4cd5cc1325532712934c6e10e36ed56165b4a6ebd85cdf9e",
+    "tests/test_wechat_reference_ui.gd": "27d4860197ccdd614f7516036c5ac62bbb2336a8ef385718ce0f5ad70c785066",
+    "tests/test_chapter3_phone_ui.gd": "f966eabcae18f5c5fc84ccea535513dc40a10bbda6fcf3a01bfa143cf701e439",
+    "tests/test_interlude_evidence_controls.gd": "ca11adc574b0b16f983edde2e113d298e6026c2f255c693ff869a780d8c59085",
+    "tests/test_interlude_retry_controls.gd": "2a09b5a37b1d84ba3e51f62c5bca1e035666ac358f472a2c5471853306146576",
+    "tests/test_phone_chrome.gd": "31545a037a18d1f5123139dcfe37c2a90f9669cd98dd50794a73871790edfda7",
+    "assets/native/chapter35_recovery_20261023/lake_memory.png": "60ef3e6a7f2d38a115ff7e475760d10b483cb0842a0c9e12a2d9a28d283c14fc",
+    "scripts/ui/phone_palette.gd": "f99a9382c2fcda754876087662ab4e62d7147c3d13efa327f891f9b2b33eed9f",
+    "scripts/ui/c3_voice_progress.gd": "81a4957b735db22a89bc72c4f5edec813e9f02001565678032129d3ac65bc4df"
+  },
+  "nativeRuns": [
+    {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35-phone-20261023/755-c35-ui-final.json",
+      "sha256": "387bd981145ecb62c60d8b3dce669c9f458b1aa0867a0b981cf2638d3e6443bf",
+      "stages": 14,
+      "failures": [],
+      "coverage": "Focused regression, not full native suite"
+    },
+    {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35-phone-20261023/755-c35-ui-final-repair.json",
+      "sha256": "e681ea9b1c52e97d02599d01f5d745e3919edccb7df539406eb3475dd13ef34a",
+      "stages": 6,
+      "failures": [],
+      "coverage": "Focused regression, not full native suite"
+    },
+    {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35-phone-20261023/755-c35-side-wechat.json",
+      "sha256": "b45cc9e1ed0864a4b2c91ee75a8d9e859c430b9e4c3b2883f6698ad1b4b7f528",
+      "stages": 13,
+      "failures": [],
+      "coverage": "Focused regression, not full native suite"
+    },
+    {
+      "file": "/Users/zhu/Downloads/755/godot_native/exports/verification/c35-phone-20261023/755-c35-white-no-gap.json",
+      "sha256": "6d488f89869f6ee012d63cb8a627a2f1e3fa1dbad708742b8a9f357357104008",
+      "stages": 9,
+      "failures": [],
+      "coverage": "Focused native regression for restored margins and WeChat white palette; not full suite"
+    }
+  ],
+  "latestFocusedNativeStages": 9,
+  "latestFocusedNativeFailures": 0,
+  "raster": {
+    "directory": "/Users/zhu/Library/Application Support/755-tools/verification/c35-phone-white-no-gap-20261023",
+    "log": "/Users/zhu/Library/Application Support/755-tools/verification/c35-phone-white-no-gap-20261023/native-raster.log",
+    "captures": 28,
+    "viewports": [
+      [
+        430,
+        860
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        360,
+        640
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "renderer": "Actual native Compatibility on Apple M4 Max",
+    "provenance": "Isolated checkpoint fixtures and real InputEventScreenTouch/ScreenDrag. Not a physical phone.",
+    "checks": 312,
+    "failures": 0,
+    "note": "Checkpoint fixtures retain source brightness 33; the separate live preview was adjusted to normal brightness through its ordinary control-center slider."
+  },
+  "liveReview": {
+    "log": "/tmp/755-c35-white-no-gap-live.log",
+    "checkpoint": "c3-interlude-photos",
+    "page": "c35_messages",
+    "screenshot": "/Users/zhu/Library/Application Support/755-tools/verification/c35-phone-white-no-gap-20261023/live-white-chat.png",
+    "observed": "CUA observed white/grey chat with symmetric content margins, adjusted only isolated preview brightness via control center, expanded the left inventory without moving content, then collapsed it. Window remains open."
+  },
+  "web": {
+    "directory": "/Users/zhu/Downloads/755/godot_native/exports/web-c35-phone-20261023",
+    "buildManifestSha256": "a20676d9993a96b9c2020169d08080ae4c0b724e8d5ac847e16bde4464719544",
+    "manifest": {
+      "schema": "7-55-godot-web-release/v1",
+      "runtime": "godot-web",
+      "engine": "4.7.1.stable.official",
+      "preset": "Web production",
+      "renderer": "gl_compatibility",
+      "threads": false,
+      "pwa": false,
+      "production": true,
+      "storyOnly": true,
+      "chapterShortcuts": false,
+      "builtAt": "2026-10-23T06:55:01.114Z",
+      "sourceCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+      "sourceTree": "db051cd2f26a542c571200efcc1e78cc5248a6a4",
+      "sourceDirty": true,
+      "sourceChanges": [
+        "M godot_native/README.md",
+        " M godot_native/docs/GODOT_WEB_RELEASE.md",
+        " M godot_native/docs/UI_SELECTED_HANDOFF_20261021.md",
+        " M godot_native/docs/UI_TYPOGRAPHY_AND_INPUT.md",
+        " M godot_native/export_presets.cfg",
+        " M godot_native/project.godot",
+        " M godot_native/scripts/chapters/chapter3.gd",
+        " M godot_native/scripts/chapters/library022.gd",
+        " M godot_native/scripts/experiments/kenney_visual_slice.gd",
+        " M godot_native/scripts/games/prologue_interception.gd",
+        " M godot_native/scripts/games/prologue_word_model.gd",
+        " M godot_native/scripts/main.gd",
+        " M godot_native/scripts/objects/canteen_object_scene.gd",
+        " M godot_native/scripts/objects/kayak_world_adapter.gd",
+        " M godot_native/scripts/platform/web_platform.gd",
+        " M godot_native/scripts/presentation/c3_narrative_host.gd",
+        " M godot_native/scripts/presentation/c3_narrative_view.gd",
+        " M godot_native/scripts/presentation/chase3d/source_chase_3d.gd",
+        " M godot_native/scripts/presentation/chase3d/source_rider.gd",
+        " M godot_native/scripts/presentation/chase_transition_3d_presenter.gd",
+        " M godot_native/scripts/presentation/chase_transition_clock.gd",
+        " M godot_native/scripts/presentation/interior_door_layer.gd",
+        " M godot_native/scripts/presentation/library_story_view.gd",
+        " M godot_native/scripts/state.gd",
+        " M godot_native/scripts/ui/c3_voice_progress.gd",
+        " M godot_native/scripts/ui/cc98_investigation_page.gd",
+        " M godot_native/scripts/ui/chapter3_phone_pages.gd",
+        " M godot_native/scripts/ui/chapter3_world_layers.gd",
+        " M godot_native/scripts/ui/checkin_success_view.gd",
+        " M godot_native/scripts/ui/library_world_layers.gd",
+        " M godot_native/scripts/ui/native_checkin_page.gd",
+        " M godot_native/scripts/ui/native_ending_resume.gd",
+        " M godot_native/scripts/ui/native_library_pages.gd",
+        " M godot_native/scripts/ui/native_typography.gd",
+        " M godot_native/scripts/ui/native_ui_theme.gd",
+        " M godot_native/scripts/ui/phone_chrome.gd",
+        " M godot_native/scripts/ui/phone_pages.gd",
+        " M godot_native/scripts/ui/selected_dialogue_layout.gd",
+        " M godot_native/scripts/ui/selected_ui_theme.gd",
+        " M godot_native/scripts/ui/world_inventory_item.gd",
+        " M godot_native/scripts/ui/world_overlay_layout.gd",
+        " M godot_native/scripts/ui/world_phone_launcher.gd",
+        " M godot_native/scripts/ui/world_selected_overlay.gd",
+        " M godot_native/scripts/world.gd",
+        " M godot_native/tests/capture_mobile_direct_touch.gd",
+        " M godot_native/tests/fixtures/qizhen_branch_source.json",
+        " M godot_native/tests/prologue_word_driver.gd",
+        " M godot_native/tests/test_c3_swan_entrance_shell.gd",
+        " M godot_native/tests/test_canteen_queue_floor_tap.gd",
+        " M godot_native/tests/test_canteen_self_drink.gd",
+        " M godot_native/tests/test_canteen_waiting_portrait.gd",
+        " M godot_native/tests/test_chapter3_phone_ui.gd",
+        " M godot_native/tests/test_chapter3_world_layers.gd",
+        " M godot_native/tests/test_chase3d_view_lifecycle.gd",
+        " M godot_native/tests/test_chase_source3d_lifecycle.gd",
+        " M godot_native/tests/test_checkin_success_presentation.gd",
+        " M godot_native/tests/test_collapsed_inventory_focus.gd",
+        " M godot_native/tests/test_compact_overlay_layout.gd",
+        " M godot_native/tests/test_compact_world_inventory.gd",
+        " M godot_native/tests/test_compact_world_tasks.gd",
+        " M godot_native/tests/test_early_games.gd",
+        " M godot_native/tests/test_interlude_evidence_controls.gd",
+        " M godot_native/tests/test_interlude_retry_controls.gd",
+        " M godot_native/tests/test_kayak_boundary_feedback.gd",
+        " M godot_native/tests/test_kayak_status_layout.gd",
+        " M godot_native/tests/test_lake_dock_handoff.gd",
+        " M godot_native/tests/test_lake_paddle_pointer.gd",
+        " M godot_native/tests/test_lake_shell_input.gd",
+        " M godot_native/tests/test_library_entry_flow.gd",
+        " M godot_native/tests/test_library_reveal_handoff.gd",
+        " M godot_native/tests/test_library_rule_action.gd",
+        " M godot_native/tests/test_library_world_layers.gd",
+        " M godot_native/tests/test_mobile_direct_touch.gd",
+        " M godot_native/tests/test_mobile_floor_room204_drag.gd",
+        " M godot_native/tests/test_mobile_floor_route.gd",
+        " M godot_native/tests/test_mobile_floor_route_orientations.gd",
+        " M godot_native/tests/test_mobile_world_feedback.gd",
+        " M godot_native/tests/test_native_surface_modes.gd",
+        " M godot_native/tests/test_native_typography.gd",
+        " M godot_native/tests/test_phone_chrome.gd",
+        " M godot_native/tests/test_phone_launcher_icons.gd",
+        " M godot_native/tests/test_phone_mechanism_feedback.gd",
+        " M godot_native/tests/test_phone_symbol_icons.gd",
+        " M godot_native/tests/test_portrait_exploration.gd",
+        " M godot_native/tests/test_portrait_narrative_contract.gd",
+        " M godot_native/tests/test_portrait_scene_contracts.gd",
+        " M godot_native/tests/test_prologue_audio.gd",
+        " M godot_native/tests/test_prologue_focus_input.gd",
+        " M godot_native/tests/test_prologue_words.gd",
+        " M godot_native/tests/test_selected_dialogue_layout.gd",
+        " M godot_native/tests/test_selected_ui_theme.gd",
+        " M godot_native/tests/test_selected_world_native_layer.gd",
+        " M godot_native/tests/test_selected_world_overlay.gd",
+        " M godot_native/tests/test_unified_typography.gd",
+        " M godot_native/tests/test_web_browser_lifecycle.mjs",
+        " M godot_native/tests/test_web_platform.gd",
+        " M godot_native/tests/test_world_input_animation.gd",
+        " M godot_native/tests/test_world_object_picking.gd",
+        " M godot_native/tests/test_world_overlay_integration.gd",
+        " M godot_native/tests/test_world_phone_launcher.gd",
+        " M godot_native/tests/ui_design_specimen.gd",
+        " M godot_native/tests/verify_canteen_paper_effects_source.mjs",
+        " M godot_native/tests/verify_web_content_boot_assets.mjs",
+        " M godot_native/tools/build_web.mjs",
+        " M godot_native/tools/plan_web_content.mjs",
+        " M godot_native/tools/sync_source.mjs",
+        " M godot_native/tools/test_ui_font_pack.mjs",
+        " M godot_native/tools/validate_native.mjs",
+        " M godot_native/tools/verify_web_export.mjs",
+        " M godot_native/ui_assets/fonts/README.md",
+        " M godot_native/ui_assets/fonts/SELECTED_UI_FONTS.md",
+        " M godot_native/web/index.html",
+        "?? godot_native/LICENSE",
+        "?? godot_native/NOTICE",
+        "?? godot_native/addons/RodinBridge/asset/default.jpeg",
+        "?? godot_native/addons/RodinBridge/components/ctx.gd",
+        "?? godot_native/addons/RodinBridge/components/proc.gd",
+        "?? godot_native/addons/RodinBridge/components/props.gd",
+        "?? godot_native/addons/RodinBridge/components/rodin_loader.gd",
+        "?? godot_native/addons/RodinBridge/components/task.gd",
+        "?? godot_native/addons/RodinBridge/components/task_manager.gd",
+        "?? godot_native/addons/RodinBridge/components/utils.gd",
+        "?? godot_native/addons/RodinBridge/components/websocket/client.gd",
+        "?? godot_native/addons/RodinBridge/components/websocket/gd_client.gd",
+        "?? godot_native/addons/RodinBridge/components/websocket/server.gd",
+        "?? godot_native/addons/RodinBridge/components/websocket/websocket_test.tscn",
+        "?? godot_native/addons/RodinBridge/plugin.cfg",
+        "?? godot_native/addons/RodinBridge/rodin_bottom_panel.gd",
+        "?? godot_native/addons/RodinBridge/rodin_bottom_panel.tscn",
+        "?? godot_native/addons/RodinBridge/rodin_bridge.gd",
+        "?? godot_native/addons/RodinBridge/settings.gd",
+        "?? godot_native/addons/RodinBridge/ui/image_gallery.gd",
+        "?? godot_native/addons/RodinBridge/ui/image_gallery.tscn",
+        "?? godot_native/addons/RodinBridge/ui/image_list.gd",
+        "?? godot_native/addons/RodinBridge/ui/image_list.tscn",
+        "?? godot_native/addons/RodinBridge/ui/single_options.gd",
+        "?? godot_native/addons/RodinBridge/ui/single_options.tscn",
+        "?? godot_native/addons/RodinBridge/ui/task_item.gd",
+        "?? godot_native/addons/RodinBridge/ui/task_item.tscn",
+        "?? godot_native/addons/RodinBridge/ui/task_list.gd",
+        "?? godot_native/addons/RodinBridge/ui/task_list.tscn",
+        "?? godot_native/addons/RodinBridge/ui/theme.tres",
+        "?? godot_native/art_source/.gdignore",
+        "?? godot_native/art_source/ending_resume_20261022/terminal_original.png",
+        "?? godot_native/art_source/fonts/morning_note_v1/charset.txt",
+        "?? godot_native/art_source/fonts/morning_note_v1/derived_grids.json",
+        "?? godot_native/art_source/fonts/morning_note_v1/family_manifest.json",
+        "?? godot_native/art_source/fonts/morning_note_v1/original_glyphs.json",
+        "?? godot_native/art_source/fonts/morning_note_v1/specimen.html",
+        "?? godot_native/art_source/fonts/morning_note_v1/web/MorningNote-Medium.woff2",
+        "?? godot_native/art_source/fonts/morning_note_v1/web/MorningNote-Regular.woff2",
+        "?? godot_native/art_source/prologue_terminal_20261022/README.md",
+        "?? godot_native/art_source/prologue_terminal_20261022/dense_prompt.txt",
+        "?? godot_native/art_source/prologue_terminal_20261022/terminal_ascii_concept.png",
+        "?? godot_native/art_source/prologue_terminal_20261022/terminal_ascii_dense_concept.png",
+        "?? godot_native/art_source/student_rider_v3/campus_student_rig.json",
+        "?? godot_native/art_source/student_rider_v3/campus_student_rigged.blend",
+        "?? godot_native/art_source/student_rider_v3/campus_student_rigged.glb",
+        "?? godot_native/art_source/student_rider_v3/campus_student_unrigged.glb",
+        "?? godot_native/art_source/student_rider_v3/superseded_v2_runtime.glb",
+        "?? godot_native/assets/native/chapter35_recovery_20261023/lake_memory.png",
+        "?? godot_native/assets/native/chapter35_recovery_20261023/provenance.json",
+        "?? godot_native/assets/native/ending_resume/terminal_signal_20261022.png",
+        "?? godot_native/assets/native/liangzhu_performance_20261021/actors.png",
+        "?? godot_native/assets/native/liangzhu_performance_20261021/chair_left.png",
+        "?? godot_native/assets/native/liangzhu_performance_20261021/chair_right.png",
+        "?? godot_native/assets/native/liangzhu_performance_20261021/furniture.json",
+        "?? godot_native/assets/native/liangzhu_performance_20261021/stage.png",
+        "?? godot_native/assets/native/liangzhu_performance_20261021/table.png",
+        "?? godot_native/assets/native/library_rebuild_20261020/backpack.png",
+        "?? godot_native/assets/native/library_rebuild_20261020/catalog_terminal.png",
+        "?? godot_native/assets/native/library_rebuild_20261020/library_cleanplate.png",
+        "?? godot_native/assets/native/library_rebuild_20261020/north_display_shelf.png",
+        "?? godot_native/assets/native/library_rebuild_20261020/printer.png",
+        "?? godot_native/assets/native/prologue_terminal_20261022/ascii_fine_glyph_atlas.png",
+        "?? godot_native/assets/native/prologue_terminal_20261022/ascii_glyph_atlas.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/fan_closed.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/fan_open.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/fan_rack.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/lantern.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/poster_board.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/prop_chest.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/rehearsal_backdrop.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/side_screen.png",
+        "?? godot_native/assets/native/theater_rebuild_20261020/sound_console.png",
+        "?? godot_native/assets/native/theater_ui_20261021/OFL.txt",
+        "?? godot_native/assets/native/theater_ui_20261021/provenance.json",
+        "?? godot_native/assets/native/theater_ui_20261021/theater_sans_regular.ttf",
+        "?? godot_native/assets/native/theater_ui_20261021/theater_sans_semibold.ttf",
+        "?? godot_native/assets/native_755/ride/pelican_palette_lut.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_glass_canopy.glb",
+        "?? godot_native/assets/native_755/ride/rodin/campus_glass_canopy_texture_diffuse.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_glass_canopy_texture_metallic-texture_roughness.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_glass_canopy_texture_normal.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_student_rigged.glb",
+        "?? godot_native/assets/native_755/ride/rodin/campus_student_rigged_texture_diffuse.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_student_rigged_texture_metallic-texture_roughness.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_student_rigged_texture_normal.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_theater_foyer.glb",
+        "?? godot_native/assets/native_755/ride/rodin/campus_theater_foyer_texture_diffuse.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_theater_foyer_texture_metallic-texture_roughness.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_theater_foyer_texture_normal.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_willow_verge.glb",
+        "?? godot_native/assets/native_755/ride/rodin/campus_willow_verge_texture_diffuse.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_willow_verge_texture_metallic-texture_roughness.png",
+        "?? godot_native/assets/native_755/ride/rodin/campus_willow_verge_texture_normal.png",
+        "?? godot_native/assets/native_755/ride/rodin/zju_official_emblem.png",
+        "?? godot_native/assets/native_755/ride/student_walk_cc0.json",
+        "?? godot_native/data/native/campus-loop-panorama-tiles.json",
+        "?? godot_native/data/native/liangzhu-performance.content.json",
+        "?? godot_native/data/native/library-entrance-geometry.json",
+        "?? godot_native/data/native/library-object-layout.json",
+        "?? godot_native/data/native/prologue-ascii-masks.json",
+        "?? godot_native/data/native/prologue-flow-atmosphere.json",
+        "?? godot_native/data/native/theater-object-layout.json",
+        "?? godot_native/docs/ART_DIRECTION_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/CHECKIN_PIXEL_RESTORATION_20261022.json",
+        "?? godot_native/docs/COLORED_CORNER_ICONS_20261021.json",
+        "?? godot_native/docs/DORM_CHARACTER_SCALE_20261022.json",
+        "?? godot_native/docs/ENDING_RESUME_ILLUSTRATED_20261022.json",
+        "?? godot_native/docs/FONT_TEST_REVIEW_20261023.md",
+        "?? godot_native/docs/GAMEDEV_SKILLS_REFERENCE.md",
+        "?? godot_native/docs/INTERIOR_DOORS_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/LIANGZHU_ACTOR_RIG.md",
+        "?? godot_native/docs/LIANGZHU_ART_PROVENANCE_20261021.json",
+        "?? godot_native/docs/LIANGZHU_CINEMATIC_PRODUCTION_20261021.json",
+        "?? godot_native/docs/LIANGZHU_PERFORMANCE_QTE.md",
+        "?? godot_native/docs/LIANGZHU_PHOTO_RESEARCH_20261021.json",
+        "?? godot_native/docs/LIANGZHU_QTE_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/LIANGZHU_SCENE_ADAPTATION_20261021.json",
+        "?? godot_native/docs/LIANGZHU_STAGE_SPACE_PLAN_20261021.json",
+        "?? godot_native/docs/LIBRARY_THEATER_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/LIBRARY_THEATER_ART_PROMPTS_20261020.json",
+        "?? godot_native/docs/LIBRARY_THEATER_DIRECT_TOUCH_20261021.md",
+        "?? godot_native/docs/MORNING_NOTE_ACCEPTANCE_20261023.json",
+        "?? godot_native/docs/MORNING_NOTE_FONT_LIBRARY.md",
+        "?? godot_native/docs/MORNING_NOTE_LATIN_ACCEPTANCE_20261023.json",
+        "?? godot_native/docs/OPENING_FRONTEND_BRIEF_20261021.txt",
+        "?? godot_native/docs/OPENING_PRESENTATION_STATUS_20261021.json",
+        "?? godot_native/docs/OPENING_WEB_DESIGN_20261021.json",
+        "?? godot_native/docs/PANORAMA_TILING_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/PHONE_C35_REDESIGN_20261023.json",
+        "?? godot_native/docs/PHONE_C35_REDESIGN_20261023.md",
+        "?? godot_native/docs/PHONE_CLUE_DISCOVERABILITY_20261021.json",
+        "?? godot_native/docs/PHONE_FONT_CLARITY_20261021.json",
+        "?? godot_native/docs/PHONE_LEGIBILITY_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/PR160_LOCAL_ADAPTATION_20261022.json",
+        "?? godot_native/docs/PROLOGUE_40S_DESIGN_20261022.md",
+        "?? godot_native/docs/PROLOGUE_CHARACTER_FLOW_20261022.json",
+        "?? godot_native/docs/PROLOGUE_CLEAN_FLOW_20261022.json",
+        "?? godot_native/docs/PROLOGUE_DENSE_FLOW_20261022.json",
+        "?? godot_native/docs/PROLOGUE_FAST_FLOW_20261022.json",
+        "?? godot_native/docs/PROLOGUE_FLOW_TRANSITIONS_20261022.json",
+        "?? godot_native/docs/PROLOGUE_FORTY_SECOND_FLOW_20261022.json",
+        "?? godot_native/docs/PROLOGUE_TERMINAL_DENSE_20261022.json",
+        "?? godot_native/docs/SOURCE_TILED_TEXTURE.md",
+        "?? godot_native/docs/THEATER_REHEARSAL_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/THEATER_REHEARSAL_COPY_PROVENANCE_20261020.json",
+        "?? godot_native/docs/THEATER_REHEARSAL_RESEARCH_20261020.json",
+        "?? godot_native/docs/TOUCHABLE_INPUT_RESEARCH_20261020.json",
+        "?? godot_native/docs/TWO_REPOSITORY_MERGES_20261022.json",
+        "?? godot_native/docs/UPSTREAM156_157_INTEGRATION_20261021.json",
+        "?? godot_native/docs/UPSTREAM161_LOCAL_INTEGRATION_20261023.json",
+        "?? godot_native/docs/art/ART_BIBLE.md",
+        "?? godot_native/docs/art/ENDING_RESUME_ART_20261022.json",
+        "?? godot_native/docs/art/PELICAN_RIDER_20261021.json",
+        "?? godot_native/docs/art/RODIN_CAMPUS_ACCEPTANCE_20261021.json",
+        "?? godot_native/docs/art/RODIN_CAMPUS_BATCH_20261021.json",
+        "?? godot_native/docs/art/RODIN_CAMPUS_GENERATION_RECEIPT_20261021.json",
+        "?? godot_native/docs/art/RODIN_DEFERRED_ASSETS_20261021.json",
+        "?? godot_native/docs/art/RODIN_SHOULDER_MULTIVIEW_REVIEW_20261021.json",
+        "?? godot_native/docs/art/RODIN_STUDENT_MULTIVIEW_20261021.json",
+        "?? godot_native/docs/art/RODIN_STUDENT_REVISION_20261021.json",
+        "?? godot_native/docs/art/RODIN_STUDENT_V2_RECEIPT_20261021.json",
+        "?? godot_native/docs/art/RODIN_STUDENT_V2_RIG_20261021.json",
+        "?? godot_native/docs/art/RODIN_STUDENT_V3_RECEIPT_20261021.json",
+        "?? godot_native/docs/art/TOOLS.md",
+        "?? godot_native/docs/art/art_direction_v1.json",
+        "?? godot_native/docs/art/prompts/ending_resume_terminal_20261022.txt",
+        "?? godot_native/docs/art/reference/campus_student_v2_imagegen_prompt.txt",
+        "?? godot_native/docs/art/reference/campus_student_v2_reference.png",
+        "?? godot_native/docs/art/reference/student_v3/back.png",
+        "?? godot_native/docs/art/reference/student_v3/bottom.png",
+        "?? godot_native/docs/art/reference/student_v3/bottom_draft.png",
+        "?? godot_native/docs/art/reference/student_v3/brief.json",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_rig.json",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_rigged.glb",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_rigged_texture_diffuse.png",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_rigged_texture_metallic-texture_roughness.png",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_rigged_texture_normal.png",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_unrigged.glb",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_unrigged_texture_diffuse.png",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_unrigged_texture_metallic-texture_roughness.png",
+        "?? godot_native/docs/art/reference/student_v3/candidate/campus_student_unrigged_texture_normal.png",
+        "?? godot_native/docs/art/reference/student_v3/cycling_back.png",
+        "?? godot_native/docs/art/reference/student_v3/front.png",
+        "?? godot_native/docs/art/reference/student_v3/left.png",
+        "?? godot_native/docs/art/reference/student_v3/prompts.json",
+        "?? godot_native/docs/art/reference/student_v3/right.png",
+        "?? godot_native/docs/art/reference/student_v3/top.png",
+        "?? godot_native/docs/art/reference/student_v3/top_draft.png",
+        "?? godot_native/docs/art/reference/zju_official_emblem.png",
+        "?? godot_native/docs/reference/755-loader-web-20261021.html",
+        "?? godot_native/docs/reference/morning_room_web_prompt_20261021.txt",
+        "?? godot_native/scripts/direct_world_gestures.gd",
+        "?? godot_native/scripts/games/prologue_ascii_field.gdshader",
+        "?? godot_native/scripts/games/prologue_character_flow.gd",
+        "?? godot_native/scripts/games/theater_rehearsal_session.gd",
+        "?? godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "?? godot_native/scripts/games/theater_shadow_rehearsal_model.gd",
+        "?? godot_native/scripts/objects/canteen_receipt_performance.gd",
+        "?? godot_native/scripts/presentation/chase3d/campus_human_rig.gd",
+        "?? godot_native/scripts/presentation/chase3d/campus_mesh_batch.gd",
+        "?? godot_native/scripts/presentation/chase3d/campus_pelican_rig.gd",
+        "?? godot_native/scripts/presentation/chase3d/campus_rider_actions.gd",
+        "?? godot_native/scripts/presentation/chase3d/campus_student_back_print.gd",
+        "?? godot_native/scripts/presentation/chase3d/fine_pixel.gdshader",
+        "?? godot_native/scripts/presentation/chase3d/fine_pixel_style.gd",
+        "?? godot_native/scripts/presentation/chase3d/pelican_feather.gdshader",
+        "?? godot_native/scripts/presentation/chase3d/pelican_transform.gd",
+        "?? godot_native/scripts/presentation/chase3d/zijingang_campus_environment.gd",
+        "?? godot_native/scripts/presentation/liangzhu_actor_rig.gd",
+        "?? godot_native/scripts/presentation/liangzhu_performance.gd",
+        "?? godot_native/scripts/presentation/liangzhu_performance_model.gd",
+        "?? godot_native/scripts/presentation/liangzhu_stage_plate.gd",
+        "?? godot_native/scripts/presentation/library_entrance_door.gd",
+        "?? godot_native/scripts/presentation/qizhen_locker_object.gd",
+        "?? godot_native/scripts/presentation/source_tiled_texture.gd",
+        "?? godot_native/scripts/presentation/source_tiled_view.gd",
+        "?? godot_native/scripts/presentation/theater_departure.gd",
+        "?? godot_native/scripts/presentation/theater_object_rebuild.gd",
+        "?? godot_native/scripts/target_approach.gd",
+        "?? godot_native/scripts/ui/library_object_rebuild.gd",
+        "?? godot_native/scripts/ui/library_printer_object.gd",
+        "?? godot_native/scripts/ui/native_settings_gear.gd",
+        "?? godot_native/scripts/ui/phone_app_frame.gd",
+        "?? godot_native/scripts/ui/phone_palette.gd",
+        "?? godot_native/scripts/ui/theater_typography.gd",
+        "?? godot_native/tests/capture_qizhen_locker_object.gd",
+        "?? godot_native/tests/capture_qizhen_locker_world.gd",
+        "?? godot_native/tests/helpers/theater_rehearsal_proof.gd",
+        "?? godot_native/tests/inspect_action_bicycle.gd",
+        "?? godot_native/tests/inspect_rider_seat.gd",
+        "?? godot_native/tests/inspect_transition_fit.gd",
+        "?? godot_native/tests/inspect_transition_gait.gd",
+        "?? godot_native/tests/library_continuity_recorder.gd",
+        "?? godot_native/tests/preview_rebuilt_rider_transition.gd",
+        "?? godot_native/tests/preview_rider_silhouette.gd",
+        "?? godot_native/tests/preview_studio_rider.gd",
+        "?? godot_native/tests/preview_zijingang_ride.gd",
+        "?? godot_native/tests/render_scaled_font_probe.gd",
+        "?? godot_native/tests/render_source_tiled_texture.gd",
+        "?? godot_native/tests/test_c35_app_frame.gd",
+        "?? godot_native/tests/test_campus_human_contacts.gd",
+        "?? godot_native/tests/test_campus_pelican_actions.gd",
+        "?? godot_native/tests/test_campus_pelican_contacts.gd",
+        "?? godot_native/tests/test_campus_rider_action_chain.gd",
+        "?? godot_native/tests/test_campus_transition_smoothing.gd",
+        "?? godot_native/tests/test_canteen_receipt_performance.gd",
+        "?? godot_native/tests/test_direct_dorm_first_move.gd",
+        "?? godot_native/tests/test_direct_library_entry_main.gd",
+        "?? godot_native/tests/test_direct_world_gestures.gd",
+        "?? godot_native/tests/test_direct_world_input.gd",
+        "?? godot_native/tests/test_interior_door_collision.gd",
+        "?? godot_native/tests/test_liangzhu_actor_rig.gd",
+        "?? godot_native/tests/test_liangzhu_performance.gd",
+        "?? godot_native/tests/test_liangzhu_performance_model.gd",
+        "?? godot_native/tests/test_liangzhu_performance_qte.gd",
+        "?? godot_native/tests/test_liangzhu_performance_qte_view.gd",
+        "?? godot_native/tests/test_library_object_rebuild.gd",
+        "?? godot_native/tests/test_library_printer_object.gd",
+        "?? godot_native/tests/test_phone_clue_discoverability.gd",
+        "?? godot_native/tests/test_prologue_character_flow.gd",
+        "?? godot_native/tests/test_prologue_pacing.gd",
+        "?? godot_native/tests/test_qizhen_locker_object.gd",
+        "?? godot_native/tests/test_scale_aware_text.gd",
+        "?? godot_native/tests/test_source_tiled_main.gd",
+        "?? godot_native/tests/test_source_tiled_texture.gd",
+        "?? godot_native/tests/test_theater_departure.gd",
+        "?? godot_native/tests/test_theater_departure_main.gd",
+        "?? godot_native/tests/test_theater_object_rebuild.gd",
+        "?? godot_native/tests/test_theater_rehearsal_controller.gd",
+        "?? godot_native/tests/test_theater_rehearsal_main.gd",
+        "?? godot_native/tests/test_theater_rehearsal_model.gd",
+        "?? godot_native/tests/test_theater_rehearsal_performance.gd",
+        "?? godot_native/tests/test_theater_rehearsal_ui.gd",
+        "?? godot_native/tests/test_theater_rehearsal_world_geometry.gd",
+        "?? godot_native/tests/test_tiled_world_background.gd",
+        "?? godot_native/tests/test_wechat_reference_ui.gd",
+        "?? godot_native/tools/__pycache__/build_morning_note_font.cpython-312.pyc",
+        "?? godot_native/tools/art_tools.lock.json",
+        "?? godot_native/tools/audit_pixel_art.mjs",
+        "?? godot_native/tools/build_morning_note_font.py",
+        "?? godot_native/tools/build_panorama_tiles.mjs",
+        "?? godot_native/tools/build_prologue_ascii_masks.py",
+        "?? godot_native/tools/build_rider_palette.mjs",
+        "?? godot_native/tools/capture_liangzhu_performance.gd",
+        "?? godot_native/tools/capture_liangzhu_performance.mjs",
+        "?? godot_native/tools/export_student_walk.mjs",
+        "?? godot_native/tools/prepare_ending_resume_art.py",
+        "?? godot_native/tools/prepare_liangzhu_actors.mjs",
+        "?? godot_native/tools/prepare_liangzhu_furniture.mjs",
+        "?? godot_native/tools/prepare_liangzhu_stage.mjs",
+        "?? godot_native/tools/prepare_rodin_campus.py",
+        "?? godot_native/tools/rodin_asset_batch.py",
+        "?? godot_native/tools/rodin_bridge_compatibility.patch",
+        "?? godot_native/tools/test_audit_pixel_art.mjs",
+        "?? godot_native/tools/test_boot_intro.mjs",
+        "?? godot_native/tools/test_scene_orientation.mjs",
+        "?? godot_native/tools/test_web_boot_typography.mjs",
+        "?? godot_native/tools/web_boot_typography.mjs",
+        "?? godot_native/ui_assets/fonts/MORNING_NOTE_OFL.txt",
+        "?? godot_native/ui_assets/fonts/MorningNote-Medium.ttf",
+        "?? godot_native/ui_assets/fonts/MorningNote-Regular.ttf",
+        "?? godot_native/ui_assets/fonts/morning_note_manifest.json",
+        "?? godot_native/web/boot_art/.gdignore",
+        "?? godot_native/web/boot_art/morning_room.webp",
+        "?? godot_native/web/boot_intro.js",
+        "?? godot_native/web/scene_orientation.js"
+      ],
+      "sourceInputSha256": "6e205603743b42d912e72898b49b865e0911ab5b1162601942ce863a3fce55b5",
+      "sourceInputCount": 1432,
+      "excludedSourceFiles": 341,
+      "excludedSourceBytes": 313941434,
+      "delivery": "chapter-content-packs",
+      "totalPayloadBytes": 631665000,
+      "logicalPayloadBytes": 536210505,
+      "initialPayloadBytes": 96025646,
+      "limits": {
+        "siteBytes": 950000000,
+        "packBytes": 800000000,
+        "wasmBytes": 70000000,
+        "deferredPackBytes": 24000000
+      },
+      "files": [
+        {
+          "path": "boot/index-pck-0001-7c9e1f841dc01f07.bin",
+          "bytes": 1048576,
+          "sha256": "7c9e1f841dc01f07aa64699637b3a4f7ebb85edf4a4f6c69d66e1370b9a1b19f"
+        },
+        {
+          "path": "boot/index-pck-0002-7a248df838d3e8cf.bin",
+          "bytes": 1048576,
+          "sha256": "7a248df838d3e8cf10887c63d768cdc8e560ea57798941ae42c97f12115d9250"
+        },
+        {
+          "path": "boot/index-pck-0003-7bd733851b0c6db9.bin",
+          "bytes": 1048576,
+          "sha256": "7bd733851b0c6db9fbe625d8a585d8bd73afa1ec5683c4c96f0402fecb287e4c"
+        },
+        {
+          "path": "boot/index-pck-0004-8a171c96987245c4.bin",
+          "bytes": 1048576,
+          "sha256": "8a171c96987245c417e7495ba5618084ba48035805cb17ac59205ca3cf7010fe"
+        },
+        {
+          "path": "boot/index-pck-0005-b4ca137eb2eccdee.bin",
+          "bytes": 1048576,
+          "sha256": "b4ca137eb2eccdee1f18d171b408bf216c5b42ae9619fabebe84a818d2971d2c"
+        },
+        {
+          "path": "boot/index-pck-0006-7a90dd0888489739.bin",
+          "bytes": 1048576,
+          "sha256": "7a90dd08884897399963d41f876fda2daee6eb4ee3cb658e1ae657a063e704a2"
+        },
+        {
+          "path": "boot/index-pck-0007-1cc78a73bcb5b860.bin",
+          "bytes": 1048576,
+          "sha256": "1cc78a73bcb5b8608df0cf79d95327d0788a99cb7d80615d210706dffdcbda0d"
+        },
+        {
+          "path": "boot/index-pck-0008-8e1e1e8ce79de02a.bin",
+          "bytes": 1048576,
+          "sha256": "8e1e1e8ce79de02a8f4e5411fd28f90c7867f7a7ce78b4bbcef814e55b2bb976"
+        },
+        {
+          "path": "boot/index-pck-0009-b06292b1ae4b5bb9.bin",
+          "bytes": 1048576,
+          "sha256": "b06292b1ae4b5bb907dd76096abfbea267c54fea4d3e50cced1c7bb1b225bf07"
+        },
+        {
+          "path": "boot/index-pck-0010-e5355f2e14bae4d6.bin",
+          "bytes": 1048576,
+          "sha256": "e5355f2e14bae4d6dfdd37f0834c8d7a36b34f3f78dffa51b49dcb3a0de87456"
+        },
+        {
+          "path": "boot/index-pck-0011-9e972247b49cd062.bin",
+          "bytes": 1048576,
+          "sha256": "9e972247b49cd062dea8bbe4767da40d5783baaa0069c806e803e5e48e679366"
+        },
+        {
+          "path": "boot/index-pck-0012-f474af5a8650a1d5.bin",
+          "bytes": 1048576,
+          "sha256": "f474af5a8650a1d5b319310f2c65e5558433fbeba546dc2ead4f2b718fb4b2d4"
+        },
+        {
+          "path": "boot/index-pck-0013-f5a0d487ebc87a24.bin",
+          "bytes": 1048576,
+          "sha256": "f5a0d487ebc87a24d845f9de473f011f5df6a1556b1d503a59698c0cdc26538f"
+        },
+        {
+          "path": "boot/index-pck-0014-47e563264bd5619c.bin",
+          "bytes": 1048576,
+          "sha256": "47e563264bd5619c7d050343fbac8ae835af80991f6644d8a1eadce4740de6bd"
+        },
+        {
+          "path": "boot/index-pck-0015-7df15e580ba9d19d.bin",
+          "bytes": 1048576,
+          "sha256": "7df15e580ba9d19d24775d1abf6bd7498375cc09e31d07c3d667111158836e30"
+        },
+        {
+          "path": "boot/index-pck-0016-bac919e1165ad785.bin",
+          "bytes": 1048576,
+          "sha256": "bac919e1165ad785510c900633495cab0667f359d47af6766c0a1ca6cfed9bb0"
+        },
+        {
+          "path": "boot/index-pck-0017-ac58ed62c70caa2a.bin",
+          "bytes": 1048576,
+          "sha256": "ac58ed62c70caa2a2ca724933506e789471ab74272ec6666aae28773bfccc21a"
+        },
+        {
+          "path": "boot/index-pck-0018-531ce26c727ee88a.bin",
+          "bytes": 1048576,
+          "sha256": "531ce26c727ee88ae14de6ea2c8be939cac136b4aa134124f677354be0c8029c"
+        },
+        {
+          "path": "boot/index-pck-0019-aafb2cc878150052.bin",
+          "bytes": 1048576,
+          "sha256": "aafb2cc878150052b17c1dcc53a66978b41b85b819d8510eca298ba961fbc183"
+        },
+        {
+          "path": "boot/index-pck-0020-1160cb6afddc95e4.bin",
+          "bytes": 1048576,
+          "sha256": "1160cb6afddc95e43567b2d0bbd69ab056ae5526f8ad15a9e4bc13442d9b3dad"
+        },
+        {
+          "path": "boot/index-pck-0021-5be32a0c5d4f2a62.bin",
+          "bytes": 1048576,
+          "sha256": "5be32a0c5d4f2a62c64e27aac6fece44464ad23fc2a519aa4275bd4a0c6b845d"
+        },
+        {
+          "path": "boot/index-pck-0022-99b0a27510d01357.bin",
+          "bytes": 1048576,
+          "sha256": "99b0a27510d013570a6ef0fa3dd66da98e3d50864c639690efd668af865ce468"
+        },
+        {
+          "path": "boot/index-pck-0023-2d86e23f9a7a2211.bin",
+          "bytes": 1048576,
+          "sha256": "2d86e23f9a7a2211d94ace69560488c1ae52a61dc39e2655c02c5dcdbe8cdcf3"
+        },
+        {
+          "path": "boot/index-pck-0024-f40a83bdda9fbe4e.bin",
+          "bytes": 1048576,
+          "sha256": "f40a83bdda9fbe4ed67ab1703519dfb233902df91bcf1d3eed9ff979c2d80e20"
+        },
+        {
+          "path": "boot/index-pck-0025-6780d87c9650d58c.bin",
+          "bytes": 1048576,
+          "sha256": "6780d87c9650d58c71e64c3664967a891e7aa18ebe7853d9751d2ca2a3c17799"
+        },
+        {
+          "path": "boot/index-pck-0026-91ecb322baac987a.bin",
+          "bytes": 1048576,
+          "sha256": "91ecb322baac987ae722639206a4412a83a97ecec26b85f4a606f2b272a625bb"
+        },
+        {
+          "path": "boot/index-pck-0027-30476ea334858ea6.bin",
+          "bytes": 1048576,
+          "sha256": "30476ea334858ea698f47010a44876238a6304c168bc46ca24e9dbbf979c720a"
+        },
+        {
+          "path": "boot/index-pck-0028-2ebe507270d38c4c.bin",
+          "bytes": 1048576,
+          "sha256": "2ebe507270d38c4c6cab3e6eae92f7f2e38e76c2c9c2f031860a3b468f2a7dfa"
+        },
+        {
+          "path": "boot/index-pck-0029-2843e49f0acf76a2.bin",
+          "bytes": 1048576,
+          "sha256": "2843e49f0acf76a2a0c2ef4d199771204fdbf5767af4361c392b8baa531faba9"
+        },
+        {
+          "path": "boot/index-pck-0030-b175f1bd18f6a598.bin",
+          "bytes": 1048576,
+          "sha256": "b175f1bd18f6a598df4acabb93bc835c12235563e782791b67a7bc583a0d5952"
+        },
+        {
+          "path": "boot/index-pck-0031-eb6c7ab11228d14e.bin",
+          "bytes": 1048576,
+          "sha256": "eb6c7ab11228d14e25414ade800fca5fcb2dbc8ab6a81d14db4f433a133d9fcc"
+        },
+        {
+          "path": "boot/index-pck-0032-aee9a835183e3387.bin",
+          "bytes": 1048576,
+          "sha256": "aee9a835183e33871795a67f0bfad4fb7be643f534997f53d59afc8820fe0d1d"
+        },
+        {
+          "path": "boot/index-pck-0033-0a35159f82079af9.bin",
+          "bytes": 1048576,
+          "sha256": "0a35159f82079af9fc39a2c7157b4cd952fcd44404ef9acc7f0156387f789d05"
+        },
+        {
+          "path": "boot/index-pck-0034-b51d8912559ea158.bin",
+          "bytes": 1048576,
+          "sha256": "b51d8912559ea158f30e5fe730f12fcc3d12ce7ca5929c2b932c7d54ff4d6817"
+        },
+        {
+          "path": "boot/index-pck-0035-1c996d8fb798b93f.bin",
+          "bytes": 1048576,
+          "sha256": "1c996d8fb798b93fbcb3da69e2a0aa09be3344a62c212b5f629331ea42fbb3e9"
+        },
+        {
+          "path": "boot/index-pck-0036-c919d1d7f9b423fa.bin",
+          "bytes": 1048576,
+          "sha256": "c919d1d7f9b423fad55245737cc4b9c2021af777de217e06628b18828ffc098a"
+        },
+        {
+          "path": "boot/index-pck-0037-cc5c739408c6b7df.bin",
+          "bytes": 1048576,
+          "sha256": "cc5c739408c6b7df5a696b3ec5eb60bad245207ad6155d9e89a9c0a43e9a3e41"
+        },
+        {
+          "path": "boot/index-pck-0038-432829ab4a831b70.bin",
+          "bytes": 1048576,
+          "sha256": "432829ab4a831b70c50f12b9efe3b7eec87f0e4717febc3106a12867162de4db"
+        },
+        {
+          "path": "boot/index-pck-0039-a9a1ab1af1abe611.bin",
+          "bytes": 1048576,
+          "sha256": "a9a1ab1af1abe611e19743d3d931fb66eb13f3c5ca193c203d66d30545ae8fb7"
+        },
+        {
+          "path": "boot/index-pck-0040-c4df0a33b052d647.bin",
+          "bytes": 1048576,
+          "sha256": "c4df0a33b052d6472685db6458ff2e963d0656dfd4cee7018f7c1992f6b65070"
+        },
+        {
+          "path": "boot/index-pck-0041-b7104f96656ef964.bin",
+          "bytes": 1048576,
+          "sha256": "b7104f96656ef964ca332266c92c30fa434ba6c1f349bd2bbca322c157c432b0"
+        },
+        {
+          "path": "boot/index-pck-0042-83dec27141791157.bin",
+          "bytes": 1048576,
+          "sha256": "83dec2714179115741857a1e1e27c9d721677641e192e4897a77fd8d96a216ed"
+        },
+        {
+          "path": "boot/index-pck-0043-32bc3ed8f2452e21.bin",
+          "bytes": 1048576,
+          "sha256": "32bc3ed8f2452e21d5350549ba8fe6962d17cf97c760209e97496dcdfa27cca6"
+        },
+        {
+          "path": "boot/index-pck-0044-cd915ac80e3a631c.bin",
+          "bytes": 1048576,
+          "sha256": "cd915ac80e3a631cf31abb988816d9d014701aaee3194028e0904a24b1a093d8"
+        },
+        {
+          "path": "boot/index-pck-0045-847f559e746447d0.bin",
+          "bytes": 1048576,
+          "sha256": "847f559e746447d0845564136730af35fe6d756e0fa4b905ef7ef94b1d9f8686"
+        },
+        {
+          "path": "boot/index-pck-0046-daa9110e8b15e582.bin",
+          "bytes": 1048576,
+          "sha256": "daa9110e8b15e582344ee1dcc93ac8f9238e92b93f7b703bc54b1fc896dd7ee3"
+        },
+        {
+          "path": "boot/index-pck-0047-21b0ff752fd694b0.bin",
+          "bytes": 1048576,
+          "sha256": "21b0ff752fd694b0152842d0be8abf82547072dbf1bd81025dfbef9b29a361e5"
+        },
+        {
+          "path": "boot/index-pck-0048-cb88a39532c202c6.bin",
+          "bytes": 1048576,
+          "sha256": "cb88a39532c202c6f49763965cecef2a3cefa6e36443d2b6bc2bfb26c127a877"
+        },
+        {
+          "path": "boot/index-pck-0049-12d125741249fce6.bin",
+          "bytes": 1048576,
+          "sha256": "12d125741249fce6f020891a559b80697725f4ae572917407843c6797602bb27"
+        },
+        {
+          "path": "boot/index-pck-0050-4a92e21c4108eb54.bin",
+          "bytes": 1048576,
+          "sha256": "4a92e21c4108eb54a8d57ad6aa17f0c254fa983dab4867ba3dc33757f4888082"
+        },
+        {
+          "path": "boot/index-pck-0051-ccfbfc3cad67c569.bin",
+          "bytes": 1048576,
+          "sha256": "ccfbfc3cad67c5699bec96fc23912c2629fd904dfab3482aaa4034b53a5e38a8"
+        },
+        {
+          "path": "boot/index-pck-0052-c98e71929bc9a61b.bin",
+          "bytes": 1048576,
+          "sha256": "c98e71929bc9a61b401124553482c8e504913cd6ffbbdf6abe25c3197f1aaca1"
+        },
+        {
+          "path": "boot/index-pck-0053-ecf1202659fa591b.bin",
+          "bytes": 1048576,
+          "sha256": "ecf1202659fa591b13808817f316b862c4fdde4fae168ebcc4fbee2121645840"
+        },
+        {
+          "path": "boot/index-pck-0054-9a6e12fde439bf15.bin",
+          "bytes": 366876,
+          "sha256": "9a6e12fde439bf15eeeb551b65732a079489b2f69ce4387b3e630d1ab3e90e50"
+        },
+        {
+          "path": "boot/index-wasm-0001-a0e0378369843d93.bin",
+          "bytes": 1048576,
+          "sha256": "a0e0378369843d9315138eade4243a2a43ed61e1e6ea59cc30e8bf1fd243503f"
+        },
+        {
+          "path": "boot/index-wasm-0002-94d42b81fec2f0fb.bin",
+          "bytes": 1048576,
+          "sha256": "94d42b81fec2f0fbcbdd8a5d582f1479f6327ed687240b3cfbfb7ac331b7cc38"
+        },
+        {
+          "path": "boot/index-wasm-0003-7278f68041cbc1f2.bin",
+          "bytes": 1048576,
+          "sha256": "7278f68041cbc1f218db4de990d2d85284298b727822956c20b49ba7f30928a7"
+        },
+        {
+          "path": "boot/index-wasm-0004-7c726906df227b5e.bin",
+          "bytes": 1048576,
+          "sha256": "7c726906df227b5e7c7a4cd9ab9b3d80c00f4d83e1682f7cf59bcdf6341c341f"
+        },
+        {
+          "path": "boot/index-wasm-0005-e85de6e248c4ff01.bin",
+          "bytes": 1048576,
+          "sha256": "e85de6e248c4ff01ef0c3fb642484f76f1a3ad658fab6246bacabac612c2a69b"
+        },
+        {
+          "path": "boot/index-wasm-0006-5c1d8cdd919a9ebb.bin",
+          "bytes": 1048576,
+          "sha256": "5c1d8cdd919a9ebb73e34d0fa6b63377457ebbf18bc97420c2c9e3698188ff3c"
+        },
+        {
+          "path": "boot/index-wasm-0007-a2002afc5ee98cd7.bin",
+          "bytes": 1048576,
+          "sha256": "a2002afc5ee98cd7f70fea4a5e4687a00a1fbd8c766b1b990816036b3ed4f81e"
+        },
+        {
+          "path": "boot/index-wasm-0008-dcb47717a9385b4b.bin",
+          "bytes": 1048576,
+          "sha256": "dcb47717a9385b4b7c6581a49be081682dddf6ed3226ec6b9022a1abc38bdd3a"
+        },
+        {
+          "path": "boot/index-wasm-0009-cd64bd5aa36025cc.bin",
+          "bytes": 1048576,
+          "sha256": "cd64bd5aa36025cc1f46fd29d0327ad3e0dfcc2c42b6512dea919313273baf5d"
+        },
+        {
+          "path": "boot/index-wasm-0010-f521fd13bde58ef8.bin",
+          "bytes": 1048576,
+          "sha256": "f521fd13bde58ef82c574336e3c06c5fa9ccab541346d975effedeb5779e6057"
+        },
+        {
+          "path": "boot/index-wasm-0011-ec4420d554044a5c.bin",
+          "bytes": 1048576,
+          "sha256": "ec4420d554044a5c1700ce1c876a41c8404fe813ae0250cd242845c319edf0b1"
+        },
+        {
+          "path": "boot/index-wasm-0012-dae7e546eb24fb7a.bin",
+          "bytes": 1048576,
+          "sha256": "dae7e546eb24fb7a14ad418a71a1e6cba79312692d923281322de41e521b7a0e"
+        },
+        {
+          "path": "boot/index-wasm-0013-b2e1f91aa3835317.bin",
+          "bytes": 1048576,
+          "sha256": "b2e1f91aa3835317e09d115888de1699a42bc17eb4cdef9aacc0643be5656e8b"
+        },
+        {
+          "path": "boot/index-wasm-0014-98c67df5bd0673bc.bin",
+          "bytes": 1048576,
+          "sha256": "98c67df5bd0673bc85c7f570c63f9177cb2a5e3b7efafe805559940a086e0ecb"
+        },
+        {
+          "path": "boot/index-wasm-0015-2da3d87128da0b25.bin",
+          "bytes": 1048576,
+          "sha256": "2da3d87128da0b2505ffe604c6be8d7707e167e72a611819592466ed5fb3613c"
+        },
+        {
+          "path": "boot/index-wasm-0016-5958e2a084e5b6f1.bin",
+          "bytes": 1048576,
+          "sha256": "5958e2a084e5b6f13bd445cc0f6917e7ca4f4b28cc653d3f1d2fae9bb67b8829"
+        },
+        {
+          "path": "boot/index-wasm-0017-743bc733f6df383e.bin",
+          "bytes": 1048576,
+          "sha256": "743bc733f6df383e15593cc8dc7ac49c5c6c7e518de222a98e84b04dc28db765"
+        },
+        {
+          "path": "boot/index-wasm-0018-dfd960db626a6345.bin",
+          "bytes": 1048576,
+          "sha256": "dfd960db626a634548c6206faf0883a0c81c8981bdfc7efb3b956864d6366685"
+        },
+        {
+          "path": "boot/index-wasm-0019-7c936f655849ebb0.bin",
+          "bytes": 1048576,
+          "sha256": "7c936f655849ebb00bdfc6dd8c48ef9568d2aa86e5efc9b2d5cea8bbbbb7bb42"
+        },
+        {
+          "path": "boot/index-wasm-0020-873cab47a7b90eea.bin",
+          "bytes": 1048576,
+          "sha256": "873cab47a7b90eead5148f213edd7bd3c0016bf95f88f58b38635e7b7d001588"
+        },
+        {
+          "path": "boot/index-wasm-0021-604c0339dc662900.bin",
+          "bytes": 1048576,
+          "sha256": "604c0339dc6629004eb152d6c456345535aa80f866e230e5bfd16712887d86e8"
+        },
+        {
+          "path": "boot/index-wasm-0022-e2f08e9094f31118.bin",
+          "bytes": 1048576,
+          "sha256": "e2f08e9094f31118081a5cfc7827e4baf59f135a5e75b50340d69e4aabcd2aca"
+        },
+        {
+          "path": "boot/index-wasm-0023-1bea43a75bf9baf3.bin",
+          "bytes": 1048576,
+          "sha256": "1bea43a75bf9baf37a9669dd8b5bf871b8a882f455f79ee67823936a77c01302"
+        },
+        {
+          "path": "boot/index-wasm-0024-72e72c414682b8bb.bin",
+          "bytes": 1048576,
+          "sha256": "72e72c414682b8bb82ca816dd10cc34a6a08704e970ac5a73c0475d61bb3752b"
+        },
+        {
+          "path": "boot/index-wasm-0025-1fbcd2925c566894.bin",
+          "bytes": 1048576,
+          "sha256": "1fbcd2925c5668943676a6e4677da959cc09e4b8daf08635e32d106755514e41"
+        },
+        {
+          "path": "boot/index-wasm-0026-8ed14dc0f0848a2f.bin",
+          "bytes": 1048576,
+          "sha256": "8ed14dc0f0848a2f9af4c1af989fd32c5ef001c45d7510e760f5bd184ec70d8c"
+        },
+        {
+          "path": "boot/index-wasm-0027-e94715b7f3496a1c.bin",
+          "bytes": 1048576,
+          "sha256": "e94715b7f3496a1cf18d94f5c8a0109a8433d5e94baba5b220cac41235b181ae"
+        },
+        {
+          "path": "boot/index-wasm-0028-0de718de63852ca5.bin",
+          "bytes": 1048576,
+          "sha256": "0de718de63852ca5861ff1baaf26447270f299b2ff66864fea15132e8261e196"
+        },
+        {
+          "path": "boot/index-wasm-0029-0485b50624c0c120.bin",
+          "bytes": 1048576,
+          "sha256": "0485b50624c0c120d8de45d9fae36609b416023d4429c28f68e51d6fabb5667f"
+        },
+        {
+          "path": "boot/index-wasm-0030-05e9b847957f573a.bin",
+          "bytes": 1048576,
+          "sha256": "05e9b847957f573acd227ded1292ecc8a812a23f9b9f28face281e0a7bca4af4"
+        },
+        {
+          "path": "boot/index-wasm-0031-8cf73b8ea6ef8756.bin",
+          "bytes": 1048576,
+          "sha256": "8cf73b8ea6ef87568a28a28ac39e11ddc43e12bf5b347cf4139fe193c8933d25"
+        },
+        {
+          "path": "boot/index-wasm-0032-26da05d430840dbc.bin",
+          "bytes": 1048576,
+          "sha256": "26da05d430840dbc16fc1789ac2c0607a4b868671af866cb4dba9a7bdd8a700c"
+        },
+        {
+          "path": "boot/index-wasm-0033-37ea57bf18afa67d.bin",
+          "bytes": 1048576,
+          "sha256": "37ea57bf18afa67dc3da452bdaa1ba3a0958f7ec832bc8816c0bae5a352bd954"
+        },
+        {
+          "path": "boot/index-wasm-0034-fb49dc51884f1a7f.bin",
+          "bytes": 1048576,
+          "sha256": "fb49dc51884f1a7f113bbfd5bb06a1e16386e91faa1d089a4b7305e39cdc8dbc"
+        },
+        {
+          "path": "boot/index-wasm-0035-51ffeaa6beb65457.bin",
+          "bytes": 1048576,
+          "sha256": "51ffeaa6beb65457d5d4915eab1fbaaf8650c1af08c205cdda83240691e42f1e"
+        },
+        {
+          "path": "boot/index-wasm-0036-b2aa72cd27ec05c3.bin",
+          "bytes": 1048576,
+          "sha256": "b2aa72cd27ec05c3494c67fb144e8b7e34d1d6e81d8f63a4c77cb7e0d4bbeee2"
+        },
+        {
+          "path": "boot/index-wasm-0037-649a46191fbad5ce.bin",
+          "bytes": 1048576,
+          "sha256": "649a46191fbad5cea58ca00d856f3815a3152dc0a1d195c9d3abb9993e4c7dc4"
+        },
+        {
+          "path": "boot/index-wasm-0038-48b7a0e3a6175d90.bin",
+          "bytes": 715779,
+          "sha256": "48b7a0e3a6175d900fc3ac0e5acf21a1db953728f2f79a0aba48b22aabc30372"
+        },
+        {
+          "path": "boot-art/morning_room.fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa.webp",
+          "bytes": 7004,
+          "sha256": "fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa"
+        },
+        {
+          "path": "boot-fonts/FUSION_PIXEL_FONT_OFL.txt",
+          "bytes": 4394,
+          "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+        },
+        {
+          "path": "boot-fonts/MORNING_NOTE_OFL.txt",
+          "bytes": 4643,
+          "sha256": "7a72a3d9fbb53f76f1dbdab821575cebb1154df2af6ba62febaeb4e7eeabf64e"
+        },
+        {
+          "path": "boot-fonts/MorningNote-Medium.6b8d62e155c58b37831c08c54fbb841b3c80187249b2f9e97ca8d1e9300d0510.woff2",
+          "bytes": 88428,
+          "sha256": "6b8d62e155c58b37831c08c54fbb841b3c80187249b2f9e97ca8d1e9300d0510"
+        },
+        {
+          "path": "boot-fonts/MorningNote-Regular.25869fa273fb0667b29288c98908b2bf3197769717e977750f43404e88c21a49.woff2",
+          "bytes": 88264,
+          "sha256": "25869fa273fb0667b29288c98908b2bf3197769717e977750f43404e88c21a49"
+        },
+        {
+          "path": "boot-fonts/OFL.txt",
+          "bytes": 4223,
+          "sha256": "ebba7ca34c39d68f26adf3b2f991c5b40d22a24bb29b867fa26221635bc68dbc"
+        },
+        {
+          "path": "content/chapter2_001-887802388c002edf.pck",
+          "bytes": 23999312,
+          "sha256": "887802388c002edf8add06e35b5dc0e8ab466c33102b239486a380b59ba6671d"
+        },
+        {
+          "path": "content/chapter2_002-02d6118bd13f9647.pck",
+          "bytes": 23997944,
+          "sha256": "02d6118bd13f964719efa7dbecfe85d94e3fdf81c8dd174fc832c5e01589be9c"
+        },
+        {
+          "path": "content/chapter2_003-e1d08de2b308bec1.pck",
+          "bytes": 23997488,
+          "sha256": "e1d08de2b308bec123b1c625e2b60b5bf9f8855c4ca283dc7f543f30747e0b54"
+        },
+        {
+          "path": "content/chapter2_004-d74ca464ea832b44.pck",
+          "bytes": 23996892,
+          "sha256": "d74ca464ea832b44194ea08126bdcc972321c6b049e86c3358383ac6888696f1"
+        },
+        {
+          "path": "content/chapter2_005-e4a8e9acd40df6c4.pck",
+          "bytes": 1558408,
+          "sha256": "e4a8e9acd40df6c43a1ad8b9edda90c10bc0e947337215745b88ba36a0ff4415"
+        },
+        {
+          "path": "content/chapter3_001-be1988929fa1bcfd.pck",
+          "bytes": 23999224,
+          "sha256": "be1988929fa1bcfdfb687e2fd29a1bfec67a657b665db6b941f4103efec22fbe"
+        },
+        {
+          "path": "content/chapter3_002-6b29b784a835270e.pck",
+          "bytes": 23999112,
+          "sha256": "6b29b784a835270ef43a4bc3f9fd7b187e1966472a0ee5bfd2e7caa32a553f17"
+        },
+        {
+          "path": "content/chapter3_003-ebf695847491eeef.pck",
+          "bytes": 23998684,
+          "sha256": "ebf695847491eeef9c685a839b0f5d402f5f41fdf4c2fc5f92f8f963785312f8"
+        },
+        {
+          "path": "content/chapter3_004-c692e31f797efcae.pck",
+          "bytes": 23998324,
+          "sha256": "c692e31f797efcae4088d558ab80f41c96a5c5f4359e2062fd2f20d6cb4d88e8"
+        },
+        {
+          "path": "content/chapter3_005-603a4c591d98ffb9.pck",
+          "bytes": 23997860,
+          "sha256": "603a4c591d98ffb921cd50a35d3de81d47c11f13f1ae2806a694ae8f7333d54c"
+        },
+        {
+          "path": "content/chapter3_006-1200c2325d26fb6e.pck",
+          "bytes": 23995544,
+          "sha256": "1200c2325d26fb6ed139eb8ebff07ea43b1dbced7d93ef3f4d0383d6a538689c"
+        },
+        {
+          "path": "content/chapter3_007-4596db12be1a9708.pck",
+          "bytes": 9234340,
+          "sha256": "4596db12be1a9708e0e08c0d38c21af558ed31ffef2968a347604527901982ad"
+        },
+        {
+          "path": "content/chapter35_001-3eb71d8c4fbdc36e.pck",
+          "bytes": 23998780,
+          "sha256": "3eb71d8c4fbdc36e2b62338671ebacb3e9200d28a721fa973389d97f6dc0a6cb"
+        },
+        {
+          "path": "content/chapter35_002-0b4c4e491a03d180.pck",
+          "bytes": 23998672,
+          "sha256": "0b4c4e491a03d180d1a53634b7f3fb775217610825cbee4f43e7e8a5803fdded"
+        },
+        {
+          "path": "content/chapter35_003-7fc58671f177c47b.pck",
+          "bytes": 23998472,
+          "sha256": "7fc58671f177c47b5cb7d1c6aa02b21c7f37f13bbd3b9cdb593c4fddf018ad4a"
+        },
+        {
+          "path": "content/chapter35_004-731a01ca6267cefb.pck",
+          "bytes": 5732424,
+          "sha256": "731a01ca6267cefb4039a051b9b3ddfd3e8749166e3d44219babc6647dbc6769"
+        },
+        {
+          "path": "content/chapter4_001-977404dca959de02.pck",
+          "bytes": 23999420,
+          "sha256": "977404dca959de0211d55aa336265a4667e134699e92a3e681966c8b86f5b6b0"
+        },
+        {
+          "path": "content/chapter4_002-281c3a3c99c6fa14.pck",
+          "bytes": 23998704,
+          "sha256": "281c3a3c99c6fa1496a916cff257b31964ecc5c1c2651529432bd2fedaaf48e3"
+        },
+        {
+          "path": "content/chapter4_003-f8c967a2b02cb06b.pck",
+          "bytes": 23998332,
+          "sha256": "f8c967a2b02cb06b36c2916d2021b7f707f3e722e40eb217b7ad20ce8127d9f5"
+        },
+        {
+          "path": "content/chapter4_004-1aa38553e3a9eb91.pck",
+          "bytes": 23998048,
+          "sha256": "1aa38553e3a9eb91f83bdc4c9fdb4ef09f1487e24d5e39e2480c1c45ecff0747"
+        },
+        {
+          "path": "content/chapter4_005-c682a188bcd96fc9.pck",
+          "bytes": 14928216,
+          "sha256": "c682a188bcd96fc90fd01211f92bb46a950c0e818df32d2f310a83ad9dc7f66a"
+        },
+        {
+          "path": "content-inventory.json",
+          "bytes": 760659,
+          "sha256": "e4ddbf1591dffbb8ce299ed5c5952cbf72cc79aa9b309e39720960e069049c8a"
+        },
+        {
+          "path": "content-loader.js",
+          "bytes": 24928,
+          "sha256": "7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d"
+        },
+        {
+          "path": "content-manifest.json",
+          "bytes": 5278,
+          "sha256": "7586ace27bd714ef008e7a3c7a28c1daef69b2bfbafc2e64b02909bcd797cc53"
+        },
+        {
+          "path": "index.audio.position.worklet.js",
+          "bytes": 2973,
+          "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+        },
+        {
+          "path": "index.audio.worklet.js",
+          "bytes": 7298,
+          "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+        },
+        {
+          "path": "index.html",
+          "bytes": 27491,
+          "sha256": "5627f9e147a471a661a4f0caecdbecc0b68645df18371291e1424e89f21a5610"
+        },
+        {
+          "path": "index.js",
+          "bytes": 279836,
+          "sha256": "81c50135df60b91aa2a7fdb8578b51e12e98bb7bc9d2008f75f046c5d3b5d744"
+        },
+        {
+          "path": "index.pck",
+          "bytes": 55941404,
+          "sha256": "764c7df3fb046fafcfb6c11eefbc86064bf369a608beae2286ac9f13a142412b"
+        },
+        {
+          "path": "index.png",
+          "bytes": 21443,
+          "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
+        },
+        {
+          "path": "index.wasm",
+          "bytes": 39513091,
+          "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277"
+        },
+        {
+          "path": "scene-orientation.js",
+          "bytes": 4948,
+          "sha256": "252f23f0aeec5287d679681cba2ee1c9cbaa5e91b5725b73e6b95bb696d79807"
+        }
+      ],
+      "contentLoader": {
+        "file": "content-loader.js",
+        "sha256": "7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d",
+        "url": "content-loader.js?v=7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d"
+      },
+      "orientationPresentation": {
+        "file": "scene-orientation.js",
+        "sha256": "252f23f0aeec5287d679681cba2ee1c9cbaa5e91b5725b73e6b95bb696d79807",
+        "url": "scene-orientation.js?v=252f23f0aeec5287d679681cba2ee1c9cbaa5e91b5725b73e6b95bb696d79807"
+      },
+      "bootIntroPresentation": {
+        "mode": "inline",
+        "source": "web/boot_intro.js",
+        "sha256": "3ec68cb549eb33d40ffd8f7ffaf4af18841448d669b1a16332005f7535035fea",
+        "assets": [
+          {
+            "source": "web/boot_art/morning_room.webp",
+            "file": "boot-art/morning_room.fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa.webp",
+            "url": "boot-art/morning_room.fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa.webp",
+            "bytes": 7004,
+            "sha256": "fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa"
+          }
+        ]
+      },
+      "bootTypography": {
+        "family": "755 Morning Note",
+        "version": "0.1.1",
+        "loading": "font-display:swap; no readiness dependency",
+        "assets": [
+          {
+            "source": "art_source/fonts/morning_note_v1/web/MorningNote-Regular.woff2",
+            "file": "boot-fonts/MorningNote-Regular.25869fa273fb0667b29288c98908b2bf3197769717e977750f43404e88c21a49.woff2",
+            "url": "boot-fonts/MorningNote-Regular.25869fa273fb0667b29288c98908b2bf3197769717e977750f43404e88c21a49.woff2",
+            "weight": 400,
+            "placeholder": "__755_BOOT_FONT_REGULAR__",
+            "bytes": 88264,
+            "sha256": "25869fa273fb0667b29288c98908b2bf3197769717e977750f43404e88c21a49"
+          },
+          {
+            "source": "art_source/fonts/morning_note_v1/web/MorningNote-Medium.woff2",
+            "file": "boot-fonts/MorningNote-Medium.6b8d62e155c58b37831c08c54fbb841b3c80187249b2f9e97ca8d1e9300d0510.woff2",
+            "url": "boot-fonts/MorningNote-Medium.6b8d62e155c58b37831c08c54fbb841b3c80187249b2f9e97ca8d1e9300d0510.woff2",
+            "weight": 500,
+            "placeholder": "__755_BOOT_FONT_MEDIUM__",
+            "bytes": 88428,
+            "sha256": "6b8d62e155c58b37831c08c54fbb841b3c80187249b2f9e97ca8d1e9300d0510"
+          },
+          {
+            "source": "ui_assets/fonts/MORNING_NOTE_OFL.txt",
+            "file": "boot-fonts/MORNING_NOTE_OFL.txt",
+            "bytes": 4643,
+            "sha256": "7a72a3d9fbb53f76f1dbdab821575cebb1154df2af6ba62febaeb4e7eeabf64e"
+          },
+          {
+            "source": "ui_assets/fonts/OFL.txt",
+            "file": "boot-fonts/OFL.txt",
+            "bytes": 4223,
+            "sha256": "ebba7ca34c39d68f26adf3b2f991c5b40d22a24bb29b867fa26221635bc68dbc"
+          },
+          {
+            "source": "assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt",
+            "file": "boot-fonts/FUSION_PIXEL_FONT_OFL.txt",
+            "bytes": 4394,
+            "sha256": "b6d9e59eaeb12c7ec55b4265d8de9f8eb89127170dd03929320b2b5ecb7298cc"
+          }
+        ]
+      },
+      "engineLoader": {
+        "file": "index.js",
+        "sha256": "81c50135df60b91aa2a7fdb8578b51e12e98bb7bc9d2008f75f046c5d3b5d744",
+        "url": "index.js?v=81c50135df60b91aa2a7fdb8578b51e12e98bb7bc9d2008f75f046c5d3b5d744"
+      },
+      "engineAudioCompatibility": {
+        "id": "755-godot-4.7.1-position-worklet-capability-v1",
+        "engine": "4.7.1.stable.official",
+        "file": "index.js",
+        "sourceSha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c",
+        "sha256": "81c50135df60b91aa2a7fdb8578b51e12e98bb7bc9d2008f75f046c5d3b5d744",
+        "replacements": 1,
+        "playback": "Stream",
+        "missingWorkletMixer": "upstream-ScriptProcessor"
+      },
+      "bootChunks": {
+        "schema": "755-boot-chunks-v1",
+        "chunkBytes": 1048576,
+        "resources": {
+          "index.pck": {
+            "file": "index.pck",
+            "bytes": 55941404,
+            "sha256": "764c7df3fb046fafcfb6c11eefbc86064bf369a608beae2286ac9f13a142412b",
+            "chunks": [
+              {
+                "file": "boot/index-pck-0001-7c9e1f841dc01f07.bin",
+                "offset": 0,
+                "bytes": 1048576,
+                "sha256": "7c9e1f841dc01f07aa64699637b3a4f7ebb85edf4a4f6c69d66e1370b9a1b19f"
+              },
+              {
+                "file": "boot/index-pck-0002-7a248df838d3e8cf.bin",
+                "offset": 1048576,
+                "bytes": 1048576,
+                "sha256": "7a248df838d3e8cf10887c63d768cdc8e560ea57798941ae42c97f12115d9250"
+              },
+              {
+                "file": "boot/index-pck-0003-7bd733851b0c6db9.bin",
+                "offset": 2097152,
+                "bytes": 1048576,
+                "sha256": "7bd733851b0c6db9fbe625d8a585d8bd73afa1ec5683c4c96f0402fecb287e4c"
+              },
+              {
+                "file": "boot/index-pck-0004-8a171c96987245c4.bin",
+                "offset": 3145728,
+                "bytes": 1048576,
+                "sha256": "8a171c96987245c417e7495ba5618084ba48035805cb17ac59205ca3cf7010fe"
+              },
+              {
+                "file": "boot/index-pck-0005-b4ca137eb2eccdee.bin",
+                "offset": 4194304,
+                "bytes": 1048576,
+                "sha256": "b4ca137eb2eccdee1f18d171b408bf216c5b42ae9619fabebe84a818d2971d2c"
+              },
+              {
+                "file": "boot/index-pck-0006-7a90dd0888489739.bin",
+                "offset": 5242880,
+                "bytes": 1048576,
+                "sha256": "7a90dd08884897399963d41f876fda2daee6eb4ee3cb658e1ae657a063e704a2"
+              },
+              {
+                "file": "boot/index-pck-0007-1cc78a73bcb5b860.bin",
+                "offset": 6291456,
+                "bytes": 1048576,
+                "sha256": "1cc78a73bcb5b8608df0cf79d95327d0788a99cb7d80615d210706dffdcbda0d"
+              },
+              {
+                "file": "boot/index-pck-0008-8e1e1e8ce79de02a.bin",
+                "offset": 7340032,
+                "bytes": 1048576,
+                "sha256": "8e1e1e8ce79de02a8f4e5411fd28f90c7867f7a7ce78b4bbcef814e55b2bb976"
+              },
+              {
+                "file": "boot/index-pck-0009-b06292b1ae4b5bb9.bin",
+                "offset": 8388608,
+                "bytes": 1048576,
+                "sha256": "b06292b1ae4b5bb907dd76096abfbea267c54fea4d3e50cced1c7bb1b225bf07"
+              },
+              {
+                "file": "boot/index-pck-0010-e5355f2e14bae4d6.bin",
+                "offset": 9437184,
+                "bytes": 1048576,
+                "sha256": "e5355f2e14bae4d6dfdd37f0834c8d7a36b34f3f78dffa51b49dcb3a0de87456"
+              },
+              {
+                "file": "boot/index-pck-0011-9e972247b49cd062.bin",
+                "offset": 10485760,
+                "bytes": 1048576,
+                "sha256": "9e972247b49cd062dea8bbe4767da40d5783baaa0069c806e803e5e48e679366"
+              },
+              {
+                "file": "boot/index-pck-0012-f474af5a8650a1d5.bin",
+                "offset": 11534336,
+                "bytes": 1048576,
+                "sha256": "f474af5a8650a1d5b319310f2c65e5558433fbeba546dc2ead4f2b718fb4b2d4"
+              },
+              {
+                "file": "boot/index-pck-0013-f5a0d487ebc87a24.bin",
+                "offset": 12582912,
+                "bytes": 1048576,
+                "sha256": "f5a0d487ebc87a24d845f9de473f011f5df6a1556b1d503a59698c0cdc26538f"
+              },
+              {
+                "file": "boot/index-pck-0014-47e563264bd5619c.bin",
+                "offset": 13631488,
+                "bytes": 1048576,
+                "sha256": "47e563264bd5619c7d050343fbac8ae835af80991f6644d8a1eadce4740de6bd"
+              },
+              {
+                "file": "boot/index-pck-0015-7df15e580ba9d19d.bin",
+                "offset": 14680064,
+                "bytes": 1048576,
+                "sha256": "7df15e580ba9d19d24775d1abf6bd7498375cc09e31d07c3d667111158836e30"
+              },
+              {
+                "file": "boot/index-pck-0016-bac919e1165ad785.bin",
+                "offset": 15728640,
+                "bytes": 1048576,
+                "sha256": "bac919e1165ad785510c900633495cab0667f359d47af6766c0a1ca6cfed9bb0"
+              },
+              {
+                "file": "boot/index-pck-0017-ac58ed62c70caa2a.bin",
+                "offset": 16777216,
+                "bytes": 1048576,
+                "sha256": "ac58ed62c70caa2a2ca724933506e789471ab74272ec6666aae28773bfccc21a"
+              },
+              {
+                "file": "boot/index-pck-0018-531ce26c727ee88a.bin",
+                "offset": 17825792,
+                "bytes": 1048576,
+                "sha256": "531ce26c727ee88ae14de6ea2c8be939cac136b4aa134124f677354be0c8029c"
+              },
+              {
+                "file": "boot/index-pck-0019-aafb2cc878150052.bin",
+                "offset": 18874368,
+                "bytes": 1048576,
+                "sha256": "aafb2cc878150052b17c1dcc53a66978b41b85b819d8510eca298ba961fbc183"
+              },
+              {
+                "file": "boot/index-pck-0020-1160cb6afddc95e4.bin",
+                "offset": 19922944,
+                "bytes": 1048576,
+                "sha256": "1160cb6afddc95e43567b2d0bbd69ab056ae5526f8ad15a9e4bc13442d9b3dad"
+              },
+              {
+                "file": "boot/index-pck-0021-5be32a0c5d4f2a62.bin",
+                "offset": 20971520,
+                "bytes": 1048576,
+                "sha256": "5be32a0c5d4f2a62c64e27aac6fece44464ad23fc2a519aa4275bd4a0c6b845d"
+              },
+              {
+                "file": "boot/index-pck-0022-99b0a27510d01357.bin",
+                "offset": 22020096,
+                "bytes": 1048576,
+                "sha256": "99b0a27510d013570a6ef0fa3dd66da98e3d50864c639690efd668af865ce468"
+              },
+              {
+                "file": "boot/index-pck-0023-2d86e23f9a7a2211.bin",
+                "offset": 23068672,
+                "bytes": 1048576,
+                "sha256": "2d86e23f9a7a2211d94ace69560488c1ae52a61dc39e2655c02c5dcdbe8cdcf3"
+              },
+              {
+                "file": "boot/index-pck-0024-f40a83bdda9fbe4e.bin",
+                "offset": 24117248,
+                "bytes": 1048576,
+                "sha256": "f40a83bdda9fbe4ed67ab1703519dfb233902df91bcf1d3eed9ff979c2d80e20"
+              },
+              {
+                "file": "boot/index-pck-0025-6780d87c9650d58c.bin",
+                "offset": 25165824,
+                "bytes": 1048576,
+                "sha256": "6780d87c9650d58c71e64c3664967a891e7aa18ebe7853d9751d2ca2a3c17799"
+              },
+              {
+                "file": "boot/index-pck-0026-91ecb322baac987a.bin",
+                "offset": 26214400,
+                "bytes": 1048576,
+                "sha256": "91ecb322baac987ae722639206a4412a83a97ecec26b85f4a606f2b272a625bb"
+              },
+              {
+                "file": "boot/index-pck-0027-30476ea334858ea6.bin",
+                "offset": 27262976,
+                "bytes": 1048576,
+                "sha256": "30476ea334858ea698f47010a44876238a6304c168bc46ca24e9dbbf979c720a"
+              },
+              {
+                "file": "boot/index-pck-0028-2ebe507270d38c4c.bin",
+                "offset": 28311552,
+                "bytes": 1048576,
+                "sha256": "2ebe507270d38c4c6cab3e6eae92f7f2e38e76c2c9c2f031860a3b468f2a7dfa"
+              },
+              {
+                "file": "boot/index-pck-0029-2843e49f0acf76a2.bin",
+                "offset": 29360128,
+                "bytes": 1048576,
+                "sha256": "2843e49f0acf76a2a0c2ef4d199771204fdbf5767af4361c392b8baa531faba9"
+              },
+              {
+                "file": "boot/index-pck-0030-b175f1bd18f6a598.bin",
+                "offset": 30408704,
+                "bytes": 1048576,
+                "sha256": "b175f1bd18f6a598df4acabb93bc835c12235563e782791b67a7bc583a0d5952"
+              },
+              {
+                "file": "boot/index-pck-0031-eb6c7ab11228d14e.bin",
+                "offset": 31457280,
+                "bytes": 1048576,
+                "sha256": "eb6c7ab11228d14e25414ade800fca5fcb2dbc8ab6a81d14db4f433a133d9fcc"
+              },
+              {
+                "file": "boot/index-pck-0032-aee9a835183e3387.bin",
+                "offset": 32505856,
+                "bytes": 1048576,
+                "sha256": "aee9a835183e33871795a67f0bfad4fb7be643f534997f53d59afc8820fe0d1d"
+              },
+              {
+                "file": "boot/index-pck-0033-0a35159f82079af9.bin",
+                "offset": 33554432,
+                "bytes": 1048576,
+                "sha256": "0a35159f82079af9fc39a2c7157b4cd952fcd44404ef9acc7f0156387f789d05"
+              },
+              {
+                "file": "boot/index-pck-0034-b51d8912559ea158.bin",
+                "offset": 34603008,
+                "bytes": 1048576,
+                "sha256": "b51d8912559ea158f30e5fe730f12fcc3d12ce7ca5929c2b932c7d54ff4d6817"
+              },
+              {
+                "file": "boot/index-pck-0035-1c996d8fb798b93f.bin",
+                "offset": 35651584,
+                "bytes": 1048576,
+                "sha256": "1c996d8fb798b93fbcb3da69e2a0aa09be3344a62c212b5f629331ea42fbb3e9"
+              },
+              {
+                "file": "boot/index-pck-0036-c919d1d7f9b423fa.bin",
+                "offset": 36700160,
+                "bytes": 1048576,
+                "sha256": "c919d1d7f9b423fad55245737cc4b9c2021af777de217e06628b18828ffc098a"
+              },
+              {
+                "file": "boot/index-pck-0037-cc5c739408c6b7df.bin",
+                "offset": 37748736,
+                "bytes": 1048576,
+                "sha256": "cc5c739408c6b7df5a696b3ec5eb60bad245207ad6155d9e89a9c0a43e9a3e41"
+              },
+              {
+                "file": "boot/index-pck-0038-432829ab4a831b70.bin",
+                "offset": 38797312,
+                "bytes": 1048576,
+                "sha256": "432829ab4a831b70c50f12b9efe3b7eec87f0e4717febc3106a12867162de4db"
+              },
+              {
+                "file": "boot/index-pck-0039-a9a1ab1af1abe611.bin",
+                "offset": 39845888,
+                "bytes": 1048576,
+                "sha256": "a9a1ab1af1abe611e19743d3d931fb66eb13f3c5ca193c203d66d30545ae8fb7"
+              },
+              {
+                "file": "boot/index-pck-0040-c4df0a33b052d647.bin",
+                "offset": 40894464,
+                "bytes": 1048576,
+                "sha256": "c4df0a33b052d6472685db6458ff2e963d0656dfd4cee7018f7c1992f6b65070"
+              },
+              {
+                "file": "boot/index-pck-0041-b7104f96656ef964.bin",
+                "offset": 41943040,
+                "bytes": 1048576,
+                "sha256": "b7104f96656ef964ca332266c92c30fa434ba6c1f349bd2bbca322c157c432b0"
+              },
+              {
+                "file": "boot/index-pck-0042-83dec27141791157.bin",
+                "offset": 42991616,
+                "bytes": 1048576,
+                "sha256": "83dec2714179115741857a1e1e27c9d721677641e192e4897a77fd8d96a216ed"
+              },
+              {
+                "file": "boot/index-pck-0043-32bc3ed8f2452e21.bin",
+                "offset": 44040192,
+                "bytes": 1048576,
+                "sha256": "32bc3ed8f2452e21d5350549ba8fe6962d17cf97c760209e97496dcdfa27cca6"
+              },
+              {
+                "file": "boot/index-pck-0044-cd915ac80e3a631c.bin",
+                "offset": 45088768,
+                "bytes": 1048576,
+                "sha256": "cd915ac80e3a631cf31abb988816d9d014701aaee3194028e0904a24b1a093d8"
+              },
+              {
+                "file": "boot/index-pck-0045-847f559e746447d0.bin",
+                "offset": 46137344,
+                "bytes": 1048576,
+                "sha256": "847f559e746447d0845564136730af35fe6d756e0fa4b905ef7ef94b1d9f8686"
+              },
+              {
+                "file": "boot/index-pck-0046-daa9110e8b15e582.bin",
+                "offset": 47185920,
+                "bytes": 1048576,
+                "sha256": "daa9110e8b15e582344ee1dcc93ac8f9238e92b93f7b703bc54b1fc896dd7ee3"
+              },
+              {
+                "file": "boot/index-pck-0047-21b0ff752fd694b0.bin",
+                "offset": 48234496,
+                "bytes": 1048576,
+                "sha256": "21b0ff752fd694b0152842d0be8abf82547072dbf1bd81025dfbef9b29a361e5"
+              },
+              {
+                "file": "boot/index-pck-0048-cb88a39532c202c6.bin",
+                "offset": 49283072,
+                "bytes": 1048576,
+                "sha256": "cb88a39532c202c6f49763965cecef2a3cefa6e36443d2b6bc2bfb26c127a877"
+              },
+              {
+                "file": "boot/index-pck-0049-12d125741249fce6.bin",
+                "offset": 50331648,
+                "bytes": 1048576,
+                "sha256": "12d125741249fce6f020891a559b80697725f4ae572917407843c6797602bb27"
+              },
+              {
+                "file": "boot/index-pck-0050-4a92e21c4108eb54.bin",
+                "offset": 51380224,
+                "bytes": 1048576,
+                "sha256": "4a92e21c4108eb54a8d57ad6aa17f0c254fa983dab4867ba3dc33757f4888082"
+              },
+              {
+                "file": "boot/index-pck-0051-ccfbfc3cad67c569.bin",
+                "offset": 52428800,
+                "bytes": 1048576,
+                "sha256": "ccfbfc3cad67c5699bec96fc23912c2629fd904dfab3482aaa4034b53a5e38a8"
+              },
+              {
+                "file": "boot/index-pck-0052-c98e71929bc9a61b.bin",
+                "offset": 53477376,
+                "bytes": 1048576,
+                "sha256": "c98e71929bc9a61b401124553482c8e504913cd6ffbbdf6abe25c3197f1aaca1"
+              },
+              {
+                "file": "boot/index-pck-0053-ecf1202659fa591b.bin",
+                "offset": 54525952,
+                "bytes": 1048576,
+                "sha256": "ecf1202659fa591b13808817f316b862c4fdde4fae168ebcc4fbee2121645840"
+              },
+              {
+                "file": "boot/index-pck-0054-9a6e12fde439bf15.bin",
+                "offset": 55574528,
+                "bytes": 366876,
+                "sha256": "9a6e12fde439bf15eeeb551b65732a079489b2f69ce4387b3e630d1ab3e90e50"
+              }
+            ]
+          },
+          "index.wasm": {
+            "file": "index.wasm",
+            "bytes": 39513091,
+            "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277",
+            "chunks": [
+              {
+                "file": "boot/index-wasm-0001-a0e0378369843d93.bin",
+                "offset": 0,
+                "bytes": 1048576,
+                "sha256": "a0e0378369843d9315138eade4243a2a43ed61e1e6ea59cc30e8bf1fd243503f"
+              },
+              {
+                "file": "boot/index-wasm-0002-94d42b81fec2f0fb.bin",
+                "offset": 1048576,
+                "bytes": 1048576,
+                "sha256": "94d42b81fec2f0fbcbdd8a5d582f1479f6327ed687240b3cfbfb7ac331b7cc38"
+              },
+              {
+                "file": "boot/index-wasm-0003-7278f68041cbc1f2.bin",
+                "offset": 2097152,
+                "bytes": 1048576,
+                "sha256": "7278f68041cbc1f218db4de990d2d85284298b727822956c20b49ba7f30928a7"
+              },
+              {
+                "file": "boot/index-wasm-0004-7c726906df227b5e.bin",
+                "offset": 3145728,
+                "bytes": 1048576,
+                "sha256": "7c726906df227b5e7c7a4cd9ab9b3d80c00f4d83e1682f7cf59bcdf6341c341f"
+              },
+              {
+                "file": "boot/index-wasm-0005-e85de6e248c4ff01.bin",
+                "offset": 4194304,
+                "bytes": 1048576,
+                "sha256": "e85de6e248c4ff01ef0c3fb642484f76f1a3ad658fab6246bacabac612c2a69b"
+              },
+              {
+                "file": "boot/index-wasm-0006-5c1d8cdd919a9ebb.bin",
+                "offset": 5242880,
+                "bytes": 1048576,
+                "sha256": "5c1d8cdd919a9ebb73e34d0fa6b63377457ebbf18bc97420c2c9e3698188ff3c"
+              },
+              {
+                "file": "boot/index-wasm-0007-a2002afc5ee98cd7.bin",
+                "offset": 6291456,
+                "bytes": 1048576,
+                "sha256": "a2002afc5ee98cd7f70fea4a5e4687a00a1fbd8c766b1b990816036b3ed4f81e"
+              },
+              {
+                "file": "boot/index-wasm-0008-dcb47717a9385b4b.bin",
+                "offset": 7340032,
+                "bytes": 1048576,
+                "sha256": "dcb47717a9385b4b7c6581a49be081682dddf6ed3226ec6b9022a1abc38bdd3a"
+              },
+              {
+                "file": "boot/index-wasm-0009-cd64bd5aa36025cc.bin",
+                "offset": 8388608,
+                "bytes": 1048576,
+                "sha256": "cd64bd5aa36025cc1f46fd29d0327ad3e0dfcc2c42b6512dea919313273baf5d"
+              },
+              {
+                "file": "boot/index-wasm-0010-f521fd13bde58ef8.bin",
+                "offset": 9437184,
+                "bytes": 1048576,
+                "sha256": "f521fd13bde58ef82c574336e3c06c5fa9ccab541346d975effedeb5779e6057"
+              },
+              {
+                "file": "boot/index-wasm-0011-ec4420d554044a5c.bin",
+                "offset": 10485760,
+                "bytes": 1048576,
+                "sha256": "ec4420d554044a5c1700ce1c876a41c8404fe813ae0250cd242845c319edf0b1"
+              },
+              {
+                "file": "boot/index-wasm-0012-dae7e546eb24fb7a.bin",
+                "offset": 11534336,
+                "bytes": 1048576,
+                "sha256": "dae7e546eb24fb7a14ad418a71a1e6cba79312692d923281322de41e521b7a0e"
+              },
+              {
+                "file": "boot/index-wasm-0013-b2e1f91aa3835317.bin",
+                "offset": 12582912,
+                "bytes": 1048576,
+                "sha256": "b2e1f91aa3835317e09d115888de1699a42bc17eb4cdef9aacc0643be5656e8b"
+              },
+              {
+                "file": "boot/index-wasm-0014-98c67df5bd0673bc.bin",
+                "offset": 13631488,
+                "bytes": 1048576,
+                "sha256": "98c67df5bd0673bc85c7f570c63f9177cb2a5e3b7efafe805559940a086e0ecb"
+              },
+              {
+                "file": "boot/index-wasm-0015-2da3d87128da0b25.bin",
+                "offset": 14680064,
+                "bytes": 1048576,
+                "sha256": "2da3d87128da0b2505ffe604c6be8d7707e167e72a611819592466ed5fb3613c"
+              },
+              {
+                "file": "boot/index-wasm-0016-5958e2a084e5b6f1.bin",
+                "offset": 15728640,
+                "bytes": 1048576,
+                "sha256": "5958e2a084e5b6f13bd445cc0f6917e7ca4f4b28cc653d3f1d2fae9bb67b8829"
+              },
+              {
+                "file": "boot/index-wasm-0017-743bc733f6df383e.bin",
+                "offset": 16777216,
+                "bytes": 1048576,
+                "sha256": "743bc733f6df383e15593cc8dc7ac49c5c6c7e518de222a98e84b04dc28db765"
+              },
+              {
+                "file": "boot/index-wasm-0018-dfd960db626a6345.bin",
+                "offset": 17825792,
+                "bytes": 1048576,
+                "sha256": "dfd960db626a634548c6206faf0883a0c81c8981bdfc7efb3b956864d6366685"
+              },
+              {
+                "file": "boot/index-wasm-0019-7c936f655849ebb0.bin",
+                "offset": 18874368,
+                "bytes": 1048576,
+                "sha256": "7c936f655849ebb00bdfc6dd8c48ef9568d2aa86e5efc9b2d5cea8bbbbb7bb42"
+              },
+              {
+                "file": "boot/index-wasm-0020-873cab47a7b90eea.bin",
+                "offset": 19922944,
+                "bytes": 1048576,
+                "sha256": "873cab47a7b90eead5148f213edd7bd3c0016bf95f88f58b38635e7b7d001588"
+              },
+              {
+                "file": "boot/index-wasm-0021-604c0339dc662900.bin",
+                "offset": 20971520,
+                "bytes": 1048576,
+                "sha256": "604c0339dc6629004eb152d6c456345535aa80f866e230e5bfd16712887d86e8"
+              },
+              {
+                "file": "boot/index-wasm-0022-e2f08e9094f31118.bin",
+                "offset": 22020096,
+                "bytes": 1048576,
+                "sha256": "e2f08e9094f31118081a5cfc7827e4baf59f135a5e75b50340d69e4aabcd2aca"
+              },
+              {
+                "file": "boot/index-wasm-0023-1bea43a75bf9baf3.bin",
+                "offset": 23068672,
+                "bytes": 1048576,
+                "sha256": "1bea43a75bf9baf37a9669dd8b5bf871b8a882f455f79ee67823936a77c01302"
+              },
+              {
+                "file": "boot/index-wasm-0024-72e72c414682b8bb.bin",
+                "offset": 24117248,
+                "bytes": 1048576,
+                "sha256": "72e72c414682b8bb82ca816dd10cc34a6a08704e970ac5a73c0475d61bb3752b"
+              },
+              {
+                "file": "boot/index-wasm-0025-1fbcd2925c566894.bin",
+                "offset": 25165824,
+                "bytes": 1048576,
+                "sha256": "1fbcd2925c5668943676a6e4677da959cc09e4b8daf08635e32d106755514e41"
+              },
+              {
+                "file": "boot/index-wasm-0026-8ed14dc0f0848a2f.bin",
+                "offset": 26214400,
+                "bytes": 1048576,
+                "sha256": "8ed14dc0f0848a2f9af4c1af989fd32c5ef001c45d7510e760f5bd184ec70d8c"
+              },
+              {
+                "file": "boot/index-wasm-0027-e94715b7f3496a1c.bin",
+                "offset": 27262976,
+                "bytes": 1048576,
+                "sha256": "e94715b7f3496a1cf18d94f5c8a0109a8433d5e94baba5b220cac41235b181ae"
+              },
+              {
+                "file": "boot/index-wasm-0028-0de718de63852ca5.bin",
+                "offset": 28311552,
+                "bytes": 1048576,
+                "sha256": "0de718de63852ca5861ff1baaf26447270f299b2ff66864fea15132e8261e196"
+              },
+              {
+                "file": "boot/index-wasm-0029-0485b50624c0c120.bin",
+                "offset": 29360128,
+                "bytes": 1048576,
+                "sha256": "0485b50624c0c120d8de45d9fae36609b416023d4429c28f68e51d6fabb5667f"
+              },
+              {
+                "file": "boot/index-wasm-0030-05e9b847957f573a.bin",
+                "offset": 30408704,
+                "bytes": 1048576,
+                "sha256": "05e9b847957f573acd227ded1292ecc8a812a23f9b9f28face281e0a7bca4af4"
+              },
+              {
+                "file": "boot/index-wasm-0031-8cf73b8ea6ef8756.bin",
+                "offset": 31457280,
+                "bytes": 1048576,
+                "sha256": "8cf73b8ea6ef87568a28a28ac39e11ddc43e12bf5b347cf4139fe193c8933d25"
+              },
+              {
+                "file": "boot/index-wasm-0032-26da05d430840dbc.bin",
+                "offset": 32505856,
+                "bytes": 1048576,
+                "sha256": "26da05d430840dbc16fc1789ac2c0607a4b868671af866cb4dba9a7bdd8a700c"
+              },
+              {
+                "file": "boot/index-wasm-0033-37ea57bf18afa67d.bin",
+                "offset": 33554432,
+                "bytes": 1048576,
+                "sha256": "37ea57bf18afa67dc3da452bdaa1ba3a0958f7ec832bc8816c0bae5a352bd954"
+              },
+              {
+                "file": "boot/index-wasm-0034-fb49dc51884f1a7f.bin",
+                "offset": 34603008,
+                "bytes": 1048576,
+                "sha256": "fb49dc51884f1a7f113bbfd5bb06a1e16386e91faa1d089a4b7305e39cdc8dbc"
+              },
+              {
+                "file": "boot/index-wasm-0035-51ffeaa6beb65457.bin",
+                "offset": 35651584,
+                "bytes": 1048576,
+                "sha256": "51ffeaa6beb65457d5d4915eab1fbaaf8650c1af08c205cdda83240691e42f1e"
+              },
+              {
+                "file": "boot/index-wasm-0036-b2aa72cd27ec05c3.bin",
+                "offset": 36700160,
+                "bytes": 1048576,
+                "sha256": "b2aa72cd27ec05c3494c67fb144e8b7e34d1d6e81d8f63a4c77cb7e0d4bbeee2"
+              },
+              {
+                "file": "boot/index-wasm-0037-649a46191fbad5ce.bin",
+                "offset": 37748736,
+                "bytes": 1048576,
+                "sha256": "649a46191fbad5cea58ca00d856f3815a3152dc0a1d195c9d3abb9993e4c7dc4"
+              },
+              {
+                "file": "boot/index-wasm-0038-48b7a0e3a6175d90.bin",
+                "offset": 38797312,
+                "bytes": 715779,
+                "sha256": "48b7a0e3a6175d900fc3ac0e5acf21a1db953728f2f79a0aba48b22aabc30372"
+              }
+            ]
+          }
+        }
+      },
+      "pack": {
+        "role": "boot-core",
+        "format": 4,
+        "engine": "4.7.1",
+        "flags": 2,
+        "files": 1169,
+        "inventorySha256": "079c1652d1a593219d71a9e4337cb3090d515fd32256fc895f0d4a6c91f001ca"
+      },
+      "fullPack": {
+        "format": 4,
+        "engine": "4.7.1",
+        "flags": 2,
+        "count": 2527,
+        "bytes": 495341568,
+        "sha256": "3273d14d0fadbda52943b77c056cf1aade1ebc4aa84603b84d12ba243de43c96",
+        "inventorySha256": "2f4cb800567340533df6ccb67143c9b1b15e1ba74282199db230d2ad3376e056",
+        "contentMapSha256": "d9531172b9625d83b4e2e94ca6da593d755efb4dc389a78ec422aff259d881e4"
+      },
+      "content": {
+        "schema": "755-web-content-v1",
+        "packs": 21,
+        "deferredBytes": 439424200,
+        "coreBytes": 55941404,
+        "exactCoverage": true,
+        "entryCount": 2527,
+        "inventorySha256": "e4ddbf1591dffbb8ce299ed5c5952cbf72cc79aa9b309e39720960e069049c8a"
+      },
+      "acceptance": "Artifact verification only. Actual browser input, rendering, persistence and chapter continuity are separate required gates."
+    },
+    "illustrationPackEntries": [
+      {
+        "path": ".godot/imported/lake_memory.png-ccf5c4d15a4ff1a3fd9a4662a87ba695.ctex",
+        "offset": 77241792,
+        "bytes": 1585542,
+        "md5": "ec8858c96708965488542e6b48728145",
+        "sha256": "a455a551d7b792f2fb221270c7619c2e190b32e0652e45bd155fb98d987e8e6f",
+        "group": "chapter35_003"
+      },
+      {
+        "path": "assets/native/chapter35_recovery_20261023/lake_memory.png.import",
+        "offset": 78827344,
+        "bytes": 200,
+        "md5": "135a96ecb9f5e75bcc1c660bfcf3a432",
+        "sha256": "0e56f31fd6b4561c04f3a166df4fe6a23e2fc3fa0a435b2121dd6dfad3a907fc",
+        "group": "chapter35_004"
+      }
+    ],
+    "buildLog": "/tmp/755-c35-web-build-white-no-gap.log",
+    "preparation": "Source sync completed. Existing previously converted OGV media reused with --skip-prepare; no authored media changed.",
+    "acceptance": "Godot production export and resource/pack checks passed. This run did not perform browser campaign or cross-browser acceptance."
+  },
+  "boundaries": [
+    "Story/controller/save schema unchanged.",
+    "Side drawer remains collapsible and vertically draggable on the left. Drawer overlays content; no permanent side lane is reserved.",
+    "WeChat reference used for structure only; private screenshot messages and avatars were not copied.",
+    "Broader phone app redesign, fresh manual campaign, physical devices, and strict full-art palette audit are not claimed."
+  ],
+  "whitePaletteFollowup": {
+    "request": "Use original WeChat white rather than warm yellow paper; remove duplicate left gutter.",
+    "contentMargins": [
+      18,
+      18
+    ],
+    "palette": "scripts/ui/phone_palette.gd",
+    "controls": "White cards, neutral light-grey chrome, dark neutral text, consistent green actions and playback. Content artwork and avatars remain source colored.",
+    "scope": "C35 app pages, existing WeChat surfaces and relevant shared phone chrome; no campaign/save authority changes."
+  }
+}

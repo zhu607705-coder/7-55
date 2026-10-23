@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-23T07:06:12.460923+00:00",
+  "scope": {
+    "include": "Only bytes converging into the Hanzi 经度与纬度不存在 in the error phase",
+    "retain": "Existing background, word-catching and final narrator-hold implementation",
+    "exclude": "All newly added subsequent effects from the proposed animation source"
+  },
+  "selectedPr": "https://github.com/zhu607705-coder/7-55/pull/163",
+  "observedHead": "34fb170cd1be2be83b7dc9bb6a813bacad5ff350",
+  "observedFiles": [
+    ".github/workflows/deploy-pages.yml",
+    "godot_native/tests/test_web_input_completion.mjs",
+    "godot_native/tests/test_web_save_diagnostics.mjs",
+    "godot_native/tools/verify_web_export.mjs",
+    "godot_native/tools/web_phone_recovery.mjs",
+    "progress.md"
+  ],
+  "status": "source-mismatch-awaiting-animation-commit",
+  "currentRuntime": "retained",
+  "evidence": "/Users/zhu/Library/Application Support/755-tools/verification/library-continuity-20261023/upstream-error-scan.json"
+}

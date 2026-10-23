@@ -6,6 +6,13 @@ const LockedOverlay = preload("res://scripts/ui/world_selected_overlay.gd")
 const LockedJournal = preload("res://scripts/ui/native_journal_view.gd")
 const CAMERA_OFFSET = Vector2(0,-120)
 const ActorArt = preload("res://assets/rpg/player/player_down_0.png")
+const PlayerMetrics = preload("res://scripts/player_metrics.gd")
+# Trial-only visual calibration. The source feet end at y126; preserve their
+# former world contact (5.2 below the body centre) while raising scale0.6→1.0.
+# Furniture, the physics circle, stands and interaction ranges keep ownership.
+const ACTOR_VISUAL_SCALE := 1.0
+const ACTOR_SOURCE_FOOT := Vector2(48,126)
+const ACTOR_GROUND_OFFSET := Vector2(0,5.2)
 var view: SubViewport
 var screen: TextureRect
 var room: Node2D
@@ -68,9 +75,15 @@ func _ready() -> void:
 	view.canvas_item_default_texture_filter=Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	add_child(view);screen.texture=view.get_texture()
 	room=Room.instantiate();view.add_child(room)
+	# The floor paper belongs below the actor, like the other loose ground
+	# props. Its old foreground layer would cover the enlarged actor's face.
+	room.get_node("Canonical0755Paper").z_index=0
 	actor=CharacterBody2D.new();actor.position=Vector2(531,1000);view.add_child(actor)
 	var hit=CollisionShape2D.new();var shape=CircleShape2D.new();shape.radius=13;hit.shape=shape;actor.add_child(hit)
-	sprite=Sprite2D.new();sprite.texture=ActorArt;sprite.scale=Vector2.ONE*.6;sprite.position.y=-32;actor.add_child(sprite)
+	sprite=Sprite2D.new();sprite.texture=ActorArt
+	sprite.scale=Vector2.ONE*ACTOR_VISUAL_SCALE
+	sprite.position=ACTOR_GROUND_OFFSET-(ACTOR_SOURCE_FOOT-PlayerMetrics.FRAME*.5)*ACTOR_VISUAL_SCALE
+	actor.add_child(sprite)
 	camera=Camera2D.new();view.add_child(camera);camera.position=logical_camera;camera.zoom=Vector2.ONE*.8
 	marker=FocusMarker.new();view.add_child(marker)
 	var lamp: Sprite2D=room.get_node("Furnishings/desk_2/lamp_green_4")

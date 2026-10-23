@@ -20,7 +20,7 @@ func click(source: Vector2) -> void:
 	shell.world_viewport.push_input(event,true)
 	event=event.duplicate(); event.pressed=false; shell.world_viewport.push_input(event,true)
 func swipe(side: String,reverse: bool=false) -> void:
-	var start: Vector2=Vector2(180 if side=="left" else 780,420)
+	var start:Vector2=shell.world.kayak_paddle_rects()[side].get_center()
 	var event: InputEventScreenTouch=InputEventScreenTouch.new()
 	event.index=0; event.position=start; event.pressed=true; shell.world_viewport.push_input(event,true)
 	event=event.duplicate(); event.pressed=false; event.position=start+Vector2(0,60 if reverse else -60); shell.world_viewport.push_input(event,true)

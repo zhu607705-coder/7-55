@@ -3,6 +3,11 @@ const Picker=preload("res://scripts/world_object_picker.gd")
 const Facing=preload("res://scripts/character_facing.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const QizhenLocker=preload("res://scripts/presentation/qizhen_locker_object.gd")
+var qizhen_locker:RefCounted=QizhenLocker.new()
+const REHEARSAL_RACK_ASSET="res://assets/native/theater_rebuild_20261020/fan_rack.png"
+const REHEARSAL_RACK_BOUNDS=Rect2(500,106,120,100)
+const REHEARSAL_RACK_FOOTPRINT={"id":"c3_dynamic_rehearsal_rack","left":512,"top":184,"right":608,"bottom":206}
 const TicketGateArt=preload("res://scripts/presentation/c3_ticket_gate_art.gd")
 var ticket_gate_art:RefCounted=TicketGateArt.new()
 const TicketGate=preload("res://scripts/presentation/c3_ticket_gate_view.gd")
@@ -10,6 +15,8 @@ var ticket_gate:RefCounted=TicketGate.new()
 const AdmissionFeedback=preload("res://scripts/presentation/c3_admission_feedback.gd")
 const TheaterClues=preload("res://scripts/presentation/c3_theater_clue_view.gd")
 var theater_clues:RefCounted=TheaterClues.new()
+const TheaterRebuild=preload("res://scripts/presentation/theater_object_rebuild.gd")
+var theater_rebuild: RefCounted=TheaterRebuild.new()
 const ModeFibers=preload("res://scripts/presentation/c3_mode_fibers.gd")
 var mode_fibers: RefCounted=ModeFibers.new()
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
@@ -18,6 +25,8 @@ var bike_view: RefCounted=Bike.new()
 const Door=preload("res://scripts/presentation/interior_door_layer.gd")
 var doors: RefCounted=Door.new()
 var narrative_session: RefCounted
+var door_owner:Dictionary={}
+var rehearsal_rack_source:=Rect2()
 var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/chapter3-world-source.json"))
 var worlds: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
 var theater_text: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter3-theater.content.json"))
@@ -41,15 +50,23 @@ var program_flights: Array=[]
 var last_carried: Array=[]
 var occlusion_alphas: Dictionary={}
 func texture(path: String) -> Texture2D:
-	if not textures.has(path): textures[path]=load(path) if ResourceLoader.exists(path) else null
-	return textures[path]
+	if textures.has(path) and textures[path]!=null:return textures[path]
+	# A later chapter pack may not be mounted yet. Cache successful resources,
+	# never a transient miss that would keep its physical object absent forever.
+	var loaded:Texture2D=load(path) if ResourceLoader.exists(path) else null
+	if loaded!=null:textures[path]=loaded
+	return loaded
 func asset(key: String) -> String: return str(source.assets.get(key,""))
 func reduced(s: Dictionary) -> bool: return bool(s.native.get("settings",{}).get("reduced_motion",false))
 func scene_npcs(s: Dictionary) -> bool: return s.canteenHunt.phase!="exit_blocking"
 func sync(s: Dictionary,scene_changed: bool=false) -> void:
+	qizhen_locker.sync(s,scene_changed)
+	theater_rebuild.sync(s,scene_changed)
 	theater_clues.sync(s,scene_changed)
 	mode_fibers.sync(s,scene_changed)
 	var current: String=str(s.native.get("scene",""))
+	if scene_changed or current!=scene_id or not is_same(door_owner,s):
+		door_owner=s;doors.configure(current,reduced(s));doors.restore(s)
 	if scene_changed or current!=scene_id or previous_state.is_empty():
 		scene_id=current; ticket_gate.reset(s); occlusion_alphas.clear(); clock_ms=0; admission_ms=INF; pickup_ms=INF; program_flights=[]
 		last_carried=s.canteenHunt.carriedTrayIds.duplicate(); collected_programs=s.theaterHunt.collectedProgramIds.duplicate()
@@ -77,6 +94,7 @@ func sync(s: Dictionary,scene_changed: bool=false) -> void:
 	previous_state={"theaterHunt":{"admitted":bool(s.theaterHunt.admitted)}}
 func tick(delta: float,s: Dictionary) -> void:
 	sync(s)
+	qizhen_locker.tick(delta,s)
 	theater_clues.tick(delta,s)
 	mode_fibers.tick(delta,s)
 	var dt: float=clampf(delta,0,.1)*1000
@@ -176,7 +194,17 @@ func entries(s: Dictionary) -> Array:
 					result.append({"id":"tray_pickup","kind":"tray","point":pickup_start.lerp(target,ease),"scale":lerpf(.75,.58,ease),"depth":2300})
 				else: result.append({"id":"carried_tray","kind":"tray","point":target,"scale":.75,"depth":player.y+163})
 	elif scene_id=="theater_interior":
+		result.append_array(theater_rebuild.entries(s))
 		var t: Dictionary=s.theaterHunt; var dark: bool=s.native.mode=="dark"
+		var rack:Texture2D=texture(REHEARSAL_RACK_ASSET)
+		if rack!=null:
+			if not rehearsal_rack_source.has_area():
+				var image:Image=rack.get_image()
+				if image.is_compressed():image.decompress()
+				rehearsal_rack_source=Rect2(image.get_used_rect())
+			if rehearsal_rack_source.has_area():
+				var fit:float=minf(REHEARSAL_RACK_BOUNDS.size.x/rehearsal_rack_source.size.x,REHEARSAL_RACK_BOUNDS.size.y/rehearsal_rack_source.size.y)
+				result.append({"id":"theater_shadow_rehearsal","kind":"sprite","asset":REHEARSAL_RACK_ASSET,"point":Vector2(REHEARSAL_RACK_BOUNDS.get_center().x,REHEARSAL_RACK_BOUNDS.end.y),"size":rehearsal_rack_source.size*fit,"source":rehearsal_rack_source,"anchor":Vector2(.5,1),"depth":REHEARSAL_RACK_BOUNDS.end.y+120-Metrics.foot_rect(Vector2.ZERO).end.y})
 		var offset: float=worlds.theater_interior.constants.THEATER_TICKET_FIXTURE_OFFSET_Y
 		var admission: Dictionary=admission_pose(s)
 		var admission_live: bool=t.admitted and admission_elapsed(s)>=0 and admission_elapsed(s)<9000
@@ -264,13 +292,17 @@ func adjusted_collisions(base: Array,s: Dictionary) -> Array:
 			var entry: Dictionary=box.duplicate(); entry.id="c3_dynamic_"+str(box.id); out.append(entry)
 		if not s.theaterHunt.admitted:
 			var entry: Dictionary=worlds.theater_interior.constants.THEATER_GATE_BLOCKER.duplicate(); entry.id="c3_dynamic_admission_gate"; out.append(entry)
-	return out
+		if texture(REHEARSAL_RACK_ASSET)!=null:out.append(REHEARSAL_RACK_FOOTPRINT.duplicate())
+	return theater_rebuild.adjusted_collisions(out,s)
 func owns_pick_target(target: Dictionary,_state: Dictionary) -> bool:
 	var id: String=str(target.get("id",""))
-	return (scene_id=="qizhen_lake" and id=="qizhen_dock_safety_officer") or (scene_id=="campus_bootstrap" and id=="bike") or scene_id in ["canteen_interior","theater_interior"] and (id.begins_with("initial-") or id.begins_with("theater_program_") or id in ["auntie","canteen-promo-board","theater_ticket_gate"])
+	if scene_id=="qizhen_lake" and id==QizhenLocker.TARGET:return true
+	if scene_id=="theater_interior" and theater_rebuild.owns_target(target):return true
+	return (scene_id=="qizhen_lake" and id=="qizhen_dock_safety_officer") or (scene_id=="campus_bootstrap" and id=="bike") or scene_id in ["canteen_interior","theater_interior"] and (id.begins_with("initial-") or id.begins_with("theater_program_") or id in ["auntie","canteen-promo-board","theater_ticket_gate","theater_shadow_rehearsal"])
 
 func _pick_ids(entry: Dictionary,targets: Array) -> Array:
 	var id: String=str(entry.id)
+	if id=="theater_shadow_rehearsal":return [id]
 	if id=="qizhen_dock_safety_officer": return [id]
 	if id.begins_with("program_") and not id.begins_with("program_flight_"): return ["theater_"+id]
 	if id in ["promo_empty","promo_active","promo_insert","promo_bubbles"]: return ["canteen-promo-board"]
@@ -286,7 +318,7 @@ func _pick_ids(entry: Dictionary,targets: Array) -> Array:
 		if point.is_equal_approx(entry.get("point",Vector2.INF)): result.append(target_id)
 	return result
 
-func handles_target(target: Dictionary,_s: Dictionary) -> bool: return str(target.get("id","")).begins_with("theater_program_")
+func handles_target(target: Dictionary,_s: Dictionary) -> bool: return str(target.get("id","")).begins_with("theater_program_") or str(target.get("id",""))=="theater_shadow_rehearsal" or theater_rebuild.owns_target(target)
 func _foot(id: String,p: Vector2) -> Dictionary: return {"id":"c3_dynamic_"+id,"left":p.x-Metrics.FOOT_SIZE.x/2,"right":p.x+Metrics.FOOT_SIZE.x/2,"top":p.y-Metrics.FOOT_SIZE.y,"bottom":p.y}
 func _bounds(r: Dictionary) -> Rect2: return Rect2(r.left,r.top,r.right-r.left,r.bottom-r.top)
 func _player(s: Dictionary) -> Vector2:
@@ -294,10 +326,12 @@ func _player(s: Dictionary) -> Vector2:
 func _yoyo(ms: float,duration: float) -> float:
 	var p: float=fmod(ms/duration,2); return (1-cos(p*PI))/2
 func draw_back(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
+	qizhen_locker.draw(canvas,context,s,false)
 	bike_view.draw(canvas,context,s,false)
 	doors.draw_back(canvas,context,s)
 	_draw_partition(canvas,context,s,false)
 func draw_front(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
+	qizhen_locker.draw(canvas,context,s,true)
 	bike_view.draw(canvas,context,s,true)
 	_draw_partition(canvas,context,s,true)
 	doors.draw_front(canvas,context,s)
@@ -307,8 +341,9 @@ func _draw_partition(canvas: CanvasItem,context: Dictionary,s: Dictionary,front:
 	for entry: Dictionary in entries(s):
 		if entry.kind=="theater_clue":continue # Glass/paper surface pass is post-occlusion.
 		if entry.id=="qizhen_dock_safety_officer" and context.get("nearby_id","")==entry.id: entry.scale*=1.08
-		if (float(entry.depth)>depth)==front: _draw_entry(canvas,context,entry)
-func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> void:
+		if (float(entry.depth)>depth)==front: _draw_entry(canvas,context,entry,s)
+func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary,s: Dictionary) -> void:
+	if entry.kind=="theater_rebuild":theater_rebuild.draw_entry(canvas,context,entry,s);return
 	var z: float=context.zoom; var origin: Vector2=context.origin
 	if entry.kind=="crop":
 		var tex: Texture2D=texture(entry.asset)
@@ -319,7 +354,7 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> vo
 	if entry.kind=="sprite":
 		var tex: Texture2D=texture(entry.asset)
 		if tex!=null:
-			var region:=Rect2(Vector2.ZERO,tex.get_size())
+			var region:Rect2=entry.get("source",Rect2(Vector2.ZERO,tex.get_size()))
 			if entry.has("frameSize"):
 				var columns: int=maxi(1,int(tex.get_width()/entry.frameSize.x)); var frame: int=int(entry.frame)
 				region=Rect2(Vector2((frame%columns)*entry.frameSize.x,int(frame/columns)*entry.frameSize.y),entry.frameSize)

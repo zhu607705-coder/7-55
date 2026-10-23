@@ -43,6 +43,7 @@ var chapter_label: Label
 var app_grid: GridContainer
 var page_body: VBoxContainer
 var c3_device_panel: Control
+var object_focus: Node
 var modal: Control
 var modal_panel: PanelContainer
 var modal_notice_slot: Control
@@ -73,9 +74,14 @@ var phone_scroll_page := ""
 var mobile_back: Button
 var phone_world_return: Button
 var world_tasks: Button
+var world_mode: Button
 var voice_player: AudioStreamPlayer
 var phone_builder: RefCounted
 var later_phone_builder: RefCounted
+const LATER_PHONE_BUILDER_SCRIPT: String="res://scripts/ui/chapter3_phone_pages.gd"
+const LIBRARY_STORY_HOST_SCRIPT: String="res://scripts/presentation/library_story_host.gd"
+const C3_SCENE_HOST_SCRIPT: String="res://scripts/presentation/c3_scene_host.gd"
+const C3_NARRATIVE_HOST_SCRIPT: String="res://scripts/presentation/c3_narrative_host.gd"
 var status_row: HBoxContainer
 var header_row: HBoxContainer
 var footer_row: HBoxContainer
@@ -204,6 +210,7 @@ func _build_shell() -> void:
 	chapter_label = _label("7:55",NativeUi.FONT_DISPLAY,Color("e9eed7"))
 	add_child(chapter_label)
 	phone = PanelContainer.new()
+	NativeUi.enable_scale_aware_text(phone)
 	phone.theme = NativeUi.make_theme(Typography.body_font(),16,16)
 	var phone_border := _box(PAPER,Color("0d0c0a"),0,3)
 	phone_border.content_margin_left = 3
@@ -306,20 +313,21 @@ func _build_shell() -> void:
 		# Main queues State feedback; a standalone world retains its fallback.
 		State.feedback.disconnect(world._receive_feedback)
 	inventory_dock = PanelContainer.new()
-	inventory_dock.add_theme_stylebox_override("panel",CampusMaterial.panel_style("placard",{},Vector2(14,10)))
+	inventory_dock.add_theme_stylebox_override("panel",StyleBoxEmpty.new())
 	add_child(inventory_dock)
 	var inventory_row := HBoxContainer.new()
 	inventory_dock.add_child(inventory_row)
-	inventory_row.add_child(_label("物品",17,Color("e7ead9")))
 	inventory_scroll = ScrollContainer.new()
 	inventory_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	inventory_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	inventory_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	inventory_row.add_child(inventory_scroll)
 	inventory_buttons = HBoxContainer.new()
-	inventory_buttons.add_theme_constant_override("separation",8)
+	inventory_buttons.add_theme_constant_override("separation",4)
 	inventory_scroll.add_child(inventory_buttons)
-	inventory_handle=_button("展开物品栏",_toggle_world_inventory,Vector2(120,44))
+	inventory_handle=preload("res://scripts/ui/world_phone_launcher.gd").new()
+	inventory_handle.set("glyph","bag")
+	inventory_handle.pressed.connect(_toggle_world_inventory)
 	inventory_handle.name="WorldInventoryHandle"
 	inventory_handle.autowrap_mode=TextServer.AUTOWRAP_OFF
 	inventory_handle.clip_text=true
@@ -339,15 +347,25 @@ func _build_shell() -> void:
 	mobile_back.pressed.connect(_show_phone_surface)
 	mobile_back.name = "WorldPhoneButton"
 	add_child(mobile_back)
-	phone_world_return = _button("返回现场 · Esc",_return_from_phone,Vector2(180,44))
+	phone_world_return = preload("res://scripts/ui/world_phone_launcher.gd").new()
+	phone_world_return.set("glyph","map")
+	phone_world_return.tooltip_text="返回原地图 · Esc / P"
+	phone_world_return.pressed.connect(_return_from_phone)
 	phone_world_return.name = "PhoneWorldReturn"
 	add_child(phone_world_return)
-	world_tasks = _button("任务",_show_world_journal,Vector2(84,44))
+	world_tasks = preload("res://scripts/ui/world_phone_launcher.gd").new()
+	world_tasks.set("glyph","journal")
+	world_tasks.tooltip_text="调查记录"
+	world_tasks.pressed.connect(_show_world_journal)
 	world_tasks.name = "WorldTasks"
 	world_tasks.autowrap_mode = TextServer.AUTOWRAP_OFF
 	world_tasks.clip_text = true
 	world_tasks.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	add_child(world_tasks)
+	world_mode=preload("res://scripts/ui/world_phone_launcher.gd").new()
+	world_mode.name="WorldMode"
+	world_mode.pressed.connect(State.toggle_mode)
+	add_child(world_mode)
 	file_dialog = FileDialog.new()
 	file_dialog.theme = NativeFileDialogTheme.create(Typography.body_font())
 	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
@@ -444,6 +462,22 @@ func _return_from_phone() -> void:
 	State.save_game()
 	_show_world_mobile()
 
+func _back_from_phone() -> void:
+	# Escape follows the same visible navigation callbacks as pointer/touch.
+	# Only the phone homepage hands control back to the world.
+	if is_instance_valid(phone_document):
+		_close_phone_document()
+		return
+	if State.d.ui.controlCenterOpen:
+		_on_phone_action("native_control_center_close",null)
+		return
+	if is_instance_valid(active_game): return
+	if str(State.d.native.page)=="phone_home":
+		_return_from_phone()
+		return
+	if phone_builder!=null and phone_builder.back_navigation(page_body): return
+	if header_row.visible: _on_phone_page("phone_home")
+
 func _focus_world_surface() -> void:
 	if not is_instance_valid(world) or not world_frame.is_visible_in_tree(): return
 	if _surface_navigation_blocked(true): return
@@ -488,7 +522,8 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		_open_c3_device("mixer")
 		return
 	if result.has("open_theater_device"):
-		_open_c3_device(str(result.open_theater_device))
+		var fresh_chest_scan: bool=str(result.open_theater_device)=="chest" and not bool(_previous.theaterHunt.propBoxOpened) and bool(current.theaterHunt.propBoxOpened)
+		_open_c3_device(str(result.open_theater_device),fresh_chest_scan)
 		return
 	if result.get("open_inventory",false):
 		State.d.ui.inventoryOpen=true
@@ -592,8 +627,8 @@ func _layout() -> void:
 	var fitted_activity: bool = _activity_owns_scene()
 	var has_world := _has_world_scene()
 	if not has_world: mobile_world = false
-	var phone_top := 64.0 if has_world else 18.0
-	var phone_space := available - Vector2(24,phone_top + 18)
+	var phone_top := 18.0
+	var phone_space := available - Vector2(24,phone_top + (64 if has_world else 18))
 	# WebDisplay expresses this viewport in CSS-sized logical pixels. Let large
 	# browser windows use the available height instead of stopping at 430x860;
 	# the authored phone and every anchored hit area still scale together.
@@ -604,74 +639,55 @@ func _layout() -> void:
 	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
 	phone.visible = not mobile_world and not fitted_activity
 	phone_world_return.visible = phone.visible and has_world and not is_instance_valid(active_game)
-	phone_world_return.position = Vector2(12,12)
-	phone_world_return.size = Vector2(180,44)
+	phone_world_return.position = available-Vector2(56,56)
+	phone_world_return.size = Vector2(44,44)
 	if not phone.visible: photo_brightness_session.reset()
 	elif not photo_brightness_session.mounted and str(State.d.native.page)=="photos":
 		photo_brightness_session.observe("photos",State.d.ui)
 	world_frame.visible = mobile_world and not fitted_activity
 	world_viewport.gui_disable_input = not world_frame.visible
-	mobile_back.visible = world_frame.visible and not is_instance_valid(active_game)
-	mobile_back.position = Vector2(12,12)
-	world_tasks.visible = mobile_back.visible
-	var inventory_available := _inventory_dock_available() and not is_instance_valid(active_game)
-	var compact: bool = mobile_world and compact_layout and not _authored_world_contract()
-	compact_world_contract = compact
-	inventory_handle.visible = world_frame.visible and inventory_available
-	inventory_handle.text = "%s物品栏 · %d"%["收起" if compact_inventory_open else "展开",inventory_buttons.get_child_count()]
-	inventory_dock.visible = inventory_handle.visible and compact_inventory_open
-	var world_extent := Vector2(960,540)
-	var border: StyleBoxFlat = world_frame.get_theme_stylebox("panel")
-	var margin := 2.0 if compact else 10.0
+	mobile_back.visible=world_frame.visible and not is_instance_valid(active_game)
+	world_tasks.visible=mobile_back.visible
+	world_mode.visible=mobile_back.visible
+	var inventory_available:=_inventory_dock_available() and not is_instance_valid(active_game)
+	var compact:bool=mobile_world and compact_layout and not _authored_world_contract()
+	compact_world_contract=compact
+	inventory_handle.hide()
+	inventory_dock.visible=world_frame.visible and inventory_available
+	var world_extent:=Vector2(960,540)
+	var border:StyleBoxFlat=world_frame.get_theme_stylebox("panel")
+	var margin:=2.0 if compact else 10.0
 	border.content_margin_left=margin; border.content_margin_right=margin
 	border.content_margin_top=margin; border.content_margin_bottom=margin
 	if compact:
-		world_frame.scale = Vector2.ONE
-		var insets := _world_safe_insets()
-		var safe_origin := Vector2(insets.x,insets.y)
-		var safe_extent := available-Vector2(insets.x+insets.z,insets.y+insets.w)
-		var scene_rect := Rect2(safe_origin+Vector2(8,64),safe_extent-Vector2(16,72))
-		mobile_back.position = safe_origin+Vector2(8,8)
-		if available.x>available.y:
-			var tray_width := minf(288,safe_extent.x*.35) if compact_inventory_open else 196.0
-			inventory_handle.position=safe_origin+Vector2(safe_extent.x-tray_width-8,8)
-			inventory_handle.size=Vector2(tray_width,44)
-			inventory_dock.position=safe_origin+Vector2(safe_extent.x-tray_width-8,64)
-			inventory_dock.size=Vector2(tray_width,76)
-			if inventory_dock.visible: scene_rect.size.x-=tray_width+8
-		else:
-			inventory_handle.position=safe_origin+Vector2(12,safe_extent.y-56)
-			inventory_handle.size=Vector2(safe_extent.x-24,44)
-			inventory_dock.position=safe_origin+Vector2(12,safe_extent.y-140)
-			inventory_dock.size=Vector2(safe_extent.x-24,76)
-			if inventory_handle.visible: scene_rect.size.y=(inventory_dock.position.y if inventory_dock.visible else inventory_handle.position.y)-8-scene_rect.position.y
-		world_frame.position=scene_rect.position
-		world_extent=scene_rect.size-Vector2.ONE*4
-		world_frame.size=scene_rect.size
+		world_frame.scale=Vector2.ONE
+		var insets:=_world_safe_insets()
+		world_frame.position=Vector2(insets.x+2,insets.y+2)
+		world_extent=available-Vector2(insets.x+insets.z+8,insets.y+insets.w+8)
+		world_frame.size=world_extent+Vector2.ONE*4
 	else:
-		# Desktop dedicates all available play area to one authored world.
-		# Cinematics retain the same 960x540 contract on compact screens.
 		world_frame.size=Vector2(980,560)
-		if compact_layout:
-			inventory_handle.position=Vector2(12,available.y-56)
-			inventory_handle.size=Vector2(available.x-24,44)
-		else:
-			inventory_handle.position=Vector2(available.x-224,12)
-			inventory_handle.size=Vector2(212,44)
-		inventory_dock.position=Vector2(12,available.y-88)
-		inventory_dock.size=Vector2(available.x-24,76)
-		var bottom := available.y-12
-		if inventory_dock.visible: bottom=inventory_dock.position.y-12
-		elif compact_layout and inventory_handle.visible: bottom=inventory_handle.position.y-12
-		var world_scale := minf((available.x-24)/980.0,maxf(1,bottom-64)/560.0)
+		var world_scale:=minf((available.x-4)/980.0,(available.y-4)/560.0)
 		world_frame.scale=Vector2.ONE*world_scale
-		world_frame.position=Vector2((available.x-980*world_scale)/2,64+(bottom-64-560*world_scale)/2)
-	var tasks_right: float = inventory_handle.position.x-8 if available.x>available.y and inventory_handle.visible else (available.x-_world_safe_insets().z-8 if compact else available.x-mobile_back.position.x)
-	world_tasks.position=Vector2(tasks_right-84,mobile_back.position.y)
-	world_tasks.size=Vector2(84,44)
-	# A hidden phone mode retains the world viewport/camera as well as its actor.
-	# Only visible world resize or authored ownership can reframe exploration.
-	if world_frame.visible: _configure_world_surface(world_extent,compact)
+		world_frame.position=(available-Vector2(980,560)*world_scale)/2
+	# The world rectangle never depends on inventory contents or a bag-open flag.
+	if world_frame.visible:_configure_world_surface(world_extent,compact)
+	var play_rect:=Rect2(world_frame.position+Vector2.ONE*margin*world_frame.scale,world_extent*world_frame.scale)
+	var row_y:=play_rect.end.y-52
+	world_tasks.position=Vector2(play_rect.position.x+8,row_y)
+	world_tasks.size=Vector2(44,44)
+	world_mode.position=Vector2(play_rect.position.x+60,row_y)
+	world_mode.size=Vector2(44,44)
+	world_mode.set("glyph","dark" if State.d.native.mode=="dark" else "light")
+	world_mode.tooltip_text="深色观察 · 切换为浅色操作" if State.d.native.mode=="dark" else "浅色操作 · 切换为深色观察"
+	world_mode.queue_redraw()
+	mobile_back.position=Vector2(play_rect.end.x-52,row_y)
+	mobile_back.size=Vector2(44,44)
+	inventory_dock.position=Vector2(play_rect.position.x+112,row_y)
+	inventory_dock.size=Vector2(maxf(44,play_rect.size.x-172),44)
+	# Retained for old callers; no visible bag button and no layout side effect.
+	inventory_handle.position=world_tasks.position
+	inventory_handle.size=Vector2(44,44)
 	var dock_rect:=inventory_dock.get_global_rect()
 	if dock_rect!=inventory_dock_rect:
 		for button in inventory_buttons.get_children(): button.cancel_gesture()
@@ -757,6 +773,12 @@ func _hide_notice_surface() -> void:
 func _layout_story_caption() -> void:
 	if not is_instance_valid(story_caption):return
 	if story_caption_time<=0:
+		if story_caption_surface=="world" and is_instance_valid(world) and world.subtitle==story_caption_line.text:
+			world.subtitle="";world.subtitle_left=0;world.queue_redraw()
+		story_caption_surface="";story_caption.session=null;story_caption.tick();return
+	# The rehearsal owns its stage-mounted prompter and performance subtitles.
+	# A still-live world line must not fall back to a second window-space card.
+	if is_instance_valid(active_game) and active_game.get_script()!=null and active_game.get_script().resource_path=="res://scripts/games/theater_shadow_rehearsal.gd":
 		if story_caption_surface=="world" and is_instance_valid(world) and world.subtitle==story_caption_line.text:
 			world.subtitle="";world.subtitle_left=0;world.queue_redraw()
 		story_caption_surface="";story_caption.session=null;story_caption.tick();return
@@ -922,6 +944,7 @@ func _refresh() -> void:
 	if not await _content_ready(): return
 	rebuild_pending = false
 	if State.d.is_empty(): return
+	_sync_story_hosts()
 	_validate_library_reveal()
 	# Refresh authority without remounting or resetting the current draft.
 	if is_instance_valid(modal) and modal.has_method("sync_authority"):
@@ -956,8 +979,9 @@ func _refresh() -> void:
 		phone_builder.connect("page_requested",_on_phone_page)
 		if phone_builder.has_signal("presentation_requested"): phone_builder.connect("presentation_requested",_play_presentation_cue)
 		if phone_builder.has_signal("document_requested"): phone_builder.connect("document_requested",_open_phone_document)
-	if later_phone_builder == null and ResourceLoader.exists("res://scripts/ui/chapter3_phone_pages.gd"):
-		later_phone_builder = load("res://scripts/ui/chapter3_phone_pages.gd").new()
+	var later_page: bool=_uses_later_phone_builder(page)
+	if later_page and later_phone_builder == null and ResourceLoader.exists(LATER_PHONE_BUILDER_SCRIPT):
+		later_phone_builder = load(LATER_PHONE_BUILDER_SCRIPT).new()
 		later_phone_builder.connect("action_requested",_on_phone_action)
 		later_phone_builder.connect("page_requested",_on_phone_page)
 		if later_phone_builder.has_signal("presentation_requested"): later_phone_builder.connect("presentation_requested",_play_presentation_cue)
@@ -965,7 +989,7 @@ func _refresh() -> void:
 		phone_builder.entry_session=State.get_phone_entry_session()
 		phone_builder.home_desk=State.get_home_desk_controller()
 	var source_entry_loading: bool=phone_builder!=null and phone_builder.entry_session.family=="zjuding" and phone_builder.entry_session.phase!="ready"
-	if later_phone_builder and not source_entry_loading: custom_body = later_phone_builder.build(page,view,State.d)
+	if later_page and later_phone_builder and not source_entry_loading: custom_body = later_phone_builder.build(page,view,State.d)
 	if custom_body == null and phone_builder: custom_body = phone_builder.build(page,view,State.d)
 	var bare := page in ["alarm","desktop","ending"]
 	status_row.visible = false
@@ -986,7 +1010,13 @@ func _refresh() -> void:
 		handled_action_ids = custom_body.get_meta("handled_action_ids",[])
 		if (page == "phone_home" or page == "desktop") and not custom_body.get_meta("handles_app_grid",false): _add_app_grid(page_body)
 	else:
-		if view.has("art") and ResourceLoader.exists(State.asset(str(view.art))):
+		if view.has("art") and preload("res://scripts/presentation/source_tiled_texture.gd").supports(State.asset(str(view.art))):
+			var artwork=preload("res://scripts/presentation/source_tiled_view.gd").new()
+			artwork.name="SourceTiledNarrativeArt"
+			artwork.configure(State.asset(str(view.art)),bool(view.get("mirror_art",false)))
+			artwork.custom_minimum_size=Vector2(378,180)
+			page_body.add_child(artwork)
+		elif view.has("art") and ResourceLoader.exists(State.asset(str(view.art))):
 			var artwork := TextureRect.new()
 			artwork.texture = load(State.asset(str(view.art)))
 			artwork.flip_h = bool(view.get("mirror_art",false))
@@ -1022,7 +1052,10 @@ func _refresh() -> void:
 		var button := _button(str(action.get("label",action.id)),func(): _invoke_action(copy))
 		button.disabled = bool(action.get("disabled",false))
 		page_body.add_child(button)
-	if not str(n.scene).is_empty():
+	# Reconstructed phone apps own their viewport and inner scrolling. A second
+	# scene-return row below them scrolls the entire phone, including its header.
+	# The shared bottom-right PhoneWorldReturn already exposes that same action.
+	if not str(n.scene).is_empty() and not (custom_body and custom_body.get_meta("source_page",false)):
 		page_body.add_child(_button("返回现场",_show_world_mobile))
 	_refresh_inventory_dock()
 	_refresh_control_center()
@@ -1187,7 +1220,7 @@ func _begin_room302_studio(device: Control) -> void:
 	if modal_previous_focus == null:
 		var focused: Control = world_viewport.gui_get_focus_owner()
 		if focused != null: modal_previous_focus = weakref(focused)
-	for control: Control in [phone,world_frame,mobile_back,phone_world_return,world_tasks,inventory_handle,inventory_dock,chapter_label,toast]:
+	for control: Control in [phone,world_frame,mobile_back,phone_world_return,world_tasks,world_mode,inventory_handle,inventory_dock,chapter_label,toast]:
 		room302_shell_restore.visibility[control] = control.visible
 		control.hide()
 	_cancel_surface_gestures()
@@ -1253,13 +1286,15 @@ func _invoke_action(action: Dictionary) -> void:
 		_show_form(action)
 	else: State.act(str(action.id),action.get("value"))
 
-func _modal_base(title: String, surface: String="paper") -> VBoxContainer:
-	_cancel_world_effect()
+func _modal_base(title: String,surface: String="paper",preserve_departure: bool=false) -> VBoxContainer:
+	if is_instance_valid(world): world.cancel_exploration_gestures()
+	if not preserve_departure or not _theater_departure_active(): _cancel_world_effect()
 	_close_modal(_room302_studio_active())
 	var previous_focus = get_viewport().gui_get_focus_owner()
 	_cancel_surface_gestures()
 	modal_previous_focus = weakref(previous_focus) if previous_focus != null else null
 	modal = ColorRect.new()
+	NativeUi.enable_scale_aware_text(modal)
 	modal.name = "NativeModalOverlay"
 	modal.focus_mode = Control.FOCUS_ALL
 	modal.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1347,9 +1382,8 @@ func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
 func _input(event: InputEvent) -> void:
 	_room302_observe_input(event)
 	_sync_inventory_dock_input()
-	if not _room302_studio_active() and is_instance_valid(world):
-		if world.handle_root_kayak_pointer(event) or world.handle_root_exploration_pointer(event):
-			get_viewport().set_input_as_handled(); return
+	if not _room302_studio_active() and is_instance_valid(world) and (world.handle_root_kayak_pointer(event) or world.handle_root_exploration_pointer(event)):
+		get_viewport().set_input_as_handled(); return
 	if not is_instance_valid(modal) or not event is InputEventKey or not event.pressed: return
 	if modal.has_method("handle_key") and modal.handle_key(event):
 		get_viewport().set_input_as_handled();return
@@ -1357,7 +1391,8 @@ func _input(event: InputEvent) -> void:
 	for choice in modal.find_children("*","OptionButton",true,false):
 		if choice.get_popup().visible: return
 	if event.keycode == KEY_ESCAPE:
-		_close_modal()
+		if is_instance_valid(object_focus):object_focus.request_close()
+		else:_close_modal()
 		get_viewport().set_input_as_handled()
 		return
 	var focused = get_viewport().gui_get_focus_owner()
@@ -1376,6 +1411,11 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _close_modal(force_studio: bool = false) -> void:
+	if is_instance_valid(object_focus):
+		# Callers that replace a modal rely on synchronous disposal. The user's
+		# back button and Escape instead request the reversible camera transition.
+		object_focus.request_close(true)
+		return
 	if not (force_studio and _room302_studio_active()) and is_instance_valid(modal) and modal.has_method("can_close") and not modal.can_close(): return
 	if _room302_studio_active(): room302_studio.cancel_input()
 	if is_instance_valid(modal) and is_instance_valid(world): world.cancel_exploration_gestures()
@@ -1409,14 +1449,14 @@ func _close_modal(force_studio: bool = false) -> void:
 		if not story_owned and is_instance_valid(audio_director): audio_director.cue("theater_decoy_inspect_closed")
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(is_instance_valid(active_game) or is_instance_valid(phone_document))
 
-func _open_c3_device(kind: String) -> void:
+func _open_c3_device(kind: String, fresh_chest_scan := false) -> void:
 	if is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document): return
 	if not is_instance_valid(world) or world._interaction_presentation_blocks(): return
 	if not world_frame.is_visible_in_tree(): _show_world_mobile()
 	# A world device returns keyboard control to its originating SubViewport,
 	# rather than a stale phone/root focus owner after Escape.
-	modal_previous_focus=weakref(world)
 	_cancel_surface_gestures()
+	modal_previous_focus=weakref(world)
 	modal=Control.new()
 	modal.name="C3WorldDeviceOverlay"
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1425,14 +1465,19 @@ func _open_c3_device(kind: String) -> void:
 	modal.z_index=100
 	add_child(modal)
 	var canteen_device: bool=kind.begins_with("drink:") or kind in ["menu","bike"]
-	var panel_script: String="res://scripts/ui/c3_canteen_device_panel.gd" if canteen_device else "res://scripts/ui/c3_mixer_panel.gd" if kind=="mixer" else "res://scripts/ui/c3_theater_device_panel.gd"
+	var panel_script: String="res://scripts/ui/theater_chest_closeup.gd" if kind=="chest" else "res://scripts/ui/c3_canteen_device_panel.gd" if canteen_device else "res://scripts/ui/c3_mixer_panel.gd" if kind=="mixer" else "res://scripts/ui/c3_theater_device_panel.gd"
 	c3_device_panel=load(panel_script).new()
+	if kind=="chest":c3_device_panel.set_meta("scan_just_accepted",fresh_chest_scan)
 	c3_device_panel.name="C3WorldDevicePanel"
 	modal.add_child(c3_device_panel)
-	c3_device_panel.closed.connect(func(_reason: String):
-		if is_instance_valid(c3_device_panel):
-			c3_device_panel=null
-			_close_modal())
+	var opened_panel: Control=c3_device_panel
+	c3_device_panel.closed.connect(func(reason: String):
+		if c3_device_panel!=opened_panel:return
+		if kind=="chest" and is_instance_valid(object_focus):
+			object_focus.request_close(reason in ["context_changed","focus_lost","hidden"])
+			return
+		c3_device_panel=null
+		_close_modal())
 	# Pause only the ordinary shell notice before this device takes its row.
 	_sync_notice_remaining();_hide_notice_surface()
 	world.subtitle="";world.subtitle_left=0
@@ -1445,6 +1490,22 @@ func _open_c3_device(kind: String) -> void:
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
 	_layout_modal()
 	modal.grab_focus()
+	if kind=="chest":
+		object_focus=preload("res://scripts/presentation/world_object_focus.gd").new()
+		add_child(object_focus)
+		object_focus.finished.connect(func():
+			object_focus=null
+			_close_modal())
+		# Source geometry is the camera anchor; it cannot relocate the player
+		# or change the scanner's source proximity and item validation.
+		var chest_bounds:=Rect2()
+		for target: Dictionary in State.get_targets("theater_interior"):
+			if str(target.get("id","")) in ["theater_prop_box","theater_prop_scanner"] and target.get("bounds") is Array:
+				var b: Array=target.bounds
+				var bounds:=Rect2(float(b[0]),float(b[1]),float(b[2]),float(b[3]))
+				chest_bounds=chest_bounds.merge(bounds) if chest_bounds.has_area() else bounds
+		if not chest_bounds.has_area():chest_bounds=Rect2(world.player-Vector2.ONE,Vector2.ONE*2)
+		object_focus.setup(world,c3_device_panel,reader,chest_bounds)
 
 func _show_apps() -> void:
 	_close_modal()
@@ -1452,16 +1513,8 @@ func _show_apps() -> void:
 	State.open_page("phone_home")
 
 func _toggle_world_inventory() -> void:
-	# Opening the bag cancels movement, not the handle's keyboard focus.
-	if is_instance_valid(world): world.cancel_exploration_gestures()
-	for button in inventory_buttons.get_children(): button.cancel_gesture()
-	compact_inventory_open=not compact_inventory_open
-	_layout()
-	# A collapsed bag returns Space to the world; opening keeps its keyboard
-	# navigation on the handle. Reuse the existing presentation/input gates.
-	if compact_inventory_open or not is_instance_valid(world) or not world_frame.is_visible_in_tree(): return
-	if _inventory_dock_input_blocked(): return
-	world.grab_focus()
+	# Legacy queued callers cannot resize the world or expose a second bag.
+	return
 
 func _inventory_dock_available() -> bool:
 	return inventory_buttons.get_child_count()>0 and not (State.d.flags.checkinDone and not State.d.actOne.inventoryRecovered)
@@ -1477,9 +1530,11 @@ func _sync_inventory_dock_input() -> void:
 	if is_instance_valid(active_game):
 		inventory_dock.hide(); inventory_handle.hide()
 		if is_instance_valid(world_tasks): world_tasks.hide()
+		if is_instance_valid(world_mode):world_mode.hide()
 	var blocked:=_inventory_dock_input_blocked()
 	inventory_handle.disabled=blocked
 	if is_instance_valid(world_tasks): world_tasks.disabled=blocked
+	if is_instance_valid(world_mode):world_mode.disabled=blocked
 	var navigation_blocked := _surface_navigation_blocked()
 	# This retained phone control is also the explicit way to leave the shelf
 	# reveal. Other dialogue, modal and device owners remain blocking.
@@ -1507,8 +1562,10 @@ func _refresh_inventory_dock() -> void:
 		var button = load("res://scripts/ui/world_inventory_item.gd").new()
 		button.name="WorldItem_"+id
 		button.item_id = id
-		button.text = str(item.name)
-		button.custom_minimum_size = Vector2(126,48)
+		button.text = ""
+		button.tooltip_text=str(item.name)
+		button.accessibility_name=str(item.name)
+		button.custom_minimum_size = Vector2(44,44)
 		button.clip_text=true
 		button.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
 		button.alignment=HORIZONTAL_ALIGNMENT_LEFT
@@ -1516,7 +1573,7 @@ func _refresh_inventory_dock() -> void:
 		if is_instance_valid(phone_chrome):
 			var icon: Control=phone_chrome._make_icon(button,id,28)
 			icon.name="WorldItemArtwork"
-			icon.position=Vector2(8,10)
+			icon.position=Vector2(8,8)
 		button.gestures=inventory_gestures
 		button.can_combine=func(from_id: String,to_id: String) -> bool:
 			return world_frame.is_visible_in_tree() and not _inventory_dock_input_blocked() and bool(State.d.items.get(from_id,false)) and bool(State.d.items.get(to_id,false))
@@ -1537,9 +1594,7 @@ func _refresh_inventory_dock() -> void:
 
 func _style_world_item(button: Button, selected: bool) -> void:
 	Typography.apply_body(button)
-	NativeUi.apply_button(button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.CORAL if selected else CampusMaterial.PAPER_EDGE,0,2 if selected else 1,14,Vector2(8,6))
-	for state: String in ["normal","hover","pressed","hover_pressed","disabled"]:
-		button.get_theme_stylebox(state).content_margin_left=42
+	preload("res://scripts/ui/world_phone_launcher.gd").apply_slot_style(button,selected)
 	button.set_meta("selected_item",selected)
 
 func _inspect_item(item: Dictionary) -> void:
@@ -1737,7 +1792,7 @@ func _show_settings() -> void:
 	# Phone chrome already blocks this entry; the native F10 shortcut follows
 	# the same rule instead of mounting a second input owner over a live run.
 	if is_instance_valid(active_game): return
-	var box := _modal_base("控制中心")
+	var box := _modal_base("控制中心","paper",true)
 	box.add_child(_button("当前：%s → 切换%s" % ["深色观察" if State.d.native.mode == "dark" else "浅色操作","浅色操作" if State.d.native.mode == "dark" else "深色观察"],func(): State.toggle_mode(); _show_settings()))
 	save_progress_button = _button("保存进度", _save_progress)
 	save_progress_button.name = "SaveNativeProgress"
@@ -1926,9 +1981,9 @@ func _open_game(config: Dictionary) -> void:
 func _retire_progressive_game(owner: Control) -> void:
 	if not is_instance_valid(owner) or owner.get_meta("progressive_session_retired",false): return
 	var script: Script = owner.get_script()
-	if script == null or script.resource_path != "res://scripts/games/progressive_transport.gd": return
+	if script == null or script.resource_path not in ["res://scripts/games/progressive_transport.gd","res://scripts/games/theater_shadow_rehearsal.gd"]: return
 	var request: Variant = owner.get("config")
-	if not request is Dictionary or request.get("kind","") != "progressive_transport": return
+	if not request is Dictionary or request.get("kind","") not in ["progressive_transport","theater_shadow_rehearsal"]: return
 	var session: Variant = request.get("session",{})
 	if not session is Dictionary: return
 	owner.set_meta("progressive_session_retired",true)
@@ -1961,6 +2016,8 @@ func _open_game_now(config: Dictionary) -> void:
 	var path := str(config.get("script","res://scripts/ui/minigame_host.gd"))
 	if config.get("kind","") == "progressive_transport":
 		path = "res://scripts/games/progressive_transport.gd"
+	elif config.get("kind","") == "theater_shadow_rehearsal":
+		path = "res://scripts/games/theater_shadow_rehearsal.gd"
 	if not ResourceLoader.exists(path):
 		_feedback("该原生小游戏尚未接入，剧情未前进。")
 		return
@@ -2255,7 +2312,7 @@ func _sync_selected_world_overlay() -> void:
 	# Transparent reading surfaces own attention, not a new camera/layout.
 	# Preserve visibility-derived world bounds and existing modal input blocking.
 	var reading: bool = is_instance_valid(modal_panel) and modal_panel.has_meta("selected_surface")
-	for chrome: Control in [mobile_back,world_tasks,inventory_handle,inventory_dock]:
+	for chrome: Control in [mobile_back,world_tasks,world_mode,inventory_handle,inventory_dock]:
 		if is_instance_valid(chrome): chrome.modulate.a=0.0 if reading else 1.0
 
 func _process(delta: float) -> void:
@@ -2299,13 +2356,18 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		var focused := get_viewport().gui_get_focus_owner()
+		if event.keycode==KEY_ESCAPE and mobile_world and is_instance_valid(focused) and inventory_buttons.is_ancestor_of(focused):
+			get_viewport().gui_release_focus()
+			_focus_world_surface()
+			get_viewport().set_input_as_handled()
+			return
 		if event.keycode == KEY_P and not event.ctrl_pressed and not event.alt_pressed and not event.meta_pressed and not (focused is LineEdit or focused is TextEdit):
 			if mobile_world: _show_phone_surface()
 			else: _return_from_phone()
 			get_viewport().set_input_as_handled()
 			return
 		if event.keycode == KEY_ESCAPE and not mobile_world:
-			_return_from_phone()
+			_back_from_phone()
 			get_viewport().set_input_as_handled()
 			return
 		if event.keycode == KEY_F10: _show_settings()
@@ -2325,24 +2387,51 @@ func _read_runtime_state() -> Dictionary:
 	snapshot.native["host"] = {"phone_modal_open":is_instance_valid(modal) or is_instance_valid(phone_document) or bool(State.d.ui.controlCenterOpen),"minigame_open":is_instance_valid(active_game),"focused":get_window().has_focus(),"world_visible":is_instance_valid(world) and world_frame.is_visible_in_tree(),"world_scene":str(world.scene_id) if is_instance_valid(world) else "","world_display_scale":world_frame.scale.x if is_instance_valid(world_frame) else 1.0,"library_stamp_active":_library_stamp_presentation_active()}
 	return snapshot
 
+func _uses_later_phone_builder(page: String) -> bool:
+	return page in ["c3_journal","c3_journal_camera","c3_ticket_post","c35_recovery","c35_journal","c35_photos","c35_voice","c35_official","c35_messages","c35_network"] or (page=="photos" and State.d.qizhenLake.phase=="complete" and not State.d.chapterThreeInterlude.completed)
+
+func _story_host_active(host: Control, needed: bool) -> void:
+	if not is_instance_valid(host): return
+	# Keep an already-used host for returns, but stop its state snapshots and
+	# frame polling outside its owning content. Reset/import cannot leave a
+	# hidden old dialogue, paper tail or camera owner processing in Chapter 1.
+	if host.has_meta("content_scope_active") and bool(host.get_meta("content_scope_active"))==needed: return
+	if not needed: host.reset()
+	host.set_meta("content_scope_active",needed)
+	host.set_process(needed)
+
+func _sync_story_hosts() -> void:
+	# Call only after _content_ready (or Main's initial Web admission). The
+	# controller's opening session can belong to Chapter 2 at seat 022; checking
+	# chapter >= 3 would strand the real Library -> Canteen handoff.
+	if State.d.is_empty() or not is_instance_valid(world): return
+	var scene: String=str(State.d.native.get("scene",""))
+	var needs_library: bool=int(State.d.native.chapter)==2 and str(State.d.ui.libraryFinalsPhase)!="idle"
+	var needs_scene: bool=scene=="canteen_interior" or State.get_scene_session()!=null
+	var needs_narrative: bool=scene in ["canteen_interior","theater_interior","campus_qizhen_loop"] or State.get_c3_narrative_session()!=null
+	if needs_narrative and ResourceLoader.exists(C3_NARRATIVE_HOST_SCRIPT) and c3_narrative_host==null:
+		c3_narrative_host=load(C3_NARRATIVE_HOST_SCRIPT).new(); add_child(c3_narrative_host)
+		c3_narrative_host.cinematic_started.connect(_layout)
+		c3_narrative_host.setup(world,func() -> Dictionary: return State.d,State.get_c3_narrative_session,State.act,_game_presentation,_read_runtime_state)
+		if c3_narrative_host.has_signal("inspect_requested"): c3_narrative_host.inspect_requested.connect(_inspect_item_by_id)
+	if needs_library and ResourceLoader.exists(LIBRARY_STORY_HOST_SCRIPT) and library_story_host==null:
+		library_story_host=load(LIBRARY_STORY_HOST_SCRIPT).new(); add_child(library_story_host)
+		library_story_host.setup(func() -> Dictionary: return State.d,State.get_library_story_session,State.act,_game_presentation,_read_runtime_state)
+	if needs_scene and ResourceLoader.exists(C3_SCENE_HOST_SCRIPT) and c3_scene_host == null:
+		c3_scene_host=load(C3_SCENE_HOST_SCRIPT).new()
+		add_child(c3_scene_host)
+		c3_scene_host.cinematic_started.connect(_layout)
+		c3_scene_host.setup(world,func() -> Dictionary: return State.d,State.get_scene_session,State.act,_game_presentation,_read_runtime_state)
+	_story_host_active(library_story_host,needs_library)
+	_story_host_active(c3_scene_host,needs_scene)
+	_story_host_active(c3_narrative_host,needs_narrative)
+
 func _setup_runtime_hosts() -> void:
 	if home_charging_host == null:
 		home_charging_host = load("res://scripts/media/home_charging_host.gd").new()
 		add_child(home_charging_host)
 		home_charging_host.setup(_read_runtime_state, func() -> Dictionary: return State.d, State.get_home_charging_session, State.act)
-	if ResourceLoader.exists("res://scripts/presentation/c3_narrative_host.gd") and c3_narrative_host==null:
-		c3_narrative_host=load("res://scripts/presentation/c3_narrative_host.gd").new(); add_child(c3_narrative_host)
-		c3_narrative_host.cinematic_started.connect(_layout)
-		c3_narrative_host.setup(world,func() -> Dictionary: return State.d,State.get_c3_narrative_session,State.act,_game_presentation,_read_runtime_state)
-		if c3_narrative_host.has_signal("inspect_requested"): c3_narrative_host.inspect_requested.connect(_inspect_item_by_id)
-	if ResourceLoader.exists("res://scripts/presentation/library_story_host.gd") and library_story_host==null:
-		library_story_host=load("res://scripts/presentation/library_story_host.gd").new(); add_child(library_story_host)
-		library_story_host.setup(func() -> Dictionary: return State.d,State.get_library_story_session,State.act,_game_presentation,_read_runtime_state)
-	if ResourceLoader.exists("res://scripts/presentation/c3_scene_host.gd") and c3_scene_host == null:
-		c3_scene_host=load("res://scripts/presentation/c3_scene_host.gd").new()
-		add_child(c3_scene_host)
-		c3_scene_host.cinematic_started.connect(_layout)
-		c3_scene_host.setup(world,func() -> Dictionary: return State.d,State.get_scene_session,State.act,_game_presentation,_read_runtime_state)
+	_sync_story_hosts()
 	if ResourceLoader.exists("res://scripts/media/audio_director.gd") and audio_director == null:
 		audio_director = load("res://scripts/media/audio_director.gd").new()
 		add_child(audio_director)
@@ -2377,6 +2466,34 @@ func _apply_media(config: Dictionary) -> void:
 
 func _cancel_world_effect() -> void:
 	if is_instance_valid(world_effect) and world_effect.has_method("cancel"): world_effect.cancel()
+
+func _theater_departure_active() -> bool:
+	return is_instance_valid(world_effect) and world_effect.get_script().resource_path=="res://scripts/presentation/theater_departure.gd"
+
+func _begin_theater_departure() -> bool:
+	if not is_instance_valid(world) or world.scene_id!="theater_interior" or str(State.d.theaterHunt.phase)!="complete": return false
+	if is_instance_valid(active_game) or is_instance_valid(world_effect) or State.story_input_locked(): return false
+	var effect: Control=load("res://scripts/presentation/theater_departure.gd").new()
+	world_effect=effect
+	world.add_child(effect)
+	effect.completed.connect(func():
+		if not is_instance_valid(effect) or world_effect!=effect:return
+		world_effect=null
+		effect.cancel()
+		State.act("c3_target:theater_exit")
+		_layout();_focus_world_surface.call_deferred()
+	)
+	effect.cancelled.connect(func(_reason: String):
+		if world_effect==effect:
+			world_effect=null
+			_layout();_focus_world_surface.call_deferred()
+	)
+	if not effect.setup(world,func() -> Dictionary: return State.d):
+		if world_effect==effect: world_effect=null
+		effect.cancel("unavailable")
+		return false
+	_layout()
+	return true
 
 func _open_world_effect(config: Dictionary) -> void:
 	if not await _content_ready(): return
@@ -2447,10 +2564,10 @@ func _reset_runtime_presentations() -> void:
 	if is_instance_valid(world):
 		world.world_key=""; world.scene_id=""; world.pending_teleport=Vector2.INF
 		world.guard_kind=""; world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO
-	if is_instance_valid(c3_narrative_host): c3_narrative_host.reset()
+	if is_instance_valid(c3_narrative_host): c3_narrative_host.reset(); c3_narrative_host.set_process(false); c3_narrative_host.set_meta("content_scope_active",false)
 	_close_phone_document()
-	if is_instance_valid(library_story_host): library_story_host.reset()
-	if is_instance_valid(c3_scene_host): c3_scene_host.reset()
+	if is_instance_valid(library_story_host): library_story_host.reset(); library_story_host.set_process(false); library_story_host.set_meta("content_scope_active",false)
+	if is_instance_valid(c3_scene_host): c3_scene_host.reset(); c3_scene_host.set_process(false); c3_scene_host.set_meta("content_scope_active",false)
 	if is_instance_valid(control_center): control_center.queue_free()
 	control_center=null
 	State.d.ui.controlCenterOpen=false
@@ -2503,7 +2620,8 @@ func _combine_inventory_items(a: String,b: String) -> void:
 func _on_phone_page(page: String) -> void:
 	_cancel_library_reveal()
 	if page=="control_center":
-		_cancel_world_effect()
+		if not _theater_departure_active():
+			_cancel_world_effect()
 		State.d.ui.controlCenterOpen=true
 		_refresh_control_center()
 		return
@@ -2572,6 +2690,7 @@ func shutdown() -> void:
 	# Native audio retires on the mixer thread. Await the real owners before
 	# immediate test/standalone exit instead of leaking a still-playing stream.
 	set_process(false)
+	if is_instance_valid(object_focus):object_focus.request_close(true)
 	if is_instance_valid(world): world.set_process(false)
 	if is_instance_valid(c3_scene_host): c3_scene_host.reset(); c3_scene_host.set_process(false)
 	if is_instance_valid(library_story_host): library_story_host.reset(); library_story_host.set_process(false)

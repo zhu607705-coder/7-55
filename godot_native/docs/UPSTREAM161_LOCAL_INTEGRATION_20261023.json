@@ -1,0 +1,284 @@
+{
+  "schema": "755-upstream-local-integration-v1",
+  "date": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "createdAt": "2026-10-23T03:16:35.278404+00:00",
+  "request": "Merge current upstream into the active independent Godot version and preserve existing local changes; no touch-cancel UI or extra failure penalty.",
+  "git": {
+    "branch": "codex/progressive-world-puzzles-20261020",
+    "originalHead": "457087fe737e4ce0bb01d2bcb651297762a9ba45",
+    "localIntegrationMerge": "6baf0c830d0c8a547162f513af2217239301d649",
+    "head": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+    "upstreamMain": "6535351da0a06434bd36ef5dd3e245fe004609a9",
+    "pr161Head": "d4b4670b27c4ff7a65ac0057904e48db5f85833a",
+    "pr162Head": "98ed5e6af90bbdf611d4338dde5e10f86e15f714",
+    "remotePRsMerged": [
+      161,
+      162
+    ],
+    "remoteEvidence": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/remote-upstream.json",
+      "sha256": "26f70f3cc7f52f67cc22944e98da316174030dc1e8a072edb70c275f1367458d",
+      "bytes": 2143
+    },
+    "privateTrackedBranchNoNewCommits": "313885d6056de0e4fe3052469643627d23c2c021",
+    "privateVerification": "Connector commit comparison; Git HTTPS credential transport was unavailable.",
+    "localWipCommittedOrUploaded": false,
+    "graphOnlyMainMerge": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/merge-backups/updates-20261023/main-ancestry-merge.json",
+      "sha256": "ef45e99208bcf249cbde99ba97254cb9ed98a7223e013697dcc693f48ad0bc71",
+      "bytes": 285
+    }
+  },
+  "preservation": {
+    "backupDirectory": "/Users/zhu/Library/Application Support/755-tools/merge-backups/updates-20261023",
+    "originalTrackedModified": 93,
+    "originalUntrackedFiles": 273,
+    "archiveSha256": "11b48ffe6ad11af7a629d653750c4e0a4af77d667e02575d87c701678479a7b8",
+    "stashRetained": "1c7d5e191fecca433e317f028a960f6c050d0c20",
+    "mergeTimeNonOverlappingFilesVerifiedByteIdentical": 343,
+    "finalByteIdenticalOfThose": 340,
+    "threeIntentionalFollowups": [
+      "c3_narrative_view.gd: honor the existing left-aligned caption request to clear the canteen door",
+      "world_phone_launcher.gd: ignore cancelled system releases without adding UI",
+      "test_mobile_floor_route.gd: assert ordinary tap recovery after cancellation"
+    ],
+    "evidence": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/merge-backups/updates-20261023/final-preservation.json",
+      "sha256": "da33744a0795d974ede6ce2b78988d0557700990eaea4cae1c7385aacdcc4784",
+      "bytes": 979
+    },
+    "rawCRLFAddonFilesRestored": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/merge-backups/updates-20261023/raw-byte-restoration.json",
+      "sha256": "56096b21784241248cd2c2053e1512eefddafb0a3266b41cd159571650b94657",
+      "bytes": 1534
+    },
+    "allFetchedPublicHeadsIntegrated": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/merge-backups/updates-20261023/preservation-and-ancestry.json",
+      "sha256": "83cfd3860acaa0031bd61f534b6507799616406335f087c6930ff429f952022a",
+      "bytes": 23369
+    }
+  },
+  "upstreamBehaviorIntegrated": [
+    "Pinned Godot 4.7.1 editor/template/tool baseline",
+    "Phone picker caption and post-import focus recovery",
+    "Bottom mobile interaction caption and read-only input observations",
+    "Opening or switching phone applications has no fixed battery charge; original network rules remain",
+    "C1 physical desk charging with explicit zero/one-percent legacy recovery",
+    "C1 original Tiyi branch and C2 account/contact/acquire/install update sequence",
+    "Source save version36 validation and old-save compatibility",
+    "Theater admission snapshot optimization and current source/CI tests"
+  ],
+  "localChoicesPreserved": [
+    "Original colored phone application art, names and real settings gear",
+    "Full-field dense ASCII Hanzi with no fixed top title/counter; existing38.85-second capture timing and1400ms grip",
+    "Bottom dialogue/interaction text, left-bottom tools and directly displayed items, right-bottom phone/map return",
+    "No permanent movement pad; tap clear floor or visible object, collision-aware approach, two-finger camera",
+    "Existing progressive world sidequests, scenes, assets, models and Apache project license",
+    "Failed interception continues its current round and retains earned material; no touch-cancel option added"
+  ],
+  "integrationFixes": [
+    {
+      "file": "scripts/ui/chapter3_world_layers.gd",
+      "change": "Pass actual render state to independent theater objects while retaining the small read-only admission snapshot."
+    },
+    {
+      "file": "scripts/presentation/c3_narrative_view.gd",
+      "change": "Honor the existing align_left request so bottom narrative text clears the source canteen exit."
+    },
+    {
+      "file": "scripts/platform/web_platform.gd",
+      "change": "Translate canvas system touchcancel into a cancelled native touch release before Godot4.7.1 ordinary-release handling; remove the hook on exit.",
+      "source": "https://raw.githubusercontent.com/godotengine/godot/4.7.1-stable/platform/web/js/libs/library_godot_input.js"
+    },
+    {
+      "file": "scripts/ui/world_phone_launcher.gd",
+      "change": "Clear a BaseButton press attempt on a cancelled release; retain normal enabled state, keyboard, pointer and fresh-tap behavior.",
+      "source": "https://raw.githubusercontent.com/godotengine/godot/4.7.1-stable/scene/gui/base_button.cpp"
+    },
+    {
+      "files": [
+        "tests/test_library_rule_action.gd",
+        "tests/test_library_reveal_handoff.gd",
+        "tests/test_phone_symbol_icons.gd"
+      ],
+      "change": "Adapt obsolete outside-world bag and fallback-launcher expectations to the preserved inline item/original app-art design; retain real shelf dragging, exact source icon checks and controller handoff assertions."
+    },
+    {
+      "file": "tools/verify_web_export.mjs",
+      "change": "Unite local/upstream scenarios, exercise the actual portrait-continuation button, await real input ownership observations, retain full Chrome stderr in an evidence file, and await real browser close before deleting its unique profile. Old failing attempts remain unchanged."
+    }
+  ],
+  "engine": {
+    "tested": "4.7.1.stable.official.a13da4feb",
+    "isolatedExecutable": "/Users/zhu/Library/Application Support/755-tools/engines/4.7.1/Godot.app/Contents/MacOS/Godot",
+    "existingApplicationReplaced": false,
+    "editorReceipt": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/engines/4.7.1/editor-install.json",
+      "sha256": "92e211a0b8105df7a003c79a53d7065f17ab913227d2ffc7aa3669af9d3696a6",
+      "bytes": 578
+    },
+    "webTemplateReceipt": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/engines/4.7.1/web-template-install.json",
+      "sha256": "e394977a1eff2b15615dbc1a7a9cdf56c6c62059e70e187bfe56e8746905cb0b",
+      "bytes": 1344
+    },
+    "templateVerification": "Official mirror partial ZIP extraction verified by each selected entry CRC/size/hash; no full1.28GB archive hash claim."
+  },
+  "validation": {
+    "native": {
+      "passed": true,
+      "stages": 501,
+      "report": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/native-final.json",
+        "sha256": "a1bb35b1313f78e748a801f98fb3cbe4e47ea6b8d99e56f14df43e34f9a51857",
+        "bytes": 462373
+      },
+      "originalFullAttempt": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/native-full.json",
+        "sha256": "f4169360b67430c41475df7ca1f44d9957f49c3c1ed02ba0f1aa78d8c1a32b17",
+        "bytes": 667487
+      },
+      "resumePlan": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/native-final-resume-plan.json",
+        "sha256": "efac323df9c0cf39fb22773bcea8887d7de5babb35d805235715ba90f451c491",
+        "bytes": 1727
+      },
+      "semantics": "474 completed unaffected stages retained; all27 failed/affected stages rerun against the corrected working tree. Original full attempt and5 failures retained."
+    },
+    "retainedWebRelease": {
+      "passed": true,
+      "validators": 38,
+      "ordinaryBrowserCases": 4,
+      "log": {
+        "path": "/tmp/755-pr161-release-20261023.log",
+        "sha256": "a52cbb73c2c851d5b935ee06480624fbb588a743ad5c6c8304ae847cd515e53e",
+        "bytes": 81911
+      }
+    },
+    "controllerCampaign": {
+      "report": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/continuity/campaign.json",
+        "sha256": "40feb4e922e5f707d4e9948681fc05f02d6155f6283d70702b965dfab7d4e4ef",
+        "bytes": 545230
+      },
+      "failures": 0,
+      "completedChapters": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "manual": false
+    },
+    "gpuMobile": {
+      "report": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/gpu-mobile/mobile-touch-captures.json",
+        "sha256": "1884419f43f68d12f08942f184663fc707ce4f7f871878143af077131b68b45c",
+        "bytes": 9464
+      },
+      "captures": 18,
+      "checks": 196,
+      "failures": 0,
+      "physicalDevice": false,
+      "provenance": "Actual Compatibility renderer on isolated4.7.1;18 views before final invisible cancel-handler and caption alignment fixes. Safe-area values are simulated."
+    },
+    "godotBrowser": [
+      {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/browser-world-ready/web-acceptance.json",
+        "sha256": "44784a3590519ed341c5a5d81c422a692aeb733a4aae5fe7031abc00cc5a6fa3",
+        "bytes": 689493,
+        "scenario": "mobile-world",
+        "checks": 553,
+        "caseIds": [
+          "touch-390"
+        ],
+        "passed": true,
+        "runnerSha256": "13100da2f51fece4985b30cca522c4413913dfb42693ae149af2bd474d37336a"
+      },
+      {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/browser-words-ready/web-acceptance.json",
+        "sha256": "313dedde4276fdc726cd2f9b816be69c2fa67c2cea0477e9e84d3835ef51e396",
+        "bytes": 530304,
+        "scenario": "words",
+        "checks": 543,
+        "caseIds": [
+          "desktop-1280"
+        ],
+        "passed": true,
+        "runnerSha256": "13100da2f51fece4985b30cca522c4413913dfb42693ae149af2bd474d37336a"
+      },
+      {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/browser-phone-ready/web-acceptance.json",
+        "sha256": "e6728fe4d03860b554a624239a1a04de294b9702b995b21f4135941e709192b5",
+        "bytes": 559183,
+        "scenario": "phone-recovery",
+        "checks": 569,
+        "caseIds": [
+          "touch-390"
+        ],
+        "passed": true,
+        "runnerSha256": "83fd23020c4e87a3815c257f8a2c00fd34caea885325b17bbfea720c1e147b77"
+      }
+    ],
+    "browserLifecycleUnitTests": {
+      "passed": true,
+      "tests": 22,
+      "report": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/browser-lifecycle-tests.log",
+        "sha256": "ce0d488652e778ab34a3cfc60483a1a7214504a836e2131e4bfdc4d0ab0bf735",
+        "bytes": 2101
+      }
+    },
+    "visualInspection": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/visual-review/image-cleanup.json",
+      "sha256": "3cd0bf3d6dbe59f91fb793ec513c67d726633f9f6c76eb4ff6395874fb9bc9f7",
+      "bytes": 35581
+    },
+    "knownLocalToolingLimit": "Linux-only ci-media-tools executor tests are not portable to macOS; exact upstream Linux CI completed successfully.",
+    "earlierAttemptsRetained": true,
+    "runnerCleanup": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/manual-runner-cleanup.json",
+      "sha256": "6acbb4b3a598ec2f5fc004ef2140df97124266f2f1cd8a0985657c3858d050d7",
+      "bytes": 1341
+    }
+  },
+  "export": {
+    "directory": "/Users/zhu/Downloads/755/godot_native/exports/web-upstream-ready-20261023",
+    "manifest": {
+      "path": "/Users/zhu/Downloads/755/godot_native/exports/web-upstream-ready-20261023/build-manifest.json",
+      "sha256": "fbf05a1d7a9467fedb818d0ad75c3d578f32c5a1a4daa8624673675f96037d9f",
+      "bytes": 73328
+    },
+    "sourceCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+    "dirtySource": true,
+    "sourceInputSha256": "ce286f34f6aba69332fa1516608b6c9021b0e4cb1e5134ec516488afab0d90e3",
+    "initialPayloadBytes": 99070066,
+    "initialPayloadLimitBytes": 100000000,
+    "totalPayloadBytes": 636353416,
+    "chapterPacks": 21,
+    "mode": "independent Godot WebAssembly/PCK, chapter content packs",
+    "localPreview": "http://127.0.0.1:5241/",
+    "publicLocalWipDeploymentClaimed": false,
+    "verifyOnly": {
+      "passed": true,
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/export-verify-only.log",
+        "sha256": "42a2c594904f3f4acff800ae81166abf9b57f3dfc8bbe7f8df9f6171a9535bbd",
+        "bytes": 725
+      }
+    },
+    "localPreviewSwitch": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/branch-updates-20261023/local-preview-switch.json",
+      "sha256": "7452d175b7fda4e18e5939365c0d86984dfc1c30829bde33a4b6239f8dc813ea",
+      "bytes": 1699
+    },
+    "qaServerStopped": true
+  },
+  "limitations": [
+    "Chromium touch emulation and native inset fixtures do not establish physical-device or WebKit/Gecko acceptance.",
+    "Automated controller campaign and selected browser paths do not establish a manual complete four-chapter playthrough.",
+    "Current local WIP is retained unstaged and was not uploaded by these merges. Public upstream main and this local working tree remain distinct candidates.",
+    "No forced reload of the user current browser round; refresh is needed to load the new local export."
+  ]
+}

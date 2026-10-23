@@ -61,6 +61,17 @@ func run() -> void:
 		surface.add_child(panel)
 		for i in 4: await process_frame
 		inspect(panel)
+		if page=="phone_home":
+			var launcher:Control=panel.find_child("HomeApp_settings",true,false)
+			check(launcher!=null,"actual launcher includes the settings app")
+			if launcher!=null:
+				for id: String in launcher.get_parent().get_meta("home_visible_app_ids"):
+					var app: Control=panel.find_child("HomeApp_"+id,true,false)
+					check(app!=null and app.get_node_or_null("OriginalAppArtwork_"+id)!=null,"available launcher app retains its original artwork: "+id)
+		if page=="zjuding":
+			for tab: String in ["ZjudingTab_home","ZjudingTab_messages"]:
+				var button: Control=panel.find_child(tab,true,false)
+				check(button!=null and button.get_node_or_null("NativeSymbolIcon")!=null,"actual navigation keeps its source icon: "+tab)
 		if page=="control_center":
 			var wifi:Button=panel.find_child("ControlNetwork_wifi",true,false)
 			var mark:Control=wifi.get_node_or_null("SourceWifiIcon")
@@ -80,7 +91,7 @@ func run() -> void:
 			var vibration:Button=panel.find_child("ControlToggle_1",true,false)
 			check(vibration.find_children("NativeSymbolIcon","",true,false).size()==1,"legitimate vibration source glyph keeps its separate role")
 		panel.queue_free(); await process_frame
-	check(marks>=7,"actual affected app surfaces include icon samples")
+	check(marks>=3,"actual navigation and control-center surfaces include their source glyph samples")
 	for symbol in Symbols.PATTERNS:
 		var button:=Button.new(); button.text=symbol; button.size=Vector2(48,48)
 		surface.add_child(button)
