@@ -30,8 +30,13 @@ const request = (host, ...ids) => host.request(JSON.stringify(ids));
 const retry = (host, ...ids) => host.retry(JSON.stringify(ids));
 const turn = () => new Promise(resolve => setImmediate(resolve));
 async function until(predicate, label) {
-  for (let index = 0; index < 500; index++) { if (predicate()) return; await turn(); }
-  throw new Error(`Timed out waiting for ${label}`);
+  // Real WebCrypto and the loader's timer yields need elapsed time, not a
+  // machine-dependent number of immediate-loop turns on a busy CI worker.
+  const deadline = performance.now() + 5000;
+  while (!predicate()) {
+    if (performance.now() >= deadline) throw new Error(`Timed out waiting for ${label}`);
+    await new Promise(resolve => setTimeout(resolve, 1));
+  }
 }
 async function quiet() { for (let index = 0; index < 5; index++) await turn(); }
 function response(id, overrides = {}) { return new Response(body(id), { status: 200, ...overrides }); }

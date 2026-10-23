@@ -1,5 +1,10 @@
 # 7:55 Release Assets
 
+## 20261024 — Original-repository merge delivery
+
+- Delivery: [7-55 PR #164](https://github.com/zhu607705-coder/7-55/pull/164), target [main](https://github.com/zhu607705-coder/7-55/tree/main); implementation [godot_native](godot_native/README.md). This merge carries the 20261023 source and asset batch, plus a bounded async test-wait correction and current delivery records.
+- No new artwork, font, third-party dependency or archive is introduced on this date. Original asset provenance, source hashes and earlier acceptance dates below remain historical evidence. Source merge does not establish a successful production deployment.
+
 ## 20261023 — Current Godot source review
 
 - Current source: [merged Godot PR #2](https://github.com/zhu607705-coder/7-55-godot/pull/2), merge `e66550c2be4f8d17eed0fcb2454d9a0730eda9fb`; original-repository sync: [7-55 PR #164](https://github.com/zhu607705-coder/7-55/pull/164). Implementation directory: [godot_native](godot_native/README.md). Both repositories are currently public.
