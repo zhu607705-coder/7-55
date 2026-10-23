@@ -181,16 +181,50 @@ check('only existing two full-store requests remain, no added getAll/key enumera
 });
 check('diagnostic source contains no filesystem sync, game save, write or public bridge hooks', () => assert(!/force_fs_sync|syncfs|save_game|__GODOT_755__|\.put\(|\.delete\(|\.clear\(/.test(source)));
 check('frame metadata does not expand observation identity and exhaust the original 160-row bound', () => assert(draft.includes('const identity = JSON.stringify([receipt, value?.saveDigest]);')));
-check('all selected original acceptance scenario invocations remain byte-preserved', () => {
-  for (const line of [
-  "    result = await freshCase(['mobile-world', 'phone-recovery'].includes(scenarios));",
-  "    if (scenarios === 'mobile-world') await mobileWorldCase();",
-  "    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir,",
-  "    else await portableSaveCase();",
-  "      if (scenarios === 'streaming') await streamingCase();",
-  "  const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280') && (!['mobile-world', 'phone-recovery'].includes(scenarios) || ['desktop-1280', 'touch-390', 'retina-touch-390'].includes(id)));"
-]) assert(draft.includes(line));
-});
+// Execute the current dispatch with inert scenario bodies. Adding a focused
+// scenario may extend the initializer/else chain without removing an original
+// acceptance path. Protect those paths by their actual calls and profile sets.
+const dispatchStart = draft.indexOf('    result = await freshCase(');
+const dispatchEnd = draft.indexOf("    if (scenarios === 'mobile-world') check(active.mobileWorld", dispatchStart);
+assert(dispatchStart >= 0 && dispatchEnd > dispatchStart);
+const dispatch = draft.slice(dispatchStart, dispatchEnd);
+const selectedExpression = draft.match(/^  const selected = (.+);$/m)?.[1];
+assert(selectedExpression);
+const baselineProfiles = ['desktop-1280', 'desktop-1440', 'touch-390', 'retina-1440', 'retina-touch-390', 'desktop-1920'];
+const focusedProfiles = ['desktop-1280', 'touch-390', 'retina-touch-390'];
+for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'phone-recovery', 'corners', 'checkin', 'words', 'durability', 'durability-switch', 'resource-loading']) {
+  const selected = vm.runInNewContext(selectedExpression, { only: 'all', scenarios });
+  const expectedProfiles = scenarios === 'streaming' ? ['desktop-1280'] : ['mobile-world', 'phone-recovery'].includes(scenarios) ? focusedProfiles : baselineProfiles;
+  check(`${scenarios}: original acceptance profile coverage remains exact`, () => assert.deepEqual(Array.from(selected, row => row[0]), expectedProfiles));
+  for (const [id, , , touch] of selected) {
+    const calls = [], initialized = [];
+    const context = { scenarios, id, touch, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
+    for (const name of ['snapshot', 'clickControl', 'clickPoint', 'renderPoint', 'poll', 'check', 'interval', 'screenshot', 'importSave', 'assertLayout', 'settings', 'saveProgressAndWait', 'startStory', 'press']) context[name] = () => {};
+    for (const name of ['mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async () => { calls.push(name); return {}; };
+    context.freshCase = async focused => { initialized.push(focused); return {}; };
+    await vm.runInNewContext(`(async () => { let result; ${dispatch} })()`, context);
+    const expected = [];
+    if (scenarios === 'mobile-world') expected.push('mobileWorldCase');
+    else if (scenarios === 'phone-recovery') expected.push('phoneRecoveryCase');
+    else expected.push('portableSaveCase');
+    if (scenarios === 'corners') expected.push('cornerNavigationCase');
+    if (scenarios === 'checkin') expected.push('checkinPresentationCase');
+    if (scenarios === 'resource-loading') expected.push('resourceLoadingCase');
+    if (scenarios === 'words') expected.push('c1Case');
+    if (id === 'desktop-1280') {
+      if (scenarios === 'all') expected.push('legacyCase', 'c1Case', 'fixtureCases');
+      if (['all', 'bike'].includes(scenarios)) expected.push('bikeCase');
+      if (['all', 'media'].includes(scenarios)) expected.push('mediaCase');
+      if (scenarios === 'durability') expected.push('durabilityCase');
+      if (scenarios === 'durability-switch') expected.push('durabilitySwitchCase');
+      if (scenarios === 'streaming') expected.push('streamingCase');
+    } else if (touch && scenarios === 'all') expected.push('c1Case');
+    check(`${scenarios}/${id}: original scenario bodies still execute exactly once`, () => {
+      assert.deepEqual(initialized, [['mobile-world', 'phone-recovery'].includes(scenarios)]);
+      assert.deepEqual(calls, expected);
+    });
+  }
+}
 const project = readFileSync(new URL('../project.godot', import.meta.url), 'utf8');
 const stateSource = readFileSync(new URL('../scripts/state.gd', import.meta.url), 'utf8');
 check('fixed key is grounded in current actual custom user directory and save path', () => { assert(project.includes('config/use_custom_user_dir=true')); assert(project.includes('config/custom_user_dir_name=\"SevenFiftyFiveNative\"')); assert(stateSource.includes('const SAVE_PATH := \"user://save.json\"')); });

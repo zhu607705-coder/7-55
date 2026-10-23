@@ -8,7 +8,7 @@
 
 当前 Godot 后续开发在[独立 Godot 库](https://github.com/zhu607705-coder/7-55-godot)进行，该库当前为公开库。2026-10-21 的本机候选包含图书馆、剧场独立物件、实体门通行、可重玩的《借扇成蝶》，以及点地行走和直接触摸物件的手机操作。网页构建从 `godot_native/` 导出独立 Godot WebAssembly；手机应用保持竖屏，地图和舞台提供横屏入口。构建与验收方式见 [Godot 浏览器交付](godot_native/docs/GODOT_WEB_RELEASE.md)。原公开站的发布状态与本机候选分开记录。
 
-2026-10-23 源码审阅候选（[Draft PR #2](https://github.com/zhu607705-coder/7-55-godot/pull/2)）位于 [`codex/godot-current-20261023`](https://github.com/zhu607705-coder/7-55-godot/tree/codex/godot-current-20261023)，实现目录为 [`godot_native/`](godot_native/README.md)。本次包括真实章节懒加载、gzip 传输与缓存、手机返回和认证对白、独立控件重建的学在浙大入口，以及此前保留的本地整合内容。聚焦验收和限制分别见[加载记录](godot_native/docs/PERFORMANCE_LAZY_LOADING_20261023.md)与[签到入口记录](godot_native/docs/NATIVE_LEARN_REBUILD_20261023.md)，素材来源见 [ASSETS.md](ASSETS.md)。本次为源码分支与 PR 交付，未生成新的 Release 归档或替换线上站点。
+2026-10-23 当前源码已通过 [Godot PR #2](https://github.com/zhu607705-coder/7-55-godot/pull/2) 合并，合并提交为 `e66550c2be4f8d17eed0fcb2454d9a0730eda9fb`；原库同步见 [7-55 PR #164](https://github.com/zhu607705-coder/7-55/pull/164)。实现目录为 [`godot_native/`](godot_native/README.md)，包括真实章节懒加载、gzip 传输与缓存、手机返回和认证对白、独立控件重建的学在浙大入口，以及此前保留的本地整合内容。聚焦验收和限制分别见[加载记录](godot_native/docs/PERFORMANCE_LAZY_LOADING_20261023.md)与[签到入口记录](godot_native/docs/NATIVE_LEARN_REBUILD_20261023.md)，素材来源见 [ASSETS.md](ASSETS.md)。本次未生成新的 Release 归档，源码合并不代表线上已替换；全量原生检查仍有未解决用例。
 
 2026-10-22 选定的双库8个PR已合并远端；本地后续整合见[合并记录](godot_native/docs/TWO_REPOSITORY_MERGES_20261022.json)与[手机操作适配验收](godot_native/docs/PR160_LOCAL_ADAPTATION_20261022.json)。本机 `exports/web-pr160-integrated-20261022/` 保留底部工具、直接展示的物品和右下角手机入口；未提交的本地修改尚未上传。寝室独立样段的人物比例见[尺寸校准](godot_native/docs/DORM_CHARACTER_SCALE_20261022.json)，后续开发采用[游戏技能参考规则](godot_native/docs/GAMEDEV_SKILLS_REFERENCE.md)。
 
