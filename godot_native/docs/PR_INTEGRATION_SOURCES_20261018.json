@@ -514,7 +514,10 @@
       "source_files": [
         {
           "path": ".github/workflows/qizhen-playable-example.yml",
-          "sha256": "e11c9185099ec3e3d33c465307c5bccf52aef7e23ef343ec563367bf416e6f70"
+          "sha256": "e11c9185099ec3e3d33c465307c5bccf52aef7e23ef343ec563367bf416e6f70",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr146/qizhen-playable-example.yml.source.txt",
+          "adapted_sha256": "922ffa3a330ba90fe4b865d595c5a5f5cc547c5891e3878262695ee4246548c8",
+          "reason": "2026-10-22 user-requested Godot 4.7.1 baseline: adapt only the official editor installation label, release URL, executable filename and archive SHA256 verification. The original PR workflow bytes are preserved exactly from merged main 32dfc73c113de980ca42b1c48a893d068e122127 and still match sha256; triggers, permissions, test/capture commands, project resources and Blender remain unchanged. This original workflow had no archive digest check; the adaptation adds the verified official ZIP SHA256 before extraction."
         },
         {
           "path": "examples/qizhen_playable_chase/.gitignore",
@@ -959,7 +962,10 @@
       "source_files": [
         {
           "path": ".github/workflows/qizhen-large-world-example.yml",
-          "sha256": "c9e9f4cb7f647db3a6b1320eca113f80b331425ea87cba545bde47b96fda2559"
+          "sha256": "c9e9f4cb7f647db3a6b1320eca113f80b331425ea87cba545bde47b96fda2559",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr147/qizhen-large-world-example.yml.source.txt",
+          "adapted_sha256": "8199392d45a04777fe08273a4c30247184651d989813eec4100d824c40ddacc1",
+          "reason": "2026-10-22 user-requested Godot 4.7.1 baseline: adapt only the official editor installation label, release URL, executable filename and archive SHA256 verification. The original PR workflow bytes are preserved exactly from merged main 32dfc73c113de980ca42b1c48a893d068e122127 and still match sha256; triggers, permissions, test/capture commands, project resources and Blender remain unchanged."
         },
         {
           "path": "examples/qizhen_large_world/.gitignore",
@@ -1228,7 +1234,10 @@
       "source_files": [
         {
           "path": ".github/workflows/blender-stair-sample.yml",
-          "sha256": "1068ca344e171aa4318fc29ed9c35b7b841809f560004677e117e7554e7b76e0"
+          "sha256": "1068ca344e171aa4318fc29ed9c35b7b841809f560004677e117e7554e7b76e0",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr148/blender-stair-sample.yml.source.txt",
+          "adapted_sha256": "dee48513f811bc3dc170a2c1a722638dc6f9e8224b6a38ad3c68e223eb2d89a9",
+          "reason": "2026-10-22 user-requested Godot 4.7.1 baseline: adapt only the official editor installation label, release URL, executable filename and archive SHA256 verification. The original PR workflow bytes are preserved exactly from merged main 32dfc73c113de980ca42b1c48a893d068e122127 and still match sha256; triggers, permissions, test/capture commands, project resources and Blender remain unchanged."
         },
         {
           "path": "examples/blender_stair_sample/ASSET_LICENSES.md",

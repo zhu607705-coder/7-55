@@ -34,9 +34,10 @@ jobs:
           node-version: '24'
       - name: Install existing pinned native renderer
         run: |
-          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo "c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip" | sha256sum --check
           unzip -q /tmp/godot.zip -d /tmp/godot
-          sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
           command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
       - name: Synchronize and import actual game assets
         run: |

@@ -528,3 +528,9 @@
 .tiyi-47.is-taken {
   text-shadow: none;
 }
+.tiyi-outdated-blank {
+  position: absolute;
+  inset: 39% 0 0;
+  background: #fafafa;
+  pointer-events: none;
+}

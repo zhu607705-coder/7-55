@@ -43,12 +43,8 @@ jobs:
 
       - name: Ensure FFmpeg audio validation tools
         run: |
-          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
-            sudo apt-get update
-            sudo apt-get install --yes --no-install-recommends ffmpeg
-          fi
-          ffmpeg -version
-          ffprobe -version
+          node scripts/test-ci-media-tools.mjs
+          node scripts/ensure-ci-media-tools.mjs
 
       - name: Run release validation suite
         run: npm run validate:release

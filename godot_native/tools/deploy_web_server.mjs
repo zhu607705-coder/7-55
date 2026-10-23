@@ -67,7 +67,7 @@ if (!rollback) {
   const manifestFile = all.find(file => file.path === 'build-manifest.json');
   if (!manifestFile) throw new Error('Missing build-manifest.json');
   manifest = JSON.parse(fs.readFileSync(manifestFile.filename, 'utf8'));
-  if (manifest.runtime !== 'godot-web' || manifest.production !== true || manifest.chapterShortcuts !== false || manifest.threads !== false || !/^[0-9a-f]{40}$/.test(manifest.sourceCommit || '') || !Array.isArray(manifest.files) || manifest.files.length < 3) throw new Error('Manifest is not an independent production Godot Web export');
+  if (manifest.runtime !== 'godot-web' || manifest.engine !== '4.7.1.stable.official' || manifest.pack?.engine !== '4.7.1' || manifest.production !== true || manifest.chapterShortcuts !== false || manifest.threads !== false || !/^[0-9a-f]{40}$/.test(manifest.sourceCommit || '') || !Array.isArray(manifest.files) || manifest.files.length < 3) throw new Error('Manifest is not an independent production Godot Web export');
   if (mode === 'deploy' && manifest.sourceDirty !== false) throw new Error('Deploy requires a clean sourceCommit build; dry-run can inspect a dirty candidate without publishing it');
   const records = new Map();
   for (const file of manifest.files) {
@@ -92,7 +92,7 @@ if (!rollback) {
   if (fs.existsSync(contentFile)) {
     const content = JSON.parse(fs.readFileSync(contentFile, 'utf8'));
     const coverage = JSON.parse(fs.readFileSync(path.join(artifact, 'content-inventory.json'), 'utf8'));
-    if (manifest.delivery !== 'chapter-content-packs' || content.schema !== '755-web-content-v1' || content.engine !== '4.7.2' || coverage.schema !== '755-web-content-inventory-v1' || content.core?.file !== 'index.pck' || !Array.isArray(content.packs) || !content.packs.length || !Array.isArray(coverage.groups) || !Array.isArray(coverage.entries) || coverage.full?.count !== coverage.entries.length || manifest.content?.exactCoverage !== true) throw new Error('Incomplete chapter content delivery manifest/coverage proof');
+    if (manifest.delivery !== 'chapter-content-packs' || content.schema !== '755-web-content-v1' || content.engine !== '4.7.1' || coverage.schema !== '755-web-content-inventory-v1' || content.core?.file !== 'index.pck' || !Array.isArray(content.packs) || !content.packs.length || !Array.isArray(coverage.groups) || !Array.isArray(coverage.entries) || coverage.full?.engine !== '4.7.1' || coverage.full.count !== coverage.entries.length || manifest.content?.exactCoverage !== true) throw new Error('Incomplete chapter content delivery manifest/coverage proof');
     if (new Set(coverage.entries.map(entry => entry.path)).size !== coverage.entries.length) throw new Error('Duplicate complete-export resource in content inventory');
     const packs = [content.core, ...content.packs];
     for (const pack of content.packs) if (!/^[a-z][a-z0-9_-]{0,63}$/.test(pack.id || '') || pack.file !== `content/${pack.id}-${String(pack.sha256).slice(0, 16)}.pck` || !Number.isSafeInteger(pack.bytes) || pack.bytes < 1 || pack.bytes > 24_000_000) throw new Error('Deferred pack must have its declared content hash in its immutable filename and stay within the 24 MB budget');

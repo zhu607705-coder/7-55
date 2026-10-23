@@ -74,6 +74,8 @@ func close_at_target() -> void:
 func open_keyboard() -> void:
 	await fixture(); shell.inventory_handle.grab_focus(); await press(KEY_SPACE)
 	check(shell.compact_inventory_open and root.gui_get_focus_owner()==shell.inventory_handle,"keyboard opening keeps handle focus")
+	shell._resume_canteen_defense_after_reset(); await frames()
+	check(root.gui_get_focus_owner()==shell.inventory_handle,"late reset focus recovery preserves a valid inventory handle")
 	await press(KEY_TAB,true)
 	var item:Control=root.gui_get_focus_owner()
 	check(item!=null and shell.inventory_buttons.is_ancestor_of(item),"Shift+Tab from open handle reaches inventory item")
@@ -81,6 +83,8 @@ func open_keyboard() -> void:
 	var count:=actions.count("lib_open_record")
 	await press(KEY_SPACE)
 	check(state.d.native.selected_item==item.item_id and root.gui_get_focus_owner()==item and shell.compact_inventory_open,"Space on focused open-bag item selects it and preserves focus")
+	shell._resume_canteen_defense_after_reset(); await frames()
+	check(root.gui_get_focus_owner()==item,"late reset focus recovery preserves a valid inventory item")
 	check(actions.count("lib_open_record")==count,"open-bag item Space does not leak into world")
 	await press(KEY_ENTER)
 	check(is_instance_valid(shell.modal) and shell.inspected_item_id==item.item_id,"Enter on focused inventory item opens its details")
@@ -98,6 +102,13 @@ func assert_blocked(label: String) -> void:
 	shell.compact_inventory_open=true; shell.inventory_handle.pressed.emit(); await frames()
 	check(root.gui_get_focus_owner()==owner and shell.world_viewport.gui_get_focus_owner()==world_owner,"collapse callback preserves blocker focus: "+label)
 	check(actions.size()==count,"collapse callback does not submit story action: "+label)
+	shell._resume_canteen_defense_after_reset(); await frames()
+	check(root.gui_get_focus_owner()==owner and shell.world_viewport.gui_get_focus_owner()==world_owner,"late reset callback preserves blocker focus: "+label)
+	# With no root owner, the existing phone/story/game guards must still stop
+	# recovery from assigning keyboard input to the blocked world.
+	root.gui_release_focus(); shell.world_viewport.gui_release_focus()
+	shell._resume_canteen_defense_after_reset(); await frames()
+	check(not shell.world.has_focus() and actions.size()==count,"late reset cannot focus or interact with blocked world: "+label)
 func guards() -> void:
 	await fixture(); await click(shell.inventory_handle)
 	shell._modal_base("Focus guard"); await frames(); await assert_blocked("modal"); shell._close_modal()
@@ -131,7 +142,58 @@ func guards() -> void:
 	var count:=actions.size(); shell.inventory_handle.pressed.emit(); await frames()
 	check(root.gui_get_focus_owner()==phone_button and not shell.world.has_focus(),"hidden-world collapse preserves phone focus")
 	check(actions.size()==count,"hidden-world collapse preserves controller actions")
+	shell._resume_canteen_defense_after_reset(); await frames()
+	check(root.gui_get_focus_owner()==phone_button and not shell.world.has_focus(),"late reset preserves visible phone button focus")
+	root.gui_release_focus(); shell._resume_canteen_defense_after_reset(); await frames()
+	check(not shell.world.has_focus(),"late reset cannot focus a hidden world even without a root owner")
+
+func subviewport_focus() -> void:
+	case_name="subviewport-focus-owner"
+	await fixture()
+	var owner:=Button.new(); owner.text="Existing world UI"; shell.world.add_child(owner)
+	root.gui_release_focus(); owner.grab_focus(); await frames()
+	shell._resume_canteen_defense_after_reset(); await frames()
+	check(root.gui_get_focus_owner()==null and shell.world_viewport.gui_get_focus_owner()==owner,"late reset preserves a valid SubViewport child focus owner")
+	owner.queue_free(); await frames()
+
+func imported_world_keyboard() -> void:
+	case_name="desktop-normal-import-focus"
+	# The source checkpoint supplies legal progression facts, not an earned
+	# campaign claim. Export/import use the shipped validator and real files.
+	shell._close_modal(); state.story_reset.emit(); await frames()
+	state.developer_mode=true
+	check(state.begin_checkpoint("c2-dorm-exit"),"source-eligible dorm exit fixture exists")
+	state.d.native.erase("checkpoint_id")
+	state.d.native.mode="light"
+	state.d.native.positions={"dorm_hub:":{"x":504.0,"y":720.0}}
+	check(state.export_save("user://focus-dorm.json")==OK,"ordinary portable dorm fixture exports through validator")
+	state.d=state.initial(); state.developer_mode=false
+	state.d.native.page="phone_home"; state.d.currentScene="phone_home"
+	check(state.export_save("user://focus-phone.json")==OK,"ordinary phone fixture exports through validator")
+	# Mount a real running Main rather than reusing the frozen spatial fixtures
+	# above. Its normal refresh loop must own the imported visibility/targets.
+	await shell.shutdown(); shell.queue_free(); await frames()
+	root.size=Vector2i(1280,720)
+	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames(10)
+	check(not shell.world_frame.is_visible_in_tree(),"normal import begins on the phone, not a pre-focused world")
+	shell._show_settings(); await frames()
+	var result:Dictionary=state.import_save("user://focus-dorm.json")
+	check(result.get("ok",false),"normal file import accepts the source-eligible dorm fixture",result)
+	await frames(10)
+	check(shell.world_frame.is_visible_in_tree() and root.gui_get_focus_owner()==null and shell.world.has_focus(),"import reveals and focuses world after deferred layout without a test focus call")
+	check(state.d.actOne.manualControlTested and state.d.actOne.canLeaveDorm and shell.world.nearby.get("id","")=="exit_door","import preserves original earned-fact and proximity requirements",{"target":shell.world.nearby,"position":shell.world.player})
+	var before:Vector2=shell.world.player
+	await key(KEY_RIGHT,true); await create_timer(.08).timeout; await key(KEY_RIGHT,false); await frames()
+	check(shell.world.player.distance_to(before)>1 and shell.world.nearby.get("id","")=="exit_door","real root direction moves actor while legitimate exit remains nearby",{"before":before,"after":shell.world.player,"target":shell.world.nearby})
+	var count:=actions.count("c2_dorm_exit")
+	await press(KEY_SPACE); await frames(8)
+	check(actions.count("c2_dorm_exit")==count+1 and state.d.native.scene=="campus_bootstrap","root Space exits imported dorm exactly once without test grabbing world focus")
+	shell._show_settings(); await frames()
+	result=state.import_save("user://focus-phone.json"); await frames(10)
+	check(result.get("ok",false) and not shell.world_frame.is_visible_in_tree() and not shell.world.has_focus(),"normal phone import never focuses the hidden world",result)
 func run() -> void:
+	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
+		push_error("COLLAPSED INVENTORY TEST ISOLATION REQUIRED"); quit(2); return
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames(); shell.set_process(false)
 	state.action_completed.connect(func(id,_before,_after,_result):actions.append(id))
@@ -142,6 +204,8 @@ func run() -> void:
 		case_name=str(dimensions)+"/immediate-space"; await close_at_target()
 		case_name=str(dimensions)+"/open-navigation"; await open_keyboard()
 		case_name=str(dimensions)+"/guards"; await guards()
+	await subviewport_focus()
+	await imported_world_keyboard()
 	var failures:=checks.filter(func(row):return not row.pass).size()
 	var path:=OS.get_environment("UI_QA_REPORT")
 	if not path.is_empty():

@@ -1,4 +1,5 @@
 import type { EventBus } from "../core/EventBus";
+import { canAccessTiyi } from "./TiyiAccessModel";
 import type {
   GameStore,
   ItemId,
@@ -421,7 +422,7 @@ export class LibraryFinalsController {
 
   setAuditValue(field: keyof LibraryFinalsAuditValues, value: number): boolean {
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !puzzle.investigationOpened || !isAuditValueInRange(field, value)) {
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.investigationOpened || !canAccessTiyi(this.store.getState()) || !isAuditValueInRange(field, value)) {
       return false;
     }
     this.patchFinals("evidence_gathering", { [auditPuzzleField(field)]: value });
@@ -434,6 +435,7 @@ export class LibraryFinalsController {
     if (
       this.getPhase() !== "evidence_gathering"
       || !puzzle.investigationOpened
+      || !canAccessTiyi(this.store.getState())
       || !puzzle.entranceRecordRead
       || !puzzle.archivedRuleRead
       || puzzle.presenceProofCollected

@@ -1,0 +1,31 @@
+/* Only the newly authorized C1 desk objects/navigation, not a phone-shell reskin. */
+.early-desk-put-down {
+  position: absolute;
+  top: 46px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  color: #514a43;
+  background: rgba(255, 247, 226, 0.7);
+  border: 1px solid rgba(81, 74, 67, 0.35);
+  border-radius: 6px;
+  z-index: 24;
+}
+.early-desk-objects {
+  position: absolute;
+  left: 50%;
+  bottom: 94px;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 144px;
+  z-index: 3;
+}
+.early-desk-dock { position: absolute; left: 0; top: 0; width: 144px; height: 144px; }
+.early-desk-dock-art { position: absolute; inset: 0; width: 144px; height: 144px; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
+.early-desk-contact { position: absolute; left: 35px; top: 53px; width: 75px; height: 57px; background: transparent; border: 0; border-radius: 8px; cursor: pointer; touch-action: manipulation; }
+.early-desk-contact:focus-visible, .early-desk-phone:focus-visible { outline: 3px solid #1975dc; outline-offset: 2px; }
+.early-desk-charge-status { position: absolute; top: 114px; left: 18px; width: 110px; display: grid; gap: 3px; justify-items: center; color: #514a43; font-size: 12px; pointer-events: none; }
+.early-desk-charge-status progress { width: 74px; height: 5px; accent-color: #689273; }
+.early-desk-phone { position: absolute; left: 164px; top: 33px; width: 52px; height: 78px; padding: 0; border: 0; background: transparent; transform: rotate(8deg); cursor: pointer; touch-action: manipulation; }
+.early-desk-phone svg { display: block; width: 52px; height: 78px; pointer-events: none; }
+.early-desk-unplug { position: absolute; left: 110px; top: 86px; width: 44px; height: 44px; padding: 0; background: transparent; border: 0; color: #514a43; font-size: 24px; cursor: pointer; touch-action: manipulation; }

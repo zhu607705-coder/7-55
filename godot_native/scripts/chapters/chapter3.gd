@@ -237,16 +237,17 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		return response()
 	if action.begins_with("c3_target:"): return physical(s,action.trim_prefix("c3_target:"))
 	if action=="c3_charge_result":
-		if value!=charge_session or not value is ChargeSession: return locked("补电回执已失效。")
+		if not value is ChargeSession or value!=charge_session: return locked("补电回执已失效。")
 		if charge_session.phase=="cancelled": return response("接线已断开，本次补电未完成。")
 		if not charge_session.consume(s): return locked("补电尚未完成。")
-		if s.phoneBattery.percent>=45: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
-		s.phoneBattery.percent=45
+		if s.phoneBattery.percent>=45 and not s.phoneBattery.lowPowerMode: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
+		s.phoneBattery.percent=maxi(45, int(s.phoneBattery.percent))
+		s.phoneBattery.lowPowerMode=false
 		s.phoneBattery.rechargeCount+=1
-		return response("已接入手机充电服务站，电量恢复至 45%。")
+		return response("已接入手机充电服务站，电量已补充，低电量模式已关闭。亮度可自行调整。")
 	if action=="c3_network":
 		if str(value) not in ["campus_wifi","cellular","offline"]: return locked()
-		if s.networkMode!=value: s.phoneBattery.percent=maxi(1,int(s.phoneBattery.percent)-1)
+		if s.networkMode!=value: s.phoneBattery.percent=mini(int(s.phoneBattery.percent),maxi(1,int(s.phoneBattery.percent)-1))
 		s.networkMode=value
 		return response("已切换网络。")
 	if action=="c3_open_map": return {"handled":true,"page":"c3_campus_map"}
@@ -628,10 +629,10 @@ func theater_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 	match str(entry.kind):
 		"charger":
 			if dark: return locked("深色观察只能查看设备。切到浅色操作后接入充电线。")
-			if s.phoneBattery.percent>=45: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
+			if s.phoneBattery.percent>=45 and not s.phoneBattery.lowPowerMode: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
 			if not ChargeSession.rejection(s).is_empty(): return locked("请走到充电服务站旁接线。")
 			if charge_session!=null and charge_session.phase=="charging": return response("正在补电，请在设备旁稍候")
-			charge_session=ChargeSession.new()
+			charge_session=ChargeSession.new("theater", s)
 			return {"handled":true,"world_effect":{"script":"res://scripts/media/c3_charging.gd","session":charge_session,"on_event":"c3_charge_result","target_id":"theater_charging_station"}}
 		"poster":
 			if t.phase!="entry_ticket" or t.posterCleaned: return locked()

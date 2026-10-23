@@ -11,7 +11,7 @@ import {createNativeTestSandbox} from './native_test_sandbox.mjs';
 const project=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'755-phone-icon-pack-'));
 const sandbox=createNativeTestSandbox(project,'755-phone-icon-pack-profile-');
-const ids=['messages','sports','campus','settings','album','recovery','voice','forum','controls','clock'];
+const ids=['messages','sports','album','recovery','voice','controls','clock'];
 try {
   const config=path.join(tmp,'project.godot');
   fs.writeFileSync(config,'config_version=5\n[application]\nconfig/name="PhoneIconPackProbe"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n');
@@ -33,8 +33,8 @@ func _initialize()->void:
   assert(ink>20 and ink<pixels.get_width()*pixels.get_height(),"Glyph has real strokes and transparent surround: "+id)
   unique[hash(pixels.get_data())]=true
   button.free()
- assert(unique.size()==10,"Ten distinct authored textures survive packing")
- print("PHONE_ICON_PACK: PASS ten distinct dynamic SVG textures loaded from source-less PCK")
+ assert(unique.size()==7,"Seven source-CSS textures survive packing; PNG/gear/wordmark use their existing renderers")
+ print("PHONE_ICON_PACK: PASS seven distinct source-CSS textures loaded from source-less PCK")
  quit()
 `);
   const pack=path.join(tmp,'icons.pck');

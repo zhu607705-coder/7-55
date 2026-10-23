@@ -1,1 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e7ecdc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4.5 9h15 M6 17l12-10 M9 4c4 4 5 10 4 16"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 42 42">
+  <!-- Source: P13_PhoneHome/index.tsx .runner; styles/scenes/p13-phone-home.css .runner and its body/arm/leg rules. CSS transforms use the element center. The 42px viewBox preserves the rotated legs outside the source 40px overflow-visible box. The orange app background remains owned by the existing button. -->
+  <g fill="#fff">
+    <rect id="body" x="16" y="12" width="10" height="20" transform="translate(21 22) skewX(-16) translate(-21 -22)"/>
+    <rect id="arm-1" x="24" y="15" width="15" height="6" transform="rotate(-33 31.5 18)"/>
+    <rect id="arm-2" x="10" y="19" width="13" height="6" transform="rotate(37 16.5 22)"/>
+    <rect id="leg-1" x="12" y="29" width="20" height="6" transform="rotate(-45 22 32)"/>
+    <rect id="leg-2" x="22" y="30" width="18" height="6" transform="rotate(33 31 33)"/>
+    <!-- ::before is painted after the runner background, before child glyphs; its head/shadow do not intersect the limbs. -->
+    <circle cx="37" cy="8" r="2"/>
+    <circle id="head" cx="29" cy="6" r="4"/>
+  </g>
+</svg>

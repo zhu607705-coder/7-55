@@ -53,11 +53,11 @@ func run() -> void:
 		legacy.free()
 	root.size=Vector2i(1440,900)
 	if OS.get_environment("C1_RELOAD_ONLY")=="1":
-		check(state.d.native.page=="wechat" and int(state.d.phoneBattery.percent)==15,"independent process reload retains WeChat and15-percent battery")
+		check(state.d.native.page=="wechat" and int(state.d.phoneBattery.percent)==17,"independent process reload retains WeChat and17-percent battery")
 		root.set_meta("entry_arguments_consumed",true);change_scene_to_file("res://scenes/entry.tscn");await frames()
 		await click(current_scene.story_button,"entry Continue")
 		shell=current_scene
-		check(shell.get_script().resource_path=="res://scripts/main.gd" and state.d.native.page=="wechat" and int(state.d.phoneBattery.percent)==15,"entry Continue keeps the saved WeChat page instead of initial alarm")
+		check(shell.get_script().resource_path=="res://scripts/main.gd" and state.d.native.page=="wechat" and int(state.d.phoneBattery.percent)==17,"entry Continue keeps the saved WeChat page instead of initial alarm")
 		verify_write("post-Continue");await finish();return
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
 	check(state.validate_snapshot(state.d),"fresh/current loaded Main starts with a valid snapshot")
@@ -68,7 +68,7 @@ func run() -> void:
 	await click(button("进入手机主界面"),"enter Home");verify_write("c1_enter_home")
 	await click(shell.page_body.find_child("HomeApp_wechat",true,false),"Home WeChat");verify_write("open_wechat")
 	await click(shell.page_body.find_child("WechatRow_1",true,false),"friend conversation");verify_write("c1_friend")
-	check(state.d.native.page=="wechat" and int(state.d.phoneBattery.percent)==15,"fresh real input reaches the expected WeChat15-percent state")
+	check(state.d.native.page=="wechat" and int(state.d.phoneBattery.percent)==17,"fresh real input reaches the expected WeChat17-percent state")
 	await finish()
 func finish() -> void:
 	var out:=OS.get_environment("C1_SAVE_REPORT")

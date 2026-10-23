@@ -1,7 +1,19 @@
-# Phone launcher vectors
+# Source-Web phone icons
 
-Original SVG outline drawings authored for this 7:55 project in the approved UI playground. No third-party art, emoji, or font glyphs. Project use and modification are permitted by the authoring task.
+The user's 2026-10-22 restoration instruction supersedes the earlier uniform
+ivory launcher-icon selection. Restore the existing Web shapes, colors and
+meaning; do not introduce new pictograms. See `runtime-mapping.json` and
+`../../docs/PHONE_ICON_SOURCE_RESTORATION.md` for exact source provenance.
 
-All use a 24×24 viewBox, 1.6-unit rounded stroke, transparent fill and fixed warm ivory `#e7ecdc`. Native launchers render them at 24×24 inside unchanged 48×48 buttons. `runtime-mapping.json` records existing app identities/routes; it does not authorize or create new apps. The playground's illustrative standalone map/notes icons are not included here: the runtime map remains inside 浙大钉, and there is no separate notes app.
+Seven SVGs port the original CSS geometry: double chat bubbles, runner,
+four-color photo flower, document plus clock, microphone plus three waves,
+overlapping control panels, and the yellow/dark clock face. Each SVG names its
+source selectors. They remain transparent and fit the existing 24×24 glyph
+slot. The unchanged 48×48 button owns the restored original tile color.
+No third-party artwork or generated redesign was introduced.
 
-The prologue settings gear is a pre-existing movable story object, not a static launcher glyph. Its original source representation and fall/pickup behavior are intentionally retained until that mechanism ends.
+浙大钉 uses its unchanged original PNG. CC98 uses its readable source wordmark
+in a 42×31 internal box. Settings uses the existing source `✱` representation,
+not sliders. The prologue gear is still its separate movable story object.
+The three historical `campus/settings/forum.svg` candidates remain in source
+but no longer render these launchers. No new app, route, or unlock is implied.

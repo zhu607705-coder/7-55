@@ -89,6 +89,7 @@ var compact_world_contract := false
 var media_host: Node
 var world_effect: Control
 var battery_prank: Control
+var home_charging_host: Node
 var capture_busy := false
 var checkin_feedback_depth := 0
 var audio_director: Node
@@ -960,7 +961,9 @@ func _refresh() -> void:
 		later_phone_builder.connect("action_requested",_on_phone_action)
 		later_phone_builder.connect("page_requested",_on_phone_page)
 		if later_phone_builder.has_signal("presentation_requested"): later_phone_builder.connect("presentation_requested",_play_presentation_cue)
-	if phone_builder: phone_builder.entry_session=State.get_phone_entry_session()
+	if phone_builder:
+		phone_builder.entry_session=State.get_phone_entry_session()
+		phone_builder.home_desk=State.get_home_desk_controller()
 	var source_entry_loading: bool=phone_builder!=null and phone_builder.entry_session.family=="zjuding" and phone_builder.entry_session.phase!="ready"
 	if later_phone_builder and not source_entry_loading: custom_body = later_phone_builder.build(page,view,State.d)
 	if custom_body == null and phone_builder: custom_body = phone_builder.build(page,view,State.d)
@@ -2301,6 +2304,10 @@ func _read_runtime_state() -> Dictionary:
 	return snapshot
 
 func _setup_runtime_hosts() -> void:
+	if home_charging_host == null:
+		home_charging_host = load("res://scripts/media/home_charging_host.gd").new()
+		add_child(home_charging_host)
+		home_charging_host.setup(_read_runtime_state, func() -> Dictionary: return State.d, State.get_home_charging_session, State.act)
 	if ResourceLoader.exists("res://scripts/presentation/c3_narrative_host.gd") and c3_narrative_host==null:
 		c3_narrative_host=load("res://scripts/presentation/c3_narrative_host.gd").new(); add_child(c3_narrative_host)
 		c3_narrative_host.cinematic_started.connect(_layout)
@@ -2362,6 +2369,7 @@ func _open_world_effect(config: Dictionary) -> void:
 	world_effect.set_meta("blocks_input",bool(config.get("blocks_input",false)))
 	var setup := config.duplicate()
 	setup["read_state"] = _read_runtime_state
+	setup["read_owner"] = func() -> Dictionary: return State.d
 	setup["world"] = world
 	setup["project_position"] = func(source: Vector2): return world.size/2+(source-world.camera)*world.zoom
 	world_effect.event.connect(func(action: String,value: Variant): State.act(action,value))
@@ -2441,6 +2449,11 @@ func _resume_canteen_defense_after_reset() -> void:
 	if not is_inside_tree(): return
 	_layout()
 	_resume_world_activity()
+	# Closing the import modal can queue focus while the old phone still hides
+	# the world. This reset callback runs after that layout boundary. Keep any
+	# real owner in either viewport; the world helper also guards phone/story UI.
+	if not world_frame.is_visible_in_tree(): world_viewport.gui_release_focus()
+	elif not is_instance_valid(get_viewport().gui_get_focus_owner()) and not is_instance_valid(world_viewport.gui_get_focus_owner()): _focus_world_surface()
 
 func _play_presentation_cue(cue: String) -> void:
 	if is_instance_valid(audio_director): audio_director.cue(cue)

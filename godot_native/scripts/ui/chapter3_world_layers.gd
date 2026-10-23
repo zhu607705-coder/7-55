@@ -25,6 +25,8 @@ var textures: Dictionary={}
 var font: Font=load("res://scripts/ui/native_typography.gd").body_font()
 var clock_ms: float=0
 var scene_id: String=""
+# This detached snapshot is used only for the admission false-to-true edge.
+# Do not deep-copy unrelated save domains on every visible-world tick.
 var previous_state: Dictionary={}
 var light_alpha: float=1
 var shadow_alpha: float=0
@@ -51,7 +53,7 @@ func sync(s: Dictionary,scene_changed: bool=false) -> void:
 	if scene_changed or current!=scene_id or previous_state.is_empty():
 		scene_id=current; ticket_gate.reset(s); occlusion_alphas.clear(); clock_ms=0; admission_ms=INF; pickup_ms=INF; program_flights=[]
 		last_carried=s.canteenHunt.carriedTrayIds.duplicate(); collected_programs=s.theaterHunt.collectedProgramIds.duplicate()
-		previous_state=s.duplicate(true)
+		previous_state={"theaterHunt":{"admitted":bool(s.theaterHunt.admitted)}}
 		fade_to=Vector2(1,0) if s.native.mode=="light" else Vector2(0,1)
 		if not scene_npcs(s): fade_to=Vector2.ZERO
 		fade_from=fade_to; light_alpha=fade_to.x; shadow_alpha=fade_to.y; fade_ms=180
@@ -72,7 +74,7 @@ func sync(s: Dictionary,scene_changed: bool=false) -> void:
 		if entry.get("kind")=="program" and s.theaterHunt.collectedProgramIds.has(entry.programId) and not collected_programs.has(entry.programId):
 			program_flights.append({"id":entry.programId,"start":Vector2(entry.x,entry.y),"elapsed":0.0})
 	collected_programs=s.theaterHunt.collectedProgramIds.duplicate()
-	previous_state=s.duplicate(true)
+	previous_state={"theaterHunt":{"admitted":bool(s.theaterHunt.admitted)}}
 func tick(delta: float,s: Dictionary) -> void:
 	sync(s)
 	theater_clues.tick(delta,s)

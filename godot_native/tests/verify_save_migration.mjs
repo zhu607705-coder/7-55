@@ -30,7 +30,7 @@ try {
   }
   function add(id,payload,assertions={}) {fixtures.push({id,payload,expected:oracle(payload),assertions});}
   function stateCase(id,version,mutate,assertions={}) {const state=copy(initial);mutate(state);add(id,{version,state},assertions);}
-  for(let version=2;version<=35;version++) {
+  for(let version=2;version<=36;version++) {
     add('version_'+version+'_fresh',{version,state:copy(initial)});
     stateCase('version_'+version+'_explicit_completed',version,s=>{s.chapter4.completed=true;s.chapter4.phase='complete';},version<25?{legacy_completed:true}:{not_completed:true});
     stateCase('version_'+version+'_malformed_nesting',version,s=>{s.actOne=7;s.phoneBattery=[];s.chapter4={lightGrid:'x',zhuQuestionAnswers:[]};s.ui={libraryFinalsPuzzle:4};s.qizhenLake={journal:{mainPhoto:{recipe:[]},optionalPhotos:[7]}};});
@@ -48,7 +48,7 @@ try {
   stateCase('malformed_optional_primitive',35,s=>{s.canteenHunt.phase='pickup_search';s.items=[];});
   stateCase('unicode_room_trim',35,s=>{s.chapter4={...s.chapter4,prologueSeen:true,phase:'room204_restore',floor:'A2',roomId:'\u00a0a2_room204\ufeff',factIds:[...opening,...elevator,'a3_reference_observed','misaligned_stair_solved']};});
   stateCase('transient_ui',35,s=>{s.ui.controlCenterOpen=true;s.ui.inventoryOpen=true;s.ui.selectedItem='campusCard';s.items.campusCard=true;},{transient_clean:true});
-  for(const value of [null,[],3,true,'oops','{"version":35,"state":', '{"version":35}', '{"version":36,"state":{}}','{"version":1,"state":{}}']) add('invalid_'+fixtures.length,value);
+  for(const value of [null,[],3,true,'oops','{"version":35,"state":', '{"version":35}', '{"version":37,"state":{}}','{"version":1,"state":{}}']) add('invalid_'+fixtures.length,value);
   for(const input of ['{"version":35,"state":{},}','{"version":035,"state":{}}','{"version":35.,"state":{}}','{"version":35,"state":{"a":[1,]}}','{"version":35,"state":{"a":"raw\nnewline"}}','{"version":35,"state":{"a":"\\q"}}'])add('strict_json_'+fixtures.length,input);
   add('legacy_unversioned',copy(initial));
   for(const version of ['35',' 35 ','\u00a035\u00a0','\ufeff35\u3000','0x23','0b100011','0o43',[35],[[35]]]) add('coerced_version_'+JSON.stringify(version),{version,state:copy(initial)});

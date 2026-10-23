@@ -71,7 +71,7 @@ function stmt(n) {
 }
 const dependencies = [sourcePath,...Object.keys(bundled.metafile.inputs).filter(p=>!p.includes('save-normalizer-generated.ts')).map(p=>path.relative(root,path.resolve(p)))].sort();
 const hashes = Object.fromEntries(dependencies.map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')]));
-const program = {format:'7-55-native-normalization-ir',version:1,sourceSaveVersion:35,sourceHashes:hashes,program:stmt(sf)};
+const program = {format:'7-55-native-normalization-ir',version:1,sourceSaveVersion:36,sourceHashes:hashes,program:stmt(sf)};
 const target = path.join(root,'godot_native/data/native/save_normalizer.json');
 const output = JSON.stringify(program)+'\n';
 if(process.argv.includes('--check')) {if(fs.readFileSync(target,'utf8')!==output)throw new Error('Normalizer data is stale; run node godot_native/tools/build-save-normalizer.mjs');console.log('Save normalizer data matches source');}

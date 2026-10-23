@@ -84,7 +84,15 @@ func _settle_layout()->void:
 	task.size.y=minf(_task_height_budget,maxf(32,task_column.get_combined_minimum_size().y+16))
 	task_scroll.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var plaque_height:float=plaque.get_combined_minimum_size().y
-	plaque.position.y=clampf(size.y*.5-plaque_height*.5,task.position.y+task.size.y+8,maxf(task.position.y+task.size.y+8,_plaque_bottom_limit-plaque_height-8))
+	plaque.position.y=_plaque_y(plaque_height)
+
+func _plaque_y(plaque_height:float)->float:
+	var top:float=task.position.y+task.size.y+8
+	var bottom:float=maxf(top,_plaque_bottom_limit-plaque_height-(4 if mobile_exploration else 8))
+	# Keep the chosen transparent plaque unchanged; only compact exploration
+	# anchors it four display pixels above the world edge.
+	# Use the same rule after deferred text settlement.
+	return bottom if mobile_exploration else clampf(size.y*.5-plaque_height*.5,top,bottom)
 
 func _clear_hidden_scroll_touch()->void:
 	if is_visible_in_tree() or _scroll_touch_id<0:return
@@ -130,7 +138,7 @@ func _label(parent:Node,surface:String,role:String)->Label:
 	Selected.apply_label(label,surface,role);parent.add_child(label)
 	return label
 
-func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,prompt:String,mode_text:String,mode_rect:Rect2,bottom:float,clock_text:String="",object_detail:String="")->void:
+func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,prompt:String,mode_text:String,mode_rect:Rect2,bottom:float,clock_text:String="",object_detail:String="",plaque_bottom:float=-1.0)->void:
 	var s:=maxf(.01,display_scale)
 	scale=Vector2.ONE/s;size=extent*s
 	location.text=title;clock.text=clock_text;clock.visible=not clock_text.is_empty();objective.text=goal;task_tip.text="当前任务"
@@ -150,7 +158,7 @@ func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,promp
 	var header_height:float=compact_header.get_combined_minimum_size().y if compact else location.get_combined_minimum_size().y+clock.get_combined_minimum_size().y+8
 	var first_goal_budget:float=16+header_height+task_tip.get_combined_minimum_size().y+16+first_line
 	var available_height:=maxf(32,minf(maxf(size.y*.36,first_goal_budget),bottom*s-inset.y-8))
-	_task_height_budget=available_height;_plaque_bottom_limit=bottom*s
+	_task_height_budget=available_height;_plaque_bottom_limit=(bottom if plaque_bottom<0 else plaque_bottom)*s
 	task.position=inset
 	task.custom_minimum_size=Vector2.ZERO
 	var minimum:=task_column.get_combined_minimum_size().y+16
@@ -163,7 +171,7 @@ func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,promp
 	var plaque_width:=minf(420,maxf(1,size.x*.76))
 	plaque.size=Vector2(plaque_width,0)
 	var plaque_height:=plaque.get_combined_minimum_size().y
-	plaque.position=Vector2((size.x-plaque_width)/2,clampf(size.y*.5-plaque_height*.5,task.position.y+task.size.y+8,maxf(task.position.y+task.size.y+8,bottom*s-plaque_height-8)))
+	plaque.position=Vector2((size.x-plaque_width)/2,_plaque_y(plaque_height))
 	plaque.visible=not prompt.is_empty()
 	mode.position=mode_rect.position*s;mode.size=mode_rect.size*s
 	_schedule_settle()

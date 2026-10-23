@@ -86,6 +86,8 @@ func run() -> void:
 		mount()
 		check(effect.uses_responsive_exploration(), "station opts into existing responsive exploration")
 		var session: RefCounted = effect.session
+		controller.dispatch(state, "c3_charge_result", {"elapsed_ms": 2200, "success": true})
+		check(session.phase == "charging" and state.phoneBattery.percent == 7, "forged dictionary cannot replace an active theater receipt")
 		await create_timer(0.35).timeout
 		check(state.phoneBattery.percent == 7 and effect.view.presentation.battery == 7 and effect.view.presentation.progress > 0, "running progress remains distinct from actual battery")
 		check(await wait_report(), "real source clock reaches its terminal receipt")
@@ -95,6 +97,10 @@ func run() -> void:
 		check(state.phoneBattery.rechargeCount == 1 and event_count == 1, "repeat callbacks cannot award or report twice")
 		await create_timer(0.85).timeout
 		check(not is_instance_valid(effect), "successful cable leaves no residual view")
+	fixture(); state.phoneBattery.percent = 87; state.phoneBattery.lowPowerMode = true; state.ui.brightness = 32; mount()
+	check(await wait_report(), "sufficient-but-capped theater phone still completes the original2200ms session")
+	check(state.phoneBattery.percent == 87 and not state.phoneBattery.lowPowerMode and state.phoneBattery.rechargeCount == 1 and state.ui.brightness == 32 and effect.terminal == "success", "theater recovery removes cap without reducing charge or increasing brightness")
+	await clean()
 	for reason in ["distance", "mode", "scene", "page", "focus", "phone", "minigame", "hidden", "control_center"]:
 		fixture(); mount(); var session: RefCounted = effect.session
 		await create_timer(0.06).timeout

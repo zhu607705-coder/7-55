@@ -1,1 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e7ecdc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1 M12 18v3 M8 21h8"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 54 54">
+  <!-- Source: P13_PhoneHome/index.tsx voice-microphone/voice-icon-wave; styles/chapter-three-interlude.css .interlude-voice-icon through .voice-icon-wave. The 54px app border is 2px; pseudo-element borders use content-box. The source #0a0a0c button background is not duplicated. -->
+  <rect id="microphone" x="10" y="9" width="16" height="26" fill="#381216"/>
+  <rect x="12" y="11" width="12" height="22" fill="#d63b43"/>
+  <path d="M7.5 26V42.5H32.5V26" fill="none" stroke="#d63b43" stroke-width="3"/>
+  <rect x="16" y="18" width="8" height="2" fill="#3b1418"/>
+  <g fill="#d63b43">
+    <rect x="14" y="45" width="3" height="7"/>
+    <rect x="24" y="45" width="3" height="7"/>
+    <rect x="19" y="40" width="3" height="7"/>
+  </g>
+  <g fill="#ff5a60">
+    <rect id="wave-1" x="34" y="21.5" width="3" height="9"/>
+    <rect id="wave-2" x="39" y="16" width="3" height="20"/>
+    <rect id="wave-3" x="44" y="19.5" width="3" height="13"/>
+  </g>
+</svg>

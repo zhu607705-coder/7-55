@@ -2,18 +2,18 @@
 
 This is an independent Godot migration of the existing game. It uses Godot Controls and Canvas rendering, with the same controllers available to native executables and a standalone Godot WebAssembly export. Original React/Phaser source and build tools remain available at repository root as a separate behavioral reference.
 
-The browser delivery uses pinned Godot 4.7.2 Web templates and the production `Web production` preset. It loads a first-chapter core, then downloads verified chapter packs in the background. See [Godot Web build and release](docs/GODOT_WEB_RELEASE.md), [content packs](docs/WEB_CONTENT_BUILD.md), [server deployment](docs/SERVER_WEB_DELIVERY.md), [browser acceptance](docs/WEB_EXPORT_ACCEPTANCE.md), and [browser storage/media boundaries](docs/WEB_PLATFORM_BRIDGE.md). A native test pass does not replace actual browser acceptance; touch emulation does not replace physical-device testing.
+The browser delivery uses pinned Godot 4.7.1 Web templates and the production `Web production` preset. It loads a first-chapter core, then downloads verified chapter packs in the background. See [Godot Web build and release](docs/GODOT_WEB_RELEASE.md), [content packs](docs/WEB_CONTENT_BUILD.md), [server deployment](docs/SERVER_WEB_DELIVERY.md), [browser acceptance](docs/WEB_EXPORT_ACCEPTANCE.md), and [browser storage/media boundaries](docs/WEB_PLATFORM_BRIDGE.md). A native test pass does not replace actual browser acceptance; touch emulation does not replace physical-device testing.
 
 **Status:** playable native migration under verification, not feature-complete and not a release candidate. Authored story/data/assets are retained, but native behavior, layouts, save compatibility and end-to-end chapter progression require the acceptance work recorded in `docs/INDEPENDENT_PARITY_AUDIT.md`. A rendered page or a chapter action list is not evidence of gameplay parity.
 
 ## 2026-10-19 integrated candidate
 
-The local complete-integration candidate combines the #152 continuity chain, #118 animation batch and the remaining formal increments, with a separate preview catalog for prototypes. See [the integration record](docs/FULL_INTEGRATION_20261019.md) and the 34-PR source manifest. The current workstation runs Godot 4.7.2 and Blender 5.2.2 LTS. A source ZIP remains directly playable after opening `project.godot`; on macOS `启动游戏.command` finds the installed Godot app. `npm run native:package:all` also includes the independent `examples/` and `samples/` projects.
+The local complete-integration candidate combines the #152 continuity chain, #118 animation batch and the remaining formal increments, with a separate preview catalog for prototypes. See [the integration record](docs/FULL_INTEGRATION_20261019.md) and the 34-PR source manifest. That older integration record used Godot 4.7.2 and Blender 5.2.2 LTS; it is provenance, not the current engine pin. The current user-requested Godot baseline is 4.7.1. This consolidation does not select or change a Blender version. See [the current branch/version record](docs/BRANCH_CONSOLIDATION.md). A source ZIP remains directly playable after opening `project.godot`; on macOS `启动游戏.command` finds the installed Godot app. `npm run native:package:all` also includes the independent `examples/` and `samples/` projects.
 
 ## Open locally
 
 1. A downloaded self-contained source ZIP already includes `assets/` and `data/source/`: open its `project.godot` directly. For a Git checkout only, run `node godot_native/tools/sync_source.mjs` from repository root to copy original assets/JSON and export source initial state. Copies are build inputs, intentionally excluded from Git.
-2. Install Godot 4.6.3 from https://godotengine.org/download/archive/4.6.3-stable/ . Open `godot_native/project.godot`.
+2. Install Godot 4.7.1 from https://godotengine.org/download/archive/4.7.1-stable/ . Open `godot_native/project.godot`.
 3. Wait for the one-time asset import, then press F6/F5 or run `godot --path godot_native`.
 4. The portable source package includes the native Ogg/Theora movies. For a fresh Git checkout, run `bash godot_native/tools/convert_media.sh` with ffmpeg installed. Both original MP4s remain unchanged.
 

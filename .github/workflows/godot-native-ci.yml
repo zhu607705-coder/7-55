@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, godot-version]
   pull_request:
-    paths: ['package.json', 'package-lock.json', 'godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
+    paths: ['package.json', 'package-lock.json', 'godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/ensure-ci-media-tools.mjs', 'scripts/test-ci-media-tools.mjs', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
   workflow_dispatch:
 permissions:
   contents: read
@@ -40,7 +40,8 @@ jobs:
           git diff --exit-code -- godot_native/data/native/save_normalizer.json godot_native/data/native/audio-director-source.json
       - name: Convert source movies for native playback
         run: |
-          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          node scripts/test-ci-media-tools.mjs
+          node scripts/ensure-ci-media-tools.mjs
           bash godot_native/tools/convert_media.sh
       - name: Import, parse, and test native runtime
         env:

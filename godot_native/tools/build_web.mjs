@@ -14,7 +14,7 @@ const root = path.resolve(import.meta.dirname, '../..');
 const project = path.join(root, 'godot_native');
 const args = process.argv.slice(2);
 const godot = process.env.GODOT_BIN || 'godot';
-const version = '4.7.2.stable.official';
+const version = '4.7.1.stable.official';
 const preset = 'Web production';
 const output = path.resolve(args.find(value => value.startsWith('--output='))?.slice(9) || path.join(project, 'exports/web-release'));
 const verifyOnly = args.includes('--verify-only');
@@ -222,7 +222,7 @@ const commit = run('git', ['rev-parse', 'HEAD'], true);
 const tree = run('git', ['rev-parse', 'HEAD^{tree}'], true);
 const dirty = run('git', ['status', '--porcelain=v1', '--untracked-files=all', '--', 'godot_native', '.github/workflows/deploy-pages.yml'], true).split('\n').filter(Boolean);
 const manifest = {
-  schema: '7-55-godot-web-release/v1', runtime: 'godot-web', engine: '4.7.2.stable.official', preset,
+  schema: '7-55-godot-web-release/v1', runtime: 'godot-web', engine: '4.7.1.stable.official', preset,
   renderer: 'gl_compatibility', threads: false, pwa: false, production: true, storyOnly: true, chapterShortcuts: false,
   builtAt: new Date().toISOString(), sourceCommit: commit, sourceTree: tree, sourceDirty: dirty.length !== 0,
   sourceChanges: dirty, sourceInputSha256: source.digest, sourceInputCount: source.inventory.length,

@@ -15,7 +15,9 @@ func run()->void:
 	game_font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 	root.size=Vector2i(390,844)
 	state=root.get_node("State");state.developer_mode=false
-	state.d=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/room302_earned_film_entry.json")).state
+	state.d=preload("res://tests/legacy_room_fixture.gd").read(state,"res://tests/fixtures/room302_earned_film_entry.json",check)
+	if state.d.is_empty():
+		quit(1);return
 	check(not state.d.native.has("c4_media_studio") and state.validate_snapshot(state.d),"Old ordinary save with absent optional checkpoint still loads")
 	var first:Dictionary=Model.initial();check(Model.valid(first) and Model.stage(first)=="wardrobe","New hats start misplaced, not pre-earned")
 	check(Model.valid(JSON.parse_string(JSON.stringify(first))),"Ordinary JSON numeric float roundtrip accepts finite integral fields")

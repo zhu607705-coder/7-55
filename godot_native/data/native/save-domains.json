@@ -2,7 +2,7 @@
   "format": "7-55-save-domains",
   "version": 1,
   "source": "src/core/SaveStore.ts",
-  "sourceSha256": "3f1c56fcbfc7b08f5c28985477e88745f9385c303ebc5c28e04d4b12850dc8ad",
+  "sourceSha256": "2ab5784fb7e876c44b0210710addc911706943be6a0756d3569d28bec52c4334",
   "sets": {
     "VALID_RUNTIME_MODES": [
       "phone",
@@ -77,6 +77,13 @@
       "bridge",
       "library",
       "game_kiosk"
+    ],
+    "VALID_TIYI_UPDATE_STAGES": [
+      "not_started",
+      "official_entry_found",
+      "package_ready",
+      "installed",
+      "legacy_ready"
     ],
     "VALID_SCENES": [
       "alarm",

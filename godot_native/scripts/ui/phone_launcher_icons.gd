@@ -1,6 +1,8 @@
 extends RefCounted
-## Original vector glyphs for existing phone launchers; no routes or app state.
-const FILES={"wechat":"messages","tiyi":"sports","zjuding":"campus","settings":"settings","photos":"album","timeline_recovery":"recovery","voice_memos":"voice","cc98":"forum","control_center":"controls","clock":"clock"}
+## Source-Web CSS shapes adapted to the locked 24px glyph / 48px hit geometry.
+## PNG, text wordmark and the interactive gear keep their source renderers in Pages.
+const FILES={"wechat":"messages","tiyi":"sports","photos":"album","timeline_recovery":"recovery","voice_memos":"voice","control_center":"controls","clock":"clock"}
+const SOURCE_COLORS={"wechat":Color("61b58c"),"tiyi":Color("e8893f"),"zjuding":Color("ece9df"),"settings":Color("777989"),"photos":Color("ece9df"),"timeline_recovery":Color("173948"),"voice_memos":Color("0a0a0c"),"cc98":Color("4d7ed9"),"control_center":Color("756aa9"),"clock":Color("20272f")}
 static func add_to(button:Control,id:String)->TextureRect:
 	var glyph:=TextureRect.new()
 	glyph.name="LauncherGlyph"

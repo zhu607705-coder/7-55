@@ -9,16 +9,29 @@ func run() -> void:
 	if output.is_empty(): quit(2); return
 	DirAccess.make_dir_recursive_absolute(output)
 	state=root.get_node("State"); state.developer_mode=true
-	for dimensions: Vector2i in [Vector2i(1440,900),Vector2i(390,844)]:
+	# The older UI comparison workflow also runs this harness on its baseline.
+	# Only the current restoration proof requires the new role-specific renderer.
+	var source_wifi_required:=OS.get_environment("PHONE_ICON_SOURCE_REQUIRED")=="1"
+	for dimensions: Vector2i in [Vector2i(1440,900),Vector2i(390,844),Vector2i(844,390)]:
 		DisplayServer.window_set_size(dimensions); root.size=dimensions
 		for page: String in ["phone_home","zjuding","library_app","control_center"]:
 			if not fixture_checkpoint("c2-dorm-exit"): quit(1); return
 			state.d.native.scene=""; state.d.native.page=page
 			state.d.ui.musicPlaying=true; state.d.native.settings.volume=0
+			state.d.networkMode="campus_wifi"
 			await fresh_shell(dimensions)
 			shell.mobile_world=false; shell._refresh(); shell._process(2); await frames(); shell._layout()
+			if page=="control_center" and source_wifi_required:
+				if not require_fixture(is_instance_valid(shell.control_center) and shell.control_center.find_child("SourceWifiIcon",true,false)!=null,"actual source WiFi mounts in the existing overlay, not page_body"): continue
 			fixture_note="DEV c2-dorm-exit + musicPlaying; actual source icons; not earned completion"
 			await capture("%dx%d-symbols-%s" % [dimensions.x,dimensions.y,page])
+			if page=="control_center":
+				for network: String in ["cellular","offline"]:
+					state.d.networkMode=network
+					shell._refresh();await frames();shell._layout()
+					if source_wifi_required and not require_fixture(is_instance_valid(shell.control_center) and shell.control_center.find_child("SourceWifiIcon",true,false)!=null,"actual source WiFi role mounts in "+network): continue
+					fixture_note="DEV c2-dorm-exit + networkMode="+network+"; actual control-center rendering, not network progression evidence"
+					await capture("%dx%d-symbols-control-center-%s" % [dimensions.x,dimensions.y,network])
 		if not fixture_checkpoint("c3-interlude-reboot"): quit(1); return
 		state.d.native.scene="";state.d.native.page="phone_home";state.d.native.settings.volume=0
 		await fresh_shell(dimensions)

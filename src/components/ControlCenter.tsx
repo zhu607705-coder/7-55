@@ -296,7 +296,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
           <header>
             <div>
               <strong>电池 {batteryPercent}%</strong>
-              <span>打开应用：{state.phoneBattery.lowPowerMode ? "1%" : "2%"} / 次</span>
+              <span>打开应用不额外扣电</span>
             </div>
             <i aria-hidden="true">BAT</i>
           </header>
@@ -304,7 +304,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
             className="cc-power-meter"
             role="meter"
             aria-label="手机电量"
-            aria-valuemin={1}
+            aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={batteryPercent}
           >
@@ -317,12 +317,14 @@ export function ControlCenter({ state }: ControlCenterProps) {
             aria-pressed={state.phoneBattery.lowPowerMode}
           >
             <strong>{state.phoneBattery.lowPowerMode ? "关闭低电量模式" : "开启低电量模式"}</strong>
-            <span>{state.phoneBattery.lowPowerMode ? "恢复每次 2% 耗电" : "每次只耗 1%；亮度限至 45%，暂停音乐"}</span>
+            <span>{state.phoneBattery.lowPowerMode ? "解除亮度上限，可手动调高" : "亮度限至 45%，暂停音乐"}</span>
           </button>
           <p className="cc-power-location">
             {state.rpgScene === "theater_interior"
               ? "剧场入口左侧设有充电服务站，需走到设备旁接线。"
-              : "充电需要在现场与充电服务站交互。"}
+              : state.actOne.phase === "prologue"
+                ? "可从主页或盆栽放下手机，点桌面充电座接线。"
+                : "充电需要在现场与充电服务站交互。"}
           </p>
           {batteryPercent === 1 ? (
             <p className="cc-power-reserve" role="status">电量仅剩 1%，请寻找现场充电服务站。</p>

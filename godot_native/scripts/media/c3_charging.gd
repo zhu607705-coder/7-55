@@ -5,6 +5,7 @@ const Session = preload("res://scripts/media/c3_charging_session.gd")
 const ChargingView = preload("res://scripts/media/c3_charging_view.gd")
 var session: RefCounted
 var read_state: Callable
+var read_owner: Callable
 var project_position: Callable
 var callback: String = "c3_charge_result"
 var reported: bool = false
@@ -18,6 +19,7 @@ func setup(config: Dictionary) -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	session = config.get("session")
 	read_state = config.get("read_state", Callable())
+	read_owner = config.get("read_owner", Callable())
 	project_position = config.get("project_position", Callable())
 	callback = str(config.get("on_event", callback))
 	if not session is Session or not read_state.is_valid(): queue_free(); return
@@ -25,7 +27,7 @@ func setup(config: Dictionary) -> void:
 	entry_recharge_count = int(state.get("phoneBattery", {}).get("rechargeCount", 0))
 	view = ChargingView.new()
 	add_child(view)
-	if not session.begin(state): session.cancel()
+	if not session.begin(state, read_owner.call() if read_owner.is_valid() else state): session.cancel()
 	_present(state)
 
 func uses_responsive_exploration() -> bool:
@@ -42,7 +44,7 @@ func _process(delta: float) -> void:
 		terminal_ms += minf(maxf(delta, 0.0), 0.1) * 1000.0
 		if terminal_ms >= ChargingView.tail_duration(terminal): queue_free(); return
 	else:
-		session.sample(state)
+		session.sample(state, read_owner.call() if read_owner.is_valid() else state)
 		if session.phase in ["complete", "cancelled"]:
 			_report()
 			state = read_state.call()
@@ -56,7 +58,7 @@ func _report() -> void:
 	# The synchronous controller owns receipt consumption AND the battery write.
 	# Elapsed time or a consumed receipt alone is not a successful recharge.
 	var battery: Dictionary = read_state.call().get("phoneBattery", {})
-	terminal = "success" if session.phase == "consumed" and int(battery.get("rechargeCount", 0)) == entry_recharge_count + 1 and int(battery.get("percent", 0)) == 45 else "cancelled"
+	terminal = "success" if session.phase == "consumed" and int(battery.get("rechargeCount", 0)) == entry_recharge_count + 1 and int(battery.get("percent", 0)) >= 45 and not battery.get("lowPowerMode", false) else "cancelled"
 	terminal_ms = 0.0
 
 func _surface_live(state: Dictionary) -> bool:
