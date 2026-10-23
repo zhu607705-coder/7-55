@@ -79,6 +79,8 @@ await run('Native save isolation',[path.join(project,'tests/verify_native_test_s
 await run('Godot asset import and editor parse',['--headless','--path',project,'--editor','--import','--quit']);
 await run('Native Chinese text revisions',[path.join(project,'tests/verify_zh_text_revisions.mjs')],process.execPath);
 await run('Native phone icon source parity',[path.join(project,'tests/verify_phone_icon_source.mjs')],process.execPath);
+await run('Scene orientation browser presentation',[path.join(project,'tools/test_scene_orientation.mjs')],process.execPath);
+await run('Boot animation browser presentation',[path.join(project,'tools/test_boot_intro.mjs')],process.execPath);
 await run('Native startup',['--headless','--path',project,'--quit-after','15','--','--fresh']);
 // These authored regressions generate the fixtures consumed later in the suite.
 // Complete surrounding readers first, then run each producer alone in source order.

@@ -45,7 +45,7 @@ func run()->void:
  check(m.phase=="complete" and m.completed_stages==3,"target selection and real swept contact complete exactly three stages")
  check(m.contacts.size()>=6,"successful play has at least six actual word/window contacts")
  check(m.captures.size()==6 and m.captures.map(func(c):return c.stage)==[0,1,1,2,2,2],"only the six authored targets produce captures in three stages")
- check(m.captures.all(func(c):return c.age>=2.4),"every captured word remains readable for at least 2.4 seconds before collision")
+ check(m.captures.all(func(c):return c.age>=.5 and c.age<1.1),"key targets retain the original 0.5 to 1.1 second reaction interval despite faster paragraph transitions")
  check(m.captures.filter(func(c):return c.stage==2).map(func(c):return c.word)==["旁白","还没","说完"],"the final three captures reconstruct the authored sentence in order")
  var author=ProjectSettings.globalize_path("res://../src/data/prologue-interception.content.json")
  check(FileAccess.get_file_as_string(author)==FileAccess.get_file_as_string("res://data/native/prologue-interception.content.json"),"native clue JSON exactly matches its sole authored Web source")
@@ -78,5 +78,5 @@ func run()->void:
  var report=OS.get_environment("PROLOGUE_WORD_REPORT")
  if not report.is_empty():
   var file=FileAccess.open(report,FileAccess.WRITE)
-  file.store_string(JSON.stringify({"checks":checks,"failures":failures,"captures":m.captures,"activeClockSeconds":m.clock,"sourceCardStartY":294,"targetTransitSeconds":"3.0 + .35 per character","spawnIntervalsOnlyMs":[350,1000,1900,700],"minObservedCaptureReadableSeconds":m.captures.map(func(c):return c.age).min(),"initialNoInputContacts":unattended_contacts},"  "))
+  file.store_string(JSON.stringify({"checks":checks,"failures":failures,"captures":m.captures,"activeClockSeconds":m.clock,"sourceCardStartY":294,"targetSpeeds":[360,390,420],"stageSpawnIntervalsMs":[950,950,950],"firstSpawnMs":350,"retrySpawnMs":700,"stageTransitionMs":280,"minObservedCaptureReadableSeconds":m.captures.map(func(c):return c.age).min(),"initialNoInputContacts":unattended_contacts},"  "))
  print("PROLOGUE_WORD_MODEL: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)

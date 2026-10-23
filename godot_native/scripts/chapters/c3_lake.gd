@@ -8,6 +8,10 @@ const WorldSession = preload("res://scripts/chapters/c3_lake_world_session.gd")
 var live_session: RefCounted
 var pending_entry: Dictionary = {}
 const Fishing = preload("res://scripts/games/rhythm_fishing_model.gd")
+const Progressive = preload("res://scripts/games/progressive_transport_model.gd")
+var logistics_session: Dictionary = {}
+var logistics_owner: Dictionary = {}
+const LOGISTICS_PHASES: Array = ["dock_outfitting","boarding_tutorial","lake_exploration","tool_chain","swan_exchange","paper_capture"]
 var fishing_session: Dictionary = {}
 var session_counter: int = 0
 const CLUES: Dictionary = {"bridge":"bridgeKeyword","reflection":"reflectionKeyword","lake":"lakeKeyword"}
@@ -85,11 +89,16 @@ func actions(page: String, s: Dictionary) -> Array:
 	return []
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
+	if not logistics_session.is_empty() and not _logistics_current(s): invalidate_logistics_session()
 	var journal_result: Dictionary=journal.dispatch(s,action,value)
 	if not journal_result.is_empty(): return journal_result
 	if not (action.begins_with("c3_lake") or action.begins_with("c3_clue:") or action.begins_with("c3_map") or action in ["c3_bait","c3_net_combine","c3_tin_open","c3_magnet_combine","c3_weather_inventory","c3_weather_start","c3_weather_result","c3_swan_chase","c3_kayak_result","c3_fishing_result","c3_rain_rescue_result"]): return {}
 	var q: Dictionary=s.qizhenLake
 	if not q.active: return locked()
+	if action=="c3_lake_logistics_cancel":
+		if value is Dictionary:cancel_logistics_session(value.get("session"))
+		return response()
+	if action=="c3_lake_logistics_result": return _logistics_result(s,value)
 	if action.begins_with("c3_lake_target:"): return physical(s,action.trim_prefix("c3_lake_target:"))
 	if action.begins_with("c3_clue:"):
 		var id: String=action.trim_prefix("c3_clue:")
@@ -248,7 +257,48 @@ func definitions() -> Array:
 	# The source still accepts previously assembled nets from older saves.
 	# Keep that compatibility interaction separate from the independent primary branches.
 	list.append({"id":"qizhen_feed_tin","label":"围栏边的旧饲料盒","x":1165,"y":470,"width":200,"height":120,"proximity":180,"kind":"feed_tin","zone":"swan_cove","vehicle":"kayak"})
+	# A native optional activity sits on the existing clear dock land. Its local
+	# board is not a new lake zone, item branch, chapter gate or saved checkpoint.
+	list.append({"id":"qizhen_dock_logistics","label":"码头转运台","x":565,"y":870,"width":86,"height":40,"stand":{"x":590,"y":870},"proximity":76,"kind":"logistics","zone":"dock","vehicle":"on_foot"})
 	return list
+
+func invalidate_logistics_session() -> void:
+	logistics_session={}
+	logistics_owner={}
+
+func cancel_logistics_session(session: Variant) -> bool:
+	if logistics_session.is_empty() or not session is Dictionary or session!=logistics_session:return false
+	invalidate_logistics_session()
+	return true
+
+func _logistics_ready(s: Dictionary) -> bool:
+	var q: Dictionary=s.qizhenLake
+	return q.active and q.phase in LOGISTICS_PHASES and q.zone=="dock" and q.vehicle=="on_foot" and light(s) and s.native.get("mode","")=="light" and s.native.get("scene","")=="qizhen_lake" and s.get("runtimeMode","")=="rpg" and s.get("rpgScene","")=="qizhen_lake"
+
+func _logistics_current(s: Dictionary) -> bool:
+	if logistics_session.is_empty() or not is_same(s,logistics_owner) or not _logistics_ready(s): return false
+	var q: Dictionary=s.qizhenLake
+	return q.phase==logistics_session.phase and q.zone==logistics_session.zone and q.vehicle==logistics_session.vehicle and q.safeSpawnId==logistics_session.safeSpawnId and str(s.get("rpgCheckpoint",""))==logistics_session.checkpoint
+
+func _logistics_game(s: Dictionary) -> Dictionary:
+	invalidate_logistics_session()
+	if not _logistics_ready(s): return locked()
+	var q: Dictionary=s.qizhenLake
+	session_counter+=1
+	logistics_session={"id":session_counter,"nonce":Crypto.new().generate_random_bytes(16).hex_encode(),"puzzleId":"lake_logistics","layoutDigest":Progressive.layout_digest("lake_logistics"),"phase":q.phase,"zone":q.zone,"vehicle":q.vehicle,"safeSpawnId":q.safeSpawnId,"checkpoint":str(s.get("rpgCheckpoint","")),"scene":"qizhen_lake","realityMode":"light"}
+	logistics_owner=s
+	return {"handled":true,"game":{"kind":"progressive_transport","script":"res://scripts/games/progressive_transport.gd","puzzleId":"lake_logistics","session":logistics_session.duplicate(true),"on_success":"c3_lake_logistics_result","on_cancel":"c3_lake_logistics_cancel","title":"码头转运","settings":s.native.get("settings",{})}}
+
+func _logistics_result(s: Dictionary,value: Variant) -> Dictionary:
+	if not _logistics_current(s) or not value is Dictionary or value.get("session")!=logistics_session: return locked("这次转运已经结束，可以回到转运台重新开始。")
+	var issued: Dictionary=logistics_session.duplicate(true)
+	invalidate_logistics_session()
+	if value.size()!=4 or value.get("puzzleId")!="lake_logistics" or value.get("layoutDigest")!=issued.layoutDigest or not value.get("actions") is Array: return locked("转运记录尚未完成。")
+	var replay: Dictionary=Progressive.replay("lake_logistics",value.actions)
+	if not replay.get("valid",false) or not replay.get("completed",false): return locked("还有物件留在水路里，可以回到转运台重试。")
+	# No story write: all four material branches, old feed receipts, weather,
+	# chase, capsize count, safe checkpoint and the 3.5 handoff remain untouched.
+	return {"handled":true,"accepted":true,"message":"转运完成，工具和通路都收好了。"}
 
 func physical(s: Dictionary, id: String) -> Dictionary:
 	var q: Dictionary=s.qizhenLake
@@ -273,6 +323,7 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 		return response(prose("chapter3-qizhen-lake.content","reflection.correct"))
 	if not light(s): return locked(prose("chapter3-qizhen-lake.content","prompts.needLight" if kind in ["board","outfit"] else "lake.darkPrompt"))
 	match kind:
+		"logistics": return _logistics_game(s)
 		"outfit":
 			if q.phase!="dock_outfitting": return locked()
 			var key: String={"kayak":"kayakEquipped","left_paddle":"leftPaddleEquipped","right_paddle":"rightPaddleEquipped"}[selected.value]
@@ -569,6 +620,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 		if entry.kind=="zone_portal" and not portal_visible(q,entry): continue
 		if entry.kind=="escape" and q.phase!="swan_chase": continue
 		if entry.kind=="outfit" and q.phase!="dock_outfitting": continue
+		if entry.kind=="logistics" and q.phase not in LOGISTICS_PHASES: continue
 		if entry.kind=="feed_tin" and (not own(s,"improvisedDipNet") or not q.netCombined or q.feedTinRetrieved): continue
 		if entry.kind=="swan" and (not light(s) or q.phase not in ["tool_chain","swan_exchange"] or q.swanFed): continue
 		# Source retires this physical action after its key-to-cord transaction.
@@ -591,6 +643,10 @@ func targets(scene: String, s: Dictionary) -> Array:
 		if entry.kind=="outfit" and entry.value=="left_paddle":
 			result.art="res://assets/native/chapter3/willow_branch.svg"
 			result.art_size=[80,44]
+		if entry.kind=="logistics":
+			result.art="res://assets/native/chapter3/dock_logistics_table.svg"
+			result.art_size=[86,52]
+			result.art_offset=[0,-16]
 		if entry.kind=="paper":
 			result.art="res://assets/rpg/theater/generated/paper/paper_residual.png" if not light(s) else "res://assets/rpg/theater/generated/paper/paper_flight_0.png"
 			result.art_size=[45,45]

@@ -38,6 +38,12 @@ func tick() -> void:
 	var region:=Rect2(16,64,size.x-32,maxf(1,size.y-80))
 	var shell:Node=get_parent().get_parent() if get_parent()!=null else null
 	var world:Variant=shell.get("world") if is_instance_valid(shell) else null
+	if is_instance_valid(world) and shell.world_frame.is_visible_in_tree():
+		var bottom:float=region.end.y
+		if shell.inventory_handle.visible:bottom=minf(bottom,shell.inventory_handle.position.y-8)
+		if shell.inventory_dock.visible:bottom=minf(bottom,shell.inventory_dock.position.y-8)
+		if shell.world_tasks.visible:bottom=minf(bottom,shell.world_tasks.position.y-8)
+		region.size.y=maxf(1,bottom-region.position.y)
 	if is_instance_valid(world) and not world.subtitle.is_empty() and shell.world_frame.is_visible_in_tree():
 		# One minimum readable feedback row and the dialogue share this budget.
 		# Otherwise a large dialogue can leave no space in which to stack HUD.
@@ -48,9 +54,6 @@ func tick() -> void:
 		region=Rect2(region.position.x,top,region.size.x,maxf(1,region.end.y-top))
 	var metrics:=DialogueLayout.metrics(region,1.0,speaker.text,body.text,prompt.text,text_scale)
 	panel.position=metrics.panel.position; panel.size=metrics.panel.size
-	if is_instance_valid(world) and shell.world_frame.is_visible_in_tree() and shell.size.y>shell.size.x:
-		var below_film:float=shell.world_view.get_global_rect().end.y+8
-		if below_film>=region.position.y and below_film+panel.size.y<=region.end.y:panel.position.y=below_film
 	speaker.position=metrics.speaker.position; speaker.size=metrics.speaker.size
 	speaker.add_theme_font_size_override("font_size",metrics.speaker_font)
 	DialogueLayout.apply_role(speaker,"heading",metrics.speaker_font)

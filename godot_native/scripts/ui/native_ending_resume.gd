@@ -1,29 +1,57 @@
 extends RefCounted
-## Restores context after an ordinary reload; the existing controller still starts
-## the source blackout/interception and validates every catch, hold and dialogue.
+## Illustrated continuation surface only. The controller owns eligibility,
+## save facts and the same six-contact interception; art never supplies proof.
+const Flow = preload("res://scripts/games/prologue_character_flow.gd")
+const HERO_PATH = "res://assets/native/ending_resume/terminal_signal_20261022.png"
+
 func build(b) -> Control:
-	var root: Control = b._base(Color("18222e"),854.0/b.PHONE_SCALE)
+	var root: Control = b._base(Flow.BACKGROUND,854.0/b.PHONE_SCALE)
 	root.name = "EndingResumePage"
 	var eligible: bool = b.s.get("flags",{}).get("checkinDone",false) and b.s.get("actOne",{}).get("phase","")=="prologue"
 	root.set_meta("handles_all_actions",true)
-	b._label(root,"未完成的拦截" if eligible else "没有待继续的拦截",Rect2(24,28,330,32),18,Color("d2dfe9"),HORIZONTAL_ALIGNMENT_CENTER)
-	b._panel(root,Rect2(24,90,330,186),Color("f4e9dc"),Color("bf5861"),0,3)
-	b._label(root,"经度与纬度不存在",Rect2(38,108,302,38),23,Color("663039"),HORIZONTAL_ALIGNMENT_CENTER)
-	b._label(root,"签到码已提交\n这段交涉尚未完成" if eligible else "当前没有待继续的拦截",Rect2(46,166,286,68),18,b.INK,HORIZONTAL_ALIGNMENT_CENTER)
-	b._label(root,"拦住旁白，与他交涉",Rect2(30,315,318,40),22,Color("fff3cc"),HORIZONTAL_ALIGNMENT_CENTER)
-	b._label(root,"已找回的签到码会保留。\n继续后重启本轮拦截。",Rect2(34,369,310,66),16,Color("cad8e3"),HORIZONTAL_ALIGNMENT_CENTER)
-	var instructions: Control = b._panel(root,Rect2(28,496,322,104),Color("253343"),Color("617588"),0,2)
-	instructions.name = "EndingResumeInstructions"; instructions.visible=false
-	b._label(instructions,"拖动错误窗口，或 A/D、←/→\n挡住旁白的离场路径",Rect2(16,14,290,76),16,Color("edf3f5"),HORIZONTAL_ALIGNMENT_CENTER)
-	var explanation: Button = b._button(root,"重看操作",Rect2(99,444,180,44),func(): instructions.visible=not instructions.visible,Color("253343"),Color("edf3f5"),0,Color("879aa9"))
-	explanation.name = "EndingResumeReview"
+	# A single portrait composition. Text remains native and legible at phone
+	# scale; the generated illustration contains no interface labels/hit areas.
+	b._panel(root,Rect2(26,29,3,14),Flow.ACCENT if eligible else Flow.MUTED)
+	b._label(root,"未完成的拦截" if eligible else "没有待继续的拦截",Rect2(39,23,266,26),14,Flow.MUTED).name="EndingResumeCaption"
+	b._label(root,"07:55",Rect2(291,23,61,26),14,Flow.MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
+	b._panel(root,Rect2(26,65,326,1),Flow.RULE)
+	b._label(root,"经度与纬度\n不存在",Rect2(26,96,326,100),32,Flow.INK).name="EndingResumeTitle"
+	b._label(root,"签到码已提交" if eligible else "当前没有待继续的拦截",Rect2(27,207,324,28),15,Flow.ACCENT if eligible else Flow.MUTED).name="EndingResumeStatus"
+	var art := TextureRect.new()
+	art.name="EndingResumeArt"
+	art.position=Vector2(0,245);art.size=Vector2(378,252)
+	art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	art.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+	art.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	art.texture=load(HERO_PATH)
+	if not eligible:art.modulate=Color(1,1,1,.4)
+	root.add_child(art)
+	b._panel(root,Rect2(26,519,326,1),Flow.RULE)
+	b._label(root,"这段交涉尚未完成" if eligible else "信号暂未接续",Rect2(26,536,326,32),19,Flow.INK).name="EndingResumeContext"
+	b._label(root,"已找回的签到码会保留。\n继续后重启本轮拦截。" if eligible else "完成课堂签到后，再从这里继续。",Rect2(26,577,326,49),14,Flow.MUTED).name="EndingResumeSaveNote"
+	# Instructions replace the vignette only when explicitly requested. No
+	# shifted phone frame or persistent solution on entry.
+	var instructions: Control = b._panel(root,Rect2(26,265,326,210),Flow.PANEL,Flow.RULE,0,1)
+	instructions.name="EndingResumeInstructions";instructions.visible=false
+	b._label(instructions,"操作方式",Rect2(20,20,286,28),17,Flow.INK)
+	b._panel(instructions,Rect2(20,62,286,1),Flow.RULE)
+	b._label(instructions,"拖动错误窗口\n或使用 A/D、←/→ 移动\n\n挡住旁白的离场路径",Rect2(20,77,286,113),16,Flow.INK)
 	var continuing := [false]
-	var next: Button = b._button(root,"继续拦住旁白",Rect2(45,625,288,58),func():
-		if continuing[0]: return
-		continuing[0] = true
-		b.action_requested.emit("c1_resume_ending",null),Color("b64e5b"),Color.WHITE,0,Color("e7a8b0"))
-	next.name = "EndingResumeContinue"
-	next.disabled = not eligible
+	var next: Button = b._button(root,"继续拦住旁白",Rect2(26,646,326,54),func():
+		if continuing[0]:return
+		continuing[0]=true
+		b.action_requested.emit("c1_resume_ending",null),Flow.ACCENT,Flow.BACKGROUND,0,Flow.ACCENT)
+	next.name="EndingResumeContinue";next.disabled=not eligible
 	next.add_theme_font_size_override("font_size",18)
+	next.tooltip_text="继续本轮拦截"
+	var explanation: Button=b._button(root,"操作方式",Rect2(26,707,326,36),func():
+		instructions.visible=not instructions.visible
+		art.visible=not instructions.visible,Color.TRANSPARENT,Flow.MUTED,0,Color.TRANSPARENT)
+	explanation.name="EndingResumeReview"
+	explanation.add_theme_font_size_override("font_size",14)
+	explanation.tooltip_text="查看或收起操作方式"
+	next.focus_neighbor_bottom=next.get_path_to(explanation)
+	explanation.focus_neighbor_top=explanation.get_path_to(next)
 	b.handled.append("c1_resume_ending")
 	return root

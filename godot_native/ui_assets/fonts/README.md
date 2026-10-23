@@ -1,4 +1,13 @@
-# Campus UI Sans
+# Project fonts
+
+The active family is **晨札像素 / 755 Morning Note 0.1.1**, with separate Regular400
+and Medium500 faces. See [font specifications, sources and rebuild instructions](../../docs/MORNING_NOTE_FONT_LIBRARY.md)
+and [the interactive specimen](../../art_source/fonts/morning_note_v1/specimen.html).
+The two current TTF files, explicit Fusion symbol fallback and their licenses
+belong to the production core. The former UI families below remain historical
+source material and are excluded from production exports.
+
+## Historical Campus UI Sans
 
 A presentation-only, Simplified Chinese body-font subset derived from **Noto Sans
 CJK SC Regular 2.004**, distributed under the **SIL Open Font License 1.1**. The
@@ -47,12 +56,12 @@ arbitrary player names/imported text.
 Some UI symbols are absent from upstream. The manifest lists them; a consumer
 must provide a suitable fallback or non-font icon. Fusion Pixel covers only some
 of those symbols. No runtime font switch or UI script is part of this artifact.
-All normal UI roles now use the same Campus family: body, titles, clocks,
-numerals and buttons. Role names do not select a separate display family.
+The historical integration used the Campus family for body, titles, clocks,
+numerals and buttons; its role names did not select a separate display family.
 The bundled Fusion resource is retained only as an explicit missing-symbol
 fallback, not as a source of normal Chinese/Latin/digit lettering.
 
-Runtime integration uses `native_typography.gd`. Known phone UI symbols absent
+The current `native_typography.gd` selects Morning Note. Known phone UI symbols absent
 from both bundled fonts are drawn by `native_symbol_icon.gd` as deterministic
 pixel primitives while retaining the control's original text and input owner.
 The font manifest remains a glyph-coverage report, not a report of those vector

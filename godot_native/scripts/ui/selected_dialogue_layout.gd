@@ -1,5 +1,5 @@
 extends RefCounted
-## DIALOGUE-2: right-side, vertically centred prose; mobile uses the safe width.
+## Selected prose rests on the bottom safe edge; mobile uses the safe width.
 ## Uses the selected fonts for both painting and measurement. No state or input.
 const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
 static func _height(text:String,width:float,role:String,px:int)->float:
@@ -28,7 +28,7 @@ static func metrics(region:Rect2,display_scale:float,speaker:String,text:String,
 	var overflow:bool=visible_height<body_height
 	if overflow:body_height=_height(text,maxf(1,inner-14/scale),"body",body_px)
 	var height:float=minf(region.size.y,body_y+visible_height+footer)
-	return {"panel":Rect2(region.end.x-width,region.position.y+(region.size.y-height)/2,width,height),"speaker":Rect2(padding,padding,inner,heading_height),"body":Rect2(padding,body_y,inner,body_height),"body_viewport":Rect2(padding,body_y,inner,visible_height),"prompt":Rect2(padding,body_y+visible_height+(gap if tip_height>0 else 0),inner,tip_height),"speaker_font":heading_px,"body_font":body_px,"prompt_font":tip_px,"body_overflow":overflow}
+	return {"panel":Rect2(region.end.x-width,region.end.y-height,width,height),"speaker":Rect2(padding,padding,inner,heading_height),"body":Rect2(padding,body_y,inner,body_height),"body_viewport":Rect2(padding,body_y,inner,visible_height),"prompt":Rect2(padding,body_y+visible_height+(gap if tip_height>0 else 0),inner,tip_height),"speaker_font":heading_px,"body_font":body_px,"prompt_font":tip_px,"body_overflow":overflow}
 static func apply_role(label:Label,role:String,px:int)->void:
 	Selected.apply_label(label,"dialogue",role)
 	label.add_theme_font_size_override("font_size",px)

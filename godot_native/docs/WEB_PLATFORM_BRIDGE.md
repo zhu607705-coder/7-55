@@ -40,6 +40,14 @@ keyboard, touch, ordinary file picker or explicit legacy-save button. The
 temporary JavaScript transport object is removed from the global namespace
 after the Godot bridge retains its reference.
 
+World observations also include the actual camera, uniform zoom, local viewport
+size and rendered touch-control rectangles. Browser tests project physical
+object clicks from those measured values instead of guessing at map positions.
+These detached geometry values cannot move the camera, issue an interaction,
+or write state or saves. The 2026-10-20 progressive-puzzle checks add four native
+assertions for exact geometry and mutation isolation to the historical checks
+below.
+
 Audio uses the Web `Stream` project override so procedural streams and mixer
 effects retain their native behavior; the HTML start gesture unlocks audio.
 Playback state alone is not proof of audible output, and automated desktop

@@ -201,6 +201,10 @@ func check_custom_gear_landing() -> void:
 	var gear: Control = body.find_child(GEAR_NODE, true, false)
 	check(frame != null and gear != null, "custom saved order retains separate gear and settings frame")
 	if frame == null or gear == null: body.free(); return
+	check(gear is TextureRect and gear.texture != null and gear.texture.get_size() == Vector2(80,80), "settings uses an independent fine-grid cog image rather than a font glyph")
+	if gear is TextureRect and gear.texture != null:
+		var pixels: Image=gear.texture.get_image()
+		check(pixels.get_pixel(40,40).a == 0 and pixels.get_pixel(40,7).a == 1 and pixels.get_pixel(40,20).a == 1, "cog has a transparent hub, visible tooth and solid ring")
 	var rest := frame.position
 	check(gear.position == rest and gear.get_parent() == body, "gear starts over its reordered frame and owns independent root-space motion")
 	var completed: Array = []

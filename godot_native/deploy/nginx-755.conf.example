@@ -55,13 +55,27 @@ location ^~ /7-55/releases/ {
     gzip_vary on;
     gzip_min_length 1024;
     gzip_types text/javascript application/json application/wasm text/css image/svg+xml;
-    # Optional, only with nginx's http_gzip_static_module and validated .gz files:
-    # gzip_static on;
-    # Optional Brotli requires its module plus validated .br files; do not enable
-    # an unavailable module. PCK media is already compressed; benchmark first.
+    # Requires nginx's http_gzip_static_module. Build receipts validate every
+    # precompressed sibling; a missing .gz transparently serves the original.
+    gzip_static on;
 
     location ~ /\. { return 404; }
+    # Boot uses immutable .bin files rather than requesting index.wasm. Give
+    # only those engine chunks the WASM MIME type so the existing gzip rule
+    # applies; PCK chunks and other binary media retain application/octet-stream.
+    location ~ "^/7-55/releases/[0-9a-f]{12}-[0-9a-f]{16}/boot/index-wasm-[0-9]{4}-[0-9a-f]{16}\.bin$" {
+        types { application/wasm bin; }
+        max_ranges 0;
+        try_files $uri =404;
+    }
+    # Ignore ranges only for boot/content transport and code. Audio/video
+    # originals retain the server's normal seeking behavior.
+    location ~ \.(?:bin|pck|wasm|js)$ {
+        max_ranges 0;
+        try_files $uri =404;
+    }
     location ~ \.(?:html|json)$ {
+        max_ranges 0;
         try_files $uri =404;
         add_header Cache-Control "no-cache" always;
     }

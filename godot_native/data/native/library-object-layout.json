@@ -1,0 +1,354 @@
+{
+  "schema": "native-library-object-layout-v1",
+  "reference": "res://assets/rpg/interiors/library_interior.png",
+  "worldSize": [
+    1500,
+    900
+  ],
+  "cleanPlate": "res://assets/native/library_rebuild_20261020/library_cleanplate.png",
+  "cleanPlateSize": [
+    1500,
+    900
+  ],
+  "removedDoorLeaves": {
+    "left": 644,
+    "top": 681,
+    "width": 212,
+    "height": 86
+  },
+  "objects": {
+    "north_display_shelf": {
+      "texture": "res://assets/native/library_rebuild_20261020/north_display_shelf.png",
+      "textureSize": [
+        123,
+        123
+      ],
+      "sourceRect": [
+        502,
+        110,
+        123,
+        123
+      ],
+      "depth": 330,
+      "targets": [
+        "library_shelf_755"
+      ],
+      "collisionIds": [
+        "north_display_shelf"
+      ]
+    },
+    "backpack": {
+      "texture": "res://assets/native/library_rebuild_20261020/backpack.png",
+      "textureSize": [
+        56,
+        80
+      ],
+      "sourceRect": [
+        1238,
+        388,
+        34,
+        38
+      ],
+      "position": [
+        1255,
+        407
+      ],
+      "scale": 0.6,
+      "angle": -4,
+      "depth": 557,
+      "targets": [
+        "backpack_pass",
+        "bag_photo",
+        "backpack"
+      ],
+      "collisionIds": []
+    },
+    "catalog_terminal": {
+      "texture": "res://assets/native/library_rebuild_20261020/catalog_terminal.png",
+      "textureSize": [
+        133,
+        97
+      ],
+      "sourceRect": [
+        613,
+        516,
+        133,
+        97
+      ],
+      "targets": [
+        "catalog_terminal"
+      ],
+      "collisionIds": [
+        "catalog_terminal_desk"
+      ],
+      "components": [
+        {
+          "id": "catalog_terminal_chair",
+          "textureRegion": [
+            27,
+            61,
+            35,
+            35
+          ],
+          "sourceRect": [
+            636,
+            594,
+            55,
+            52
+          ],
+          "targets": [],
+          "collisionIds": [
+            "catalog_terminal_chair"
+          ],
+          "baselineY": 646
+        }
+      ],
+      "baselineY": 613
+    },
+    "printer": {
+      "texture": "res://assets/native/library_rebuild_20261020/printer.png",
+      "textureSize": [
+        77,
+        104
+      ],
+      "sourceRect": [
+        788,
+        510,
+        77,
+        104
+      ],
+      "targets": [
+        "printer"
+      ],
+      "collisionIds": [
+        "catalog_printer"
+      ],
+      "baselineY": 614
+    }
+  },
+  "staticForeground": [
+    {
+      "id": "north_shelf_01",
+      "rect": [
+        124,
+        85,
+        42,
+        231
+      ],
+      "baselineY": 316
+    },
+    {
+      "id": "north_shelf_02",
+      "rect": [
+        205,
+        85,
+        40,
+        231
+      ],
+      "baselineY": 316
+    },
+    {
+      "id": "north_shelf_03",
+      "rect": [
+        283,
+        85,
+        42,
+        231
+      ],
+      "baselineY": 316
+    },
+    {
+      "id": "north_shelf_04",
+      "rect": [
+        362,
+        85,
+        42,
+        231
+      ],
+      "baselineY": 316
+    },
+    {
+      "id": "north_shelf_05",
+      "rect": [
+        442,
+        85,
+        42,
+        231
+      ],
+      "baselineY": 316
+    },
+    {
+      "id": "north_shelf_06",
+      "rect": [
+        643,
+        85,
+        41,
+        232
+      ],
+      "baselineY": 317
+    },
+    {
+      "id": "north_shelf_07",
+      "rect": [
+        714,
+        85,
+        42,
+        232
+      ],
+      "baselineY": 317
+    },
+    {
+      "id": "north_shelf_08",
+      "rect": [
+        787,
+        85,
+        43,
+        232
+      ],
+      "baselineY": 317
+    }
+  ],
+  "contract": {
+    "coordinates": "original source pixels; uniform scale only",
+    "authority": "presentation only; controller facts, original collisions and save fields are unchanged",
+    "activation": "clean plate and all four transparent sprites must validate together; otherwise the original source presentation remains active",
+    "doors": "library_entrance_door owns the independently rendered door leaves",
+    "depth": "new floor props sort at their original solid bottom using the shared player foot-box back edge; shelf and bag retain authored source depths"
+  },
+  "cleanPlateEdits": {
+    "masks": [
+      [
+        500,
+        108,
+        130,
+        140
+      ],
+      [
+        1238,
+        391,
+        37,
+        36
+      ],
+      [
+        1242,
+        426,
+        13,
+        14
+      ],
+      [
+        1265,
+        426,
+        12,
+        14
+      ],
+      [
+        1260,
+        412,
+        35,
+        29
+      ],
+      [
+        609,
+        512,
+        149,
+        135
+      ],
+      [
+        785,
+        509,
+        86,
+        113
+      ],
+      [
+        871,
+        548,
+        10,
+        74
+      ],
+      [
+        650,
+        688,
+        199,
+        74
+      ],
+      [
+        650,
+        762,
+        17,
+        5
+      ],
+      [
+        695,
+        762,
+        42,
+        5
+      ],
+      [
+        763,
+        762,
+        44,
+        5
+      ],
+      [
+        834,
+        762,
+        15,
+        5
+      ]
+    ],
+    "sameSourceShelf": {
+      "source": [
+        500,
+        268,
+        130,
+        140
+      ],
+      "target": [
+        500,
+        108,
+        130,
+        140
+      ]
+    },
+    "sameSourceCarpet": {
+      "sampling": "same y; x phase preserved modulo24",
+      "sourceColumnX": [
+        758,
+        782
+      ]
+    },
+    "sameSourceTable": {
+      "removedBakedNote": true,
+      "sampling": "same y; x phase preserved modulo8",
+      "sourceColumnX": [
+        1306,
+        1314
+      ]
+    },
+    "preservedDoorPostRects": [
+      [
+        667,
+        762,
+        28,
+        110
+      ],
+      [
+        737,
+        762,
+        26,
+        110
+      ],
+      [
+        807,
+        762,
+        27,
+        110
+      ]
+    ],
+    "outsideChangedPixels": 0,
+    "outsideOriginalRgbaSha256": "fa669770a74f686d2a75a2f4a6c49a223aaf01dfff002f872f1712e371b69de5",
+    "outsideCleanPlateRgbaSha256": "fa669770a74f686d2a75a2f4a6c49a223aaf01dfff002f872f1712e371b69de5",
+    "sourceFileSha256": "9c17066c0edfdbaa53ff3025fbcd473129e54106b3a8452b465954999e22ee2b",
+    "cleanPlateFileSha256": "7439f5d8a737d21c8c87a54e0c3ee27f9773db982933c9449e01cccb29293641"
+  }
+}

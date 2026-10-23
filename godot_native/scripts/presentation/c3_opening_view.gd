@@ -18,7 +18,6 @@ func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	clip_contents=true
 	font=preload("res://scripts/ui/native_typography.gd").body_font()
-	backdrop=load("res://assets/rpg/interiors/library_interior.png")
 	subtitle=Label.new(); subtitle.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	subtitle.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	subtitle.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
@@ -35,6 +34,9 @@ func _ready() -> void:
 	visible=false
 func tick() -> void:
 	if session==null: visible=false; return
+	# Main creates this hidden view in Chapter 1. The library backdrop belongs
+	# to the actual opening session, after its chapter content has been mounted.
+	if backdrop==null: backdrop=load("res://assets/rpg/interiors/library_interior.png")
 	var was_visible: bool=visible
 	visible=true
 	scale_factor=minf(size.x/960,size.y/540); origin=(size-Vector2(960,540)*scale_factor)/2

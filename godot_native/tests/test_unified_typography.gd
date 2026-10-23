@@ -9,14 +9,16 @@ func check(ok: bool, message: String) -> void:
 	if not ok: failures+=1; push_error(message)
 func inspect(node: Node, width: float) -> void:
 	if node is Label or node is Button:
-		check(node.get_theme_font("font")==Type.body_font(),"same UI font at every size and state")
-		check(node.texture_filter==CanvasItem.TEXTURE_FILTER_LINEAR,"same text rasterization, no pixel-font branch")
+		var face:FontVariation=Type.display_font() if node.get_meta("typography_role","body")=="display" else Type.body_font()
+		check(node.get_theme_font("font")==face,"control uses its shared body or display role at every size and state")
+		check(face.base_font.get_font_name()=="755 Morning Note","all specimen roles belong to the same pixel family")
+		check(node.texture_filter==CanvasItem.TEXTURE_FILTER_NEAREST,"same scoped pixel rasterization across roles")
 		check(node.size.x<=width,"specimen text wraps inside page")
 	for child in node.get_children(): inspect(child,width)
 func run() -> void:
-	check(Type.body_font()==Type.display_font(),"display/time/number/body role shares exact font resource")
+	check(Type.body_font()!=Type.display_font(),"display and body use distinct faces within one family")
 	for ch in "校园调查时间按钮数字07:55Aa0123，。":
-		check(Type.body_font().base_font.has_char(ch.unicode_at(0)),"main UI glyph belongs to Campus, not fallback: "+ch)
+		check(Type.body_font().base_font.has_char(ch.unicode_at(0)) and Type.display_font().base_font.has_char(ch.unicode_at(0)),"authored UI glyph belongs to the project family, not the symbol fallback: "+ch)
 	for dimensions in [Vector2i(390,844),Vector2i(1440,900)]:
 		root.size=dimensions
 		var sample:=Specimen.new(); sample.size=Vector2(dimensions)

@@ -5,9 +5,13 @@ signal presentation_ready
 signal presentation_failed(reason: String)
 
 const Rider=preload("res://scripts/presentation/chase3d/source_rider.gd")
+const FinePixel=preload("res://scripts/presentation/chase3d/fine_pixel_style.gd")
 const MaterialAdapter=preload("res://scripts/presentation/chase3d/source_material_adapter.gd")
+const CampusEnvironment=preload("res://scripts/presentation/chase3d/zijingang_campus_environment.gd")
 var material_adapter:=MaterialAdapter.new()
 var source_materials: bool=true
+var rebuilt_campus: bool=true
+var campus_environment: Node3D
 const WORLD_PER_METER: float=1.05
 const LANE_WIDTH: float=3.35
 var asset_directory: String="res://assets/"
@@ -62,6 +66,7 @@ func configure(options: Dictionary={}) -> bool:
 	asset_directory=str(options.get("asset_directory",asset_directory)).trim_suffix("/")+"/"
 	reduced_motion=bool(options.get("reduced_motion",false))
 	source_materials=bool(options.get("source_materials",true))
+	rebuilt_campus=bool(options.get("rebuilt_campus",true))
 	enable_live_shadows=bool(options.get("live_shadows",true))
 	var width: int=maxi(16,int(options.get("render_width",960)))
 	viewport_resolution=Vector2i(width,maxi(9,roundi(width*9.0/16.0)))
@@ -111,7 +116,7 @@ func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	if not _preflight():return
 	viewport3d=SubViewport.new();viewport3d.name="NativeSourceChase3D";viewport3d.own_world_3d=true;viewport3d.size=viewport_resolution
-	viewport3d.msaa_3d=Viewport.MSAA_2X;viewport3d.render_target_update_mode=SubViewport.UPDATE_DISABLED;add_child(viewport3d)
+	viewport3d.msaa_3d=Viewport.MSAA_DISABLED;viewport3d.render_target_update_mode=SubViewport.UPDATE_DISABLED;add_child(viewport3d)
 	world=Node3D.new();world.name="SourceWorld";viewport3d.add_child(world)
 	hero=Rider.new();hero.asset_directory=asset_directory;hero.name="SourceRider";world.add_child(hero)
 	if source_materials:material_adapter.adapt_scene(hero)
@@ -131,6 +136,7 @@ func _ready() -> void:
 	bell_material=_instance_effect_material(bell)
 	shield=_asset("fx_trayShield");world.add_child(shield);_instance_effect_material(shield)
 	surface=TextureRect.new();surface.texture=viewport3d.get_texture();surface.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;surface.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;surface.mouse_filter=Control.MOUSE_FILTER_IGNORE;surface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(surface)
+	FinePixel.apply(surface)
 	ready3d=true
 	presentation_ready.emit()
 
@@ -212,6 +218,11 @@ func render_model(model: RefCounted,delta: float=-1,paused: bool=false) -> void:
 	viewport3d.render_target_update_mode=SubViewport.UPDATE_ONCE
 
 func _update_chunks(z: float) -> void:
+	if rebuilt_campus:
+		if not is_instance_valid(campus_environment):
+			campus_environment=CampusEnvironment.new();campus_environment.name="ZijingangCampus";world.add_child(campus_environment)
+		campus_environment.update_distance(-z/WORLD_PER_METER,65 if quality=="light" else (85 if quality=="balanced" else 115))
+		return
 	var keep: Dictionary={}
 	for entry: Dictionary in manifest.world_chunks:
 		var ahead: float=65 if quality=="light" else (85 if quality=="balanced" else 115)

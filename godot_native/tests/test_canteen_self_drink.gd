@@ -134,18 +134,11 @@ func run() -> void:
 	shell.world._drop_data(local,{"kind":"inventory_item","item":"badDrink"});assert_unchanged(before,"modal-blocked drop")
 	shell._close_modal();await frames()
 	check(not slot("badDrink").disabled,"closing modal restores inventory input")
-	# The actual joystick owns its overlay area even inside the source circle.
-	# The removed confirm rect has no area; its (0,0) center only tests HUD.
+	# Reserved mobile HUD remains non-world input, even inside source circle.
 	var original_player:Vector2=shell.world.player
-	var controls:Dictionary=shell.world.mobile_control_metrics()
-	var control:Vector2=controls.stick
-	var control_source:Vector2=(control-shell.world.size/2)/shell.world.zoom+shell.world.camera
-	check(controls.stick_rect.has_point(control) and shell.world._floor_visible_rect().has_point(control_source),"self-drink ownership probe hits actual visible joystick, not an out-of-world HUD point")
-	shell.world.player=control_source+Vector2(0,24)
-	check(control_source.distance_to(shell.world.player-Vector2(0,24))<=58.0 and state.d.items.badDrink,"joystick ownership probe is otherwise inside original self-drink circle with owned item")
-	count=actions.count("c3_bad_drink")
-	shell.world._drop_data(control,{"kind":"inventory_item","item":"badDrink"});assert_unchanged(before,"mobile control ownership")
-	check(actions.count("c3_bad_drink")==count,"joystick-covered drop cannot dispatch self-drink")
+	var control:Vector2=shell.world.mobile_control_metrics().mode.get_center()
+	shell.world.player=(control-shell.world.size/2)/shell.world.zoom+shell.world.camera+Vector2(0,24)
+	shell.world._drop_data(control,{"kind":"inventory_item","item":"badDrink"});assert_unchanged(before,"visible mode control owns input over the source self-use circle")
 	shell.world.player=original_player
 	# Other scenes cannot route the canteen-specific adapter.
 	var original_scene:String=shell.world.scene_id;shell.world.scene_id="library_interior"

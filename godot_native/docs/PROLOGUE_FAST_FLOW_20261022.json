@@ -1,0 +1,106 @@
+{
+  "schema": "755-prologue-fast-flow/v1",
+  "date": "2026-10-22",
+  "request": "Increase real word-flow speed and interception difficulty.",
+  "engine": "4.7.2.stable.official",
+  "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+  "sourceDirty": true,
+  "sourceInputSha256": "dfdceb5de0a461fd8485cdc755922965393e97033e90a29c82a67d2a5347f1cc",
+  "timing": {
+    "targetSpeedsBefore": [
+      360,
+      390,
+      420
+    ],
+    "targetSpeedsAfter": [
+      580,
+      660,
+      740
+    ],
+    "spawnIntervalsBeforeMs": [
+      950,
+      950,
+      950
+    ],
+    "spawnIntervalsAfterMs": [
+      600,
+      540,
+      480
+    ],
+    "boardSpeedBefore": 440,
+    "boardSpeedAfter": 600,
+    "clueFlowBefore": 260,
+    "clueFlowAfter": 430,
+    "normalReadingScale": 0.5,
+    "reducedMotionReadingScale": 1.0,
+    "firstSpawnMs": 220,
+    "retryMs": 350,
+    "stageTransitionMs": 280
+  },
+  "actualCaptureSeconds": [
+    0.500000000000001,
+    0.433333333333334,
+    0.441666666666667,
+    0.391666666666667,
+    0.391666666666667,
+    0.4
+  ],
+  "preserved": [
+    "original word text and order",
+    "real swept collision geometry",
+    "earned collection on automatic retry",
+    "original narrator and dialogue audio timing",
+    "1400ms final hold",
+    "controller-owned C2 and save handoff",
+    "reduced-motion full static reading time"
+  ],
+  "verification": {
+    "nativeSuites": 7,
+    "nativeReport": "/Users/zhu/Library/Application Support/755-tools/verification/fast-flow-20261022/755-fast-flow-native-final-20261022.json",
+    "browser": [
+      {
+        "kind": "desktop",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/fast-flow-20261022/desktop/web-acceptance.json",
+        "sha256": "15a0436264e32c593d0914082d1d874def0a27a7f86bf1010acb3c49256f0705"
+      },
+      {
+        "kind": "touch",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/fast-flow-20261022/touch/web-acceptance.json",
+        "sha256": "7565ae54e023a97230674962c9d9cfe2cc0d8193c3a0a0897eb79f19677224ff"
+      }
+    ],
+    "retainedWebReleaseValidators": 38,
+    "sourceContentParity": true,
+    "exportVerifyOnly": true,
+    "notes": [
+      "First native run retained the old 0.5-1.1 second speed expectation; updated to the requested 0.32-0.64 second transit guard. Final seven suites passed.",
+      "First QA requests preceded local server readiness and fetched no browser cases. Retried after independently reading the served manifest; final desktop and touch cases passed."
+    ]
+  },
+  "video": {
+    "path": "/Users/zhu/Library/Application Support/755-tools/review/fast-flow-20261022.mp4",
+    "sha256": "55affea0fb7b4a8d6af55424655a14706f0208fed5875db86e1cbaf528999822",
+    "frames": 264,
+    "fps": 24,
+    "durationSeconds": 11,
+    "meaning": "Actual native GPU presentation fixture, no shared State or save writes."
+  },
+  "delivery": {
+    "url": "http://127.0.0.1:5241/",
+    "export": "godot_native/exports/web-fast-flow-20261022",
+    "httpManifestMatched": true,
+    "remotePublished": false
+  },
+  "cleanup": {
+    "removedTemporaryPngs": 270,
+    "hashRecord": "/Users/zhu/Library/Application Support/755-tools/verification/fast-flow-20261022/temporary-screenshot-hashes.json"
+  },
+  "limitations": [
+    "Touch acceptance uses Chromium emulation, not a physical mobile device.",
+    "No new full-chapter or Gecko/WebKit acceptance is claimed."
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "schema": "755-pelican-rider-v1",
+  "updatedAt": "2026-10-21T13:13:30.181Z",
+  "scope": "Native Godot authored 3D cycling camera exception, local Web delivery",
+  "userDirection": "Replace uncanny semi-realistic human with stylized pixel-rendered pelican; provide protagonist-to-pelican handoff",
+  "status": "local implementation and technical acceptance passed; user art review pending",
+  "art": {
+    "originalDesign": true,
+    "implementation": "Original native weighted procedural avian mesh with 17 connected Skeleton3D bones; fine-resolution palette rendering, not a hand-painted sprite atlas",
+    "palette": "755-campus-morning-32",
+    "paletteSource": "art_direction_v1.json",
+    "featherMaterial": "three-value hard-edged morning planes",
+    "silhouette": [
+      "warm white body",
+      "long ochre bill and pouch",
+      "slate wing tips",
+      "wide golden webbed feet"
+    ],
+    "renderResolution": [
+      960,
+      540
+    ],
+    "responsiveResolutionRetained": true,
+    "filter": "nearest, one native texel; existing responsive quality remains",
+    "camera": "existing authored camera and cuts retained",
+    "ui": "native labels and controls outside palette shader"
+  },
+  "motion": {
+    "master": "existing controller/model and transition visible-time clock",
+    "connectedSkeleton": true,
+    "contactTargets": "actual authored grips, saddle and pedals",
+    "gait": "pelvis-led; bird walking-height and knee-flexion calibration; physical web outline checked at 120 Hz",
+    "handoff": "existing animated pixel protagonist -> paper feathers -> avian mount/ride/dismount -> original animated protagonist",
+    "pause": true,
+    "reducedMotion": true,
+    "skip": true,
+    "progressionWrites": false
+  },
+  "provenance": {
+    "mesh": "Original project procedural construction, no pelican demo model or code copied",
+    "solver": "Original analytic two-bone solver shared with retained human rollback rig",
+    "rigReference": "https://docs.godotengine.org/en/stable/classes/class_skeleton3d.html",
+    "shaderReference": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html",
+    "walk": "Existing project Quaternius CC0 derived walk data, original source retained",
+    "newRodinTasks": 0,
+    "newCreditsSpent": 0
+  },
+  "build": {
+    "sourceCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "sourceInputSha256": "7d1c234a98a48c5db74942168753c58104f7849eb5b6d6bf76e571aceda3763d",
+    "output": "exports/web-pelican-final-20261021",
+    "unusedHumanExportEntries": 0,
+    "logicalBytes": 533616356,
+    "initialBytes": 95046161,
+    "previousHumanBuildLogicalBytes": 546060864
+  },
+  "verification": {
+    "native": {
+      "passed": 24,
+      "report": "exports/verification/pelican-20261021/native.json"
+    },
+    "desktop": {
+      "passed": 533,
+      "viewport": [
+        1280,
+        720
+      ],
+      "report": "exports/verification/web-pelican-final-desktop-20261021/web-acceptance.json"
+    },
+    "touch": {
+      "passed": 525,
+      "viewport": [
+        844,
+        390
+      ],
+      "deviceScaleFactor": 3,
+      "mode": "Chromium CDP touch emulation; physical phone not tested; focused bike runner skips unrelated portable-save download/share case",
+      "report": "exports/verification/web-pelican-final-mobile-20261021/web-acceptance.json"
+    },
+    "scope": "Real Godot WebGL engine, ordinary keyboard/touch steer/jump, pause/visibility, ordinary earned save import, exit and reload. Not full campaign or physical mobile acceptance.",
+    "actualGodotReview": "exports/review/pelican-20261021/riding-three-quarter.jpg"
+  },
+  "artifacts": [
+    {
+      "path": "scripts/presentation/chase3d/campus_pelican_rig.gd",
+      "sha256": "94f7fe21e3dadca356d513a82cbb62166603ab7844d29b9ef79d647f26d55bdc"
+    },
+    {
+      "path": "scripts/presentation/chase3d/pelican_feather.gdshader",
+      "sha256": "f36d430ae825c44d26afc3984c776ba79a2a5ecdc3f8514b2eff204d2ad53674"
+    },
+    {
+      "path": "scripts/presentation/chase3d/pelican_transform.gd",
+      "sha256": "018e6ce98415b2083bc4e8552ceaa6bc83e960a148bc1ddb62c7c8f06e1e23ae"
+    },
+    {
+      "path": "scripts/presentation/chase3d/fine_pixel.gdshader",
+      "sha256": "24ecbf7aaea0bae9719023d3e46a88d643a0650bb8b041c457b696d06de85b8e"
+    },
+    {
+      "path": "scripts/presentation/chase3d/fine_pixel_style.gd",
+      "sha256": "088a62d84e68bf3b4f943731bb04cfb2a8accbd6b7a264595a7365f17da3d68b"
+    },
+    {
+      "path": "assets/native_755/ride/pelican_palette_lut.png",
+      "sha256": "e2dbac54f7122f895f5c4214252dcfcba5c21b7ad2f5e40da783dd8c5d830b71"
+    },
+    {
+      "path": "assets/rpg/player/player_side_0.png",
+      "sha256": "75f2f28b9e64ca18d993546b37a6c801df940f702d5b56888924b92fe552a819"
+    }
+  ],
+  "rollback": {
+    "retained": "art_source/student_rider_v3 and campus_human_rig.gd; pelican_enabled=false for local human reference",
+    "intermediateHumanBuild": "exports/web-rider-pelvis-final-20261021",
+    "artDecision": "Human and prior scenery were not accepted by user"
+  },
+  "release": {
+    "publiclyDeployed": false,
+    "gitStaged": false,
+    "gitCommitted": false,
+    "gitPushed": false,
+    "localPreview": "http://127.0.0.1:5241/",
+    "localPreviewBuildIdentityVerified": true
+  }
+}

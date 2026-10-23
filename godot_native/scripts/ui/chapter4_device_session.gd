@@ -1,6 +1,7 @@
 extends RefCounted
 ## An ephemeral source-panel draft. Never writes progression or a save.
 const SOURCE_PATH := "res://data/native/chapter4-device-source.json"
+const PHYSICAL_PUZZLES: Array = ["power_topology","evacuation_route"]
 var source: Dictionary = {}
 var puzzle_id := ""
 var definition: Dictionary = {}
@@ -49,12 +50,13 @@ func operation_locked() -> bool:
 	return puzzle_id in ["media_alignment","positioning_calibration"] and not prerequisite_ready
 
 func editable() -> bool:
-	return opened and not pending and not completed and mode == "light" and not operation_locked()
+	return opened and not pending and not completed and mode == "light" and not operation_locked() and puzzle_id not in PHYSICAL_PUZZLES
 
 func view_kind() -> String:
 	if completed: return "completed"
 	if operation_locked(): return "locked"
 	if mode == "dark": return "observation"
+	if puzzle_id in PHYSICAL_PUZZLES: return "activity"
 	return "controls"
 
 func order_key() -> String:
@@ -127,13 +129,14 @@ func controller_value(value: Dictionary) -> Dictionary:
 	return result
 
 func begin_submit() -> Dictionary:
-	if not can_submit(): return {}
-	var value := controller_value(answer())
+	var activity: bool=opened and not pending and view_kind()=="activity"
+	if not activity and not can_submit(): return {}
+	var value: Dictionary={} if activity else controller_value(answer())
 	pending = true
 	feedback = ""
 	serial += 1
 	pending_serial = serial
-	return {"action":"c4_solve_"+puzzle_id,"value":value,"serial":pending_serial}
+	return {"action":("c4_device_" if activity else "c4_solve_")+puzzle_id,"value":value,"serial":pending_serial}
 
 func resolve(request_serial: int, state: Dictionary, result: Dictionary) -> bool:
 	if not opened or not pending or request_serial != pending_serial: return false

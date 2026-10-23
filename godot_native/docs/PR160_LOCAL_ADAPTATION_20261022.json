@@ -1,0 +1,169 @@
+{
+  "schema": "755-pr160-local-adaptation-v1",
+  "date": "2026-10-22",
+  "upstream": {
+    "repository": "zhu607705-coder/7-55",
+    "pr": 160,
+    "url": "https://github.com/zhu607705-coder/7-55/pull/160",
+    "head": "77633d526a9ef605b3477cef35b87bb333f9cbbd",
+    "retargetedBase": "main",
+    "remoteMerge": {
+      "sha": "32dfc73c113de980ca42b1c48a893d068e122127",
+      "state": "closed",
+      "merged": true,
+      "mainVerified": true,
+      "mainTree": "1b67cf864e46639b02a877e4d55ccfb71a22166c"
+    }
+  },
+  "local": {
+    "branch": "codex/progressive-world-puzzles-20261020",
+    "head": "457087fe737e4ce0bb01d2bcb651297762a9ba45",
+    "aheadOfTrackedBranch": 37,
+    "uncommittedWorkUploaded": false,
+    "stashRetained": "ec88d67ec38e5ec43cfa8ff8446f07fe71b8fcba",
+    "backup": "/Users/zhu/Library/Application Support/755-tools/merge-backups/two-repos-20261022/pre160",
+    "preservedDecisions": [
+      "No fixed joystick or separate confirmation button; existing scene taps, physical target approach and two-finger camera retained",
+      "Bottom tools and inline inventory; bottom-right phone icon",
+      "Existing source collision, range, mode and required-item controller gates",
+      "Dorm experiment character scale1.0 and calibrated foot contact",
+      "Game-development toolkit reference in AGENTS and docs"
+    ],
+    "portedFixes": [
+      "Root capture only for a GUI-acquired pointer; outside release and cancellation",
+      "Duplicate and emulated pointer events cannot dispatch twice; target identity rechecked on release",
+      "Modal, phone, inventory, scene/teleport, resize and focus boundaries retire stale ownership",
+      "Platform safe insets applied without restoring top controls or resizing for inventory",
+      "Object plaque follows actual confirmation and clears when leaving source range",
+      "Modal focus recorded before gesture cancellation; original item focus restored"
+    ]
+  },
+  "validation": {
+    "engine": "4.7.2.stable.official.ed1daf0bf",
+    "sourceSyncAssets": 719,
+    "nativeFinalStages": 53,
+    "nativeFailures": 0,
+    "rootTouchChecks": 317,
+    "rootTouchFailures": 0,
+    "room204ChecksAfterOutsideTouchExtension": 162,
+    "room204Failures": 0,
+    "crossPrStaticChecks": 2839,
+    "crossPrRuntimeStages": 35,
+    "crossPrFailures": 0,
+    "retainedWebReleaseValidators": 38,
+    "browserDesktopChecks": 554,
+    "browserTouchChecks": 556,
+    "browserFailures": 0,
+    "actualLocalGpuCaptures": 18,
+    "actualLocalGpuChecks": 96,
+    "actualLocalGpuFailures": 0,
+    "sourceInputSha256": "818681ab15ca8c68d34bb92965e6ce6930336eec93815763f349107362fc3276",
+    "export": "godot_native/exports/web-pr160-integrated-20261022",
+    "sourceDirty": true,
+    "verifyOnlyPassed": true,
+    "firstFailedAttemptsRetained": [
+      "adapted-native.json: old lake HUD assertion; updated to real confirmed target",
+      "interaction-regressions.json: modal item focus; fixed capture order and rerun"
+    ]
+  },
+  "remoteProof": {
+    "run": 39777262180,
+    "artifactId": 12424089611,
+    "zipSha256": "de5e62b940f39260fe4d595ec20e7c4b2cd3b580f7d7098c41ecf1d9e48a12b1",
+    "head": "77633d526a9ef605b3477cef35b87bb333f9cbbd",
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "actualCaptures": 18,
+    "captureChecks": 92,
+    "failures": 0,
+    "nativeScreenshotBatchInspected": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5241/",
+    "existingGameNotReloaded": true,
+    "dormScaleNativePreviewStillOpen": true
+  },
+  "limits": [
+    "Automated earned-save browser acceptance and isolated source-state native fixtures; no fresh manual four-chapter campaign",
+    "Simulated safe areas and Chromium touch; no physical mobile device claim",
+    "Uncommitted local UI is not the remote production website",
+    "Remote full native and new main CI/Pages are still running at final observation; prior Pages publish was skipped after the payload gate failed."
+  ],
+  "remoteCiObserved": [
+    {
+      "id": 39777271304,
+      "name": "Godot native migration",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777271304",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    },
+    {
+      "id": 39777271242,
+      "name": "Web CI",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777271242",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    },
+    {
+      "id": 39777271235,
+      "name": "Native cross-PR integration",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777271235",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    },
+    {
+      "id": 39777262180,
+      "name": "Native mobile touch proof",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777262180",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    }
+  ],
+  "newMainRunsObserved": [
+    {
+      "id": 39781321168,
+      "name": "Web CI",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321168"
+    },
+    {
+      "id": 39781321423,
+      "name": "Godot native migration",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321423"
+    },
+    {
+      "id": 39781321068,
+      "name": "Native cross-PR integration",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321068"
+    },
+    {
+      "id": 39781321260,
+      "name": "Deploy Godot Web to GitHub Pages",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321260"
+    }
+  ],
+  "acceptanceScope": "Selected increment merged after code review, affected native regressions, exact-head Web/cross-PR/actual-render proof and local browser acceptance. The 455-script remote native suite remains in progress; this is not a claim that it passed.",
+  "remotePagesPriorRun": {
+    "commit": "ea2b95bb61dc34ba8e0afeb9e513353d41b6b006",
+    "run": 39773387529,
+    "status": "failure",
+    "failedStep": "Check immutable build provenance",
+    "reason": "Initial payload exceeds unchanged100,000,000-byte release budget",
+    "initialPayloadBytes": 101337784,
+    "budgetBytes": 100000000,
+    "publish": "skipped",
+    "newMainRun": 39781321260,
+    "newMainRunStatus": "in_progress",
+    "uncommittedLocalPackageInitialPayloadBytes": 98959441
+  }
+}

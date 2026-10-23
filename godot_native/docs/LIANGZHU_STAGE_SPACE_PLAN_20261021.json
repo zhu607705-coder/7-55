@@ -1,0 +1,270 @@
+{
+  "schema": "755-liangzhu-stage-space-plan-v1",
+  "date": "2026-10-21",
+  "status": "Coordinate proposal only; user confirmed both classic stage furniture and dramatic text, actual artwork/adapter/model integration not yet implemented by this task",
+  "scope": "Keep current stage.png unchanged. New original table/tablecloth and two chairs are independent native fine-pixel layers. No actors in the backgrounds; no source-photo cutouts or claims of reproducing a particular troupe/ZJU stage.",
+  "coordinateSystems": {
+    "composition": [
+      240,
+      135
+    ],
+    "nativeRaster": [
+      1200,
+      675
+    ],
+    "finePixelsPerCompositionUnit": 5,
+    "rehearsalAuthority": [
+      960,
+      540
+    ],
+    "compositionFromRehearsal": "p/4",
+    "rehearsalFromComposition": "p*4",
+    "finePixelsFromComposition": "p*5",
+    "rule": "Map coordinates/transforms, never render240×135 then enlarge; preserve all original Model data, picker, projection/intent and progress semantics."
+  },
+  "props": [
+    {
+      "id": "table",
+      "suggestedAsset": "stage_table.png",
+      "nativeRaster": [
+        160,
+        100
+      ],
+      "nativeFootAnchor": [
+        80,
+        100
+      ],
+      "compositionRect": [
+        8,
+        82,
+        32,
+        20
+      ],
+      "compositionFoot": [
+        24,
+        102
+      ],
+      "rehearsalRect": [
+        32,
+        328,
+        128,
+        80
+      ],
+      "rehearsalFoot": [
+        96,
+        408
+      ],
+      "fineRect": [
+        40,
+        410,
+        160,
+        100
+      ],
+      "fineFoot": [
+        120,
+        510
+      ],
+      "construction": "32unit wide,8unit tabletop depth,12unit table height; restrained enclosing tablecloth across front/side, readable wood feet. No baked text, actor, lamp, tea set or chairs."
+    },
+    {
+      "id": "chair_left",
+      "suggestedAsset": "stage_chair_left.png",
+      "nativeRaster": [
+        60,
+        120
+      ],
+      "nativeFootAnchor": [
+        30,
+        120
+      ],
+      "compositionRect": [
+        8,
+        68,
+        12,
+        24
+      ],
+      "compositionFoot": [
+        14,
+        92
+      ],
+      "rehearsalRect": [
+        32,
+        272,
+        48,
+        96
+      ],
+      "rehearsalFoot": [
+        56,
+        368
+      ],
+      "fineRect": [
+        40,
+        340,
+        60,
+        120
+      ],
+      "fineFoot": [
+        70,
+        460
+      ],
+      "construction": "Independent high-back theater chair,12unit frame width/24unit visual height, seat level8units above its source foot; same camera/materials as table."
+    },
+    {
+      "id": "chair_right",
+      "suggestedAsset": "stage_chair_right.png",
+      "nativeRaster": [
+        60,
+        120
+      ],
+      "nativeFootAnchor": [
+        30,
+        120
+      ],
+      "compositionRect": [
+        28,
+        68,
+        12,
+        24
+      ],
+      "compositionFoot": [
+        34,
+        92
+      ],
+      "rehearsalRect": [
+        112,
+        272,
+        48,
+        96
+      ],
+      "rehearsalFoot": [
+        136,
+        368
+      ],
+      "fineRect": [
+        140,
+        340,
+        60,
+        120
+      ],
+      "fineFoot": [
+        170,
+        460
+      ],
+      "construction": "Matching second independent chair, same camera/pixel density and shared row baseline; no separate perspective or nonuniform fit."
+    }
+  ],
+  "group": {
+    "location": "Left upstage/wing-adjacent cluster, chairs behind table; preserves central action field",
+    "compositionEnvelope": [
+      8,
+      68,
+      32,
+      34
+    ],
+    "rehearsalEnvelope": [
+      32,
+      272,
+      128,
+      136
+    ],
+    "fineEnvelope": [
+      40,
+      340,
+      160,
+      170
+    ],
+    "drawOrder": "Existing stage floor, chairs foot92, table foot102, actors/live props by authored foot depth, foreground curtains/rail when overlapping. No new physics blockers or item targets from a decorative prop layer."
+  },
+  "protectedExistingGeometry": {
+    "receiverRehearsal": [
+      118,
+      44,
+      724,
+      204
+    ],
+    "receiverComposition": [
+      29.5,
+      11,
+      181,
+      51
+    ],
+    "receiverBottom": 248,
+    "gapBelowReceiverToFurnitureTop": 24,
+    "movablePropUnionRehearsal": [
+      178,
+      142,
+      604,
+      254
+    ],
+    "propUnionDerivation": "Source x in[-4.5,4.5],footX=480+x*56; screen half-width50, fan visual width up to96. Screen depth8/footY274; fan depths3..7/footY296..384, per existing prop_rect.",
+    "furnitureRight": 160,
+    "gapToPropUnionLeft": 18,
+    "lampRehearsal": [
+      438,
+      436,
+      84,
+      88
+    ],
+    "lampComposition": [
+      109.5,
+      109,
+      21,
+      22
+    ],
+    "currentPerformanceActorFrameEnvelopeX": [
+      52,
+      188
+    ],
+    "currentActorFrameMinRehearsalX": 208,
+    "gapToActorFrameEnvelope": 48,
+    "boundary": "Current22second actor paths only. Any new50second staging or seated poses must recheck these bounds; this proposal does not freeze new performer blocking."
+  },
+  "sourceSeparationFinding": {
+    "gameplay": "scripts/games/theater_shadow_rehearsal.gd::_draw_stage currently uses theater_rebuild/rehearsal_backdrop, while optional performance uses the fine stage. They are visually different sets.",
+    "proposedUnification": "Reuse the same fine stage and independent furniture in both views through a read-only presentation adapter; convert rehearsal960×540 coordinates÷4 into composition while retaining the original960×540 Model, receiver, projection and picking authority.",
+    "uiLayerContract": "Native task/status/feedback text should be positioned from the same field/global transform as the stage, in a deliberate bounded caption/task surface. Do not independently use root-window coordinates for a transformed/scaled activity. Root/door owns actual Main/layout changes."
+  },
+  "referenceEvidence": [
+    {
+      "file": "exports/verification/liangzhu_performance_20261021/reference/hk_lcsd_shanghai_yueju_liangzhu_2015_original.jpg",
+      "sha256": "eb768a949d28abeab14add8b7f710b84682800ece331bb39c39a47d2e5ae1c78",
+      "page": "https://www.info.gov.hk/gia/general/201511/06/P201511050730_photo_1092411.htm",
+      "actuallyViewedThisTask": true,
+      "visible": "Central wood table, two seated performers, small lamp-shaped object/brushes; chair count/details are partly hidden, not a complete furniture survey.",
+      "boundary": "Reference for generic furniture/staging vocabulary only, not permission to reproduce the photo, identifiable faces or unique set."
+    },
+    {
+      "file": "exports/verification/liangzhu_performance_20261021/reference/commons_loutaihui_20191025_augustohai_original.jpg",
+      "sha256": "d7789ceda4d553fad85c4aa5cfa4eabb9a329b606902d938daa2501fff42d88e",
+      "page": "https://commons.wikimedia.org/w/index.php?title=File:%E6%A2%81%E5%B1%B1%E4%BC%AF%E4%B8%8E%E7%A5%9D%E8%8B%B1%E5%8F%B0.%E6%A5%BC%E5%8F%B0%E4%BC%9A145528.jpg&oldid=659508822",
+      "actuallyViewedThisTask": true,
+      "visible": "Foreground rails, decorative screen, red column and right-side tea table/metal pot; reference depth layering only.",
+      "boundary": "Do not call this ZJU2026 stage or infer singing text/choreography from one static photo."
+    }
+  ],
+  "fineArtContract": {
+    "pixelGrid": "1 native fine pixel, aligned origin; not5×5 uniform blocks",
+    "palette": "Existing32-color policy, restrained wood/paper cloth; avoid skin/coral speckle on wood and green backdrop noise",
+    "alpha": [
+      0,
+      255
+    ],
+    "light": "Same upper-left warm stage light, small contact shadows; no face spotlight or independent material bloom",
+    "perspective": "Same orthographic oblique floor grammar; parallel tabletop/floor axes; upright chair backs; no independent vanishing point",
+    "sizing": "Whole object uniform fit only; preserve complete cloth hem/feet/backs, measured anchors and transparent padding. Root approves final samples before integration."
+  },
+  "notAuthorizedByThisPlan": [
+    "No generated furniture image or production stage modification was performed.",
+    "No new collision, controller gate, evidence, input rule or save mutation.",
+    "Current actor atlas has standing/step/raised-arm/bow poses, not seated poses. Do not imply sitting by clipping a standing body behind furniture; author seated poses if the new script actually requires them.",
+    "No assertion that every Yueju production must use one table/two chairs, or that these reference photos establish the exact proposed layout.",
+    "Classic scene/dialogue/chant content remains with parent research/design task; no new quotes or singing audio supplied by this plan."
+  ],
+  "acceptanceBeforeIntegration": [
+    "Review new furniture at native size and in the shared1200×675 GPU stage.",
+    "Recompute protected rectangles and new50second performer path/hand/fan envelopes after model freeze.",
+    "Keep table/chairs outside every existing receiver/target/drag/lamp hit area; decorative alpha cannot intercept input.",
+    "Verify actual root-to-field UI geometry at desktop, portrait fallback and mobile landscape; task text and stage should move/scale together.",
+    "Verify no baked actor duplication, same model/rig and exact raw-frame capture identity; full movie remains paused."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "755-rodin-asset-batch-v1",
+  "date": "2026-10-21",
+  "provider": "Hyper3D / Rodin",
+  "authorization": "User confirmed use of existing Hyper3D / Rodin credits for the human rider and reusable campus scenery.",
+  "maxCredits": 2.0,
+  "expectedCreditsPerAsset": 0.5,
+  "sourceReferences": [
+    "https://www.zju.edu.cn/english/2018/0521/c19949a812627/page.htm",
+    "https://edp.zju.edu.cn/news/993",
+    "https://claude-opus-5-5.riba2534.cn/"
+  ],
+  "referenceUse": "Original models inspired by public campus architecture and motion principles. No copied demo code, pelican mesh, logos, identifiable photographed people, or surveyed-route claims.",
+  "artDirection": "Existing 3D bicycle-camera exception only. Restrained navy, ivory, brick, gray metal, muted foliage; clear silhouettes and PBR materials without baked lighting. The rest of the project's fine pixel direction remains authoritative.",
+  "importContract": {
+    "format": "glb",
+    "axis": "Godot Y up; measure generated orientation before calibration",
+    "units": "Normalize uniformly to existing bicycle contact rig; preserve source movement, lane width, route gates and collisions",
+    "human": "One A/T-pose master. Skin/weights must be inspected and bound locally; generation alone does not prove a working rig. Hands attach to grips and soles to pedals at every phase.",
+    "scenery": "One reusable master per type; split useful submeshes in Blender, common ground pivots, use uniform scale and shared material treatment. No generated road or collision authority.",
+    "acceptance": ["Native-size silhouette", "Measured bounds and triangle count", "Texture and material inspection", "Human joint deformation over a full pedal cycle", "Mount/live/dismount handoff", "Desktop and mobile renderer budget"]
+  },
+  "assets": [
+    {
+      "id": "campus_student",
+      "purpose": "Replace the unapproved procedural human prototype",
+      "targetHeightMetres": 1.76,
+      "request": {
+        "prompt": "Original full-body East Asian male university student, age 22, natural 7.5-head proportions, dense short black hair, calm friendly face. Navy casual jacket over ivory T-shirt, charcoal straight trousers and ivory low-top sneakers. Refined stylized realism, convincing shoulders, elbows, knees, hands, shoe soles and subtle cloth folds. Symmetric A-pose, arms 35 degrees from sides, separated fingers, feet parallel and flat. Full body alone, no pedestal, bicycle, backpack, scene, lettering or logos. Muted blue-gray, ivory and natural skin palette, even neutral lighting without baked shadows. Clean continuous anatomy suitable for skeleton skinning and cycling animation; no ball-joint toy or primitive mannequin look.",
+        "tier": "Gen-2.5-High", "mesh_mode": "Quad", "quality": "medium",
+        "quad_normal": true, "geometry_file_format": "glb", "material": "PBR",
+        "texture_mode": "high", "TAPose": true, "seed": 755,
+        "is_symmetric": "symmetric"
+      }
+    },
+    {
+      "id": "campus_glass_canopy",
+      "purpose": "Reusable Zijingang-inspired teaching/canteen frontage",
+      "targetBoundsMetres": [16, 7.5, 5],
+      "request": {
+        "prompt": "Original reusable modern Chinese university frontage module inspired by Zhejiang University Zijingang: a long airy glass entrance canopy held by slender gray steel columns, warm ivory concrete wall and rhythm of blue-gray windows, a red brick end pier. Clean refined stylized realism, realistic thickness and material detail, neutral PBR illumination with no baked shadows. Rectangular module about 16m wide, 7.5m high, 5m deep, straight joinable edges, base at ground level, visible structural supports and readable open entrance. Architecture alone, no road, landscape slab, people, bicycles, signs, text or logos. Restrained ivory, gray steel, muted brick and blue-gray glass matching a calm campus game. Not a diorama or white block prototype.",
+        "tier": "Gen-2.5-High", "mesh_mode": "Quad", "quality": "medium",
+        "quad_normal": true, "geometry_file_format": "glb", "material": "PBR",
+        "texture_mode": "high", "seed": 756
+      }
+    },
+    {
+      "id": "campus_willow_verge",
+      "purpose": "Reusable waterside greenery, bench and railing composition",
+      "targetBoundsMetres": [10, 7, 3],
+      "request": {
+        "prompt": "Original modular Hangzhou university waterside verge: one graceful mature willow with a visible gray-brown branching trunk and fine drooping muted green foliage, beside a short elegant gray metal railing and simple weathered wood bench. Refined stylized realism with rich natural silhouette and subtle material detail, neutral PBR illumination, no baked shadows. Straight reusable 10m long by 3m deep strip, willow about 7m tall, common ground level, bench and railing visually separate with clear gaps. Isolated objects only, no base slab, road, water plane, buildings, people, bicycles, signs, lettering or logos. Calm restrained foliage, ivory-gray metal and warm wood palette matching a modern Zhejiang campus game. No low-detail cones or spheres.",
+        "tier": "Gen-2.5-High", "mesh_mode": "Quad", "quality": "medium",
+        "quad_normal": true, "geometry_file_format": "glb", "material": "PBR",
+        "texture_mode": "high", "seed": 757
+      }
+    },
+    {
+      "id": "campus_theater_foyer",
+      "purpose": "Reusable original theater entrance/arrival landmark",
+      "targetBoundsMetres": [18, 9, 6],
+      "request": {
+        "prompt": "Original Zhejiang university campus theater entrance module: broad ivory modernist foyer, gently curved projecting roof, tall blue-gray glazed lobby divided by slender dark mullions, warm brick side wings and a shallow three-step entrance. Refined stylized realism, convincing concrete, glass and metal thickness, subtle material detail, neutral PBR lighting with no baked shadows. Architecture alone, rectangular footprint about 18m wide, 6m deep and 9m high, base at ground zero, clear broad entrance silhouette. No ground slab, road, people, bicycles, posters, lettering, crest or logos. Restrained ivory, muted brick and cool blue-gray glass matching a calm Zijingang campus cycling game. Original composition rather than a replica of a named architect's building; no white-box prototype look.",
+        "tier": "Gen-2.5-High", "mesh_mode": "Quad", "quality": "medium",
+        "quad_normal": true, "geometry_file_format": "glb", "material": "PBR",
+        "texture_mode": "high", "seed": 758
+      }
+    }
+  ]
+}

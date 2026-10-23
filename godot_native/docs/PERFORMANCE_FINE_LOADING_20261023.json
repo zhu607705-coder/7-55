@@ -1,0 +1,131 @@
+{
+  "schema": "755-fine-loading-acceptance-v1",
+  "at": "2026-10-23T08:33:25.706840+00:00",
+  "engine": "4.7.1.stable.official",
+  "sourceCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "sourceInputSha256": "9d7eb0ba35c64333a1c364ea069edc8e283f48a2ffec5aa9804fc103ad5de7f1",
+  "exportDirectory": "/Users/zhu/Downloads/755/godot_native/exports/web-performance-fine-20261023",
+  "buildManifestSha256": "8b248369c0c348f647cdd940c03787f6e387712461794efda03cf980c4f3a91d",
+  "contentManifestSha256": "59dfb76c9b42fb5cdfc0b9d89c266cd41a5a1ecf47013e107327d9fbea2955cc",
+  "previewUrl": "http://127.0.0.1:5241/?build=9d7eb0ba35c6",
+  "previewOpenResult": "queued",
+  "packs": 74,
+  "ordinaryPacks": 70,
+  "ordinaryMaxBytes": 5999688,
+  "transportChunks": {
+    "files": 54,
+    "bytes": 53619220,
+    "packCount": 4,
+    "exactCoverage": true
+  },
+  "initialPayloadBytes": 76066799,
+  "siteBytes": 666209663,
+  "logicalPayloadBytes": 537129240,
+  "coreBytes": 35948112,
+  "fullEntries": 2535,
+  "browserChecks": {
+    "desktopStreaming": 1082,
+    "retinaTouchResourceLoading": 968,
+    "total": 2050
+  },
+  "focusedTests": {
+    "loader": 50,
+    "resourceCache": 45,
+    "staticChunkGroups": 7,
+    "partitionGroups": 8
+  },
+  "artifactValidation": {
+    "sourceBeforeAfterGuard": true,
+    "verifyOnly": true,
+    "realPackBootAndDeferredResources": true,
+    "sameFrozenPayloadLosslessPartition": true
+  },
+  "unchangedChapterResourceGate": true,
+  "committed": false,
+  "remoteDeployed": false,
+  "limitations": [
+    "Chapter admission still waits for cumulative chapter families; packaging does not reduce their total bytes.",
+    "Initial upgrade from old PCK grouping does not reuse old whole-PCK identities.",
+    "Byte interruption benchmark uses local HTTP and in-memory IDB; not online timing or physical phone.",
+    "Browser checks use isolated Chromium with touch emulation; no Firefox, Safari or physical mobile acceptance.",
+    "Lake check covers theater-to-lake approach, not all four kayak maps.",
+    "Frozen export excludes later edits from concurrent chest chat."
+  ],
+  "evidence": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/baseline.json",
+      "bytes": 529,
+      "sha256": "84a61e1207654066a171f3b89b2bc5bc56f05f7aeaa3f18547282c22a00ed59d"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/build.log",
+      "bytes": 8943,
+      "sha256": "76f409d74f0cc32482875078ab702e070e5f3ba2dbe79878fb01cf8a63f90ea9"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/verify.log",
+      "bytes": 727,
+      "sha256": "b00182fbb66d2bfba44c9a5c9ba354ec8b46e289450b11f132834e5b526ac94a"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/core-assets.json",
+      "bytes": 4513,
+      "sha256": "c33258cdf4f354208cc6d063ff88779fcc4957f8b93fc26fa53fd0259d67bfc1"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/package/verification.json",
+      "bytes": 781,
+      "sha256": "ddc31c682c7326340bdf433396322b561eac596d5cb297b943d65987df07aa1a"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/package/finish-verification.json",
+      "bytes": 1008,
+      "sha256": "be818911a19f13acef9e788803f217ac833915734469eeb97a874b956ae5a6d7"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/content-loader.json",
+      "bytes": 4399,
+      "sha256": "67abb45b7d8eb6d4fea3530f485ebec8c823d2e10f493c575d7095acf90af0fa"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/resource-cache.json",
+      "bytes": 4390,
+      "sha256": "cc5811b646122d5abdca3b664342bd5d5e0c7e48b81675fdb407ca4f3a037237"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/compatibility-audit.json",
+      "bytes": 3291,
+      "sha256": "22c5989f6eb631cf4d7a80932a627c08e4a3790e09a82cf0116ea6045be6149b"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/interrupted-pck-transfer.json",
+      "bytes": 7065,
+      "sha256": "eda27c5079f8e0c521c1e9bfda10061cbfae56ffc631c4a760b32e856ea805a2"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/measure-interrupted-pck.mjs",
+      "bytes": 7601,
+      "sha256": "b79e3238cf404d9c0b530e8f368dbb06b16ae04272f1fafb11dd330d2d38395e"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/browser-streaming/web-acceptance.json",
+      "bytes": 886921,
+      "sha256": "d60beb21b44d551e791d49dd548dc8f64f4f95ce085a0772ed9d3ba8d6f5b678"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/browser-resource-touch/web-acceptance.json",
+      "bytes": 868396,
+      "sha256": "5771d9e543c58f6ccc82ff4875c09756237772403ce9423f27355e4c5b1e70eb"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/screenshot-cleanup.json",
+      "bytes": 2808,
+      "sha256": "f46c683c5353b4f1f513aa70a14d75713311882108a4273dc2e4c4d159d35ca1"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/performance-fine-20261023/preview-switch.json",
+      "bytes": 4462,
+      "sha256": "ed62ff2ad5df0ba5e5c516f8793ff875be9f890f2c64cfe7c04d68cab57cbadc"
+    }
+  ]
+}

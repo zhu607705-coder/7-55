@@ -3,6 +3,10 @@ const PlatePress = preload("res://scripts/objects/room201_press_model.gd")
 const MediaStudio = preload("res://scripts/objects/room302_studio_model.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const Room204 = preload("res://scripts/games/chapter4_room204_model.gd")
+const Progressive = preload("res://scripts/games/progressive_transport_model.gd")
+const PROGRESSIVE_PUZZLES: Array = ["power_topology","evacuation_route"]
+var progressive_session: Dictionary = {}
+var progressive_owner: Dictionary = {}
 const StairModel = preload("res://scripts/games/chapter4_stair_model.gd")
 const ChaseStair=preload("res://scripts/games/chapter4_chase_stair_model.gd")
 const ChaseSpace=preload("res://scripts/games/chapter4_chase_space.gd")
@@ -84,11 +88,55 @@ func _dialogue(id: String) -> String:
 	for line in content.dialogues.get(id,[]): lines.append(line.text)
 	return "\n".join(lines)
 func _game(s: Dictionary,kind: String,action: String,options: Dictionary={}) -> Dictionary:
+	invalidate_progressive_session()
 	serial+=1; var token: String="c4-%d-%d"%[Time.get_ticks_msec(),serial]
 	pending={"kind":kind,"token":token,"action":action,"phase":s.chapter4.phase,"floor":s.chapter4.floor,"attempt":s.chapter4.chaseAttempt}
 	var config: Dictionary={"script":"res://scripts/games/chapter4_activity.gd","kind":kind,"session":token,"on_success":action,"title":content.title,"settings":s.native.get("settings",{})}
 	config.merge(options,true)
 	return _ok("",{"game":config})
+
+# Local object moves are replayed by a pure model. This capability is held only
+# by this controller instance; neither its nonce nor an unfinished board is saved.
+func invalidate_progressive_session() -> void:
+	progressive_session={}
+	progressive_owner={}
+
+func cancel_progressive_session(session: Variant) -> bool:
+	if progressive_session.is_empty() or not session is Dictionary or session!=progressive_session:return false
+	invalidate_progressive_session()
+	return true
+
+func _progressive_context(s: Dictionary,id: String) -> bool:
+	var c: Dictionary=s.chapter4
+	return id in PROGRESSIVE_PUZZLES and c.prologueSeen and c.phase=="room204_restore" and c.floor=="A2" and c.timeState=="1850_evening" and c.mode=="light" and s.native.get("mode","")=="light" and s.native.get("chapter",0)==4 and s.native.get("scene","")==SCENE and s.get("runtimeMode","")=="rpg" and s.get("rpgScene","")==SCENE and s.native.get("c4_context","")==id
+
+func _progressive_current(s: Dictionary) -> bool:
+	if progressive_session.is_empty() or not is_same(s,progressive_owner): return false
+	var c: Dictionary=s.chapter4
+	return _progressive_context(s,progressive_session.puzzleId) and c.phase==progressive_session.phase and c.floor==progressive_session.floor and c.roomId==progressive_session.roomId and c.timeState==progressive_session.timeState and c.mode==progressive_session.realityMode and str(s.native.scene)==progressive_session.scene
+
+func _progressive_game(s: Dictionary,id: String) -> Dictionary:
+	invalidate_progressive_session()
+	if not _progressive_context(s,id): return _locked()
+	serial+=1
+	var c: Dictionary=s.chapter4
+	progressive_session={"id":serial,"nonce":Crypto.new().generate_random_bytes(16).hex_encode(),"puzzleId":id,"layoutDigest":Progressive.layout_digest(id),"phase":c.phase,"floor":c.floor,"roomId":c.roomId,"timeState":c.timeState,"realityMode":c.mode,"scene":str(s.native.scene)}
+	progressive_owner=s
+	pending={}
+	return _ok("",{"game":{"kind":"progressive_transport","script":"res://scripts/games/progressive_transport.gd","puzzleId":id,"session":progressive_session.duplicate(true),"on_success":"c4_puzzle_trace","on_cancel":"c4_puzzle_cancel","title":extra.puzzles[id].title,"settings":s.native.get("settings",{})}})
+
+func _progressive_result(s: Dictionary,value: Variant) -> Dictionary:
+	if not _progressive_current(s) or not value is Dictionary or value.get("session")!=progressive_session: return _locked()
+	var issued: Dictionary=progressive_session.duplicate(true)
+	invalidate_progressive_session()
+	# Caller-provided final answers, flags and final snapshots are never accepted.
+	if value.size()!=4 or value.get("puzzleId")!=issued.puzzleId or value.get("layoutDigest")!=issued.layoutDigest or not value.get("actions") is Array: return _locked()
+	var replay: Dictionary=Progressive.replay(issued.puzzleId,value.actions)
+	if not replay.get("valid",false) or not replay.get("completed",false) or not _puzzle_correct(issued.puzzleId,replay.get("controllerValue",{})): return _ok("物件还没有全部归位，可以回到现场重新试。")
+	var c: Dictionary=s.chapter4
+	if _has(c,extra.puzzles[issued.puzzleId].factId): return _locked("already_complete")
+	_fact(c,extra.puzzles[issued.puzzleId].factId)
+	return _ok(extra.puzzles[issued.puzzleId].successText)
 
 func _chase_activity(s:Dictionary,lead:float=650.0)->Dictionary:
 	var landing:int=clampi(int(s.chapter4.chaseStairwellLanding),0,2)
@@ -243,6 +291,7 @@ func actions(page: String,s: Dictionary) -> Array:
 			var out: Array=[]
 			for zone in content.lightGrid.zones: out.append(_action("c4_toggle_"+zone.id,zone.label))
 			out.append(_action("c4_lock_power","锁定供电")); return out
+	if id in PROGRESSIVE_PUZZLES and c.mode=="light" and not _has(c,extra.puzzles[id].factId): return [_action("c4_device_"+id,"操作现场装置")]
 	if extra.puzzles.has(id) and c.mode=="light" and not _has(c,extra.puzzles[id].factId): return [_action("c4_solve_"+id,"确认装置设置",_puzzle_fields(id))]
 	return []
 func _puzzle_fields(id: String) -> Array:
@@ -264,9 +313,14 @@ func _puzzle_fields(id: String) -> Array:
 			return [_field("a","第一块",opts),_field("b","第二块",opts),_field("c","第三块",opts),_field("d","第四块",opts)]
 	return []
 func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
+	if not progressive_session.is_empty() and not _progressive_current(s): invalidate_progressive_session()
 	if not action.begins_with("c4_"): return {}
 	if not _active(s): return _locked("prologue_requirements_unmet")
 	var c: Dictionary=s.chapter4
+	if action=="c4_puzzle_cancel":
+		if value is Dictionary:cancel_progressive_session(value.get("session"))
+		return _ok()
+	if action=="c4_puzzle_trace": return _progressive_result(s,value)
 	if action=="c4_prologue":
 		if c.prologueSeen or s.qizhenLake.phase!="complete" or s.chapterThreeInterlude.phase!="replay_ready" or not s.chapterThreeInterlude.replayUnlocked: return _locked("prologue_requirements_unmet")
 		return _game(s,"prologue","c4_prologue_end",{"durationMs":43834,"video":"res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"})
@@ -282,6 +336,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if c.phase=="hall_clock_inspection" and not _has(c,"hall_clock_inspected"): return _presentation(s,"hall_clock_inspection","c4_clock_inspected",{"durationMs":4700,"body":_dialogue("hall_clock.first_inspection")})
 		return _ok("",{"scene":SCENE})
 	if action=="c4_mode":
+		invalidate_progressive_session()
 		c.mode="dark" if c.mode=="light" else "light"; s.native.mode=c.mode; return _ok("深色观察" if c.mode=="dark" else "浅色操作")
 	if action=="c4_cancel_floor_selection":
 		if value is Dictionary and pending.get("action","")=="c4_floor_select" and value.get("session","")==pending.get("token","missing"): pending={}
@@ -481,10 +536,14 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		var id: String=action.trim_prefix("c4_device_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id): return _locked()
 		# The source opens the scanner to explain the missing film; submission stays gated.
-		s.native.c4_context=id; return _ok("",{"page":"c4_device"})
+		invalidate_progressive_session()
+		s.native.c4_context=id
+		if id in PROGRESSIVE_PUZZLES and c.mode=="light" and not _has(c,extra.puzzles[id].factId): return _progressive_game(s,id)
+		return _ok("",{"page":"c4_device"})
 	if action.begins_with("c4_solve_"):
 		var id: String=action.trim_prefix("c4_solve_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id) or c.mode!="light" or s.native.get("c4_context","")!=id: return _locked()
+		if id in PROGRESSIVE_PUZZLES: return _ok("请在现场移动物件，最后把通路和工具一起收好。")
 		if id=="positioning_calibration":
 			if not _plate_press_context(s): return _locked()
 			if _has(c,"a2_positioning_plate_calibrated"): return _ok(extra.puzzles[id].successText)

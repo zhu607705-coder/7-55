@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-21",
+  "status": "implemented-and-fixture-browser-accepted-audio-pending-zero-credits",
+  "scope": "54秒原创中文演出、实体桌椅/角色舞台视图及3个QTE已接入独立Godot生产导出；三引擎9个基础场景与额外Chrome DPR3共10场景358项实际Web检查通过。验收以普通导入的剧场存档为边界，FF/WK连续手势为synthetic DOM输入；不代表真机或完整通关。中文唱念音轨仍待接入；原英语旁白、主线进度和存档不变。",
+  "identity": "依据梁祝民间故事与可核查越剧场次作原创浓缩演出，不标注为某院团原唱、某流派复刻或浙大2026实录。",
+  "sources": [
+    {
+      "id": "lcsd-2023",
+      "url": "https://www.lcsd.gov.hk/CE/CulturalService/Programme/tc/chinese_opera/programs_1531.html",
+      "authority": "香港康乐及文化事务署，中国戏曲节2023官方节目",
+      "verified": "HTML可访问；详细列出女扮男装同窗、返家相送借物示意、托称妹妹、回家被定婚、楼台相会、山伯病逝及墓前化蝶的因果链。",
+      "use": "场次与故事事实；不复制现代剧本长对白或录音。"
+    },
+    {
+      "id": "mct-2009",
+      "url": "https://www.mct.gov.cn/whzx/bnsj/yss/201111/t20111128_752015.html",
+      "authority": "文化和旅游部艺术司，正文日期2009-10-26（不是URL中的2011）",
+      "verified": "2009浙江小百花新版以折扇转承、扇舞转为蝶舞；这支持以扇贯穿的设计，不证明任意秒数或本项目动作是原编舞。",
+      "use": "借扇转蝶的叙事方法；本项目秒表、动作、对白另创。"
+    },
+    {
+      "id": "xicheng-2026",
+      "url": "https://www.bjxch.gov.cn/xcfw/whfw/xxxq/pnidpv1004721.html",
+      "authority": "北京市西城区政府，2026-09-11演出报道",
+      "verified": "新版精选结拜、相送、思祝、楼台会、祷墓等核心段落浓缩全剧。",
+      "use": "可浓缩核心场次的当代演出实例；不推导为固定唯一版本。"
+    }
+  ],
+  "durationProposalMs": 54000,
+  "durationReason": "已采用54秒舞台逻辑时长，三处QTE等待/局部重试另外计时；声音尚未生成，待真实音源可用再校准。",
+  "stageProposal": {
+    "presentation": "可见台口、台面、前沿、侧幕及一桌二椅，固定同一舞台空间。",
+    "firstScene": "一桌二椅作书案；两人靠同一页书，随后起身相送。用侧幕和演员圆场改变含义，无需切成任务界面。",
+    "secondScene": "桌椅留作楼台室内陈设，两人隔桌或栏相对，距离和欲伸又收的手表现阻隔。不能把两人相对站立直接冒称为楼台会。",
+    "thirdScene": "有明确后来/墓前转场，收去书案动作或侧幕遮切，留一把空椅作为缺席的舞台意象；这是原创象征，不称经典固定程式。",
+    "layerContract": "舞台实体和演员在同一stage/subviewport坐标与遮挡顺序；任务/谜题HUD是舞台之外的用户界面。演出时不在演员上叠原任务、按钮或解题提示；字幕在独立边缘纸带，暂停/返回保持可见。只读演出不承担剧情提交。"
+  },
+  "scenes": [
+    {
+      "id": "study-and-farewell",
+      "rangeMs": [
+        0,
+        20000
+      ],
+      "classicBasis": "同窗三载作为开场；主段十八相送的借物示意与迟钝未悟。",
+      "captionOriginal": "同窗三载，临别时仍有话未说。",
+      "actionsOriginal": [
+        "第一场两位演员脚点为(108,90)/(132,90)，位于椅背88之前、桌96之后，完整姿势图同案读书。",
+        "8秒后从桌两侧绕到台前，14秒起举袖相对，15秒接扇QTE停在真实英台手腕前。",
+        "接扇成功才续当前拍，折扇按两只真实腕点完成短距离交接；18秒英台收袖。"
+      ],
+      "status": "implemented-in-canonical-content-and-model",
+      "cues": [
+        {
+          "id": "study-opening",
+          "startMs": 0,
+          "endMs": 2000,
+          "speaker": "",
+          "text": "同窗三载，临别时仍有话未说。",
+          "delivery": "caption",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "study-scholar",
+          "startMs": 2000,
+          "endMs": 5500,
+          "speaker": "梁山伯",
+          "text": "这一页，你总比我先读懂。",
+          "delivery": "spoken",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "study-yingtai",
+          "startMs": 5500,
+          "endMs": 9200,
+          "speaker": "祝英台",
+          "text": "书上能读，心里未必。",
+          "delivery": "spoken",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "farewell-question",
+          "startMs": 9200,
+          "endMs": 15000,
+          "speaker": "祝英台",
+          "text": "梁兄，可看见路边那一双蝶？",
+          "delivery": "original-sung",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "farewell-answer",
+          "startMs": 15000,
+          "endMs": 18000,
+          "speaker": "梁山伯",
+          "text": "看见了。我再送你一程。",
+          "delivery": "spoken",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "farewell-silence",
+          "startMs": 18000,
+          "endMs": 20000,
+          "speaker": "",
+          "text": "仍有话未说。",
+          "delivery": "caption",
+          "voiceAssetGenerated": false
+        }
+      ]
+    },
+    {
+      "id": "chamber-meeting",
+      "rangeMs": [
+        20000,
+        38000
+      ],
+      "classicBasis": "楼台会：认明身份之后，英台婚事已定，二人相见而难相守。",
+      "captionOriginal": "再相见，英台的婚事已被定下。",
+      "actionsOriginal": [
+        "20秒幕过后，一人在桌前、一人在桌后，桌椅仍是实际舞台实体。",
+        "27秒起举袖相对，29秒向左回身QTE暂停当前拍；误向局部重试，不回放上一场。",
+        "回身成功后换收袖姿态，以原图完整cel表达欲言又止，不宣称新增网格关节形变。"
+      ],
+      "status": "implemented-in-canonical-content-and-model",
+      "cues": [
+        {
+          "id": "chamber-opening",
+          "startMs": 20000,
+          "endMs": 23000,
+          "speaker": "",
+          "text": "再相见，英台的婚事已被定下。",
+          "delivery": "caption",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "chamber-yingtai",
+          "startMs": 23000,
+          "endMs": 29000,
+          "speaker": "祝英台",
+          "text": "你认出我时，婚事已定。",
+          "delivery": "spoken",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "chamber-scholar",
+          "startMs": 29000,
+          "endMs": 33500,
+          "speaker": "梁山伯",
+          "text": "我认得的，一直是你。",
+          "delivery": "original-sung",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "chamber-silence",
+          "startMs": 33500,
+          "endMs": 38000,
+          "speaker": "",
+          "text": "两人隔桌相望。",
+          "delivery": "caption",
+          "voiceAssetGenerated": false
+        }
+      ]
+    },
+    {
+      "id": "butterflies",
+      "rangeMs": [
+        38000,
+        54000
+      ],
+      "classicBasis": "山伯病逝之后的墓前祭奠与化蝶结尾；不把楼台会当场误演成活人突然变蝶。",
+      "captionOriginal": "后来，山伯病逝。英台来到墓前。",
+      "actionsOriginal": [
+        "幕过之后，山伯缺席；只留一把空椅，字幕明确后来及墓前。",
+        "英台在空位前躬身，再举起双手的扇影；两扇均读取同一演员实际手腕挂点。",
+        "48秒左右两扇各从对应腕点放飞成双蝶，人物渐退，末尾留一段静止观看。",
+        "交互模式需通过本地接扇/回身/放蝶动作才续当前拍；失败只重试本拍，演出回到原排练后不写主线进度。"
+      ],
+      "status": "implemented-in-canonical-content-and-model",
+      "cues": [
+        {
+          "id": "grave-later",
+          "startMs": 38000,
+          "endMs": 42000,
+          "speaker": "",
+          "text": "后来，山伯病逝。英台来到墓前。",
+          "delivery": "caption",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "grave-yingtai",
+          "startMs": 42000,
+          "endMs": 46000,
+          "speaker": "祝英台",
+          "text": "这一次，换我来寻你。",
+          "delivery": "spoken",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "butterfly-verse-a",
+          "startMs": 46000,
+          "endMs": 49000,
+          "speaker": "合声",
+          "text": "一袖春风，半窗旧梦。",
+          "delivery": "original-sung",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "butterfly-verse-b",
+          "startMs": 49000,
+          "endMs": 52500,
+          "speaker": "合声",
+          "text": "双蝶并起，再过重门。",
+          "delivery": "original-sung",
+          "voiceAssetGenerated": false
+        },
+        {
+          "id": "butterfly-ending",
+          "startMs": 52500,
+          "endMs": 54000,
+          "speaker": "",
+          "text": "蝶影越过重门。",
+          "delivery": "caption",
+          "voiceAssetGenerated": false
+        }
+      ]
+    }
+  ],
+  "optionalClassicRecognition": {
+    "status": "not-adopted",
+    "modernLibrettoQuotationHanziInShippedContent": 0,
+    "note": "本批采用原创中文台词，不使用先前研究中的可选经典短句。"
+  },
+  "audioResearch": {
+    "verifiedFreelyReusableClassicRecording": null,
+    "searchScope": "官方节目/文化报道、Commons音频定向搜索、Archive梁祝录音检索；找到公开可听或演出页面不等于拿到明确CC/PD原唱录音许可。本轮没有确认一条适合直接入游戏的CC/PD唱腔短音源；不声称全网不存在。未下载原唱或提取真人声纹。",
+    "existingProjectTools": [
+      {
+        "path": "scripts/generate-chapter3-voice-audio.mjs",
+        "actualCapability": "现有speech-2.8-hd CLI调用及干声/时长/哈希验证；当前定义为英语旁白，不应运行全量生成器覆盖它。"
+      },
+      {
+        "path": "scripts/generate-chapter3-theater-audio.mjs",
+        "actualCapability": "music-2.6纯器乐与短音效，不含本次中文表演；旧脚本本身不能证明现在有可用配额。"
+      }
+    ],
+    "currentAvailability": {
+      "mmxExecutableInPath": false,
+      "mmxAtThreeProjectKnownLocations": false,
+      "checkedEnvCredentialConfigured": {
+        "MINIMAX_API_KEY": false,
+        "MINIMAX_GROUP_ID": false,
+        "MMX_API_KEY": false,
+        "MMX_GROUP_ID": false,
+        "MINIMAX_TOKEN": false
+      },
+      "credentialReadScope": "只输出指定环境变量是否存在；未读取/打印key，未读app私有凭证存储。",
+      "localSpeechVoicesListed": [
+        "Tingting zh_CN",
+        "Meijia zh_TW",
+        "Sinji zh_HK"
+      ],
+      "localSpeechLimitation": "macOS say可输出本地中文念白作为临时可听版本，不是戏曲唱腔，也未审查系统声音导出许可；不把它标为已完成唱念双要求。"
+    },
+    "officialGeneration": {
+      "cliSource": "https://github.com/MiniMax-AI/cli",
+      "verifiedFlags": [
+        "music generate --lyrics",
+        "--lyrics-file",
+        "--vocals",
+        "--genre",
+        "speech synthesize --voice"
+      ],
+      "apiSource": "https://platform.minimax.io/docs/guides/music-generation",
+      "apiAvailabilityCaution": "当前官方文档载2026-08-20后新用户音乐API准入限制和免费接口停用；不得照旧free模型说明盲重试/扣费。官方文档推荐已有MiniMax Audio网页或本地开源模型。",
+      "webEntry": "https://www.minimax.io/audio/music",
+      "recommendedFastPath": "已有登录网页生成一段40–55秒原创中文戏曲风格声乐，再按真实词句/时长校准动作；需实际试听语言、咬字、旋律和角色交替，不能仅依据prompt宣称正宗越剧。无现成登录时先补本地念白验证时序，真正唱腔仍待生成/授权录制。",
+      "voiceDirection": "两条匿名女声：小生中低声区、花旦较明亮声区，咬字清楚，含蓄的念唱交接，江南戏曲氛围；不用真实演员姓名或声音克隆。",
+      "singingPromptOriginal": "原创中文戏曲风格微型舞台表演，54秒内，开场书案同窗的轻快对念，中段送别时含蓄的问答，楼台相会转为克制悲情，末段两条匿名女声唱四句原创短词。小生中低音与花旦明亮音色，不模拟真实演员；小型弦乐、笛、轻木板点拍，清晰中文，不唱既有旋律，不用梁祝小提琴协奏曲，短前奏、留白让动作与字句落地。",
+      "generationPerformed": false,
+      "separateAssetPolicy": "后续仅写本次liangzhu_performance独立音频/来源manifest；不运行旧chapter3全量generator，不覆盖旧音乐与英语旁白。",
+      "voiceAssetsGenerated": 0,
+      "localTtsGenerated": false,
+      "currentBlocker": "用户报告当前音频生成额度为0；未执行付费或未知凭证调用，中文唱念尚未生成。",
+      "metadataBoundary": "delivery=original-sung是拟定表演方式，当前只有文字与动作，不代表实际已唱出。"
+    },
+    "status": "pending-zero-generation-credits"
+  },
+  "contentPath": "data/native/liangzhu-performance.content.json",
+  "modelPath": "scripts/presentation/liangzhu_performance_model.gd",
+  "runtimeQteDoc": "docs/LIANGZHU_PERFORMANCE_QTE.md",
+  "contentSha256": "4037d19f777feba8bfaacb53a7293ea459c41d92b16f199620d0d35fc34dd45b",
+  "modelSha256": "aa0183449b3f70c8c5ab0433c315c1020f97564a8024e8381e0d2aef34164f23",
+  "reducedMotion": "各可操作构图静止；第三场48秒前保留可见英台和左右手持扇，48秒后一次切换为固定双蝶。29秒演员保留，静态左向袖带由实际视图绘制，不以提前完成画面替换QTE实体。",
+  "validation": {
+    "nativeModelChecks": 94,
+    "nativeQteChecks": 32,
+    "nativeRigChecks": 345,
+    "failures": 0,
+    "scope": "原生model94/QTE32/rig345，及固定7ac2生产包10场景358项实际Web输入/存档检查；仅记录范围内通过。中文音轨与物理手机未验收。",
+    "browserProfiles": 10,
+    "browserChecks": 358,
+    "browserUnexpectedErrors": 0,
+    "browserEvidence": "exports/verification/liangzhu_performance_20261021/web-qa-final-summary.json"
+  },
+  "standingDepthCalibration": {
+    "studyFeet": [
+      [
+        108,
+        90
+      ],
+      [
+        132,
+        90
+      ]
+    ],
+    "chamberFeet": [
+      [
+        108,
+        106
+      ],
+      [
+        132,
+        90
+      ]
+    ],
+    "chairBaseline": 88,
+    "tableBaseline": 96,
+    "graveYingtaiFoot": [
+      132,
+      102
+    ],
+    "reason": "实际GPU发现椅背挡胸后按真实脚点排序校准；保留桌椅尺度与QTE时点。"
+  },
+  "visualIntegration": {
+    "status": "integrated-and-fixture-browser-accepted",
+    "presenter": "scripts/presentation/liangzhu_performance.gd",
+    "stagePlate": "scripts/presentation/liangzhu_stage_plate.gd",
+    "sourceInputSha256": "7ac2e7c7d76b7501795009ad204a00281e8a1c291bc62204dacd475d147e29d9",
+    "browserBuild": "exports/web-liangzhu-qte-v2-20261021",
+    "nativeEvidenceScope": "实际GPU检查及截图由root/door/library独立记录；此文档不替代那些检查或完整Web验收。",
+    "browserEvidence": "exports/verification/liangzhu_performance_20261021/web-qa-final-summary.json",
+    "rejectedCandidate": {
+      "sourceInputSha256": "c639682d5f7135b8e11c25e204fe1fb13c38fb169ba7c14e7d66a09dbe040ff3",
+      "browserBuild": "exports/web-liangzhu-qte-20261021",
+      "status": "not-accepted-first-touch-ownership-and-offscreen-help-menu",
+      "originalReportsPreserved": true
+    }
+  }
+}

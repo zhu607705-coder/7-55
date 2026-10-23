@@ -1,0 +1,147 @@
+{
+  "schema": "755-liangzhu-stage-furniture-v1",
+  "rasterPixelsPerCompositionUnit": 5,
+  "nativeGrid": 1,
+  "alpha": [
+    0,
+    255
+  ],
+  "props": {
+    "table": {
+      "texture": "res://assets/native/liangzhu_performance_20261021/table.png",
+      "nativeSize": [
+        160,
+        100
+      ],
+      "nativeFootAnchor": [
+        80,
+        100
+      ],
+      "visibleRect": [
+        10,
+        22,
+        139,
+        78
+      ],
+      "sha256": "4a0bd091d71ae660da439160463b61138cd600c53f44f21a569a51898a5e4da7",
+      "colors": 32
+    },
+    "chair_left": {
+      "texture": "res://assets/native/liangzhu_performance_20261021/chair_left.png",
+      "nativeSize": [
+        60,
+        120
+      ],
+      "nativeFootAnchor": [
+        30,
+        120
+      ],
+      "visibleRect": [
+        2,
+        26,
+        56,
+        94
+      ],
+      "sha256": "2a1a113c97dee8659f218c9cfc9d3dcad1103be605d823a6faec2b2333146c7f",
+      "colors": 24
+    },
+    "chair_right": {
+      "texture": "res://assets/native/liangzhu_performance_20261021/chair_right.png",
+      "nativeSize": [
+        60,
+        120
+      ],
+      "nativeFootAnchor": [
+        30,
+        120
+      ],
+      "visibleRect": [
+        2,
+        26,
+        56,
+        94
+      ],
+      "sha256": "27cdfe7529b3c1a60c36d3d6a63b4d886548c1f63a23e7c4382edc2c03fdf65c",
+      "colors": 23
+    }
+  },
+  "sets": {
+    "performance": {
+      "table": {
+        "compositionRect": [
+          104,
+          76,
+          32,
+          20
+        ],
+        "foot": [
+          120,
+          96
+        ]
+      },
+      "chair_left": {
+        "compositionRect": [
+          102,
+          64,
+          12,
+          24
+        ],
+        "foot": [
+          108,
+          88
+        ]
+      },
+      "chair_right": {
+        "compositionRect": [
+          126,
+          64,
+          12,
+          24
+        ],
+        "foot": [
+          132,
+          88
+        ]
+      }
+    },
+    "rehearsal": {
+      "table": {
+        "compositionRect": [
+          8,
+          82,
+          32,
+          20
+        ],
+        "foot": [
+          24,
+          102
+        ]
+      },
+      "chair_left": {
+        "compositionRect": [
+          8,
+          68,
+          12,
+          24
+        ],
+        "foot": [
+          14,
+          92
+        ]
+      },
+      "chair_right": {
+        "compositionRect": [
+          28,
+          68,
+          12,
+          24
+        ],
+        "foot": [
+          34,
+          92
+        ]
+      }
+    }
+  },
+  "semantics": "Original decorative stage props only; no collision, picking target, gameplay fact or fake seated actor. Draw from full native frame with uniform density, sort by foot.y; rehearsal coordinates multiply composition units by4."
+}

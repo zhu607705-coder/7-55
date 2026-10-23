@@ -1,0 +1,19 @@
+{
+  "schema": "755-generated-ui-illustration-v1",
+  "created": "2026-10-23",
+  "tool": "built-in image_gen",
+  "reference": "/Users/zhu/.codex/generated_images/01a1673c-a9ef-7793-86ad-b517c830b096/exec-7cfe3ed9-fd34-450a-8b53-9cc14e778901.png",
+  "generatedOriginal": "/Users/zhu/.codex/generated_images/01a1673c-a9ef-7793-86ad-b517c830b096/exec-3a039ca2-045d-438c-9e07-90d069e58f68.png",
+  "output": "lake_memory.png",
+  "sha256": "60ef3e6a7f2d38a115ff7e475760d10b483cb0842a0c9e12a2d9a28d283c14fc",
+  "role": "Decorative chapter introduction; native type and controls overlay it. Not evidence, collision, story state or map coordinates.",
+  "displayRect": [
+    26,
+    252,
+    372,
+    310
+  ],
+  "resize": "Uniform cover crop; source retained unchanged",
+  "prompt": "Create a production background illustration extracted and reauthored from ONLY the central lake vignette in this reference chapter UI. Output one landscape 6:5 fine-pixel-art illustration, around 1200x1000, of the SAME quiet night lake, stone bank along the bottom left, sparse reeds and small dark leafy branch at upper left, muted blue water reflections, and one pale film-memory strip floating on the water with a missing dark segment. Match the elegant fine pixel detail, crisp discrete color clusters, orthographic oblique parallel view and limited ink blue, warm paper and stone palette of the reference. Composition should retain bank and memory strip within a generous center safe area for later uniform crop. Lake takes most of the image. Palette: 202B35,344452,526B7A,7993A1,766E63,A39B87,C5C1A9,E8E0C8,243F5A,385B79,547F9D,83A7B6. No UI of any kind, no letters, no labels, no digits, no text, no buttons, no phone, no title, no status icons, no watermark, no sky or realistic camera perspective. Fill image edge to edge with the illustration. This will be a single decorative non-authoritative image underneath native text and controls in a game.",
+  "acceptance": "User approved the prior UI concept; this derivative is integrated and visually inspected. Strict project-wide art/palette acceptance is not claimed."
+}

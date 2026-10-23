@@ -1,0 +1,37 @@
+{
+  "planSha256": "01e30102fa9f0865829edfe94815a87866da70362103b8a1dae4751924ff6bb4",
+  "balanceBefore": 221,
+  "balanceAfter": 220,
+  "jobs": {
+    "campus_student_v2": {
+      "status": "downloaded",
+      "uuid": "161e79e8-e9e9-427f-9bfc-0bb6845aa705",
+      "consumed": 1,
+      "jobStatuses": [
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done"
+      ],
+      "files": [
+        {
+          "name": "base_basic_pbr.glb",
+          "bytes": 11878256,
+          "sha256": "fcfde9ff9e07ece8a54f451bd4bc1d37ab89847bcc0b14d563312c90f205c18f"
+        },
+        {
+          "name": "preview.webp",
+          "bytes": 5524,
+          "sha256": "76822ffb9081bfec13b716e7769e8aaa90e6c1038d5cf6c12f293e1121e6ede1"
+        },
+        {
+          "name": "model_export_raw.glb",
+          "bytes": 6994536,
+          "sha256": "5eb907fb9df6d807acdb69a9f1ff85191eae9b14fa6a3c3fdbf59a6a39c30c40"
+        }
+      ]
+    }
+  }
+}

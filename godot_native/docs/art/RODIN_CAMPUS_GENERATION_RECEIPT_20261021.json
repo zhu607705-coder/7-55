@@ -1,0 +1,107 @@
+{
+  "planSha256": "c853ed733ad8b8289ecbb66e4d334cd7268d21337cb0509452f536b01f6cc520",
+  "balanceBefore": 223,
+  "balanceAfter": 221,
+  "jobs": {
+    "campus_student": {
+      "status": "downloaded",
+      "uuid": "500b4f8c-bf3f-40c0-a906-7272ef586435",
+      "consumed": 0.5,
+      "jobStatuses": [
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done"
+      ],
+      "files": [
+        {
+          "name": "base_basic_pbr.glb",
+          "bytes": 8348632,
+          "sha256": "6c26b45ed40e4876769af6b1f6082ea75706e8b91364c699b34810de7f25f797"
+        },
+        {
+          "name": "preview.webp",
+          "bytes": 3032,
+          "sha256": "27502f765363d32b45c6d74f3dce0a4b7c39a97a1c0646ceb5f934d2ce87cfcd"
+        }
+      ]
+    },
+    "campus_glass_canopy": {
+      "status": "downloaded",
+      "uuid": "3e49d8d5-b8ca-494c-aea7-61ad0488969b",
+      "consumed": 0.5,
+      "jobStatuses": [
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done"
+      ],
+      "files": [
+        {
+          "name": "base_basic_pbr.glb",
+          "bytes": 10546948,
+          "sha256": "8b3e4690cb66696c30d95c7f0e8bbc1afff193b7a83aae8415247db5b520bc31"
+        },
+        {
+          "name": "preview.webp",
+          "bytes": 4562,
+          "sha256": "0813795ec8dfeb9abbd84f4a0a484b3ab0b3e7526d68f5e853290c34cd5c4fa2"
+        }
+      ]
+    },
+    "campus_willow_verge": {
+      "status": "downloaded",
+      "uuid": "0f7dde4b-71e3-4071-b13e-156fe3dacf49",
+      "consumed": 0.5,
+      "jobStatuses": [
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done"
+      ],
+      "files": [
+        {
+          "name": "base_basic_pbr.glb",
+          "bytes": 11466316,
+          "sha256": "dd1b99761d119e39320d9f607d918540cc2020ef810cc4301b0947e51e37afd9"
+        },
+        {
+          "name": "preview.webp",
+          "bytes": 5282,
+          "sha256": "d727a17a6a878ce919cb79342fa03c121baf1f9ea773665fd4b1dfff5b543a55"
+        }
+      ]
+    },
+    "campus_theater_foyer": {
+      "status": "downloaded",
+      "uuid": "2222120d-c6c6-4185-9d75-c8978ff6281d",
+      "consumed": 0.5,
+      "jobStatuses": [
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done",
+        "Done"
+      ],
+      "files": [
+        {
+          "name": "base_basic_pbr.glb",
+          "bytes": 10053996,
+          "sha256": "57f0e6215e8c868249d57e54397f39d32806373ded45e5028933037ffe9e4989"
+        },
+        {
+          "name": "preview.webp",
+          "bytes": 3268,
+          "sha256": "76675163fd42a854c4ea9adc3d74c3bf413d5f66c029a81e8cf0bdcbc461d227"
+        }
+      ]
+    }
+  }
+}

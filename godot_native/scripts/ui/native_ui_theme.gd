@@ -18,6 +18,23 @@ const SPACE_MEDIUM := 12
 const SPACE_LARGE := 16
 const MIN_TARGET := 44.0
 
+static func enable_scale_aware_text(item: CanvasItem) -> bool:
+	# Newer engines can re-rasterize the original font at nested Control scales.
+	# Reflection keeps the supported 4.6.x native CI parseable; it must not claim
+	# the newer visual behavior when the native capability is unavailable.
+	if not is_instance_valid(item): return false
+	const PROPERTY := &"oversampling_with_scale"
+	const ENABLED := &"OVERSAMPLING_WITH_SCALE_ENABLED"
+	if not ClassDB.class_has_integer_constant(&"CanvasItem",ENABLED): return false
+	var found := false
+	for property: Dictionary in item.get_property_list():
+		if property.name == PROPERTY: found = true; break
+	if not found: return false
+	var enabled: int=ClassDB.class_get_integer_constant(&"CanvasItem",ENABLED)
+	if int(item.get(PROPERTY)) == enabled: return false
+	item.set(PROPERTY,enabled)
+	return true
+
 static func box(fill: Color, border: Color = Color.TRANSPARENT, width: int = 0, radius: int = 0, padding: Vector2 = Vector2.ZERO) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill

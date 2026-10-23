@@ -106,6 +106,7 @@ func home(b) -> Control:
 		["borrow","借阅信息","阅",false],["reserve","座位预约","24",reservation],["space","空间预约","⌂",false],
 		["recommend","求是荐书","荐",false],["new","新书通报","新",false],["citation","查收查引","引",false],["fees","图书馆缴费","¥",false],
 		["recovery","022恢复申请","PASS",recovery_open],["return","返回现场","↗",b.s.ui.libraryFinalsPhase!="idle"]]
+	if b.s.ui.libraryFinalsPuzzle.archivedRuleCollected: apps.append(["rule","旧版离座规则","规",true])
 	for i in range(apps.size()):
 		var app: Array=apps[i]; var point=Vector2(23+(i%4)*83,149+int(i/4)*79)
 		if not app[3]: b._label(inner,"xxx",Rect2(point,Vector2(75,71)),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER).name="LibraryLocked_"+app[0]; continue
@@ -115,6 +116,7 @@ func home(b) -> Control:
 				"reserve": goto(b,"spaces")
 				"recovery": open_recovery(b)
 				"return": b.action_requested.emit("lib_enter",null)
+				"rule": b.action_requested.emit("lib_open_rule",null)
 		var target: Button=b._button(inner,"",Rect2(point,Vector2(75,71)),open_app,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 		target.name="LibraryApp_"+app[0]
 		b._panel(target,Rect2(15,0,46,46),Color("0f66b7"),Color("073f7c"),0,3)

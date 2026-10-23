@@ -1,16 +1,10 @@
 extends RefCounted
-## User-locked five surfaces only. No progression, input or global theme mutation.
+## User-selected surface layouts, now using the project Morning Note family.
 ## Sizes are logical UI pixels; opacity applies to BACKGROUND ONLY.
 ## Never modulate the whole container: no-background roles retain full text alpha.
 const SURFACES := ["hud", "interaction", "dialogue", "journal", "theater"]
 const ROLES := ["heading", "body", "button", "tip"]
-const FONT_PATHS := {
-	"legacy400": "res://ui_assets/fonts/CampusUISans-Regular.otf",
-	"sans400": "res://ui_assets/fonts/SelectedSans-Regular.otf",
-	"sans700": "res://ui_assets/fonts/SelectedSans-Bold.otf",
-	"boutique400": "res://ui_assets/fonts/SelectedBoutique-Regular.ttf",
-}
-static var _fonts: Dictionary = {}
+const Typography=preload("res://scripts/ui/native_typography.gd")
 
 class ButtonTextShadow extends Label:
 	# Button does not implement Label's shadow theme constants in Godot 4.6.
@@ -30,9 +24,9 @@ static func role(surface: String, text_role: String) -> Dictionary:
 	assert(surface in SURFACES and text_role in ROLES, "Only explicitly selected UI roles are supported")
 	var hud := surface == "hud"
 	return {
-		"family": ("boutique" if text_role == "body" else "legacy") if hud else "sans",
+		"family": "morning_note",
 		"size": 18 if text_role == "heading" else (11 if text_role == "tip" else (13 if hud and text_role == "body" else 14)),
-		"weight": 700 if not hud and text_role == "heading" else 400,
+		"weight": 500 if text_role == "heading" else 400,
 		"color": "#cbd6bb" if text_role == "tip" else ("#eedff1" if hud and text_role == "body" else "#f1efdd"),
 		"shadow": true, "outline": 0, "tracking": 0,
 		"leading": 1.7 if hud and text_role == "body" else 1.6,
@@ -43,23 +37,8 @@ static func panel(surface: String) -> Dictionary:
 	return {"background": "scrim" if surface == "hud" else "none", "spacing": 8, "opacity": 0.9, "corner": 6}
 
 static func font(surface: String, text_role: String) -> Font:
-	var spec := role(surface, text_role)
-	var key := str(spec.family) + str(spec.weight)
-	if not _fonts.has(key):
-		var file: FontFile = load(FONT_PATHS[key]).duplicate()
-		file.allow_system_fallback = false
-		var variation := FontVariation.new()
-		variation.base_font = file
-		# Exact preview bytes remain primary. Only absent glyphs use a bundled,
-		# true-weight companion from the same verified SC source (never synthetic).
-		var coverage_weight := "Bold" if int(spec.weight) == 700 else "Regular"
-		var coverage: FontFile = load("res://ui_assets/fonts/SelectedCoverage-" + coverage_weight + ".otf").duplicate()
-		coverage.allow_system_fallback = false
-		var symbols: FontFile = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf").duplicate()
-		symbols.allow_system_fallback = false
-		variation.fallbacks = [coverage, symbols]
-		_fonts[key] = variation
-	return _fonts[key]
+	role(surface,text_role)
+	return Typography.display_font() if text_role=="heading" else Typography.body_font()
 
 static func size(surface: String, text_role: String) -> int:
 	return int(role(surface, text_role).size)
@@ -84,7 +63,8 @@ static func apply_label(control: Control, surface: String, text_role: String) ->
 	control.add_theme_constant_override("shadow_offset_y", 1)
 	control.add_theme_constant_override("shadow_outline_size", 3)
 	control.add_theme_constant_override("line_spacing", roundi(line_height(surface, text_role) - face.get_height(px)))
-	control.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	control.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	preload("res://scripts/ui/native_ui_theme.gd").enable_scale_aware_text(control)
 
 static func apply_button(button: Button, surface: String) -> void:
 	apply_label(button, surface, "button")

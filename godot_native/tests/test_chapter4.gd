@@ -3,6 +3,7 @@ const Chapter = preload("res://scripts/chapters/chapter4.gd")
 const Model = preload("res://scripts/games/chapter4_stair_model.gd")
 const Activity = preload("res://scripts/games/chapter4_activity.gd")
 const Stairs = preload("res://scripts/games/chapter4_stairs.gd")
+const TransportProof=preload("res://tests/helpers/progressive_transport_proof.gd")
 var failures: int=0
 var checks: int=0
 func check(value: bool,message: String) -> void:
@@ -94,9 +95,14 @@ func full_chain(records: Array) -> void:
 	for event: Dictionary in [{"kind":"insert"},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"vertical","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1}]:
 		chapter.dispatch(s,"c4_plate_press_event",event)
 	chapter.dispatch(s,"c4_solve_positioning_calibration",{"horizontal":-2,"vertical":1,"pressure":3})
-	chapter.dispatch(s,"c4_device_power_topology"); var edges: Dictionary={}
-	for edge in ["hall__west_corridor","hall__east_corridor","west_corridor__bakery_back_area","east_corridor__classroom_zone","bakery_back_area__classroom_zone"]: edges[edge]="on"
-	chapter.dispatch(s,"c4_solve_power_topology",edges); chapter.dispatch(s,"c4_device_evacuation_route"); chapter.dispatch(s,"c4_solve_evacuation_route",{"a":"lecture_202_door","b":"east_corridor","c":"transport_core","d":"main_stair_down"})
+	for id: String in ["power_topology","evacuation_route"]:
+		var transport: Dictionary=chapter.dispatch(s,"c4_device_"+id)
+		check(transport.has("game") and transport.game.kind=="progressive_transport","Original world device opens real object campaign: "+id)
+		if transport.has("game"):
+			var transport_proof: Dictionary=TransportProof.proof(transport.game)
+			check(not transport_proof.is_empty(),"All three local stages use legal inputs: "+id)
+			chapter.dispatch(s,transport.game.on_success,transport_proof)
+		check(s.chapter4.factIds.has(chapter.extra.puzzles[id].factId),"Replay earns original source fact: "+id)
 	chapter.dispatch(s,"c4_deduce",{"arrival":"A3","unserved":"A2"})
 	var floor_choice: Dictionary=chapter.dispatch(s,"c4_elevator")
 	check(floor_choice.has("open_c4_floor_selection"),"Solved-state return offers original floor choice")

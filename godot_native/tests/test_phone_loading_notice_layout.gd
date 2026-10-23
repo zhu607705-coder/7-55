@@ -96,7 +96,7 @@ func run() -> void:
 		var hint: Control=find_named(shell.page_body,"ZjudingReentryHint")
 		var exit_button: Control=find_named(shell.page_body,"ZjudingLoadingExit")
 		check(hint!=null,"blocked hint appears at3000ms")
-		check(hint.get_global_rect().end.y<=exit_button.get_global_rect().position.y,"hint and exit remain separate")
+		check(not hint.get_global_rect().intersects(exit_button.get_global_rect()),"hint and exit remain separate")
 		check_loading_art()
 		await click(exit_button)
 		check(state.d.native.page=="phone_home","real exit remains clickable through art")

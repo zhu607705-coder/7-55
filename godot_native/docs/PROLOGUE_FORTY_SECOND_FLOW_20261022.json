@@ -1,0 +1,121 @@
+{
+  "schema": "755-prologue-forty-second-flow/v1",
+  "date": "2026-10-22",
+  "request": "Approximately40 seconds from first word flow to narrator caught; consult ChatGPT web first. Preserve critical reaction speed.",
+  "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+  "sourceDirty": true,
+  "sourceInputSha256": "44924adeebfe8f62bee45eda98d24a3900f287be7e9167af60f762e6c06d9619",
+  "engine": "4.7.2.stable.official",
+  "consultation": {
+    "url": "https://chatgpt.com/c/6ad9da85-c178-83e8-9901-d78b93e2daa7",
+    "displayedMode": "Extra High",
+    "prompt": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/chatgpt-prompt.txt",
+    "responseAX": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/chatgpt-response-ax.txt",
+    "screenshot": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/chatgpt-review.png",
+    "adopted": [
+      "discovery, recognition, reconstruction",
+      "continuous original decoys between the six real targets",
+      "relative encounter beats and immediate success handoffs",
+      "natural duration rather than a40-second completion timer"
+    ],
+    "notAdopted": [
+      "changing physical target entry to four directions",
+      "holding completed play until an absolute global deadline"
+    ]
+  },
+  "timingBoundary": {
+    "start": "first deploy after blackout",
+    "end": "caught, after the original1400ms grip",
+    "excludes": [
+      "receipt and blackout",
+      "later dialogue and whiteout"
+    ],
+    "nativeMeasuredActiveSeconds": 38.8500000000008,
+    "baselineSeconds": 22.07,
+    "gpuRenderedSeconds": 38.875
+  },
+  "composition": {
+    "targetBeats": [
+      [
+        5
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        2,
+        6,
+        13
+      ]
+    ],
+    "realTargets": 6,
+    "encounters": 27,
+    "originalDecoys": 21,
+    "stageStartsSeconds": [
+      0,
+      9.34,
+      20.06
+    ],
+    "lockSeconds": 37.45,
+    "criticalSpeedsUnchanged": [
+      360,
+      390,
+      420
+    ],
+    "windowSpeedUnchanged": 440,
+    "baseSpawnMs": 950,
+    "stageHandoffMs": 280,
+    "teachingRebound": "first physical demonstration is harmless while exploring",
+    "retry": "preserve deck position and collection; repeat only already introduced missing targets"
+  },
+  "verification": {
+    "nativeSuites": 8,
+    "nativeReport": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/755-forty-second-native-paced-20261022.json",
+    "pacingReport": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/755-forty-second-paced-20261022.json",
+    "browser": [
+      {
+        "kind": "desktop",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/desktop/web-acceptance.json",
+        "sha256": "9fa0948db457e5428fb0d1baeb9eb7b88bf144ca1bf16aa789f4b16347564e38"
+      },
+      {
+        "kind": "touch",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/touch/web-acceptance.json",
+        "sha256": "4d40528e235d1c00ff94867b7c9cd853608d09d483c1e464d23e14898a184151"
+      }
+    ],
+    "retainedWebReleaseValidators": 38,
+    "retainedWebReport": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/755-forty-second-release-20261022.log",
+    "exportVerifyOnly": true,
+    "sourceWordParity": true,
+    "candidateCorrection": "Initial dense encounters exposed an earliest-hazard prioritization flaw in the trial drivers and punitive exploration during the first demonstration. Corrected the drivers and made the first teaching rebound harmless; final legal route has zero misses."
+  },
+  "video": {
+    "path": "/Users/zhu/Library/Application Support/755-tools/review/forty-second-flow-20261022.mp4",
+    "sha256": "9b1905e05ba6b349d40e213eae4436ca6a50da4a9fce95bcae23f8fa2c07ca3c",
+    "bytes": 52622788,
+    "frames": 933,
+    "fps": 24,
+    "meaning": "Actual GPU rendering, six real collisions and local pointer intents; an automated silent presentation fixture, not a human-play claim."
+  },
+  "delivery": {
+    "url": "http://127.0.0.1:5241/",
+    "export": "godot_native/exports/web-forty-second-flow-20261022",
+    "httpManifestMatched": true,
+    "directUserSaveOrProofWrites": false,
+    "remotePublished": false
+  },
+  "cleanup": {
+    "temporaryPngsRemoved": 939,
+    "hashRecord": "/Users/zhu/Library/Application Support/755-tools/verification/forty-second-flow-20261022/temporary-screenshot-hashes.json"
+  },
+  "limitations": [
+    "The natural timing is measured on a smooth route; reading, misses and grip discovery may extend it.",
+    "Touch uses Chromium emulation, not a physical phone; full-game and Gecko/WebKit parity were not reaccepted."
+  ]
+}

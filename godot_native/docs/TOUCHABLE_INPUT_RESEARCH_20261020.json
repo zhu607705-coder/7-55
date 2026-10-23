@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "title": "Touchable context-sensitive input research for independent Godot Web",
+  "reviewedAtUtc": "2026-10-20T15:25:23Z",
+  "target": {
+    "repository": "https://github.com/MZhao-ouo/Touchable",
+    "branchObserved": "main",
+    "commit": "5cab3ac2fbde9409814545d66209488304e8b73d",
+    "commitTimeUtc": "2026-10-20T02:16:50Z"
+  },
+  "scope": {
+    "mode": "read_only_source_and_documentation",
+    "runtimeTarget": "godot_native independent Godot Web, not retained React/Phaser",
+    "executedForeignCode": false,
+    "installedDependencies": false,
+    "downloadedGameAssets": false,
+    "readKeysOrGameFiles": false,
+    "productionFilesChanged": false,
+    "codeCopied": false
+  },
+  "conclusions": [
+    {
+      "id": "adapt_actions_not_skin",
+      "evidence": [
+        "overview",
+        "rhythm_mapping",
+        "context_visibility"
+      ],
+      "finding": "它根据当前小关的真实输入需求选择单动作大触区、双动作或小方向键；菜单改为直接点击/拖动。不是把所有关卡重做成滑动手势。Liquid Glass 是独立外观层。",
+      "transfer": "将场景控制器已有的有效动作/可移动实体作为输入配置来源；不使用资源文件读取或画面猜测来决定剧情可用动作。"
+    },
+    {
+      "id": "ownership_and_generation",
+      "evidence": [
+        "pointer_lifecycle",
+        "pointer_ownership",
+        "layout_cancellation"
+      ],
+      "finding": "触点先认领角色；菜单拖动只有一个所有者。owner/mode 改变或帧过期会更新 generation，旧触点和旧事件不会在新界面继续生效。",
+      "transfer": "Godot 手势记录 pointer_id、真实/模拟来源与 scene/floor/layout/session 代际；换场、设备页、模态框、重排、旋转、失焦统一 cancel。无需照搬上游250ms有效期。"
+    },
+    {
+      "id": "drag_never_becomes_tap",
+      "evidence": [
+        "pointer_lifecycle",
+        "map_confirmation",
+        "pointer_test_source"
+      ],
+      "finding": "超过累计位移阈值后永久归类为拖动，拖回起点也不恢复 tap；cancel、错误 token、事件队列溢出都不产生点击。",
+      "transfer": "地图双指缩放开始后两指 tap 候选同时失效，直到全部抬起；一指抬起不转成新一指点击或划桨。物品拖放、镜头平移、门/实体点击的所有权互斥。"
+    },
+    {
+      "id": "feedback_follows_contact",
+      "evidence": [
+        "ownership_feedback"
+      ],
+      "finding": "单动作区隐藏常驻字母/边框，按下才在每根触指附近反馈，松开后短暂淡出；多个触点同持一个动作时采用并集，单指抬起不会撤掉另一指。",
+      "transfer": "反馈贴合扇架底座、桨叶或水面接触点；用中性轮廓、实际受力/影子变化与短促声响应。不把“成功”或解法/目标数值画成答案提示。"
+    },
+    {
+      "id": "do_not_claim_complete_validation",
+      "evidence": [
+        "upstream_scope"
+      ],
+      "finding": "上游文档明确记录全关卡和专门多指/后台取消尚未全部验收；也记录过 remix 资源检测只识别到一段的案例。",
+      "transfer": "借用输入原则，不把上游描述视为性能或完整玩法验收证据。我们的地图/排练需在真实 Godot Web 三浏览器分别验收。"
+    }
+  ],
+  "localAudit": {
+    "head": "313885d6056de0e4fe3052469643627d23c2c021",
+    "files": [
+      {
+        "path": "godot_native/scripts/world.gd",
+        "sha256": "5d9f2b3c8ec0a3687d51165ad2f941b27026a147c15304443dfbcc5bf691bd8b"
+      },
+      {
+        "path": "godot_native/scripts/main.gd",
+        "sha256": "5da8dab3df96f51773cf19addd8e80fb320828859460391ab04f9167f6110749"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "93dd84cb3a228fb384cb3214b36bea9514ff77cb9a1b4a9ea488a43614909463"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal_model.gd",
+        "sha256": "4655ade02b1a1694f2b7d814191217bee0db474457fa8e6f27c6d5215903c9fd"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
+        "sha256": "9d712cf57d1eb4e79945328479cfbb4a0d9fd7cb2eea2dd34c1fbf24973551cf"
+      },
+      {
+        "path": "godot_native/tests/test_portrait_exploration.gd",
+        "sha256": "4581099f5515eaab015517bb6e89308bc5a62284ea73dd0a1b0a04e96206f383"
+      },
+      {
+        "path": "godot_native/tests/test_world_input_animation.gd",
+        "sha256": "cec0df737454328f7404ab3bd5fa7f26c00cb0348c33f29e41fb52a3e7768210"
+      }
+    ],
+    "note": "Snapshot of a dirty shared working tree before concurrent input changes. This is static audit only; findings are not claims of a reproduced browser failure.",
+    "strengths": [
+      {
+        "path": "godot_native/scripts/world.gd",
+        "lines": [
+          1327,
+          1408
+        ],
+        "evidence": "集中取消会清 touch axis/roles/route；桨鼠标手势带context，根级释放能离开SubViewport继续归属；模拟鼠标device=-1去重。"
+      },
+      {
+        "path": "godot_native/scripts/world.gd",
+        "lines": [
+          1425,
+          1468
+        ],
+        "evidence": "紧凑地图已有 index→role，pan后不tap，取消的paddle/pan不会按正常release执行。"
+      },
+      {
+        "path": "godot_native/scripts/main.gd",
+        "lines": [
+          410,
+          417,
+          690,
+          711,
+          1480,
+          1485
+        ],
+        "evidence": "手机/地图切换、viewport变化、任务弹窗会调用统一cancel。"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "lines": [
+          194,
+          204,
+          233,
+          281
+        ],
+        "evidence": "实体直接拖动、单触指id跟踪、暂停/帮助/失焦清输入；拖动组成一次可撤回组；模型仍独立验证有界move/try/replay。"
+      }
+    ],
+    "observations": [
+      {
+        "id": "redundant_rehearsal_controls",
+        "impact": "P2 presentation/input relevance",
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "lines": [
+          104,
+          109
+        ],
+        "evidence": "首次touch后换件、横移和远近5键持续全显示；模型LEVELS第一幕只有一个实体且depthMovable=false，换件和远近键没有有效自由度。",
+        "recommendation": "以实体直接拖动为主。辅助微调放在按需展开的可达入口，或由当前实体自由度呈现；第一幕横移、第二幕远近、第三幕选择多个实体。保留键盘等价和辅助输入。"
+      },
+      {
+        "id": "stick_multiple_owner",
+        "impact": "P2 multi-contact edge",
+        "path": "godot_native/scripts/world.gd",
+        "lines": [
+          1447,
+          1464
+        ],
+        "evidence": "两个index均能认领stick并写同一个touch_axis，任一stick release会无条件置零。静态序列：指1按杆→指2按杆→指1抬起→指2仍按住但axis=0。",
+        "recommendation": "如保留杆，限制一位stick owner或按仍持触点重新计算；本轮去常驻杆的直接手势实现应覆盖多指所有权测试。"
+      },
+      {
+        "id": "hybrid_mouse_takeover",
+        "impact": "P2 coverage question, not release blocker",
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "lines": [
+          266,
+          281
+        ],
+        "evidence": "触指可接替pointer_id=-1，mouse用last_touch_ms<600过滤。test_theater_rehearsal_ui.gd:63-65明确把接替作为合成鼠标恢复行为验证，因此不标成新回归。真实mouse+finger同时使用尚无证据。",
+        "recommendation": "后续按device/source区分真实鼠标和合成事件；真实owner只允许显式cancel后接替，合成事件忽略。避免仅靠600ms时间窗禁止真实鼠标。"
+      }
+    ],
+    "inspectedTests": [
+      "godot_native/tests/test_portrait_exploration.gd",
+      "godot_native/tests/test_world_input_animation.gd",
+      "godot_native/tests/test_theater_rehearsal_ui.gd"
+    ],
+    "newTestsRun": 0
+  },
+  "recommendedAcceptance": [
+    "一指拖地图并回起点：镜头改变，角色和剧情不动，抬起不点击；坐标逆变换与同源碰撞不变。",
+    "实体拖动与地图pan/物品drag不抢同一触点；两指pinch结束后不派生tap/桨stroke。",
+    "排练一整次拖动只撤回一次；取消/旋转/失焦不试演、不推进；继续后需新按下。",
+    "真实鼠标与触摸混用、浏览器合成鼠标、离开canvas后释放均只提交一次；重复up和旧scene的up无效果。",
+    "所有UI按钮均可达；按需辅助、WASD/方向键/Tab仍可操作；保留无限重试与分层观察，不输出数值答案。",
+    "在Godot Web Blink/Gecko/WebKit、1280×720/1440×900/390×844进行普通输入验收；不以本研究或上游测试替代。"
+  ],
+  "sources": [
+    {
+      "id": "overview",
+      "path": "README.md",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/README.md#L7-L23",
+      "blobSha": "83a92daf66008e22789eafe80458befaa7507630",
+      "scope": "General styling and Rhythm Heaven scene adaptation are separate features."
+    },
+    {
+      "id": "rhythm_mapping",
+      "path": "internal/games/rhythm-heaven/runtime/rh_touch.c",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/games/rhythm-heaven/runtime/rh_touch.c#L24-L104",
+      "blobSha": "b171140776d031356025fd20f38949bd462d2414",
+      "scope": "Per-scene input-set lookup; one action/two actions/compact D-pad; remix union and menu reset."
+    },
+    {
+      "id": "ownership_feedback",
+      "path": "internal/platform/ios/App.m",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/platform/ios/App.m#L375-L488",
+      "blobSha": "14a57be375d97f34bbb21c92f1208bd03dcc77ec",
+      "scope": "Multi-finger action union, per-finger feedback, hidden/cancel release, 160ms feedback fade."
+    },
+    {
+      "id": "layout_cancellation",
+      "path": "internal/platform/ios/App.m",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/platform/ios/App.m#L533-L607",
+      "blobSha": "14a57be375d97f34bbb21c92f1208bd03dcc77ec",
+      "scope": "Changing action layout clears held contacts; an old contact cannot regain the new mapping merely by moving."
+    },
+    {
+      "id": "pointer_lifecycle",
+      "path": "internal/runtime/common/ss_pointer.c",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/runtime/common/ss_pointer.c#L18-L117",
+      "blobSha": "e43232b5c216b4f518a5f22e17b5ff3f4d034a26",
+      "scope": "Owner/mode generation, stale frame rejection, overflow cancellation, irreversible pan classification, cancel is not tap."
+    },
+    {
+      "id": "pointer_ownership",
+      "path": "internal/platform/ios/App.m",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/platform/ios/App.m#L643-L695",
+      "blobSha": "14a57be375d97f34bbb21c92f1208bd03dcc77ec",
+      "scope": "One owned menu contact; independent per-contact held hints; context refresh cancels old owner."
+    },
+    {
+      "id": "context_visibility",
+      "path": "internal/platform/ios/App.m",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/platform/ios/App.m#L875-L940",
+      "blobSha": "14a57be375d97f34bbb21c92f1208bd03dcc77ec",
+      "scope": "Only relevant gameplay controls show; action remap releases old held input."
+    },
+    {
+      "id": "background_cancel",
+      "path": "internal/platform/ios/App.m",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/platform/ios/App.m#L1146-L1152",
+      "blobSha": "14a57be375d97f34bbb21c92f1208bd03dcc77ec",
+      "scope": "App deactivation clears contacts/button union/pointer generation and suspends media."
+    },
+    {
+      "id": "map_confirmation",
+      "path": "internal/games/rhythm-heaven/runtime/rh_menu.c",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/games/rhythm-heaven/runtime/rh_menu.c#L323-L347",
+      "blobSha": "eaf81e11150f80f42c86cd43b4827bb8a40f8e6a",
+      "scope": "Map pan/cancel resets pending confirmation and a target tap selects before activation."
+    },
+    {
+      "id": "upstream_scope",
+      "path": "internal/games/rhythm-heaven/README.md",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/games/rhythm-heaven/README.md#L330-L450",
+      "blobSha": "048af0ea1f9de8984d98113c2cd13587b0283efa",
+      "scope": "Upstream documents multi-finger/background and all-level coverage gaps, plus an observed remix detection limitation."
+    },
+    {
+      "id": "pointer_test_source",
+      "path": "internal/tests/common/test_pointer.c",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/tests/common/test_pointer.c#L1-L103",
+      "blobSha": "23cf2f3e141ed1eb61f9873551943341e425e231",
+      "scope": "Read tests for drag reversal, cancel, old tokens, overflow and stale frames; these tests were not executed."
+    },
+    {
+      "id": "scene_test_source",
+      "path": "internal/games/rhythm-heaven/tests/test_touch.c",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/internal/games/rhythm-heaven/tests/test_touch.c#L20-L81",
+      "blobSha": "ae0052323ea698bdf894c5e6cdc3507e9061fad1",
+      "scope": "Read scene reset/remix union/unknown scene/fallback test cases; these tests were not executed."
+    },
+    {
+      "id": "license",
+      "path": "LICENSE",
+      "url": "https://github.com/MZhao-ouo/Touchable/blob/5cab3ac2fbde9409814545d66209488304e8b73d/LICENSE#L1-L21",
+      "blobSha": "9c4ac4a7c07dbd5ceabd23339633e6cc29f1eb65",
+      "scope": "MIT; no source implementation, game artwork, binaries or keys imported."
+    }
+  ]
+}

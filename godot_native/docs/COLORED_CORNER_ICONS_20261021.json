@@ -1,0 +1,269 @@
+{
+  "schema": "755-colored-corner-icons-v1",
+  "recordedAt": "2026-10-21T15:49:33.863Z",
+  "direction": "Original filled colored pixel objects matching existing phone-app readability; supersedes earlier monochrome outline launcher choice",
+  "source": "godot_native/scripts/ui/world_phone_launcher.gd",
+  "provenance": {
+    "author": "Original project artwork authored in native code",
+    "externalImages": false,
+    "generatedModelJobs": 0,
+    "license": "Apache-2.0"
+  },
+  "specification": {
+    "engine": "Godot 4.7.2",
+    "platforms": [
+      "native",
+      "web desktop",
+      "web mobile"
+    ],
+    "masterPixels": [
+      80,
+      80
+    ],
+    "displayPixels": [
+      34,
+      34
+    ],
+    "hoverPixels": [
+      36,
+      36
+    ],
+    "pointerAndKeyboardTarget": [
+      44,
+      44
+    ],
+    "pivot": "center of retained control",
+    "collisionRole": "UI only; no world collision",
+    "palette": "755-campus-morning-32",
+    "paletteMembershipVerified": true,
+    "alpha": "0 or 255 in master",
+    "filter": "nearest",
+    "motion": "existing 1px press offset; hover artwork only; control geometry unchanged",
+    "text": "Existing tooltip and accessible action names retained",
+    "uniformPlate": {
+      "scope": "World tools, permanent world item row, phone-world return",
+      "fill": "#F4EAD5",
+      "normalBorder": "#A1744E",
+      "pixels": [
+        44,
+        44
+      ],
+      "radius": 4,
+      "allPointerAndDisabledStatesKeepSameFill": true,
+      "statusFeedback": "border only",
+      "contentMargins": 0,
+      "verticalAlignment": "one shared row_y; item dock44px, no2px offset"
+    }
+  },
+  "assets": [
+    {
+      "colors": [
+        "202B35",
+        "A9BCC2",
+        "526B7A",
+        "243F5A",
+        "83A7B6",
+        "F4CD77",
+        "F4EAD5",
+        "A9B577",
+        "547F9D",
+        "C77964",
+        "385B79",
+        "C5C1A9"
+      ],
+      "glyph": "phone",
+      "master": "80x80",
+      "translucentPixels": false,
+      "active": true,
+      "consumers": [
+        "WorldPhoneButton"
+      ]
+    },
+    {
+      "colors": [
+        "70503B",
+        "F4EAD5",
+        "A1744E",
+        "A9B577",
+        "C79B62",
+        "D8C7A0",
+        "E8E0C8",
+        "9A514A",
+        "F4CD77",
+        "83A7B6",
+        "72865C",
+        "A76A4C"
+      ],
+      "glyph": "map",
+      "master": "80x80",
+      "translucentPixels": false,
+      "active": true,
+      "consumers": [
+        "PhoneWorldReturn"
+      ]
+    },
+    {
+      "colors": [
+        "70503B",
+        "A76A4C",
+        "9A514A",
+        "C77964",
+        "D89C6A",
+        "44332D",
+        "F4EAD5",
+        "D8C7A0",
+        "E8E0C8",
+        "547F9D",
+        "A39B87"
+      ],
+      "glyph": "journal",
+      "master": "80x80",
+      "translucentPixels": false,
+      "active": true,
+      "consumers": [
+        "WorldTasks"
+      ]
+    },
+    {
+      "colors": [
+        "D3A451",
+        "F4CD77",
+        "A76A4C",
+        "FFF0B2"
+      ],
+      "glyph": "light",
+      "master": "80x80",
+      "translucentPixels": false,
+      "active": true,
+      "consumers": [
+        "WorldMode:light"
+      ]
+    },
+    {
+      "colors": [
+        "385B79",
+        "F4CD77",
+        "FFF0B2",
+        "243F5A",
+        "D8C7A0"
+      ],
+      "glyph": "dark",
+      "master": "80x80",
+      "translucentPixels": false,
+      "active": true,
+      "consumers": [
+        "WorldMode:dark"
+      ]
+    },
+    {
+      "colors": [
+        "70503B",
+        "44332D",
+        "A1744E",
+        "C79B62",
+        "D3A451",
+        "FFF0B2"
+      ],
+      "glyph": "bag",
+      "master": "80x80",
+      "translucentPixels": false,
+      "active": false,
+      "consumers": [
+        "hidden legacy WorldInventoryHandle"
+      ]
+    }
+  ],
+  "validation": {
+    "nativeReport": "/Users/zhu/Library/Application Support/755-tools/verification/uniform-icon-plates-20261021/755-uniform-icon-plates-final-native.json",
+    "nativeStages": 6,
+    "failed": 0,
+    "visualChecks": [
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 900,
+        "id": "1440x900-light",
+        "width": 1440
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 900,
+        "id": "1440x900-dark",
+        "width": 1440
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 900,
+        "id": "1440x900-phone",
+        "width": 1440
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 844,
+        "id": "390x844-light",
+        "width": 390
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 844,
+        "id": "390x844-dark",
+        "width": 390
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 844,
+        "id": "390x844-phone",
+        "width": 390
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 375,
+        "id": "667x375-light",
+        "width": 667
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 375,
+        "id": "667x375-dark",
+        "width": 667
+      },
+      {
+        "error": 0,
+        "fixture": "DEV fixture; not earned campaign completion",
+        "height": 375,
+        "id": "667x375-phone",
+        "width": 667
+      }
+    ],
+    "scope": "Actual GPU light/dark, desktop/portrait/short landscape; real item/keyboard/mouse/touch and navigation checks",
+    "sourceInputSha256": "0ca3cd8eb0013c3935f49a538cd9fd455123981da36351d9333b5f256d29e633",
+    "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+    "sourceDirty": true,
+    "browser": [
+      {
+        "kind": "desktop",
+        "checks": 554,
+        "passed": true,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/uniform-icon-plates-20261021/desktop-web-acceptance.json"
+      },
+      {
+        "kind": "touch",
+        "checks": 556,
+        "passed": true,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/uniform-icon-plates-20261021/touch-web-acceptance.json"
+      }
+    ],
+    "actualComputerUse": "Native existing earned-save theater restored; matching tools, item and phone plates visually confirmed; browser preview refreshed without reset/import",
+    "temporaryCaptureHashReceipt": "/Users/zhu/Library/Application Support/755-tools/verification/uniform-icon-plates-20261021/temporary-ui-capture-cleanup.json"
+  },
+  "reviewImage": "/Users/zhu/Library/Application Support/755-tools/review/colored-corner-icons-20261021.png",
+  "preview": "http://127.0.0.1:5241/",
+  "actualGameImage": "/Users/zhu/Library/Application Support/755-tools/review/uniform-icon-plates-in-game-20261021.png"
+}

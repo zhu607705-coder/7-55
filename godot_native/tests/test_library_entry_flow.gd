@@ -104,6 +104,10 @@ func entry(dimensions: Vector2i) -> void:
 func walk_to_bag() -> bool:
 	# Compute a collision-checked route, then walk it using routed W/A/S/D.
 	# No player teleport or progress mutation is used to reach the backpack.
+	# This fixture disables automatic processing. Spend the ordinary opening
+	# frames after the real record action before planning through its leaves.
+	for i in 10:shell.world._process(.05)
+	check(shell.world.library_door.access_granted and shell.world.library_door.progress==1,"earned-record-opens-physical-entrance")
 	var start: Vector2=shell.world.player
 	var goal:=Vector2(1237,470)
 	var step:=16.5

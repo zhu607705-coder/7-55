@@ -1,0 +1,541 @@
+{
+  "schemaVersion": 2,
+  "scope": "Optional theater shadow rehearsal: actual production Godot Web input and persistence acceptance",
+  "updatedAt": "2026-10-20T17:14:39.256Z",
+  "summary": {
+    "candidateDirectCases": 1,
+    "candidateDirectChecks": 31,
+    "candidateFailedChecks": 0,
+    "baselineMatrixCases": 9,
+    "baselineMatrixChecks": 231,
+    "fullNineCaseMatrixRerunOnCandidate": false
+  },
+  "candidate": {
+    "build": "exports/web-library-theater-tiled-20261021",
+    "sourceInputSha256": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+    "buildManifestSha256": "d9d12e7fd7a953932a9b6ced5f6ff9a7924e0ae247fc709cf5a5bbe1acae9391",
+    "sourceCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "sourceDirty": true,
+    "targetedRegression": {
+      "engine": "webkit",
+      "id": "mobile-rotate",
+      "viewport": {
+        "initial": [
+          390,
+          844
+        ],
+        "rotated": [
+          844,
+          390
+        ]
+      },
+      "result": "PASS",
+      "checks": 31,
+      "report": {
+        "path": "exports/verification/library_theater_rebuild_20261021/web-rehearsal-tiled-webkit-mobile-rotate-attempt1/report.json",
+        "sha256": "fe6268530ac72155793d79ad8d4414fe877fdf0d89a50abf354a545755d0e926"
+      },
+      "testScriptSha256": "4de32b38b86953d8462766b33c97b6b1ecd329ca8be91ce2ca418e9a24c5e298",
+      "startedAt": "2026-10-20T17:12:03.677Z",
+      "finishedAt": "2026-10-20T17:12:58.884Z",
+      "input": "Same ordinary production save-import, actual coarse browser context and real TouchEvent-to-canvas input; no state/proof writer.",
+      "validated": "Three physical acts, complete-drag undo, layered observation, two-finger menu, Pause/Return, failure in same act, physical return position, unchanged original theater/lake/items/wallet/checkpoint and durable saveDigest, replay cancellation and real reload Continue.",
+      "fixture": {
+        "path": "exports/verification/theater_rehearsal_20261020/fixtures/before_theater_rehearsal.json",
+        "sha256": "5f9d6f15edbaadf0f5198366f06fd3bb8699f73f4bc453ad44498b594b35d489",
+        "boundary": "Original c3-theater-program checkpoint and physical rack stand 560,206. Imported by ordinary F10 production save-import/file-input UI. This fixture does not prove a full campaign earned from a fresh save."
+      },
+      "physicalMobileHardware": "Not tested."
+    },
+    "moduleContinuity": {
+      "receipt": {
+        "path": "exports/verification/library_theater_rebuild_20261021/theater-tiled-artifact-relationship.json",
+        "sha256": "59be38823b2b1bc876eb59f440c725640a9069aa0d727f35ed532f5db071279f"
+      },
+      "rehearsalEntries": [
+        {
+          "path": "scripts/chapters/chapter3.gdc",
+          "sha256": "7411375e0cca984dc307501d65f5ad1d69c99347f33d7619e3978f35729a3550",
+          "identical": true
+        },
+        {
+          "path": "scripts/games/theater_rehearsal_session.gdc",
+          "sha256": "044d43695888c1126c9ed6f70f99605c50298a07b02ab0c280a2aeb40cfd0461",
+          "identical": true
+        },
+        {
+          "path": "scripts/games/theater_shadow_rehearsal_model.gdc",
+          "sha256": "bafa85b83f58d09e4d2739c044a202ab6c5ce1294e78dd63773156756b63a335",
+          "identical": true
+        },
+        {
+          "path": "scripts/games/theater_shadow_rehearsal.gdc",
+          "sha256": "96a2aa73969cb38d0dc56c50909565da1b11e67407c8c68a70f7180e991dce50",
+          "identical": true
+        },
+        {
+          "path": "scripts/presentation/theater_object_rebuild.gdc",
+          "sha256": "48f26d2c1813a3522b19ce6db65fd9b5e068be7582253ddbc75a9981b66ec8c5",
+          "identical": true
+        },
+        {
+          "path": "scripts/state.gdc",
+          "sha256": "18b3147f02c8ba7ea83fb733beeeafd37944cf4be5e020a8c814268245c400f0",
+          "identical": true
+        },
+        {
+          "path": "scripts/ui/chapter3_world_layers.gdc",
+          "sha256": "7da50b2469a917a10ed0ca6d84dedf00fe291464e2b59488bfe18e36946ffbca",
+          "identical": true
+        }
+      ],
+      "chapter3Packs": [
+        {
+          "path": "content/chapter3_001-3c18e66aebba6682.pck",
+          "sha256": "3c18e66aebba6682ac9e2a9f32588b7e51a0310ee6ccfad4762640b48a13c7bc",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_002-b8a2eb18e286f19d.pck",
+          "sha256": "b8a2eb18e286f19d466d1b01de0263c323b927e61eccf0f864e79fad07156586",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_003-31d255e06cd2569f.pck",
+          "sha256": "31d255e06cd2569f4d5e2dd2f8aead0e941fd696eac8eab6b8c1540015c34043",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_004-3c784f3ba5d8f08b.pck",
+          "sha256": "3c784f3ba5d8f08b6e8b37c14eb51c3c7d5bd6a48e4b47c14a629bcb2dfc6934",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_005-f8baf10520235631.pck",
+          "sha256": "f8baf10520235631566c63c79b5d24c210a5c3a1faf927a43768b708e78fcd41",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_006-976b87ffaef8cb60.pck",
+          "sha256": "976b87ffaef8cb600b3a01ff2a14c6e38737024f82a03939f00b5a6acaf61de4",
+          "identical": true
+        }
+      ],
+      "sharedHostDelta": "Main, world and WebPlatform compiled bytes changed for tiled-background drawing, narrative artwork and readonly background measurements. New tiled adapters and manifest are present. Their shared-host change is covered here by the new actual WebKit phone run; the previous nine cases are retained as a baseline rather than claimed as nine new-artifact runs.",
+      "otherBrowsers": "Prior Chromium/Firefox/WebKit rehearsal success remains evidence for byte-identical rehearsal modules and C3 assets. This ledger does not assert unchanged Main/world bytes or a complete nine-case rerun of the tiled artifact.",
+      "wideLoopExit": "This rehearsal regression does not exercise the original theater-to-Qizhen departure, lossless panorama draw or Firefox MAX_TEXTURE_SIZE repair. Those require separate door/tiled-background acceptance."
+    },
+    "visualReview": {
+      "receipt": {
+        "path": "exports/verification/library_theater_rebuild_20261021/theater-tiled-qa-image-review-receipt.json",
+        "sha256": "511652f1f020127d30075a34a89beda818016a41b537d906c8a74adadb8efb00"
+      },
+      "imagesReviewedAndRemoved": 10,
+      "result": "No new material presentation problem found."
+    }
+  },
+  "baselineMatrix": {
+    "identity": "Retained pre-tiling rehearsal matrix on 7273 candidate, using v3 desktop reuse as originally recorded. Overall release acceptance was subsequently blocked by a separately recorded Firefox theater-to-Qizhen black-background issue.",
+    "archive": {
+      "path": "exports/verification/library_theater_rebuild_20261021/theater-acceptance-7273-baseline.json",
+      "sha256": "ad27b9d04961c030dacd1147cd9aaa2f8a49a0372937fde3f13a8111e74e6c0d"
+    },
+    "schemaVersion": 1,
+    "scope": "Optional theater shadow rehearsal: actual production Godot Web input and persistence acceptance",
+    "createdAt": "2026-10-20T16:38:31.319Z",
+    "release": {
+      "build": "exports/web-library-theater-20261021",
+      "sourceInputSha256": "7273e5a3ebb70c6240c7cdcf672ae2f8a349d47f65af834aaffdfe80b81274a8",
+      "buildManifestSha256": "489443a550b1dca43ad2f76875cdeb8d528eefb1472202aff213254736ab99c2",
+      "sourceCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+      "sourceDirty": true
+    },
+    "summary": {
+      "cases": 9,
+      "passedCases": 9,
+      "checks": 231,
+      "failedChecks": 0
+    },
+    "cases": [
+      {
+        "engine": "chromium",
+        "id": "desktop-wide",
+        "viewport": [
+          1280,
+          720
+        ],
+        "report": "web-rehearsal-v3-chromium-attempt1",
+        "binding": "reuse-identical-theater-runtime-and-content",
+        "checks": 23,
+        "passed": 23,
+        "result": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "id": "desktop-roomy",
+        "viewport": [
+          1440,
+          900
+        ],
+        "report": "web-rehearsal-v3-chromium-attempt1",
+        "binding": "reuse-identical-theater-runtime-and-content",
+        "checks": 23,
+        "passed": 23,
+        "result": "PASS"
+      },
+      {
+        "engine": "chromium",
+        "id": "mobile-rotate",
+        "viewport": {
+          "initial": [
+            390,
+            844
+          ],
+          "rotated": [
+            844,
+            390
+          ]
+        },
+        "report": "web-rehearsal-final-chromium-mobile-rotate-attempt1",
+        "binding": "direct-final",
+        "checks": 31,
+        "passed": 31,
+        "result": "PASS"
+      },
+      {
+        "engine": "firefox",
+        "id": "desktop-wide",
+        "viewport": [
+          1280,
+          720
+        ],
+        "report": "web-rehearsal-final-firefox-desktop-wide-attempt1",
+        "binding": "direct-final",
+        "checks": 23,
+        "passed": 23,
+        "result": "PASS"
+      },
+      {
+        "engine": "firefox",
+        "id": "desktop-roomy",
+        "viewport": [
+          1440,
+          900
+        ],
+        "report": "web-rehearsal-final-firefox-desktop-roomy-attempt1",
+        "binding": "direct-final",
+        "checks": 23,
+        "passed": 23,
+        "result": "PASS"
+      },
+      {
+        "engine": "firefox",
+        "id": "mobile-rotate",
+        "viewport": {
+          "initial": [
+            390,
+            844
+          ],
+          "rotated": [
+            844,
+            390
+          ]
+        },
+        "report": "web-rehearsal-final-firefox-mobile-rotate-attempt1",
+        "binding": "direct-final",
+        "checks": 31,
+        "passed": 31,
+        "result": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "id": "desktop-wide",
+        "viewport": [
+          1280,
+          720
+        ],
+        "report": "web-rehearsal-v3-webkit-attempt1",
+        "binding": "reuse-identical-theater-runtime-and-content",
+        "checks": 23,
+        "passed": 23,
+        "result": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "id": "desktop-roomy",
+        "viewport": [
+          1440,
+          900
+        ],
+        "report": "web-rehearsal-v3-webkit-attempt1",
+        "binding": "reuse-identical-theater-runtime-and-content",
+        "checks": 23,
+        "passed": 23,
+        "result": "PASS"
+      },
+      {
+        "engine": "webkit",
+        "id": "mobile-rotate",
+        "viewport": {
+          "initial": [
+            390,
+            844
+          ],
+          "rotated": [
+            844,
+            390
+          ]
+        },
+        "report": "web-rehearsal-final-webkit-mobile-rotate-attempt1",
+        "binding": "direct-final",
+        "checks": 31,
+        "passed": 31,
+        "result": "PASS"
+      }
+    ],
+    "reports": {
+      "web-rehearsal-v3-chromium-attempt1": {
+        "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-v3-chromium-attempt1/report.json",
+        "sha256": "26692a16d83fe72562f78741e8bd85cbd787b4acd2ccde14b01b50d9b475f999",
+        "sourceInputSha256": "62a8db3db27abbe17a344bbdbfec85e11938bf2ef6ff58ccb633c55cfde29222",
+        "testScriptSha256": "7eaaff5426e47a454db50120ed15e7140d6c1d5ed54155c6a88ecd90c770267b",
+        "nodeVersion": "v22.23.3",
+        "playwrightVersion": "1.64.1",
+        "startedAt": "2026-10-20T16:22:19.399Z",
+        "finishedAt": "2026-10-20T16:24:12.050Z",
+        "success": true
+      },
+      "web-rehearsal-final-chromium-mobile-rotate-attempt1": {
+        "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-final-chromium-mobile-rotate-attempt1/report.json",
+        "sha256": "392fe6231734248024c2b39dc9bc3b145ef584dece6bd841f0fd510680e2d211",
+        "sourceInputSha256": "7273e5a3ebb70c6240c7cdcf672ae2f8a349d47f65af834aaffdfe80b81274a8",
+        "testScriptSha256": "4de32b38b86953d8462766b33c97b6b1ecd329ca8be91ce2ca418e9a24c5e298",
+        "nodeVersion": "v22.23.3",
+        "playwrightVersion": "1.64.1",
+        "startedAt": "2026-10-20T16:28:53.046Z",
+        "finishedAt": "2026-10-20T16:29:35.707Z",
+        "success": true
+      },
+      "web-rehearsal-final-firefox-desktop-wide-attempt1": {
+        "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-final-firefox-desktop-wide-attempt1/report.json",
+        "sha256": "22ec057afcf873ea166410a05f360063ff9cff96932eadbcf09c19b70b6b19fe",
+        "sourceInputSha256": "7273e5a3ebb70c6240c7cdcf672ae2f8a349d47f65af834aaffdfe80b81274a8",
+        "testScriptSha256": "4de32b38b86953d8462766b33c97b6b1ecd329ca8be91ce2ca418e9a24c5e298",
+        "nodeVersion": "v22.23.3",
+        "playwrightVersion": "1.64.1",
+        "startedAt": "2026-10-20T16:28:53.056Z",
+        "finishedAt": "2026-10-20T16:30:14.137Z",
+        "success": true
+      },
+      "web-rehearsal-final-firefox-desktop-roomy-attempt1": {
+        "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-final-firefox-desktop-roomy-attempt1/report.json",
+        "sha256": "05a4e871d60f5abc32108d5ccfb276fb2bdcec66ffaa4ea336c375b1efd1ac48",
+        "sourceInputSha256": "7273e5a3ebb70c6240c7cdcf672ae2f8a349d47f65af834aaffdfe80b81274a8",
+        "testScriptSha256": "4de32b38b86953d8462766b33c97b6b1ecd329ca8be91ce2ca418e9a24c5e298",
+        "nodeVersion": "v22.23.3",
+        "playwrightVersion": "1.64.1",
+        "startedAt": "2026-10-20T16:28:53.046Z",
+        "finishedAt": "2026-10-20T16:30:13.024Z",
+        "success": true
+      },
+      "web-rehearsal-final-firefox-mobile-rotate-attempt1": {
+        "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-final-firefox-mobile-rotate-attempt1/report.json",
+        "sha256": "e19417e896653bc1b5302460c69809031dbc45b875e2341d44dda31eec395092",
+        "sourceInputSha256": "7273e5a3ebb70c6240c7cdcf672ae2f8a349d47f65af834aaffdfe80b81274a8",
+        "testScriptSha256": "4de32b38b86953d8462766b33c97b6b1ecd329ca8be91ce2ca418e9a24c5e298",
+        "nodeVersion": "v22.23.3",
+        "playwrightVersion": "1.64.1",
+        "startedAt": "2026-10-20T16:28:53.048Z",
+        "finishedAt": "2026-10-20T16:30:16.220Z",
+        "success": true,
+        "firefoxTouchPrefs": {
+          "dom.w3c_touch_events.enabled": 1,
+          "dom.w3c_touch_events.legacy_apis.enabled": true
+        }
+      },
+      "web-rehearsal-v3-webkit-attempt1": {
+        "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-v3-webkit-attempt1/report.json",
+        "sha256": "2addc01a978cd9214562490c10c782e55b9902c20f7332c85f1dfbae3c2e22e4",
+        "sourceInputSha256": "62a8db3db27abbe17a344bbdbfec85e11938bf2ef6ff58ccb633c55cfde29222",
+        "testScriptSha256": "7eaaff5426e47a454db50120ed15e7140d6c1d5ed54155c6a88ecd90c770267b",
+        "nodeVersion": "v22.23.3",
+        "playwrightVersion": "1.64.1",
+        "startedAt": "2026-10-20T16:22:19.401Z",
+        "finishedAt": "2026-10-20T16:25:01.706Z",
+        "success": true
+      },
+      "web-rehearsal-final-webkit-mobile-rotate-attempt1": {
+        "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-final-webkit-mobile-rotate-attempt1/report.json",
+        "sha256": "439990a7efe6c22b97ef702af55af7f34a9cfd8d0b0647002586e89a146f138a",
+        "sourceInputSha256": "7273e5a3ebb70c6240c7cdcf672ae2f8a349d47f65af834aaffdfe80b81274a8",
+        "testScriptSha256": "4de32b38b86953d8462766b33c97b6b1ecd329ca8be91ce2ca418e9a24c5e298",
+        "nodeVersion": "v22.23.3",
+        "playwrightVersion": "1.64.1",
+        "startedAt": "2026-10-20T16:28:53.047Z",
+        "finishedAt": "2026-10-20T16:29:52.030Z",
+        "success": true
+      }
+    },
+    "reuseEvidence": {
+      "previousBuild": "exports/web-theater-library-v3-20261021",
+      "previousSourceInputSha256": "62a8db3db27abbe17a344bbdbfec85e11938bf2ef6ff58ccb633c55cfde29222",
+      "method": "Read-only Godot PCK payload SHA-256 comparison with partition_web_pack.readPack; MD5 directory verification also performed. Full chapter3 PCK files independently SHA-256 compared.",
+      "coreEntryCount": {
+        "previous": 1036,
+        "final": 1037
+      },
+      "coreDifferences": [
+        {
+          "path": ".godot/uid_cache.bin",
+          "previousSha256": "aae736b0cd16894cc12e9dcb7714d08834b65cffc99021717e56dffacf80636c",
+          "finalSha256": "b08eac1aa3ffb7109a93e1a8a423c195fb7e27ab17b4890d53e1f9b7561aac48"
+        },
+        {
+          "path": "data/native/library-entrance-geometry.json",
+          "previousSha256": null,
+          "finalSha256": "4abe41d0a0af3959822eaa31d5a61cc3c79bcffc0a297c21b735db36b4bcee5c"
+        },
+        {
+          "path": "scripts/presentation/library_entrance_door.gdc",
+          "previousSha256": "cc68ae1baae2d31e2bd72d5409518b392c3f207c4afd112112de843d5511bc76",
+          "finalSha256": "df1fc5acbe09165e1d17c745554b446878fec037d0b41f33305ed358375efd95"
+        }
+      ],
+      "theaterAndAuthorityEntries": [
+        {
+          "path": "scripts/chapters/chapter3.gdc",
+          "sha256": "7411375e0cca984dc307501d65f5ad1d69c99347f33d7619e3978f35729a3550",
+          "identical": true
+        },
+        {
+          "path": "scripts/games/theater_rehearsal_session.gdc",
+          "sha256": "044d43695888c1126c9ed6f70f99605c50298a07b02ab0c280a2aeb40cfd0461",
+          "identical": true
+        },
+        {
+          "path": "scripts/games/theater_shadow_rehearsal.gdc",
+          "sha256": "96a2aa73969cb38d0dc56c50909565da1b11e67407c8c68a70f7180e991dce50",
+          "identical": true
+        },
+        {
+          "path": "scripts/games/theater_shadow_rehearsal_model.gdc",
+          "sha256": "bafa85b83f58d09e4d2739c044a202ab6c5ce1294e78dd63773156756b63a335",
+          "identical": true
+        },
+        {
+          "path": "scripts/main.gdc",
+          "sha256": "d1082336c8c9ebfdf26c9aeeff9487a684f932a9537e863aab6953036515ebc5",
+          "identical": true
+        },
+        {
+          "path": "scripts/presentation/theater_object_rebuild.gdc",
+          "sha256": "48f26d2c1813a3522b19ce6db65fd9b5e068be7582253ddbc75a9981b66ec8c5",
+          "identical": true
+        },
+        {
+          "path": "scripts/state.gdc",
+          "sha256": "18b3147f02c8ba7ea83fb733beeeafd37944cf4be5e020a8c814268245c400f0",
+          "identical": true
+        },
+        {
+          "path": "scripts/ui/chapter3_world_layers.gdc",
+          "sha256": "7da50b2469a917a10ed0ca6d84dedf00fe291464e2b59488bfe18e36946ffbca",
+          "identical": true
+        }
+      ],
+      "chapter3Packs": [
+        {
+          "path": "content/chapter3_001-3c18e66aebba6682.pck",
+          "sha256": "3c18e66aebba6682ac9e2a9f32588b7e51a0310ee6ccfad4762640b48a13c7bc",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_002-b8a2eb18e286f19d.pck",
+          "sha256": "b8a2eb18e286f19d466d1b01de0263c323b927e61eccf0f864e79fad07156586",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_003-31d255e06cd2569f.pck",
+          "sha256": "31d255e06cd2569f4d5e2dd2f8aead0e941fd696eac8eab6b8c1540015c34043",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_004-3c784f3ba5d8f08b.pck",
+          "sha256": "3c784f3ba5d8f08b6e8b37c14eb51c3c7d5bd6a48e4b47c14a629bcb2dfc6934",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_005-f8baf10520235631.pck",
+          "sha256": "f8baf10520235631566c63c79b5d24c210a5c3a1faf927a43768b708e78fcd41",
+          "identical": true
+        },
+        {
+          "path": "content/chapter3_006-976b87ffaef8cb60.pck",
+          "sha256": "976b87ffaef8cb600b3a01ff2a14c6e38737024f82a03939f00b5a6acaf61de4",
+          "identical": true
+        }
+      ]
+    },
+    "inputAndFixtureScope": {
+      "runtime": "Actual standalone Godot WASM/PCK in isolated Playwright browser profiles; no personal sessions.",
+      "fixture": {
+        "path": "exports/verification/theater_rehearsal_20261020/fixtures/before_theater_rehearsal.json",
+        "sha256": "5f9d6f15edbaadf0f5198366f06fd3bb8699f73f4bc453ad44498b594b35d489",
+        "boundary": "Original c3-theater-program checkpoint and physical rack stand 560,206. Imported by ordinary F10 production save-import/file-input UI. This fixture does not prove a full campaign earned from a fresh save."
+      },
+      "stateAccess": "Public read-only window.__GODOT_755__.snapshot only; no state setter, proof submitter, controller shortcut or chapter jump.",
+      "desktop": "Real keyboard press and undo, physical mouse prop drags, ordinary UI buttons. Each accepted scene validated by the production model.",
+      "mobile": "Real coarse/hasTouch browser context, actual portrait-to-landscape viewport resize, direct prop drag and lamp tap, layered long-press observation, two-finger undo/menu, Pause/Return, replay Exit and reload.",
+      "touchDispatch": {
+        "chromium": "Trusted CDP Input.dispatchTouchEvent.",
+        "webkit": "Browser DOM TouchEvent to production canvas; createTouch/createTouchList fallback because Touch constructor is unavailable in Playwright WebKit.",
+        "firefox": "page.touchscreen.tap native trusted touch support verified. Multitouch uses DOM TouchEvent with constructible Touch; browser-only touch/legacy API prefs enabled in the phone profile."
+      },
+      "firefoxPhoneOnlyPrefs": {
+        "dom.w3c_touch_events.enabled": 1,
+        "dom.w3c_touch_events.legacy_apis.enabled": true
+      },
+      "firefoxPrefsBasis": "https://bugzilla.mozilla.org/show_bug.cgi?id=1412485",
+      "firefoxBoundary": "Desktop Firefox cases retain default browser prefs. Phone prefs emulate the legacy APIs that Godot receives on touch environments; maxTouchPoints remains 0 and actual coarse media query remains true. No production or UA branch was added.",
+      "invariants": "Original theater, Qizhen lake, items, wallet, checkpoint, return position and durable saveDigest unchanged after all three scenes, replay cancellation and reload.",
+      "physicalMobileHardware": "Not tested: emulated browser touch and native Godot tests do not prove Android/iOS device performance, hardware gestures or OS orientation behavior.",
+      "errorScope": "All final selected reports passed with no captured page, console, Godot runtime or network errors."
+    },
+    "retainedFailureEvidence": {
+      "pathPrefix": "exports/verification/library_theater_rebuild_20261020/",
+      "reports": [
+        "web-rehearsal-v2-chromium-attempt1/report.json",
+        "web-rehearsal-v2-firefox-attempt1/report.json",
+        "web-rehearsal-v2-webkit-attempt1/report.json",
+        "web-rehearsal-v3-firefox-attempt1/report.json",
+        "web-rehearsal-v3-firefox-attempt2-touch-prefs/report.json",
+        "web-rehearsal-v3-firefox-attempt3-touch-debug/report.json"
+      ],
+      "meaning": "Historical input baseline and Firefox touch-emulation diagnostics remain intact and are not counted as final passes."
+    },
+    "nativeUiAndMain": {
+      "report": "exports/verification/theater_rehearsal_20261020/butterfly-profile-native.json",
+      "sha256": "55fa352e3278b17ea7309dbdfe4654226fe9a4a93e4a7f915770128fe0d3ec8c",
+      "checks": {
+        "ui": 76,
+        "main": 177
+      },
+      "failures": 0
+    },
+    "visualReview": {
+      "receipt": "exports/verification/library_theater_rebuild_20261020/rehearsal-qa-image-review-receipt.json",
+      "sha256": "fbaf303b4dcce2a5ecb5ac02f5e6af7deb00260592f0310d5e00c535d338a07a",
+      "qaImagesReviewedAndRemoved": 98,
+      "contactSheetsReviewedAndRemoved": 9,
+      "result": "No new material rendering problem found; root additionally reviewed final full-size butterfly/world/menu."
+    },
+    "qaScript": {
+      "path": "exports/verification/library_theater_rebuild_20261020/web-rehearsal-final-qa.mjs",
+      "sha256": "4de32b38b86953d8462766b33c97b6b1ecd329ca8be91ce2ca418e9a24c5e298"
+    },
+    "additionalComputerUse": {
+      "scope": "Root reported actual Chrome final 5236 ordinary F10 file-picker import of the same validated fixture, physical rack entry, High reading sheet and rehearsal start with full stage/new lamp visible after window zoom.",
+      "boundary": "Manual run did not complete all three acts and did not modify the original hosted-site save."
+    }
+  }
+}

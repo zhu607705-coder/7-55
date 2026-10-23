@@ -1,4 +1,5 @@
 extends VBoxContainer
+const Palette=preload("res://scripts/ui/phone_palette.gd")
 ## Read-only source waveform and playhead. No synthetic amplitude or clock.
 class WaveBand extends Control:
  var bins:Array=[]
@@ -8,21 +9,21 @@ class WaveBand extends Control:
  func _draw()->void:
   var width:float=maxf(1,size.x)
   var middle:float=22
-  draw_line(Vector2(0,middle),Vector2(width,middle),Color("d6d9ce"),1)
+  draw_line(Vector2(0,middle),Vector2(width,middle),Palette.LINE,1)
   var count:int=maxi(1,bins.size())
   var step:float=width/count
   for i:int in range(bins.size()):
    var amplitude:float=float(bins[i])
    var height:float=clampf(amplitude*34 if amplitude<=1 else amplitude,4,34)
    var left:float=round(i*step+step*.22)
-   var color:Color=Color("70979a")
-   if phase!="idle" and float(i)/count<position_ratio:color=Color("c72f3a") if not fallback else Color("65747a")
-   if phase=="paused" and float(i)/count<position_ratio:color=Color("8a5558")
+   var color:Color=Palette.MUTED
+   if phase!="idle" and float(i)/count<position_ratio:color=Palette.ACCENT if not fallback else Palette.MUTED
+   if phase=="paused" and float(i)/count<position_ratio:color=Palette.MUTED
    draw_rect(Rect2(left,round(middle-height/2),maxf(2,floor(step*.56)),round(height)),color)
   if phase!="idle":
    var x:float=round(clampf(position_ratio,0,1)*maxf(0,width-2))
-   draw_line(Vector2(x,2),Vector2(x,42),Color("172e35"),2)
-   draw_rect(Rect2(x-2,0,6,4),Color("172e35"))
+   draw_line(Vector2(x,2),Vector2(x,42),Palette.INK,2)
+   draw_rect(Rect2(x-2,0,6,4),Palette.INK)
 var session:RefCounted
 var recording:Dictionary
 var duration_ms:float=5200
@@ -39,7 +40,7 @@ func setup(value:RefCounted,source:Dictionary,generated:Dictionary={},reduce:boo
  band=WaveBand.new();band.name="SourceWaveform";band.bins=generated.get("waveform",generated.get("waveformBins",[])).duplicate()
  band.custom_minimum_size=Vector2(0,44);band.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(band)
  caption=Label.new();caption.name="PlaybackPosition";caption.custom_minimum_size.y=18
- caption.add_theme_font_size_override("font_size",14);caption.add_theme_color_override("font_color",Color("506267"));add_child(caption)
+ caption.add_theme_font_size_override("font_size",14);caption.add_theme_color_override("font_color",Palette.MUTED);add_child(caption)
  refresh()
 func _process(_delta:float)->void:
  if is_visible_in_tree():refresh()

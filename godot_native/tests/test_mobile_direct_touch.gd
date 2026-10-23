@@ -1,4 +1,5 @@
 extends SceneTree
+## PR160 adapted to the existing local no-fixed-controls scheme.
 ## Actual Main/World, source dorm targets and root-dispatched events. Fixtures
 ## isolate pointer ownership; they are not earned gameplay or physical-device QA.
 var shell: Control
@@ -92,23 +93,26 @@ func fixture(dimensions := Vector2i(390,844), insets := Vector4.ZERO, bag := fal
 	check(not target().is_empty() and shell.world._distance(target()) <= float(target().radius)*.5,"real lamp target is in its original range")
 	check(visible_pick().is_finite(),"real painted source object has a visible pick")
 func held_clear(label: String) -> void:
-	check(shell.world.touch_axis == Vector2.ZERO and shell.world.mobile_touch_roles.is_empty() and not shell.world.mobile_mouse_control,label+" clears movement and pointer owners")
+	check(shell.world.touch_axis==Vector2.ZERO and not shell.world.direct_gestures.has_active(),label+" clears movement and pointer owners")
 	check(shell.world._floor_route.is_empty(),label+" does not leave a floor route")
-func stick_point() -> Vector2: return world_screen(shell.world.mobile_control_metrics().stick+Vector2(30,0))
+
+func held_point() -> Vector2:return visible_pick()
+
 func assert_layout(insets: Vector4) -> void:
-	var safe := Rect2(insets.x,insets.y,shell.size.x-insets.x-insets.z,shell.size.y-insets.y-insets.w)
-	var metrics: Dictionary = shell.world.mobile_control_metrics()
+	var safe:=Rect2(insets.x,insets.y,shell.size.x-insets.x-insets.z,shell.size.y-insets.y-insets.w)
+	var metrics:Dictionary=shell.world.mobile_control_metrics()
 	check(shell.world.mobile_exploration,"compact exploration owns viewport")
-	check(not metrics.interact.has_area(),"no separate interaction confirmation button remains")
-	check(metrics.stick_rect.size.x >= 100 and metrics.stick_rect.size.y >= 100,"movement hit area retains 100px floor")
-	check(Rect2(Vector2.ZERO,shell.world.size).encloses(metrics.stick_rect),"entire joystick overlays rendered game viewport")
-	check(shell.world.exploration_safe_rect(true) == shell.world.exploration_safe_rect(),"joystick does not reserve a full-width bottom scene strip")
+	check(metrics.scheme=="direct_world" and not metrics.has("stick") and not metrics.has("interact"),"local scene gestures keep fixed joystick and confirmation button removed")
+	check(metrics.gestureArea==shell.world.exploration_safe_rect(),"gesture area is actual visible scene, with no control strip")
 	check(safe.encloses(shell.world_frame.get_global_rect()),"world frame fits platform safe area")
-	for control: Control in [shell.mobile_back,shell.world_tasks,shell.inventory_handle,shell.inventory_dock]:
-		if control.visible: check(safe.encloses(control.get_global_rect()),control.name+" fits platform safe area")
-	check(not shell.inventory_dock.visible or not shell.inventory_dock.get_global_rect().intersects(shell.world_frame.get_global_rect()),"existing inventory remains outside game viewport")
-	check(shell.world.size == Vector2(shell.world_viewport.size),"world pixels match SubViewport exactly")
-	observations.append({"size":str(shell.size),"safe":str(safe),"world":str(shell.world_frame.get_global_rect()),"stick":str(metrics.stick_rect),"inventory_open":shell.compact_inventory_open})
+	for control:Control in [shell.mobile_back,shell.world_tasks,shell.world_mode,shell.inventory_dock]:
+		if control.visible:check(safe.encloses(control.get_global_rect()),control.name+" fits platform safe area")
+	check(not shell.inventory_handle.visible,"local bag toggle remains removed")
+	check(not shell.inventory_dock.visible or shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"existing inline inventory remains inside game viewport")
+	check(shell.mobile_back.position.y>shell.size.y*.6 and shell.mobile_back.position.x>shell.size.x*.6,"phone icon stays in bottom right")
+	check(shell.world.size==Vector2(shell.world_viewport.size),"world pixels match SubViewport exactly")
+	observations.append({"size":str(shell.size),"safe":str(safe),"world":str(shell.world_frame.get_global_rect()),"gestureArea":str(metrics.gestureArea)})
+
 func plaque_character_rects() -> Array[Rect2]:
 	var result:Array[Rect2]=[]
 	var overlay:Control=shell.world.selected_overlay
@@ -128,23 +132,22 @@ func assert_mobile_plaque_at_bottom(label: String) -> void:
 	var region:Rect2=shell.world_view.get_global_rect()
 	var insets:Vector4=shell.test_safe_insets
 	var safe:=Rect2(insets.x,insets.y,shell.size.x-insets.x-insets.z,shell.size.y-insets.y-insets.w)
-	var stick:Rect2=shell.world.mobile_control_metrics().stick_rect
-	var stick_global:=Rect2(world_screen(stick.position),world_screen(stick.end)-world_screen(stick.position))
+	var metrics:Dictionary=shell.world.mobile_control_metrics()
+	check(metrics.scheme=="direct_world" and not metrics.has("stick"),label+" retains direct scene gestures")
 	check(shell.world.mobile_exploration and overlay.plaque.is_visible_in_tree(),label+" has a confirmed mobile plaque")
 	check(region.encloses(plaque) and safe.encloses(plaque),label+" stays entirely in the game viewport and simulated safe area")
 	check(absf(plaque.get_center().x-region.get_center().x)<=1,label+" remains horizontally centered")
-	check(absf(region.end.y-plaque.end.y-4)<=1,label+" sits 4 display pixels above the game viewport bottom, not its center")
-	# Both the plaque VBox and joystick input rect contain transparent space.
-	# Test actual character envelopes (including locked outline/shadow), against
-	# the circle drawn by world._draw_touch_controls, not those invisible corners.
+	check(plaque.end.y>=region.position.y+region.size.y*.6,label+" uses the lower playfield above the inline tools")
+	# The local version keeps its tools and items inside the game viewport.
+	# Check actual character/shadow envelopes against those visible controls.
 	var characters:=plaque_character_rects()
 	var visible_overlap:=false;var characters_contained:=true
 	for character:Rect2 in characters:
-		var closest:Vector2=stick_global.get_center().clamp(character.position,character.end)
-		if closest.distance_to(stick_global.get_center())<=stick_global.size.x*.5:visible_overlap=true
+		for control:Control in [shell.world_tasks,shell.world_mode,shell.mobile_back,shell.inventory_dock]:
+			if control.is_visible_in_tree() and character.intersects(control.get_global_rect()):visible_overlap=true
 		if not region.encloses(character) or not safe.encloses(character):characters_contained=false
 	check(not characters.is_empty(),label+" checks actual nonblank character bounds")
-	check(not visible_overlap,label+" text and its existing shadow do not overlap the painted joystick circle")
+	check(not visible_overlap,label+" text and its shadow do not overlap visible tools or items")
 	check(characters_contained,label+" complete characters and shadows remain inside world and safe area")
 	for control:Control in [shell.inventory_handle,shell.inventory_dock]:
 		if control.is_visible_in_tree():check(not plaque.intersects(control.get_global_rect()),label+" remains above existing inventory chrome")
@@ -186,20 +189,23 @@ func test_direct_tap() -> void:
 	check(not shell.world.selected_overlay.plaque.visible,"range exit clears confirmed title")
 func test_no_remote_or_arrival() -> void:
 	await fixture()
-	shell.world.player=FAR; shell.world.pan_offset=Vector2(110,0)
-	shell.world._sync_player(); shell.world._process(0); shell.world.queue_redraw(); await frames()
-	check(shell.world._distance(target()) > float(target().radius)*.5,"far fixture is outside unchanged range")
-	var point := visible_pick(); check(point.is_finite(),"far object remains actually visible for tap")
-	var count:=action_count(); touch(point,true); touch(point,false); await frames()
-	check(action_count()==count and not lamp(),"visible far object cannot activate remotely")
-	# Move through the existing source movement model, not an interaction callback.
-	shell.world.pan_offset=Vector2.ZERO
+	shell.world.player=FAR;shell.world.pan_offset=Vector2(110,0)
+	shell.world._sync_player();shell.world._process(0);shell.world.queue_redraw();await frames()
+	check(shell.world._distance(target())>float(target().radius)*.5,"far fixture is outside unchanged source range")
+	var point:=visible_pick();var count:=action_count()
+	check(point.is_finite(),"far target remains physically visible")
+	touch(point,true);touch(point,false);await frames()
+	check(action_count()==count and not lamp(),"far tap cannot activate remotely; any local approach must physically reach original range")
+	# Preserve the local physical approach, covered by test_direct_world_input.
+	# Cancel it before a different movement intent; it must never resume later.
+	shell.world.cancel_exploration_gestures();shell.world.pan_offset=Vector2.ZERO
 	for unused in 16:
-		shell.world.touch_axis=Vector2.RIGHT; shell.world._process(.05)
-	shell.world.touch_axis=Vector2.ZERO; shell.world._process(0); await frames()
-	check(shell.world._distance(target()) <= float(target().radius)*.5,"ordinary movement arrives within source range")
-	check(action_count()==count and not lamp(),"arrival after a rejected far tap never auto-opens or activates")
-	check(not shell.world.selected_overlay.plaque.visible,"arrival alone still has no confirmed title")
+		shell.world.touch_axis=Vector2.RIGHT;shell.world._process(.05)
+	shell.world.touch_axis=Vector2.ZERO;shell.world._process(0);await frames()
+	check(shell.world._distance(target())<=float(target().radius)*.5,"ordinary movement reaches source range")
+	check(action_count()==count and not lamp(),"arrival cannot revive a canceled far approach")
+	check(not shell.world.selected_overlay.plaque.visible,"arrival alone exposes no confirmed object title")
+
 func test_drag_and_cancel() -> void:
 	for pointer in ["touch","mouse"]:
 		await fixture(); var point:=visible_pick(); var count:=action_count()
@@ -214,69 +220,54 @@ func test_drag_and_cancel() -> void:
 	touch(point,true); touch(point,false,0,true); touch(point,false); await frames()
 	check(action_count()==count and not lamp(),"canceled touch then late release cannot activate")
 	held_clear("canceled object tap")
-func test_joystick_ownership() -> void:
-	await fixture(); var point:=stick_point(); var count:=action_count(); var before:Vector2=shell.world.player
-	touch(point,true,3); await frames(2)
-	check(shell.world.touch_axis.x>.5,"root joystick press acquires movement")
-	shell.world._process(.05)
-	check(shell.world.player.x>before.x and action_count()==count,"joystick moves through unchanged model without confirming nearby object")
-	touch(world_screen(shell.world.mobile_control_metrics().stick+Vector2(-30,0)),true,4); await frames()
-	check(shell.world.touch_axis.x>.5,"second finger cannot replace joystick owner")
-	touch(Vector2(1,1),false,4); await frames()
-	check(shell.world.touch_axis.x>.5,"unowned finger release cannot stop owned joystick")
-	drag(Vector2(-40,-40),Vector2(-200,-200),3); touch(Vector2(-40,-40),false,3); await frames()
-	held_clear("release outside viewport")
-	check(action_count()==count,"outside release never becomes object confirmation")
-	# Release outside also covers a genuine mouse-owned stick on hybrid devices.
-	mouse(stick_point(),true); await frames(); check(shell.world.touch_axis.x>.5,"genuine mouse can acquire joystick")
-	motion(Vector2(-40,-40),Vector2(-200,-200)); mouse(Vector2(-40,-40),false); await frames()
-	held_clear("mouse outside release")
-	# Duplicate down is still the same held pointer, not a new ignored owner.
-	mouse(stick_point(),true); mouse(stick_point(),true); mouse(stick_point(),false); await frames()
-	held_clear("duplicate mouse down then release")
-	check(action_count()==count,"duplicate joystick down cannot confirm an object")
-	# A tap can coexist with a movement finger without releasing that owner.
-	point=visible_pick(); count=action_count(); touch(stick_point(),true,7); touch(point,true,8); touch(point,false,8); await frames()
-	check(action_count()==count+1,"independent nearby object finger confirms once")
-	touch(stick_point(),false,7); await frames(); held_clear("multitouch completion")
+func test_root_capture() -> void:
+	for pointer in ["touch","mouse"]:
+		await fixture();var point:=visible_pick();var count:=action_count()
+		if pointer=="touch":
+			touch(point,true,3);touch(point,true,3)
+		else:mouse(point,true);mouse(point,true)
+		check(shell.world.direct_gestures.has_active(),pointer+" acquires one real scene pointer")
+		if pointer=="touch":
+			drag(Vector2(-40,-40),Vector2(-200,-200),3);touch(Vector2(-40,-40),false,3)
+		else:
+			motion(Vector2(-40,-40),Vector2(-200,-200));mouse(Vector2(-40,-40),false)
+		await frames();held_clear(pointer+" release outside viewport")
+		check(action_count()==count and not lamp(),pointer+" outside release never confirms object")
+	# Two map fingers retain the local shared pinch/pan owner.
+	await fixture();var count:=action_count();var zoom:float=shell.world.zoom
+	var a:=world_screen(Vector2(140,200));var b:=world_screen(Vector2(250,200))
+	touch(a,true,3);touch(b,true,4);drag(b+Vector2(30,0),Vector2(30,0),4);await frames()
+	check(shell.world.zoom>zoom and action_count()==count,"root-routed pinch changes camera without interacting")
+	touch(Vector2(-40,-40),false,3);touch(b+Vector2(30,0),false,4);await frames();held_clear("pinch release")
+
 func test_interrupted_ownership() -> void:
 	for boundary in ["focus","resize","modal","phone","inventory"]:
-		await fixture(); var point:=stick_point(); var count:=action_count()
-		touch(point,true,5); await frames(); check(shell.world.touch_axis.length()>.5,boundary+" starts from held movement")
+		await fixture();var point:=visible_pick();var count:=action_count()
+		touch(point,true,5);await frames();check(shell.world.direct_gestures.has_active(),boundary+" begins with an owned scene pointer")
+		var item:Control=shell.inventory_buttons.get_node_or_null("WorldItem_campusCard")
 		match boundary:
-			"focus": shell.world.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
-			"resize": root.size=Vector2i(844,390); shell.size=Vector2(844,390); shell._layout()
-			"modal": shell._show_journal()
-			"phone": shell._show_phone_surface()
-			"inventory": shell._toggle_world_inventory()
-		await frames(); held_clear(boundary)
-		touch(point,false,5); await frames()
-		check(action_count()==count,boundary+" late release cannot confirm object")
-		if boundary=="modal": shell._close_modal()
-		if boundary=="phone": shell._show_world_mobile()
-		await frames(); held_clear(boundary+" restored")
-		if shell.world_frame.visible:
-			touch(stick_point(),true,6); await frames(); check(shell.world.touch_axis.length()>.5,boundary+" accepts a fresh gesture")
-			touch(stick_point(),false,6); await frames(); held_clear(boundary+" fresh release")
-	# Closing a modal while an object finger was down cannot revive that tap.
-	await fixture(); var point:=visible_pick(); var count:=action_count()
-	touch(point,true); shell._show_journal(); await frames(); shell._close_modal(); await frames(); touch(point,false); await frames()
-	check(action_count()==count and not lamp(),"modal open/close retires old object press")
-	# Inventory begins/ends its own gesture, even when released over an object.
-	await fixture(Vector2i(390,844),Vector4.ZERO,true)
-	var item:Control=shell.inventory_buttons.get_node_or_null("WorldItem_campusCard")
-	check(item!=null,"existing inventory item is available")
-	if item!=null:
-		shell.inventory_scroll.ensure_control_visible(item); await frames()
-		var start:=item.get_global_rect().get_center(); point=visible_pick(); count=action_count()
-		touch(start,true); drag(start+Vector2(0,-20),Vector2(0,-20)); await frames(); drag(point,point-start); touch(point,false); await frames()
-		check(action_count()==count and not lamp(),"inventory drag release cannot bleed into direct object tap")
-		check(state.d.items.campusCard,"existing wrong inventory item remains owned")
-		held_clear("inventory drag")
+			"focus":shell.world.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
+			"resize":root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout()
+			"modal":shell._show_journal()
+			"phone":shell._show_phone_surface()
+			"inventory":
+				shell.inventory_scroll.ensure_control_visible(item);await frames()
+				touch(item.get_global_rect().get_center(),true,6);shell.world._process(0)
+		await frames();held_clear(boundary)
+		touch(point,false,5)
+		if boundary=="inventory":touch(item.get_global_rect().get_center(),false,6)
+		await frames();check(action_count()==count,boundary+" late release cannot confirm object")
+		if boundary=="modal":shell._close_modal()
+		if boundary=="phone":shell._show_world_mobile()
+		await frames();held_clear(boundary+" restored")
+	await fixture();var point:=visible_pick();var count:=action_count()
+	touch(point,true);shell._show_journal();await frames();shell._close_modal();await frames();touch(point,false);await frames()
+	check(action_count()==count and not lamp(),"modal open/close cannot revive an old object press")
+
 func test_world_replacement() -> void:
 	for boundary in ["teleport","scene"]:
-		await fixture(); var point:=stick_point(); var count:=action_count()
-		touch(point,true,9); await frames(); check(shell.world.touch_axis.length()>.5,boundary+" starts with a held world pointer")
+		await fixture(); var point:=held_point(); var count:=action_count()
+		touch(point,true,9); await frames(); check(shell.world.direct_gestures.has_active(),boundary+" starts with a held world pointer")
 		if boundary=="teleport":
 			state.world_teleport.emit([630,880])
 		else:
@@ -290,28 +281,16 @@ func test_world_replacement() -> void:
 func test_inventory_first_and_focus() -> void:
 	await fixture(Vector2i(390,844),Vector4.ZERO,true)
 	var item:Control=shell.inventory_buttons.get_node_or_null("WorldItem_campusCard")
-	check(item!=null,"multitouch fixture has original campus-card item")
+	check(item!=null,"multitouch fixture retains original inventory item")
 	if item==null:return
-	shell.inventory_scroll.ensure_control_visible(item); await frames()
-	var count:=action_count(); var point:=stick_point()
-	shell.world.set_process(true)
-	touch(point,true,0); await frames(); check(shell.world.touch_axis.length()>.5,"stick acquires before inventory finger")
-	touch(item.get_global_rect().get_center(),true,1)
-	var position_on_inventory_press:Vector2=shell.world.player
-	await frames()
-	check(shell.world.player==position_on_inventory_press,"inventory ownership cancels held stick before another movement tick")
-	touch(point,false,0); await frames()
-	check(shell.world.touch_axis==Vector2.ZERO,"inventory-owned second finger cannot swallow stick release into stuck movement")
-	touch(item.get_global_rect().get_center(),false,1); await frames()
-	shell.world.set_process(false)
-	held_clear("stick-first inventory multitouch")
-	check(action_count()==count and not lamp(),"stick-first inventory sequence cannot confirm nearby object")
-	await fixture()
-	shell.inventory_handle.grab_focus(); key(KEY_SPACE,true); key(KEY_SPACE,false); await frames()
-	check(shell.compact_inventory_open and shell.inventory_dock.visible,"focused inventory handle opens through keyboard")
-	check(root.gui_get_focus_owner()==shell.inventory_handle,"keyboard inventory toggle retains handle focus")
-	key(KEY_SPACE,true); key(KEY_SPACE,false); await frames()
-	check(not shell.compact_inventory_open and root.gui_get_focus_owner()==null and shell.world_viewport.gui_get_focus_owner()==shell.world,"same focused key closes inventory and returns Space to world by original contract")
+	shell.inventory_scroll.ensure_control_visible(item);await frames()
+	var count:=action_count();var point:=visible_pick()
+	touch(point,true,0);touch(item.get_global_rect().get_center(),true,1)
+	shell.world._process(0);await frames();held_clear("world-first inventory acquisition")
+	touch(point,false,0);touch(item.get_global_rect().get_center(),false,1);await frames()
+	held_clear("inventory multitouch release")
+	check(action_count()==count and not lamp() and state.d.items.campusCard,"inventory sequence cannot confirm object or consume wrong item")
+	check(not shell.inventory_handle.visible and shell.inventory_dock.visible,"local inline inventory stays exposed without bag toggle")
 
 func test_keyboard() -> void:
 	await fixture(Vector2i(1440,900))
@@ -320,11 +299,22 @@ func test_keyboard() -> void:
 	check(action_count()==count+1 and lamp(),"desktop Space retains existing nearby interaction")
 	var overlay:Control=shell.world.selected_overlay
 	var plaque_height:float=overlay.plaque.get_combined_minimum_size().y
-	var original_y:float=clampf(overlay.size.y*.5-plaque_height*.5,overlay.task.position.y+overlay.task.size.y+8,maxf(overlay.task.position.y+overlay.task.size.y+8,overlay._plaque_bottom_limit-plaque_height-8))
-	check(overlay.plaque.visible and absf(overlay.plaque.position.y-original_y)<=1,"desktop interaction plaque retains its original centered layout formula")
+	var bottom_y:float=maxf(8,overlay._plaque_bottom_limit-plaque_height-8)
+	check(overlay.plaque.visible and absf(overlay.plaque.position.y-bottom_y)<=1,"desktop interaction plaque retains the chosen bottom-safe layout")
 	check(absf(overlay.plaque.get_global_rect().get_center().x-shell.world_view.get_global_rect().get_center().x)<=1,"desktop plaque keeps its original horizontal center")
 	var before:Vector2=shell.world.player; key(KEY_A,true); shell.world._process(.05); key(KEY_A,false); await frames()
 	check(shell.world.player.x<before.x,"desktop direction key still moves")
+func test_browser_cancel_boundary() -> void:
+	await fixture()
+	var point:=visible_pick();var count:=action_count()
+	touch(point,true,0);await frames(2)
+	check(shell.world.direct_gestures.pointers.has(0),"browser cancellation starts with an owned real scene touch")
+	var platform=load("res://scripts/platform/web_platform.gd").new()
+	platform._on_browser_touch_cancel(["[0]"]);await frames()
+	check(not shell.world.direct_gestures.has_active() and action_count()==count and not lamp(),"browser cancelled release clears ownership without accepting an object")
+	touch(point,false,0);await frames()
+	check(action_count()==count and not lamp(),"pinned engine's following ordinary release cannot revive cancelled touch")
+	platform.free()
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"test uses an isolated save profile")
 	if failures: quit(1); return
@@ -339,11 +329,12 @@ func run() -> void:
 	await test_direct_tap()
 	await test_no_remote_or_arrival()
 	await test_drag_and_cancel()
-	await test_joystick_ownership()
+	await test_root_capture()
 	await test_interrupted_ownership()
 	await test_world_replacement()
 	await test_inventory_first_and_focus()
 	await test_keyboard()
+	await test_browser_cancel_boundary()
 	check(Input.emulate_mouse_from_touch==emulation_before,"test and runtime preserve platform touch-emulation setting")
 	if is_instance_valid(shell): await shell.shutdown(); shell.queue_free(); await frames()
 	var output:=OS.get_environment("MOBILE_TOUCH_REPORT")

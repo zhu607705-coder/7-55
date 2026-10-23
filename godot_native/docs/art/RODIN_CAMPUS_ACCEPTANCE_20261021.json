@@ -1,0 +1,170 @@
+{
+  "schema": "755-rodin-campus-acceptance-v1",
+  "date": "2026-10-21",
+  "status": "USER REJECTED: v2 shoulder/back silhouette and adjacent campus scenery; prior runtime test results are technical evidence only",
+  "sourceCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+  "dirty": true,
+  "sourceInputSha256": "7bd19736cb7bc8936a448051effb748fcf61fb8c1fbf4b4641cc213c041e3887",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "blender": "5.2.2 LTS",
+  "userRevision": {
+    "face": "image-conditioned original young adult face",
+    "shoes": "ivory white lace-up running sneakers",
+    "apparel": "navy crewneck campus sweatshirt; original design inspired by public ZJU cultural-merch references",
+    "backPrint": "official standard emblem projected on actual skinned cloth with matching weights",
+    "triangles": 90612,
+    "vertices": 45302,
+    "bones": 15,
+    "maxWeights": 4,
+    "unweightedVertices": 0,
+    "noFingerRig": true
+  },
+  "generation": {
+    "provider": "Hyper3D / Rodin",
+    "totalCreditsSpent": 3,
+    "firstBatchCredits": 2,
+    "revisedRiderCredits": 1,
+    "balanceAfter": 220,
+    "referenceTool": "built-in image_gen; no CLI fallback",
+    "prompt": "reference/campus_student_v2_imagegen_prompt.txt",
+    "revisionPlan": "RODIN_STUDENT_REVISION_20261021.json",
+    "revisionReceipt": "RODIN_STUDENT_V2_RECEIPT_20261021.json",
+    "rigReceipt": "RODIN_STUDENT_V2_RIG_20261021.json"
+  },
+  "sources": [
+    {
+      "url": "https://detail.youzan.com/show/goods/newest?from_source=gbox_seo&kdt_id=44216704",
+      "use": "campus sweatshirt category; not an exact official product replica"
+    },
+    {
+      "url": "https://www.zju.edu.cn/572/main.htm",
+      "use": "standard university seal"
+    },
+    {
+      "url": "https://www.zju.edu.cn/english/2018/0521/c19949a812627/page.htm",
+      "use": "campus architectural motifs; not surveyed route reconstruction"
+    },
+    {
+      "url": "https://docs.blender.org/manual/en/latest/animation/armatures/skinning/parenting.html",
+      "use": "open-source Blender automatic heat-weight rigging principles"
+    },
+    {
+      "url": "https://docs.godotengine.org/en/stable/classes/class_skeleton3d.html",
+      "use": "native Skeleton3D skin and pose APIs"
+    },
+    {
+      "url": "https://github.com/riba2534/claude-opus-5-5-demo",
+      "commit": "54adc1fb64155f9dd7c1c90ecae7b8185ac540b8",
+      "use": "movement/camera reference only; no source or art copied because no detected license"
+    }
+  ],
+  "validation": {
+    "native": {
+      "stages": 19,
+      "passed": true,
+      "reports": [
+        "exports/review/rodin-rider-20261021/755-rodin-final-native.json",
+        "exports/review/rodin-rider-20261021/755-rodin-additional-native.json"
+      ],
+      "scope": "physical bone lengths and palm/sole anchors across pedaling/steering, transition clocks and contacts, lifecycle, source fidelity, mobile input contract, original quality and integration"
+    },
+    "web": {
+      "passed": true,
+      "checks": 533,
+      "cases": 1,
+      "report": "exports/verification/web-rodin-rider-20261021/web-acceptance.json",
+      "sha256": "02b98187d03b82b327ce5dbf24799e7ff07924b0d7f109d5156b5d4fcd5142a2",
+      "scope": "isolated desktop Chromium, actual WASM/WebGL frame, ordinary earned-save import, steering/jump, pause ownership, incomplete ride exit/save/reload; no injected progress"
+    },
+    "gui": "Godot native revised face/back/sneakers viewed through computer use; actual keyboard/click movement exercised in isolated fixture",
+    "quickValidation": "npm run validate:quick passed five validators",
+    "deferredAssets": "RODIN_DEFERRED_ASSETS_20261021.json",
+    "newRodinCoreEntries": 0,
+    "newRodinDeferredEntries": 34,
+    "initialPayloadBytes": 95014114,
+    "media": "source sync ran; fresh ffprobe conversion unavailable; two unchanged OGVs verified against accepted gear export MD5 before --skip-prepare build"
+  },
+  "preview": {
+    "front": "exports/review/rodin-rider-20261021/student_v2_front.jpg",
+    "back": "exports/review/rodin-rider-20261021/student_v2_back.jpg",
+    "localUrl": "http://127.0.0.1:5241/",
+    "httpBuildManifestSha256": "03696ca88cd1c6d9012667aca2799892570c3725dbb2970e2489afa1638962e2"
+  },
+  "files": [
+    {
+      "path": "assets/native_755/ride/rodin/campus_glass_canopy.glb",
+      "bytes": 10772772,
+      "sha256": "c6305d0855235963d7353317560da3b7a09be541d27317d32239ba36df9f532d"
+    },
+    {
+      "path": "assets/native_755/ride/rodin/campus_student_rigged.glb",
+      "bytes": 12914852,
+      "sha256": "fae4383a5cd4ec1b08784d9c8eaeb9abf4a598262da90cb23802539601f53cd8"
+    },
+    {
+      "path": "assets/native_755/ride/rodin/campus_theater_foyer.glb",
+      "bytes": 10304660,
+      "sha256": "cb02238bc970cfcea3f06a3796400a3da534606327d368cef87c39b214ea309b"
+    },
+    {
+      "path": "assets/native_755/ride/rodin/campus_willow_verge.glb",
+      "bytes": 11472940,
+      "sha256": "f2d9a671ddbcde11f23caedb672d5b0aa3e4cab2ad2604ec1c1c80c0a1c9bcb9"
+    },
+    {
+      "path": "assets/native_755/ride/rodin/zju_official_emblem.png",
+      "bytes": 64402,
+      "sha256": "dc914cc634bdcd9b871c84686817c12287c6bafd309f083a1054040aee806fca"
+    },
+    {
+      "path": "scripts/presentation/chase3d/campus_human_rig.gd",
+      "bytes": 12623,
+      "sha256": "4a11e1a0cac2e26446f07a8b780a1799c0661d3579dfbff2bcc20f46fdf4d881"
+    },
+    {
+      "path": "scripts/presentation/chase3d/campus_student_back_print.gd",
+      "bytes": 2784,
+      "sha256": "bbb26b0ae6c32b22f776f4573c087fdb28c0b151c8bc67f85e08005645b7e94e"
+    },
+    {
+      "path": "scripts/presentation/chase3d/source_rider.gd",
+      "bytes": 5825,
+      "sha256": "7847e9e759396e7359004fa210e632da051b42505decb81940f9df390ef07340"
+    },
+    {
+      "path": "scripts/presentation/chase3d/zijingang_campus_environment.gd",
+      "bytes": 12133,
+      "sha256": "44976d2db54cd5ebf0f7bce3734ad4c21511102f1b3b9ef4dae04207668d314b"
+    },
+    {
+      "path": "scripts/presentation/chase3d/campus_mesh_batch.gd",
+      "bytes": 3652,
+      "sha256": "fa0d73c1f9b5ebb651f148b47596683c4578730c16795930e69cda2089aed400"
+    },
+    {
+      "path": "scripts/presentation/chase3d/source_chase_3d.gd",
+      "bytes": 18579,
+      "sha256": "5876bc24dfc5d1d2c25e5689639f2d694f5b3830fee2065e74007b85fcec00d4"
+    },
+    {
+      "path": "scripts/presentation/chase_transition_3d_presenter.gd",
+      "bytes": 13282,
+      "sha256": "def7a585f530ab887f5c35938a82b356d56b862ce6b64fb8a39d4018ec2e5c7c"
+    }
+  ],
+  "limitations": [
+    "No public deployment, staging, commit or push.",
+    "No physical mobile-device, historical minimum-browser, full campaign or full target-device performance acceptance for this batch.",
+    "No new finger curl rig. Basic 15-bone weighted skin has calibrated palms and soles.",
+    "Generated willow base had bare branches; original native hanging leaves complete its silhouette. Other generic road props remain procedural.",
+    "Campus corridor is source-inspired original composition, not photogrammetry or a surveyed replica.",
+    "Current 3D riding camera exception remains; this does not certify global pixel-art conversion.",
+    "Blender CLI rig/export succeeded; attempted GUI file navigation did not verify the revised blend file opened."
+  ],
+  "artAccepted": false,
+  "rejection": {
+    "date": "2026-10-21",
+    "reason": "Triangular sloping back, missing shoulder volume, image-to-model identity mismatch and unacceptable scene art",
+    "next": "consistent six-view reference set, multiview reconstruction, rest-pose and posed silhouette review before runtime promotion"
+  }
+}

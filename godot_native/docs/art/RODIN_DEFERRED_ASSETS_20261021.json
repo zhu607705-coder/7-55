@@ -1,0 +1,278 @@
+{
+  "schema": "755-rodin-deferred-proof-v1",
+  "assets": [
+    {
+      "pack": "chapter3_001",
+      "path": ".godot/imported/campus_student_rigged_texture_normal.png-0e0e6f69ac89fd03c01f171197a846a5.ctex",
+      "offset": 5826592,
+      "bytes": 5086644,
+      "md5": "7c94f8ff3115078840fc0b51fc36a860",
+      "sha256": "149524b857884b5f243f6a0c5412022d907cf40be69dfae2ab5eba100f294616"
+    },
+    {
+      "pack": "chapter3_001",
+      "path": ".godot/imported/campus_willow_verge_texture_normal.png-672688112650d4df3931fcbeab0b60b9.ctex",
+      "offset": 10913248,
+      "bytes": 4779060,
+      "md5": "e9ef05131521b977d0b59494f87b5716",
+      "sha256": "b94986294cddf3464a0d289f8add2e1742e4abcc00f4a82de28bcfbccd0603aa"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": ".godot/imported/zju_official_emblem.png-ac58e0e1f516e713495191423797d15f.ctex",
+      "offset": 8224448,
+      "bytes": 43684,
+      "md5": "98c02dbcce5b7e68b35a708176ec32c8",
+      "sha256": "e506390f68680814781fc88fbb3e0b21904aad5c745212263e52990c3780bba7"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_glass_canopy_texture_diffuse.png.import",
+      "offset": 14128960,
+      "bytes": 291,
+      "md5": "fb3c7a2f2d39bf567bc4ce19e0ddd4a4",
+      "sha256": "6aa200f92d7fc08a5bd39ec4cbaf9d132da8a0192c0c8bf25ddf263be519c4a6"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_glass_canopy_texture_metallic-texture_roughness.png.import",
+      "offset": 14129280,
+      "bytes": 309,
+      "md5": "53e20dc5338f8238bde9cf1520619da5",
+      "sha256": "8e44a1a8829b10e276ccd82bf85b666c5b55eabaf9c22b4ec198135df2964fb2"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_glass_canopy_texture_normal.png.import",
+      "offset": 14129600,
+      "bytes": 289,
+      "md5": "7af1c16d4d519ead07386de517f45856",
+      "sha256": "179ec4daa798fccba4f0840c5b6520881e4c85cc83b8c17ff3b327a1c8b0bc88"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_glass_canopy.glb.import",
+      "offset": 14129920,
+      "bytes": 181,
+      "md5": "7761aa84503eca384c5eec8150ebec64",
+      "sha256": "c5a0e79f62f66137266cc9ec3335e6e9267f60e7324af04131f3bc1a80d303b1"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_student_rigged_texture_diffuse.png.import",
+      "offset": 14130112,
+      "bytes": 293,
+      "md5": "a8ee5b1c31104827c02fb4e0a22724d6",
+      "sha256": "65e53e71fbb66ba957e962c3862dd0432cb811ef44eb21ffb531d7cb49649823"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_student_rigged_texture_metallic-texture_roughness.png.import",
+      "offset": 14130432,
+      "bytes": 312,
+      "md5": "70401b5e752d3e68089c78ab781b71bc",
+      "sha256": "dbdedba12a572666771b1196f6f9d12814b18ccb7b7297386ea9c61c4338060d"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_student_rigged_texture_normal.png.import",
+      "offset": 14130752,
+      "bytes": 292,
+      "md5": "740e94426311847e08f14bcdb6931efd",
+      "sha256": "90bddcd7da4597fda4d25928f023e184f2a86848597454ef1b0aa9b3ee2ac91f"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_student_rigged.glb.import",
+      "offset": 14131072,
+      "bytes": 182,
+      "md5": "226ca9f07e579c2b25f386990dc21793",
+      "sha256": "a28a48706a6a7aafa7ca51566c406cd4b855f4285d3aa2545ac94baac8c3d40c"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_theater_foyer_texture_diffuse.png.import",
+      "offset": 14131264,
+      "bytes": 292,
+      "md5": "615daf021b3d020a17a13d874ac88b92",
+      "sha256": "1c6ff0e1dc0da4a9081fe4708ae86a83542831f076788342af719fb41ea899aa"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_theater_foyer_texture_metallic-texture_roughness.png.import",
+      "offset": 14131584,
+      "bytes": 311,
+      "md5": "ebf1ae04812632b1377e177082449964",
+      "sha256": "243cc07dd56daa139eef035a889a40c54dafef7e66b3f994663210cfbf0c0047"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_theater_foyer_texture_normal.png.import",
+      "offset": 14131904,
+      "bytes": 290,
+      "md5": "747c33ebb650ed3527815ed752853757",
+      "sha256": "d5b165ffe5cb748d4c5f8902475ea7934d05c6ff241a1c339219bcb7e48f2c8e"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_theater_foyer.glb.import",
+      "offset": 14132224,
+      "bytes": 182,
+      "md5": "ce4402171830fdddc9f6d005d91381b3",
+      "sha256": "dcd1552c45f38239766baa5e35ac34786c41a721d076fcbd743632a26273301f"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_willow_verge_texture_diffuse.png.import",
+      "offset": 14132416,
+      "bytes": 290,
+      "md5": "20421ab5309405603dfb840ab11ddf9c",
+      "sha256": "0b5ba017b5a7ac4bef8b5905acbd31a55128c90d5b5efe4045d9cfb89aae0098"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_willow_verge_texture_metallic-texture_roughness.png.import",
+      "offset": 14132736,
+      "bytes": 310,
+      "md5": "25a175a59b69743a32b8b39c55aea799",
+      "sha256": "ac877a803b8320a0790eefe8a71181eaa9867a13382b132f7e8bf8c4565ff326"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_willow_verge_texture_normal.png.import",
+      "offset": 14133056,
+      "bytes": 290,
+      "md5": "5239c028194a503b7c2f83788e1f2b71",
+      "sha256": "144425bda34d4119d114a6b04c805e1086de2f05c94e1d451a3e035ca1f155ca"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/campus_willow_verge.glb.import",
+      "offset": 14133376,
+      "bytes": 181,
+      "md5": "29ebc78ecb47b962144c71bad1bce87d",
+      "sha256": "006de64c1d3357c67aa086d9510fb9a6792e2876ab695325839664b143728f99"
+    },
+    {
+      "pack": "chapter3_007",
+      "path": "assets/native_755/ride/rodin/zju_official_emblem.png.import",
+      "offset": 14133568,
+      "bytes": 208,
+      "md5": "14a3bc97cef09743f6fec5cbdfbae542",
+      "sha256": "85b58c423a2cb294fd2f24a0286954b985ee91b64984e4d488a4f33b21f73b35"
+    },
+    {
+      "pack": "chapter3_005",
+      "path": ".godot/imported/campus_glass_canopy.glb-6f063ea66ce679bdf03c5af71aafd057.scn",
+      "offset": 7816896,
+      "bytes": 1176389,
+      "md5": "405a6e804f95e1d51e25155ca33e011d",
+      "sha256": "47e0fd08fef3ba170686e328b22dd2a8448f545a6a0e1736379a1b55b100d081"
+    },
+    {
+      "pack": "chapter3_005",
+      "path": ".godot/imported/campus_theater_foyer.glb-b49eccb12786a452442ce6d396a1f6df.scn",
+      "offset": 8993312,
+      "bytes": 1132516,
+      "md5": "374d2cfbed4d089d01c8bcce6339bbc0",
+      "sha256": "6fa0c5c48e8152ba95b1298956f814c8226223d0392a31cf8f660a2d6a60f727"
+    },
+    {
+      "pack": "chapter3_005",
+      "path": ".godot/imported/campus_willow_verge.glb-6a0cdb99da70521c5a0a5adf56ae5641.scn",
+      "offset": 10125856,
+      "bytes": 1252047,
+      "md5": "e2f49cc4a713907e7927b80d444a5419",
+      "sha256": "3e1cc2fd08e8ee9bab8efdb107c2b0a2c6aa75dc3bfa28e5cab18b178a861eab"
+    },
+    {
+      "pack": "chapter3_002",
+      "path": ".godot/imported/campus_glass_canopy_texture_diffuse.png-baa6d134981bd874de3b2d94b1a55acd.ctex",
+      "offset": 128,
+      "bytes": 3832322,
+      "md5": "8122556fe22353b9ff2ff6012521742d",
+      "sha256": "22c6d2ed533beca06303b9fe5a8506cb862b9d21ee58e07d8ff5dbe013e6ea8a"
+    },
+    {
+      "pack": "chapter3_002",
+      "path": ".godot/imported/campus_glass_canopy_texture_normal.png-dbf819142dade1fd8b142ba65156cbe9.ctex",
+      "offset": 3832480,
+      "bytes": 2965816,
+      "md5": "fe52334a961ca9284bb9e0bfa9de4b72",
+      "sha256": "7a30626c201cf042c4b13590bf1f447137294e6ad8862ccffdeedc46b54e980c"
+    },
+    {
+      "pack": "chapter3_002",
+      "path": ".godot/imported/campus_student_rigged_texture_diffuse.png-043d23c2bb8dc144213a55574bfaa6e4.ctex",
+      "offset": 6798304,
+      "bytes": 2767860,
+      "md5": "287b77ca8c721e894990124bc7b8897a",
+      "sha256": "6d8ec045952a50d90a289cbd8a0e85cf269e8baf2516b90fdedc950c677a3fa0"
+    },
+    {
+      "pack": "chapter3_002",
+      "path": ".godot/imported/campus_theater_foyer_texture_diffuse.png-24c945ff7e3e8e8be4dbe34240a64b90.ctex",
+      "offset": 9566176,
+      "bytes": 3351594,
+      "md5": "424ab86970aebe10d662484ef9002738",
+      "sha256": "4f2fbfd191557fa12c9d726948260f0383c4a58e9a7c7114282ac2f5fb393ea4"
+    },
+    {
+      "pack": "chapter3_002",
+      "path": ".godot/imported/campus_willow_verge_texture_diffuse.png-a7a7f4ddeb5167ea10146b2f0a438660.ctex",
+      "offset": 12917792,
+      "bytes": 3098748,
+      "md5": "a0f1e3f47280634cea9190b01d52c26f",
+      "sha256": "1c106a9d91e36998982ca8af58cf688fc749ca1421e28f76c475b93430ee92a2"
+    },
+    {
+      "pack": "chapter3_003",
+      "path": ".godot/imported/campus_glass_canopy_texture_metallic-texture_roughness.png-c55bf72e2e506a742908cb68e93c678f.ctex",
+      "offset": 3135264,
+      "bytes": 1983572,
+      "md5": "76508f1f107f264bd5f39b09a6f51c76",
+      "sha256": "da5fbcd830112fc87a45b487173f29eaa208504ac250ae44e3d50ad8d329459d"
+    },
+    {
+      "pack": "chapter3_003",
+      "path": ".godot/imported/campus_student_rigged_texture_metallic-texture_roughness.png-446478ebb8a64c4b2a4dc0ea4edb9b66.ctex",
+      "offset": 5118848,
+      "bytes": 1623928,
+      "md5": "3ce351cf8ee167345666dbf0566c610d",
+      "sha256": "e546cfed7c68c1a0a11d5c77a7a3e04189af1371aaa7b7d98a9da0139da2b338"
+    },
+    {
+      "pack": "chapter3_003",
+      "path": ".godot/imported/campus_student_rigged.glb-21925586faa6e18d59e8ed2379970428.scn",
+      "offset": 6742784,
+      "bytes": 2377412,
+      "md5": "a51b4442d64a3123c1a7c839ddbd230b",
+      "sha256": "6faebce7b8e7c6ec087ad1fc37590324a08ac206a7bb4c1f0ab925166730d862"
+    },
+    {
+      "pack": "chapter3_003",
+      "path": ".godot/imported/campus_theater_foyer_texture_metallic-texture_roughness.png-3740c77b9180581d190356a352dbf34b.ctex",
+      "offset": 9120224,
+      "bytes": 2269720,
+      "md5": "afec406e88518e103b752944be409785",
+      "sha256": "bbe6693dabd2ebd83a0566193121cae3a7daa6d05ce4534c332798c8659e842f"
+    },
+    {
+      "pack": "chapter3_003",
+      "path": ".godot/imported/campus_theater_foyer_texture_normal.png-ce50cdb52604351f11097872c6577591.ctex",
+      "offset": 11389952,
+      "bytes": 2415178,
+      "md5": "4c9f8b6d09ae9b81156ce4e5a5f6651f",
+      "sha256": "6a2b5d064cb4ea9879c8ae01882133afe16aa79798b629fa52f189aa7f78aaba"
+    },
+    {
+      "pack": "chapter3_003",
+      "path": ".godot/imported/campus_willow_verge_texture_metallic-texture_roughness.png-ccb9c2a5f4ef32021798ce3528a37922.ctex",
+      "offset": 13805152,
+      "bytes": 1727406,
+      "md5": "6dd534763330806b60aa849672f21082",
+      "sha256": "91172ef53c45e6aa329afed3bc219541f4a65db1835996004d49c0f481731da5"
+    }
+  ],
+  "coreRodinEntries": 0
+}

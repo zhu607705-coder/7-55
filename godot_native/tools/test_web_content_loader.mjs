@@ -30,16 +30,33 @@ const request = (host, ...ids) => host.request(JSON.stringify(ids));
 const retry = (host, ...ids) => host.retry(JSON.stringify(ids));
 const turn = () => new Promise(resolve => setImmediate(resolve));
 async function until(predicate, label) {
-  for (let index = 0; index < 500; index++) { if (predicate()) return; await turn(); }
-  throw new Error(`Timed out waiting for ${label}`);
+  // Real WebCrypto and the loader's timer yields need elapsed time, not a
+  // machine-dependent number of immediate-loop turns on a busy CI worker.
+  const deadline = performance.now() + 5000;
+  while (!predicate()) {
+    if (performance.now() >= deadline) throw new Error(`Timed out waiting for ${label}`);
+    await new Promise(resolve => setTimeout(resolve, 1));
+  }
 }
 async function quiet() { for (let index = 0; index < 5; index++) await turn(); }
 function response(id, overrides = {}) { return new Response(body(id), { status: 200, ...overrides }); }
 function deferred() { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; }
+function idb(storage) {
+  return {open(){const request={};setImmediate(()=>{
+    request.result={objectStoreNames:{contains:()=>true},close(){},transaction(){const transaction={objectStore(){return {
+      get:key=>run(()=>storage.get(key)),put:(value,key)=>run(()=>{storage.set(key,structuredClone(value));return key;}),delete:key=>run(()=>storage.delete(key))
+    };}};function run(action){const result={};setImmediate(()=>{result.result=action();result.onsuccess?.();setImmediate(()=>transaction.oncomplete?.());});return result;}return transaction;}};request.onsuccess?.();});return request;}};
+}
+function chunkedPack(bytes,id='chapter2_large',family='chapter2') {
+  const sha256=digest(bytes),transportChunks=[];
+  for(let offset=0;offset<bytes.length;offset+=1048576){const part=bytes.subarray(offset,offset+1048576),sha256=digest(part);transportChunks.push({file:`content/chunks/${id}-${String(transportChunks.length+1).padStart(4,'0')}-${sha256.slice(0,16)}.bin`,offset,bytes:part.length,sha256});}
+  return {id,family,file:`content/${id}-${sha256.slice(0,16)}.pck`,bytes:bytes.length,sha256,transportChunks};
+}
 function fixture(options = {}) {
-  const events = [], requests = [], copies = [], raf = [];
+  const events = [], requests = [], copies = [], raf = [], visibilityListeners = new Set();
   const documentBase = options.baseURI || baseURI;
   const stored = options.stored || new Map();
+  const chunks = options.chunks || new Map();
   const cacheEvents = [];
   const store = {
     async match(key) { cacheEvents.push(['match', key]); return stored.get(key)?.clone() || null; },
@@ -47,10 +64,13 @@ function fixture(options = {}) {
     async delete(key) { cacheEvents.push(['delete', key]); return stored.delete(key); },
   };
   const context = {
-    window: {}, document: { baseURI: documentBase }, location: { origin },
+    window: {}, document: { baseURI: documentBase, hidden: false,
+      addEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.add(fn); },
+      removeEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.delete(fn); } }, location: { origin },
     navigator: { connection: { saveData: Boolean(options.saveData) } },
-    URL, Response, TextEncoder, TextDecoder,
-    crypto: options.noCrypto ? {} : crypto.webcrypto,
+    URL, Response, TextEncoder, TextDecoder, setTimeout, AbortController, ArrayBuffer, Uint8Array, Uint32Array, DataView, ReadableStream,
+    crypto: options.crypto || (options.noCrypto ? {} : crypto.webcrypto),
+    ...(options.idb?{indexedDB:idb(chunks)}:{}),
     requestAnimationFrame: callback => { raf.push(callback); return raf.length; },
     fetch: async (url, init) => {
       const info = { url, init, sequence: requests.length + 1 };
@@ -62,15 +82,17 @@ function fixture(options = {}) {
     },
     ...(options.noCache ? {} : { caches: { open: async name => { assert.equal(name, '755-godot-content-v1'); return store; } } }),
   };
-  vm.runInNewContext(source, context, { filename, timeout: 1000 });
+  vm.runInNewContext(options.source||source, context, { filename, timeout: 1000 });
   const api = context.window.Godot755Content;
   const engine = { copyToFS: (name, buffer) => {
     if (options.copyFails) throw new Error('MEMFS fixture failed');
     copies.push({ name, bytes: Buffer.from(new Uint8Array(buffer)) });
   } };
-  const host = api.create({ manifest: structuredClone(manifest), engine });
+  const host = api.create({ manifest: structuredClone(options.manifest||manifest), engine });
   host.install((id, name, error) => events.push({ id, name, error }));
-  return { api, host, events, requests, copies, raf, stored, cacheEvents, store, async frame() { assert.ok(raf.length, 'A frame must have been scheduled'); const callbacks = raf.splice(0); for (const callback of callbacks) callback(); await quiet(); } };
+  return { api, host, events, requests, copies, raf, stored, chunks, cacheEvents, store, visibilityListeners,
+    setHidden(value) { context.document.hidden = value; for (const listener of visibilityListeners) listener(); },
+    async frame() { assert.ok(raf.length, 'A frame must have been scheduled'); const callbacks = raf.splice(0); for (const callback of callbacks) callback(); await quiet(); } };
 }
 function check(name, value) { assert.ok(value, name); checks.push(name); }
 
@@ -93,25 +115,86 @@ function check(name, value) { assert.ok(value, name); checks.push(name); }
   f.host.dispose();
 }
 
-// A currently downloading block completes, then foreground work overtakes the
-// remaining background list. The loader never issues a second simultaneous PCK.
+// Explicit foreground demand cancels optional transfer before its completion;
+// even a transport that resolves late must not reach MEMFS or the native callback.
 {
   const held = deferred();
   const f = fixture({ fetch: info => info.sequence === 1 ? held.promise : response(packs.find(item => info.url.endsWith(item.file)).id) });
   f.host.startPrefetch(); await f.frame(); await f.frame();
   await until(() => f.requests.length === 1, 'held background request');
   request(f.host, packs[3].id, packs[3].id);
-  await quiet();
-  check('Foreground demand does not open a second PCK request while one is downloading', f.requests.length === 1 && snapshot(f.host).active === packs[0].id);
-  held.resolve(response(packs[0].id));
-  await until(() => f.events.length === 1, 'held download finish');
-  await quiet();
-  check('Foreground demand remains queued until the current pack has actually mounted', f.requests.length === 1 && f.events[0].id === packs[0].id);
-  await f.host.acknowledge(packs[0].id, true, '');
-  await until(() => f.events.length === 2, 'foreground mount request');
-  check('Queued foreground pack overtakes the next background chapter pack', f.requests.length === 2 && f.requests[1].url === new URL(packs[3].file, baseURI).href && f.requests[1].init.priority === 'high');
-  check('Engine receives exactly the verified bytes at the SHA-bound MEMFS path', f.copies.every((copy, index) => copy.name === `/755-content/${packs[index === 0 ? 0 : 3].sha256}.pck` && copy.bytes.equals(Buffer.from(body(packs[index === 0 ? 0 : 3].id)))));
+  await until(() => f.events.length === 1, 'foreground after cancellation');
+  check('Foreground demand aborts optional in-flight work and starts required content at high priority', f.requests[0].init.signal.aborted && f.events[0].id === packs[3].id && f.requests[1].init.priority === 'high');
+  check('Optional cancellation returns its record to idle without a visible transport error', record(f.host, packs[0].id).status === 'idle' && record(f.host, packs[0].id).error === '' && f.events.length === 1);
+  held.resolve(response(packs[0].id)); await quiet();
+  check('A late response from cancelled optional work never copies stale bytes or emits a callback', f.copies.length === 1 && f.copies[0].bytes.equals(Buffer.from(body(packs[3].id))) && f.events.length === 1);
+  f.host.setPrefetchFamilies('[]');
+  await f.host.acknowledge(packs[3].id, true, '');
+  check('Foreground mounting completes normally after preemption', record(f.host, packs[3].id).status === 'mounted' && snapshot(f.host).active === '');
   f.host.dispose();
+}
+
+// Visibility/window cancellation and upgrading the same pending optional pack
+// to an explicit requirement are distinct from cancelling unrelated work.
+for (const kind of ['hidden', 'window', 'same-required']) {
+  const held = deferred();
+  const f = fixture({fetch: () => held.promise});
+  f.host.startPrefetch(); await f.frame(); await f.frame();
+  await until(() => f.requests.length === 1, 'optional request');
+  if (kind === 'hidden') f.setHidden(true);
+  if (kind === 'window') f.host.setPrefetchFamilies('[]');
+  if (kind === 'same-required') { request(f.host, packs[0].id); f.setHidden(true); }
+  if (kind === 'same-required') {
+    check('Requiring the already active pack preserves its transfer even when the page becomes hidden', !f.requests[0].init.signal.aborted && snapshot(f.host).active === packs[0].id);
+    held.resolve(response(packs[0].id)); await until(() => f.events.length === 1, 'upgraded requirement');
+    await f.host.acknowledge(packs[0].id, true, '');
+  } else {
+    await until(() => snapshot(f.host).active === '', 'cancel optional ' + kind);
+    check('Optional transfer aborts with no error on ' + kind, f.requests[0].init.signal.aborted && f.events.length === 0 && record(f.host, packs[0].id).status === 'idle');
+    held.resolve(response(packs[0].id)); await quiet();
+    check('Late optional response remains inert after ' + kind, f.copies.length === 0 && f.events.length === 0);
+  }
+  f.host.dispose();
+}
+
+// Test-only introspection proves host-owned bytes are released; it does not
+// imply that a PCK already copied into the engine can be unmounted by this host.
+{
+  const instrumented = source.replace('return host;', 'host.retainedBytesForTest = () => [...records.values()].reduce((sum, record) => sum + (record.buffer?.byteLength || 0), 0); return host;');
+  const f = fixture({source: instrumented}); request(f.host, packs[0].id);
+  await until(() => f.events.length === 1, 'dispose mounting candidate');
+  check('A mount candidate holds its verified transport bytes until native acknowledgement', f.host.retainedBytesForTest() === packs[0].bytes);
+  f.host.dispose();
+  check('Disposing during mounting releases host buffers and active record immediately', f.host.retainedBytesForTest() === 0 && snapshot(f.host).active === '' && record(f.host, packs[0].id).status === 'idle');
+  await f.host.acknowledge(packs[0].id, true, ''); request(f.host, packs[2].id); await quiet();
+  check('Late acknowledgement and requests after disposal cannot cache, remount or restart work', f.cacheEvents.filter(item => item[0] === 'put').length === 0 && f.requests.length === 1 && f.host.retainedBytesForTest() === 0);
+}
+
+// A verified 1 MiB chunk survives optional cancellation and is reusable after
+// a new page/loader, while the currently partial response is discarded.
+{
+  const bytes = Buffer.alloc(1048576 * 4 + 57);
+  for (let i=0; i<bytes.length; i++) bytes[i]=(i*29+(i>>>10)+(i>>>20)*17)&255;
+  const large = chunkedPack(bytes), held = deferred();
+  const smallManifest = {...manifest,packs:[large,packs[3]]};
+  const f = fixture({manifest:smallManifest,idb:true,noCache:true,fetch:info=>{
+    if (info.url.endsWith(packs[3].file)) return response(packs[3].id);
+    const chunk=large.transportChunks.find(item=>info.url.endsWith(item.file));
+    return chunk.offset===0 ? new Response(bytes.subarray(0,1048576)) : held.promise;
+  }});
+  f.host.startPrefetch();await f.frame();await f.frame();
+  await until(()=>f.chunks.has('chunk:'+large.transportChunks[0].sha256),'durable optional chunk');
+  request(f.host,packs[3].id);await until(()=>f.events.length===1,'foreground after chunk cancellation');
+  check('Chunked optional transfer cancels sibling requests while preserving the verified complete chunk', f.events[0].id===packs[3].id && f.requests.filter(item=>item.url.includes('/chunks/')).every(item=>item.init.signal.aborted) && f.chunks.has('chunk:'+large.transportChunks[0].sha256));
+  f.host.dispose();
+  const reopened=fixture({manifest:smallManifest,idb:true,chunks:f.chunks,noCache:true,fetch:info=>{
+    const chunk=large.transportChunks.find(item=>info.url.endsWith(item.file));
+    assert.ok(chunk);return new Response(bytes.subarray(chunk.offset,chunk.offset+chunk.bytes));
+  }});
+  request(reopened.host,large.id);await until(()=>reopened.events.length===1,'resumed chunked mount');
+  check('A new loader requests only missing chunks and verifies the final PCK before copying it', reopened.requests.length===large.transportChunks.length-1 && reopened.copies[0].bytes.equals(bytes) && record(reopened.host,large.id).source==='resumed-network');
+  check('Deferred static chunks use complete hash-named GETs without Range headers', reopened.requests.every(item=>item.url.includes('/content/chunks/') && item.init.headers===undefined));
+  reopened.host.dispose();
 }
 
 // Hash checks use real WebCrypto. A same-length substitution must not reach
@@ -230,6 +313,30 @@ for (const kind of ['truncated', 'overflow']) {
   assert.throws(() => f.api.validate(huge), /Invalid content group/);
   check('Escaping paths and oversized deferred packs are rejected before any fetch', f.requests.length === 0);
   f.host.dispose();
+}
+
+// Optional work is bounded to one next-chapter family. Explicit old-save or
+// navigation requirements still outrank that window, including while hidden.
+{
+  const f = fixture();
+  f.host.startPrefetch(); await f.frame(); await f.frame();
+  await until(() => f.events.length === 1, 'first lookahead part');
+  await f.host.acknowledge(packs[0].id, true, '');
+  await until(() => f.events.length === 2, 'second lookahead part');
+  await f.host.acknowledge(packs[1].id, true, ''); await quiet();
+  check('Finishing the next chapter does not fetch or mount all later chapters', f.requests.length === 2 && snapshot(f.host).active === '' && record(f.host, packs[2].id).status === 'idle');
+  f.setHidden(true); f.host.setPrefetchFamilies(JSON.stringify(['chapter3'])); await quiet();
+  check('A hidden page defers new optional requests when the lookahead advances', f.requests.length === 2);
+  f.setHidden(false); await until(() => f.events.length === 3, 'visible lookahead resumes');
+  check('Returning to visibility resumes precisely the next family', f.events[2].id === packs[2].id);
+  await f.host.acknowledge(packs[2].id, true, '');
+  f.host.setPrefetchFamilies('[]'); f.setHidden(true); request(f.host, packs[3].id);
+  await until(() => f.events.length === 4, 'explicit demand beyond lookahead');
+  check('Explicit required content bypasses optional lookahead and visibility limits', f.events[3].id === packs[3].id && f.requests[3].init.priority === 'high');
+  await f.host.acknowledge(packs[3].id, true, '');
+  f.host.setPrefetchFamilies('["chapter2","chapter4"]');
+  check('An invalid multi-chapter window is rejected', snapshot(f.host).prefetchFamilies.length === 0);
+  f.host.dispose(); check('Disposal removes its visibility listener', f.visibilityListeners.size === 0);
 }
 
 console.log(JSON.stringify({

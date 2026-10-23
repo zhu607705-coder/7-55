@@ -37,6 +37,7 @@ var state:Dictionary={}
 var layers:RefCounted
 var mixer_performance:Node2D
 var drink_performance:Node2D
+var receipt_performance:Node2D
 var _active:=false
 var _origin:=Vector2.ZERO
 var _zoom:=1.0
@@ -101,6 +102,7 @@ func setup(owner_world:Control)->void:
 		if role=="return_contact":feature.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 	mixer_performance=load("res://scripts/objects/canteen_mixer_performance.gd").new();source_space.add_child(mixer_performance);mixer_performance.setup(world)
 	drink_performance=load("res://scripts/objects/canteen_drink_performance.gd").new();source_space.add_child(drink_performance);drink_performance.setup(world)
+	receipt_performance=load("res://scripts/objects/canteen_receipt_performance.gd").new();source_space.add_child(receipt_performance);receipt_performance.setup(world)
 	var tail:=Tail.new();tail.owner_scene=self;tail.name="CanteenInterface";tail.z_index=60;add_child(tail)
 	hide();set_process(world!=null)
 func is_active()->bool:return _active
@@ -108,6 +110,7 @@ func sync(next_state:Dictionary,scene_id:String)->void:
 	var was:=_active;_active=scene_id=="canteen_interior";visible=_active;state=next_state
 	if is_instance_valid(mixer_performance):mixer_performance.sync(state,_active)
 	if is_instance_valid(drink_performance):drink_performance.sync(state,_active)
+	if is_instance_valid(receipt_performance):receipt_performance.sync(state,_active)
 	if not is_same(bound_state,state):bound_state=state;previous_returns=state.canteenHunt.returnedTrayIds.size();_reset_feedback()
 	if _active and state.canteenHunt.returnedTrayIds.size()>previous_returns:
 		return_age=0;return_start=world.player+Vector2(0,-3) if world!=null else Vector2(1497,592)
@@ -159,6 +162,7 @@ func _apply_draw_order()->void:
 	for feature:Node2D in features:ordered.append({"node":feature,"depth":float(feature.get_meta("source_depth"))})
 	if is_instance_valid(mixer_performance):ordered.append({"node":mixer_performance,"depth":818.0})
 	if is_instance_valid(drink_performance):ordered.append({"node":drink_performance,"depth":197.0})
+	if is_instance_valid(receipt_performance):ordered.append_array(receipt_performance.draw_order_entries())
 	ordered.append({"node":mode_fiber_view,"depth":ModeFiberView.SOURCE_DEPTH})
 	ordered.append({"node":player_shadow,"depth":float(player_sprite.get_meta("source_depth",0))-1})
 	ordered.append({"node":player_sprite,"depth":float(player_sprite.get_meta("source_depth",0))})
@@ -353,6 +357,9 @@ func record_surfaces()->void:
 		feature_surfaces.append({"depth":244.0,"canvas_z":Prop.draw_layer(244),"root_order":source_space.get_node("pickup_slots").get_index(),"ids":["pickup_window_"+str(i+1)],"geometry":{"rect":Rect2(x-19,209,38,20)}})
 	if is_instance_valid(mixer_performance) and is_instance_valid(mixer_performance.glass_back):
 		feature_surfaces.append({"depth":818.0,"canvas_z":mixer_performance.z_index,"root_order":mixer_performance.get_index(),"ids":["canteen-mixer"],"geometry":{"polygon":mixer_performance.glass_back.polygon,"transform":mixer_performance.transform*mixer_performance.glass_root.transform}})
+	if is_instance_valid(receipt_performance):
+		var receipt_surface:Dictionary=receipt_performance.paper_surface()
+		if not receipt_surface.is_empty():feature_surfaces.append(receipt_surface)
 	var return_surface:Dictionary=_return_surface()
 	if not return_surface.is_empty():feature_surfaces.append(return_surface)
 	ordered.append_array(feature_surfaces)

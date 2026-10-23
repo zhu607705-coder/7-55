@@ -1,0 +1,16 @@
+{
+  "schema": "7-55-native-library-entrance-geometry-v1",
+  "reference": "res://assets/rpg/interiors/library_interior.png",
+  "sourceSize": [1500, 900],
+  "fixedCollisionRects": [
+    {"id": "entrance_south_wall_west_base", "rect": [8, 828, 521, 25]},
+    {"id": "entrance_south_wall_east_base", "rect": [986, 828, 507, 25]}
+  ],
+  "clearCentralApertureX": [529, 986],
+  "provenance": {
+    "measuredAt": "2026-10-21",
+    "basis": "Visible continuous masonry bases at the south source-image edge; the central entrance, all glass, pillars, plants and furniture retain their original geometry.",
+    "observedFailure": "Production Godot Web coarse landscape 844x390, closed record=false: real route from [715,792.5] through [705,847.875], [657,847.875], [452,817.875], [452,664.75], [505,642.75] to [715,641.5]. Every original body sample was accepted outside the painted west south wall.",
+    "scope": "Two fixed source-pixel wall-base strips only. They remain solid in both reality modes and at every leaf-animation progress. No domain facts, evidence, admission rules, original spawns or furniture bounds change."
+  }
+}
