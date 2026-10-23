@@ -52,7 +52,7 @@ func dispatch(s: Dictionary, id: String, value: Variant) -> Dictionary:
 			if s.phoneBattery.lowPowerMode:
 				s.ui.brightness = minf(45,s.ui.brightness)
 				s.ui.musicPlaying = false
-			return _ok("低电量模式已开启：打开应用仅消耗 1%，亮度上限 45%，音乐已暂停。" if s.phoneBattery.lowPowerMode else "低电量模式已关闭：打开应用恢复消耗 2%。")
+			return _ok("低电量模式已开启：亮度上限 45%，音乐已暂停。打开应用不扣电。" if s.phoneBattery.lowPowerMode else "低电量模式已关闭：可手动调整亮度，打开应用不扣电。")
 		"phone_settings_brightness":
 			if str(value).is_valid_float(): s.ui.brightness = clampf(float(value),0,100)
 			return _ok()

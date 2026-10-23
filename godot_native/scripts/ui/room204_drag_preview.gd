@@ -20,7 +20,7 @@ func configure(source: Sprite2D,angle: float,zoom: float,reduce: bool) -> void:
 	hint.position=Vector2(-64,source.region_rect.size.x*source.scale.x*zoom/2+6)
 	hint.size=Vector2(128,28);hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	hint.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	hint.add_theme_font_override("font",load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"))
+	hint.add_theme_font_override("font",preload("res://scripts/ui/native_typography.gd").body_font())
 	hint.add_theme_font_size_override("font_size",18)
 	hint.add_theme_color_override("font_color",Color("b8edf4"))
 	hint.add_theme_color_override("font_shadow_color",Color("102029"))

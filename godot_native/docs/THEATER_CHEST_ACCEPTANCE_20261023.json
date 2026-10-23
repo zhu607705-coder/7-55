@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-23",
+  "engine": "Godot 4.7.1.stable.official.a13da4feb",
+  "head": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "workingTree": "uncommitted, contains unrelated parallel work",
+  "files": {
+    "godot_native/scripts/objects/theater_chest_object.gd": "77210fc7eb7671ea45b2d82e24fedfb5da69b595751ef584cfd46a42c14e1190",
+    "godot_native/scripts/ui/theater_chest_closeup.gd": "c1a3dd5b8576fc83cc2f94d76115ef95bc89a29edfd1bda99f965bc7dcb759e1",
+    "godot_native/scripts/presentation/world_object_focus.gd": "b507b61e922d4be68bad440fb13ee4b2355b16c25cbd094900e49256de32835e",
+    "godot_native/scripts/chapters/chapter3.gd": "168a99db516a11e7d7d77961bb53817f909e675b7f8f5cc492ca0291d7bc51b9",
+    "godot_native/scripts/main.gd": "1881da8b07f6d19546abf16b673d0043c5d3a30f647f0898f8e286128f9449f4",
+    "godot_native/scripts/world.gd": "9e0e92a8e79332c201f7b876fecebb7f2cf66ff6f86036d3e09d7cee602812d4",
+    "godot_native/tests/test_theater_chest_focus.gd": "73cc6b9c9199655b2e080adec86f624313e28981077e39e5d05445a4f424ddc2",
+    "godot_native/assets/native/theater_chest_20261023/prop_chest_overhead_open.png": "4b18a7e4d8746cd0a203562c7acc8f36ed34ccdb3d1e31e750ba373e764960b4"
+  },
+  "headlessReport": "/tmp/755-theater-chest-overhead-final.json",
+  "nativeGuiLog": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-overhead-20261023/native-gui-validation.log",
+  "viewports": [
+    [
+      1440,
+      900
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "guiChecks": 144,
+  "guiFailures": 0,
+  "scope": "isolated native Main + original scanner controller + mouse and ScreenTouch; not browser export or physical phone acceptance"
+}

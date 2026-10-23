@@ -50,9 +50,10 @@ func run() -> void:
 	shell.world.mobile_exploration = true
 	var touch_snapshot: Dictionary = bridge.read_snapshot()
 	var actual_controls: Dictionary = shell.world.mobile_control_metrics()
-	check(touch_snapshot.world.touchControls.interact == bridge._rect(actual_controls.interact), "touch hit geometry comes from the actual rendered world control")
-	touch_snapshot.world.touchControls.interact.x += 100
-	check(shell.world.mobile_control_metrics().interact == actual_controls.interact and state.d == before and disk(state.SAVE_PATH) == primary, "geometry observation has no world-input, progression or save write authority")
+	check(touch_snapshot.world.touchControls.scheme == "direct_world" and touch_snapshot.world.touchControls.gestureArea == bridge._rect(actual_controls.gestureArea) and touch_snapshot.world.touchControls.mode == bridge._rect(actual_controls.mode), "touch geometry observes the actual direct world area and visible mode control")
+	check(not touch_snapshot.world.touchControls.has("stick") and not touch_snapshot.world.touchControls.has("interact"), "read-only bridge exposes no retired invisible control targets")
+	touch_snapshot.world.touchControls.gestureArea.x += 100
+	check(shell.world.mobile_control_metrics().gestureArea == actual_controls.gestureArea and state.d == before and disk(state.SAVE_PATH) == primary, "geometry observation has no world-input, progression or save write authority")
 	shell.world.mobile_exploration = previous_mobile
 	snapshot.state.native.page = "detached-only"
 	check(state.d == before and disk(state.SAVE_PATH) == primary and disk(state.BACKUP_PATH) == backup, "reading and mutating a returned copy cannot alter state or either save")

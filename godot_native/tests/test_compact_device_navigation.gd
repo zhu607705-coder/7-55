@@ -68,7 +68,9 @@ func prepare(id: String,width: int) -> void:
 	seed_case(id); state.story_reset.emit(); state.changed.emit()
 	root.size=Vector2i(width,844 if width<1100 else 720)
 	await process_frame; await process_frame
-	main.world.set_process(false); main.c3_narrative_host.set_process(false); main.c3_scene_host.set_process(false); main.library_story_host.set_process(false)
+	main.world.set_process(false)
+	for host in [main.c3_narrative_host,main.c3_scene_host,main.library_story_host]:
+		if is_instance_valid(host):host.set_process(false)
 	main.mobile_world=true; main._layout(); await process_frame
 func interact(action: String) -> Dictionary:
 	var selected: Dictionary={}
@@ -139,7 +141,9 @@ func run() -> void:
 				"c4_power":
 					var button: Button=find_button(main.page_body,"大厅"); var before: int=state.d.chapter4.lightGrid.mask
 					await click(button,"power toggle"); check(state.d.chapter4.lightGrid.mask!=before,"real power control applies toggle")
-			await click(find_button(main.page_body,"返回现场"),"return to same world")
+			# Source apps keep their own viewport. Use the same visible map icon
+			# as the player rather than expecting an extra row below the app.
+			await click(main.phone_world_return,"return to same world with shared map icon")
 			check(main.world_frame.is_visible_in_tree() and main.world.player==position and state.d.native.scene==scene,"return retains source world position")
 			state.act("phone_refresh",{}); await process_frame
 			check(main.world_frame.is_visible_in_tree(),"refresh does not yank return view back to phone")

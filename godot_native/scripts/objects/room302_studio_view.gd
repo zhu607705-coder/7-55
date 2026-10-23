@@ -6,6 +6,8 @@ signal check_requested
 const Shade=preload("res://scripts/objects/room302_shade_prop.gd")
 const Scanner=preload("res://scripts/objects/room302_scanner_prop.gd")
 const Model=preload("res://scripts/objects/room302_studio_model.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
+const SCANNER_CAPTION:="点扫描台核对"
 var stage_root:Node2D
 var projection:Control
 var curtain:Sprite2D
@@ -55,12 +57,16 @@ func layout_scene(rect:Rect2)->void:
 	play_area=rect;_layout()
 func _layout()->void:
 	if not play_area.has_area():play_area=Rect2(Vector2.ZERO,size)
-	var narrow:bool=touch_mode and size.y>size.x
+	# Composition follows available geometry, not the last input device.
+	# A portrait window with a keyboard still needs the portrait arrangement.
+	var narrow:bool=play_area.size.y>play_area.size.x
 	design_size=Vector2(360,660) if narrow else Vector2(880,460)
 	lamp_positions=[Vector2(65,500),Vector2(180,430),Vector2(295,500)] if narrow else [Vector2(140,376),Vector2(345,376),Vector2(550,376)]
 	shadow_positions=[Vector2(104,144),Vector2(180,105),Vector2(256,144)] if narrow else [Vector2(251,139),Vector2(345,139),Vector2(439,139)]
 	curtain_width=340 if narrow else 455
-	fit=minf(play_area.size.x/design_size.x,play_area.size.y/design_size.y);origin=play_area.position+(play_area.size-design_size*fit)/2
+	var caption_height:float=Typography.body_font().get_height(14)+4
+	var art_space:=Vector2(play_area.size.x,maxf(1,play_area.size.y-caption_height))
+	fit=minf(art_space.x/design_size.x,art_space.y/design_size.y);origin=play_area.position+(art_space-design_size*fit)/2
 	if stage_root!=null:
 		stage_root.position=origin;stage_root.scale=Vector2.ONE*fit
 		curtain.position=Vector2(180,142) if narrow else Vector2(345,136)
@@ -220,8 +226,14 @@ func draw_projection(canvas:CanvasItem)->void:
 				canvas.draw_line(at+direction*5,at+direction.rotated(-2.5)*3,Color("f4e4b2"),2)
 	canvas.draw_set_transform(Vector2.ZERO)
 	if check_station!=null:
-		var caption:=origin+(check_station.position+Vector2(-35,18))*fit
-		canvas.draw_string(get_theme_default_font(),caption,"点扫描台核对",HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("26372b"))
+		var rect:=scanner_caption_rect()
+		canvas.draw_string(Typography.body_font(),rect.position+Vector2(0,Typography.body_font().get_ascent(14)),SCANNER_CAPTION,HORIZONTAL_ALIGNMENT_CENTER,rect.size.x,14,Color("26372b"))
+func scanner_caption_rect()->Rect2:
+	var font:Font=Typography.body_font()
+	var width:float=minf(play_area.size.x,font.get_string_size(SCANNER_CAPTION,HORIZONTAL_ALIGNMENT_LEFT,-1,14).x)
+	var height:float=font.get_height(14)
+	var foot:Vector2=origin+check_station.position*fit if check_station!=null else play_area.position
+	return Rect2(Vector2(clampf(foot.x-width/2,play_area.position.x,maxf(play_area.position.x,play_area.end.x-width)),clampf(foot.y+4,play_area.position.y,maxf(play_area.position.y,play_area.end.y-height))),Vector2(width,height))
 class ProjectionCanvas extends Control:
 	var owner_view:Control
 	func _draw()->void:

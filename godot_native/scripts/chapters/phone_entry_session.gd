@@ -1,10 +1,12 @@
 extends RefCounted
+const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
 ## Transient mount/presentation clock, owned by ChapterOne. Never serialized.
 ## Source: P06_Tiyi, P14_Wechat, P15_Zjuding useState/useEffect mount contracts.
 var owner: Dictionary={}
 var family: String=""
 var elapsed_ms:=0.0
 var entry_allowed:=false
+var tiyi_update_blocked:=false
 var phase: String=""
 var crash_recorded:=false
 var friend_open:=false
@@ -27,7 +29,8 @@ func route(state: Dictionary) -> void:
 	if is_same(owner,state) and next==family: return
 	owner=state; family=next; elapsed_ms=0; phase=""; crash_recorded=false; blocked_hint_sent=false
 	close_friend()
-	entry_allowed=(state.get("networkMode")=="cellular") if family=="tiyi" else (state.get("networkMode")=="campus_wifi")
+	tiyi_update_blocked=family=="tiyi" and TiyiAccess.needs_update(state)
+	entry_allowed=TiyiAccess.allowed(state) if family=="tiyi" else (state.get("networkMode")=="campus_wifi")
 	if family in ["tiyi","zjuding"]: phase="loading"
 
 func start_friend() -> void:

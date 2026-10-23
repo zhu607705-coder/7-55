@@ -1,0 +1,66 @@
+name: Native motion reference proof
+on:
+  push:
+    branches: [codex/motion-reference-polish-20261022]
+    paths: ['godot_native/**', '.github/workflows/motion-reference-proof.yml']
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [baseline, candidate]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve common harness and select exact source
+        run: |
+          cp godot_native/tests/capture_motion_reference.gd /tmp/capture_motion_reference.gd
+          if [ '${{ matrix.source }}' = baseline ]; then
+            git fetch --depth=1 origin 5907b166d4775e1288aef5d13d56bc99111d5c33
+            git checkout --detach 5907b166d4775e1288aef5d13d56bc99111d5c33
+          fi
+          cp /tmp/capture_motion_reference.gd godot_native/tests/capture_motion_reference.gd
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Use existing pinned official renderer route
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo "c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip" | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      - name: Synchronize and import original resources
+        id: import
+        run: |
+          node godot_native/tools/sync_source.mjs
+          GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
+      - name: Verify affected original motion contracts
+        if: matrix.source == 'candidate'
+        run: |
+          GODOT_TEST_REPORT=motion-tests.json node godot_native/tools/validate_native.mjs --filter 'endless_stair_(jump_pose|gait|step_pose|camera_input|integration|presentation|pursuit)|chase3d_(rider_fidelity|world_camera_contacts|view_lifecycle)|chase_asset_provenance'
+      - name: Capture identical native motion fixtures
+        if: always() && steps.import.outcome == 'success'
+        run: |
+          mkdir -p /tmp/755-motion-profile/{data,config,cache,state}
+          export XDG_DATA_HOME=/tmp/755-motion-profile/data XDG_CONFIG_HOME=/tmp/755-motion-profile/config
+          export XDG_CACHE_HOME=/tmp/755-motion-profile/cache XDG_STATE_HOME=/tmp/755-motion-profile/state
+          export GODOT_TEST_USER_DATA_DIR="$XDG_DATA_HOME/SevenFiftyFiveNative"
+          mkdir -p "$GODOT_TEST_USER_DATA_DIR"
+          export MOTION_CAPTURE_DIR="$GITHUB_WORKSPACE/motion-proof"
+          mkdir -p "$MOTION_CAPTURE_DIR"
+          git rev-parse HEAD > "$MOTION_CAPTURE_DIR/source-sha.txt"
+          timeout 240 xvfb-run --auto-servernum --server-args='-screen 0 1280x720x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_motion_reference.gd 2>&1 | tee "$MOTION_CAPTURE_DIR/render.log"
+          test -f "$MOTION_CAPTURE_DIR/captures.json"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Assertion failed' "$MOTION_CAPTURE_DIR/render.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: motion-proof-${{ matrix.source }}
+          path: |
+            motion-proof/
+            import-report.json
+            motion-tests.json

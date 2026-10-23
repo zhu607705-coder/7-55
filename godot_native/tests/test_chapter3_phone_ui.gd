@@ -29,7 +29,7 @@ func run() -> void:
 	for page: String in ["c35_recovery","c35_journal","c35_photos","c35_voice","c35_official","c35_messages","c35_network","c3_ticket_post"]:
 		var surface: Control=ui.build(page,controller.view(page,s),s)
 		check(surface!=null,"specialized page exists "+page)
-		check(surface.get_child_count()>=1 and surface.get_child(0).get_child_count()>=2,"page contains native content "+page)
+		check(surface.find_child("PhoneAppScroll",true,false)!=null and surface.content.get_child_count()>0,"page contains native content "+page)
 		root.add_child(surface)
 		surface.free()
 	check(ui.build("unrelated",{},s)==null,"unknown pages safely delegate")
@@ -49,7 +49,7 @@ func run() -> void:
 	s.chapterThreeInterlude=JSON.parse_string(FileAccess.get_file_as_string("res://data/initial_state.json")).chapterThreeInterlude
 	s.native.erase("c35_photo_selection")
 	s.native.erase("c35_voice_selection")
-	press(ui,controller,s,"c35_recovery","打开恢复工具")
+	press(ui,controller,s,"c35_recovery","开始恢复")
 	press(ui,controller,s,"c35_journal","安全返航")
 	check(not s.chapterThreeInterlude.evidenceIds.has("journal_start"),"summary selection does not publish early")
 	press(ui,controller,s,"c35_journal","发布收尾并保存时间")
@@ -97,7 +97,9 @@ func find_card(node: Node,text: String) -> Node:
 		if nested!=null: return nested
 	return null
 func find_button(node: Node,text: String) -> Button:
-	if node is Button and text in node.text: return node
+	if node is Button and not node is OptionButton:
+		if text in node.text:return node
+		if text=="选择" and node.get_meta("intent","")=="c35_select_route" and not node.get_meta("route_selected",false):return node
 	for child: Node in node.get_children():
 		var found: Button=find_button(child,text)
 		if found!=null: return found
@@ -107,8 +109,14 @@ func press(ui: RefCounted,controller: RefCounted,s: Dictionary,page: String,text
 	var surface: Control=ui.build(page,controller.view(page,s),s)
 	var scope: Node=surface if row_text.is_empty() else find_card(surface,row_text)
 	var selected: Button=find_button(scope,text) if scope!=null else null
+	if selected==null and scope!=null:
+		for option: OptionButton in scope.find_children("*","OptionButton",true,false):
+			for index: int in range(option.item_count):
+				if text in option.get_item_text(index):
+					option.select(index);option.item_selected.emit(index)
+					selected=find_button(scope,"确认排除" if page=="c35_recovery" and not row_text.is_empty() else "确认地点")
 	check(selected!=null and not selected.disabled,"native button reachable "+page+" / "+text+" / "+row_text)
-	if selected!=null and not selected.disabled: selected.pressed.emit()
+	if selected!=null and not selected.disabled:selected.pressed.emit()
 	surface.free()
 
 func await_actual_heard(media: Node,state: Dictionary) -> bool:

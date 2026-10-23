@@ -45,6 +45,7 @@ func run() -> void:
 		await capture(prefix+"-zjuding-accepted-loading",true)
 		await fixture("campus_wifi",1)
 		await click(find_named(shell.page_body,"HomeApp_wechat"))
+		await switch_network_at_reserve()
 		check_notice_geometry()
 		await capture(prefix+"-wechat-battery-warning")
 		shell.battery_prank.deadline=Time.get_ticks_msec()

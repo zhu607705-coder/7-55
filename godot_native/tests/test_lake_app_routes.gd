@@ -38,7 +38,9 @@ func fixture(id: String,width: int) -> void:
 	check(state.begin_checkpoint(id),"unmodified original source scenario")
 	root.size=Vector2i(width,844 if width<1100 else 720)
 	await process_frame; await process_frame
-	main.world.set_process(false); main.c3_narrative_host.set_process(false); main.c3_scene_host.set_process(false)
+	main.world.set_process(false)
+	for host in [main.c3_narrative_host,main.c3_scene_host]:
+		if is_instance_valid(host):host.set_process(false)
 	main.mobile_world=false; main._layout(); await process_frame
 func run() -> void:
 	state=root.get_node("State"); state.developer_mode=true; state.begin_checkpoint("c3-qizhen-location")

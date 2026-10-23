@@ -1,0 +1,216 @@
+{
+  "schema": "755-morning-note-acceptance-v1",
+  "date": "2026-10-23",
+  "family": "755 Morning Note",
+  "familyZh": "晨札像素",
+  "version": "0.1.0",
+  "sourceCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "sourceDirty": true,
+  "engine": "4.7.1.stable.official",
+  "sourceInputSha256": "e4dd2054154f69cbb8051de5c0200fdc113f684d8c7461b0628ebe50241d0f5e",
+  "evidenceRoot": "/Users/zhu/Library/Application Support/755-tools/verification/morning-note-20261023",
+  "font": {
+    "emGrid": 24,
+    "baseline": 20,
+    "glyphs": 1824,
+    "originalGridGlyphs": 137,
+    "derivedGlyphs": 1687,
+    "originCounts": {
+      "OFL-Fusion-Pixel-grid-derivative": 25,
+      "OFL-Noto-CJK-grid-derivative": 1662,
+      "original-manual-grid": 137
+    },
+    "files": [
+      {
+        "file": "MorningNote-Regular.ttf",
+        "family": "755 Morning Note",
+        "style": "Regular",
+        "weight": 400,
+        "bytes": 416496,
+        "sha256": "649b615b2f17fe9387281366d2017ac903e7fb92e49f103eae9452ae913be7e0",
+        "woff2Bytes": 88212,
+        "woff2Sha256": "0206556173528aadeb979ceceff1c900cd6cbca9773c78c3fb93a01bfbe90062"
+      },
+      {
+        "file": "MorningNote-Medium.ttf",
+        "family": "755 Morning Note",
+        "style": "Medium",
+        "weight": 500,
+        "bytes": 405660,
+        "sha256": "69df30e5a80bd413a3712bfedf996ac241d1348d1da98eee979ef4508ce91da9",
+        "woff2Bytes": 87832,
+        "woff2Sha256": "f56a8e8d93a0676aaf26706f48196eb8c410f6301e46de6fadecf02e1c5406ad"
+      }
+    ],
+    "originalSource": {
+      "file": "art_source/fonts/morning_note_v1/original_glyphs.json",
+      "sha256": "0019ad86c8872f332b6a826058b435a5f9ae4480fe7ce4da75d8347eb44ebaf9"
+    },
+    "license": "SIL-OFL-1.1 for combined font binaries; Apache-2.0 original glyph source; upstream notices retained",
+    "coverageBoundary": "Static authored game text plus original glyph source. Future wording requires coverage validation; unsupported user input uses the explicit bundled Fusion fallback, never an OS font.",
+    "unsupportedNonHanzi": [
+      "U+224B",
+      "U+2302",
+      "U+232B",
+      "U+2726",
+      "U+2731",
+      "U+275A",
+      "U+27F3",
+      "U+2B22"
+    ],
+    "knownMissingSymbols": "Existing native pixel-symbol drawing remains; no implicit OS font is used.",
+    "fontRebuildCheck": "font-rebuild-check.log",
+    "allGlyphContourValidation": "The builder independently rasterizes both generated faces through FreeType at the24-grid and requires exact per-glyph grid equality.",
+    "asciiMaskRebuildCheck": "ascii-rebuild-check.log"
+  },
+  "runtime": {
+    "surfaces": [
+      "shared phone/body/buttons",
+      "selected HUD/dialogue/journal",
+      "theater UI",
+      "check-in and receipt",
+      "ASCII Hanzi masks"
+    ],
+    "bodyWeight": 400,
+    "headingWeight": 500,
+    "noSystemFallback": true,
+    "textLocalNearest": true,
+    "scaleAware": true,
+    "preserved": [
+      "selected geometry, colors and input ownership",
+      "word-grid20, timing, six contacts and1400ms final grip",
+      "save and controller authority",
+      "existing world art filters and collisions"
+    ],
+    "excluded": [
+      "baked image/video text",
+      "physical authored3D stair lettering"
+    ]
+  },
+  "testReview": {
+    "document": "FONT_TEST_REVIEW_20261023.md",
+    "retiredAssumptions": [
+      "fixed Campus family name",
+      "linear filter for every text label",
+      "body equals display Font instance",
+      "mixed historic families",
+      "six historic UI fonts in production core",
+      "dorm review-only candidate resources required in production"
+    ],
+    "checksRetained": [
+      "authored glyph coverage and real face weights",
+      "no hidden system font or synthetic bold",
+      "actual line wrapping and hit areas",
+      "focus and input authority",
+      "full actual-PCK hashes and delivery coverage",
+      "unchanged100000000-byte boot budget",
+      "optional reference resource identity comparison"
+    ],
+    "originalFailureEvidence": [
+      "native-font-initial-attempt.json",
+      "actual-core-fonts.log"
+    ],
+    "realFailureFixed": "Distinct faces exposed CC98 wordmark using the body role. Kept assertion and changed the wordmark to the display role.",
+    "packPolicy": "Full2514-entry delivery verified;26 required core resources including fonts/imports/licenses;10 excluded candidate source identities and anonymous payloads absent;4 independent leak negative controls passed; optional old-reference identity negative control correctly rejected changed resources.",
+    "packReport": "font-agent-production-pack-policy.log"
+  },
+  "validation": {
+    "native": {
+      "targetedStages": 22,
+      "initialPassed": 21,
+      "initialFailed": 1,
+      "affectedRerunStages": 8,
+      "affectedRerunFailed": 0,
+      "combinedCoverage": "native-font-final-coverage.json",
+      "notFull501StageRerun": true
+    },
+    "retainedWeb": {
+      "log": "web-reference-release.log",
+      "validators": 38,
+      "browserRoutes": 4,
+      "passed": true
+    },
+    "gpuScaleProfiles": {
+      "report": "gpu-probe/report.json",
+      "profiles": [
+        "1280x720 DPR1",
+        "1440x900 DPR2",
+        "390x844 DPR3"
+      ],
+      "realGodotRenderer": true,
+      "physicalDevice": false
+    },
+    "gpuWorld": {
+      "report": "gpu-world/mobile-touch-captures.json",
+      "views": 18,
+      "checks": 196,
+      "failures": 0,
+      "physicalDevice": false,
+      "insets": "simulated"
+    },
+    "actualGodotWeb": [
+      {
+        "scenario": "words",
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/morning-note-20261023/browser-words/web-acceptance.json",
+        "passed": true,
+        "checks": 531,
+        "completedAt": "2026-10-23T04:01:38.207Z"
+      },
+      {
+        "scenario": "checkin",
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/morning-note-20261023/browser-checkin/web-acceptance.json",
+        "passed": true,
+        "checks": 532,
+        "completedAt": "2026-10-23T04:00:33.730Z"
+      },
+      {
+        "scenario": "corners",
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/morning-note-20261023/browser-corners/web-acceptance.json",
+        "passed": true,
+        "checks": 545,
+        "completedAt": "2026-10-23T04:00:35.829Z"
+      }
+    ],
+    "actualGodotWebChecks": 1608,
+    "finalVerifyOnly": "web-verify-only.log"
+  },
+  "delivery": {
+    "directory": "godot_native/exports/web-morning-note-final-20261023",
+    "initialPayloadBytes": 95803122,
+    "previousInitialPayloadBytes": 99070066,
+    "reductionBytes": 3266944,
+    "budgetBytes": 100000000,
+    "deferredPacks": 21,
+    "preview": "http://127.0.0.1:5241/",
+    "fontLab": "http://127.0.0.1:5243/art_source/fonts/morning_note_v1/specimen.html",
+    "previewSwitch": "local-preview-switch.json",
+    "existingGameNotReloaded": true,
+    "ownedQa5242Stopped": true,
+    "fontLab5243Preserved": true
+  },
+  "reviewImages": [
+    {
+      "file": "review/font-library-browser.png",
+      "bytes": 54007,
+      "sha256": "f7f6b237472dffc146314449a90194b7c818b4ff30122cd1f8d9c40e31ab64b4"
+    },
+    {
+      "file": "review/game-checkin-receipt.png",
+      "bytes": 11825,
+      "sha256": "c6083a6f2fabfd15096eac24473347b035d7642b4450dcc6e74c2325d53d59b2"
+    },
+    {
+      "file": "review/game-journal-landscape.png",
+      "bytes": 370809,
+      "sha256": "bf9f241432608446ac06d5facab5c5e90e8fd71268e7f98f227378547057b4ac"
+    }
+  ],
+  "temporaryQaImagesRemoved": 37,
+  "boundaries": [
+    "No new backup, stash, commit, push or remote publication. Existing local work retained.",
+    "Fonts are project files; no system font installation.",
+    "137 manually designed glyphs plus OFL-derived coverage; not a fully original complete Chinese typeface.",
+    "Future authored wording and external names require coverage checks.",
+    "No physical phone, fresh Safari/Firefox or full manual campaign acceptance claimed."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "sourceCommit": "32dfc73c113de980ca42b1c48a893d068e122127",
+  "provenance": "Restored existing Web DOM/CSS icon shapes and palettes, under the user’s 2026-10-22 instruction superseding the earlier uniform launcher icon selection. Internal size adaptation only; no grid, input, route or unlock changes.",
+  "geometry": {
+    "button": [
+      48,
+      48
+    ],
+    "svgSlot": [
+      24,
+      24
+    ],
+    "zjudingImage": [
+      24,
+      24
+    ],
+    "cc98Wordmark": [
+      42,
+      31
+    ],
+    "cc98FontSize": 16,
+    "settingsGlyphSlot": [
+      42,
+      42
+    ],
+    "svgViewBox": "Source-CSS shape extent; see each SVG provenance comment"
+  },
+  "runtimeAppIds": {
+    "wechat": "messages.svg",
+    "tiyi": "sports.svg",
+    "zjuding": "res://assets/ui/zjuding.png",
+    "settings": "phone_pages.gd source ✱ renderer",
+    "photos": "album.svg",
+    "timeline_recovery": "recovery.svg",
+    "voice_memos": "voice.svg",
+    "cc98": "phone_pages.gd CC98Wordmark",
+    "control_center": "controls.svg",
+    "clock": "clock.svg"
+  },
+  "sourceStyles": [
+    "src/styles/scenes/p13-phone-home.css",
+    "src/styles/scenes/p13-home-widgets.css",
+    "src/styles/chapter-three-interlude.css",
+    "src/styles/scenes/p19-clock.css",
+    "src/styles/base.css"
+  ],
+  "notes": [
+    "Existing app availability and order stay authoritative; defining clock art does not unlock the unavailable clock slot.",
+    "campus.svg/settings.svg/forum.svg are retained historical unselected assets, not used by these runtime launchers.",
+    "Original68 pixel maps and11 raster item images are protected by source parity checks.",
+    "Original prologue gear remains its independent movable story object.",
+    "Font-independent Unicode fallback marks remain where no fixed source outline is established; WiFi uses a dedicated CSS-derived role, not the vibration glyph."
+  ]
+}

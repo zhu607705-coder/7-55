@@ -1,0 +1,46 @@
+{
+  "schema": "755-character-multiview-v1",
+  "status": "reference family and19-bone candidate available for review; no release promotion",
+  "date": "2026-10-21",
+  "identitySource": "../campus_student_v2_reference.png",
+  "views": [
+    "front",
+    "back",
+    "left",
+    "right",
+    "top",
+    "bottom"
+  ],
+  "bodyPose": "same upright relaxed A pose in every view",
+  "projection": "orthographic; poles remain true top/bottom rather than tilted full-body views",
+  "material": "navy regular-fit cotton crewneck; charcoal trousers; ivory mesh athletic sneakers",
+  "shoulderRequirements": [
+    "distinct acromion corners and shoulder caps",
+    "normal set-in sleeves",
+    "broad upper back and ribcage volume",
+    "no neck-to-elbow triangle or missing shoulders"
+  ],
+  "rodinInputLimit": 5,
+  "rodinInputOrder": [
+    "front",
+    "back",
+    "left",
+    "right"
+  ],
+  "rodinImageLabels": [
+    "F",
+    "B",
+    "L",
+    "R"
+  ],
+  "bottomPurpose": "retained for underside shoe/anatomy review outside the five-image request",
+  "acceptance": [
+    "consistent identity/proportions/garments among views",
+    "unrigged mesh matches views before weights",
+    "posed shoulders retain rest-pose volume and clavicle support",
+    "real pedal/contact and mount/dismount review after silhouette acceptance"
+  ],
+  "rejectedBatch": "../../RODIN_CAMPUS_ACCEPTANCE_20261021.json",
+  "topBottomReview": "Top retry removes most face/leg visibility; bottom retry remains low-angle perspective, not a true orthographic bottom. Neither was used to constrain reconstruction.",
+  "posedBack": "cycling_back.png"
+}

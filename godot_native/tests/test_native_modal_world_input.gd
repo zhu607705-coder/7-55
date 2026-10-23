@@ -14,7 +14,8 @@ func _run() -> void:
 	root.size=Vector2i(1440,900); shell.size=Vector2(1440,900); shell._show_world_mobile(); await frame()
 	var world: Control=shell.world
 	world.set_process(false)
-	shell.c3_narrative_host.set_process(false); shell.c3_scene_host.set_process(false); shell.library_story_host.set_process(false)
+	for host in [shell.c3_narrative_host,shell.c3_scene_host,shell.library_story_host]:
+		if is_instance_valid(host):host.set_process(false)
 	check(world.is_visible_in_tree() and shell.world_frame.visible,"world-ready",world.scene_id)
 	# Use a measured collision-free cardinal direction before assessing a block.
 	var start: Vector2=world.player

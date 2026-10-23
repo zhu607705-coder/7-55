@@ -57,7 +57,7 @@ func check_dialog_theme() -> void:
 		if not child.is_visible_in_tree():continue
 		if child is Label and not child.text.is_empty():
 			labels+=1;readable(child,"font_color",base,4.5,"visible native label")
-			check(child.get_theme_font("font")==shell.font,"native label keeps original bundled font")
+			check(child.get_theme_font("font")==load("res://scripts/ui/native_typography.gd").body_font(),"native label uses the shared bundled readable body font")
 		elif child is LineEdit:
 			fields+=1
 			readable(child,"font_color",background(child,"normal",base),4.5,"visible native field")
@@ -99,6 +99,46 @@ func check_picker_bounds(context: String) -> void:
 	check(dialog.overwrite_warning_enabled,context+" native overwrite safety retained")
 	print("PICKER BOUNDS ",context," ",window_rect," intrinsic=",dialog.get_contents_minimum_size())
 
+func popup_items(popup: PopupMenu) -> Array:
+	var result:=[]
+	for i in popup.item_count:
+		result.append([popup.get_item_id(i),popup.get_item_text(i),popup.get_item_tooltip(i),popup.get_item_metadata(i)])
+	return result
+
+func check_long_drive_caption() -> void:
+	var dialog: FileDialog=shell.file_dialog
+	var drive: MenuButton
+	for menu: MenuButton in dialog.get_vbox().find_children("*","MenuButton",true,false):
+		if menu.is_visible_in_tree() and not menu.text.is_empty():drive=menu;break
+	check(drive!=null,"actual native drive selector exists")
+	if drive==null:return
+	var original:={"text":drive.text,"clip":drive.clip_text,"overrun":drive.text_overrun_behavior,"minimum":drive.custom_minimum_size,"tooltip":drive.tooltip_text,"focus":drive.focus_mode,"mouse":drive.mouse_filter}
+	var items:=popup_items(drive.get_popup())
+	var path:=dialog.current_dir;var filename:=dialog.current_file
+	# Deterministic counterpart to a real checkout below HOME: Godot chooses
+	# the longest drive prefix, so CI uses /home/runner instead of local /.
+	for caption: String in ["/home/runner","/home/runner/very-long-workspace-volume"]:
+		drive.text=caption
+		for viewport: Vector2i in [Vector2i(390,844),Vector2i(430,860)]:
+			root.size=viewport;shell._layout();await frames(5)
+			var context:="long drive "+caption+" "+str(viewport)
+			check_picker_bounds(context)
+			check(drive.clip_text and drive.text_overrun_behavior==TextServer.OVERRUN_TRIM_ELLIPSIS,context+" compact drive caption ellipsized")
+			check(drive.size.x>=44 and Rect2(Vector2.ZERO,Vector2(dialog.size)).encloses(drive.get_global_rect()),context+" drive target remains usable and contained")
+			check(drive.text==caption and popup_items(drive.get_popup())==items,context+" full caption and native popup entries retained")
+			check(dialog.current_dir==path and dialog.current_file==filename,context+" current path and filename unchanged")
+			check(drive.tooltip_text==original.tooltip and drive.focus_mode==original.focus and drive.mouse_filter==original.mouse,context+" native tooltip and input properties unchanged")
+			await click(drive);await frames()
+			check(drive.get_popup().visible and popup_items(drive.get_popup())==items,context+" native drive popup opens with complete entries")
+			await key(KEY_ESCAPE);await frames()
+			check(not drive.get_popup().visible and dialog.visible,context+" popup Escape returns to picker without selecting a drive")
+		root.size=Vector2i(1440,900);shell._layout();await frames(5)
+		check_picker_bounds("desktop after long drive")
+		check(drive.clip_text==original.clip and drive.text_overrun_behavior==original.overrun and drive.custom_minimum_size==original.minimum,"desktop restores original drive layout properties")
+		check(drive.size.x>44,"desktop expands the long drive caption beyond its compact target")
+		check(drive.text==caption and popup_items(drive.get_popup())==items and dialog.current_dir==path and dialog.current_file==filename,"desktop restores layout without changing native values")
+	drive.text=original.text;await frames()
+
 func check_notice(context: String) -> void:
 	var card: Rect2=shell.toast.get_global_rect()
 	var panel: Rect2=shell.modal_panel.get_global_rect()
@@ -135,6 +175,7 @@ func run() -> void:
 		await key(KEY_TAB)
 		var focus=shell.file_dialog.gui_get_focus_owner()
 		check(focus!=null and shell.file_dialog.is_ancestor_of(focus),"resize retains native keyboard focus")
+	await check_long_drive_caption()
 	var settings=shell.modal
 	await key(KEY_TAB)
 	var dialog_focus=shell.file_dialog.gui_get_focus_owner()

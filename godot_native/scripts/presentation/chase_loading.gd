@@ -9,7 +9,7 @@ func _ready() -> void:
 	name="ChaseLoading"
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	focus_mode=Control.FOCUS_ALL
-	var font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	var font=preload("res://scripts/ui/native_typography.gd").body_font()
 	heading=Label.new();heading.text="正在准备骑行画面…"
 	heading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

@@ -3,8 +3,10 @@ on:
   push:
     branches: [main, godot-version]
   pull_request:
-    paths: ['package.json', 'package-lock.json', 'godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
+    paths: ['package.json', 'package-lock.json', 'godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/ensure-ci-media-tools.mjs', 'scripts/test-ci-media-tools.mjs', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   native-parse-and-tests:
     runs-on: ubuntu-latest
@@ -15,9 +17,10 @@ jobs:
           node-version: '24'
       - name: Install pinned official Godot
         run: |
-          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
           unzip -q /tmp/godot.zip -d /tmp/godot
-          sudo install /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
       - name: Install locked source-test dependencies
         run: npm ci --ignore-scripts
@@ -37,7 +40,8 @@ jobs:
           git diff --exit-code -- godot_native/data/native/save_normalizer.json godot_native/data/native/audio-director-source.json
       - name: Convert source movies for native playback
         run: |
-          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          node scripts/test-ci-media-tools.mjs
+          node scripts/ensure-ci-media-tools.mjs
           bash godot_native/tools/convert_media.sh
       - name: Import, parse, and test native runtime
         env:

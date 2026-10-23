@@ -50,8 +50,8 @@ func run() -> void:
 	await process_frame
 	check(completions.size()==count,"dispose invalidates all pending callbacks")
 	view.set_process(true);view.play("finish");view.manual_clock=true
-	for i: int in range(56):view.advance(.1)
-	check(view.frame==132 and completions.size()==count+1,"normal ending completes once at source5.5seconds")
+	for i: int in range(150):view.advance(.1)
+	check(view.frame==132 and completions.size()==count+1,"production ending completes once after grounded parking and walking beats")
 	check(JSON.stringify(state.d)==before,"presentation never changes state wallet inventory proof or saves")
 	view.queue_free();await process_frame
 	print("TRANSITION_TEST failures=",errors.size());quit(0 if errors.is_empty() else 1)

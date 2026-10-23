@@ -1,0 +1,167 @@
+{
+  "schema": "source-pixel-tiled-texture-v1",
+  "sourceAsset": "res://assets/rpg/campus/zijingang_campus_loop_panorama.png",
+  "sourceFile": "src/assets/rpg/campus/zijingang_campus_loop_panorama.png",
+  "sourceSha256": "504b0fdc6e846a2e5b4214b327a93c03b720b6ea7e48acbfa7804acbdd56cfb6",
+  "sourceSize": [
+    13668,
+    1084
+  ],
+  "channels": 3,
+  "coreWidth": 2046,
+  "gutter": 1,
+  "maxPhysicalDimension": 2048,
+  "filter": "inherit_canvas_no_mipmaps",
+  "gutterPolicy": "One neighboring source pixel on each side; clamp only at outer source boundary. Draw core region with clip_uv=false.",
+  "decodedSourceSha256": "a8dc2b6018b588a7d72866028722081921ab7c27067b12e54dae158243812115",
+  "reconstructedPixelSha256": "a8dc2b6018b588a7d72866028722081921ab7c27067b12e54dae158243812115",
+  "tiles": [
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_00.png",
+      "sourceRect": [
+        0,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "c2bc17da9ef64c7026527153033d1c0efe593173bca2eba6227154cbe364e53a",
+      "decodedPixelSha256": "3830ad3470a63677e52ed511b56693cd06e4f0e8a908891f6d6b56ea66892710"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_01.png",
+      "sourceRect": [
+        2046,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "08b9aa36fd4b15e0b84837e8893a4ddaf020496c479d0fe2d37e5bd012dd08e9",
+      "decodedPixelSha256": "34b55202968dfd61cd5168e6fdfeebb1df795c754e4b5907f603ff3845340450"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_02.png",
+      "sourceRect": [
+        4092,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "c81808e384b37c0bca87454aca2c76f22e893871bafac5af993cd55cf50c8244",
+      "decodedPixelSha256": "88969810e4df9ab5d04038808fed2dc6e9673705e4d2d7c83bd48f99bf180659"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_03.png",
+      "sourceRect": [
+        6138,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "73091176e08a9cb1c2249572911f4d4d5b96daa2f77299866f5334c5777e1af3",
+      "decodedPixelSha256": "b3724fcc5dedeb99ec40292c95a885b99adc4e6f33816c68e8124a69cdff5d7a"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_04.png",
+      "sourceRect": [
+        8184,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "1ea14c8f3519d8a5d227b00e904ee94dbc6ee7c605edf62271d4a883a6bbfb2e",
+      "decodedPixelSha256": "649b3e80088f1476090a3f5f3d70ad6f29a19639beee0b4211dfcfa5ad5b4373"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_05.png",
+      "sourceRect": [
+        10230,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "021287191fe113aa007ebf28256d86534656a2587fc5412d81c854cefe0ffb31",
+      "decodedPixelSha256": "ffd462efac042129efbd735d26ab9abfd6bafddc073abfc705ec80a119f91051"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_06.png",
+      "sourceRect": [
+        12276,
+        0,
+        1392,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        1392,
+        1084
+      ],
+      "textureSize": [
+        1394,
+        1086
+      ],
+      "sha256": "b76fc57e53e88063d60def850bb793cdf76f0bdacf6acbbb91922006117e43d0",
+      "decodedPixelSha256": "45520692189794e3f185ae251acaacddf3d13a10332b3d12a4f470f4f2e258e6"
+    }
+  ]
+}

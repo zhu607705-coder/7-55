@@ -33,6 +33,7 @@ var paused:=false
 var dragging:=false
 var pointer:=Vector2.ZERO
 var queued_dash:=false
+var gameplay_space_owned:=false
 var screen:="intro"
 var approved:=false
 var final_act:=false
@@ -47,6 +48,7 @@ var resume_button: Button
 var overlay_title: Label
 var overlay_body: Label
 func setup(parameters: Dictionary) -> void:
+	gameplay_space_owned=false
 	config=parameters; state=rules.create(int(config.get("round",0)),int(config.get("attempt",0)))
 	trace.clear();review_pointer_trace.clear();accumulator=0;visual_time=0;hurt_feedback=0;hit_remaining=0;hit_origin=Vector2.ZERO;hit_life=-1;hit_count=0;running=false;paused=false;screen="intro";approved=false;final_act=false;_release_pointer();queued_dash=false
 	if is_node_ready(): refresh()
@@ -67,7 +69,7 @@ func _button(text: String,rect: Rect2,callback: Callable) -> Button:
 	button.pressed.connect(callback); add_child(button); return button
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT); size=Vector2(960,540); mouse_filter=Control.MOUSE_FILTER_STOP
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	if state.is_empty(): setup(config)
 	stage_view=StageView.new();stage_view.name="ModeledTheater";add_child(stage_view)
 	ui_ink=Node2D.new();ui_ink.draw.connect(func():draw_ui(ui_ink));add_child(ui_ink)
@@ -96,13 +98,24 @@ func _pause() -> void:
 	screen="paused"; paused=true; accumulator=0; _release_pointer(); queued_dash=false; refresh()
 func resolve(accepted: bool,last_act: bool=false) -> void:
 	approved=accepted; final_act=last_act; screen="result"; running=false; queued_dash=false; _release_pointer(); refresh()
+func _input(event: InputEvent) -> void:
+	if not event is InputEventKey or event.keycode!=KEY_SPACE: return
+	# Running Space belongs to the advertised dash, before a focused toolbar
+	# button can consume ui_accept. Keep ownership through release, even if
+	# the scene pauses in between; Enter retains native button activation.
+	if screen!="running" and not gameplay_space_owned: return
+	if event.pressed:
+		if not event.echo and screen=="running": queued_dash=true; gameplay_space_owned=true
+	else: gameplay_space_owned=false
+	get_viewport().set_input_as_handled()
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event is InputEventKey or not event.pressed or event.echo: return
 	if event.keycode==KEY_ESCAPE: _pause(); get_viewport().set_input_as_handled()
-	elif event.keycode==KEY_SPACE and screen=="running": queued_dash=true; get_viewport().set_input_as_handled()
 	elif event.keycode in [KEY_ENTER,KEY_KP_ENTER] and screen!="running": _primary(); get_viewport().set_input_as_handled()
 func _notification(what: int) -> void:
-	if what==NOTIFICATION_APPLICATION_FOCUS_OUT and running: _pause()
+	if what==NOTIFICATION_APPLICATION_FOCUS_OUT:
+		gameplay_space_owned=false
+		if running: _pause()
 func pointer_to_model(point:Vector2)->Vector2:return Lens.sample_point(point)
 func model_to_pointer(point:Vector2)->Vector2:return Lens.display_point(point)
 func pointer_screen_distance()->float:

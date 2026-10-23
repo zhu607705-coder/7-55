@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
+import { prepareWebCompression, verifyWebCompression } from './web_precompress.mjs';
 import { createBootChunks, verifyBootChunks, BOOT_CHUNK_BYTES } from './web_boot_chunks.mjs';
 
 const directory = fs.mkdtempSync(path.join(os.tmpdir(), '755-static-boot-test-'));
@@ -47,6 +48,11 @@ pass(() => assert.throws(() => verifyBootChunks(directory, manifest), /Unlisted/
 fs.unlinkSync(stray);
 pass(() => assert.equal(verifyBootChunks(directory, manifest).bytes, Object.values(original).reduce((sum, block) => sum + block.length, 0)));
 for (const [name, bytes] of Object.entries(original)) pass(() => assert.deepEqual(fs.readFileSync(path.join(directory, name)), bytes));
+const compressed = verifyWebCompression(directory, prepareWebCompression(directory));
+const verifiedCompressedFiles = compressed.files.map(file => file.file);
+pass(() => assert.throws(() => verifyBootChunks(directory, manifest), /Unlisted/));
+pass(() => assert.equal(verifyBootChunks(directory, manifest, { verifiedCompressedFiles }).files, 5));
+pass(() => assert.throws(() => verifyBootChunks(directory, manifest, { verifiedCompressedFiles: [...verifiedCompressedFiles, 'boot/phantom.bin.gz'] }), /no original/));
 const sha256 = crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');
 fs.rmSync(directory, { recursive: true });
 console.log(JSON.stringify({ success: true, checks, manifestSha256: sha256, scope: 'Static chunk boundaries, exact reconstructed bytes, corruption/gap/overlap/duplicate/omission/extra-file rejection and unchanged original resources.' }, null, 2));

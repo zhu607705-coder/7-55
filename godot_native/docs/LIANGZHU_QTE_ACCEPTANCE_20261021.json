@@ -1,0 +1,282 @@
+{
+  "schema": "755-liangzhu-local-qte-acceptance-v2",
+  "date": "2026-10-21",
+  "status": "accepted-local-playable-qte-with-recorded-scope",
+  "request": {
+    "presentation": "Fine pixel classic Yue-opera stage, one table/two chairs, anonymous original Liangzhu performers and coherent three-scene performance",
+    "interaction": "Desktop keyboard/mouse and mobile touch QTEs with current-beat retry",
+    "audioDecision": "User explicitly selected playable QTE first, singing later; this build uses authored Chinese subtitles, no new singing track."
+  },
+  "candidate": {
+    "runtime": "godot-web",
+    "engine": "4.7.2.stable.official",
+    "sourceCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "sourceDirty": true,
+    "sourceInputSha256": "7ac2e7c7d76b7501795009ad204a00281e8a1c291bc62204dacd475d147e29d9",
+    "build": "exports/web-liangzhu-qte-v2-20261021",
+    "manifest": {
+      "path": "exports/web-liangzhu-qte-v2-20261021/build-manifest.json",
+      "sha256": "5c5d88c2c022abf4355003036d402b21ea990cab9225c62dba556070e531b9fb",
+      "bytes": 57466
+    },
+    "sourceInputs": {
+      "path": "exports/web-liangzhu-qte-v2-20261021/source-inputs.json",
+      "sha256": "bcf5926a8b5d0b15d4885610a84f9a26e2797c9de5033236d643e43527031a5f",
+      "bytes": 285197
+    },
+    "compiledInputBindings": [
+      {
+        "path": "scripts/presentation/liangzhu_performance.gd",
+        "sha256": "685eed70ada3372156724e154c45fa675a1179f46e5d737d313fd9480bca054e",
+        "matchesExportInput": true
+      },
+      {
+        "path": "scripts/presentation/liangzhu_performance_model.gd",
+        "sha256": "aa0183449b3f70c8c5ab0433c315c1020f97564a8024e8381e0d2aef34164f23",
+        "matchesExportInput": true
+      },
+      {
+        "path": "scripts/presentation/liangzhu_actor_rig.gd",
+        "sha256": "f411eef667ddedb0afe5e965ee8b02377338604052ea209f412f8ada58f5e24f",
+        "matchesExportInput": true
+      },
+      {
+        "path": "scripts/presentation/liangzhu_stage_plate.gd",
+        "sha256": "6fc09e64e326470d17d77ec69676606e1c2be9d8e879b6b6b04e72728667c9dd",
+        "matchesExportInput": true
+      },
+      {
+        "path": "scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "8ca2bcb083a16550a18b1d1600c8171e01b9d0c35f4149459f0c01f4fe52a761",
+        "matchesExportInput": true
+      }
+    ]
+  },
+  "behavior": {
+    "timelineMs": 54000,
+    "actualPlayTime": "Adds real input waiting/retries to the authored timeline.",
+    "acts": [
+      "同窗与相送",
+      "楼台会",
+      "明确后来/墓前的化蝶结尾"
+    ],
+    "qtes": [
+      {
+        "atMs": 15000,
+        "action": "接扇",
+        "desktop": "Space or click fan",
+        "mobile": "Tap rendered fan"
+      },
+      {
+        "atMs": 29000,
+        "action": "回身",
+        "desktop": "Left arrow",
+        "mobile": "Swipe left at actor"
+      },
+      {
+        "atMs": 46000,
+        "action": "放蝶",
+        "desktop": "Hold Space, release after visible stabilization",
+        "mobile": "Hold fan, release after visible stabilization"
+      }
+    ],
+    "recovery": "Miss pauses locally. Retry restarts this cue and retains previous successful cues. Focus loss, resizing, cancellation and overlays clear a held gesture and require explicit resume.",
+    "help": "Short diegetic cue first, observation/input explanations on request or failure. No default numeric timing solution.",
+    "passive": "Explicit 从头观看 restarts as passive, zero QTE success receipts.",
+    "authority": "This optional performance never awards rehearsal proof, mainline facts, items, wallet value or save progress. Exiting restores the exact prior rehearsal state."
+  },
+  "art": {
+    "policy": {
+      "path": "docs/art/art_direction_v1.json",
+      "sha256": "ec20fa4bb6440a4926cd9b7a9f4fda320bd4951c387c962aab333af364034e8f",
+      "bytes": 10725
+    },
+    "bible": {
+      "path": "docs/art/ART_BIBLE.md",
+      "sha256": "97e392479952042e4dd96125a8885cf70e1b4e5ae02e3a1a0f99408664a62990",
+      "bytes": 9576
+    },
+    "nativeStage": [
+      1200,
+      675
+    ],
+    "actorCell": [
+      120,
+      160
+    ],
+    "compositionStage": [
+      240,
+      135
+    ],
+    "finePixelsPerCompositionUnit": 5,
+    "palette": "755-campus-morning-32",
+    "actorsMaxColorsEach": 24,
+    "assets": [
+      {
+        "path": "assets/native/liangzhu_performance_20261021/actors.png",
+        "sha256": "41b42f9486ecbec2745239daa3a75937055105ff73a2da6eb22cc07db7a0ff32",
+        "bytes": 32849,
+        "width": 480,
+        "height": 320
+      },
+      {
+        "path": "assets/native/liangzhu_performance_20261021/chair_left.png",
+        "sha256": "2a1a113c97dee8659f218c9cfc9d3dcad1103be605d823a6faec2b2333146c7f",
+        "bytes": 1826,
+        "width": 60,
+        "height": 120
+      },
+      {
+        "path": "assets/native/liangzhu_performance_20261021/chair_right.png",
+        "sha256": "27cdfe7529b3c1a60c36d3d6a63b4d886548c1f63a23e7c4382edc2c03fdf65c",
+        "bytes": 1812,
+        "width": 60,
+        "height": 120
+      },
+      {
+        "path": "assets/native/liangzhu_performance_20261021/stage.png",
+        "sha256": "c7b68d647b395417efd1d8fb5c65a7ca2032b282a4be9128945bf2084ef47066",
+        "bytes": 78784,
+        "width": 1200,
+        "height": 675
+      },
+      {
+        "path": "assets/native/liangzhu_performance_20261021/table.png",
+        "sha256": "4a0bd091d71ae660da439160463b61138cd600c53f44f21a569a51898a5e4da7",
+        "bytes": 4038,
+        "width": 160,
+        "height": 100
+      }
+    ],
+    "provenance": "LIANGZHU_ART_PROVENANCE_20261021.json",
+    "photoResearch": "LIANGZHU_PHOTO_RESEARCH_20261021.json",
+    "photosOrRawMastersInProductionPack": false,
+    "rig": "Two real15Bone2D Skeleton2D rigs, original intact cels and real wrist attachments; not weighted mesh skinning. Fixed MIT official Godot-demo structural reference recorded in LIANGZHU_ACTOR_RIG.md.",
+    "stageSpace": "Same stage coordinates for props/actors/captions; foot-depth ordering, two corrected visible standing positions, no fake seated pose."
+  },
+  "native": {
+    "baseline": {
+      "path": "exports/verification/liangzhu_performance_20261021/native-final.json",
+      "sha256": "c013f1950afb1218f7f3c1950c19e23330230dae90d1945a3528e8ad927ea94a",
+      "bytes": 16109,
+      "stages": 17,
+      "failedStages": 0,
+      "gdChecks": 1459
+    },
+    "finalAffectedRerun": {
+      "path": "exports/verification/liangzhu_performance_20261021/native-final-v2.json",
+      "sha256": "d806842f56d869132390a631ba67032e783037b691fce4d1d2e14ab3320ca7b4",
+      "bytes": 10451,
+      "stages": 9,
+      "failedStages": 0,
+      "gdChecks": 743
+    },
+    "scope": "Final renderer/input/help and parent/Main/portrait/overlay checks rerun. Exact unchanged model, rig and controller files retain the baseline evidence; no full manual campaign or4.6.x binary claim.",
+    "existingMedia": {
+      "path": "exports/verification/liangzhu_performance_20261021/existing-media-revalidated-v2.json",
+      "sha256": "fe4290b455cb052e09ee0aee78de3dd1569a0bb07d4ce83dc9b85efed9672742",
+      "bytes": 3064
+    }
+  },
+  "browser": {
+    "summary": {
+      "path": "exports/verification/liangzhu_performance_20261021/web-qa-final-summary.json",
+      "sha256": "abb2f4e43daf54141359df2b7197b581d1701dd3f73759c00fb32eb07692c3f3",
+      "bytes": 50123
+    },
+    "totals": {
+      "baseProfiles": 9,
+      "baseChecks": 323,
+      "additionalDpr3Profiles": 1,
+      "additionalDpr3Checks": 35,
+      "profiles": 10,
+      "checks": 358,
+      "failedChecks": 0,
+      "unexpectedErrors": 0
+    },
+    "viewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "engines": [
+      "Chromium",
+      "Firefox",
+      "WebKit"
+    ],
+    "additional": "Chromium390x844 DPR3, actual1170x2532 canvas/screenshots",
+    "ordinaryFlow": "HTMLStart, native story entry, ordinary validated save file import, actual world fan rack, rehearsal, interactive performance, retry, return, durable save/reload. No developer routes, State/proof injection or timer seeking.",
+    "fixture": "Existing before_theater_rehearsal.json checkpoint; focused acceptance, not an earned full-story run.",
+    "trustedInput": "All three engines: actual trusted single-finger identifier0 tap. Chromium: trusted continuous protocol touch. Gecko/WebKit continuous gestures use recorded synthetic DOM TouchEvents because installed Playwright lacks a public continuous-touch API.",
+    "physicalDevicesTested": false,
+    "actualUserComputerUse": {
+      "path": "exports/verification/liangzhu_performance_20261021/computer-use-review.json",
+      "sha256": "bcae7c7257ac84019baf0960dea2ef4d1bc61aaef78b6f9461871e91c2f4d58c",
+      "bytes": 1405
+    }
+  },
+  "delivery": {
+    "verifyOnly": "web-verify-only-v2.log, exit0",
+    "packing": {
+      "path": "exports/verification/liangzhu_performance_20261021/pack-delivery-audit-v2.json",
+      "sha256": "bc470aefd01af3a3f304c5f4f8b3530a3a020d2d1dd8f97ad307756db61a9547",
+      "bytes": 2815
+    },
+    "initialPayloadBytes": 94814809,
+    "logicalPayloadBytes": 503005280,
+    "totalHostedBytes": 597439042,
+    "newArt": "All5textures and furniture metadata delivered with chapter3, not initial boot assets.",
+    "cacheReuse": "Versus accepted opening baseline:19/20 deferred PCKs and engine WASM unchanged. Final input/help fix preserves all20deferred PCKs from first QTE build.",
+    "localPreview": {
+      "path": "exports/verification/liangzhu_performance_20261021/local-preview-v2.json",
+      "sha256": "59632f3704ff2071c1f470080f18cb56179c92fd3857ec70365b0f3505d89a05",
+      "bytes": 821
+    },
+    "publicSiteOrGitMutation": false
+  },
+  "passiveMovie": {
+    "review": {
+      "path": "exports/review/liangzhu-performance-v2-20261021/review.json",
+      "sha256": "21c096a2536b2587315403160cd4088607500cbe4182f4accca9cf1b5352c6f8",
+      "bytes": 20714
+    },
+    "mp4": {
+      "path": "exports/review/liangzhu-performance-v2-20261021/liangzhu_preview.mp4",
+      "sha256": "8da469325db95cff9ff7f41c9a94754f6310969e7af89df0a7eea4d5369b896b",
+      "bytes": 3616525
+    },
+    "webm": {
+      "path": "exports/review/liangzhu-performance-v2-20261021/liangzhu_preview.webm",
+      "sha256": "bfd98a2f97e9050fcebb87555003bef7fd6fd5a0cda0070fc6c1fa2330c443be",
+      "bytes": 4562205
+    },
+    "dimensions": [
+      1280,
+      720
+    ],
+    "fps": 30,
+    "decodedFrames": 1620,
+    "durationSeconds": 54,
+    "audioTracks": 0,
+    "source": "Actual new fixed renderer GPU recapture, isolated no-autoload/State/Main project. Canonical passive presentation, no player QTE completion.",
+    "pixelOracle": "Native1200x675 lossless stage PNGs; lossy movie is a preview."
+  },
+  "fixesVerified": [
+    "First and second-act chair backs obscured standing actors; feet moved in front of chairs while behind table, exact depth ordering retained.",
+    "Reduced-motion finale removed the fan before the QTE; visible static fan now remains until release.",
+    "First-finger emulated mouse claimed a QTE gesture before ScreenTouch; custom QTE ignores emulated mouse while real mouse and native GUI remain functional.",
+    "Wrapping help text expanded a minimum-height container beyond the viewport; finite-width measurement and bounded manual paper layout keep44CSSpx actions visible.",
+    "Stage/task/subtitle owner mismatch and duplicate parent HUD; one stage frame and exact hidden-HUD restoration now exercised."
+  ],
+  "retention": "Failed earlier artifacts/reports, reference source art and native frame oracles remain. Reviewed passing temporary QA screenshots are removed only after SHA/dimension/visual receipts; fixed review copies are retained.",
+  "remaining": "Singing deferred by user. Physical phone, minimum historical browser binaries, whole-game fine-art conversion, full fresh manual campaign and public release are outside this focused local acceptance."
+}

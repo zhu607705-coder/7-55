@@ -21,8 +21,12 @@ func reload_file() -> void:
 	check(state.save_game(),"actual save_game writes pending reversal")
 	state.d=state.initial()
 	check(state.load_game(),"actual load_game accepts pending reversal file")
-	state.story_reset.emit(); state.changed.emit(); await process_frame; await process_frame
-	host.set_process(false); world.set_process(false); host.tick(0,true)
+	state.story_reset.emit(); state.changed.emit()
+	# Re-entry correctly reactivates the deferred host. Retake the test clock
+	# synchronously, before an engine frame can advance the reconstructed cue.
+	host.set_process(false); world.set_process(false)
+	await process_frame; await process_frame
+	host.tick(0,true)
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"reversal tests use isolated actual save files")
 	if errors: quit(1); return
@@ -34,6 +38,9 @@ func run() -> void:
 	main=load("res://scenes/main.tscn").instantiate(); root.add_child(main)
 	await process_frame; await process_frame
 	host=main.c3_narrative_host; world=main.world; host.set_process(false); world.set_process(false)
+	# Main can reactivate processing on a later content-ready refresh. This
+	# test owns a manual monotonic clock across those ordinary reload callbacks.
+	host.process_mode=Node.PROCESS_MODE_DISABLED
 	main.audio_director.cue_published.connect(func(id:String,payload:Dictionary)->void:cues.append({"id":id,"payload":payload}))
 	state.act("c3_reversal"); host.tick(0,true)
 	var session: RefCounted=host.current
@@ -92,7 +99,7 @@ func run() -> void:
 	state.d.native.positions={}; state.story_reset.emit(); state.changed.emit(); await process_frame
 	world.player=world._find_safe(Vector2(1466,608)); world._sync_player()
 	state.act("c3_target:auntie"); host.tick(0,true); session=host.current
-	check(host.view.get_parent()==world and host.view.panel.get_rect().position.x>=0 and host.view.panel.get_rect().end.x<=960 and host.view.panel.get_rect().end.y<=540,"actual split shell subtitles remain inside960x540 RPG viewport")
+	check(host.view.get_parent()==host and host.view.get_viewport()==root and main.world_view.get_global_rect().encloses(host.view.panel.get_global_rect()),"actual split shell native subtitles remain inside displayed canonical RPG viewport")
 	# Headless OS focus is unavailable; retain actual visibility/layout and provide
 	# only an explicit focused-window test input to the host's runtime reader.
 	host.runtime_reader=func()->Dictionary:
@@ -101,11 +108,11 @@ func run() -> void:
 	at=session.elapsed_ms; var cue_count: int=cues.size()
 	for _i in range(10): host._process(.1)
 	check(not world.is_visible_in_tree() or not main.world_frame.is_visible_in_tree(),"actual narrow phone-only layout hides world")
-	check(session.elapsed_ms==at and not main.world_frame.is_visible_in_tree() and host.view.get_parent()==world,"phone-only layout pauses invisible dialogue and contains its surface in hidden world")
+	check(session.elapsed_ms==at and not main.world_frame.is_visible_in_tree() and not host.view.is_visible_in_tree(),"phone-only layout pauses dialogue and hides its native screen surface")
 	main.mobile_world=true; main._layout(); await process_frame; await process_frame
 	host._process(.1)
 	check(session.elapsed_ms>at and host.view.is_visible_in_tree(),"actual narrow world layout resumes the same dialogue")
-	check(Rect2(Vector2.ZERO,world.size).encloses(host.view.panel.get_rect()),"mobile dialogue stays inside the current exploration world")
+	check(main.world_view.get_global_rect().encloses(host.view.panel.get_global_rect()),"mobile native dialogue stays inside the displayed exploration world")
 	var active_key: String=session.audio_keys.get(session.lines[0].text,"")
 	var same_cues: Array=cues.slice(cue_count).filter(func(e:Dictionary)->bool:return e.id=="chapter3_story_line" and e.payload.get("subtitleKey")==active_key)
 	check(same_cues.is_empty(),"hide/show resumes current line without duplicating its voice cue")

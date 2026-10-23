@@ -1,0 +1,640 @@
+[gd_scene load_steps=60 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/native/dorm_modular/clean_room.png" id="1"]
+
+[ext_resource type="Texture2D" path="res://assets/native/dorm_modular/furniture_atlas.png" id="2"]
+
+[ext_resource type="Texture2D" path="res://assets/native/dorm_modular/props_atlas.png" id="3"]
+
+[ext_resource type="Script" path="res://scripts/objects/dorm_practice_paper.gd" id="4"]
+
+[sub_resource type="AtlasTexture" id="tex_bed_upper"]
+atlas = ExtResource("2")
+region = Rect2(25, 40, 223, 564)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_bed_upper"]
+size = Vector2(213, 554)
+
+[sub_resource type="AtlasTexture" id="tex_bed_lower"]
+atlas = ExtResource("2")
+region = Rect2(25, 604, 223, 343)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_bed_lower"]
+size = Vector2(213, 333)
+
+[sub_resource type="AtlasTexture" id="tex_sink_unverified"]
+atlas = ExtResource("2")
+region = Rect2(24, 947, 226, 232)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_sink_unverified"]
+size = Vector2(216, 222)
+
+[sub_resource type="AtlasTexture" id="tex_shelf_upper"]
+atlas = ExtResource("2")
+region = Rect2(248, 130, 109, 251)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_shelf_upper"]
+size = Vector2(99, 241)
+
+[sub_resource type="AtlasTexture" id="tex_shelf_lower"]
+atlas = ExtResource("2")
+region = Rect2(248, 1088, 110, 232)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_shelf_lower"]
+size = Vector2(100, 222)
+
+[sub_resource type="AtlasTexture" id="tex_cabinet"]
+atlas = ExtResource("2")
+region = Rect2(396, 180, 186, 211)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_cabinet"]
+size = Vector2(176, 201)
+
+[sub_resource type="AtlasTexture" id="tex_bin"]
+atlas = ExtResource("2")
+region = Rect2(588, 220, 94, 125)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_bin"]
+size = Vector2(84, 115)
+
+[sub_resource type="AtlasTexture" id="tex_chair_1"]
+atlas = ExtResource("2")
+region = Rect2(684, 181, 58, 220)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_chair_1"]
+size = Vector2(48, 210)
+
+[sub_resource type="AtlasTexture" id="tex_chair_2"]
+atlas = ExtResource("2")
+region = Rect2(684, 452, 58, 230)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_chair_2"]
+size = Vector2(48, 220)
+
+[sub_resource type="AtlasTexture" id="tex_chair_3"]
+atlas = ExtResource("2")
+region = Rect2(684, 771, 58, 222)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_chair_3"]
+size = Vector2(48, 212)
+
+[sub_resource type="AtlasTexture" id="tex_chair_4"]
+atlas = ExtResource("2")
+region = Rect2(684, 1060, 58, 228)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_chair_4"]
+size = Vector2(48, 218)
+
+[sub_resource type="AtlasTexture" id="tex_desk_1"]
+atlas = ExtResource("2")
+region = Rect2(742, 129, 168, 274)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_desk_1"]
+size = Vector2(158, 264)
+
+[sub_resource type="AtlasTexture" id="tex_desk_2"]
+atlas = ExtResource("2")
+region = Rect2(742, 403, 168, 307)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_desk_2"]
+size = Vector2(158, 297)
+
+[sub_resource type="AtlasTexture" id="tex_desk_3"]
+atlas = ExtResource("2")
+region = Rect2(742, 710, 168, 291)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_desk_3"]
+size = Vector2(158, 281)
+
+[sub_resource type="AtlasTexture" id="tex_desk_4"]
+atlas = ExtResource("2")
+region = Rect2(742, 1001, 168, 318)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_desk_4"]
+size = Vector2(158, 308)
+
+[sub_resource type="AtlasTexture" id="tex_storage"]
+atlas = ExtResource("2")
+region = Rect2(750, 1319, 160, 227)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_storage"]
+size = Vector2(150, 217)
+
+[sub_resource type="AtlasTexture" id="tex_backpack"]
+atlas = ExtResource("2")
+region = Rect2(665, 1380, 90, 141)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_backpack"]
+size = Vector2(80, 131)
+
+[sub_resource type="AtlasTexture" id="tex_balcony_plant"]
+atlas = ExtResource("2")
+region = Rect2(44, 1380, 95, 202)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_balcony_plant"]
+size = Vector2(85, 192)
+
+[sub_resource type="AtlasTexture" id="prop_lamp_blue"]
+atlas = ExtResource("3")
+region = Rect2(65, 75, 245, 265)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_lamp_green"]
+atlas = ExtResource("3")
+region = Rect2(370, 85, 225, 255)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_laptop"]
+atlas = ExtResource("3")
+region = Rect2(659, 86, 234, 259)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_open_book"]
+atlas = ExtResource("3")
+region = Rect2(960, 143, 243, 199)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_mug_blue"]
+atlas = ExtResource("3")
+region = Rect2(103, 423, 197, 208)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_mug_white"]
+atlas = ExtResource("3")
+region = Rect2(395, 429, 176, 193)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_green_book"]
+atlas = ExtResource("3")
+region = Rect2(685, 440, 188, 181)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_red_book"]
+atlas = ExtResource("3")
+region = Rect2(985, 430, 178, 191)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_pencil"]
+atlas = ExtResource("3")
+region = Rect2(115, 738, 145, 147)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_pen"]
+atlas = ExtResource("3")
+region = Rect2(401, 707, 146, 189)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_books"]
+atlas = ExtResource("3")
+region = Rect2(700, 695, 162, 223)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_plant"]
+atlas = ExtResource("3")
+region = Rect2(973, 677, 217, 240)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_clipboard"]
+atlas = ExtResource("3")
+region = Rect2(100, 953, 181, 233)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="prop_yellow_note"]
+atlas = ExtResource("3")
+region = Rect2(404, 1002, 151, 168)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="wall_0"]
+size = Vector2(885, 25)
+
+[sub_resource type="RectangleShape2D" id="wall_1"]
+size = Vector2(40, 1480)
+
+[sub_resource type="RectangleShape2D" id="wall_2"]
+size = Vector2(40, 1480)
+
+[sub_resource type="RectangleShape2D" id="wall_3"]
+size = Vector2(380, 90)
+
+[sub_resource type="RectangleShape2D" id="wall_4"]
+size = Vector2(380, 90)
+
+[node name="DormModularCandidate" type="Node2D"]
+texture_filter = 1
+metadata/status = "candidate_not_production"
+
+[node name="CleanPlate" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+centered = false
+
+[node name="Furnishings" type="Node2D" parent="."]
+position = Vector2(66, 65)
+scale = Vector2(0.9, 0.9)
+y_sort_enabled = true
+
+[node name="bed_upper" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(136.5, 604)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(25, 40, 223, 564)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/bed_upper"]
+texture = SubResource("tex_bed_upper")
+position = Vector2(0, -282.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/bed_upper"]
+position = Vector2(0, -282.0)
+shape = SubResource("shape_bed_upper")
+
+[node name="bed_lower" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(136.5, 947)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(25, 604, 223, 343)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/bed_lower"]
+texture = SubResource("tex_bed_lower")
+position = Vector2(0, -171.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/bed_lower"]
+position = Vector2(0, -171.5)
+shape = SubResource("shape_bed_lower")
+
+[node name="sink_unverified" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(137.0, 1179)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(24, 947, 226, 232)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/sink_unverified"]
+texture = SubResource("tex_sink_unverified")
+position = Vector2(0, -116.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/sink_unverified"]
+position = Vector2(0, -116.0)
+shape = SubResource("shape_sink_unverified")
+
+[node name="shelf_upper" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(302.5, 381)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(248, 130, 109, 251)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/shelf_upper"]
+texture = SubResource("tex_shelf_upper")
+position = Vector2(0, -125.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/shelf_upper"]
+position = Vector2(0, -125.5)
+shape = SubResource("shape_shelf_upper")
+
+[node name="shelf_lower" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(303.0, 1320)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(248, 1088, 110, 232)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/shelf_lower"]
+texture = SubResource("tex_shelf_lower")
+position = Vector2(0, -116.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/shelf_lower"]
+position = Vector2(0, -116.0)
+shape = SubResource("shape_shelf_lower")
+
+[node name="cabinet" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(489.0, 391)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(396, 180, 186, 211)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/cabinet"]
+texture = SubResource("tex_cabinet")
+position = Vector2(0, -105.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/cabinet"]
+position = Vector2(0, -105.5)
+shape = SubResource("shape_cabinet")
+
+[node name="bin" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(635.0, 345)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(588, 220, 94, 125)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/bin"]
+texture = SubResource("tex_bin")
+position = Vector2(0, -62.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/bin"]
+position = Vector2(0, -62.5)
+shape = SubResource("shape_bin")
+
+[node name="chair_1" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(713.0, 401)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(684, 181, 58, 220)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/chair_1"]
+texture = SubResource("tex_chair_1")
+position = Vector2(0, -110.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/chair_1"]
+position = Vector2(0, -110.0)
+shape = SubResource("shape_chair_1")
+
+[node name="chair_2" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(713.0, 682)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(684, 452, 58, 230)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/chair_2"]
+texture = SubResource("tex_chair_2")
+position = Vector2(0, -115.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/chair_2"]
+position = Vector2(0, -115.0)
+shape = SubResource("shape_chair_2")
+
+[node name="chair_3" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(713.0, 993)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(684, 771, 58, 222)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/chair_3"]
+texture = SubResource("tex_chair_3")
+position = Vector2(0, -111.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/chair_3"]
+position = Vector2(0, -111.0)
+shape = SubResource("shape_chair_3")
+
+[node name="chair_4" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(713.0, 1288)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(684, 1060, 58, 228)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/chair_4"]
+texture = SubResource("tex_chair_4")
+position = Vector2(0, -114.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/chair_4"]
+position = Vector2(0, -114.0)
+shape = SubResource("shape_chair_4")
+
+[node name="desk_1" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(826.0, 403)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(742, 129, 168, 274)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/desk_1"]
+texture = SubResource("tex_desk_1")
+position = Vector2(0, -137.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/desk_1"]
+position = Vector2(0, -137.0)
+shape = SubResource("shape_desk_1")
+
+[node name="desk_2" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(826.0, 710)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(742, 403, 168, 307)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/desk_2"]
+texture = SubResource("tex_desk_2")
+position = Vector2(0, -153.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/desk_2"]
+position = Vector2(0, -153.5)
+shape = SubResource("shape_desk_2")
+
+[node name="desk_3" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(826.0, 1001)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(742, 710, 168, 291)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/desk_3"]
+texture = SubResource("tex_desk_3")
+position = Vector2(0, -145.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/desk_3"]
+position = Vector2(0, -145.5)
+shape = SubResource("shape_desk_3")
+
+[node name="desk_4" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(826.0, 1319)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(742, 1001, 168, 318)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/desk_4"]
+texture = SubResource("tex_desk_4")
+position = Vector2(0, -159.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/desk_4"]
+position = Vector2(0, -159.0)
+shape = SubResource("shape_desk_4")
+
+[node name="storage" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(830.0, 1546)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(750, 1319, 160, 227)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/storage"]
+texture = SubResource("tex_storage")
+position = Vector2(0, -113.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/storage"]
+position = Vector2(0, -113.5)
+shape = SubResource("shape_storage")
+
+[node name="backpack" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(710.0, 1521)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(665, 1380, 90, 141)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/backpack"]
+texture = SubResource("tex_backpack")
+position = Vector2(0, -70.5)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/backpack"]
+position = Vector2(0, -70.5)
+shape = SubResource("shape_backpack")
+
+[node name="balcony_plant" type="StaticBody2D" parent="Furnishings"]
+position = Vector2(91.5, 1582)
+metadata/pivot = "bottom_center"
+metadata/source_region = Rect2(44, 1380, 95, 202)
+
+[node name="Art" type="Sprite2D" parent="Furnishings/balcony_plant"]
+texture = SubResource("tex_balcony_plant")
+position = Vector2(0, -101.0)
+
+[node name="Footprint" type="CollisionShape2D" parent="Furnishings/balcony_plant"]
+position = Vector2(0, -101.0)
+shape = SubResource("shape_balcony_plant")
+
+[node name="lamp_blue_0" type="Sprite2D" parent="Furnishings/desk_1"]
+position = Vector2(0.0, -232)
+scale = Vector2(0.32, 0.32)
+z_index = 1
+texture = SubResource("prop_lamp_blue")
+
+[node name="laptop_1" type="Sprite2D" parent="Furnishings/desk_1"]
+position = Vector2(-30.0, -142)
+scale = Vector2(0.27, 0.27)
+z_index = 1
+texture = SubResource("prop_laptop")
+
+[node name="mug_blue_2" type="Sprite2D" parent="Furnishings/desk_1"]
+position = Vector2(37.0, -64)
+scale = Vector2(0.19, 0.19)
+z_index = 1
+texture = SubResource("prop_mug_blue")
+
+[node name="clipboard_3" type="Sprite2D" parent="Furnishings/desk_1"]
+position = Vector2(-35.0, -58)
+scale = Vector2(0.25, 0.25)
+z_index = 1
+texture = SubResource("prop_clipboard")
+
+[node name="lamp_green_4" type="Sprite2D" parent="Furnishings/desk_2"]
+position = Vector2(7.0, -259)
+scale = Vector2(0.32, 0.32)
+z_index = 1
+texture = SubResource("prop_lamp_green")
+
+[node name="open_book_5" type="Sprite2D" parent="Furnishings/desk_2"]
+position = Vector2(-29.0, -154)
+scale = Vector2(0.3, 0.3)
+z_index = 1
+texture = SubResource("prop_open_book")
+
+[node name="books_6" type="Sprite2D" parent="Furnishings/desk_2"]
+position = Vector2(41.0, -138)
+scale = Vector2(0.25, 0.25)
+z_index = 1
+texture = SubResource("prop_books")
+
+[node name="green_book_7" type="Sprite2D" parent="Furnishings/desk_2"]
+position = Vector2(-26.0, -45)
+scale = Vector2(0.34, 0.34)
+z_index = 1
+texture = SubResource("prop_green_book")
+
+[node name="lamp_blue_8" type="Sprite2D" parent="Furnishings/desk_3"]
+position = Vector2(11.0, -245)
+scale = Vector2(0.32, 0.32)
+z_index = 1
+texture = SubResource("prop_lamp_blue")
+
+[node name="laptop_9" type="Sprite2D" parent="Furnishings/desk_3"]
+position = Vector2(-30.0, -146)
+scale = Vector2(0.27, 0.27)
+z_index = 1
+texture = SubResource("prop_laptop")
+
+[node name="mug_white_10" type="Sprite2D" parent="Furnishings/desk_3"]
+position = Vector2(38.0, -68)
+scale = Vector2(0.23, 0.23)
+z_index = 1
+texture = SubResource("prop_mug_white")
+
+[node name="yellow_note_11" type="Sprite2D" parent="Furnishings/desk_3"]
+position = Vector2(-32.0, -46)
+scale = Vector2(0.23, 0.23)
+z_index = 1
+texture = SubResource("prop_yellow_note")
+
+[node name="lamp_green_12" type="Sprite2D" parent="Furnishings/desk_4"]
+position = Vector2(10.0, -274)
+scale = Vector2(0.32, 0.32)
+z_index = 1
+texture = SubResource("prop_lamp_green")
+
+[node name="open_book_13" type="Sprite2D" parent="Furnishings/desk_4"]
+position = Vector2(-27.0, -157)
+scale = Vector2(0.3, 0.3)
+z_index = 1
+texture = SubResource("prop_open_book")
+
+[node name="red_book_14" type="Sprite2D" parent="Furnishings/desk_4"]
+position = Vector2(24.0, -56)
+scale = Vector2(0.34, 0.34)
+z_index = 1
+texture = SubResource("prop_red_book")
+
+[node name="plant_15" type="Sprite2D" parent="Furnishings/shelf_upper"]
+position = Vector2(-1.5, -199)
+scale = Vector2(0.29, 0.29)
+z_index = 1
+texture = SubResource("prop_plant")
+
+[node name="books_16" type="Sprite2D" parent="Furnishings/shelf_upper"]
+position = Vector2(-2.5, -101)
+scale = Vector2(0.27, 0.27)
+z_index = 1
+texture = SubResource("prop_books")
+
+[node name="plant_17" type="Sprite2D" parent="Furnishings/shelf_lower"]
+position = Vector2(-1.0, -183)
+scale = Vector2(0.29, 0.29)
+z_index = 1
+texture = SubResource("prop_plant")
+
+[node name="books_18" type="Sprite2D" parent="Furnishings/shelf_lower"]
+position = Vector2(-2.0, -89)
+scale = Vector2(0.27, 0.27)
+z_index = 1
+texture = SubResource("prop_books")
+
+[node name="plant_19" type="Sprite2D" parent="Furnishings/storage"]
+position = Vector2(-3.0, -164)
+scale = Vector2(0.37, 0.37)
+z_index = 1
+texture = SubResource("prop_plant")
+
+[node name="Canonical0755Paper" type="Node2D" parent="."]
+position = Vector2(531, 834)
+z_index = 5
+script = ExtResource("4")
+
+[node name="Wall0" type="StaticBody2D" parent="."]
+position = Vector2(472.5,47.5)
+
+[node name="Collision" type="CollisionShape2D" parent="Wall0"]
+shape = SubResource("wall_0")
+
+[node name="Wall1" type="StaticBody2D" parent="."]
+position = Vector2(44.0,775.0)
+
+[node name="Collision" type="CollisionShape2D" parent="Wall1"]
+shape = SubResource("wall_1")
+
+[node name="Wall2" type="StaticBody2D" parent="."]
+position = Vector2(900.0,775.0)
+
+[node name="Collision" type="CollisionShape2D" parent="Wall2"]
+shape = SubResource("wall_2")
+
+[node name="Wall3" type="StaticBody2D" parent="."]
+position = Vector2(214.0,1535.0)
+
+[node name="Collision" type="CollisionShape2D" parent="Wall3"]
+shape = SubResource("wall_3")
+
+[node name="Wall4" type="StaticBody2D" parent="."]
+position = Vector2(731.0,1535.0)
+
+[node name="Collision" type="CollisionShape2D" parent="Wall4"]
+shape = SubResource("wall_4")

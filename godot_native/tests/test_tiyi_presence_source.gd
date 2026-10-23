@@ -16,6 +16,10 @@ func fresh(row: Dictionary) -> Dictionary:
 	s.ui.libraryFinalsPuzzle.entranceRecordRead=true; s.ui.libraryFinalsPuzzle.archivedRuleRead=true
 	s.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen=true
 	s.ui.libraryFinalsPuzzle.presenceProofCollected=row.passed
+	var controller=load("res://scripts/chapters/chapter1_2.gd").new()
+	s.native.page="wechat"
+	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(s,intent)
+	s.native.page="tiyi"
 	return s
 func report() -> void:
 	var path=OS.get_environment("TIYI_SOURCE_REPORT")

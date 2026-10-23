@@ -3,46 +3,166 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101e28">
+  <meta name="theme-color" content="#F4EAD5">
   <meta name="seven55-runtime" content="godot-web">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%23101e28'/%3E%3Ctext%20x='32'%20y='46'%20text-anchor='middle'%20font-family='sans-serif'%20font-size='44'%20fill='%23f1f0e5'%3E7%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20fill%3D%27%23202B35%27%2F%3E%3Cpath%20d%3D%27M3%201H13V5H11V7H9V9H7V15H5V9H7V7H9V5H11V3H3Z%27%20fill%3D%27%23F4EAD5%27%2F%3E%3C%2Fsvg%3E">
   <title>7:55</title>
   $GODOT_HEAD_INCLUDE
   <style>
-    :root { color-scheme: dark; font-family: system-ui, -apple-system, "PingFang SC", sans-serif; background: #101e28; color: #f1f0e5; }
+    /* Font notices ship beside the browser files in boot-fonts/. */
+    @font-face { font-family: "755 Morning Note"; src: url("__755_BOOT_FONT_REGULAR__") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
+    @font-face { font-family: "755 Morning Note"; src: url("__755_BOOT_FONT_MEDIUM__") format("woff2"); font-style: normal; font-weight: 500; font-display: swap; }
+    :root { color-scheme: dark; font-family: "755 Morning Note", monospace; font-synthesis: none; background: #202B35; color: #F4EAD5; }
     * { box-sizing: border-box; }
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
     #canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: none; }
-    #loading { position: fixed; inset: 0; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px)); background: #101e28; }
+    #loading { --boot-viewport-height: 100vh; position: fixed; inset: 0; z-index: 10; isolation: isolate; overflow: hidden; background: #D8C7A0; color: #344452; color-scheme: light; }
     #loading[hidden] { display: none; }
-    .card { width: min(100%, 420px); text-align: center; }
-    .clock { font-size: clamp(56px, 16vw, 84px); font-variant-numeric: tabular-nums; font-weight: 300; letter-spacing: .04em; margin: 0 0 24px; }
-    #loading-message { line-height: 1.7; margin: 12px 0; white-space: pre-line; }
-    #loading-detail { color: #adbbb7; font-size: 14px; line-height: 1.6; min-height: 2em; overflow-wrap: anywhere; }
-    progress { display: block; width: 100%; height: 7px; margin: 24px 0; accent-color: #b6d5bf; }
-    progress[hidden] { display: none; }
-    button { min-height: 48px; min-width: 160px; padding: 12px 28px; border: 1px solid #c5d5ca; border-radius: 8px; background: #e8eee3; color: #17352d; font: inherit; cursor: pointer; }
-    button:focus-visible { outline: 3px solid #e7bf71; outline-offset: 4px; }
-    button[hidden] { display: none; }
-    button:disabled { opacity: .65; cursor: wait; }
-    noscript { position: fixed; inset: 0; display: grid; place-items: center; background: #101e28; }
+    #loading .boot-sheet { position: absolute; inset: 0; overflow: hidden; background: #F4EAD5; }
+    #loading .boot-room { position: absolute; inset: 0; overflow: hidden; contain: paint; isolation: isolate; background: #243F5A; }
+    #loading .boot-room-art { position: absolute; width: max(100vw, var(--boot-viewport-height)); height: max(100vw, var(--boot-viewport-height)); left: calc((100% - max(100vw, var(--boot-viewport-height))) * .08); top: calc((100% - max(100vw, var(--boot-viewport-height))) * .16); pointer-events: none; image-rendering: pixelated; }
+    #loading #boot-art-source { image-rendering: pixelated; }
+    #loading .boot-sunlight, #loading .boot-wake-glow, #loading .boot-dust { opacity: 1; }
+    #loading .boot-wake-glow { transform: translate(-2px, -2px); }
+    #loading .boot-content { position: absolute; inset: 0; pointer-events: none; }
+    #loading .boot-heading { position: absolute; top: max(24px, env(safe-area-inset-top, 0px)); left: max(24px, env(safe-area-inset-left, 0px)); width: min(350px, calc(100% - 48px)); padding: 16px 18px; border-left: 3px solid #9A514A; background: #F4EAD5; }
+    #loading .boot-transfer { position: absolute; right: max(24px, env(safe-area-inset-right, 0px)); bottom: max(24px, env(safe-area-inset-bottom, 0px)); width: min(380px, calc(100% - 48px)); }
+    #loading .boot-eyebrow { font-size: 12px; line-height: 1.6; letter-spacing: .15em; color: #70503B; }
+    #loading .boot-title { margin: 10px 0 6px; font-size: 76px; font-weight: 500; line-height: 1; color: #9A514A; }
+    #loading .boot-subtitle { margin: 0 0 10px; font-size: 20px; line-height: 1.5; font-weight: 500; }
+    #loading .boot-story { margin: 0; font-size: 17px; line-height: 1.7; color: #70503B; }
+    #loading .boot-divider, #loading .boot-chapter-label { display: none; }
+    #loading .boot-status { position: relative; padding: 16px; pointer-events: auto; border: 1px solid #A1744E; background: #F4EAD5; box-shadow: 4px 4px 0 #D8C7A0; }
+    #loading .boot-status::after { content: ''; position: absolute; pointer-events: none; left: 7px; right: 7px; bottom: -5px; height: 5px; background: repeating-linear-gradient(90deg, #F4EAD5 0 7px, transparent 7px 10px); }
+    #loading #loading-message { margin: 0; font-size: 16px; font-weight: 500; line-height: 1.7; white-space: pre-line; }
+    #loading #loading-detail { min-height: 2.8em; margin: 0; color: #70503B; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+    #loading progress { display: block; width: 100%; height: 7px; margin: 12px 0 10px; border: 0; border-radius: 0; accent-color: #9A514A; background: #D8C7A0; }
+    #loading progress::-webkit-progress-bar { background: #D8C7A0; }
+    #loading progress::-webkit-progress-value { background: #9A514A; }
+    #loading progress::-moz-progress-bar { background: #9A514A; }
+    #loading .boot-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    #loading button { min-height: 48px; padding: 10px 16px; border: 1px solid #70503B; border-radius: 0; background: #D8C7A0; color: #44332D; font: 16px/1.5 "755 Morning Note", monospace; cursor: pointer; }
+    #loading #start-game { color: #F4EAD5; background: #9A514A; border-color: #6F483E; }
+    #loading button:focus-visible { outline: 3px solid #9A514A; outline-offset: 3px; }
+    #loading button:disabled { opacity: .65; cursor: wait; }
+    #loading button[hidden], #loading progress[hidden] { display: none; }
+    #loading .boot-footer { display: none; }
+    #loading[data-boot-animation="true"] .boot-sunlight { animation: boot-daylight 8s steps(1, end) infinite alternate; }
+    #loading[data-boot-animation="true"] .boot-wake-glow { animation: boot-waking-light 12s steps(1, end) infinite alternate; }
+    #loading[data-boot-animation="true"] .boot-dust { animation: boot-floating-dust 8s steps(1, end) infinite alternate; }
+    #loading[data-boot-animation="true"] .boot-status::after { animation: boot-paper-settle 2s ease-out 4s 1 both; }
+    #loading[data-boot-motion="paused"] .boot-sunlight, #loading[data-boot-motion="paused"] .boot-wake-glow, #loading[data-boot-motion="paused"] .boot-dust, #loading[data-boot-motion="paused"] .boot-status::after { animation-play-state: paused; }
+    #loading[data-boot-motion="reduced"] .boot-sunlight, #loading[data-boot-motion="reduced"] .boot-wake-glow, #loading[data-boot-motion="reduced"] .boot-dust, #loading[data-boot-motion="reduced"] .boot-status::after,
+    #loading[data-boot-motion="stopped"] .boot-sunlight, #loading[data-boot-motion="stopped"] .boot-wake-glow, #loading[data-boot-motion="stopped"] .boot-dust, #loading[data-boot-motion="stopped"] .boot-status::after { animation: none; }
+    #boot-noscript { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; background: #F4EAD5; color: #344452; }
+    @keyframes boot-daylight { 0%, 24% { opacity: 0; } 25%, 100% { opacity: 1; } }
+    @keyframes boot-waking-light { 0%, 24% { transform: translate(0, 0); } 25%, 49% { transform: translate(-1px, -1px); } 50%, 74% { transform: translate(-2px, -2px); } 75%, 100% { transform: translate(-3px, -3px); } }
+    @keyframes boot-floating-dust { 0%, 32% { transform: translate(0, 0); } 33%, 65% { transform: translate(1px, -1px); } 66%, 100% { transform: translate(1px, -2px); } }
+    @keyframes boot-paper-settle { from { opacity: .6; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+    @supports (height: 100dvh) { #loading { --boot-viewport-height: 100dvh; } }
+    @media (max-width: 720px) {
+      #loading .boot-heading { top: max(14px, env(safe-area-inset-top, 0px)); left: max(14px, env(safe-area-inset-left, 0px)); width: auto; max-width: calc(100% - 28px); padding: 10px 14px; }
+      #loading .boot-transfer { left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); bottom: max(14px, env(safe-area-inset-bottom, 0px)); width: auto; }
+      #loading .boot-title { font-size: 58px; margin: 5px 0 3px; }
+      #loading .boot-subtitle { font-size: 17px; margin-bottom: 0; }
+      #loading .boot-story { display: none; }
+      #loading .boot-status { padding: 14px; }
+      #loading #loading-message { font-size: 16px; }
+      #loading #loading-detail { font-size: 14px; }
+      #loading .boot-eyebrow { font-size: 11px; }
+    }
+    @media (max-width: 720px) and (max-height: 700px) {
+      #loading .boot-heading { padding: 8px 12px; }
+      #loading .boot-title { font-size: 50px; }
+      #loading .boot-status { padding: 12px; }
+      #loading progress { margin: 9px 0; }
+    }
+    @media (orientation: landscape) and (max-height: 500px) {
+      #loading .boot-heading { top: max(12px, env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); width: auto; max-width: min(330px, calc(100% - 24px)); padding: 8px 12px; }
+      #loading .boot-transfer { left: auto; right: max(12px, env(safe-area-inset-right, 0px)); bottom: max(12px, env(safe-area-inset-bottom, 0px)); width: min(440px, 45vw); }
+      #loading .boot-title { font-size: 52px; margin: 5px 0; }
+      #loading .boot-subtitle { margin-bottom: 0; font-size: 17px; }
+      #loading .boot-story, #loading .boot-divider, #loading .boot-chapter-label { display: none; }
+      #loading .boot-status { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 10px 12px; }
+      #loading #loading-message { grid-column: 1; grid-row: 1; font-size: 16px; }
+      #loading progress { grid-column: 1; grid-row: 2; margin: 0; height: 5px; }
+      #loading #loading-detail { grid-column: 1; grid-row: 3; min-height: 0; }
+      #loading .boot-actions { grid-column: 2; grid-row: 1 / span 3; margin: 0; }
+      #loading #loading-detail { font-size: 14px; }
+    }
+    @media (orientation: landscape) and (max-height: 380px) {
+      #loading .boot-eyebrow { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #loading .boot-sunlight, #loading .boot-wake-glow, #loading .boot-dust, #loading .boot-status::after { animation: none !important; }
+    }
   </style>
 </head>
 <body>
   <canvas id="canvas" tabindex="0" aria-label="7:55 游戏画面"></canvas>
-  <section id="loading" aria-label="游戏加载">
-    <div class="card">
-      <h1 class="clock">07:55</h1>
-      <p id="loading-message" role="status" aria-live="polite">正在准备游戏…</p>
-      <progress id="loading-progress" aria-label="游戏加载进度"></progress>
-      <p id="loading-detail">先准备开场，后续内容会在游玩时后台加载。</p>
-      <button id="start-game" type="button" hidden>进入游戏</button>
-      <button id="retry-game" type="button" hidden>重新加载</button>
+  <section id="loading" aria-label="游戏加载" data-boot-animation="true">
+    <div class="boot-sheet">
+      <div class="boot-room" aria-hidden="true">
+        <svg class="boot-room-art" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" focusable="false" shape-rendering="crispEdges">
+          <defs>
+            <image id="boot-art-source" href="__755_BOOT_ART_MORNING_ROOM__" width="160" height="160" />
+            <clipPath id="boot-bed-receiver" clipPathUnits="userSpaceOnUse">
+              <path d="M21 40 H58 V44 H61 V97 H17 V63 H20 V46 H21 Z" />
+            </clipPath>
+            <clipPath id="boot-foreground-clip" clipPathUnits="userSpaceOnUse">
+              <path d="M0 0 H14 V160 H0 Z M42 0 H54 V28 H42 Z M112 0 H123 V38 H112 Z M14 27 H65 V35 H14 Z M62 27 H67 V147 H62 Z M14 99 H65 V105 H14 Z M44 104 H61 V147 H44 Z" />
+            </clipPath>
+          </defs>
+          <use href="#boot-art-source" />
+          <g class="boot-sunlight" fill="#FFF0B2" fill-opacity=".333333">
+            <path d="M85 32 H87 V38 H89 V44 H91 V50 H93 V56 H91 V52 H89 V46 H87 V40 H85 Z" />
+            <path d="M93 35 H95 V41 H97 V47 H99 V53 H101 V59 H99 V55 H97 V49 H95 V43 H93 Z" />
+          </g>
+          <g clip-path="url(#boot-bed-receiver)">
+            <g class="boot-wake-glow" fill="#F4CD77">
+              <path d="M50 66 H54 V69 H56 V73 H58 V78 H60 V84 H57 V80 H55 V76 H53 V72 H50 Z" fill-opacity=".666667" />
+              <path d="M45 61 H49 V64 H51 V67 H48 V65 H45 Z" fill-opacity=".333333" />
+            </g>
+          </g>
+          <rect x="39" y="54" width="1" height="1" fill="#FFF0B2" fill-opacity=".333333" />
+          <g class="boot-dust" fill="#FFF0B2" fill-opacity=".333333">
+            <rect x="82" y="44" width="1" height="1" />
+            <rect x="92" y="53" width="1" height="1" />
+            <rect x="101" y="66" width="1" height="1" />
+          </g>
+          <use href="#boot-art-source" clip-path="url(#boot-foreground-clip)" />
+        </svg>
+      </div>
+      <div class="boot-content">
+        <div class="boot-heading">
+          <div class="boot-eyebrow">ZHEJIANG UNIVERSITY · CAMPUS STORY</div>
+          <h1 class="boot-title">7:55</h1>
+          <p class="boot-subtitle">清晨，从寝室开始。</p>
+          <p class="boot-story">窗外已经亮了。</p>
+          <div class="boot-divider"></div>
+          <div class="boot-eyebrow boot-chapter-label">晨光未醒</div>
+        </div>
+        <div class="boot-transfer">
+          <div class="boot-status">
+            <p id="loading-message" role="status" aria-live="polite">正在准备这一天…</p>
+            <progress id="loading-progress" aria-label="游戏加载进度"></progress>
+            <p id="loading-detail">先准备开场，后续内容会在游玩时后台加载。</p>
+            <div class="boot-actions">
+              <button id="start-game" type="button" hidden>进入游戏</button>
+              <button id="retry-game" type="button" hidden>重新加载</button>
+              <button id="boot-motion-toggle" type="button" aria-pressed="false" hidden>暂停动效</button>
+            </div>
+          </div>
+          <div class="boot-footer">7:55 · 一场校园叙事解谜游戏</div>
+        </div>
+      </div>
     </div>
   </section>
-  <noscript>请启用 JavaScript 后重新打开游戏。</noscript>
+  <noscript id="boot-noscript">请启用 JavaScript 后重新打开游戏。</noscript>
+  <script src="boot-intro.js"></script>
   <script src="$GODOT_URL" onerror="document.documentElement.dataset.loaderFailed='true'"></script>
   <script src="content-loader.js"></script>
+  <script src="scene-orientation.js"></script>
   <script>
     'use strict';
     (function () {
@@ -53,17 +173,20 @@
       const progress = document.getElementById('loading-progress');
       const start = document.getElementById('start-game');
       const retry = document.getElementById('retry-game');
+      const bootIntro = typeof window.install755BootIntro === 'function' ? window.install755BootIntro() : null;
       let failed = false;
       function fail(error) {
         if (failed) return;
         failed = true;
         document.documentElement.dataset.bootState = 'error';
+        if (bootIntro) bootIntro.update({ stage: 'error' });
         loading.hidden = false;
         start.hidden = true;
         progress.hidden = true;
         retry.hidden = false;
-        message.textContent = '游戏暂时未能打开';
-        detail.textContent = '请检查网络后重试；若仍无法打开，请尝试更新浏览器。';
+        message.textContent = '加载遇到了一点问题。';
+        detail.hidden = false;
+        detail.textContent = '请重新加载后再试；若仍无法打开，可尝试更新浏览器。';
         console.error('[7:55 Godot Web]', error);
       }
       retry.addEventListener('click', function () { window.location.reload(); });
@@ -89,6 +212,7 @@
       config.ensureCrossOriginIsolationHeaders = false;
       config.onProgress = function (current, total) {
         if (failed) return;
+        if (bootIntro) bootIntro.progress(current, total);
         if (total > 0) {
           progress.max = total;
           progress.value = current;
@@ -103,9 +227,7 @@
       };
       let engine;
       let pack;
-      let bootReusedBytes = 0;
-      let bootCacheStorage = '';
-      message.textContent = '正在准备开场…';
+      message.textContent = '正在准备这一天…';
       // Only the engine and the complete first-chapter dependency closure are
       // blocking. Later chapters retain their original res:// paths in packs.
       function readManifest(file) {
@@ -143,27 +265,30 @@
         delete window.Godot755Content;
         const counts = [0, 0];
         const total = release.boot.wasm.bytes + release.boot.core.bytes;
+        if (bootIntro) bootIntro.update({ phase: 'downloading' });
         function downloaded(index) { return function (current) {
           counts[index] = current;
           downloadProgress(counts[0] + counts[1], total);
-          if (counts[0] + counts[1] === total) message.textContent = '正在校验资源并启动引擎…';
+          if (counts[0] + counts[1] === total) {
+            message.textContent = '正在检查游戏文件…';
+            if (bootIntro) bootIntro.update({ phase: 'verifying' });
+          }
         }; }
         return Promise.all([
           cache.load(release.boot.wasm, { response: true, onProgress: downloaded(0) }).then(function (loaded) { return api.initEngine(engine, config.executable, release.boot.wasm, loaded.response); }),
           cache.load(release.boot.core, { onProgress: downloaded(1) }).then(function (loaded) { return engine.preloadFile(loaded.buffer, pack); })
         ]).then(function () {
           const state = cache.snapshot();
-          bootReusedBytes = state.reusedBytes;
-          bootCacheStorage = state.storage;
           document.documentElement.dataset.resourceCache = state.storage;
           document.documentElement.dataset.reusedBytes = String(state.reusedBytes);
-          detail.textContent = state.reusedBytes > 0 ? '已复用本机资源，下次可继续使用。' : '资源已准备好，后续章节会在游玩时后台加载。';
         });
       }).then(function () {
         if (failed) return;
         document.documentElement.dataset.bootState = 'ready';
-        message.textContent = '准备好了';
-        detail.textContent = bootReusedBytes > 0 ? '已复用 ' + (bootReusedBytes / 1048576).toFixed(1) + ' MB 本机资源。点击进入。' : bootCacheStorage === 'unavailable' ? '点击进入。浏览器未允许保存资源缓存，下次可能需要重新下载。' : '点击进入，资源已保存在本机，后续内容会在游玩时后台准备。';
+        if (bootIntro) bootIntro.update({ stage: 'ready' });
+        message.textContent = '清晨已经准备好了。';
+        detail.textContent = '';
+        detail.hidden = true;
         progress.hidden = true;
         start.hidden = false;
         start.focus();
@@ -171,10 +296,12 @@
       start.addEventListener('click', function () {
         if (failed || start.disabled) return;
         start.disabled = true;
+        if (bootIntro) bootIntro.update({ stage: 'starting' });
         message.textContent = '正在进入游戏…';
         engine.start({ args: ['--main-pack', pack] }).then(function () {
           if (failed) return;
           document.documentElement.dataset.bootState = 'running';
+          if (bootIntro) bootIntro.update({ stage: 'running' });
           loading.hidden = true;
           canvas.focus();
         }).catch(fail);

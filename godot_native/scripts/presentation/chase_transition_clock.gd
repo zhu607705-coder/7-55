@@ -41,7 +41,7 @@ func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	focus_mode=Control.FOCUS_ALL
 	clip_contents=true
-	_font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	_font=preload("res://scripts/ui/native_typography.gd").body_font()
 	film=Film.new();film.presenter=self;add_child(film)
 	caption=Label.new();caption.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -71,7 +71,7 @@ func play(next_stage: String, retry: bool=false, reduce: bool=false) -> bool:
 	paused=false;reduced_motion=reduce;skipped=retry and stage=="start"
 	show();_layout();grab_focus()
 	if reduced_motion or skipped:
-		frame=last_frame();elapsed=float(frame)/FPS
+		frame=last_frame();elapsed=source_frame_seconds(frame)
 		_complete_generation.call_deferred(generation)
 	_redraw()
 	return true
@@ -85,13 +85,16 @@ func _process(delta: float) -> void:
 func advance(delta: float) -> void:
 	if status!="playing" or paused or not is_finite(delta) or delta<=0:return
 	elapsed+=minf(delta,0.25)
-	frame=mini(last_frame(),int(floor(elapsed*FPS+0.00001)))
+	frame=mini(last_frame(),int(floor(source_frame_position(elapsed)+0.00001)))
 	_redraw()
 	if frame>=last_frame():_complete_generation(generation)
 
+func source_frame_position(seconds: float) -> float:return seconds*FPS
+func source_frame_seconds(at: float) -> float:return at/FPS
+
 func skip() -> void:
 	if status!="playing":return
-	skipped=true;frame=last_frame();elapsed=float(frame)/FPS
+	skipped=true;frame=last_frame();elapsed=source_frame_seconds(frame)
 	_redraw();_complete_generation(generation,true)
 
 func set_paused(value: bool) -> void:
@@ -177,7 +180,7 @@ func film_rect() -> Rect2:
 	return Rect2((available-extent)/2,extent)
 
 func snapshot() -> Dictionary:
-	return {"stage":stage,"status":status,"frame":frame,"last_frame":last_frame(),"elapsed":elapsed,"paused":paused,"skipped":skipped,"generation":generation,"pose":pose_at(stage,frame),"film_rect":film_rect()}
+	return {"stage":stage,"status":status,"frame":frame,"last_frame":last_frame(),"elapsed":elapsed,"duration":source_frame_seconds(last_frame()),"paused":paused,"skipped":skipped,"generation":generation,"pose":pose_at(stage,frame),"film_rect":film_rect()}
 
 static func _progress(at: int, first: int,last: int) -> float:
 	var p: float=clampf(float(at-first)/maxf(1,last-first),0,1)

@@ -3,6 +3,16 @@ const CanteenObjective = preload("res://scripts/presentation/canteen_objective.g
 const ChargeSession = preload("res://scripts/media/c3_charging_session.gd")
 var charge_session: RefCounted
 const SceneSession = preload("res://scripts/presentation/c3_scene_session.gd")
+const RehearsalSession = preload("res://scripts/games/theater_rehearsal_session.gd")
+const RehearsalModel = preload("res://scripts/games/theater_shadow_rehearsal_model.gd")
+const ChestMechanism = preload("res://scripts/games/theater_chest_mechanism.gd")
+const CHEST_ACTIONS = ["c3_chest_begin", "c3_chest_inspect", "c3_chest_place", "c3_chest_turn", "c3_chest_open", "c3_chest_cancel"]
+var chest_mechanism: RefCounted
+var chest_serial: int = 0
+const REHEARSAL_TARGET = {"id":"theater_shadow_rehearsal","label":"借扇成蝶 · 舞台排练","kind":"rehearsal","x":560,"y":156,"width":120,"height":100,"proximity":68,"stand":{"x":560,"y":206}}
+const REHEARSAL_PHASES = ["program_search","prop_setup","spotlight_ready","complete"]
+var rehearsal_session: RefCounted
+var rehearsal_serial := 0
 var entry_session: RefCounted
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
 const NarrativeSession=preload("res://scripts/presentation/c3_narrative_session.gd")
@@ -209,6 +219,14 @@ func actions(page: String, s: Dictionary) -> Array:
 	return list
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
+	if chest_mechanism != null and not chest_mechanism.current(s): invalidate_chest_mechanism()
+	if action == "c3_chest_cancel":
+		var cancelled: bool = cancel_chest_mechanism(value.get("session") if value is Dictionary else null)
+		return {"handled": true, "ephemeral": true, "accepted": cancelled, "cancelled": cancelled, "message": ""}
+	if rehearsal_session!=null and not rehearsal_session.current(s): invalidate_rehearsal_session()
+	if action=="c3_rehearsal_cancel":
+		var retired: bool=cancel_rehearsal_session(value.get("session") if value is Dictionary else null)
+		return {"handled":true,"message":"","ephemeral":true,"cancelled":retired}
 	if action=="c3_story_complete": return finish_story(s,value)
 	if action=="c3_reversal_visual_complete":
 		if not value is NarrativeSession or value!=story or value.sequence_id!="theater_reversal" or s.theaterHunt.phase!="reversal" or s.theaterHunt.spotlightRound<3 or not value.consume_visual(s): return locked("纸面还没有裂开。")
@@ -224,6 +242,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		s.canteenHunt.queueGapOpened=true; s.canteenHunt.phase="menu_order"
 		return _audio_event(response(),"canteen_queue_gap_opened")
 	if narrative_session(s)!=null: return locked("对话尚未结束。")
+	if action in CHEST_ACTIONS: return _chest_action(s, action, value)
+	if action=="c3_rehearsal_begin": return _begin_rehearsal(s)
+	if action=="c3_rehearsal_result": return _finish_rehearsal(s,value)
 	var result: Dictionary = lake.dispatch(s,action,value)
 	if not result.is_empty(): return result
 	result=interlude.dispatch(s,action,value)
@@ -237,16 +258,17 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		return response()
 	if action.begins_with("c3_target:"): return physical(s,action.trim_prefix("c3_target:"))
 	if action=="c3_charge_result":
-		if value!=charge_session or not value is ChargeSession: return locked("补电回执已失效。")
+		if not value is ChargeSession or value!=charge_session: return locked("补电回执已失效。")
 		if charge_session.phase=="cancelled": return response("接线已断开，本次补电未完成。")
 		if not charge_session.consume(s): return locked("补电尚未完成。")
-		if s.phoneBattery.percent>=45: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
-		s.phoneBattery.percent=45
+		if s.phoneBattery.percent>=45 and not s.phoneBattery.lowPowerMode: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
+		s.phoneBattery.percent=maxi(45, int(s.phoneBattery.percent))
+		s.phoneBattery.lowPowerMode=false
 		s.phoneBattery.rechargeCount+=1
-		return response("已接入手机充电服务站，电量恢复至 45%。")
+		return response("已接入手机充电服务站，电量已补充，低电量模式已关闭。亮度可自行调整。")
 	if action=="c3_network":
 		if str(value) not in ["campus_wifi","cellular","offline"]: return locked()
-		if s.networkMode!=value: s.phoneBattery.percent=maxi(1,int(s.phoneBattery.percent)-1)
+		if s.networkMode!=value: s.phoneBattery.percent=mini(int(s.phoneBattery.percent),maxi(1,int(s.phoneBattery.percent)-1))
 		s.networkMode=value
 		return response("已切换网络。")
 	if action=="c3_open_map": return {"handled":true,"page":"c3_campus_map"}
@@ -459,6 +481,57 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			return tell(s,"theater_reversal","chapter3-theater.content","spotlight.endingDialogue",{"delayMs":1320,"visualCompleted":false})
 	return locked()
 
+func invalidate_chest_mechanism() -> void:
+	if chest_mechanism != null: chest_mechanism.invalidate()
+	chest_mechanism = null
+
+func cancel_chest_mechanism(token: Variant) -> bool:
+	if chest_mechanism == null or not chest_mechanism.cancel(token): return false
+	chest_mechanism = null
+	return true
+
+func _chest_ready(s: Dictionary) -> bool:
+	var theater: Dictionary = s.get("theaterHunt", {})
+	return str(s.get("runtimeMode", "")) == "rpg" and str(s.get("rpgScene", "")) == "theater_interior" and bool(theater.get("active", false)) and bool(theater.get("admitted", false)) and bool(theater.get("propBoxOpened", false)) and str(theater.get("phase", "")) == "prop_setup" and (can_operate(s, "theater_interior", "theater_prop_box") or can_operate(s, "theater_interior", "theater_prop_scanner"))
+
+func _chest_action(s: Dictionary, action: String, value: Variant) -> Dictionary:
+	if not _chest_ready(s):
+		invalidate_chest_mechanism()
+		return {"handled": true, "ephemeral": true, "accepted": false, "message": "先在打开的道具箱旁查看。"}
+	if action == "c3_chest_begin":
+		if chest_mechanism == null:
+			chest_serial += 1
+			chest_mechanism = ChestMechanism.new(s, chest_serial)
+		return {"handled": true, "ephemeral": true, "accepted": true, "message": "", "mechanism": chest_mechanism.snapshot()}
+	if chest_mechanism == null:
+		return {"handled": true, "ephemeral": true, "accepted": false, "message": "这次箱内查看已经结束。"}
+	return chest_mechanism.apply(s, action.trim_prefix("c3_chest_"), value)
+
+func invalidate_rehearsal_session() -> void:
+	if rehearsal_session!=null: rehearsal_session.invalidate()
+	rehearsal_session=null
+
+func cancel_rehearsal_session(token: Variant) -> bool:
+	if rehearsal_session==null or not rehearsal_session.cancel(token): return false
+	rehearsal_session=null
+	return true
+
+func _rehearsal_ready(s: Dictionary) -> bool:
+	var theater: Dictionary=s.get("theaterHunt",{})
+	return str(s.get("runtimeMode",""))=="rpg" and str(s.get("rpgScene",""))=="theater_interior" and bool(theater.get("active",false)) and bool(theater.get("admitted",false)) and str(theater.get("phase","")) in REHEARSAL_PHASES and can_operate(s,"theater_interior","theater_shadow_rehearsal")
+
+func _begin_rehearsal(s: Dictionary) -> Dictionary:
+	if not _rehearsal_ready(s): return {"handled":true,"message":"先到侧翼的扇架旁，用浅色操作排练。","ephemeral":true}
+	invalidate_rehearsal_session();rehearsal_serial+=1
+	rehearsal_session=RehearsalSession.new(s,rehearsal_serial)
+	return {"handled":true,"ephemeral":true,"game":{"kind":"theater_shadow_rehearsal","script":"res://scripts/games/theater_shadow_rehearsal.gd","puzzleId":RehearsalModel.PUZZLE_ID,"session":rehearsal_session.token.duplicate(true),"on_success":"c3_rehearsal_result","on_cancel":"c3_rehearsal_cancel","title":"借扇成蝶","settings":s.native.get("settings",{})}}
+
+func _finish_rehearsal(s: Dictionary, value: Variant) -> Dictionary:
+	if rehearsal_session==null or not _rehearsal_ready(s) or not value is Dictionary or not rehearsal_session.matches(value.get("session")): return {"handled":true,"message":"这次排练已经收幕，可以回到扇架旁重新开始。","ephemeral":true}
+	var accepted: bool=rehearsal_session.consume(s,value)
+	rehearsal_session=null
+	return {"handled":true,"message":"双扇收拢，这一遍排练完成。" if accepted else "本次排练记录没有合上，道具仍留在原位。","ephemeral":true,"rehearsalAccepted":accepted}
+
 func _initial_npcs(s: Dictionary) -> Array:
 	if is_same(npc_state,s) and not npc_targets.is_empty(): return npc_targets
 	npc_state=s; npc_targets=[]
@@ -481,6 +554,7 @@ func definitions(scene: String, s: Dictionary) -> Array:
 	if scene!=npc_scene:
 		npc_scene=scene; npc_targets=[]
 	var list: Array = source_targets(scene).duplicate(true)
+	if scene=="theater_interior": list.append(REHEARSAL_TARGET.duplicate(true))
 	if scene=="campus_bootstrap" and s.canteenHunt.phase=="chase_ready":
 		var bike: Dictionary=world(scene).manifest.canteen.bike
 		list.append({"id":"bike","label":"共享单车","x":bike.x,"y":bike.y,"proximity":170,"kind":"bike","acceptedItems":["greaseTissue","cafeteriaWages"]})
@@ -626,12 +700,13 @@ func theater_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 	var t: Dictionary = s.theaterHunt
 	var dark: bool = mode(s,"theaterHunt")=="dark"
 	match str(entry.kind):
+		"rehearsal": return _begin_rehearsal(s)
 		"charger":
 			if dark: return locked("深色观察只能查看设备。切到浅色操作后接入充电线。")
-			if s.phoneBattery.percent>=45: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
+			if s.phoneBattery.percent>=45 and not s.phoneBattery.lowPowerMode: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
 			if not ChargeSession.rejection(s).is_empty(): return locked("请走到充电服务站旁接线。")
 			if charge_session!=null and charge_session.phase=="charging": return response("正在补电，请在设备旁稍候")
-			charge_session=ChargeSession.new()
+			charge_session=ChargeSession.new("theater", s)
 			return {"handled":true,"world_effect":{"script":"res://scripts/media/c3_charging.gd","session":charge_session,"on_event":"c3_charge_result","target_id":"theater_charging_station"}}
 		"poster":
 			if t.phase!="entry_ticket" or t.posterCleaned: return locked()
@@ -674,13 +749,17 @@ func theater_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 				t.propGhostRead=true
 				t.managerHintRead=true
 				return tell_lines(s,"theater_prop_ghost",[prose("chapter3-theater.content","prop.ghost"),prose("chapter3-theater.content","prop.managerHint")])
-			return response(prose("chapter3-theater.content","prop.opened" if t.propBoxOpened else "prop.locked"))
+			var inspection: Dictionary=response(prose("chapter3-theater.content","prop.opened" if t.propBoxOpened else "prop.locked"))
+			inspection.open_theater_device="chest"
+			return inspection
 		"scanner":
 			if t.phase!="prop_setup" or dark or not own(s,"temporaryTheaterTicket"): return locked()
 			consume(s,"temporaryTheaterTicket")
 			s.items.fluorescentBrush=true
 			t.propBoxOpened=true
-			return response(prose("chapter3-theater.content","prop.scannerAccepted"))
+			var accepted: Dictionary=response(prose("chapter3-theater.content","prop.scannerAccepted"))
+			accepted.open_theater_device="chest"
+			return accepted
 		"vent":
 			if t.phase!="prop_setup" or dark or not own(s,"fluorescentBrush"): return locked()
 			consume(s,"fluorescentBrush")
@@ -709,6 +788,13 @@ func targets(scene: String, s: Dictionary) -> Array:
 	if not active: return list
 	for entry: Dictionary in definitions(scene,s):
 		if scene=="theater_interior":
+			if entry.kind=="rehearsal":
+				if not bool(s.theaterHunt.get("admitted",false)) or str(s.theaterHunt.phase) not in REHEARSAL_PHASES: continue
+				var rehearsal_target: Dictionary=from_source(entry,"c3_rehearsal_begin")
+				rehearsal_target.art="res://assets/native/theater_rebuild_20261020/fan_rack.png"
+				rehearsal_target.art_size=[120,100]
+				list.append(rehearsal_target)
+				continue
 			var allowed: Array={"entry_ticket":["poster","kiosk","gate","charger"],"program_search":["console","program","charger"],"prop_setup":["prop","scanner","vent","charger"],"spotlight_ready":["console","charger"],"complete":["exit","charger"]}.get(s.theaterHunt.phase,["charger"])
 			if entry.kind not in allowed: continue
 		if scene=="canteen_interior":

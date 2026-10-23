@@ -1,3 +1,4 @@
+import { PutPhoneOnDesk } from "../P01_Desktop/EarlyDeskCharging";
 import { useEffect, useState } from "react";
 import bonsaiBloomUrl from "../../../assets/ui/bonsai_bloom.png";
 import bonsaiBudUrl from "../../../assets/ui/bonsai_bud.png";
@@ -96,6 +97,7 @@ export function BonsaiScene({ state, router, events }: SceneComponentProps) {
 
   return (
     <section className={`app-screen bonsai-scene ${bloomed ? "is-bloomed" : ""}`} aria-label="盆栽">
+      <PutPhoneOnDesk state={state} router={router} events={events} />
       <div className="bonsai-stage" style={{ transform: `scale(${1 + stage * 0.045})` }}>
         <button
           type="button"

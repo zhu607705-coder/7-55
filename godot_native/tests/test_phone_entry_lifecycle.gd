@@ -102,7 +102,7 @@ func run() -> void:
 		check(session().phase=="loading" and find_named(shell.page_body,"ZjudingReentryHint")!=null,"blocked Zjuding requires reentry even after WiFi restored")
 		var hint: Control=find_named(shell.page_body,"ZjudingReentryHint")
 		var exit_button: Control=find_named(shell.page_body,"ZjudingLoadingExit")
-		check(hint.get_global_rect().end.y<=exit_button.get_global_rect().position.y,"blocked-entry hint does not overlap exit")
+		check(not hint.get_global_rect().intersects(exit_button.get_global_rect()),"blocked-entry hint does not overlap exit")
 		check(exit_button.size.y*exit_button.get_global_transform().get_scale().y>=28,"source exit retains physical28px pointer floor")
 		state.open_page("phone_home"); state.open_page("zjuding"); await frames(); await tick(1499)
 		check(session().phase=="loading","Zjuding ready waits1500ms")

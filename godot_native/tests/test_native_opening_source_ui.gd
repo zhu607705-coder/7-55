@@ -63,7 +63,7 @@ func check_button(name: String,fill: Color,ink: Color) -> Button:
 	check(button.get_theme_stylebox("pressed").bg_color==fill,"source pressed palette "+name)
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 		check(button.has_theme_stylebox_override(mode),"complete local state "+name+" "+mode)
-		check(button.get_theme_stylebox(mode).corner_radius_top_left==0,"sharp source edge "+mode)
+		check(button.get_theme_stylebox(mode).corner_radius_top_left==4 and not button.get_theme_stylebox(mode).anti_aliasing,"shared low-resolution edge "+mode)
 	check(rect(button).size.x>=44 and rect(button).size.y>=44,"big button keeps readable pointer target "+name)
 	check(16*scale>=14,"big button readable at tested physical scale "+name)
 	return button

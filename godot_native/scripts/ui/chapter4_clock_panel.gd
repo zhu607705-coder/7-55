@@ -17,6 +17,7 @@ var pending:=false
 var feedback_label:Label
 var submit_button:Button
 var close_button:Button
+var back_button:Button
 var font:Font
 var layout_pending:=false
 class ClockFace extends Control:
@@ -45,7 +46,7 @@ func configure(state:Dictionary,choices:Array,required:String,pixel_font:Font)->
 	var header=HBoxContainer.new();body.add_child(header)
 	var title=label("大厅旧钟",24,Color("ead8a9"));title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title)
 	close_button=button("× 返回",func():close_requested.emit());close_button.custom_minimum_size=Vector2(90,44);header.add_child(close_button)
-	body.add_child(label("转动外圈，比较能够停住的刻度",18,Color("b0bcae")))
+	body.add_child(label("选择刻度，比较能够停住的位置",18,Color("b0bcae")))
 	var scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;body.add_child(scroll)
 	grid=GridContainer.new();grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_theme_constant_override("h_separation",18);grid.add_theme_constant_override("v_separation",12);scroll.add_child(grid)
 	face=ClockFace.new();face.font=font;face.custom_minimum_size=Vector2(220,220);face.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_child(face)
@@ -56,7 +57,7 @@ func configure(state:Dictionary,choices:Array,required:String,pixel_font:Font)->
 	feedback_label=label("",16,Color("b9d88b"));feedback_label.custom_minimum_size.y=38;body.add_child(feedback_label)
 	var commands=HBoxContainer.new();commands.add_theme_constant_override("separation",10);body.add_child(commands)
 	submit_button=button("固定这一刻度",submit);submit_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;commands.add_child(submit_button)
-	var back=button("暂不调节",func():close_requested.emit());back.size_flags_horizontal=Control.SIZE_EXPAND_FILL;commands.add_child(back)
+	back_button=button("暂不调节",func():close_requested.emit());back_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;commands.add_child(back_button)
 	body.add_child(label("← / → 选择刻度 · Enter 确认 · Esc 返回",14,Color("b0bcae")))
 	refresh();return true
 func label(text:String,points:int,ink:Color)->Label:
@@ -112,6 +113,8 @@ func owns_feedback()->bool:
 	return live and pending
 func handle_key(event:InputEventKey)->bool:
 	if not live or not event.pressed or event.echo:return false
+	# Return controls keep native activation instead of submitting a clock choice.
+	if event.keycode in [KEY_ENTER,KEY_KP_ENTER,KEY_SPACE] and (close_button.has_focus() or back_button.has_focus()):return false
 	if event.keycode in [KEY_LEFT,KEY_UP]:choose(selected-1);return true
 	if event.keycode in [KEY_RIGHT,KEY_DOWN]:choose(selected+1);return true
 	if event.keycode in [KEY_ENTER,KEY_KP_ENTER]:submit();return true

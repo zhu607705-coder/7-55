@@ -16,6 +16,9 @@ func run()->void:
 	if failures:quit(1);return
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
+	# This layout fixture reuses a previously visited library caption.
+	state.d.native.chapter=2;state.d.native.scene="library_interior"
+	state.d.ui.libraryFinalsPhase="evidence_gathering";shell._refresh();await frames()
 	for dimensions:Vector2i in [Vector2i(1440,900),Vector2i(390,844),Vector2i(844,390)]:
 		await configure(dimensions)
 		var world:Control=shell.world
@@ -46,17 +49,21 @@ func run()->void:
 		shell._show_world_mobile();shell._layout_toast()
 		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,.04),"handoff preserves a notice's final40ms without extending it")
 		world.subtitle_left=3.25
+		var unread_text:String=world.subtitle
+		var unread_seconds:float=float(shell.notice_queue.current.remaining)
 		var view:Control=shell.library_story_host.view
 		view.session=SourceLine.new();shell.library_story_host.current=view.session;view.tick();shell._layout();await frames(2);view.tick()
 		var hud:Dictionary=world.hud_metrics(world._hud_line())
 		var surface:Rect2=shell.world_view.get_global_rect()
 		var feedback_rect:=Rect2(surface.position+hud.body_rect.position*world.hud_display_scale(),hud.body_rect.size*world.hud_display_scale())
-		check(not feedback_rect.intersects(view.panel.get_global_rect()),"earned feedback and library dialogue never overlap")
+		world._sync_selected_overlay()
+		check(world._exploration_overlay_blocked() and not world.overflow_feedback.visible and not world.selected_overlay.visible,"native right-side dialogue suppresses exploration help rather than cropping the world")
+		check(shell.notice_queue.current.get("text","")==unread_text and is_equal_approx(float(shell.notice_queue.current.get("remaining",-1)),unread_seconds),"suppressed queued feedback retains its original text and unread lifetime in the queue owner")
 		check(view.body.get_theme_font("font").get_multiline_string_size(view.body.text,HORIZONTAL_ALIGNMENT_LEFT,view.body.size.x,view.body.get_theme_font_size("font_size")).y<=view.body.size.y,"full library line is visible")
 		view.session=null;shell.library_story_host.current=null;view.tick();shell._layout();await frames(2)
 		world.subtitle="";world._update_camera()
 		var plain:Dictionary=world.hud_metrics("")
-		check(is_equal_approx(plain.body_rect.end.y,world.size.y-plain.body_gap),"closing story restores the regular footer")
+		check(is_equal_approx(plain.body_rect.end.y,(shell.world_tasks.position.y-shell.world_view.get_global_rect().position.y)/world.hud_display_scale()-plain.body_gap),"closing story restores the regular footer")
 		check(JSON.stringify(state.d)==facts,"layout and notice transfer never mutate story/save state")
 		var text_scale_before:float=state.d.native.settings.text_scale
 		for scale:float in [1.25,3.0]:
@@ -67,13 +74,15 @@ func run()->void:
 			var stacked:Dictionary=world.hud_metrics(world.subtitle)
 			var shown:Rect2=shell.world_view.get_global_rect()
 			var stacked_rect:=Rect2(shown.position+stacked.body_rect.position*world.hud_display_scale(),stacked.body_rect.size*world.hud_display_scale())
-			check(not stacked_rect.intersects(view.panel.get_global_rect()),"enlarged Library dialogue and full feedback share a disjoint budget")
+			world._sync_selected_overlay()
+			check(not world.overflow_feedback.visible and not world.selected_overlay.visible,"enlarged right-side dialogue has exclusive text ownership")
+			check(is_equal_approx(stacked.body_rect.end.y,minf(world.size.y-stacked.body_gap,(shell.world_tasks.position.y-shell.world_view.get_global_rect().position.y)/world.hud_display_scale()-stacked.body_gap)),"right-side dialogue never turns its top into the world bottom "+str([dimensions,scale,stacked.body_rect.end.y,plain.body_rect.end.y,plain.body_gap,stacked.body_gap]))
 			view.session=null;shell.library_story_host.current=null;view.tick();shell._layout();world.queue_redraw();await frames(2)
 			var large:Dictionary=world.hud_metrics(world.subtitle)
 			var controls:Dictionary=world.mobile_control_metrics()
 			check(Rect2(Vector2.ZERO,world.size).encloses(large.body_rect),"enlarged feedback stays inside viewport")
 			if world.mobile_exploration:
-				check(controls.stick_rect.position.y>=large.header_height and not controls.stick_rect.intersects(large.body_rect),"enlarged feedback preserves header and movement target")
+				check(controls.gestureArea.position.y>=large.header_height and not controls.gestureArea.intersects(large.body_rect) and controls.gestureArea.size.x>=200 and controls.gestureArea.size.y>=44,"enlarged feedback preserves usable direct movement area below header")
 			if large.body_overflow:
 				check(world.overflow_feedback.visible and world.overflow_feedback.label.text==world.subtitle,"overflow retains every original character")
 				var zoom_before:float=world.zoom

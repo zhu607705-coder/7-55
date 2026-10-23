@@ -5,7 +5,7 @@ var checks := 0
 var failures := 0
 var fixture_directory := ""
 var original_bytes: Dictionary = {}
-class Transport extends RefCounted:
+class LegacyTransport extends RefCounted:
 	var requests: Array = []
 	var retries: Array = []
 	var acknowledgements: Array = []
@@ -14,6 +14,12 @@ class Transport extends RefCounted:
 	func retry(raw: String) -> void: retries.append(JSON.parse_string(raw))
 	func acknowledge(id: String, accepted: bool, message: String) -> void: acknowledgements.append({"id": id, "accepted": accepted, "message": message})
 	func startPrefetch() -> void: prefetches += 1
+class Transport extends LegacyTransport:
+	var prefetch_families: Array = []
+	var windows: Array = []
+	func setPrefetchFamilies(raw: String) -> void:
+		prefetch_families = JSON.parse_string(raw)
+		windows.append(prefetch_families.duplicate())
 class Probe extends "res://scripts/platform/web_content.gd":
 	var directory := ""
 	var mounts := 0
@@ -49,6 +55,8 @@ func manifest(records: Array) -> Dictionary:
 	return {"schema": "755-web-content-v1", "core": {"file": "core.pck", "bytes": 1, "sha256": "0".repeat(64)}, "packs": records.duplicate(true), "backgroundOrder": ["chapter2", "chapter3", "chapter35", "chapter4"]}
 func begin_wait(coordinator: Node, families: Array, result: Array) -> void:
 	result.append(await coordinator.ensure_families(families))
+func begin_state_wait(coordinator: Probe, snapshot: Dictionary, result: Array) -> void:
+	result.append(await coordinator.ensure_state(snapshot))
 func new_probe(records: Array, host: Transport) -> Probe:
 	var result := Probe.new(); result.directory = fixture_directory; root.add_child(result)
 	check(result._configure_manifest(manifest(records), host), "valid fixed-family manifest is accepted")
@@ -91,6 +99,11 @@ func run() -> void:
 	fixture_directory = ProjectSettings.globalize_path("user://web-content-unit")
 	DirAccess.make_dir_recursive_absolute(fixture_directory)
 	var state: Node = root.get_node("State")
+	check(Coordinator.next_prefetch_families({"native":{"chapter":1}}) == ["chapter2"], "fresh chapter warms only chapter two")
+	check(Coordinator.next_prefetch_families({"native":{"chapter":2}}) == ["chapter3"], "library entry advances the one-family lookahead")
+	check(Coordinator.next_prefetch_families({"native":{"chapter":3}}) == ["chapter35"], "canteen entry warms only the following lake segment")
+	check(Coordinator.next_prefetch_families({"native":{"chapter":3,"scene":"qizhen_lake"}}) == ["chapter4"], "lake entry warms chapter four")
+	check(Coordinator.next_prefetch_families({"native":{"chapter":4}}).is_empty(), "final chapter has no speculative future content")
 	state.d = state.initial(); check(state.save_game(), "isolated baseline save commits")
 	var before: Dictionary = state.d.duplicate(true)
 	var primary := FileAccess.get_file_as_bytes(state.SAVE_PATH)
@@ -121,6 +134,10 @@ func run() -> void:
 	native_fatal.queue_free()
 	check(Coordinator.required_families(before).is_empty(), "fresh C1 never waits for deferred chapter resources")
 	check(Coordinator.required_families({"native": {"chapter": 2}}) == ["chapter2"], "C2 requires its own family")
+	check(Coordinator.required_families({"native": {"chapter": 1,"scene":"dorm_hub"}}) == ["chapter2"], "a retained dorm checkpoint requires its actors and room resources even with an older chapter field")
+	check(Coordinator.required_families({"native":{"chapter":1,"page":"cc98"},"actOne":{"phase":"prologue"}}).is_empty(),"first-chapter network notice does not force later authentication art")
+	check(Coordinator.required_families({"native":{"chapter":1,"page":"cc98"},"actOne":{"phase":"movement_required"}})==["chapter2"],"older authentication app checkpoint loads its required background")
+	check(Coordinator.required_families({"native":{"chapter":1,"page":"photos"}})==["chapter2"],"opening the shared photo album loads its assets on demand")
 	check(Coordinator.required_families({"native": {"chapter": 3}}) == ["chapter2", "chapter3"], "C3 conservatively retains earlier item and return art")
 	check(Coordinator.required_families({"native": {"chapter": 3, "scene": "qizhen_lake"}}) == ["chapter2", "chapter3", "chapter35"], "lake scene distinguishes C3.5 from shared numeric chapter")
 	check(Coordinator.required_families({"native": {"chapter": 3, "page": "c35_voice"}}).size() == 3, "phone-only interlude restore requires C3.5 media")
@@ -144,10 +161,11 @@ func run() -> void:
 	var blocking_events: Array = []
 	coordinator.blocking_changed.connect(func(value: bool): blocking_events.append(value))
 	var first: Array = []; var second: Array = []
-	begin_wait(coordinator, ["chapter2"], first)
+	begin_state_wait(coordinator, {"native":{"chapter":2}}, first)
 	begin_wait(coordinator, ["chapter2"], second)
 	check(coordinator.is_blocking() and coordinator._overlay.visible and host.requests == [[a.id, b.id]], "concurrent waits share one request and a visible required-content overlay")
 	check(first.is_empty() and second.is_empty(), "a family cannot resolve with chunks still missing")
+	check(host.windows.is_empty(), "required content does not advance optional prefetch before mounting")
 	var detached: Dictionary = coordinator.read_snapshot()
 	detached.packs[0].status = "ready"; detached.requiredIds.clear()
 	check(coordinator.read_snapshot().packs[0].status == "requested" and coordinator.read_snapshot().requiredIds.size() == 2, "read-only snapshots detach nested pack and waiter arrays")
@@ -171,6 +189,7 @@ func run() -> void:
 	deliver(coordinator, b.id)
 	await process_frame
 	check(first == [true] and second == [true] and coordinator.ready_for_state({"native": {"chapter": 2}}), "all chunks release every waiting consumer")
+	check(host.prefetch_families == ["chapter3"] and host.windows.size() == 1, "actual C2 state wait advances lookahead only after both PCKs mount")
 	check(not coordinator.is_blocking() and not coordinator._overlay.visible and blocking_events == [true, false], "overlay and blocking lease retire after the whole family mounts")
 	var count := host.requests.size()
 	check(await coordinator.ensure_families(["chapter2"]), "a later consumer of an already ready family succeeds")
@@ -190,6 +209,19 @@ func run() -> void:
 	coordinator.reject_mount = false; coordinator._retry_required(); deliver(coordinator, d.id)
 	await process_frame
 	check(coordinator.mounts == 5 and fourth == [true] and not coordinator.is_blocking(), "user retry can recover a mount failure without restarting the current chapter")
+	coordinator._prefetch_window_set = false
+	check(await coordinator.ensure_state({"native":{"chapter":4}}) and host.windows.back().is_empty(), "a fully mounted C4 save explicitly clears the host lookahead")
+	var old_host := LegacyTransport.new()
+	var legacy := Probe.new(); root.add_child(legacy)
+	legacy.directory = fixture_directory
+	check(legacy._configure_manifest(manifest([a]), old_host), "old cached loader remains a supported explicit transport")
+	var legacy_result: Array = []
+	begin_state_wait(legacy, {"native":{"chapter":2}}, legacy_result)
+	check(old_host.requests == [[a.id]] and legacy_result.is_empty(), "old loader still receives required PCK requests")
+	deliver(legacy, a.id); await process_frame
+	legacy.start_prefetch()
+	check(legacy_result == [true] and old_host.prefetches == 0 and not legacy._prefetch_started, "old loader completes required state without unbounded optional prefetch or missing-method calls")
+	legacy.queue_free()
 	check(not await coordinator.ensure_families(["untrusted_family"]), "unexpected family request is rejected")
 	var backup_after := FileAccess.get_file_as_bytes(state.BACKUP_PATH) if FileAccess.file_exists(state.BACKUP_PATH) else PackedByteArray()
 	check(state.d == before and FileAccess.get_file_as_bytes(state.SAVE_PATH) == primary and backup_after == backup, "availability, rejection, retries and mounting never change story or either save")

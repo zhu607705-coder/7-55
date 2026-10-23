@@ -64,7 +64,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd",
-          "sha256": "09b83c3b3b80f35b2f4bfabbdb774fabb51e437df375699e61ba1d8290c56b41"
+          "sha256": "09b83c3b3b80f35b2f4bfabbdb774fabb51e437df375699e61ba1d8290c56b41",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/chapter4_endless_stair_view.gd.source.txt",
+          "adapted_sha256": "5bf666830b3d8e2345ecd11fdc6b56ad5edd90f354371fe9d6f2e020bf09d8e2",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. The original stair_text.ttf remains exclusively on physical Label3D wall lettering; instruction, start/back actions, corner HUD and subtitle share the common UI font. 2026-10-22 PR #159 motion-only adaptation: reuse original front/back frames for takeoff/gather/descent and seven-tick landing recovery across facing changes; held-phone sockets follow the same original pixels. Verified against unchanged physics/model/sole contacts by 11 native stages and matched actual renders at a4b5a67 (run 39748220942). No camera, input, source texture, story or save changes."
         },
         {
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd.uid",
@@ -80,7 +83,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/endless_stair_gait.gd",
-          "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b"
+          "sha256": "a563bf6ae01bb59e304e109db33e762999120accb60420e5e2b48f127c7f975b",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/endless_stair_gait.gd.source.txt",
+          "adapted_sha256": "37c09b942464c73ced569621880a082a9781bccd3e615d7931930b4f54cfe227",
+          "reason": "2026-10-22 PR #159 motion-only adaptation: continue landing recovery through front/back-to-side turns by compressing only original upper pixels toward the pelvis, preserving independently solved shoe contacts and shared gait phase. Include recovery in mesh cache identity so stopping cannot freeze the deformation. Original PR #143 bytes remain verified in the scoped snapshot; runtime changes passed 11 native stages and matched actual renders at a4b5a67 (run 39748220942)."
         },
         {
           "path": "godot_native/scripts/presentation/endless_stair_guard_feedback.gd",
@@ -261,8 +267,8 @@
           "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd",
           "sha256": "a2fd233abebb166cec85201e728922516a881d443776c2791e88857343d84537",
           "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_entrance_preview.gd.source.txt",
-          "adapted_sha256": "fd206df4783a548e086a072bd71f656ba49d029c19769bf364b3c9d101937192",
-          "reason": "Preserve PR #144 source bytes while adapting its read-only kayak presentation to the current native RigScene; paper/HUD painter order and original input/physics remain unchanged. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent."
+          "adapted_sha256": "f3d27f2ab0d623bee9f7cfe5499995d8a55f28d1473530e0bc36097a6d8c0cdc",
+          "reason": "Preserve PR #144 source bytes while adapting its read-only kayak presentation to the current native RigScene; paper/HUD painter order and original input/physics remain unchanged. Also discard cancelled touch gestures and late releases so cancellation cannot create a paddle intent. 2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_entrance_preview.gd.uid",
@@ -270,7 +276,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_hop_study.gd",
-          "sha256": "4dae9513de92727658a11ccf07854959b64416b28cde6de0cd8f7f2695f5e738"
+          "sha256": "4dae9513de92727658a11ccf07854959b64416b28cde6de0cd8f7f2695f5e738",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_hop_study.gd.source.txt",
+          "adapted_sha256": "2c95b1daf8c9039cc739d7ff0d8aecf578b4bc13492a03d86154707231ac1671",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_hop_timeline.gd",
@@ -278,7 +287,10 @@
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_swim_study.gd",
-          "sha256": "ed774938efe5d375b6afeb2f8129717e8081d8618fccd3ae4ecd2ffd8889c78d"
+          "sha256": "ed774938efe5d375b6afeb2f8129717e8081d8618fccd3ae4ecd2ffd8889c78d",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr144/qizhen_swan_swim_study.gd.source.txt",
+          "adapted_sha256": "16c94f78b4a1300f0bac6c9724eb0f3a0e9ca7f14ff2a685d2a8a076bcd6ad07",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. Only the preview/study font assignment changes; original swan art, pose and motion logic remain byte-identical."
         },
         {
           "path": "godot_native/scripts/presentation/qizhen_swan_swim_visual.gd",
@@ -502,7 +514,10 @@
       "source_files": [
         {
           "path": ".github/workflows/qizhen-playable-example.yml",
-          "sha256": "e11c9185099ec3e3d33c465307c5bccf52aef7e23ef343ec563367bf416e6f70"
+          "sha256": "e11c9185099ec3e3d33c465307c5bccf52aef7e23ef343ec563367bf416e6f70",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr146/qizhen-playable-example.yml.source.txt",
+          "adapted_sha256": "922ffa3a330ba90fe4b865d595c5a5f5cc547c5891e3878262695ee4246548c8",
+          "reason": "2026-10-22 user-requested Godot 4.7.1 baseline: adapt only the official editor installation label, release URL, executable filename and archive SHA256 verification. The original PR workflow bytes are preserved exactly from merged main 32dfc73c113de980ca42b1c48a893d068e122127 and still match sha256; triggers, permissions, test/capture commands, project resources and Blender remain unchanged. This original workflow had no archive digest check; the adaptation adds the verified official ZIP SHA256 before extraction."
         },
         {
           "path": "examples/qizhen_playable_chase/.gitignore",
@@ -947,7 +962,10 @@
       "source_files": [
         {
           "path": ".github/workflows/qizhen-large-world-example.yml",
-          "sha256": "c9e9f4cb7f647db3a6b1320eca113f80b331425ea87cba545bde47b96fda2559"
+          "sha256": "c9e9f4cb7f647db3a6b1320eca113f80b331425ea87cba545bde47b96fda2559",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr147/qizhen-large-world-example.yml.source.txt",
+          "adapted_sha256": "8199392d45a04777fe08273a4c30247184651d989813eec4100d824c40ddacc1",
+          "reason": "2026-10-22 user-requested Godot 4.7.1 baseline: adapt only the official editor installation label, release URL, executable filename and archive SHA256 verification. The original PR workflow bytes are preserved exactly from merged main 32dfc73c113de980ca42b1c48a893d068e122127 and still match sha256; triggers, permissions, test/capture commands, project resources and Blender remain unchanged."
         },
         {
           "path": "examples/qizhen_large_world/.gitignore",
@@ -1216,7 +1234,10 @@
       "source_files": [
         {
           "path": ".github/workflows/blender-stair-sample.yml",
-          "sha256": "1068ca344e171aa4318fc29ed9c35b7b841809f560004677e117e7554e7b76e0"
+          "sha256": "1068ca344e171aa4318fc29ed9c35b7b841809f560004677e117e7554e7b76e0",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr148/blender-stair-sample.yml.source.txt",
+          "adapted_sha256": "dee48513f811bc3dc170a2c1a722638dc6f9e8224b6a38ad3c68e223eb2d89a9",
+          "reason": "2026-10-22 user-requested Godot 4.7.1 baseline: adapt only the official editor installation label, release URL, executable filename and archive SHA256 verification. The original PR workflow bytes are preserved exactly from merged main 32dfc73c113de980ca42b1c48a893d068e122127 and still match sha256; triggers, permissions, test/capture commands, project resources and Blender remain unchanged."
         },
         {
           "path": "examples/blender_stair_sample/ASSET_LICENSES.md",

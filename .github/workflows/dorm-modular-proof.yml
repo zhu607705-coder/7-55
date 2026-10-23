@@ -1,0 +1,54 @@
+name: Dorm modular candidate proof
+on:
+  push:
+    branches: [codex/dorm-modular-assets-20261021]
+    paths: ['godot_native/**', '.github/workflows/dorm-modular-proof.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned renderer
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo "c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip" | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      - name: Sync, import, verify independent scene and original paper
+        run: |
+          node godot_native/tools/sync_source.mjs
+          GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
+          mkdir -p /tmp/dorm-profile/{data,config,cache,state}
+          export XDG_DATA_HOME=/tmp/dorm-profile/data XDG_CONFIG_HOME=/tmp/dorm-profile/config XDG_CACHE_HOME=/tmp/dorm-profile/cache XDG_STATE_HOME=/tmp/dorm-profile/state
+          godot --headless --path godot_native --script res://tests/test_dorm_modular.gd
+          godot --headless --path godot_native --script res://tests/test_canteen_paper_art.gd
+          node godot_native/tests/verify_canteen_paper_art_source.mjs
+      - name: Capture actual candidate scene and canonical paper poses
+        run: |
+          set -o pipefail
+          mkdir -p dorm-proof /tmp/dorm-profile/{data,config,cache,state}
+          export XDG_DATA_HOME=/tmp/dorm-profile/data XDG_CONFIG_HOME=/tmp/dorm-profile/config XDG_CACHE_HOME=/tmp/dorm-profile/cache XDG_STATE_HOME=/tmp/dorm-profile/state
+          export DORM_CAPTURE_DIR="$GITHUB_WORKSPACE/dorm-proof"
+          git rev-parse HEAD > dorm-proof/source-sha.txt
+          timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_dorm_modular.gd 2>&1 | tee dorm-proof/render.log
+          test -f dorm-proof/01-source-candidate.png
+          test -f dorm-proof/02-separated-objects.png
+          test -f dorm-proof/paper-3.png
+          test -f dorm-proof/canonical-paper--1.png
+          test -f dorm-proof/canonical-paper-3.png
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Screenshot failed:' dorm-proof/render.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dorm-modular-proof
+          path: |
+            dorm-proof/
+            import-report.json
+          if-no-files-found: error

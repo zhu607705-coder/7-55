@@ -4,9 +4,11 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream, existsSync } from 'node:fs';
-import { mkdir, mkdtemp, readFile, readdir, writeFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, writeFile, rm, open } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { phoneRecoveryCase } from './web_phone_recovery.mjs';
+import { phoneNavigationCase } from './web_phone_navigation.mjs';
 
 const args = process.argv.slice(2);
 function option(name, fallback) { const inline = args.find(arg => arg.startsWith(`--${name}=`)); if (inline) return inline.slice(name.length + 3); const i = args.indexOf(`--${name}`); return i < 0 ? fallback : args[i + 1]; }
@@ -19,6 +21,7 @@ const c1Fixture = option('c1-fixture', process.env.GODOT_WEB_C1_FIXTURE || (fixt
 const legacySave = option('legacy-save', process.env.GODOT_WEB_LEGACY_SAVE);
 const only = option('only', 'all');
 const scenarios = option('scenarios', 'all');
+if (!['all', 'bike', 'media', 'durability', 'durability-switch', 'streaming', 'mobile-world', 'phone-recovery', 'phone-navigation', 'corners', 'checkin', 'words', 'library', 'boot-font-failure', 'resource-loading'].includes(scenarios)) throw new Error(`Unknown scenario: ${scenarios}`);
 const importSettleMs = Number(option('import-settle-ms', 1600));
 const bootTimeout = Number(option('boot-timeout', 360000));
 const chromeArgs = args.flatMap((arg, i) => arg.startsWith('--chrome-arg=') ? [arg.slice('--chrome-arg='.length)] : arg === '--chrome-arg' && args[i + 1] ? [args[i + 1]] : []);
@@ -50,17 +53,29 @@ if (args.includes('--self-test-paths')) {
 }
 const interval = ms => new Promise(resolve => setTimeout(resolve, ms));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
-const report = { schema: '755-godot-web-acceptance-v1', startedAt: new Date().toISOString(), url,
+const report = { schema: '755-godot-web-acceptance-v1', startedAt: new Date().toISOString(), url, scenarios,
   passed: false, checks: [], cases: [], network: [], errors: [], limitations: [
     'Automated browser input and actual Godot clocks; this does not prove human audio audibility or a fresh manual four-chapter campaign.',
     'Chapter saves must be ordinary validated portable saves earned by a recorded controller campaign. Import is performed through the shipped file picker.',
     'This runner uses an isolated Chromium profile. Other browser engines and physical phones require separate acceptance.'
   ] };
+if (scenarios === 'mobile-world') report.limitations.push('This focused scenario imports one controller-earned C2 fixture and tests actual world input; C3/C4, deeper campaign routes and full media lifecycle are not run here.');
+if (scenarios === 'phone-recovery') report.limitations.push('Zero/one-percent legacy files are explicitly constructed compatibility variants of an earned plant boundary. Their construction is not browser evidence; actual charging and two-stage Tiyi input are tested separately.');
 const runnerBytes = await readFile(new URL(import.meta.url));
 report.runnerSha256 = hash(runnerBytes);
 if (exportDir && existsSync(path.join(exportDir, 'build-manifest.json'))) report.exportManifest = JSON.parse(await readFile(path.join(exportDir, 'build-manifest.json'), 'utf8'));
 await mkdir(output, { recursive: true });
 await writeFile(path.join(output, 'runner-source.mjs'), runnerBytes);
+if (scenarios === 'phone-navigation') {
+  const dependency = await readFile(new URL('./web_phone_navigation.mjs', import.meta.url));
+  report.phoneNavigationRunnerSha256 = hash(dependency);
+  await writeFile(path.join(output, 'phone-navigation-runner.mjs'), dependency);
+}
+if (scenarios === 'phone-recovery') {
+  const dependency = await readFile(new URL('./web_phone_recovery.mjs', import.meta.url));
+  report.phoneRecoveryRunnerSha256 = hash(dependency);
+  await writeFile(path.join(output, 'phone-recovery-runner.mjs'), dependency);
+}
 function check(ok, label, details) { const row = { ok: !!ok, label, ...(details === undefined ? {} : { details }) }; report.checks.push(row); if (!ok) throw new Error(label); }
 async function persist() { await writeFile(path.join(output, 'web-acceptance.json'), JSON.stringify(report, null, 2) + '\n'); }
 async function poll(fn, label, timeout = 20000) {
@@ -91,12 +106,14 @@ async function prepareDeliveryEvidence() {
   const content = await manifest('content-manifest.json');
   const value = build.value, chunks = value.bootChunks;
   check(value.runtime === 'godot-web' && value.storyOnly === true && Array.isArray(value.files), 'actual build manifest declares the independent story-only release');
-  check(content.value.schema === '755-web-content-v1' && Array.isArray(content.value.packs) && content.value.packs.every(pack => !pack.family.startsWith('campus_')), 'actual delivery includes story content without research campus families');
+  check(value.engine === '4.7.1.stable.official' && value.pack?.engine === '4.7.1' && value.fullPack?.engine === '4.7.1', 'actual HTTP build manifest declares the pinned Godot 4.7.1 engine and both PCK identities');
+  check(content.value.schema === '755-web-content-v1' && content.value.engine === '4.7.1' && Array.isArray(content.value.packs) && content.value.packs.every(pack => !pack.family.startsWith('campus_')), 'actual delivery includes story content without research campus families');
   check(chunks?.schema === '755-boot-chunks-v1' && chunks.chunkBytes === 1048576 && JSON.stringify(Object.keys(chunks.resources || {}).sort()) === '["index.pck","index.wasm"]', 'actual delivery declares both statically chunked boot resources');
   const files = new Map(value.files.map(file => [file.path, file]));
   check(files.size === value.files.length, 'actual build file identities are unique');
   const transport = [];
   const bootByUrl = new Map();
+  const deferredChunksByUrl = new Map();
   const originalUrls = new Set();
   for (const name of ['index.pck', 'index.wasm']) {
     const resource = chunks.resources[name], full = files.get(name);
@@ -120,11 +137,25 @@ async function prepareDeliveryEvidence() {
     const listed = files.get(relativePath);
     if (!relativePath.startsWith('content/') || !relativePath.endsWith('.pck') || !listed || listed.bytes !== pack.bytes || listed.sha256 !== pack.sha256) throw new Error(`Deferred PCK identity differs from build: ${pack.file}`);
     transport.push({ ...pack, role: 'deferred-pck', url: assetUrl });
+    if (pack.transportChunks !== undefined) {
+      if (!Array.isArray(pack.transportChunks) || pack.transportChunks.length !== Math.ceil(pack.bytes / 1048576)) throw new Error(`Invalid deferred chunk count: ${pack.id}`);
+      let offset = 0;
+      for (const [index, chunk] of pack.transportChunks.entries()) {
+        const chunkUrl = new URL(chunk.file, base).href;
+        const { relativePath: chunkPath } = artifactLocation(chunkUrl);
+        const listedChunk = files.get(chunkPath);
+        const expectedPath = `content/chunks/${pack.id}-${String(index + 1).padStart(4, '0')}-${chunk.sha256?.slice(0, 16)}.bin`;
+        if (chunkPath !== expectedPath || chunk.offset !== offset || chunk.bytes !== Math.min(1048576, pack.bytes - offset) || !/^[a-f0-9]{64}$/.test(chunk.sha256) || !listedChunk || listedChunk.bytes !== chunk.bytes || listedChunk.sha256 !== chunk.sha256 || deferredChunksByUrl.has(chunkUrl)) throw new Error(`Invalid deferred chunk identity: ${pack.id}:${index}`);
+        const chunkRecord = { ...chunk, resource: pack.file, family: pack.family, role: 'deferred-chunk', url: chunkUrl };
+        deferredChunksByUrl.set(chunkUrl, chunkRecord); transport.push(chunkRecord); offset += chunk.bytes;
+      }
+      check(offset === pack.bytes, `deferred chunk map exactly covers ${pack.id}`);
+    }
   }
   check(new Set(transport.map(asset => asset.url)).size === transport.length, 'actual boot and deferred transport paths have no duplicates');
   const evidence = { buildManifestSha256: build.sha256, contentManifestSha256: content.sha256, bootResources: chunks.resources, transportFiles: transport.map(({ role, resource, file, url, bytes, sha256 }) => ({ role, resource, file, url, bytes, sha256 })), originalArtifactsRetained: [...originalUrls], originalArtifactsClaimedAsBrowserDownloads: false };
   report.delivery = evidence;
-  return { build: value, content: content.value, bootByUrl, originalUrls, transport, evidence };
+  return { build: value, content: content.value, bootByUrl, deferredChunksByUrl, originalUrls, transport, evidence };
 }
 async function verifyColdBoot(start) {
   await poll(() => [...delivery.bootByUrl.keys()].every(url => active.bootResponses.some(record => record.url === url && record.requestAt >= start && !record.pending)), 'every actual cold boot chunk has an independently inspected browser response', bootTimeout);
@@ -140,9 +171,9 @@ async function verifyColdBoot(start) {
 async function evaluate(expression) { const result = await active.cdp.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }); if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text); return result.result.value; }
 async function snapshot() { return evaluate('window.__GODOT_755__?.snapshot?.() ?? null'); }
 const state = value => value?.state;
-async function key(key, code, down) { await active.cdp.send('Input.dispatchKeyEvent', { type: down ? 'keyDown' : 'keyUp', key, code, windowsVirtualKeyCode: ({ Enter: 13, Escape: 27, F10: 121, ArrowLeft: 37, ArrowRight: 39, ArrowUp: 38, ArrowDown: 40, Space: 32 })[code] || 0 }); }
+async function key(key, code, down) { if (active.mobileWorld) active.mobileWorld.inputs.push({ at: Date.now(), method: 'Input.dispatchKeyEvent', key, code, down }); await active.cdp.send('Input.dispatchKeyEvent', { type: down ? 'keyDown' : 'keyUp', key, code, windowsVirtualKeyCode: ({ Enter: 13, Escape: 27, F10: 121, ArrowLeft: 37, ArrowRight: 39, ArrowUp: 38, ArrowDown: 40, Space: 32 })[code] || 0 }); }
 async function press(keyName, code = keyName) { await key(keyName, code, true); await interval(65); await key(keyName, code, false); }
-async function clickPoint(point, touch = active.touch) { if (touch) { await active.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...point, id: 1 }] }); await interval(65); await active.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); } else { await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point }); await active.cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point }); await interval(65); await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point }); } }
+async function clickPoint(point, touch = active.touch) { if (active.mobileWorld) active.mobileWorld.inputs.push({ at: Date.now(), method: touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', point, touch }); if (touch) { await active.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...point, id: 1 }] }); await interval(65); await active.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); } else { await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point }); await active.cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point }); await interval(65); await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point }); } }
 async function canvasGeometry() { return evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas');if(!c)return null;const r=c.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,pixelWidth:c.width,pixelHeight:c.height};})()`); }
 async function renderPoint(point, value) { value ||= await snapshot(); const canvas = await canvasGeometry(); const viewport = value.viewport || {}; const width = viewport.width || viewport.size?.x || canvas.pixelWidth; const height = viewport.height || viewport.size?.y || canvas.pixelHeight; return { x: canvas.x + point.x / width * canvas.width, y: canvas.y + point.y / height * canvas.height }; }
 function controls(value) { return value?.visibleControls || []; }
@@ -153,10 +184,121 @@ async function clickControl(nameOrText, match = 'either') {
   await clickPoint(point); await interval(350);
 }
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
-async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = false) {
+// Diagnostic only: one fixed-key readonly transaction, never a save/sync API.
+// Its own bounded lifetime does not alter either acceptance deadline.
+function readOnlySaveProbe(identity) {
+  const result = { ...identity, database: '/userfs', key: '/userfs/SevenFiftyFiveNative/save.json', timings: {} };
+  const mark = phase => { result.timings[phase] = { wallMs: Date.now(), monotonicMs: performance.now() }; };
+  mark('started'); result.documentHidden = document.hidden;
+  return new Promise(resolve => {
+    let db, finished = false;
+    const expired = () => performance.now() - result.timings.started.monotonicMs >= 8000;
+    const closeConnection = reason => {
+      if (!db) return;
+      db.close(); db = undefined; mark('closeRequested'); result.closeReason = reason;
+    };
+    const finish = error => {
+      if (finished) return;
+      finished = true; clearTimeout(timer); closeConnection('diagnostic-finished');
+      if (error) result.error = String(error.message || error);
+      mark('finished'); resolve(result);
+    };
+    const timer = setTimeout(() => finish('diagnostic read limit'), 8000);
+    try {
+      mark('openIssued');
+      const open = indexedDB.open(result.database);
+      // Never create or upgrade the backing store as a side effect of diagnosis.
+      open.onupgradeneeded = () => { open.transaction.abort(); finish('unexpected database upgrade'); };
+      open.onerror = () => finish(open.error || 'database open failed');
+      open.onsuccess = () => {
+        if (finished) { open.result.close(); return; }
+        db = open.result; mark('openSucceeded');
+        if (expired()) { finish('diagnostic read limit'); return; }
+        try {
+          const tx = db.transaction('FILE_DATA', 'readonly'); mark('transactionCreated');
+          const get = tx.objectStore('FILE_DATA').get(result.key); mark('getIssued');
+          get.onsuccess = () => { if (!finished) { mark('getSucceeded'); if (expired()) finish('diagnostic read limit'); } };
+          get.onerror = () => finish(get.error || 'get failed');
+          tx.onerror = () => finish(tx.error || 'transaction failed');
+          tx.onabort = () => finish(tx.error || 'transaction aborted');
+          tx.oncomplete = async () => {
+            if (finished) return;
+            mark('transactionCompleted'); closeConnection('read-transaction-completed');
+            if (expired()) { finish('diagnostic read limit'); return; }
+            try {
+              const value = get.result, raw = value?.contents;
+              if (raw == null) { result.missing = true; finish(); return; }
+              const bytes = raw instanceof ArrayBuffer ? new Uint8Array(raw) : ArrayBuffer.isView(raw) ? new Uint8Array(raw.buffer, raw.byteOffset, raw.byteLength) : null;
+              if (!bytes || bytes.byteLength > 8 * 1024 * 1024) throw new Error('unsupported stored bytes');
+              result.bytes = bytes.byteLength;
+              // This is MEMFS file mtime, NOT a database commit timestamp.
+              result.fileMtimeMs = value.timestamp instanceof Date ? value.timestamp.getTime() : null;
+              mark('hashStarted');
+              const digest = await crypto.subtle.digest('SHA-256', bytes);
+              if (finished) return;
+              if (expired()) { finish('diagnostic read limit'); return; }
+              result.sha256 = Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, '0')).join('');
+              mark('hashCompleted'); finish();
+            } catch (error) { finish(error); }
+          };
+        } catch (error) { finish(error); }
+      };
+    } catch (error) { finish(error); }
+  });
+}
+function createSaveDiagnostics(session, attempt, previousToken, isCurrentSession, now = Date.now) {
+  const diagnostics = attempt.diagnostics = { schema: '755-readonly-save-diagnostics-v1', probes: [] };
+  let generation, pending, stopped = false;
+  const sent = new Set();
+  const stop = reason => {
+    if (stopped) return;
+    stopped = true; diagnostics.stoppedAt = now(); diagnostics.stopReason = reason;
+    if (pending?.status === 'pending') pending.status = 'unfinished-at-stop';
+  };
+  const observe = value => {
+    if (stopped) return;
+    if (!isCurrentSession()) { stop('session-changed'); return; }
+    const receipt = value?.savePersistence;
+    if (!receipt || receipt.token <= previousToken || !Number.isSafeInteger(receipt.token) || !/^[a-f0-9]{64}$/.test(receipt.digest || '')) return;
+    generation ||= { token: receipt.token, targetDigest: receipt.digest };
+    if (generation.token !== receipt.token || generation.targetDigest !== receipt.digest) { stop('save-generation-changed'); return; }
+    const reason = receipt.error === 'timeout' ? 'after-production-timeout' : receipt.pending && now() - attempt.beganAt >= 10000 ? 'slow-pending' : '';
+    if (!reason || pending || sent.has(reason) || diagnostics.probes.length >= 2) return;
+    sent.add(reason);
+    const row = { ...generation, reason, eligibleAt: reason === 'slow-pending' ? attempt.beganAt + 10000 : now(), dispatchedAt: now(), status: 'pending', sampleFrame: value.sampleFrame, documentHidden: value.documentHidden };
+    diagnostics.probes.push(row); pending = row;
+    // A captured CDP session, no global active lookup and no awaited work in poll.
+    // No scheduling timer: existing receipt polling alone triggers at most 2 reads.
+    Promise.resolve().then(() => {
+      if (stopped || !isCurrentSession()) return null;
+      return session.cdp.send('Runtime.evaluate', { expression: `(${readOnlySaveProbe.toString()})(${JSON.stringify(generation)})`, returnByValue: true, awaitPromise: true }, 9000);
+    }).then(response => {
+      if (stopped) return;
+      if (!isCurrentSession()) { stop('session-changed'); return; }
+      if (response?.exceptionDetails) throw new Error(response.exceptionDetails.text || 'diagnostic evaluate failed');
+      const value = response?.result?.value;
+      if (!value || value.token !== row.token || value.targetDigest !== row.targetDigest) throw new Error('diagnostic identity mismatch');
+      row.result = value; row.status = value.error ? 'diagnostic-error' : 'complete'; row.receivedAt = now();
+      // close() requests closure; an errored/timed-out readonly transaction may
+      // still be completing. Do not schedule another diagnostic in that case.
+      if (value.error) { stop('diagnostic-read-failed'); return; }
+      pending = null;
+    }).catch(error => {
+      if (stopped) return;
+      if (!isCurrentSession()) { stop('session-changed'); return; }
+      row.status = 'diagnostic-error'; row.error = error.message; row.receivedAt = now();
+      // A CDP timeout cannot prove the browser read ended. Never stack another.
+      stop('diagnostic-operation-failed');
+    });
+  };
+  return { observe, stop };
+}
+async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = false, saveInputBeganAt = null) {
   const began = Date.now();
-  const attempt = { label, beganAt: began, previousToken, visibleSuccess, observations: [] };
+  const attempt = { label, beganAt: began, saveInputBeganAt, previousToken, visibleSuccess, observations: [] };
   (active.saveAttempts ||= []).push(attempt);
+  const session = active;
+  const diagnostics = createSaveDiagnostics(session, attempt, previousToken, () => active === session);
   let observed = '';
   let saved;
   try { saved = await poll(async () => {
@@ -164,21 +306,23 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
     const identity = JSON.stringify([receipt, value?.saveDigest]);
     if (identity !== observed && attempt.observations.length < 160) {
       observed = identity;
-      attempt.observations.push({ elapsedMs: Date.now() - began, receipt, currentDigest: value?.saveDigest });
+      attempt.observations.push({ elapsedMs: Date.now() - began, receipt, currentDigest: value?.saveDigest, sampleFrame: value?.sampleFrame, documentHidden: value?.documentHidden });
     }
+    diagnostics.observe(value);
     if (!receipt || receipt.token <= previousToken) return null;
     if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);
     const visible = !visibleSuccess || controls(value).some(c => c.name === 'SaveNativeProgress' && c.text === '已保存' && !c.disabled);
     return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;
   }, `${label}: current native save has an exact durable receipt`, 30000);
   } catch (error) {
+    diagnostics.stop('wait-failed');
     attempt.failedAt = Date.now();
     // A readonly backing-store sample diagnoses a failed receipt without
     // accepting it, retrying a game save, or extending the original watchdog.
     try { attempt.failureDisk = await readPersistentSaveEntries(); }
     catch (readError) { attempt.failureDisk = { error: readError.message }; }
     throw error;
-  }
+  } finally { diagnostics.stop('wait-finished'); }
   const disk = await readPersistentSaveEntries(); const primary = disk.entries.find(e => e.key.endsWith('/save.json'));
   attempt.completedAt = Date.now(); attempt.disk = disk;
   check(primary?.sha256 === saved.saveDigest, `${label}: independent readonly IndexedDB primary matches the current native save`, { elapsedMs: Date.now() - began, receipt: saved.savePersistence, primary, diskReadMs: disk.readDurationMs });
@@ -186,14 +330,24 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
 }
 async function saveProgressAndWait(label) {
   const before = await snapshot();
+  const saveInputBeganAt = Date.now();
   await clickControl('SaveNativeProgress', 'name');
-  return waitForPersistedSave(label, before.savePersistence?.token ?? -1, true);
+  return waitForPersistedSave(label, before.savePersistence?.token ?? -1, true, saveInputBeganAt);
 }
 async function startStory(reload = false) {
   if (reload) await waitForPersistedSave(`${active.id} before actual reload`);
   const start = Date.now(); await active.cdp.send(reload ? 'Page.reload' : 'Page.navigate', reload ? { ignoreCache: true } : { url: active.url || url });
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
+  if (scenarios === 'phone-navigation') {
+    const ready = await evaluate(`({detail:document.getElementById('loading-detail').textContent,hidden:document.getElementById('loading-detail').hidden,startHidden:document.getElementById('start-game').hidden})`);
+    check(ready.hidden && ready.detail === '' && !ready.startHidden, `${active.id}: ready entry retains its button without cache helper copy`, ready);
+  }
+  if (!reload && ['library', 'boot-font-failure'].includes(scenarios)) {
+    active.bootTypography = await evaluate(`({family:getComputedStyle(document.getElementById('loading')).fontFamily,faces:Array.from(document.fonts).map(face=>({family:face.family,weight:face.weight,status:face.status})),ready:document.documentElement.dataset.bootState})`);
+    check(active.bootTypography.ready === 'ready' && active.bootTypography.family.includes('755 Morning Note'), `${active.id}: actual loading shell selects the project font without a font-readiness gate`);
+    active.screenshots.push(await screenshot(`${active.id}-loading-typography`));
+  }
   if (!reload && !active.coldBoot) await verifyColdBoot(start);
   if (active.streaming) {
     const deferred = active.requests.filter(request => request.at >= start && active.deferredUrls.has(request.url));
@@ -209,7 +363,7 @@ async function startStory(reload = false) {
   const s = await poll(async () => { const s = await snapshot(); return state(s)?.native ? s : null; }, 'real Main snapshot', 60000);
   console.log(`${active.id}: Godot ${s.version} ready=${bootReadyMs}ms Main=${Date.now() - start}ms${reload ? ' reload' : ''}`);
   check(s.web === true, `${active.id}: actual Godot Web feature`);
-  check(s.engine && String(s.engine).toLowerCase().includes('godot') || s.version, `${active.id}: engine version exposed`, { engine: s.engine, version: s.version });
+  check(s.engine === 'Godot' && s.version === '4.7.1-stable (official)', `${active.id}: actual pinned Godot 4.7.1 official runtime`, { engine: s.engine, version: s.version });
   check(s.developerAvailable === false || s.developerToolsAvailable === false || s.developerMode === false, `${active.id}: production developer tools unavailable`);
   check(!controls(s).some(c => /DEV|独立场景检查|动画与原型预览|章节跳转/.test(c.text)), `${active.id}: no chapter or QA controls`);
   return { snapshot: s, bootReadyMs, mainReadyMs: Date.now() - start };
@@ -249,16 +403,26 @@ async function importSave(filename) {
   await interval(350);
   check(s.developerToolsAvailable === false, 'ordinary imported save remains formal progression');
   const completed = await snapshot();
-  active.imports.push({ filename: path.basename(filename), sha256: hash(bytes), bytes: bytes.length, chapter: expected.chapter, page: expected.page, scene: expected.scene, firstAcceptedAt, observedAt: Date.now(), saveDigest: completed.saveDigest }); return completed;
+  active.imports.push({ filename: path.basename(filename), sha256: hash(bytes), bytes: bytes.length, chapter: expected.chapter, page: expected.page, scene: expected.scene, firstAcceptedAt, observedAt: Date.now(), saveDigest: completed.saveDigest });
+  if (completed.world?.visible) await acceptPortraitFallback();
+  return completed;
 }
-async function freshCase() {
+async function freshCase(entryOnly = false) {
+  // Focused input scenarios still cold-boot and enter through ordinary controls.
+  // The separate default gate retains the complete generic persistence baseline.
+  if (entryOnly) active.fresh = { scope: 'cold-boot-to-phone-only', persistenceBaselineRepeated: false, recording: true, inputs: [], startedAt: Date.now() };
   const start = await startStory(); check(state(start.snapshot).native.page === 'alarm', `${active.id}: fresh story starts at alarm`);
   await clickControl('开始游戏'); await poll(async () => state(await snapshot())?.native.alarm_ringing, 'real alarm start');
   active.mediaObservations.push({ phase: 'alarm-ringing', audio: (await snapshot()).audio, video: (await snapshot()).video });
   await clickControl('关闭'); await poll(async () => state(await snapshot())?.native.page === 'desktop', 'real alarm dismiss');
   await clickControl('……再睡5分钟……'); await poll(async () => state(await snapshot())?.native.wake_warned, 'real wake warning');
   await clickControl('进入手机主界面'); await poll(async () => state(await snapshot())?.native.page === 'phone_home', 'real phone home');
-  await assertLayout(active.id); await settings();
+  const geometry = await assertLayout(active.id);
+  if (entryOnly) {
+    active.fresh.recording = false; active.fresh.completedAt = Date.now();
+    return { bootReadyMs: start.bootReadyMs, mainReadyMs: start.mainReadyMs, geometry };
+  }
+  await settings();
   const evidence = value => ({ page: state(value)?.native?.page, chapter: state(value)?.native?.chapter, mode: state(value)?.native?.mode, flags: state(value)?.flags, saveDigest: value?.saveDigest });
   const s = await snapshot(); const beforeMode = state(s).native.mode; const toggle = controls(s).find(c => c.text.startsWith('当前：')); check(!!toggle, 'mode toggle states current and destination');
   active.fresh = { recording: true, inputs: [], before: evidence(s) };
@@ -356,6 +520,239 @@ async function fixtureCases() {
     console.log(`desktop-1280: ${item.name} import, presenter and reload passed`);
   }
 }
+
+async function resourceLoadingCase() {
+  if (!fixtureDir) throw new Error('Resource loading acceptance requires controller-earned portable saves');
+  active.chapterResults = [];
+  for (const item of [
+    {file:'before_c3_defense_result.json',scene:'canteen_interior',family:'chapter3',next:['chapter35']},
+    {file:'after_c3_target_theater_exit.json',scene:'campus_qizhen_loop',family:'chapter35',next:['chapter4']},
+    {file:'action_c4_arrive_a3.json',scene:'duan_yongping_temporal_maze',family:'chapter4',next:[]}
+  ]) {
+    const imported = await importSave(path.join(fixtureDir,item.file));
+    const items = hash(JSON.stringify(state(imported).items));
+    const ready = await poll(async()=>{
+      const s=await snapshot();
+      return !s?.content?.blocking && s?.content?.readyFamilies?.includes(item.family) && s.world?.scene_id===item.scene ? s : null;
+    },`mounted ${item.family} and actual ${item.scene}`,120000);
+    check(hash(JSON.stringify(state(ready).items))===items,`${item.scene}: loading and view construction preserve imported inventory`);
+    check(JSON.stringify(ready.content.prefetchFamilies)===JSON.stringify(item.next),`${item.scene}: native lookahead advances only to its next chapter`,ready.content);
+    // This earned canteen boundary resumes the authored defense activity.
+    // Its normal Exit retires the activity before settings/import can open.
+    // Never bypass the active-game input lock with a direct state write.
+    if (item.scene === 'canteen_interior' && gameOf(ready)?.script) {
+      await clickControl('退出');
+      await poll(async()=>{const s=await snapshot();return !gameOf(s)?.script && s.world?.visible && s.world.scene_id===item.scene;},'ordinary defense Exit exposes loaded canteen',20000);
+      check(hash(JSON.stringify(state(await snapshot()).items))===items,'leaving the unfinished defense does not manufacture or consume items');
+    }
+    await assertLayout(`resource-${item.scene}`);
+    active.screenshots.push(await screenshot(`${active.id}-resource-${item.scene}`));
+    active.chapterResults.push({file:item.file,scene:ready.world.scene_id,content:ready.content,itemsSha256:items});
+    await persist();
+  }
+  check(active.chapterResults.length===3,`${active.id}: deferred canteen, lake approach and teaching-building resources are actually loaded by Godot`);
+}
+async function acceptPortraitFallback() {
+    if (!active.touch) return;
+    const orientation = await poll(async () => evaluate("(()=>{const s=window.__GODOT_755_ORIENTATION__?.snapshot();return s?.wanted?s:null})()"), 'landscape preference reaches the mobile browser');
+    if (!orientation.visible) return;
+    const rect = await evaluate("(()=>{const e=document.getElementById('scene-landscape-dismiss'),r=e?.getBoundingClientRect();return r&&r.width>0?{x:r.x,y:r.y,width:r.width,height:r.height}:null})()");
+    check(!!rect, `${active.id}: ordinary portrait fallback is visible`);
+    await clickPoint({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+    await poll(async () => evaluate("window.__GODOT_755_ORIENTATION__?.snapshot()?.visible===false"), 'ordinary portrait fallback closes its orientation prompt');
+}
+async function cornerNavigationCase() {
+  if (!fixtureDir) throw new Error('Corner navigation requires an earned ordinary save');
+  await importSave(path.join(fixtureDir, 'after_c3_enter_theater.json'));
+  await poll(async () => { const s = await snapshot(); return s?.world?.visible && state(s)?.native?.c3_theater_entry_seen && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled); }, 'earned theater navigation is available');
+  await acceptPortraitFallback();
+  const before = await snapshot();
+  const facts = s => JSON.stringify([s.items, s.actOne, s.ui.libraryFinalsPhase, s.canteenHunt, s.theaterHunt, s.qizhenLake, s.chapter4, s.rpgScene, s.rpgCheckpoint]);
+  const originalFacts = facts(state(before));
+  const corner = (s, name) => {
+    const c = controls(s).find(c => c.name === name); const r = c?.rect;
+    check(!!r && c.text === '' && Math.abs(r.width-44)<.01 && Math.abs(r.height-44)<.01, `${active.id}: ${name} is a 44px icon`);
+    const edge = name === 'WorldPhoneButton' ? {x:s.world.rect.x+s.world.rect.width-8,y:s.world.rect.y+s.world.rect.height-8} : {x:s.viewport.width-12,y:s.viewport.height-12};
+    check(Math.abs(r.x+r.width-edge.x)<.1 && Math.abs(r.y+r.height-edge.y)<.1, `${active.id}: ${name} uses its actual bottom-right safe corner`);
+  };
+  corner(before, 'WorldPhoneButton');
+  check(before.world.chrome?.taskColumnVisible === false && before.world.chrome?.modeLabelVisible === false, `${active.id}: no persistent top task column or mode caption`);
+  for (const name of ['WorldTasks', 'WorldMode']) {
+    const c = controls(before).find(c => c.name === name);
+    check(!!c && c.text === '' && c.rect.y >= before.world.rect.y+before.world.rect.height-60 && c.rect.x >= before.world.rect.x && c.rect.x+c.rect.width<=before.world.rect.x+before.world.rect.width && Math.abs(c.rect.width-44)<.01 && Math.abs(c.rect.height-44)<.01, `${active.id}: ${name} remains a quiet footer icon`);
+  }
+  active.screenshots.push(await screenshot(`${active.id}-corner-map`));
+  await clickControl('WorldPhoneButton', 'name');
+  const phone = await poll(async () => { const s = await snapshot(); return state(s)?.runtimeMode === 'phone' && !s.world.visible && controls(s).some(c => c.name === 'PhoneWorldReturn' && !c.disabled) ? s : null; }, 'phone opened through its actual corner icon');
+  corner(phone, 'PhoneWorldReturn');
+  check(facts(state(phone)) === originalFacts, `${active.id}: map-to-phone preserves earned facts`);
+  active.screenshots.push(await screenshot(`${active.id}-corner-phone`));
+  await clickControl('PhoneWorldReturn', 'name');
+  const returned = await poll(async () => { const s = await snapshot(); return s?.world?.visible && state(s)?.runtimeMode === 'rpg' ? s : null; }, 'corner map return restores the original world');
+  await acceptPortraitFallback();
+  check(facts(state(returned)) === originalFacts && returned.world.scene_id === before.world.scene_id && Math.hypot(returned.world.player.x - before.world.player.x, returned.world.player.y - before.world.player.y) < .01, `${active.id}: phone-to-map preserves scene, actor, checkpoint, inventory and story`);
+  const mode = state(returned).native.mode;
+  await clickControl('WorldMode', 'name');
+  check(state(await snapshot()).native.mode !== mode, `${active.id}: footer mode icon works through real input`);
+  await clickControl('WorldMode', 'name');
+  check(state(await snapshot()).native.mode === mode && facts(state(await snapshot())) === originalFacts, `${active.id}: mode round trip retains progression`);
+  const inline = await snapshot();
+  check(!controls(inline).some(c=>c.name==='WorldInventoryHandle'), `${active.id}: obsolete bag switch is absent`);
+  const items = controls(inline).filter(c=>c.name.startsWith('WorldItem_'));
+  check(items.length>0 && items.every(c=>c.text==='' && Math.abs(c.rect.width-44)<.1 && Math.abs(c.rect.height-44)<.1), `${active.id}: actual item artwork appears directly in 44px slots`);
+  const modeButton = controls(inline).find(c=>c.name==='WorldMode');
+  check(items[0].rect.x>=modeButton.rect.x+modeButton.rect.width && items[0].rect.y>=inline.world.rect.y+inline.world.rect.height-60, `${active.id}: items start immediately to the right of the in-game tools`);
+  const surfaceBefore=JSON.stringify([inline.world.rect,inline.world.size,inline.world.camera,inline.world.zoom]);
+  await clickControl(items[0].name,'name');
+  const selected=await snapshot();
+  check(state(selected).native.selected_item===items[0].name.slice('WorldItem_'.length), `${active.id}: real pointer selects the visible item`);
+  check(JSON.stringify([selected.world.rect,selected.world.size,selected.world.camera,selected.world.zoom])===surfaceBefore && facts(state(selected))===originalFacts, `${active.id}: item interaction preserves map size, camera, zoom and progression`);
+  await clickControl('WorldTasks', 'name');
+  await clickControl('JournalResume', 'name');
+  check((await snapshot()).world.visible && facts(state(await snapshot())) === originalFacts, `${active.id}: footer journal closes back to the same world`);
+  await assertLayout('corner navigation');
+}
+async function checkinPresentationCase() {
+  if (!fixtureDir) throw new Error('Check-in presentation requires an earned before-check-in save');
+  await importSave(path.join(fixtureDir,'before_c1_checkin.json'));
+  await clickControl('HomeApp_zjuding','name');
+  await clickControl('ZjudingApp_learn','name');
+  const learn=await poll(async()=>{const s=await snapshot();return controls(s).some(c=>c.name==='ZjudingLearnTitle'&&c.text==='学在浙大')?s:null;},'learning dashboard renders actual native text');
+  const learningFacts=JSON.stringify([state(learn).items,state(learn).flags.checkinDone,state(learn).actOne.phase]);
+  const phoneFrame=JSON.stringify(learn.phoneRect);
+  check(['LearnSchedule','LearnCourse_0','LearnCourse_1','LearnNotice','ZjudingCheckin'].every(name=>controls(learn).some(c=>c.name===name&&c.type==='Button')),`${active.id}: learning cards are independent visible controls`);
+  active.screenshots.push(await screenshot(`${active.id}-native-learn-dashboard`));
+  for(const [name,title] of [['LearnSchedule','今日课程'],['LearnCourse_1','化学工程基础'],['LearnNotice','课堂提醒']]) {
+    await clickControl(name,'name');
+    const detail=await poll(async()=>{const s=await snapshot();return controls(s).some(c=>c.name==='LearnReaderTitle'&&c.text===title)?s:null;},'native learning card opens '+title);
+    check(JSON.stringify(detail.phoneRect)===phoneFrame,`${active.id}: ${title} preserves phone frame`);
+    if(active.touch)await clickControl('LearnReaderBack','name');else await press('Escape');
+    await poll(async()=>!controls(await snapshot()).some(c=>c.name==='LearnReaderTitle'),'learning reader closes to its parent dashboard');
+    const after=await snapshot();
+    check(JSON.stringify([state(after).items,state(after).flags.checkinDone,state(after).actOne.phase])===learningFacts,`${active.id}: ${title} does not write story progress`);
+  }
+  await clickControl('PhoneNav_back','name');
+  await clickControl('ZjudingApp_learn','name');
+  await clickControl('ZjudingCheckin','name');
+  const page=await poll(async()=>{const s=await snapshot();return state(s)?.native.page==='checkin'&&controls(s).some(c=>c.name==='CheckinSubmit'&&c.disabled)?s:null;},'original check-in form opens through ZJU Ding');
+  check(!state(page).flags.checkinDone,`${active.id}: earned pre-check-in state remains unsolved`);
+  await clickControl('PhoneNav_back','name');
+  await poll(async()=>controls(await snapshot()).some(c=>c.name==='ZjudingLearnTitle'),'check-in returns to the real learning dashboard');
+  await clickControl('ZjudingCheckin','name');
+  active.screenshots.push(await screenshot(`${active.id}-pixel-checkin`));
+  await clickControl('CheckinKey_1','name');await clickControl('CheckinKey_2','name');await clickControl('CheckinKey_delete','name');
+  check(controls(await snapshot()).find(c=>c.name==='CheckinSlot_0')?.text==='1'&&controls(await snapshot()).find(c=>c.name==='CheckinSlot_1')?.text==='',`${active.id}: restored pixel keys preserve delete behavior`);
+  for(const digit of ['2','3','4'])await clickControl('CheckinKey_'+digit,'name');
+  await clickControl('CheckinSubmit','name');
+  const rejected=await poll(async()=>{const s=await snapshot();return controls(s).some(c=>c.name==='CheckinError')&&!state(s).flags.checkinDone?s:null;},'wrong code remains a controller-owned rejection');
+  check(controls(rejected).find(c=>c.name==='CheckinSlot_0')?.text==='',`${active.id}: wrong code clears only the form draft`);
+  for(const digit of ['0','7','9','8'])await clickControl('CheckinKey_'+digit,'name');
+  await clickControl('CheckinSubmit','name');
+  await poll(async()=>gameOf(await snapshot())?.phase==='success','real successful submission starts the receipt printer');
+  active.screenshots.push(await screenshot(`${active.id}-pixel-receipt-printing`));
+  await press('Escape');
+  const paused=await poll(async()=>{const s=await snapshot();return gameOf(s)?.paused?s:null;},'real Escape pauses receipt printing');
+  const frozen=gameOf(paused).elapsed;await interval(450);
+  check(Math.abs(gameOf(await snapshot()).elapsed-frozen)<.01,`${active.id}: printer uses the paused game clock`);
+  await clickControl('PrologueResume','name');
+  const printed=await poll(async()=>{const s=await snapshot(),g=gameOf(s);return g?.phase==='success'&&g.elapsed>=1.9?s:null;},'real paper finishes feeding through its original top slot');
+  check(controls(printed).some(c=>c.name==='CheckinSuccessLabel'&&c.text==='签到成功')&&state(printed).flags.checkinDone&&state(printed).actOne.phase==='prologue',`${active.id}: live printed stamp confirms check-in without completing the word puzzle`);
+  active.screenshots.push(await screenshot(`${active.id}-pixel-parchment-receipt`));
+  await poll(async()=>gameOf(await snapshot())?.phase==='error','receipt preserves the authored coordinate-error handoff');
+  check(gameOf(await snapshot()).session?.completed_stages===0,`${active.id}: visual restoration grants no interception completion`);
+  await assertLayout('pixel check-in and parchment receipt');
+}
+async function reopenLibraryRuleThroughApp() {
+  // A portable import accepts validated state before its deferred content has
+  // mounted. Wait for the actual target surface before the first user input.
+  const initial = await poll(async () => {
+    const value = await snapshot();
+    if (value?.content?.blocking) return null;
+    if (value?.world?.visible) {
+      if (value.world.scene_id !== state(value)?.native.scene || !controls(value).some(c => c.name === 'WorldPhoneButton' && !c.disabled)) return null;
+    } else if (!controls(value).some(c => c.name === 'LibraryRuleAction')) return null;
+    return value;
+  }, 'imported Library surface has actually mounted', 60000);
+  if (controls(initial).some(c => c.name === 'LibraryRuleAction')) return;
+  if (initial.world?.visible) {
+    active.library ||= { navigation: [] };
+    active.library.navigation ||= [];
+    const button = controls(initial).find(c => c.name === 'WorldPhoneButton');
+    active.library.navigation.push({ at: Date.now(), phase: 'before-map-return', button, viewport: initial.viewport, canvas: await canvasGeometry(), world: initial.world });
+    await clickControl('WorldPhoneButton', 'name');
+    const after = await snapshot();
+    active.library.navigation.push({ at: Date.now(), phase: 'after-map-return', page: state(after).native.page, world: after.world,
+      browser: await evaluate(`(()=>({focused:document.hasFocus(),hidden:document.hidden,active:document.activeElement?.tagName,orientation:window.__GODOT_755_ORIENTATION__?.snapshot()}))()`) });
+  }
+  await clickControl('HomeApp_zjuding', 'name');
+  await clickControl('ZjudingApp_library', 'name');
+  await clickControl('LibraryApp_rule', 'name');
+}
+async function libraryCase() {
+  if (!fixtureDir) throw new Error('Library continuity requires controller-earned portable boundaries');
+  await importSave(path.join(fixtureDir, 'before_library_rule_read.json'));
+  await reopenLibraryRuleThroughApp();
+  let value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'earned unread rule opens its original reader');
+  const originalItems = JSON.stringify(state(value).items);
+  check(state(value).ui.libraryFinalsPuzzle.archivedRuleCollected && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: acquired rule is still unread`);
+  await clickControl('PhoneNav_back', 'name');
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_app' ? s : null; }, 'ordinary rule header returns to Library home');
+  check(controls(value).some(c => c.name === 'LibraryApp_rule'), `${active.id}: acquired rule has a visible ordinary app entry`);
+  active.screenshots.push(await screenshot(`${active.id}-library-rule-entry`));
+  await clickControl('LibraryApp_rule', 'name');
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'app entry reopens original rule reader');
+  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: reopening alone neither reads nor changes inventory`);
+  await settings(); await saveProgressAndWait(`${active.id} unread library rule`);
+  await startStory(true);
+  await reopenLibraryRuleThroughApp();
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'ordinary reload restores unread rule reader');
+  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: reload never supplies the missing reading fact`);
+  await clickControl('LibraryRuleAction', 'name');
+  active.library ||= {};
+  active.library.dialogueSamples = [];
+  // The earned portable boundary may also restore earlier unacknowledged
+  // source dialogue. Advance the actual queue through normal input, observing
+  // each publication rather than assuming a fixed count of key presses.
+  for (let index = 0; index < 106; index++) {
+    const before = await snapshot();
+    if (state(before).ui.libraryFinalsPuzzle.archivedRuleBriefingSeen) break;
+    active.library.dialogueSamples.push({ at: Date.now(), frame: before.sampleFrame, text: controls(before).filter(c => c.type === 'Label').map(c => c.text) });
+    if (active.touch) {
+      const prompt = controls(before).find(c => /^点击 \/ 空格 \/ 回车(?:继续|确认)$/.test(c.text));
+      if (prompt) await clickPoint(await renderPoint({ x: prompt.rect.x + prompt.rect.width / 2, y: prompt.rect.y + prompt.rect.height / 2 }, before));
+    } else await press(' ', 'Space');
+    await poll(async () => (await snapshot())?.sampleFrame > before.sampleFrame, 'Library dialogue advances its real frame publication');
+  }
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.ui.libraryFinalsPuzzle.archivedRuleRead && state(s).ui.libraryFinalsPuzzle.archivedRuleBriefingSeen ? s : null; }, 'explicit reading and original briefing complete');
+  check(JSON.stringify(state(value).items) === originalItems, `${active.id}: reading preserves the acquired original and other inventory`);
+  await clickControl('PhoneNav_back', 'name'); await clickControl('LibraryApp_rule', 'name');
+  value = await snapshot();
+  check(state(value).native.page === 'library_rule' && !controls(value).some(c => c.name === 'LibraryRuleAction'), `${active.id}: read rule remains reviewable without a second acknowledgement`);
+  active.screenshots.push(await screenshot(`${active.id}-library-rule-reviewed`));
+  await importSave(path.join(fixtureDir, 'before_library_022_opening.json'));
+  await poll(async () => controls(await snapshot()).some(c => c.text === '跳过演出'), 'earned022 seat starts its original transition');
+  await clickControl('跳过演出', 'text');
+  await clickControl('回到校园', 'text');
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.chapter === 3 && state(s)?.native.scene === 'campus_bootstrap' ? s : null; }, 'ordinary022 arrival hands off to campus and Chapter3');
+  check(state(value).ui.libraryFinalsPhase === 'friend_contacted' && state(value).canteenHunt.active && state(value).canteenHunt.phase === 'tracking', `${active.id}: original controller starts the canteen hunt at the library exit`);
+  await interval(900); await settings(); await saveProgressAndWait(`${active.id} library handoff`); await startStory(true);
+  value = await snapshot();
+  check(state(value).native.chapter === 3 && state(value).ui.libraryFinalsPhase === 'friend_contacted' && state(value).canteenHunt.active, `${active.id}: reload retains completed library handoff`);
+  await poll(async () => { const s = await snapshot(); return !s.content?.blocking && s.world?.visible && s.world.scene_id === 'campus_bootstrap'; }, 'reloaded handoff presents the actual campus');
+  await acceptPortraitFallback();
+  const handoffFacts = JSON.stringify([state(value).items, state(value).ui.libraryFinalsPhase, state(value).canteenHunt, state(value).rpgCheckpoint]);
+  await clickControl('WorldPhoneButton', 'name');
+  await poll(async () => { const s = await snapshot(); return state(s).native.page === 'phone_home' && !s.world?.visible; }, 'library handoff permits an ordinary phone return');
+  await clickControl('PhoneWorldReturn', 'name');
+  await poll(async () => { const s = await snapshot(); return s.world?.visible && s.world.scene_id === 'campus_bootstrap'; }, 'library handoff permits an ordinary return to campus');
+  await acceptPortraitFallback();
+  value = await snapshot();
+  check(JSON.stringify([state(value).items, state(value).ui.libraryFinalsPhase, state(value).canteenHunt, state(value).rpgCheckpoint]) === handoffFacts, `${active.id}: handoff phone/map round trip preserves earned facts and items`);
+  await assertLayout(`${active.id} Library handoff`);
+  active.screenshots.push(await screenshot(`${active.id}-library-handoff`));
+  active.library = { ...active.library, completed: true, unreadReopen: true, explicitRead: true, reload: true, handoff: 'original skip-to-arrival button then ordinary return-to-campus', fixtureBoundary: 'controller-earned; not manual spatial navigation' };
+}
+
 async function mediaCase() {
   if (!fixtureDir) return;
   await importSave(path.join(fixtureDir, 'after_c35_replay.json')); await startStory(true);
@@ -441,13 +838,14 @@ async function durabilityCase() {
 }
 async function readPersistentSaveEntries() {
   return evaluate(`(async()=>{
-    const started=performance.now(), databases=await indexedDB.databases(), entries=[];
+    const started=performance.now(), readStartedAt=Date.now(), databases=await indexedDB.databases(), entries=[],stores=[];
     for(const meta of databases){
       if(!meta.name)continue;
       const db=await new Promise((resolve,reject)=>{const request=indexedDB.open(meta.name);request.onupgradeneeded=()=>request.transaction.abort();request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
       try{
         if(!db.objectStoreNames.contains('FILE_DATA'))continue;
         const rows=await new Promise((resolve,reject)=>{const tx=db.transaction('FILE_DATA','readonly'),store=tx.objectStore('FILE_DATA'),keys=store.getAllKeys(),values=store.getAll();tx.oncomplete=()=>resolve(keys.result.map((key,i)=>({key,value:values.result[i]})));tx.onerror=()=>reject(tx.error);});
+        stores.push({database:meta.name,store:'FILE_DATA',keyCount:rows.length});
         for(const row of rows){
           if(!/save.*\\.json$/i.test(String(row.key)))continue;
           const raw=row.value?.contents;
@@ -459,7 +857,7 @@ async function readPersistentSaveEntries() {
         }
       }finally{db.close()}
     }
-    return{readDurationMs:performance.now()-started,entries};
+    return{readStartedAt,readCompletedAt:Date.now(),readDurationMs:performance.now()-started,stores,entries};
   })()`);
 }
 async function durabilitySwitchCase() {
@@ -488,33 +886,57 @@ async function c1Case(full) {
     await active.cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); await interval(500); check(!gameOf(await snapshot()).dragging, 'C1 actual touch cancellation releases pointer ownership');
     active.screenshots.push(await screenshot('touch-c1-board')); return;
   }
-  await poll(async () => gameOf(await snapshot())?.phase === 'failed', 'C1 stationary miss opens branch hint', 60000);
-  const failure = gameOf(await snapshot()); await clickControl('继续当前阶段'); const retry = gameOf(await snapshot()); check(retry.session.stage === failure.session.stage && retry.misses === failure.misses, 'C1 failure continues current stage and preserves failure history');
-  await clickControl('重看完整线索'); const review = gameOf(await snapshot()); await interval(1200); check(JSON.stringify(gameOf(await snapshot()).session.cards) === JSON.stringify(review.session.cards), 'C1 reread pauses actual moving word bodies'); await clickControl('继续寻找');
+  await poll(async () => gameOf(await snapshot())?.misses >= 1, 'C1 ordinary missed word returns to the same flowing stage', 60000);
+  const missed = gameOf(await snapshot());
+  check(missed.phase === 'intercept' && missed.blocks === 0, 'C1 automatic retry earns no stage proof');
+  check(!controls(await snapshot()).some(c => ['再试这段字流','重看完整线索','继续寻找','显示落点帮助'].includes(c.text)), 'C1 removed retry and clue controls are absent');
+  await poll(async () => gameOf(await snapshot())?.misses > missed.misses, 'C1 another missing word is re-emitted without an overlay or button', 15000);
+  const continued = gameOf(await snapshot());
+  check(continued.session.stage === missed.session.stage && JSON.stringify(continued.session.collected) === JSON.stringify(missed.session.collected), 'C1 unattended retries preserve earned progress without auto-completing');
+  active.screenshots.push(await screenshot(`${active.id}-word-flow-clean`));
+  await press('Escape');
+  await poll(async () => gameOf(await snapshot())?.paused, 'C1 explicit system pause is observed');
+  const pausedFlow = gameOf(await snapshot()); await interval(1000);
+  check(pausedFlow.paused && JSON.stringify(gameOf(await snapshot()).session.cards) === JSON.stringify(pausedFlow.session.cards), 'C1 explicit system pause still freezes word bodies');
+  await clickControl('PrologueResume','name');
+  async function releaseDrag() {
+    if (active.touch) await active.cdp.send('Input.dispatchTouchEvent', {type:'touchEnd',touchPoints:[]});
+    else await active.cdp.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,x:1,y:1});
+  }
+  async function dragTo(type, point) {
+    if(active.touch) await active.cdp.send('Input.dispatchTouchEvent',{type:type==='start'?'touchStart':'touchMove',touchPoints:[{...point,id:2}]});
+    else await active.cdp.send('Input.dispatchMouseEvent',{type:type==='start'?'mousePressed':'mouseMoved',button:'left',buttons:1,clickCount:1,...point});
+  }
   let dragging = false; const until = Date.now() + 240000;
   while (Date.now() < until) {
     const s = await snapshot(), g = gameOf(s); if (!g || g.phase === 'lock') break;
-    if (g.phase === 'failed') { if (dragging) { await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, x: 1, y: 1 }); dragging = false; } await clickControl('继续当前阶段'); continue; }
     if (!['deploy', 'intercept'].includes(g.phase)) { await interval(150); continue; }
     const model = g.session; const cards = model.cards || []; const wanted = model.missing || []; const next = wanted[0]; const ordered = model.current?.ordered; let desired = model.board_x; let found = false;
     for (const c of cards) if (!c.resolved && wanted.includes(c.text) && (!ordered || c.text === next)) { desired = c.position.x; found = true; break; }
-    for (const c of cards) if (!c.resolved && (!wanted.includes(c.text) || ordered && c.text !== next) && (!found || c.position.y >= 500 && c.position.y <= 716) && Math.abs(Math.max(104, Math.min(326, desired)) - c.position.x) < 88 + c.size.x / 2) desired = c.position.x > 215 ? 104 : 326;
+    const hazards=cards.filter(c=>!c.resolved && !c.demonstration && (!wanted.includes(c.text) || ordered && c.text!==next) && c.position.y<=658+29+c.size.y/2+6).sort((a,b)=>b.position.y-a.position.y);
+    const hazard=hazards[0];
+    if(hazard && (!found || hazard.position.y>=380) && Math.abs(Math.max(104,Math.min(326,desired))-hazard.position.x)<88+hazard.size.x/2) desired=hazard.position.x>215?104:326;
     const f = g.field, scale = f.width / 430;
-    if (!dragging) { await active.cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...(await renderPoint({ x: f.x + model.board_x * scale, y: f.y + 658 * scale }, s)) }); dragging = true; }
-    await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', buttons: 1, ...(await renderPoint({ x: f.x + desired * scale, y: f.y + 658 * scale }, s)) }); await interval(160);
+    if (!dragging) { await dragTo('start',await renderPoint({ x:f.x+model.board_x*scale,y:f.y+658*scale },s)); dragging = true; }
+    await dragTo('move',await renderPoint({ x:f.x+desired*scale,y:f.y+658*scale },s)); await interval(80);
   }
-  if (dragging) await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, x: 1, y: 1 });
+  if (dragging) await releaseDrag();
   const lock = gameOf(await snapshot()); check(lock?.phase === 'lock' && lock.blocks === 3, 'C1 real pointer contacts complete all three semantic stages');
   active.mediaObservations.push({ phase: 'c1-lock', audio: (await snapshot()).audio, video: (await snapshot()).video });
-  active.screenshots.push(await screenshot('desktop-c1-lock')); await press(' ', 'Space'); await key(' ', 'Space', true); await interval(600); await key(' ', 'Space', false); await interval(400); check(gameOf(await snapshot()).phase === 'lock' && gameOf(await snapshot()).hold_ms === 0, 'C1 partial actual keyboard hold cannot complete');
-  await key(' ', 'Space', true); await interval(600);
+  async function hold(down) {
+    if (!active.touch) return key(' ','Space',down);
+    const observed=await snapshot(),g=gameOf(observed),f=g.field,scale=f.width/430;
+    await active.cdp.send('Input.dispatchTouchEvent',{type:down?'touchStart':'touchEnd',touchPoints:down?[{...(await renderPoint({x:f.x+215*scale,y:f.y+352*scale},observed)),id:3}]:[]});
+  }
+  active.screenshots.push(await screenshot(`${active.id}-c1-lock`)); await interval(650); await hold(true); await interval(600); await hold(false); await interval(400); check(gameOf(await snapshot()).phase === 'lock' && gameOf(await snapshot()).hold_ms === 0, 'C1 partial actual keyboard hold cannot complete');
+  await hold(true); await interval(600);
   const hiddenHold = await active.cdp.send('Target.createTarget', { url: 'about:blank' }); await active.cdp.send('Target.activateTarget', { targetId: hiddenHold.targetId }); await poll(() => evaluate('document.hidden'), 'C1 actual hidden tab during held lock'); await interval(1600); await active.cdp.send('Page.bringToFront'); await active.cdp.send('Target.closeTarget', { targetId: hiddenHold.targetId }); await interval(450);
-  const returnedHold = gameOf(await snapshot()); check(returnedHold.phase === 'lock' && returnedHold.hold_ms === 0, 'C1 visibility loss releases a held lock without progression or stale input'); await key(' ', 'Space', false);
-  if (returnedHold.paused) await clickControl('继续');
-  await key(' ', 'Space', true); await interval(1650); await key(' ', 'Space', false); await poll(async () => gameOf(await snapshot())?.phase === 'caught', 'C1 actual hold reaches authored dialogue');
+  const returnedHold = gameOf(await snapshot()); check(returnedHold.phase === 'lock' && returnedHold.hold_ms === 0, 'C1 visibility loss releases a held lock without progression or stale input'); await hold(false);
+  if (returnedHold.paused) await clickControl('PrologueResume','name');
+  await hold(true); await interval(1650); await hold(false); await poll(async () => gameOf(await snapshot())?.phase === 'caught', 'C1 actual hold reaches authored dialogue');
   await poll(async () => state(await snapshot())?.actOne.phase === 'friend_message_required', 'C1 authored dialogue and whiteout hand off to chapter two', 30000);
   await interval(1500); const reloaded = await startStory(true); check(state(reloaded.snapshot).actOne.phase === 'friend_message_required', 'C1 controller completion persists through actual page reload');
-  console.log('desktop-1280: C1 six-word real pointer/keyboard run, authored C2 handoff and native reload passed');
+  console.log(`${active.id}: C1 six-word real ${active.touch?'touch':'mouse and keyboard'} run, authored C2 handoff and native reload passed`);
 }
 async function prepareStreamingFault() {
   if (!fixtureDir || !existsSync(path.join(fixtureDir, 'after_c2_dorm_exit.json'))) throw new Error('Streaming acceptance requires an earned after_c2_dorm_exit.json fixture directory');
@@ -526,12 +948,12 @@ async function prepareStreamingFault() {
   check(manifest.schema === '755-web-content-v1' && manifest.core && Array.isArray(manifest.packs) && manifest.packs.length > 0, 'delivery declares separate core and deferred content packs');
   const base = new URL('.', url);
   const coreUrl = new URL(manifest.core.file, base).href;
-  const deferredUrls = manifest.packs.map(pack => new URL(pack.file, base).href);
+  const deferredUrls = manifest.packs.flatMap(pack => [pack.file, ...(pack.transportChunks || []).map(chunk => chunk.file)]).map(file => new URL(file, base).href);
   for (const deferred of deferredUrls) {
     const location = artifactLocation(deferred);
     check(location.relativePath.startsWith('content/') && deferred !== coreUrl, 'controlled failure targets only a declared deferred content path', { relativePath: location.relativePath });
   }
-  check(new Set(deferredUrls).size === manifest.packs.length, 'deferred content URLs are unique');
+  check(new Set(deferredUrls).size === deferredUrls.length, 'deferred PCK and transport chunk URLs are unique');
   if (exportDir) check(await shaFile(path.join(exportDir, 'content-manifest.json')) === hash(bytes), 'HTTP content manifest matches the actual split export');
   active.deferredUrls = new Set(deferredUrls);
   active.controlledBlockedUrls = new Set(deferredUrls);
@@ -588,6 +1010,16 @@ async function streamingCase() {
   check(hash(JSON.stringify(state(ready).items)) === frozen.itemsSha256 && hash(JSON.stringify(state(ready).wallet)) === frozen.walletSha256 && state(ready).actOne.phase === frozen.actOnePhase, 'asset recovery preserves earned inventory, wallet and story phase');
   const chapter2Packs = active.streamingManifest.packs.filter(pack => pack.family === 'chapter2');
   check(chapter2Packs.length > 1 && chapter2Packs.every(pack => ready.content.packs.some(loaded => loaded.id === pack.id && loaded.status === 'ready')), 'family readiness requires every independently verified C2 content block');
+  const chapter2Chunks = [...delivery.deferredChunksByUrl.values()].filter(chunk => chunk.family === 'chapter2');
+  if (chapter2Chunks.length) {
+    await poll(() => chapter2Chunks.every(chunk => active.deferredResponses.some(row => row.url === chunk.url && !row.pending && !row.error && row.status === 200)), 'all C2 oversized-pack chunks have actual browser response evidence');
+    for (const chunk of chapter2Chunks) {
+      const observed = active.deferredResponses.find(row => row.url === chunk.url && !row.pending && !row.error && row.status === 200);
+      check(observed.bytes === chunk.bytes && observed.sha256 === chunk.sha256 && !observed.range, 'real deferred HTTP chunk matches its exact bytes and SHA', { file: chunk.file, ...observed });
+    }
+    const oversizedOriginals = new Set(chapter2Packs.filter(pack => pack.transportChunks).map(pack => new URL(pack.file, new URL('.', url)).href));
+    check(!active.requests.some(request => oversizedOriginals.has(request.url)), 'new loader obtains large C2 packs through small static chunks, without the original PCK request');
+  }
   const position = ready.world.player;
   await evaluate("document.getElementById('canvas').focus()");
   let moved = false;
@@ -614,7 +1046,7 @@ async function streamingCase() {
   const oldDocument = await evaluate('performance.timeOrigin');
   const reloaded = await startStory(true);
   const resumed = await poll(async () => { const value = await snapshot(); return !value?.content?.blocking && value?.content?.readyFamilies?.includes('chapter2') && value.world?.visible && value.world.scene_id === 'campus_bootstrap' ? value : null; }, 'real document reload restores C2 entirely from verified content cache', 60000);
-  const chapter2Urls = new Set(chapter2Packs.map(pack => new URL(pack.file, new URL('.', url)).href));
+  const chapter2Urls = new Set(chapter2Packs.flatMap(pack => [pack.file, ...(pack.transportChunks || []).map(chunk => chunk.file)]).map(file => new URL(file, new URL('.', url)).href));
   const requests = active.requests.slice(requestStart).filter(request => chapter2Urls.has(request.url));
   check(requests.length === 0, 'ordinary reload makes no C2 HTTP requests while all deferred URLs remain explicitly blocked', requests);
   check(await evaluate('performance.timeOrigin') !== oldDocument && state(resumed).native.chapter === 2 && state(resumed).native.scene === 'campus_bootstrap', 'cache recovery occurs in a new real document and retains the saved C2 route');
@@ -625,15 +1057,404 @@ async function streamingCase() {
   console.log('desktop-1280: earned C2 file import, visible failure/retry, full-family map recovery and cache-only real reload passed');
 }
 
+// No game writes: every operation below is a real CDP input or a fresh read of
+// the detached engine snapshot. Fixture construction is separate evidence.
+const mobileDistance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const inRect = (point, rect, inset = 0) => point.x >= rect.x + inset && point.y >= rect.y + inset && point.x <= rect.x + rect.width - inset && point.y <= rect.y + rect.height - inset;
+const mobileFacts = value => JSON.stringify({ scene: state(value).native.scene, phase: state(value).actOne.phase, props: state(value).native.dorm_props, items: state(value).items, wallet: state(value).wallet, dormPropActions: value.world?.input?.dormPropActions });
+// Production creates dorm_props on the first real prop action; absent lamps are off.
+const lampOn = value => !!state(value).native.dorm_props?.lamp_03_on;
+const worldTarget = (value, id = 'desk_03') => value.world.input.targets.find(target => target.id === id);
+async function mobileSample(previous, delay = 300) {
+  await interval(delay);
+  const value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > (previous?.sampleFrame ?? -1) ? next : null; }, 'fresh engine mobile-input observation', 5000);
+  active.mobileWorld.samples.push({ at: Date.now(), sampleFrame: value.sampleFrame, world: value.world, facts: mobileFacts(value) });
+  return value;
+}
+async function worldTouches(type, points = []) {
+  if ((type === 'touchEnd' || type === 'touchCancel') && points.length) throw new Error('CDP end/cancel requires an empty active point set');
+  active.mobileWorld.inputs.push({ at: Date.now(), method: 'Input.dispatchTouchEvent', type, touchPoints: points });
+  await active.cdp.send('Input.dispatchTouchEvent', { type, touchPoints: points });
+}
+async function worldTap(value, point) {
+  const css = await renderPoint(point, value);
+  await worldTouches('touchStart', [{ ...css, id: 1 }]); await interval(65); await worldTouches('touchEnd');
+  return mobileSample(value);
+}
+async function stickStart(value, vector = { x: 0, y: -1 }) {
+  const origin = await renderPoint(value.world.input.stick, value);
+  const length = Math.hypot(vector.x, vector.y) || 1;
+  const displaced = await renderPoint({ x: value.world.input.stick.x + 38 * vector.x / length, y: value.world.input.stick.y + 38 * vector.y / length }, value);
+  await worldTouches('touchStart', [{ ...origin, id: 1 }]);
+  await worldTouches('touchMove', [{ ...displaced, id: 1 }]);
+  return displaced;
+}
+async function stickStep(value, vector, ms = 150) {
+  await stickStart(value, vector); await interval(ms); await worldTouches('touchEnd');
+  return mobileSample(value);
+}
+async function assertStickHeld(value, label) {
+  const held = await mobileSample(value);
+  check(held.world.input.owners.filter(owner => owner.role === 'stick').length === 1 && mobileDistance(held.world.touch_axis, { x: 0, y: 0 }) > .1, `${active.id}: ${label} begins with an actually owned, nonzero joystick`, held.world);
+  return held;
+}
+async function assertWorldStopped(value, label) {
+  value = await mobileSample(value);
+  check(mobileDistance(value.world.touch_axis, { x: 0, y: 0 }) < .001 && value.world.input.owners.length === 0 && !value.world.input.mouseOwned && !value.world.input.inventoryOwned, `${active.id}: ${label} clears pointer owners and axis`, value.world.input);
+  const after = await mobileSample(value, 500);
+  check(mobileDistance(value.world.player, after.world.player) < .5, `${active.id}: ${label} does not leave stuck movement`, { before: value.world.player, after: after.world.player });
+  return after;
+}
+async function assertBottomPlaque(value, label) {
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.plaque?.visible && !next.world.subtitle ? next : null; }, 'actual confirmed plaque with no transient feedback', 15000);
+  const rect = value.world.rect, plaque = value.world.input.plaque.rect, stick = value.world.input.stickRect;
+  check(inRect({ x: plaque.x, y: plaque.y }, value.viewport) && inRect({ x: plaque.x + plaque.width, y: plaque.y + plaque.height }, value.viewport), `${active.id}: ${label} plaque stays inside the actual root viewport`);
+  if (value.world.input.scheme === 'direct_world') {
+    const tools = controls(value).filter(control => /^(WorldTasks|WorldTaskButton|WorldMode|WorldPhoneButton|WorldItem_)/.test(control.name));
+    check(tools.every(({ rect: tool }) => plaque.x + plaque.width <= tool.x || tool.x + tool.width <= plaque.x || plaque.y + plaque.height <= tool.y || tool.y + tool.height <= plaque.y), `${active.id}: ${label} plaque clears the actual inline tools and items`, { plaque, tools });
+  } else check(plaque.x + plaque.width <= stick.x || stick.x + stick.width <= plaque.x || plaque.y + plaque.height <= stick.y || stick.y + stick.height <= plaque.y, `${active.id}: ${label} plaque does not overlap the actual joystick rectangle`, { plaque, stick });
+  check(inRect({ x: plaque.x, y: plaque.y }, rect) && inRect({ x: plaque.x + plaque.width, y: plaque.y + plaque.height }, rect), `${active.id}: ${label} confirmed plaque stays inside the actual world`, { rect, plaque });
+  check(Math.abs(plaque.x + plaque.width / 2 - rect.x - rect.width / 2) <= 1 && (value.world.input.scheme === 'direct_world' ? plaque.y + plaque.height >= rect.y + rect.height * .6 : Math.abs(rect.y + rect.height - plaque.y - plaque.height - 4) <= 1), `${active.id}: ${label} confirmed plaque is bottom-centred above its actual controls`, { rect, plaque });
+  const later = await mobileSample(value, 500);
+  check(JSON.stringify(later.world.input.plaque.rect) === JSON.stringify(plaque), `${active.id}: ${label} deferred layout keeps the plaque anchored`);
+  active.screenshots.push(await screenshot(`${active.id}-${label}-confirmed-bottom`));
+  return later;
+}
+async function directWorldCase(value) {
+  const input = value.world.input, target = worldTarget(value), start = value.world.player;
+  check(value.world.mobile_exploration && input.stick === null && !input.stickRect.width && !input.confirmRect.width, `${active.id}: local direct scene has no fixed joystick or confirmation button`);
+  check(target.distance > target.radius && inRect(target.point, value.world.rect, 8), `${active.id}: real lamp begins visible and beyond its source proximity`, target);
+  const beforeActions = input.dormPropActions, beforeLamp = lampOn(value);
+  const css = await renderPoint(target.point, value);
+  await worldTouches('touchStart', [{ ...css, id: 1 }]);
+  value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.owners?.length === 1 ? s : null; }, 'real direct touch-down reaches the engine owner', 5000);
+  check(value.world.input.owners.length === 1 && value.world.input.dormPropActions === beforeActions && lampOn(value) === beforeLamp, `${active.id}: touch-down owns one pointer and submits no premature object action`);
+  await worldTouches('touchEnd');
+  const routeSamples = [];
+  value = await poll(async () => {
+    const next = await snapshot();
+    if (!next?.world?.input || next.sampleFrame <= (routeSamples.at(-1)?.frame ?? -1)) return null;
+    const row = { frame: next.sampleFrame, player: next.world.player, distance: worldTarget(next).distance, actions: next.world.input.dormPropActions };
+    routeSamples.push(row);
+    if (row.actions > beforeActions) return next;
+    return null;
+  }, 'direct target tap physically approaches and interacts through its original controller', 30000);
+  active.mobileWorld.approach = routeSamples;
+  check(routeSamples.some(row => row.actions === beforeActions && mobileDistance(row.player, start) > 1) && mobileDistance(value.world.player, start) > 20, `${active.id}: approach includes real intermediate motion before its accepted action`, routeSamples);
+  check(worldTarget(value).distance <= worldTarget(value).radius && value.world.input.dormPropActions === beforeActions + 1 && lampOn(value) !== beforeLamp, `${active.id}: physical arrival accepts exactly one original lamp interaction`);
+  value = await mobileSample(value, 650);
+  check(value.world.input.dormPropActions === beforeActions + 1, `${active.id}: emulated mouse and settled arrival cannot double-submit`);
+  value = await assertBottomPlaque(value, 'direct-portrait');
+  const facts = mobileFacts(value), point = await renderPoint(worldTarget(value).point, value);
+  await worldTouches('touchStart', [{ ...point, id: 1 }]);
+  await worldTouches('touchMove', [{ x: point.x - 35, y: point.y, id: 1 }]);
+  await worldTouches('touchMove', [{ ...point, id: 1 }]); await worldTouches('touchEnd');
+  value = await mobileSample(value);
+  check(mobileFacts(value) === facts && !value.world.input.routeWaypointCount, `${active.id}: a drag returning to its start is neither a tap nor a walking route`);
+  // Re-read the object's projected position after camera panning.
+  const held = await renderPoint(worldTarget(value).point, value);
+  await worldTouches('touchStart', [{ ...held, id: 1 }]);
+  value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.owners?.length === 1 ? s : null; }, 'real cancellation probe owns a scene pointer', 5000);
+  check(value.world.input.owners.length === 1, `${active.id}: cancellation probe starts with a real held scene pointer`);
+  await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-cancel');
+  check(mobileFacts(value) === facts, `${active.id}: cancelling preserves source facts and item ownership`);
+  const a = await renderPoint(worldTarget(value).point, value), b = { x: a.x + 24, y: a.y + 20 };
+  await worldTouches('touchStart', [{ ...a, id: 1 }]);
+  await worldTouches('touchStart', [{ ...a, id: 1 }, { ...b, id: 2 }]);
+  value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.owners?.length === 2 ? s : null; }, 'both real scene fingers reach the camera owner', 5000);
+  check(value.world.input.owners.length === 2 && value.world.input.owners.every(owner => owner.role === 'camera'), `${active.id}: two scene fingers transfer to the local camera owner`);
+  await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-two-finger-cancel');
+  check(mobileFacts(value) === facts, `${active.id}: two-finger camera ownership never submits an object action`);
+  const item = controls(value).find(control => control.name === 'WorldItem_campusCard' && !control.disabled);
+  check(!!item && state(value).items.campusCard && item.rect.width >= 44 && item.rect.height >= 44 && inRect({ x: item.rect.x, y: item.rect.y }, value.world.rect) && inRect({ x: item.rect.x + item.rect.width, y: item.rect.y + item.rect.height }, value.world.rect), `${active.id}: actual earned item is directly visible inside the world`, item);
+  const mapPoint = await renderPoint(worldTarget(value).point, value);
+  const itemPoint = await renderPoint({ x: item.rect.x + item.rect.width / 2, y: item.rect.y + item.rect.height / 2 }, value);
+  await worldTouches('touchStart', [{ ...mapPoint, id: 1 }]);
+  value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.owners?.length === 1 ? s : null; }, 'real inventory probe owns a scene pointer', 5000);
+  check(value.world.input.owners.length === 1, `${active.id}: inventory probe starts with an actual held scene pointer`);
+  await worldTouches('touchStart', [{ ...mapPoint, id: 1 }, { ...itemPoint, id: 2 }]);
+  value = await mobileSample(value, 100);
+  check(value.world.input.owners.length === 0 && !value.world.input.routeWaypointCount && mobileFacts(value) === facts, `${active.id}: touching the inline inventory cancels the held scene pointer without a route or object action`);
+  await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-inventory-cancel');
+  check(mobileFacts(value) === facts, `${active.id}: inventory cancellation retains items and source actions`);
+  await worldTouches('touchStart', [{ ...mapPoint, id: 1 }]); await press('F10');
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.modalVisible ? next : null; }, 'settings modal opens over a direct scene pointer');
+  await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-modal');
+  check(mobileFacts(value) === facts, `${active.id}: modal cancellation cannot activate the held source object`);
+  await clickControl('关闭');
+  value = await mobileSample(value);
+  const currentTarget = worldTarget(value);
+  const oldActions = value.world.input.dormPropActions;
+  value = await worldTap(value, currentTarget.point);
+  check(value.world.input.dormPropActions === oldActions + 1 && lampOn(value) === beforeLamp, `${active.id}: a fresh ordinary target tap works after cancellation and reverses only the lamp`);
+  value = await assertBottomPlaque(value, 'direct-resumed');
+  if (active.id === 'touch-390') {
+    await active.cdp.send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: active.dpr, mobile: true });
+    value = await poll(async () => { const next = await snapshot(); return next?.viewport?.width > next.viewport.height && next.world.input.geometryAvailable ? next : null; }, 'landscape layout reaches the actual direct scene');
+    value = await assertWorldStopped(value, 'direct-orientation');
+    check(state(value).native.scene === 'dorm_hub' && state(value).items.campusCard, `${active.id}: orientation preserves the earned scene and item`);
+    value = await worldTap(value, worldTarget(value).point);
+    check(value.world.input.dormPropActions === oldActions + 2 && lampOn(value) !== beforeLamp, `${active.id}: landscape direct target tap still submits exactly one action`);
+    await assertBottomPlaque(value, 'direct-landscape');
+  }
+  active.mobileWorld.coverage.push('real physical target approach', 'original proximity and single action', 'bottom plaque above inline controls', 'drag is not tap', 'cancel and fresh gesture', 'two-finger camera ownership', 'scene then inventory ownership', 'settings modal cancellation', ...(active.id === 'touch-390' ? ['landscape resize and direct tap'] : []));
+  active.mobileWorld.completed = true;
+}
+
+async function mobileWorldCase() {
+  check(!!fixtureDir, 'mobile-world requires an explicit earned fixture directory (never a fabricated save)');
+  active.mobileWorld = { fixtureConstructionIsNotTouchEvidence: true, inputs: [], samples: [], coverage: [], limitations: ['Chromium emulation, not physical phones or a manual campaign.', 'No notch/safe-area emulation is claimed by DeviceMetricsOverride; native safe-area regression is separate.'] };
+  await importSave(path.join(fixtureDir, 'before_c2_dorm_exit.json'));
+  let value = await poll(async () => { const s = await snapshot(); return s?.world?.visible && s.world.scene_id === 'dorm_hub' && s.world.input && (!active.touch || s.world.input.geometryAvailable) && !s.world.input.modalVisible && !s.content.blocking ? s : null; }, 'ordinary earned import reaches the real dorm world', 60000);
+  value = await mobileSample(value, importSettleMs);
+  value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > value.sampleFrame && !next.world.subtitle && (!active.touch || next.world.input.geometryAvailable) ? next : null; }, 'import feedback finishes before any world gesture', 15000);
+  check(state(value).actOne.manualControlTested && state(value).actOne.phase === 'movement_ready', 'earned C2 fixture contains the original unlocked movement and exit gates');
+  if (!active.touch) {
+    const before = value.world.player;
+    // A short wall-clock pulse can begin and end between loaded WASM frames.
+    // Keep real input held only until a fresh engine sample proves movement.
+    // The earned actor stands beside the right door jamb: move toward its centre.
+    const direction = { at: Date.now(), method: 'observedKeyHold', code: 'ArrowLeft', startSampleFrame: value.sampleFrame, endSampleFrame: value.sampleFrame, maxMs: 3000, released: false };
+    active.mobileWorld.inputs.push(direction);
+    try {
+      await key('ArrowLeft', 'ArrowLeft', true);
+      value = await poll(async () => {
+        const next = await snapshot();
+        if (!next || next.sampleFrame <= direction.endSampleFrame) return null;
+        direction.endSampleFrame = next.sampleFrame;
+        active.mobileWorld.samples.push({ at: Date.now(), sampleFrame: next.sampleFrame, world: next.world, facts: mobileFacts(next) });
+        return mobileDistance(before, next.world.player) > 1 ? next : null;
+      }, 'real desktop direction produces movement in a fresh engine sample', direction.maxMs);
+    } finally {
+      await key('ArrowLeft', 'ArrowLeft', false);
+      direction.finishedAt = Date.now(); direction.released = true;
+    }
+    value = await mobileSample(value);
+    check(mobileDistance(before, value.world.player) > 1 && worldTarget(value, 'exit_door').distance <= worldTarget(value, 'exit_door').radius, 'desktop direction input moves the actual actor while the earned door remains nearby');
+    await press(' ', 'Space');
+    value = await poll(async () => { const s = await snapshot(); return s?.world?.scene_id === 'campus_bootstrap' ? s : null; }, 'PC Space retains the existing proximity-gated dorm exit', 60000);
+    active.mobileWorld.coverage.push('PC direction + Space');
+    active.mobileWorld.completed = true;
+    active.screenshots.push(await screenshot(`${active.id}-pc-space-campus`));
+    return;
+  }
+  if (value.world.input.scheme === 'direct_world') { await directWorldCase(value); return; }
+  check(value.world.mobile_exploration && inRect({ x: value.world.input.stickRect.x, y: value.world.input.stickRect.y }, value.world.rect) && inRect({ x: value.world.input.stickRect.x + value.world.input.stickRect.width, y: value.world.input.stickRect.y + value.world.input.stickRect.height }, value.world.rect) && value.world.input.confirmRect.width === 0 && value.world.input.confirmRect.height === 0, `${active.id}: mobile movement pad overlays the actual world without a confirm button`);
+  const original = mobileFacts(value), target = worldTarget(value), beforeFarTap = value.world.player;
+  check(target.distance > target.radius && inRect(target.point, value.world.rect, 8), `${active.id}: far lamp is visibly on-screen and outside the original proximity radius`, target);
+  value = await worldTap(value, target.point);
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.subtitle === `太远了，请靠近${target.label}。` ? next : null; }, 'the actual lamp proximity refusal reaches the feedback FIFO', 15000);
+  check(value.world.subtitle === `太远了，请靠近${target.label}。`, `${active.id}: far tap actually reaches the visible lamp picker and receives its proximity refusal`, { subtitle: value.world.subtitle, target });
+  check(mobileFacts(value) === original && !value.world.mobile_confirmed_target_id, `${active.id}: far object tap does not interact, confirm or start remote progress`);
+  check(mobileDistance(value.world.player, beforeFarTap) < .5, `${active.id}: the rejected far tap never moved or teleported the actor before its refusal`, { before: beforeFarTap, after: value.world.player });
+  const farPosition = value.world.player;
+  value = await mobileSample(value, 650);
+  check(mobileDistance(value.world.player, farPosition) < .5, `${active.id}: rejected distant object tap does not auto-walk`);
+  const movementStart = value.world.player;
+  for (let step = 0; step < 55 && worldTarget(value).distance > worldTarget(value).radius - 18; step++) {
+    const destination = worldTarget(value).worldPoint;
+    value = await stickStep(value, { x: destination.x - value.world.player.x, y: destination.y - value.world.player.y });
+  }
+  check(mobileDistance(value.world.player, movementStart) > 20 && worldTarget(value).distance <= worldTarget(value).radius - 10, `${active.id}: real joystick movement reaches the ordinary lamp proximity`, value.world);
+  value = await mobileSample(value, 650);
+  check(mobileFacts(value) === original && !value.world.mobile_confirmed_target_id && !value.world.input.plaque.visible, `${active.id}: joystick only moves; arriving beside an object never opens it or reveals a confirmed label`);
+  // Briefly face away while remaining nearby: direct tapping has no facing gate.
+  value = await stickStep(value, { x: 0, y: 1 }, 55);
+  check(value.world.facing === 'down' && worldTarget(value).worldPoint.y < value.world.player.y && worldTarget(value).distance <= worldTarget(value).radius, `${active.id}: actor faces away from the nearby lamp before direct tap`);
+  const beforeLamp = lampOn(value), beforeActions = value.world.input.dormPropActions;
+  value = await worldTap(value, worldTarget(value).point);
+  check(lampOn(value) !== beforeLamp && value.world.mobile_confirmed_target_id === 'desk_03' && value.world.input.dormPropActions === beforeActions + 1, `${active.id}: one direct object touch confirms exactly one nearby lamp toggle without facing/joystick confirmation`);
+  const once = lampOn(value);
+  value = await mobileSample(value, 650);
+  check(lampOn(value) === once && value.world.input.dormPropActions === beforeActions + 1, `${active.id}: generated mouse events do not toggle the lamp a second time`);
+  value = await assertBottomPlaque(value, 'portrait');
+  const facts = mobileFacts(value), point = await renderPoint(worldTarget(value).point, value);
+  await worldTouches('touchStart', [{ ...point, id: 1 }]);
+  await worldTouches('touchMove', [{ x: point.x - 40, y: point.y, id: 1 }]);
+  await worldTouches('touchMove', [{ ...point, id: 1 }]); await worldTouches('touchEnd');
+  value = await mobileSample(value);
+  check(mobileFacts(value) === facts, `${active.id}: object drag returning to its start never ends as a tap`);
+  await stickStart(value); value = await assertStickHeld(value, 'touchcancel interruption'); await worldTouches('touchCancel');
+  value = await assertWorldStopped(value, 'touchcancel');
+  const first = await stickStart(value, { x: 0, y: 0 });
+  let held = await mobileSample(value);
+  const owner = held.world.input.owners.find(owner => owner.role === 'stick');
+  check(!!owner, `${active.id}: the first finger actually owns the stick`);
+  const second = await renderPoint({ x: held.world.input.stick.x + 24, y: held.world.input.stick.y }, held);
+  await worldTouches('touchStart', [{ ...first, id: 1 }, { ...second, id: 2 }]);
+  held = await mobileSample(held);
+  check(held.world.input.owners.filter(row => row.role === 'stick').length === 1 && held.world.input.owners.find(row => row.role === 'stick').index === owner.index && mobileDistance(held.world.touch_axis, { x: 0, y: 0 }) < .001, `${active.id}: second finger cannot steal the joystick or inject its direction`, held.world.input);
+  await worldTouches('touchEnd'); value = await assertWorldStopped(held, 'multitouch release');
+  // The reverse ownership order is important: inventory handles some pointer
+  // releases before Main, so movement must stop as soon as its gesture owns input.
+  await clickControl('WorldInventoryHandle', 'name'); value = await mobileSample(value);
+  // The world item inherits inventory_item.gd; the probe's exact-script itemId
+  // field only describes base phone items. Use the shipped world control name.
+  const item = controls(value).find(control => control.name === 'WorldItem_campusCard' && !control.disabled);
+  check(!!item && state(value).items.campusCard === true && value.world.visible && state(value).ui.inventoryOpen && item.rect.width >= 44 && item.rect.height >= 44 && inRect({ x: item.rect.x, y: item.rect.y }, value.viewport) && inRect({ x: item.rect.x + item.rect.width, y: item.rect.y + item.rect.height }, value.viewport), `${active.id}: the existing earned inventory item is available through the real bag UI`, { owned: state(value).items.campusCard, item, viewport: value.viewport });
+  const heldStick = await stickStart(value, { x: -1, y: 0 });
+  value = await assertStickHeld(value, 'inventory acquisition interruption');
+  const itemPoint = await renderPoint({ x: item.rect.x + item.rect.width / 2, y: item.rect.y + item.rect.height / 2 }, value);
+  await worldTouches('touchStart', [{ ...heldStick, id: 1 }, { ...itemPoint, id: 2 }]);
+  value = await mobileSample(value);
+  check(value.world.input.inventoryOwned && mobileDistance(value.world.touch_axis, { x: 0, y: 0 }) < .001, `${active.id}: acquiring an inventory touch cancels already-held world movement`);
+  await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'inventory cancellation');
+  check(mobileFacts(value) === facts, `${active.id}: inventory ownership does not consume an item or trigger the world`);
+  await clickControl('WorldInventoryHandle', 'name'); value = await mobileSample(value);
+  await stickStart(value); value = await assertStickHeld(value, 'settings interruption'); await press('F10');
+  value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.modalVisible ? s : null; }, 'settings modal opens over a held joystick');
+  value = await assertWorldStopped(value, 'settings modal before finger release'); await worldTouches('touchEnd');
+  await press('Escape'); value = await mobileSample(value);
+  await stickStart(value, { x: -1, y: 0 }); value = await assertStickHeld(value, 'journal interruption');
+  const tasks = controls(value).find(control => control.name === 'WorldTasks');
+  check(!!tasks, `${active.id}: the existing task journal launcher is visible`);
+  const tasksPoint = await renderPoint({ x: tasks.rect.x + tasks.rect.width / 2, y: tasks.rect.y + tasks.rect.height / 2 }, value);
+  // A real independent mouse click opens the native button without releasing
+  // the held touch; testing touchEnd first would mask missing modal cleanup.
+  await clickPoint(tasksPoint, false);
+  value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.modalVisible ? s : null; }, 'actual task journal opens while the touch remains held');
+  value = await assertWorldStopped(value, 'journal modal before finger release'); await worldTouches('touchEnd');
+  check(mobileFacts(value) === facts, `${active.id}: modal and journal input cannot bleed into world interaction`);
+  await press('Escape'); value = await mobileSample(value);
+  await stickStart(value); value = await assertStickHeld(value, 'browser blur interruption');
+  check(await evaluate('document.hasFocus()'), `${active.id}: game document is focused immediately before the real tab switch`);
+  const other = await active.cdp.send('Target.createTarget', { url: 'about:blank' });
+  await active.cdp.send('Target.activateTarget', { targetId: other.targetId }); await interval(350);
+  const lostFocus = await evaluate('!document.hasFocus()');
+  await active.cdp.send('Target.activateTarget', { targetId: active.targetId });
+  await active.cdp.send('Target.closeTarget', { targetId: other.targetId });
+  check(await evaluate('document.hasFocus()'), `${active.id}: returning to the game tab restores actual document focus`);
+  check(lostFocus, `${active.id}: browser tab switch really removes document focus (not a synthetic blur event)`);
+  value = await assertWorldStopped(value, 'real browser blur/return before finger release'); await worldTouches('touchEnd');
+  check(mobileFacts(value) === facts, `${active.id}: browser blur cannot trigger an object or consume inventory`);
+  const beforeNew = value.world.player; value = await stickStep(value, { x: -1, y: 0 });
+  check(mobileDistance(beforeNew, value.world.player) > 1, `${active.id}: a fresh joystick gesture still works after cancellation and blur`);
+  if (active.id === 'touch-390') {
+    await stickStart(value); value = await assertStickHeld(value, 'orientation interruption');
+    await active.cdp.send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: active.dpr, mobile: true });
+    value = await poll(async () => { const s = await snapshot(); return s?.viewport?.width === 844 && s.viewport.height === 390 ? s : null; }, 'actual landscape canvas resize');
+    value = await assertWorldStopped(value, 'orientation resize before finger release'); await worldTouches('touchEnd');
+    // Re-import through the shipped file picker rather than moving the actor
+    // or camera through a privileged bridge to obtain a convenient screenshot.
+    await importSave(path.join(fixtureDir, 'before_c2_dorm_exit.json')); value = await mobileSample(value, importSettleMs);
+    value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > value.sampleFrame && !next.world.subtitle && next.world.input.geometryAvailable ? next : null; }, 'landscape import feedback finishes before joystick movement', 15000);
+    for (let step = 0; step < 55 && worldTarget(value).distance > worldTarget(value).radius - 18; step++) {
+      const destination = worldTarget(value).worldPoint;
+      value = await stickStep(value, { x: destination.x - value.world.player.x, y: destination.y - value.world.player.y });
+    }
+    check(worldTarget(value).distance <= worldTarget(value).radius, 'landscape real joystick reaches lamp proximity');
+    value = await worldTap(value, worldTarget(value).point);
+    check(value.world.mobile_confirmed_target_id === 'desk_03', 'landscape direct touch confirms the actual lamp');
+    await assertBottomPlaque(value, 'landscape');
+  }
+  active.mobileWorld.completed = true;
+  active.mobileWorld.coverage.push('real joystick movement only', 'far tap and arrival never interact', 'near direct tap without facing', 'single reversible lamp toggle', 'bottom plaque', 'drag is not tap', 'cancel and new gesture', 'single-owner multitouch', 'stick then inventory', 'settings and journal gates', 'real browser blur', ...(active.id === 'touch-390' ? ['landscape resize'] : []));
+}
+
+// Observe immediately after spawn, before any await. 'exit' is not 'close':
+// Node may still have open stdio, and the browser may still hold its profile.
+function createBrowserLifecycle(ownedTemp) {
+  const evidence = { spawnRequestedAt: Date.now(), pid: null, ownedTemp, events: [] };
+  let child = null, closed = false;
+  const waiting = new Set();
+  const event = (type, details = {}) => { const row = { type, at: Date.now(), ...details }; evidence.events.push(row); return row; };
+  return {
+    evidence, get child() { return child; }, get closed() { return closed; },
+    attach(process) {
+      if (child) throw new Error('Browser lifecycle already attached');
+      child = process; evidence.pid = process.pid ?? null;
+      process.once('spawn', () => { evidence.spawnedAt = event('spawn', { pid: process.pid }).at; evidence.pid = process.pid; });
+      process.once('exit', (code, signal) => { evidence.exitedAt = event('exit', { code, signal }).at; });
+      process.on('error', error => event('error', { message: error.message, code: error.code || null }));
+      process.once('close', (code, signal) => {
+        closed = true; evidence.closedAt = event('close', { code, signal }).at;
+        for (const notify of waiting) notify();
+      });
+    },
+    waitForClose(milliseconds) {
+      if (closed) return Promise.resolve(true);
+      return new Promise(resolve => {
+        const notify = () => { clearTimeout(timer); waiting.delete(notify); resolve(true); };
+        const timer = setTimeout(() => { waiting.delete(notify); resolve(false); }, milliseconds);
+        waiting.add(notify);
+      });
+    }
+  };
+}
+async function cleanupBrowserLifecycle(lifecycle, { remove = rm, termWaitMs = 2000, killWaitMs = 3000 } = {}) {
+  const details = lifecycle.evidence.cleanup = { startedAt: Date.now(), signals: [] };
+  const signal = name => {
+    const row = { signal: name, at: Date.now() }; details.signals.push(row);
+    try { row.sent = lifecycle.child.kill(name); } catch (error) { row.error = error.message; }
+  };
+  try {
+    if (lifecycle.child && !lifecycle.closed) {
+      if (lifecycle.evidence.exitedAt === undefined) signal('SIGTERM');
+      if (!await lifecycle.waitForClose(termWaitMs)) {
+        if (lifecycle.evidence.exitedAt === undefined) signal('SIGKILL');
+        if (!await lifecycle.waitForClose(killWaitMs)) throw new Error('Browser did not close; owned temporary directory retained');
+      }
+    }
+    // Only the unique mkdtemp directory created by this case is removable.
+    const directory = path.resolve(lifecycle.evidence.ownedTemp);
+    if (path.dirname(directory) !== path.resolve(tmpdir()) || !/^755-godot-web-browser-.+/.test(path.basename(directory))) throw new Error('Refusing cleanup outside an owned browser temporary directory');
+    details.removeStartedAt = Date.now();
+    await remove(directory, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    details.removedAt = Date.now();
+  } catch (error) { details.error = { message: error.message, code: error.code || null }; throw error; }
+  finally { details.finishedAt = Date.now(); }
+}
+async function finishBrowserCase({ lifecycle, caseRecord, primaryError, bootBodyJobs = [], cdp, persistEvidence, cleanupOptions }) {
+  caseRecord.browserLifecycle = lifecycle.evidence;
+  let firstError;
+  const failure = (stage, error) => {
+    firstError ||= error;
+    (caseRecord.cleanupErrors ||= []).push({ stage, message: error.message, code: error.code || null, stack: error.stack || String(error) });
+    if (caseRecord.passed) caseRecord.functionalPassedBeforeCleanup = true;
+    caseRecord.passed = false;
+    if (!caseRecord.error) caseRecord.error = error.stack || String(error);
+  };
+  await Promise.allSettled(bootBodyJobs);
+  if (typeof cdp?.send === 'function') {
+    try {
+      await cdp.send('Browser.close', {}, 1000);
+      // Let Chrome finish its own helper/stdio shutdown before signal fallback.
+      await lifecycle.waitForClose(cleanupOptions?.termWaitMs ?? 2000);
+    }
+    catch (error) { caseRecord.browserCloseRequestError = error.message; }
+  }
+  try { cdp?.close(); } catch (error) { failure('cdp-close', error); }
+  try { await cleanupBrowserLifecycle(lifecycle, cleanupOptions); } catch (error) { failure('browser-cleanup', error); }
+  // A removal error must not skip persistence of the original game evidence.
+  try { await persistEvidence(); } catch (error) { failure('persist-evidence', error); }
+  // The caller's existing catch/finally rethrows its original functional error.
+  if (!primaryError && firstError) throw firstError;
+}
+
 async function browserCase(id, width, height, touch, dpr = 1) {
   const temp = await mkdtemp(path.join(tmpdir(), '755-godot-web-browser-')); const profile = path.join(temp, 'profile'); const errors = []; const network = new Map(); const responses = new Map();
-  const child = spawn(chrome, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--disable-extensions', '--disable-sync', '--disable-default-apps', ...chromeArgs, `--window-size=${width},${height}`, '--force-device-scale-factor=1', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] }); let stderr = ''; child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-10000); });
-  active = { id, width, height, touch, dpr, child, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') }; await mkdir(active.downloadDir);
-  if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
-  let result;
+  const lifecycle = createBrowserLifecycle(temp); let stderr = '';
+  const stderrPath = path.join(output, `${id}-browser-stderr.log`);
+  active = { id, width, height, touch, dpr, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], deferredResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') };
+  let result, primaryError;
   try {
-    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts'); const port = portFile.split('\n')[0]; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-    active.cdp = await connect(targets.find(t => t.type === 'page').webSocketDebuggerUrl, ({ method, params }) => {
+    // Preserve stderr in full. Chromium helpers may inherit a pipe beyond the
+    // browser's exit on macOS, preventing Node's close event indefinitely.
+    // A file retains those diagnostics without tying profile cleanup to EOF on
+    // a helper's inherited pipe. Real browser exit/close remain mandatory.
+    const stderrFile = await open(stderrPath, 'w');
+    let child;
+    try {
+      child = spawn(chrome, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--disable-extensions', '--disable-sync', '--disable-default-apps', ...chromeArgs, `--window-size=${width},${height}`, '--force-device-scale-factor=1', `--user-data-dir=${profile}`, '--remote-debugging-port=0', 'about:blank'], { stdio: ['ignore', 'ignore', stderrFile.fd] });
+      lifecycle.attach(child); active.child = child;
+    } finally { await stderrFile.close(); }
+    await mkdir(active.downloadDir);
+    if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
+    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts'); const port = portFile.split('\n')[0]; lifecycle.evidence.portFileObservedAt = Date.now(); lifecycle.evidence.port = port; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+    const target = targets.find(t => t.type === 'page');
+    active.targetId = target.id;
+    if (target.id && target.webSocketDebuggerUrl) lifecycle.evidence.portReadyAt = Date.now();
+    active.cdp = await connect(target.webSocketDebuggerUrl, ({ method, params }) => {
       if (method === 'Runtime.exceptionThrown') errors.push({ type: 'pageerror', ...params.exceptionDetails });
       if (method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(params.type)) { const text = params.args.map(a => a.value ?? a.description ?? '').join(' '); if (params.type === 'error' || /SCRIPT ERROR|Parse Error|Failed to load|ERROR:/.test(text)) errors.push({ type: params.type, text }); }
       if (method === 'Network.requestWillBeSent') {
@@ -644,10 +1465,10 @@ async function browserCase(id, width, height, touch, dpr = 1) {
       if (method === 'Network.loadingFinished' && responses.has(params.requestId)) {
         const response = responses.get(params.requestId);
         network.set(response.url, { ...response, encodedDataLength: params.encodedDataLength });
-        if (delivery.bootByUrl.has(response.url)) {
+        if (delivery.bootByUrl.has(response.url) || delivery.deferredChunksByUrl.has(response.url)) {
           const request = active.requestsById.get(params.requestId);
           const row = { ...response, requestId: params.requestId, requestAt: request?.at ?? 0, range: request?.range ?? '', encodedDataLength: params.encodedDataLength, pending: true };
-          active.bootResponses.push(row);
+          (delivery.bootByUrl.has(response.url) ? active.bootResponses : active.deferredResponses).push(row);
           active.bootBodyJobs.push(active.cdp.send('Network.getResponseBody', { requestId: params.requestId }).then(result => {
             const bytes = Buffer.from(result.body, result.base64Encoded ? 'base64' : 'utf8');
             row.bytes = bytes.length; row.sha256 = hash(bytes); row.pending = false;
@@ -661,16 +1482,49 @@ async function browserCase(id, width, height, touch, dpr = 1) {
         // blockedReason=inspector and the exact active injected URL remain the
         // authoritative, narrowly scoped fault identity. Keep the raw event.
         if (active.streaming && request?.controlled && active.deferredUrls.has(request.url) && ['', 'net::ERR_BLOCKED_BY_CLIENT'].includes(params.errorText || '') && params.blockedReason === 'inspector') active.streaming.controlledFailures.push(failure);
+        else if (active.bootFontFault && request?.controlled && active.bootFontFault.urls.includes(request.url) && ['', 'net::ERR_BLOCKED_BY_CLIENT'].includes(params.errorText || '') && params.blockedReason === 'inspector') active.bootFontFault.failures.push(failure);
         else errors.push(failure);
       }
     });
     // Retain the complete ~94 MB cold boot response set while the inspector
     // hashes real response bodies, even when local export I/O delays CDP.
     // This changes observation capacity only; HTTP/hash/cache checks stay strict.
-    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 });
+    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
     if (scenarios === 'streaming') await prepareStreamingFault();
-    result = await freshCase(); await portableSaveCase();
+    if (scenarios === 'boot-font-failure') {
+      const assets = report.exportManifest?.bootTypography?.assets.filter(asset => asset.weight);
+      check(assets?.length === 2, 'font-failure scenario targets only the two declared boot WOFF2 faces');
+      const urls = assets.map(asset => new URL(asset.file, url).href);
+      active.bootFontFault = { urls, failures: [] };
+      for (const fontUrl of urls) active.controlledBlockedUrls.add(fontUrl);
+      await active.cdp.send('Network.setBlockedURLs', { urls });
+    }
+    result = await freshCase(['mobile-world', 'phone-recovery', 'phone-navigation', 'library', 'boot-font-failure'].includes(scenarios));
+    if (scenarios === 'mobile-world') await mobileWorldCase();
+    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir,
+      snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
+      assertLayout, settings, saveProgressAndWait, startStory, record: value => { active.phoneRecovery = value; }, capture: value => active.screenshots.push(value) });
+    else if (scenarios === 'phone-navigation') active.phoneNavigation = await phoneNavigationCase({ id, touch, fixtureDir,
+      snapshot, clickControl, renderPoint, poll, check, interval, screenshot, importSave, assertLayout, press,
+      type: async text => { for (const ch of text) { await active.cdp.send('Input.dispatchKeyEvent', {type:'keyDown',key:ch,text:ch}); await active.cdp.send('Input.dispatchKeyEvent', {type:'keyUp',key:ch}); } },
+      scroll: async (a,b,down) => {
+        if (touch) {
+          await active.cdp.send('Input.dispatchTouchEvent', {type:'touchStart',touchPoints:[{...a,id:1}]});
+          for (let step=1;step<=12;step++) { await active.cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:a.x+(b.x-a.x)*step/12,y:a.y+(b.y-a.y)*step/12,id:1}]}); await interval(20); }
+          await active.cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+        } else await active.cdp.send('Input.dispatchMouseEvent',{type:'mouseWheel',x:a.x,y:a.y,deltaX:0,deltaY:down?260:-260});
+      }, record: value => { active.phoneNavigation=value; }, capture: value => active.screenshots.push(value) });
+    else if (!['library', 'boot-font-failure'].includes(scenarios)) await portableSaveCase();
+    if (scenarios === 'corners') await cornerNavigationCase();
+    if (scenarios === 'checkin') await checkinPresentationCase();
+    if (scenarios === 'library') await libraryCase();
+    if (scenarios === 'resource-loading') await resourceLoadingCase();
+    if (scenarios === 'boot-font-failure') {
+      check(active.bootFontFault.failures.length >= 2 && active.bootFontFault.urls.every(fontUrl => active.bootFontFault.failures.some(failure => failure.url === fontUrl)), `${id}: actual blocked font requests do not prevent ready, ordinary Start or Godot phone input`);
+      active.screenshots.push(await screenshot(`${id}-font-failure-entered`));
+    }
+    if (scenarios === 'words') await c1Case(true);
     if (id === 'desktop-1280') {
       if (scenarios === 'all') { await legacyCase(); await c1Case(true); await fixtureCases(); }
       if (scenarios === 'all' || scenarios === 'bike') await bikeCase();
@@ -679,8 +1533,19 @@ async function browserCase(id, width, height, touch, dpr = 1) {
       if (scenarios === 'durability-switch') await durabilitySwitchCase();
       if (scenarios === 'streaming') await streamingCase();
     } else if (touch && scenarios === 'all') await c1Case(false);
+    if (scenarios === 'mobile-world') check(active.mobileWorld?.completed === true && active.mobileWorld.coverage.length > 0 && active.imports.some(item => item.filename === 'before_c2_dorm_exit.json'), `${id}: requested mobile-world scenario completed with actual inputs and earned file import`);
+    if (scenarios === 'phone-recovery') check(active.phoneRecovery?.completed === true && active.phoneRecovery.coverage.length === 9 && active.phoneRecovery.inputs.length > 0, `${id}: requested phone recovery flows completed with ordinary input`);
+    if (scenarios === 'phone-navigation') check(active.phoneNavigation?.completed === true && active.phoneNavigation.coverage.length === 4, `${id}: phone navigation and authentication passed with ordinary input`);
+    if (scenarios === 'library') check(active.library?.completed === true, `${id}: requested Library continuity scenario completed`);
     const transportUrls = new Set(delivery.transport.map(asset => asset.url));
     const resources = [...network.values()].filter(record => transportUrls.has(record.url));
+    await Promise.all(active.bootBodyJobs);
+    for (const row of active.deferredResponses) {
+      const expected = delivery.deferredChunksByUrl.get(row.url);
+      check(expected && !row.pending && !row.error && row.status === 200 && !row.range && row.bytes === expected.bytes && row.sha256 === expected.sha256, `${id}: observed deferred chunk passes independent response-byte verification`, row);
+    }
+    const chunkedOriginals = new Set(delivery.content.packs.filter(pack => pack.transportChunks).map(pack => new URL(pack.file, new URL('.', url)).href));
+    check(!active.requests.some(request => chunkedOriginals.has(request.url)), `${id}: chunk-capable loader never downloads duplicate original large PCKs`);
     check(active.coldBoot?.responses.length === delivery.bootByUrl.size, `${id}: actual Godot engine boot and ordinary input used the verified complete static boot chunk set`, { chunks: active.coldBoot?.responses.length, expected: delivery.bootByUrl.size, freshInput: active.fresh?.inputs });
     check(![...network.values()].some(n => n.status >= 400), `${id}: no failed HTTP resources`, [...network.values()].filter(n => n.status >= 400));
     check(errors.length === 0, `${id}: no page, runtime, script or uncancelled network errors`, errors);
@@ -688,13 +1553,25 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     check(renderer.webgl2, `${id}: actual WebGL2 context available`, renderer);
     check(await evaluate("JSON.stringify(Object.keys(window.__GODOT_755__))") === '["snapshot"]', 'production browser bridge exposes only a read operation');
     check(await evaluate("(()=>{const s=window.__GODOT_755__.snapshot(),old=s.state.native.chapter;s.state.native.chapter=999;return window.__GODOT_755__.snapshot().state.native.chapter===old})()"), 'returned browser snapshot is a detached copy');
-    report.cases.push({ id, width, height, touch, dpr, passed: true, ...result, coldBoot: active.coldBoot, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
+    report.cases.push({ id, width, height, touch, dpr, passed: true, ...result, coldBoot: active.coldBoot, fresh: active.fresh, portable: active.portable, imports: active.imports, legacy: active.legacy, bike: active.bike, durability: active.durability, streaming: active.streaming, mobileWorld: active.mobileWorld, phoneRecovery: active.phoneRecovery, phoneNavigation: active.phoneNavigation, library: active.library, bootFontFault: active.bootFontFault, bootTypography: active.bootTypography, chapterResults: active.chapterResults, screenshots: active.screenshots, mediaObservations: active.mediaObservations, renderer, network: resources, errors });
     report.network.push(...network.values());
-  } catch (e) { report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
-  finally { if (report.cases.at(-1)?.id === id) report.cases.at(-1).saveAttempts = active.saveAttempts || []; await Promise.allSettled(active.bootBodyJobs); active.cdp?.close(); child.kill('SIGTERM'); await interval(200); if (child.exitCode === null) child.kill('SIGKILL'); await rm(temp, { recursive: true, force: true }); await persist(); }
+  } catch (e) { primaryError = e; if (!lifecycle.child) lifecycle.evidence.spawnSynchronousError = e.message; report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, mobileWorld: active.mobileWorld, phoneRecovery: active.phoneRecovery, phoneNavigation: active.phoneNavigation, library: active.library, bootFontFault: active.bootFontFault, bootTypography: active.bootTypography, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
+  finally {
+    const caseRecord = report.cases.at(-1);
+    caseRecord.deferredChunkResponses = active.deferredResponses;
+    caseRecord.saveAttempts = active.saveAttempts || [];
+    await finishBrowserCase({ lifecycle, caseRecord, primaryError, bootBodyJobs: active.bootBodyJobs, cdp: active.cdp, persistEvidence: async () => {
+      if (existsSync(stderrPath)) {
+        const bytes = await readFile(stderrPath);
+        caseRecord.browserStderr = { file: stderrPath, bytes: bytes.length, sha256: hash(bytes) };
+        if (!caseRecord.passed) caseRecord.stderr = bytes.toString('utf8').slice(-10000);
+      }
+      await persist();
+    } });
+  }
 }
 try {
-  const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280'));
+  const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280') && (!['mobile-world', 'phone-recovery'].includes(scenarios) || ['desktop-1280', 'touch-390', 'retina-touch-390'].includes(id)));
   check(selected.length > 0, 'at least one requested viewport selected');
   delivery = await prepareDeliveryEvidence();
   for (const selectedCase of selected) await browserCase(...selectedCase);

@@ -7,6 +7,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
 const prefix='godot_native/scripts/media/c3_rain_rescue_native/';
+const uiFontDependency='res://scripts/ui/native_typography.gd';
 const manifest=JSON.parse(read('godot_native/assets/native/qizhen_rain_rescue/integration_provenance.json'));
 let checks=0;
 function check(ok,label){assert.ok(ok,label);checks++;}
@@ -28,7 +29,11 @@ for(const module of ['renderer.gd','timeline.gd','pose_geometry.gd']){
  }
  for(const match of text.matchAll(/(?:preload|load)\("(res:\/\/[^"\n]+)"\)/g)){
   const target=match[1];
-  check(target.startsWith('res://scripts/media/c3_rain_rescue_native/')||target.startsWith('res://assets/native/qizhen_rain_rescue/'),`namespaced runtime dependency ${target}`);
+  // The renderer alone may use the shared presentation-only font provider.
+  // This exact exception does not admit other UI, state, input or clock modules.
+  const sharedFont=module==='renderer.gd'&&target===uiFontDependency;
+  if(sharedFont)check(text.split(uiFontDependency).length===2&&text.split(`font=preload("${uiFontDependency}").body_font()`).length===2,'shared dependency is exactly one common-font assignment');
+  check(sharedFont||target.startsWith('res://scripts/media/c3_rain_rescue_native/')||target.startsWith('res://assets/native/qizhen_rain_rescue/'),`namespaced runtime dependency ${target}`);
   check(fs.existsSync(path.join(root,'godot_native',target.slice(6))),`portable runtime resource ${target}`);
  }
 }

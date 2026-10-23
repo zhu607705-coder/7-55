@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 38 38">
+  <!-- Source: styles/scenes/p13-phone-home.css .photo-flower, original 38px box. Its five CSS radial gradients retain their positions, 1px color-to-transparent transition and first-gradient-on-top paint order. -->
+  <defs>
+    <radialGradient id="pink"><stop offset="88.8889%" stop-color="#e88a9f"/><stop offset="100%" stop-color="#e88a9f" stop-opacity="0"/></radialGradient>
+    <radialGradient id="blue"><stop offset="88.8889%" stop-color="#7fb0e8"/><stop offset="100%" stop-color="#7fb0e8" stop-opacity="0"/></radialGradient>
+    <radialGradient id="green"><stop offset="88.8889%" stop-color="#8fce7c"/><stop offset="100%" stop-color="#8fce7c" stop-opacity="0"/></radialGradient>
+    <radialGradient id="orange"><stop offset="88.8889%" stop-color="#e8a05f"/><stop offset="100%" stop-color="#e8a05f" stop-opacity="0"/></radialGradient>
+    <radialGradient id="center-gradient"><stop offset="85.7143%" stop-color="#f5c542"/><stop offset="100%" stop-color="#f5c542" stop-opacity="0"/></radialGradient>
+  </defs>
+  <circle id="petal-orange" cx="26.6" cy="25.84" r="9" fill="url(#orange)"/>
+  <circle id="petal-green" cx="11.4" cy="25.84" r="9" fill="url(#green)"/>
+  <circle id="petal-blue" cx="26.6" cy="12.92" r="9" fill="url(#blue)"/>
+  <circle id="petal-pink" cx="11.4" cy="12.92" r="9" fill="url(#pink)"/>
+  <circle id="center" cx="19" cy="19" r="7" fill="url(#center-gradient)"/>
+</svg>

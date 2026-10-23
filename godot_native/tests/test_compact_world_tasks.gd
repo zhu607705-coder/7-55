@@ -20,33 +20,42 @@ func setup_world(dimensions: Vector2i,bag_open:=false) -> void:
 	state.d.native.log=[{"text":"这是一条很长的已见记录，用来确认任务入口不会把历史文本放进顶部工具栏。","time":"fixture"}]
 	current_size=dimensions;root.size=dimensions;shell.size=Vector2(dimensions)
 	shell.mobile_world=true;shell.compact_inventory_open=bag_open;shell._refresh();await frames(6)
-	shell.world.set_process(false);shell.c3_scene_host.set_process(false);shell.c3_narrative_host.set_process(false)
+	shell.world.set_process(false)
+	for host in [shell.c3_scene_host,shell.c3_narrative_host]:
+		if is_instance_valid(host):host.set_process(false)
 	shell.world.grab_focus()
 func presentation() -> Dictionary:
 	return {"phone_size":shell.phone.size,"phone_scale":shell.phone.scale,"phone_position":shell.phone.position,"world_size":shell.world.size,"world_scale":shell.world_frame.scale,"world_rect":shell.world_frame.get_global_rect(),"viewport":shell.world_viewport.size,"player":shell.world.player,"camera":shell.world.camera,"zoom":shell.world.zoom,"pan":shell.world.pan_offset,"bag":shell.compact_inventory_open,"controls":shell.world.mobile_control_metrics()}
 func check_top_row() -> void:
 	var tasks:Control=shell.world_tasks
 	check(tasks.is_visible_in_tree() and not tasks.disabled,"compact world exposes enabled direct Tasks entry")
-	check(tasks.text=="任务" and tasks.size==Vector2(84,44) and tasks.scale==Vector2.ONE,"Tasks remains a bounded physical44px target")
-	check(Rect2(8,8,shell.size.x-16,48).encloses(tasks.get_global_rect()),"Tasks fits the existing top-row edge clearance")
+	check(tasks.text.is_empty() and tasks.get("glyph")=="journal" and tasks.size==Vector2(44,44) and tasks.scale==Vector2.ONE,"journal is a quiet glyph with a physical44px target")
+	check(shell.world_view.get_global_rect().encloses(tasks.get_global_rect()) and tasks.position.y>=shell.world_view.get_global_rect().end.y-60,"journal fits the actual game image's lower edge")
 	check(not tasks.get_global_rect().intersects(shell.mobile_back.get_global_rect()),"Tasks does not cover return-to-phone")
-	check(not tasks.get_global_rect().intersects(shell.world_frame.get_global_rect()),"Tasks stays outside world camera and touch surface")
+	check(shell.world_view.get_global_rect().encloses(tasks.get_global_rect()),"system icon overlays the playfield without reserving an outer toolbar")
 	if shell.inventory_handle.visible:
 		check(not tasks.get_global_rect().intersects(shell.inventory_handle.get_global_rect()),"Tasks does not overlap portrait or landscape bag handle")
 	check(shell.find_children("WorldTasks","Button",true,false).size()==1 and node("JournalObjective")==null,"world adds one entry and no permanent objective panel")
 	observations.append({"viewport":str(current_size),"tasks":str(tasks.get_global_rect()),"back":str(shell.mobile_back.get_global_rect()),"bag":str(shell.inventory_handle.get_global_rect()),"world":str(shell.world_frame.get_global_rect()),"bag_open":shell.compact_inventory_open})
 func check_theme() -> void:
 	var button:Button=shell.world_tasks
-	check(button.get_theme_font("font")==shell.font and button.get_theme_font_size("font_size")==18,"Tasks inherits the existing world top-row typography")
-	var reference:StyleBoxFlat=button.get_theme_stylebox("normal")
+	check(button.get_theme_stylebox("normal") is StyleBoxFlat and button.get_theme_stylebox("normal").bg_color==Color("F4EAD5"),"journal uses the shared paper icon plate")
+	var reference:StyleBox=button.get_theme_stylebox("normal")
 	for name in ["hover","pressed","hover_pressed","disabled"]:
-		var style:StyleBoxFlat=button.get_theme_stylebox(name)
+		var style:StyleBox=button.get_theme_stylebox(name)
 		check(style.get_minimum_size()==reference.get_minimum_size(),"button state preserves hit-area geometry: "+name)
 	check(button.get_theme_stylebox("focus").border_width_left>=2,"Tasks retains visible keyboard focus outline")
+	var slots:Array=[shell.world_tasks,shell.world_mode,shell.mobile_back,shell.phone_world_return]
+	slots.append_array(shell.inventory_buttons.get_children())
+	for slot:Button in slots:
+		for state_name:String in ["normal","hover","pressed","hover_pressed","disabled"]:
+			var plate:StyleBoxFlat=slot.get_theme_stylebox(state_name)
+			check(plate.bg_color==Color("F4EAD5") and plate.corner_radius_top_left==4 and plate.content_margin_left==0,"all tool and item states share one opaque plate and stable content margins")
 func journal_round_trip(method: String) -> void:
 	var before:=JSON.stringify(state.d);var layout:=presentation();var count:=actions.size()
-	# Use a held thumb intent to verify an opening journal ends its ownership.
-	shell.world.touch_axis=Vector2.LEFT;shell.world.mobile_touch_roles[9]="stick"
+	# Hold a real pending floor gesture while a different pointer opens Tasks.
+	var pending:=InputEventScreenTouch.new();pending.index=9;pending.position=world_screen(shell.world.mobile_control_metrics().gestureArea.get_center());pending.pressed=true;event(pending);await frames(2)
+	check(shell.world.direct_gestures.has_active(),"real floor press owns a gesture before Tasks opens")
 	if method=="keyboard":shell.world_tasks.grab_focus();await press(KEY_SPACE)
 	elif method=="touch":
 		var point:Vector2=shell.world_tasks.get_global_rect().get_center();touch(point,true);touch(point,false);await frames()
@@ -56,7 +65,8 @@ func journal_round_trip(method: String) -> void:
 	check(node("JournalObjective").text==state.objective() and node("JournalNextStep").text.contains("调配台"),"direct journal shows the current earned-fact objective")
 	check(shell.modal.find_children("NativeJournal","",true,false).size()==1,"direct entry mounts exactly one journal")
 	check(shell.world_tasks.disabled and shell.inventory_handle.disabled,"journal blocks background top-row and inventory input")
-	check(shell.world.touch_axis==Vector2.ZERO and shell.world.mobile_touch_roles.is_empty(),"opening ends outstanding thumb ownership")
+	check(not shell.world.direct_gestures.has_active() and shell.world._floor_route.is_empty(),"opening ends the outstanding floor gesture and route")
+	pending.pressed=false;pending.canceled=true;event(pending);await frames(2)
 	check(root.gui_get_focus_owner()==node("JournalResume"),"existing resume button receives keyboard focus")
 	var identity:int=shell.modal.get_instance_id();shell.world_tasks.pressed.emit();await frames()
 	check(shell.modal.get_instance_id()==identity,"queued repeated Tasks cannot replace its modal")
@@ -75,12 +85,10 @@ func phone_round_trip() -> void:
 	check(shell.phone.visible and not shell.world_tasks.visible and not shell.world_frame.visible,"phone return hides the world Tasks entry")
 	var page:String=state.d.native.page;shell.world_tasks.pressed.emit();await frames()
 	check(not is_instance_valid(shell.modal) and state.d.native.page==page,"queued hidden-world press cannot open journal over phone")
-	var back:Control
-	for button in shell.page_body.find_children("*","Button",true,false):
-		if button.text=="返回现场":back=button
-	check(back!=null,"ordinary phone page retains its existing return-to-world action")
+	var back:Control=shell.phone_world_return
+	check(back!=null and back.visible and back.get("glyph")=="map","phone has the matching bottom-right return map icon")
 	if back==null:return
-	shell.phone_scroll.ensure_control_visible(back);await frames();await click(back)
+	await click(back)
 	check(shell.world_tasks.visible and not shell.phone.visible and shell.world_frame.visible,"normal phone return restores direct Tasks")
 	check(presentation()==geometry and state.d.canteenHunt==hunt,"phone round trip preserves world, phone and story facts")
 func restored_movement() -> void:
@@ -91,10 +99,11 @@ func restored_movement() -> void:
 	await key(KEY_D if direction==Vector2.RIGHT else KEY_A,false)
 	check(shell.world.player.distance_to(before)>1 and not is_instance_valid(shell.modal),"real keyboard movement resumes after direct journal close")
 	before=shell.world.player
-	var controls:Dictionary=shell.world.mobile_control_metrics()
-	var point:=world_screen(controls.stick+Vector2(32,0))
-	touch(point,true);await frames(2);shell.world._process(.05);touch(point,false);await frames()
-	check(shell.world.player.distance_to(before)>1 and shell.world.touch_axis==Vector2.ZERO,"real thumb input resumes and releases after direct journal close")
+	var point:=floor_touch_point(Vector2.RIGHT)
+	await tap_floor(point)
+	check(not shell.world._floor_route.is_empty(),"real floor tap starts a collision route after direct journal close")
+	shell.world._process(.05);await cancel_floor_touch(point)
+	check(shell.world.player.distance_to(before)>1 and shell.world._floor_route.is_empty() and not shell.world.direct_gestures.has_active(),"real floor movement resumes and cancels cleanly after direct journal close")
 	check(state.d.canteenHunt==hunt,"restored movement does not fabricate canteen progression")
 func rejected_press(label: String) -> void:
 	shell._sync_inventory_dock_input();var before:=JSON.stringify(state.d);var count:=actions.size()
@@ -144,7 +153,9 @@ func run() -> void:
 			shell._close_modal();state.story_reset.emit();state.d=earned.duplicate(true)
 			current_size=dimensions;root.size=dimensions;shell.size=Vector2(dimensions);shell.mobile_world=true
 			shell.compact_inventory_open=false;shell._refresh();await frames(6)
-			shell.world.set_process(false);shell.c3_scene_host.set_process(false);shell.c3_narrative_host.set_process(false)
+			shell.world.set_process(false)
+			for host in [shell.c3_scene_host,shell.c3_narrative_host]:
+				if is_instance_valid(host):host.set_process(false)
 			check_top_row()
 			for method in ["pointer","keyboard","touch"]:await journal_round_trip(method)
 	await setup_world(Vector2i(1440,900))

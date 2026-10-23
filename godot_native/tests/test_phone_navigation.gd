@@ -65,10 +65,10 @@ func _run() -> void:
 	for target in [["wechat","exit","phone_home"],["checkin","back","zjuding"],["campus_card","back","zjuding"],["bonsai","exit","phone_home"],["weather","exit","phone_home"],["directory","back","zjuding"],["library_app","back","zjuding"],["library_record","back","library_app"],["library_rule","back","library_app"],["library_recovery","back","library_app"],["library_catalog","back","library_app"],["library_archive","back","library_app"],["library_022_dialogue","back","library_app"],["photos","exit","phone_home"]]:
 		page_events.clear(); await show(target[0]); await click(nav(target[1]))
 		expect(page_events==[target[2]],"Pointer navigation "+target[0]+" → "+target[2])
-	# Check-in returns into the actual authored learn page, and its hotspot is live.
+	# Check-in returns into the authored learning page and its native entrance.
 	s.actOne.phase="prologue"; await show("checkin"); await click(nav("back")); await show("zjuding")
 	expect(p.zjuding_page=="learn" and node("ZjudingCheckin")!=null,"Check-in back returns to source learn page")
-	page_events.clear(); await click(node("ZjudingCheckin")); expect(page_events==["checkin"],"Learn source-aligned hotspot opens check-in")
+	page_events.clear(); await click(node("ZjudingCheckin")); expect(page_events==["checkin"],"Learn native entrance opens the original check-in route")
 	await click(nav("back")); await show("zjuding")
 	expect(p.zjuding_page=="hub","Learn back returns to hub")
 	# Locked actions retain a static icon; all source utilities unlock with identity.
@@ -126,6 +126,26 @@ func _run() -> void:
 	await click(node("TiyiCount47")); expect(s.flags.tiyiCountTaken,"Actual rendered 47 hotspot collects source digit")
 	page_events.clear(); await click(nav("exit")); expect(page_events==["phone_home"],"Tiyi main source exit returns home")
 	await show("phone_home"); await show("tiyi"); page_events.clear(); await click(node("TiyiLoadingExit")); expect(page_events==["phone_home"],"Tiyi loading source exit remains clickable")
+	# One visible top-left exit across both phases. Keyboard dispatch uses that
+	# same rendered callback; it does not infer routes from the running state.
+	for started in [false,true]:
+		s=fresh(); s.actOne.phase="prologue"; s.networkMode="cellular"; s.actOne.exerciseStarted=started
+		await show("tiyi")
+		var loading_exit: Control=node("TiyiLoadingExit")
+		expect(loading_exit.position.y<54 and loading_exit.size.y>=40,"Tiyi loading exit stays in app navigation area")
+		page_events.clear(); expect(p.back_navigation(body),"Tiyi loading has an actual back callback")
+		expect(page_events==["phone_home"] and s.actOne.exerciseStarted==started,"Tiyi exit does not depend on or change exercise state")
+		await create_timer(1.6).timeout; await show("tiyi")
+		expect(nav("exit").text.is_empty(),"source arrow is the sole main-page exit symbol")
+		page_events.clear(); expect(p.back_navigation(body),"ready Tiyi has the same back callback")
+		expect(page_events==["phone_home"],"ready Tiyi returns to phone home")
+	s=fresh(); p.zjuding_page="hub"; p.zjuding_panel=""; p.zjuding_overlay=""; await show("zjuding")
+	page_events.clear(); await click(nav("exit")); expect(page_events==["phone_home"],"Zjuding root exits without a profile-menu detour")
+	p.zjuding_panel="contacts"; await show("zjuding"); page_events.clear()
+	expect(p.back_navigation(body) and p.zjuding_panel.is_empty() and page_events.is_empty(),"back in Zjuding detail stays inside its parent app")
+	await show("zjuding"); p.zjuding_overlay="profile"; await show("zjuding"); page_events.clear()
+	expect(p.back_navigation(body) and p.zjuding_overlay.is_empty() and page_events.is_empty(),"back closes the foreground sheet before exiting the app")
+	await show("phone_home"); expect(not p.back_navigation(body),"phone home leaves world return to the host")
 	# WeChat source list restores the missing helper row and real row feedback.
 	s=fresh(); await show("wechat"); await click(node("WechatRow_0")); expect(node("SourceToast")!=null,"File transfer helper shows authored row feedback")
 	await click(node("WechatRow_2")); expect(node("SourceToast")!=null,"Roommate row is functional")

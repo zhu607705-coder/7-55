@@ -1,0 +1,138 @@
+{
+  "sourceSha256": "c2fe16b755079a362afb7abc1ffba83b63297959259c0bd6e94248103b42cd0e",
+  "bonePoints": {
+    "Hips": [
+      0,
+      1.51,
+      0
+    ],
+    "Torso": [
+      0,
+      1.96,
+      0
+    ],
+    "Head": [
+      0,
+      2.46,
+      0
+    ],
+    "ShoulderL": [
+      -0.32,
+      2.2,
+      -0.025
+    ],
+    "ElbowL": [
+      -0.49,
+      1.85,
+      -0.025
+    ],
+    "WristL": [
+      -0.62,
+      1.42,
+      0
+    ],
+    "HipL": [
+      -0.16,
+      1.51,
+      0
+    ],
+    "KneeL": [
+      -0.16,
+      0.82,
+      0
+    ],
+    "FootL": [
+      -0.16,
+      0.15,
+      0
+    ],
+    "ShoulderR": [
+      0.32,
+      2.2,
+      -0.025
+    ],
+    "ElbowR": [
+      0.49,
+      1.85,
+      -0.025
+    ],
+    "WristR": [
+      0.62,
+      1.42,
+      0
+    ],
+    "HipR": [
+      0.16,
+      1.51,
+      0
+    ],
+    "KneeR": [
+      0.16,
+      0.82,
+      0
+    ],
+    "FootR": [
+      0.16,
+      0.15,
+      0
+    ],
+    "Spine": [
+      0,
+      1.73,
+      0
+    ],
+    "Neck": [
+      0,
+      2.35,
+      -0.025
+    ],
+    "ClavicleL": [
+      -0.055,
+      2.22,
+      -0.025
+    ],
+    "ClavicleR": [
+      0.055,
+      2.22,
+      -0.025
+    ]
+  },
+  "boneParents": {
+    "Hips": null,
+    "Torso": "Spine",
+    "Head": "Neck",
+    "ShoulderL": "ClavicleL",
+    "ElbowL": "ShoulderL",
+    "WristL": "ElbowL",
+    "HipL": "Hips",
+    "KneeL": "HipL",
+    "FootL": "KneeL",
+    "ShoulderR": "ClavicleR",
+    "ElbowR": "ShoulderR",
+    "WristR": "ElbowR",
+    "HipR": "Hips",
+    "KneeR": "HipR",
+    "FootR": "KneeR",
+    "Spine": "Hips",
+    "Neck": "Torso",
+    "ClavicleL": "Torso",
+    "ClavicleR": "Torso"
+  },
+  "vertices": 44326,
+  "sourceVertices": 50816,
+  "coincidentVerticesWelded": 6490,
+  "triangles": 88694,
+  "heatUnweightedVertices": 0,
+  "unweightedVertices": 0,
+  "maxWeights": 4,
+  "surfaceWeightRepairs": [],
+  "normalizationScale": 1.4875983538608133,
+  "groundPivot": [
+    0,
+    0,
+    0
+  ],
+  "front": "-Z in Godot",
+  "skeleton": "Blender heat weights -> glTF Skin -> Godot Skeleton3D",
+  "status": "import candidate; visual deformation and contact acceptance still required"
+}

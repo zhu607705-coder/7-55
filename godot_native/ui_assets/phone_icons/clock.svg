@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 34 34">
+  <!-- Source: styles/scenes/p19-clock.css .clock-app-face and ::before/::after (34px border-box, 3px yellow border, 330deg/237deg hands). The source #20272f app background remains owned by the existing button. -->
+  <defs>
+    <radialGradient id="pivot"><stop offset="66.6667%" stop-color="#f0d54e"/><stop offset="100%" stop-color="#f0d54e" stop-opacity="0"/></radialGradient>
+  </defs>
+  <circle cx="17" cy="17" id="face" r="15.5" fill="#101820" stroke="#f0d54e" stroke-width="3"/>
+  <circle cx="17" cy="17" id="center" r="3" fill="url(#pivot)"/>
+  <g fill="#f0d54e">
+    <rect id="hour" x="15.5" y="5" width="3" height="12" transform="rotate(330 17 17)"/>
+    <rect id="minute" x="15.5" y="8" width="3" height="9" transform="rotate(237 17 17)"/>
+  </g>
+</svg>

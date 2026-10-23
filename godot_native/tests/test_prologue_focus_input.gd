@@ -54,17 +54,10 @@ func run()->void:
  key(KEY_D,true);tick(.12);key(KEY_D,false)
  check(game.session.board_x>baseline+30,"real root keyboard moves the physical error window")
  check(absf(game.session.board_angle)>0,"window movement changes its visible and physical tilt")
- await click(game.review_button.get_global_rect().get_center());game._process(0)
- check(game.session.reviewing,"real review control opens the complete authored clue")
- var frozen=game.session.clock;var x=game.session.board_x
- key(KEY_A,true);tick(8);key(KEY_A,false)
- check(game.session.clock==frozen and game.session.board_x==x and game.misses==0,"reading a clue cannot move, expire or punish words")
- await click(game.close_review.get_global_rect().get_center());game._process(0)
- check(not game.session.reviewing and root.gui_get_focus_owner()==game,"closing review restores root gameplay focus")
+ var x=game.session.board_x
  key(KEY_R,true);key(KEY_R,false);tick(.04)
- check(game.session.reviewing,"R reopens the clue after a real cross-frame button click")
- key(KEY_R,true);key(KEY_R,false);tick(.04)
- check(not game.session.reviewing and root.gui_get_focus_owner()==game,"R closes the clue and retains root gameplay focus")
+ check(not game.session.reviewing and root.gui_get_focus_owner()==game,"removed clue shortcut does not open a hidden reading panel or steal gameplay focus")
+ var frozen=game.session.clock
  # A touch must start on the rendered window and retain its initiating finger.
  touch(Vector2(20,220),true);drag(Vector2(300,660));tick(.1)
  check(not game.dragging,"touching empty space does not teleport the window")
@@ -83,23 +76,39 @@ func run()->void:
  check(not game.paused and root.gui_get_focus_owner()==game,"pointer Continue restores keyboard ownership")
  # Deliberately stay opposite each target to earn a semantic failure.
  for i in 2200:
-  if game.phase=="failed":break
+  if game.misses>0:break
   var desired=104.0
   for card:Dictionary in game.session.cards:
    if card.target and not card.resolved:desired=104 if card.position.x>215 else 326
   var difference=desired-game.session.board_x
   keyboard(-1 if difference < -3 else 1 if difference>3 else 0);game._process(.01)
  keyboard(0);game._process(0)
- check(game.phase=="failed" and game.blocks==0 and results.is_empty(),"missing a real required word reaches a branch without fabricated proof")
- var before=game.session.collected.duplicate();var stage=game.session.stage
- await click(game.retry.get_global_rect().get_center());game._process(0)
- check(game.phase=="intercept" and game.session.stage==stage and game.session.collected==before,"real branch Continue retains the current stage and collection")
- check(root.gui_get_focus_owner()==game,"branch Continue immediately restores root focus")
+ check(game.misses>0 and game.phase=="intercept" and game.blocks==0 and results.is_empty(),"a real missed target continues the current stage without granting proof or requiring a retry button")
+ check(root.gui_get_focus_owner()==game,"automatic continuation preserves root keyboard focus")
+ # Earn one coordinate, then miss the other through actual keyboard movement.
+ for i in 9000:
+  if game.session.stage==1 and game.session.collected.size()==1:break
+  var difference=Driver.goal(game)-game.session.board_x
+  keyboard(-1 if difference < -3 else 1 if difference>3 else 0);game._process(.01)
+ var earned=game.session.collected.duplicate();var earned_stage=game.session.stage;var prior_misses=game.misses
+ check(earned_stage==1 and earned.size()==1,"real contacts earn a partial coordinate pair before retry preservation is checked")
+ for i in 2200:
+  if game.misses>prior_misses:break
+  var desired=104.0
+  for card:Dictionary in game.session.cards:
+   if card.target and not card.resolved:desired=104 if card.position.x>215 else 326
+  var difference=desired-game.session.board_x
+  keyboard(-1 if difference < -3 else 1 if difference>3 else 0);game._process(.01)
+ keyboard(0)
+ check(game.misses>prior_misses and game.session.stage==earned_stage and game.session.collected==earned and game.blocks==1,"silent retry preserves the actual earned coordinate and completed first stage")
  var started=game.session.clock
  var reached=until_phase("lock",140);keyboard(0)
  check(reached and game.blocks==3,"real root keyboard selection earns all three semantic stages")
  check(game.session.contacts.size()>=6 and game.session.captures.size()==6,"completion requires exactly six authored word captures through actual contact")
- check(game.session.clock-started>30,"readable finding and interception are longer than three endpoint checks")
+ var reading_seconds=0.0
+ for entry:Dictionary in game.session.stages.slice(2):
+  for fragment:String in entry.fragments:reading_seconds+=maxf(.9,fragment.length()*.09)
+ check(game.session.clock-started>=reading_seconds,"fast interception still includes the authored final clue-reading interval and real contacts")
  game._process(0)
  check(not game.lock_help_open and game.lock_help_button.visible and game.lock_release_count==0,"narrator lock starts with optional keyboard help collapsed")
  var initial_lock_feedback:String=game._lock_feedback()

@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-22",
+  "scope": "User-confirmed isolated dorm sample only",
+  "script": "scripts/experiments/kenney_visual_slice.gd",
+  "scriptSha256": "19c73c1f101c587edf6aee6d650d335909682d0b49d9132e85d841a636c499a3",
+  "sourceFrame": "assets/rpg/player/player_down_0.png",
+  "frameSha256": "ab29c2e04c8ca5a165ede053b0b879be695adb41971c820bc67dbdf4c36f6fd9",
+  "oldUniformScale": 0.6,
+  "newUniformScale": 1.0,
+  "increasePercent": 66.66666666666667,
+  "sourceFoot": [
+    48,
+    126
+  ],
+  "preservedWorldFootOffset": [
+    0,
+    5.2
+  ],
+  "groundPaperLayer": 0,
+  "preserved": [
+    "physics circle radius13",
+    "camera/FOV",
+    "furniture and source positions",
+    "stand points and interaction range",
+    "original image and shared paper renderer",
+    "story/save authority"
+  ],
+  "nativeTests": [
+    {
+      "label": "test_dorm_modular.gd",
+      "failed": false
+    },
+    {
+      "label": "test_kenney_visual_slice.gd",
+      "failed": false
+    }
+  ],
+  "measurements": {
+    "measurements": [
+      {
+        "artScale": 1.0,
+        "feetOffset": "(0.0, 5.200012)",
+        "newVisibleHeight": 112.319995880127,
+        "oldVisibleHeight": 67.3919975280762,
+        "physicsRadius": 13.0,
+        "uniform": true,
+        "viewport": "(1280, 900)"
+      },
+      {
+        "artScale": 1.0,
+        "feetOffset": "(0.0, 5.200012)",
+        "newVisibleHeight": 85.9199974536896,
+        "oldVisibleHeight": 51.5519984722137,
+        "physicsRadius": 13.0,
+        "uniform": true,
+        "viewport": "(390, 844)"
+      },
+      {
+        "artScale": 1.0,
+        "feetOffset": "(0.0, 5.200012)",
+        "newVisibleHeight": 95.519996881485,
+        "oldVisibleHeight": 57.311998128891,
+        "physicsRadius": 13.0,
+        "uniform": true,
+        "viewport": "(430, 860)"
+      },
+      {
+        "artScale": 1.0,
+        "feetOffset": "(0.0, 5.200012)",
+        "newVisibleHeight": 27.8400002717972,
+        "oldVisibleHeight": 16.7040001630783,
+        "physicsRadius": 13.0,
+        "uniform": true,
+        "viewport": "(568, 320)"
+      }
+    ],
+    "presentationOnly": true,
+    "sourceFrame": "(96.0, 128.0)",
+    "visibleSourceBounds": "(22,18)-(73,126)"
+  },
+  "gpuFixtures": 9,
+  "reviewDirectory": "/Users/zhu/Library/Application Support/755-tools/review/dorm-character-scale-20261022",
+  "livePreview": {
+    "pid": 67279,
+    "project": "/Users/zhu/Library/Application Support/755-native-check-mkFi2b/workspace/godot_native",
+    "profile": "/Users/zhu/Library/Application Support/755-native-check-mkFi2b/data/SevenFiftyFiveNative",
+    "scene": "res://scenes/kenney_visual_slice.tscn",
+    "title": "7:55 · 寝室人物比例预览"
+  },
+  "notPushed": true,
+  "notPhysicalMobileAcceptance": true
+}

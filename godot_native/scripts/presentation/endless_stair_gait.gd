@@ -165,7 +165,9 @@ func apply(guard: bool, direction: String, frame: int) -> void:
 	sprite.region_enabled = true
 	sprite.region_rect = Rect2(0, 0, 96, 98)
 	sprite.offset = Vector2(0, 77)
-	var key := Vector3(view.model.guard.x if guard else view.model.player.x, float(pose.body_y), float(frame))
+	# Landing recovery remains visible even if the player stops on this tread.
+	var recovery: float = float(view.land_ticks) * .1 if not guard else 0.0
+	var key := Vector3(view.model.guard.x if guard else view.model.player.x, float(pose.body_y), float(frame)+recovery)
 	if mesh_keys[index] != key:
 		_build_upper(index, sprite, guard)
 		_build_legs(index, sprite, pose, guard)
@@ -204,6 +206,11 @@ func warp_pixel(pixel: Vector2, guard: bool) -> Vector2:
 	var neck := (Vector2(48,55)-pelvis).rotated(lean)+pelvis
 	var head_weight := weights[3]
 	point += ((point-neck).rotated(-lean*.60)-point+neck)*head_weight
+	# Continue the same brief landing absorption after the route turns from
+	# front/back into side view. Only the upper source pixels compress toward
+	# the pelvis: the independently solved shoe contacts never move or scale.
+	if not guard and view.model.player_grounded and view.land_ticks > 0:
+		point.y = lerpf(point.y, 93.0, .075 * float(view.land_ticks) / 7.0)
 	return point
 
 func _pixel_weights(pixel: Vector2, guard: bool) -> PackedFloat64Array:

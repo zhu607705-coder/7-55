@@ -1,7 +1,12 @@
 import type { EventBus } from "../core/EventBus";
-import type { GameStore, SceneId } from "../core/types";
+import type { GameState, GameStore, SceneId } from "../core/types";
 import {
   checkPhoneChargingStation,
+  checkHomeDeskChargingStation,
+  canReturnToHomeDesk,
+  isHomeDeskContext,
+  HOME_DESK_CHARGING_STATION,
+  PHONE_CHARGING_DURATION_MS,
   PHONE_BATTERY_RECHARGE_PERCENT,
   THEATER_CHARGING_STATION,
   type ChargingRejection
@@ -10,23 +15,112 @@ import {
 export const PHONE_BATTERY_MIN_PERCENT = 1;
 export { PHONE_BATTERY_RECHARGE_PERCENT } from "../core/PhoneChargingStation";
 
-const BATTERY_FREE_SCENES = new Set<SceneId>([
-  "alarm",
-  "desktop",
-  "phone_home",
-  "ending"
-]);
-
-export function getPhoneSceneBatteryCost(sceneId: SceneId, lowPowerMode: boolean): number {
-  if (BATTERY_FREE_SCENES.has(sceneId)) return 0;
-  return lowPowerMode ? 1 : 2;
+// Navigation is not an energy-consuming action. Keep this source contract for
+// router integrations; explicit network switching retains its separate cost.
+export function getPhoneSceneBatteryCost(_sceneId: SceneId, _lowPowerMode: boolean): number {
+  return 0;
 }
 
+export type HomeDeskChargingReceipt = Readonly<{ stationId: typeof HOME_DESK_CHARGING_STATION.id }>;
+type DeskSession = {
+  receipt: HomeDeskChargingReceipt;
+  elapsedMs: number;
+  lastClock: number;
+  flags: GameState["flags"];
+  battery: GameState["phoneBattery"];
+  unsubscribe: () => void;
+};
+
 export class PhoneBatteryController {
+  private deskSession: DeskSession | null = null;
+  private deskHintShown = false;
   constructor(
     private readonly store: GameStore,
-    private readonly events: EventBus
+    private readonly events: EventBus,
+    private readonly now: () => number = () => performance.now(),
+    private readonly foreground: () => boolean = () => typeof document === "undefined" || (!document.hidden && document.hasFocus())
   ) {}
+
+  prepareHomeDeskReturn(page: SceneId): boolean {
+    const state = this.store.getState();
+    if (!canReturnToHomeDesk(state) || state.currentScene !== page || !["phone_home", "bonsai"].includes(page)) return false;
+    this.cancelHomeDeskCharging();
+    this.store.setState(current => ({ ...current, ui: { ...current.ui, homeDeskReturnScene: page as "phone_home" | "bonsai" } }));
+    if (!this.deskHintShown) {
+      this.deskHintShown = true;
+      this.events.emit("toast", { text: "手机放回桌面，点充电座接电；点手机拿起。", tone: "task" });
+    }
+    return true;
+  }
+
+  hasHomeDeskReturn(): boolean {
+    const state = this.store.getState();
+    // Presentation remembers the desk while a modal is open; only charging/input
+    // uses the stricter no-modal predicate, so opening it cannot replay wake VO.
+    return isHomeDeskContext(state) && ["phone_home", "bonsai"].includes(state.ui.homeDeskReturnScene ?? "");
+  }
+
+  takePhoneFromDesk(): "phone_home" | "bonsai" {
+    const page = this.hasHomeDeskReturn() ? this.store.getState().ui.homeDeskReturnScene! : "phone_home";
+    this.cancelHomeDeskCharging();
+    this.store.setState(state => ({ ...state, ui: { ...state.ui, homeDeskReturnScene: null } }));
+    return page;
+  }
+
+  beginHomeDeskCharging(): HomeDeskChargingReceipt | "already_sufficient" | ChargingRejection {
+    const state = this.store.getState();
+    if (checkHomeDeskChargingStation(state) || !this.foreground()) {
+      this.cancelHomeDeskCharging();
+      return "no_power_source";
+    }
+    if (this.deskSession && this.validDeskSession(this.deskSession.receipt)) return this.deskSession.receipt;
+    if (state.phoneBattery.percent >= PHONE_BATTERY_RECHARGE_PERCENT && !state.phoneBattery.lowPowerMode) return "already_sufficient";
+    const receipt: HomeDeskChargingReceipt = Object.freeze({ stationId: HOME_DESK_CHARGING_STATION.id });
+    this.deskSession = { receipt, elapsedMs: 0, lastClock: this.now(), flags: state.flags, battery: state.phoneBattery, unsubscribe: () => {} };
+    this.deskSession.unsubscribe = this.store.subscribe(() => {
+      if (this.deskSession) this.validDeskSession(this.deskSession.receipt);
+    });
+    return receipt;
+  }
+
+  getHomeDeskChargingProgress(receipt: HomeDeskChargingReceipt): number | null {
+    if (!this.validDeskSession(receipt)) return null;
+    const session = this.deskSession!;
+    const clock = this.now();
+    // Match the existing theater timeline: a resumed/stalled frame cannot
+    // backfill an unattended interval, and repeated reads at one clock add zero.
+    session.elapsedMs += Math.min(100, Math.max(0, clock - session.lastClock));
+    session.lastClock = clock;
+    return Math.min(1, session.elapsedMs / PHONE_CHARGING_DURATION_MS);
+  }
+
+  completeHomeDeskCharging(receipt: HomeDeskChargingReceipt): "charged" | "already_sufficient" | "too_early" | "invalid_receipt" {
+    const progress = this.getHomeDeskChargingProgress(receipt);
+    if (progress === null) return "invalid_receipt";
+    if (progress < 1) return "too_early";
+    // Retire the receipt before mutating state or notifying subscribers.
+    this.cancelHomeDeskCharging(receipt);
+    return this.applyRecharge(HOME_DESK_CHARGING_STATION.label);
+  }
+
+  cancelHomeDeskCharging(receipt?: HomeDeskChargingReceipt): void {
+    if (!this.deskSession || (receipt && receipt !== this.deskSession.receipt)) return;
+    const session = this.deskSession;
+    this.deskSession = null;
+    session.unsubscribe();
+  }
+
+  private validDeskSession(receipt: HomeDeskChargingReceipt): boolean {
+    const session = this.deskSession;
+    if (!session || session.receipt !== receipt) return false;
+    const state = this.store.getState();
+    if (session.flags !== state.flags || session.battery !== state.phoneBattery
+      || checkHomeDeskChargingStation(state) || !this.foreground()) {
+      this.cancelHomeDeskCharging(receipt);
+      return false;
+    }
+    return true;
+  }
 
   consumeForSceneOpen(previousScene: SceneId, nextScene: SceneId): number {
     if (previousScene === nextScene) return this.store.getState().phoneBattery.percent;
@@ -59,8 +153,8 @@ export class PhoneBatteryController {
     this.events.emit("phone_low_power_mode_changed", { enabled });
     this.events.emit("toast", {
       text: enabled
-        ? "低电量模式已开启：打开应用仅消耗 1%，亮度上限 45%，音乐已暂停。"
-        : "低电量模式已关闭：打开应用恢复消耗 2%。",
+        ? "低电量模式已开启：亮度上限 45%，音乐已暂停。打开应用不扣电。"
+        : "低电量模式已关闭：可手动调整亮度，打开应用不扣电。",
       tone: "task"
     });
   }
@@ -82,8 +176,12 @@ export class PhoneBatteryController {
       });
       return rejection;
     }
-    const source = THEATER_CHARGING_STATION.label;
-    if (current.phoneBattery.percent >= PHONE_BATTERY_RECHARGE_PERCENT) {
+    return this.applyRecharge(THEATER_CHARGING_STATION.label);
+  }
+
+  private applyRecharge(source: string): "charged" | "already_sufficient" {
+    const current = this.store.getState();
+    if (current.phoneBattery.percent >= PHONE_BATTERY_RECHARGE_PERCENT && !current.phoneBattery.lowPowerMode) {
       this.events.emit("toast", {
         text: `当前电量 ${current.phoneBattery.percent}%，暂不需要补电。`,
         tone: "task"
@@ -91,21 +189,23 @@ export class PhoneBatteryController {
       return "already_sufficient";
     }
     const from = current.phoneBattery.percent;
+    const to = Math.max(from, PHONE_BATTERY_RECHARGE_PERCENT);
     this.store.setState((state) => ({
       ...state,
       phoneBattery: {
         ...state.phoneBattery,
-        percent: PHONE_BATTERY_RECHARGE_PERCENT,
+        percent: to,
+        lowPowerMode: false,
         rechargeCount: state.phoneBattery.rechargeCount + 1
       }
     }));
     this.events.emit("phone_battery_recharged", {
       from,
-      to: PHONE_BATTERY_RECHARGE_PERCENT,
+      to,
       source
     });
     this.events.emit("toast", {
-      text: `已接入${source}，电量恢复至 ${PHONE_BATTERY_RECHARGE_PERCENT}%。`,
+      text: `已接入${source}，电量 ${to}%，已退出低电量模式。`,
       tone: "task"
     });
     return "charged";
@@ -115,7 +215,7 @@ export class PhoneBatteryController {
     if (amount <= 0) return this.store.getState().phoneBattery.percent;
     const current = this.store.getState();
     const from = current.phoneBattery.percent;
-    const to = Math.max(PHONE_BATTERY_MIN_PERCENT, from - amount);
+    const to = Math.min(from, Math.max(PHONE_BATTERY_MIN_PERCENT, from - amount));
     if (to === from) {
       this.events.emit("phone_battery_reserve_used", { percent: to, reason, sceneId });
       return to;

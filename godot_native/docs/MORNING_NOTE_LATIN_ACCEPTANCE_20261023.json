@@ -1,0 +1,143 @@
+{
+  "schema": "755-morning-note-latin-acceptance-v1",
+  "date": "2026-10-23",
+  "version": "0.1.1",
+  "sourceCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "sourceDirty": true,
+  "sourceInputSha256": "efc73dffb1b32262ae6644227fddb44be0bcbfeb893315ea68c8d8a47f19bbc9",
+  "engine": "4.7.1.stable.official",
+  "evidenceRoot": "/Users/zhu/Library/Application Support/755-tools/verification/morning-note-latin-20261023",
+  "design": {
+    "changedGlyphs": 62,
+    "unchangedOriginalHanziAndPunctuation": 75,
+    "capHeight": 16,
+    "xHeight": 12,
+    "baseline": 20,
+    "emGrid": 24,
+    "digitAdvance": 12,
+    "features": [
+      "open counters and native one-cell stepped curves",
+      "tabular time and code digits",
+      "slashed0,entry-stroke1,barredI,curved-footl",
+      "proportional lowercase widths",
+      "same Chinese proportions, punctuation, control geometry and progression"
+    ],
+    "metrics": "alnum-design-metrics.json",
+    "scope": "scope-check.json",
+    "asciiWeights": "The62 original ASCII glyphs share one master across Regular/Medium. Distinct font files and weight metadata do not imply separate ASCII stroke weights."
+  },
+  "files": [
+    {
+      "file": "MorningNote-Regular.ttf",
+      "family": "755 Morning Note",
+      "style": "Regular",
+      "weight": 400,
+      "bytes": 416852,
+      "sha256": "5b4fac6a328e33d54de6d6981cd2ee78fd336ca08accceafb9f6cbe6cb671bb1",
+      "woff2Bytes": 88232,
+      "woff2Sha256": "3b663fb2afd5b4f7d0cd94efe2ff4ed6e6643e9950275f8d5dfa74e40d1ea852"
+    },
+    {
+      "file": "MorningNote-Medium.ttf",
+      "family": "755 Morning Note",
+      "style": "Medium",
+      "weight": 500,
+      "bytes": 406016,
+      "sha256": "ab9f328ce70bc3b5342ed6f820aa5efcb86361c82f4d507a7267f1e156982041",
+      "woff2Bytes": 88092,
+      "woff2Sha256": "c4436eec9f4801406dcae8eb15fd5069c09295dc6edd2cce86f02d829fe2551e"
+    }
+  ],
+  "fontSource": {
+    "file": "art_source/fonts/morning_note_v1/original_glyphs.json",
+    "sha256": "9dcdd2edb533fba834f7618ed08b24c6c7d0a9f533290401c321f12767cfeec8"
+  },
+  "validation": {
+    "rebuild": "rebuild-check.log",
+    "allGlyphFreeTypeRoundtrip": true,
+    "asciiRebuild": "ascii-rebuild-check.log",
+    "nativeStages": 8,
+    "nativeReport": "native-font.json",
+    "nativeFailures": 0,
+    "additionalFlowRegression": "native-flow.json",
+    "additionalFlowFailures": 0,
+    "gpuTextProfiles": [
+      "1280x720 DPR1",
+      "1440x900 DPR2",
+      "390x844 DPR3"
+    ],
+    "gpuTextReport": "gpu/report.json",
+    "gpuFlowViews": [
+      "430x860 stage0",
+      "430x860 stage2",
+      "1280x720 stage0",
+      "390x844 stage2"
+    ],
+    "gpuFlowBoundary": "Constructed visual fixtures using the actual renderer; no State intents, earned completion or gameplay acceptance claim.",
+    "actualGodotWeb": {
+      "scenario": "checkin",
+      "profile": "touch-390",
+      "checks": 532,
+      "passed": true,
+      "report": "browser-checkin-corrected/web-acceptance.json",
+      "fixture": "Controller-earned before_c1_checkin.json, SHA1e5f05c77a459e7ead5896235a97d44c807db99b504465646ee1e0834f081ca8, imported through shipped picker; ordinary keys, rejection, receipt, persistence and reload.",
+      "firstAttempt": "browser-checkin/web-acceptance.json retained: invocation omitted required --fixtures argument; corrected invocation used original earned fixture."
+    },
+    "actualPckClosure": "actual-core-fonts.log",
+    "actualPckEntries": 2514,
+    "verifyOnly": "web-verify-only.log",
+    "notRepeated": [
+      "full four-chapter campaign",
+      "40-second word-flow gameplay route",
+      "unaffected retained-Web full suite"
+    ]
+  },
+  "asciiSideEffect": {
+    "hanzi20CellMasks": "byte-equivalent canonical mask data",
+    "sourcePunctuation": "unchanged outlines and metrics",
+    "atlasAlphaDelta": {
+      "72x8": 6,
+      "36x4": 2
+    },
+    "reason": "Restoring old62 Latin outlines/metrics in-memory restores old8px punctuation raster; restoring old OS/2 cap/xheight alone does not. This supports a FreeType automatic-hint alignment effect from the changed Latin set.",
+    "controls": "atlas-font-metadata-control.json",
+    "actualPreviousPckComparison": "atlas-actual-pck-comparison.json",
+    "resolution": "Regenerated exact-source atlases, passed flow regression and inspected desktop/mobile GPU views; no whole glyph removed."
+  },
+  "delivery": {
+    "export": "godot_native/exports/web-morning-note-latin-20261023",
+    "initialPayloadBytes": 95803762,
+    "previousInitialPayloadBytes": 95803122,
+    "deltaBytes": 640,
+    "unchangedBudgetBytes": 100000000,
+    "localPreview": "http://127.0.0.1:5241/",
+    "fontSpecimen": "http://127.0.0.1:5243/art_source/fonts/morning_note_v1/specimen.html#latin-study",
+    "existingGameNotReloaded": true,
+    "previewSwitch": "local-preview-switch.json",
+    "ownedQa5242Stopped": true
+  },
+  "reviewImages": [
+    {
+      "file": "review/alnum-context-before-after.png",
+      "bytes": 8404,
+      "sha256": "bc18b98f29ec39f0e4f779fc32fa27a4f0756fbd382ddbd3aa0cf97324170a59"
+    },
+    {
+      "file": "review/game-checkin-receipt.png",
+      "bytes": 11652,
+      "sha256": "ca430c31da504e1aa5036d72b4d2f01a84076b5d6880a550768da57a9d12113e"
+    },
+    {
+      "file": "review/latin-specimen-browser.png",
+      "bytes": 70503,
+      "sha256": "6cce9e7e36b1a302abaf9aee0fda7d64c87848bcdae57cee52ac51530e248e15"
+    }
+  ],
+  "temporaryImagesRemoved": 23,
+  "temporaryPckResourcesRemoved": 3,
+  "boundaries": [
+    "No new backup, stash, commit, push, remote release or system font installation.",
+    "Original137 plus1687 OFL-derived glyphs; total1824.",
+    "No physical phone, fresh Safari/Firefox or full manual campaign acceptance claimed."
+  ]
+}

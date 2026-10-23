@@ -33,6 +33,37 @@ func reveal(id: String) -> Control:
 	var item:=slot(id);shell.inventory_scroll.ensure_control_visible(item);await frames();return item
 func world_screen(local: Vector2) -> Vector2:
 	return shell.world_view.get_global_transform_with_canvas()*(local*shell.world_view.size/Vector2(shell.world_viewport.size))
+func floor_touch_point(direction:=Vector2.RIGHT,distance:=64.0,allow_turn:=true) -> Vector2:
+	# Read authoritative geometry only to locate visible clear floor. The real
+	# root release still owns picking, path planning, collisions and movement.
+	var world:Control=shell.world
+	world._update_camera()
+	var angles:Array=[0.0]
+	if allow_turn:
+		for degrees:int in range(15,360,15):angles.append(deg_to_rad(float(degrees)))
+	for angle:float in angles:
+		for factor:float in [1.0,0.75,0.5,0.375,0.25,1.25,1.5,2.0]:
+			var anchor:Vector2=world.player+direction.normalized().rotated(angle)*distance*factor
+			var foot:Vector2=world.PlayerMetrics.foot_rect(anchor).get_center()
+			var local:Vector2=(foot-world.camera)*world.zoom+world.size/2
+			if world.can_stand(anchor) and world.exploration_safe_rect(true).has_point(local) and world._floor_empty_destination(foot) and world._floor_segment_clear(world.player,anchor,world._floor_obstacles(),true):return world_screen(local)
+	return Vector2.INF
+func tap_floor(point: Vector2) -> void:
+	check(point.is_finite(),"fixture locates visible collision-valid empty floor")
+	if not point.is_finite():return
+	motion(point);touch(point,true);touch(point,false);await frames(2)
+	if shell.world._floor_route.is_empty():
+		var start_boxes:Array=[]
+		for box:Rect2 in shell.world._floor_obstacles():
+			if box.has_point(shell.world.player):start_boxes.append(box)
+		var open_steps:Array=[]
+		for axis:Vector2 in [Vector2.LEFT,Vector2.RIGHT,Vector2.UP,Vector2.DOWN]:
+			if shell.world.can_stand(shell.world.player+axis*8.25):open_steps.append(axis)
+		var local:Vector2=shell.world_view.source_position(shell.world_view.get_global_transform_with_canvas().affine_inverse()*point)
+		print("DIRECT_TAP_DIAGNOSTIC ",JSON.stringify({"root":point,"local":local,"rootSize":root.size,"rootVisible":root.get_visible_rect(),"hover":str(root.gui_get_hovered_control()),"disabled":shell.world_viewport.gui_disable_input,"startStand":shell.world.can_stand(shell.world.player),"enclosingObstacles":start_boxes,"openSteps":open_steps,"bounds":shell.world._floor_bounds,"goal":shell.world._floor_goal,"world":shell.world.size,"view":shell.world_view.get_global_rect(),"player":shell.world.player,"role":shell.world._direct_touch_role(local),"status":shell.world._floor_status,"sceneBlocks":shell.world._scene_presentation_blocks(),"shellBlocks":shell.world._shell_input_blocked(),"pointers":shell.world.direct_gestures.pointers,"safe":shell.world.exploration_safe_rect(true)}))
+func cancel_floor_touch(point: Vector2) -> void:
+	# A new press cancels the route; a cancelled release never creates a new one.
+	touch(point,true);touch(point,false,true);await frames(2)
 func actor_screen() -> Vector2:
 	# Resolve opaque pixels of the rendered actor through its real object picker.
 	for y in range(-30,31,2):
@@ -78,10 +109,8 @@ func fixture(dimensions: Vector2i) -> void:
 	await click(shell.find_child("Cc98GamepadReturn",true,false));await frames(6)
 	shell.world.set_process(false)
 	check(state.d.native.scene=="dorm_hub" and shell.world_frame.visible,"actual return opens dorm world")
-	check(shell.inventory_handle.visible and not shell.inventory_dock.visible,"world offers collapsed bag")
-	check(is_equal_approx(shell.inventory_handle.get_global_rect().size.y,44),"bag handle retains exactly44px physical height")
-	await click(shell.inventory_handle)
-	if dimensions.x<1100: check(not shell.inventory_handle.get_global_rect().intersects(shell.inventory_dock.get_global_rect()),"bag handle never overlaps the item row after orientation")
+	check(not shell.inventory_handle.visible and shell.inventory_dock.visible,"items are directly available without a bag toggle")
+	check(shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"inline items stay inside the actual game image")
 	check(shell.inventory_dock.visible and not slot("gamepad").disabled,"world owns a visible enabled item source")
 	check(is_equal_approx(shell.world_frame.scale.x,shell.world_frame.scale.y),"uniform world display scale retained")
 	if dimensions.x<1100:
@@ -91,12 +120,12 @@ func fixture(dimensions: Vector2i) -> void:
 		var hud:Dictionary=shell.world.hud_metrics("找到入口，继续向前。")
 		check(hud.title_font>=18 and hud.body_font>=14 and hud.mode_rect.size.y>=44,"physical HUD fonts and mode touch target meet mobile floor")
 		var controls:Dictionary=shell.world.mobile_control_metrics()
-		check(controls.interact.size.x>=44 and controls.interact.size.y>=44 and controls.stick_rect.size.x>=100,"physical movement and interaction controls remain useful")
+		check(controls.scheme=="direct_world" and controls.gestureArea.size.x>=200 and controls.gestureArea.size.y>=100 and controls.mode.size.y>=44,"direct world gestures retain useful physical floor area and mode target")
 		var actor:Rect2=shell.world.PlayerMetrics.visual_rect(shell.world.player,shell.world.display_scale_at(shell.world.player))
 		check(actor.size.y*shell.world.zoom>=70,"dorm actor renders at least70 physical pixels high")
-		print("MEASURE ",dimensions," world=",shell.world.size," actor=",actor.size*shell.world.zoom," HUD=",hud.title_font,"/",hud.body_font," mode=",hud.mode_rect.size," action=",controls.interact.size)
+		print("MEASURE ",dimensions," world=",shell.world.size," actor=",actor.size*shell.world.zoom," HUD=",hud.title_font,"/",hud.body_font," mode=",hud.mode_rect.size," gestures=",controls.gestureArea)
 	else: check(shell.world_viewport.size==Vector2i(960,540),"desktop retains canonical authored viewport")
-	check(not shell.inventory_dock.get_global_rect().intersects(shell.world_frame.get_global_rect()),"bag does not cover world HUD or touch controls")
+	check(shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"inventory overlays the actual map without resizing it")
 	check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(shell.inventory_dock.get_global_rect()),"bag fits physical screen")
 	check(slot("gamepad").get_global_rect().size.y>=44,"item retains44px physical height")
 	check(actor_screen().is_finite(),"rendered actor exposes actual gamepad target")
@@ -190,20 +219,25 @@ func run() -> void:
 		var key:=InputEventKey.new();key.keycode=KEY_D;key.physical_keycode=KEY_D;key.pressed=true;event(key)
 		await create_timer(.14).timeout;key.pressed=false;event(key);await frames();shell.world.set_process(false)
 		check(shell.world.player.distance_to(before)>0 and state.d.actOne.manualControlTested and actions.has("c2_manual_input"),"actual D key moves player and records manual-input proof")
-		var thumb:=world_screen(shell.world.mobile_control_metrics().stick+Vector2(-32,0) if shell.world.mobile_exploration else Vector2(46,400));before=shell.world.player;shell.world.set_process(true)
-		touch(thumb,true);await frames(2)
-		check(shell.world.touch_axis.length()>0 and Gesture.touch_owner()==null and not root.gui_is_dragging(),"world thumb control keeps its own touch input while bag is open")
-		await create_timer(.1).timeout;touch(thumb,false);await frames();shell.world.set_process(false)
-		check(shell.world.player.distance_to(before)>0 and shell.world.touch_axis==Vector2.ZERO,"thumb movement releases cleanly without inventory drag")
+		if shell.world.mobile_exploration:
+			var floor_point:=floor_touch_point(Vector2.LEFT);before=shell.world.player
+			await tap_floor(floor_point)
+			check(not shell.world._floor_route.is_empty() and Gesture.touch_owner()==null and not root.gui_is_dragging(),"real floor tap owns a collision route while bag remains open")
+			shell.world.set_process(true);await create_timer(.1).timeout;shell.world.set_process(false)
+			await cancel_floor_touch(floor_point)
+			check(shell.world.player.distance_to(before)>0 and shell.world._floor_route.is_empty() and not shell.world.direct_gestures.has_active(),"floor movement advances and cancellation retires route without inventory drag")
+		else:
+			before=shell.world.player;key=InputEventKey.new();key.keycode=KEY_A;key.physical_keycode=KEY_A;key.pressed=true;event(key)
+			shell.world.set_process(true);await create_timer(.1).timeout;key.pressed=false;event(key);await frames();shell.world.set_process(false)
+			check(shell.world.player.distance_to(before)>0 and Gesture.touch_owner()==null and not root.gui_is_dragging(),"desktop keyboard remains independent of inventory drag")
 		if dimensions.x<1100:
-			await click(shell.inventory_handle);check(not shell.inventory_dock.visible,"bag collapses through its visible handle")
+			var before_rect:Rect2=shell.world_view.get_global_rect()
+			shell._toggle_world_inventory();await frames()
+			check(shell.inventory_dock.visible and not shell.inventory_handle.visible and shell.world_view.get_global_rect()==before_rect,"legacy bag request cannot resize or hide inline items")
 			root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout();await frames()
-			check(not shell.compact_inventory_open and shell.inventory_handle.visible,"collapsed state survives orientation change")
-			await click(shell.inventory_handle)
-			check(shell.inventory_dock.visible and Rect2(Vector2.ZERO,shell.size).encloses(shell.inventory_dock.get_global_rect()),"expanded landscape bag stays on screen")
-			check(not shell.inventory_dock.get_global_rect().intersects(shell.world_frame.get_global_rect()) and not shell.mobile_back.get_global_rect().intersects(shell.world_frame.get_global_rect()),"landscape world remains clear of bag and Back")
+			check(shell.inventory_dock.visible and shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"inline items remain within the landscape map")
 			root.size=dimensions;shell.size=Vector2(dimensions);shell._layout();await frames()
-			check(shell.compact_inventory_open and shell.inventory_dock.visible,"expanded state survives return to portrait")
+			check(shell.inventory_dock.visible,"inline items survive return to portrait")
 	Input.emulate_mouse_from_touch=baseline
 	await shell.shutdown();shell.queue_free();await frames()
 	print("PORTRAIT_EXPLORATION: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)

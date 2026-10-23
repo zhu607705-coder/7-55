@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "feature": "借扇成蝶 · 侧翼排练",
+  "source": {
+    "kind": "user-authorized web High editorial review",
+    "url": "https://chatgpt.com/c/6ad78d81-d6c8-83e8-99f1-311381e2c3a9",
+    "effortAsRecorded": "High3/5"
+  },
+  "consumer": "scripts/games/theater_shadow_rehearsal.gd",
+  "adopted": {
+    "opening": "晚场还没开，侧翼的灯先亮了。\n排练单上写着：今晚先试一段扇影。",
+    "actCompletionByRound": [
+      "一道扇影稳稳落下。",
+      "扇影的轮廓清楚了。",
+      "两片翼合成一只蝶。"
+    ],
+    "finale": "蝶影留在幕上，今晚这段排练成了。"
+  },
+  "composition": "The third-act sentence and finale are shown together on the existing complete screen, while the view awaits the player's final lamp input. Touch-only action reminders remain separate from the narrative sentences.",
+  "retainedOperationInstructions": {
+    "touch": "手机横过来：点选并拖动道具，点灯试演；按住道具观察。双指轻触撤回，双指按住打开排练单，里面可以重排、暂停或返回。",
+    "keyboard": "键盘：Tab 换一件，方向键 / WASD 移动；Enter 试演，Z 撤回，R 重排，Esc 暂停。"
+  },
+  "failureFeedback": {
+    "authority": "Model.failure_text",
+    "retained": true,
+    "excludedSuggestion": "一角伸出幕边",
+    "reason": "The current mismatch checks projected radius and center, rather than whether a corner extends beyond the screen boundary."
+  },
+  "modelContract": {
+    "levelsChanged": false,
+    "layoutDigestChanged": false,
+    "sessionChanged": false,
+    "modelSha256": "4655ade02b1a1694f2b7d814191217bee0db474457fa8e6f27c6d5215903c9fd"
+  },
+  "validationReport": "exports/verification/theater_rehearsal_20261020/high-copy-native-final.json",
+  "appliedAtUtc": "2026-10-20T16:08:32Z",
+  "consumerSha256": "0f76bc24c4f12a086569dfc8a548beb20ec62df0e8e7978f0ba970752f3748d1",
+  "validationReportSha256": "0491294d108778519e07193f0e4ed6ae4b056ed892508c94836af2e5b906e045",
+  "presentationRevision": {
+    "date": "2026-10-21",
+    "description": "The common target and projected wing profile has distinct upper/lower lobes; projected silhouettes are clipped to the gauze. The earned final image adds a small body and antennae. Input, center/radius/side, levels, model and session remain unchanged."
+  }
+}

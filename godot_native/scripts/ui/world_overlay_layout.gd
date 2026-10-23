@@ -19,15 +19,17 @@ static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:b
 	var body_font:=font_pixels(ceili(BODY_PX*type_scale*text_scale),s)
 	var title_font:=font_pixels(ceili((18 if touch else TITLE_PX)*type_scale),s)
 	var mode_font:=font_pixels(ceili(SPEAKER_PX*type_scale),s)
-	var width:=maxf(1,extent.x-body_padding*2)
+	var available_width:=maxf(1,minf(extent.x-body_padding*2,pixels(680,s)))
+	var natural_width:=maxf(pixels(220,s),font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,body_font).x)
+	var width:=minf(available_width,natural_width)
 	var measured:=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_CENTER,width,body_font)
 	var inset:=pixels(8,s)
 	var content_height:=measured.y
-	var height:=maxf(pixels(34,s),content_height+inset*2)
+	var height:=maxf(pixels(44 if touch else 34,s),content_height+inset*2)
 	var header:=maxf(pixels(44 if touch else 32,s),font.get_height(title_font)+pixels(10,s))
-	# Preserve a useful world strip and the real touch targets. Unusually
-	# long/enlarged messages retain their text in a bounded scroll surface.
-	var budget:=minf(extent.y-header-pixels(124 if touch else 16,s),maxf(font.get_height(body_font)+inset*2,extent.y-header-pixels(188 if touch else 72,s)))
+	# A long caption keeps the scene usable. Its complete text remains in the
+	# existing scroll surface instead of taking over the visible map.
+	var budget:=minf(extent.y/3.0,extent.y-header-pixels(96,s))
 	budget=maxf(inset*2+1,budget)
 	var overflow:=height>budget
 	if overflow:

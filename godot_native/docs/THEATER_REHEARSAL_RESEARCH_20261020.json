@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "researchDate": "2026-10-20",
+  "feature": "借扇成蝶 · 侧翼排练",
+  "runtime": "godot_native",
+  "status": "implemented-local-review-candidate",
+  "sources": [
+    {
+      "url": "https://www.zju.edu.cn/2026/0515/c79825a3163003/page.htm",
+      "publisher": "浙江大学",
+      "title": "越剧诞生120周年纪念暨浙江大学学生越剧社2026年度大戏《梁祝》",
+      "published": "2026-05-15",
+      "verifiedFacts": {
+        "eventTime": "2026年6月7日18:30",
+        "venue": "紫金港校区剧场",
+        "sourceDepartment": "公共体育与艺术部"
+      },
+      "use": "确定本校越剧社、梁祝题材和演出场地的关联。公告不是舞台技术方案，未据此虚构该场扇子、灯或布景配置。"
+    },
+    {
+      "url": "https://www.zju.edu.cn/2020/0424/c50228a2089636/pagem.htm",
+      "publisher": "浙江大学",
+      "title": "天上掉下个周妹妹",
+      "published": "2020-04-24",
+      "verifiedFacts": [
+        "本校学生越剧社排演过全本《梁祝》与《陆游与唐琬》。",
+        "2019年11月在中国教育电视台《戏聚校园》演绎《梁祝·十八相送》。",
+        "报道叙述社员反复揣摩唱腔、咬字、身段及排练。"
+      ],
+      "use": "侧翼排练的校园生活依据；不复写唱词或人物身份。"
+    },
+    {
+      "url": "https://zjcm.edu.cn/zyxww/zyyw/201706/2286.html",
+      "publisher": "浙江音乐学院",
+      "title": "浙江小百花越剧团入驻浙音合演新版《梁祝》，开启院团合作新征程",
+      "published": "2017-06-21",
+      "verifiedFacts": [
+        "报道2017年6月20日的小百花与浙音合作首演。",
+        "文章明确说明结尾用扇子的表演表达化蝶意象。"
+      ],
+      "use": "将真实戏曲道具语义转译为可操作的扇影组合；不声称本项目复原这台演出。"
+    },
+    {
+      "url": "https://www.chntheatre.edu.cn/cn/mei/detail/23893.html",
+      "publisher": "中央戏剧学院",
+      "title": "《前线》| 高校原创文化精品：中央戏剧学院原创话剧《梁祝》",
+      "verifiedFacts": [
+        "文章列出草亭结拜、同窗三载、十八相送、再相会、化蝶等核心情境。",
+        "创作以民族表达方式融合现代舞台手段。"
+      ],
+      "use": "采用可识别的主题意象和小步引入规则的方法；不是浙大2026场的场次表。"
+    },
+    {
+      "url": "https://www.eldt.org/artschoolmusical2024-2025",
+      "publisher": "非常林奕华（制作方）",
+      "title": "梁祝的一年 2024–2025",
+      "verifiedFacts": [
+        "制作方用十八相送中的比喻、同窗与走过的时间讨论表达与理解。"
+      ],
+      "use": "把操作前后的可见变化留给玩家理解，避免默认文字直接给出参数。该来源是另一部现代舞台作品，不并入浙大演出的事实记录。"
+    }
+  ],
+  "storyContinuity": {
+    "existingProduction": "保留虚构学生剧《7:55》的原CC98售票档案；实际2026年6月越剧公告是设计参考。",
+    "preserved": [
+      "票根A/B与0832订单、拼接、验票",
+      "三张节目单与spotlight/opening/finale原节目顺序",
+      "票扫码取得荧光粉刷、风口撒粉",
+      "原三幕追光小游戏及完整验证",
+      "decoyPaper与wetProgram、反转对话",
+      "剧院出口至campus_qizhen_loop，再交给现有三来源手机调查"
+    ],
+    "newEntry": {
+      "id": "theater_shadow_rehearsal",
+      "action": "c3_rehearsal_begin",
+      "phaseAvailability": [
+        "program_search",
+        "prop_setup",
+        "spotlight_ready",
+        "complete"
+      ],
+      "requires": "已验票、原剧院场景、浅色操作、真实距离",
+      "position": [
+        560,
+        156
+      ],
+      "visibleBounds": [
+        500,
+        106,
+        120,
+        100
+      ],
+      "footprint": [
+        512,
+        184,
+        96,
+        22
+      ],
+      "stand": [
+        560,
+        206
+      ],
+      "radius": 68
+    },
+    "completion": "只完成本次可重玩排练，不写主线、道具、钱包、存档或检查点。"
+  },
+  "progressionDesign": [
+    {
+      "stage": "一叶入幕",
+      "newRule": "横向移扇改变同一纱幕上的影子位置",
+      "presentation": "一把扇架、一盏灯、一片可见轮廓。第一幕扇架纵深固定。",
+      "discovery": "拖动实体底座，影子同步变化；不显示参数或操作顺序。"
+    },
+    {
+      "stage": "一程相送",
+      "newRule": "灯、扇、幕之间的前后距离改变投影尺寸",
+      "presentation": "沿用同一物体与幕，增加纵深移动；先前横向移动仍可用。",
+      "discovery": "影子大小随实际投影比变化，试演指出尺寸差异，位置保留。"
+    },
+    {
+      "stage": "双翼合幕",
+      "newRule": "双物体投影组合，另一件实体侧幕也会遮光",
+      "presentation": "不同尺寸的两把扇架，加一片可移动宽侧幕；两扇在不同实际纵深对合成蝶影。",
+      "discovery": "宽影与侧幕同步移动；错误试演保留位置，可继续当前幕。"
+    }
+  ],
+  "implementation": {
+    "model": "scripts/games/theater_shadow_rehearsal_model.gd",
+    "view": "scripts/games/theater_shadow_rehearsal.gd",
+    "session": "scripts/games/theater_rehearsal_session.gd",
+    "controller": "scripts/chapters/chapter3.gd",
+    "gameKind": "theater_shadow_rehearsal",
+    "resultAction": "c3_rehearsal_result",
+    "cancelAction": "c3_rehearsal_cancel",
+    "projection": "screenX = x * screenDepth / propDepth；screenRadius = propRadius * screenDepth / propDepth",
+    "input": "鼠标或触摸拖动实际物体；Tab选物、WASD/方向键、Enter试演、Z撤回、R重排、Esc暂停。键盘说明只在主动打开的观察面板呈现。",
+    "failure": "当前幕原位继续；撤回以完整拖动手势为单位；重排保留已完成幕。",
+    "hints": "玩家主动打开观察；三层逐步从现象到结构到相关物件，不给坐标答案。",
+    "sessionValidation": "nonce、原state对象身份、原scene/phase/mode/checkpoint、真实距离、完整合法动作trace、layoutDigest；取消/替换/离开不恢复旧session。"
+  },
+  "generatedAssets": {
+    "directory": "assets/native/theater_rebuild_20261020",
+    "files": [
+      "rehearsal_backdrop.png",
+      "fan_closed.png",
+      "fan_open.png",
+      "lantern.png",
+      "side_screen.png",
+      "fan_rack.png"
+    ],
+    "contract": "固定逻辑舞台960×540；全景均匀缩放、实体透明cutout独立载入、投影/轮廓/物理地面不烘焙主线角色或答案。世界扇架使用与footprint一致的独立架体图；内部大小不同的扇仍使用同一source art均匀缩放。"
+  },
+  "acceptance": {
+    "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+    "model": "40 checks, 0 failures",
+    "controller": "54 checks, 0 failures",
+    "ui": "76 checks, 0 failures",
+    "pending": [
+      "Physical Android/iOS device orientation, performance and hardware gesture acceptance"
+    ],
+    "isolatedFocusedReport": "exports/verification/theater_rehearsal_20261020/integration-final.json",
+    "isolatedFocusedReportSha256": "4aa6f4e1ef3320d7c2a2d9c963d0af83f163a910f0196bda520bfabcfeef8f7b",
+    "isolatedStages": [
+      "test_chapter3.gd",
+      "test_chapter3_reversal.gd",
+      "test_theater_rehearsal_controller.gd",
+      "test_theater_rehearsal_main.gd",
+      "test_theater_rehearsal_model.gd",
+      "test_theater_rehearsal_ui.gd",
+      "test_theater_stage_model.gd",
+      "Source oracle tests/verify_source_model_parity.mjs"
+    ],
+    "runtimeBaseCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "testedWorktreeDiffSha256": "2ee28859597b574eebd0eb698bb641b084c63064b570acb158b29a16a1a9fffc",
+    "testedFilesSha256": {
+      "scripts/games/theater_shadow_rehearsal_model.gd": "4655ade02b1a1694f2b7d814191217bee0db474457fa8e6f27c6d5215903c9fd",
+      "scripts/games/theater_shadow_rehearsal.gd": "3f9d7cc04c4c056b9046535ee4d68cf997344b2f71808cb0c338c4396fa0bd69",
+      "scripts/games/theater_rehearsal_session.gd": "ab552a8d5b786579bd854aeb77d3a1b015db3e7c734939d4e2cf695c7fb55df2",
+      "scripts/chapters/chapter3.gd": "aafb417bc1b0476ac62d17681e7240daf613a0b7952feb28af60bff12705a622",
+      "scripts/main.gd": "552d9e206d24e0c8c46f7e01f2f7ecf2b8ac055c01262d994238ad9203f27ff7",
+      "scripts/state.gd": "733ea58b638e57c9f5a6ce7c024f1c5bdee5bdc81d74e1b8df4435d727ce603e",
+      "tests/helpers/theater_rehearsal_proof.gd": "226a169a1010f012334ae4138d9cfb5d12c74350480abb019bf9d026647e298b",
+      "tests/test_theater_rehearsal_model.gd": "d1f9e44bd8afe2d0a3b6aaf9f1977fca6a7015fcd050bb4c10a16e1044ad72fa",
+      "tests/test_theater_rehearsal_controller.gd": "cf9149367fc05ee473bc420f9523ba2f58e057f6a635a007f2f157a62f2993c3",
+      "tests/test_theater_rehearsal_ui.gd": "608e29515a9ad70c0e1eba9ad18a9f1a529c6066b95b57fc3998293925ba0d26",
+      "tests/test_theater_rehearsal_main.gd": "64f7bb0a388f0aea274f3190cc552feaafb069fc66c2606673d5a2f73e36ee87"
+    },
+    "main": "177 checks, 0 failures",
+    "fixture": {
+      "path": "exports/verification/theater_rehearsal_20261020/fixtures/before_theater_rehearsal.json",
+      "sha256": "5f9d6f15edbaadf0f5198366f06fd3bb8699f73f4bc453ad44498b594b35d489",
+      "preparation": "原c3-theater-program开发验收快照，显式摆到原生可站立的source坐标560206，通过普通save validator与export_save导出；未声称玩家从售票流程挣得该快照。"
+    },
+    "historicalFailures": [
+      {
+        "attempt": "main-attempt1/main-attempt2",
+        "finding": "首帧Label的自动换行最小尺寸把intro撑到3105px，实际开始按钮越出屏幕。",
+        "fix": "阅读正文改为fit_content=false的可滚动RichTextLabel，保留真实按钮边界和点击验收。"
+      },
+      {
+        "attempt": "main-attempt3",
+        "finding": "390×844时intro面板从y92开始，遮住顶部Exit中心。",
+        "fix": "竖屏面板从y124开始，真实Exit重玩/返回和intro不覆盖Exit断言通过。"
+      },
+      {
+        "attempt": "object-attempt1",
+        "finding": "The only failing assertion sampled the real console base while checking its adjacent open gap.",
+        "fix": "Moved the sample to real clear floor at1220535; retained the real desk collider."
+      },
+      {
+        "attempt": "source-compositor-review",
+        "finding": "A right-seat cleaning donor crossed the original console and repeated desk legs. Tiny baked door diagonals also survived.",
+        "fix": "Moved cleaning donors to clear right-aisle source carpet; cleaned complete source leaf rectangles while preserving door posts and architecture."
+      },
+      {
+        "attempt": "touch-main-attempt1",
+        "finding": "The first touch switched the reading-sheet layout underneath the held Start button; a replay could keep its introduction open.",
+        "fix": "Touch capability is remembered immediately, but sheet-layout switching waits for its explicit close. Final real-touch intro/replay and Main tests pass."
+      }
+    ],
+    "latestGeometryAndUiReport": "exports/verification/theater_rehearsal_20261020/object-final2.json",
+    "latestGeometryAndUiReportSha256": "06c6ce772a9e64a661922926805607312a1327d42fb805e0a005c01ab220bc97",
+    "latestGeometryAndUiStages": [
+      "test_chapter3_world_layers.gd",
+      "test_theater_object_rebuild.gd",
+      "test_theater_rehearsal_main.gd",
+      "test_theater_rehearsal_ui.gd",
+      "test_theater_rehearsal_world_geometry.gd"
+    ],
+    "latestTestedFilesSha256": {
+      "scripts/presentation/theater_object_rebuild.gd": "9c93d4b9b9d95a6471f816060cb1e9d92863e33dc4a127b1be9a7ca0ba9114a0",
+      "data/native/theater-object-layout.json": "fce34e8e636cede51ddaab494e821226ac18337ae67d5d8225ed22b8b62f743d",
+      "scripts/ui/chapter3_world_layers.gd": "b400cec123d8b181dd03eedd3c95b4a31b82f43f7219685e43f9a3b8eba63a70",
+      "scripts/games/theater_shadow_rehearsal.gd": "cb83ed418b24e33aee1d2c4d774d5c76bdf8718b055776fb2021211781ae32ae",
+      "tests/test_theater_object_rebuild.gd": "fce12fca0747896223fdfe0bf96739fc34423131bda2ab29664a9aaa485c6863",
+      "tests/test_theater_rehearsal_ui.gd": "9d712cf57d1eb4e79945328479cfbb4a0d9fd7cb2eea2dd34c1fbf24973551cf",
+      "tests/test_theater_rehearsal_main.gd": "64f7bb0a388f0aea274f3190cc552feaafb069fc66c2606673d5a2f73e36ee87"
+    },
+    "shortKeyboardInput": "Keydown applies an immediate step; held repetition waits 0.075 seconds. Keydown/up inside the same rendered frame still preserves one step.",
+    "objectRebuild": {
+      "manifest": "data/native/theater-object-layout.json",
+      "module": "scripts/presentation/theater_object_rebuild.gd",
+      "objects": 16,
+      "sourceParts": 34,
+      "strictChecks": 1935,
+      "retainedLayerChecks": 130,
+      "worldBodyAndRackChecks": 192,
+      "selectedFamily": "three generated objects with exact source-atlas fallback for the entire family",
+      "generatedObjects": [
+        "prop_chest.png",
+        "sound_console.png",
+        "poster_board.png"
+      ],
+      "sourceProjection": [
+        1672,
+        941
+      ],
+      "geometry": "Six seat groups use independent row polygons. The original sound-operator chair is separate. Generated chest, console and narrow cabinet are uniformly fitted to actual alpha bounds at authored ground baselines. Baked exit door leaves are cleaned; InteriorDoorLayer alone draws moving leaves.",
+      "cache": "Successful geometry and clean meshes survive scene reentry. Missing images retry at 250ms. Successful frames never reread texture.get_image or rescan alpha.",
+      "visualReview": "Temporary browser canvas composited the same source-pixel manifest; clean background and generated object assembly were inspected. This is not Godot Web release acceptance. Temporary images were removed after inspection.",
+      "knownPresentationObservation": "Local same-source floor/carpet repetition can show texture seams when every fixture is hidden; no playability issue was found in normal composed presentation."
+    },
+    "mobileSceneInput": {
+      "status": "Native accepted; actual Godot Web browser matrix accepted with explicitly recorded Firefox phone prefs and physical-device gap",
+      "reason": "Actual Godot Web390x844 visual review showed about350px empty below the previous button row. User then requested Touchable-style contextual input and landscape game scenes.",
+      "reference": "docs/TOUCHABLE_INPUT_RESEARCH_20261020.json",
+      "upstreamCommit": "5cab3ac2fbde9409814545d66209488304e8b73d",
+      "primaryReadme": "https://github.com/MZhao-ouo/Touchable#exclusive-improvements",
+      "implementation": "Touch landscape maximizes the original960x540 stage at a uniform scale with a24px title strip. No permanent operation buttons remain. A portrait fallback requests rotation and keeps observation/exit available. Desktop buttons and keyboard remain.",
+      "gestures": {
+        "drag": "Tap/select and directly drag the same real prop through existing _move_prop. A gesture crossing10px stays a drag.",
+        "lamp": "Tap the visible stage lamp to try, continue a completed scene or finish the full rehearsal. A later physical mouse can use the same lamp on hybrid devices.",
+        "observe": "Hold a real prop0.6seconds without crossing10px to request the existing layered hint sheet.",
+        "undo": "Two-finger tap restores one whole previous drag.",
+        "menu": "Two-finger hold0.6seconds opens a temporary opaque paper sheet with Return/Undo/Restart/Pause/Exit. Closing explicitly resumes.",
+        "ownership": "Second finger retires the prior single-finger drag; consumed/third-finger gestures do not restart an action. Cancel, resize, focus loss and paper overlays clear stale owners."
+      },
+      "discoverability": "First introduction explains gestures and menu access without projection equations, target coordinates or the solution.",
+      "nativeChecks": [
+        "real Main390x844 introduction then resize844x390",
+        "three stages via physical touch drags and the real lamp",
+        "two-finger whole-drag undo and held paper menu",
+        "held prop requests one hint layer",
+        "paper overlay blocks physical drag below it",
+        "real menu Pause/Return and replay Exit",
+        "active touch cancellation, Main resize and Window.focus_exited",
+        "original controller completion and identical game-state/primary-save/backup bytes"
+      ],
+      "reports": {
+        "ui": {
+          "path": "exports/verification/theater_rehearsal_20261020/touch-ui-clean.json",
+          "sha256": "cb2683bd21bb04120e173b639959cbe3aeb2c6f9820e11dcc19c4ae3d9845c96"
+        },
+        "main": {
+          "path": "exports/verification/theater_rehearsal_20261020/touch-main-clean.json",
+          "sha256": "43eb3c09f5071e1934befe73c5a31c19cea4bdac5abeade478bd3a3ad836af76"
+        },
+        "latestNative": {
+          "report": "exports/verification/theater_rehearsal_20261020/butterfly-profile-native.json",
+          "sha256": "55fa352e3278b17ea7309dbdfe4654226fe9a4a93e4a7f915770128fe0d3ec8c",
+          "checks": {
+            "ui": 76,
+            "main": 177
+          },
+          "failures": 0
+        },
+        "web": {
+          "ledger": "docs/THEATER_REHEARSAL_ACCEPTANCE_20261021.json",
+          "sha256": "d63633bf2f57c082fb06764cb889dc2614c38da8276cb910cc1e2739c86dc244",
+          "sourceInputSha256": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+          "directCandidateCases": 1,
+          "directCandidateChecks": 31,
+          "retainedBaselineCases": 9,
+          "retainedBaselineChecks": 231,
+          "fullCandidateNineCaseRerun": false
+        }
+      },
+      "filesSha256": {
+        "scripts/games/theater_shadow_rehearsal.gd": "0f76bc24c4f12a086569dfc8a548beb20ec62df0e8e7978f0ba970752f3748d1",
+        "tests/test_theater_rehearsal_ui.gd": "eb7ac5f371dba3600d384fb8ca87f5719d042bc1abd6caaeb91d58f6b519926a",
+        "tests/test_theater_rehearsal_main.gd": "24b181908ca904f1b20b9ba53336cee2642d62a9ba25873f8589b0c19136d659"
+      }
+    },
+    "webAcceptance": {
+      "ledger": "docs/THEATER_REHEARSAL_ACCEPTANCE_20261021.json",
+      "sha256": "d63633bf2f57c082fb06764cb889dc2614c38da8276cb910cc1e2739c86dc244",
+      "sourceInputSha256": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+      "directCandidateCases": 1,
+      "directCandidateChecks": 31,
+      "retainedBaselineCases": 9,
+      "retainedBaselineChecks": 231,
+      "fullCandidateNineCaseRerun": false
+    }
+  }
+}

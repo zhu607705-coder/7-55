@@ -25,7 +25,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	texture=load("res://assets/native/chapter3/black_swan_hop_keyframes_v3.png")
 	lake=load("res://assets/rpg/interiors/qizhen_lake_swan_cove.png")
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 
 func _process(dt: float) -> void:
 	if timeline.paused:return

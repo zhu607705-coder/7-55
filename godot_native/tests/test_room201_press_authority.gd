@@ -9,12 +9,13 @@ var checks := 0
 var failures := 0
 var owner: Node
 var controller: RefCounted
+var fixture_state: Dictionary
 func _initialize() -> void: run.call_deferred()
 func check(ok: bool, label: String) -> void:
 	checks+=1
 	if not ok: failures+=1; push_error(label)
 func entry(collect: bool=true) -> Dictionary:
-	var state: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(ENTRY)).state
+	var state: Dictionary=fixture_state.duplicate(true)
 	if collect: controller.dispatch(state,"c4_plate")
 	controller.dispatch(state,"c4_device_positioning_calibration")
 	return state
@@ -44,6 +45,9 @@ func stale(state: Dictionary, gate: String) -> void:
 		_: state.native.erase(gate)
 func run() -> void:
 	owner=root.get_node("State");owner.developer_mode=false;controller=Chapter.new()
+	fixture_state=preload("res://tests/legacy_room_fixture.gd").read(owner,ENTRY,check)
+	if fixture_state.is_empty():
+		quit(1);return
 	check(owner.validate_snapshot(entry(false)),"Honest pre-plate fixture is a valid ordinary snapshot")
 	test_gates(); test_payloads(); test_order_and_install(); test_saves()
 	print("ROOM201_PRESS_AUTHORITY ",checks," checks; ",failures," failures")

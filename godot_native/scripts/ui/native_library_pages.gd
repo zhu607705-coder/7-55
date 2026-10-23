@@ -1,4 +1,5 @@
 extends RefCounted
+const Typography = preload("res://scripts/ui/native_typography.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 ## Source-native mobile library. UI-local navigation and draft selection only.
 ## All booking, catalog evidence and recovery transitions are existing chapter intents.
@@ -105,6 +106,7 @@ func home(b) -> Control:
 		["borrow","借阅信息","阅",false],["reserve","座位预约","24",reservation],["space","空间预约","⌂",false],
 		["recommend","求是荐书","荐",false],["new","新书通报","新",false],["citation","查收查引","引",false],["fees","图书馆缴费","¥",false],
 		["recovery","022恢复申请","PASS",recovery_open],["return","返回现场","↗",b.s.ui.libraryFinalsPhase!="idle"]]
+	if b.s.ui.libraryFinalsPuzzle.archivedRuleCollected: apps.append(["rule","旧版离座规则","规",true])
 	for i in range(apps.size()):
 		var app: Array=apps[i]; var point=Vector2(23+(i%4)*83,149+int(i/4)*79)
 		if not app[3]: b._label(inner,"xxx",Rect2(point,Vector2(75,71)),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER).name="LibraryLocked_"+app[0]; continue
@@ -114,6 +116,7 @@ func home(b) -> Control:
 				"reserve": goto(b,"spaces")
 				"recovery": open_recovery(b)
 				"return": b.action_requested.emit("lib_enter",null)
+				"rule": b.action_requested.emit("lib_open_rule",null)
 		var target: Button=b._button(inner,"",Rect2(point,Vector2(75,71)),open_app,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 		target.name="LibraryApp_"+app[0]
 		b._panel(target,Rect2(15,0,46,46),Color("0f66b7"),Color("073f7c"),0,3)
@@ -154,9 +157,8 @@ func enter_room(b, room: String) -> void:
 
 func spaces(b) -> Control:
 	var root=base(b,"图书馆空间预约...",func(): goto(b,"home"))
-	# This source page explicitly uses the platform sans-serif stack, unlike the pixel apps.
-	var sans=SystemFont.new(); sans.font_names=PackedStringArray(["PingFang SC","Microsoft YaHei","Noto Sans CJK SC","sans-serif"]); sans.fallbacks=[load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")]
-	var page_theme=Theme.new(); page_theme.default_font=sans; root.theme=page_theme
+	# Keep this page's sans-serif role deterministic on native and Web.
+	var page_theme=Theme.new(); page_theme.default_font=Typography.body_font(); root.theme=page_theme
 	var width=25 if rail_collapsed else 48
 	var rail_background: Panel=b._panel(root,Rect2(0,54,width,b.APP_HEIGHT-114),Color("061a49"))
 	var rail: Button=b._button(root,"»\n\n座\n位\n预\n约" if not rail_collapsed else "»",Rect2(0,61,width,265),func(): rail_collapsed=not rail_collapsed; refresh(b),Color.TRANSPARENT,Color.WHITE,0,Color.TRANSPARENT); rail.name="LibraryReservationRail"
@@ -190,6 +192,7 @@ func spaces(b) -> Control:
 	b._label(inner,"没有更多了" if not available_rooms.is_empty() else "该馆暂未开放可预约空间",Rect2(left,y,working_width,46),14,Color("999999"),HORIZONTAL_ALIGNMENT_CENTER)
 	bottom_nav(b,root,true)
 	if not sheet.is_empty(): add_sheet(b,root)
+	Typography.apply_body_text_tree(root)
 	return root
 
 func seat_count(b) -> int:

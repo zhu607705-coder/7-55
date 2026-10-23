@@ -13,16 +13,20 @@ class Surface extends Control:
 	var center:=Vector2(750,450)
 	var magnify: float=1
 	var actor:=Vector2(600,370)
+	var door: RefCounted
 	func _draw() -> void:
 		var origin: Vector2=size/2-center*magnify
 		draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
 		draw_texture_rect(layer.art,Rect2(origin,Vector2(1500,900)*magnify),false)
 		var ctx: Dictionary={"origin":origin,"zoom":magnify,"player":actor,"scene_id":"library_interior"}
 		layer.draw_back(self,ctx,state)
+		if door!=null:
+			door.sync(state); door.draw(self,ctx,false)
 		# Source-sized actor drawn between background and foreground prop passes.
 		var visual: Rect2=PlayerMetrics.visual_rect(actor)
 		draw_texture_rect(actor_texture,Rect2(origin+visual.position*magnify,visual.size*magnify),false)
 		layer.draw_front(self,ctx,state)
+		if door!=null: door.draw(self,ctx,true)
 func check(ok: bool,label: String) -> void:
 	checks+=1
 	if not ok: failures+=1; push_error(label)
@@ -120,19 +124,43 @@ func capture_gallery() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(directory))
 	root.size=Vector2i(960,540)
 	var view:=Surface.new(); view.size=Vector2(960,540); view.layer=layer; root.add_child(view)
-	for mode: String in ["shelf_idle","shelf_shake","shelf_shifted","shelf_paper","shelf_complete","shelf_actor_front","backpack_occupied","backpack_shaking","backpack_removed","front_desk_idle","front_desk_checking","front_desk_stamping"]:
+	var entrance: RefCounted=load("res://scripts/presentation/library_entrance_door.gd").new()
+	var modes: Array=["shelf_idle","shelf_shake","shelf_shifted","shelf_paper","shelf_complete","shelf_actor_front","backpack_occupied","backpack_note_visible","backpack_note_collected","backpack_shaking","backpack_removed","front_desk_idle","front_desk_checking","front_desk_stamping","catalog_devices","catalog_actor_back","catalog_actor_front","printer_actor_back","printer_actor_front","entrance_closed","entrance_open","entrance_half"]
+	var requested: String=OS.get_environment("LIBRARY_CAPTURE_MODES")
+	if not requested.is_empty(): modes=modes.filter(func(mode: String) -> bool: return mode in requested.split(","))
+	for mode: String in modes:
 		s=fresh(); view.state=s; layer.sync(s); view.center=Vector2(570,190); view.magnify=2.0; view.actor=Vector2(600,260)
+		view.door=null
 		if mode.begins_with("shelf") and mode!="shelf_idle":
 			s.ui.libraryFinalsPuzzle.archivedRuleCollected=true; layer.sync(s)
 			advance(255 if mode=="shelf_shake" else 2105 if mode=="shelf_shifted" else 2300 if mode=="shelf_paper" else 3000)
 		if mode=="shelf_actor_front": view.actor=Vector2(583,220)
 		if mode.begins_with("backpack"):
 			view.center=Vector2(1255,407); view.magnify=3.0; view.actor=Vector2(1320,500)
-			if mode!="backpack_occupied": s.ui.libraryFinalsPuzzle.backpackEvicted=true; layer.sync(s); advance(350 if mode=="backpack_shaking" else 4360)
+			if mode in ["backpack_note_visible","backpack_note_collected"]:
+				s.ui.libraryFinalsPuzzle.backpackInspected=true
+				s.ui.libraryFinalsPuzzle.occupancyNoteCollected=mode=="backpack_note_collected"
+				layer.sync(s,true)
+			elif mode!="backpack_occupied":
+				s.ui.libraryFinalsPuzzle.backpackInspected=true; s.ui.libraryFinalsPuzzle.occupancyNoteCollected=true
+				s.ui.libraryFinalsPuzzle.backpackEvicted=true; layer.sync(s); advance(350 if mode=="backpack_shaking" else 4360)
 		if mode.begins_with("front_desk"):
 			view.center=Vector2(334,587); view.magnify=2.4; view.actor=Vector2(440,680)
 			if mode=="front_desk_checking": s.ui.libraryFinalsPuzzle.lostFoundStage="scanning"; layer.sync(s); advance(360)
 			if mode=="front_desk_stamping": s.ui.libraryFinalsPuzzle.nonPersonProofStamped=true; s.ui.libraryFinalsPuzzle.lostFoundStage="stamped"; layer.sync(s); advance(120)
+		if mode.begins_with("catalog") or mode.begins_with("printer"):
+			view.center=Vector2(750,575); view.magnify=2; view.actor=Vector2(760,680)
+			if mode=="catalog_actor_back": view.actor=Vector2(600,580)
+			if mode=="catalog_actor_front": view.actor=Vector2(663,623)
+			if mode=="printer_actor_back": view.actor=Vector2(878,560)
+			if mode=="printer_actor_front": view.actor=Vector2(827,591)
+		if mode.begins_with("entrance"):
+			view.center=Vector2(750,742); view.magnify=1.65; view.actor=Vector2(715,790)
+			s.native.player={"x":view.actor.x,"y":view.actor.y,"scene":"library_interior"}
+			s.ui.libraryFinalsPuzzle.entranceRecordRead=mode!="entrance_closed"
+			entrance.sync(s,true)
+			if mode=="entrance_half": entrance.progress=.5
+			view.door=entrance
 		view.queue_redraw(); await process_frame; await RenderingServer.frame_post_draw
 		var path: String=directory+"/"+mode+".png"; root.get_texture().get_image().save_png(path); print("CAPTURE ",ProjectSettings.globalize_path(path))
 	view.queue_free(); await process_frame
@@ -148,6 +176,9 @@ func test_native_world_integration() -> void:
 	await process_frame; await process_frame
 	var world: Control=shell.world; world.set_process(false)
 	check(world.library_layers!=null and world.library_layers.shelf_offset==0,"live world initializes exact library layer")
+	if world.library_layers.rebuild.ready:
+		check(world.background==world.library_layers.rebuild.clean_plate,"live world base is the validated clean plate before wash, route, actor and door passes")
+		check(world.library_layers.rebuild.snapshot().fallback=="","live library uses every generated prop with no fallback")
 	# Isolate the source cabinet footprint to demonstrate actual foot collision.
 	var original: Array=world.collisions.duplicate(true)
 	world.collisions=[{"id":"north_display_shelf","left":502,"top":108,"right":625,"bottom":234}]

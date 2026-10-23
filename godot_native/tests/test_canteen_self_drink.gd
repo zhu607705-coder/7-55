@@ -136,9 +136,9 @@ func run() -> void:
 	check(not slot("badDrink").disabled,"closing modal restores inventory input")
 	# Reserved mobile HUD remains non-world input, even inside source circle.
 	var original_player:Vector2=shell.world.player
-	var control:Vector2=shell.world.mobile_control_metrics().interact.get_center()
+	var control:Vector2=shell.world.mobile_control_metrics().mode.get_center()
 	shell.world.player=(control-shell.world.size/2)/shell.world.zoom+shell.world.camera+Vector2(0,24)
-	shell.world._drop_data(control,{"kind":"inventory_item","item":"badDrink"});assert_unchanged(before,"mobile control ownership")
+	shell.world._drop_data(control,{"kind":"inventory_item","item":"badDrink"});assert_unchanged(before,"visible mode control owns input over the source self-use circle")
 	shell.world.player=original_player
 	# Other scenes cannot route the canteen-specific adapter.
 	var original_scene:String=shell.world.scene_id;shell.world.scene_id="library_interior"

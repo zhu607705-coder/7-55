@@ -1,0 +1,1155 @@
+{
+  "schema": "755-liangzhu-cinematic-production-plan-v2",
+  "date": "2026-10-21",
+  "status": "54-second/1620-frame native production specification with v2 passive previews bound to fixedpresenter685eed70. Three-scene originaltext/fineassets shared; browser/player QTE and later singing integration require separate acceptance.",
+  "scope": {
+    "reference": "The two documented official/public stage-reference originals were actually viewed for furniture, costume silhouettes and depth layering. Final generic performers/set are newly generated/redesigned, not reference-photo cutouts or a reconstruction of the ZJU performance.",
+    "actors": "Two newly authored fictional stage performers with generic illustrated faces and original costume/detail designs. They do not replace the existing player; no reference face tracing was performed by this derivation.",
+    "story": "Original Liangzhu narrative text is now integrated in data/native/liangzhu-performance.content.json. These captions/dialogue belong to the optional stage presentation; evidence, items, controller progression and puzzle completion remain separate authorities. Passive viewing never records player QTE success or gameplay completion.",
+    "productChangesThisTask": "This subtask owns art normalization/audit and offline capture tools. Presenter, StagePlate, Main/UI, model and original content are integrated by the cooperating owners. Source-art approval does not constitute browser/release acceptance."
+  },
+  "policy": {
+    "ART_BIBLE": {
+      "path": "docs/art/ART_BIBLE.md",
+      "sha256": "97e392479952042e4dd96125a8885cf70e1b4e5ae02e3a1a0f99408664a62990"
+    },
+    "config": {
+      "path": "docs/art/art_direction_v1.json",
+      "sha256": "ec20fa4bb6440a4926cd9b7a9f4fda320bd4951c387c962aab333af364034e8f",
+      "version": "1.1.0"
+    },
+    "paletteName": "755-campus-morning-32",
+    "colors": [
+      "202B35",
+      "344452",
+      "526B7A",
+      "7993A1",
+      "A9BCC2",
+      "D8C7A0",
+      "F4EAD5",
+      "FFF0B2",
+      "44332D",
+      "70503B",
+      "A1744E",
+      "C79B62",
+      "766E63",
+      "A39B87",
+      "C5C1A9",
+      "E8E0C8",
+      "243F5A",
+      "385B79",
+      "547F9D",
+      "83A7B6",
+      "2D443E",
+      "49634A",
+      "72865C",
+      "A9B577",
+      "6F483E",
+      "A76A4C",
+      "D89C6A",
+      "F0C895",
+      "9A514A",
+      "C77964",
+      "D3A451",
+      "F4CD77"
+    ],
+    "projection": "Retain the oblique orthographic campus grammar: visible stage floor, upright figures, parallel stage/floor edges, no vanishing point or isometric diamond. This miniature performance is not a replacement theater world map.",
+    "sourceGridOrigin": [
+      0,
+      0
+    ],
+    "tileLogical": [
+      16,
+      16
+    ],
+    "paletteAndAlpha": "32 fixed RGB colors; each fine performer uses at most24 of them, full stage at most32. Opaque/silhouette artwork uses binary alpha. Any translucent effect explicitly declares0/85/170/255; composition must be rechecked because alpha blending can create off-palette RGB.",
+    "normalMapRule": "Sprite Normals outputs linear direction data, not pixelization or grid repair. It is not required for this cutscene and is not enabled in the existing material pipeline.",
+    "nativeExportScale": 1,
+    "finePixelsPerCompositionUnit": 5,
+    "nativeRasterGrid": [
+      1,
+      1
+    ],
+    "fineTilePixels": [
+      80,
+      80
+    ],
+    "fineRasterMeaning": "Native1200×675 art has newly authored fine detail. --scale=1 checks source-pixel dimensions/palette only; no uniform5×5 block requirement and no claim of correct pixel clustering from a one-pixel grid."
+  },
+  "fixedAssetContract": {
+    "confirmedByRoot": true,
+    "logicalStage": [
+      240,
+      135
+    ],
+    "sourceStage": [
+      1200,
+      675
+    ],
+    "aspect": [
+      16,
+      9
+    ],
+    "gridBoundary": "Stage composition follows16-unit modules (80 native fine pixels). Canvas is15 modules wide and8 modules plus7 composition units high; bottom35 fine pixels are a documented outer composition boundary. These modules do not require solid5×5 color blocks. Source raster is authored directly at1200×675.",
+    "stageOrigin": [
+      0,
+      0
+    ],
+    "requiredAssets": [
+      {
+        "role": "stage",
+        "format": "PNG opaque color artwork",
+        "sourceDimensions": [
+          1200,
+          675
+        ],
+        "logicalDimensions": [
+          240,
+          135
+        ],
+        "notes": "Newly authored native fine detail, coherent stage-floor/backdrop projection, no photographic people or baked text. No240×135 intermediate enlarged5×. Final approved path/hash supplied by art owner.",
+        "colorBudget": 32,
+        "auditProfile": "fineStage",
+        "auditScale": 1
+      },
+      {
+        "role": "actors",
+        "format": "PNG RGBA, binary alpha",
+        "sourceDimensions": [
+          480,
+          320
+        ],
+        "columns": 4,
+        "rows": 2,
+        "sourceCell": [
+          120,
+          160
+        ],
+        "logicalCell": [
+          24,
+          32
+        ],
+        "totalFrames": 8,
+        "row0": "blue-costume performer: neutral, misstep, raised fan, bow",
+        "row1": "rose-costume performer: neutral, misstep, raised fan, bow",
+        "visibleBodyTarget": [
+          16,
+          28
+        ],
+        "headTarget": [
+          12,
+          9
+        ],
+        "proposedCellFootAnchor": [
+          12,
+          30
+        ],
+        "notes": "One sheet has8 whole drawings total:4 poses per performer in4columns×2rows. New120×160 cells preserve24×32 composition proportions and add fine folds/embroidery/silhouette detail. Check foot anchor and anatomy against actual drawings before freeze. Not a replacement of existing96×128 player runtime frames.",
+        "visibleBodyTargetNative": [
+          80,
+          140
+        ],
+        "headTargetNative": [
+          60,
+          45
+        ],
+        "outlineNativePixels": 1,
+        "proposedCellFootAnchorNative": [
+          60,
+          150
+        ],
+        "colorBudgetPerFrame": 24,
+        "auditProfilePerExtractedCell": "fineCharacter",
+        "auditScale": 1
+      }
+    ],
+    "futureOptionalLayers": [
+      {
+        "role": "separate fans",
+        "logicalCell": [
+          16,
+          16
+        ],
+        "frames": 4,
+        "sourceAtlas": [
+          320,
+          80
+        ],
+        "layout": "4columns×1row of80×80 native fine cells",
+        "notes": "Optional; initial four whole-actor poses may already include their held fan. Do not double-draw it. Independent fan anchors must match the same hand pixel in both render paths.",
+        "sourceCell": [
+          80,
+          80
+        ]
+      },
+      {
+        "role": "butterfly",
+        "logicalCell": [
+          16,
+          16
+        ],
+        "framesMax": 8,
+        "sourceAtlasMax": [
+          640,
+          80
+        ],
+        "colorBudget": 4,
+        "notes": "Distinct silhouette/wing poses, not bloom dots. If initial presenter draws an authored pixel mask procedurally, retain that same pattern in the canonical native frame export.",
+        "sourceCell": [
+          80,
+          80
+        ]
+      },
+      {
+        "role": "curtains and front trim",
+        "logicalBounds": [
+          240,
+          135
+        ],
+        "sourceBounds": [
+          1200,
+          675
+        ],
+        "notes": "Use aligned source crops or separate transparent pieces; foreground occludes performers and light. Avoid generating a huge multi-frame full-canvas atlas. Optional layers are not required inputs to the initial stage+actors setup."
+      }
+    ],
+    "technicalLimits": "Current proposed stage1200×675, actors480×320 and optional effect strips<=640×80 fit within2048 per dimension. Actual dimensions/alpha/frame boundaries and detail must be inspected after generation. No placeholder is accepted artwork.",
+    "finePixelsPerCompositionUnit": 5,
+    "motionQuantumCompositionUnits": 0.2
+  },
+  "composition": {
+    "nativeLayerOrder": [
+      "opaque stage/backdrop",
+      "rear curtain or scenery if any",
+      "performers ordered by measured foot-baseline",
+      "fan attachment or whole-pose fan, exactly once",
+      "butterfly/effect silhouettes",
+      "front curtain and stage rail",
+      "native readable caption/pause/skip controls outside low-resolution art"
+    ],
+    "darkScene": "Keep floor and costume silhouettes readable with blue-gray shadows. Faces receive no spotlight, white flare, glow halo or isolated rim. Costume/wing accents can be the visual peak; face pixels stay below it.",
+    "pixelLighting": "Use authored palette ramps and discrete painted light states. Avoid additive light, soft blur and continuous color lerp that invent off-palette intermediate colors. Prefer binary-alpha palette variants for canonical exact32-color composite; review any4-level-alpha effect separately.",
+    "animation": "Discrete whole-pose selection and position quantized to0.2 composition units (one native fine pixel). Do not rotate, stretch or elastically grid-snap a finished atlas to fabricate missing poses. Curtain/butterfly tracks remain presentation only.",
+    "audio": "No audio track is currently connected or captured. The content delivery values spoken/original-sung are authored delivery labels only, not generated voices, recorded singing or lip sync. MP4/WebM templates explicitly use-an. Actual voice/audio generation and synchronization have not been accepted."
+  },
+  "timelineAndModel": {
+    "durationMs": 54000,
+    "captureFps": 30,
+    "canonicalFrames": 1620,
+    "modelOwner": "Cooperating model/content, presenter and rig owners. Modelaa018344, rigf411eef6 and StagePlate6fc09e64 unchanged; presenter final685eed70 contains emulatedmouse input deduplication and bounded Help menu. v2 GPU capture records full exactsource SHA.",
+    "pureModelContract": "LiangzhuPerformanceModel.pose_at(ms: float, reduced: bool=false) -> Dictionary; arbitrary seek does not submit a domain action or finish playback",
+    "presenterContract": "Control.setup({read_state: Callable, playback_mode: passive, allow_placeholder: false}) -> bool, with actual stage/actors/furniture assets; render_at(ms) seeks the same production draw path without advancing runtime time.",
+    "captureContract": "render_at(ms: float) sets only the stageCanvas pure pose override; stage_texture() returns the native1200×675 SubViewportTexture directly, with240×135 layout units and fine density5. Capture-only use requires no input host.",
+    "stateContext": "Parent explicitly selected a deep-readonly minimal theater-admitted presentation context in a temporary no-autoload project. It is not a save, is not submitted through Main/State, and makes no claim of earned gameplay admission. No game user storage is opened or written.",
+    "clock": "Default passive capture samples i=0..1619 at t_ms=i*1000/30, covering the54-second logical presentation. The implementation derives ceil(Model.DURATION_MS*30/1000) from the frozen model; it never substitutes wall-clock time or submits QTE results.",
+    "lifecycle": "Pause, reduced motion, tab hiding, close/unmount and scene exit leave a valid static frame and stop presentation resources. No partially played animation resumes as story progress.",
+    "motionQuantumCompositionUnits": 0.2,
+    "interactiveBoundary": "Interactive mode can wait, fail or retry at the authored QTEs and therefore need not finish in54 wall-clock seconds. Passive capture is explicitly labelled viewing and cannot stand in for an interactive successful playthrough.",
+    "content": {
+      "file": "data/native/liangzhu-performance.content.json",
+      "sha256": "4037d19f777feba8bfaacb53a7293ea459c41d92b16f199620d0d35fc34dd45b",
+      "durationMs": 54000,
+      "scenes": [
+        {
+          "id": "study-farewell",
+          "title": "同窗 · 相送",
+          "startMs": 0,
+          "endMs": 20000
+        },
+        {
+          "id": "chamber-meeting",
+          "title": "楼台会",
+          "startMs": 20000,
+          "endMs": 38000
+        },
+        {
+          "id": "grave-butterflies",
+          "title": "后来 · 化蝶",
+          "startMs": 38000,
+          "endMs": 54000
+        }
+      ],
+      "cueCount": 15,
+      "deliveryCounts": {
+        "caption": 6,
+        "original-sung": 4,
+        "spoken": 5
+      },
+      "textIdentity": "Original condensed adaptation of the Liangzhu folk story, as identified by the authored content metadata; not a transcript of a real troupe performance or a claim of quoting modern canonical lyrics.",
+      "audioTrackPresent": false,
+      "audioTiming": "User selected playable QTE first and singing/audio integration later. No generated/recorded voice or soundtrack is connected. The54-second script/animation clock is authored timing, not a synchronized sung performance."
+    },
+    "modelFeetFreezeSha256": "aa0183449b3f70c8c5ab0433c315c1020f97564a8024e8381e0d2aef34164f23"
+  },
+  "captureHarnessPlan": {
+    "status": "Complete v2 actual1620-frame passive recapture on fixed presenter685eed70; silentMP4/WebM verified1280x720/30fps/54s. Seven raw+two-codec cues reviewed; interactive/browser acceptance remains separate.",
+    "plannedHarnessName": "tools/capture_liangzhu_performance.gd (manual GPU only, outside automatic test naming); tools/capture_liangzhu_performance.mjs creates the minimal project",
+    "isolation": "Runner creates a disposable project with no Main scene and no autoload entries, shares completed imported textures, and supplies only immutable presentation context. GDScript rejects any autoload configuration. It does not instantiate State or access game user saves. No editor import/export is performed.",
+    "steps": [
+      "Final model/content/StagePlate/presenter freeze and lead seven-cue approval are recorded. Full capture actually used the production presenter in a temporary no-autoload project with deep-readonly context, actual generated assets, allow_placeholder:false and playback_mode:passive.",
+      "At each exact model timestamp call render_at, await frame_post_draw and retrieve native stage_texture1200×675. In --presentation-frame mode also read the actual rootViewport1280×720 image, including the same presenter title/caption; do not draw a second subtitle layer.",
+      "Sample mode saves actual full-view cue PNGs and matching1200×675 stage_oracle PNGs. Full mode saves1620 full-view PNGs at30fps for the frozen54second model, plus per-frame native-stage/raw output pixel hashes, actual caption/cue/scene text and bone/socket data.",
+      "Require zero runtime clock advance, QTE completions/results, closed signals or readonly-context mutation; no State/Main/game save exists in the project.",
+      "After lead approval encode MP4 and WebM directly from the1280×720 full-view PNGs without scaling/cropping. Stage-oracle PNGs remain native fine-art pixel truth; compressed movies are separate viewing artifacts."
+    ],
+    "reasonForSubViewportCapture": "The production native stage_texture is1200×675 and is the fine-art pixel oracle. --presentation-frame reads the actual rootViewport1280×720 at the same GPU frame, including the real title/caption controls. Both readback sizes are asserted; no coarse intermediate, crop or nonuniform resize is accepted.",
+    "commandTemplate": {
+      "status": "v2 full capture, both encodes and full-frame-count ffprobe actually executed successfully; oldv1 directories/reports unchanged.",
+      "Godot": [
+        "/Applications/Godot.app/Contents/MacOS/Godot",
+        "--path",
+        "<temporary-no-autoload-project-created-by-runner>",
+        "--rendering-method",
+        "gl_compatibility",
+        "--audio-driver",
+        "Dummy",
+        "--fixed-fps",
+        "30",
+        "--script",
+        "res://tools/capture_liangzhu_performance.gd",
+        "--",
+        "--output=<new-absolute-capture-directory>",
+        "--samples",
+        "--presentation-frame"
+      ],
+      "MP4": [
+        "/tmp/codex-755-tools/bin/ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-framerate",
+        "30",
+        "-start_number",
+        "0",
+        "-i",
+        "<capture-directory>/frame_%06d.png",
+        "-frames:v",
+        "1620",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "-crf",
+        "18",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        "-an",
+        "<output>/liangzhu_preview.mp4"
+      ],
+      "WebM": [
+        "/tmp/codex-755-tools/bin/ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-framerate",
+        "30",
+        "-start_number",
+        "0",
+        "-i",
+        "<capture-directory>/frame_%06d.png",
+        "-frames:v",
+        "1620",
+        "-c:v",
+        "libvpx-vp9",
+        "-crf",
+        "24",
+        "-b:v",
+        "0",
+        "-row-mt",
+        "1",
+        "-pix_fmt",
+        "yuv420p",
+        "-an",
+        "<output>/liangzhu_preview.webm"
+      ],
+      "ffprobe": [
+        "/tmp/codex-755-tools/bin/ffprobe",
+        "-v",
+        "error",
+        "-count_frames",
+        "-show_entries",
+        "stream=codec_name,width,height,avg_frame_rate,nb_read_frames:format=duration",
+        "-of",
+        "json",
+        "<output>/liangzhu_preview.mp4"
+      ],
+      "NodeSamples": [
+        "/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+        "godot_native/tools/capture_liangzhu_performance.mjs",
+        "--output=<new-absolute-samples-directory>",
+        "--presentation-frame"
+      ],
+      "NodeFull": [
+        "/tmp/codex-755-tools/node-v22.23.3-darwin-arm64/bin/node",
+        "godot_native/tools/capture_liangzhu_performance.mjs",
+        "--output=<new-absolute-full-frames-directory>",
+        "--presentation-frame",
+        "--full"
+      ]
+    },
+    "codecBoundary": "Final MP4/WebM are actual passive presenter1280x720 views including native dialogue/title, encoded directly without resize/crop. Both are lossy/chroma-subsampled viewing artifacts, not exact32-color pixel oracles. Native1200x675 stage PNGs/raw hashes remain art truth. Both movies are silent and were fully decoded for1620-frame metadata verification.",
+    "GodotVideoBoundary": "Native VideoStreamPlayer supportsOGV/Theora by default; MP4/WebM require a separately supported extension/path. Initial Godot delivery should render these same layers natively, not claim direct MP4/WebM support. Existing project OGV conversion is a separate option, not a required second rendering authority.",
+    "nativeFrameDimensions": [
+      1200,
+      675
+    ],
+    "MP4ViewingDimensions": [
+      1280,
+      720
+    ],
+    "verificationRequired": {
+      "MP4": {
+        "dimensions": [
+          1280,
+          720
+        ],
+        "fps": 30,
+        "decodedFrames": 1620,
+        "durationSeconds": 54
+      },
+      "WebM": {
+        "dimensions": [
+          1280,
+          720
+        ],
+        "fps": 30,
+        "decodedFrames": 1620,
+        "durationSeconds": 54
+      },
+      "rawStageSamplePNG": {
+        "dimensions": [
+          1200,
+          675
+        ],
+        "pixelOracle": true
+      },
+      "status": "v2 movies verified1280x720/30fps/1620frames/54seconds/zeroaudio. Seven timestamps reviewed in raw/MP4/WebM contacts plus29s originals. This is passive preview acceptance, not successful QTE/browser acceptance."
+    },
+    "sampleCueTimesMs": [
+      0,
+      6000,
+      15000,
+      29000,
+      42000,
+      48000,
+      52000
+    ],
+    "runnerSha256": "cdfdf60d648381a91c850f521678bf939e801b6eecd68f6e08c2da42106e6fea",
+    "harnessSha256": "84d2d7f93ba9436f2d4443fbf69f25948900f82aafa2af2a2c153e7d14824c1c",
+    "actualSampleCapture": {
+      "receipt": "exports/verification/liangzhu_performance_20261021/native-final-seven-cues/capture.json",
+      "sha256": "6b7073253ca9002399caf332e9df96d60095b275f55c5fe0fc9e18dc7d7da887",
+      "visualReview": "exports/verification/liangzhu_performance_20261021/native-final-seven-cues/visual-review.json",
+      "reviewSha256": "598eb13131c09a8871f36b2486c248d9a256a442990e8cb268391f1dc4558dc6",
+      "frames": 7,
+      "timestampsMs": [
+        0.0,
+        6000.0,
+        15000.0,
+        29000.0,
+        42000.0,
+        48000.0,
+        52000.0
+      ],
+      "presentationDimensions": [
+        1280,
+        720
+      ],
+      "nativeStageOracleDimensions": [
+        1200,
+        675
+      ],
+      "sameProductionDrawPath": true,
+      "rawPixelHashes": true,
+      "playbackMode": "passive",
+      "actualTitleText": "梁祝 · 扇影 · 观看",
+      "qteResults": [],
+      "qteCompletions": [],
+      "gameSaveAccess": false,
+      "subagentActuallyViewedAll14PNGsAndContact": true,
+      "rootActuallyViewedAndAccepted": true,
+      "finding": "Study and chamber feet90 layering correct at sampled6s/29s; furniture/fan/butterflies and real title/captions contained. No blocking visual issue found in sampled poses.",
+      "sourceFingerprintsRecordedInReceipt": true,
+      "scope": "Seven frozen-source native cues; not full movie, player completion or browser acceptance."
+    },
+    "currentFullFrameCountContract": "ceil(Model.DURATION_MS*30/1000); current54000ms source gives1620, sampled from0 to53966.666667ms. Final model/content/renderer identity and lead approval remain required.",
+    "relatedSpacePlan": {
+      "file": "docs/LIANGZHU_STAGE_SPACE_PLAN_20261021.json",
+      "sha256": "1bb6821b111ade9acc0bef3a5670203f6fb01bf32e1ee53cd75f6c59a990670c",
+      "status": "Independent props/metadata are integrated in shared StagePlate. Root accepted central table/chair foot-depth composition at6seconds and seven-cue contact/29s original after feet90; left-wing rehearsal constraints preserved. Actual browser UI remains separate."
+    },
+    "activeFinalDelivery": {
+      "playbackMode": "passive",
+      "presentationFrame": [
+        1280,
+        720
+      ],
+      "fps": 30,
+      "durationMs": 54000,
+      "frames": 1620,
+      "captions": "Real presenter title/caption after render_at, in the same GPU view; no invented postproduction subtitles",
+      "nativeArtOracle": [
+        1200,
+        675
+      ],
+      "oracleMethod": "Presentation sample mode also saves native stage_oracle PNGs at identical timestamps. Full output retains native-stage raw-pixel hashes per frame.",
+      "QTEBoundary": "Explicit viewing mode, zero QTE results/completions; this film cannot stand in for interactive success.",
+      "status": "v2 fixed-source passive previews recaptured/encoded complete. Current browser/player QTE acceptance and later singing/voice integration remain separate."
+    },
+    "earlierVisualDiagnosticReports": {
+      "status": "Archived visual-only investigations; do not inherit their scope as current script/UI/movie/browser acceptance. Raw reports remain unchanged.",
+      "files": [
+        "exports/verification/liangzhu_performance_20261021/native-five-cues-v1/visual-review.json",
+        "exports/verification/liangzhu_performance_20261021/native-five-cues-v2/visual-review.json",
+        "exports/verification/liangzhu_performance_20261021/native-fold-cue-v2/capture.json",
+        "exports/verification/liangzhu_performance_20261021/native-study-6s-v3/capture.json"
+      ]
+    },
+    "WebMViewingDimensions": [
+      1280,
+      720
+    ],
+    "earlierSixSecondPreflight": {
+      "receipt": "exports/verification/liangzhu_performance_20261021/native-study-6s-v4/capture.json",
+      "sha256": "fa98ca818235972b95c9f0dbbeecedcb1fcc9b33664e9ce7dd53cee06c6476cd",
+      "visualReview": "exports/verification/liangzhu_performance_20261021/native-study-6s-v4/visual-review.json",
+      "reviewSha256": "2e75861c4e4dab7e3044284ec5b996e1a6c550fadb4ea62d4ae9c379b75d6c9f",
+      "timestampMs": 6000,
+      "frames": 1,
+      "presentationDimensions": [
+        1280,
+        720
+      ],
+      "nativeStageOracleDimensions": [
+        1200,
+        675
+      ],
+      "sameProductionDrawPath": true,
+      "rawPixelHashes": true,
+      "playbackMode": "passive",
+      "actualTitleText": "梁祝 · 扇影 · 观看",
+      "actualCaptionText": "祝英台：书上能读，心里未必。",
+      "qteResults": [],
+      "qteCompletions": [],
+      "gameSaveAccess": false,
+      "rootActuallyViewedAndAccepted": true,
+      "finding": "feet90 positions both standing performers in front of the chair backs. Faces/chest/sleeves remain visible; table still occludes the lower body correctly. No seated cel was fabricated.",
+      "sourceFingerprintsRecordedInReceipt": true,
+      "scope": "Single current cue preflight, not full movie/browser acceptance."
+    },
+    "actualFullCapture": {
+      "capture": {
+        "file": "exports/verification/liangzhu_performance_20261021/native-v2-full-frames/capture.json",
+        "sha256": "57b954eaacfdf9ebc99d32d1d163dcba322663ea614baee5e2bf4b9f40fd9949"
+      },
+      "movieReview": {
+        "file": "exports/review/liangzhu-performance-v2-20261021/review.json",
+        "sha256": "21c096a2536b2587315403160cd4088607500cbe4182f4accca9cf1b5352c6f8"
+      },
+      "frames": 1620,
+      "presentationDimensions": [
+        1280,
+        720
+      ],
+      "nativeStageDimensions": [
+        1200,
+        675
+      ],
+      "durationMs": 54000,
+      "fps": 30,
+      "allPNGsRehashed": true,
+      "zeroQTE": true,
+      "zeroClockAdvance": true,
+      "gameSaveAccess": false,
+      "actualPauseAction": "暂停",
+      "presenterSha256": "685eed70ada3372156724e154c45fa675a1179f46e5d737d313fd9480bca054e",
+      "movies": [
+        {
+          "file": "liangzhu_preview.mp4",
+          "sha256": "8da469325db95cff9ff7f41c9a94754f6310969e7af89df0a7eea4d5369b896b",
+          "bytes": 3616525,
+          "codec": "h264",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "fps": 30,
+          "decodedFrames": 1620,
+          "durationSeconds": 54,
+          "audioStreams": 0,
+          "ffprobe": {
+            "file": "exports/verification/liangzhu_performance_20261021/encoded-review-v2/mp4-ffprobe.json",
+            "sha256": "07abaea117e2fc579acd2661392e3c501c9e4f27623d61e4f8432cfed4924ccd"
+          }
+        },
+        {
+          "file": "liangzhu_preview.webm",
+          "sha256": "bfd98a2f97e9050fcebb87555003bef7fd6fd5a0cda0070fc6c1fa2330c443be",
+          "bytes": 4562205,
+          "codec": "vp9",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "fps": 30,
+          "decodedFrames": 1620,
+          "durationSeconds": 54,
+          "audioStreams": 0,
+          "ffprobe": {
+            "file": "exports/verification/liangzhu_performance_20261021/encoded-review-v2/webm-ffprobe.json",
+            "sha256": "2406bf3140ae81688583815add795988a7688222301f7e3140ae8b230bd16dde"
+          }
+        }
+      ]
+    },
+    "offlineFocusPreflight": {
+      "capture": {
+        "file": "exports/verification/liangzhu_performance_20261021/native-pause-action-preflight/capture.json",
+        "sha256": "5de98f60e0cc00eda0c4d7799245c8b3abee21fc930f216c0b54bfed3cb6b694"
+      },
+      "visualReview": {
+        "file": "exports/verification/liangzhu_performance_20261021/native-pause-action-preflight/visual-review.json",
+        "sha256": "3ed3c73da5c9c8dd627d3741678d0a33ea72961c073cda888f036b5e2e56b855"
+      },
+      "method": "Only isolated passive presenter.resume() before each render_at. Root had observed NO_FOCUS-induced继续 toolbar in old sample; production source was not changed. Native29s stage raw pixels identical before/after."
+    },
+    "earlierV1FullCapture": {
+      "capture": {
+        "file": "exports/verification/liangzhu_performance_20261021/native-final-full-frames/capture.json",
+        "sha256": "212a9028036953f11e526decc46db3e0a351cc469e171a7933744f9552a159bd"
+      },
+      "movieReview": {
+        "file": "exports/review/liangzhu-performance-20261021/review.json",
+        "sha256": "22bd58ac8a3ff7d0372deb507b962e27ecbc699fe0b9d2e3f0840b0590c54569"
+      },
+      "frames": 1620,
+      "presentationDimensions": [
+        1280,
+        720
+      ],
+      "nativeStageDimensions": [
+        1200,
+        675
+      ],
+      "durationMs": 54000,
+      "fps": 30,
+      "allPNGsRehashed": true,
+      "zeroQTE": true,
+      "zeroClockAdvance": true,
+      "gameSaveAccess": false,
+      "actualPauseAction": "暂停",
+      "movies": [
+        {
+          "file": "liangzhu_preview.mp4",
+          "sha256": "8da469325db95cff9ff7f41c9a94754f6310969e7af89df0a7eea4d5369b896b",
+          "bytes": 3616525,
+          "codec": "h264",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "fps": 30,
+          "decodedFrames": 1620,
+          "durationSeconds": 54.0,
+          "audioStreams": 0,
+          "ffprobe": {
+            "file": "exports/verification/liangzhu_performance_20261021/encoded-review/mp4-ffprobe.json",
+            "sha256": "ce695fe81a6426a669c3d7cdb3ed5cafe8875f6307e2cf2f5d6d96db50f15bd1"
+          }
+        },
+        {
+          "file": "liangzhu_preview.webm",
+          "sha256": "d5409afd7550856d4b9202f97d4118a2e43ad9644b95c678fa7fe1985bc3f7c0",
+          "bytes": 4562205,
+          "codec": "vp9",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "fps": 30,
+          "decodedFrames": 1620,
+          "durationSeconds": 54.0,
+          "audioStreams": 0,
+          "ffprobe": {
+            "file": "exports/verification/liangzhu_performance_20261021/encoded-review/webm-ffprobe.json",
+            "sha256": "f376f14226b9644845c1c9708e20f65d98ce3554e1cce9859e2a7174a9f0401b"
+          }
+        }
+      ]
+    },
+    "currentV2CueReview": {
+      "timesMs": [
+        0,
+        6000,
+        15000,
+        29000,
+        42000,
+        48000,
+        52000
+      ],
+      "source": "Exact newfull GPU frames and both encoded movies",
+      "contacts": [
+        {
+          "file": "exports/verification/liangzhu_performance_20261021/encoded-review-v2/raw-contact.png",
+          "sha256": "d9da33039c3a02fe464bb3d2161647757f1dbdd9a72b9deda0feea3468331493",
+          "dimensions": [
+            1280,
+            1440
+          ],
+          "actuallyViewed": true,
+          "method": "Seven640x360 nearest half-scale cells in2columns/4rows, chronological. Eighth cell blank."
+        },
+        {
+          "file": "exports/verification/liangzhu_performance_20261021/encoded-review-v2/mp4-contact.png",
+          "sha256": "5999b7cfd33c64e0e6f555fa76617e9002c405cc18c33232c4db49c3a95cf85d",
+          "dimensions": [
+            1280,
+            1440
+          ],
+          "actuallyViewed": true,
+          "method": "Seven640x360 nearest half-scale cells in2columns/4rows, chronological. Eighth cell blank."
+        },
+        {
+          "file": "exports/verification/liangzhu_performance_20261021/encoded-review-v2/webm-contact.png",
+          "sha256": "59e07db32e8a7f3ae7dc553902b1c2be27fb42944b24a78772a04def48622bcb",
+          "dimensions": [
+            1280,
+            1440
+          ],
+          "actuallyViewed": true,
+          "method": "Seven640x360 nearest half-scale cells in2columns/4rows, chronological. Eighth cell blank."
+        }
+      ],
+      "full29sOriginalsViewed": 3,
+      "scope": "All21 timed cue samples viewed in three contacts;29s raw/MP4/WebM also viewed full resolution. All1620 newfull/stage raw pixel hashes equalv1 accepted passive visual outputs.",
+      "comparison": {
+        "file": "exports/verification/liangzhu_performance_20261021/encoded-review-v2/v1-v2-pixel-comparison.json",
+        "sha256": "746ae2b7c074a9ceedce9db784013c11222ddf1a6d01b9c4a78057a787ac3b06"
+      }
+    }
+  },
+  "mobileAndDesktop": {
+    "desktop": "Contain the complete16:9 stage uniformly inside the game/performance viewport. All image layers share the same projection, layout and scale; no scene crop or unequal axes.",
+    "portrait": "Keep the complete16:9 stage visible throughout the complete frozen performance. Offer a readable recommendation to rotate landscape and an accessible exit. Never cover-crop one performer or their fan route.",
+    "remainingViewport": "Use a low-contrast stage-colored extension/background without camera stretch, repeated fake stage geometry or large unrelated black glass panels.",
+    "controls": "Native readable pause/skip/close and complete exit, respecting actual safe bounds. Primary44CSSpx target, absolute minimum28; captions remain native readable text. No persistent answer-revealing hint.",
+    "pendingActualProfiles": [
+      "1280×720",
+      "1440×900/DPR2",
+      "390×844/DPR3",
+      "360×640",
+      "430×932",
+      "844×390"
+    ],
+    "acceptance": "No actual new-scene desktop/mobile/physical-device display acceptance yet. Portrait contain policy replaces the earlier untested center-crop proposal."
+  },
+  "toolchain": {
+    "verifiedAt": "2026-10-21T02:06:38.138292+00:00",
+    "godot": {
+      "path": "/Applications/Godot.app/Contents/MacOS/Godot",
+      "version": "4.7.2.stable.official.ed1daf0bf",
+      "movieMaker": "CLI--write-movie and--fixed-fps are present. Exact frame source is the same production native1200×675 stage texture, independent of outer Window size. No movie capture executed yet."
+    },
+    "ffmpeg": {
+      "path": "/tmp/codex-755-tools/bin/ffmpeg",
+      "version": "7.1",
+      "availableRelevantEncoders": [
+        "libx264",
+        "libx264rgb",
+        "libvpx-vp9",
+        "ffv1",
+        "libtheora",
+        "libvorbis",
+        "aac",
+        "libopus",
+        "png"
+      ],
+      "availabilityCheckOnly": "Encoder list inspected; no new movie encode or performance benchmark run for this proposed clip."
+    },
+    "pixelSnapper": {
+      "path": "/Users/zhu/.local/share/755-art-tools/pixel-snapper/bin/spritefusion-pixel-snapper",
+      "version": "1.0.0",
+      "commit": "02f9315d73d3219274d17767b36d9a231a6b1f4b",
+      "sha256": "4ba6c3a6d868fffa72c8e2285653c907dfdd4b6e792b41518c78c6744fd49b18",
+      "role": "Optional copy-only palette/grid candidate tool; elastic cuts can move dimensions/origins and cannot invent missing fine detail. Do not apply default4px snapping to new one-native-pixel fine artwork.",
+      "template": [
+        "/Users/zhu/.local/share/755-art-tools/pixel-snapper/bin/spritefusion-pixel-snapper",
+        "<generated-copy>.png",
+        "<candidate>.png",
+        "32",
+        "--pixel-size",
+        "1",
+        "--palette",
+        "202B35,344452,526B7A,7993A1,A9BCC2,D8C7A0,F4EAD5,FFF0B2,44332D,70503B,A1744E,C79B62,766E63,A39B87,C5C1A9,E8E0C8,243F5A,385B79,547F9D,83A7B6,2D443E,49634A,72865C,A9B577,6F483E,A76A4C,D89C6A,F0C895,9A514A,C77964,D3A451,F4CD77"
+      ],
+      "atlasWarning": "Never run elastic snapping on the finished whole actor atlas and accept shifted frame boundaries. Work on whole individual poses, reject wrong dimensions, then assemble the fixed4×2 sheet.",
+      "templateStatus": "Not an approved automatic conversion command; expected native dimensions and frame anchors must survive any trial."
+    },
+    "spriteNormals": {
+      "path": "/Users/zhu/.local/share/755-art-tools/sprite-normals/bin/spritefusion-sprite-normals",
+      "version": "0.1.0",
+      "commit": "d14b06726cabab09c68a403ce2e684a52efbfe4c",
+      "sha256": "254a19ccba03b519fe93d306f02a3435dbe0763ca050872d8113816bcfa23ebd",
+      "role": "Deterministic silhouette/shading normal estimation only; not a grid tool; no need to apply it to this dark-stage preview."
+    },
+    "pixelAudit": {
+      "path": "tools/audit_pixel_art.mjs",
+      "sha256": "9a547398891c27b63e45b3cb949ece835d3c64cb10cf1b9a3bc2279c981c7e30",
+      "usage": "Stage: --profile=fineStage --scale=1; separately extracted120×160 actor cells: --profile=fineCharacter --scale=1. nativeRaster overrides logicalFrame/logicalCanvas as exact source dimensions; profile colorBudget is32/24. Whole480×320 atlas is not one expected120×160 frame.",
+      "limitations": "Scale1 only proves a one-pixel raster, dimensions, selected palette/budget and alpha. It cannot prove coherent clusters, newly authored detail, correct pose/anatomy, projection, lighting, feet, grid intent or recognizability.",
+      "legacy": "Legacy character--scale=4 and prior reports remain unchanged; fine masters are not tested for uniform5px blocks."
+    }
+  },
+  "acceptancePending": [
+    "Complete current-source browser desktop/mobile actual entry, keyboard/touch, interactive QTE cancellation/retry/exit, persistence and UI lifecycle acceptance. A passive film is not a successful player session.",
+    "Review continuous preview playback if needed beyond the actually viewed decoded start/middle/end and seven native pose samples. Encoded full-frame counts/duration are verified; no claim of having watched every instant is made.",
+    "User selected playable QTE first and actual singing later. Current original text and54second animation timing are silent; voiced/sung track, synchronization and audio lifecycle await a separate integration.",
+    "Physical mobile-device/older supported-browser media validation is not supplied by native GPU capture. Shared game rendering remains native; movie codecs do not replace model/controller/progression."
+  ],
+  "officialReferences": [
+    {
+      "url": "https://docs.godotengine.org/en/stable/tutorials/animation/creating_movies.html",
+      "supports": "Offline same-engine movie/frame recording and fixed-FPS control."
+    },
+    {
+      "url": "https://docs.godotengine.org/en/stable/classes/class_moviewriter.html",
+      "supports": "MovieWriter supports PNG sequence/WAV and other containers; PNG sequence is a lossless route for later encoding."
+    },
+    {
+      "url": "https://docs.godotengine.org/en/stable/classes/class_videostreamplayer.html",
+      "supports": "Default playback isOGV/Theora; extra formats depend on extensions and Web decoding has performance limitations."
+    },
+    {
+      "url": "https://ffmpeg.org/ffmpeg-scaler.html",
+      "supports": "Explicit nearest-neighbor scaling; scaling algorithm must not silently default to bicubic for the canonical pixel enlargement."
+    },
+    {
+      "url": "https://github.com/Hugo-Dz/spritefusion-pixel-snapper/tree/02f9315d73d3219274d17767b36d9a231a6b1f4b",
+      "supports": "Grid/palette candidate cleanup capability."
+    },
+    {
+      "url": "https://github.com/Hugo-Dz/spritefusion-sprite-normals/tree/d14b06726cabab09c68a403ce2e684a52efbfe4c",
+      "supports": "Normal-map generator capability boundary."
+    }
+  ],
+  "supersededSpecifications": [
+    {
+      "status": "superseded before production acceptance by later2026-10-21 user fine-pixel request",
+      "previousDocumentSha256": "24d39c191eb70068557a43466297d6eb0abcda6a93fc41a0c7267ee6f69e8faa",
+      "previousSpecification": {
+        "composition": [
+          240,
+          135
+        ],
+        "coarseStageSource": [
+          960,
+          540
+        ],
+        "coarseActorCell": [
+          96,
+          128
+        ],
+        "coarseActorAtlas": [
+          384,
+          256
+        ],
+        "coarseSourceEnlargement": 4,
+        "coarseCapturePlan": "240×135 SubViewport nearest4× to960×540",
+        "portraitProposal": "Centered cover crop with candidate60-unit safe width; never actual visual acceptance."
+      },
+      "replacement": "Keep240×135 composition and24×32 actor proportions, author5 native fine pixels per composition unit, capture1200×675 directly, and contain the complete16:9 stage on every viewport. No coarse raster enlargement is accepted as added detail.",
+      "historicalReceipts": "Existing frozen coarse art audits and acceptance ledgers remain unchanged."
+    }
+  ],
+  "currentProductionAssets": {
+    "status": "Lead actually viewed/approved stage, actor atlas, all three independent furniture PNGs, seven-cue contact and29s full view. First/second scene feet90 layering accepted; full native passive previews produced. Browser/player QTE and future audio acceptance remain separate.",
+    "stage": {
+      "file": "assets/native/liangzhu_performance_20261021/stage.png",
+      "sha256": "c7b68d647b395417efd1d8fb5c65a7ca2032b282a4be9128945bf2084ef47066",
+      "dimensions": [
+        1200,
+        675
+      ],
+      "colors": 21,
+      "alpha": [
+        255
+      ],
+      "derivation": "Uniform nearest150/209, centered source extent[0,0.25,1672,940.5]; material-constrained nearest32/no dither. Wood/paper, cool backdrop, warm curtain subsets avoid pink/green speckles.",
+      "sourceSha256": "c184054fc1d849a316ae12c1ce5695b81262297a547a0b53d1ca54af2fcde03c",
+      "receipt": "exports/verification/liangzhu_performance_20261021/stage-material-v2-conversion.json",
+      "selection": "exports/verification/liangzhu_performance_20261021/stage-production-selection.json",
+      "superseded": "Unrestricted nearest32 v1 retained with original receipt; not the selected stage."
+    },
+    "actors": {
+      "file": "assets/native/liangzhu_performance_20261021/actors.png",
+      "sha256": "41b42f9486ecbec2745239daa3a75937055105ff73a2da6eb22cc07db7a0ff32",
+      "dimensions": [
+        480,
+        320
+      ],
+      "cell": [
+        120,
+        160
+      ],
+      "totalFrames": 8,
+      "colorBudgetPerActorAcross4Poses": 24,
+      "actualColorsPerActor": [
+        24,
+        24
+      ],
+      "actualAtlasColors": 30,
+      "alpha": [
+        0,
+        255
+      ],
+      "cellFootAnchor": [
+        60,
+        150
+      ],
+      "commonScaleAcross8Poses": 0.24523216268653383,
+      "actualMaxVisibleHeight": 118,
+      "sideMarginPixelsMin": 2,
+      "derivation": "Alpha>=128 gives8 complete connected silhouettes; generated sleeves cross original384px source cells, so retain whole components ordered by row/pose rather than clipping grid. One common uniform scale preserves asymmetric sleeves and fixed foot points.",
+      "sourceSha256": "0502864a1fb2818cfeb26ae282a833d4f742960657507c132e40520d4beb174d",
+      "receipt": "exports/verification/liangzhu_performance_20261021/actors-conversion.json",
+      "geometry": "exports/verification/liangzhu_performance_20261021/actors-native-geometry.json",
+      "audit": "exports/verification/liangzhu_performance_20261021/actors-cells-audit.json",
+      "originalAnonymityScope": "Newly generated generic fictional performers per art owner; no photographic cutout or reference face trace performed by this derivation. No biometric likeness guarantee."
+    },
+    "reproductionTools": [
+      {
+        "file": "tools/prepare_liangzhu_stage.mjs",
+        "sha256": "2019751098bb79fde3ed78488a362823b86e164803a69720aa0fa1619f8bbd83"
+      },
+      {
+        "file": "tools/prepare_liangzhu_actors.mjs",
+        "sha256": "cf420a8dc668af7243e808055f9928a6d8c6128a9149a74029a0e3f7ea4bfc39"
+      },
+      {
+        "file": "tools/prepare_liangzhu_furniture.mjs",
+        "sha256": "4db0df60ece812e4f9bf7866938130511065662822609f20a7336544f1bae73a"
+      }
+    ],
+    "auditToolCases": {
+      "file": "tools/test_audit_pixel_art.mjs",
+      "sha256": "f37c10e8731252158f8cd594b743d85fa43f02827b394b725e827850b7955653",
+      "passedCases": 9,
+      "receipt": "exports/verification/liangzhu_performance_20261021/pixel-audit-tool-tests.json",
+      "boundary": "Synthetic positive/negative tests plus8 extracted actor cell strict audits. These do not constitute performance, browser or physical-device acceptance."
+    },
+    "furniture": {
+      "metadata": "assets/native/liangzhu_performance_20261021/furniture.json",
+      "metadataSha256": "f9661da14a07736074d3cb6555721f8821aae50a98116135b881090402869892",
+      "props": {
+        "table": {
+          "texture": "res://assets/native/liangzhu_performance_20261021/table.png",
+          "nativeSize": [
+            160,
+            100
+          ],
+          "nativeFootAnchor": [
+            80,
+            100
+          ],
+          "visibleRect": [
+            10,
+            22,
+            139,
+            78
+          ],
+          "sha256": "4a0bd091d71ae660da439160463b61138cd600c53f44f21a569a51898a5e4da7",
+          "colors": 32
+        },
+        "chair_left": {
+          "texture": "res://assets/native/liangzhu_performance_20261021/chair_left.png",
+          "nativeSize": [
+            60,
+            120
+          ],
+          "nativeFootAnchor": [
+            30,
+            120
+          ],
+          "visibleRect": [
+            2,
+            26,
+            56,
+            94
+          ],
+          "sha256": "2a1a113c97dee8659f218c9cfc9d3dcad1103be605d823a6faec2b2333146c7f",
+          "colors": 24
+        },
+        "chair_right": {
+          "texture": "res://assets/native/liangzhu_performance_20261021/chair_right.png",
+          "nativeSize": [
+            60,
+            120
+          ],
+          "nativeFootAnchor": [
+            30,
+            120
+          ],
+          "visibleRect": [
+            2,
+            26,
+            56,
+            94
+          ],
+          "sha256": "27cdfe7529b3c1a60c36d3d6a63b4d886548c1f63a23e7c4382edc2c03fdf65c",
+          "colors": 23
+        }
+      },
+      "sets": {
+        "performance": {
+          "table": {
+            "compositionRect": [
+              104,
+              76,
+              32,
+              20
+            ],
+            "foot": [
+              120,
+              96
+            ]
+          },
+          "chair_left": {
+            "compositionRect": [
+              102,
+              64,
+              12,
+              24
+            ],
+            "foot": [
+              108,
+              88
+            ]
+          },
+          "chair_right": {
+            "compositionRect": [
+              126,
+              64,
+              12,
+              24
+            ],
+            "foot": [
+              132,
+              88
+            ]
+          }
+        },
+        "rehearsal": {
+          "table": {
+            "compositionRect": [
+              8,
+              82,
+              32,
+              20
+            ],
+            "foot": [
+              24,
+              102
+            ]
+          },
+          "chair_left": {
+            "compositionRect": [
+              8,
+              68,
+              12,
+              24
+            ],
+            "foot": [
+              14,
+              92
+            ]
+          },
+          "chair_right": {
+            "compositionRect": [
+              28,
+              68,
+              12,
+              24
+            ],
+            "foot": [
+              34,
+              92
+            ]
+          }
+        }
+      },
+      "rootActuallyViewedAndApprovedPreview": true,
+      "reproduction": "exports/verification/liangzhu_performance_20261021/furniture-reproduction.json",
+      "audit": "exports/verification/liangzhu_performance_20261021/furniture-native-audit.json",
+      "rootAssetImportCompleted": true,
+      "integrationStatus": "Shared StagePlate integration visible in seven frozen-source native cues and full passive capture; root accepted standing feet90 in first/second scene, contact and29s original. Browser acceptance remains separate.",
+      "source": {
+        "file": "exports/verification/liangzhu_performance_20261021/source-art/liangzhu_table_chairs_transparent_master.png",
+        "sha256": "ccca1521319c9dd636f59b915c2e25008fe59b58c18856964559d1f975ad8f23",
+        "dimensions": [
+          2059,
+          764
+        ],
+        "boundary": "The web background-removal operation regenerated some details/geometry. Normalization preserves this approved result; it is not a claim of unchanged original photo pixels."
+      },
+      "originalSource": {
+        "file": "exports/verification/liangzhu_performance_20261021/source-art/liangzhu_table_chairs_master.png",
+        "sha256": "2264295b27c08a9b218fb16341a35559e2dceb818ab7fcedfc4071df2c38f47b",
+        "dimensions": [
+          2048,
+          768
+        ],
+        "aliasRecord": "exports/verification/liangzhu_performance_20261021/source-art/furniture-original-alias.json",
+        "boundary": "One canonical source retained; the identical extra glow-master copy was removed after exact-byte verification. Original download unchanged."
+      },
+      "normalization": {
+        "alphaThreshold": 128,
+        "alphaOutput": [
+          0,
+          255
+        ],
+        "commonUniformScale": 0.13943876368059724,
+        "sameScaleAcross3Props": true,
+        "wholeShapesRetained": true,
+        "nonuniformStretch": false,
+        "colorKeying": false,
+        "dither": false,
+        "sourcePureRedPixelsBelowThreshold": 4781,
+        "sourcePureRedPixelsAtLeastThreshold": 0,
+        "palette": "32 locked colors; actual table32/chair_left24/chair_right23, set union32"
+      },
+      "rasterAcceptance": {
+        "checks": 18,
+        "passed": true,
+        "audit": "exports/verification/liangzhu_performance_20261021/furniture-native-audit.json",
+        "auditSha256": "4f3c97b68880f7a2da462ea326201b0904c5fb411637f1ed4c06df4b556255d3",
+        "independentChecks": "Decoded source dimensions, binary alpha, locked palette, exact native lower-foot edge, PNG SHA and no retained pure-red outline; root preview actually viewed/approved.",
+        "limitation": "Scale1/palette checks do not prove artistic clusters, gameplay collision, full performance or browser input."
+      }
+    },
+    "rig": {
+      "file": "scripts/presentation/liangzhu_actor_rig.gd",
+      "sha256AtAccepted6sPreflight": "f411eef667ddedb0afe5e965ee8b02377338604052ea209f412f8ada58f5e24f",
+      "method": "Whole-cel artwork plus real Skeleton2D/Bone2D forward-kinematic attachment chain, with live wrist sockets for fan props; not a weighted-mesh body deformation.",
+      "bonesPerActor": 15,
+      "actors": [
+        "scholar",
+        "yingtai"
+      ],
+      "sourceCell": [
+        120,
+        160
+      ],
+      "sourceFootAnchor": [
+        60,
+        150
+      ],
+      "finePixelsPerCompositionUnit": 5,
+      "atlasSha256": "41b42f9486ecbec2745239daa3a75937055105ff73a2da6eb22cc07db7a0ff32",
+      "boundary": "Pose/cel geometry, actual socket and renderer identity are bound in capture receipts. Passive sampling advances no runtime/QTE clock or story state."
+    }
+  }
+}

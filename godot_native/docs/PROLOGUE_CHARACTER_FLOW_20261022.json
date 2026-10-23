@@ -1,0 +1,115 @@
+{
+  "schema": "755-prologue-character-flow-20261022-v1",
+  "timestamp": "2026-10-21T16:42:31.713182+00:00",
+  "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+  "sourceDirty": true,
+  "sourceInputSha256": "a19372555abe4f8475eee2c58de36d9322236c338c9d644bb9069531d49d624b",
+  "export": "godot_native/exports/web-character-flow-final-20261022",
+  "localPreview": "http://127.0.0.1:5241/",
+  "reference": {
+    "url": "https://github.com/stackedlol/ascii-sharks",
+    "commit": "c521e24a787e6d4cc460d4cf2b9815f25e4fe453",
+    "filesInspected": [
+      "README.md",
+      "src/engine.ts",
+      "src/renderer.ts"
+    ],
+    "borrowed": "continuous stable glyph motion; original GDScript implementation",
+    "thirdPartySourceBundled": false
+  },
+  "motion": {
+    "decorativeGlyphs": 160,
+    "decorativeDownflowPixelsPerSecond": [
+      650,
+      994
+    ],
+    "physicalWordDownflowPixelsPerSecondByStage": [
+      360,
+      390,
+      420
+    ],
+    "clueDownflowPixelsPerSecond": 260,
+    "realWordContactSeconds": [
+      0.5,
+      1.1
+    ],
+    "decorativeAnswerCopies": false,
+    "reducedMotion": "no decorative flow or trails; original complete clues drawn static",
+    "flash": "continuous tint and monotonic white wash; original audio timestamps preserved"
+  },
+  "actions": {
+    "paused": "PrologueResume: 返回字流, bottom y=668",
+    "failed": "PrologueRetry: 再试这段字流, bottom y=668",
+    "printedReceipt": "收起回执, after print completion; automatic handoff retained"
+  },
+  "validation": {
+    "nativeSuitesPassed": 7,
+    "browser": [
+      {
+        "case": "character-flow-final-desktop-20261022",
+        "passed": true,
+        "checks": 540,
+        "evidence": "/Users/zhu/Library/Application Support/755-tools/verification/character-flow-20261022/character-flow-final-desktop-20261022.json"
+      },
+      {
+        "case": "character-flow-final-touch-20261022",
+        "passed": true,
+        "checks": 540,
+        "evidence": "/Users/zhu/Library/Application Support/755-tools/verification/character-flow-20261022/character-flow-final-touch-20261022.json"
+      }
+    ],
+    "retainedWebReleaseValidators": 38,
+    "sourceClueParity": "node sync_source.mjs --check-prologue-words PASS",
+    "exportVerification": "build_web.mjs --verify-only PASS"
+  },
+  "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/verification/character-flow-20261022",
+  "review": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/character-flow-20261022.gif",
+      "bytes": 6955864,
+      "sha256": "ce55371a5c93046f49fc2978a0baa5224921b1796eaa175f78d127937e980c97"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/character-flow-20261022.mp4",
+      "bytes": 346240,
+      "sha256": "a0d1617f69ec122c66bd2d1b1f9b66526366a025b1625c9df324aef8268f6a3f"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/character-flow-browser-20261022.png",
+      "bytes": 24608,
+      "sha256": "a556034c583ab737f9d588fbd241b26363372eb690e8dd27fb8199f2b0969af9"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/character-flow-native-fixture-20261022.gif",
+      "bytes": 917780,
+      "sha256": "edf1510d26af351e04edf34f39bb9bd619dbf18d7a70de8548d6000c639e2e43"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/character-flow-native-fixture-20261022.mp4",
+      "bytes": 357930,
+      "sha256": "acb73916d27454207dfcfbe7fbb3f1df5bed784f58ba31a9dbf6e5915c3a3b5a"
+    }
+  ],
+  "capture": {
+    "actualBrowserFrames": 301,
+    "mediaUsesRealTimestamps": true,
+    "reviewClipSeconds": 10.5,
+    "sevenSecondBlackoutRemovedFromClipOnly": true,
+    "nativeFixtureFrames": 264,
+    "nativeFixtureFPS": 24,
+    "deletedQaPngs": 1111
+  },
+  "preservation": [
+    "six authored target words, unordered coordinate pair and ordered sentence reconstruction",
+    "real swept contacts; no presentation-owned progress",
+    "retry preserves completed stages/current collected set",
+    "review and pause freeze clock and penalties",
+    "1400ms final hold, original four-line exchange, C2 handoff and save reload",
+    "existing user unfinished-interception save retained; no artificial completion"
+  ],
+  "limitations": [
+    "Browser acceptance uses isolated Chromium desktop/touch emulation, not physical phone or other browser-engine acceptance.",
+    "The retained Web reference remains unchanged; this presentation revision is in the independent Godot runtime.",
+    "No commit, push or remote deployment performed."
+  ]
+}

@@ -170,7 +170,15 @@ func run() -> void:
 		if target.id=="a1_campus_card_reader":reader=target
 	check(not reader.is_empty(),"c4-current-reader-target-exists")
 	if not reader.is_empty():
-		await click(Vector2(reader.position[0],reader.position[1]));check(world.interactions==["a1_campus_card_reader"],"c4-authored-reader-picks-visible-installation",world.interactions)
+		# Distant clicks retain the picked object while the actual player walks
+		# into its original interaction radius. They must not act remotely.
+		await click(Vector2(reader.position[0],reader.position[1]))
+		check(world.interactions.is_empty() and world._floor_pending_interaction.get("target",{}).get("id","")=="a1_campus_card_reader","c4-distant-reader-click-queues-the-visible-installation")
+		for unused:int in range(480):
+			world._process(.05)
+			if not world.interactions.is_empty():break
+		check(world.can_stand(world.player) and world._distance(reader)<=float(reader.radius),"c4-reader-approach-stays-on-reachable-floor-within-original-radius")
+		check(world.interactions==["a1_campus_card_reader"],"c4-authored-reader-picks-visible-installation",world.interactions)
 	# Authored multi-item lake workbench keeps its original acceptance list.
 	var source: Dictionary=load("res://scripts/chapters/c3_base.gd").new().from_source({"id":"bench","label":"bench","x":836,"y":740,"width":80,"height":60,"acceptedItems":["nylonCord","fishingRod"]},"noop")
 	world.targets=[source];world.interactions.clear();await redraw();await drag("fishingRod",Vector2(836,740))

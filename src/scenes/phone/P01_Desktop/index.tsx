@@ -2,17 +2,21 @@ import { useEffect, useState } from "react";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { playSfx } from "../../../modules/Sfx";
 import { playVo } from "../../../modules/VoicePlayer";
+import { kit } from "../../../modules/GameKit";
+import { EarlyDeskCharging } from "./EarlyDeskCharging";
 import { GameSubtitleContent } from "../../../components/GameSubtitleFrame";
 
 /** P01 手机主屏幕 07:55：……再睡5分钟…… → 旁白 → 巨大字幕“起床蠢货！！！” */
 export function WakeScene({ state, router, events }: SceneComponentProps) {
   const [warned, setWarned] = useState(false);
+  const returningToDesk = kit.battery.hasHomeDeskReturn();
 
   // 底部旁白与进场同步
   useEffect(() => {
+    if (returningToDesk) return;
     const timer = window.setTimeout(() => playVo("wake_narration", { subtitle: false }), 400);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [returningToDesk]);
 
   function sleepMore() {
     setWarned(true);
@@ -24,7 +28,7 @@ export function WakeScene({ state, router, events }: SceneComponentProps) {
 
   function enterHome() {
     playSfx("01_");
-    router.goTo("phone_home");
+    router.goTo(kit.battery.takePhoneFromDesk());
   }
 
   return (
@@ -33,7 +37,7 @@ export function WakeScene({ state, router, events }: SceneComponentProps) {
         <strong>07:55</strong>
         <span>ZJUWLAN · {state.phoneBattery.percent}%</span>
       </header>
-      <div className="wake-center">
+      {!returningToDesk ? <div className="wake-center">
         {!warned ? (
           <div className="sleep-choice">
             <p className="wake-me px-chip">（我）</p>
@@ -52,8 +56,9 @@ export function WakeScene({ state, router, events }: SceneComponentProps) {
             </button>
           </>
         )}
-      </div>
-      {!warned ? (
+      </div> : null}
+      <EarlyDeskCharging state={state} router={router} events={events} />
+      {!warned && !returningToDesk ? (
         <p className="bottom-narration game-subtitle-frame subtitle-tone-narrator is-line-entering">
           <GameSubtitleContent speaker="旁白" text="你没有5分钟了，但你很有勇气" />
         </p>

@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT } from './web_content_chunks.mjs';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const argv = process.argv.slice(2);
@@ -54,19 +55,38 @@ function classify(name) {
   if (name.startsWith('campuses/buct_haidian/')) return 'campus_haidian';
   if (name.startsWith('campuses/buct_pilots/')) return 'campus_chaoyang';
   if (name.startsWith('campuses/buct/')) return 'campus_chaoyang';
+  // These scenes are instantiated only after their chapter's content gate.
+  // Classify the logical scene before the shared script/data rule; its remap
+  // and anonymous exported .scn payload must travel as one import unit.
+  if (name === 'scenes/objects/lake_assembly_parts.tscn') return 'chapter35';
+  if (name === 'scenes/theater/funhouse_stage_editable.scn') return 'chapter3';
   if (/^(scripts|scenes|data)\//.test(name) || name === 'project.binary' || /assets\/rpg\/fonts\//.test(name)) return 'core';
+  // Shared UI font and its OFL travel with first paint, not a chapter pack.
+  if (name.startsWith('ui_assets/fonts/') || name.startsWith('ui_assets/phone_icons/')) return 'core';
   if (!name.startsWith('assets/')) return null;
   if (/^assets\/audio\/(library-finals)\//.test(name)) return 'chapter2';
   if (/^assets\/audio\/(chapter4)\//.test(name)) return 'chapter4';
   if (/^assets\/audio\/(chapter3-qizhen|chapter3-interlude)\//.test(name)) return 'chapter35';
   if (/^assets\/audio\/(chapter3|chapter3-theater|chapter3-canteen|pursuit)\//.test(name)) return /(?:ch35|qizhen|night_wind|interlude)/.test(name) ? 'chapter35' : 'chapter3';
+  // The audio director starts these on act2/dorm events, after Chapter 2 is
+  // admitted. Prologue blackout and narrator chase remain first-chapter audio.
+  if (/^assets\/audio\/act-one\/music\/music_act2_(?:manual_control|movement_puzzle|search)\.mp3$/.test(name)) return 'chapter2';
   if (/^assets\/audio\/(act-one|sfx|vo)\//.test(name)) return 'core';
   if (/^assets\/phone\/library-search\//.test(name)) return 'chapter2';
   if (/^assets\/native_755\/ride\//.test(name) || /^assets\/derived\/chase_transition_3d\//.test(name)) return 'chapter3';
   if (/^assets\/(objectized\/chapter4|native\/(stair_b|endless_stair_b3|canruo))\//.test(name)) return 'chapter4';
+  if (/^assets\/native\/chapter35_recovery_/.test(name)) return 'chapter35';
   if (/^assets\/native\/(qizhen_rain_rescue|lake_assembly|kayak)\//.test(name)) return 'chapter35';
+  if (/^assets\/native\/library_rebuild_20261020\//.test(name)) return 'chapter2';
+  if (/^assets\/native\/(theater_rebuild_20261020|liangzhu_performance_20261021|theater_chest_20261023)\//.test(name)) return 'chapter3';
   if (/^assets\/native\/(canteen_objects|mixer|chapter3|canteen_animation|canteen_door)\//.test(name)) return 'chapter3';
-  if (/^assets\/native\/(bonsai|dorm_cabinet)\//.test(name)) return 'core';
+  // Review-only dorm atlases are not the production first-chapter room. Keep
+  // their original bytes in the first deferred retained-source bucket, like
+  // unused player sheets below. This does not activate a preview in the story.
+  // Source/native preview builds remain complete and do not use this planner.
+  if (name.startsWith('assets/native/dorm_modular/')) return 'chapter2';
+  if (name.startsWith('assets/native/dorm_cabinet/')) return 'chapter2';
+  if (name.startsWith('assets/native/bonsai/')) return 'core';
   if (/^assets\/rpg\/(campus|landmarks)\//.test(name)) return /loop_panorama/.test(name) ? 'chapter35' : 'chapter2';
   if (/^assets\/rpg\/(portraits|chapter4-stair)\//.test(name)) return 'chapter4';
   if (/^assets\/rpg\/(qizhen_fishing|qizhen)\//.test(name)) return 'chapter35';
@@ -76,7 +96,7 @@ function classify(name) {
     if (/(?:qizhen|lake|swan)/.test(name)) return 'chapter35';
     if (/(?:canteen|theater)/.test(name)) return 'chapter3';
     if (/library/.test(name)) return 'chapter2';
-    if (/dorm/.test(name)) return 'core';
+    if (/dorm/.test(name)) return 'chapter2';
   }
   if (/^assets\/rpg\/npcs\//.test(name)) {
     if (/(?:finale|chapter4)/.test(name)) return 'chapter4';
@@ -85,9 +105,9 @@ function classify(name) {
     if (/library/.test(name)) return 'chapter2';
   }
   if (/^assets\/rpg\/cinematics\//.test(name)) return /(?:chapter4-prologue|chapter4-755)/.test(name) ? 'chapter4' : /qizhen/.test(name) ? 'chapter35' : null;
-  // Retain unused source sheets in later content too. Only the actual shared
-  // 32 animation frames and idle images are needed by World._ready.
-  if (/^assets\/rpg\/player\//.test(name)) return /^assets\/rpg\/player\/player_(?:down_[0-7]|up_[0-7]|side_[0-7]|left_[0-7]|side_idle|left_idle)\.png$/.test(name) ? 'core' : 'chapter2';
+  // World admits the Chapter 2 family before its first nonempty scene and
+  // loads the shared actor frames then, not while opening the phone.
+  if (/^assets\/rpg\/player\//.test(name)) return 'chapter2';
   if (/^assets\/rpg\/props\//.test(name)) {
     if (/\/(?:front-source|side-source|landscape-source)\//.test(name) || /\/zijingang_environment(?:_source)?\.png$/.test(name)) return 'chapter2';
     if (/(?:chapter4|finale)/.test(name)) return 'chapter4';
@@ -96,7 +116,15 @@ function classify(name) {
     if (/library/.test(name)) return 'chapter2';
   }
   if (/^assets\/rpg\/tiles\//.test(name)) return 'chapter2';
-  if (/^assets\/ui\//.test(name)) return /library/.test(name) ? 'chapter2' : 'core';
+  if (/^assets\/ui\//.test(name)) {
+    // C3.5 recovery photos are read by the gated later-phone builder, not the
+    // first-chapter phone. The campus album and CC98 open no earlier than C2.
+    if (name.startsWith('assets/ui/photo-evidence/chapter35_live_')) return 'chapter35';
+    if (name.startsWith('assets/ui/photo-evidence/campus-life/') || name.startsWith('assets/ui/cc98/')) return 'chapter2';
+    // Retained Web room reference; the native dorm uses interiors/dorm_hub.
+    if (name === 'assets/ui/dorm_room.png') return 'chapter2';
+    return /library/.test(name) ? 'chapter2' : 'core';
+  }
   return null;
 }
 try {
@@ -189,14 +217,15 @@ function scanParsed(logical, why) {
 const bootRoots = [
   'scripts/entry.gd', 'scripts/state.gd', 'scripts/main.gd',
   'scripts/chapters/chapter1_2.gd', 'scripts/chapters/chapter3.gd', 'scripts/chapters/chapter4.gd',
-  'scripts/ui/phone_chrome.gd', 'scripts/ui/phone_object_pickup.gd', 'scripts/ui/phone_pages.gd', 'scripts/ui/chapter3_phone_pages.gd',
+  'scripts/ui/phone_chrome.gd', 'scripts/ui/phone_object_pickup.gd', 'scripts/ui/phone_pages.gd',
   'scripts/world.gd', 'scripts/ui/world_viewport_container.gd',
-  'scripts/presentation/c3_narrative_host.gd', 'scripts/presentation/library_story_host.gd', 'scripts/presentation/c3_scene_host.gd',
+  // Later phone/presentation hosts use explicit *_SCRIPT paths and are created
+  // by Main only after content admission for their actual scene/session.
   'scripts/media/audio_director.gd', 'scripts/media/c3_media_host.gd', 'scripts/media/c3_battery_prank.gd',
 ];
 const eagerWorldRoots = [
   'scripts/ui/chapter4_world_layers.gd', 'scripts/ui/chapter3_world_layers.gd', 'scripts/ui/library_world_layers.gd',
-  'scripts/objects/room204_table_adapter.gd', 'scripts/objects/canteen_object_scene.gd', 'scripts/objects/dorm_scene_adapter.gd',
+  'scripts/objects/room204_table_adapter.gd',
 ];
 if (startup === 'conservative') bootRoots.push(...eagerWorldRoots);
 for (const logical of bootRoots) scanParsed(logical, 'ordinary fresh-main startup');
@@ -208,9 +237,14 @@ function scanReady(logical) {
 for (const logical of ['scripts/entry.gd', 'scripts/main.gd', 'scripts/presentation/c3_opening_view.gd']) scanReady(logical);
 if (startup === 'conservative') {
   scanReady('scripts/world.gd');
-  const layout = JSON.parse(fs.readFileSync(path.join(project, 'data/native/canteen-object-layout.json'), 'utf8'));
-  for (const asset of Object.values(layout.assets)) promote(asset.texture, 'canteen_object_scene.gd:setup loads every layout.assets texture');
-  for (const logical of ['assets/rpg/interiors/dorm_hub.png', 'assets/native/dorm_cabinet/cabinet_opening_frames.png']) promote(logical, 'dorm_scene_adapter.gd:setup');
+  // World admits the canteen scene only after WebContent.ready_for_state and
+  // loads its script through CANTEEN_SCENE_SCRIPT on the first canteen entry.
+  // Its setup-time layout textures and drink rigs are chapter3 resources.
+  // The real split-pack regression verifies those import units in chapter3;
+  // neither a missing classification nor a preload is silently discarded.
+  // Dorm/player/guard setup now runs in World._ensure_scene_visuals only
+  // after refresh_world's content-ready gate. Entry's own background, if
+  // used, is still discovered by scanReady above and retained explicitly.
 }
 
 // An import pointer and its actual payload are indivisible. A shared payload
@@ -237,7 +271,7 @@ const summaries = groupOrder.map(id => {
   const files = entries.filter(entry => ownership.get(entry.path).group === id).sort((a, b) => a.path.localeCompare(b.path, 'en'));
   return { id, count: files.length, payloadBytes: files.reduce((sum, entry) => sum + entry.bytes, 0), paths: files.map(entry => entry.path) };
 });
-const chunkLimitBytes = 24_000_000;
+const chunkLimitBytes = CONTENT_PACK_LIMIT;
 const chunks = [];
 for (const family of summaries.filter(group => group.id !== 'core' && group.count)) {
   let current = null;
@@ -249,17 +283,22 @@ for (const family of summaries.filter(group => group.id !== 'core' && group.coun
   for (const entry of sorted) {
     // PCKPacker also writes file alignment and a path/hash directory. Reserve
     // 128 bytes per entry plus its UTF-8 path and a 256-byte pack header, which
-    // is greater than the 4.7.2 format's 32-byte alignment/directory overhead.
+    // is greater than the supported PCK format's 32-byte alignment/directory overhead.
     const budgetBytes = entry.bytes + Buffer.byteLength(entry.path, 'utf8') + 128;
     if (budgetBytes + 256 > chunkLimitBytes) throw new Error(`Resource exceeds ${chunkLimitBytes}-byte content chunk budget: ${entry.path} (${entry.bytes}); split/convert the authored resource explicitly`);
-    current = bins.find(bin => bin.estimatedPackBytes + budgetBytes <= chunkLimitBytes);
+    // A single immutable resource may exceed the ordinary target. Keep it
+    // alone, record the exception, and retain the unchanged 24 MB hard limit.
+    const oversized = budgetBytes + 256 > CONTENT_PACK_TARGET;
+    current = oversized ? null : bins.find(bin => !bin.oversizedResource && bin.estimatedPackBytes + budgetBytes <= CONTENT_PACK_TARGET);
     if (!current) { current = { family: family.id, id: `${family.id}_${String(++sequence).padStart(3, '0')}`, paths: [], payloadBytes: 0, estimatedPackBytes: 256 }; bins.push(current); }
+    if (oversized) current.oversizedResource = entry.path;
     current.paths.push(entry.path);
     current.payloadBytes += entry.bytes;
     current.estimatedPackBytes += budgetBytes;
   }
   for (const bin of bins) { bin.paths.sort((a, b) => a.localeCompare(b, 'en')); chunks.push(bin); }
 }
+if (chunks.length > 100) throw new Error(`Content plan exceeds the browser's 100-pack limit: ${chunks.length}`);
 const plan = { schemaVersion: 1, coreId: 'core', groups: chunks.map(({ id, paths }) => ({ id, paths })) };
 const report = {
   schemaVersion: 1, mode: startup,
@@ -268,6 +307,7 @@ const report = {
   totalPayloadBytes: entries.reduce((sum, entry) => sum + entry.bytes, 0),
   groups: summaries.map(({ paths, ...group }) => group),
   chunkLimitBytes,
+  targetPackBytes: CONTENT_PACK_TARGET,
   chunks: chunks.map(({ paths, ...chunk }) => ({ ...chunk, count: paths.length })),
   startupParsedScripts: [...parsed].sort(),
   startupPromotions: [...promoted].map(([path, value]) => ({ path, ...value })), unresolved,

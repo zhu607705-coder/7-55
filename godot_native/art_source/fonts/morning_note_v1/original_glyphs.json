@@ -1,0 +1,3715 @@
+{
+  "schema": "755-morning-note-original-glyphs-v1",
+  "family": "755 Morning Note",
+  "family_zh": "晨札像素",
+  "em": 24,
+  "coordinate_system": "top-left within24x24 em; rows are native font pixels; offset=[x,y]; advance in same pixels",
+  "baseline": 20,
+  "design": {
+    "cjk_advance": 24,
+    "ascii_default_advance": 12,
+    "digit_advance": 12,
+    "cap_height": 16,
+    "x_height": 12,
+    "stem_pixels": 2,
+    "description": "Quiet campus notebook ink: short square terminals, open counters and restrained one-cell stair curves. Latin uses16-cell caps/digits,12-cell x-height, proportional letters and tabular12-cell numerals; each is authored directly on the native grid rather than doubling a coarse bitmap. Original CJK construction is retained. No random notches, detached decorative dots, synthetic italic or borrowed font outlines.",
+    "digit_height": 16,
+    "ascender_height": 16,
+    "descender_pixels": 4,
+    "latin_revision": "2026-10-23 humanist native-grid revision"
+  },
+  "provenance": {
+    "origin": "original-manual-grid",
+    "authoring": "Original glyph construction authored for the7:55 project; conventional letter/character skeletons, independent pixel arrangements. No font outline/raster tracing or extraction was used for this file.",
+    "license": "Apache-2.0 for these original project glyph sources; any font family combining them with OFL-derived glyphs must preserve the upstream OFL and accurately disclose the derivative boundary.",
+    "scope": "This file covers printable ASCII and selected manually drawn CJK only. It does not claim an independently original full Chinese typeface.",
+    "external_font_inputs": []
+  },
+  "glyph_count": 137,
+  "ascii_count": 95,
+  "cjk_count": 42,
+  "glyphs": {
+    " ": {
+      "rows": [
+        "."
+      ],
+      "advance": 8,
+      "offset": [
+        0,
+        0
+      ],
+      "origin": "original-manual-grid"
+    },
+    "!": {
+      "rows": [
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "..",
+        "..",
+        "..",
+        "..",
+        "##",
+        "##"
+      ],
+      "advance": 4,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "\"": {
+      "rows": [
+        "##..##",
+        "##..##",
+        "##..##",
+        "##..##",
+        "##..##",
+        "##..##"
+      ],
+      "advance": 8,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "#": {
+      "rows": [
+        "..##..##..",
+        "..##..##..",
+        "..##..##..",
+        "..##..##..",
+        "##########",
+        "##########",
+        "..##..##..",
+        "..##..##..",
+        "##########",
+        "##########",
+        "..##..##..",
+        "..##..##..",
+        "..##..##..",
+        "..##..##.."
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        6
+      ],
+      "origin": "original-manual-grid"
+    },
+    "$": {
+      "rows": [
+        "....##....",
+        "....##....",
+        "..########",
+        "..########",
+        "##..##....",
+        "##..##....",
+        "##..##....",
+        "##..##....",
+        "##..##....",
+        "##..##....",
+        "..######..",
+        "..######..",
+        "....##..##",
+        "....##..##",
+        "....##..##",
+        "....##..##",
+        "....##..##",
+        "....##..##",
+        "########..",
+        "########..",
+        "....##....",
+        "....##...."
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        0
+      ],
+      "origin": "original-manual-grid"
+    },
+    "%": {
+      "rows": [
+        "####....##",
+        "####....##",
+        "####....##",
+        "####....##",
+        "......##..",
+        "......##..",
+        "......##..",
+        "......##..",
+        "....##....",
+        "....##....",
+        "..##......",
+        "..##......",
+        "..##......",
+        "..##......",
+        "##....####",
+        "##....####",
+        "##....####",
+        "##....####"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "&": {
+      "rows": [
+        "..####....",
+        "..####....",
+        "##....##..",
+        "##....##..",
+        "##....##..",
+        "##....##..",
+        "..####....",
+        "..####....",
+        "..##......",
+        "..##......",
+        "##..##..##",
+        "##..##..##",
+        "##....##..",
+        "##....##..",
+        "##....##..",
+        "##....##..",
+        "..####..##",
+        "..####..##"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "'": {
+      "rows": [
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##"
+      ],
+      "advance": 4,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "(": {
+      "rows": [
+        "....##",
+        "....##",
+        "..##..",
+        "..##..",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "..##..",
+        "..##..",
+        "....##",
+        "....##"
+      ],
+      "advance": 8,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    ")": {
+      "rows": [
+        "##....",
+        "##....",
+        "..##..",
+        "..##..",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "..##..",
+        "..##..",
+        "##....",
+        "##...."
+      ],
+      "advance": 8,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "*": {
+      "rows": [
+        "....##....",
+        "....##....",
+        "##..##..##",
+        "##..##..##",
+        "..######..",
+        "..######..",
+        "##..##..##",
+        "##..##..##",
+        "....##....",
+        "....##...."
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        6
+      ],
+      "origin": "original-manual-grid"
+    },
+    "+": {
+      "rows": [
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "##########",
+        "##########",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##...."
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        6
+      ],
+      "origin": "original-manual-grid"
+    },
+    ",": {
+      "rows": [
+        "..##",
+        "..##",
+        "..##",
+        "..##",
+        "##..",
+        "##.."
+      ],
+      "advance": 6,
+      "offset": [
+        1,
+        18
+      ],
+      "origin": "original-manual-grid"
+    },
+    "-": {
+      "rows": [
+        "##########",
+        "##########"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        10
+      ],
+      "origin": "original-manual-grid"
+    },
+    ".": {
+      "rows": [
+        "##",
+        "##"
+      ],
+      "advance": 4,
+      "offset": [
+        1,
+        18
+      ],
+      "origin": "original-manual-grid"
+    },
+    "/": {
+      "rows": [
+        "........##",
+        "........##",
+        "........##",
+        "........##",
+        "......##..",
+        "......##..",
+        "......##..",
+        "......##..",
+        "....##....",
+        "....##....",
+        "..##......",
+        "..##......",
+        "..##......",
+        "..##......",
+        "##........",
+        "##........",
+        "##........",
+        "##........"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "0": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...###...",
+        ".#######.",
+        ".##...##.",
+        "##.....##",
+        "##.....##",
+        "##....###",
+        "##...#.##",
+        "##..#..##",
+        "##..#..##",
+        "##.#...##",
+        "###....##",
+        "##.....##",
+        "##.....##",
+        ".##...##.",
+        ".#######.",
+        "...###..."
+      ],
+      "construction": "Narrow open capsule with a single restrained rising counter slash; tabular12 advance."
+    },
+    "1": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        ".....##..",
+        "....###..",
+        "...####..",
+        "..#####..",
+        ".###.##..",
+        ".##..##..",
+        ".....##..",
+        ".....##..",
+        ".....##..",
+        ".....##..",
+        ".....##..",
+        ".....##..",
+        ".....##..",
+        ".....##..",
+        ".########",
+        ".########"
+      ],
+      "construction": "Sloping entry flag, continuous stem and short baseline foot; distinct from I and bent-foot l."
+    },
+    "2": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "..######..",
+        ".#########",
+        ".##....###",
+        "###.....##",
+        "##......##",
+        "........##",
+        "........##",
+        "........##",
+        ".......###",
+        "......###.",
+        "....####..",
+        "...####...",
+        "..###.....",
+        ".###......",
+        "##########",
+        "##########"
+      ],
+      "construction": "Open upper shoulder and continuous diagonal sweep; full baseline without a seven-segment corner."
+    },
+    "3": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "..######..",
+        "##########",
+        "###....###",
+        "........##",
+        "........##",
+        "........##",
+        ".......###",
+        ".....#####",
+        ".....#####",
+        ".......###",
+        "........##",
+        "........##",
+        "........##",
+        "........##",
+        "##########",
+        "##########"
+      ],
+      "construction": "Two unequal open bowls joined through a short waist; deliberately differs from the closed8."
+    },
+    "4": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        ".......##.",
+        "......###.",
+        "......###.",
+        ".....####.",
+        "....#####.",
+        "...###.##.",
+        "...##..##.",
+        "..###..##.",
+        ".###...##.",
+        ".##....##.",
+        "##########",
+        "##########",
+        ".......##.",
+        ".......##.",
+        ".......##.",
+        ".......##."
+      ],
+      "construction": "Open-top triangular4 with long upright leg and low crossbar."
+    },
+    "5": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        ".#########",
+        ".#########",
+        ".##.......",
+        ".##.......",
+        ".##.......",
+        ".##.......",
+        ".######...",
+        ".########.",
+        ".###..####",
+        "........##",
+        "........##",
+        "........##",
+        "........##",
+        "........##",
+        "##########",
+        "##########"
+      ],
+      "construction": "Short square top, open shoulder and rounded lower bowl; no squared digital lower corner."
+    },
+    "6": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        ".....#####",
+        "...#######",
+        "..####....",
+        ".###......",
+        ".##.......",
+        "###.......",
+        "##........",
+        "##.######.",
+        "##########",
+        "####....##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "###.....##",
+        ".#########",
+        ".#########"
+      ],
+      "construction": "Sweeping open upper entry leading to a wider lower loop;6 is not a rotated9."
+    },
+    "7": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##########",
+        "##########",
+        "........##",
+        "........##",
+        "........##",
+        ".......###",
+        "......###.",
+        "......##..",
+        ".....###..",
+        "....###...",
+        "....##....",
+        "...###....",
+        "...##.....",
+        "...##.....",
+        "..###.....",
+        "..##......"
+      ],
+      "construction": "Full-width square top and a single tapered stepped diagonal; no horizontal middle segment."
+    },
+    "8": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "..######..",
+        ".#########",
+        ".##....###",
+        "###.....##",
+        "##......##",
+        "###.....##",
+        ".###...###",
+        "..#######.",
+        ".#########",
+        ".##....###",
+        "###.....##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##########",
+        ".#########"
+      ],
+      "construction": "Small upper loop and broader lower loop, separated open counters and short waist."
+    },
+    "9": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "..######..",
+        ".#########",
+        ".##....###",
+        "###.....##",
+        "##......##",
+        "##......##",
+        "###.....##",
+        ".####...##",
+        "..########",
+        "....######",
+        "........##",
+        "........##",
+        "........##",
+        ".......###",
+        ".########.",
+        ".#######.."
+      ],
+      "construction": "High round loop and open descending exit;9 has a longer right-side fall than6."
+    },
+    ":": {
+      "rows": [
+        "##",
+        "##",
+        "..",
+        "..",
+        "..",
+        "..",
+        "..",
+        "..",
+        "##",
+        "##"
+      ],
+      "advance": 4,
+      "offset": [
+        1,
+        6
+      ],
+      "origin": "original-manual-grid"
+    },
+    ";": {
+      "rows": [
+        "..##",
+        "..##",
+        "..##",
+        "..##",
+        "....",
+        "....",
+        "..##",
+        "..##",
+        "..##",
+        "..##",
+        "##..",
+        "##.."
+      ],
+      "advance": 6,
+      "offset": [
+        1,
+        10
+      ],
+      "origin": "original-manual-grid"
+    },
+    "<": {
+      "rows": [
+        "........##",
+        "........##",
+        "......##..",
+        "......##..",
+        "..####....",
+        "..####....",
+        "##........",
+        "##........",
+        "..####....",
+        "..####....",
+        "......##..",
+        "......##..",
+        "........##",
+        "........##"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        6
+      ],
+      "origin": "original-manual-grid"
+    },
+    "=": {
+      "rows": [
+        "##########",
+        "##########",
+        "..........",
+        "..........",
+        "..........",
+        "..........",
+        "##########",
+        "##########"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid"
+    },
+    ">": {
+      "rows": [
+        "##........",
+        "##........",
+        "..##......",
+        "..##......",
+        "....####..",
+        "....####..",
+        "........##",
+        "........##",
+        "....####..",
+        "....####..",
+        "..##......",
+        "..##......",
+        "##........",
+        "##........"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        6
+      ],
+      "origin": "original-manual-grid"
+    },
+    "?": {
+      "rows": [
+        "..######..",
+        "..######..",
+        "##......##",
+        "##......##",
+        "........##",
+        "........##",
+        "........##",
+        "........##",
+        "......##..",
+        "......##..",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "..........",
+        "..........",
+        "....##....",
+        "....##...."
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "@": {
+      "rows": [
+        "....######....",
+        "....######....",
+        "..##......##..",
+        "..##......##..",
+        "##..........##",
+        "##..........##",
+        "##..######..##",
+        "##..######..##",
+        "##..##..##..##",
+        "##..##..##..##",
+        "##..##..##..##",
+        "##..##..##..##",
+        "##..########..",
+        "##..########..",
+        "..##..........",
+        "..##..........",
+        "....########..",
+        "....########.."
+      ],
+      "advance": 16,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "A": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "....###...",
+        "...#####..",
+        "...##.###.",
+        "..###..##.",
+        "..##...###",
+        ".###....##",
+        ".##.....##",
+        ".##.....##",
+        "###.....##",
+        "##########",
+        "##########",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "B": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "########..",
+        "##########",
+        "##.....###",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##.....###",
+        "#########.",
+        "##########",
+        "##.....###",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##########",
+        "##########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "C": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...######.",
+        ".#########",
+        ".###....##",
+        "###.....##",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "###.....##",
+        ".#########",
+        ".#########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "D": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "#######...",
+        "#########.",
+        "##....####",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##########",
+        "#########."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "E": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##########",
+        "##########",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "#########.",
+        "#########.",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##########",
+        "##########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "F": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##########",
+        "##########",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "#########.",
+        "#########.",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "G": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...######.",
+        ".#########",
+        ".###....##",
+        "###.....##",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##...#####",
+        "##...#####",
+        "##......##",
+        "##......##",
+        "##......##",
+        "###.....##",
+        ".#########",
+        ".#########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "H": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##########",
+        "##########",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "I": {
+      "advance": 8,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "######",
+        "######",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "..##..",
+        "######",
+        "######"
+      ],
+      "construction": "Short top and bottom crossbars distinguish capital I from1 and lowercase l."
+    },
+    "J": {
+      "advance": 11,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...######",
+        "...######",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        "##....###",
+        "########.",
+        ".#######."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "K": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##......##",
+        "##......##",
+        "##.....###",
+        "##....###.",
+        "##..####..",
+        "##.####...",
+        "#####.....",
+        "####......",
+        "###.......",
+        "###.......",
+        "#####.....",
+        "######....",
+        "##..###...",
+        "##...####.",
+        "##....####",
+        "##......##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "L": {
+      "advance": 11,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "#########",
+        "#########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "M": {
+      "advance": 16,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##..........##",
+        "####.......###",
+        "#####......###",
+        "##.##.....####",
+        "##.###....####",
+        "##..##...#####",
+        "##..###..##.##",
+        "##...##.###.##",
+        "##...#####..##",
+        "##....####..##",
+        "##....###...##",
+        "##..........##",
+        "##..........##",
+        "##..........##",
+        "##..........##",
+        "##..........##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "N": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "###.....##",
+        "####....##",
+        "####....##",
+        "#####...##",
+        "##.##...##",
+        "##.###..##",
+        "##..##..##",
+        "##..###.##",
+        "##...##.##",
+        "##...#####",
+        "##....####",
+        "##....####",
+        "##.....###",
+        "##.....###",
+        "##......##",
+        "##......##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "O": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...####...",
+        ".########.",
+        ".##....##.",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        ".##....##.",
+        ".########.",
+        "...####..."
+      ],
+      "construction": "Soft stepped capsule, wider than the numeral zero; no interior dot."
+    },
+    "P": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "########..",
+        "##########",
+        "##.....###",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##.....###",
+        "##########",
+        "########..",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "##........"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "Q": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...####...",
+        ".########.",
+        ".##....##.",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##....#.##",
+        "##...#####",
+        ".##...###.",
+        ".#########",
+        "...####.##"
+      ],
+      "construction": "Round O counter with an attached lower-right exit stroke; no isolated decorative tail."
+    },
+    "R": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "########..",
+        "##########",
+        "##.....###",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##.....###",
+        "##########",
+        "########..",
+        "##...##...",
+        "##...###..",
+        "##....###.",
+        "##.....###",
+        "##......##",
+        "##......##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "S": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...######.",
+        ".#########",
+        "####....##",
+        "##......##",
+        "##........",
+        "##........",
+        "####......",
+        ".#####....",
+        "...#####..",
+        ".....#####",
+        ".......###",
+        "........##",
+        "........##",
+        "##......##",
+        "##########",
+        ".#########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "T": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##########",
+        "##########",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##...."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "U": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "###.....##",
+        ".#########",
+        ".#########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "V": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "##......##",
+        "###.....##",
+        ".##.....##",
+        ".##.....##",
+        ".##.....##",
+        ".###...###",
+        "..##...##.",
+        "..##...##.",
+        "..###.###.",
+        "...##.##..",
+        "...#####..",
+        "....###..."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "W": {
+      "advance": 16,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##..........##",
+        "##..........##",
+        "##..........##",
+        "##..........##",
+        "##..........##",
+        "##..........##",
+        "##....###...##",
+        "###...###...##",
+        ".##..#####..##",
+        ".##..##.##..##",
+        ".##..##.##..##",
+        ".##.###.###.##",
+        ".##.##...##.##",
+        ".#####...#####",
+        "..####...####.",
+        "..###.....###."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "X": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##......##",
+        "###.....##",
+        ".##.....##",
+        ".###...###",
+        "..##...##.",
+        "..###.###.",
+        "...#####..",
+        "....###...",
+        "....###...",
+        "....###...",
+        "...#####..",
+        "..###.###.",
+        "..##...##.",
+        ".###...###",
+        "###.....##",
+        "###.....##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "Y": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##......##",
+        "###.....##",
+        ".##.....##",
+        ".###....##",
+        "..##...###",
+        "..###..##.",
+        "...##.###.",
+        "...#####..",
+        "....####..",
+        "....###...",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##....",
+        "....##...."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "Z": {
+      "advance": 12,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##########",
+        "##########",
+        "........##",
+        "........##",
+        ".......###",
+        "......###.",
+        "......##..",
+        ".....###..",
+        "....###...",
+        "...###....",
+        "...##.....",
+        "..###.....",
+        ".###......",
+        ".##.......",
+        "##########",
+        "##########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "[": {
+      "rows": [
+        "######",
+        "######",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "##....",
+        "######",
+        "######"
+      ],
+      "advance": 8,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "\\": {
+      "rows": [
+        "##........",
+        "##........",
+        "##........",
+        "##........",
+        "..##......",
+        "..##......",
+        "..##......",
+        "..##......",
+        "....##....",
+        "....##....",
+        "......##..",
+        "......##..",
+        "......##..",
+        "......##..",
+        "........##",
+        "........##",
+        "........##",
+        "........##"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "]": {
+      "rows": [
+        "######",
+        "######",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "######",
+        "######"
+      ],
+      "advance": 8,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "^": {
+      "rows": [
+        "....##....",
+        "....##....",
+        "..##..##..",
+        "..##..##..",
+        "##......##",
+        "##......##"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "_": {
+      "rows": [
+        "##########",
+        "##########"
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        21
+      ],
+      "origin": "original-manual-grid"
+    },
+    "`": {
+      "rows": [
+        "##..",
+        "##..",
+        "..##",
+        "..##"
+      ],
+      "advance": 6,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "a": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        ".######..",
+        "#########",
+        "##....###",
+        ".......##",
+        ".......##",
+        "...######",
+        ".########",
+        "####...##",
+        "##.....##",
+        "##.....##",
+        "#########",
+        ".########"
+      ],
+      "construction": "Double-storey a: short open top and broad lower counter; readable beside o and9."
+    },
+    "b": {
+      "advance": 11,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##..###..",
+        "#########",
+        "#####.###",
+        "###....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "#########",
+        "#########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "c": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...######",
+        ".########",
+        "####...##",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "###......",
+        ".########",
+        ".########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "d": {
+      "advance": 11,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        ".......##",
+        ".......##",
+        ".......##",
+        ".......##",
+        "...###.##",
+        ".########",
+        "####.####",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "###....##",
+        ".########",
+        ".########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "e": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...#####.",
+        ".########",
+        "####...##",
+        "##.....##",
+        "##.....##",
+        "#########",
+        "#########",
+        "##.......",
+        "##.......",
+        "###......",
+        ".########",
+        ".########"
+      ],
+      "construction": "Open lower-right aperture, high crossbar and single flowing bowl; open at small display sizes."
+    },
+    "f": {
+      "advance": 10,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        ".....###",
+        "...#####",
+        "..######",
+        "..##....",
+        "..##....",
+        "########",
+        "########",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##...."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "g": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...######",
+        ".########",
+        "####...##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "###....##",
+        ".##....##",
+        ".########",
+        "..#######",
+        ".......##",
+        ".......##",
+        "#########",
+        "#########"
+      ],
+      "construction": "Single-storey open-tail g with broad counter and four-cell descender; never an upside-down a."
+    },
+    "h": {
+      "advance": 11,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##..###..",
+        "#########",
+        "#####.###",
+        "###....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "i": {
+      "advance": 5,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "###",
+        "###",
+        "...",
+        "...",
+        "...",
+        ".##",
+        ".##",
+        ".##",
+        ".##",
+        ".##",
+        ".##",
+        ".##",
+        ".##",
+        ".##",
+        ".##",
+        ".##"
+      ],
+      "construction": "Separate two-row dot and compact twelve-cell upright; proportional narrow advance."
+    },
+    "j": {
+      "advance": 8,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...###",
+        "...###",
+        "......",
+        "......",
+        "......",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "....##",
+        "...###",
+        "#####.",
+        "#####."
+      ],
+      "construction": "Separate dot, upright and attached descending left hook; baseline and descender fit24 cells."
+    },
+    "k": {
+      "advance": 11,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.......",
+        "##.....##",
+        "##....###",
+        "##...####",
+        "##.####..",
+        "######...",
+        "####.....",
+        "####.....",
+        "#####....",
+        "##.####..",
+        "##..#####",
+        "##....###"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "l": {
+      "advance": 7,
+      "offset": [
+        1,
+        4
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "###..",
+        "###..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".##..",
+        ".###.",
+        "..###",
+        "..###"
+      ],
+      "construction": "Small rising cap and visible right-turning baseline foot; distinct from I and numeral1."
+    },
+    "m": {
+      "advance": 15,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "######..####.",
+        "#############",
+        "###..####..##",
+        "##....##...##",
+        "##....##...##",
+        "##....##...##",
+        "##....##...##",
+        "##....##...##",
+        "##....##...##",
+        "##....##...##",
+        "##....##...##",
+        "##....##...##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "n": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.#####.",
+        "#########",
+        "####...##",
+        "###....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "o": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...###...",
+        ".#######.",
+        ".##...##.",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        ".##...##.",
+        ".#######.",
+        "...###..."
+      ],
+      "construction": "Soft stepped capsule, wider than the numeral zero; no interior dot."
+    },
+    "p": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "#######..",
+        "#########",
+        "###...###",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "###....##",
+        "#########",
+        "########.",
+        "##.......",
+        "##.......",
+        "##......."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "q": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "...######",
+        ".########",
+        "####...##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "###....##",
+        ".##....##",
+        ".########",
+        "..#######",
+        ".......##",
+        ".......##",
+        ".......##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "r": {
+      "advance": 9,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.###.",
+        "#######",
+        "####.##",
+        "###....",
+        "##.....",
+        "##.....",
+        "##.....",
+        "##.....",
+        "##.....",
+        "##.....",
+        "##.....",
+        "##....."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "s": {
+      "advance": 10,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "..######",
+        ".#######",
+        "###...##",
+        "##......",
+        "###.....",
+        ".####...",
+        "..#####.",
+        "....####",
+        "......##",
+        "......##",
+        "########",
+        "########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "t": {
+      "advance": 9,
+      "offset": [
+        1,
+        5
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "..##...",
+        "..##...",
+        "..##...",
+        "..##...",
+        "#######",
+        "#######",
+        "..##...",
+        "..##...",
+        "..##...",
+        "..##...",
+        "..##...",
+        "..##...",
+        "..###..",
+        "...####",
+        "...####"
+      ],
+      "construction": "Short ascender and low curved foot; does not rise to full-cap height."
+    },
+    "u": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "###....##",
+        ".########",
+        ".########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "v": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "###....##",
+        ".##....##",
+        ".##....##",
+        ".##....##",
+        ".###..###",
+        "..##..##.",
+        "..######.",
+        "...####..",
+        "...####.."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "w": {
+      "advance": 15,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.........##",
+        "##.........##",
+        "##.........##",
+        "###........##",
+        ".##...##...##",
+        ".##...##...##",
+        ".##..####..##",
+        ".##..####..##",
+        ".##.######.##",
+        ".#####..#####",
+        "..####..####.",
+        "..###....###."
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "x": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.....##",
+        "###....##",
+        ".##....##",
+        ".###..###",
+        "..######.",
+        "...####..",
+        "....##...",
+        "...####..",
+        "..######.",
+        ".###..###",
+        "###....##",
+        "###....##"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "y": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "##.....##",
+        "##.....##",
+        "##.....##",
+        "###....##",
+        ".##....##",
+        ".##....##",
+        ".##....##",
+        ".###..###",
+        "..##..##.",
+        "..######.",
+        "...####..",
+        "...####..",
+        "....##...",
+        "...###...",
+        "#####....",
+        "#####...."
+      ],
+      "construction": "Open diagonal y with left-descending tail, distinct from the looped g."
+    },
+    "z": {
+      "advance": 11,
+      "offset": [
+        1,
+        8
+      ],
+      "origin": "original-manual-grid",
+      "rows": [
+        "#########",
+        "#########",
+        ".......##",
+        "......###",
+        ".....###.",
+        "....###..",
+        "....##...",
+        "...###...",
+        "..###....",
+        ".###.....",
+        "#########",
+        "#########"
+      ],
+      "construction": "Independently drawn native-grid strokes; two-cell stems and one-cell stair transitions, not a doubled coarse bitmap."
+    },
+    "{": {
+      "rows": [
+        "....####",
+        "....####",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "##......",
+        "##......",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "..##....",
+        "....####",
+        "....####"
+      ],
+      "advance": 10,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "|": {
+      "rows": [
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##",
+        "##"
+      ],
+      "advance": 4,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "}": {
+      "rows": [
+        "####....",
+        "####....",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "......##",
+        "......##",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "....##..",
+        "####....",
+        "####...."
+      ],
+      "advance": 10,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "~": {
+      "rows": [
+        "..##....##",
+        "..##....##",
+        "##..####..",
+        "##..####.."
+      ],
+      "advance": 12,
+      "offset": [
+        1,
+        6
+      ],
+      "origin": "original-manual-grid"
+    },
+    "一": {
+      "rows": [
+        "###################",
+        "###################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        11
+      ],
+      "origin": "original-manual-grid"
+    },
+    "七": {
+      "rows": [
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "####################",
+        "####################",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##.......##.",
+        "........##.......##.",
+        "........##.......##.",
+        "........###########.",
+        ".........#########.."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "三": {
+      "rows": [
+        "..################..",
+        "..################..",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "...##############...",
+        "...##############...",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        3
+      ],
+      "origin": "original-manual-grid"
+    },
+    "上": {
+      "rows": [
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........###########.",
+        "........###########.",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "下": {
+      "rows": [
+        "####################",
+        "####################",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##.##.......",
+        "........##.###......",
+        "........##..###.....",
+        "........##...####...",
+        "........##....####..",
+        "........##......###.",
+        "........##.......##.",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##..........",
+        "........##.........."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        3
+      ],
+      "origin": "original-manual-grid"
+    },
+    "中": {
+      "rows": [
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "##################",
+        "##################",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##################",
+        "#################.",
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........"
+      ],
+      "advance": 24,
+      "offset": [
+        3,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "二": {
+      "rows": [
+        "...##############...",
+        "...##############...",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "....................",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        5
+      ],
+      "origin": "original-manual-grid"
+    },
+    "五": {
+      "rows": [
+        ".##################.",
+        ".##################.",
+        "........##..........",
+        "........##..........",
+        ".......###..........",
+        ".......##...........",
+        ".......##...........",
+        "....############....",
+        "....#############...",
+        "......##.......##...",
+        ".....###.......##...",
+        ".....##........##...",
+        ".....##........##...",
+        "....###........##...",
+        "....##.........##...",
+        "....##.........##...",
+        "...###.........##...",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        3
+      ],
+      "origin": "original-manual-grid"
+    },
+    "人": {
+      "rows": [
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "........###.........",
+        "........##..........",
+        "........##..........",
+        "........###.........",
+        "........####........",
+        ".......#####........",
+        ".......##.###.......",
+        "......###..##.......",
+        "......##...###......",
+        ".....###....##......",
+        ".....##.....###.....",
+        "....###......###....",
+        "...###........###...",
+        "..###..........###..",
+        ".###............###.",
+        "###..............###",
+        "##................##"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "光": {
+      "rows": [
+        ".........##.........",
+        ".........##.........",
+        ".##......##......##.",
+        ".###.....##.....###.",
+        "..##.....##.....##..",
+        "..###....##....###..",
+        "...###...##...###...",
+        "....##...##...##....",
+        ".........##.........",
+        "####################",
+        "####################",
+        "......##....##......",
+        "......##....##......",
+        "......##....##......",
+        ".....###....##......",
+        ".....##.....##......",
+        ".....##.....##......",
+        "....###.....##....##",
+        "..####......##....##",
+        ".####.............##",
+        "###..........######.",
+        "##...........######."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "到": {
+      "rows": [
+        "....................##",
+        "##############......##",
+        "##############......##",
+        ".......#............##",
+        "......#.........##..##",
+        "....##...#......##..##",
+        "...#......#.....##..##",
+        "..##########....##..##",
+        "............#...##..##",
+        "......##........##..##",
+        "......##........##..##",
+        "......##........##..##",
+        ".############...##..##",
+        ".############...##..##",
+        "......##........##..##",
+        "......##........##..##",
+        "......##............##",
+        "......##............##",
+        "......##............##",
+        "......##............##",
+        "##############...#####",
+        "##############...###.."
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "至 plus 刂; left roof, angular middle, soil stem and distinct paired knife strokes"
+    },
+    "功": {
+      "rows": [
+        "................##....",
+        "................##....",
+        "#########.......##....",
+        "#########.......##....",
+        "....##..........##....",
+        "....##..........##....",
+        "....##.....##########.",
+        "....##.....###########",
+        "....##..........##..##",
+        "....##.........###..##",
+        "....##.........##...##",
+        "....##.........##...##",
+        "....##........###...##",
+        "....##........##....##",
+        "....##.......###....##",
+        "....##.......##.....##",
+        "....##......###.....##",
+        "....##.....###......##",
+        "#########..##.......##",
+        "#########.###....###..",
+        ".........###.....###..",
+        ".........##..........."
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid",
+      "construction": "工 plus 力; right downstroke sweeps left through a separate horizontal-hook stroke"
+    },
+    "十": {
+      "rows": [
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "####################",
+        "####################",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##........."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "口": {
+      "rows": [
+        "################",
+        "################",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "################",
+        "###############."
+      ],
+      "advance": 24,
+      "offset": [
+        4,
+        3
+      ],
+      "origin": "original-manual-grid"
+    },
+    "土": {
+      "rows": [
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "..################..",
+        "..################..",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "大": {
+      "rows": [
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "####################",
+        "####################",
+        "........#####.......",
+        "........##.##.......",
+        ".......###.###......",
+        ".......##...##......",
+        "......###...###.....",
+        "......##.....##.....",
+        ".....###.....###....",
+        "...####.......###...",
+        "..####.........###..",
+        ".###............###.",
+        "###..............###",
+        "##................##"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "小": {
+      "rows": [
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "...##....##....##...",
+        "...##....##....##...",
+        "..###....##....###..",
+        "..##.....##.....##..",
+        "..##.....##.....##..",
+        ".###.....##.....###.",
+        ".##......##......##.",
+        "###......##......###",
+        "##.......##.......##",
+        "##.......##.......##",
+        ".........##.........",
+        ".........##.........",
+        "......#####.........",
+        "......####.........."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "山": {
+      "rows": [
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "........##........",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##......##......##",
+        "##################",
+        ".###############.."
+      ],
+      "advance": 24,
+      "offset": [
+        3,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "工": {
+      "rows": [
+        "..################..",
+        "..################..",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        3
+      ],
+      "origin": "original-manual-grid"
+    },
+    "度": {
+      "rows": [
+        "..........#..........",
+        "...........##........",
+        ".....................",
+        ".....................",
+        "..###################",
+        "..###################",
+        "..##....#.......#....",
+        "..##....#.......#....",
+        "..##....#.......#....",
+        "..##.################",
+        "..##....#.......#....",
+        "..##....#.......#....",
+        "..##....#.......#....",
+        "..##....#########....",
+        "..##.................",
+        "..##.................",
+        ".###..#############..",
+        ".##......#.......##..",
+        ".##.......##....#....",
+        ".##.........####.....",
+        "###......###..###....",
+        "##....###........####",
+        "##..................."
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "广 over 廿 and 又; no dropped inner uprights or crossed final stroke"
+    },
+    "心": {
+      "rows": [
+        "........##...........",
+        "........###..........",
+        ".........###.........",
+        "..........###........",
+        "...........##........",
+        ".....................",
+        "................##...",
+        "................###..",
+        "..##..##.........##..",
+        "..##..##.........###.",
+        ".###..##..........##.",
+        ".##...##..........###",
+        ".##...##...........##",
+        "###...##.............",
+        "##....##........##...",
+        "##....##........##...",
+        "......###.......##...",
+        ".......##.......##...",
+        ".......#########.....",
+        "........########....."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "成": {
+      "rows": [
+        "............##...#....",
+        "............##....#...",
+        "............##.....#..",
+        "............##........",
+        "............##........",
+        ".####################.",
+        ".####################.",
+        "...##........##.......",
+        "...##........##.......",
+        "...##........##....#..",
+        "...########..##...#...",
+        "...##.....#..##...#...",
+        "...##.....#..##..#....",
+        "...##.....#..####.....",
+        "...##.....#...###.....",
+        "..###.....#...###.....",
+        "..##......#...###.....",
+        ".###......#..#.###....",
+        ".##....####.#...##...#",
+        "###.............###..#",
+        "##...............###.#",
+        "##................####",
+        "...................##."
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "厂-like left sweep, internal hooked box, long slant hook, crossing slash and separate upper dot"
+    },
+    "文": {
+      "rows": [
+        "........##...........",
+        "........###..........",
+        ".........###.........",
+        "..........##.........",
+        ".....................",
+        "####################.",
+        "####################.",
+        "....##.........##....",
+        "....###.......###....",
+        ".....##.......##.....",
+        ".....###.....###.....",
+        "......###...###......",
+        ".......##...##.......",
+        ".......###.###.......",
+        "........#####........",
+        "........#####........",
+        ".......#######.......",
+        "......###...###......",
+        "....####.....####....",
+        "..#####.......#####..",
+        "#####...........#####",
+        "###...............###"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "日": {
+      "rows": [
+        "################",
+        "################",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "################",
+        "################",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "##............##",
+        "################",
+        "###############."
+      ],
+      "advance": 24,
+      "offset": [
+        4,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "早": {
+      "rows": [
+        "...##############...",
+        "...##############...",
+        "...##..........##...",
+        "...##..........##...",
+        "...##############...",
+        "...##############...",
+        "...##..........##...",
+        "...##..........##...",
+        "...##..........##...",
+        "...##############...",
+        "...#############....",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "####################",
+        "####################",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##........."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "是": {
+      "rows": [
+        "....############.....",
+        "....##........##.....",
+        "....##........##.....",
+        "....############.....",
+        "....##........##.....",
+        "....##........##.....",
+        "....############.....",
+        ".....................",
+        ".....................",
+        ".....................",
+        "####################.",
+        "####################.",
+        ".........##..........",
+        ".....##..##..........",
+        ".....##..#########...",
+        "....###..##..........",
+        "....##...##..........",
+        "...###...##..........",
+        "...#####.##..........",
+        "..#########..........",
+        ".###...#########.....",
+        "###.......###########",
+        "##.............######"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "日 over the walking-foot structure; lower stem, short right crossbar and spreading final stroke"
+    },
+    "晨": {
+      "rows": [
+        ".....############.....",
+        ".....##........##.....",
+        ".....##........##.....",
+        ".....############.....",
+        ".....##........##.....",
+        ".....##........##.....",
+        ".....############.....",
+        "......................",
+        "......................",
+        ".####################.",
+        ".####################.",
+        "...##.................",
+        "...##.#############...",
+        "...##.................",
+        "...##.................",
+        "...#################..",
+        "..###..##.......#.....",
+        "..##...##......##.....",
+        ".###...##...#.####....",
+        ".##....#####.#..####..",
+        "###....##........####.",
+        "##.................###",
+        "##..................##"
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "日 over 辰; compact inner horizontal strokes remain one pixel to preserve counters"
+    },
+    "月": {
+      "rows": [
+        "....#############.",
+        "...###############",
+        "...##...........##",
+        "...##...........##",
+        "...##...........##",
+        "...##...........##",
+        "...##...........##",
+        "...###############",
+        "...###############",
+        "...##...........##",
+        "...##...........##",
+        "...##...........##",
+        "...##...........##",
+        "...###############",
+        "..################",
+        "..##............##",
+        "..##............##",
+        ".###............##",
+        "###.............##",
+        "##..........######",
+        "##..........####.."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "木": {
+      "rows": [
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        "####################.",
+        "####################.",
+        "........#####........",
+        ".......#######.......",
+        ".......####.##.......",
+        "......#####.###......",
+        ".....###.##..###.....",
+        ".....##..##...##.....",
+        "....###..##...###....",
+        "...###...##....###...",
+        ".####....##.....####.",
+        "####.....##......####",
+        "##.......##........##",
+        ".........##.........."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "本": {
+      "rows": [
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        "####################.",
+        "####################.",
+        "........#####........",
+        ".......#######.......",
+        ".......####.##.......",
+        "......#####.###......",
+        ".....###.##..###.....",
+        ".....##..##...##.....",
+        "....###..##...###....",
+        "...###...##....###...",
+        "..#################..",
+        ".###############.###.",
+        "###......##.......###",
+        "##.......##........##",
+        ".........##.........."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "札": {
+      "rows": [
+        "....##................",
+        "....##.......##.......",
+        "....##.......##.......",
+        "....##.......##.......",
+        "....##.......##.......",
+        "....##.......##.......",
+        "#########....##.......",
+        "#########....##.......",
+        "...#####.....##.......",
+        "...#####.....##.......",
+        "..#######....##.......",
+        ".#####.##....##.......",
+        ".##.##.###...##.......",
+        ".##.##..##...##.......",
+        "###.##..##...##.......",
+        "##..##.......##.....##",
+        "....##.......##.....##",
+        "....##.......###....##",
+        "....##........########",
+        "....##.........######."
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid",
+      "construction": "木 plus 乚; the right component is a vertical bend and hook, not 乙"
+    },
+    "水": {
+      "rows": [
+        "..........##..........",
+        "..........##..........",
+        "..........##..........",
+        "..........##..........",
+        "..........##......##..",
+        "..........##.....###..",
+        "..#####...##....###...",
+        "..#####...##...###....",
+        "......##..##..###.....",
+        ".....###..######......",
+        ".....##...#####.......",
+        ".....##...##.##.......",
+        "....###...##.###......",
+        "...###....##..###.....",
+        "...##.....##...##.....",
+        "..###.....##...###....",
+        ".###......##....####..",
+        "###.......##.....####.",
+        "##........##.......###",
+        ".......#####........##",
+        ".......###............"
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        2
+      ],
+      "origin": "original-manual-grid"
+    },
+    "求": {
+      "rows": [
+        "...............##....",
+        ".........##....###...",
+        ".........##.....###..",
+        ".........##......##..",
+        ".........##..........",
+        "####################.",
+        "####################.",
+        ".........##..........",
+        ".........##..........",
+        ".##......##......##..",
+        ".####....##....####..",
+        "..####...##..#####...",
+        "....##...##.####.....",
+        "......##.##.##.......",
+        ".....###.##.###......",
+        "....###..##..###.....",
+        "...###...##...####...",
+        "..###....##....####..",
+        ".###.....##......###.",
+        ".##......##.......###",
+        "......#####........##",
+        "......###............"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "central hooked stem; separate upper-right dot and paired left/right strokes"
+    },
+    "王": {
+      "rows": [
+        ".##################.",
+        ".##################.",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "..################..",
+        "..################..",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        3
+      ],
+      "origin": "original-manual-grid"
+    },
+    "生": {
+      "rows": [
+        ".........##.........",
+        ".....##..##.........",
+        "....###..##.........",
+        "....##...##.........",
+        "....##...##.........",
+        "...###...##.........",
+        "..#################.",
+        "..#################.",
+        "..##.....##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "..################..",
+        "..################..",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        ".........##.........",
+        "####################",
+        "####################"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid"
+    },
+    "等": {
+      "rows": [
+        "...##.........##.....",
+        "..###........###.....",
+        ".########....########",
+        ".##.........###......",
+        "###..#.....###..#....",
+        "##...#.....##....#...",
+        "......#..........#...",
+        ".....................",
+        "..........#..........",
+        "..........#..........",
+        "....##############...",
+        "..........#..........",
+        "..........#..........",
+        "..........#..........",
+        "..###################",
+        ".....................",
+        ".....................",
+        "..###################",
+        "...............#.....",
+        ".....##........#.....",
+        ".......#.......#.....",
+        "............####....."
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "竹 over 寺; soil top and the lower 寸 hook/dot remain separate"
+    },
+    "签": {
+      "rows": [
+        "...##.........##.....",
+        "..###........###.....",
+        ".########....########",
+        ".##.........###......",
+        "###..#.....###..#....",
+        "##...#.....##....#...",
+        "......#..........#...",
+        "..........###........",
+        ".........######......",
+        ".......####.####.....",
+        "......####....###....",
+        ".....###.......####..",
+        "....###.........####.",
+        "....#############.##.",
+        ".....................",
+        ".....................",
+        ".....#....#......#...",
+        ".....#.....#....#....",
+        "......#....#...#.....",
+        "..............#......",
+        ".....................",
+        "...#################.",
+        "...#################."
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "竹 over 佥; the lower component retains its person roof, inner bar, three strokes and bottom bar"
+    },
+    "纬": {
+      "rows": [
+        "....##........##......",
+        "...###........##......",
+        "...##.........##......",
+        "..###...#############.",
+        "..##....#############.",
+        ".######.......##......",
+        ".##.###.......##......",
+        "....##........##......",
+        "...###...###########..",
+        "...##....###########..",
+        "..###.........##......",
+        "..##..........##......",
+        ".#####........##......",
+        ".##.....#############.",
+        "........#############.",
+        "..............##....##",
+        "..............##....##",
+        ".....##.......##....##",
+        "...####.......##....##",
+        ".#####........##.#####",
+        "####..........##.###..",
+        "##............##......"
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "纟 plus 韦; three crossbars, right hook and through-stem have visible gaps"
+    },
+    "经": {
+      "rows": [
+        "....##................",
+        "...###...###########..",
+        "...##....###########..",
+        "..###..............#..",
+        "..##.............##...",
+        ".######.........#.....",
+        ".##.###.......##......",
+        "....##.......#..##....",
+        "...###.....##.....#...",
+        "...##.....#........##.",
+        "..###................#",
+        "..##..................",
+        ".#####...############.",
+        ".##......############.",
+        "...............##.....",
+        "...............##.....",
+        "...............##.....",
+        ".....##........##.....",
+        "...####........##.....",
+        ".#####.........##.....",
+        "####...........##.....",
+        "##......##############",
+        "........##############"
+      ],
+      "advance": 24,
+      "offset": [
+        1,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "纟 plus 𢀖; top right is the horizontal-sweep/dot structure above 工, not 又 over 土"
+    },
+    "话": {
+      "rows": [
+        "..##.............##..",
+        "..###..........##....",
+        "...###......###......",
+        "....##....##..##.....",
+        "..............##.....",
+        "..............##.....",
+        "........#############",
+        "#####...#############",
+        "#####.........##.....",
+        "....##........##.....",
+        "....##........##.....",
+        "....##...############",
+        "....##...############",
+        "....##...##........##",
+        "....##...##........##",
+        "....##...##........##",
+        "....##.#.##........##",
+        "....###..##........##",
+        "....###..##........##",
+        "....##...############",
+        ".........###########."
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        2
+      ],
+      "origin": "original-manual-grid",
+      "construction": "讠 plus 舌; right slanted roof, crossbar/stem, and open mouth counter"
+    },
+    "走": {
+      "rows": [
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        "...##############....",
+        "...##############....",
+        ".........##..........",
+        ".........##..........",
+        ".........##..........",
+        "####################.",
+        "####################.",
+        ".........##..........",
+        ".........##..........",
+        ".....##..##..........",
+        ".....##..#########...",
+        "....###..##..........",
+        "....##...##..........",
+        "...###...##..........",
+        "...#####.##..........",
+        "..#########..........",
+        ".###...#########.....",
+        "###.......###########",
+        "##.............######"
+      ],
+      "advance": 24,
+      "offset": [
+        2,
+        1
+      ],
+      "origin": "original-manual-grid",
+      "construction": "soil top over walking-foot structure"
+    },
+    "门": {
+      "rows": [
+        "..##..............",
+        "..###.###########.",
+        "...###############",
+        "....##..........##",
+        "................##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##..............##",
+        "##...........#####",
+        ".............###.."
+      ],
+      "advance": 24,
+      "offset": [
+        3,
+        2
+      ],
+      "origin": "original-manual-grid"
+    }
+  }
+}

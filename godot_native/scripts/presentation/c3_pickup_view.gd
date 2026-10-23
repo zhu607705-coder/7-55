@@ -28,7 +28,7 @@ func configure(scene:Node2D,layers:RefCounted,state:Dictionary,player:Vector2,ca
 		start_clock=float(layers.clock_ms) if layers!=null else 0.0
 		crowd.light_alpha=1;crowd.shadow_alpha=0
 		reduced=bool(snapshot.native.settings.get("reduced_motion",false))
-	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	background=_texture("res://assets/rpg/interiors/canteen_interior.png")
 func pose(milliseconds:float)->Dictionary:return Timeline.sample(milliseconds,reduced,start_player,start_camera,start_zoom)
 func _texture(path:String)->Texture2D:

@@ -1,0 +1,463 @@
+{
+  "schema": "755-art-direction-v1",
+  "version": "1.1.0",
+  "status": "fine-pixel-revision-locked-new-batches-legacy-coarse-receipts-retained",
+  "genre": "modern-campus-narrative-puzzle",
+  "platforms": [
+    "godot-native",
+    "godot-web-desktop",
+    "godot-web-mobile"
+  ],
+  "projection": {
+    "world": "orthographic-oblique-top-down",
+    "floorAxes": "screen-horizontal-and-screen-vertical-no-isometric-diamonds",
+    "verticals": "upright-on-screen",
+    "vanishingPoints": false,
+    "cameraChanges": false,
+    "existingExceptions": [
+      "Authored theater-to-lake side-view approach retains its separate camera and source-coordinate manifest.",
+      "Approved Chapter4 spatial stair renderer retains its existing camera and controller gates.",
+      "Portrait phone apps retain their430x860 viewport and readable native text."
+    ]
+  },
+  "grid": {
+    "logicalPixel": 1,
+    "tile": [
+      16,
+      16
+    ],
+    "subtile": 8,
+    "worldSourceScale": 4,
+    "tileSourcePixels": [
+      64,
+      64
+    ],
+    "sourceGridOrigin": [
+      0,
+      0
+    ],
+    "resampling": "nearest-neighbor-only-after-native-grid-reconstruction",
+    "physicsGridSnapping": false,
+    "legacyMapCoordinates": "Preserve exact source rectangle, collision mask, checkpoints and measured anchors. Art grid does not authorize moving physics onto a64px tile grid.",
+    "units": "composition units;5fine native pixels per previous logical art pixel",
+    "finePixelsPerCompositionUnit": 5,
+    "fineTilePixels": [
+      80,
+      80
+    ],
+    "worldSourceScaleMeaning": "legacy coarse export scale only; new fine masters are native1x and declare their original scene placement rectangle",
+    "newMasterExportScale": 1,
+    "newArtResampling": "nearest; uniform scene placement; no coarse240x135 raster enlarged into a1200x675 claim"
+  },
+  "profiles": {
+    "character": {
+      "logicalFrame": [
+        24,
+        32
+      ],
+      "sourceFrame": [
+        96,
+        128
+      ],
+      "visibleBodyTarget": [
+        16,
+        28
+      ],
+      "headHeight": 9,
+      "headWidth": 12,
+      "outlinePixels": 1,
+      "directions": [
+        "down",
+        "side",
+        "up"
+      ],
+      "walkFramesPerDirection": 8,
+      "frameMs": 110,
+      "footCollisionSource": {
+        "width": 30,
+        "height": 22.5,
+        "offsetX": 33,
+        "offsetY": 101.5
+      },
+      "motion": "Preserve existing speed, continuous movement, foot box, display scales and approach depth curve.",
+      "status": "legacy-runtime-reference; new fine masters use fineCharacter with explicit source placement"
+    },
+    "environment": {
+      "tileLogical": [
+        16,
+        16
+      ],
+      "wallThickness": 4,
+      "wallFaceHeight": 24,
+      "doorClearWidth": 16,
+      "doorHeight": 24,
+      "stepRise": 4,
+      "stepTread": 8,
+      "tableTopHeight": 12,
+      "chairSeatHeight": 8,
+      "bedTopHeight": 8,
+      "treeMinHeight": 48,
+      "units": "logical-art-pixels-for-new-compositions-only"
+    },
+    "itemIcon": {
+      "logicalFrame": [
+        16,
+        16
+      ],
+      "padding": 1,
+      "optionalInspectFrame": [
+        32,
+        32
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    "uiIcon": {
+      "logicalFrame": [
+        16,
+        16
+      ],
+      "outlinePixels": 1,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    "effect": {
+      "logicalCell": [
+        16,
+        16
+      ],
+      "maxFrames": 8,
+      "alpha": [
+        0,
+        85,
+        170,
+        255
+      ],
+      "colorsPerEffectMax": 4
+    },
+    "opening": {
+      "logicalCanvas": [
+        160,
+        160
+      ],
+      "sourceCanvas": [
+        640,
+        640
+      ],
+      "tileCount": [
+        10,
+        10
+      ],
+      "projection": "orthographic-oblique-top-down",
+      "fullViewportCover": true,
+      "cameraOrArtMayNotStretch": true,
+      "status": "historical-coarse-accepted-before-user-fine-pixel-revision",
+      "calibration": "The initial320px planning canvas made the sleeping head roughly twice the world proportion. Native160px composition selected from the actual grid-normalized trial before first production acceptance."
+    },
+    "promotion": {
+      "landscapeLogical": [
+        480,
+        270
+      ],
+      "portraitLogical": [
+        270,
+        480
+      ],
+      "pixelScale": "integer-export-no-independent-style-change",
+      "projection": "same-oblique-world-grammar"
+    },
+    "fineCharacter": {
+      "logicalFrame": [
+        24,
+        32
+      ],
+      "compositionFrame": [
+        24,
+        32
+      ],
+      "visibleBodyTarget": [
+        80,
+        140
+      ],
+      "headSize": [
+        60,
+        45
+      ],
+      "colorBudget": 24,
+      "alpha": [
+        0,
+        255
+      ],
+      "nativeMaster": true,
+      "runtimePlacementSourceFrame": [
+        96,
+        128
+      ],
+      "runtimePhysicsUnchanged": true,
+      "nativeRaster": [
+        120,
+        160
+      ]
+    },
+    "fineStage": {
+      "logicalCanvas": [
+        240,
+        135
+      ],
+      "compositionCanvas": [
+        240,
+        135
+      ],
+      "worldViewport": [
+        960,
+        540
+      ],
+      "colorBudget": 32,
+      "alpha": [
+        255
+      ],
+      "actorAtlas": [
+        480,
+        320
+      ],
+      "actorFrame": [
+        120,
+        160
+      ],
+      "actorColumns": 4,
+      "actorRows": 2,
+      "nativeMaster": true,
+      "projection": "orthographic-oblique-top-down",
+      "display": "uniform-contain-full-stage",
+      "nativeRaster": [
+        1200,
+        675
+      ]
+    },
+    "fineOpening": {
+      "logicalCanvas": [
+        160,
+        160
+      ],
+      "compositionCanvas": [
+        160,
+        160
+      ],
+      "colorBudget": 32,
+      "nativeMaster": true,
+      "fullViewportCover": true,
+      "nativeRaster": [
+        800,
+        800
+      ]
+    }
+  },
+  "palette": {
+    "name": "755-campus-morning-32",
+    "colors": [
+      "202B35",
+      "344452",
+      "526B7A",
+      "7993A1",
+      "A9BCC2",
+      "D8C7A0",
+      "F4EAD5",
+      "FFF0B2",
+      "44332D",
+      "70503B",
+      "A1744E",
+      "C79B62",
+      "766E63",
+      "A39B87",
+      "C5C1A9",
+      "E8E0C8",
+      "243F5A",
+      "385B79",
+      "547F9D",
+      "83A7B6",
+      "2D443E",
+      "49634A",
+      "72865C",
+      "A9B577",
+      "6F483E",
+      "A76A4C",
+      "D89C6A",
+      "F0C895",
+      "9A514A",
+      "C77964",
+      "D3A451",
+      "F4CD77"
+    ],
+    "ramps": {
+      "inkMetal": [
+        "202B35",
+        "344452",
+        "526B7A",
+        "7993A1"
+      ],
+      "paper": [
+        "A9BCC2",
+        "D8C7A0",
+        "F4EAD5",
+        "FFF0B2"
+      ],
+      "wood": [
+        "44332D",
+        "70503B",
+        "A1744E",
+        "C79B62"
+      ],
+      "plasterStone": [
+        "766E63",
+        "A39B87",
+        "C5C1A9",
+        "E8E0C8"
+      ],
+      "blueFabricWater": [
+        "243F5A",
+        "385B79",
+        "547F9D",
+        "83A7B6"
+      ],
+      "plant": [
+        "2D443E",
+        "49634A",
+        "72865C",
+        "A9B577"
+      ],
+      "skin": [
+        "6F483E",
+        "A76A4C",
+        "D89C6A",
+        "F0C895"
+      ],
+      "signals": [
+        "9A514A",
+        "C77964",
+        "D3A451",
+        "F4CD77"
+      ]
+    },
+    "materialRampLengthMax": 4,
+    "materialTexture": {
+      "revisionDate": "2026-10-23",
+      "isolatedPixelNoise": "Reduce scattered isolated single-pixel noise in future new and rebuilt art; use single-point highlights only when they communicate form or state.",
+      "preferredMarks": [
+        "broad contiguous color clusters for value and volume",
+        "grouped texture following the material and object structure"
+      ],
+      "detailPurpose": [
+        "form",
+        "material identity",
+        "interactive-state readability"
+      ],
+      "review": "At actual desktop and mobile display sizes, keep background texture quiet so silhouettes, traversable surfaces and interactive objects read first.",
+      "fineGrid": "Retain the established fine-pixel grid and native detail scale.",
+      "terminalCharacterFlow": "Its existing gameplay brief continues to control ASCII character density and flow; this material-texture revision does not change them."
+    },
+    "spriteColorBudget": 12,
+    "worldColorBudget": 32,
+    "sourceAlpha": [
+      0,
+      255
+    ],
+    "exceptions": [
+      "normal-map-data-textures",
+      "readable-native-text-antialiasing",
+      "verified-document-and-portrait-evidence-within-consistent-ui-frame"
+    ]
+  },
+  "lighting": {
+    "defaultDirection": "upper-left-to-lower-right",
+    "baseShadowSteps": 3,
+    "contactShadowLogicalOffset": [
+      1,
+      2
+    ],
+    "receiverHighlightStepsMax": 3,
+    "faceBelowBlanketPeak": true,
+    "noNightPortraitSpotlights": true,
+    "normalFormat": "opengl",
+    "normalColorSpace": "linear-data-not-srgb",
+    "normalRuntimeIntegration": "not-enabled-until-per-material-audit"
+  },
+  "occlusion": {
+    "sortBy": "authored-foot-baseline",
+    "foregroundMasks": "separate-object-crops-sharing-source-coordinate-system",
+    "solidBoundary": "visible-solid-base-not-painted-top-trim",
+    "walkBehind": "retain-authored-clear-floor-and-partial-visibility-rules",
+    "interactionFacingGates": false
+  },
+  "ui": {
+    "phoneLogical": [
+      430,
+      860
+    ],
+    "worldLogical": [
+      960,
+      540
+    ],
+    "textCssPxMin": 16,
+    "secondaryCssPxMin": 14,
+    "textContrastMin": 4.5,
+    "primaryTargetCssPx": 44,
+    "absoluteTargetCssPxMin": 28,
+    "font": "755-morning-note-regular-and-medium-with-scale-aware-rendering",
+    "fontNativeGrid": 24,
+    "fontBaseline": 20,
+    "fontDigitAdvance": 12,
+    "fontProvenance": "original-ascii-and-key-hanzi-plus-disclosed-ofl-derived-authored-coverage",
+    "textMustRemainNative": true,
+    "openingNoLargeBlackSideGutters": true,
+    "modeCues": "shape-plus-label-plus-color",
+    "noEmeraldCheckBadge": true
+  },
+  "batchAcceptance": [
+    "exact-logical-dimensions",
+    "fine-native-detail-not-coarse-raster-upscale",
+    "single-grid-origin",
+    "fixed-palette-membership",
+    "declared-alpha-policy",
+    "fixed-anchor-and-source-placement",
+    "same-pose-silhouette-at-native-size",
+    "collision-and-clear-floor-regression",
+    "actual-desktop-and-mobile-display-legibility",
+    "original-source-retained-and-output-hashed"
+  ],
+  "densityRevision": {
+    "date": "2026-10-21",
+    "userRequest": "Interpreted as pixel edge length about20percent; stated in commentary before proceeding",
+    "interpretation": "pixel-edge-length approximately20percent of previous coarse art;5x linear native detail",
+    "linearDetailMultiplier": 5,
+    "edgeLengthRatio": 0.2,
+    "notUpscaling": true,
+    "legacyAcceptedOpening": "160x160 native enlarged4x to640x640; retained historical receipt, not the density target for new work",
+    "rawUserRequest": "像素大小缩小到原来的 20&"
+  },
+  "skeleton": {
+    "runtime": "Godot Skeleton2D/Bone2D",
+    "reference": "https://github.com/godotengine/godot-demo-projects/tree/34fc99545fc41520a958248f607101e7d0b95b05/2d/skeleton",
+    "referenceLicense": "MIT; principles referenced, no demo artwork or code copied",
+    "hierarchy": [
+      "Hip/Torso/Head",
+      "Torso/Shoulder/Elbow/Wrist/FanSocket",
+      "Hip/Knee/Foot"
+    ],
+    "poseCalibration": "one source-cell joint table per authored pose",
+    "flipPivot": "fixed foot anchor",
+    "nonUniformScale": false,
+    "liveAttachments": "actual Bone2D descendant Marker2D transform",
+    "firstBatch": "intact cel artwork plus live attachment bones; no weighted mesh",
+    "performanceNativeFoot": [
+      60,
+      150
+    ],
+    "secondarySleeveAngleLimitDegrees": 6,
+    "reducedMotionSecondaryAngle": 0,
+    "sourceDocument": "../LIANGZHU_ACTOR_RIG.md"
+  }
+}

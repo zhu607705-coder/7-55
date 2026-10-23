@@ -1,0 +1,222 @@
+{
+  "schema": "755-phone-legibility-local-acceptance-v1",
+  "updatedAt": "2026-10-20T18:07:05.194Z",
+  "status": "phone-reading-fixes-locally-accepted; webpage-opening-design-blocked",
+  "artifact": {
+    "directory": "exports/web-phone-legibility-v2-20261021",
+    "preview": "http://127.0.0.1:5239/",
+    "buildManifest": {
+      "path": "exports/web-phone-legibility-v2-20261021/build-manifest.json",
+      "sha256": "11be490d3862fb29d7d000aa734be519112a8aa4afb32c8f8e752950e0bd129b"
+    },
+    "sourceCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "sourceDirty": true,
+    "sourceInputSha256": "9970179ac94c1afcfa3a4d7036a2fe95d9908de50eb4294ccd28fd1b4bac3c69",
+    "engine": "4.7.2.stable.official",
+    "initialPayloadBytes": 94737441,
+    "logicalPayloadBytes": 502837299,
+    "totalPayloadBytes": 597211181
+  },
+  "changes": [
+    "CC98 cards measured with original text/font rather than oversized fixed heights; first-screen reading and existing evidence anchors move only original scroll container.",
+    "Generic CC98 text inset avoids collapsed inventory rail at actual measured widths; source reply order, evidence gates and original record actions retained.",
+    "Phone and modal subtree font rasterization accounts for nested uniform scales on the actual supported engine; original font, canonical frame, DPR and input coordinates retained."
+  ],
+  "evidence": {
+    "clueLayout": {
+      "path": "docs/PHONE_CLUE_DISCOVERABILITY_20261021.json",
+      "sha256": "88f79d9689574c4ba3ba16ef3a7cc945ee050ae874f47a0b3f2948b42804afc7"
+    },
+    "fontAndViewport": {
+      "path": "docs/PHONE_FONT_CLARITY_20261021.json",
+      "sha256": "caba3e8f2828a2f7ccf19944785440aef5b65c5de4fbae79c3e890138a59d19b"
+    },
+    "clueBrowsers": [
+      {
+        "engine": "chromium",
+        "report": {
+          "path": "exports/verification/phone_clue_layout_20261021/final-v2-chromium/report.json",
+          "sha256": "752e116fb9245c8e7074af3fd702b491a27c274f59de9f771eeac0260a579914"
+        },
+        "profiles": [
+          [
+            390,
+            844
+          ],
+          [
+            360,
+            640
+          ],
+          [
+            430,
+            932
+          ]
+        ],
+        "checks": 54,
+        "errors": 0
+      },
+      {
+        "engine": "firefox",
+        "report": {
+          "path": "exports/verification/phone_clue_layout_20261021/final-v2-firefox/report.json",
+          "sha256": "d499715e81ba5c8c0b2f9f14d9e12ca7c96a2594ea8b4bc033764f0f4f0ad785"
+        },
+        "profiles": [
+          [
+            390,
+            844
+          ],
+          [
+            360,
+            640
+          ],
+          [
+            430,
+            932
+          ]
+        ],
+        "checks": 54,
+        "errors": 0
+      },
+      {
+        "engine": "webkit",
+        "report": {
+          "path": "exports/verification/phone_clue_layout_20261021/final-v2-webkit/report.json",
+          "sha256": "71e95f268905fbd1b524198071ba053cb02ec5a13d947d8f3a803740d265b79a"
+        },
+        "profiles": [
+          [
+            390,
+            844
+          ],
+          [
+            360,
+            640
+          ],
+          [
+            430,
+            932
+          ]
+        ],
+        "checks": 54,
+        "errors": 0
+      }
+    ],
+    "fontViewportFinal": {
+      "report": {
+        "path": "exports/verification/phone_font_clarity_20261021/web-final-v2/report.json",
+        "sha256": "4b7e8680113ba7ab80267efdb8747bcf068e5d03f39c542ccef57104b6dc1258"
+      },
+      "profiles": [
+        {
+          "id": "desktop-1280-dpr1",
+          "viewport": [
+            1280,
+            720
+          ],
+          "dpr": 1,
+          "touch": false
+        },
+        {
+          "id": "desktop-1440-dpr2",
+          "viewport": [
+            1440,
+            900
+          ],
+          "dpr": 2,
+          "touch": false
+        },
+        {
+          "id": "phone-360-dpr2",
+          "viewport": [
+            360,
+            640
+          ],
+          "dpr": 2,
+          "touch": true
+        },
+        {
+          "id": "phone-390-dpr3",
+          "viewport": [
+            390,
+            844
+          ],
+          "dpr": 3,
+          "touch": true
+        },
+        {
+          "id": "phone-430-dpr3",
+          "viewport": [
+            430,
+            932
+          ],
+          "dpr": 3,
+          "touch": true
+        },
+        {
+          "id": "phone-landscape-dpr2",
+          "viewport": [
+            844,
+            390
+          ],
+          "dpr": 2,
+          "touch": true
+        }
+      ],
+      "checks": 54
+    },
+    "foundation": {
+      "report": {
+        "path": "exports/verification/phone_legibility_20261021/final-foundation-retina-1440/web-acceptance.json",
+        "sha256": "61b5597696d3ed16d39574da49817559896dd5fd834db292b233016c435c4183"
+      },
+      "checks": 506,
+      "scope": "Actual Godot4.7.2 HTTP startup, ordinary input, exact native/independent IndexedDB save receipt and fresh-document reload at1440x900/DPR2."
+    },
+    "artifactDeltaProof": {
+      "path": "exports/verification/phone_legibility_20261021/artifact-delta-proof.json",
+      "sha256": "7e257e53816a8bc29394281b680e1576cc19b36b48d35b9b9fa43d5a458f09b2"
+    },
+    "verifiedBuildLog": {
+      "path": "exports/verification/phone_legibility_20261021/verify-v2.log",
+      "sha256": "acad9815512a721a2d70f993a26faad4b309ec74ae4559a7f450241ed7d62846"
+    },
+    "rootScreenshotReview": {
+      "path": "exports/verification/phone_legibility_20261021/root-qa-cleanup.json",
+      "sha256": "fe3954b431deb796c3e0f2c8350f7fa4bce16db37681d698188ec7b9f6e64126"
+    },
+    "bootInterfaceValidationEntryPoint": {
+      "path": "exports/verification/phone_legibility_20261021/boot-interface-entrypoint.json",
+      "sha256": "c3c5905bdfec784b8f570ef96fc205038c9280dc69de06f658717b2f65027475",
+      "passed": true
+    }
+  },
+  "opening": {
+    "status": "web-design-blocked-by-mac-lock",
+    "record": {
+      "path": "docs/OPENING_PRESENTATION_STATUS_20261021.json",
+      "sha256": "7066e8af3441b51dcf9b6a21ed9629bc41c7704dc2f0adf85b37610a4f0fd658"
+    },
+    "brief": {
+      "path": "docs/OPENING_FRONTEND_BRIEF_20261021.txt",
+      "sha256": "39ec9c03e5e80097586c247290a8ab44375e05c4993c1a903bb8129953573b39"
+    },
+    "webDesignReceived": false,
+    "visualAnimationEnabled": false,
+    "interfaceDomChecks": 41,
+    "scope": "Presentation interface only. Existing static loading UI remains. The5.3KB synchronous presenter request is documented; no completed visual or faster public download is claimed."
+  },
+  "limits": [
+    "360x640,390x844 and430x932 are the tested portrait reading sizes. Current browser emulation is not Android/iPhone physical-device acceptance.",
+    "844x390 retains the portrait phone and real tap succeeds, but home-app targets are22.16CSSpx; this is fallback coverage, not complete mobile interaction acceptance.",
+    "New scale-aware text was executed on4.7.2. Reflection defines no-op when unavailable;4.6.x execution and minimum historical browser versions were not repeated here.",
+    "The20 unchanged deferred packs and engine WASM were verified by bytes. Prior chapter acceptance remains an identified baseline, not a complete new manual campaign."
+  ],
+  "delivery": {
+    "newGitCommit": false,
+    "newPush": false,
+    "publicSiteUpdatedByThisWork": false,
+    "serverDeployment": false,
+    "scope": "Local candidate; existing public deployment and earlier accepted reports remain separate."
+  }
+}

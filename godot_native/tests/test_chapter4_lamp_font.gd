@@ -41,7 +41,7 @@ func run()->void:
 	issued.game.native_exterior_presented=true
 	shell._open_game_now(issued.game);shell.active_game.set_process(false)
 	var main_view:Control=shell.active_game.lamp_view
-	check(main_view.get_theme_font("font")==shell.font,"Real Main entry retains the original project theme")
+	check(main_view.get_theme_font("font")==load("res://scripts/ui/native_typography.gd").body_font(),"Real Main entry inherits the shared readable body role")
 	inspect_summaries(main_view,data)
 	shell.queue_free();await process_frame;await process_frame
 	print("CHAPTER4_LAMP_FONT ",checks," checks; ",failures," failures")

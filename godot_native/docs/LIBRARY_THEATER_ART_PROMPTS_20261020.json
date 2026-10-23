@@ -1,0 +1,233 @@
+{
+  "date": "2026-10-20",
+  "generator": "built-in image_gen.imagegen; ChatGPT web image generation for final stage lamp",
+  "mode": "generation and referenced-image edits",
+  "assembly": "Uniform alpha-trim/fit; source-pixel atlas extraction and masked same-source floor reconstruction. No unequal XY scaling of objects.",
+  "requests": [
+    {
+      "key": "library_shelf_v2",
+      "request": {
+        "referenced_image_paths": [
+          "/Users/zhu/Downloads/755/godot_native/exports/verification/library_theater_rebuild_20261020/original_shelf_reference.png"
+        ],
+        "transparent_background": true,
+        "prompt": "Create a production game sprite by carefully extracting and rebuilding the SINGLE tall square wooden book display cabinet in this reference. Preserve this exact top-down slightly elevated pixel-art projection and proportions: cabinet nearly fills a square 123 x 123 footprint, tall upright back, shallow visible top cornice, three dark shelves tightly filled with ochre books, two narrow side columns, two short feet at the bottom. Keep the two small green plants on either side as part of this ONE cabinet. Do not turn it into a wide low shelf: the solid cabinet must extend from near the top of the square to the feet. Crisp brown and amber pixel art, same light direction and pixel density as reference. Remove the beige floor and all background pixels completely, true transparent PNG. Isolated cabinet only, with compact contained shadow under its feet, no room, no extra props, no text or UI. Object centered and tightly framed with very small transparent margin; original square aspect."
+      }
+    },
+    {
+      "key": "theater_backdrop",
+      "request": {
+        "transparent_background": false,
+        "prompt": "A single empty theater stage background for a 2D campus pixel-art shadow-puppet puzzle inspired by the Yue opera Liang Zhu (Butterfly Lovers). 16:9 composition intended 960 x 540. View from the audience, slightly elevated looking onto the stage floor, orthographic game art with crisp pixel texture. Warm muted mahogany plank floor occupies lower half, deep burgundy velvet side curtains and top valance, dark walnut proscenium, restrained gold seam accents, a blank pale linen scrim in upper middle, atmospheric amber practical lighting from above. The central scrim area x118..842 y44..248 must be plain and readable because the game overlays physical projected shadows there. Lower floor is open and uncluttered so separate movable fan stands, side screen and a stage lamp can be added dynamically. No baked props, no characters, no butterflies or targets painted on scrim, no writing, no symbols, no interface. Richly finished theater environment, quiet and tactile, restrained colors, no neon, no emerald check marks. One stage background only."
+      }
+    },
+    {
+      "key": "theater_fan_open",
+      "request": {
+        "transparent_background": true,
+        "prompt": "One isolated open Chinese folding fan prop for a pixel-art Yue opera stage shadow game. A pale warm ivory paper fan with delicate very faint muted ink bamboo strokes, dark walnut ribs, narrow handle below and a simple straight thin support stem ending at bottom. Front view with slight elevated top visibility, crisp consistent pixel-art rendering, warm theatrical amber key light from upper left, believable matte paper and wood. The fan is open in a graceful half-circle, clearly readable at 80 x 86 game pixels. Only the fan and its slender central support, no floor base (runtime supplies movable dolly), no room, no cast shadow extending outside, no characters, no text, no markings giving an answer, no UI. Object tightly framed with true alpha transparent background."
+      }
+    },
+    {
+      "key": "theater_fan_rack",
+      "request": {
+        "referenced_image_paths": [
+          "/Users/zhu/Downloads/755/src/assets/rpg/interiors/theater_interior.png"
+        ],
+        "transparent_background": true,
+        "prompt": "Create one independent freestanding stage rehearsal prop rack to match the exact pixel-art projection and amber lighting of this top-down slightly elevated theater map. Intended size 120 x 100 pixels. A low dark walnut frame displays two small folded ivory theater fans and one narrow rolled linen scrim; brass fasteners and worn wood. Its lower quarter has TWO clearly visible substantial wooden feet and a connecting ground beam spanning about 96 pixels of the 120-pixel width. The bottom feet must visibly touch the bottom of the sprite and occupy a shallow 22-pixel-deep footprint, because the game uses that visible footprint for collision. Keep it short and solid, no floating fans, no human. Warm brown and cream with muted burgundy accents, coherent map pixel density and light from upper left. Fully isolated on true transparent alpha, compact shadow inside the feet footprint, no floor tile, no architecture, no text, no border, no HUD, no green gem or check."
+      }
+    },
+    {
+      "key": "theater_fan_closed",
+      "request": {
+        "transparent_background": true,
+        "prompt": "One isolated production PNG sprite for a Chinese university theater pixel-art game, warm muted amber light from upper left, dark walnut/ivory/burgundy palette, crisp pixel texture matching the referenced top-down slightly elevated map, no labels or text or UI or people, true transparent alpha with no floor or rectangular background, tight framing. Single closed Chinese folding fan, ivory folded paper held between two dark brown ribs with a tiny muted burgundy tassel at its handle. Vertical narrow 39 x 103 intended silhouette. Slight elevated front view, restrained and tactile. No stand, no room, no extra fan."
+      }
+    },
+    {
+      "key": "theater_lantern",
+      "request": {
+        "transparent_background": true,
+        "prompt": "One isolated production PNG sprite for a Chinese university theater pixel-art game, warm muted amber light from upper left, dark walnut/ivory/burgundy palette, crisp pixel texture matching the referenced top-down slightly elevated map, no labels or text or UI or people, true transparent alpha with no floor or rectangular background, tight framing. One practical small theater spotlight projector on a short pivoting brass and black-iron pedestal. An amber frosted round lamp aperture faces toward the rear stage, with tiny hood and narrow power cable ending inside sprite. Visible weighted low wooden base centered at bottom. Intended84 x 88 game pixels. Front audience-facing view slightly elevated, compatible with an opera rehearsal stage. No halo filling the background, no free-floating object."
+      }
+    },
+    {
+      "key": "theater_side_screen",
+      "request": {
+        "transparent_background": true,
+        "prompt": "One isolated production PNG sprite for a Chinese university theater pixel-art game, warm muted amber light from upper left, dark walnut/ivory/burgundy palette, crisp pixel texture matching the referenced top-down slightly elevated map, no labels or text or UI or people, true transparent alpha with no floor or rectangular background, tight framing. One freestanding movable side screen for a shadow rehearsal: a single tall rectangular muted charcoal-burgundy fabric flat in a worn walnut frame, plain opaque fabric with subtle weave, mounted on two small visible brass caster feet. Intended 92 x 128 game pixels, front view with slight top visibility, slim depth. No ornaments or painted illustrations, no answer hints, no extra panels, compact feet at bottom."
+      }
+    },
+    {
+      "key": "theater_prop_chest",
+      "request": {
+        "referenced_image_paths": [
+          "/Users/zhu/Downloads/755/src/assets/rpg/interiors/theater_interior.png"
+        ],
+        "transparent_background": true,
+        "prompt": "One isolated production PNG sprite for a Chinese university theater pixel-art game, warm muted amber light from upper left, dark walnut/ivory/burgundy palette, crisp pixel texture matching the referenced top-down slightly elevated map, no labels or text or UI or people, true transparent alpha with no floor or rectangular background, tight framing. Rebuild just ONE theater props chest visible at upper-left side of the reference stage. A closed squat dark walnut touring chest with antique brass corner bands, centered latch and small brass lock; shallow top plane visible with exactly the same map camera, grounded two low feet. Intended size 84 x 74. Preserve original low wide form so the original accessible floor and source collision still match. No neighboring ticket scanner, wall, backstage clutter or floor."
+      }
+    },
+    {
+      "key": "theater_sound_console",
+      "request": {
+        "referenced_image_paths": [
+          "/Users/zhu/Downloads/755/src/assets/rpg/interiors/theater_interior.png"
+        ],
+        "transparent_background": true,
+        "prompt": "One isolated production PNG sprite for a Chinese university theater pixel-art game, warm muted amber light from upper left, dark walnut/ivory/burgundy palette, crisp pixel texture matching the referenced top-down slightly elevated map, no labels or text or UI or people, true transparent alpha with no floor or rectangular background, tight framing. Rebuild ONE theater sound mixing console from the middle-right audience area of reference. A compact dark charcoal and walnut slanted mixer desk, shallow top plane filled with little rows of pale faders and amber knobs, two sturdy pedestal feet at bottom. Same game map camera and proportions, intended 118 x 80. Console only; no operator chair (it remains a separate entity), no floor, no cables extending beyond boundary."
+      }
+    },
+    {
+      "key": "theater_poster_board",
+      "request": {
+        "referenced_image_paths": [
+          "/Users/zhu/Downloads/755/src/assets/rpg/interiors/theater_interior.png"
+        ],
+        "transparent_background": true,
+        "prompt": "One isolated production PNG sprite for a Chinese university theater pixel-art game, warm muted amber light from upper left, dark walnut/ivory/burgundy palette, crisp pixel texture matching the referenced top-down slightly elevated map, no labels or text or UI or people, true transparent alpha with no floor or rectangular background, tight framing. Rebuild ONE low freestanding dark walnut theater program poster cabinet, the small ornate box-like fixture in the bottom lobby left of center in reference. A narrow upright wooden case with an empty ivory inset display, brass latch and a short base. Intended 74 x 90. Match exact map projection and overhead warm light. No letters, no event details, no answer symbols, no other lobby furniture."
+      }
+    }
+  ],
+  "outputs": {
+    "library_shelf_v2": "exec-7a9a729c-8b51-4e98-827a-b45d174ae3a8.png",
+    "theater_backdrop": "exec-2a309d75-c4f5-49a1-8237-400f09c5f815.png",
+    "theater_fan_open": "exec-d080c075-84ad-4099-aadf-b43adb843194.png",
+    "theater_fan_rack": "exec-d8c90000-5a1f-4f68-9db1-ba22e82cbd19.png",
+    "theater_fan_closed": "exec-0dcbc056-d16d-4e9e-9b2b-ce350e09e92b.png",
+    "theater_lantern": "exec-f87e866b-aaf5-469f-b6db-d8a6d7db6950.png",
+    "theater_side_screen": "exec-71b437ca-8746-4a0c-be95-cadda416d46e.png",
+    "theater_prop_chest": "exec-7e5cb644-66f4-4da9-bc75-ebb25472f1f9.png",
+    "theater_sound_console": "exec-11b32527-1a11-498d-bb20-75b323f8026f.png",
+    "theater_poster_board": "exec-ad6eff49-0522-4b78-9258-f2402e031550.png"
+  },
+  "rawArchive": "Codex generated_images session 01a15309-b0c1-7870-bc0b-f00a3e00cade; original generated images retained locally.",
+  "finalLibraryAssets": [
+    "library_cleanplate.png",
+    "north_display_shelf.png",
+    "backpack.png",
+    "catalog_terminal.png",
+    "printer.png"
+  ],
+  "finalTheaterAssets": [
+    "rehearsal_backdrop.png",
+    "fan_closed.png",
+    "fan_open.png",
+    "lantern.png",
+    "side_screen.png",
+    "fan_rack.png",
+    "prop_chest.png",
+    "sound_console.png",
+    "poster_board.png"
+  ],
+  "assetInventory": [
+    {
+      "path": "assets/native/library_rebuild_20261020/backpack.png",
+      "bytes": 9053,
+      "sha256": "a0371db6956d85b3dc076afb534e1c2acdd731464fb71c45e84f4f3013c89721"
+    },
+    {
+      "path": "assets/native/library_rebuild_20261020/catalog_terminal.png",
+      "bytes": 22063,
+      "sha256": "52a391e21b770cd25d0889a43b9781f3acffce8aa68241adf67576a9a2129937"
+    },
+    {
+      "path": "assets/native/library_rebuild_20261020/library_cleanplate.png",
+      "bytes": 2746985,
+      "sha256": "7439f5d8a737d21c8c87a54e0c3ee27f9773db982933c9449e01cccb29293641"
+    },
+    {
+      "path": "assets/native/library_rebuild_20261020/north_display_shelf.png",
+      "bytes": 29148,
+      "sha256": "74948f4d90145fa9c1574de1904704823247db4176d1ec0d0f6415ada3c77fb9"
+    },
+    {
+      "path": "assets/native/library_rebuild_20261020/printer.png",
+      "bytes": 13588,
+      "sha256": "6de3555b495d8b1821381a5b0d17b085e4520245be15292b33766a200697022b"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/fan_closed.png",
+      "bytes": 19760,
+      "sha256": "8bf40ab5246a340fb850106dfc222f6895210cea3a73f7e15b9be80e7eaf29ad"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/fan_open.png",
+      "bytes": 36678,
+      "sha256": "105af4803e7e2a8e99beeba4d7e5787f72daf1c5d85a558aec42a468616a521a"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/fan_rack.png",
+      "bytes": 21596,
+      "sha256": "8aea3c16e2b1281cfd6776f93d62e3fa5c875ecab072ff6a94f7341aa30af379"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/lantern.png",
+      "bytes": 34517,
+      "sha256": "02263eeb2eef94f8777d28b672114b42eab641509eae51df2b4006f5c3072a24"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/poster_board.png",
+      "bytes": 9998,
+      "sha256": "2571bbacaa7b20387b1a0d6cdd65f3e76dc7e30f74e5822f43a0075a19ca3e81"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/prop_chest.png",
+      "bytes": 10005,
+      "sha256": "a7d865b643664b6ff0d99c67da346e2ddd4c751175ad1d5d6036ac5a3f65aad9"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/rehearsal_backdrop.png",
+      "bytes": 651557,
+      "sha256": "a97a0a609174efba27c0b45147e26c0ba49790a5c7dbde8e25751963d00c54fd"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/side_screen.png",
+      "bytes": 54372,
+      "sha256": "7f7cd92ed0c425e36f172e915d46118fff4adbc3b60dddcc4a4cfcd0d1c5dd71"
+    },
+    {
+      "path": "assets/native/theater_rebuild_20261020/sound_console.png",
+      "bytes": 17101,
+      "sha256": "3e4b4af55e3cc0cf76af003016262cbc4d147fd6000874313ac502dcf6fad551"
+    }
+  ],
+  "initialLibraryGeneration": {
+    "reference": "src/assets/rpg/interiors/library_interior.png",
+    "rawCleanplateCandidate": "exec-b9e39778-6e85-4532-821e-312afdb33a1f.png",
+    "decision": "Full image generation shifted geometry; final cleanplate uses exact measured local same-source floor patches. Outside cleanup masks RGBA remains identical. First wide shelf candidate was replaced by square source-referenced generation.",
+    "remainingSelectedOutputs": {
+      "backpack.png": "exec-f32ecf36-414e-47d7-b869-89400dc2cfa4.png",
+      "catalog_terminal.png": "exec-172109e5-5d77-4c88-aa81-3d00b2ab751d.png",
+      "printer.png": "exec-c07c1bf1-111f-4676-95c0-5f9be0d9b3c4.png"
+    },
+    "promptSummary": "Individually isolated navy student backpack with brown straps; honey-brown CRT catalog terminal with keyboard, plant, cabinet and stool; ivory library printer. Referenced original source map, matching elevated pixel-art projection, true transparent alpha, no people/text/background. Stool separated at runtime to preserve original physical footprint."
+  },
+  "finalizedDate": "2026-10-21",
+  "webStageLamp": {
+    "conversation": "https://chatgpt.com/c/6ad78f16-4120-83e8-bdb7-2f2ece4d180d",
+    "reference": "src/assets/rpg/interiors/theater_interior.png",
+    "prompt": "请生成一个独立游戏物件：小型舞台排练聚光灯。附件是我们原游戏剧场，只参考它的像素画风、上方略俯视视角、暖棕木色与暗红配色、左上暖光，别重画整张场景。灯置于观众一侧，出光朝画面上方幕布；我们从后上方看到黑色灯壳和黄铜支架，不要正面巨大圆形发光面。完整短支架、稳固低木底座与很短线缆，在84×88游戏像素中可辨认。真实透明PNG背景，仅一个物件，不能带地板、幕布、其他道具、人物、文字或UI。边缘干净，阴影紧贴底座。不要照片或3D写实风，不要绿宝石勾。",
+    "rawDownloadName": "像素艺术舞台聚光灯娱乐主管.png",
+    "rawSha256": "728b567c5b49ce4ee346f0153725228d32b8c62adb5c13e3837727dbcc1e9bd6",
+    "preservedRaw": "exports/verification/library_theater_rebuild_20261021/web_generated_stage_spotlight.png",
+    "alphaValidation": {
+      "width": 1225,
+      "height": 1284,
+      "alphaMode": "blend",
+      "opaqueAbove005": 258000,
+      "transparentAtOrBelow005": 1314900,
+      "trim": [
+        404,
+        253,
+        491,
+        774
+      ]
+    },
+    "assembly": "Uniform Lanczos fit of alpha-trimmed 491×774 sprite into 168×176, bottom aligned; final opaque bounds 110×174. No background removal needed: downloaded PNG already has real alpha.",
+    "consumer": "scripts/games/theater_shadow_rehearsal.gd",
+    "finalAsset": "assets/native/theater_rebuild_20261020/lantern.png",
+    "supersedes": "exec-f87e866b-aaf5-469f-b6db-d8a6d7db6950.png"
+  }
+}

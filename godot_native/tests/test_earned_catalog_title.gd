@@ -120,7 +120,7 @@ func run() -> void:
 	shell.phone_builder.earned_catalog_title=clipboard
 	shell.phone_builder.action_requested.connect(func(id,value): emitted.append([id,value]))
 	shell.phone_builder.page_requested.connect(func(page): routed.append(page))
-	for viewport in [Vector2i(390,844),Vector2i(430,860),Vector2i(1440,900)]:
+	for viewport in [Vector2i(390,844),Vector2i(429,860),Vector2i(430,860),Vector2i(431,860),Vector2i(1440,900)]:
 		root.size=viewport; shell.size=Vector2(viewport); await frames()
 		await restore_earned()
 		var copy: Button=node("Cc98CopyCatalogTitle")

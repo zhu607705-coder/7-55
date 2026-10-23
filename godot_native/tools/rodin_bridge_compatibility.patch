@@ -1,0 +1,102 @@
+--- a/rodin_bridge.gd
++++ b/rodin_bridge.gd
+@@ -31,9 +31,22 @@
+ 	RBSettings.instance()._settings["editor_interface"] = e
+ 
+ func _exit_tree() -> void:
+-	remove_control_from_bottom_panel(panel)
+-	panel.queue_free()
+-	task_manager.queue_free()
++	remove_control_from_docks(panel)
++	panel.free()
++	task_manager.free()
++	# The supplied bridge allocates these outside the scene tree. Release them
++	# on disable/editor shutdown rather than leaking scripts into export import.
++	var settings := RBSettings.instance()
++	if is_instance_valid(settings):
++		for key in ["task_manager_inst", "ctx_inst", "props_inst"]:
++			var owned = settings._settings.get(key)
++			if is_instance_valid(owned): owned.free()
++		for client in settings._settings.get("client", {}).values():
++			if is_instance_valid(client): client.free()
++		settings._settings.clear()
++		ProjectSettings.set_initial_value("rodin_setting_inst", null)
++		ProjectSettings.set_setting("rodin_setting_inst", null)
++		settings.free()
+ 
+ func _handles(object: Object) -> bool:
+ 	return true
+--- a/rodin_bottom_panel.tscn
++++ b/rodin_bottom_panel.tscn
+@@ -93,7 +93,7 @@
+ [sub_resource type="GDScript" id="GDScript_k65g3"]
+ resource_name = "DirectTo3D"
+ script/source = "@tool 
+-class_name DirectTo3D extends CheckBox
++extends CheckBox
+ 
+ func _ready() -> void:
+ 	%TextToBox/TextTo.option_selected.connect(display_cb)
+@@ -111,7 +111,7 @@
+ [sub_resource type="GDScript" id="GDScript_ejkgi"]
+ resource_name = "TextInput"
+ script/source = "@tool
+-class_name TextInput extends LineEdit
++extends LineEdit
+ 
+ signal option_trigger(value, prop:String)
+ 
+@@ -129,7 +129,7 @@
+ [sub_resource type="GDScript" id="GDScript_y06av"]
+ resource_name = "RBComptibleBrowerError"
+ script/source = "@tool
+-class_name RBCompatibleBrowerError extends HBoxContainer
++extends HBoxContainer
+ 
+ func _ready() -> void:
+ 	var theme: Theme = RBUtils.get_editor_interface().get_editor_theme()
+@@ -186,7 +186,7 @@
+ [sub_resource type="GDScript" id="GDScript_o4pcp"]
+ resource_name = "RBGenTypeBox"
+ script/source = "@tool
+-class_name RBGenTypeBox extends VBoxContainer
++extends VBoxContainer
+ 
+ signal option_trigger(value, prop:String)
+ 
+@@ -214,7 +214,7 @@
+ [sub_resource type="GDScript" id="GDScript_rpquq"]
+ resource_name = "RBMatBox"
+ script/source = "@tool 
+-class_name RBMatBox extends VBoxContainer
++extends VBoxContainer
+ 
+ signal option_trigger(value, prop:String)
+ 
+@@ -236,7 +236,7 @@
+ [sub_resource type="GDScript" id="GDScript_s6rj1"]
+ resource_name = "RBMatResolution"
+ script/source = "@tool 
+-class_name RBMatResolution extends OptionButton
++extends OptionButton
+ 
+ func _ready() -> void:
+ 	%ModeOption.option_selected.connect(display_cb)
+@@ -260,7 +260,7 @@
+ [sub_resource type="GDScript" id="GDScript_t7phj"]
+ resource_name = "RBImageInputBox"
+ script/source = "@tool
+-class_name RBImageInputBox extends VBoxContainer
++extends VBoxContainer
+ 
+ # 暂时不需要关联属性变更
+ 
+@@ -274,7 +274,7 @@
+ [sub_resource type="GDScript" id="GDScript_vetgi"]
+ resource_name = "RBRightPanel"
+ script/source = "@tool
+-class_name RBRightPanel extends VBoxContainer
++extends VBoxContainer
+ 
+ func _ready() -> void:
+ 	%TextToBox/TextTo.option_selected.connect(display_cb)

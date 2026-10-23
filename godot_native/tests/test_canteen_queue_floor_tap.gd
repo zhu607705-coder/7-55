@@ -43,7 +43,7 @@ func reset_route() -> void:
 	check(shell.world.player.distance_to(START)<.002,"normal Main load retains ordinary starting position")
 	for i in 4: await wheel()
 	check(is_equal_approx(shell.world.zoom,.45),"four recorded root wheel events derive minimum zoom .45")
-	check(shell.world_view.get_global_rect()==Rect2(10,66,370,712),"actual Main viewport matches recorded 390x844 transform")
+	check(shell.world_view.get_global_rect()==Rect2(4,4,382,836),"390x844 map fills the viewport behind the inline controls")
 	shell.world._floor_planner=CountPlanner.new()
 func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	var w=shell.world
@@ -78,7 +78,12 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 func replay_approach() -> void:
 	await reset_route()
 	await arrive(source_screen(BOARD+Metrics.FOOT_CENTER_OFFSET),BOARD+Metrics.FOOT_CENTER_OFFSET)
-	root_tap(world_screen(shell.world.mobile_control_metrics().interact.get_center()));await frames(2)
+	var board_target:Dictionary={}
+	for target:Dictionary in shell.world.targets:
+		if target.id=="canteen-promo-board":board_target=target;break
+	check(not board_target.is_empty(),"queue board remains an actual authored world target")
+	if not board_target.is_empty():root_tap(source_screen(shell.world._target_point(board_target)),true)
+	await frames(2)
 	check(shell.world.subtitle=="请先从物品栏选择对应物品。","recorded board interaction retains source item requirement")
 	# Fix only the unsaved animation phase for a repeatable empty-floor approach.
 	shell.world.set_process(false);shell.world.chapter3_layers.clock_ms=0;shell.world.queue_redraw();await frames(2)
@@ -149,8 +154,8 @@ func run() -> void:
 	var calls: int=w._floor_planner.calls
 	root_tap(source_screen(actor))
 	check(w._floor_planner.calls==calls and w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"actor input cannot become a corrected floor goal")
-	root_tap(world_screen(Vector2(18,18)),true)
-	check(w._floor_planner.calls==calls and w._floor_route.is_empty(),"HUD touch cannot enter floor planner")
+	root_tap(Vector2(shell.size.x/2,shell.size.y-20),true)
+	check(w._floor_planner.calls==calls and w._floor_route.is_empty(),"footer touch outside the map cannot enter floor planner")
 	w.zoom=1.2;w._update_camera();w.queue_redraw();await frames(2)
 	await rejection(source_screen(Vector2(680,241.1)),"empty-floor correction beyond six screen pixels")
 	w.zoom=.45;w._update_camera();w.queue_redraw();await frames(2)

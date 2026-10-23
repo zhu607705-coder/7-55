@@ -2,6 +2,7 @@ import type { EventBus } from "../core/EventBus";
 import type { ActOneBootstrapState, GameStore, RpgCheckpointId, RpgSceneId } from "../core/types";
 import content from "../data/act-one-bootstrap.content.json";
 import libraryReservation from "../data/library-reservation.config.json";
+import { canAccessTiyi, tiyiUpdateInstalled, tiyiUpdateRequired } from "./TiyiAccessModel";
 import {
   CC98_LOGIN_HINTS,
   evaluateCc98LoginAttempt,
@@ -243,9 +244,39 @@ export class ActOneBootstrapController {
     return "connected";
   }
 
+  /** Contact-us download card, simulated acquisition and install are separate intents. */
+  discoverTiyiUpdate(): boolean {
+    const state = this.store.getState();
+    if (!tiyiUpdateRequired(state)) return false;
+    if (state.actOne.tiyiUpdateStage !== "not_started") return true;
+    this.patch({ tiyiUpdateStage: "official_entry_found" });
+    this.events.emit("tiyi_update_official_entry_found");
+    return true;
+  }
+
+  acquireTiyiUpdate(): boolean {
+    const state = this.store.getState();
+    if (!tiyiUpdateRequired(state)) return false;
+    if (state.actOne.tiyiUpdateStage === "package_ready" || tiyiUpdateInstalled(state)) return true;
+    if (state.actOne.tiyiUpdateStage !== "official_entry_found" || state.networkMode === "offline") return false;
+    this.patch({ tiyiUpdateStage: "package_ready" });
+    this.events.emit("tiyi_update_package_acquired");
+    return true;
+  }
+
+  installTiyiUpdate(): boolean {
+    const state = this.store.getState();
+    if (!tiyiUpdateRequired(state)) return false;
+    if (tiyiUpdateInstalled(state)) return true;
+    if (state.actOne.tiyiUpdateStage !== "package_ready") return false;
+    this.patch({ tiyiUpdateStage: "installed" });
+    this.events.emit("tiyi_update_installed");
+    return true;
+  }
+
   startExercise(): boolean {
     const actOne = this.getState();
-    if (!this.isMovementPhase(actOne) || !actOne.characterNamed) {
+    if (!this.isMovementPhase(actOne) || !actOne.characterNamed || !canAccessTiyi(this.store.getState())) {
       return false;
     }
     if (actOne.exerciseStarted) {

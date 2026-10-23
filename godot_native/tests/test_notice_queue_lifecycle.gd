@@ -23,11 +23,18 @@ func click(control:Control)->void:
 func reset_phone()->void:
 	state.d=state.initial();state.d.native.page="phone_home";state.story_reset.emit();shell._refresh();shell.mobile_world=false;shell._layout();await frames()
 	shell.set_process(false);shell.audio_director.set_process(false);shell.audio_director.reset()
-	for host in [shell.c3_narrative_host,shell.c3_scene_host,shell.library_story_host]:host.set_process(false)
+	for host in [shell.c3_narrative_host,shell.c3_scene_host,shell.library_story_host]:
+		if is_instance_valid(host):host.set_process(false)
 	shell.world.set_process(false)
 func run()->void:
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial();state.d.native.page="phone_home"
 	root.size=Vector2i(430,860);shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames(5)
+	# These notice fixtures exercise previously visited dialogue surfaces.
+	# Visit their owning content before resetting to the phone; initial Main
+	# intentionally has no later-story hosts anymore.
+	state.begin_checkpoint("c3-canteen-entry");shell._refresh();await frames()
+	state.d=state.initial();state.d.native.chapter=2;state.d.native.scene="library_interior"
+	state.d.ui.libraryFinalsPhase="evidence_gathering";shell._refresh();await frames()
 	await reset_phone()
 	shell._feedback("第一条通知");shell._feedback("第二条通知");shell._feedback("第二条通知")
 	check(shell.toast.text=="第一条通知","burst preserves the currently read message")
@@ -53,7 +60,7 @@ func run()->void:
 	var line:=SourceLine.new();var library:Control=shell.library_story_host
 	library.current=line;library.view.session=line;library.view.tick();shell._layout();shell._process(8)
 	check(not shell.toast.visible,"library dialogue suspends the generic notice")
-	check(library.view.panel.get_theme_stylebox("panel").bg_color==Ui.PAPER,"library caption is opaque warm paper")
+	check(library.view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"library caption uses selected none background")
 	library.current=null;library.view.session=null;library.view.tick();shell._layout();shell._process(0)
 	check(shell.toast.text=="对白前的通知" and is_equal_approx(shell.toast_time,remaining),"dialogue close resumes exactly the unread lifetime")
 	var c3_view:Control=shell.c3_narrative_host.view
@@ -62,7 +69,7 @@ func run()->void:
 	c3_view.surface_visible=true;c3_view.session=SourceLine.new();c3_view.tick();shell._layout()
 	check(c3_view.is_visible_in_tree(),"C3 pause fixture is actually visible outside the hidden SubViewport")
 	shell._process(6)
-	check(not shell.toast.visible and c3_view.panel.get_theme_stylebox("panel").bg_color==Ui.PAPER,"visible C3 caption also suspends ordinary notices on opaque paper")
+	check(not shell.toast.visible and c3_view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"visible C3 caption still suspends ordinary notices with selected none background")
 	c3_view.session=null;c3_view.tick();shell._layout();shell._process(0)
 	check(shell.toast.text=="对白前的通知" and is_equal_approx(shell.toast_time,remaining),"C3 caption hands back the same unread notice")
 	await reset_phone()

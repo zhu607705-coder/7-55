@@ -1,0 +1,513 @@
+{
+  "schema": "755-panorama-tiling-native-acceptance-v1",
+  "status": "native_accepted_with_recorded_exact_boundary_oracle_limitation",
+  "recordedAt": "2026-10-20T17:27:04.387137+00:00",
+  "scope": "Native source-pixel tiling, reconstruction, geometric crops, GPU seam checks and actual Main narrative art consumer. Browser acceptance is recorded by root/door separately.",
+  "gitHead": "313885d6056de0e4fe3052469643627d23c2c021",
+  "workspaceState": "Shared uncommitted workspace snapshot; exact input hashes below identify tested code.",
+  "source": {
+    "path": "src/assets/rpg/campus/zijingang_campus_loop_panorama.png",
+    "sha256": "504b0fdc6e846a2e5b4214b327a93c03b720b6ea7e48acbfa7804acbdd56cfb6",
+    "width": 13668,
+    "height": 1084,
+    "channels": 3,
+    "decodedPixelSha256": "a8dc2b6018b588a7d72866028722081921ab7c27067b12e54dae158243812115",
+    "reconstructedPixelSha256": "a8dc2b6018b588a7d72866028722081921ab7c27067b12e54dae158243812115",
+    "allPixelsEqual": true
+  },
+  "design": {
+    "coreWidth": 2046,
+    "sourceHeight": 1084,
+    "neighborGutter": 1,
+    "tileCount": 7,
+    "largestPhysicalWidth": 2048,
+    "physicalHeight": 1086,
+    "mapping": "Intersect requested source rect with each original world core; map the overlap proportionally into the original destination; subtract source-core origin only for tile UVs.",
+    "gutter": "Exact neighboring source pixels; clamp only original outside edges. All four gutter edges independently checked.",
+    "sampling": "Every tile inherits the same canvas filter, no mipmaps, clip_uv=false to sample neighboring gutter.",
+    "worldSizeChanged": false,
+    "worldCollisionDataChangedByTiling": false,
+    "controllerOrSaveMeaningChangedByTiling": false
+  },
+  "tiles": [
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_00.png",
+      "sourceRect": [
+        0,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "c2bc17da9ef64c7026527153033d1c0efe593173bca2eba6227154cbe364e53a",
+      "decodedPixelSha256": "3830ad3470a63677e52ed511b56693cd06e4f0e8a908891f6d6b56ea66892710"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_01.png",
+      "sourceRect": [
+        2046,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "08b9aa36fd4b15e0b84837e8893a4ddaf020496c479d0fe2d37e5bd012dd08e9",
+      "decodedPixelSha256": "34b55202968dfd61cd5168e6fdfeebb1df795c754e4b5907f603ff3845340450"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_02.png",
+      "sourceRect": [
+        4092,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "c81808e384b37c0bca87454aca2c76f22e893871bafac5af993cd55cf50c8244",
+      "decodedPixelSha256": "88969810e4df9ab5d04038808fed2dc6e9673705e4d2d7c83bd48f99bf180659"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_03.png",
+      "sourceRect": [
+        6138,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "73091176e08a9cb1c2249572911f4d4d5b96daa2f77299866f5334c5777e1af3",
+      "decodedPixelSha256": "b3724fcc5dedeb99ec40292c95a885b99adc4e6f33816c68e8124a69cdff5d7a"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_04.png",
+      "sourceRect": [
+        8184,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "1ea14c8f3519d8a5d227b00e904ee94dbc6ee7c605edf62271d4a883a6bbfb2e",
+      "decodedPixelSha256": "649b3e80088f1476090a3f5f3d70ad6f29a19639beee0b4211dfcfa5ad5b4373"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_05.png",
+      "sourceRect": [
+        10230,
+        0,
+        2046,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        2046,
+        1084
+      ],
+      "textureSize": [
+        2048,
+        1086
+      ],
+      "sha256": "021287191fe113aa007ebf28256d86534656a2587fc5412d81c854cefe0ffb31",
+      "decodedPixelSha256": "ffd462efac042129efbd735d26ab9abfd6bafddc073abfc705ec80a119f91051"
+    },
+    {
+      "path": "res://assets/rpg/campus/zijingang_campus_loop_panorama_tiles/tile_06.png",
+      "sourceRect": [
+        12276,
+        0,
+        1392,
+        1084
+      ],
+      "textureRegion": [
+        1,
+        1,
+        1392,
+        1084
+      ],
+      "textureSize": [
+        1394,
+        1086
+      ],
+      "sha256": "b76fc57e53e88063d60def850bb793cdf76f0bdacf6acbbb91922006117e43d0",
+      "decodedPixelSha256": "45520692189794e3f185ae251acaacddf3d13a10332b3d12a4f470f4f2e258e6"
+    }
+  ],
+  "reproducibility": {
+    "fullSyncCommand": "node godot_native/tools/sync_source.mjs",
+    "generationHook": "await import('./build_panorama_tiles.mjs') after full source synchronization",
+    "prologueEarlyReturnsPreserved": true,
+    "actualFullSourceSyncReportedBy": "root",
+    "originalAssetCountReported": 719,
+    "generatedTiles": 7,
+    "derivedPNGTracking": "Ignored derived outputs, deterministically generated on clean sync; no narrow ignore exception remains.",
+    "manualRebuild": "node godot_native/tools/build_panorama_tiles.mjs",
+    "readOnlyCheck": "node godot_native/tools/build_panorama_tiles.mjs --check",
+    "readOnlyCheckResult": "passed",
+    "rootBuildCheckLog": {
+      "path": "exports/verification/library_theater_rebuild_20261021/tiled-build.log",
+      "sha256": "ec2366a2c0ffacce2d766395fcc11cd2774c24de5a7ec629dbd1c29131cea417"
+    },
+    "rootVerifyOnlyLog": {
+      "path": "exports/verification/library_theater_rebuild_20261021/tiled-verify-only.log",
+      "sha256": "cd7119f79d31ced6fd9d7f099cc7832e3b934100c15e92335cb2e857346cf39b"
+    }
+  },
+  "officialBasis": [
+    {
+      "url": "https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html#webgl-version",
+      "claim": "Godot4 Web uses WebGL2 with Compatibility rendering.",
+      "checkedDateUTC": "2026-10-20"
+    },
+    {
+      "url": "https://registry.khronos.org/OpenGL/specs/es/3.0/es_spec_3.0.pdf#page=285",
+      "table": "6.28, printed page273 / PDF page285",
+      "claim": "Minimum MAX_TEXTURE_SIZE is2048; chosen physical textures stay at or below that size.",
+      "checkedDateUTC": "2026-10-20"
+    }
+  ],
+  "stableProductionAndTestInputs": [
+    {
+      "path": "scripts/presentation/source_tiled_texture.gd",
+      "sha256": "8d5cadfe28662f0e1b19676ba8b872f8f8b8d297f3ff6f7e06282eb0cb9a9c46"
+    },
+    {
+      "path": "scripts/presentation/source_tiled_view.gd",
+      "sha256": "eeacb9683ed3dcde8fc71f0ee5d72a3ff10216fad37ad8dc6809a6de1b0e9283"
+    },
+    {
+      "path": "scripts/main.gd",
+      "sha256": "7cbf01441cb150620787d40801ddc303adc5a160fb067e3a1c6a8ae68324a48d"
+    },
+    {
+      "path": "scripts/world.gd",
+      "sha256": "7229d6cb8d4006aceb14d5a76b2d7942d0293247af4954aff870e7b3350b3bb0"
+    },
+    {
+      "path": "tools/build_panorama_tiles.mjs",
+      "sha256": "41369d14ad3d43d5e40a49c859333a7cd7327a1c61103e35cc89252a503877fe"
+    },
+    {
+      "path": "tools/sync_source.mjs",
+      "sha256": "9dcb7460a5cb1a59fbb4c7ecfca405bc42aa1b546732bfcfa25e1be1714535a6"
+    },
+    {
+      "path": "tests/test_source_tiled_texture.gd",
+      "sha256": "28d27c903d3efe082c57f743930ebdfb54a35c341e452a180f1889f9b7a82ebd"
+    },
+    {
+      "path": "tests/render_source_tiled_texture.gd",
+      "sha256": "36a234e21ceed8fc7ec78e794111e3b9f4a27401767789aa22ad829810d456b9"
+    },
+    {
+      "path": "tests/test_source_tiled_main.gd",
+      "sha256": "c759cc6ee036f7697a7dfb61faa1cd03799a7a181d2faea3f5d001922ab760fc"
+    },
+    {
+      "path": "data/native/campus-loop-panorama-tiles.json",
+      "sha256": "7831b4a72157a86c3d0bf9f9effe0fc883288a732216e5dc25ab3b457a97be72"
+    }
+  ],
+  "engine": "Godot4.7.2.stable.official.ed1daf0bf",
+  "gpu": "Apple M4 Max, OpenGL API4.1 Metal90.5, Compatibility",
+  "tests": [
+    {
+      "name": "lossless_source_and_geometry",
+      "checks": 47,
+      "failures": 0,
+      "receipt": "exports/verification/direct_gestures_20261020/tiled-source-unit-final/receipt.json",
+      "receiptSha256": "fda203ddd01f822a7f8daaf3487cade9d7d2eddd6495cb65cc5ceff132733d9a",
+      "scope": "native_headless",
+      "logs": [
+        {
+          "path": "exports/verification/direct_gestures_20261020/tiled-source-unit-final/test_source_tiled_texture.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "exports/verification/direct_gestures_20261020/tiled-source-unit-final/test_source_tiled_texture.stdout.log",
+          "sha256": "3626ed73b2f80e504e98875b15e102a7b886c853910eb60a388954b96c1ea44f"
+        }
+      ]
+    },
+    {
+      "name": "non_tie_gpu_seams",
+      "checks": 40,
+      "failures": 0,
+      "receipt": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-final-named/receipt.json",
+      "receiptSha256": "bf0424960836e561eb95d7cdb797908e093fda1e509a8bd06d6027326112252d",
+      "scope": "native_GPU",
+      "logs": [
+        {
+          "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-final-named/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-final-named/stdout.log",
+          "sha256": "bc6741f96cac481ca9a11ce629a8f4c71bd40e22ce80d12201a7a0742dbc2b4d"
+        }
+      ],
+      "previousEquivalentReceipt": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-final/receipt.json"
+    },
+    {
+      "name": "real_main_gpu_consumer",
+      "checks": 10,
+      "failures": 0,
+      "receipt": "exports/verification/library_theater_rebuild_20261021/panorama-tile-main-gpu/receipt.json",
+      "receiptSha256": "446d470933f116a6dcda66f6b8172ad278e92b493c68459e59754c30ae3f85dd",
+      "scope": "native_GPU",
+      "logs": [
+        {
+          "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-main-gpu/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-main-gpu/stdout.log",
+          "sha256": "9470e1b5187c6f9610b9d6bce3d7dcabd53e75f074ed082151cc7f49ea36e98f"
+        }
+      ]
+    },
+    {
+      "name": "real_main_headless_consumer",
+      "checks": 9,
+      "failures": 0,
+      "receipt": "exports/verification/direct_gestures_20261020/tiled-main-consumer/receipt.json",
+      "receiptSha256": "51a10dadf20c46e7516cd5cf89d657a9d74f45a62d62a1d7c1ed9f0f0df5ce92",
+      "scope": "native_headless",
+      "logs": [
+        {
+          "path": "exports/verification/direct_gestures_20261020/tiled-main-consumer/test_source_tiled_main.stdout.log",
+          "sha256": "55b210c914ac57001b2ad1457c86f4131a6c5c4a3704768b7aee856291abb2c9"
+        },
+        {
+          "path": "exports/verification/direct_gestures_20261020/tiled-main-consumer/test_source_tiled_main.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "nearestExactBoundaryNegativeControl": {
+    "status": "retained_negative_not_relabelled_as_pass",
+    "failedChecks": 6,
+    "cases": "Nearest filter, zoom1.0, sourceX=seam-250.25, destinationX=13.25. Pixel center screenX+0.5 maps to sourceX=seam+screenX-263, exactly an integer texel boundary.",
+    "representativeSourceRect": [
+      12025.75,
+      200.5,
+      500.5,
+      280.0
+    ],
+    "representativeDestinationRect": [
+      13.25,
+      17.5,
+      500.5,
+      280.0
+    ],
+    "representativeWorldSeam": 12276,
+    "screenSeamX": 263.5,
+    "mismatchedPixels": 15660,
+    "mismatchesByColumnAndRow": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-tie-negative/seam-tail-native-tie.json",
+    "independentFinding": "theater_design independently decoded every mismatched pixel:15660/15660 equal the two adjacent original source texels selected on opposite sides of the exact boundary;0 other texels or blanks;0 differences in actual seam columns261..266.",
+    "independentAuditFile": "exports/verification/library_theater_rebuild_20261021/panorama-tile-nearest-independent-review.json",
+    "interpretation": "P2 oracle UV floating-point rounding difference at this exact boundary, not a visible tile crack or shifted whole tile. This finding does not permit arbitrary nearest-sampling errors.",
+    "newPassingCoverage": "Separate sourceX=seam-250.125 tests sample1/8px inside the intended texel, retain the same2.1/255 color tolerance and cover all six seams. Linear0.63/1.1 cases remain independently covered.",
+    "newMaxSampleColorError": 0.00392159819603,
+    "failedLogsPreserved": [
+      "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-attempt1/stdout.log",
+      "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-tie-negative/stdout.log"
+    ],
+    "independentAuditSha256": "46aaa6f7e3d877bf091d992fe841f566e183075c06aaca5c6789c4db82f17e92",
+    "independentAuditAlias": {
+      "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-tie-negative/independent-texel-audit.json",
+      "sha256": "aeb7b2f29d39460d068fc4a5a666833edaa8b7987cc7d9b8889fbe38b01a7235"
+    },
+    "independentScope": "Exact source-pixel audit of the single representative seam12276/nearest1.0 tail crop; no such exhaustive audit is claimed for the other five original negative cases."
+  },
+  "mainConsumer": {
+    "sourcePage": "c3_location",
+    "fixture": "Authored c3-qizhen-location checkpoint plus original State.open_page API; explicit presentation fixture, not an earned playthrough.",
+    "realNode": "SourceTiledNarrativeArt",
+    "textureCount": 7,
+    "originalTextureCachedBeforeAndAfter": false,
+    "storyItemsUnchanged": true,
+    "aspectContainPreserved": true
+  },
+  "packIdentityReference": {
+    "sourceInputSha256": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+    "rootArtifactProof": "exports/verification/library_theater_rebuild_20261021/tiled-artifact-proof.json",
+    "rootArtifactProofSha256": "5544a32e8e15a1986ee71271c7875f0421b58efe98ee1d9bee5b627c43073c1e",
+    "browserAcceptanceClaimedByThisLedger": false
+  },
+  "temporaryQaImages": [
+    {
+      "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-attempt1/seam-tail-native.png",
+      "sha256": "1a30bac822919154288f830dd19ef10711608b888b139c7a21f93869d5cc1784",
+      "width": 1280,
+      "height": 360,
+      "bytes": 322497,
+      "reviewed": true,
+      "reviewedBy": [
+        "library_rebuild"
+      ],
+      "conclusion": "Actual tile render and small source reference show continuous aligned tree/building imagery with no seam/crack.",
+      "deleted": true,
+      "deletedAt": "2026-10-20T17:27:39.715908+00:00"
+    },
+    {
+      "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-tie-negative/seam-tail-native-tie.png",
+      "sha256": "c86519812a8e9899088cce2170ae51fd7fd720b5d76ebaa7cd2d5ffedbc915c3",
+      "width": 1920,
+      "height": 360,
+      "bytes": 355680,
+      "reviewed": true,
+      "reviewedBy": [
+        "library_rebuild",
+        "root",
+        "theater_design"
+      ],
+      "conclusion": "Exact-tie negative control: actual/ref visually agree; threshold diff is distributed neighboring-texel rounding away from seam, audited separately.",
+      "deleted": true,
+      "deletedAt": "2026-10-20T17:27:39.716382+00:00"
+    },
+    {
+      "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-tie-negative/seam-tail-native.png",
+      "sha256": "1a30bac822919154288f830dd19ef10711608b888b139c7a21f93869d5cc1784",
+      "width": 1280,
+      "height": 360,
+      "bytes": 322497,
+      "reviewed": true,
+      "reviewedBy": [
+        "library_rebuild"
+      ],
+      "conclusion": "Actual tile render and small source reference show continuous aligned tree/building imagery with no seam/crack.",
+      "deleted": true,
+      "deletedAt": "2026-10-20T17:27:39.716636+00:00"
+    },
+    {
+      "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-final/seam-tail-native.png",
+      "sha256": "87cd605ff02fb9567153e7a85d043b4e77e9c4d64db93a08c4d82ee064882ef3",
+      "width": 1280,
+      "height": 360,
+      "bytes": 313639,
+      "reviewed": true,
+      "reviewedBy": [
+        "library_rebuild"
+      ],
+      "conclusion": "Actual tile render and small source reference show continuous aligned tree/building imagery with no seam/crack.",
+      "deleted": true,
+      "deletedAt": "2026-10-20T17:27:39.716869+00:00"
+    },
+    {
+      "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-main-gpu/main-location-card.png",
+      "sha256": "f43992dde402baf60296383ede996bcad9c57f078b52cb324cc73174d59e7240",
+      "width": 390,
+      "height": 844,
+      "bytes": 48458,
+      "reviewed": true,
+      "reviewedBy": [
+        "library_rebuild"
+      ],
+      "conclusion": "Actual Main location card uses visible panorama strip at original aspect-contain ratio; no black/missing art, no source texture cache.",
+      "deleted": true,
+      "deletedAt": "2026-10-20T17:27:39.716992+00:00"
+    },
+    {
+      "path": "exports/verification/library_theater_rebuild_20261021/panorama-tile-render-final-named/seam-tail-native.png",
+      "sha256": "87cd605ff02fb9567153e7a85d043b4e77e9c4d64db93a08c4d82ee064882ef3",
+      "width": 1280,
+      "height": 360,
+      "bytes": 313639,
+      "reviewed": true,
+      "reviewedBy": [
+        "library_rebuild"
+      ],
+      "conclusion": "Same test bytes under explicit GPU-only name: actual-left/reference-right images are continuous and aligned across tail seam, no visible crack.",
+      "deleted": true,
+      "deletedAt": "2026-10-20T17:30:26.598842+00:00"
+    }
+  ],
+  "limitations": [
+    "Native/GPU tests do not replace actual browser loading, ordinary movement, chapter handoff, persistence or physical-device acceptance.",
+    "No claim that every minimum-spec mobile GPU/device has been exercised.",
+    "The exact nearest-boundary negative control remains a recorded failed oracle comparison; it is not counted as one of the new passing samples.",
+    "Main retains the original aspect-contain panorama thumbnail design; redesigning that extremely wide narrative card was outside this compatibility fix."
+  ],
+  "qaCleanup": {
+    "reviewedAndDeleted": 6,
+    "bytes": 1676410,
+    "sourceInputsOrGeneratedTilesDeleted": false,
+    "failedLogsAndPixelDistributionsRetained": true,
+    "independentAuditRetained": true
+  },
+  "completedAt": "2026-10-20T17:30:26.599245+00:00",
+  "gpuTestNaming": {
+    "historicalName": "tests/test_source_tiled_render.gd",
+    "currentName": "tests/render_source_tiled_texture.gd",
+    "contentSha256Unchanged": "36a234e21ceed8fc7ec78e794111e3b9f4a27401767789aa22ad829810d456b9",
+    "reason": "validate_native.mjs automatically runs top-level test_* with --headless. GPU-only test is explicit rather than failing normal CI with a dummy renderer. Source and Main consumer tests remain automatic.",
+    "oldRawLogPathsPreserved": true,
+    "newNameGpuRerunChecks": 40,
+    "newNameGpuRerunFailures": 0
+  },
+  "finalHeadlessSmoke": {
+    "path": "exports/verification/direct_gestures_20261020/tiled-ci-headless-final/receipt.json",
+    "sha256": "231548e117368ebdf2168a66baccdc6300674826cc410de90ea42cd0a99bedbe",
+    "sourceStable": true,
+    "tests": [
+      {
+        "name": "test_source_tiled_texture.gd",
+        "summary": "SOURCE_TILED_TEXTURE: 47 checks; 0 failures",
+        "exitCode": 0
+      },
+      {
+        "name": "test_source_tiled_main.gd",
+        "summary": "SOURCE_TILED_MAIN: 9 checks; 0 failures",
+        "exitCode": 0
+      }
+    ],
+    "scope": "Same isolated --headless test scripts selected by normal validate_native automatic sweep; no editor import/export executed."
+  }
+}

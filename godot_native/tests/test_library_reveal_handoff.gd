@@ -120,9 +120,8 @@ func fixture(dimensions: Vector2i,reduced: bool=false) -> void:
 	check(shell.world_frame.is_visible_in_tree() and not shell.phone.is_visible_in_tree(),"earned fixture begins on the live Library world")
 	check(shell.world.library_layers.shelf_offset==0 and not shell.world.library_layers.blocks_movement(),"unacquired shelf starts idle at its source position")
 	check(shell.pending_library_reveal.is_empty(),"new earned fixture has no inherited reveal owner")
-	await click(shell.inventory_handle)
-	check(shell.inventory_dock.is_visible_in_tree(),"visible inventory handle opens the world item source")
-	check(not screen_rect(shell.inventory_dock).intersects(screen_rect(shell.world_frame)),"inventory and shelf world remain separate at the requested viewport")
+	check(not shell.inventory_handle.is_visible_in_tree() and shell.inventory_dock.is_visible_in_tree(),"earned items are directly exposed without the retired bag toggle")
+	check(screen_rect(shell.world_view).encloses(screen_rect(shell.inventory_dock)),"inline item row stays within the actual world viewport")
 	reader_openings=0; action_start=actions.size()
 func world_screen(point: Vector2) -> Vector2:
 	var local: Vector2=(point-shell.world.camera)*shell.world.zoom+shell.world.size/2
@@ -143,6 +142,7 @@ func acquire_by_drag() -> bool:
 	shell.inventory_scroll.ensure_control_visible(item); await frames()
 	check(item.is_visible_in_tree() and not item.disabled,"call number has an enabled visible native drag source")
 	var end: Vector2=shelf_screen()
+	check(not screen_rect(shell.inventory_dock).has_point(end),"visible source cabinet target remains outside the inline item row")
 	check(end.is_finite(),"actual rendered library_shelf_755 is pickable inside the world viewport")
 	if not end.is_finite(): return false
 	var start: Vector2=screen_rect(item).get_center()

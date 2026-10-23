@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Losslessly partition an exported Godot 4.7.2 PCK with official PCKPacker.
+ * Losslessly partition an exported Godot 4.7.1 PCK with official PCKPacker.
  *
  * node partition_web_pack.mjs --input=.../index.pck
  *   --inventory=.../pack-inventory.json --groups=groups.json --output=NEW_DIRECTORY
  * Add --verify-only to independently revalidate an existing output directory.
- * GODOT_BIN selects the same 4.7.2 executable used to export the original pack.
+ * GODOT_BIN selects the same 4.7.1 executable used to export the original pack.
  *
  * groups.json:
  * {"schemaVersion":1,"coreId":"core","groups":[
@@ -62,7 +62,7 @@ export function readPack(filename, hashContents = true) {
     if (read(4).toString('ascii') !== 'GDPC') fail('Input is not a Godot PCK');
     const format = u32();
     const engine = [u32(), u32(), u32()].join('.');
-    if (![2, 3, 4].includes(format) || engine !== '4.7.2') fail(`Expected Godot 4.7.2 PCK, got ${format}/${engine}`);
+    if (![2, 3, 4].includes(format) || engine !== '4.7.1') fail(`Expected Godot 4.7.1 PCK, got ${format}/${engine}`);
     const flags = u32();
     const fileBase = u64();
     if (flags & ~2) fail('Encrypted, sparse or unknown PCK flags are unsupported');
@@ -181,7 +181,7 @@ export function main(argv = process.argv.slice(2)) {
   if (fs.existsSync(options.output) && !options.verifyOnly) fail('Output already exists; choose a new directory (existing exports are never overwritten)');
   const godot = process.env.GODOT_BIN || 'godot';
   const version = spawnSync(godot, ['--version'], { encoding: 'utf8', timeout: 30_000 });
-  if (version.error || version.status !== 0 || !version.stdout.trim().startsWith('4.7.2.')) fail(`Expected Godot 4.7.2 executable: ${version.error?.message ?? version.stdout.trim()}`);
+  if (version.error || version.status !== 0 || !version.stdout.trim().startsWith('4.7.1.')) fail(`Expected Godot 4.7.1 executable: ${version.error?.message ?? version.stdout.trim()}`);
   const original = readPack(options.input);
   const inventory = json(options.inventory);
   if (inventory.format !== original.format || inventory.engine !== original.engine || inventory.flags !== original.flags || inventory.count !== original.count || !Array.isArray(inventory.entries)) fail('Provided inventory does not describe input PCK');
