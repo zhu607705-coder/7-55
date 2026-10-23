@@ -194,4 +194,146 @@ check('all selected original acceptance scenario invocations remain byte-preserv
 const project = readFileSync(new URL('../project.godot', import.meta.url), 'utf8');
 const stateSource = readFileSync(new URL('../scripts/state.gd', import.meta.url), 'utf8');
 check('fixed key is grounded in current actual custom user directory and save path', () => { assert(project.includes('config/use_custom_user_dir=true')); assert(project.includes('config/custom_user_dir_name=\"SevenFiftyFiveNative\"')); assert(stateSource.includes('const SAVE_PATH := \"user://save.json\"')); });
+
+// Exercise the actual save target selection, ordinary click orchestration and
+// unchanged receipt poll against deterministic snapshots. These are regression
+// checks for the acceptance driver, not proof of a real browser click or IDB.
+const saveSource = draft.slice(draft.indexOf('async function waitForPersistedSave('), draft.indexOf('async function startStory('));
+const pollSource = draft.slice(draft.indexOf('async function poll('), draft.indexOf('async function shaFile('));
+const clickSource = draft.slice(draft.indexOf('async function clickPoint('), draft.indexOf('async function canvasGeometry('));
+const targetDigest = 'a'.repeat(64), oldDigest = 'b'.repeat(64);
+function saveSnapshot(frame, patch = {}) {
+  return { sampleFrame: frame, documentHidden: false, viewport: { x: 0, y: 0, width: 1280, height: 720 },
+    state: { native: { chapter: 2, mode: 'world', page: 'campus_bootstrap', scene: 'dorm_hub' } },
+    visibleControls: [{ name: 'SaveNativeProgress', text: '保存进度', disabled: false, rect: { x: 366, y: 177.5, width: 548, height: 48 } }],
+    savePersistence: { token: 3, digest: oldDigest, acknowledgedDigest: oldDigest, pending: false, error: '' }, saveDigest: oldDigest, ...patch };
+}
+function saveClickFixture(options = {}) {
+  let now = 1000, beforeIndex = 0, afterIndex = 0, dispatched = false, lastBefore;
+  const clicks = [], events = [], canvasReads = [], delays = [], diskReads = [], accepted = [];
+  const active = { fresh: { recording: false, inputs: [] }, touch: !!options.touch };
+  active.cdp = { send: async (method, params) => {
+    assert(['Input.dispatchMouseEvent', 'Input.dispatchTouchEvent'].includes(method));
+    events.push({ method, params, at: now });
+    if (['mouseMoved', 'touchStart'].includes(params.type)) { const point = params.touchPoints?.[0] || params; clicks.push({ point: { x: point.x, y: point.y }, at: now }); }
+    if (['mouseReleased', 'touchEnd'].includes(params.type)) { dispatched = true; if (options.clickError) throw new Error(options.clickError); }
+    return {};
+  } };
+  const samples = options.samples || [saveSnapshot(1), saveSnapshot(2)];
+  const canvas = { x: 0, y: 0, width: 1280, height: 720, pixelWidth: 2560, pixelHeight: 1440, windowWidth: 1280, windowHeight: 720, documentHidden: false, ...options.canvas };
+  const DateClock = class extends Date { static now() { return now; } };
+  const context = vm.createContext({ Date: DateClock, active, console,
+    state: value => value?.state, controls: value => value?.visibleControls || [],
+    interval: async ms => { delays.push(ms); now += ms; },
+    snapshot: async () => {
+      if (!dispatched) {
+        lastBefore = structuredClone(typeof options.beforeSnapshot === 'function' ? options.beforeSnapshot(beforeIndex++, now) : samples[Math.min(beforeIndex++, samples.length - 1)]);
+        return lastBefore;
+      }
+      if (options.afterSnapshot) return options.afterSnapshot(afterIndex++, now, lastBefore);
+      return saveSnapshot(lastBefore.sampleFrame + 1, { visibleControls: [{ ...lastBefore.visibleControls[0], text: '已保存' }], saveDigest: targetDigest,
+        savePersistence: { token: lastBefore.savePersistence.token + 1, digest: targetDigest, acknowledgedDigest: targetDigest, pending: false, error: '' } });
+    },
+    evaluate: async expression => { assert(expression.includes('getBoundingClientRect()')); canvasReads.push({ at: now, expression, beforeIndex }); return structuredClone(canvas); },
+    createSaveDiagnostics: () => ({ observe() {}, stop() {} }),
+    readPersistentSaveEntries: async () => { diskReads.push(now); return { entries: [{ key: '/userfs/SevenFiftyFiveNative/save.json', sha256: options.diskDigest || targetDigest }], readDurationMs: 0 }; },
+    check: (ok, label) => { assert(ok, label); accepted.push(label); }
+  });
+  vm.runInContext(pollSource + '\n' + clickSource + '\n' + saveSource, context);
+  return { context, active, clicks, events, canvasReads, delays, diskReads, accepted, get now() { return now; }, get beforeReads() { return beforeIndex; } };
+}
+const stable = saveClickFixture({ samples: [saveSnapshot(10), saveSnapshot(10), saveSnapshot(11)] });
+await stable.context.saveProgressAndWait('stable Save');
+check('same cached frame cannot satisfy two fresh stable native samples', () => { assert.equal(stable.beforeReads, 3); assert.deepEqual([...stable.active.saveInputs[0].stableSampleFrames], [10, 11]); });
+check('one fresh DOM canvas mapping immediately precedes exactly one ordinary click', () => { assert.equal(stable.canvasReads.length, 1); assert.equal(stable.clicks.length, 1); assert.equal(stable.canvasReads[0].at, stable.clicks[0].at); assert.deepEqual(stable.clicks[0].point, { x: 640, y: 201.5 }); });
+check('explicit Save keeps provenance even outside fresh-game recording', () => {
+  const input = stable.active.saveInputs[0];
+  assert.equal(stable.active.fresh.inputs.length, 0); assert.equal(input.uniqueControlMatches, 1);
+  assert.equal(input.previousToken, 3); assert.equal(input.text, '保存进度'); assert.equal(input.sampleFrame, 11);
+  assert.equal(input.geometryWaitBeganAt, 1000); assert.equal(input.preparedAt, 1200);
+  assert.equal(input.dispatchStartedAt, 1200); assert.equal(input.dispatchEndedAt, 1265); assert.equal(input.dispatchCompleted, true);
+  assert.equal(input.canvas.pixelWidth, 2560); assert.equal(input.viewport.width, 1280); assert.equal(input.observedContext.scene, 'dorm_hub');
+  assert.equal(stable.active.saveAttempts[0].input, input); assert.equal(stable.active.saveAttempts[0].saveInputBeganAt, input.dispatchStartedAt);
+});
+check('stable-save path adds neither click retry nor fixed settling sleep', () => { assert.equal(stable.clicks.length, 1); assert(stable.delays.every(ms => ms === 100 || ms === 65)); assert.equal(stable.delays.filter(ms => ms === 65).length, 1); });
+check('actual mouse helper keeps move/down/up ordering and records every transport acknowledgement', () => {
+  const trace = stable.active.saveInputs[0].events;
+  assert.deepEqual([...trace].map(event => event.params.type), ['mouseMoved', 'mousePressed', 'mouseReleased']);
+  assert.deepEqual([...trace].map(event => event.startedAt), [1200, 1200, 1265]);
+  assert(trace.every(event => event.method === 'Input.dispatchMouseEvent' && event.acknowledgedAt === event.endedAt));
+  assert.equal(stable.events.length, 3);
+});
+const moved = saveSnapshot(2); moved.visibleControls[0].rect.y += 100;
+const finalMoved = structuredClone(moved); finalMoved.sampleFrame = 3; finalMoved.savePersistence.token = 7;
+const moving = saveClickFixture({ samples: [saveSnapshot(1), moved, finalMoved], touch: true, canvas: { x: 20, y: 30, width: 640, height: 360, pixelWidth: 1920, pixelHeight: 1080 } });
+await moving.context.saveProgressAndWait('settling menu');
+check('changed layout resets stability and maps the final rect, not first visible rect', () => { assert.equal(moving.beforeReads, 3); assert.deepEqual([...moving.active.saveInputs[0].stableSampleFrames], [2, 3]); assert.deepEqual(moving.clicks[0].point, { x: 340, y: 180.75 }); });
+check('autosave during geometry preparation becomes baseline, never explicit-save activation', () => { assert.equal(moving.active.saveInputs[0].previousToken, 7); assert.equal(moving.active.saveAttempts[0].previousToken, 7); assert.equal(moving.active.saveAttempts[0].observations[0].receipt.token, 8); });
+check('touch provenance and actual scaled canvas are retained without backing-pixel coordinate drift', () => { assert.equal(moving.active.saveInputs[0].touch, true); assert.equal(moving.active.saveInputs[0].canvas.pixelWidth, 1920); assert.equal(moving.active.saveInputs[0].canvas.width, 640); });
+check('actual touch helper sends one start/end pair and retains both event boundaries', () => {
+  const trace = moving.active.saveInputs[0].events;
+  assert.deepEqual([...trace].map(event => event.params.type), ['touchStart', 'touchEnd']);
+  assert.equal(trace[0].params.touchPoints.length, 1); assert.equal(trace[1].params.touchPoints.length, 0);
+  assert.equal(trace[1].startedAt - trace[0].startedAt, 65); assert(trace.every(event => event.acknowledgedAt === event.endedAt));
+});
+for (const kind of ['missing', 'duplicate', 'disabled', 'hidden', 'document-hidden', 'nan', 'zero-area', 'offscreen', 'bad-frame', 'bad-token']) {
+  const invalid = saveSnapshot(1);
+  if (kind === 'missing') invalid.visibleControls = [];
+  if (kind === 'duplicate') invalid.visibleControls.push(structuredClone(invalid.visibleControls[0]));
+  if (kind === 'disabled') invalid.visibleControls[0].disabled = true;
+  if (kind === 'hidden') invalid.visibleControls[0].visible = false;
+  if (kind === 'document-hidden') invalid.documentHidden = true;
+  if (kind === 'nan') invalid.visibleControls[0].rect.x = NaN;
+  if (kind === 'zero-area') invalid.visibleControls[0].rect.width = 0;
+  if (kind === 'offscreen') invalid.visibleControls[0].rect.x = 1200;
+  if (kind === 'bad-frame') invalid.sampleFrame = undefined;
+  if (kind === 'bad-token') invalid.savePersistence.token = NaN;
+  const fixture = saveClickFixture({ samples: [invalid, saveSnapshot(2), saveSnapshot(3)] });
+  await fixture.context.saveProgressAndWait(kind);
+  check(`${kind} save target cannot seed geometry stability or trigger input`, () => { assert.equal(fixture.beforeReads, 3); assert.deepEqual([...fixture.active.saveInputs[0].stableSampleFrames], [2, 3]); assert.equal(fixture.clicks.length, 1); });
+}
+const stale = saveClickFixture({ samples: [saveSnapshot(22)] });
+await assert.rejects(stale.context.saveProgressAndWait('stale geometry'), /fresh native frames/);
+check('a frozen cached frame fails within original target-discovery 20s without any click', () => { assert.equal(stale.now, 21000); assert.equal(stale.clicks.length, 0); assert.equal(stale.active.saveInputs[0].failureKind, 'save-control-not-stable'); assert.equal(stale.active.saveAttempts, undefined); });
+for (const text of ['已保存', '正在保存…', '保存尚未完成，请稍后重试']) {
+  const fixture = saveClickFixture({ beforeSnapshot: index => { const value = saveSnapshot(index + 1); value.visibleControls[0].text = text; return value; } });
+  await assert.rejects(fixture.context.saveProgressAndWait('noninitial save label'), /fresh native frames/);
+  check(`prior label ${text} is not a fresh explicit-save target even across fresh frames`, () => { assert.equal(fixture.clicks.length, 0); assert.equal(fixture.now, 21000); assert.equal(fixture.active.saveAttempts, undefined); });
+}
+for (const canvas of [{ width: 0 }, { x: NaN }, { documentHidden: true }, { x: 1000 }, { pixelWidth: 0 }]) {
+  const fixture = saveClickFixture({ beforeSnapshot: index => saveSnapshot(index + 1), canvas });
+  await assert.rejects(fixture.context.saveProgressAndWait('invalid canvas'), /fresh native frames/);
+  check(`unusable DOM canvas ${JSON.stringify(canvas)} never receives a speculative click`, () => { assert.equal(fixture.clicks.length, 0); assert.equal(fixture.now, 21000); });
+}
+const failedDispatch = saveClickFixture({ clickError: 'CDP input rejected' });
+await assert.rejects(failedDispatch.context.saveProgressAndWait('dispatch failure'), /CDP input rejected/);
+check('failed single dispatch still records both boundaries and is never retried', () => { const input = failedDispatch.active.saveInputs[0]; assert.equal(failedDispatch.clicks.length, 1); assert.equal(input.dispatchStartedAt, 1100); assert.equal(input.dispatchEndedAt, 1165); assert.equal(input.dispatchCompleted, undefined); assert.equal(input.failureKind, 'save-input-dispatch-failed'); assert.equal(failedDispatch.active.saveAttempts, undefined); });
+check('mouse release failure is distinguishable from a failed press without another event', () => { const trace = failedDispatch.active.saveInputs[0].events; assert.equal(trace.length, 3); assert.equal(trace[1].params.type, 'mousePressed'); assert.equal(trace[1].acknowledgedAt, 1100); assert.equal(trace[2].params.type, 'mouseReleased'); assert.equal(trace[2].error, 'CDP input rejected'); assert.equal(trace[2].acknowledgedAt, undefined); assert.equal(trace[2].endedAt, 1165); });
+const failedTouch = saveClickFixture({ touch: true, clickError: 'CDP touch release rejected' });
+await assert.rejects(failedTouch.context.saveProgressAndWait('touch release failure'), /CDP touch release rejected/);
+check('touch release failure retains acknowledged press and failed end, with no retry', () => { const trace = failedTouch.active.saveInputs[0].events; assert.equal(trace.length, 2); assert.equal(trace[0].params.type, 'touchStart'); assert.equal(trace[0].acknowledgedAt, 1100); assert.equal(trace[1].params.type, 'touchEnd'); assert.equal(trace[1].error, 'CDP touch release rejected'); assert.equal(trace[1].endedAt, 1165); assert.equal(failedTouch.clicks.length, 1); });
+const noToken = saveClickFixture({ afterSnapshot: (index, now, before) => saveSnapshot(3 + index, { visibleControls: [{ ...before.visibleControls[0], text: '已保存' }] }) });
+await assert.rejects(noToken.context.saveProgressAndWait('unacknowledged input'), /no new native save token observed/);
+check('old durable digest and old saved label never substitute for a new explicit-save token', () => {
+  const attempt = noToken.active.saveAttempts[0]; assert.equal(attempt.failedAt - attempt.beganAt, 30000); assert.equal(attempt.failureKind, 'save-input-not-acknowledged');
+  assert.equal(noToken.clicks.length, 1); assert.equal(noToken.accepted.length, 0); assert.equal(noToken.diskReads.length, 1);
+});
+const pendingSave = saveClickFixture({ afterSnapshot: (index, now) => saveSnapshot(3 + index, { saveDigest: targetDigest, savePersistence: { token: 4, digest: targetDigest, pending: now < 21165, error: now >= 21165 ? 'timeout' : '', acknowledgedDigest: '' } }) });
+await assert.rejects(pendingSave.context.saveProgressAndWait('native timeout'), /new native save token observed, but exact persistence acceptance failed.*timeout/);
+check('new-token production timeout is distinct and retains the same one 30s receipt window', () => { const attempt = pendingSave.active.saveAttempts[0]; assert.equal(attempt.failureKind, 'save-persistence-not-acknowledged'); assert.equal(attempt.failedAt - attempt.beganAt, 30000); assert.equal(pendingSave.clicks.length, 1); });
+const lateToken = saveClickFixture({ afterSnapshot: (index, now) => saveSnapshot(3 + index, { saveDigest: targetDigest, savePersistence: { token: now >= 30165 ? 4 : 3, digest: targetDigest, pending: true, error: '', acknowledgedDigest: '' } }) });
+await assert.rejects(lateToken.context.saveProgressAndWait('late native token'), /new native save token observed/);
+check('late new token does not start another 30s persistence phase', () => { const attempt = lateToken.active.saveAttempts[0]; assert.equal(attempt.failedAt - attempt.beganAt, 30000); assert.equal(lateToken.clicks.length, 1); });
+const wrongDigest = saveClickFixture({ afterSnapshot: index => saveSnapshot(3 + index, { visibleControls: [{ ...saveSnapshot(1).visibleControls[0], text: '已保存' }], saveDigest: targetDigest, savePersistence: { token: 4, digest: targetDigest, acknowledgedDigest: oldDigest, pending: false, error: '' } }) });
+await assert.rejects(wrongDigest.context.saveProgressAndWait('wrong receipt hash'), /exact persistence acceptance failed/);
+check('new token plus visible saved label cannot bypass exact receipt digest agreement', () => { assert.equal(wrongDigest.accepted.length, 0); assert.equal(wrongDigest.active.saveAttempts[0].failedAt - wrongDigest.active.saveAttempts[0].beganAt, 30000); });
+const wrongDisk = saveClickFixture({ diskDigest: oldDigest });
+await assert.rejects(wrongDisk.context.saveProgressAndWait('wrong primary hash'), /independent readonly IndexedDB primary/);
+check('successful receipt cannot bypass independent primary-file digest agreement', () => assert.equal(wrongDisk.accepted.length, 0));
+check('input evidence is serialized for both successful and failed browser cases', () => assert(draft.includes('    caseRecord.saveInputs = active.saveInputs || [];')));
+check('save-input repair adds no native save mutation, sync or bridge write', () => {
+  const helpers = draft.slice(draft.indexOf('function saveClickCandidate('), draft.indexOf('async function startStory('));
+  assert(!/force_fs_sync|syncfs|save_game|__GODOT_755__|setTimeout/.test(helpers));
+  assert.equal((helpers.match(/await clickPoint\(/g) || []).length, 1);
+});
 console.log(`PASS ${checks.length} pure Node checks; no browser, real IDB, or runtime acceptance executed.`);

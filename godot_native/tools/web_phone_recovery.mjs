@@ -151,6 +151,12 @@ export async function phoneRecoveryCase(h) {
   await h.poll(async () => (await read()).state.actOne.exerciseStarted, 'ten actual exercise point presses accepted');
   await shot('tiyi-real-exercise'); await click('ReturnToTiyi'); await home();
   await click('HomeWeatherOpen'); await click('WeatherWaterCard');
+  // CDP delivery plus a fixed delay does not acknowledge the engine's cached
+  // snapshot. Observe this one real claim completing; never repeat the input.
+  await h.poll(async () => {
+    const current = await read();
+    return current?.state?.native?.chapter === 2 && current.state.native.page === 'weather' && current.state.actOne.exerciseStarted && current.state.actOne.weatherWaterTaken && current.state.items.weatherWater;
+  }, 'actual weather card claim after exercise completes');
   value = await read('C2 original weather rain earned after exercise');
   h.check(value.state.actOne.weatherWaterTaken && value.state.items.weatherWater, `${h.id}: original weather drop remains gated behind actual exercise`);
   await shot('tiyi-weather-rain'); await h.assertLayout('Tiyi two-stage recovery');
