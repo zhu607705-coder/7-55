@@ -1,19 +1,19 @@
-// Godot 4.7.2's common audio init loads the Sample position worklet before
+// Godot 4.7.1's common audio init loads the Sample position worklet before
 // selecting a mixer. On insecure HTTP audioWorklet is absent, so that load
 // throws before the engine can try its existing ScriptProcessor mixer. This
 // release uses Stream playback; only skip the unavailable optional worklet.
 // Do not fabricate an AudioWorklet or advertise Sample playback support.
-// Upstream 4.7.2-stable: platform/web/js/libs/library_godot_audio.js:1285,
+// Upstream 4.7.1-stable: platform/web/js/libs/library_godot_audio.js:1286,
 // platform/web/os_web.cpp:303 and servers/audio/audio_server.cpp:228.
-// https://github.com/godotengine/godot/tree/4.7.2-stable/platform/web
+// https://github.com/godotengine/godot/tree/4.7.1-stable/platform/web
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-export const AUDIO_COMPAT_ENGINE = '4.7.2.stable.official';
-export const AUDIO_COMPAT_ID = '755-godot-4.7.2-position-worklet-capability-v1';
-export const AUDIO_COMPAT_SOURCE_SHA256 = '33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba';
-export const AUDIO_COMPAT_OUTPUT_SHA256 = '649986c2276d830baa17cd1774a4bb192fc929186e040394b4fc728a350919cd';
+export const AUDIO_COMPAT_ENGINE = '4.7.1.stable.official';
+export const AUDIO_COMPAT_ID = '755-godot-4.7.1-position-worklet-capability-v1';
+export const AUDIO_COMPAT_SOURCE_SHA256 = '68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c';
+export const AUDIO_COMPAT_OUTPUT_SHA256 = '81c50135df60b91aa2a7fdb8578b51e12e98bb7bc9d2008f75f046c5d3b5d744';
 export const POSITION_WORKLET_INIT = 'GodotAudio.audioPositionWorkletPromise=ctx.audioWorklet.addModule(path);';
 export const GUARDED_POSITION_WORKLET_INIT = 'if(ctx.audioWorklet){GodotAudio.audioPositionWorkletPromise=ctx.audioWorklet.addModule(path)}';
 const sha256 = source => crypto.createHash('sha256').update(source).digest('hex');

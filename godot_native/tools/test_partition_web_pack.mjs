@@ -33,6 +33,13 @@ func _initialize() -> void:
 `);
   run(godot, ['--headless', '--path', directory, '--script', 'res://fixture.gd']);
   const inventory = readPack(source);
+  assert.equal(inventory.engine, '4.7.1', 'The fixture is produced by the pinned actual engine');
+  const wrongVersion = path.join(directory, 'wrong-version.pck');
+  const wrongHeader = fs.readFileSync(source);
+  wrongHeader.writeUInt32LE(2, 16); // PCK header patch version, not resource bytes.
+  fs.writeFileSync(wrongVersion, wrongHeader);
+  assert.throws(() => readPack(wrongVersion), /Expected Godot 4\.7\.1 PCK/);
+  checks.push('Actual 4.7.1 PCK accepted; a former 4.7.2 header is rejected');
   fs.writeFileSync(path.join(directory, 'inventory.json'), JSON.stringify(inventory));
   const groups = { schemaVersion: 1, coreId: 'core', groups: [{ id: 'chapter2', paths: ['chapter2/后续.txt'] }] };
   fs.writeFileSync(path.join(directory, 'groups.json'), JSON.stringify(groups));

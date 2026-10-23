@@ -15,7 +15,7 @@ signal battery_recharged
 signal action_completed(action: String,previous: Dictionary,next: Dictionary,result: Dictionary)
 const SAVE_PATH := "user://save.json"
 const BACKUP_PATH := "user://save.previous.json"
-const SOURCE_VERSION := 35
+const SOURCE_VERSION := 36
 const SaveDomainGuard = preload("res://scripts/save_domain_guard.gd")
 const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
 var _domain_guard: RefCounted = SaveDomainGuard.new()
@@ -106,6 +106,17 @@ func get_phone_entry_session() -> RefCounted:
 		if module.has_method("phone_entry_session"): return module.phone_entry_session(d)
 	return null
 
+func get_home_desk_controller() -> RefCounted:
+	for module in modules:
+		if module.get("home_desk") != null:
+			module.home_desk.route(d)
+			return module.home_desk
+	return null
+
+func get_home_charging_session() -> RefCounted:
+	var desk := get_home_desk_controller()
+	return desk.session if desk != null else null
+
 func advance_phone_entry(delta_ms: float) -> Array:
 	var session:=get_phone_entry_session()
 	if session==null: return []
@@ -155,7 +166,7 @@ func _accept_result(action: String,previous_state: Dictionary,result: Dictionary
 	var previous_network: String=str(previous_state.networkMode)
 	var previous_battery: int=int(previous_state.phoneBattery.percent)
 	last_result=result
-	if previous_network!=str(d.networkMode) and previous_battery<=1: battery_reserve_used.emit(1)
+	if previous_network!=str(d.networkMode) and previous_battery<=1: battery_reserve_used.emit(int(d.phoneBattery.percent))
 	if int(d.phoneBattery.percent)>previous_battery: battery_recharged.emit()
 	if result.has("page"): d.native.page=str(result.page)
 	if result.has("scene"):
@@ -207,17 +218,10 @@ func source_app(page: String) -> String:
 	if page in ["c35_journal","c3_ticket_post"]: return "cc98"
 	return ""
 
-func _consume_scene_open(previous: String, next: String) -> void:
-	var old_app := source_app(previous)
-	var next_app := source_app(next)
-	if next_app.is_empty() or next_app == old_app or next_app in ["alarm","desktop","phone_home","ending"]: return
-	var before := int(d.phoneBattery.percent)
-	if before <= 1:
-		battery_reserve_used.emit(1)
-		return
-	d.phoneBattery.percent = maxi(1,before-(1 if d.phoneBattery.lowPowerMode else 2))
-	if before > 10 and d.phoneBattery.percent <= 10: feedback.emit("电量降至 %s%%。点状态栏，可开启低电量模式或寻找附近电源。"%int(d.phoneBattery.percent))
-	elif d.phoneBattery.percent == 1: feedback.emit("电量仅剩 1%，请寻找现场充电服务站。")
+func _consume_scene_open(_previous: String, _next: String) -> void:
+	# Navigation is not a battery drain. In particular, opening an app must not
+	# spend or manufacture the 0/1-percent reserve, nor trigger its prank.
+	pass
 
 func story_input_locked() -> bool:
 	return get_library_story_session()!=null or get_c3_narrative_session()!=null
@@ -315,6 +319,9 @@ func _matches_shape(template: Variant, value: Variant, depth: int = 0, location:
 			# Added consumption receipt; older native saves have no such field.
 			# Present values still pass the ordinary boolean shape check below.
 			if location==".qizhenLake" and key=="legacyNetMaterialsConsumed" and not value.has(key): continue
+			# Only the versioned native import/load boundary may migrate this absence.
+			if location==".actOne" and key=="tiyiUpdateStage" and not value.has(key): continue
+			if location==".ui" and key=="homeDeskReturnScene" and not value.has(key): continue
 			if not value.has(key) or not _matches_shape(template[key],value[key],depth+1,location+"."+str(key)): return false
 		return true
 	if template is Array:
@@ -353,10 +360,13 @@ func _safe_json(value: Variant, depth: int = 0) -> bool:
 	elif value != null and not value is bool: return false
 	return true
 
-func validate_snapshot(value: Variant) -> bool:
+func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> bool:
 	if not value is Dictionary or not _safe_json(value): return false
 	if not _matches_shape(initial(),value): return false
 	if not _domain_guard.validate(value): return false
+	if not allow_legacy_v35_fields and (not value.actOne.has("tiyiUpdateStage") or not value.ui.has("homeDeskReturnScene")): return false
+	if value.actOne.has("tiyiUpdateStage") and value.actOne.tiyiUpdateStage not in preload("res://scripts/chapters/tiyi_access.gd").STAGES: return false
+	if value.ui.has("homeDeskReturnScene") and value.ui.homeDeskReturnScene not in [null,"phone_home","bonsai"]: return false
 	# The studio checkpoint is optional for old saves; present checkpoints stay bounded.
 	if value.native.has("c4_plate_press") and not load("res://scripts/objects/room201_press_model.gd").valid(value.native.c4_plate_press): return false
 	if value.native.has("c4_media_studio") and not load("res://scripts/objects/room302_studio_model.gd").valid(value.native.c4_media_studio): return false
@@ -514,9 +524,25 @@ func _read_native_save(path: String) -> Dictionary:
 	var envelope = JSON.parse_string(raw)
 	if not envelope is Dictionary or envelope.get("format") != "7-55-godot-native": return {}
 	if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1: return {}
-	if not validate_snapshot(envelope.get("state")): return {}
+	if not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35): return {}
+	if not _valid_native_v36_fields(envelope): return {}
 	_upgrade_legacy_net_receipt(envelope.state)
+	_upgrade_legacy_v36_fields(envelope.state)
 	return envelope
+
+func _valid_native_v36_fields(envelope: Dictionary) -> bool:
+	# A missing field is an exact v35 migration, never an unbounded old-schema pass.
+	if envelope.state.actOne.has("tiyiUpdateStage") and envelope.state.ui.has("homeDeskReturnScene"): return true
+	var version: Variant=envelope.get("sourceVersion")
+	return (version is int or version is float) and version==35
+
+func _upgrade_legacy_v36_fields(snapshot: Dictionary) -> void:
+	var a: Dictionary=snapshot.actOne
+	if not a.has("tiyiUpdateStage"):
+		# Preserve earned exercise/water, never infer installation from C1's 7,
+		# network mode, chapter number or an advanced phase alone.
+		a.tiyiUpdateStage="legacy_ready" if a.exerciseStarted or a.weatherWaterTaken else "not_started"
+	if not snapshot.ui.has("homeDeskReturnScene"): snapshot.ui.homeDeskReturnScene=null
 
 func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 	# Raw native save has already passed structural/domain validation. Preserve
@@ -526,6 +552,9 @@ func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 		q.legacyNetMaterialsConsumed=q.netCombined and q.lockerOpened and not q.magneticRodCombined
 
 func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
+	# Match source SaveStore: this is a bounded C1 desktop return location,
+	# not a persistent charging session or a later-chapter navigation grant.
+	if snapshot.actOne.phase!="prologue" or snapshot.flags.checkinDone or snapshot.runtimeMode!="phone" or snapshot.currentScene!="desktop": snapshot.ui.homeDeskReturnScene=null
 	# The source lake rehydrates at its checkpoint, not a stale moving/chasing
 	# framebuffer position. This never alters a saved photo recipe or story fact.
 	var positions: Dictionary=snapshot.native.get("positions",{})
@@ -578,8 +607,10 @@ func import_save(path: String) -> Dictionary:
 	var portable_media := false
 	var store_service: Script
 	if envelope.get("format") == "7-55-godot-native":
-		if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1 or not validate_snapshot(envelope.get("state")): return {"ok":false,"message":"原生存档结构或剧情凭据无效，当前进度未改变。"}
+		if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1 or not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35): return {"ok":false,"message":"原生存档结构或剧情凭据无效，当前进度未改变。"}
+		if not _valid_native_v36_fields(envelope): return {"ok":false,"message":"新增存档字段无效，当前进度未改变。"}
 		_upgrade_legacy_net_receipt(envelope.state)
+		_upgrade_legacy_v36_fields(envelope.state)
 		candidate = merge_defaults(initial(),envelope.state)
 		if envelope.has("journalImages"):
 			var prepared: Dictionary=JOURNAL_ARCHIVE.prepare(candidate,envelope.journalImages)

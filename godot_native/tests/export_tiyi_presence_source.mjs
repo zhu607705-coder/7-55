@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { stripTypeScriptTypes } from 'node:module';
+import { createRequire, stripTypeScriptTypes } from 'node:module';
 
 // Execute the authored methods, not a hand-copied model of their behavior.
 const here = dirname(fileURLToPath(import.meta.url));
@@ -14,10 +14,22 @@ if (args.length > 1 || (args.length === 1 && (!args[0] || (args[0].startsWith('-
 const checkOnly = args[0] === '--check';
 const out = checkOnly || args.length === 0 ? resolve(here, 'tiyi_audit_oracle.json') : resolve(args[0]);
 const root = resolve(process.env.SOURCE_REPO_ROOT || resolve(here, '../..'));
+const { build } = createRequire(resolve(root, 'package.json'))('esbuild');
 const controllerPath = 'src/modules/LibraryFinalsController.ts';
 const rulesPath = 'src/modules/library-finals/puzzleRules.ts';
 const controller = readFileSync(resolve(root, controllerPath), 'utf8');
 const rules = readFileSync(resolve(root, rulesPath), 'utf8');
+// Execute the shared access rule and acquire its prerequisite with the actual
+// source controller. Do not stub the new gate to true or assign installed here.
+const compiled = await build({
+  stdin: { resolveDir: root, contents: [
+    'export { canAccessTiyi } from "./src/modules/TiyiAccessModel.ts";',
+    'export { ActOneBootstrapController } from "./src/modules/ActOneBootstrapController.ts";',
+    'export { createInitialGameState, createGameStore } from "./src/core/GameState.ts";',
+    'export { EventBus } from "./src/core/EventBus.ts";'
+  ].join('\n') }, bundle: true, write: false, platform: 'node', format: 'esm'
+});
+const sourceModel = await import('data:text/javascript;base64,' + Buffer.from(compiled.outputFiles[0].text).toString('base64'));
 function balancedBody(text, start, marker) {
   const index = text.indexOf(marker, start);
   if (index < 0) throw new Error(`Missing source marker: ${marker}`);
@@ -36,11 +48,16 @@ const functions = ['function isAuditValueInRange(', 'function auditPuzzleField('
 const validate = balancedBody(rules, 0, 'function validateAudit(');
 const config = JSON.parse(readFileSync(resolve(root, 'src/data/library-finals.puzzle.json'), 'utf8'));
 const js = stripTypeScriptTypes(`${rangeBlock}\n${functions.join('\n')}\n${validate}\nclass SourceAudit { ${methods.join('\n')} }`, { mode: 'strip' });
-const SourceAudit = new Function('LIBRARY_FINALS_PUZZLE_CONFIG', `${js}; return SourceAudit;`)(config);
+const SourceAudit = new Function('LIBRARY_FINALS_PUZZLE_CONFIG', 'canAccessTiyi', `${js}; return SourceAudit;`)(config, sourceModel.canAccessTiyi);
 const fields = { arrival: 'arrivalMinutes', notice: 'publicNoticeFloor', proofs: 'proofCount' };
 const initialPuzzle = { investigationOpened: true, entranceRecordRead: true, archivedRuleRead: true, presenceProofCollected: false, auditArrivalMinutes: 0, auditPublicNoticeFloor: 0, auditProofCount: 0, auditAttemptCount: 0 };
 function model(phase, opened, passed) {
   const subject = new SourceAudit();
+  const state = sourceModel.createInitialGameState();
+  state.actOne.phase = 'complete'; state.networkMode = 'cellular'; state.ui.libraryFinalsPhase = phase;
+  subject.store = sourceModel.createGameStore(state);
+  const update = new sourceModel.ActOneBootstrapController(subject.store, new sourceModel.EventBus());
+  if (!update.discoverTiyiUpdate() || !update.acquireTiyiUpdate() || !update.installTiyiUpdate()) throw new Error('Source update fixture did not earn installation');
   subject.phase = phase;
   subject.puzzle = { ...initialPuzzle, investigationOpened: opened, presenceProofCollected: passed };
   subject.items = {};
@@ -68,7 +85,7 @@ for (const phase of ['evidence_gathering', 'library_entered', 'top_ten_reached']
       const accepted = subject.submitAudit(values);
       submissions.push({ phase, opened, passed, values, accepted, puzzle: subject.puzzle, items: subject.items, events: subject.recorded });
     }
-const hashes = Object.fromEntries([controllerPath, rulesPath, 'src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx', 'src/data/library-finals.audio.json'].map(path => [path, createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex')]));
+const hashes = Object.fromEntries([controllerPath, rulesPath, 'src/modules/TiyiAccessModel.ts', 'src/modules/ActOneBootstrapController.ts', 'src/core/GameState.ts', 'src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx', 'src/data/library-finals.audio.json'].map(path => [path, createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex')]));
 const output = { provenance: 'Reconstructed source oracle; methods executed from active TypeScript source', hashes, drafts, submissions };
 const serialized = JSON.stringify(output, null, 2) + '\n';
 if (checkOnly) {

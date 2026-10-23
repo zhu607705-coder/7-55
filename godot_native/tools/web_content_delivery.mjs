@@ -50,7 +50,7 @@ export function createContentDelivery({ exportDirectory, intermediateDirectory }
     fs.copyFileSync(path.join(partitionDirectory, group.file), path.join(exportDirectory, file), fs.constants.COPYFILE_FICLONE);
     return { id: group.id, family: family(group.id), file, bytes: group.bytes, sha256: group.sha256 };
   });
-  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.2', core, packs, backgroundOrder };
+  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.1', core, packs, backgroundOrder };
   writeJson(path.join(exportDirectory, 'content-manifest.json'), manifest);
   const owned = new Map();
   const groupInventories = result.groups.map(group => {
@@ -75,10 +75,10 @@ export function createContentDelivery({ exportDirectory, intermediateDirectory }
 export function verifyContentDelivery(exportDirectory) {
   const manifest = json(path.join(exportDirectory, 'content-manifest.json'));
   const inventory = json(path.join(exportDirectory, 'content-inventory.json'));
-  if (manifest.schema !== CONTENT_SCHEMA || manifest.engine !== '4.7.2' || inventory.schema !== '755-web-content-inventory-v1') throw new Error('Invalid Godot content manifest/inventory schema');
+  if (manifest.schema !== CONTENT_SCHEMA || manifest.engine !== '4.7.1' || inventory.schema !== '755-web-content-inventory-v1') throw new Error('Invalid Godot content manifest/inventory schema');
   if (manifest.core?.file !== 'index.pck' || !Array.isArray(manifest.packs) || !Array.isArray(inventory.entries) || !Array.isArray(inventory.groups)) throw new Error('Invalid Godot content manifest shape');
   if (JSON.stringify(manifest.backgroundOrder) !== JSON.stringify(backgroundOrder)) throw new Error('Content background order differs from the story chapter order');
-  if (inventory.full?.engine !== '4.7.2' || inventory.full.count !== inventory.entries.length || contentMapDigest(inventory.entries) !== inventory.full.contentMapSha256) throw new Error('Complete-export inventory lost or changed a resource');
+  if (inventory.full?.engine !== '4.7.1' || inventory.full.count !== inventory.entries.length || contentMapDigest(inventory.entries) !== inventory.full.contentMapSha256) throw new Error('Complete-export inventory lost or changed a resource');
   const original = inventory.entries.map(({ group, ...entry }) => entry);
   if (digest(JSON.stringify(original)) !== inventory.full.inventorySha256) throw new Error('Complete-export inventory does not match its original SHA-256');
   const records = [{ id: inventory.coreId, ...manifest.core }, ...manifest.packs];

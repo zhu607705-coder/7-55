@@ -2,7 +2,7 @@
 
 ## Scope
 
-Originally based on `codex/campus-ui-system-20261021@5907b166d4775e1288aef5d13d56bc99111d5c33` (#156). External repository activity subsequently merged #157/#158/#159 into that UI branch and #156 into `codex/godot-complete-20261019@2d8e3257540c40f492c904f9f1961bc5e63e5f60`. PR160 now targets that formal Godot branch. This task did not perform those merges; its diff contains only the requested controls, regression coverage and verification infrastructure. The old React `main` is not the implementation base.
+Originally based on `codex/campus-ui-system-20261021@5907b166d4775e1288aef5d13d56bc99111d5c33` (#156). External repository activity merged the Godot history into `main@ea2b95bb61dc34ba8e0afeb9e513353d41b6b006`, then merged PR160 head `77633d526a9ef605b3477cef35b87bb333f9cbbd` at 2026-10-22 12:47:50 UTC as `32dfc73c113de980ca42b1c48a893d068e122127`. This task did not perform those merges. The subsequent user-requested bottom-hint adjustment is a separate follow-up based on that merged main checkpoint; it does not push more changes onto the closed PR160 branch. The old React-only main was never the implementation base.
 
 The ordinary compact world retains the existing inventory, locked HUD/interaction/journal components, source objects, collisions, controller actions and save shape. No mini-game control scheme or kayak paddles are replaced.
 
@@ -18,6 +18,8 @@ The ordinary compact world retains the existing inventory, locked HUD/interactio
 | PC direction keys + Space | Existing movement and interaction |
 
 A compact nearby object has no textual interaction plaque until confirmed. The existing selected plaque style is unchanged. Range exit, dismissal and context changes clear the confirmation. Desktop nearby prompts are unchanged.
+
+After reviewing the actual screenshots, the user requested the compact interaction text at the very bottom. The confirmed plaque is therefore centered horizontally with its bottom 4 display pixels above the actual world viewport edge, above the existing inventory and safe-area inset. It does not reserve an invisible idle-feedback strip. The same anchor is applied when container layout settles on later frames. Its font, width, background, activation rules and the joystick are unchanged; desktop placement retains its original centered/clamped rule and 8-pixel inset.
 
 The joystick is drawn over the world corner. There is no separate confirmation button or full-width reserved joystick row. The existing feedback surface may lift this corner hit area without reserving a new world strip. The bag remains the existing separate bag, not a redesigned bottom joystick panel.
 

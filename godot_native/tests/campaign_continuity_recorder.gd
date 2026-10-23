@@ -2,7 +2,7 @@ extends "res://tests/test_full_campaign.gd"
 ## Earned snapshots from the uninterrupted controller campaign, never DEV seeds.
 ## Positions are still explicit campaign test setup, not manual-navigation proof.
 var capture_dir := OS.get_environment("CONTINUITY_CAPTURE_DIR")
-const CAPTURE_ACTIONS := ["c1_checkin","c2_dorm_exit","lib_opening_complete","c3_defense_result","c3_chase_result","c3_enter_theater","c3_target:theater_ticket_gate","c3_target:theater_exit","c3_rain_rescue_result","c35_replay","c4_prologue_end","c4_checkin_card","c4_checkin_paper","c4_lamp_start"]
+const CAPTURE_ACTIONS := ["c1_tiyi_digit","c1_plant_light","c1_checkin","c2_dorm_exit","lib_opening_complete","c3_defense_result","c3_chase_result","c3_enter_theater","c3_target:theater_ticket_gate","c3_target:theater_exit","c3_rain_rescue_result","c35_replay","c4_prologue_end","c4_checkin_card","c4_checkin_paper","c4_lamp_start"]
 func run() -> void:
 	var owner:Node=root.get_node("State")
 	owner.action_completed.connect(func(action:String,_before:Dictionary,_after:Dictionary,_result:Dictionary):
@@ -11,10 +11,12 @@ func run() -> void:
 	await super.run()
 func step(id: String, value: Variant = null) -> Dictionary:
 	await drain_c3()
+	if id=="c2_tiyi_discover": capture("before_c2_tiyi_update")
 	if id in CAPTURE_ACTIONS: capture("before_"+id)
 	var result: Dictionary = state.act(id,value)
 	trace.append({"action":id,"chapter":state.d.native.chapter,"phase":state.d.actOne.phase})
 	check(result.get("handled",false),"handled " + id)
+	if id=="c2_tiyi_install": capture("after_c2_tiyi_install")
 	if id in CAPTURE_ACTIONS: capture("after_"+id)
 	if id in ["c3_defense_result","c3_target:theater_ticket_gate"]:
 		check(state.load_game(),"interrupted handoff loads actual autosave "+id)

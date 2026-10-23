@@ -63,7 +63,8 @@ const CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION = 33;
 const PHONE_BATTERY_SAVE_VERSION = 34;
 const CHAPTER_FOUR_ZHU_CLOSURE_SAVE_VERSION = 29;
 const CHAPTER_FOUR_EVIDENCE_CAUSALITY_SAVE_VERSION = 30;
-const SAVE_VERSION = 35;
+const TIYI_UPDATE_SAVE_VERSION = 36;
+const SAVE_VERSION = 36;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
 const SUPPORTED_ENVELOPE_VERSIONS = new Set([
@@ -78,6 +79,7 @@ const SUPPORTED_ENVELOPE_VERSIONS = new Set([
   CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION,
   CHAPTER_FOUR_CLOSURE_SAVE_VERSION,
   PHONE_BATTERY_SAVE_VERSION,
+  35,
   SAVE_VERSION
 ]);
 
@@ -130,6 +132,9 @@ const VALID_ACT_ONE_PHASES = new Set<ActOneBootstrapPhase>([
   "chapter_two_ready", "complete"
 ]);
 const VALID_ACT_ONE_AREA_IDS = new Set(["north_gate", "bridge", "library", "game_kiosk"]);
+const VALID_TIYI_UPDATE_STAGES = new Set<GameState["actOne"]["tiyiUpdateStage"]>([
+  "not_started", "official_entry_found", "package_ready", "installed", "legacy_ready"
+]);
 const VALID_SCENES = new Set<GameState["currentScene"]>([
   "alarm", "desktop", "phone_home", "settings", "wechat", "cc98", "zjuding", "tiyi", "weather",
   "photos", "timeline_recovery", "voice_memos", "campus_card",
@@ -390,7 +395,17 @@ export class SaveStore {
       const envelopeVersion = isVersionedEnvelope ? Number(parsed.version) : 0;
       const saved = isVersionedEnvelope ? parsed.state as Record<string, unknown> : parsed;
       const legacySave = !isVersionedEnvelope || envelopeVersion <= 6;
-      let actOne = normalizeActOne(saved.actOne, initial.actOne, legacySave);
+      const savedActOne = asRecord(saved.actOne);
+      const hasTiyiUpdateStage = Object.prototype.hasOwnProperty.call(savedActOne, "tiyiUpdateStage");
+      if (hasTiyiUpdateStage && (typeof savedActOne.tiyiUpdateStage !== "string"
+        || !VALID_TIYI_UPDATE_STAGES.has(savedActOne.tiyiUpdateStage as GameState["actOne"]["tiyiUpdateStage"]))) return null;
+      if (!hasTiyiUpdateStage && envelopeVersion >= TIYI_UPDATE_SAVE_VERSION) return null;
+      const savedUi = asRecord(saved.ui);
+      const hasHomeDeskReturnScene = Object.prototype.hasOwnProperty.call(savedUi, "homeDeskReturnScene");
+      if (hasHomeDeskReturnScene && savedUi.homeDeskReturnScene !== null
+        && savedUi.homeDeskReturnScene !== "phone_home" && savedUi.homeDeskReturnScene !== "bonsai") return null;
+      if (!hasHomeDeskReturnScene && envelopeVersion >= TIYI_UPDATE_SAVE_VERSION) return null;
+      let actOne = normalizeActOne(saved.actOne, initial.actOne, legacySave, envelopeVersion < TIYI_UPDATE_SAVE_VERSION);
       const items = normalizeItems(saved.items, initial.items);
       const digits = normalizeDigits(saved.digits, initial.digits);
       const flags = normalizeFlags(saved.flags, initial.flags);
@@ -427,6 +442,7 @@ export class SaveStore {
         dormHubUnlocked: !["prologue", "friend_message_required", "system_required"].includes(actOne.phase)
       };
       const ui = normalizeUi(saved.ui, initial.ui, !isVersionedEnvelope, actOne);
+      if (flags.checkinDone || saved.runtimeMode !== "phone" || saved.currentScene !== "desktop") ui.homeDeskReturnScene = null;
       if (legacySave) {
         const puzzle = ui.libraryFinalsPuzzle;
         const catalogWasAlreadyPassed = puzzle.catalogSearchCompleted
@@ -699,7 +715,7 @@ export class SaveStore {
       const phoneBattery: GameState["phoneBattery"] = {
         percent: rangedIntegerOr(
           savedPhoneBattery.percent,
-          1,
+          0,
           100,
           initial.phoneBattery.percent
         ),
@@ -2626,7 +2642,7 @@ function normalizeWallet(
   };
 }
 
-function normalizeActOne(value: unknown, initial: ActOneBootstrapState, legacyControlsCoupled: boolean): ActOneBootstrapState {
+function normalizeActOne(value: unknown, initial: ActOneBootstrapState, legacyControlsCoupled: boolean, legacyTiyiUpdate: boolean): ActOneBootstrapState {
   const saved = asRecord(value);
   const savedPhase = enumOr(saved.phase, VALID_ACT_ONE_PHASES, initial.phase);
   const phase = (["identity_required", "phone_link_required", "controls_required", "item_required", "map_required", "chapter_two_ready"] as ActOneBootstrapPhase[]).includes(savedPhase)
@@ -2635,6 +2651,11 @@ function normalizeActOne(value: unknown, initial: ActOneBootstrapState, legacyCo
   const characterNamed = booleanOr(saved.characterNamed, booleanOr(saved.identityVerified, initial.characterNamed));
   const gamepadPurchased = booleanOr(saved.gamepadPurchased, false);
   const exerciseStarted = booleanOr(saved.exerciseStarted, false);
+  // Only actually earned movement-era facts grandfather old saves. C1's seven,
+  // plant water, chapter/phase and network mode do not stand in for installation.
+  const legacyTiyiEarned = legacyTiyiUpdate && (saved.exerciseStarted === true || saved.weatherWaterTaken === true);
+  const tiyiUpdateStage = enumOr(saved.tiyiUpdateStage, VALID_TIYI_UPDATE_STAGES,
+    legacyTiyiEarned ? "legacy_ready" : initial.tiyiUpdateStage);
   const controlsInstalled = booleanOr(saved.controlsInstalled, legacyControlsCoupled && gamepadPurchased);
   const savedCc98Login = asRecord(saved.cc98Login);
   const cc98Authenticated = booleanOr(savedCc98Login.authenticated, gamepadPurchased);
@@ -2647,6 +2668,7 @@ function normalizeActOne(value: unknown, initial: ActOneBootstrapState, legacyCo
     inventoryRecovered: booleanOr(saved.inventoryRecovered, initial.inventoryRecovered),
     characterPromptSeen: booleanOr(saved.characterPromptSeen, initial.characterPromptSeen),
     characterNamed,
+    tiyiUpdateStage,
     exerciseStarted,
     pushTriangleTapCount: rangedIntegerOr(saved.pushTriangleTapCount, 0, 3, initial.pushTriangleTapCount),
     pushTriangleTaken: booleanOr(saved.pushTriangleTaken, initial.pushTriangleTaken),
@@ -2704,6 +2726,8 @@ function normalizeUi(
   const normalizedStateForRemoval = { actOne, ui: { libraryFinalsPuzzle: puzzle } };
 
   return {
+    homeDeskReturnScene: actOne.phase === "prologue" && (saved.homeDeskReturnScene === "phone_home" || saved.homeDeskReturnScene === "bonsai")
+      ? saved.homeDeskReturnScene : null,
     controlCenterOpen: booleanOr(saved.controlCenterOpen, initial.controlCenterOpen),
     autoRotate: booleanOr(saved.autoRotate, initial.autoRotate),
     musicPlaying: booleanOr(saved.musicPlaying, initial.musicPlaying),

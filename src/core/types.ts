@@ -158,6 +158,8 @@ export type ActOneBootstrapPhase =
   | "chapter_two_ready"
   | "complete";
 
+export type TiyiUpdateStage = "not_started" | "official_entry_found" | "package_ready" | "installed" | "legacy_ready";
+
 export interface ActOneBootstrapState {
   phase: ActOneBootstrapPhase;
   identityVerified: boolean;
@@ -167,6 +169,7 @@ export interface ActOneBootstrapState {
   inventoryRecovered: boolean;
   characterPromptSeen: boolean;
   characterNamed: boolean;
+  tiyiUpdateStage: TiyiUpdateStage;
   exerciseStarted: boolean;
   pushTriangleTapCount: number;
   pushTriangleTaken: boolean;
@@ -1084,6 +1087,8 @@ export interface GameFlags {
 
 /** 手机系统层 UI 状态（控制中心开关等） */
 export interface UiState {
+  /** Runtime navigation only; lets a saved C1 desk return to the phone without replaying wake. */
+  homeDeskReturnScene: "phone_home" | "bonsai" | null;
   controlCenterOpen: boolean;
   autoRotate: boolean;
   musicPlaying: boolean;
@@ -1114,13 +1119,13 @@ export interface UiState {
 }
 
 /**
- * 手机电量是持久化的轻量资源。最低 1% 为任务保底电量，避免玩家因耗尽电量
- * 无法打开承载主线的手机页面。
+ * 手机电量是持久化的轻量资源。合法存档可保留 0%；显式网络切换保留现有正电量的 1% 底线。
+ * 应用导航不消耗电量。
  */
 export interface PhoneBatteryState {
-  /** 1-100 */
+  /** 0-100 */
   percent: number;
-  /** 开启后，应用启动耗电由 2% 降为 1%。 */
+  /** 开启后限制亮度并暂停音乐；不改变应用导航成本。 */
   lowPowerMode: boolean;
   /** 成功连接场景内电源的累计次数，仅用于反馈与调试。 */
   rechargeCount: number;

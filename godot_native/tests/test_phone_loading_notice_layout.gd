@@ -33,6 +33,11 @@ func fixture(network: String="campus_wifi",percent: int=100) -> void:
 	shell._refresh(); await frames()
 func tick(milliseconds: float) -> void:
 	shell._process(milliseconds/1000.0); await frames()
+func switch_network_at_reserve() -> void:
+	await click(find_named(shell,"ControlCenterTrigger"))
+	await click(find_named(shell,"ControlNetwork_cellular"))
+	await click(find_named(shell,"PhoneNav_close"))
+	check(state.d.networkMode=="cellular" and state.d.phoneBattery.percent==1,"real network switch preserves the final1percent reserve")
 func contained(inner: Rect2,outer: Rect2) -> bool:
 	return outer.grow(0.1).encloses(inner)
 func check_loading_art() -> void:
@@ -105,17 +110,20 @@ func run() -> void:
 		await fixture("campus_wifi",1)
 		await click(find_named(shell.page_body,"HomeApp_wechat"))
 		var prank: Control=shell.battery_prank
-		check(state.d.native.page=="wechat" and prank.used,"real WeChat entry at1percent triggers owned prank")
+		check(state.d.native.page=="wechat" and state.d.phoneBattery.percent==1 and not prank.used,"real WeChat entry at1percent neither spends battery nor triggers reserve prank")
+		await switch_network_at_reserve()
+		check(state.d.native.page=="wechat" and prank.used,"real network use at1percent triggers owned prank without leaving the app")
 		check_notice_geometry()
 		var deadline: int=prank.deadline
-		check(prank.view(deadline-10000).seconds==10 and prank.view(deadline-1).seconds==1,"source countdown spans exact10000ms")
-		check(prank.view(deadline).kind=="joke" and prank.view(deadline).text=="吓吓你的","source punchline starts at deadline unchanged")
-		check(prank.view(deadline+3499).kind=="joke" and prank.view(deadline+3500).is_empty(),"source punchline lasts exact3500ms")
+		check(prank.view(deadline-10000).get("seconds",-1)==10 and prank.view(deadline-1).get("seconds",-1)==1,"source countdown spans exact10000ms")
+		check(prank.view(deadline).get("kind","")=="joke" and prank.view(deadline).get("text","")=="吓吓你的","source punchline starts at deadline unchanged")
+		check(prank.view(deadline+3499).get("kind","")=="joke" and prank.view(deadline+3500).is_empty(),"source punchline lasts exact3500ms")
 		await click(find_named(shell.page_body,"WechatFriendAvatar"))
 		check(state.get_phone_entry_session().friend_open,"notice allows real app input underneath")
 		check(prank.deadline==deadline,"page navigation never restarts prank")
 		await fixture("campus_wifi",1)
 		await click(find_named(shell.page_body,"HomeApp_wechat"))
+		await switch_network_at_reserve()
 		deadline=prank.deadline; prank.consume_reserve(1)
 		check(prank.deadline==deadline,"duplicate reserve event never stacks warning")
 		state.d.phoneBattery.percent=45; prank._process(0); await frames()

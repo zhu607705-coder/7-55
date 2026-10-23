@@ -1844,7 +1844,7 @@ function validateTask7RuntimeSources(errors) {
     || !/items\.campusCard = true/.test(saveStore)
     || !/CHAPTER_FOUR_ZHU_CLOSURE_SAVE_VERSION = 29/.test(saveStore)
     || !/CHAPTER_FOUR_EVIDENCE_CAUSALITY_SAVE_VERSION = 30/.test(saveStore)
-    || !/const SAVE_VERSION = 35/.test(saveStore)
+    || !/const SAVE_VERSION = 36/.test(saveStore)
     || !/migrateChapterFourEvidenceCausality/.test(saveStore)
     || !/restoredToSafePhase/.test(saveStore)
     || !/room204_restore[\s\S]*?bakery_hour_hand[\s\S]*?maintenance_repair[\s\S]*?blackout_light_grid/.test(saveStore)

@@ -13,6 +13,8 @@ const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const PhotoEvidence = preload("res://scripts/ui/photo_evidence_surface.gd")
 const WeatherIcon = preload("res://scripts/ui/native_weather_icon.gd")
 const TiyiIdentity = preload("res://scripts/ui/native_tiyi_identity.gd")
+const TiyiAccess = preload("res://scripts/chapters/tiyi_access.gd")
+var tiyi_official_open=false
 const TiyiSevenArt = preload("res://scripts/ui/tiyi_seven_art.gd")
 const TiyiPresence = preload("res://scripts/ui/native_tiyi_presence.gd")
 var tiyi_presence = TiyiPresence.new()
@@ -83,6 +85,7 @@ const MUTED = Color("637080")
 var handled: Array = []
 var s: Dictionary = {}
 var previous_page = ""
+var home_desk: RefCounted
 var displayed_balance_shifted = false
 
 func build(page: String, view: Dictionary, state: Dictionary) -> Control:
@@ -91,6 +94,7 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 	entry_session.route(s)
 	lake_apps.route(previous_page,page,s)
 	if page != previous_page and page != "control_center":
+		if page!="wechat": tiyi_official_open=false
 		if not page.begins_with("library_"): native_library.reset()
 		if page!="checkin": checkin_page.reset()
 		if page!="tiyi": tiyi_presence.reset()
@@ -323,6 +327,12 @@ func _wake() -> Control:
 	root.set_meta("handles_app_grid",true)
 	_label(root,"07:55",Rect2(Vector2(20,16)/PHONE_SCALE,Vector2(180,36)/PHONE_SCALE),int(round(NativeUi.FONT_DISPLAY/PHONE_SCALE))).name="WakeTime"
 	_label(root,"ZJUWLAN · %s%%" % int(s.phoneBattery.percent),Rect2(Vector2(210,16)/PHONE_SCALE,Vector2(194,36)/PHONE_SCALE),NativeUi.font_size_for_scale(NativeUi.FONT_LABEL,PHONE_SCALE),INK,HORIZONTAL_ALIGNMENT_RIGHT).name="WakeNetwork"
+	var desk = load("res://scripts/ui/home_charging_dock.gd").new()
+	desk.name = "HomeChargingDock"; desk.position = Vector2(86, 555); root.add_child(desk)
+	desk.configure(home_desk, func(): action_requested.emit("c1_desk_charge", null), func(): action_requested.emit("c1_desk_cancel", null), func(): action_requested.emit("c1_desk_pickup", null), s)
+	if home_desk != null and home_desk.returning(s):
+		root.set_meta("handles_all_actions", true)
+		return root
 	if not s.native.get("wake_warned",false):
 		_opening_chip(root,"（我）",Vector2(189,303)).name="WakePlayerChip"
 		_opening_button(root,"……再睡5分钟……",Rect2(45,338,288,72),"c1_wake","paper")
@@ -335,6 +345,11 @@ func _wake() -> Control:
 	handled.append("c1_wake")
 	return root
 
+func _desk_return_icon(root: Control, y: float = 4.0) -> void:
+	if home_desk == null or not home_desk.available(s): return
+	var close = _nav(root, "close", "放下手机，回到桌面", func(): action_requested.emit("c1_desk_putdown", null), Rect2(330, y, 44, 44), Color("fff4d8", .85), INK)
+	close.name = "PutPhoneOnDesk"
+
 func _home_rect(x: float, y: float, w: float, h: float) -> Rect2:
 	return Rect2(Vector2(x,y-40)/PHONE_SCALE,Vector2(w,h)/PHONE_SCALE)
 
@@ -342,6 +357,8 @@ func _home() -> Control:
 	var root = _base(PAPER,643)
 	root.set_meta("handles_app_grid",true)
 	var artwork=HomeArt.new(); artwork.name="SourceHomeArtwork"; artwork.size=Vector2(378,APP_HEIGHT); artwork.tower_open=s.flags.towerOpened; artwork.flower_bloomed=s.flags.flowerBloomed; root.add_child(artwork)
+	# Keep the top friend-notification hit target untouched.
+	_desk_return_icon(root, 60)
 	if s.actOne.phase=="prologue":
 		var tower=_drop_action(root,_home_rect(288,116,66,330),"c1_tower"); tower.name="TowerDropTarget"; tower.disabled=s.native.get("tower_key_pending",false)
 		if s.native.get("tower_key_pending",false) and s.items.towerKey and not s.flags.towerOpened: _animate_tower_key(root)
@@ -484,7 +501,7 @@ func _home_open_notification(root: Control, notice: Dictionary) -> void:
 	else: page_requested.emit(notice.route)
 
 func _build_home_apps(root: Control) -> void:
-	var colors={"wechat":Color("61b58c"),"tiyi":Color("e8893f"),"zjuding":Color("539ccb"),"settings":Color("777989"),"photos":Color("eee5dd"),"timeline_recovery":Color("a0bdbd"),"voice_memos":Color("d89e96"),"cc98":Color("4d7ed9"),"control_center":Color("756aa9"),"clock":Color("e8e5db")}
+	var colors=LauncherIcons.SOURCE_COLORS
 	var order=Utilities.normalized_order(s.ui.homeAppOrder)
 	var layout={"order":order.duplicate(),"buttons":{},"slots":{},"labels":{},"changed":false}
 	var visible_ids=_home_visible_app_ids(order)
@@ -499,7 +516,7 @@ func _build_home_apps(root: Control) -> void:
 		button.tooltip_text=Utilities.LABELS[id];button.accessibility_name=Utilities.LABELS[id]
 		button.focus_mode=Control.FOCUS_ALL
 		button.editable=s.actOne.phase!="prologue"; button.editing=home_editing
-		var fill:Color=colors[id] if id=="settings" and s.actOne.phase=="prologue" else Color("253b45")
+		var fill:Color=colors[id]
 		for mode in ["normal","hover","pressed"]: button.add_theme_stylebox_override(mode,_style(fill.lightened(.12) if mode=="hover" else fill.darkened(.12) if mode=="pressed" else fill,INK,0,2))
 		button.add_theme_stylebox_override("focus",_style(Color.TRANSPARENT,Color("e7ecdc"),2,3))
 		root.add_child(button)
@@ -514,6 +531,11 @@ func _build_home_apps(root: Control) -> void:
 				# actual glyph rectangle, not the pre-layout requested48px rectangle.
 				root.ready.connect(func(): gear.position=button.position+(button.size-gear.size)/2)
 				if s.ui.autoRotate: _animate_rotation(root,gear,"gear",HOME_GEAR_PICKUP_RECT.get_center())
+		elif id in ["zjuding","settings","cc98"]:
+			# Preserve the original image / source glyph / CC98 wordmark, not a
+			# generic campus, slider or forum pictogram. Hit geometry is unchanged.
+			_app_icon(button,id)
+			button.get_child(button.get_child_count()-1).name="LauncherGlyph"
 		else: LauncherIcons.add_to(button,id)
 		var objective=_home_chapter4_objective() if s.chapterThreeInterlude.completed and s.chapterThreeInterlude.replayUnlocked else {}
 		if not objective.is_empty() and ((objective.id=="study_index" and id=="cc98") or (objective.id!="study_index" and id=="wechat")):
@@ -606,6 +628,8 @@ func _home_edit_visuals(root: Control, layout: Dictionary) -> void:
 			remove.name="Remove_"+str(id)
 
 func _wechat(_view: Dictionary) -> Control:
+	for id in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: handled.append(id)
+	if tiyi_official_open and TiyiAccess.update_required(s): return _tiyi_official_account()
 	if friend_open: return _friend_chat()
 	var root=_base(Color("ededed"),APP_HEIGHT)
 	_panel(root,Rect2(0,0,378,47),Color("f7f7f7"),Color("d6d6d6"),0,1)
@@ -655,12 +679,49 @@ func _wechat(_view: Dictionary) -> Control:
 		caption.autowrap_mode=TextServer.AUTOWRAP_OFF; caption.clip_text=true; caption.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
 		_label(button,row[2],Rect2(323,14,43,18),10,Color("999999"),HORIZONTAL_ALIGNMENT_RIGHT)
 	if s.ui.autoRotate and s.actOne.phase=="prologue" and s.flags.codeScattered and not s.flags.slashHalfDropped: _animate_rotation(root,root,"slash")
+	if TiyiAccess.update_required(s) and not lake_apps.active(s):
+		var official=_button(root,"",Rect2(0,360,378,70),func(): tiyi_official_open=true; action_requested.emit("phone_refresh",null),Color.WHITE,INK,0,Color.TRANSPARENT)
+		official.name="TiyiOfficialAccount"
+		_label(official,"体艺",Rect2(12,375-360,47,36),16,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+		_label(official,"浙大体育与艺术",Rect2(74,10,290,26),16)
+		_label(official,"公众号 · 修读办法 / 场馆预约 / 联系我们",Rect2(74,39,290,24),11,MUTED)
 	_panel(root,Rect2(0,APP_HEIGHT-55,378,55),Color("f7f7f7"),Color("d6d6d6"),0,1)
 	for i in range(4):
 		var color=Color("429355") if i==0 else Color("333333")
 		var icon=_panel(root,Rect2(38+i*94.5,APP_HEIGHT-46,18,18),color if i==0 else Color.TRANSPARENT,color,9 if i in [1,2] else 1,2)
 		_label(root,["聊天","联系人","发现","我的"][i],Rect2(i*94.5,APP_HEIGHT-22,94.5,17),10,color,HORIZONTAL_ALIGNMENT_CENTER)
 	handled.append("c1_friend"); handled.append("c2_friend_exchange")
+	return root
+
+func _tiyi_official_account() -> Control:
+	var root=_base(Color("ededed"),APP_HEIGHT)
+	root.name="TiyiOfficialAccountPage"
+	root.set_meta("handles_all_actions",true)
+	_panel(root,Rect2(0,0,378,54),Color("f7f7f7"))
+	_button(root,"‹",Rect2(8,5,40,44),func(): tiyi_official_open=false; action_requested.emit("phone_refresh",null),Color("f7f7f7"),INK,0,Color.TRANSPARENT).name="TiyiOfficialBack"
+	_label(root,"浙大体育与艺术",Rect2(52,8,274,37),17,INK,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(root,"公众号",Rect2(16,75,346,28),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(root,"在底部「联系我们」查看体艺下载卡。",Rect2(22,111,334,48),15,INK,HORIZONTAL_ALIGNMENT_CENTER)
+	var stage: String=str(s.actOne.get("tiyiUpdateStage","not_started"))
+	if stage!="not_started":
+		var card=_panel(root,Rect2(22,183,334,330),Color.WHITE,Color("cbd3d9"),8,1)
+		card.name="TiyiDownloadCard"
+		_label(card,"浙大体艺 APP",Rect2(16,15,302,35),22,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+		_label(card,"游戏内更新",Rect2(16,57,302,26),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+		_label(card,"仅模拟扫码、获取和安装。\n不调用设备权限，不下载真实应用。",Rect2(20,103,294,62),14,INK,HORIZONTAL_ALIGNMENT_CENTER)
+		if stage=="official_entry_found":
+			_act(card,"模拟扫码获取更新",Rect2(25,194,284,52),"c2_tiyi_acquire",null,Color("168c54"),Color.WHITE,6).name="TiyiAcquireUpdate"
+			_label(card,"需要网络连接",Rect2(20,265,294,28),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+		elif stage=="package_ready":
+			_label(card,"更新包已就绪",Rect2(20,172,294,28),14,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+			_act(card,"安装更新",Rect2(25,218,284,52),"c2_tiyi_install",null,Color("168c54"),Color.WHITE,6).name="TiyiInstallUpdate"
+		else:
+			_label(card,"更新已安装",Rect2(20,172,294,28),16,Color("168c54"),HORIZONTAL_ALIGNMENT_CENTER)
+			_page(card,"返回桌面，重新进入体艺",Rect2(25,218,284,52),"phone_home").name="TiyiUpdateReturnHome"
+	_panel(root,Rect2(0,APP_HEIGHT-57,378,57),Color("f7f7f7"),Color("d6d6d6"),0,1)
+	_label(root,"修读办法",Rect2(0,APP_HEIGHT-48,126,38),14,INK,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(root,"场馆预约",Rect2(126,APP_HEIGHT-48,126,38),14,INK,HORIZONTAL_ALIGNMENT_CENTER)
+	_act(root,"联系我们",Rect2(252,APP_HEIGHT-55,126,53),"c2_tiyi_discover",null,Color("f7f7f7"),INK,0,Color("d6d6d6")).name="TiyiContact"
 	return root
 
 func _friend_chat() -> Control:
@@ -797,8 +858,7 @@ func _controls() -> Control:
 		button.name="ControlNetwork_"+("wifi" if i==0 else "cellular")
 		_panel(button,Rect2(9,10,34,34),Color.WHITE,INK,0,2)
 		if i==0:
-			_label(button,"≋",Rect2(11,8,30,25),26,INK,HORIZONTAL_ALIGNMENT_CENTER)
-			_panel(button,Rect2(24,33,5,5),INK)
+			Symbols.add_wifi(button,Rect2(9,10,34,34))
 		else:
 			for bar in range(4): _panel(button,Rect2(15+bar*5,34-bar*4,3,5+bar*4),INK)
 		_label(button,"ZJUWLAN" if i==0 else "移动数据",Rect2(50,12,115,19),12,Color.WHITE if active else INK)
@@ -858,15 +918,15 @@ func _controls() -> Control:
 	var critical=int(s.phoneBattery.percent)<=5
 	var power=_panel(panel,Rect2(14,313,350,141+(21 if int(s.phoneBattery.percent)==1 else 0)),Color("edd2cf") if critical else Color("d8eadb") if s.phoneBattery.lowPowerMode else Color("d9dde2"),INK,0,2)
 	_label(power,"电池 %d%%" % int(s.phoneBattery.percent),Rect2(9,8,267,20),13)
-	_label(power,"打开应用：%s%% / 次" % (1 if s.phoneBattery.lowPowerMode else 2),Rect2(9,30,267,17),10,MUTED)
+	_label(power,"打开应用不额外扣电",Rect2(9,30,267,17),10,MUTED)
 	_panel(power,Rect2(305,10,35,28),Color("c85454") if critical else Color("2d7a52"),INK,0,2)
 	_label(power,"BAT",Rect2(305,10,35,28),9,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 	_panel(power,Rect2(9,55,332,12),Color("f4f0e7"),INK,0,2)
 	_panel(power,Rect2(11,57,maxf(2,328*float(s.phoneBattery.percent)/100),8),Color("c85454") if critical else Color("2d7a52"))
 	var low_power=_act(power,"",Rect2(9,76,332,35),"phone_low_power",null,Color("f5c542") if s.phoneBattery.lowPowerMode else PAPER,INK,0,INK); low_power.name="LowPowerToggle"
 	_label(low_power,"关闭低电量模式" if s.phoneBattery.lowPowerMode else "开启低电量模式",Rect2(8,6,167,25),12)
-	_label(low_power,"恢复每次 2% 耗电" if s.phoneBattery.lowPowerMode else "每次只耗 1%；亮度限至 45%，暂停音乐",Rect2(169,3,155,29),8,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
-	_label(power,"剧场入口左侧设有充电服务站，需走到设备旁接线。" if s.get("rpgScene","")=="theater_interior" else "充电需要在现场与充电服务站交互。",Rect2(9,118,332,18),10)
+	_label(low_power,"解除亮度上限，可手动调高" if s.phoneBattery.lowPowerMode else "亮度限至 45%，暂停音乐",Rect2(169,3,155,29),8,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
+	_label(power,"剧场入口左侧设有充电服务站，需走到设备旁接线。" if s.get("rpgScene","")=="theater_interior" else "可从主页或盆栽放下手机，点桌面充电座接线。" if s.actOne.phase=="prologue" else "充电需要在现场与充电服务站交互。",Rect2(9,118,332,18),10)
 	if int(s.phoneBattery.percent)==1: _label(power,"电量仅剩 1%，请寻找现场充电服务站。",Rect2(9,139,332,18),10,Color("7a241f"))
 	var save_y=467+(21 if int(s.phoneBattery.percent)==1 else 0)
 	var saves=_panel(panel,Rect2(14,save_y,350,95+(53 if control_reset_confirm else 0)),Color("cfd3d9"),INK,0,2)
@@ -995,6 +1055,7 @@ func _bonsai() -> Control:
 	plant.configure(s,bonsai_growth)
 	root.add_child(plant)
 	plant.name="BonsaiArtwork"
+	_desk_return_icon(root)
 	var stage = int(s.flags.plantWatered)+int(s.flags.plantLit)+int(s.flags.plantFertilized)
 	# Invisible semantic plant silhouette measured on the two 941x1672 assets.
 	# Inversion follows the actual cropped/scaled artwork, including growth.
@@ -1960,7 +2021,7 @@ func _app_icon(root: Control, id: String, factor: float = 1.0) -> void:
 			for limb in [[27,19,14,5,-.55],[13,20,14,5,.65],[13,32,20,5,-.78],[25,32,17,5,.55]]:
 				var segment = _panel(icon,Rect2(limb[0],limb[1],limb[2],limb[3]),Color.WHITE)
 				segment.rotation = limb[4]
-		"zjuding": _image(icon,"ui/zjuding.png",Rect2(3,3,42,42))
+		"zjuding": _image(icon,"ui/zjuding.png",Rect2(12,12,24,24))
 		"photos":
 			for petal in [[10,11,"e88a9f"],[25,11,"7fb0e8"],[10,27,"8fce7c"],[25,27,"e8a05f"]]: _panel(icon,Rect2(petal[0],petal[1],16,16),Color(petal[2]),Color.TRANSPARENT,8)
 			_panel(icon,Rect2(20,20,12,12),Color("f5c542"),Color.TRANSPARENT,6)
@@ -1977,7 +2038,7 @@ func _app_icon(root: Control, id: String, factor: float = 1.0) -> void:
 			wordmark.add_theme_font_size_override("font_size",16)
 			wordmark.autowrap_mode=TextServer.AUTOWRAP_OFF
 			wordmark.name="CC98Wordmark"
-		"settings": _label(icon,"✱",Rect2(3,3,42,42),37,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+		"settings": _label(icon,"✱",Rect2(3,3,42,42),37,Color("f4f5f7"),HORIZONTAL_ALIGNMENT_CENTER)
 		"voice_memos":
 			_panel(icon,Rect2(20,10,9,22),Color.WHITE,Color.TRANSPARENT,5)
 			_panel(icon,Rect2(14,23,20,14),Color.TRANSPARENT,Color.WHITE,8,2)
@@ -1997,6 +2058,10 @@ func _entry_loading(app: String) -> Control:
 	else:
 		var loading:=_image(root,"ui/"+app+"_loading.png",Rect2(0,0,378,APP_HEIGHT))
 		loading.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		if entry_session.tiyi_update_blocked:
+			# The referenced old client shows a blank lower panel before returning.
+			# This is an in-game presentation, not a device permission request.
+			_panel(root,Rect2(0,APP_HEIGHT*.39,378,APP_HEIGHT*.61),Color("fafafa"))
 	var dots: Array=[]
 	if app in ["tiyi","zjuding"]:
 		for i in range(3):

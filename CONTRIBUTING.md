@@ -3,8 +3,9 @@
 本项目由 4 名协作者共同维护。完整规则见
 [版本管理规范](docs/VERSION_MANAGEMENT.md)。
 
-Godot 原生任务从 `godot-version` 或明确的依赖分支创建功能分支，PR 指向相应基线；
-通用规范修订可从 `main` 独立提交，合并后需同步到迁移及活动功能分支，避免旧规则继续影响审查。
+PR #105 已由外部合入 `main`；当前 Godot 正式基线为 `main`，引擎及同版 Web 模板目标为 4.7.1。
+新任务以最新 `main` 或明确的依赖分支为基线；本次既有远端分支整合复用 PR #161，
+不再为每项差异另开分支。已合入来源按 ancestry 核验，不用旧目录覆盖当前运行时。
 不要因规则修订而合并未验收功能。引擎边界见 [AGENTS.md](AGENTS.md)。
 
 ## 开始工作
@@ -31,8 +32,8 @@ npm run validate:release
 [测试策略](docs/TESTING.md)。新增验证器时，需要明确它属于日常阻断、手动扩展审计或发布级端到端验证。
 
 旧 `godot/` 与 `src/integrations/godot/` 混合运行时仍不得恢复。
-当前 `godot_native/` 的 Godot 4.6.3 原生场景、导出、同步工具和测试允许开发。
-上述 npm 命令用于 Web 验证；原生变更按迁移分支 `godot_native/README.md` 运行同步、
+当前 `godot_native/` 使用 Godot 4.7.1；原生和真正的 Godot Web 导出需各自验收。
+上述 npm 命令用于保留 Web 源码验证，不代替 Godot Web；原生变更按 `godot_native/README.md` 运行同步、
 导入/启动/原生测试及相关源模型差分。共享源数据或控制器变更需要两侧相关验证。
 文档修订核对链接、差异和规范一致性即可，不能把文档检查写成游戏验收。
 

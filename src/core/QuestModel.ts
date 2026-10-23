@@ -1,5 +1,6 @@
 import type { ChapterId, GameState, QuestStep, QuestViewModel, SceneId } from "./types";
 import { selectFeatureAccess } from "./FeatureAccess";
+import { tiyiUpdateInstalled } from "../modules/TiyiAccessModel";
 import { hasQizhenLegacyNetMaterials } from "../modules/QizhenFinalAssembly";
 import canteenContent from "../data/chapter3-canteen.content.json";
 import theaterContent from "../data/chapter3-theater.content.json";
@@ -214,10 +215,12 @@ function movementQuest(state: GameState): QuestViewModel {
       label: "让地图人物动起来",
       hints: [
         "有一个 App 专门负责把普通走路变成记录。",
-        "打开浙大体艺，开始课外锻炼。"
+        tiyiUpdateInstalled(state)
+          ? "打开浙大体艺，开始课外锻炼。"
+          : "这次换网络也没用。去微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。"
       ],
       targetSurface: "phone",
-      recommendedScene: "tiyi"
+      recommendedScene: tiyiUpdateInstalled(state) ? "tiyi" : "wechat"
     },
     directionTask,
     {

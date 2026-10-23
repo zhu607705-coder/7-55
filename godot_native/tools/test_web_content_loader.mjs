@@ -20,7 +20,7 @@ function pack(id, family) {
 }
 const packs = [pack('chapter2_a', 'chapter2'), pack('chapter2_b', 'chapter2'), pack('chapter3_a', 'chapter3'), pack('chapter4_a', 'chapter4')];
 const manifest = {
-  schema: '755-web-content-v1', engine: '4.7.2',
+  schema: '755-web-content-v1', engine: '4.7.1',
   core: { file: 'index.pck', bytes: 4, sha256: digest(new Uint8Array([1, 2, 3, 4])) },
   packs, backgroundOrder: ['chapter2', 'chapter3', 'chapter35', 'chapter4'],
 };

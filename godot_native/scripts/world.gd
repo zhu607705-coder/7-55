@@ -100,6 +100,9 @@ var last_vehicle := ""
 var pan_offset := Vector2.ZERO
 var touch_controls := false
 var mobile_exploration := false
+# The Web observer reads geometry already computed by normal drawing/input.
+# It must not call the HUD path, which also retires stale confirmed labels.
+var mobile_control_observation: Dictionary = {}
 var mobile_touch_roles: Dictionary={}
 var mobile_mouse_control := false
 var mobile_mouse_gesture: Dictionary = {}
@@ -999,9 +1002,13 @@ func _sync_selected_overlay()->void:
 	var extent:Vector2=selected_overlay_native_rect.size if selected_overlay_is_native else size
 	var mode_rect:Rect2=Rect2(hud.mode_rect.position*display,hud.mode_rect.size*display) if selected_overlay_is_native else hud.mode_rect
 	var bottom:float=hud.body_rect.position.y*display if selected_overlay_is_native else hud.body_rect.position.y
+	# Main already excludes the inventory and device safe area from this world.
+	# Idle navigation prose is not painted: let the confirmed mobile plaque use
+	# the real lower edge instead of reserving an invisible feedback strip.
+	var plaque_bottom:float=extent.y if mobile_exploration and subtitle.is_empty() and not guard_capture.active else -1.0
 	selected_overlay.mobile_exploration=mobile_exploration
 	var label_target:Dictionary=_mobile_confirmed_target() if mobile_exploration else nearby
-	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str(label_target.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(label_target.get("hud_prompt","")))
+	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str(label_target.get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str(label_target.get("hud_prompt","")),plaque_bottom)
 
 func _mobile_confirmed_target() -> Dictionary:
 	if mobile_confirmed_target_id.is_empty(): return {}
@@ -1454,7 +1461,10 @@ func mobile_control_metrics() -> Dictionary:
 	var center:=Vector2(62,maxf(float(body.header_height)+radius,bottom-radius))
 	# Keep the key for existing geometry consumers; no confirmation button is
 	# drawn or hit-tested. Object taps submit the ordinary proximity-gated action.
-	return {"stick":center,"radius":radius,"stick_rect":Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),"interact":Rect2()}
+	var metrics := {"stick":center,"radius":radius,"stick_rect":Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),"interact":Rect2()}
+	if mobile_exploration and is_visible_in_tree():
+		mobile_control_observation={"frame":Engine.get_process_frames(),"world_key":world_key,"size":size,"display_scale":hud_display_scale(),"metrics":metrics}
+	return metrics
 
 func _inventory_owns_pointer() -> bool:
 	if is_instance_valid(InventoryGesture.touch_owner()): return true

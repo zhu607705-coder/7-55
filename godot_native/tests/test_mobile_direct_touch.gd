@@ -109,6 +109,56 @@ func assert_layout(insets: Vector4) -> void:
 	check(not shell.inventory_dock.visible or not shell.inventory_dock.get_global_rect().intersects(shell.world_frame.get_global_rect()),"existing inventory remains outside game viewport")
 	check(shell.world.size == Vector2(shell.world_viewport.size),"world pixels match SubViewport exactly")
 	observations.append({"size":str(shell.size),"safe":str(safe),"world":str(shell.world_frame.get_global_rect()),"stick":str(metrics.stick_rect),"inventory_open":shell.compact_inventory_open})
+func plaque_character_rects() -> Array[Rect2]:
+	var result:Array[Rect2]=[]
+	var overlay:Control=shell.world.selected_overlay
+	for line:Label in [overlay.object_heading,overlay.object_body,overlay.object_hint]:
+		if not line.is_visible_in_tree():continue
+		for index:int in line.get_total_character_count():
+			if line.text.substr(index,1).strip_edges().is_empty():continue
+			var glyph:Rect2=line.get_character_bounds(index)
+			if not glyph.has_area():continue
+			var ink:Rect2=glyph.grow(line.get_theme_constant("outline_size"))
+			var shadow:=Rect2(glyph.position+Vector2(line.get_theme_constant("shadow_offset_x"),line.get_theme_constant("shadow_offset_y")),glyph.size).grow(line.get_theme_constant("shadow_outline_size"))
+			result.append(line.get_global_transform_with_canvas()*ink.merge(shadow))
+	return result
+func assert_mobile_plaque_at_bottom(label: String) -> void:
+	var overlay:Control=shell.world.selected_overlay
+	var plaque:Rect2=overlay.plaque.get_global_rect()
+	var region:Rect2=shell.world_view.get_global_rect()
+	var insets:Vector4=shell.test_safe_insets
+	var safe:=Rect2(insets.x,insets.y,shell.size.x-insets.x-insets.z,shell.size.y-insets.y-insets.w)
+	var stick:Rect2=shell.world.mobile_control_metrics().stick_rect
+	var stick_global:=Rect2(world_screen(stick.position),world_screen(stick.end)-world_screen(stick.position))
+	check(shell.world.mobile_exploration and overlay.plaque.is_visible_in_tree(),label+" has a confirmed mobile plaque")
+	check(region.encloses(plaque) and safe.encloses(plaque),label+" stays entirely in the game viewport and simulated safe area")
+	check(absf(plaque.get_center().x-region.get_center().x)<=1,label+" remains horizontally centered")
+	check(absf(region.end.y-plaque.end.y-4)<=1,label+" sits 4 display pixels above the game viewport bottom, not its center")
+	# Both the plaque VBox and joystick input rect contain transparent space.
+	# Test actual character envelopes (including locked outline/shadow), against
+	# the circle drawn by world._draw_touch_controls, not those invisible corners.
+	var characters:=plaque_character_rects()
+	var visible_overlap:=false;var characters_contained:=true
+	for character:Rect2 in characters:
+		var closest:Vector2=stick_global.get_center().clamp(character.position,character.end)
+		if closest.distance_to(stick_global.get_center())<=stick_global.size.x*.5:visible_overlap=true
+		if not region.encloses(character) or not safe.encloses(character):characters_contained=false
+	check(not characters.is_empty(),label+" checks actual nonblank character bounds")
+	check(not visible_overlap,label+" text and its existing shadow do not overlap the painted joystick circle")
+	check(characters_contained,label+" complete characters and shadows remain inside world and safe area")
+	for control:Control in [shell.inventory_handle,shell.inventory_dock]:
+		if control.is_visible_in_tree():check(not plaque.intersects(control.get_global_rect()),label+" remains above existing inventory chrome")
+	check(overlay.mouse_filter==Control.MOUSE_FILTER_IGNORE and overlay.plaque.mouse_filter==Control.MOUSE_FILTER_IGNORE,label+" remains passive text, not an extra interaction button")
+	observations.append({"size":str(shell.size),"world":str(region),"plaque":str(plaque),"plaque_bottom_gap":region.end.y-plaque.end.y,"inventory_open":shell.compact_inventory_open})
+func confirm_and_check_bottom_plaque() -> void:
+	var point:=visible_pick();var count:=action_count();var was_on:=lamp()
+	check(not shell.world.selected_overlay.plaque.visible,"layout fixture arrival still has no automatic plaque")
+	touch(point,true);touch(point,false);await frames(8)
+	check(action_count()==count+1 and lamp()!=was_on,"layout probe confirms the actual nearby source object through root touch")
+	assert_mobile_plaque_at_bottom("confirmed layout")
+	var before:Rect2=shell.world.selected_overlay.plaque.get_global_rect()
+	await frames(8)
+	check(shell.world.selected_overlay.plaque.get_global_rect().is_equal_approx(before),"container settlement cannot move the confirmed bottom plaque back to the center")
 func test_direct_tap() -> void:
 	await fixture()
 	var point := visible_pick(); var count := action_count()
@@ -119,6 +169,7 @@ func test_direct_tap() -> void:
 	check(action_count()==count+1 and lamp(),"one released tap directly toggles existing lamp exactly once")
 	check(shell.world.touch_axis==Vector2.ZERO,"direct object tap never drives movement")
 	check(shell.world.selected_overlay.plaque.visible,"confirmed target uses existing locked interaction plaque")
+	assert_mobile_plaque_at_bottom("direct tap")
 	# Duplicate release, emulated mouse and mouse motion cannot re-dispatch it.
 	touch(point,false); mouse(point,true,InputEvent.DEVICE_ID_EMULATION); mouse(point,false,InputEvent.DEVICE_ID_EMULATION)
 	motion(point,Vector2.ZERO,InputEvent.DEVICE_ID_EMULATION); await frames()
@@ -267,6 +318,11 @@ func test_keyboard() -> void:
 	check(not shell.world.mobile_exploration and shell.world.size==Vector2(960,540),"desktop keeps canonical world")
 	shell.world.grab_focus(); var count:=action_count(); key(KEY_SPACE,true); key(KEY_SPACE,false); await frames()
 	check(action_count()==count+1 and lamp(),"desktop Space retains existing nearby interaction")
+	var overlay:Control=shell.world.selected_overlay
+	var plaque_height:float=overlay.plaque.get_combined_minimum_size().y
+	var original_y:float=clampf(overlay.size.y*.5-plaque_height*.5,overlay.task.position.y+overlay.task.size.y+8,maxf(overlay.task.position.y+overlay.task.size.y+8,overlay._plaque_bottom_limit-plaque_height-8))
+	check(overlay.plaque.visible and absf(overlay.plaque.position.y-original_y)<=1,"desktop interaction plaque retains its original centered layout formula")
+	check(absf(overlay.plaque.get_global_rect().get_center().x-shell.world_view.get_global_rect().get_center().x)<=1,"desktop plaque keeps its original horizontal center")
 	var before:Vector2=shell.world.player; key(KEY_A,true); shell.world._process(.05); key(KEY_A,false); await frames()
 	check(shell.world.player.x<before.x,"desktop direction key still moves")
 func run() -> void:
@@ -279,6 +335,7 @@ func run() -> void:
 	for row: Array in [[Vector2i(390,844),Vector4.ZERO],[Vector2i(430,860),Vector4(0,44,0,34)],[Vector2i(844,390),Vector4(44,0,44,21)],[Vector2i(568,320),Vector4.ZERO]]:
 		for bag in [false,true]:
 			await fixture(row[0],row[1],bag); assert_layout(row[1])
+			await confirm_and_check_bottom_plaque()
 	await test_direct_tap()
 	await test_no_remote_or_arrival()
 	await test_drag_and_cancel()

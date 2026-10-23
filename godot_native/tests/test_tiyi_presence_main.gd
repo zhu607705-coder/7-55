@@ -47,6 +47,8 @@ func source_fixture() -> Dictionary:
 	var s=state.initial(); var controller=Chapter.new()
 	s.native.chapter=2; s.native.page="library_app"; s.native.scene="campus_bootstrap"
 	s.actOne.phase="complete"; s.actOne.cc98Login.authenticated=true; s.networkMode="campus_wifi"; s.ui.libraryFinalsPhase="library_route_unlocked"
+	# Retain the original library transport; the three update facts use authority.
+	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(s,intent)
 	controller.dispatch(s,"lib_enter"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_record"); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_note"); controller.dispatch(s,"lib_investigate","occupancyNote"); acknowledge(controller,s)

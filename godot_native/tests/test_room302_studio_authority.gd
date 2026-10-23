@@ -9,13 +9,14 @@ var checks := 0
 var failures := 0
 var owner: Node
 var controller: RefCounted
+var fixture_state: Dictionary
 
 func _initialize() -> void: run.call_deferred()
 func check(ok: bool, label: String) -> void:
 	checks += 1
 	if not ok: failures += 1; push_error(label)
 func entry() -> Dictionary:
-	var state: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(ENTRY)).state
+	var state: Dictionary = fixture_state.duplicate(true)
 	controller.dispatch(state,"c4_device_media_alignment")
 	return state
 func dispatch(state: Dictionary, event: Dictionary) -> Dictionary:
@@ -33,6 +34,9 @@ func run() -> void:
 	owner = root.get_node("State")
 	owner.developer_mode = false
 	controller = Chapter.new()
+	fixture_state=preload("res://tests/legacy_room_fixture.gd").read(owner,ENTRY,check)
+	if fixture_state.is_empty():
+		quit(1);return
 	check(owner.validate_snapshot(entry()),"Earned-film source fixture is an ordinary valid save")
 	test_gates()
 	test_payloads()

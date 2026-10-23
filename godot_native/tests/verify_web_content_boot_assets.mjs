@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { readPack } from '../tools/partition_web_pack.mjs';
+import { verifyContentDelivery } from '../tools/web_content_delivery.mjs';
 
 const argument = name => process.argv.find(value => value.startsWith(name + '='))?.slice(name.length + 1);
 const directory = argument('--export');
@@ -54,7 +55,50 @@ function verify(folder) {
     return checks;
   } finally { fs.closeSync(fd); }
 }
+// These independent review resources are retained, not attached to Chapter 2
+// gameplay. The production entry and validated saves cannot open their scenes.
+// Source/native F6/CLI previews use the complete project, not this Web planner.
+function verifyRetainedReferences(folder) {
+  const delivery = verifyContentDelivery(folder); // Real PCK bytes, all MD5/SHA and exact full-export coverage.
+  const receipts = new Map(delivery.inventory.entries.map(entry => [entry.path, entry]));
+  const actual = new Map();
+  delivery.packs.forEach((pack, index) => {
+    const record = index === 0 ? delivery.manifest.core : delivery.manifest.packs[index - 1];
+    for (const entry of pack.entries) actual.set(entry.path, { entry, file: path.join(folder, record.file) });
+  });
+  const checked = [];
+  function retained(name) {
+    const receipt = receipts.get(name), found = actual.get(name);
+    assert.ok(receipt && found, `Retained reference missing from full split export: ${name}`);
+    assert.match(receipt.group, /^chapter2_\d+$/, `Review-only source must be deferred, not boot core: ${name}`);
+    assert.ok(!delivery.corePack.entries.some(entry => entry.path === name), `Review reference leaked into boot core: ${name}`);
+    for (const key of ['bytes', 'md5', 'sha256']) assert.equal(found.entry[key], receipt[key], `Retained reference changed ${key}: ${name}`);
+    checked.push(name);
+    return found;
+  }
+  for (const name of ['clean_room.png', 'furniture_atlas.png', 'props_atlas.png', 'manifest.json']) {
+    const logical = 'assets/native/dorm_modular/' + name;
+    const found = retained(logical + (name.endsWith('.png') ? '.import' : ''));
+    const fd = fs.openSync(found.file, 'r');
+    const bytes = Buffer.alloc(found.entry.bytes);
+    try { assert.equal(fs.readSync(fd, bytes, 0, bytes.length, found.entry.offset), bytes.length); }
+    finally { fs.closeSync(fd); }
+    if (name.endsWith('.png')) {
+      const targets = [...new Set([...bytes.toString('utf8').matchAll(/"res:\/\/(\.godot\/[^"\r\n]+)"/g)].map(match => match[1]))];
+      assert.ok(targets.length > 0, `Review source import has no real target: ${logical}`);
+      for (const target of targets) retained(target);
+    } else assert.equal(JSON.parse(bytes).status, 'candidate_not_production', 'Review-only provenance remains unchanged');
+  }
+  const reference = argument('--reference-export');
+  if (reference) {
+    const prior = verifyContentDelivery(reference);
+    const identity = entries => entries.map(({ path, bytes, md5, sha256 }) => ({ path, bytes, md5, sha256 })).sort((a, b) => a.path.localeCompare(b.path, 'en'));
+    assert.deepEqual(identity(delivery.fullEntries), identity(prior.fullEntries), 'Lossless regrouping must preserve every original resource identity');
+  }
+  return { checked, fullEntries: delivery.fullEntries.length, originalExportIdentitiesPreserved: Boolean(reference) };
+}
 const checks = verify(directory);
+const retainedReferences = verifyRetainedReferences(directory);
 const negative = argument('--negative-export');
 if (negative) assert.throws(() => verify(negative), /Known eager boot resource absent|Boot import target deferred/);
-console.log(JSON.stringify({ success: true, coreBootResources: checks.length, checked: checks, priorFailedExportRejected: Boolean(negative) }, null, 2));
+console.log(JSON.stringify({ success: true, coreBootResources: checks.length, checked: checks, retainedReferences, priorFailedExportRejected: Boolean(negative) }, null, 2));

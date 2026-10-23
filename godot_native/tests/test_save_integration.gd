@@ -80,7 +80,7 @@ func run() -> void:
 			check(int(state.d.native.chapter) == 2,"imported Chapter 2 prelude retains its active native chapter: " + str(checkpoint.id))
 	print("Save integration: all 117 developer checkpoints exercised")
 	_test_chapter_two_continuation(checkpoints)
-	for version in range(2,36):
+	for version in range(2,37):
 		import_browser({"version":version,"state":state.initial()},"version " + str(version) + " fresh")
 		var completed: Dictionary = state.initial()
 		completed.chapter4.completed = true
@@ -91,6 +91,10 @@ func run() -> void:
 			if version < 25:
 				check(state.d.chapter4.phase == "exterior_closure" and state.d.native.save_import.legacy_completed,"legacy completion restores explicit closure waiting")
 		var malformed := {"actOne":7,"phoneBattery":[],"chapter4":{"lightGrid":"x","zhuQuestionAnswers":[]},"ui":{"libraryFinalsPuzzle":4},"qizhenLake":{"journal":{"mainPhoto":{"recipe":[]},"optionalPhotos":[7]}}}
+		if version>=36:
+			reject_raw(JSON.stringify({"version":version,"state":malformed}),"v36 missing required update/desktop fields")
+			malformed.actOne={"tiyiUpdateStage":"not_started"}
+			malformed.ui.homeDeskReturnScene=null
 		import_browser({"version":version,"state":malformed},"version " + str(version) + " repairable nesting")
 	_test_source_journal_strings()
 	_test_roundtrip_and_invalid()

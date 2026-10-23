@@ -30,6 +30,24 @@ static func fit(dialog: FileDialog,available: Vector2) -> Vector2i:
 	# Native optional sidebars need 148px. Compact layouts retain the actual
 	# back/forward/up/path/file/filter controls and restore sidebars on desktop.
 	var compact:=available.x<560
+	# Godot 4.7's drive selector is a MenuButton, not an OptionButton. On Unix
+	# its closed caption can be the complete HOME path. The other native menu
+	# is icon-only sorting; leave that control and every popup entry untouched.
+	for menu: MenuButton in dialog.get_vbox().find_children("*","MenuButton",true,false):
+		var original_key:=&"_755_drive_caption_layout"
+		if menu.text.is_empty() and not menu.has_meta(original_key):continue
+		if compact:
+			if not menu.has_meta(original_key):
+				menu.set_meta(original_key,{"clip":menu.clip_text,"overrun":menu.text_overrun_behavior,"minimum":menu.custom_minimum_size})
+			menu.clip_text=true
+			menu.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+			menu.custom_minimum_size.x=maxf(44,menu.custom_minimum_size.x)
+		elif menu.has_meta(original_key):
+			var original: Dictionary=menu.get_meta(original_key)
+			menu.clip_text=original.clip
+			menu.text_overrun_behavior=original.overrun
+			menu.custom_minimum_size=original.minimum
+			menu.remove_meta(original_key)
 	dialog.favorites_enabled=not compact
 	dialog.recent_list_enabled=not compact
 	var target:=Vector2i(minf(800,available.x-16),minf(540,available.y-64))

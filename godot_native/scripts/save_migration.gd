@@ -187,7 +187,7 @@ func validate_import_proof(state: Dictionary, kind: String = "stair") -> bool:
 	for fact in origin.proof_facts:
 		if not fact is String: return false
 	var version = origin.get("source_version")
-	if not (version is int or version is float) or version != floor(float(version)) or (version != 0 and (version < 2 or version > 35)): return false
+	if not (version is int or version is float) or version != floor(float(version)) or (version != 0 and (version < 2 or version > 36)): return false
 	var defaults = JSON.parse_string(FileAccess.get_file_as_string("res://data/initial_state.json"))
 	if not defaults is Dictionary: return false
 	var source := {"version":version,"state":{"chapter4":origin.source_chapter4}}
