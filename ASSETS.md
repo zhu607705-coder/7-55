@@ -5,6 +5,7 @@
 - Source candidate: [codex/godot-current-20261023](https://github.com/zhu607705-coder/7-55-godot/tree/codex/godot-current-20261023), implementation directory: [godot_native](godot_native/README.md). The renamed Godot repository is currently public.
 - The selected source includes current runtime assets, original font/art sources, authoring tools and provenance records. Local RodinBridge editor installation, its activation setting, Python bytecode and Blender automatic backup are excluded. Existing third-party licenses remain attached to their assets; the original project source uses Apache-2.0.
 - [Lazy-loading evidence](godot_native/docs/PERFORMANCE_LAZY_LOADING_20261023.md) and [native Learn reconstruction](godot_native/docs/NATIVE_LEARN_REBUILD_20261023.md) identify their exact tested inputs and limitations. WASM/PCK exports and temporary QA output remain outside the source submission. This delivery creates no new Release archive or production deployment.
+- The frozen `examples/qizhen_blender_nearshore/source/qizhen_north_bank.blend` is restored to its existing `SOURCE_SHA256.json` receipt in the current review tree. The local working Blender revision remains untouched; it has not replaced the accepted frozen sample.
 
 ## 20261022 — Two-repository integration and local preview
 

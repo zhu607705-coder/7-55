@@ -183,10 +183,9 @@ function readPck(filename, full = false) {
 }
 
 validatePreset();
-console.log('Panorama source tiles: ' + run(process.execPath, [path.join(project, 'tools/build_panorama_tiles.mjs'), '--check'], true));
-let sourceBeforeExport;
-let bootChunks;
-let audioCompatibility;
+// Clean checkouts do not contain generated panorama tiles. Prepare their
+// source copy before checking it; verification-only and --skip-prepare still
+// require the existing tiles and manifest to match exactly.
 if (!verifyOnly) {
   const actual = run(godot, ['--version'], true);
   if (!actual.startsWith(version)) throw new Error(`Godot must be ${version}, found ${actual}`);
@@ -194,6 +193,12 @@ if (!verifyOnly) {
     run(process.execPath, ['godot_native/tools/sync_source.mjs']);
     run('bash', ['godot_native/tools/convert_media.sh'], false, { ...process.env, NODE_BIN: process.execPath });
   }
+}
+console.log('Panorama source tiles: ' + run(process.execPath, [path.join(project, 'tools/build_panorama_tiles.mjs'), '--check'], true));
+let sourceBeforeExport;
+let bootChunks;
+let audioCompatibility;
+if (!verifyOnly) {
   for (const required of ['assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf', 'data/source/items.config.json', 'assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv', 'assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.ogv']) {
     if (!fs.existsSync(path.join(project, required))) throw new Error(`Build input missing: ${required}; run without --skip-prepare`);
   }
