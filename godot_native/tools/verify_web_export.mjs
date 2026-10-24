@@ -91,6 +91,27 @@ async function connect(wsUrl, onEvent) {
   ws.addEventListener('close', () => { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP connection closed')); } pending.clear(); });
   return { send(method, params = {}, timeoutMs = 30000) { return new Promise((resolve, reject) => { const id = ++sequence; const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout ${method}`)); }, timeoutMs); pending.set(id, { resolve, reject, timer }); ws.send(JSON.stringify({ id, method, params })); }); }, close() { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP closed')); } pending.clear(); ws.close(); } };
 }
+async function enableNetworkObservation(session) {
+  // CI Chrome 155 exposes this dedicated command. Keep the original caps;
+  // only response-body retention across renderer navigation changes. Missing
+  // protocol support is an explicit failure, never permission to skip hashes.
+  const observation = { startedAt: Date.now(), maxTotalBufferSize: 128 * 1024 * 1024,
+    maxResourceBufferSize: 2 * 1024 * 1024, durableMessages: false, navigations: [] };
+  session.networkObservation = observation;
+  try {
+    observation.browser = await session.cdp.send('Browser.getVersion');
+    const capacity = { maxTotalBufferSize: observation.maxTotalBufferSize, maxResourceBufferSize: observation.maxResourceBufferSize };
+    await session.cdp.send('Network.enable', capacity);
+    observation.networkEnabledAt = Date.now();
+    await session.cdp.send('Network.configureDurableMessages', capacity);
+    observation.durableMessages = true;
+    observation.confirmedAt = Date.now();
+  } catch (error) {
+    observation.failedAt = Date.now(); observation.error = error.message;
+    throw new Error(`Required durable network response observation failed: ${error.message}`, { cause: error });
+  }
+  return observation;
+}
 let active;
 let delivery;
 async function prepareDeliveryEvidence() {
@@ -461,7 +482,11 @@ async function saveProgressAndWait(label) {
 }
 async function startStory(reload = false) {
   if (reload) await waitForPersistedSave(`${active.id} before actual reload`);
-  const start = Date.now(); await active.cdp.send(reload ? 'Page.reload' : 'Page.navigate', reload ? { ignoreCache: true } : { url: active.url || url });
+  const start = Date.now();
+  const navigation = { method: reload ? 'Page.reload' : 'Page.navigate', requestedAt: start };
+  active.networkObservation?.navigations.push(navigation);
+  await active.cdp.send(navigation.method, reload ? { ignoreCache: true } : { url: active.url || url });
+  navigation.acknowledgedAt = Date.now();
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
   if (scenarios === 'phone-navigation') {
@@ -1600,12 +1625,12 @@ async function browserCase(id, width, height, touch, dpr = 1) {
         network.set(response.url, { ...response, encodedDataLength: params.encodedDataLength });
         if (delivery.bootByUrl.has(response.url) || delivery.deferredChunksByUrl.has(response.url)) {
           const request = active.requestsById.get(params.requestId);
-          const row = { ...response, requestId: params.requestId, requestAt: request?.at ?? 0, range: request?.range ?? '', encodedDataLength: params.encodedDataLength, pending: true };
+          const row = { ...response, requestId: params.requestId, requestAt: request?.at ?? 0, range: request?.range ?? '', encodedDataLength: params.encodedDataLength, loadingFinishedAt: Date.now(), pending: true };
           (delivery.bootByUrl.has(response.url) ? active.bootResponses : active.deferredResponses).push(row);
           active.bootBodyJobs.push(active.cdp.send('Network.getResponseBody', { requestId: params.requestId }).then(result => {
             const bytes = Buffer.from(result.body, result.base64Encoded ? 'base64' : 'utf8');
-            row.bytes = bytes.length; row.sha256 = hash(bytes); row.pending = false;
-          }).catch(error => { row.error = error.message; row.pending = false; }));
+            row.bytes = bytes.length; row.sha256 = hash(bytes); row.pending = false; row.bodyObservedAt = Date.now();
+          }).catch(error => { row.error = error.message; row.pending = false; row.bodyFailedAt = Date.now(); }));
         }
       }
       if (method === 'Network.loadingFailed' && !params.canceled) {
@@ -1619,10 +1644,11 @@ async function browserCase(id, width, height, touch, dpr = 1) {
         else errors.push(failure);
       }
     });
-    // Retain the complete ~94 MB cold boot response set while the inspector
-    // hashes real response bodies, even when local export I/O delays CDP.
-    // This changes observation capacity only; HTTP/hash/cache checks stay strict.
-    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
+    // Confirm durable body observation before the first real navigation.
+    // Reload must not destroy evidence for an already-finished deferred chunk.
+    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable');
+    await enableNetworkObservation(active);
+    await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
     if (scenarios === 'streaming') await prepareStreamingFault();
     if (scenarios === 'boot-font-failure') {
@@ -1691,6 +1717,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
   } catch (e) { primaryError = e; if (!lifecycle.child) lifecycle.evidence.spawnSynchronousError = e.message; report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, mobileWorld: active.mobileWorld, phoneRecovery: active.phoneRecovery, phoneNavigation: active.phoneNavigation, library: active.library, bootFontFault: active.bootFontFault, bootTypography: active.bootTypography, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
   finally {
     const caseRecord = report.cases.at(-1);
+    caseRecord.networkObservation = active.networkObservation;
     caseRecord.deferredChunkResponses = active.deferredResponses;
     caseRecord.saveAttempts = active.saveAttempts || [];
     caseRecord.saveInputs = active.saveInputs || [];
