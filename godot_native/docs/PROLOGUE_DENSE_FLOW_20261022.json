@@ -1,0 +1,187 @@
+{
+  "schema": "755-prologue-dense-flow-v1",
+  "date": "2026-10-22",
+  "request": "Remove the marked fixed top heading/counter; fill the space with denser, more chaotic ASCII-built Hanzi fragments.",
+  "sourceCommit": "457087fe737e4ce0bb01d2bcb651297762a9ba45",
+  "sourceDirty": true,
+  "sourceInputSha256": "762d4cb680e982a8803af554fd69a6e6ad3f92473c7a8f22fb1b8da3cab93f11",
+  "engine": "4.7.2.stable.official",
+  "presentation": {
+    "fieldLogical": [
+      430,
+      820
+    ],
+    "fixedTitleAndStageCounterRemoved": true,
+    "ambientVocabularyPhrases": 48,
+    "glyphMasks": 170,
+    "shaderSlots": {
+      "physical": 2,
+      "sourceClues": 6,
+      "ambient": 24
+    },
+    "motion": "continuous single clock; mixed directions, speeds, small scales and angled overlap",
+    "targetPriority": "physical targets overwrite ambient strokes inside their own word bodies",
+    "pause": "single presentation clock frozen",
+    "reducedMotion": "static original clues, no animated decorative fragments"
+  },
+  "preserved": {
+    "byteIdenticalSource": [
+      {
+        "path": "godot_native/scripts/games/prologue_word_model.gd",
+        "sha256": "40f06cbaabd674427a3eb2a358799fb8b14c5473332c8e26fc271a7c756a47aa",
+        "byteIdentical": true
+      },
+      {
+        "path": "src/data/prologue-interception.content.json",
+        "sha256": "64ff1f31b664749a43d5590bf9464717634c33bdb342386852c9244a91fea778",
+        "byteIdentical": true
+      },
+      {
+        "path": "godot_native/scripts/chapters/chapter1_2.gd",
+        "sha256": "c19fe619314a79a42d8a7a1f58f9ba4e400fb2178fe832a1ebe488d8f24d3473",
+        "byteIdentical": true
+      }
+    ],
+    "targetSpeedsPxPerSecond": [
+      360,
+      390,
+      420
+    ],
+    "windowSpeedPxPerSecond": 440,
+    "spawnMs": 950,
+    "stageTransitionMs": 280,
+    "requiredRealContacts": 6,
+    "finalGripMs": 1400,
+    "smoothRouteActiveSeconds": 38.85,
+    "presentationWritesProgressOrSaves": false
+  },
+  "verification": {
+    "nativeStages": 10,
+    "nativePassed": true,
+    "nativeReport": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/final-native.json",
+      "sha256": "8fd054312e948f6fd3aa3aa1578f50d6e29d619d4ffbeac77d10a0fd11eb26a8"
+    },
+    "characterFlowChecks": 24,
+    "browser": [
+      {
+        "kind": "browser-desktop",
+        "passed": true,
+        "checks": 542,
+        "report": {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/browser-desktop/web-acceptance.json",
+          "sha256": "45b030d26514bb7a22569bdb543af613dd9a8f1dfa0584a66d87dce7598fafcb"
+        }
+      },
+      {
+        "kind": "browser-touch",
+        "passed": true,
+        "checks": 542,
+        "report": {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/browser-touch/web-acceptance.json",
+          "sha256": "dc7401539cbe186fe1b79db678cc14949a415d6f96c2829d833efb569245fb21"
+        }
+      }
+    ],
+    "actualGpuFinalFrames": 12,
+    "gpuReport": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/gpu-final/capture-report.json",
+      "sha256": "c5a559b265f69c95f747e5c3121419df80dd95749ff898bd651a0175d89df69c"
+    },
+    "retainedWebReleaseValidators": 38,
+    "retainedWebRelease": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/retained-web-release.log",
+      "sha256": "66e76d6a8b02a284bc122398d49b58fcafec03051a380be88d29e7eccf30e460"
+    },
+    "generatedMaskCheck": true,
+    "exportVerifyOnly": true,
+    "initialPayloadBytes": 99027589,
+    "initialPayloadAddedBytes": 68148,
+    "staleTestCorrection": {
+      "oldFailure": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/early-games-before-correction.log",
+      "reason": "pre-existing early-games test expected removed failed phase and retry handler; updated to current clean-flow semantics",
+      "finalPass": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/early-games-corrected.json"
+    },
+    "postReportHarnessCleanup": [
+      {
+        "pid": 4591,
+        "reason": "passed complete report and PASS log emitted; post-report idle WebSocket handle cleanup",
+        "command": "node godot_native/tools/verify_web_export.mjs --url http://127.0.0.1:5242/ --export-dir godot_native/exports/web-dense-character-flow-20261022 --fixtures /Users/zhu/Library/Application Support/755-continuity-report-Uhl7aR/earned --scenarios words --only desktop-1280 --output /Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/browser-desktop"
+      },
+      {
+        "pid": 4592,
+        "reason": "passed complete report and PASS log emitted; post-report idle WebSocket handle cleanup",
+        "command": "node godot_native/tools/verify_web_export.mjs --url http://127.0.0.1:5242/ --export-dir godot_native/exports/web-dense-character-flow-20261022 --fixtures /Users/zhu/Library/Application Support/755-continuity-report-Uhl7aR/earned --scenarios words --only touch-390 --output /Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/browser-touch"
+      }
+    ]
+  },
+  "delivery": {
+    "url": "http://127.0.0.1:5241/",
+    "export": "godot_native/exports/web-dense-character-flow-20261022",
+    "httpManifestMatched": true,
+    "existingUserGameReloaded": false,
+    "directUserSaveOrProofWrites": false,
+    "commitPushOrRemotePublication": false
+  },
+  "changes": [
+    {
+      "path": "godot_native/scripts/games/prologue_character_flow.gd",
+      "sha256": "7e02472f383f301769e9cd0631025ea58b167966865ee4e64b9b71d3560cb5dc"
+    },
+    {
+      "path": "godot_native/scripts/games/prologue_ascii_field.gdshader",
+      "sha256": "43a57b5815b933e821e73dc65e51a86de5fe2ccb20e4cde0856ad62871d08a31"
+    },
+    {
+      "path": "godot_native/scripts/games/prologue_interception.gd",
+      "sha256": "7c45c13780140c10ea53927310b3c6702b58d4c07a8bc91afd7ad854b3f32ac9"
+    },
+    {
+      "path": "godot_native/data/native/prologue-flow-atmosphere.json",
+      "sha256": "d2162c0175a6cb9f640d4f9ea529a990f65f95a699fa79ab5a072090743e84d1"
+    },
+    {
+      "path": "godot_native/data/native/prologue-ascii-masks.json",
+      "sha256": "54658e9b18b1a9751228ff500935138b5cae3f04f520f77b1009293d01b145a5"
+    },
+    {
+      "path": "godot_native/tools/build_prologue_ascii_masks.py",
+      "sha256": "f5660b452957b06e0dadb78eb62ac7a37ec64b98d06917b7b819371abfb5b85c"
+    },
+    {
+      "path": "godot_native/tests/test_prologue_character_flow.gd",
+      "sha256": "72c94ee88c936263b10600583ee344850af1d3f4d7e03c843ccf8e5fa65dc35c"
+    },
+    {
+      "path": "godot_native/tests/test_early_games.gd",
+      "sha256": "bc70c9c7a150cf8cc2bc8ebcaa571a625701451d1a84d003c46d065cc0131fd9"
+    }
+  ],
+  "review": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/prologue-dense-field-20261022/touch-word-flow.png",
+      "sha256": "70262c21592acb2ae34afb33d696926edef467695736bbf6fd1d2e75e7918ba8"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/prologue-dense-field-20261022/desktop-word-flow.png",
+      "sha256": "9ac644413f9bef34b537a74154ce9b9c8772cf833d26321ee6bc6fb8b5209e77"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/prologue-dense-field-20261022/native-stage-2.png",
+      "sha256": "080a1538dc69634fdbee403ed149fc0c49fe758d3bc661bc53019875c1a750b8"
+    }
+  ],
+  "cleanup": {
+    "temporaryImagesRemoved": 34,
+    "hashRecord": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/prologue-dense-field-20261022/cleanup.json",
+      "sha256": "7039162a56a351753f11d750eb53022aca31d92e6c2ff508d19df5b3eb5d800f"
+    },
+    "ownedQa5242Stopped": true
+  },
+  "limitations": [
+    "Native screenshots are isolated actual-rendering fixtures; browser runs use ordinary UI and earned-save fixtures.",
+    "Touch acceptance uses Chromium emulation; physical phones and a fresh Gecko/WebKit/full-campaign acceptance were not performed.",
+    "38.85 seconds measures a smooth successful route; retries and discovery can extend it."
+  ]
+}

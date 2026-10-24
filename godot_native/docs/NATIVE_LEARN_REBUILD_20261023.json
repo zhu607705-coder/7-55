@@ -1,0 +1,36 @@
+{
+  "schema": "755-native-learn-delivery-v1",
+  "sourceInputSha256": "795a779baadfc7d5ea7aecf4c157656cbc3c543c5383ecfe76dba1059a7dbb74",
+  "initialPayloadBytes": 65127138,
+  "initialGzipPayloadBytes": 31744779,
+  "actual5241GzipVerified": true,
+  "preview": "http://127.0.0.1:5241/?build=795a779baadf",
+  "review": "/Users/zhu/Library/Application Support/755-tools/verification/learn-rebuild-20261023/review/native-learn-mobile.png",
+  "evidence": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/learn-rebuild-20261023/native.json",
+      "sha256": "37fa257fab8e56809795fab6d781612a9ca36790348153f330bb842c9cd4c1cd",
+      "passed": true
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/learn-rebuild-20261023/illustration-bounds.json",
+      "sha256": "f007761178be587ae55dfc032fd6e5570b070783099d6f53ad3debac3164a643",
+      "passed": true
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/learn-rebuild-20261023/web-final-desktop/web-acceptance.json",
+      "sha256": "294b90e73042a7f26fff9d78e2633f351f88f8a0a9440e8e0b6a98abc69f3f06",
+      "passed": true
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/learn-rebuild-20261023/web-release-mobile/web-acceptance.json",
+      "sha256": "6aef9dbe11ecbaf34145158eb7f8b22fe2600947cab59b44dc691857ffb6df87",
+      "passed": true
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/learn-rebuild-20261023/image-inspection-cleanup.json",
+      "sha256": "2e2d07f496aa686d3e98ea586ca692df6f08e37628f04a1ca195be13b4419e11",
+      "passed": null
+    }
+  ]
+}

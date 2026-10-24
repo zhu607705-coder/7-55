@@ -12,10 +12,13 @@ func _ready()->void:
 	for side:String in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,16)
 	add_child(margin)
 	var column:=VBoxContainer.new();column.add_theme_constant_override("separation",10);margin.add_child(column)
-	# One actual UI family, with size hierarchy rather than unrelated faces.
-	for sample: Array in [[28,"校园调查 7:55"],[18,"正文与按钮 · Campus UI Sans"],[15,"0123456789 Aa，。！？"]]:
+	# One project family with actual Regular/Medium roles and unchanged sizes.
+	for sample: Array in [[28,"校园调查 7:55","display"],[18,"正文与按钮 · Morning Note","body"],[15,"0123456789 Aa，。！？","display"]]:
 		var line:=Label.new();line.name="TypeSample"+str(sample[0]);line.text=sample[1]
-		Typography.apply_body(line);line.add_theme_font_size_override("font_size",sample[0])
+		line.set_meta("typography_role",sample[2])
+		if sample[2]=="display":Typography.apply_display(line)
+		else:Typography.apply_body(line)
+		line.add_theme_font_size_override("font_size",sample[0])
 		line.add_theme_color_override("font_color",MaterialUi.PAPER)
 		line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;column.add_child(line)
 	for dark:bool in [false,true]:

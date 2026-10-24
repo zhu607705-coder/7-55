@@ -3,6 +3,7 @@ extends Node
 signal blocking_changed(blocking: bool)
 signal content_changed
 const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "campus_shared", "campus_chaoyang", "campus_haidian", "campus_changping"]
+const STORY_FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4"]
 const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
 var _host: Variant
@@ -15,6 +16,9 @@ var _waiters: Dictionary = {}
 var _next_waiter := 0
 var _blocking := false
 var _prefetch_started := false
+var _prefetch_families: Array = []
+var _prefetch_window_set := false
+var _prefetch_window_supported := false
 var _overlay: CanvasLayer
 var _cover: Control
 var _card: PanelContainer
@@ -27,9 +31,10 @@ func _ready() -> void:
 	if not OS.has_feature("web"): return
 	_host = JavaScriptBridge.get_interface("__GODOT_755_CONTENT_HOST__")
 	if not _require_web_host(_host): return
+	var supports_window: bool = bool(JavaScriptBridge.eval("typeof window.__GODOT_755_CONTENT_HOST__.setPrefetchFamilies === 'function'", true))
 	JavaScriptBridge.eval("delete window.__GODOT_755_CONTENT_HOST__", true)
 	var raw: Variant = JSON.parse_string(str(_host.manifest()))
-	if not raw is Dictionary or not _configure_manifest(raw, _host):
+	if not raw is Dictionary or not _configure_manifest(raw, _host, supports_window):
 		_enabled = true
 		_fatal_error = "游戏尚未准备完成，请重新加载页面后重试。当前进度已保留。"
 		_show_fatal()
@@ -71,7 +76,7 @@ func _valid_id(value: Variant) -> bool:
 		if character not in "abcdefghijklmnopqrstuvwxyz0123456789_": return false
 	return true
 
-func _configure_manifest(value: Dictionary, host: Variant) -> bool:
+func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool = false) -> bool:
 	# Also exercised with an isolated transport in tests. No test hook is exposed
 	# through the browser's read-only public observation surface.
 	_enabled = true
@@ -93,6 +98,7 @@ func _configure_manifest(value: Dictionary, host: Variant) -> bool:
 	_packs = packs
 	_families = families
 	_host = host
+	_prefetch_window_supported = supports_window or (host != null and not host is JavaScriptObject and host.has_method("setPrefetchFamilies"))
 	_fatal_error = ""
 	return true
 
@@ -104,7 +110,10 @@ static func required_families(snapshot: Dictionary) -> Array:
 	var scene := str(native.get("scene", ""))
 	var chapter: int = int(native.get("chapter", 1))
 	var level: int = 4 if chapter >= 4 else 2 if chapter >= 3 else 1 if chapter >= 2 else 0
-	if scene in ["campus_bootstrap", "library_interior"] or page.begins_with("library_"): level = maxi(level, 1)
+	if scene in ["dorm_hub", "campus_bootstrap", "library_interior"] or page.begins_with("library_"): level = maxi(level, 1)
+	# Old imports may remember an app before updating the numeric chapter.
+	# The first-chapter CC98 network notice itself still needs no later pack.
+	if page=="photos" or (page in ["cc98","cc98_login"] and str(snapshot.get("actOne",{}).get("phase","prologue"))!="prologue"): level=maxi(level,1)
 	if scene in ["canteen_interior", "theater_interior"] or page.begins_with("c3_"): level = maxi(level, 2)
 	var lake: Dictionary = snapshot.get("qizhenLake", {})
 	if scene in ["campus_qizhen_loop", "qizhen_lake"] or page.begins_with("c35_") or bool(lake.get("active", false)) or str(lake.get("phase", "inactive")) not in ["", "inactive"]: level = maxi(level, 3)
@@ -132,7 +141,25 @@ func ready_for_state(snapshot: Dictionary) -> bool:
 	return not _enabled or (_fatal_error.is_empty() and _ids_ready(_required_ids(required_families(snapshot))))
 
 func ensure_state(snapshot: Dictionary) -> bool:
-	return await ensure_families(required_families(snapshot))
+	var required := required_families(snapshot)
+	var ready := await ensure_families(required)
+	if ready and _enabled and _host != null:
+		_set_prefetch_window(snapshot)
+	return ready
+
+static func next_prefetch_families(snapshot: Dictionary) -> Array:
+	var required := required_families(snapshot)
+	return [STORY_FAMILIES[required.size()]] if required.size() < STORY_FAMILIES.size() else []
+
+func _set_prefetch_window(snapshot: Dictionary) -> void:
+	# Old cached HTML/JS may accompany a newer core. Optional warming needs the
+	# bounded-window capability; ordinary request/retry remains compatible.
+	if not _prefetch_window_supported: return
+	var next := next_prefetch_families(snapshot)
+	if _prefetch_window_set and next == _prefetch_families: return
+	_prefetch_window_set = true
+	_prefetch_families = next
+	_host.setPrefetchFamilies(JSON.stringify(next))
 
 func ensure_families(families: Array) -> bool:
 	# Admission precedes the native monolithic fallback as well: loading a Web
@@ -199,8 +226,10 @@ func _on_pack_received(args: Array) -> void:
 	content_changed.emit()
 
 func start_prefetch() -> void:
-	if not _enabled or not _fatal_error.is_empty() or _prefetch_started or _host == null: return
+	if not _enabled or not _fatal_error.is_empty() or _prefetch_started or _host == null or not _prefetch_window_supported: return
 	_prefetch_started = true
+	var state := get_node_or_null("/root/State")
+	_set_prefetch_window(state.d if state != null else {})
 	_host.startPrefetch()
 
 func is_blocking() -> bool:
@@ -222,7 +251,7 @@ func read_snapshot() -> Dictionary:
 		if _packs[id].status == "ready": loaded += int(_packs[id].bytes)
 	var retry_visible: bool = is_instance_valid(_retry) and _retry.is_visible_in_tree()
 	var retry_rect: Rect2 = _retry.get_global_rect() if retry_visible else Rect2()
-	return {"enabled": _enabled, "monolithic": not _enabled, "blocking": _blocking, "prefetchStarted": _prefetch_started, "manifestError": _fatal_error, "readyFamilies": ready_families, "requiredIds": required, "requiredBytes": total, "loadedBytes": loaded, "packs": packs, "retryVisible": retry_visible, "retryRect": {"x": retry_rect.position.x, "y": retry_rect.position.y, "width": retry_rect.size.x, "height": retry_rect.size.y}}.duplicate(true)
+	return {"enabled": _enabled, "monolithic": not _enabled, "blocking": _blocking, "prefetchStarted": _prefetch_started, "prefetchFamilies": _prefetch_families.duplicate(), "manifestError": _fatal_error, "readyFamilies": ready_families, "requiredIds": required, "requiredBytes": total, "loadedBytes": loaded, "packs": packs, "retryVisible": retry_visible, "retryRect": {"x": retry_rect.position.x, "y": retry_rect.position.y, "width": retry_rect.size.x, "height": retry_rect.size.y}}.duplicate(true)
 
 func _waiting_ids() -> Array:
 	var result: Array = []

@@ -21,8 +21,12 @@ func reload_file() -> void:
 	check(state.save_game(),"actual save_game writes pending reversal")
 	state.d=state.initial()
 	check(state.load_game(),"actual load_game accepts pending reversal file")
-	state.story_reset.emit(); state.changed.emit(); await process_frame; await process_frame
-	host.set_process(false); world.set_process(false); host.tick(0,true)
+	state.story_reset.emit(); state.changed.emit()
+	# Re-entry correctly reactivates the deferred host. Retake the test clock
+	# synchronously, before an engine frame can advance the reconstructed cue.
+	host.set_process(false); world.set_process(false)
+	await process_frame; await process_frame
+	host.tick(0,true)
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"reversal tests use isolated actual save files")
 	if errors: quit(1); return
@@ -34,6 +38,9 @@ func run() -> void:
 	main=load("res://scenes/main.tscn").instantiate(); root.add_child(main)
 	await process_frame; await process_frame
 	host=main.c3_narrative_host; world=main.world; host.set_process(false); world.set_process(false)
+	# Main can reactivate processing on a later content-ready refresh. This
+	# test owns a manual monotonic clock across those ordinary reload callbacks.
+	host.process_mode=Node.PROCESS_MODE_DISABLED
 	main.audio_director.cue_published.connect(func(id:String,payload:Dictionary)->void:cues.append({"id":id,"payload":payload}))
 	state.act("c3_reversal"); host.tick(0,true)
 	var session: RefCounted=host.current

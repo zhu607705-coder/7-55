@@ -29,7 +29,7 @@ func room_fixture(dimensions: Vector2i,source: Vector2,group_id: String) -> Vect
 				valid=valid and Rect2(5,50,w.size.x-10,w.size.y-110).has_point(local)
 				if w.mobile_exploration:
 					var controls: Dictionary=w.mobile_control_metrics()
-					valid=valid and not controls.stick_rect.has_point(local) and not controls.interact.has_point(local)
+					valid=valid and controls.gestureArea.has_point(local) and not controls.mode.has_point(local)
 			if valid: found=true;break
 		if found: break
 	check(found,"legal nearby feet leave source and target visible "+case_name)
@@ -54,6 +54,13 @@ func run() -> void:
 			check(not picked.is_empty(),"real object picker resolves overlapping click target "+case_name)
 			var before:=story();var position: Vector2=w.player;var action_count:=actions.size();var feedback_count:=feedback.size()
 			var start:=source_screen(sample.source);var end:=source_screen(drop)
+			# An actual furniture touch released outside the viewport must retire
+			# its scene pointer even when the native drag owner receives the up.
+			touch(start,true);await frames(1)
+			check(w.direct_gestures.pointers.get(0,{}).get("role","")=="furniture","touch resolves actual furniture ownership "+case_name)
+			touch(Vector2(-40,-40),false);await frames(2)
+			check(not w.direct_gestures.has_active(),"outside furniture release cannot leave a stale scene pointer "+case_name)
+			check(story()==before and actions.size()==action_count,"canceled furniture touch leaves story and actions unchanged "+case_name)
 			motion(start);mouse(start,true);await frames(2)
 			check(actions.size()==action_count and state.d.chapter4.room204Placements.is_empty(),"mousedown cannot dispatch or place group "+case_name)
 			check(feedback.size()==feedback_count,"mousedown belongs to furniture; no overlapping target feedback "+case_name)

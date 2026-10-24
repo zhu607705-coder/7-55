@@ -85,19 +85,13 @@ func run() -> void:
 	check(absf(audio.voice.get_playback_position()-playback)<.04,"paused voice offset cannot drift")
 	game._resume(); await process_frame
 	check(not audio.voice.stream_paused and count("prologue_playback_resumed")==1,"resume continues same clip")
-	game._review(true); var review_clock: float=game.intro_elapsed_ms; playback=audio.voice.get_playback_position()
-	tick(.4); await wait_msec(150)
-	check(game.session.reviewing and game.intro_elapsed_ms==review_clock and audio.voice.stream_paused,"clue review freezes original narration and its scene caption clock")
-	game._review(false); await process_frame
-	check(not audio.voice.stream_paused,"closing clue review resumes the same original voice owner")
-	# Semantic failure freezes the branch; continuing does not replay the intro.
-	for index in range(3):
-		while game.phase != "failed": tick(.01)
-		if index < 2: game._retry()
-	check(game.phase=="failed" and count("prologue_error_intercept_missed")==3 and count("prologue_error_round_failed")==1,"miss and escalating-hint sounds follow actual escaped target words")
+	# Real misses keep flowing without replaying the original narration.
+	for tick_index in range(6000):
+		if game.misses>=3:break
+		tick(.01)
+	check(game.phase=="intercept" and count("prologue_error_intercept_missed")==3 and count("prologue_error_round_failed")==1,"three real missed targets preserve their authored audio cues while the stage continues")
 	check(events.filter(func(e: Dictionary) -> bool: return e.id=="prologue_error_intercept_missed")[2].payload=={"misses":3,"maxMisses":3},"third miss retains the existing presentation payload")
-	game._retry()
-	check(count("prologue_narrator_intro")==1 and pending_voice("vo_prologue_narrator_intro").is_empty(),"continue resumes the current semantic stage without replaying narration")
+	check(count("prologue_narrator_intro")==1 and pending_voice("vo_prologue_narrator_intro").is_empty(),"automatic continuation does not replay the original narration")
 	check(WordDriver.until(game,"lock"),"actual word selection and board collisions earn the lock")
 	check(game.phase=="lock" and count("prologue_error_intercepted")==3 and count("prologue_error_lock_ready")==1,"three completed semantic stages emit the original lock cue once")
 	game.holding=true; tick(1.41)

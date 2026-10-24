@@ -30,9 +30,9 @@ func run()->void:
 				var bounds:=Rect2(Vector2.ZERO,physical)
 				check(bounds.encloses(Rect2(overlay.task.position,overlay.task.size)),id+" task contained "+str(physical))
 				check(bounds.encloses(Rect2(overlay.plaque.position,overlay.plaque.size)),id+" plaque contained "+str(physical))
+				check(is_equal_approx(overlay.plaque.position.y+overlay.plaque.get_combined_minimum_size().y,physical.y-78),id+" prompt stays eight pixels above the supplied lower safe edge")
 				check(not Rect2(overlay.task.position,overlay.task.size).intersects(Rect2(overlay.plaque.position,overlay.plaque.size)),id+" task and plaque separate")
-				var first_line_bottom:float=overlay.objective.get_global_rect().position.y+overlay.objective.get_theme_font("font").get_height(13)*overlay.scale.y
-				check(first_line_bottom<=overlay.task_scroll.get_global_rect().end.y+.01,"first objective glyph line visible without scrolling "+str(physical))
+				check(not overlay.task.visible and not overlay.mode.visible,"exploration has no persistent task column or top mode label")
 				check(overlay.objective.text==goal and overlay.object_heading.text==plaque_text,"authored content retained")
 				check(overlay.objective.get_theme_font_size("font_size")==13 and overlay.object_heading.get_theme_font_size("font_size")==18,"locked sizes not enlarged")
 				check(overlay.mouse_filter==Control.MOUSE_FILTER_IGNORE and overlay.plaque.mouse_filter==Control.MOUSE_FILTER_IGNORE,"world pointer owner preserved")
@@ -41,6 +41,9 @@ func run()->void:
 	# Real scrolling owns input only while text overflows; passive HUD passes
 	# through to the original world floor-tap coordinate contract.
 	surface.size=Vector2(390,700);root.size=Vector2i(390,700)
+	# Keep the retained review-column scrolling contract separate from the
+	# production exploration direction, which leaves this column hidden.
+	overlay.show_task_column=true
 	for goal:String in ["从寝室门出发","保留完整的任务说明。".repeat(30)]:
 		for unused:int in range(3):
 			overlay.sync_view(Vector2(390,700),1,"寝室",goal,"","浅色操作",Rect2(290,0,100,44),630,"07:55")

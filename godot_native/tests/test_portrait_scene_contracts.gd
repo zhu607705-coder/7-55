@@ -44,12 +44,21 @@ func run() -> void:
 	check(shell.world.mobile_exploration and shell.world.size.y>=300,"completed cinematic restores landscape exploration")
 	root.size=Vector2i(390,844);shell.size=Vector2(390,844);shell._layout();await frames()
 	check(shell.world.mobile_exploration and shell.world.size.y>=600,"return to portrait restores tall exploration")
-	# Starting a held movement and losing focus retires input ownership.
-	var control_point:=world_screen(shell.world.mobile_control_metrics().stick+Vector2(30,0))
-	touch(control_point,true);await frames();check(shell.world.touch_axis.length()>0,"routed movement owns its touch")
+	# The preceding cinematic uses an explicit trigger-position fixture. The
+	# independent input check starts from collision-valid nearby feet.
+	shell.world.player=shell.world._find_safe(shell.world.player);shell.world._sync_player();shell.world._update_camera()
+	check(shell.world.can_stand(shell.world.player),"post-cinematic input fixture has collision-valid feet")
+	# A pending floor tap and an active collision route have the same focus boundary.
+	var control_point:=floor_touch_point(Vector2.RIGHT)
+	check(control_point.is_finite(),"post-cinematic scene has visible legal empty floor")
+	touch(control_point,true);await frames();check(shell.world.direct_gestures.has_active(),"real floor press owns a pending gesture")
 	shell.world._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
-	check(shell.world.touch_axis==Vector2.ZERO and shell.world.mobile_touch_roles.is_empty(),"focus loss clears held movement and pan")
+	check(not shell.world.direct_gestures.has_active() and shell.world._floor_route.is_empty(),"focus loss clears pending floor tap and pan")
 	touch(control_point,false,true)
+	await tap_floor(control_point)
+	check(not shell.world._floor_route.is_empty(),"fresh floor tap after focus boundary can start a collision route")
+	shell.world._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
+	check(shell.world._floor_route.is_empty(),"focus loss also retires an already issued floor route")
 	# Starting/replacing a session never trusts an old presentation timer.
 	state.begin_checkpoint("c3-canteen-entry");shell._refresh();await frames();shell.c3_scene_host.tick(0,true);shell._layout()
 	var abandoned:RefCounted=shell.c3_scene_host.current

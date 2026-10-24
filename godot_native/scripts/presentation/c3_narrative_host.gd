@@ -114,13 +114,8 @@ func _sync_view_layout() -> void:
 			# leaves the source southeast exit and its arrival point unobscured.
 			view.align_left=true
 	if world.get("mobile_exploration")==true:
-		var controls: Dictionary=world.mobile_control_metrics()
-		var top: float=float(world.hud_metrics("").header_height)+8
-		var bottom: float=minf(controls.stick_rect.position.y,controls.interact.position.y)-8
-		# Input-owning dialogue hides exploration controls; do not reserve
-		# their invisible strip and clip a 14 px line to half its glyph height.
-		if blocks_input():bottom=float(world.hud_metrics("").body_rect.position.y)-8
-		view.exploration_rect=Rect2(8,top,world.size.x-16,maxf(0,bottom-top))
+		var safe: Rect2=world.exploration_safe_rect()
+		view.exploration_rect=Rect2(safe.position+Vector2(8,8),(safe.size-Vector2(16,16)).max(Vector2.ZERO))
 	elif parent==world and not owns_world_contract() and world.has_method("exploration_safe_rect"):
 		var safe:Rect2=world.exploration_safe_rect()
 		view.exploration_rect=Rect2(safe.position+Vector2(8,8),safe.size-Vector2(16,16))

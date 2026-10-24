@@ -1,0 +1,958 @@
+{
+  "schema": "755-phone-font-clarity-acceptance-v1",
+  "date": "2026-10-21",
+  "status": "accepted within native4.7.2 GPU and isolated current Chromium Web scope; physical phones and legacy browser matrix not accepted here",
+  "problem": "Actual custom non-MSDF pixel font was first rasterized for viewport density then resampled by nested phone Control scales; correct Web backing DPR alone did not account for those local scales. Public and5237 source identities differ and were inspected separately.",
+  "solution": {
+    "production": {
+      "path": "scripts/ui/native_ui_theme.gd",
+      "sha256": "0b2cb4adc4d26fb9cba8601d41e68286fcde4ed4d667f13b6d873a102f8c73bb"
+    },
+    "entrypoint": "NativeUi.enable_scale_aware_text(CanvasItem)",
+    "capability": "Reflect CanvasItem OVERSAMPLING_WITH_SCALE_ENABLED and property oversampling_with_scale; unavailable engines are no-op; repeat call performs no new write.",
+    "scope": [
+      "Main._build_shell phone CanvasItem",
+      "Main._modal_base modal ColorRect"
+    ],
+    "unchanged": [
+      "WebDisplay CSS layout/DPR policy",
+      "FontFile family, source and imports",
+      "source font MSDF false",
+      "phone canonical aspect ratio and uniform scale",
+      "rendered anchors and input hit geometry",
+      "original PixelGrid decorative overlay",
+      "story/controller/save facts"
+    ],
+    "productionFingerprints": [
+      {
+        "path": "scripts/ui/native_ui_theme.gd",
+        "sha256": "0b2cb4adc4d26fb9cba8601d41e68286fcde4ed4d667f13b6d873a102f8c73bb"
+      },
+      {
+        "path": "scripts/main.gd",
+        "sha256": "7c894e9c74dc50bb40aeb5b01160d6ac26fb999d6292f4ec3e5b32732da8cd03"
+      },
+      {
+        "path": "scripts/platform/web_display.gd",
+        "sha256": "25ca1ce2677c14aa03b075d4d329d82b0b8ffe467f6a4b743765302e7a7147bd"
+      },
+      {
+        "path": "scripts/ui/phone_pages.gd",
+        "sha256": "a98c686aac1776da3ad541a48728b8bffdc892b8916ad023be2433c5c26d3804"
+      },
+      {
+        "path": "scripts/ui/phone_chrome.gd",
+        "sha256": "fc9c828f299c96cf178020b67088524119a10a5d139e2eaa5239133dd91f529b"
+      },
+      {
+        "path": "assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+        "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+      },
+      {
+        "path": "assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf.import",
+        "sha256": "923948b94ebb8ac3c46fe441958b67827618555241b6974fad02542089c74243"
+      }
+    ]
+  },
+  "evidence": {
+    "font": {
+      "resource": "res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "importMSDF": false,
+      "fontOversampling": 0.0,
+      "phoneInnerScale": 1.1216931216931216,
+      "note": "Project default-font MSDF setting does not convert this explicitly loaded custom FontFile; design remains a pixel font."
+    },
+    "nativeUnit": {
+      "receipt": {
+        "path": "exports/verification/direct_gestures_20261020/font-scale-unit/receipt.json",
+        "sha256": "692555c847c31011b108382d2417ddd2efa18e056b31f0f90209f79450c63363"
+      },
+      "checks": 61,
+      "failures": 0,
+      "tests": [
+        {
+          "path": "tests/test_scale_aware_text.gd",
+          "checks": 16,
+          "sha256": "8d879eb95513ad226dc2bd4a27b0786f781404d6551bcba91ec68db075718ca3"
+        },
+        {
+          "path": "tests/test_web_display_scale.gd",
+          "checks": 45,
+          "sha256": "c0abeffbb07cc7e1faf7e3c4fb5e8e06884098652f8815ba57ae8d631b116271"
+        }
+      ],
+      "actualEngine": "4.7.2.stable.official.ed1daf0bf",
+      "capabilityObserved": true,
+      "assertions": "Null/unavailable contract, uniform nested scales, unchanged logical measurements/rendered transform/Button rect, idempotent no-write, font resource and DPR unchanged, no progression mutation."
+    },
+    "nativeGpuAB": {
+      "rendererSource": {
+        "path": "tests/render_scaled_font_probe.gd",
+        "sha256": "260e5e2b189cbdc02f858e6c537fcc9a12c76f804159f9475e1526e4e755a51e"
+      },
+      "report": {
+        "path": "exports/verification/phone_font_clarity_20261021/native-ab-final/report.json",
+        "sha256": "e2b8cbaedd2101f4fc6e8ef3fc21a5cefef423b127db9fe249089ae7def88e7a"
+      },
+      "engine": "4.7.2.stable.official.ed1daf0bf",
+      "renderer": "gl_compatibility Apple M4 Max, OpenGL4.1 Metal90.5",
+      "method": "Real offscreen GPU SubViewport, size_2d_override CSS viewport, physical size CSS*DPR, unchanged font/scales/sample text, upper disabled mode1 and lower enabled mode2.",
+      "profiles": [
+        {
+          "aMode": 1,
+          "bMode": 2,
+          "css": "(1280.0, 720.0)",
+          "density": 1.0,
+          "file": "font-ab-1280-dpr1.png",
+          "fontMSDF": false,
+          "fontOversampling": 0.0,
+          "innerScale": 1.12169312169312,
+          "phoneFitScale": 0.774418604651163,
+          "physicalImage": "(1280, 720)",
+          "viewportOversampling": 1.0,
+          "visibleRect": "[P: (0.0, 0.0), S: (1280.0, 720.0)]"
+        },
+        {
+          "aMode": 1,
+          "bMode": 2,
+          "css": "(1440.0, 900.0)",
+          "density": 2.0,
+          "file": "font-ab-1440-dpr2.png",
+          "fontMSDF": false,
+          "fontOversampling": 0.0,
+          "innerScale": 1.12169312169312,
+          "phoneFitScale": 0.983720930232558,
+          "physicalImage": "(2880, 1800)",
+          "viewportOversampling": 2.0,
+          "visibleRect": "[P: (0.0, 0.0), S: (1440.0, 900.0)]"
+        },
+        {
+          "aMode": 1,
+          "bMode": 2,
+          "css": "(390.0, 844.0)",
+          "density": 3.0,
+          "file": "font-ab-390-dpr3.png",
+          "fontMSDF": false,
+          "fontOversampling": 0.0,
+          "innerScale": 1.12169312169312,
+          "phoneFitScale": 0.851162790697674,
+          "physicalImage": "(1170, 2532)",
+          "viewportOversampling": 3.0,
+          "visibleRect": "[P: (0.0, 0.0), S: (390.0, 844.0)]"
+        }
+      ],
+      "visualConclusion": "Enabled group strokes are more complete while preserving original square pixel outlines. Root independently inspected actual390DPR3 sample; root also reviewed Web1280 before/after and native1440DPR2 modal via its own foundation evidence.",
+      "scope": "Synthetic GPU rasterization probe, not a physical handset and not an actual full phone page. Fixed sample spacing can overlap large sample lines equally in both groups.",
+      "rejectedAttempt": {
+        "report": {
+          "path": "exports/verification/phone_font_clarity_20261021/native-ab-attempt1-window-clamped/report.json",
+          "sha256": "b24f68a84e7b5c039ab7e89522f29d8e162b22c02b4df077081c69bfeb561040"
+        },
+        "reason": "Native macOS Window capped backing height at928 for2x/3x requested profiles. Preserved negative raw evidence; not counted as accepted requested viewport rendering."
+      }
+    },
+    "web": [
+      {
+        "name": "web-public-before",
+        "report": {
+          "path": "exports/verification/phone_font_clarity_20261021/web-public-before/report.json",
+          "sha256": "517a345cd36d33359c57d88ae13835d12b498e43d7814d1b600dee57b4c9c0b9"
+        },
+        "url": "https://zhu607705-coder.github.io/7-55/",
+        "manifestIdentity": {
+          "source": "6dfc3931ceae7457cd6016a6f854f5a6423bfa181c1d06dc59e5cc82d25db994",
+          "commit": "f963d47cbe31e5d799b405e36d4ad68cd97546fa"
+        },
+        "success": true,
+        "cases": 3,
+        "explicitAssertions": 9,
+        "profiles": [
+          {
+            "id": "desktop-1280-dpr1",
+            "cssViewport": [
+              1280,
+              720
+            ],
+            "dpr": 1,
+            "touch": false,
+            "phoneRect": {
+              "height": 684,
+              "width": 342,
+              "x": 469,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              1280,
+              720
+            ]
+          },
+          {
+            "id": "desktop-1440-dpr2",
+            "cssViewport": [
+              1440,
+              900
+            ],
+            "dpr": 2,
+            "touch": false,
+            "phoneRect": {
+              "height": 864,
+              "width": 432,
+              "x": 504,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              2880,
+              1800
+            ]
+          },
+          {
+            "id": "phone-390-dpr3",
+            "cssViewport": [
+              390,
+              844
+            ],
+            "dpr": 3,
+            "touch": true,
+            "phoneRect": {
+              "height": 732,
+              "width": 366,
+              "x": 12,
+              "y": 56
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              1170,
+              2532
+            ]
+          }
+        ]
+      },
+      {
+        "name": "web-local-before",
+        "report": {
+          "path": "exports/verification/phone_font_clarity_20261021/web-local-before/report.json",
+          "sha256": "250c526ca7feab787ea301787b266de5e380dfabffd7fd16a0dddd8b32777856"
+        },
+        "url": "http://127.0.0.1:5237/",
+        "manifestIdentity": {
+          "source": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+          "commit": "313885d6056de0e4fe3052469643627d23c2c021"
+        },
+        "success": true,
+        "cases": 3,
+        "explicitAssertions": 9,
+        "profiles": [
+          {
+            "id": "desktop-1280-dpr1",
+            "cssViewport": [
+              1280,
+              720
+            ],
+            "dpr": 1,
+            "touch": false,
+            "phoneRect": {
+              "height": 684,
+              "width": 342,
+              "x": 469,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              1280,
+              720
+            ]
+          },
+          {
+            "id": "desktop-1440-dpr2",
+            "cssViewport": [
+              1440,
+              900
+            ],
+            "dpr": 2,
+            "touch": false,
+            "phoneRect": {
+              "height": 864,
+              "width": 432,
+              "x": 504,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              2880,
+              1800
+            ]
+          },
+          {
+            "id": "phone-390-dpr3",
+            "cssViewport": [
+              390,
+              844
+            ],
+            "dpr": 3,
+            "touch": true,
+            "phoneRect": {
+              "height": 732,
+              "width": 366,
+              "x": 12,
+              "y": 56
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              1170,
+              2532
+            ]
+          }
+        ]
+      },
+      {
+        "name": "web-local-after",
+        "report": {
+          "path": "exports/verification/phone_font_clarity_20261021/web-local-after/report.json",
+          "sha256": "da193e168dfc2b5466aba2f46ead72fe36fe553d342e40419e590589954f0b77"
+        },
+        "url": "http://127.0.0.1:5238/",
+        "manifestIdentity": {
+          "source": "8e13b312e573723814d02148c8039372dab85b1b0a2ef751e0eb24fee8d9c27f",
+          "commit": "313885d6056de0e4fe3052469643627d23c2c021"
+        },
+        "success": true,
+        "cases": 3,
+        "explicitAssertions": 9,
+        "profiles": [
+          {
+            "id": "desktop-1280-dpr1",
+            "cssViewport": [
+              1280,
+              720
+            ],
+            "dpr": 1,
+            "touch": false,
+            "phoneRect": {
+              "height": 684,
+              "width": 342,
+              "x": 469,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              1280,
+              720
+            ]
+          },
+          {
+            "id": "desktop-1440-dpr2",
+            "cssViewport": [
+              1440,
+              900
+            ],
+            "dpr": 2,
+            "touch": false,
+            "phoneRect": {
+              "height": 864,
+              "width": 432,
+              "x": 504,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              2880,
+              1800
+            ]
+          },
+          {
+            "id": "phone-390-dpr3",
+            "cssViewport": [
+              390,
+              844
+            ],
+            "dpr": 3,
+            "touch": true,
+            "phoneRect": {
+              "height": 732,
+              "width": 366,
+              "x": 12,
+              "y": 56
+            },
+            "page": "phone_home",
+            "checks": 3,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": null,
+            "actualCssEnv": null,
+            "backingPixels": [
+              1170,
+              2532
+            ]
+          }
+        ]
+      },
+      {
+        "name": "web-phone-safe-bands",
+        "report": {
+          "path": "exports/verification/phone_font_clarity_20261021/web-phone-safe-bands/report.json",
+          "sha256": "e8f4fe1ac1a10de30f7e33a1171ca43a8ed87688883ae433f20bfb991f151fb9"
+        },
+        "url": "http://127.0.0.1:5238/",
+        "manifestIdentity": {
+          "source": "8e13b312e573723814d02148c8039372dab85b1b0a2ef751e0eb24fee8d9c27f",
+          "commit": "313885d6056de0e4fe3052469643627d23c2c021"
+        },
+        "success": true,
+        "cases": 4,
+        "explicitAssertions": 24,
+        "profiles": [
+          {
+            "id": "phone-360",
+            "cssViewport": [
+              360,
+              640
+            ],
+            "dpr": 2,
+            "touch": true,
+            "phoneRect": {
+              "height": 604,
+              "width": 302,
+              "x": 29,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 6,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 5,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 37.814094543457
+            },
+            "backingPixels": [
+              720,
+              1280
+            ]
+          },
+          {
+            "id": "phone-390",
+            "cssViewport": [
+              390,
+              844
+            ],
+            "dpr": 3,
+            "touch": true,
+            "phoneRect": {
+              "height": 732,
+              "width": 366,
+              "x": 12,
+              "y": 56
+            },
+            "page": "phone_home",
+            "checks": 6,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": {
+              "top": 59,
+              "bottom": 34,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 59,
+              "right": 0,
+              "bottom": 34,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 5,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 45.8276786804199
+            },
+            "backingPixels": [
+              1170,
+              2532
+            ]
+          },
+          {
+            "id": "phone-430",
+            "cssViewport": [
+              430,
+              932
+            ],
+            "dpr": 3,
+            "touch": true,
+            "phoneRect": {
+              "height": 812,
+              "width": 406,
+              "x": 12,
+              "y": 60
+            },
+            "page": "phone_home",
+            "checks": 6,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": {
+              "top": 59,
+              "bottom": 34,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 59,
+              "right": 0,
+              "bottom": 34,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 5,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 50.8361701965332
+            },
+            "backingPixels": [
+              1290,
+              2796
+            ]
+          },
+          {
+            "id": "phone-landscape",
+            "cssViewport": [
+              844,
+              390
+            ],
+            "dpr": 2,
+            "touch": false,
+            "phoneRect": {
+              "height": 354,
+              "width": 177,
+              "x": 333.5,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 6,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": null,
+            "safeAreaRequested": {
+              "top": 0,
+              "bottom": 21,
+              "left": 59,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 0,
+              "right": 0,
+              "bottom": 21,
+              "left": 59
+            },
+            "safeTargets": {
+              "count": 5,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 22.1625652313232
+            },
+            "backingPixels": [
+              1688,
+              780
+            ]
+          }
+        ]
+      },
+      {
+        "name": "web-final-v2",
+        "report": {
+          "path": "exports/verification/phone_font_clarity_20261021/web-final-v2/report.json",
+          "sha256": "4b7e8680113ba7ab80267efdb8747bcf068e5d03f39c542ccef57104b6dc1258"
+        },
+        "url": "http://127.0.0.1:5239/",
+        "manifestIdentity": {
+          "source": "9970179ac94c1afcfa3a4d7036a2fe95d9908de50eb4294ccd28fd1b4bac3c69",
+          "commit": "313885d6056de0e4fe3052469643627d23c2c021"
+        },
+        "success": true,
+        "cases": 6,
+        "explicitAssertions": 54,
+        "profiles": [
+          {
+            "id": "desktop-1280-dpr1",
+            "cssViewport": [
+              1280,
+              720
+            ],
+            "dpr": 1,
+            "touch": false,
+            "phoneRect": {
+              "height": 684,
+              "width": 342,
+              "x": 469,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 9,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": true,
+            "safeAreaRequested": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 7,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 42.822582244873
+            },
+            "backingPixels": [
+              1280,
+              720
+            ]
+          },
+          {
+            "id": "desktop-1440-dpr2",
+            "cssViewport": [
+              1440,
+              900
+            ],
+            "dpr": 2,
+            "touch": false,
+            "phoneRect": {
+              "height": 864,
+              "width": 432,
+              "x": 504,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 9,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": true,
+            "safeAreaRequested": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 7,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 54.0916862487793
+            },
+            "backingPixels": [
+              2880,
+              1800
+            ]
+          },
+          {
+            "id": "phone-360-dpr2",
+            "cssViewport": [
+              360,
+              640
+            ],
+            "dpr": 2,
+            "touch": true,
+            "phoneRect": {
+              "height": 604,
+              "width": 302,
+              "x": 29,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 9,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": true,
+            "safeAreaRequested": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 7,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 37.814094543457
+            },
+            "backingPixels": [
+              720,
+              1280
+            ]
+          },
+          {
+            "id": "phone-390-dpr3",
+            "cssViewport": [
+              390,
+              844
+            ],
+            "dpr": 3,
+            "touch": true,
+            "phoneRect": {
+              "height": 732,
+              "width": 366,
+              "x": 12,
+              "y": 56
+            },
+            "page": "phone_home",
+            "checks": 9,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": true,
+            "safeAreaRequested": {
+              "top": 59,
+              "bottom": 34,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 59,
+              "right": 0,
+              "bottom": 34,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 7,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 45.8276786804199
+            },
+            "backingPixels": [
+              1170,
+              2532
+            ]
+          },
+          {
+            "id": "phone-430-dpr3",
+            "cssViewport": [
+              430,
+              932
+            ],
+            "dpr": 3,
+            "touch": true,
+            "phoneRect": {
+              "height": 812,
+              "width": 406,
+              "x": 12,
+              "y": 60
+            },
+            "page": "phone_home",
+            "checks": 9,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": true,
+            "safeAreaRequested": {
+              "top": 59,
+              "bottom": 34,
+              "left": 0,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 59,
+              "right": 0,
+              "bottom": 34,
+              "left": 0
+            },
+            "safeTargets": {
+              "count": 7,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 50.8361701965332
+            },
+            "backingPixels": [
+              1290,
+              2796
+            ]
+          },
+          {
+            "id": "phone-landscape-dpr2",
+            "cssViewport": [
+              844,
+              390
+            ],
+            "dpr": 2,
+            "touch": true,
+            "phoneRect": {
+              "height": 354,
+              "width": 177,
+              "x": 333.5,
+              "y": 18
+            },
+            "page": "phone_home",
+            "checks": 9,
+            "allChecksPassed": true,
+            "pageAndConsoleErrors": [],
+            "inputOpenedControlCenter": true,
+            "safeAreaRequested": {
+              "top": 0,
+              "bottom": 21,
+              "left": 59,
+              "right": 0
+            },
+            "actualCssEnv": {
+              "top": 0,
+              "right": 0,
+              "bottom": 21,
+              "left": 59
+            },
+            "safeTargets": {
+              "count": 7,
+              "allClearSafeBands": true,
+              "minimumHomeAppExtentCssPx": 22.1625652313232
+            },
+            "backingPixels": [
+              1688,
+              780
+            ]
+          }
+        ]
+      }
+    ],
+    "finalV1ToV2GeometryComparison": [
+      {
+        "profile": "desktop-1280-dpr1",
+        "v1ToV2SamePhoneRect": true,
+        "v1ToV2SameHomeAppHitRects": true
+      },
+      {
+        "profile": "desktop-1440-dpr2",
+        "v1ToV2SamePhoneRect": true,
+        "v1ToV2SameHomeAppHitRects": true
+      },
+      {
+        "profile": "phone-390-dpr3",
+        "v1ToV2SamePhoneRect": true,
+        "v1ToV2SameHomeAppHitRects": true
+      }
+    ],
+    "finalPackage": {
+      "url": "http://127.0.0.1:5239/",
+      "manifest": {
+        "path": "exports/web-phone-legibility-v2-20261021/build-manifest.json",
+        "sha256": "11be490d3862fb29d7d000aa734be519112a8aa4afb32c8f8e752950e0bd129b"
+      },
+      "sourceInputSha256": "9970179ac94c1afcfa3a4d7036a2fe95d9908de50eb4294ccd28fd1b4bac3c69",
+      "engine": "4.7.2.stable.official",
+      "explicitAssertions": 54,
+      "profiles": 6,
+      "ordinaryRoute": "Fresh isolated context → actual HTML start → native alarm → ordinary buttons → phone home → actual home app mouse/touch center → original control-center overlay opens. Snapshot is read-only; no state injection/JS progression write.",
+      "safeArea": "CDP setSafeAreaInsetsOverride CSS env values read back and matched requested bands; actual task/control-center/app rects tested against same bands. Emulation does not render or prove physical cutouts.",
+      "scope": "Current Chromium lightweight home/clarity/hit verification, not a full chapter or3-engine campaign. Door agent owns final CC98 reading/layout scenarios."
+    }
+  },
+  "visualReview": {
+    "method": "All25 captures reviewed through5 contacts; actual Web final required1280DPR1/1440DPR2/390DPR3 screenshots also individually inspected. Baseline9 screenshots had prior individual review.",
+    "conclusion": "Stable complete phone frame and app glyphs, improved scaled title/label strokes; no new clipping/blanking. Tiny captions and grid retain original pixel aesthetic.",
+    "rootIndependentReviewConfirmed": true,
+    "cleanupReceipt": {
+      "path": "exports/verification/phone_font_clarity_20261021/screenshot-cleanup.json",
+      "sha256": "5f6a9688f470444debef5959641bd9eaab209b7c015d14b43896ec69e7584933",
+      "deletedCaptures": 25,
+      "deletedContacts": 5,
+      "deletedSidecars": 19,
+      "deletedBytes": 4638491,
+      "rawReportsAndLogsUnchanged": true
+    }
+  },
+  "limits": [
+    "Only native4.7.2 actually executed for the new feature. Reflection avoids static4.7-only enum/property use and defines graceful4.6 no-op, but no4.6 binary execution/visual enhancement is claimed by this ledger.",
+    "Current Google Chrome isolated automation is the only browser engine in this narrow font acceptance. Older Chrome/Edge90, Firefox91, Safari/iOS15 rendering behavior is not established here.",
+    "No physical handset, OS text accessibility scaling, device cutout hardware, browser-toolbar animation, IME or low-memory handset acceptance is claimed.",
+    "844×390 is a portrait phone letterbox and real-touch-hit fallback check only: its home apps measure22.16257 CSSpx, below28CSS minimum. This is not complete mobile interaction acceptance; portrait is the tested reading presentation.",
+    "Original PixelGrid still overlays text at3px intervals (horizontal alpha.045/vertical.03). It was held constant in A/B; no evidence here justifies changing that styling.",
+    "No quantitative psychophysical reading benchmark or runtime font-rasterization performance benchmark was performed."
+  ],
+  "officialReferences": [
+    {
+      "url": "https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html#font-and-image-oversampling",
+      "supports": "Scale-aware font oversampling is optional; enable in selected subtree; uniform scaling recommended; animated scales have additional cost."
+    },
+    {
+      "url": "https://docs.godotengine.org/en/stable/classes/class_control.html#class-control-property-scale",
+      "supports": "Ordinary font oversampling ignores Control.scale; explicitly loaded custom fonts differ from project default-font MSDF setting."
+    },
+    {
+      "url": "https://docs.godotengine.org/en/stable/tutorials/ui/gui_using_fonts.html",
+      "supports": "Raster/MSDF font configuration and sampling behavior."
+    },
+    {
+      "url": "https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setSafeAreaInsetsOverride",
+      "supports": "Isolated environment emulation of safe-area CSS env insets, not physical hardware."
+    }
+  ],
+  "rawEvidenceRetained": true
+}

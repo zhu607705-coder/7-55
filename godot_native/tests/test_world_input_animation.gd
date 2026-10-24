@@ -55,36 +55,36 @@ func test_focus() -> void:
 	var goal:=Vector2(560,670)
 	check(world.can_stand(goal),"real source destination is walkable")
 	click_ground(goal)
-	check(world.move_target.distance_to(goal)<.001,"desktop production click handler sets route target")
+	check(world._floor_goal.distance_to(goal)<.001 and not world._floor_route.is_empty(),"desktop production click handler sets exact floor marker and collision route")
 	var start:Vector2=world.player
 	world._process(.05)
 	check(world.player.x>start.x,"click target moves before focus loss")
 	var stopped:Vector2=world.player
 	world.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
-	check(world.move_target==Vector2.INF,"desktop focus notification retires click target")
+	check(world.move_target==Vector2.INF and world._floor_route.is_empty() and world._floor_goal==Vector2.INF,"desktop focus notification retires click target and floor route")
 	for i in 20: world._process(.05)
 	check(world.player==stopped,"20 background ticks do not consume the retired desktop target")
 	world.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_IN)
 	world._process(.05)
-	check(world.player==stopped and world.move_target==Vector2.INF,"focus regain cannot replay the old click target")
+	check(world.player==stopped and world.move_target==Vector2.INF and world._floor_route.is_empty() and world._floor_goal==Vector2.INF,"focus regain cannot replay the old click target or floor route")
 	var fresh_goal:=Vector2(520,610)
 	check(world.can_stand(fresh_goal) and world._pick_target(fresh_goal).is_empty(),"fresh click fixture is ground rather than the actor inspection target")
 	click_ground(fresh_goal)
-	check(world.move_target.distance_to(fresh_goal)<.001,"fresh ground click sets a new target after regain")
+	check(world._floor_goal.distance_to(fresh_goal)<.001 and not world._floor_route.is_empty(),"fresh ground click sets a new exact floor marker and collision route after regain")
 	world._process(.05)
 	check(world.player!=stopped,"a fresh click can move after focus regain")
 	for compact in [false,true]:
 		world.mobile_exploration=compact
 		world.move_target=goal
 		world.touch_axis=Vector2.RIGHT
-		world.touch_points[3]=Vector2(90,80)
-		world.mobile_touch_roles[3]={"role":"stick"}
-		world.mobile_mouse_control=true
+		var contact:=InputEventScreenTouch.new();contact.index=3;contact.position=world.exploration_safe_rect(true).get_center();contact.pressed=true
+		world._gui_input(contact)
+		check(world.direct_gestures.has_active(),"real contact claims direct world gesture compact="+str(compact))
 		world._floor_route.append(goal)
 		world._floor_goal=goal
 		world.kayak_mouse_gesture={"side":"left"}
 		world.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
-		check(world.move_target==Vector2.INF and world.touch_axis==Vector2.ZERO and world.touch_points.is_empty() and world.mobile_touch_roles.is_empty() and not world.mobile_mouse_control,"focus clears all transient controls compact="+str(compact))
+		check(world.move_target==Vector2.INF and world.touch_axis==Vector2.ZERO and not world.direct_gestures.has_active(),"focus clears all transient controls compact="+str(compact))
 		check(world._floor_route.is_empty() and world._floor_goal==Vector2.INF and world.kayak_mouse_gesture.is_empty(),"focus clears floor and paddle ownership compact="+str(compact))
 		world.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
 		check(world.move_target==Vector2.INF,"repeated focus loss is idempotent compact="+str(compact))

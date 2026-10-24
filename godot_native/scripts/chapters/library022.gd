@@ -126,6 +126,7 @@ func pages(s: Dictionary) -> Array:
 	if ["reservation_required", "movement_ready", "complete"].has(s.actOne.phase) or s.ui.librarySeatReserved: out.append({"id":"library_app","label":"图书馆服务"})
 	if not _active(s): return out
 	if _p(s).occupancyNoteCollected: out.append({"id":"library_archive","label":"已取得的材料"})
+	if _p(s).archivedRuleCollected: out.append({"id":"library_rule","label":"旧版离座规则"})
 	if _p(s).catalogUnlocked: out.append({"id":"library_catalog","label":"馆藏检索"})
 	if _p(s).backpackInspected and _p(s).investigationOpened: out.append({"id":"photos","label":"照片"})
 	if _phase(s) in ["top_ten_reached","recovery_application","pass_ready","backpack_removed","seat_recovered"]: out.append({"id":"library_recovery","label":"座位恢复申请"})
@@ -192,6 +193,7 @@ func actions(page: String, s: Dictionary) -> Array:
 	if not _active(s): return []
 	var p = _p(s)
 	match page:
+		"library_app": return [_a("lib_open_rule", "查看旧版离座规则")] if p.archivedRuleCollected else []
 		"library_record": return [_a("lib_record", "记下入馆记录")] if not p.entranceRecordRead else []
 		"library_rule": return [_a("lib_read_rule", "阅读旧版离座规则")] if p.archivedRuleCollected and not p.archivedRuleRead else []
 		"library_catalog":
@@ -264,6 +266,12 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		"lib_open_record":
 			if s.native.scene != "library_interior": return _ok("需要靠近入口记录屏。")
 			return _go(s,"library_record")
+		"lib_open_rule":
+			# The acquired paper remains readable after leaving its first reader,
+			# an interrupted shelf reveal, or the Library itself. Opening it never
+			# acknowledges reading and never grants a spent evidence item again.
+			if not p.archivedRuleCollected: return _ok("请先取得旧版离座规则。")
+			return _go(s,"library_rule")
 		"lib_record":
 			if phase != "library_entered" or s.native.scene != "library_interior": return _ok("现在不能写入入馆记录。")
 			p.entranceRecordRead = true
@@ -301,6 +309,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			p.catalogUnlocked = true
 			_unique(p.libraryVisitedPoints,"catalog_terminal")
 			return _go(s,"library_catalog")
+		"lib_printer":
+			if s.native.scene != "library_interior": return _ok("需要靠近图书馆自助打印机。")
+			return _ok("打印机显示缺纸；旁边的纸盒显示库存充足。")
 		"lib_catalog_search":
 			var query = str(value).strip_edges().replace(" ","").replace("《","").replace("》","")
 			# Search remains functional; collecting story evidence still requires the terminal fact.
@@ -579,6 +590,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 	out.append(_target("entrance_record","查看入馆记录",[750,727],[673,693,154,68],64,"lib_open_record"))
 	out.append(_target("front_desk","前台工作人员",[334,594],[174,519,320,150],64,"lib_front_desk"))
 	out.append(_target("catalog_terminal","馆藏检索终端",[653,555],[597,507,112,96],70,"lib_catalog_terminal"))
+	out.append(_target("printer","查看自助打印机",[820,555],[788,510,77,104],70,"lib_printer"))
 	if p.itemReportGenerated and not p.nonPersonProofStamped: out.append(_target("identity_machine","物品身份盖章机",[334,594],[174,519,320,150],64,"lib_scan","itemRecognitionReport"))
 	if p.callNumberCollected and not p.archivedRuleCollected: out.append(_target("library_shelf_755","文学书架夹层",[548,230],[486,125,124,210],64,"lib_shelf","callNumber755"))
 	if p.entranceRecordRead and not p.backpackInspected: out.append(_target("backpack","检查占座书包",[1255,407],[1237,375,36,64],100,"lib_backpack"))

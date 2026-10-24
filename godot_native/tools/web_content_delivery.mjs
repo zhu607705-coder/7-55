@@ -5,10 +5,11 @@ import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { main as partition, readPack, checkExactCoverage } from './partition_web_pack.mjs';
+import { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT, CONTENT_PACK_POLICY, createContentChunks, verifyContentChunks } from './web_content_chunks.mjs';
 
 const planner = fileURLToPath(new URL('./plan_web_content.mjs', import.meta.url));
 export const CONTENT_SCHEMA = '755-web-content-v1';
-export const CONTENT_PACK_LIMIT = 24_000_000;
+export { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT };
 const backgroundOrder = ['chapter2', 'chapter3', 'chapter35', 'chapter4'];
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const json = filename => JSON.parse(fs.readFileSync(filename, 'utf8'));
@@ -24,6 +25,13 @@ export function fileSha256(filename) {
 }
 const contentMapDigest = entries => digest(JSON.stringify(entries.map(({ path: name, bytes, md5, sha256 }) => ({ path: name, bytes, md5, sha256 })).sort((a, b) => a.path.localeCompare(b.path, 'en'))));
 const safeContentFile = name => /^content\/[a-z][a-z0-9_-]*-[0-9a-f]{16}\.pck$/.test(name);
+
+export function contentSizeException(pack, entries) {
+  if (pack.bytes <= CONTENT_PACK_TARGET) return null;
+  if (pack.bytes > CONTENT_PACK_LIMIT || entries.length !== 1) throw new Error(`Content pack exceeds the ordinary target without a single-resource exception: ${pack.id}`);
+  const entry = entries[0];
+  return { reason: 'single-resource', path: entry.path, bytes: entry.bytes, sha256: entry.sha256 };
+}
 
 export function createContentDelivery({ exportDirectory, intermediateDirectory }) {
   if (fs.existsSync(intermediateDirectory)) throw new Error('Content build intermediate directory already exists; previous proof is never overwritten');
@@ -44,13 +52,15 @@ export function createContentDelivery({ exportDirectory, intermediateDirectory }
   if (!coreGroup) throw new Error('Partition did not produce its declared core');
   fs.copyFileSync(path.join(partitionDirectory, coreGroup.file), path.join(exportDirectory, 'index.pck'), fs.constants.COPYFILE_FICLONE);
   const core = { file: 'index.pck', bytes: coreGroup.bytes, sha256: coreGroup.sha256 };
-  const packs = result.groups.filter(group => group.id !== result.coreId).map(group => {
+  const packRecords = result.groups.filter(group => group.id !== result.coreId).map(group => {
     if (group.bytes > CONTENT_PACK_LIMIT) throw new Error(`Content pack exceeds the ${CONTENT_PACK_LIMIT}-byte budget: ${group.id}`);
     const file = `content/${group.id}-${group.sha256.slice(0, 16)}.pck`;
     fs.copyFileSync(path.join(partitionDirectory, group.file), path.join(exportDirectory, file), fs.constants.COPYFILE_FICLONE);
-    return { id: group.id, family: family(group.id), file, bytes: group.bytes, sha256: group.sha256 };
+    const exception = contentSizeException(group, json(path.join(partitionDirectory, group.inventory)).entries);
+    return { id: group.id, family: family(group.id), file, bytes: group.bytes, sha256: group.sha256, ...(exception ? { sizeException: exception } : {}) };
   });
-  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.1', core, packs, backgroundOrder };
+  const packs = createContentChunks(exportDirectory, packRecords);
+  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.1', core, packs, backgroundOrder, packPolicy: CONTENT_PACK_POLICY };
   writeJson(path.join(exportDirectory, 'content-manifest.json'), manifest);
   const owned = new Map();
   const groupInventories = result.groups.map(group => {
@@ -72,11 +82,15 @@ export function createContentDelivery({ exportDirectory, intermediateDirectory }
   return verifyContentDelivery(exportDirectory);
 }
 
-export function verifyContentDelivery(exportDirectory) {
+export function verifyContentDelivery(exportDirectory, { verifiedCompressedFiles = [] } = {}) {
   const manifest = json(path.join(exportDirectory, 'content-manifest.json'));
   const inventory = json(path.join(exportDirectory, 'content-inventory.json'));
   if (manifest.schema !== CONTENT_SCHEMA || manifest.engine !== '4.7.1' || inventory.schema !== '755-web-content-inventory-v1') throw new Error('Invalid Godot content manifest/inventory schema');
   if (manifest.core?.file !== 'index.pck' || !Array.isArray(manifest.packs) || !Array.isArray(inventory.entries) || !Array.isArray(inventory.groups)) throw new Error('Invalid Godot content manifest shape');
+  if (manifest.packs.length > 100) throw new Error('Content manifest exceeds the browser 100-pack limit');
+  const sizedPacks = Object.hasOwn(manifest, 'packPolicy');
+  if (sizedPacks && JSON.stringify(manifest.packPolicy) !== JSON.stringify(CONTENT_PACK_POLICY)) throw new Error('Unknown deferred content pack policy');
+  if (!sizedPacks && manifest.packs.some(pack => Object.hasOwn(pack, 'sizeException') || Object.hasOwn(pack, 'transportChunks'))) throw new Error('Deferred content extensions require an explicit pack policy');
   if (JSON.stringify(manifest.backgroundOrder) !== JSON.stringify(backgroundOrder)) throw new Error('Content background order differs from the story chapter order');
   if (inventory.full?.engine !== '4.7.1' || inventory.full.count !== inventory.entries.length || contentMapDigest(inventory.entries) !== inventory.full.contentMapSha256) throw new Error('Complete-export inventory lost or changed a resource');
   const original = inventory.entries.map(({ group, ...entry }) => entry);
@@ -95,11 +109,16 @@ export function verifyContentDelivery(exportDirectory) {
     const wanted = inventory.entries.filter(entry => entry.group === record.id);
     const membership = new Set(wanted.map(entry => entry.path));
     if (wanted.length !== pack.count || pack.entries.some(entry => !membership.has(entry.path))) throw new Error(`Content pack membership changed: ${record.id}`);
+    if (sizedPacks && record.id !== inventory.coreId) {
+      const expected = contentSizeException(record, pack.entries);
+      if (expected ? JSON.stringify(record.sizeException) !== JSON.stringify(expected) : Object.hasOwn(record, 'sizeException')) throw new Error(`Content pack size exception differs from its actual single resource: ${record.id}`);
+    }
     parsed.push(pack);
   }
   if (inventory.groups.length !== records.length || inventory.entries.some(entry => !records.some(record => record.id === entry.group))) throw new Error('Content group receipt contains unknown or omitted groups');
   checkExactCoverage(original, parsed);
   const actualContentPacks = fs.readdirSync(path.join(exportDirectory, 'content')).filter(name => name.endsWith('.pck')).map(name => `content/${name}`).sort();
   if (JSON.stringify(actualContentPacks) !== JSON.stringify(manifest.packs.map(pack => pack.file).sort())) throw new Error('Unlisted or missing PCK in published content directory');
-  return { manifest, inventory, corePack: parsed[0], fullEntries: original, packs: parsed, deferredPackLimit: CONTENT_PACK_LIMIT };
+  const transportChunks = verifyContentChunks(exportDirectory, manifest.packs, { requireLargePacks: sizedPacks, verifiedCompressedFiles });
+  return { manifest, inventory, corePack: parsed[0], fullEntries: original, packs: parsed, deferredPackLimit: CONTENT_PACK_LIMIT, transportChunks };
 }

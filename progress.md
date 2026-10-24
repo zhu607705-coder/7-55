@@ -4909,6 +4909,219 @@ The full release PCK exposed a real packaging-only regression: north_large and n
 - 同新02d7包另有真实普通HTTP16项聚焦通过：两document均secureContext=false、crypto.subtle=false且IDB可用，DPR2真实闹钟→手机→模式切换→保存→native精确ACK/Node侧独立IDB字节hash→新document继续恢复chapter/page/mode/flags/items/wallet及相同摘要；116ms、1次请求、console/page/request errors均0。收据SHA322e6a7c206d14e532d888e559da9b8b5e13619f91a43328c9517017018927cc；没有继承旧缓存中断测试，也不当作续推恢复证据。
 - 唯一一轮受控真实浏览器对照（独立HTTP临时engine响应，同DPR2/CPU4x）在基线精确ACK及空闲后，仅遗漏一次新字节的官方GodotFS.sync，之后原函数全放行。旧36ba真实产品20秒timeout，native622bd48c…而独立IDB/observed/ACK仍0466cf5d…；新02d7在6149ms、8次请求内得到精确c548204b…，独立IDB与新document恢复相同摘要，27检查通过。没有第二writer、额外Save点击、改deadline或注入剧情；比较收据SHA1360d71bacca13c820c845713c85ef4c60912ce6dd41d604ed2a5005754d6908。旧负控后续导航CDP超时独立保留，未验证其重载，未确定是否beforeunload。3图检查留hash后删除、自有server/profile清理。这个临时hook诊断证明续推可恢复单flush丢失，不冒充无hook正式验收或c152实际云端根因证明。
 
+### 2026-10-20 从关卡设计学习到北教实体关卡与码头可重玩支线
+
+- 通过已登录飞书客户端实际导出并阅读《沉星之序｜关卡设计与美术学习手册》P1–P38；P39记录不完整。归纳的是观察、尝试、可见反馈、回收与离场的递进关系，不复制地图、美术或原文，也不把攻略播放速度当成通关速度。原始导出含签名图片地址，仅留本机；实现和设计文档只引用无登录参数的来源链接。
+- 北教A2的拓扑终端、疏散路线板各接入三个内部阶段，从单一关系到位置约束再到组合运用；两入口仍可任意先后。成功必须同时满足物件目标与操作者真实离场，原控制器回放合法动作并核对既有连接/路线值后才写原完成事实。旧存档已完成事实保持有效。新增运行时会话核对布局、状态身份、模式、房间与阶段；空记录、错误或重复回执、退出后失效会话、换模式后恢复旧会话均拒绝。
+- 按用户选择在启真湖码头现有陆地增加可重玩的转运台，入口是实际世界物件，使用原距离、浅色操作与步行准入。支线不写主线事实、不发奖励、不改变材料、钱包、湖区阶段或检查点；取消、重玩、刷新不影响PR51独立材料支线、旧投喂存档、追逐及3.5章衔接。没有新增主线必过关或章节跳转。
+- 界面采用可撤销、当前阶段重开与主动分层提示，角色/工具/门/踏板在棋盘内给出因果反馈。暂停、帮助、失焦时停止输入，返回后明确恢复。处理真实触控与合成鼠标去重、嵌套帮助关闭坐标，以及竖屏目标和线路图可读性；不默认显示最终接线答案或完整解法。运行时取消使用不落盘的精确会话API，在叙事输入锁下也可释放旧活动，且不能取消已签发的新会话。
+- Godot实际4.7.2单次导入/导出成功。关联原生92阶段通过，随后最终排版独立复验UI56项/Main360项、WebPlatform22项与连续四章控制器流程；较早聚焦模型447项、控制器181项亦通过。测试存档由明确源检查点与站位夹具准备，原楼梯交接保留控制器合法回放验证；随后从世界物件实际点击进入、键盘完成三阶段、返回原位置和保存重载；不是人工从新游戏完整跑四章。原失败和修正保留，不弱化剧情门槛或改失败为通过。
+- 最终本机冻结包 `exports/web-progressive-puzzles-v2-20261020`，f963基底dirty=true，source-input `2acb978c835f1016ecd1a3253e1c53a73970be8525e2634b06b9406e8006cf15`。初载94,580,636B、托管594,261,409B、逻辑500,032,895B，91启动块/19后续包/1016核心与2291全资源。模型/界面/关卡JSON为核心，码头SVG沿现有第三章包加载；测试、解法夹具、文档、北化与飞书导出不在生产资源中。只读verify-only通过。
+- 同一最终包正式6场景基础浏览器验收737项通过，覆盖桌面、非16:9、390触控、DPR2/3、大窗口，真实HTTP资源摘要、普通输入、精确保存ACK/独立IDB与新document刷新。三种实际浏览器另外通过Chromium98项、Firefox57项、WebKit98项：桌面三活动与两种引擎的手机触控活动，实际三阶段操作、主线原事实提交或湖区状态严格不变、回现场、重玩取消、耐久保存与刷新恢复。五个浏览器场景/13次活动运行，无页面、控制台或非受控网络错误；断言数不等于人工功能数。最终截图以总览和重点大图检查，临时图片留摘要后清理。验收索引见 `godot_native/docs/PROGRESSIVE_WORLD_PUZZLES_ACCEPTANCE_20261020.json`。
+- 已创建独立私库 `zhu607705-coder/7-55-godot-20261020`，验证private=true、fork=false、Pages=false，完整导入原Git历史的3分支/7标签，基线f963/tree3814与原候选相同，默认分支为Godot候选。新活动交付到独立 `codex/progressive-world-puzzles-20261020` 分支供审阅，不改原线上f963。私库复制不等于复制原PR审阅/issue元数据，也不代表新云端CI、物理手机、最低浏览器或完整人工通关已完成。
+
+### 2026-10-21 图书馆与剧场逐物件重建、直接触摸和扇影排练
+
+- 图书馆清底限定于量过的旧物件区域，区域外像素不变；书柜、背包、检索终端和打印机独立绘制，保留原证据、物品、座位与打印机交互。剧场座椅、柜体、道具箱、调音台按原轮廓拆分，新增扇具、灯与纱幕；源图占地与控制器准入仍是依据。14张新PNG的提示词、摘要和实际消费者记入素材记录，分别进入第二、三章后续资源包，不占首包。
+- 在已获授权的独立Chrome窗口，实际上传原剧场参考并通过网页生成后向舞台灯，下载透明PNG、统一缩放后替换排练灯。网页High修订的开场与三幕成功文案已接入；未采纳虚构观众、掌声和不符合实际判定的失败描述。素材与文案来源分别见 `LIBRARY_THEATER_ART_PROMPTS_20261020.json`、`THEATER_REHEARSAL_COPY_PROVENANCE_20261020.json`。
+- 《借扇成蝶》以位置、距离、组合三幕递进，参考官方浙大学生越剧社《梁祝》信息与以扇喻蝶的舞台表达；关卡为原创。支线可取消、重玩、撤回，不写主线事实、物品、钱包或检查点，提交核对原世界、距离、浅色模式和精确会话。模型、控制器与视图分离，动画和成功文案不拥有进度写入权。
+- 参考固定版本Touchable的实体交互思路：地图点空地沿真实路径行走，点物件有界走近后仅调用一次原交互，双指移动/缩放；排练直接拖动、点灯、长按观察，双指轻点撤回、按住打开排练单。移除常驻方向盘与操作键，桌面保留键盘和鼠标；弹窗、失焦、场景/状态/模式变化清理待执行动作。手机应用保持竖屏，世界与排练提供能力检测的横屏入口及竖屏回退。首次宿舍触摸移动仍遵循原手柄安装与移动权限，实际移动才提交原手动输入事实。
+- 图书馆玻璃门和剧场门叶参与真实碰撞，感应有人保持开启。实际角色先穿过剧场门再调用一次原出口动作。新增南墙源像素实心基座，修复闭门时从侧边绕入的真实路径；未改原碰撞集或以缩小角色掩盖问题。原座位存档点落在阅读栏杆内的历史差异保留，由已有安全落点恢复处理。
+- 本轮原生共同回归13阶段通过；直接触摸18阶段11,984项基线及4阶段1,830项后续差异通过，门与首次移动另有聚焦检查。保留Web发布38阶段为初跑加四项ffprobe路径修正后的重跑，未修改TypeScript/Phaser源文件。浏览器排练9场景231项通过，覆盖三引擎、三幕、撤回/观察、重玩和保存刷新；普通存档夹具明确包含源检查点与站位准备，不冒充从新游戏完整人工通关。
+- `7273e5a3…`候选的手机DPR3基础验收506项、门与宿舍9场景192项功能检查通过，但额外截图复核发现Firefox剧场出口后持续黑底。30秒负控中后续资源已ready、出口恰好一次，世界只显示角色与文字；实际纹理上限8192，而原全景宽13668。因此该候选被视觉衔接拒收，后续修复另行构建，旧失败记录不覆盖。
+- 修复版 `exports/web-library-theater-tiled-20261021` 以313885d为基底、dirty=true，source-input `e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38`，manifest `d9d12e7fd7a953932a9b6ced5f6ff9a7924e0ae247fc709cf5a5bbe1acae9391`。原图逐像素分为7张≤2048纹理，保留13668×1084坐标、碰撞和通行掩码；地图、前景裁片与同源剧情插图都使用同一适配器。完整native:sync实际重建719源资产和7分片，派生PNG不入Git，生成器/manifest可复现，Web排除原超宽载荷。import/export与只读verify-only通过，初载94,729,061B、逻辑502,828,919B、托管597,200,561B，91启动块/20后续包/1042核心及2357全资源；逻辑体积比被拒收候选减少4,124B，没有双份全景下载。
+- 同一e4aa新包门、出口和首次触摸9场景204项通过，三引擎各有桌面/横屏真实场景及独立首次移动。Firefox在真实8192纹理上限下加载7张≤2048纹理，原出口仍恰好提交一次，画面可见比例由负控0.01176恢复到0.77389；六个门口场景均实际截图检查。新包另有手机DPR3基础506项及WebKit手机完整三幕31项通过。原9场景231项排练矩阵明确保留为基线；模型、视图、会话和6个第三章资源包逐字节一致，Main/world/platform的分片差异另有当前7项原生963检查及浏览器复验，不冒称所有旧用例重跑新包。
+- 分片源重组与边界47项、真实GPU图形40项及Main真实剧情插图headless9/GPU10项通过；只读Platform保存/导入回归另过。原nearest精确texel边界的6项对照失败单列保留：独立复核15,660个差异全部是相邻左右texel的浮点取样舍入，实际接缝附近无差异。1/8像素非边界样本保留原容差另测，不将原负例改标通过，不泛化为任意错位可接受。实际素材、源图和日志保留；QA截图逐张审查后留摘要清理。
+- 已用computer use从真实HTML入口启动Godot、经过闹钟和正式导入文件选择器，点击世界扇架打开采用High文案的排练，停在第一幕未解状态供用户试玩。实际设备方向锁、Android/iPhone、最低浏览器和完整人工四章保持未验范围。当前新增修改尚未提交或推送，原公开网站、服务器与main均未改；最终记录见 `godot_native/docs/LIBRARY_THEATER_ACCEPTANCE_20261021.json`。
+
+### 2026-10-21 手机线索阅读、缩放字体与开场设计准备
+
+- 在实际公开 Godot 包和本机候选中复现：CC98 单行正文与回复占用过高固定卡片，地点线索操作落到首屏之外。改用原字体和真实可用宽度测高，保留全文、楼层顺序和原证据条件。首屏增加阅读回复入口；调查帖保留证据区入口。两者只改变原滚动容器的位置，读取和导航不取得线索或提交证据。通用帖文字左边距避开收起的道具栏。
+- 手机与弹窗在引擎支持时按嵌套均匀缩放重新采样字体，修复小字笔画破碎。保留原 FusionPixel 字体、PixelGrid、430×860 框架、高清 DPR 和点击坐标；通过反射检测能力，实际新特性验证使用 Godot4.7.2，未执行4.6.x二进制。实际GPU三档A/B和网页普通屏/Retina/高像素比手机均查看过。
+- 最终本地包 `exports/web-phone-legibility-v2-20261021`，313885d基底、dirty=true，source-input `9970179ac94c1afcfa3a4d7036a2fe95d9908de50eb4294ccd28fd1b4bac3c69`，manifest `11be490d3862fb29d7d000aa734be519112a8aa4afb32c8f8e752950e0bd129b`。import/export与只读verify-only通过；初载94,737,441B、逻辑502,837,299B、托管597,211,181B，91启动块/20后续包/1042核心及2357全资源。对先前e4aa包逐字节验证20个后续包与引擎WASM未变；v1到v2仅通用CC98文字避栏布局变化，旧报告不改标新包。
+- 新线索布局原生102项及原CC98回归447项通过，GPU同102项与6张截图检查另列。最终包在Chromium、Firefox、WebKit分别检查360×640、390×844、430×932，共9场景162项通过；真实触摸阅读、证据区导航、原记录操作、无状态副作用、原BD门槛、最小阅读入口触点及无溢出/错误均验证。字体与DPR原生61项通过；最终包另外六档54项真实主页点击/安全带/画框检查通过。新版DPR2基础浏览器506项通过，包含原输入、精确保存回执、独立只读IDB与新document刷新恢复。
+- 横屏844×390保留竖向手机框的回退检查可实际点击，但主页图标仅22.16CSSpx，未算作完整手机触控验收；手机阅读仍以竖屏为准。浏览器模拟不代替Android/iPhone、最低历史浏览器和系统字体放大的真机检查。临时截图审查后留摘要清理，原素材与原始报告保留。
+- 用户要求先由网页端设计加载开场。多次computer use返回Mac锁屏、浏览器连接不可用，尚未提交网页请求或收到设计。已保存前端分镜需求 `godot_native/docs/OPENING_FRONTEND_BRIEF_20261021.txt`，并接好真实进度、ready/Start/error、减少动态效果、后台与手动暂停的展示接口，41项DOM检查通过；动画未启用、静态加载界面未被新视觉替换。新增5.3KB同步脚本请求的等待依赖保留在状态记录，不能称为零额外请求或公网提速。
+- 本轮未提交、推送或替换原网站，服务器部署仍按用户先前决定暂停。验收总账 `godot_native/docs/PHONE_LEGIBILITY_ACCEPTANCE_20261021.json`；开场待项见 `godot_native/docs/OPENING_PRESENTATION_STATUS_20261021.json`。
+
+### 2026-10-21：统一像素规范、工具安装与晨光开场首批
+
+已按用户新方向锁定斜俯视图块语言与原创32色板，规范、材质色阶、比例、遮挡、UI、动效及逐批验收见 `godot_native/docs/art/ART_BIBLE.md` / `art_direction_v1.json`，并写入AGENTS。角色画布24×32、世界tile16；原地图坐标、移动和碰撞保持。官方Pixel Snapper与Sprite Normals已审查固定提交、MIT许可、隔离构建，持久CLI位于 `~/.local/share/755-art-tools/`，未改PATH；前者处理网格/色板，后者仅生成法线。539项生产资源清单与9批计划已保留；29张旧角色/道具/图标小样仍有格网、色板、尺寸或透明度差异，没有自动覆盖。
+
+真实网页Create Image以游戏寝室和玩家为参考重制斜俯视晨光图。近景概念因新全局规则弃用；首轮正式生成失败保留，重试成功。Pixel Snapper32色/pixel-size8后原生176×178，整数裁160×160，再nearest4倍导出640×640无损WebP（7004B、规范内19色）；25,600个4×4格全部均匀。开场铺满浏览器，标题和favicon使用原创像素数字，正文16/细节14/按钮16CSSpx；加载保持原真实字节/校验/缓存/Start/Retry，插画独立请求。源码已冻结，未引入新字体下载、第二引擎或剧情写入。
+
+本地Godot4.7.2候选 `exports/web-pixel-opening-v2-20261021`，sourceInput `9248cb39938e51bb0d17b5123b11554aa584bef164df2231e8473e5204c6839e`，基于313885d dirty工作树。真实三浏览器20例421项PASS，含慢速、503重试、插画挂起/404、减少动态效果及CLI独立Chrome真实后台最小化/恢复；原生主线入口按既有流程另一次普通Enter后检查Main。早期脚本漏这一步导致误报，原失败与诊断全部保留，产品键盘未改。另有506项DPR3触摸/存档/重进验收、44项DOM检查、7视口154项独立stub布局检查；后者不算实际Godot通过数。篡改/缺失/额外插画拒绝与恢复5项PASS。20个后续PCK和WASM逐字节相同；core1041/1042条目相同，唯一差异是UID缓存序列顺序，1047个映射完全一致。验收入口 `godot_native/docs/ART_DIRECTION_ACCEPTANCE_20261021.json`。
+
+已用computer use在用户Chrome新标签打开 `http://127.0.0.1:5240/`，查看实际1920×960窗口，停留就绪开场供用户查看。最终桌面/手机审阅图在 `exports/review/pixel-opening-20261021/`。已查看临时截图按哈希回执清理，失败图/原始素材保留。本次仅采用开场首批；全库重绘、物理手机、旧最低浏览器、正式CI/提交推送/线上发布另有验收边界，原网站未更新。
+
+### 2026-10-21 梁祝细像素三场演出与电脑/手机QTE
+
+- 按用户新要求将像素边长理解为原先约20%，本批规范v1.1采用5倍线性细节，保留原构图与世界碰撞坐标。网页生成1200×675舞台、480×320八姿势演员图集及一桌二椅独立PNG，锁定32色板与二值透明度。真实剧照只参考服装、水袖、台面；面孔与构图重新设计，原照片与原唱未打包。每人15个Bone2D、左右腕与脚点承担扇挂接，完整cel配合骨骼，不称为网格蒙皮。
+- 演出扩为54秒同窗相送、楼台会、明确后来/墓前的化蝶三场，15条原创对白与短词来自唯一content数据。接扇、向左回身、稳住扇页后松手共用键盘/鼠标/触摸模型。失败只重试当前拍、保留已过段落，观察说明分层出现；显式从头观看不记QTE成功。用户确认先完成可玩QTE，唱段稍后接入，当前使用字幕。
+- 舞台、物件、演员、提词与字幕共享视图和脚深度排序，演出隐藏父HUD，退出精确恢复。实际GPU复核修正两场椅背挡胸及减少动态效果提前移除扇的问题。真实Web又发现首指0模拟鼠标抢操作、帮助菜单最小高度撑屏，修复后补原始事件顺序和多帧布局检查。早期失败与诊断原样保留。独立演出不发原谜题proof、道具、主线事实或存档进度。
+- 最终本机包 `exports/web-liangzhu-qte-v2-20261021` 为独立Godot4.7.2 WASM/PCK，313885d dirty工作树，sourceInput `7ac2e7c7d76b7501795009ad204a00281e8a1c291bc62204dacd475d147e29d9`。原生17阶段1459项基线通过，输入/帮助修复后9个关联阶段743项复验通过；未改模型、骨骼、控制器按精确SHA沿用原证据。源同步完成，既有两段OGV原字节沿用并只读全流复核。import/export与verify-only通过。
+- 最终包三引擎在1280×720、844×390、390×844九场景通过323项，另Chrome手机DPR3实际1170×2532通过35项，共358项、0意外错误。覆盖普通导入、世界扇架、三QTE、错向重试、真实blur/resize取消按住、纯观看、回原排练/现场、耐久保存与刷新。三引擎首指0受信tap均通过；Chrome连续触摸受信，FF/WK连续手势使用明确记录的合成DOM TouchEvent，不代替物理手机。
+- 五张新纹理与家具metadata进入第三章后续包。相对晨光开场基线，19/20后续PCK与WASM字节相同；最终首包94,814,809B、逻辑503,005,280B、托管597,439,042B。最终renderer重新GPU采集1620帧并编码54秒无声MP4/WebM，作为被动演出预览。临时通过QA图审阅留SHA回执后清理，最终review图、失败诊断、源稿和原生像素oracle保留。
+- 本机 `http://127.0.0.1:5241/` 已指向修正版，HTTP manifest与验收包逐字节一致；刷新原试玩页加载新代码，并沿用该origin的剧场存档。此前computer use通过正式主线、导入、扇架与合演入口查看并暂停首版，之后Mac锁屏，未绕锁接管个人Chrome；该首版GUI查看不算修版完整手测。本轮未提交、推送或改公开网站。统一证据入口 `godot_native/docs/LIANGZHU_QTE_ACCEPTANCE_20261021.json`。
+
+
+## 2026-10-21 · 梁祝剧场字体 UI（本地，待统一发布）
+
+- 按用户最后澄清，处理字体与界面美术。灯影三幕模型、难度、QTE 判定和剧情进度未修改；自行车开发文件未在此支线修改。
+- 新增剧场专用 `scripts/ui/theater_typography.gd`，接入排练及演出两个视图。正文与半粗标题使用独立命名的 Noto Sans SC OFL 子集；两个字体共209568字节，源版本、SHA和许可证保存在 `assets/native/theater_ui_20261021/`。启用专用MSDF字体与文字线性采样，像素舞台素材仍沿用nearest。
+- 阅读单限制行宽并按内容决定高度；标题、正文和主次按钮分层。桌面操作栏收窄、主要按钮44px高，舞台可用高度增加。正文/纸面对比度12.05:1，主按钮4.82:1。
+- Godot4.7.2针对性验收：`test_liangzhu_performance.gd`90、`test_liangzhu_performance_qte_view.gd`61、`test_theater_rehearsal_ui.gd`87，共238项检查零失败；`npm run validate:quick`5个验证器通过。隔离GPU预览检查1280×720、1440×900、844×390、390×844；不代表真机或发布版浏览器验收。
+- 实际渲染图及摘要：`/Users/zhu/.codex/visualizations/2026/10/21/01a15d88-0050-7010-aadf-c73fb5460a62/liangzhu-typography/`。
+- 此支线只完成本地改动，没有暂存、提交、推送、整包构建或部署。只读核对原网址的build-manifest：构建时间2026-10-20T11:43:15.442Z（北京时间19:43），sourceCommit f963d47cbe31e5d799b405e36d4ad68cd97546fa；当前字体版尚未上线。
+
+
+### 2026-10-21 Native gear, Rodin bridge and Zijingang riding assets (in progress)
+
+- The native phone settings entry now uses a separate 80x80 gear texture. Actual Godot Web home was checked through computer use. Local port5241 still serves exports/web-gear-rodin-20261021, sourceInput6bdce72d0941abc12ee4667ad1fa9b6281eb50e650c526794f8c62dff29f7f9c; that export predates the new riding assets.
+- RodinBridge installed in Godot and Blender5.2.2, with Godot class/resource-cleanup compatibility fixes and production exclusion. Blender panel visible; Godot editor listener61883 started without errors. No API credentials were placed in the project/export. Three missing temporary project-manager paths were replaced with the real godot_native path; backups kept and project files not deleted.
+- Codex reconnection: TUN was already enabled when inspected. With explicit user approval, only chatgpt.com/openai.com received Cloudflare DoH through the existing PROXY in the current subscription merge. Actual app log at08:06:33.853Z recorded initialized=true,reconnectAttempt=0,transport=websocket; approximately five following minutes had no new matching failures. Configuration backups are outside the repo. Ordinary HTTP403 alone was not treated as chat recovery.
+- Official Godot MCP0.1.1 initialized14 tools and confirmed Godot4.7.2. Fourteen relevant game skills installed at upstream0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd. Hyper3D remote MCP OAuth succeeded, but this conversation tool inventory has not refreshed; actual generation used the same account official API. Tripo login remains stopped.
+- User corrected the goal to a human character with the fluid contact IK and camera quality of the pelican demo. Public reference54adc1fb64155f9dd7c1c90ecae7b8185ac540b8 had no detected license; no code/model copied. ZJU official photos inform original glass-canopy, waterside and theater motifs; the compressed755m scenery is not a surveyed campus route.
+- New native campus chunks and a real15-bone Skeleton3D skin keep source movement,755m simulation, lanes, collision and controller authority. Continuous transition shots interpolate between source samples while reference24fps and camera cuts remain exact. Actual contact testing found a0.103-unit arm stretch, corrected with riding posture and bind-length IK; failed evidence retained.
+- User selected existing Hyper3D/Rodin credits. Four tasks generated/downloaded: human, canopy frontage, waterside prop composition and theater foyer. Credits223 to221, total2. Original GLBs/private job keys and full download hash receipts are in Library/755-tools/rodin/campus-batch-20261021. Only consumer GLBs and non-secret manifests enter the repo. Blender heat weights left47 tiny isolated vertices; transferred weights from surfaces within0.01214 native units, leaving zero unweighted vertices and at most4 influences. Actual Godot GUI showed the new skinned rider pedaling.
+- Seventeen relevant native stages passed in /tmp/755-rodin-campus-checks.json BEFORE the subsequent back-print and revised character. User rejected the initial face/shoes. Original imagegen reference now has a crewneck sweatshirt, detailed young face and white lace-up running shoes. Revised task161e79e8-e9e9-427f-9bfc-0bb6845aa705 requests Extreme-High/Quad-high, costs1 credit and is still in progress. Back print uses the official ZJU standard PNG on skinned cloth; apparel references do not imply an exact official product replica.
+- No staging, commit, push or public deployment this turn. HEAD313885d has unrelated existing dirty changes. Revised character, mount/dismount handoff, final Web export and physical mobile acceptance remain open; generation/download alone is not final art acceptance.
+
+### 2026-10-21 Revised rider v2 and final local Rodin acceptance
+
+- Replaced the rejected first face/shoes with image-conditioned original v2:90,612 triangles,45,302 welded vertices, navy crewneck, ivory-white lace-up running sneakers. Blender5.2.2 automatic heat weights produced zero unweighted vertices with at most4 influences across15 named bones. Exact original source GLB SHAfcfde9ff9e07ece8a54f451bd4bc1d37ab89847bcc0b14d563312c90f205c18f. Revised task161e79e8-e9e9-427f-9bfc-0bb6845aa705 completed for1 credit; total batch3 credits, current balance220.
+- Official standard ZJU seal is rendered as a skinned cloth-surface patch sharing original weights, not a floating billboard or AI-invented mark. Public campus clothing informed the original sweatshirt design; no exact-product claim. Saved exact built-in imagegen prompt, reference, non-secret download receipt, rig receipt, source URLs and hashes under docs/art. No API key or subscription key entered runtime/export.
+- Final surface-contact correction calibrates palms and shoe soles to transformed bone-space anchors. Bind-length IK preserves actual limb lengths; mount/dismount free hand uses the source wrist rather than an unreachable low helper. Final16 native stages plus3 provenance/quality/integration stages passed. Existing quick validation passed5 validators. Actual Godot computer use viewed v2 face/back/shoes and used real Start/steering/Space; screenshots saved under exports/review/rodin-rider-20261021. Blender CLI rig/export succeeded; GUI file-navigation attempts did not verify the revised blend opened.
+- Web export imports/exports successfully with Godot4.7.2. First build failed because computer-use JPEG captures had .png names; corrected suffixes and excluded review folder from Godot import, preserving the failed log. Fresh media conversion lacked ffprobe;719 source assets were already synced and both existing OGVs matched prior accepted export MD5 byte-for-byte before the skip-prepare build. No media content was modified.
+- Final local package exports/web-rodin-rider-20261021: HEAD313885d dirty, sourceInput7bd19736cb7bc8936a448051effb748fcf61fb8c1fbf4b4641cc213c041e3887, initial95,014,114B, logical545,114,343B, hosted639,747,173B,21 deferred packs. All34 new Rodin model/texture/remap entries are deferred chapter3 assets, zero in core; startup did not acquire the model downloads.
+- Actual desktop Chromium acceptance PASS533 checks: WASM/WebGL3D scene, earned ordinary portable-save import, steering, charge/release jump, player pause across tab hiding, exit preserving items/wallet/unfinished chase, exact save persistence and fresh-document re-entry. Three browser screenshots inspected. Not a full campaign, physical mobile, WebKit or target-device performance result. Native mobile input regression passed separately.
+- Evidence index: godot_native/docs/art/RODIN_CAMPUS_ACCEPTANCE_20261021.json. No staging, commit, push or public website deployment this turn. Existing server deployment remains paused.
+
+- Local5241 now serves the accepted revised-rider export, exact HTTP build-manifest bytes verified. Same origin retains existing browser save/cache namespace; a refresh loads new code. Public website unchanged.
+
+### 2026-10-21 Shoulder rejection, coherent multiview and cycling-back reference
+
+- User rejected v2's triangular sloping back, image-to-mesh identity mismatch and adjacent scenery. Marked old Rodin acceptance as USER REJECTED;19 native stages/533 prior browser assertions remain technical evidence, not art approval. No previous pass log was rewritten.
+- Actual neutral-lit Godot comparison confirms v2 unposed mesh has shoulders while the generic chest-relative ride anchors lower/collapse the girdle. Failure persists with back print hidden. Fixed shoulder/head positions from the imported rest anatomy, rather than generic .12 chest offsets. Added anatomical span/neck-gap regressions and a collapsed-girdle negative control.
+- Built-in imagegen produced one coherent fictional adult family: front, back, left, right, top and bottom. Two pole-view retries retained; bottom still has low-angle perspective, so top/bottom were excluded from reconstruction. Added the user's later requested cycling-back pose reference showing supported shoulders, scapular/cloth volume, bent elbows and ordinary handlebar contact, with a restrained seal on navy cloth. All selected sources, failed pole drafts, exact prompts and hashes retained under docs/art/reference/student_v3.
+- Extended official Rodin helper to ordered1-to5 repeated images and correctly JSON-encoded image_label arrays; dry-run and multipart validation cover labels/count and legacy single image. Actual v3 request26899c58-2061-42f4-8167-1bfd33d1b43c used4 elevation images with F/B/L/R, consumed1 existing credit, balance220 to219. Raw GLB SHA c2fe16b755079a362afb7abc1ffba83b63297959259c0bd6e94248103b42cd0e. No credentials, private job keys or signed URLs enter the repo.
+- Blender5.2.2 v3 candidate has88,694 triangles,44,326 vertices and19 body bones, with spine, neck and left/right clavicles based on the official open-source Godot humanoid-profile hierarchy. Zero unweighted vertices, at most4 normalized weights. Separate normalized unrigged GLB retained. Parent-first posing avoids moving a bone's parent after its global target has been set. It is a body subset, not the full56-bone profile or finger rig.
+- Actual Godot candidate import and1440x900 raw/posed back comparison performed via computer use. Candidate8 contact/anatomy checks pass; max physical palm/sole error0.00002940158811 native units. Active legacy skin's two affected regression stages and quick5 validators pass. These do not prove final facial identity or art approval. Review index: godot_native/docs/art/RODIN_SHOULDER_MULTIVIEW_REVIEW_20261021.json.
+- New v3 GLBs remain reference candidates under docs/art; active character GLB and existing local Web export were not replaced. No staging, commit, push or public deployment. Rejected scenery is not regenerated or claimed accepted. Source rig corrections are local and await ordinary export/browser acceptance when a visual candidate is promoted.
+
+### 2026-10-21 · 骑行改为像素化鹈鹕，本地验收
+
+- 用户否决半写实人物效果后，骑行段改用原创鹈鹕。17骨 Skeleton3D 加权羽毛、颈头、尾翼及双侧翼/腿链；复用实际车把、车座、脚踏与原运动模型。原人物 v3 和 Blender 文件保留为本地回退，技术测试通过不代表其美术获认可。未新增 Rodin 任务或扣点。
+- 接入原像素主角 → 纸羽遮挡变身 → 鹈鹕上下车/骑行 → 原主角的衔接；恢复原角色时播放现有行走帧。纸羽、像素着色及骨骼只读已有时钟，暂停、后台、跳过与减少动态效果继续有效，不写剧情、物品或存档。
+- 新骑行画面使用32色共享色板、三档羽毛光照和原生纹素 nearest 采样。属于细像素化的3D呈现，并非手绘精灵帧集，也不代表全游戏美术验收。原镜头、755m路线和碰撞权威保留。
+- 两次实际回归发现鸟腿步幅导致落脚够不到、跨车时蹼脚穿地，已降低固定步态骨盆并以膝关节屈曲抬脚；120Hz检查覆盖实际骨骼、完整蹼脚轮廓、支撑滑移、反关节及状态不变。最终24个相关 native 阶段全部通过。
+- 最终独立 Godot Web：`exports/web-pelican-final-20261021`，HEAD313885d6056de0e4fe3052469643627d23c2c021 的脏工作树；输入SHA7d1c234a98a48c5db74942168753c58104f7849eb5b6d6bf76e571aceda3763d。桌面Chromium533项、844×390/DPR3触摸模拟525项通过，覆盖真实WebGL、普通输入、跳跃、暂停/后台、退出和存档恢复。触摸专用验收不涵盖无关的移动端便携存档下载/分享，未做物理手机或全章节验收。
+- Web排除停用人物及其贴图，原文件保留。逻辑资源533616356字节，比上一人物构建减少12444508字节；首启95046161字节。新色板数据留在第三章延迟包，未把新增美术塞入首启。
+- 实际 Godot GUI 图在`exports/review/pelican-20261021/`；验收和来源记录在`docs/art/PELICAN_RIDER_20261021.json`。仍为本地版本，未暂存、提交、推送或部署公开网站。
+- 本地端口5241已切换至上述最终鹈鹕构建；实际HTTP build-manifest输入SHA核对一致。
+
+## 2026-10-21 · 本地整合 #156/#157 与手机图标恢复
+
+- 在 `codex/progressive-world-puzzles-20261020` 本地完成整合，merge `830a848`；原工作树逐文件备份及 stash 保留，没有推送或远程合并。#157 寝室候选未替换当前场景，正式包候选条目为 0。
+- 按后续明确要求：交互提示/对白贴底；移除地图常驻顶部 UI；地图右下手机与手机右下地图可往返；左下工具右侧直接显示原物品图像，取消地图背包开关和物品展开导致的缩放。
+- 撤销上游主页线框图标替换，恢复整合前彩色应用图案、应用名称和原网格，保留排序编辑、原路由及独立设置齿轮。
+- 项目原始代码增加 Apache-2.0 LICENSE/NOTICE，并进入 Godot 正式 core PCK；Godot、字体及其他第三方许可保留。
+- 合并基线原生 490 阶段通过；最后界面改动的 30 个受影响阶段重新通过。最终独立 Godot 浏览器包 6 场景 933 项检查通过，含实际输入、地图/手机往返、物品操作不缩放与保存重载；保留 Web release 38 validator 通过。最后源输入摘要 `e3771064ca74fc7c1b755e65116f282fe2882e2700b6cc70562b82063d7f9525`。
+- 原生电脑操作确认地图内物品与原主页图标；完整新开四章人工通关、Gecko/WebKit 和实体手机另行验收。具体证据见 `godot_native/docs/UPSTREAM156_157_INTEGRATION_20261021.json`。
+
+## 2026-10-21 · 彩色物件图标
+
+按用户补充要求，地图/手机互返、手记与明暗切换从单色线框改为与原应用图标协调的彩色像素物件。80×80 原生母版严格使用项目锁定32色；实际34px图案与44px输入区域分离，鼠标/触摸/焦点、布局和剧情路由不变。4个受影响原生阶段通过，桌面浏览器554项、触屏浏览器556项检查通过；原生电脑操作实际完成手机/地图返回并查看彩色图标，本地5241预览更新。实际明暗、竖屏和短横屏渲染及产物摘要见 `godot_native/docs/COLORED_CORNER_ICONS_20261021.json`。未提交/推送本次改动。
+
+## 2026-10-21 · 工具与物品格统一底板
+
+按用户要求，所有地图系统入口、物品格和返回地图入口共用同一44×44米白底板与像素圆角；各指针状态不再切换底色，选中/焦点仅描边区分。消除物品行2px垂直错位，保留彩色图案和原操作。最终6个受影响原生阶段通过，桌面554项、触屏556项浏览器检查通过；原生实际画面已查看，5241本地预览更新。验证与来源见 `godot_native/docs/COLORED_CORNER_ICONS_20261021.json`。
+
+## 2026-10-22 · 恢复像素课堂签到与羊皮纸打印回执
+
+- 对照原生 `701efd1` 与保留 Web P11，撤回签到页现代绿色表单，恢复浅蓝网格、课程卡、四个描边数字格与像素键盘。局部使用原 Fusion Pixel 字体，并提高小字/键盘字号；共享手机框和其他页面保持原逻辑。
+- 成功回执改为原生304×420细像素羊皮纸，带阶梯毛边、轻纸纹和单色文字印章。替换活动写实纸面，原素材保留；仍由原游戏时钟驱动顶部打印，保留1.8秒打印、3.8秒成功段、暂停、减少动态效果、继续与后续剧情门槛。
+- 原生9个受影响阶段通过，最后字号调整另复验2阶段；实际桌面/触屏各543项 Godot 浏览器检查通过，包含普通路径进入签到、删除、错码、正确提交、打印暂停恢复、原经纬度错误交接。保留 Web release38 validator通过。
+- 现有用户存档正常恢复至“已提交签到、未完成拦截”，未导入/重置/新开游戏。5241本地预览已更新。来源、准确源包摘要与证据见 `godot_native/docs/CHECKIN_PIXEL_RESTORATION_20261022.json`。未推送或远程发布。
+
+## 2026-10-22 — Continuous prologue character flow
+
+- Replaced fragment-by-fragment appearance with a continuous downward clue conveyor. A deterministic punctuation field travels at 650–994 logical pixels/s; actual collectible words fall at 360/390/420 pixels/s across the three stages. The large rendered word remains the actual swept collision body, with a punctuation wake rather than fake answer copies. Original six target words and authored clues remain unchanged.
+- Replaced the full-screen alternating white flash with one monotonic wash, and the red flash with a short continuous tint. Authored audio cues and their timestamps, blackout duration, final hold and four-line exchange remain independent and unchanged.
+- Removed the ambiguous generic Continue labels from this activity. A completed printed receipt has `收起回执`; pause recovery names its destination (`返回字流` etc.) and sits at the bottom. Printing has no extra dismiss control until paper feed finishes; reduced motion keeps immediate access. Failure continues the earned current stage and full clue review still freezes simulation.
+- Reference research: stackedlol/ascii-sharks, commit c521e24a787e6d4cc460d4cf2b9815f25e4fe453, README, engine.ts and renderer.ts. Borrowed the presentation principle of stable animated glyphs; implementation is original GDScript and uses the existing game palette/fonts. No source or shark artwork imported.
+- Native validation: physical-word, audio, success lifecycle and SFX suites passed; the old >30s total-play assertion was updated to require the actual authored remaining reading intervals because user-requested physical word transit is now under 1.1s. Focus and character-field checks passed after this intentional assertion update. Retained Web release baseline passed all 38 validators. Exported actual Godot 4.7.2 Web build for browser input acceptance; detailed results are recorded in the character-flow receipt.
+
+- Final visible follow-up: failure text now forms a compact bottom panel; `PrologueRetry` is labelled `再试这段字流` and sits at logical y=668. Fully escaped word bodies no longer draw over the review control. Browser trials repeated against this exact final PCK passed 540 checks each on 1280×720 desktop and 390×844 touch, including six physical captures, partial/cancelled holds, hidden-tab release, original dialogue, C2 entry and ordinary reload. Seven affected native suites passed. `build_web --verify-only` matched source-input SHA-256 a19372555abe4f8475eee2c58de36d9322236c338c9d644bb9069531d49d624b.
+- Updated local 5241 preview to `exports/web-character-flow-final-20261022`. Computer-use inspection retained the existing unfinished check-in save and recorded 301 real browser screenshots with timestamps, then encoded a short review clip. This scene remains available for user retry; no controller completion was written to the user's profile. No commit or remote deployment performed in this turn.
+
+## 2026-10-22 — Dense ASCII Hanzi / black terminal correction
+
+The user clarified that the ASCII symbols should form Hanzi, and then requested much denser flow rather than separated symbols. Generated a reference with the built-in image tool and revised it once for density, then implemented an original native glyph-atlas shader. A 6×8 background field is 95% occupied; within the original-font Hanzi masks, a continuously advected 3×4 field gives four times the character density. No ordinary filled Hanzi, sparse sprinkled rain, or opaque paper word tile remains in this stage. Near-black/cold-white surfaces extend to error window, reading, retry, pause and final hold; the approved printed parchment is intact.
+
+The sampled Hanzi display at 80×80 each, with measured word extents shared by presentation and the real swept collision model; word bodies are 92px high with16px horizontal padding. Kept all authored words, ordered/unordered semantics, clocks, failure preservation, hold threshold, dialogue and save handoff. Expanded trial drivers' avoidance boundary using actual card height so acceptance still follows visible geometry.
+
+Seven affected native suites passed; real GPU Compatibility rendering was inspected at the owning viewport. Rebuilt independent Godot 4.7.2 Web export for actual desktop and touch full-flow acceptance. The retained Web behavioral reference passed all38 release validators. Exact final artifact/acceptance recorded in the terminal-density receipt.
+
+## 2026-10-22 · 连续字符词云、四侧聚字与右下角入口
+
+按用户连续修正，线索改为与目标相同的ASCII汉字，不再以普通字体混在流动词中。独立呈现时钟穿过原读线索、生成、阶段切换，保持持续词云；阅读、物理速度和真实碰撞语义不变。字符从四侧汇入自己的笔画格，在0.28秒内成字，早于首次实际碰撞；背景格缩小到4×6，笔画保持可辨的3×4。ERROR窗采用同套像素终端面板。重试、完整线索、关闭回看及可选帮助为右下角148×34小控件，390×844和1280×720验证保持有效点击区。
+
+最终7项相关原生套件通过，最终Godot4.7.2浏览器导出在桌面与触屏模拟各通过540项检查，覆盖六词真实拦截、重试/回看、长按与取消、隐藏释放、四句对白、第二章及存档重载；保留Web参考38项发布验证通过。准确源码指纹841ec2489b5e726b0a1bd5f0e4f6155443567ccc8b6f54fb7c5b2e7ceaa6609a；build_web --verify-only通过。5241现提供web-terminal-gather-20261022，HTTP清单已核对；现有试玩标签不强制刷新。真实GPU演示录像、实际浏览器截图和临时QA截图的摘要记录于PROLOGUE_TERMINAL_DENSE_20261022.json。无提交/推送或远程发布。
+
+
+## 2026-10-22 - Clean word flow, no retry or clue-review UI
+
+The latest explicit user correction removes the failure title/reason, retry, full-clue review/close, landing help, R shortcut and idle footer. A real miss continues the same stage immediately, retaining earned words, completed stages and held keyboard/pointer input. Only missing targets respawn; unattended retries cannot grant progress. Explicit system pause, reduced-motion original static clues, authored narration and the parchment receipt remain intact.
+
+Seven affected native suites passed. Actual Godot 4.7.2 browser mouse/keyboard and touch-emulation runs passed 542 checks each: repeated misses without progression, six real captures, pause/resume, partial holds, hidden-tab release, original dialogue, C2 handoff and reload. The first browser run observed a stale snapshot immediately after Escape; the runner now waits for observed paused state before comparing frozen bodies. Both final runs passed. The retained Web release passed all 38 validators; original word-content parity and export verify-only passed. Source-input SHA-256: 4d5484dab0f66eded4218c004a84c6a7dd7208f19d5f3e8e44deaffdd4dc379e.
+
+Local port 5241 now serves web-terminal-clean-20261022; its HTTP manifest matches the accepted artifact. The user's existing tab was not forcibly reloaded and their save was not modified. No commit, push or remote deployment. Browser images were inspected; two review images remain outside the deliverable, with temporary QA screenshots hashed and removed. Exact receipt: godot_native/docs/PROLOGUE_CLEAN_FLOW_20261022.json.
+
+
+## 2026-10-22 - Middle clue typography, stale browser instance correction
+
+Computer-use inspection found that both open local tabs still held an earlier runtime: the third-stage clue was ordinary type and the removed retry/review controls remained visible. The accepted clean export already renders all three stages with the same dense ASCII Hanzi masks. Reloaded the second tab and resumed its existing unfinished check-in through ordinary story controls; the original paused third-stage tab remains intact. No runtime changes were needed and no save/progression fields were directly written. HTTP source fingerprint still matches 4d5484dab0f66eded4218c004a84c6a7dd7208f19d5f3e8e44deaffdd4dc379e.
+
+Re-ran test_prologue_character_flow successfully. Inspected three actual Compatibility GPU stage fixtures, including the original third-stage clue text rendered as ASCII Hanzi, without controller/save writes. These are rendering fixtures, not claims of newly earned stages. Saved the stage-three review frame outside the deliverable; temporary fixture PNGs were hashed then removed. Evidence: /Users/zhu/Library/Application Support/755-tools/verification/middle-character-recheck-20261022.
+
+
+## 2026-10-22 - Faster word interception with staged difficulty
+
+User requested greater speed and difficulty. Real target speeds rise from360/390/420 to580/660/740px/s; spawn cadence changes from950ms to600/540/480ms across the three stages. The window responds at600px/s instead of440, and continuous ASCII clue flow rises from260 to430px/s. Normal clue lead-in is halved; reduced motion retains the original full static reading duration. First spawn220ms, retry350ms and completed-stage transition280ms remove excess gaps. Geometry, source words/order, earned-word retention, original audio/dialogue timing, final hold and controller save handoff stay intact.
+
+Seven affected native suites passed. Measured six real capture ages0.392-0.500s, after glyph assembly. Actual Godot Web desktop mouse/keyboard and390x844 touch emulation each passed542 checks, including six real captures, repeated misses without unearned proof, pause, cancelled/hidden holds, original dialogue, C2 and reload. Retained Web release38 validators, source-content parity and export verify-only passed. Source fingerprint: dfdceb5de0a461fd8485cdc755922965393e97033e90a29c82a67d2a5347f1cc.
+
+Port5241 now serves web-fast-flow-20261022 with matching HTTP manifest. Recorded264 native GPU frames at24fps as an11s preview; no shared State writes. Reviewed browser/GPU images, saved review outputs outside delivery, hashed and removed temporary PNGs. Exact receipt: godot_native/docs/PROLOGUE_FAST_FLOW_20261022.json. No commit, push or remote publication.
+
+
+## 2026-10-22 - Clarification: speed up connecting paragraphs, preserve reaction windows
+
+The prior fast-target candidate misread the request and is superseded. Restored original target fall360/390/420px/s,950ms cadence,440px/s window motion,350ms first spawn and700ms retry. Kept only shorter normal connecting-clue lead-ins (half the old duration),280ms stage transitions instead of650ms, and430px/s non-interactive character cloud. Reduced motion retains the old full static reading time. Source words, collision geometry, semantic order, original audio/dialogue, hold and saves are unchanged.
+
+Seven affected native suites passed; actual capture ages0.683-0.800s confirm the original reaction interval. Corrected Godot Web export passed542 checks each on desktop and touch emulation, including six physical captures, holds, original dialogue, C2 and reload. Export verify-only passed. The retained Web release38-validator report from earlier in this active task remains applicable because retained Web files did not change. Corrected source fingerprint8b28dddb92f26e697797e3fe05d1be22adc74e9157c0f19d7700c942b1d88fdc.
+
+5241 serves web-flow-transitions-20261022, replacing the mistaken candidate; its HTTP manifest matches. Refreshed the second existing preview tab through ordinary saved-story continuation, preserving the old paused third-stage tab. No direct save/proof writes, commit, push or remote publication. Scoped evidence and cleanup hashes: godot_native/docs/PROLOGUE_FLOW_TRANSITIONS_20261022.json.
+
+
+## 2026-10-22 - Forty-second discovery/recognition/reconstruction flow
+
+The user confirmed the timing boundary: word flow begins to narrator caught, excluding receipt/blackout and later dialogue. Consulted ChatGPT web Extra High first with the full current mechanics and constraints; saved the actual prompt, response AX and screenshot. Adopted continuous meaningful encounters and natural pacing, preserving original reaction speed and all six original targets. Web source and chosen implementation rationale: godot_native/docs/PROLOGUE_40S_DESIGN_20261022.md.
+
+Authored target beats [5], [2,6], [2,6,13] create27 real word encounters (six original targets,21 original decoys). Stage handoffs remain280ms and all moving clue text stays continuous ASCII. The first teaching rebound is harmless during exploration; later decoys still fail. Retry retains deck position and collection and cannot force an unintroduced future target. Completion is still six contacts plus the original grip, with no global time gate.
+
+Smooth actual-intent physics route measured38.85 active seconds, zero misses, with stage handoffs at9.34/20.06s and lock at37.45s. A two-second pause freezes deck/movement/grip clocks and does not count. Original target transit0.683-0.808s remains intact. New pacing regression also proves no idle completion and no early-decoy future-answer shortcut. Eight relevant native suites passed. Actual Godot Web desktop and touch emulation each passed542 checks including six real contacts, holds, original dialogue, C2 and reload. Retained Web release38 validators, original word-content parity and export verify-only passed. Exact source fingerprint44924adeebfe8f62bee45eda98d24a3900f287be7e9167af60f762e6c06d9619.
+
+Port5241 serves web-forty-second-flow-20261022 with matching HTTP manifest; the existing second game tab is refreshed for ordinary saved-story continuation. No direct user save/proof writes, commit, push or remote publication. Captured933 actual GPU frames at24fps as a38.875s silent automated demonstration; reviewed representative frames and browser gameplay, retained review outputs and consultation evidence outside delivery, and hashed/removed temporary screenshots. Exact receipt: godot_native/docs/PROLOGUE_FORTY_SECOND_FLOW_20261022.json.
+
+## 2026-10-22 - Generated illustration and native interception continuation page
+
+Rebuilt the user-marked static ending-resume page with an original built-in image_gen terminal/receipt/glyph-window vignette. Preserved the generated original and exact prompt under art_source/docs; the deterministic normalizer creates a756×504,16-color runtime image for378×252 placement with nearest filtering and uniform aspect. The page shares the existing near-black terminal colors, left-aligned native typography, one bottom primary continuation and an optional help control that swaps the illustration in place. The former grey/red card and competing centered text are removed. Actual text and all controls remain Godot-native.
+
+Eligibility, guarded single c1_resume_ending/null payload, earned state, controller proof gates and the approximately40-second word-flow route are unchanged. Five native validation stages passed (editor import/parse plus cohesion, phone identity, pacing and focus input). An isolated earned-save GPU replay passed59 layout/input/fact-preservation checks at1280×720,1440×900,390×844 and360×640. The new actual Godot Web export passed555 checks each for desktop mouse/keyboard and390×844 touch emulation, including help, continuation, six captures, original dialogue, C2 handoff and real reload. Retained Web release38 validators and export verify-only passed. Tested dirty checkout based on830a848ad4c8cf570ab9076bcf286502adf97e74; exact source input SHA-256 a05a5915d94cc7f8c3e9ada399e0618a92a06c4680601ec50ad3bf7c92c7f914.
+
+Port5241 now serves web-ending-resume-20261022; HTTP manifest identity matches. Through computer use, reloaded the existing user-marked tab and entered the saved story normally, then left the browser on the actual new continuation page. Saved a deliberate browser review image outside the repository, hashed and removed15 temporary QA PNGs, and stopped the owned5242 QA server. No direct user save/proof injection, commit, push or remote publication. Physical phones and fresh Safari/Firefox validation are not claimed. Receipt: godot_native/docs/ENDING_RESUME_ILLUSTRATED_20261022.json; asset provenance: godot_native/docs/art/ENDING_RESUME_ART_20261022.json.
+
 ## 2026-10-22 — Mobile direct-touch controls (independent #156-based branch)
 
 - Ordinary compact exploration now uses the lower-left in-world movement overlay and nearby-object release taps, with no extra joystick confirmation or full-width control-row reservation. Existing inventory, locked UI styles, PC keys, source proximity/mode/item gates and non-exploration games remain.
@@ -4950,3 +5163,127 @@ The full release PCK exposed a real packaging-only regression: north_large and n
 - Desktop world acceptance failed before engine loading because Chromium did not produce its DevTools port within the original 20 seconds. Spawn succeeded; only runner cleanup later killed it. DBus warnings do not establish a cause. The same job's independent phone case passed 560 checks. Preserve this separate infrastructure failure without changing security settings, launch flags or timeouts; new candidate CI must actually complete the case.
 - These changes are acceptance-tooling only, not a game-state or UI fix. Local source-extracted Node regressions are separate from the still-required actual Godot Web CI. No concept-preview files are part of this change.
 - Local Node 22.23.4 checks passed: input completion 27, save diagnostics 104, browser lifecycle 20, workflow 11, immutable bundle 40; runner syntax, artifact-path guards and diff whitespace also passed. These are synthetic/source-extracted and ordinary-Node lifecycle checks, not a Chromium/Godot run. The original startup failure and unknown exact save-click miss cause remain explicitly unproven until the real candidate CI runs.
+
+
+### 2026-10-22 双库 PR 合并、本地触控适配与寝室样段比例
+
+- 用户逐项确认范围后，远端已合并私库 PR1 和公开库105/155/156/157/158/159；158/159在本地以独立 merge commit 整合。原工作树356文件已完整归档并校验，未自动提交或上传本地界面、素材和模型修改。记录见 `godot_native/docs/TWO_REPOSITORY_MERGES_20261022.json`。
+- 寝室独立样段人物统一缩放从0.6调至1.0，保留足点、碰撞、相机和原物件坐标；地面纸张放到人物下层，桌面与手机实际渲染及原样段回归通过。正式玩家的共享比例未改变。9张截图与尺寸校准记录见 `godot_native/docs/DORM_CHARACTER_SCALE_20261022.json`。
+- 将用户指定的 gamedev-skills/awesome-gamedev-agent-skills 写入项目开发规则；按引擎与任务选择最小相关技能，并以本项目实际运行验收。引用和已审阅版本见 `godot_native/docs/GAMEDEV_SKILLS_REFERENCE.md`，本轮没有全量安装套件。
+- 用户补充纳入160后，再次归档360个现有修改或新增文件；整合上游最终77633d5，冲突中保留本地无固定摇杆、点地行走、物件实体接近、双指相机、底部工具与物品展示和右下角手机入口。吸收根级指针释放、去重、取消、安全区与确认后标牌逻辑，未改控制器门槛和存档。新增物品详情焦点回归已修正，旧失败记录保留。
+- 适配版最终53个原生阶段全过；根事件317项、家具拖拽及画面外松手扩展162项均通过。交叉2839静态/35运行阶段、保留Web release38验证器通过。实际GPU18图/96项，Godot WASM桌面554项及手机触控556项通过；新包source-input `818681ab15ca8c68d34bb92965e6ce6930336eec93815763f349107362fc3276`，只读verify-only通过，本机5241已换成新包。临时截图查看后留摘要清理，明确保留的审阅图在仓库外。
+- 160的上游最终提交已改向main，Web、交叉与4.7.1实际触控渲染证明成功；完整远端原生流水线仍在运行，尚未据此宣称160已合并或线上适配版已发布。详情见 `godot_native/docs/PR160_LOCAL_ADAPTATION_20261022.json`。
+
+- 最终160按明确授权以32dfc73c合入公开main，已重新fetch并逐一验证七个公开PR的选定head均为main祖先；私库PR1此前已合并，因此本次8个PR全部完成。合并采用已通过的改动范围验收；455脚本全量原生流水线仍在运行，未标成全过。原ea2b95b的Pages在首包101,337,784B超过100,000,000B预算时停止，Publish跳过；32df新main流水线刚启动，当前本地98,959,441B包已独立验收，未冒充线上部署。备份、旧失败和当前CI链接均随上述收据保留。
+
+
+## 2026-10-22 — Full-field, denser ASCII Hanzi flow
+
+The user clarified that “more text” means the obfuscating character composition, and marked the fixed top title/stage counter for removal. The complete430×820 native activity surface now uses the same terminal field. Added48 original presentation-only four-Hanzi fragments, up to24 concurrent small ambient phrases plus six original clue slots and two real bodies. Varied directions, speeds, scales and angles give crossing layers; font-derived ASCII masks remain consistent, physical targets stay on top, pause freezes the shared clock, and reduced motion keeps original static clues. No dialogue/story expansion was made.
+
+The original word model, authored source content and Chapter1/2 controller are byte-identical to the scoped backup. Original reaction speeds, six real contacts and1400ms final grip remain; the paced regression still measures38.85 active seconds. Ten final native stages passed, including24 character-flow checks. Corrected an obsolete early-games expectation for a removed retry handler; the initial failure is retained. Retained Web release38 validators passed. Actual Godot WASM desktop mouse/keyboard and390×844 touch emulation each passed542 checks through real captures, pause/cancelled holds, original dialogue, Chapter2 and reload. Final12 GPU views cover all three stages and reduced motion at430×860,390×844 and1280×720.
+
+New export web-dense-character-flow-20261022 has source-input762d4cb680e982a8803af554fd69a6e6ad3f92473c7a8f22fb1b8da3cab93f11 and99,027,589B initial payload (68,148B added); verify-only passed. Port5241 now serves that exact manifest. The existing paused user round was left running, so refreshing loads the new visuals. Inspected and hashed34 temporary images before cleanup; three deliberate review copies remain outside the repository. Completed browser reports preceded cleanup of two idle runner handles; the owned5242 QA server is stopped. No commit, push, remote publication or direct user save writes. Scope and evidence: godot_native/docs/PROLOGUE_DENSE_FLOW_20261022.json.
+
+## 2026-10-23 — Upstream161/162 integration with local changes retained
+
+Fetched the current public branches and verified the private tracked tip through the connector. After the user's explicit merge instruction, public PR161 at d4b4670 was merged to main as6535351; PR162 is included and marked merged. All nine exact-head upstream workflows succeeded. The active local branch contains merge6baf0c8 plus the graph-only main merge03790d8. The original93 tracked modifications and273 untracked files were fully archived, hashed and retained through a stash. The original343 non-overlapping files were byte-identical after restoration;340 remain identical after three documented, targeted followups. No local WIP was automatically committed or uploaded.
+
+Preserved the dense ASCII field, original colored app artwork and gear, bottom captions/tools, inline items, right-bottom phone/map return and direct world taps. Integrated the4.7.1 pin, picker/focus recovery, battery/physical desk charging, two-stage Tiyi update and sourceVersion36 migration. Fixed the theater renderer's state argument after upstream admission-snapshot optimization, honored the existing canteen caption left alignment, and prevented system-cancelled releases from activating the world or bottom light button. There is no touch-cancel option and no added failure penalty; ordinary taps and current-round recovery remain intact.
+
+Final native coverage is501 passing stages: the complete attempt is retained, with all27 failed/affected stages freshly rerun against the corrected worktree. The retained Web release passed38 validators and4 actual browser routes. The original controller campaign completed chapters1–4 with0 failures. Actual Godot WASM acceptance on the same final export passed543 desktop word-flow checks,553 direct touch-world checks and569 phone-recovery checks, including real import, ordinary input and reload. Native GPU coverage has18 inspected views/196 checks using4.7.1; it predates the last invisible cancellation fix. Chromium emulation and simulated insets are not physical-phone or complete manual-campaign acceptance.
+
+The final standalone export is exports/web-upstream-ready-20261023, source-input ce286f34f6aba69332fa1516608b6c9021b0e4cb1e5134ec516488afab0d90e3, with99,070,066B initial payload. Full browser stderr is now retained in a file so inherited macOS helper pipes cannot stall runner cleanup; real child exit/close and cleanup failures remain acceptance gates. All22 lifecycle regressions pass. Earlier failing reports remain unchanged. Inspected and hashed115 temporary QA images before removal; three deliberate review copies, full reports, backups and the stash remain outside the repository. Details and final preview-switch evidence: godot_native/docs/UPSTREAM161_LOCAL_INTEGRATION_20261023.json.
+
+
+## 2026-10-23 — 晨札像素 font library and current-behavior test review
+
+Created755 Morning Note0.1.0 with editable24-grid matrices, baseline20, tabular12-grid digits and distinct Regular400/Medium500 TTF/WOFF2 faces.137 glyph matrices (95 printable ASCII and42 Hanzi) are independently authored; the other1687 glyphs are openly licensed Noto/Fusion derivatives brought onto the shared grid. Both faces cover1824 current glyphs. Font binaries retainOFL and upstream notices; original matrix/tool source remainsApache2.0. The deterministic offline builder verifies source hashes and independently FreeType-rasterizes every generated glyph against its grid. The family is not claimed as a completely original full Chinese typeface.
+
+Integrated the family into the phone, selected HUD/journal/dialogue, theater UI, check-in/receipt and ASCII Hanzi masks. Retained native controller/save authority, geometry/colors, local input ownership,20-cell word masks, six physical contacts and1400ms final grip. Kept scale-aware text with local nearest filtering and no implicit system fonts. Six retired experimental UI fonts remain historical source material and leave production packs.
+
+Following the user’s correction, made no new backup or stash. Retired obsolete tests locking the former family, linear text filtering, identical body/display instances and candidate-only dorm resources inside production. Kept actual glyph/weight/geometry/input tests, complete PCK integrity, excluded candidate identities including anonymous imported/exported payloads, and the100MB first-load budget. Distinct weights exposed one real CC98 wordmark role error; fixed its display assignment and retained the assertion. The initial native22-stage attempt passed21; all8 affected rerun stages passed, giving22-stage combined coverage. Earlier failures remain separate. Actual core verification passed26 required dependencies and2514 packed entries, with four leak negative controls and an unchanged optional resource-identity comparison.
+
+Retained Web release passed38 validators and4 browser routes. Actual4.7.1 GPU text checks covered1280×720DPR1,1440×900DPR2 and390×844DPR3; actual dorm/journal rendering produced18 views with196 checks. These scoped GPU scenes preceded the unrelated final CC98 wordmark role fix. Three actual final Godot WASM cases passed1608 checks: desktop word flow531, touch check-in532 and touch phone/map corners545, including ordinary input, earned import and reload. Emulator/inset evidence is not physical-phone, freshSafari/Firefox or full manual-campaign acceptance.
+
+Final export web-morning-note-final-20261023 has source-input e4dd2054154f69cbb8051de5c0200fdc113f684d8c7461b0628ebe50241d0f5e, first payload95,803,122B (3,266,944B less than the preceding preview); final verify-only passed. Port5241 now serves that exact export without refreshing the user’s running game. The interactive editable font specimen is visible at5243. Owned QA5242 stopped;37 inspected temporary QA images were hashed and removed, with three deliberate review images retained outside Git. No commit, push, remote release or system font installation. Specifications and receipt: godot_native/docs/MORNING_NOTE_FONT_LIBRARY.md and MORNING_NOTE_ACCEPTANCE_20261023.json.
+
+
+## 2026-10-23 — Morning Note Latin and numeral second draft
+
+Reworked precisely62 original A–Z/a–z/0–9 grids for Morning Note0.1.1. Caps/digits are16 cells, lowercase x-height12, baseline20 and em24. Numerals keep12-cell tabular advances; proportional letters have clearer counters and finer one-cell curve steps.0/O and1/I/l have distinct structures. The other75 original Hanzi/punctuation objects are hash-identical. Updated font OS/2 cap/xheight from the authored design, browser WOFF2 cache identities, interactive clock/word/mixed-text specimen and honest shared-master ASCII weight documentation. No new backup or Git mutation.
+
+Full offline font rebuild/FreeType per-glyph roundtrip and read-only rebuild checks pass. Eight affected native stages and one additional flow regression pass; native clock checks cover stable advances and time updates at14/18/24px for both faces. Actual4.7.1 GPU text renderings cover1280×720DPR1,1440×900DPR2 and390×844DPR3. Real final Godot WASM touch check-in passed532 checks with original earned-save picker input, original keypad rejection/success, parchment receipt and reload. An initial browser invocation omitted --fixtures and failed before its scenario; that report is retained separately. No full campaign,40-second gameplay route or unrelated retained-Web suite was repeated.
+
+An initial scope assumption that micro atlases would stay identical was disproven:20-cell Hanzi masks are unchanged, but72×8/36×4 atlases lose6/2 alpha pixels. Actual previous-PCK texture decoding and in-memory font controls confirm punctuation outlines/metrics unchanged; restoring old Latin outlines restores the old raster, supporting FreeType global auto-hint alignment from the new letter set. Regenerated source-matched atlases, passed the flow regression and inspected four short actual-GPU stage views including desktop/mobile. These are visual fixtures, not earned gameplay proof.
+
+Final export web-morning-note-latin-20261023 uses source-input efc73dffb1b32262ae6644227fddb44be0bcbfeb893315ea68c8d8a47f19bbc9 and95,803,762B initial payload,640B above the prior font preview and below the unchanged100MB limit. Actual2514-entry core-pack integrity/closure and final verify-only passed. Guarded5241 switch served the matching manifest without reloading the user's running page;5243 specimen remains visible, owned5242 stopped. Temporary QA images and extracted old-PCK font/textures were hashed and removed after review, with three deliberate review images outside Git. Receipt: godot_native/docs/MORNING_NOTE_LATIN_ACCEPTANCE_20261023.json.
+
+
+## 2026-10-23 — 晨札替换、图书馆衔接与逐对象交互验收
+
+晨札0.1.1已用于原生界面与网页开场字体，当前覆盖1823字形（137原创、1686开放授权派生）；清理过时派生符号后重新生成TTF/WOFF2，原创矩阵不变。修复已取得旧版离座规则、离开首次阅读页后失去正常入口的卡关：图书馆应用可重新打开原阅读页，仍仅由原lib_read_rule提交阅读事实，不补发索书号或已消耗原件。图书馆打印机、食堂点餐机小票与启真湖储物柜各自拆分独立部件，保持源坐标、遮挡、碰撞和原控制器物品事务；动画可结束/复位，存档重入不重演奖励。
+
+最终集成21阶段、原有动画10阶段、图书馆已完成20阶段、启真湖14阶段及食堂17阶段定向原生检查均通过，各报告存在重叠，不相加为全游戏证明。实际Godot WASM的四份Chromium报告分别通过526/528/493/531项，共2078项，覆盖图书馆桌面/触控、开场字体失败仍可进入，以及触控完成交接后的手机/地图往返、持久化与重载。三对象已分别通过原生GPU检查；这些仿真与声明前提的画面样例不代表实体手机、Safari/Firefox或完整手工流程验收。
+
+本阶段导出web-object-continuity-final-20261023，source-input bd57b24e71dce2a897380d5bf23d9ebfea068ecadee5e64be5722661fcccd6a2，记录HEAD03790d8，4.7.1官方引擎；首包96,024,222B，完整/核心包2525/1167项，实际包检查及verify-only通过。5241已守卫切换至该导出（PID75475），未重载用户正在运行的游戏；5243字体页保留。最后43张临时PNG已留hash后清理，3张明确审阅图保留在仓库外；51个本轮完成的隔离测试目录已清理，拥有的QA5242已停止。本阶段未commit、push或远端发布；新增上游error整合另行处理。数据收据：godot_native/docs/OBJECT_CONTINUITY_ACCEPTANCE_20261023.json。
+
+
+## 2026-10-23 — 性能、首包与章节资源调度
+
+完成食堂对象、Room204桌子、图书馆纹理和隐藏开场背景的实际使用时加载；全量资源保留所属章节。缓存按块SHA与长度寻址，保留块/整体校验，WebCrypto异步和普通HTTP分段让出。前台所需包优先，仅预取下一章；隐藏页面暂停新可选请求，旧host能力协商保留按需加载。生产首包回归预算收紧到80MB。
+
+官方4.7.1冻结导出web-performance-20261023，source-input57a77aa14e1b71ba48fca69b6f0ddfc9a133c6843e47bcbd8e9aae2941f4d044，HEAD03790d8但工作区含原有/并行修改；首包96,024,222→75,193,952B。实际Chromium20Mbps/60ms单组配对：桌面Main冷启动43.226→35.127s、同配置重启5.779→3.408s；加载就绪另为40.282→32.854s和2.897→1.152s。160Mbps首页45秒预取439.4→99.5MB。performance.memory观测505.7→147.4MB，但CDP纯堆计数9.65→10.39MB，口径不同，不宣称进程RAM/FPS改善。原生首屏纹理380.9→46.7MB；首次食堂创建成本后移且约616ms。
+
+最终浏览器1433检查、相关原生10阶段4305检查、协调器80、JS调度39、缓存33和拆包8检查通过。覆盖重试/缓存重载、触控图书馆及食堂/湖畔接近段/北教加载；不代表实体手机、完整湖区玩法、全手工流程或Safari/Firefox。保留初次ffprobe环境失败和食堂活动退出测试失败记录。实际2531项完整包、core1080项、22后续包检查及verify-only通过。
+
+5241已守卫切换并核对manifest，未重载原游戏；5242自有QA已停，5243字体页保留。16张已审阅临时PNG留hash后清理，保留2张明确审阅图；2个本轮原生隔离环境已清理。Nginx实际WASM块MIME修正与39.51→11.48MB gzip测量仅准备到本地，未服务器部署/nginx -t。本轮无备份/stash/commit/push。详见PERFORMANCE_OPTIMIZATION_20261023.md及配套JSON；其他任务之后继续编辑的第3.5章不属于此冻结验收。
+
+## 2026-10-23 — 更细资源包与可取消下载
+
+后续PCK从22拆成74包：普通包约6MB，四个单资源大包增加54个1MiB静态切片，保留旧整包兼容。前台请求抢占可选下载，隐藏/过期预取与dispose取消并释放下载持有buffer；章节资源闸门不变。真实21MB PCK断流测量复用3MiB已完成块，重传已接收数据3,407,872→262,144B（本机HTTP与内存IDB模拟，不是线上速度）。修正旧缓存键自测。Godot4.7.1导出、完整性和首包依赖通过；桌面/触控浏览器2050检查、loader50、cache45、切片7组、分包8组通过。source-input `9d7eb0ba35c64333a1c364ea069edc8e283f48a2ffec5aa9804fc103ad5de7f1`，本机5241预览已切换，旧页面未强刷；未提交、推送或远端发布。首次旧包分组升级缓存不能跨PCK身份复用，首包因并行箱子资源略增至76.07MB。证据、范围与清理见 `godot_native/docs/PERFORMANCE_FINE_LOADING_20261023.md/.json`。
+
+## 2026-10-23 — 实际懒加载、传输压缩与手机返回
+
+将后续剧情宿主、人物帧、寝室对象、第四章守卫和配电柜图集改为在资源准入后首次使用才创建/读取，重进复用、离开停用。按实际依赖移动98项原启动资源到后续章节；完整资源保留。新增gzip生成/摘要/解压验证、协商HTTP服务器与Nginx示例，49项实际HTTP检查通过。浏览器章节准入与下一章预取不变，不声称逐物件网络流式或卸载已挂载PCK。
+
+冻结导出web-lazy-phone-ready-20261023，source-input80859ae6e59d7df48210b9967df2750d9aa07e88352d04fdb0fb2d407c17ece1，初始载荷65,118,506B，gzip31,735,482B。相同20Mbps/60ms真实Chromium对比旧9d7：桌面/手机模拟冷启动34.895/35.267→16.212/16.221秒，暖重启3.242/3.303→3.219/3.254秒。实际冷传输76.13→31.85MB；暖启动0启动块请求，仍有清单HTTP，未宣称零网络、实体手机或FPS提升。详见PERFORMANCE_LAZY_LOADING_20261023.md及外部实测报告。
+
+去除缓存就绪提示和来源页面重复返回现场行，按当前渲染页统一应用返回；体艺保留原网络/客户端行为。认证改为对白暗藏线索，原密码、失败/锁定规则不变。真实浏览器先发现认证页touch不滚动，修正content和内部控件的事件透传，未新增滚动器或全局输入设置。真实桌面869、触控870、图书馆交接885检查通过；原生触摸52、认证62、滚动396及主宿主13组5652项通过。前一冻结4c366591的断流/重试/缓存1048项继续保留其真实来源。失败报告未改写；自有浏览器/原生隔离目录按标记清理，已审阅临时截图留摘要后清理。后续Learn入口重构独立验收，不冒充此冻结测量。
+
+## 2026-10-23 — 学在浙大入口改为独立原生控件
+
+实看用户当前页确认其为整张zjuding_home图+透明签到热区。新增native_learn_page.gd，保留晨景和课程插图局部AtlasTexture，标题/课时/签到册印章/课程/通知/底栏均原生重建，统一图标底色；课程和通知为本页只读层，原签到门槛及输入/回执不变。首次功能验收通过后，真实截图揭示TextureRect纹理最小尺寸导致图片压字；修正赋值顺序与裁切，并加入旧顺序负例和真实屏幕边界检查，原生1407项通过。随后裁掉课程图中的旧图标残片。
+
+最终web-lazy-learn-release-20261023，source-input795a779baadfc7d5ea7aecf4c157656cbc3c543c5383ecfe76dba1059a7dbb74，初始原始65,127,138B/gzip31,744,779B。实际手机878项签到链路通过；桌面878项来自仅两处插图裁切前e8b01bf0版本。涵盖普通入口、信息阅读、返回、错误/正确输入、打印暂停/恢复和字流衔接。构建verify-only通过；5241以Node gzip服务守卫切换并核对真实WASM压缩响应，PID63423，未强刷用户旧页；5242 QA服务已停、5243字体页未动。25张QA图与合成图留摘要清理，保留review/native-learn-mobile.png供用户查看。无Git提交/推送或远端部署。详见NATIVE_LEARN_REBUILD_20261023.md/.json。
+
+## 2026-10-23 - Godot source upload preparation
+
+User selected the 471-file source scope for zhu607705-coder/7-55-godot after working-tree and both-remote review. Exclude the local RodinBridge installation/activation and automatic cache/backup files; keep the original checkout and unrelated work. Both remotes fetched successfully using a per-command existing proxy override. Direct Git write authentication is unavailable, so delivery uses the authenticated GitHub connector and an isolated source-review branch. Retained Web release has 34 initial passes plus 4 successful media-validator reruns after adding existing ffprobe/ffmpeg directories to subprocess PATH. Full native validation is still running; focused runtime/browser evidence remains in its original dated records. Source upload is separate from merge and production deployment.
+
+Upload regression follow-up: canteen waiting now enters the owning chapter before accessing its deferred host and asserts no early allocation; C2 navigation uses explicit inner overflow instead of requiring the redesigned home to overflow; reversal reload keeps its manual test clock disabled across deferred host activation, retaining the exact zero-time, cancellation and reward checks. All three corrected tests pass in isolated Godot 4.7.1. The latter two previously unchanged tests are necessary additions to the original 471-file selection (473 paths total). Full native validation retains its original failures and supplemental reruns; the Chapter 4 legacy bag-clearance expectation remains unresolved. GitHub CLI 2.103.0 was installed outside the repository from the official release with its published SHA-256 verified, and the user completed device authorization as the repository owner. No token is stored in the project.
+
+Cloud review follow-up (2026-10-23): source uploaded as 7ff90c2 and Draft PR #2 in 7-55-godot. CI found build_web checked ignored/generated panorama tiles before its clean-checkout synchronization step. Move the existing version check and preparation before the unchanged strict tile/manifest verifier; syntax and seven lossless tile checks pass locally. Restore only the review-tree frozen nearshore .blend to its existing receipt; keep the user working .blend unchanged in the original checkout. Effective worktree delivery is 472 paths: original 471 minus the frozen-sample replacement plus two required regression fixtures. Do not rewrite either frozen acceptance evidence or old failing reports. Native full validation and clean-SHA cloud acceptance remain separate gates.
+
+## 2026-10-23 — Godot merge and original-repository upload
+
+At the user's request, marked Godot PR #2 ready and merged its exact head 75d0abc as e66550c2be4f8d17eed0fcb2454d9a0730eda9fb, with GitHub confirming the merge. Uploaded the same source to the original 7-55 repository and opened PR #164 against main. The original work branch, uncommitted edits, local RodinBridge configuration and frozen-sample draft remain intact; the original index has no staged paths. No new backup or stash was created.
+
+The clean-cloud production Godot Web export and retained Web CI passed at 75d0abc. The next acceptance step exposed an old exact-line assertion in test_web_save_diagnostics.mjs: new focused scenarios had extended the dispatch without removing its original paths. Replace that textual assertion with execution of the actual dispatch and profile expression using inert scenario stubs. All 12 original modes retain exact profile coverage, focused initialization and scenario invocation order; 138 pure Node checks pass. Readonly save-diagnostic limits and strict no-write checks remain unchanged. This verifies the test harness, not real browser persistence or complete native gameplay. The full native report retains its unresolved failures and three supplemental corrected-case passes; no all-green acceptance claim is made.
+
+## 2026-10-24 — Original-repository merge handoff
+
+User explicitly requested merging the uploaded original-repository PR #164. Fetched origin and reviewed the working tree, PR commits and remote-only commits: 152 modified and 358 untracked local paths, no staged paths, PR head 14 commits ahead of main, and no new main commits outside the selected ancestry. Retain the original work branch and all unselected working changes. Godot source and assets remain the previously selected 20261023 batch; this dated handoff introduces no archive or artwork.
+
+At cd359b9, retained Web CI and the actual Godot Web production build passed. Content transport checks then failed at the fixture's resumed-chunk wait, which allowed only 500 immediate-loop turns despite real WebCrypto and deliberate timer yields. The same 50 checks passed locally. Replace that CPU-speed-dependent turn budget with a 5-second monotonic deadline and timer yields, retaining the original assertions, integrity checks, cancellation and native-mount acknowledgement. This is a Node transport-fixture correction, not evidence of actual browser or full native acceptance. Prior full native report completed 516 stages with 503 passes and 13 original failures, including a formal continuity timeout; three affected initialization fixtures passed separate corrected reruns. Preserve that evidence and the production deployment gate.
+
+Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic checks. A controlled 20ms delay around real WebCrypto reproduced the old turn-budget timeout; the corrected deadline version passed the same original loader assertions under that delay. Control scripts and logs stay outside the repository under the 20261024 merge verification directory. The runtime content loader hash remains 123525c2a5cebc21ca739eb1d70aa4caee4ac7f425d94341feac6d22b14b3036.
+
+## 2026-10-24 — PR #163 compatibility and exact observation contracts
+
+- The user requested continuing the earlier PR delivery. Re-fetched actual Godot `main` at `926cfe9983bdb044850435dbb09c3bbe9d1d1ebe` and existing #163 head `34fb170`; #164 was already externally merged. Preserve both histories with a two-parent integration, not a force-push or replacement by the old Godot branch. The only content conflicts were the acceptance runner's terminal evidence and appended progress notes: retain both the save-input evidence and main's browser stderr evidence, and preserve both log histories.
+- Reconstructed the bounded Performance diagnostic against the new main runner. Before stable save-button discovery, attempt CDP Performance enable at most once per session and read one cumulative metric sample; read one more only after the original receipt and independent disk verification finish or fail. Each diagnostic command has its own one-second bound. Unsupported metrics do not replace functional results. No sampling is inserted inside the receipt loop or between final stable geometry and the one click. The original receipt function stays byte-identical; production's 20-second and acceptance's 30-second deadlines, exact token/hash and actual reload remain unchanged. Raw CDP Frames is DOM-frame count, not FPS.
+- Correct the separately identified native visibility-test clock contract. Record each voice/effect/pending initial deadline independently. Require all three actual resume increments to be exactly equal and inside the real before/after presentation-clock bracket. Do not assume separate reads share a millisecond. Keep all hidden-time, authored remaining-time and elapsed bounds; include twelve deterministic positive/negative contract checks and actual clock values on failure. No production audio, storage, input, UI, engine or asset changes are introduced.
+- New local checks on this merged candidate: workflow-pinned Node 22.23.3 passes input completion 27, save diagnostics 193, workflow 11 and bundle 40; syntax checks pass. Lifecycle is 21/22 under that local Node because the cloud proxy bootstrap appends its UNDICI-EHPA warning to a fixture's exact stderr expectation. Preserve that failed log and unchanged assertion/proxy configuration. System Node 24.22.1 passes the same 22 lifecycle checks; this is separate environment evidence, not a substitute for official Node-22 CI.
+- The official pinned Godot 4.7.1 ZIP and executable hashes were verified. New isolated headless checks pass: native save isolation, resource import/parse, AudioDirector (4646 checks), Chapter 4 audio ownership (12), and Web visibility (45). Three additional pre-planned isolated visibility runs each passed 45 checks on their first attempt (3191/3320/3212ms), without failure retries. These focused results are not a full Native or real-browser acceptance claim. Previously failed 34fb runs and the intermittent real save watchdog failure remain historical evidence, not repaired-runtime claims.
+- Main already contains the separate `direct_world` runtime and its real input scenario, including physical approach after a remote object tap. Preserve its current code rather than applying the previous unpublished joystick-only fixture patch or treating old local results as current acceptance. The user's input-contract choice remains a merge decision; this tooling patch does not approve or reverse that runtime change. Keep #163 unmerged pending that decision and exact-head CI.

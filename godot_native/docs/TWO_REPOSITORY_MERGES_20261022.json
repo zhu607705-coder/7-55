@@ -1,0 +1,241 @@
+{
+  "schema": "755-two-repository-merge-v2",
+  "date": "2026-10-22",
+  "approvedScope": "Private PR1 and public PR105/155/156/157/158/159, followed by explicit approval of160; integrate158/159/160 locally while preserving existing work without uploading it",
+  "pullRequests": [
+    {
+      "repo": "zhu607705-coder/7-55",
+      "number": 105,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/105",
+      "state": "closed",
+      "merged": true,
+      "commit": "ea2b95bb61dc34ba8e0afeb9e513353d41b6b006"
+    },
+    {
+      "repo": "zhu607705-coder/7-55",
+      "number": 155,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/155",
+      "state": "closed",
+      "merged": true,
+      "commit": "8a0ede389ae3e366474cc52642cd6cfc6ab436de"
+    },
+    {
+      "repo": "zhu607705-coder/7-55",
+      "number": 156,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/156",
+      "state": "closed",
+      "merged": true,
+      "commit": "2d8e3257540c40f492c904f9f1961bc5e63e5f60"
+    },
+    {
+      "repo": "zhu607705-coder/7-55",
+      "number": 157,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/157",
+      "state": "closed",
+      "merged": true,
+      "commit": "c5a41bd2566502eaa10c4954af95568990fca9bc"
+    },
+    {
+      "repo": "zhu607705-coder/7-55",
+      "number": 158,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/158",
+      "state": "closed",
+      "merged": true,
+      "commit": "60e996d394ba7b33716a4d3a287a1536b3b8d4c2"
+    },
+    {
+      "repo": "zhu607705-coder/7-55",
+      "number": 159,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/159",
+      "state": "closed",
+      "merged": true,
+      "commit": "3ee0eb5ec62eee4bd86e4a0527093ccbaf2ff999"
+    },
+    {
+      "repo": "zhu607705-coder/7-55-godot-20261020",
+      "number": 1,
+      "url": "https://github.com/zhu607705-coder/7-55-godot-20261020/pull/1",
+      "state": "closed",
+      "merged": true,
+      "commit": "3d8b69bd4c749f65fe5acbc146ed2e2a7967f31a"
+    },
+    {
+      "repo": "zhu607705-coder/7-55",
+      "number": 160,
+      "url": "https://github.com/zhu607705-coder/7-55/pull/160",
+      "state": "closed",
+      "merged": true,
+      "commit": "32dfc73c113de980ca42b1c48a893d068e122127",
+      "verifiedHead": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    }
+  ],
+  "publicMainCommit": "32dfc73c113de980ca42b1c48a893d068e122127",
+  "publicMainTree": "1b67cf864e46639b02a877e4d55ccfb71a22166c",
+  "privateMerge": "3d8b69bd4c749f65fe5acbc146ed2e2a7967f31a",
+  "local": {
+    "branch": "codex/progressive-world-puzzles-20261020",
+    "head": "457087fe737e4ce0bb01d2bcb651297762a9ba45",
+    "merges": [
+      "1c4d4c9",
+      "5fa05f4",
+      "da584c5",
+      "457087f"
+    ],
+    "aheadOfTrackedBranch": 37,
+    "uncommittedWorkUploaded": false,
+    "originalChangedFiles": 356,
+    "backupVerified": true,
+    "stashRetained": "d91d65561194fb742ee46e51514b2a6a4b81e706",
+    "backupDirectory": "/Users/zhu/Library/Application Support/755-tools/merge-backups/two-repos-20261022",
+    "followup": "Exclude independent sample consumers from production presets; update stale105 status. Later user-requested character scale and toolkit guidance remain uncommitted.",
+    "pre160OriginalFiles": 360,
+    "pre160StashRetained": "ec88d67ec38e5ec43cfa8ff8446f07fe71b8fcba",
+    "adaptation": "godot_native/docs/PR160_LOCAL_ADAPTATION_20261022.json"
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5241/",
+    "serverRecord": "/tmp/755-two-repos-delivery-server-20261022.json",
+    "existingBrowserGameNotReloaded": true,
+    "sourceInputSha256": "818681ab15ca8c68d34bb92965e6ce6930336eec93815763f349107362fc3276",
+    "export": "godot_native/exports/web-pr160-integrated-20261022"
+  },
+  "remoteCiObserved": [
+    {
+      "id": 39781321168,
+      "name": "Web CI",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321168"
+    },
+    {
+      "id": 39781321423,
+      "name": "Godot native migration",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321423"
+    },
+    {
+      "id": 39781321068,
+      "name": "Native cross-PR integration",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321068"
+    },
+    {
+      "id": 39781321260,
+      "name": "Deploy Godot Web to GitHub Pages",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39781321260"
+    }
+  ],
+  "newPullRequest": {
+    "number": 160,
+    "userApproved": true,
+    "merged": true,
+    "commit": "32dfc73c113de980ca42b1c48a893d068e122127",
+    "localOverlapAtFinalHead": 10
+  },
+  "limitations": [
+    "No physical-mobile or fresh full manual campaign acceptance",
+    "Uncommitted local UI/assets, character followup, toolkit guidance and adaptation were not pushed",
+    "Remote full native and new-main checks are in progress; prior Pages failed the initial payload budget and did not publish"
+  ],
+  "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/merge-backups/two-repos-20261022",
+  "pre160PublicMain": {
+    "commit": "ea2b95bb61dc34ba8e0afeb9e513353d41b6b006",
+    "tree": "61ce51900ead177043a6d666116c2b699a2778a6",
+    "parentMergeTreesEqual": true
+  },
+  "publicMainContainsAllSevenSelectedPublicHeads": true,
+  "pre160Validation": {
+    "nativeStages": 32,
+    "nativeFailed": 0,
+    "crossPrStaticChecks": 2834,
+    "crossPrRuntimeStages": 35,
+    "crossPrFailures": 0,
+    "retainedWebReleaseValidators": 38,
+    "desktopWordBrowserChecks": 542,
+    "touchWordBrowserChecks": 542,
+    "sourceInputSha256": "7c2a8766fbb3150098e366d0939b23237483c10caa609464085afc44c302f46f",
+    "webExport": "godot_native/exports/web-pr158-pr159-20261022",
+    "nativeGpuFrames": 29,
+    "maximumRecordedFootPedalError": 0.000285034795524552,
+    "exportVerifyOnly": true
+  },
+  "validation": {
+    "engine": "4.7.2.stable.official.ed1daf0bf",
+    "sourceSyncAssets": 719,
+    "nativeFinalStages": 53,
+    "nativeFailures": 0,
+    "rootTouchChecks": 317,
+    "rootTouchFailures": 0,
+    "room204ChecksAfterOutsideTouchExtension": 162,
+    "room204Failures": 0,
+    "crossPrStaticChecks": 2839,
+    "crossPrRuntimeStages": 35,
+    "crossPrFailures": 0,
+    "retainedWebReleaseValidators": 38,
+    "browserDesktopChecks": 554,
+    "browserTouchChecks": 556,
+    "browserFailures": 0,
+    "actualLocalGpuCaptures": 18,
+    "actualLocalGpuChecks": 96,
+    "actualLocalGpuFailures": 0,
+    "sourceInputSha256": "818681ab15ca8c68d34bb92965e6ce6930336eec93815763f349107362fc3276",
+    "export": "godot_native/exports/web-pr160-integrated-20261022",
+    "sourceDirty": true,
+    "verifyOnlyPassed": true,
+    "firstFailedAttemptsRetained": [
+      "adapted-native.json: old lake HUD assertion; updated to real confirmed target",
+      "interaction-regressions.json: modal item focus; fixed capture order and rerun"
+    ]
+  },
+  "pr160CiObserved": [
+    {
+      "id": 39777271304,
+      "name": "Godot native migration",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777271304",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    },
+    {
+      "id": 39777271242,
+      "name": "Web CI",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777271242",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    },
+    {
+      "id": 39777271235,
+      "name": "Native cross-PR integration",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777271235",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    },
+    {
+      "id": 39777262180,
+      "name": "Native mobile touch proof",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/zhu607705-coder/7-55/actions/runs/39777262180",
+      "head_sha": "77633d526a9ef605b3477cef35b87bb333f9cbbd"
+    }
+  ],
+  "remotePagesPriorRun": {
+    "commit": "ea2b95bb61dc34ba8e0afeb9e513353d41b6b006",
+    "run": 39773387529,
+    "status": "failure",
+    "failedStep": "Check immutable build provenance",
+    "reason": "Initial payload exceeds unchanged100,000,000-byte release budget",
+    "initialPayloadBytes": 101337784,
+    "budgetBytes": 100000000,
+    "publish": "skipped",
+    "newMainRun": 39781321260,
+    "newMainRunStatus": "in_progress",
+    "uncommittedLocalPackageInitialPayloadBytes": 98959441
+  }
+}

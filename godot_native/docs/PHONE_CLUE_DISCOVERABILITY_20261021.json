@@ -1,0 +1,646 @@
+{
+  "schema": "phone-clue-layout-acceptance-v1",
+  "updatedAt": "2026-10-20T18:06:17.370889+00:00",
+  "status": "accepted-unified-local-artifact",
+  "scope": "Native Godot phone layout and clue discoverability. Original controller gates, text sequence, evidence IDs, and acquisition actions retained. No claimed full earned campaign or physical-device acceptance.",
+  "sourceFiles": {
+    "scripts/main.gd": "7c894e9c74dc50bb40aeb5b01160d6ac26fb999d6292f4ec3e5b32732da8cd03",
+    "scripts/ui/phone_pages.gd": "a98c686aac1776da3ad541a48728b8bffdc892b8916ad023be2433c5c26d3804",
+    "scripts/ui/cc98_investigation_page.gd": "62cd3ed1c9b8ae59eebe7c225eaf00d4fa34a00a1cf0cde6cfbe4d9e5bda40ce",
+    "scripts/ui/native_ui_theme.gd": "0b2cb4adc4d26fb9cba8601d41e68286fcde4ed4d667f13b6d873a102f8c73bb",
+    "tests/test_phone_clue_discoverability.gd": "35b7879e5ac5685f005a4a1ebd5e1277df6236f14074acc4ccd231e0a10d7d15"
+  },
+  "baseline": [
+    {
+      "id": "public",
+      "url": "https://zhu607705-coder.github.io/7-55/",
+      "sourceInputSha256": "6dfc3931ceae7457cd6016a6f854f5a6423bfa181c1d06dc59e5cc82d25db994",
+      "report": "exports/verification/phone_clue_layout_20261021/public/report.json",
+      "sha256": "f0113cf5801177a9243ea311e9ddb2b13cd4dde3f3a9114a89676c9f874216fe",
+      "profiles": 1,
+      "pageCases": 2,
+      "browserErrors": []
+    },
+    {
+      "id": "local-reset",
+      "url": "http://127.0.0.1:5237/",
+      "sourceInputSha256": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+      "report": "exports/verification/phone_clue_layout_20261021/local-reset/report.json",
+      "sha256": "210079b01cf65bc0f138e5b97c9bc7fa83cdc9bd987c06b601e4cecc1fb5de06",
+      "profiles": 3,
+      "pageCases": 18,
+      "browserErrors": []
+    }
+  ],
+  "verifiedIssue": [
+    {
+      "page": "CC98 witness thread",
+      "old": "Fixed >=120px body text allocation plus 64px chrome for single-line 如题。, fixed143px reply cards; keyword action below first viewport.",
+      "measuredBeforeRootY": {
+        "390x844": 976.69,
+        "360x640": 845.62,
+        "430x932": 1081.31
+      },
+      "fix": "Measure unchanged source text with the original font; retain all replies and final keyword summary in order. First-screen reply anchor changes only the existing outer scroll position."
+    },
+    {
+      "page": "CC98 evidence investigation",
+      "old": "Authored long thread with catalog copy at y864.99 and proof slots at y2064 at390x844. An uploader anchor already existed; no parallel reading navigation.",
+      "fix": "Keep uploader anchor and add adjacent first-screen reading anchor, without promoting replies or unearned BD evidence."
+    },
+    {
+      "page": "Generic CC98 source threads",
+      "old": "The collapsed inventory handle, count badge and shadow could cover the first character of source author/reply text at some scroll positions.",
+      "fix": "Keep card rectangles and source text/order; move the readable content column to x48, preserve its right edge, and measure the remaining306px width with the original font. Five scroll positions per profile are sampled against actual handle/badge/shadow geometry."
+    }
+  ],
+  "webFinal": {
+    "sourceInputSha256": "9970179ac94c1afcfa3a4d7036a2fe95d9908de50eb4294ccd28fd1b4bac3c69",
+    "artifactDirectory": "exports/web-phone-legibility-v2-20261021",
+    "url": "http://127.0.0.1:5239/",
+    "status": "accepted",
+    "engines": [
+      {
+        "engine": "chromium",
+        "report": "exports/verification/phone_clue_layout_20261021/final-v2-chromium/report.json",
+        "sha256": "752e116fb9245c8e7074af3fd702b491a27c274f59de9f771eeac0260a579914",
+        "profiles": [
+          {
+            "viewport": [
+              390,
+              844
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 844,
+                "width": 390,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 732,
+                "width": 366,
+                "x": 12,
+                "y": 56
+              },
+              "browser": {
+                "innerWidth": 390,
+                "innerHeight": 844,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 390,
+                  "height": 844
+                },
+                "canvas": {
+                  "width": 390,
+                  "height": 844
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "390-witness-first.png",
+              "390-witness-replies.png",
+              "390-investigation-first.png",
+              "390-investigation-uploader.png"
+            ]
+          },
+          {
+            "viewport": [
+              360,
+              640
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 640,
+                "width": 360,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 604,
+                "width": 302,
+                "x": 29,
+                "y": 18
+              },
+              "browser": {
+                "innerWidth": 360,
+                "innerHeight": 640,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 360,
+                  "height": 640
+                },
+                "canvas": {
+                  "width": 360,
+                  "height": 640
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "360-witness-first.png",
+              "360-witness-replies.png",
+              "360-investigation-first.png",
+              "360-investigation-uploader.png"
+            ]
+          },
+          {
+            "viewport": [
+              430,
+              932
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 932,
+                "width": 430,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 812,
+                "width": 406,
+                "x": 12,
+                "y": 60
+              },
+              "browser": {
+                "innerWidth": 430,
+                "innerHeight": 932,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 430,
+                  "height": 932
+                },
+                "canvas": {
+                  "width": 430,
+                  "height": 932
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "430-witness-first.png",
+              "430-witness-replies.png",
+              "430-investigation-first.png",
+              "430-investigation-uploader.png"
+            ]
+          }
+        ]
+      },
+      {
+        "engine": "firefox",
+        "report": "exports/verification/phone_clue_layout_20261021/final-v2-firefox/report.json",
+        "sha256": "d499715e81ba5c8c0b2f9f14d9e12ca7c96a2594ea8b4bc033764f0f4f0ad785",
+        "profiles": [
+          {
+            "viewport": [
+              390,
+              844
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 844,
+                "width": 390,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 732,
+                "width": 366,
+                "x": 12,
+                "y": 56
+              },
+              "browser": {
+                "innerWidth": 390,
+                "innerHeight": 844,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 390,
+                  "height": 844
+                },
+                "canvas": {
+                  "width": 390,
+                  "height": 844
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "390-witness-first.png",
+              "390-witness-replies.png",
+              "390-investigation-first.png",
+              "390-investigation-uploader.png"
+            ]
+          },
+          {
+            "viewport": [
+              360,
+              640
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 640,
+                "width": 360,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 604,
+                "width": 302,
+                "x": 29,
+                "y": 18
+              },
+              "browser": {
+                "innerWidth": 360,
+                "innerHeight": 640,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 360,
+                  "height": 640
+                },
+                "canvas": {
+                  "width": 360,
+                  "height": 640
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "360-witness-first.png",
+              "360-witness-replies.png",
+              "360-investigation-first.png",
+              "360-investigation-uploader.png"
+            ]
+          },
+          {
+            "viewport": [
+              430,
+              932
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 932,
+                "width": 430,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 812,
+                "width": 406,
+                "x": 12,
+                "y": 60
+              },
+              "browser": {
+                "innerWidth": 430,
+                "innerHeight": 932,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 430,
+                  "height": 932
+                },
+                "canvas": {
+                  "width": 430,
+                  "height": 932
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "430-witness-first.png",
+              "430-witness-replies.png",
+              "430-investigation-first.png",
+              "430-investigation-uploader.png"
+            ]
+          }
+        ]
+      },
+      {
+        "engine": "webkit",
+        "report": "exports/verification/phone_clue_layout_20261021/final-v2-webkit/report.json",
+        "sha256": "71e95f268905fbd1b524198071ba053cb02ec5a13d947d8f3a803740d265b79a",
+        "profiles": [
+          {
+            "viewport": [
+              390,
+              844
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 844,
+                "width": 390,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 732,
+                "width": 366,
+                "x": 12,
+                "y": 56
+              },
+              "browser": {
+                "innerWidth": 390,
+                "innerHeight": 844,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 390,
+                  "height": 844
+                },
+                "canvas": {
+                  "width": 390,
+                  "height": 844
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "390-witness-first.png",
+              "390-witness-replies.png",
+              "390-investigation-first.png",
+              "390-investigation-uploader.png"
+            ]
+          },
+          {
+            "viewport": [
+              360,
+              640
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 640,
+                "width": 360,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 604,
+                "width": 302,
+                "x": 29,
+                "y": 18
+              },
+              "browser": {
+                "innerWidth": 360,
+                "innerHeight": 640,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 360,
+                  "height": 640
+                },
+                "canvas": {
+                  "width": 360,
+                  "height": 640
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "360-witness-first.png",
+              "360-witness-replies.png",
+              "360-investigation-first.png",
+              "360-investigation-uploader.png"
+            ]
+          },
+          {
+            "viewport": [
+              430,
+              932
+            ],
+            "passed": true,
+            "assertions": 18,
+            "errors": [],
+            "environment": {
+              "root": {
+                "height": 932,
+                "width": 430,
+                "x": 0,
+                "y": 0
+              },
+              "phone": {
+                "height": 812,
+                "width": 406,
+                "x": 12,
+                "y": 60
+              },
+              "browser": {
+                "innerWidth": 430,
+                "innerHeight": 932,
+                "dpr": 1,
+                "visualViewport": {
+                  "width": 430,
+                  "height": 932
+                },
+                "canvas": {
+                  "width": 430,
+                  "height": 932
+                },
+                "documentOverflow": false
+              }
+            },
+            "snapshotReference": "report.json cases[].witnessFirstControls",
+            "screenshots": [
+              "430-witness-first.png",
+              "430-witness-replies.png",
+              "430-investigation-first.png",
+              "430-investigation-uploader.png"
+            ]
+          }
+        ]
+      }
+    ],
+    "profileCount": 9,
+    "assertionsPassed": 162,
+    "assertionsFailed": 0,
+    "consolePageAndScriptErrors": 0,
+    "viewportEvidence": "Each fresh context has exact matching CSS inner dimensions, Godot root viewport and canvas dimensions; phone remains1:2 and reply target is >=28CSSpx. Real touch uses original production controls.",
+    "preservedRules": [
+      "Opening or navigating the thread never grants evidence.",
+      "Original reply order and final summary remain unchanged.",
+      "Only the original explicit record action grants the existing keyword.",
+      "Uploader navigation does not submit, consume or generate proof.",
+      "Unearned BD controls remain hidden."
+    ]
+  },
+  "screenshots": {
+    "index": "exports/verification/phone_clue_layout_20261021/qa-contact-review/index.json",
+    "indexSha256": "0788020eb58abd714fd7c05313c45eb6513f0ddb424fe84b71a43d616262bf84",
+    "reviewedFinalBrowserFrames": 36,
+    "reviewedFinalNativeFrames": 6,
+    "cleanupReceipt": "exports/verification/phone_clue_layout_20261021/qa-cleanup-receipt.json",
+    "cleanupReceiptSha256": "ed7d926d7770ce27610829db78b0b19b8b2fedf3085ecfd9a741c0eca3f9c888",
+    "deletedTemporaryQaFrames": 144,
+    "deletedTemporaryContactSheets": 24,
+    "sourceAssetsDeleted": 0
+  },
+  "nonAcceptedExploration": "The earlier local/ run was interrupted after discovering stale app-local UI from importing two same-page fixtures without an ordinary phone-home route reset. It is retained as diagnostic only; local-reset/ and final acceptance use ordinary route resets.",
+  "remaining": [],
+  "nativeV1Baseline": {
+    "report": "exports/verification/phone_clue_layout_20261021/acceptance-final-native.json",
+    "sha256": "6dfa3e81128603443122632a31bd2fdda9c0727b74a91b8c3dfdf261ddb00919",
+    "tests": [
+      {
+        "name": "test_cc98_investigation_layout.gd",
+        "passed": true
+      },
+      {
+        "name": "test_chapter3_phone_ui.gd",
+        "passed": true
+      },
+      {
+        "name": "test_native_long_form_layout.gd",
+        "passed": true
+      },
+      {
+        "name": "test_native_modal_world_input.gd",
+        "passed": true
+      },
+      {
+        "name": "test_phone_clue_discoverability.gd",
+        "passed": true
+      },
+      {
+        "name": "test_phone_pages.gd",
+        "passed": true
+      },
+      {
+        "name": "test_shell_layout.gd",
+        "passed": true
+      }
+    ],
+    "newDirectTouchAssertions": 96,
+    "profiles": [
+      "390x844",
+      "360x640",
+      "430x932"
+    ],
+    "graphicalRun": "exports/verification/phone_clue_layout_20261021/native-after/stdout.log",
+    "graphicalPassedAssertions": 102,
+    "graphicalCapturesIncludeAssertions": 6
+  },
+  "native": {
+    "report": "exports/verification/phone_clue_layout_20261021/acceptance-v2-native.json",
+    "sha256": "540b7b716315e3646345fe668161c84af7165e38e1e2fd784e3a4b02ed40cb6d",
+    "passedTests": [
+      {
+        "name": "test_cc98_investigation_layout.gd",
+        "passed": true
+      },
+      {
+        "name": "test_phone_clue_discoverability.gd",
+        "passed": true
+      }
+    ],
+    "newDirectTouchAssertions": 102,
+    "existingCc98RegressionAssertions": 447,
+    "profiles": [
+      "390x844",
+      "360x640",
+      "430x932"
+    ],
+    "graphicalRun": "exports/verification/phone_clue_layout_20261021/native-after-v2/stdout.log",
+    "graphicalRunSha256": "c331f4490b93eb8daf9d6d4cfeee1463e81d0d0a7a5325dcdda087f4f22dfd8b",
+    "graphicalChecks": 108,
+    "graphicalIncludesSame102AssertionsPlus6CaptureChecks": true,
+    "graphicalCaptureDimensions": {
+      "investigation-first-430.png": [
+        430,
+        928
+      ],
+      "witness-first-430.png": [
+        430,
+        928
+      ],
+      "witness-first-390.png": [
+        390,
+        844
+      ],
+      "investigation-first-390.png": [
+        390,
+        844
+      ],
+      "witness-first-360.png": [
+        360,
+        640
+      ],
+      "investigation-first-360.png": [
+        360,
+        640
+      ]
+    },
+    "nativeWindowNote": "The native graphical430px-wide window is physically clamped to928px in the captures. The headless layout test uses requested430x932; final isolated browser contexts separately verify exact430x932."
+  },
+  "webV1Baseline": [
+    {
+      "report": "exports/verification/phone_clue_layout_20261021/final-chromium/report.json",
+      "sha256": "8b78a64facaf879d42adc4ab8fa7893ef0c903736f4b9d7e661146bfd39d06e7",
+      "sourceInputSha256": "8e13b312e573723814d02148c8039372dab85b1b0a2ef751e0eb24fee8d9c27f",
+      "completedProfiles": [
+        [
+          390,
+          844
+        ],
+        [
+          360,
+          640
+        ],
+        [
+          430,
+          932
+        ]
+      ],
+      "completedAssertions": 48,
+      "incompleteProfiles": [],
+      "status": "superseded-before-final-matrix-for-inventory-rail-layout-fix"
+    },
+    {
+      "report": "exports/verification/phone_clue_layout_20261021/final-firefox/report.json",
+      "sha256": "fdce5591d227ed03bbb76bfba282cd603de4cf3213e04071f85933918c12d191",
+      "sourceInputSha256": "8e13b312e573723814d02148c8039372dab85b1b0a2ef751e0eb24fee8d9c27f",
+      "completedProfiles": [
+        [
+          390,
+          844
+        ]
+      ],
+      "completedAssertions": 16,
+      "incompleteProfiles": [
+        [
+          360,
+          640
+        ]
+      ],
+      "status": "superseded-before-final-matrix-for-inventory-rail-layout-fix"
+    }
+  ],
+  "deliveryBoundary": "This acceptance binds the local9970179a unified Godot artifact; public deployment is a separate parent-owned step. Original public build remains recorded as baseline."
+}

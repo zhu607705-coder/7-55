@@ -1,0 +1,2826 @@
+{
+  "schemaVersion": 1,
+  "sceneId": "theater_interior",
+  "source": {
+    "asset": "res://assets/rpg/interiors/theater_interior.png",
+    "webPath": "src/assets/rpg/interiors/theater_interior.png",
+    "size": [
+      1672,
+      941
+    ],
+    "sha256": "8de37e1976c36c637b3022df76ce52d81b31a40ce9bbf64a7d82255fd5c9f5d3"
+  },
+  "generatedBundlePolicy": "all_replacement_textures_valid_or_source_atlas_for_all",
+  "objects": [
+    {
+      "id": "upper_left_seats",
+      "category": "seat_group",
+      "label": "upper_left_seats",
+      "sourceCollisionIds": [
+        "upper_left_seats"
+      ],
+      "legacyCoverIds": [
+        "upper_left_seats_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            242,
+            333,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              333
+            ],
+            [
+              528,
+              333
+            ],
+            [
+              531,
+              336
+            ],
+            [
+              531,
+              368
+            ],
+            [
+              528,
+              371
+            ],
+            [
+              245,
+              371
+            ],
+            [
+              242,
+              368
+            ],
+            [
+              242,
+              336
+            ]
+          ],
+          "baselineY": 371,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                333,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                333,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            242,
+            365,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              365
+            ],
+            [
+              528,
+              365
+            ],
+            [
+              531,
+              368
+            ],
+            [
+              531,
+              400
+            ],
+            [
+              528,
+              403
+            ],
+            [
+              245,
+              403
+            ],
+            [
+              242,
+              400
+            ],
+            [
+              242,
+              368
+            ]
+          ],
+          "baselineY": 403,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                365,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                365,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            242,
+            397,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              397
+            ],
+            [
+              528,
+              397
+            ],
+            [
+              531,
+              400
+            ],
+            [
+              531,
+              432
+            ],
+            [
+              528,
+              435
+            ],
+            [
+              245,
+              435
+            ],
+            [
+              242,
+              432
+            ],
+            [
+              242,
+              400
+            ]
+          ],
+          "baselineY": 435,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                397,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                397,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            242,
+            429,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              429
+            ],
+            [
+              528,
+              429
+            ],
+            [
+              531,
+              432
+            ],
+            [
+              531,
+              464
+            ],
+            [
+              528,
+              467
+            ],
+            [
+              245,
+              467
+            ],
+            [
+              242,
+              464
+            ],
+            [
+              242,
+              432
+            ]
+          ],
+          "baselineY": 467,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                429,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                429,
+                48,
+                38
+              ]
+            }
+          ]
+        }
+      ],
+      "collisionFallback": [
+        {
+          "left": 244,
+          "top": 343,
+          "right": 529,
+          "bottom": 369
+        },
+        {
+          "left": 244,
+          "top": 375,
+          "right": 529,
+          "bottom": 401
+        },
+        {
+          "left": 244,
+          "top": 407,
+          "right": 529,
+          "bottom": 433
+        },
+        {
+          "left": 244,
+          "top": 439,
+          "right": 529,
+          "bottom": 465
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 244,
+          "top": 343,
+          "right": 529,
+          "bottom": 369
+        },
+        {
+          "left": 244,
+          "top": 375,
+          "right": 529,
+          "bottom": 401
+        },
+        {
+          "left": 244,
+          "top": 407,
+          "right": 529,
+          "bottom": 433
+        },
+        {
+          "left": 244,
+          "top": 439,
+          "right": 529,
+          "bottom": 465
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "upper_center_seats",
+      "category": "seat_group",
+      "label": "upper_center_seats",
+      "sourceCollisionIds": [
+        "upper_center_seats"
+      ],
+      "legacyCoverIds": [
+        "upper_center_seats_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            622,
+            333,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              333
+            ],
+            [
+              1041,
+              333
+            ],
+            [
+              1044,
+              336
+            ],
+            [
+              1044,
+              368
+            ],
+            [
+              1041,
+              371
+            ],
+            [
+              625,
+              371
+            ],
+            [
+              622,
+              368
+            ],
+            [
+              622,
+              336
+            ]
+          ],
+          "baselineY": 371,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                333,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                333,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            622,
+            365,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              365
+            ],
+            [
+              1041,
+              365
+            ],
+            [
+              1044,
+              368
+            ],
+            [
+              1044,
+              400
+            ],
+            [
+              1041,
+              403
+            ],
+            [
+              625,
+              403
+            ],
+            [
+              622,
+              400
+            ],
+            [
+              622,
+              368
+            ]
+          ],
+          "baselineY": 403,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                365,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                365,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            622,
+            397,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              397
+            ],
+            [
+              1041,
+              397
+            ],
+            [
+              1044,
+              400
+            ],
+            [
+              1044,
+              432
+            ],
+            [
+              1041,
+              435
+            ],
+            [
+              625,
+              435
+            ],
+            [
+              622,
+              432
+            ],
+            [
+              622,
+              400
+            ]
+          ],
+          "baselineY": 435,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                397,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                397,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            622,
+            429,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              429
+            ],
+            [
+              1041,
+              429
+            ],
+            [
+              1044,
+              432
+            ],
+            [
+              1044,
+              464
+            ],
+            [
+              1041,
+              467
+            ],
+            [
+              625,
+              467
+            ],
+            [
+              622,
+              464
+            ],
+            [
+              622,
+              432
+            ]
+          ],
+          "baselineY": 467,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                429,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                429,
+                48,
+                38
+              ]
+            }
+          ]
+        }
+      ],
+      "collisionFallback": [
+        {
+          "left": 624,
+          "top": 343,
+          "right": 1042,
+          "bottom": 369
+        },
+        {
+          "left": 624,
+          "top": 375,
+          "right": 1042,
+          "bottom": 401
+        },
+        {
+          "left": 624,
+          "top": 407,
+          "right": 1042,
+          "bottom": 433
+        },
+        {
+          "left": 624,
+          "top": 439,
+          "right": 1042,
+          "bottom": 465
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 624,
+          "top": 343,
+          "right": 1042,
+          "bottom": 369
+        },
+        {
+          "left": 624,
+          "top": 375,
+          "right": 1042,
+          "bottom": 401
+        },
+        {
+          "left": 624,
+          "top": 407,
+          "right": 1042,
+          "bottom": 433
+        },
+        {
+          "left": 624,
+          "top": 439,
+          "right": 1042,
+          "bottom": 465
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "upper_right_seats",
+      "category": "seat_group",
+      "label": "upper_right_seats",
+      "sourceCollisionIds": [
+        "upper_right_seats"
+      ],
+      "legacyCoverIds": [
+        "upper_right_seats_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            1138,
+            333,
+            291,
+            38
+          ],
+          "polygon": [
+            [
+              1141,
+              333
+            ],
+            [
+              1426,
+              333
+            ],
+            [
+              1429,
+              336
+            ],
+            [
+              1429,
+              368
+            ],
+            [
+              1426,
+              371
+            ],
+            [
+              1141,
+              371
+            ],
+            [
+              1138,
+              368
+            ],
+            [
+              1138,
+              336
+            ]
+          ],
+          "baselineY": 371,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1138,
+                333,
+                291,
+                38
+              ],
+              "donorRect": [
+                1445,
+                333,
+                20,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            1138,
+            365,
+            291,
+            38
+          ],
+          "polygon": [
+            [
+              1141,
+              365
+            ],
+            [
+              1426,
+              365
+            ],
+            [
+              1429,
+              368
+            ],
+            [
+              1429,
+              400
+            ],
+            [
+              1426,
+              403
+            ],
+            [
+              1141,
+              403
+            ],
+            [
+              1138,
+              400
+            ],
+            [
+              1138,
+              368
+            ]
+          ],
+          "baselineY": 403,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1138,
+                365,
+                291,
+                38
+              ],
+              "donorRect": [
+                1445,
+                365,
+                20,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            1138,
+            397,
+            291,
+            38
+          ],
+          "polygon": [
+            [
+              1141,
+              397
+            ],
+            [
+              1426,
+              397
+            ],
+            [
+              1429,
+              400
+            ],
+            [
+              1429,
+              432
+            ],
+            [
+              1426,
+              435
+            ],
+            [
+              1141,
+              435
+            ],
+            [
+              1138,
+              432
+            ],
+            [
+              1138,
+              400
+            ]
+          ],
+          "baselineY": 435,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1138,
+                397,
+                291,
+                38
+              ],
+              "donorRect": [
+                1445,
+                397,
+                20,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            1138,
+            429,
+            291,
+            38
+          ],
+          "polygon": [
+            [
+              1141,
+              429
+            ],
+            [
+              1426,
+              429
+            ],
+            [
+              1429,
+              432
+            ],
+            [
+              1429,
+              464
+            ],
+            [
+              1426,
+              467
+            ],
+            [
+              1141,
+              467
+            ],
+            [
+              1138,
+              464
+            ],
+            [
+              1138,
+              432
+            ]
+          ],
+          "baselineY": 467,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1138,
+                429,
+                291,
+                38
+              ],
+              "donorRect": [
+                1445,
+                429,
+                20,
+                38
+              ]
+            }
+          ]
+        }
+      ],
+      "collisionFallback": [
+        {
+          "left": 1140,
+          "top": 343,
+          "right": 1427,
+          "bottom": 369
+        },
+        {
+          "left": 1140,
+          "top": 375,
+          "right": 1427,
+          "bottom": 401
+        },
+        {
+          "left": 1140,
+          "top": 407,
+          "right": 1427,
+          "bottom": 433
+        },
+        {
+          "left": 1140,
+          "top": 439,
+          "right": 1427,
+          "bottom": 465
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 1140,
+          "top": 343,
+          "right": 1427,
+          "bottom": 369
+        },
+        {
+          "left": 1140,
+          "top": 375,
+          "right": 1427,
+          "bottom": 401
+        },
+        {
+          "left": 1140,
+          "top": 407,
+          "right": 1427,
+          "bottom": 433
+        },
+        {
+          "left": 1140,
+          "top": 439,
+          "right": 1427,
+          "bottom": 465
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "lower_left_seats",
+      "category": "seat_group",
+      "label": "lower_left_seats",
+      "sourceCollisionIds": [
+        "lower_left_seats"
+      ],
+      "legacyCoverIds": [
+        "lower_left_seats_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            242,
+            505,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              505
+            ],
+            [
+              528,
+              505
+            ],
+            [
+              531,
+              508
+            ],
+            [
+              531,
+              540
+            ],
+            [
+              528,
+              543
+            ],
+            [
+              245,
+              543
+            ],
+            [
+              242,
+              540
+            ],
+            [
+              242,
+              508
+            ]
+          ],
+          "baselineY": 543,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                505,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                505,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            242,
+            537,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              537
+            ],
+            [
+              528,
+              537
+            ],
+            [
+              531,
+              540
+            ],
+            [
+              531,
+              572
+            ],
+            [
+              528,
+              575
+            ],
+            [
+              245,
+              575
+            ],
+            [
+              242,
+              572
+            ],
+            [
+              242,
+              540
+            ]
+          ],
+          "baselineY": 575,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                537,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                537,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            242,
+            569,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              569
+            ],
+            [
+              528,
+              569
+            ],
+            [
+              531,
+              572
+            ],
+            [
+              531,
+              604
+            ],
+            [
+              528,
+              607
+            ],
+            [
+              245,
+              607
+            ],
+            [
+              242,
+              604
+            ],
+            [
+              242,
+              572
+            ]
+          ],
+          "baselineY": 607,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                569,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                569,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            242,
+            601,
+            289,
+            38
+          ],
+          "polygon": [
+            [
+              245,
+              601
+            ],
+            [
+              528,
+              601
+            ],
+            [
+              531,
+              604
+            ],
+            [
+              531,
+              636
+            ],
+            [
+              528,
+              639
+            ],
+            [
+              245,
+              639
+            ],
+            [
+              242,
+              636
+            ],
+            [
+              242,
+              604
+            ]
+          ],
+          "baselineY": 639,
+          "cleanBands": [
+            {
+              "targetRect": [
+                242,
+                601,
+                289,
+                38
+              ],
+              "donorRect": [
+                548,
+                601,
+                48,
+                38
+              ]
+            }
+          ]
+        }
+      ],
+      "collisionFallback": [
+        {
+          "left": 244,
+          "top": 515,
+          "right": 529,
+          "bottom": 541
+        },
+        {
+          "left": 244,
+          "top": 547,
+          "right": 529,
+          "bottom": 573
+        },
+        {
+          "left": 244,
+          "top": 579,
+          "right": 529,
+          "bottom": 605
+        },
+        {
+          "left": 244,
+          "top": 611,
+          "right": 529,
+          "bottom": 637
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 244,
+          "top": 515,
+          "right": 529,
+          "bottom": 541
+        },
+        {
+          "left": 244,
+          "top": 547,
+          "right": 529,
+          "bottom": 573
+        },
+        {
+          "left": 244,
+          "top": 579,
+          "right": 529,
+          "bottom": 605
+        },
+        {
+          "left": 244,
+          "top": 611,
+          "right": 529,
+          "bottom": 637
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "lower_center_seats",
+      "category": "seat_group",
+      "label": "lower_center_seats",
+      "sourceCollisionIds": [
+        "lower_center_seats"
+      ],
+      "legacyCoverIds": [
+        "lower_center_seats_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            622,
+            505,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              505
+            ],
+            [
+              1041,
+              505
+            ],
+            [
+              1044,
+              508
+            ],
+            [
+              1044,
+              540
+            ],
+            [
+              1041,
+              543
+            ],
+            [
+              625,
+              543
+            ],
+            [
+              622,
+              540
+            ],
+            [
+              622,
+              508
+            ]
+          ],
+          "baselineY": 543,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                505,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                505,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            622,
+            537,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              537
+            ],
+            [
+              1041,
+              537
+            ],
+            [
+              1044,
+              540
+            ],
+            [
+              1044,
+              572
+            ],
+            [
+              1041,
+              575
+            ],
+            [
+              625,
+              575
+            ],
+            [
+              622,
+              572
+            ],
+            [
+              622,
+              540
+            ]
+          ],
+          "baselineY": 575,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                537,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                537,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            622,
+            569,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              569
+            ],
+            [
+              1041,
+              569
+            ],
+            [
+              1044,
+              572
+            ],
+            [
+              1044,
+              604
+            ],
+            [
+              1041,
+              607
+            ],
+            [
+              625,
+              607
+            ],
+            [
+              622,
+              604
+            ],
+            [
+              622,
+              572
+            ]
+          ],
+          "baselineY": 607,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                569,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                569,
+                48,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            622,
+            601,
+            422,
+            38
+          ],
+          "polygon": [
+            [
+              625,
+              601
+            ],
+            [
+              1041,
+              601
+            ],
+            [
+              1044,
+              604
+            ],
+            [
+              1044,
+              636
+            ],
+            [
+              1041,
+              639
+            ],
+            [
+              625,
+              639
+            ],
+            [
+              622,
+              636
+            ],
+            [
+              622,
+              604
+            ]
+          ],
+          "baselineY": 639,
+          "cleanBands": [
+            {
+              "targetRect": [
+                622,
+                601,
+                422,
+                38
+              ],
+              "donorRect": [
+                548,
+                601,
+                48,
+                38
+              ]
+            }
+          ]
+        }
+      ],
+      "collisionFallback": [
+        {
+          "left": 624,
+          "top": 515,
+          "right": 1042,
+          "bottom": 541
+        },
+        {
+          "left": 624,
+          "top": 547,
+          "right": 1042,
+          "bottom": 573
+        },
+        {
+          "left": 624,
+          "top": 579,
+          "right": 1042,
+          "bottom": 605
+        },
+        {
+          "left": 624,
+          "top": 611,
+          "right": 1042,
+          "bottom": 637
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 624,
+          "top": 515,
+          "right": 1042,
+          "bottom": 541
+        },
+        {
+          "left": 624,
+          "top": 547,
+          "right": 1042,
+          "bottom": 573
+        },
+        {
+          "left": 624,
+          "top": 579,
+          "right": 1042,
+          "bottom": 605
+        },
+        {
+          "left": 624,
+          "top": 611,
+          "right": 1042,
+          "bottom": 637
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "lower_right_seats",
+      "category": "seat_group",
+      "label": "lower_right_seats",
+      "sourceCollisionIds": [
+        "lower_right_seats"
+      ],
+      "legacyCoverIds": [
+        "lower_right_seats_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            1239,
+            503,
+            190,
+            38
+          ],
+          "polygon": [
+            [
+              1242,
+              503
+            ],
+            [
+              1426,
+              503
+            ],
+            [
+              1429,
+              506
+            ],
+            [
+              1429,
+              538
+            ],
+            [
+              1426,
+              541
+            ],
+            [
+              1242,
+              541
+            ],
+            [
+              1239,
+              538
+            ],
+            [
+              1239,
+              506
+            ]
+          ],
+          "baselineY": 541,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1239,
+                503,
+                190,
+                38
+              ],
+              "donorRect": [
+                1445,
+                503,
+                20,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            1138,
+            537,
+            291,
+            38
+          ],
+          "polygon": [
+            [
+              1141,
+              537
+            ],
+            [
+              1426,
+              537
+            ],
+            [
+              1429,
+              540
+            ],
+            [
+              1429,
+              572
+            ],
+            [
+              1426,
+              575
+            ],
+            [
+              1141,
+              575
+            ],
+            [
+              1138,
+              572
+            ],
+            [
+              1138,
+              540
+            ]
+          ],
+          "baselineY": 575,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1138,
+                537,
+                291,
+                38
+              ],
+              "donorRect": [
+                1445,
+                537,
+                20,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            1138,
+            569,
+            291,
+            38
+          ],
+          "polygon": [
+            [
+              1141,
+              569
+            ],
+            [
+              1426,
+              569
+            ],
+            [
+              1429,
+              572
+            ],
+            [
+              1429,
+              604
+            ],
+            [
+              1426,
+              607
+            ],
+            [
+              1141,
+              607
+            ],
+            [
+              1138,
+              604
+            ],
+            [
+              1138,
+              572
+            ]
+          ],
+          "baselineY": 607,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1138,
+                569,
+                291,
+                38
+              ],
+              "donorRect": [
+                1445,
+                569,
+                20,
+                38
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRect": [
+            1138,
+            601,
+            291,
+            38
+          ],
+          "polygon": [
+            [
+              1141,
+              601
+            ],
+            [
+              1426,
+              601
+            ],
+            [
+              1429,
+              604
+            ],
+            [
+              1429,
+              636
+            ],
+            [
+              1426,
+              639
+            ],
+            [
+              1141,
+              639
+            ],
+            [
+              1138,
+              636
+            ],
+            [
+              1138,
+              604
+            ]
+          ],
+          "baselineY": 639,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1138,
+                601,
+                291,
+                38
+              ],
+              "donorRect": [
+                1445,
+                601,
+                20,
+                38
+              ]
+            }
+          ]
+        }
+      ],
+      "collisionFallback": [
+        {
+          "left": 1241,
+          "top": 513,
+          "right": 1427,
+          "bottom": 539
+        },
+        {
+          "left": 1140,
+          "top": 547,
+          "right": 1427,
+          "bottom": 573
+        },
+        {
+          "left": 1140,
+          "top": 579,
+          "right": 1427,
+          "bottom": 605
+        },
+        {
+          "left": 1140,
+          "top": 611,
+          "right": 1427,
+          "bottom": 637
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 1241,
+          "top": 513,
+          "right": 1427,
+          "bottom": 539
+        },
+        {
+          "left": 1140,
+          "top": 547,
+          "right": 1427,
+          "bottom": 573
+        },
+        {
+          "left": 1140,
+          "top": 579,
+          "right": 1427,
+          "bottom": 605
+        },
+        {
+          "left": 1140,
+          "top": 611,
+          "right": 1427,
+          "bottom": 637
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "stage_prop_chest",
+      "category": "furniture",
+      "label": "stage_prop_chest",
+      "sourceCollisionIds": [
+        "stage_prop_chest"
+      ],
+      "legacyCoverIds": [],
+      "parts": [
+        {
+          "sourceRect": [
+            255,
+            145,
+            84,
+            74
+          ],
+          "polygon": [
+            [
+              258,
+              145
+            ],
+            [
+              336,
+              145
+            ],
+            [
+              339,
+              148
+            ],
+            [
+              339,
+              216
+            ],
+            [
+              336,
+              219
+            ],
+            [
+              258,
+              219
+            ],
+            [
+              255,
+              216
+            ],
+            [
+              255,
+              148
+            ]
+          ],
+          "baselineY": 219,
+          "cleanBands": [
+            {
+              "targetRect": [
+                255,
+                145,
+                84,
+                60
+              ],
+              "donorRect": [
+                259,
+                84,
+                76,
+                60
+              ]
+            },
+            {
+              "targetRect": [
+                255,
+                205,
+                84,
+                14
+              ],
+              "donorRect": [
+                258,
+                223,
+                76,
+                14
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": [
+        "theater_prop_box"
+      ],
+      "replacement": {
+        "asset": "res://assets/native/theater_rebuild_20261020/prop_chest.png",
+        "destinationRect": [
+          255,
+          145,
+          84,
+          74
+        ],
+        "anchor": "bottom_center",
+        "requireAlpha": true
+      },
+      "collisionFallback": [
+        {
+          "id": "stage_prop_chest",
+          "left": 259,
+          "top": 191,
+          "right": 334,
+          "bottom": 218
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "id": "stage_prop_chest",
+          "left": 259,
+          "top": 191,
+          "right": 334,
+          "bottom": 218
+        }
+      ]
+    },
+    {
+      "id": "stage_prop_scanner",
+      "category": "furniture",
+      "label": "stage_prop_scanner",
+      "sourceCollisionIds": [
+        "stage_prop_scanner"
+      ],
+      "legacyCoverIds": [],
+      "parts": [
+        {
+          "sourceRect": [
+            341,
+            160,
+            34,
+            55
+          ],
+          "polygon": [
+            [
+              344,
+              160
+            ],
+            [
+              372,
+              160
+            ],
+            [
+              375,
+              163
+            ],
+            [
+              375,
+              212
+            ],
+            [
+              372,
+              215
+            ],
+            [
+              344,
+              215
+            ],
+            [
+              341,
+              212
+            ],
+            [
+              341,
+              163
+            ]
+          ],
+          "baselineY": 215,
+          "cleanBands": [
+            {
+              "targetRect": [
+                341,
+                160,
+                34,
+                45
+              ],
+              "donorRect": [
+                341,
+                109,
+                34,
+                45
+              ]
+            },
+            {
+              "targetRect": [
+                341,
+                205,
+                34,
+                10
+              ],
+              "donorRect": [
+                341,
+                223,
+                34,
+                10
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": [
+        "theater_prop_scanner"
+      ]
+    },
+    {
+      "id": "lighting_console",
+      "category": "furniture",
+      "label": "lighting_console",
+      "sourceCollisionIds": [
+        "lighting_console"
+      ],
+      "legacyCoverIds": [
+        "lighting_console_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            1080,
+            460,
+            118,
+            64
+          ],
+          "polygon": [
+            [
+              1080,
+              460
+            ],
+            [
+              1198,
+              460
+            ],
+            [
+              1198,
+              524
+            ],
+            [
+              1162,
+              524
+            ],
+            [
+              1162,
+              520
+            ],
+            [
+              1120,
+              520
+            ],
+            [
+              1120,
+              524
+            ],
+            [
+              1080,
+              524
+            ]
+          ],
+          "baselineY": 524,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1080,
+                460,
+                118,
+                64
+              ],
+              "donorRect": [
+                1062,
+                460,
+                7,
+                64
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": [
+        "theater_light_console"
+      ],
+      "replacement": {
+        "asset": "res://assets/native/theater_rebuild_20261020/sound_console.png",
+        "destinationRect": [
+          1080,
+          460,
+          118,
+          80
+        ],
+        "anchor": "bottom_center",
+        "requireAlpha": true
+      },
+      "collisionFallback": [
+        {
+          "id": "lighting_console",
+          "left": 1085,
+          "top": 506,
+          "right": 1193,
+          "bottom": 524
+        },
+        {
+          "id": "lighting_console_chair",
+          "left": 1123,
+          "top": 539,
+          "right": 1157,
+          "bottom": 564
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 1091,
+          "top": 523,
+          "right": 1187,
+          "bottom": 540
+        },
+        {
+          "id": "lighting_console_chair",
+          "left": 1123,
+          "top": 539,
+          "right": 1157,
+          "bottom": 564
+        }
+      ]
+    },
+    {
+      "id": "lighting_operator_chair",
+      "category": "furniture",
+      "label": "lighting_operator_chair",
+      "sourceCollisionIds": [],
+      "legacyCoverIds": [],
+      "parts": [
+        {
+          "sourceRect": [
+            1118,
+            520,
+            44,
+            47
+          ],
+          "polygon": [
+            [
+              1126,
+              520
+            ],
+            [
+              1155,
+              520
+            ],
+            [
+              1161,
+              528
+            ],
+            [
+              1158,
+              550
+            ],
+            [
+              1162,
+              559
+            ],
+            [
+              1159,
+              566
+            ],
+            [
+              1121,
+              566
+            ],
+            [
+              1118,
+              558
+            ],
+            [
+              1123,
+              549
+            ],
+            [
+              1121,
+              529
+            ]
+          ],
+          "baselineY": 565,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1118,
+                520,
+                44,
+                47
+              ],
+              "donorRect": [
+                1080,
+                540,
+                24,
+                47
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "poster_case",
+      "category": "furniture",
+      "label": "poster_case",
+      "sourceCollisionIds": [
+        "poster_case"
+      ],
+      "legacyCoverIds": [
+        "poster_case_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            130,
+            665,
+            325,
+            170
+          ],
+          "polygon": [
+            [
+              151,
+              665
+            ],
+            [
+              432,
+              665
+            ],
+            [
+              432,
+              672
+            ],
+            [
+              455,
+              672
+            ],
+            [
+              455,
+              823
+            ],
+            [
+              447,
+              835
+            ],
+            [
+              136,
+              835
+            ],
+            [
+              130,
+              825
+            ],
+            [
+              130,
+              674
+            ],
+            [
+              151,
+              674
+            ]
+          ],
+          "baselineY": 835,
+          "cleanBands": [
+            {
+              "targetRect": [
+                130,
+                665,
+                325,
+                47
+              ],
+              "donorRect": [
+                471,
+                665,
+                15,
+                47
+              ]
+            },
+            {
+              "targetRect": [
+                130,
+                712,
+                325,
+                44
+              ],
+              "donorRect": [
+                655,
+                712,
+                32,
+                44
+              ]
+            },
+            {
+              "targetRect": [
+                130,
+                756,
+                325,
+                79
+              ],
+              "donorRect": [
+                655,
+                756,
+                32,
+                79
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": [
+        "theater_poster"
+      ]
+    },
+    {
+      "id": "lobby_service_cabinet",
+      "category": "furniture",
+      "label": "lobby_service_cabinet",
+      "sourceCollisionIds": [
+        "lost_found_box"
+      ],
+      "legacyCoverIds": [
+        "lost_found_box_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            559,
+            725,
+            74,
+            90
+          ],
+          "polygon": [
+            [
+              562,
+              725
+            ],
+            [
+              630,
+              725
+            ],
+            [
+              633,
+              728
+            ],
+            [
+              633,
+              812
+            ],
+            [
+              630,
+              815
+            ],
+            [
+              562,
+              815
+            ],
+            [
+              559,
+              812
+            ],
+            [
+              559,
+              728
+            ]
+          ],
+          "baselineY": 815,
+          "cleanBands": [
+            {
+              "targetRect": [
+                559,
+                725,
+                74,
+                90
+              ],
+              "donorRect": [
+                643,
+                725,
+                32,
+                90
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": [
+        "theater_charging_station"
+      ],
+      "replacement": {
+        "asset": "res://assets/native/theater_rebuild_20261020/poster_board.png",
+        "destinationRect": [
+          559,
+          725,
+          74,
+          90
+        ],
+        "anchor": "bottom_center",
+        "requireAlpha": true
+      },
+      "collisionFallback": [
+        {
+          "id": "lost_found_box",
+          "left": 564,
+          "top": 748,
+          "right": 629,
+          "bottom": 813
+        }
+      ],
+      "collisionGenerated": [
+        {
+          "left": 566,
+          "top": 749,
+          "right": 626,
+          "bottom": 815
+        }
+      ]
+    },
+    {
+      "id": "ticket_kiosk",
+      "category": "furniture",
+      "label": "ticket_kiosk",
+      "sourceCollisionIds": [
+        "ticket_kiosk"
+      ],
+      "legacyCoverIds": [
+        "ticket_kiosk_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            1102,
+            687,
+            82,
+            136
+          ],
+          "polygon": [
+            [
+              1105,
+              687
+            ],
+            [
+              1181,
+              687
+            ],
+            [
+              1184,
+              690
+            ],
+            [
+              1184,
+              820
+            ],
+            [
+              1181,
+              823
+            ],
+            [
+              1105,
+              823
+            ],
+            [
+              1102,
+              820
+            ],
+            [
+              1102,
+              690
+            ]
+          ],
+          "baselineY": 823,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1102,
+                687,
+                82,
+                136
+              ],
+              "donorRect": [
+                1075,
+                687,
+                20,
+                136
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": [
+        "theater_ticket_kiosk"
+      ]
+    },
+    {
+      "id": "ticket_counter",
+      "category": "furniture",
+      "label": "ticket_counter",
+      "sourceCollisionIds": [
+        "ticket_counter"
+      ],
+      "legacyCoverIds": [
+        "ticket_counter_front"
+      ],
+      "parts": [
+        {
+          "sourceRect": [
+            1258,
+            679,
+            204,
+            169
+          ],
+          "polygon": [
+            [
+              1261,
+              679
+            ],
+            [
+              1459,
+              679
+            ],
+            [
+              1462,
+              682
+            ],
+            [
+              1462,
+              845
+            ],
+            [
+              1459,
+              848
+            ],
+            [
+              1261,
+              848
+            ],
+            [
+              1258,
+              845
+            ],
+            [
+              1258,
+              682
+            ]
+          ],
+          "baselineY": 848,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1258,
+                679,
+                204,
+                169
+              ],
+              "donorRect": [
+                1481,
+                679,
+                24,
+                169
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "lobby_bin_west",
+      "category": "furniture",
+      "label": "lobby_bin_west",
+      "sourceCollisionIds": [
+        "lobby_bin_west"
+      ],
+      "legacyCoverIds": [],
+      "parts": [
+        {
+          "sourceRect": [
+            497,
+            758,
+            35,
+            50
+          ],
+          "polygon": [
+            [
+              500,
+              758
+            ],
+            [
+              529,
+              758
+            ],
+            [
+              532,
+              761
+            ],
+            [
+              532,
+              805
+            ],
+            [
+              529,
+              808
+            ],
+            [
+              500,
+              808
+            ],
+            [
+              497,
+              805
+            ],
+            [
+              497,
+              761
+            ]
+          ],
+          "baselineY": 808,
+          "cleanBands": [
+            {
+              "targetRect": [
+                497,
+                758,
+                35,
+                50
+              ],
+              "donorRect": [
+                539,
+                758,
+                16,
+                50
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": []
+    },
+    {
+      "id": "lobby_bin_east",
+      "category": "furniture",
+      "label": "lobby_bin_east",
+      "sourceCollisionIds": [
+        "lobby_bin_east"
+      ],
+      "legacyCoverIds": [],
+      "parts": [
+        {
+          "sourceRect": [
+            1197,
+            756,
+            38,
+            51
+          ],
+          "polygon": [
+            [
+              1200,
+              756
+            ],
+            [
+              1232,
+              756
+            ],
+            [
+              1235,
+              759
+            ],
+            [
+              1235,
+              804
+            ],
+            [
+              1232,
+              807
+            ],
+            [
+              1200,
+              807
+            ],
+            [
+              1197,
+              804
+            ],
+            [
+              1197,
+              759
+            ]
+          ],
+          "baselineY": 807,
+          "cleanBands": [
+            {
+              "targetRect": [
+                1197,
+                756,
+                38,
+                51
+              ],
+              "donorRect": [
+                1238,
+                756,
+                12,
+                51
+              ]
+            }
+          ]
+        }
+      ],
+      "targetIds": []
+    }
+  ],
+  "notes": [
+    "Stage front, stairs, curtain architecture, doorway and divider retain the source base/occlusion layers.",
+    "Seats are separate source rows; their gold carpet borders remain flat floor decoration.",
+    "The lower-right seating group is L-shaped: five seats in its first row, eight in the following three rows.",
+    "The sound-console replacement has no chair; the original chair remains a separate source entity.",
+    "poster_board.png replaces only the narrow wooden service cabinet, never the wide wall-mounted poster case.",
+    "Only collision ids present in the input source dataset are replaced.",
+    "No item, quest, controller, save or door state is written by the renderer."
+  ],
+  "backgroundPatches": [
+    {
+      "id": "old_exit_left_leaf",
+      "sourceRect": [
+        743,
+        842,
+        61,
+        84
+      ],
+      "polygon": [
+        [
+          743,
+          842
+        ],
+        [
+          804,
+          842
+        ],
+        [
+          804,
+          926
+        ],
+        [
+          743,
+          926
+        ]
+      ],
+      "cleanBands": [
+        {
+          "targetRect": [
+            743,
+            842,
+            61,
+            84
+          ],
+          "donorRect": [
+            807,
+            842,
+            54,
+            84
+          ]
+        }
+      ]
+    },
+    {
+      "id": "old_exit_right_leaf",
+      "sourceRect": [
+        870,
+        842,
+        55,
+        84
+      ],
+      "polygon": [
+        [
+          870,
+          842
+        ],
+        [
+          925,
+          842
+        ],
+        [
+          925,
+          926
+        ],
+        [
+          870,
+          926
+        ]
+      ],
+      "cleanBands": [
+        {
+          "targetRect": [
+            870,
+            842,
+            55,
+            84
+          ],
+          "donorRect": [
+            807,
+            842,
+            54,
+            84
+          ]
+        }
+      ]
+    }
+  ]
+}

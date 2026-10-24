@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter, once } from 'node:events';
 import { spawn } from 'node:child_process';
-import { readFile, mkdtemp, mkdir, rm, access } from 'node:fs/promises';
+import { readFile, mkdtemp, mkdir, rm, access, open } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import vm from 'node:vm';
@@ -94,7 +94,8 @@ test('actual browserCase synchronous spawn exception still persists its primary 
   const directory = path.join(tmpdir(), '755-godot-web-browser-sync-error');
   const bodyEnd = runner.indexOf('\ntry {\n  const selected =', end);
   assert(bodyEnd > end);
-  const context = vm.createContext({ path, tmpdir, Date, setTimeout: trackedTimeout, clearTimeout: trackedClear,
+  const context = vm.createContext({ path, tmpdir, Date, setTimeout: trackedTimeout, clearTimeout: trackedClear, output: directory,
+    open: async () => ({ fd: 2, close: async () => {} }), existsSync: () => false,
     mkdtemp: async () => directory, spawn: () => { throw primary; }, chrome: 'mock-not-launched', chromeArgs: [],
     rm: async target => { removed = target; }, report: { cases },
     snapshot: async () => { throw new Error('no CDP session'); },
@@ -151,6 +152,13 @@ test('cleanup success preserves functional success and writes terminal lifecycle
   await finishBrowserCase({ lifecycle: f.lifecycle, caseRecord, cleanupOptions: f.cleanupOptions, persistEvidence: async () => { persisted = JSON.parse(JSON.stringify(caseRecord)); } });
   assert.equal(persisted.passed, true); assert(persisted.browserLifecycle.cleanup.removedAt); assert.equal(caseRecord.cleanupErrors, undefined);
 });
+test('protocol shutdown waits for the real close before considering signal fallback', async () => {
+  const f = fixture(); const caseRecord = { passed: true }; let persisted;
+  const cdp = { async send(method) { assert.equal(method, 'Browser.close'); setTimeout(f.close, 5); }, close() {} };
+  await finishBrowserCase({ lifecycle: f.lifecycle, caseRecord, cdp, cleanupOptions: f.cleanupOptions, persistEvidence: async () => { persisted = JSON.parse(JSON.stringify(caseRecord)); } });
+  assert.deepEqual(f.signals, []); assert.equal(f.removed.length, 1);
+  assert(persisted.passed); assert(persisted.browserLifecycle.closedAt <= persisted.browserLifecycle.cleanup.removeStartedAt);
+});
 test('multiple close waiters settle and remove their timers', async () => {
   const f = fixture(); const first = f.lifecycle.waitForClose(100), second = f.lifecycle.waitForClose(100); f.close();
   assert.deepEqual(await Promise.all([first, second]), [true, true]);
@@ -196,5 +204,25 @@ test('ordinary real Node child ignoring TERM is killed and observed closed befor
   } finally {
     if (!lifecycle.closed) { child.kill('SIGKILL'); await lifecycle.waitForClose(3000); }
     if (lifecycle.closed) await rm(directory, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+  }
+});
+test('file-backed browser diagnostics retain stderr and real close before owned profile removal', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), '755-godot-web-browser-file-log-'));
+  const logRoot = await mkdtemp(path.join(tmpdir(), '755-browser-log-evidence-'));
+  const filename = path.join(logRoot, 'stderr.log');
+  const file = await open(filename, 'w');
+  const lifecycle = createBrowserLifecycle(directory);
+  const child = spawn(process.execPath, ['-e', "process.stderr.write('complete diagnostic\\n');"], { stdio: ['ignore', 'ignore', file.fd] });
+  lifecycle.attach(child); await file.close();
+  try {
+    assert(await lifecycle.waitForClose(3000), 'observe the actual child close event');
+    await cleanupBrowserLifecycle(lifecycle);
+    assert.equal(await readFile(filename, 'utf8'), 'complete diagnostic\n');
+    assert(lifecycle.evidence.closedAt <= lifecycle.evidence.cleanup.removeStartedAt);
+    await assert.rejects(access(directory), { code: 'ENOENT' });
+  } finally {
+    if (!lifecycle.closed) { child.kill('SIGKILL'); await lifecycle.waitForClose(3000); }
+    if (lifecycle.closed) await rm(directory, { recursive: true, force: true });
+    await rm(logRoot, { recursive: true, force: true });
   }
 });

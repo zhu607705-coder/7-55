@@ -2,9 +2,9 @@ extends Node2D
 ## Two compatible native props inserted at their former draw positions. This adapter never
 ## handles input or saves progress; the original dispatcher remains the only owner.
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
-const TableScene=preload("res://scenes/objects/room204_table.tscn")
-const Table2Scene=preload("res://scenes/objects/room204_table_2.tscn")
-const SCENES={"table:group_table_1":TableScene,"table:group_table_2":Table2Scene}
+# Keep the adapter cheap during the early chapters. Loading these PackedScenes
+# eagerly also loads their furniture atlas before the Chapter 4 pack is mounted.
+const SCENES={"table:group_table_1":"res://scenes/objects/room204_table.tscn","table:group_table_2":"res://scenes/objects/room204_table_2.tscn"}
 const KEY="table:group_table_1"
 class DrawPass extends Node2D:
 	var world: Control
@@ -40,7 +40,8 @@ func sync(state: Dictionary,scene_id: String) -> void:
 	for id: String in SCENES:
 		if not entities.has(id): continue
 		if not tables.has(id):
-			var object: Node2D=SCENES[id].instantiate();source_space.add_child(object);tables[id]=object
+			var scene: PackedScene=load(SCENES[id])
+			var object: Node2D=scene.instantiate();source_space.add_child(object);tables[id]=object
 		var object: Node2D=tables[id];var e: Dictionary=entities[id]
 		object.position=e.position;object.rotation=deg_to_rad(float(e.angle))
 	# Preserve the first-table inspection access used by existing callers/tests.

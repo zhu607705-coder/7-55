@@ -1,0 +1,125 @@
+{
+  "schema": "755-pixel-checkin-restoration-v1",
+  "date": "2026-10-22",
+  "recordedAt": "2026-10-21T16:12:34.590Z",
+  "requested": "Restore original pixel classroom check-in; present success receipt as pixel parchment",
+  "restorationReference": {
+    "nativeCommit": "701efd1e21f972a380526ba0e147165606381458",
+    "nativeFile": "godot_native/scripts/ui/native_checkin_page.gd",
+    "retainedWeb": [
+      "src/scenes/phone/P11_Checkin/index.tsx",
+      "src/styles/scenes/p11-checkin.css"
+    ]
+  },
+  "changes": [
+    "Original light-blue pixel grid, course card, absence-zero source location, four outlined slots and square keypad restored",
+    "Fusion Pixel font explicitly scoped to check-in and receipt; small captions and key numerals enlarged within original frame",
+    "Pixel parchment304x420 authored in native code, aged palette and transparent stepped/frayed edges; no photograph filter or low-resolution upscale",
+    "Nearest filtering, native pixel text, one-color printed success stamp, restrained pixel glint and square printer styling",
+    "Original top feed mask,1.8s printing,3.8s success beat, pause, reduced motion, Continue and error/blackout/word-game handoff retained"
+  ],
+  "provenance": {
+    "paperSource": "Original project procedural artwork in checkin_success_view.gd::paint_parchment",
+    "license": "Apache-2.0",
+    "externalGenerations": 0,
+    "oldPhoto": "assets/native/checkin/checkin_receipt_v1.png retained as historical source; no longer the active receipt texture",
+    "font": "Existing Fusion Pixel font; its own font license retained"
+  },
+  "spec": {
+    "paper": [
+      304,
+      420
+    ],
+    "logicalGame": [
+      430,
+      820
+    ],
+    "phone": [
+      430,
+      860
+    ],
+    "filter": "nearest",
+    "masterScale": 1,
+    "alpha": "binary in paper artwork",
+    "paperColors": [
+      "F4EAD5",
+      "E8E0C8",
+      "D8C7A0",
+      "C79B62",
+      "A1744E"
+    ],
+    "stampInk": "9A514A",
+    "progressAuthority": "Existing controllers; no presentation-owned story writes"
+  },
+  "sources": [
+    {
+      "file": "godot_native/scripts/ui/native_checkin_page.gd",
+      "sha256": "c1d8518dd0de0101ef08421c69dc654e96041188e2465aa5f0c403519af681a4"
+    },
+    {
+      "file": "godot_native/scripts/ui/checkin_success_view.gd",
+      "sha256": "2a6a48e63e081cc5827799035378b674be854f86589d9c15cc5a070ae6e0bd99"
+    },
+    {
+      "file": "godot_native/scripts/games/prologue_interception.gd",
+      "sha256": "f9650d3a60281f813202a3bbe1a6479d4f636bde8d630cc264d1ddd0ba1135ef"
+    }
+  ],
+  "validation": {
+    "native": {
+      "report": "/Users/zhu/Library/Application Support/755-tools/verification/pixel-checkin-20261022/755-pixel-checkin-native-20261022.json",
+      "stages": 9,
+      "passed": true,
+      "finalTypographyAffectedRerun": {
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/pixel-checkin-20261022/755-pixel-checkin-final-native-20261022.json",
+        "stages": 2,
+        "passed": true
+      }
+    },
+    "browser": [
+      {
+        "device": "desktop",
+        "passed": true,
+        "checks": 543,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/pixel-checkin-20261022/desktop-web-acceptance.json"
+      },
+      {
+        "device": "touch",
+        "passed": true,
+        "checks": 543,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/pixel-checkin-20261022/touch-web-acceptance.json"
+      }
+    ],
+    "scope": "Real desktop mouse and mobile touch, earned pre-check-in save imported through shipped picker, ordinary ZJU Ding navigation, actual keys/delete/wrong code/valid submit, paused printer clock, original coordinate-error handoff with zero word-stage completion",
+    "rendering": {
+      "gpu": "Apple M4 Max Compatibility",
+      "nativeCaptures": 9,
+      "viewports": [
+        "430x860",
+        "390x844",
+        "1440x900"
+      ],
+      "fixture": "Native read-only presentation samples; actual browser tests separately prove ordinary input and controller handoff",
+      "cleanupHashReceipt": "/Users/zhu/Library/Application Support/755-tools/verification/pixel-checkin-20261022/temporary-captures-cleanup.json"
+    },
+    "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+    "sourceDirty": true,
+    "sourceInputSha256": "e4af956ea4a38a8de368d28d82273d599eeea7d4a4d66aa6b577a3dcc5279489",
+    "retainedWebRelease": {
+      "passed": true,
+      "validators": 38,
+      "log": "/Users/zhu/Library/Application Support/755-tools/verification/pixel-checkin-20261022/retained-web-release.log"
+    },
+    "existingUserPreview": "Existing IAB save re-opened normally; it shows accepted check-in with unfinished interception. No import, reset, new game or progression action was performed in the user profile."
+  },
+  "preview": "http://127.0.0.1:5241/",
+  "review": {
+    "form": "/Users/zhu/Library/Application Support/755-tools/review/restored-pixel-checkin-form-20261022.png",
+    "receipt": "/Users/zhu/Library/Application Support/755-tools/review/pixel-parchment-checkin-receipt-20261022.png"
+  },
+  "limits": [
+    "No remote push or deployment performed",
+    "No physical mobile-device or Gecko/WebKit acceptance claimed",
+    "No new complete human campaign claimed"
+  ]
+}

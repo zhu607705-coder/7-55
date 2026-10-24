@@ -1,0 +1,611 @@
+{
+  "schema": "755-native-theater-chest-mechanism-acceptance-v1",
+  "recorded_at_utc": "2026-10-23T10:01:17.688580+00:00",
+  "user_date": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "status": "local_native_verified_with_desktop_automated_gui_focus_limitation",
+  "project_root": "/Users/zhu/Downloads/755",
+  "capture_root": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023",
+  "runtime": {
+    "engine": "Godot",
+    "version": "4.7.1.stable.official.a13da4feb",
+    "executable": "/Users/zhu/Library/Application Support/755-tools/engines/4.7.1/Godot.app/Contents/MacOS/Godot",
+    "gui_renderer": "OpenGL 4.1 Metal / Compatibility; Apple M4 Max",
+    "delivery": "native sandbox fixture"
+  },
+  "source": {
+    "tested_head": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+    "focus_rerun_head": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+    "receipt_head": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+    "working_tree_dirty": true,
+    "worktree_status": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/receipt-worktree-status.txt",
+      "bytes": 19532,
+      "sha256": "0472af270827f3c52281a585785cc22d5b4da7cac51818681736c29f8afb62cb"
+    },
+    "native_run_tracked_diff_sha256": "364e9c0bebf2416f8eff9dcb2e95271a05b2301b7bd7229637f91079acd0b0fe",
+    "focus_rerun_tracked_diff_sha256": "aeed4a8702dbce93b0b9143357abc1855a43bf969d14c9b1fda593cdbe328726",
+    "identity_note": "Both runs exercised the dirty checkout on this HEAD, not HEAD alone. Full report metadata preserves each run status. File hashes below were collected when writing this receipt; the coordinating agent confirmed production files were unchanged after the native run. The focus harness changed afterward and was rerun. Git diff hashes exclude untracked files; individual hashes below identify the new scripts and atlases.",
+    "files": [
+      {
+        "path": "godot_native/scripts/main.gd",
+        "sha256": "4c8e4383fcbbf19b23db260d3ce2564ea14d555e71dd18f88f451f7a5428f8c4",
+        "bytes": 143650,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/world.gd",
+        "sha256": "602547a7a4da6de6d47b3819e0fc0d7f43f66ed04614c1cab8f311c856c82f25",
+        "bytes": 106230,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/state.gd",
+        "sha256": "71bf0c5b15b01262c26c4e240c015e8fa08aceb0c4e48e3e5a6cbf5a6909bcd2",
+        "bytes": 37475,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/chapters/chapter3.gd",
+        "sha256": "e1ef95102b869b972320dafb8d1434cc574c2c2934b4dc155f69fb786cb68a50",
+        "bytes": 57453,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_chest_mechanism.gd",
+        "sha256": "17064fc916826afcba89a84cf828455587f5ff77e64b42bdb13bdac7b0288f19",
+        "bytes": 4241,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/presentation/world_object_focus.gd",
+        "sha256": "b507b61e922d4be68bad440fb13ee4b2355b16c25cbd094900e49256de32835e",
+        "bytes": 4128,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/ui/theater_chest_closeup.gd",
+        "sha256": "1b665f70b989588b9338aec9da4dd08c95df60f9ddfd79145fe520dc9a6eda62",
+        "bytes": 18322,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/objects/theater_chest_object.gd",
+        "sha256": "056a0ea934481c1db13efee582c529b541d5ebc66dfc6b5b54b18333ce1ece3b",
+        "bytes": 6407,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/objects/theater_chest_contents.gd",
+        "sha256": "40d9770802eb68d119a0a877feacf9ce32f5c75c94a9d5a268d6deadee5f4841",
+        "bytes": 10446,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/scripts/objects/theater_chest_contents_3d.gd",
+        "sha256": "dca202afe2f11d9259e135bb22f86eb26f779583ec8b63865763c332ceddaea7",
+        "bytes": 16296,
+        "role": "production"
+      },
+      {
+        "path": "godot_native/tests/test_theater_chest_focus.gd",
+        "sha256": "5eebc2468526dd85eae16ea2641a6bef5c078fafcc15a81fa3501de340b23ef2",
+        "bytes": 22998,
+        "role": "test"
+      },
+      {
+        "path": "godot_native/tests/test_theater_chest_mechanism.gd",
+        "sha256": "3b43f3c03757e55c2a7d72ea1bec9523c1f02ef5c7c8bc1be0e6c819664a780d",
+        "bytes": 10360,
+        "role": "test"
+      },
+      {
+        "path": "godot_native/tests/test_theater_chest_volume.gd",
+        "sha256": "db36d701f06881ad5174f29eed03e9f16b477aa71e76ddc3b7741edd7c6e9c90",
+        "bytes": 9914,
+        "role": "test"
+      },
+      {
+        "path": "godot_native/tests/test_chapter3.gd",
+        "sha256": "805221c1b6cb84b7121b1ebbced4ca87b3ace33c1a8a884ca05f8a575cc4a53a",
+        "bytes": 17892,
+        "role": "test"
+      },
+      {
+        "path": "godot_native/tests/test_c3_devices_controls.gd",
+        "sha256": "65147ded94b3cb7846144ed84c422c90784f38515e84e82168b8c98a0f2eaeb8",
+        "bytes": 13950,
+        "role": "test"
+      },
+      {
+        "path": "godot_native/tests/test_theater_object_rebuild.gd",
+        "sha256": "fce12fca0747896223fdfe0bf96739fc34423131bda2ab29664a9aaa485c6863",
+        "bytes": 9744,
+        "role": "test"
+      },
+      {
+        "path": "godot_native/assets/native/theater_chest_20261023/prop_chest_overhead_body_v2.png",
+        "sha256": "d3d275d9eb5117839f681268cf7d12965ddd556dbb95f073255c4d24e1a37e54",
+        "bytes": 1427606,
+        "role": "active chest body atlas"
+      },
+      {
+        "path": "godot_native/assets/native/theater_chest_20261023/puzzle_kit.png",
+        "sha256": "58ec2bf6b590fb640c8874e0f8c621c57818e667e648498379d8082bfc6b7c1b",
+        "bytes": 2293314,
+        "role": "active symbol/rotor/note atlas"
+      },
+      {
+        "path": "godot_native/assets/native/theater_rebuild_20261020/prop_chest.png",
+        "sha256": "a7d865b643664b6ff0d99c67da346e2ddd4c751175ad1d5d6036ac5a3f65aad9",
+        "bytes": 10005,
+        "role": "existing world chest identity reference"
+      },
+      {
+        "path": "godot_native/data/native/theater-object-layout.json",
+        "sha256": "fce34e8e636cede51ddaab494e821226ac18337ae67d5d8225ed22b8b62f743d",
+        "bytes": 52082,
+        "role": "existing source geometry and world-object calibration"
+      },
+      {
+        "path": "godot_native/data/worlds.json",
+        "sha256": "2b39114d585d0f7b45b4537f227e318f564031b636773388c3fedb626c35757c",
+        "bytes": 720232,
+        "role": "source scanner and chest interaction geometry"
+      }
+    ],
+    "focus_harness_restore_note": "The coordinating agent briefly tried a GUI focus-readiness wait after the 273-check rerun, then reverted it exactly. Receipt hashes now describe the restored 4000ms harness; that restoration is attested by the coordinating agent. The two failed GUI retries remain listed separately."
+  },
+  "contract": {
+    "projection": "Exact downward orthographic camera; source points project 1:1 in the 1448x1086 contents SubViewport.",
+    "volume": "Extruded beveled symbols, staggered physical heights, shared projected picking, real contact light/floor geometry, fixed object scale during placement, and continuous endpoint transforms.",
+    "existing_story_transaction": "Original world scanner consumes temporaryTheaterTicket, grants fluorescentBrush, and sets propBoxOpened immediately. The optional mechanism neither delays nor repeats that transaction and never gates original vent/mainline progression.",
+    "optional_mechanism": "Three symbol tiles and a separate crank rotate a local arrangement; the correctly aligned drawer reveals a non-authoritative vent diagram.",
+    "session_lifecycle": "Controller-issued runtime-only capability. Matching close cancels it; reopening resets local pieces. No puzzle occupancy, intermediate animation, clue viewing, or drawer state is saved as story progress.",
+    "evidence": "Mechanism and original chapter/controller regressions verify unchanged items/progression, stale capability rejection, and original scanner authored stand (420,218)."
+  },
+  "headless": {
+    "native_suite": {
+      "passed_stages": 10,
+      "failed_stages": 0,
+      "stages": [
+        {
+          "label": "Godot asset import and editor parse",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:40:12.955Z",
+          "finishedAt": "2026-10-23T09:40:16.111Z",
+          "durationMs": 3156
+        },
+        {
+          "label": "Native startup",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:40:16.114Z",
+          "finishedAt": "2026-10-23T09:40:17.603Z",
+          "durationMs": 1489
+        },
+        {
+          "label": "test_c3_devices_controls.gd",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:40:17.606Z",
+          "finishedAt": "2026-10-23T09:41:21.848Z",
+          "durationMs": 64241,
+          "checks": 2961,
+          "failures": 0
+        },
+        {
+          "label": "test_chapter3.gd",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:41:21.851Z",
+          "finishedAt": "2026-10-23T09:41:42.759Z",
+          "durationMs": 20908,
+          "checks": 72,
+          "failures": 0
+        },
+        {
+          "label": "test_theater_chest_focus.gd",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:41:42.762Z",
+          "finishedAt": "2026-10-23T09:42:07.143Z",
+          "durationMs": 24382,
+          "checks": 260,
+          "failures": 0
+        },
+        {
+          "label": "test_theater_chest_mechanism.gd",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:42:07.146Z",
+          "finishedAt": "2026-10-23T09:42:07.672Z",
+          "durationMs": 526,
+          "checks": 79,
+          "failures": 0
+        },
+        {
+          "label": "test_theater_chest_volume.gd",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:42:07.675Z",
+          "finishedAt": "2026-10-23T09:42:08.204Z",
+          "durationMs": 529,
+          "checks": 110,
+          "failures": 0
+        },
+        {
+          "label": "test_theater_object_rebuild.gd",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:42:08.206Z",
+          "finishedAt": "2026-10-23T09:42:09.027Z",
+          "durationMs": 821,
+          "checks": 1935,
+          "failures": 0
+        },
+        {
+          "label": "Source catalog tools/export-c3-world-source.mjs",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:42:09.030Z",
+          "finishedAt": "2026-10-23T09:42:09.241Z",
+          "durationMs": 211
+        },
+        {
+          "label": "Source catalog tests/export_c3_devices_source.mjs",
+          "status": 0,
+          "failed": false,
+          "startedAt": "2026-10-23T09:42:09.244Z",
+          "finishedAt": "2026-10-23T09:42:09.420Z",
+          "durationMs": 176
+        }
+      ],
+      "report_copy": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-native-20261023.json",
+      "meta_copy": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-native-20261023.json.meta.json"
+    },
+    "focus_harness_rerun": {
+      "checks": 273,
+      "failures": 0,
+      "status": 0,
+      "startedAt": "2026-10-23T09:52:17.682Z",
+      "finishedAt": "2026-10-23T09:52:42.236Z",
+      "report_copy": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-focus-20261023.json",
+      "meta_copy": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-focus-20261023.json.meta.json",
+      "supersedes": "The earlier 260-check focus harness result. Adds safe failure handling and independent viewport execution flags; default run still covers desktop, portrait, interruptions, reduced motion and legacy state."
+    }
+  },
+  "gui": {
+    "earlier_combined_run": {
+      "status": "partial_failure_retained",
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/native-gui-validation.log",
+        "bytes": 337299,
+        "sha256": "d6471f7e289715a2a646b6b1f51d5227b400ef0f44e2fa6fe21ecaf1326b67fd"
+      },
+      "desktop": {
+        "viewport": [
+          1440,
+          900
+        ],
+        "status": "exercise_completed_before_portrait_failure",
+        "renders": [
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-assembled.png",
+            "bytes": 671810,
+            "sha256": "c6c563e91e1a1e8ac2e8c807ad976096c9e226e32dcfc96e7a058887eedd7650"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-bottom-focused.png",
+            "bytes": 1234602,
+            "sha256": "27b1feaa937dd7f543ab007e5359b5c31d4ff5a0bd6531e4ed894e33c209fe23"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-bottom.png",
+            "bytes": 677588,
+            "sha256": "c7bb384532f3e98a653f24db20174bb0364cf63f0eb51d0c2227c3d77ce86e73"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-closed.png",
+            "bytes": 529744,
+            "sha256": "9909c5c67a1e19f2197a07e81cf9b187f8cf481843239dcb67423a9217736f79"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-clue.png",
+            "bytes": 668142,
+            "sha256": "87a9e84dc5b1c1a6a5717c68da1c253b0db741133a2933291d241e7aeac1d44a"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-compartment.png",
+            "bytes": 320727,
+            "sha256": "2fa5e46182565fefe9f66d17e5a5e744afc37a4334de9758d3477a93fcdfaa91"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-opening-front.png",
+            "bytes": 517480,
+            "sha256": "fa6e35dc1437414047591cac7485a83f65e3c6a0b81009a06bf4465cd3132fa2"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-opening-inner.png",
+            "bytes": 646388,
+            "sha256": "aa59672f7b27523e4a60f5e50592004084aee46cfde1f6f3c8a5ac9051d3051a"
+          },
+          {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-returned.png",
+            "bytes": 856762,
+            "sha256": "5f97f45b8a079a235cae4d362e723c6066296e517308d3f25192def3e07b2456"
+          }
+        ]
+      },
+      "portrait": {
+        "viewport": [
+          390,
+          844
+        ],
+        "status": "failed_after_os_focus_loss_during_resize",
+        "observed_log": "leaving camera transition stalled; subsequent old harness continued and repeatedly accessed nil lid_open. This is not counted as a passing combined GUI suite.",
+        "cause_attribution": "OS focus loss was observed by the coordinating agent; the log captures the leaving transition and cascading errors.",
+        "superseded_by": [
+          "portrait_only_suite",
+          "manual_portrait"
+        ]
+      },
+      "test_only_remediation": "Harness now stops failed dependent cases, guards panel waits, and supports --portrait-only / --desktop-only; production focus-pause semantics remain unchanged."
+    },
+    "portrait_only_suite": {
+      "status": "passed",
+      "viewport": [
+        390,
+        844
+      ],
+      "argument": "--portrait-only",
+      "checks": 135,
+      "failures": 0,
+      "render_count": 9,
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/native-gui-validation.log",
+        "bytes": 2890,
+        "sha256": "b8123d961759e8f7ca3a42b0ca76b2b3627d1698466188c031bc5e26ace2de43"
+      },
+      "renders": [
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-assembled.png",
+          "bytes": 193241,
+          "sha256": "715efa862eb6661736ae0e637d61aa13420bb6538335303508bc96f89103517b"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-bottom-focused.png",
+          "bytes": 247612,
+          "sha256": "e92af580510fd878c6053ceb0fd064a8b001551b7a478e485f3b3ee3f52d923f"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-bottom.png",
+          "bytes": 195681,
+          "sha256": "19afda572a97f29b2235030b1f33541c3c1667d7f0bba4a78a04810fbf47028d"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-closed.png",
+          "bytes": 156449,
+          "sha256": "43d3df564f0365d95cfff34384a8c88137adf79b00e35e84feabe435d237720a"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-clue.png",
+          "bytes": 343376,
+          "sha256": "8d81da9305ecdbd97ea708b9e9dffeda3712755111d6eb66be63b8c1b23937dc"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-compartment.png",
+          "bytes": 308645,
+          "sha256": "a4ed4340899fb01a5eea253df726ccbd88e48d2f68445c18dbb7373e60bd6da4"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-opening-front.png",
+          "bytes": 159217,
+          "sha256": "4ee99eaa89237ae07407212f431711794d5d8655942bf3aa27dd0b7ff1147a72"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-opening-inner.png",
+          "bytes": 188309,
+          "sha256": "49f55ecdbdf8e517d76c70ea56f6f289348dc027f84fbc8646984a5c4cbf0c5a"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/portrait-suite/mobile-returned.png",
+          "bytes": 467012,
+          "sha256": "027d7a9072425b261f73ce2c939acfabaa5710161f4ea1839145b9cab19caede"
+        }
+      ],
+      "coverage": "Actual native window with synthetic ScreenTouch input; complete original scan, physical mechanism, camera framing and return. Cross-size interruption/legacy cases remain covered by the default headless suite."
+    },
+    "manual_portrait": {
+      "status": "passed_coordinating_agent_observation",
+      "viewport": [
+        390,
+        844
+      ],
+      "method": "CUA actual mouse clicks in the visible native application; not a physical phone test.",
+      "actions": [
+        "paper open and close",
+        "select exposed butterfly on top of stack",
+        "install crank",
+        "place lamp in right slot and fan in left slot",
+        "turn crank clockwise",
+        "open drawer",
+        "return to theater world"
+      ],
+      "source_of_action_trace": "Reported directly by the coordinating agent after its CUA interaction. The local log confirms preview/capture output, not each individual click.",
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/manual-portrait-cua.log",
+        "bytes": 552,
+        "sha256": "58346ff7b113da13b91d61e6742e854d9e9f3cb7af41469ef748b222c5d3542b",
+        "source_path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-portrait/cua.log"
+      },
+      "captures": [
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-portrait/manual-001.png",
+          "bytes": 343376,
+          "sha256": "8d81da9305ecdbd97ea708b9e9dffeda3712755111d6eb66be63b8c1b23937dc"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-portrait/manual-002.png",
+          "bytes": 308645,
+          "sha256": "a4ed4340899fb01a5eea253df726ccbd88e48d2f68445c18dbb7373e60bd6da4"
+        }
+      ]
+    },
+    "desktop_only_followup": {
+      "status": "not_passed_host_window_focus_limitation",
+      "viewport": [
+        1440,
+        900
+      ],
+      "argument": "--desktop-only",
+      "attempts": [
+        {
+          "log": {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-suite/native-gui-focus-timeout.log",
+            "bytes": 592,
+            "sha256": "9f3a10fc11a2e9b8aeb94197402b86dd19f31fddf23d757a4acb55e560c13182"
+          },
+          "checks": 7,
+          "failures": 1,
+          "render_count": 0,
+          "failure": "camera reaches chest inspection timed out"
+        },
+        {
+          "log": {
+            "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/desktop-suite/native-gui-validation.log",
+            "bytes": 592,
+            "sha256": "6bace0b86a74b5a2c5ca9493aea6abc4b26739c346b79b61a0e3063752b4157b"
+          },
+          "checks": 7,
+          "failures": 1,
+          "render_count": 0,
+          "failure": "camera reaches chest inspection timed out",
+          "harness_note": "Temporary focus-readiness experiment was reverted; not adopted as production or test semantics."
+        }
+      ],
+      "cause_attribution": "The coordinating agent observed lack of OS window focus before CUA selected the app. Production correctly pauses camera motion while unfocused; logs prove timeout, not independent successful GUI acceptance.",
+      "remaining_evidence": "Earlier combined run completed the desktop exercise and produced all 9 desktop captures. Do not describe either independent desktop attempt as a pass."
+    },
+    "manual_desktop": {
+      "status": "passed_coordinating_agent_observation",
+      "viewport": [
+        1280,
+        820
+      ],
+      "method": "CUA actual mouse clicks in the visible native application; isolated theater-phase fixture.",
+      "actions": [
+        "select exposed butterfly and place in top slot",
+        "place lamp in right slot and fan in left slot",
+        "pick up crank and install on axis",
+        "turn clockwise once",
+        "open physical drawer and inspect vent diagram",
+        "return to theater with restored world view",
+        "F7 starts fresh original scanner fixture; leave full-stack inspection open"
+      ],
+      "source_of_action_trace": "Reported directly by the coordinating agent after its CUA interaction. Log independently confirms three captures and final F8 state; the log alone is not a per-click trace.",
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/manual-desktop-cua.log",
+        "bytes": 1118,
+        "sha256": "4fe1c7cc732ef656dd95c7e381ebbb85898a5d03f183513e0f3b6430d1144228",
+        "source_path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-desktop/cua.log"
+      },
+      "captures": [
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-desktop/manual-001.png",
+          "bytes": 554083,
+          "sha256": "93e362568af8e6b90ac0d2b792a662bdfa1e9d6ab8aa53dd76f1cfb8d3cc16e0",
+          "meaning": "initial mounted stack"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-desktop/manual-002.png",
+          "bytes": 318945,
+          "sha256": "59f4760f1ace31e707603ceba2bba158aa9064af7f8b97f59eec9edb8c3e7340",
+          "meaning": "opened compartment and vent diagram"
+        },
+        {
+          "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-desktop/manual-003.png",
+          "bytes": 554083,
+          "sha256": "93e362568af8e6b90ac0d2b792a662bdfa1e9d6ab8aa53dd76f1cfb8d3cc16e0",
+          "meaning": "fresh stack after reset, left visible"
+        }
+      ],
+      "final_log_state": {
+        "window_has_focus": true,
+        "modal_mounted": true,
+        "object_focus_mounted": true,
+        "busy": false,
+        "selected": "",
+        "slots": [
+          "",
+          "",
+          ""
+        ],
+        "remaining": [
+          "fan",
+          "butterfly",
+          "lamp",
+          "crank"
+        ],
+        "crank_installed": false,
+        "drawer_open": false,
+        "clue_open": false,
+        "turns": 0
+      },
+      "preview_left_open": true,
+      "preview_process_at_recording": 62647
+    }
+  },
+  "reports": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-native-20261023.json",
+      "bytes": 9202,
+      "sha256": "7470e0ba3382fd9ad168f8bda55188a9893ce8201844ce4ce70a2454d0469f95",
+      "source_path": "/tmp/755-chest-final-native-20261023.json"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-native-20261023.json.meta.json",
+      "bytes": 40992,
+      "sha256": "836726f5c8071a2b7c0c1ee8cccb1d39904e4c6fda7aba0991ff9cce6f7aca15",
+      "source_path": "/tmp/755-chest-final-native-20261023.json.meta.json"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-focus-20261023.json",
+      "bytes": 727,
+      "sha256": "416c21512b888441aa4cd8e94c5cc9a50c37d40ee06b097670b595bf4d86162a",
+      "source_path": "/tmp/755-chest-final-focus-20261023.json"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/755-chest-final-focus-20261023.json.meta.json",
+      "bytes": 40876,
+      "sha256": "2e28bed06285e7c191540e9bfe6859b8bf5e82e8f26eb27a9ac85460306306b9",
+      "source_path": "/tmp/755-chest-final-focus-20261023.json.meta.json"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/manual-portrait-cua.log",
+      "bytes": 552,
+      "sha256": "58346ff7b113da13b91d61e6742e854d9e9f3cb7af41469ef748b222c5d3542b",
+      "source_path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-portrait/cua.log"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/reports/manual-desktop-cua.log",
+      "bytes": 1118,
+      "sha256": "4fe1c7cc732ef656dd95c7e381ebbb85898a5d03f183513e0f3b6430d1144228",
+      "source_path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-mechanism-20261023/manual-desktop/cua.log"
+    }
+  ],
+  "limitations": [
+    "No Godot Web export or browser acceptance was performed for this change.",
+    "No physical mobile device acceptance; portrait validation used a resized native desktop window.",
+    "Fixtures start at the authored theater phase; this is not an earned end-to-end campaign playthrough.",
+    "These tests and captures are local acceptance evidence, not a merge, deployment or release approval.",
+    "Earlier combined GUI run failed on the portrait transition; its failure evidence remains preserved rather than being relabeled as a pass.",
+    "Independent desktop-only GUI attempts timed out before OS focus was acquired and are not passing results; earlier desktop captures and separately reported manual evidence have distinct scopes."
+  ],
+  "completion": {
+    "required_local_work_remaining": false,
+    "scope": "Native presentation and optional mechanism implementation, local automated checks and desktop/portrait manual verification. Independent desktop automated GUI retries remain explicitly failed due to observed OS focus limitations.",
+    "release_claim": false
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "755-prologue-terminal-gather-20261022-v1",
+  "timestamp": "2026-10-22T08:37:25.760411+00:00",
+  "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+  "sourceDirty": true,
+  "sourceInputSha256": "841ec2489b5e726b0a1bd5f0e4f6155443567ccc8b6f54fb7c5b2e7ceaa6609a",
+  "export": "godot_native/exports/web-terminal-gather-20261022",
+  "localPreview": "http://127.0.0.1:5241/",
+  "localResponseVerified": true,
+  "visual": {
+    "palette": {
+      "background": "#070B10",
+      "panel": "#0B1219",
+      "ink": "#DBEDF4",
+      "accent": "#9AD9EF"
+    },
+    "backgroundCell": [
+      4,
+      6
+    ],
+    "backgroundOccupancy": 0.95,
+    "strokeCell": [
+      3,
+      4
+    ],
+    "originalFontMasks": 66,
+    "maskGrid": [
+      20,
+      20
+    ],
+    "physicalHanziSize": [
+      80,
+      80
+    ],
+    "clueHanziSize": [
+      44,
+      44
+    ],
+    "shaderSlots": {
+      "physicalWords": 2,
+      "clueCloud": 6
+    },
+    "assembly": {
+      "directions": [
+        "top",
+        "right",
+        "bottom",
+        "left"
+      ],
+      "initialLocalDistance": 90,
+      "durationSeconds": 0.28,
+      "stableGlyphIdentities": true,
+      "settlesBeforeEarliestContact": true
+    },
+    "clueCloud": "same ASCII Hanzi construction as targets; continuous two-column downward flow; independent presentation clock survives reading/spawn/stage handoffs",
+    "fixedNarrationAndReview": "ordinary accessible text only; no normal-font moving clue overlay",
+    "errorWindow": "native pixel-font terminal face, thin cyan frame; same dimensions and actual board physics"
+  },
+  "controls": {
+    "retry": [
+      266,
+      732,
+      148,
+      34
+    ],
+    "reviewAndCloseReview": [
+      266,
+      772,
+      148,
+      34
+    ],
+    "optionalLandingHelp": [
+      266,
+      692,
+      148,
+      34
+    ],
+    "fontSize": 15,
+    "logicalViewport": [
+      430,
+      820
+    ],
+    "minimumRenderedHeightInAcceptedViewports": 29
+  },
+  "provenance": {
+    "concepts": "art_source/prologue_terminal_20261022",
+    "imageTool": "built-in image_gen; original generation followed by density edit; no CLI fallback",
+    "prompt": "art_source/prologue_terminal_20261022/dense_prompt.txt",
+    "runtime": "original GDScript and shader; existing Fusion Pixel OFL font, generated masks and ASCII atlas; reference images excluded from pack",
+    "reference": {
+      "url": "https://github.com/stackedlol/ascii-sharks",
+      "commit": "c521e24a787e6d4cc460d4cf2b9815f25e4fe453",
+      "copiedSourceOrArt": false
+    }
+  },
+  "validation": {
+    "nativeSuitesPassed": 7,
+    "browser": [
+      {
+        "case": "desktop-1280",
+        "passed": true,
+        "checks": 540,
+        "evidence": "/Users/zhu/Library/Application Support/755-tools/verification/terminal-gather-20261022/desktop-web-acceptance.json"
+      },
+      {
+        "case": "touch-390",
+        "passed": true,
+        "checks": 540,
+        "evidence": "/Users/zhu/Library/Application Support/755-tools/verification/terminal-gather-20261022/touch-web-acceptance.json"
+      }
+    ],
+    "exportVerification": "build_web --verify-only passed against exact sourceInputSha256",
+    "sourceClueParity": "sync_source --check-prologue-words passed",
+    "glyphAssetCheck": "build_prologue_ascii_masks.py --check passed",
+    "retainedWebReleaseValidators": 38,
+    "gpu": "264 real Compatibility-rendered frames inspected; no shader errors"
+  },
+  "review": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/terminal-gather-20261022.mp4",
+      "bytes": 10362825,
+      "sha256": "c970e94458de766d68c0b199b072cee0e7834f1fa5af89d933dcf481830d0425"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/terminal-gather-browser-20261022.png",
+      "bytes": 104577,
+      "sha256": "61ba777a1d57d8c73ed4c1c9383b117d58f3542f92721e8386c96b619d9f014f"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/terminal-gather-corner-20261022.png",
+      "bytes": 123507,
+      "sha256": "5729dc2de496b16a134239c058efae642a6dc48186ec215752f6298bfb0560e8"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/terminal-gather-word-20261022.png",
+      "bytes": 116895,
+      "sha256": "2cabf9e2d5f5bafdad33956047389a714d3f3962bdbcbf3bf0904efc58a9b308"
+    }
+  ],
+  "capture": {
+    "video": "native presentation fixture, not user campaign proof; 264 rendered frames at24fps; no shared State writes",
+    "browserStill": "actual final Chromium desktop acceptance screenshot",
+    "temporaryQaPngsRemoved": 272
+  },
+  "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/verification/terminal-gather-20261022",
+  "preservation": [
+    "original six targets and ordered/unordered semantics",
+    "same real swept-contact model, target speed and clue timing",
+    "failure retains completed stages and current collection",
+    "review/pause freeze visual and simulation clocks; reduced motion omits decorative cloud/assembly",
+    "1400ms final hold, original audio cues, four-line exchange, C2 handoff and save reload",
+    "approved printed parchment receipt; existing user tab kept running without forced reload"
+  ],
+  "limitations": [
+    "Chromium desktop and touch emulation only, not physical phone or Gecko/WebKit acceptance",
+    "No commit, push or remote deployment in this presentation revision"
+  ]
+}

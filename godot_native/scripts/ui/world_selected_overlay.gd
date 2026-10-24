@@ -25,6 +25,7 @@ var object_hint: Label
 var mode: Label
 var geometry: Dictionary = {}
 var mobile_exploration:=false
+var show_task_column:=false
 var compact_header:HBoxContainer
 var compact_clock:Label
 var compact_location:Label
@@ -81,18 +82,15 @@ func _settle_layout()->void:
 	if not is_inside_tree():return
 	# Container minimum sizes settle after text/font/width changes. Do not
 	# depend on Main's next process tick to release a stale input-blocking HUD.
-	task.size.y=minf(_task_height_budget,maxf(32,task_column.get_combined_minimum_size().y+16))
-	task_scroll.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var plaque_height:float=plaque.get_combined_minimum_size().y
-	plaque.position.y=_plaque_y(plaque_height)
-
-func _plaque_y(plaque_height:float)->float:
-	var top:float=task.position.y+task.size.y+8
-	var bottom:float=maxf(top,_plaque_bottom_limit-plaque_height-(4 if mobile_exploration else 8))
-	# Keep the chosen transparent plaque unchanged; only compact exploration
-	# anchors it four display pixels above the world edge.
-	# Use the same rule after deferred text settlement.
-	return bottom if mobile_exploration else clampf(size.y*.5-plaque_height*.5,top,bottom)
+	# Interaction copy belongs to the lower safe edge, never the world centre.
+	# Reserve its settled height before sizing a long task column.
+	plaque.position.y=maxf(8,_plaque_bottom_limit-plaque_height-8)
+	var task_budget:float=minf(_task_height_budget,plaque.position.y-task.position.y-8) if plaque.visible else _task_height_budget
+	task.size.y=minf(maxf(32,task_budget),maxf(32,task_column.get_combined_minimum_size().y+16))
+	task_scroll.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	geometry["task"]=Rect2(task.position,task.size)
+	geometry["interaction"]=Rect2(plaque.position,Vector2(plaque.size.x,plaque_height))
 
 func _clear_hidden_scroll_touch()->void:
 	if is_visible_in_tree() or _scroll_touch_id<0:return
@@ -108,7 +106,7 @@ func _input(event:InputEvent)->void:
 	# already forwards one native drag, so discard its duplicate emulated events.
 	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION and Time.get_ticks_msec()<_scroll_emulation_until and (_scroll_touch_id>=0 or scrollbar.get_global_rect().has_point(event.position)):
 		get_viewport().set_input_as_handled();return
-	if not is_visible_in_tree():return
+	if not is_visible_in_tree() or not task.visible:return
 	# ScrollBar handles mouse drags natively, but not raw ScreenDrag events.
 	# Translate only a touch that begins on its visible thumb/track; never
 	# capture world touches that began on the transparent text column.
@@ -144,6 +142,8 @@ func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,promp
 	location.text=title;clock.text=clock_text;clock.visible=not clock_text.is_empty();objective.text=goal;task_tip.text="当前任务"
 	object_heading.text=prompt;object_body.text=object_detail;object_body.visible=not object_detail.is_empty() and object_detail!=prompt;object_hint.text="交互" if mobile_exploration else "空格 · 交互"
 	mode.text=mode_text
+	task.visible=show_task_column
+	mode.visible=false
 	var compact:bool=size.y<450
 	compact_header.visible=compact
 	compact_clock.text=clock_text;compact_clock.visible=not clock_text.is_empty()
@@ -171,7 +171,7 @@ func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,promp
 	var plaque_width:=minf(420,maxf(1,size.x*.76))
 	plaque.size=Vector2(plaque_width,0)
 	var plaque_height:=plaque.get_combined_minimum_size().y
-	plaque.position=Vector2((size.x-plaque_width)/2,_plaque_y(plaque_height))
+	plaque.position=Vector2((size.x-plaque_width)/2,maxf(8,bottom*s-plaque_height-8))
 	plaque.visible=not prompt.is_empty()
 	mode.position=mode_rect.position*s;mode.size=mode_rect.size*s
 	_schedule_settle()

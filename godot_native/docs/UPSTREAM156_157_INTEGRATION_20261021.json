@@ -1,0 +1,114 @@
+{
+  "schema": "755-local-upstream-integration-v1",
+  "recordedAt": "2026-10-21T15:20:46.114Z",
+  "scope": "Local integration of upstream PRs #156 and #157, preserving existing work; subsequent explicitly requested UI and license corrections. No remote push or merge.",
+  "git": {
+    "branch": "codex/progressive-world-puzzles-20261020",
+    "before": "313885d6056de0e4fe3052469643627d23c2c021",
+    "merge": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+    "upstream": {
+      "pr156": "5907b166d4775e1288aef5d13d56bc99111d5c33",
+      "pr157": "799034fbf1604edf1dcea59bdf12ffaacc8aff34"
+    },
+    "stashRetained": "ef646bf44a020d90b146936748f0c4e7608b0d03",
+    "backup": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z"
+  },
+  "runtime": "Independent godot_native Godot 4.7.2; retained Web remains behavioral reference",
+  "changes": [
+    "Upstream UI/fonts integrated; modular dorm candidate retained but not activated or exported",
+    "Interaction hints and dialogue use actual bottom safe region above inline tools/items",
+    "No persistent world top task/mode UI; journal/mode at actual map bottom left; phone at map bottom right",
+    "Permanent original item artwork to the right of tools; no world bag toggle or inventory-dependent world resize; mouse/touch drag, combination, inspect, focus and Escape preserved",
+    "Phone returns to same existing map through bottom-right map glyph",
+    "Original pre-merge colorful phone app artwork, names, order, edit behavior and independent settings gear restored; upstream outline launcher inactive",
+    "Project original source Apache-2.0; third-party notices retained; LICENSE and NOTICE included in production core PCK"
+  ],
+  "validation": {
+    "mergedBaseline": {
+      "report": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/evidence/755-upstream-native-full.json",
+      "stages": 490,
+      "failed": 0,
+      "scope": "Earlier merged baseline before latest inline-inventory and restored-phone-icon changes"
+    },
+    "finalAffectedNative": {
+      "report": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/evidence/755-inline-final-native.json",
+      "stages": 30,
+      "failed": 0,
+      "semantics": "30 affected stages rerun on final runtime source; obsolete collapsed-bag test expectations adapted to permanent inline UI; full baseline not re-claimed as final-tree full validation"
+    },
+    "browser": {
+      "report": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/evidence/inline-original-apps-web-acceptance.json",
+      "cases": 6,
+      "checks": 933,
+      "passed": true,
+      "runnerSha256": "974837a2f31b22ad4dedc4b828572c5539466e7bf2b9901343edb91106b33799",
+      "engine": "Chromium actual Godot WASM/PCK, ordinary mouse/touch/keyboard and save/reload",
+      "sourceInputSha256": "e3771064ca74fc7c1b755e65116f282fe2882e2700b6cc70562b82063d7f9525"
+    },
+    "retainedWebRelease": {
+      "log": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/evidence/755-final-apache-release.log",
+      "validators": 38,
+      "passed": true
+    },
+    "production": {
+      "exportDirectory": "/Users/zhu/Downloads/755/godot_native/exports/web-inline-original-apps-20261021",
+      "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+      "sourceDirty": true,
+      "sourceInputSha256": "e3771064ca74fc7c1b755e65116f282fe2882e2700b6cc70562b82063d7f9525",
+      "dormCandidateEntries": 0,
+      "licenseEntries": [
+        {
+          "path": "LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "path": "NOTICE",
+          "bytes": 882,
+          "sha256": "8e68dd8261313a166a10297ca029dacebf7a1b446b5c2bb4cc5650bcfaefeeb8"
+        }
+      ]
+    },
+    "rendering": {
+      "gpu": "Apple M4 Max Compatibility",
+      "worldFixtureImages": 24,
+      "uiFixtureImages": 54,
+      "hashReport": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/evidence/inline-original-apps-gpu-captures.json",
+      "scope": "Actual isolated development renderer fixtures; representative desktop, portrait, short landscape and original phone icons reviewed. Actual native earned-save phone/map roundtrip also operated via computer use.",
+      "temporaryQa": {
+        "removed": 189,
+        "hashReceipt": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/evidence/temporary-ui-captures-cleanup.json"
+      }
+    }
+  },
+  "localPreview": "http://127.0.0.1:5241/",
+  "limitations": [
+    "No new full four-chapter human playthrough claimed",
+    "No Gecko/WebKit or physical-mobile-device acceptance claimed",
+    "UI/license refinements remain local uncommitted work; no remote changes",
+    "Modular dorm remains an excluded candidate; current authored dorm remains active"
+  ],
+  "originalWork": {
+    "manifest": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/manifest.json",
+    "audit": "/Users/zhu/Library/Application Support/755-tools/merge-backups/upstream156-157-20261021T133440Z/evidence/final-original-work-preservation.json",
+    "files": 292,
+    "present": 292,
+    "missing": [],
+    "staged": [],
+    "unmerged": []
+  },
+  "userReview": {
+    "actualBrowserImage": "/Users/zhu/Library/Application Support/755-tools/review/restored-phone-apps-20261021.png",
+    "actualBrowser": "IAB existing user profile; ordinary boot and Enter Story, original current C1 phone restored without import/reset",
+    "native": "Isolated existing earned-save native profile operated through same right-corner phone action",
+    "localPreview": "http://127.0.0.1:5241/"
+  },
+  "followups": [
+    {
+      "request": "Colored object visualization for system/navigation icons",
+      "receipt": "COLORED_CORNER_ICONS_20261021.json",
+      "sourceInputSha256": "223ecda18234acc5871df2fa8a582ccd3ecf4ac275c358fbe6bdfa89660a05b6",
+      "preview": "http://127.0.0.1:5241/"
+    }
+  ]
+}

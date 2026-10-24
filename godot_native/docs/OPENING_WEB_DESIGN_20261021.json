@@ -1,0 +1,185 @@
+{
+  "schema": "755-opening-web-design-v1",
+  "date": "2026-10-21",
+  "status": "formal-pixel-opening-local-candidate-accepted",
+  "source": {
+    "conversationUrl": "https://chatgpt.com/c/6ad8050e-6cd0-83e8-91f4-f9e556388c7f",
+    "method": "Actual authorized Chrome computer-use session; original dorm image uploaded, frontend-only brief submitted, completed response and working HTML viewer inspected, original HTML downloaded using viewer Download > HTML.",
+    "modelUiObserved": "Extra High was visible during generation and in the completed conversation. The earlier model popup focused High3/5; that is not evidence that generation used that setting.",
+    "generation": "Used the visible Skip control after about9m46s of preparation to request the current answer; the resulting complete response supplied the original8,643-byte HTML prototype and concrete layout, palette, storyboard and state copy.",
+    "referenceImage": {
+      "path": "../src/assets/ui/dorm_room.png",
+      "sha256": "ebacd393ad9ed7689776a1ffb8eef1c8b31f500ea7b5b8e48587b6abfce6fe95"
+    },
+    "preparedBrief": "docs/OPENING_FRONTEND_BRIEF_20261021.txt",
+    "originalPrototype": {
+      "path": "docs/reference/755-loader-web-20261021.html",
+      "bytes": 8643,
+      "sha256": "bcffff7847a6e2e7fe410d456753653c44950fb158d9a5f68042209cc63a8e83",
+      "downloadPath": "/Users/zhu/Downloads/755-loader.html",
+      "runtimeConsumer": false,
+      "scope": "Unmodified webpage-produced reference. Its demonstration LoaderUI is not an additional production loader. docs/ is excluded from the Godot production pack."
+    }
+  },
+  "supersededPrototypeVisual": {
+    "name": "晨光未醒 ·07:55",
+    "objects": [
+      "window frame",
+      "restrained morning light",
+      "blue-grey bedding",
+      "warm wood desk",
+      "separate phone showing07:55",
+      "paper-strip loading status"
+    ],
+    "palette": {
+      "warmPaper": "#F0E4CC",
+      "paperWhite": "#FFF8E9",
+      "bedding": "#526C82",
+      "wood": "#A87952",
+      "printedAccent": "#A45D43",
+      "ink": "#343F43"
+    },
+    "layout": "Desktop two columns, scene left and title/status right, max1100px. Portrait phones use a compressed top scene and readable paper information below. Short landscape uses compact two columns and omits secondary prose.",
+    "storyboard": "Morning light and title, subtle two-stroke phone vibration, decorative paper edge, then restrained light loop. All are presentation only and interruptible.",
+    "newImageVideoFontOrLibrary": false
+  },
+  "selectedVisual": {
+    "name": "斜俯视像素寝室 · 晨光未醒",
+    "userReference": "https://x.com/Suisaeki/status/2112523005368902054/video/2",
+    "referenceObservation": "The requested carousel video was opened with authorized computer use. Visible stained-glass lighting had volumetric depth and different receiving surfaces. Only the visible portion was inspected; no full-video analysis is claimed. Translate the lighting principle into warm ordinary dorm sunlight, retaining neither the church setting nor its purple palette or displayed text.",
+    "composition": "Fixed oblique top-down original dorm opening, native160x160 logical grid,4x lossless source, same source coordinates for art/foreground/pixel light.",
+    "layout": "User explicitly rejected large black side gutters. Fill the browser opening viewport, including portrait mobile; place compact readable loading information inside the composition without stretching source art. Preserve canonical phone/gameplay aspect contracts after entry.",
+    "animation": "Stepped pixel-light and sparse grid-aligned dust only; no gradients as a substitute for geometry and no progression writes.",
+    "imageGeneration": {
+      "method": "Actual authorized Chrome webpage Create Image tool with both game reference files attached; no built-in image-generation API used.",
+      "conversationUrl": "https://chatgpt.com/c/6ad80ea1-132c-83e8-8497-7658bffd0c69",
+      "referenceImages": [
+        "../src/assets/rpg/interiors/dorm_hub.png",
+        "../src/assets/rpg/player/player_down_0.png"
+      ],
+      "preparedPrompt": "docs/reference/morning_room_web_prompt_20261021.txt",
+      "promptNote": "The actual submitted Chinese prompt has the same scene, style, lighting and safe-crop requirements and explicitly includes the user's later full-screen preference.",
+      "status": "formal-oblique-pixel-art-adopted",
+      "downloadedTitle": "宿舍晨光中的安睡时光",
+      "visualInspection": "Both webpage master and normalized output were inspected. Visible floor plane, readable furniture fronts, parallel edges, sleeper and blue bedding, window and a restrained morning light hierarchy. The final native160px scene preserves world-scale face detail better than the initial320px planning target. Runtime crops and source-coordinate light masks still require acceptance.",
+      "supersededCloseupConcept": {
+        "path": "exports/verification/boot_intro_design_20261021/source-art/morning_room_master_20261021.png",
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "bytes": 1988619,
+        "sha256": "8f4e659eba59e7350dae35e00203e48824617ca9c85debeb338f504a124b9e96",
+        "note": "The webpage returned1254 square despite the requested1024; runtime geometry uses the actual dimensions. Original download retained unchanged and excluded from PCK."
+      },
+      "supersededCloseupBrowserTrial": {
+        "path": "exports/verification/boot_intro_design_20261021/source-art/morning_room_closeup_q94.webp",
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "bytes": 318516,
+        "sha256": "fd9e38fb83de589244788c9d95a1ed3da3893bb00529ea6a8d4598f63b381663",
+        "preparation": "Deterministic same-size ffmpeg libwebp quality94 compression_level6 encoding; no repaint, crop, generated replacement or image API. The derived image was viewed at full image detail before integration.",
+        "runtime": "Browser opening only. Content-hashed URL, async decorative image loading, outside engine readiness and real-byte progress."
+      },
+      "master": {
+        "path": "exports/verification/boot_intro_design_20261021/source-art/morning_room_oblique_master_20261021.png",
+        "bytes": 2346274,
+        "sha256": "0e8ef1a2c4a43510572a21f55850f15cd6e3015ea5a877785e2d20a352432da7",
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "downloadedTitle": "晨光洒落的像素宿舍",
+        "projection": "orthographic-oblique-top-down",
+        "productionMapReplacement": false
+      },
+      "browserAsset": {
+        "path": "web/boot_art/morning_room.webp",
+        "bytes": 7004,
+        "sha256": "fea8b54424f90c20d354e79273af412bc5bb40e234dcc6cbd2e966b06ec5e5fa",
+        "dimensions": [
+          640,
+          640
+        ],
+        "logicalDimensions": [
+          160,
+          160
+        ],
+        "sourceScale": 4,
+        "encoding": "lossless-WebP",
+        "runtime": "Browser opening only; hashed URL; no PCK or Engine readiness dependency."
+      },
+      "attemptHistory": [
+        "Closeup dawn concept generated and inspected; superseded after the global oblique pixel-art directive.",
+        "First formal oblique generation visibly failed in the webpage; no artifact claimed.",
+        "Create Image retry returned the oblique master; downloaded and inspected in the native webpage viewer."
+      ],
+      "normalization": {
+        "tool": "spritefusion-pixel-snapper",
+        "commit": "02f9315d73d3219274d17767b36d9a231a6b1f4b",
+        "colorCountBeforeFixedPalette": 32,
+        "paletteFile": "docs/art/art_direction_v1.json",
+        "paletteSha256": "825ea11183db7f347eb429ea6684abf4622a06f0ac17b0a2b7aefa8e7c7090d8",
+        "pixelSizeOverride": 8,
+        "rawOutput": {
+          "path": "exports/verification/pixel_snapper_20261021/formal-oblique-canonical32-px8.png",
+          "bytes": 28783,
+          "sha256": "9074eb05df3093e444aa067d871fa4bb2dcec10c4e2cbffe6646671d33a35702",
+          "dimensions": [
+            176,
+            178
+          ]
+        },
+        "integerCrop": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "scale": "nearest-neighbor4x; no independent-axis stretch",
+        "actualOutputColors": 19,
+        "offPaletteColors": 0,
+        "nonuniform4x4Blocks": 0,
+        "checkedBlocks": 25600,
+        "audit": "exports/verification/art_direction_20261021/opening-final-raster-audit-v2.json",
+        "negativeControl": "exports/verification/art_direction_20261021/negative-one-pixel-audit-v2.json",
+        "limits": "Grid/palette acceptance does not prove manually authored clusters or full-project art uniformity. Other sprites had dimension/alpha mismatch and were not replaced."
+      }
+    }
+  },
+  "productionDecisions": [
+    "Keep actual progress, state text, Enter and Retry readable from the first frame; the suggested4s paper entrance cannot delay functional content.",
+    "Use the existing verified Godot boot chain, progress callbacks, presenter and original Enter/Retry handlers. Do not copy the prototype LoaderUI state machine or loader-enter/loader-retry events.",
+    "Scope all decorative selectors to the loading surface and prefix their class names. Actual embedded prototype preview showed a large triangular clipping/washout; a generic.light collision with the host is a possible cause, not a confirmed production defect.",
+    "Morning light stays inside the decorative scene below the ink and controls; no whole-page white overlay.",
+    "Use real-byte progress and a transform scale for decorative progress fill. Do not copy the prototype width transition, illustrative42percent or any fake95/99percent verification value.",
+    "Keep100vh and safe-area0px fallbacks; do not copy dynamic-viewport-only sizing.",
+    "Ready immediately shows the original Enter button and a static final frame, regardless of elapsed animation time or explicit pause.",
+    "Keep generic starting copy because Continue can restore a later chapter; do not promise that every start walks into the dorm.",
+    "No new calendar month, unearned check-in success, emerald/check badge, highlighted nighttime portrait, automatic sound or story/save write.",
+    "Use a source-coordinate160px scene and lossless4x WebP. All image blocks and source colors are audited against the locked art policy.",
+    "Keep body text native and readable without duplicating the5.9MB game font in the boot transfer; the7:55 title uses original inline grid glyphs. Bootstrap UI colors use the locked palette."
+  ],
+  "acceptance": {
+    "record": "docs/ART_DIRECTION_ACCEPTANCE_20261021.json",
+    "build": "exports/web-pixel-opening-v2-20261021",
+    "sourceInputSha256": "9248cb39938e51bb0d17b5123b11554aa584bef164df2231e8473e5204c6839e",
+    "actualOpeningCases": 20,
+    "actualOpeningChecks": 421,
+    "foundationChecks": 506,
+    "nativeBootChecks": 44,
+    "separateUiFixtureChecks": 154,
+    "globalArtScope": "First browser opening batch adopted; remaining539-item inventory migration is staged. No public deployment or whole-project art acceptance."
+  },
+  "actualEngineAttempts": [
+    {
+      "build": "exports/web-pixel-opening-v2-20261021",
+      "sourceInputSha256": "9248cb39938e51bb0d17b5123b11554aa584bef164df2231e8473e5204c6839e",
+      "pointerFoundation": "exports/verification/boot_intro_design_20261021/actual-v2/foundation-retina390/web-acceptance.json",
+      "pointerFoundationChecks": 506,
+      "enterStatus": "Product Enter behavior passed; initial QA had omitted the normal Godot story-entry step before waiting for Main. Original failures retained. Corrected20-case acceptance uses both real entry actions."
+    }
+  ]
+}

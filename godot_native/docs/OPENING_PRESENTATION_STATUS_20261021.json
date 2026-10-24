@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-20T18:00:52.651Z",
+  "state": "web-design-blocked-by-mac-lock",
+  "requestedWorkflow": "User requested webpage design before implementing the loading opening. Root owns the authorized webpage interaction; this subtask has not used an alternative personal-browser access path.",
+  "blocker": {
+    "reportedBy": "root computer-use session",
+    "condition": "Most recent computer-use result reports Mac locked and browser host unavailable. User unlock was requested by root.",
+    "webDesignSubmitted": false,
+    "webDesignReceived": false,
+    "designSourceUrl": null
+  },
+  "preparedBrief": {
+    "path": "docs/OPENING_FRONTEND_BRIEF_20261021.txt",
+    "bytes": 1868,
+    "sha256": "39ec9c03e5e80097586c247290a8ab44375e05c4993c1a903bb8129953573b39",
+    "localPreparedPath": "exports/verification/phone_legibility_20261021/web-opening-brief.txt"
+  },
+  "visual": {
+    "animationEnabled": false,
+    "webpageDesignAdopted": false,
+    "finalVisualImplemented": false,
+    "currentDisplay": "Existing static07:55 loading card, actual progress, original Enter and Retry controls.",
+    "enableGate": "No data-boot-animation=true appears on the current loading section. The new presenter reports motion=off and hides its motion toggle.",
+    "authoredDecorativeMotion": "No added CSS keyframes, CSS animation, requestAnimationFrame, timer, audio, video, image fetch or forced sequence.",
+    "existingNativeProgress": "The pre-existing browser progress element may use the browser own indeterminate indicator. No new narrative motion was enabled.",
+    "userConstraints": "No emerald/check success badge, no highlighted nighttime portrait and no premature check-in-success claim."
+  },
+  "interfaceFiles": [
+    {
+      "path": "web/index.html",
+      "bytes": 11250,
+      "sha256": "a57c2a86e7b793fac9874e77abfe359cfc958a0842ee4712e129b2c75c182552"
+    },
+    {
+      "path": "web/boot_intro.js",
+      "bytes": 5347,
+      "sha256": "0952c014eb7a5789e6fdcb542bdbb3fd2962f7cd314006d86fc1da8c6319b389"
+    },
+    {
+      "path": "web/content_loader.js",
+      "bytes": 24928,
+      "sha256": "7f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d"
+    },
+    {
+      "path": "tools/test_boot_intro.mjs",
+      "bytes": 11440,
+      "sha256": "48e8167b8b028a4014f6d9d79cbd5baf08005fa04db375dca5e0860ec651c92f"
+    }
+  ],
+  "independentReview": {
+    "method": "Read-only review of current presenter, HTML boot promise chain, unchanged content transport and v1/v2 exported script provenance. No runtime changes or new tests were run for this status record.",
+    "firstPaint": "The original inline CSS and static loading markup precede the presenter and engine script tags, so the static loading surface does not depend on a new video or illustration download. The presenter initializes before the engine script when its own small script has loaded.",
+    "resourceWaiting": {
+      "additionalLargeAsset": false,
+      "additionalAnimationTimerOrReadinessPromise": false,
+      "additionalScriptRequest": true,
+      "presenterScriptBytes": 5347,
+      "parserBlocking": true,
+      "scope": "The current boot-intro.js tag is a classic synchronous script before the engine tag. It adds one hash-bound small-file HTTP request and may delay parser continuation while that file is pending. Do not describe this interface as zero additional resource waiting. No visual sequence holds back ready or Start."
+    },
+    "transport": "content_loader.js is byte-identical to current HEAD:SHA-2567f179874f34773977ec3409055a1629e795e803e855a279aa7c1c787b527f73d. Resource sizes, complete hashes, original chunk validation, cache handling and promise admission remain unchanged.",
+    "cacheErrors": "Presenter never accesses CacheStorage or IndexedDB. The original boot-resource IndexedDB unavailable/error fallback remains network-only with its existing warning. The original deferred CacheStorage open/match rejection fallback remains intact. No new cache failure condition or cache API gate was introduced.",
+    "progressAuthority": "Only the original WASM+core accepted-byte callbacks supply received/total.100 percent remains loading/verifying until the original complete resource/preload/init promises resolve.",
+    "entryAuthority": "Original Start click alone calls Engine.start. Paused, hidden or reduced-motion presentation cannot postpone ready or automatically enter the engine.",
+    "postHandoffError": "After running has removed its listeners, the presenter still accepts the original running-to-error notification as a static terminal error. Original webglcontextlost/nonzero onExit fail logic reopens loading, hides Start/progress and exposes Retry; no motion listener is recreated.",
+    "saveStoryAudio": "Presenter never reads/writes story state, saves, wallet, inventory or audio. Original audio activation/Engine start gesture is unchanged.",
+    "currentFindings": [
+      {
+        "priority": "P2",
+        "scope": "Optional presentation script fetch dependency",
+        "finding": "Classic parser-blocking tag adds a small request before engine loading. It is not an animation delay or an extra large asset, but can wait on network delivery.",
+        "resolution": "Recorded accurately; no runtime edit made in this documentation-only review."
+      }
+    ]
+  },
+  "validation": {
+    "previousDomChecks": {
+      "passed": 41,
+      "failed": 0,
+      "script": {
+        "path": "tools/test_boot_intro.mjs",
+        "bytes": 11440,
+        "sha256": "48e8167b8b028a4014f6d9d79cbd5baf08005fa04db375dca5e0860ec651c92f"
+      },
+      "scope": "Fake DOM and stub Engine only. Covers supplied-byte ratios, unknown totals,100 percent not ready, monotonic terminal states, reduced motion/manual/background pause, legacy media listener disposal, production HTML Start/fail/retry event-handler execution, running-to-WebGL-loss/nonzero-exit error and no resurrected listeners."
+    },
+    "currentReadOnlyChecks": [
+      "No visual activation attribute, authored keyframes or animation clock was added.",
+      "Original content_loader.js has no git diff and matches HEAD SHA.",
+      "Both v1/v2 exported boot-intro.js files match the current presenter SHA and hash-bound manifest URL."
+    ],
+    "notClaimed": [
+      "A completed webpage design or opening animation",
+      "A new browser visual or GPU-context-loss run in this review",
+      "Physical phone, minimum historical browser versions or full campaign acceptance"
+    ]
+  },
+  "interfaceBuilds": [
+    {
+      "directory": "exports/web-phone-legibility-v1-20261021",
+      "sourceInputSha256": "8e13b312e573723814d02148c8039372dab85b1b0a2ef751e0eb24fee8d9c27f",
+      "buildManifestSha256": "bf30613eb8294055db6ae3f5cf7a4e1227bcc0e4f91620eb380805a7b3ab078c",
+      "bootIntroPresentation": {
+        "file": "boot-intro.js",
+        "sha256": "0952c014eb7a5789e6fdcb542bdbb3fd2962f7cd314006d86fc1da8c6319b389",
+        "url": "boot-intro.js?v=0952c014eb7a5789e6fdcb542bdbb3fd2962f7cd314006d86fc1da8c6319b389"
+      },
+      "presenterMatchesCurrentSource": true,
+      "scope": "Exported presentation interface only. This is not acceptance of a webpage-designed opening animation."
+    },
+    {
+      "directory": "exports/web-phone-legibility-v2-20261021",
+      "sourceInputSha256": "9970179ac94c1afcfa3a4d7036a2fe95d9908de50eb4294ccd28fd1b4bac3c69",
+      "buildManifestSha256": "11be490d3862fb29d7d000aa734be519112a8aa4afb32c8f8e752950e0bd129b",
+      "bootIntroPresentation": {
+        "file": "boot-intro.js",
+        "sha256": "0952c014eb7a5789e6fdcb542bdbb3fd2962f7cd314006d86fc1da8c6319b389",
+        "url": "boot-intro.js?v=0952c014eb7a5789e6fdcb542bdbb3fd2962f7cd314006d86fc1da8c6319b389"
+      },
+      "presenterMatchesCurrentSource": true,
+      "scope": "Exported presentation interface only. This is not acceptance of a webpage-designed opening animation."
+    }
+  ],
+  "pending": [
+    "Unlock the Mac and use the authorized webpage to submit the prepared frontend-only brief and references.",
+    "Receive and record the actual webpage proposal before choosing the visual design.",
+    "Implement the selected lightweight opening, real-byte progress and clear verification/error/ready states without changing transport admission.",
+    "Assess the small presenter script scheduling dependency before calling loading overhead negligible.",
+    "Visually inspect1280x720,1440x900,360x640,390x844,430x932 and844x390; check reduced motion, background pause, manual pause, keyboard access and Retry.",
+    "Verify actual browser slow/cached/failed loading and post-handoff WebGL/engine error behavior on the final opening build."
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "755-illustrated-resume-acceptance-v1",
+  "date": "2026-10-22",
+  "scope": "native ending resume page presentation only",
+  "testedCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+  "sourceDirty": true,
+  "sourceInputSha256": "a05a5915d94cc7f8c3e9ada399e0618a92a06c4680601ec50ad3bf7c92c7f914",
+  "runtime": "Godot 4.7.2 independent Web export",
+  "export": "godot_native/exports/web-ending-resume-20261022",
+  "deliveryUrl": "http://127.0.0.1:5241/",
+  "deliveryServerRecord": "/tmp/755-ending-resume-delivery-server-20261022.json",
+  "art": "docs/art/ENDING_RESUME_ART_20261022.json",
+  "changes": [
+    "generated original terminal/receipt/glyph-window illustration",
+    "near-black terminal palette; native title/labels and one bottom primary action",
+    "optional help swaps illustration in place; stable portrait layout"
+  ],
+  "preserved": [
+    "checkinDone and prologue eligibility",
+    "single guarded c1_resume_ending intent with null payload",
+    "controller/save/proof authority",
+    "six-word encounter mechanics and approximately forty-second active route",
+    "pixel parchment check-in success receipt"
+  ],
+  "native": {
+    "stages": [
+      {
+        "label": "Godot asset import and editor parse",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_cohesion_lifecycle.gd",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_phone_app_identity.gd",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_prologue_pacing.gd",
+        "failed": false,
+        "status": 0
+      },
+      {
+        "label": "test_prologue_focus_input.gd",
+        "failed": false,
+        "status": 0
+      }
+    ],
+    "renderChecks": 59,
+    "renderFailures": 0,
+    "viewports": [
+      "1280x720",
+      "1440x900",
+      "390x844",
+      "360x640"
+    ],
+    "realInput": "touch opens/closes help and starts original interception from earned isolated save"
+  },
+  "web": {
+    "desktop": {
+      "checks": 555,
+      "passed": true,
+      "caseIds": [
+        "desktop-1280"
+      ],
+      "report": "/Users/zhu/Library/Application Support/755-tools/verification/ending-resume-20261022/desktop/web-acceptance.json"
+    },
+    "touch": {
+      "checks": 555,
+      "passed": true,
+      "caseIds": [
+        "touch-390"
+      ],
+      "report": "/Users/zhu/Library/Application Support/755-tools/verification/ending-resume-20261022/touch/web-acceptance.json"
+    }
+  },
+  "retainedWebRelease": {
+    "passed": true,
+    "validators": 38,
+    "log": "/Users/zhu/Library/Application Support/755-tools/verification/ending-resume-20261022/755-ending-resume-release-20261022.log"
+  },
+  "exportVerifyOnly": true,
+  "computerUse": {
+    "browser": "existing IAB tab1",
+    "operation": "reload new export; normal enter-game and existing saved-story entry; left on illustrated resume page",
+    "screenshot": "/Users/zhu/Library/Application Support/755-tools/review/ending-resume-browser-20261022.png",
+    "playerSaveInjected": false
+  },
+  "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/verification/ending-resume-20261022",
+  "temporaryScreenshotsRemoved": 15,
+  "limitations": [
+    "Chromium desktop and touch emulation, not physical phone or fresh Safari/Firefox acceptance",
+    "No full manual campaign claimed",
+    "Local preview delivery only; no commit, push or remote publication"
+  ],
+  "resolvedTooling": [
+    "Initial build lacked ffprobe in PATH; rerun with existing media-validation tools passed",
+    "Visual fixture first used unsupported sandbox prefix; rerun with standard verified isolation passed"
+  ]
+}

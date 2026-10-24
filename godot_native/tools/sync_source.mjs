@@ -32,3 +32,6 @@ fs.writeFileSync(path.join(dest,'data/asset_manifest.json'),JSON.stringify({sour
 
 const itemModule=await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptTypes(fs.readFileSync(path.join(root,'src/data/itemCatalog.ts'),'utf8'),{mode:'transform'})).toString('base64'));
 fs.mkdirSync(path.join(dest,'data/native'),{recursive:true});fs.writeFileSync(path.join(dest,'data/native/item_catalog.json'),JSON.stringify(itemModule.ITEM_CATALOG,null,2)+'\n');
+// The full source sync deterministically creates portable GPU-sized tiles.
+// Prologue-only early exits above intentionally never generate other assets.
+await import('./build_panorama_tiles.mjs');

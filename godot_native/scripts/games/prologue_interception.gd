@@ -5,10 +5,14 @@ signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
 const WordModel=preload("res://scripts/games/prologue_word_model.gd")
 const SuccessPresentation=preload("res://scripts/ui/checkin_success_view.gd")
+const CharacterFlow=preload("res://scripts/games/prologue_character_flow.gd")
+const AsciiField=preload("res://scripts/games/prologue_ascii_field.gdshader")
+const AsciiAtlas=preload("res://assets/native/prologue_terminal_20261022/ascii_glyph_atlas.png")
+const FineAsciiAtlas=preload("res://assets/native/prologue_terminal_20261022/ascii_fine_glyph_atlas.png")
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const DIALOGUE=["旁白：喂！你拽我弹窗干什么？！快松手！要未响应了！", "玩家：帮我补签到！", "玩家：不帮就一起死机！", "旁白：行行行！算你狠！我帮你想办法还不行吗？先把手指挪开！"]
-const INK=Color("354243")
-const PAPER=Color("f6efdc")
+const INK=CharacterFlow.INK
+const PAPER=CharacterFlow.PANEL
 var phase="success"
 var elapsed=0.0
 var blocks=0
@@ -24,11 +28,7 @@ var dialogue_index=0
 var intro_elapsed_ms=0.0
 var intro_segments:Array=[]
 var config:Dictionary={}
-var retry:Button
 var resume_button:Button
-var review_button:Button
-var close_review:Button
-var help_button:Button
 var field=Rect2()
 var display_scale=1.0
 var session=WordModel.new()
@@ -37,7 +37,6 @@ var left_held=false
 var right_held=false
 var pointer_id=-99
 var drag_offset=0.0
-var show_landing=false
 var lock_from=Vector2(215,605)
 var success_view:Control
 var success_continue:Button
@@ -45,21 +44,36 @@ var reduced_motion=false
 var lock_help_button:Button
 var lock_help_open=false
 var lock_release_count=0
+var field_material:ShaderMaterial
+var field_texture:ImageTexture
+var text_flow_clock=0.0
 
 func _ready()->void:
+	field_material=ShaderMaterial.new();field_material.shader=AsciiField;material=field_material
+	field_material.set_shader_parameter("glyph_atlas",AsciiAtlas)
+	field_material.set_shader_parameter("fine_glyph_atlas",FineAsciiAtlas)
+	field_material.set_shader_parameter("hanzi_masks",CharacterFlow.mask_texture())
+	field_material.set_shader_parameter("mask_count",CharacterFlow.mask_texture().get_height()/20.0)
+	field_material.set_shader_parameter("flow_cell",CharacterFlow.FLOW_CELL)
+	field_material.set_shader_parameter("stroke_cell",CharacterFlow.STROKE_CELL)
+	field_material.set_shader_parameter("assembly_duration",CharacterFlow.ASSEMBLY_DURATION)
+	field_material.set_shader_parameter("assembly_distance",CharacterFlow.ASSEMBLY_DISTANCE)
+	field_material.set_shader_parameter("field_occupancy",CharacterFlow.FIELD_OCCUPANCY)
+	field_material.set_shader_parameter("word_cell_size",WordModel.GLYPH_CELL)
+	field_material.set_shader_parameter("letter_gap",WordModel.LETTER_GAP)
+	var pixel=Image.create(1,1,false,Image.FORMAT_RGBA8);pixel.fill(Color.WHITE)
+	field_texture=ImageTexture.create_from_image(pixel)
 	var source=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/act-one-bootstrap.content.json"))
 	if source is Dictionary:intro_segments=source.get("audioNarration",{}).get("prologue_narrator_intro",{}).get("subtitleSegmentsZh",[])
 	content=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/prologue-interception.content.json"))
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;grab_focus()
 	success_view=SuccessPresentation.new();add_child(success_view)
-	retry=_button("继续当前阶段",_retry)
-	resume_button=_button("继续",_resume)
-	review_button=_button("重看完整线索",func():_review(true))
-	close_review=_button("继续寻找",func():_review(false))
-	help_button=_button("显示落点帮助",func():show_landing=not show_landing;queue_redraw())
-	success_continue=_button("继续",_continue_success)
+	resume_button=_button("返回字流",_resume)
+	resume_button.name="PrologueResume"
+	success_continue=_button("收起回执",_continue_success)
 	success_continue.name="CheckinSuccessContinue"
-	NativeUi.apply_button(success_continue,Color("f8f8ef"),Color("193f38"),Color("b9cbbd"),24,1,14,Vector2(12,6),Color("193f38"))
+	NativeUi.apply_button(success_continue,Color("F4EAD5"),Color("44332D"),Color("A1744E"),0,2,16,Vector2(12,6),Color("44332D"))
+	success_continue.add_theme_font_override("font",SuccessPresentation.PIXEL_FONT)
 	lock_help_button=_button("键盘帮助",_toggle_lock_help)
 	lock_help_button.name="NarratorLockKeyboardHelp"
 	get_tree().root.focus_exited.connect(_pause)
@@ -67,17 +81,18 @@ func _ready()->void:
 
 func _button(text:String,callback:Callable)->Button:
 	var button=Button.new();button.text=text;button.pressed.connect(callback);add_child(button)
+	NativeUi.apply_button(button,CharacterFlow.PANEL,INK,CharacterFlow.RULE,0,1,16,Vector2(12,6),CharacterFlow.ACCENT)
 	return button
 
 func _reset_session()->void:
-	var widths:Dictionary={}
 	for stage:Dictionary in content.get("stages",[]):
-		for word:String in stage.targets+stage.distractors:widths[word]=get_theme_default_font().get_string_size(word,HORIZONTAL_ALIGNMENT_LEFT,-1,WordModel.FONT_SIZE).x
-	session.setup(content,widths)
+		for word:String in stage.targets+stage.distractors:CharacterFlow.word_cells(word)
+	session.setup(content)
+	session.reading_time_scale=2.0 if reduced_motion else 1.0
 	_sync()
 
 func start(request:Dictionary)->void:
-	config=request;done=false;paused=false;dialogue_index=0;hold_ms=0;intro_elapsed_ms=0
+	config=request;done=false;paused=false;dialogue_index=0;hold_ms=0;intro_elapsed_ms=0;text_flow_clock=0
 	lock_help_open=false;lock_release_count=0
 	reduced_motion=bool(request.get("reduced_motion",false))
 	_reset_session();_clear_input();_switch("blackout" if request.get("resume",false) else "success")
@@ -117,22 +132,11 @@ func _pause()->void:
 func _resume()->void:
 	if not paused or done:return
 	paused=false;grab_focus()
-	if not session.reviewing:presentation_requested.emit("prologue_playback_resumed",{})
+	presentation_requested.emit("prologue_playback_resumed",{})
 
 func _exit_tree()->void:
 	presentation_requested.emit("prologue_scene_closed",{})
 	if get_tree().root.focus_exited.is_connected(_pause):get_tree().root.focus_exited.disconnect(_pause)
-
-func _review(value:bool)->void:
-	if not phase in ["deploy","intercept","failed"] or paused:return
-	_clear_input();session.set_review(value);grab_focus()
-	presentation_requested.emit("prologue_playback_paused" if value else "prologue_playback_resumed",{})
-	queue_redraw()
-
-func _retry()->void:
-	if phase!="failed":return
-	_clear_input();session.set_review(false);session.continue_stage();show_landing=false
-	phase="intercept";elapsed=0;grab_focus();_sync()
 
 func _switch(next:String)->void:
 	phase=next;elapsed=0
@@ -151,19 +155,16 @@ func _switch(next:String)->void:
 func _layout_controls()->void:
 	display_scale=minf(size.x/430.0,size.y/820.0)
 	field=Rect2((size-Vector2(430,820)*display_scale)/2,Vector2(430,820)*display_scale)
-	var visible_game=phase in ["deploy","intercept","failed"]
-	for button:Button in [retry,resume_button,review_button,close_review,help_button,success_continue,lock_help_button]:
+	var visible_game=phase in ["deploy","intercept"]
+	for button:Button in [resume_button,success_continue,lock_help_button]:
 		button.scale=Vector2.ONE*display_scale
 	success_view.position=field.position;success_view.scale=Vector2.ONE*display_scale
 	success_view.visible=phase=="success"
-	success_continue.visible=phase=="success" and not paused
+	success_continue.visible=phase=="success" and (elapsed>=1.8 or reduced_motion) and not paused
+	resume_button.text="返回字流" if visible_game else "返回回执" if phase=="success" else "返回交涉" if phase in ["lock","caught"] else "返回剧情"
 	lock_help_button.visible=phase=="lock" and not paused
-	retry.visible=phase=="failed" and not paused and not session.reviewing
 	resume_button.visible=paused
-	review_button.visible=visible_game and not paused and not session.reviewing
-	close_review.visible=visible_game and session.reviewing and not paused
-	help_button.visible=phase=="failed" and int(session.hint.get("tier",0))>=3 and not paused and not session.reviewing
-	for item:Array in [[retry,Rect2(86,568,258,48)],[resume_button,Rect2(115,460,200,48)],[review_button,Rect2(118,768,194,38)],[close_review,Rect2(86,618,258,48)],[help_button,Rect2(86,514,258,38)],[success_continue,Rect2(125,704,180,48)],[lock_help_button,Rect2(118,704,194,42)]]:
+	for item:Array in [[resume_button,Rect2(115,668,200,48)],[success_continue,Rect2(125,704,180,48)],[lock_help_button,Rect2(118,704,194,42)]]:
 		var rect:Rect2=item[1];item[0].position=field.position+rect.position*display_scale;item[0].size=rect.size
 
 func _sync()->void:
@@ -173,22 +174,27 @@ func _process(delta:float)->void:
 	_layout_controls()
 	if paused or done:
 		if phase=="success":success_view.pose(elapsed,reduced_motion,paused)
-		queue_redraw();return
+		_update_terminal_field();queue_redraw();return
 	var dt=clampf(delta,0,.25)
+	text_flow_clock+=dt
 	elapsed+=dt
-	if phase in ["deploy","intercept","failed"]:
-		if not session.reviewing and phase!="failed":intro_elapsed_ms+=dt*1000
+	if phase in ["deploy","intercept"]:
+		intro_elapsed_ms+=dt*1000
 		var result=session.advance(dt,float(right_held)-float(left_held))
 		for event:Dictionary in result:
 			match event.kind:
 				"stage_complete":presentation_requested.emit("prologue_error_intercepted",{"blockedCount":event.completed,"requiredBlocks":3})
 				"miss":
-					_clear_input();show_landing=false
 					presentation_requested.emit("prologue_error_intercept_missed",{"misses":event.misses,"maxMisses":3})
 					if int(event.hint.tier)==3:presentation_requested.emit("prologue_error_round_failed",{"misses":event.misses})
+		if session.phase=="hint":
+			# Keep the earned collection and the current grip; re-emit missing words.
+			var target=session.board_target
+			session.continue_stage()
+			session.set_target(target)
 		_sync()
 		if session.phase=="complete":_switch("lock")
-		else:phase="failed" if session.phase=="hint" else "deploy" if session.phase=="clue" else "intercept"
+		else:phase="deploy" if session.phase=="clue" else "intercept"
 	else:
 		match phase:
 			"success":
@@ -215,7 +221,7 @@ func _process(delta:float)->void:
 					done=true
 					finished.emit({"interceptedCount":blocks,"lockHeldMs":hold_ms,"failed":false,"dialogueCount":4,"whiteoutCompleted":true})
 	if phase=="success":success_view.pose(elapsed,reduced_motion,paused)
-	queue_redraw()
+	_update_terminal_field();queue_redraw()
 
 func _logical(point:Vector2)->Vector2:return (point-field.position)/maxf(.0001,display_scale)
 func _position(percent:Vector2)->Vector2:return field.position+field.size*percent/100
@@ -236,7 +242,6 @@ func _gui_input(event:InputEvent)->void:
 			else:_release_lock()
 			accept_event()
 		elif code==KEY_ESCAPE and event.pressed:_pause();accept_event()
-		elif code==KEY_R and event.pressed and phase in ["deploy","intercept","failed"]:_review(not session.reviewing);accept_event()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
 		_pointer_begin(event.position,-1) if event.pressed else _pointer_end(-1)
 		accept_event()
@@ -292,13 +297,11 @@ func _text(text:String,y:float,color:Color=INK,font_size:int=20,width:float=386,
 		draw_string(font,Vector2((430-measured)/2,y+i*(font_size+8)),lines[i],HORIZONTAL_ALIGNMENT_LEFT,-1,font_size,color)
 
 func _narration_card(text:String,y:float,height:float,speaker:String,font_size:int=20)->void:
-	# A paper dialogue lane gives the authored line a clear entry point without
-	# covering the word arena or adding a second system-message surface.
+	# Quiet terminal output is readable independently from the moving ASCII field.
 	var box=Rect2(22,y,386,height)
-	draw_rect(Rect2(box.position+Vector2(3,4),box.size),Color("354243",.20))
-	draw_rect(box,Color("fcf6e6"));draw_rect(box,INK,false,2)
-	draw_line(Vector2(38,y+36),Vector2(392,y+36),Color("cdc4ae"),1)
-	_text(speaker,y+24,Color("697268"),14)
+	draw_rect(box,PAPER)
+	draw_line(Vector2(38,y+36),Vector2(392,y+36),CharacterFlow.RULE,1)
+	_text(speaker,y+24,CharacterFlow.MUTED,14)
 	_text(text,y+64,INK,font_size,348,true)
 
 func _retained_words(y:float)->void:
@@ -310,108 +313,120 @@ func _retained_words(y:float)->void:
 		var extent=font.get_string_size(word,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+16
 		words.append({"word":word,"width":extent});width+=extent
 	width+=maxi(0,words.size()-1)*6
-	_text("已留下",y-16,Color("697268"),14)
+	_text("已留下",y-16,CharacterFlow.MUTED,14)
 	var x=(430-width)/2
 	for word:Dictionary in words:
-		draw_rect(Rect2(x,y,word.width,34),Color("f8f3e5"))
-		draw_rect(Rect2(x,y,word.width,34),Color("b6b7a8"),false,1)
+		draw_rect(Rect2(x,y,word.width,34),PAPER)
+		draw_rect(Rect2(x,y,word.width,34),CharacterFlow.RULE,false,1)
 		draw_string(font,Vector2(x+8,y+23),word.word,HORIZONTAL_ALIGNMENT_LEFT,-1,17,INK)
 		x+=word.width+6
 
-func _word(text:String,center:Vector2,extent:Vector2,angle:float,color:Color=PAPER)->void:
-	var polygon=WordModel.polygon(center,extent/2,angle)
-	var shadow=WordModel.polygon(center+Vector2(4,7),extent/2,angle)
-	draw_colored_polygon(shadow,Color("65706a",.17*color.a));draw_colored_polygon(polygon,color)
-	var outline=polygon.duplicate();outline.append(polygon[0]);draw_polyline(outline,Color("73746a",color.a),1.5,true)
-	draw_set_transform(field.position+center*display_scale,angle,Vector2.ONE*display_scale)
-	var font=get_theme_default_font();var measured=font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,24).x
-	draw_string(font,Vector2(-measured/2,8),text,HORIZONTAL_ALIGNMENT_LEFT,-1,24,Color(INK,color.a))
-	draw_set_transform(field.position,0,Vector2.ONE*display_scale)
+func _update_terminal_field()->void:
+	var bodies=PackedVector4Array();bodies.resize(CharacterFlow.WORD_SLOTS)
+	var symbols=PackedVector4Array();symbols.resize(CharacterFlow.WORD_SLOTS)
+	var styles=PackedVector4Array();styles.resize(CharacterFlow.WORD_SLOTS)
+	var more=PackedVector2Array();more.resize(CharacterFlow.WORD_SLOTS)
+	var index=0
+	if phase=="lock":
+		var center=_lock_center()
+		var struggle=sin(elapsed*(24 if holding else 5))*(3.0*(1.0-hold_ms/1400) if holding else 1.3)
+		var ids=CharacterFlow.mask_indices("话")
+		bodies[0]=Vector4(center.x+struggle,center.y,1,1)
+		symbols[0]=Vector4(ids.x,ids.y,1,0);styles[0]=Vector4(elapsed,1,0,0)
+	elif phase in ["deploy","intercept"]:
+		for card:Dictionary in session.cards:
+			if index>=2:break
+			if not WordModel.ARENA.intersects(Rect2(card.position-card.size/2,card.size)):continue
+			var opacity=clampf(session.transition_left/WordModel.STAGE_TRANSITION,0,1) if card.resolved and session.transition_left>0 else 1.0
+			var ids=CharacterFlow.mask_indices(card.text)
+			bodies[index]=Vector4(card.position.x,card.position.y,card.text.length(),opacity)
+			symbols[index]=Vector4(ids.x,ids.y,cos(card.angle),sin(card.angle))
+			styles[index]=Vector4(card.age,1,0,0);index+=1
 
-func _draw_board()->void:
-	var center=Vector2(session.board_x,WordModel.BOARD_Y)
-	var half=WordModel.BOARD_SIZE/2
-	draw_colored_polygon(WordModel.polygon(center+Vector2(4,10),half,session.board_angle),Color("65706a",.20))
-	draw_colored_polygon(WordModel.polygon(center+Vector2(0,6),half,session.board_angle),Color("9b8580"))
-	draw_set_transform(field.position+center*display_scale,session.board_angle,Vector2.ONE*display_scale)
-	draw_rect(Rect2(-half,WordModel.BOARD_SIZE),Color("f4e2df"))
-	draw_rect(Rect2(-half,Vector2(164,18)),Color("dfbabb"))
-	draw_rect(Rect2(-half,WordModel.BOARD_SIZE),Color("9b5f66"),false,2)
-	var font=get_theme_default_font()
-	draw_string(font,Vector2(-69,-15),"位置错误",HORIZONTAL_ALIGNMENT_LEFT,-1,11,INK)
-	draw_string(font,Vector2(66,-15),"×",HORIZONTAL_ALIGNMENT_LEFT,-1,11,INK)
+	if phase in ["deploy","intercept"] and not reduced_motion:
+		index=CharacterFlow.PHYSICAL_SLOTS
+		for cloud:Dictionary in CharacterFlow.cloud_words(session.current().get("fragments",[]),text_flow_clock):
+			if index>=CharacterFlow.PHYSICAL_SLOTS+CharacterFlow.CLUE_SLOTS:break
+			var ids=CharacterFlow.mask_letters(cloud.text)
+			bodies[index]=Vector4(cloud.position.x,cloud.position.y,cloud.text.length(),cloud.alpha)
+			symbols[index]=Vector4(ids.x,ids.y,cos(cloud.angle),sin(cloud.angle));more[index]=Vector2(ids.z,ids.w)
+			styles[index]=Vector4(cloud.age,cloud.scale,0,0);index+=1
+		index=CharacterFlow.PHYSICAL_SLOTS+CharacterFlow.CLUE_SLOTS
+		for cloud:Dictionary in CharacterFlow.ambient_words(text_flow_clock,session.stage):
+			if index>=CharacterFlow.WORD_SLOTS:break
+			var ids=CharacterFlow.mask_letters(cloud.text)
+			bodies[index]=Vector4(cloud.position.x,cloud.position.y,cloud.text.length(),cloud.alpha)
+			symbols[index]=Vector4(ids.x,ids.y,cos(cloud.angle),sin(cloud.angle));more[index]=Vector2(ids.z,ids.w)
+			styles[index]=Vector4(cloud.age,cloud.scale,0,0);index+=1
+	field_material.set_shader_parameter("field_rect",Vector4(CharacterFlow.FIELD_RECT.position.x,CharacterFlow.FIELD_RECT.position.y,CharacterFlow.FIELD_RECT.size.x,CharacterFlow.FIELD_RECT.size.y))
+	field_material.set_shader_parameter("word_more",more)
+	field_material.set_shader_parameter("flow_clock",text_flow_clock)
+	field_material.set_shader_parameter("reduced_motion",reduced_motion)
+	field_material.set_shader_parameter("word_data",bodies)
+	field_material.set_shader_parameter("word_symbols",symbols)
+	field_material.set_shader_parameter("word_style",styles)
+
+func _draw_character_flow()->void:
+	draw_texture_rect(field_texture,CharacterFlow.FIELD_RECT,false,Color.MAGENTA)
+
+func _draw_terminal_window(center:Vector2,extent:Vector2,angle:float=0)->void:
+	var half=extent/2
+	draw_set_transform(field.position+center*display_scale,angle,Vector2.ONE*display_scale)
+	draw_rect(Rect2(-half,extent),PAPER)
+	draw_rect(Rect2(-half,Vector2(extent.x,18)),Color("10212B"))
+	draw_rect(Rect2(-half,extent),CharacterFlow.ACCENT,false,1)
+	var font=SuccessPresentation.PIXEL_FONT
+	draw_string(font,Vector2(-half.x+9,-half.y+13),"! ERROR",HORIZONTAL_ALIGNMENT_LEFT,-1,12,CharacterFlow.ACCENT)
+	draw_line(Vector2(-half.x+8,-half.y+18),Vector2(half.x-8,-half.y+18),CharacterFlow.RULE,1)
 	var text="经度与纬度不存在"
 	var width=font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,14).x
 	draw_string(font,Vector2(-width/2,13),text,HORIZONTAL_ALIGNMENT_LEFT,-1,14,INK)
 	draw_set_transform(field.position,0,Vector2.ONE*display_scale)
 
-func hint_text()->String:
-	var hint=session.hint;var reason=str(hint.get("reason","late"));var tier=int(hint.get("tier",1))
-	var text={"unmoved":"字从窗口旁边离开了。\n窗口还留在原来的位置。","meaning":"刚才留下的是“%s”。\n它不符合这段话的要求。"%hint.get("word",""),"order":"这一段来得太早了。\n原句的先后还没有接上。","wrong_side":"窗口还在另一侧。\n这块字从旁边离开了。","late":"目标已经越过窗口。\n刚才的移动晚了一点。"}.get(reason,"")
-	if tier>=2:
-		text+="\n\n"+["前后的文字都在说“留下”。\n窗口的标题栏可以拖动。","需要留下两个坐标名称，先后不限。\n拖动窗口，让它们碰到窗沿。","按原句先后接回三段。\n拖动窗口，已有的字会保留。"][session.stage]
-	if tier>=3:
-		text+="\n\n"+("下一段："+str(session.missing()[0]) if session.current().get("ordered",false) else "还缺："+"、".join(session.missing()))
-	return text
+func _draw_board()->void:
+	_draw_terminal_window(Vector2(session.board_x,WordModel.BOARD_Y),WordModel.BOARD_SIZE,session.board_angle)
 
 func _draw()->void:
-	draw_rect(Rect2(Vector2.ZERO,size),Color("e8e1d0"))
+	draw_rect(Rect2(Vector2.ZERO,size),Color("e8e1d0") if phase=="success" else CharacterFlow.BACKGROUND)
 	if phase=="blackout":draw_rect(Rect2(Vector2.ZERO,size),Color.BLACK);return
-	if phase=="red":draw_rect(Rect2(Vector2.ZERO,size),Color("ef223d"));return
+	if phase=="red":
+		var shade=CharacterFlow.BACKGROUND.lerp(Color("371A25"),smoothstep(0.0,.35,elapsed))
+		draw_rect(Rect2(Vector2.ZERO,size),shade);return
 	if phase in ["burst","whiteout"]:
-		if phase=="whiteout" or int(elapsed*18)%2==0:draw_rect(Rect2(Vector2.ZERO,size),Color.WHITE)
+		draw_rect(Rect2(Vector2.ZERO,size),Color.WHITE if phase=="whiteout" else CharacterFlow.BACKGROUND.lerp(Color.WHITE,CharacterFlow.burst_opacity(elapsed)))
 		return
 	draw_set_transform(field.position,0,Vector2.ONE*display_scale)
 	if phase=="success":pass # Independent child objects render the accepted receipt.
 	elif phase=="error":
-		draw_rect(Rect2(30,330,370,140),PAPER);_text("经度与纬度不存在",400,INK,25)
+		_draw_terminal_window(Vector2(215,400),Vector2(310,86))
 	else:
-		_text("经度与纬度不存在",38,Color("963f4b"),24)
-		_text("第 %d / 3 段"%mini(3,blocks+1),72,INK,17)
-		if phase in ["deploy","intercept","failed"]:
+		if phase in ["deploy","intercept","lock","caught"]:_draw_character_flow()
+		if phase in ["deploy","intercept"]:
 			# Original voiced narration owns this lane; puzzle fragments never add speech.
 			if intro_segments.size()>=3 and intro_elapsed_ms<8500:
 				var index=2 if intro_elapsed_ms>=6800 else 1 if intro_elapsed_ms>=3400 else 0
 				_narration_card(str(intro_segments[index]),98,112,"旁白",18)
 			if not session.captures.is_empty():_text("已留下："+" · ".join(session.captures.map(func(c):return c.word)),219,INK,17)
-			draw_rect(WordModel.ARENA,Color("ece7d9"));draw_rect(WordModel.ARENA,Color("b6b7a8"),false,2)
-			_text("字句还在向外走",732,Color("787b70"),14)
-			_draw_board()
-			for card:Dictionary in session.cards:
-				var color=Color("fff9e7") if not card.resolved else Color("e2ead3",clampf(session.transition_left/.65,0,1) if session.transition_left>0 else 1)
-				_word(card.text,card.position,card.size,card.angle,color)
 			for contact:Dictionary in session.contacts:
 				var age=session.clock-float(contact.time)
-				if age<.22:draw_arc(contact.point,8+age*30,0,TAU,24,Color(.72,.24,.29,1-age/.22),2,true)
-			if show_landing and not session.missing().is_empty():
-				var x=clampf(float(session.hint.get("landing_x",215)),60,370)
-				draw_line(Vector2(x,626),Vector2(x,643),Color("a76c43"),2,true)
-				draw_circle(Vector2(x,629),4,Color("a76c43"))
-			if phase=="deploy" or session.reviewing:
-				draw_rect(Rect2(30,282,370,318 if session.reviewing else 260),PAPER)
+				if age<.22:draw_line(contact.point-Vector2(9+age*30,0),contact.point+Vector2(9+age*30,0),Color(INK,1-age/.22),2)
+			_draw_board()
+			if reduced_motion and phase=="deploy":
 				var fragments:Array=session.current().get("fragments",[])
-				if session.reviewing:
-					for i:int in fragments.size():_text(str(fragments[i]),337+i*56,INK,23)
-				else:
-					var at=session.clue_index()
-					for i:int in range(maxi(0,at-2),at+1):_text(str(fragments[i]),440+(i-at)*44,INK if i==at else Color("83887a"),24 if i==at else 19)
-			elif phase=="failed":
-				draw_rect(Rect2(30,275,370,350),PAPER)
-				_text("刚才这一下",313,Color("963f4b"),24)
-				_text(hint_text(),344,INK,17)
+				for i:int in fragments.size():_text(str(fragments[i]),337+i*56,INK,23)
 		elif phase=="lock":
 			_narration_card(_lock_feedback(),110,126,"眼前的字",20)
 			var center=_lock_center()
-			draw_circle(center,55,Color("ad414a"));draw_arc(center,62,-PI/2,-PI/2+TAU*hold_ms/1400,60,Color("a8782b"),5)
-			var struggle=sin(elapsed*(24 if holding else 5))*(3.0*(1.0-hold_ms/1400) if holding else 1.3)
-			var font=get_theme_default_font();var glyph_width=font.get_string_size("话",HORIZONTAL_ALIGNMENT_LEFT,-1,32).x
-			draw_string(font,center+Vector2(-glyph_width/2+struggle,11),"话",HORIZONTAL_ALIGNMENT_LEFT,-1,32,PAPER)
+			draw_arc(center,55,0,TAU,64,CharacterFlow.RULE,1)
+			draw_arc(center,62,-PI/2,-PI/2+TAU*hold_ms/1400,60,CharacterFlow.ACCENT,3)
 			if elapsed>=.55 and not session.captures.is_empty():_retained_words(520)
-			if lock_help_open:_text("空格 / Enter 与触碰圆圈等效。\n按键状态会同步到这个字。",624,Color("637067"),15)
+			if lock_help_open:_text("空格 / Enter 与触碰圆圈等效。\n按键状态会同步到这个字。",624,CharacterFlow.MUTED,15)
 		elif phase=="caught":
 			var line:String=DIALOGUE[dialogue_index]
 			var colon=line.find("：")
 			_narration_card(line.substr(colon+1),286,206,line.left(colon),23)
 	if paused:
-		draw_rect(Rect2(30,300,370,230),PAPER);_text("已暂停",380,INK,28)
+		draw_rect(Rect2(30,540,370,190),PAPER)
+		_text("已暂停",582,INK,25)
+		_text("文字已停住，已留下的字仍在。" if phase in ["deploy","intercept"] else "这一段停在这里。",624,INK,17)
 	draw_set_transform(Vector2.ZERO)

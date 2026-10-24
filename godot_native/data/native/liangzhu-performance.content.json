@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "liangzhu-original-stage-54s",
+  "durationMs": 54000,
+  "textIdentity": "梁祝民间故事原创浓缩改编；无现代经典唱词摘录，无原唱录音。",
+  "audioTimingStatus": "等待实际生成声音后校准；54秒是舞台逻辑时长，交互等待另计。",
+  "scenes": [
+    {"id":"study-farewell","title":"同窗 · 相送","startMs":0,"endMs":20000},
+    {"id":"chamber-meeting","title":"楼台会","startMs":20000,"endMs":38000},
+    {"id":"grave-butterflies","title":"后来 · 化蝶","startMs":38000,"endMs":54000}
+  ],
+  "cues": [
+    {"id":"study-opening","startMs":0,"endMs":2000,"speaker":"","text":"同窗三载，临别时仍有话未说。","delivery":"caption"},
+    {"id":"study-scholar","startMs":2000,"endMs":5500,"speaker":"梁山伯","text":"这一页，你总比我先读懂。","delivery":"spoken"},
+    {"id":"study-yingtai","startMs":5500,"endMs":9200,"speaker":"祝英台","text":"书上能读，心里未必。","delivery":"spoken"},
+    {"id":"farewell-question","startMs":9200,"endMs":15000,"speaker":"祝英台","text":"梁兄，可看见路边那一双蝶？","delivery":"original-sung"},
+    {"id":"farewell-answer","startMs":15000,"endMs":18000,"speaker":"梁山伯","text":"看见了。我再送你一程。","delivery":"spoken"},
+    {"id":"farewell-silence","startMs":18000,"endMs":20000,"speaker":"","text":"仍有话未说。","delivery":"caption"},
+    {"id":"chamber-opening","startMs":20000,"endMs":23000,"speaker":"","text":"再相见，英台的婚事已被定下。","delivery":"caption"},
+    {"id":"chamber-yingtai","startMs":23000,"endMs":29000,"speaker":"祝英台","text":"你认出我时，婚事已定。","delivery":"spoken"},
+    {"id":"chamber-scholar","startMs":29000,"endMs":33500,"speaker":"梁山伯","text":"我认得的，一直是你。","delivery":"original-sung"},
+    {"id":"chamber-silence","startMs":33500,"endMs":38000,"speaker":"","text":"两人隔桌相望。","delivery":"caption"},
+    {"id":"grave-later","startMs":38000,"endMs":42000,"speaker":"","text":"后来，山伯病逝。英台来到墓前。","delivery":"caption"},
+    {"id":"grave-yingtai","startMs":42000,"endMs":46000,"speaker":"祝英台","text":"这一次，换我来寻你。","delivery":"spoken"},
+    {"id":"butterfly-verse-a","startMs":46000,"endMs":49000,"speaker":"合声","text":"一袖春风，半窗旧梦。","delivery":"original-sung"},
+    {"id":"butterfly-verse-b","startMs":49000,"endMs":52500,"speaker":"合声","text":"双蝶并起，再过重门。","delivery":"original-sung"},
+    {"id":"butterfly-ending","startMs":52500,"endMs":54000,"speaker":"","text":"蝶影越过重门。","delivery":"caption"}
+  ],
+  "qtes": [
+    {"id":"catch-fan","action":"catch","title":"接扇","prompt":"接扇","retryLabel":"再接这一拍","atMs":15000,"windowMs":6000,"entity":"fan","targetAttachment":{"actor":"yingtai","socket":"FanSocket","offset":[0,0]},"failure":"扇子又收回了。再接这一拍。","help":["看一看递扇的掌心。","轻触扇子；键盘按一下空格。"]},
+    {"id":"turn-back","action":"turn","title":"回身","prompt":"回身","retryLabel":"再回这一身","atMs":29000,"windowMs":6500,"entity":"actor","direction":"left","targetAttachment":{"actor":"scholar","socket":"FootAnchor","offset":[0,-12]},"failure":"两人的脚步错开了。再回这一身。","help":["回身看看身后的人。","沿人物回望的方向横划；键盘按左。"]},
+    {"id":"release-butterflies","action":"butterfly","title":"放蝶","prompt":"放蝶","retryLabel":"再试这一拍","atMs":46000,"windowMs":7000,"holdMinMs":850,"holdMaxMs":2400,"entity":"fan","targetAttachment":{"actor":"yingtai","socket":"FanSocket","offset":[0,0]},"failure":"扇影还没有稳住。再试这一拍。","help":["让扇影在掌心停一停。","按住扇影，等它稳住后松开；键盘按住空格再松开。"]}
+  ],
+  "stageProps": [
+    {"id":"study_table","kind":"table","nativeSize":[160,100],"rect":[104,76,32,20],"foot":[120,96]},
+    {"id":"left_chair","kind":"chair","nativeSize":[60,120],"rect":[102,64,12,24],"foot":[108,88]},
+    {"id":"right_chair","kind":"chair","nativeSize":[60,120],"rect":[126,64,12,24],"foot":[132,88]}
+  ]
+}

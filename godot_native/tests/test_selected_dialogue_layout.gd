@@ -20,6 +20,7 @@ func run()->void:
 			var metrics:=Layout.metrics(region,1,"管理员",content,"点击 / 空格 / 回车继续")
 			check(region.encloses(metrics.panel),"right-side panel inside safe region")
 			check(is_equal_approx(metrics.panel.end.x,region.end.x),"selected geometry is right anchored")
+			check(is_equal_approx(metrics.panel.end.y,region.end.y),"short and overflowing dialogue stay on the bottom safe edge")
 			check(metrics.speaker_font==18 and metrics.body_font==14 and metrics.prompt_font==11,"locked role sizes")
 			var bounds:=Rect2(Vector2.ZERO,metrics.panel.size)
 			for key:String in ["speaker","body_viewport","prompt"]:check(bounds.encloses(metrics[key]),"visible text region inside panel "+key)
@@ -30,6 +31,7 @@ func run()->void:
 			var view=script.new();host.add_child(view);view.session=Line.new()
 			await process_frame
 			view.tick();await process_frame;view.tick()
+			check(is_equal_approx(view.panel.get_rect().end.y,extent.y-(8 if script==Narrative else 16)),"actual short dialogue uses the bottom safe edge")
 			check(view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"none surface has no paper or scrim")
 			check(is_equal_approx(view.panel.modulate.a,1),"none surface does not dim text to background opacity")
 			check(view.speaker.get_theme_font("font")==Selected.font("dialogue","heading"),"heading uses real selected bold face")

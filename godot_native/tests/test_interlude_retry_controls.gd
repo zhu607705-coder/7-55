@@ -12,7 +12,10 @@ func check(ok:bool,name:String,detail:Variant=null):
 	checks.append({"pass":ok,"name":name,"detail":detail})
 	if not ok:push_error(name)
 func find_button(node:Node,text:String)->Button:
-	if node is Button and text in node.text:return node
+	if node is Button:
+		if text in node.text:return node
+		if text=="‹" and node.name=="PhoneAppBack":return node
+		if node.name=={"照片线索":"C35Source_photo","录音线索":"C35Source_voice","消息线索":"C35Source_chat","网络记录":"C35Source_network"}.get(text,""):return node
 	for child in node.get_children():
 		var found=find_button(child,text)
 		if found!=null:return found
@@ -21,7 +24,11 @@ func click(text:String):
 	var button=find_button(main.page_body,text)
 	check(button!=null and not button.disabled,"enabled actual control: "+text)
 	if button==null or button.disabled:return
-	main.phone_scroll.ensure_control_visible(button);await frames()
+	var owner=button.get_parent()
+	while owner!=null:
+		if owner is ScrollContainer:owner.ensure_control_visible(button)
+		owner=owner.get_parent()
+	await frames()
 	var point=button.get_global_rect().get_center()
 	check(main.phone_scroll.get_global_rect().has_point(point),"visible hit area: "+text)
 	for down in [true,false]:
@@ -67,7 +74,7 @@ func matrix_fixture_checks():
 	interlude.rejectedDecoyIds=["canteen_0755","theater_0832","status_clock_075523"]
 	interlude.statusClockMarkedUntrusted=true
 	view=pages.build("c35_recovery",{},fixture)
-	check(has_text(view,"自动恢复的时间线") and find_button(view,"段永平教学楼")!=null and find_button(view,"开始回放")==null,"original completed-exclusion gate still opens only destination choices")
+	check(has_text(view,"恢复的时间线") and view.find_child("C35Destination",true,false)!=null and find_button(view,"开始回放")==null,"original completed-exclusion gate still opens only destination choices")
 	view.free()
 	interlude.networkRecordId="record_0755";interlude.destinationId="duan_yongping_a1";interlude.phase="destination_verified"
 	before=JSON.stringify(fixture)
@@ -82,22 +89,22 @@ func run():
 	root.size=Vector2i(390,844)
 	matrix_fixture_checks()
 	main=load("res://scenes/main.tscn").instantiate();root.add_child(main);await frames()
-	await click("打开恢复工具");await click("查看划船帖")
+	await click("开始恢复");await click("查看划船帖")
 	await click("安全返航");check(not state.d.chapterThreeInterlude.evidenceIds.has("journal_start"),"summary draft is not publication")
 	await click("细节暂不公开");await click("发布收尾并保存时间")
 	check(state.d.qizhenLake.journal.summaryChoice=="details_withheld","actual chosen journal summary published")
-	await click("返回记录恢复")
+	await click("‹")
 	# Source ring order uses clockwise next/previous plus Home/End, not spatial nearest.
-	var first=find_button(main.page_body,"照片线索");first.grab_focus();await key(KEY_RIGHT)
-	check(root.gui_get_focus_owner()==find_button(main.page_body,"录音线索"),"ring Right moves to next source")
-	await key(KEY_RIGHT)
-	check(root.gui_get_focus_owner()==find_button(main.page_body,"消息线索"),"ring Right continues clockwise from rightmost source")
+	var first=find_button(main.page_body,"照片线索");first.grab_focus();await key(KEY_DOWN)
+	check(root.gui_get_focus_owner()==find_button(main.page_body,"录音线索"),"source-list Down moves to next source")
+	await key(KEY_DOWN)
+	check(root.gui_get_focus_owner()==find_button(main.page_body,"消息线索"),"source-list Down continues clockwise from rightmost source")
 	await key(KEY_END)
-	check(root.gui_get_focus_owner()==find_button(main.page_body,"网络记录"),"ring End reaches last source")
+	check(root.gui_get_focus_owner()==find_button(main.page_body,"网络记录"),"source-list End reaches last source")
 	await key(KEY_HOME)
-	check(root.gui_get_focus_owner()==find_button(main.page_body,"照片线索"),"ring Home returns to first source")
+	check(root.gui_get_focus_owner()==find_button(main.page_body,"照片线索"),"source-list Home returns to first source")
 	await key(KEY_ENTER)
-	check(state.d.native.page=="c35_photos","ring keyboard activation opens photo branch")
+	check(state.d.native.page=="c35_photos","source-list keyboard activation opens photo branch")
 	if state.d.native.page!="c35_photos":state.open_page("c35_photos");await frames()
 	for code in ["FRM B2","FRM D7","FRM 4C"]:await click(code)
 	await click("确认照片顺序")
@@ -108,9 +115,11 @@ func run():
 	check(state.d.native.c35_photo_selection.is_empty(),"source reorder clears the draft")
 	await click("FRM B2");await click("FRM 91");await click("FRM 4C");await click("确认照片顺序")
 	check(state.d.chapterThreeInterlude.photoSequenceSolved and state.d.chapterThreeInterlude.photoFrameIds==["paper_left","paper_middle","paper_right"],"correct photo order accepted through real controls")
-	# A repeated wrong attempt after success must not corrupt the accepted proof.
-	await click("重排");await click("FRM B2");await click("FRM D7");await click("FRM 4C");await click("确认照片顺序")
-	check(state.d.chapterThreeInterlude.photoFrameIds==["paper_left","paper_middle","paper_right"],"solved photo proof remains unchanged on wrong retry",state.d.chapterThreeInterlude.photoFrameIds)
+	# Accepted proof is read-only in the UI, and stale submissions cannot rewrite it.
+	check(find_button(main.page_body,"重排")==null and find_button(main.page_body,"确认照片顺序")==null,"solved gallery has no stale submit or reorder action")
+	check(find_button(main.page_body,"FRM B2").disabled,"solved gallery disables selection edits")
+	controller.dispatch(state.d,"c35_photos",["paper_left","mirrored_a","paper_right"])
+	check(state.d.chapterThreeInterlude.photoFrameIds==["paper_left","paper_middle","paper_right"],"stale wrong retry preserves accepted photo proof")
 	# Stale domain messages follow source already_complete semantics.
 	var before=state.d.qizhenLake.journal.duplicate(true)
 	state.d.chapterThreeInterlude.phase="timeline_assembly"

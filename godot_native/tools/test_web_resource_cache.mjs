@@ -38,9 +38,10 @@ function idb(storage,failWrites=false) {
     });return request;
   }};
 }
-function fixture({stored=new Map(),fetcher,noIDB=false,failWrites=false}={}) {
+function fixture({stored=new Map(),fetcher,noIDB=false,failWrites=false,nativeCrypto=false,cryptoDenied=false}={}) {
   const requests=[];
-  const context={window:{},document:{baseURI:'http://755-cache.test/7-55/releases/new/'},location:{origin:'http://755-cache.test'},navigator:{},URL,Response,ReadableStream,ArrayBuffer,Uint8Array,Uint32Array,DataView,TextEncoder,
+  const context={window:{},document:{baseURI:'http://755-cache.test/7-55/releases/new/'},location:{origin:'http://755-cache.test'},navigator:{},URL,Response,ReadableStream,ArrayBuffer,Uint8Array,Uint32Array,DataView,TextEncoder,setTimeout,AbortController,
+    ...(nativeCrypto?{crypto:cryptoDenied?{subtle:{digest:async()=>{throw new Error('Crypto denied fixture');}}}:crypto.webcrypto}:{}),
     fetch:async(url,init)=>{requests.push({url,init});return fetcher?fetcher(url,init,requests.length):new Response(payload);},
     ...(noIDB?{}:{indexedDB:idb(stored,failWrites)})};
   vm.runInNewContext(source,context);
@@ -144,14 +145,44 @@ for(const failure of ['reject','http','range']) {
   }});
   const loaded=await f.cache.load(table,{response:true});
   check(Buffer.from(await loaded.response.arrayBuffer()).equals(payload)&&f.requests.length===1&&loaded.reusedBytes===payload.length-block,'Static boot chunks reuse non-contiguous durable blocks and fetch only the missing complete gzip-decoded file without Range');
+  check(table.chunks.every(chunk=>stored.has('chunk:'+chunk.sha256))&&![1,2].some(index=>stored.has(`${table.sha256}:${index}`)),'Verified legacy release-bound chunks migrate to content-addressed keys without redownload');
+}
+{
+  const table=chunked(payload),stored=new Map();prefix(stored,payload,3);
+  const f=fixture({stored,nativeCrypto:true,fetcher:()=>{throw new Error('Legacy complete cache must not fetch');}});
+  const loaded=await f.cache.load(table,{response:true});
+  check(f.requests.length===0&&loaded.reusedBytes===payload.length&&Buffer.from(await loaded.response.arrayBuffer()).equals(payload),'A complete old release-key cache migrates and boots without a network request');
+}
+{
+  const table=chunked(payload),first=fixture({nativeCrypto:true,fetcher:url=>{const part=table.chunks.find(chunk=>url.endsWith(chunk.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}});
+  await first.cache.load(table);
+  const changed=Buffer.from(payload);changed[block+12]^=1;
+  const nextTable=chunked(changed),next=fixture({stored:first.stored,nativeCrypto:true,fetcher:url=>{const part=nextTable.chunks.find(chunk=>url.endsWith(chunk.file));return new Response(changed.subarray(part.offset,part.offset+part.bytes));}});
+  const loaded=await next.cache.load(nextTable);
+  check(next.requests.length===1&&loaded.reusedBytes===changed.length-block&&Buffer.from(loaded.buffer).equals(changed),'A new core release reuses unchanged SHA-addressed blocks and fetches only its changed 1 MiB block');
+  const corrupt=first.stored.get('chunk:'+nextTable.chunks[0].sha256);new Uint8Array(corrupt.bytes)[9]^=1;
+  const repaired=fixture({stored:first.stored,nativeCrypto:true,fetcher:url=>{const part=nextTable.chunks.find(chunk=>url.endsWith(chunk.file));return new Response(changed.subarray(part.offset,part.offset+part.bytes));}});
+  const repairedLoad=await repaired.cache.load(nextTable);
+  check(repaired.requests.length===1&&Buffer.from(repairedLoad.buffer).equals(changed),'Content-addressed cache entries still rehash before reuse and replace a corrupt block');
+}
+for(const nativeCrypto of [true,false]) {
+  const table=chunked(payload),badManifest={...table,sha256:'0'.repeat(64)};
+  const f=fixture({nativeCrypto,fetcher:url=>{const part=table.chunks.find(chunk=>url.endsWith(chunk.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}});
+  await assert.rejects(f.cache.load(badManifest,{response:true}),/Content digest differs/);
+  check(f.stored.size===0,'Whole-resource SHA remains required after per-block verification and removes quarantined blocks: '+(nativeCrypto?'native':'fallback'));
+}
+{
+  const f=fixture({nativeCrypto:true,cryptoDenied:true});
+  const loaded=await f.cache.load(resource);
+  check(Buffer.from(loaded.buffer).equals(payload),'A denied WebCrypto operation falls back to the independently verified JS implementation');
 }
 {
   const table=chunked(payload),stored=new Map(),bad=Buffer.from(payload.subarray(0,block));bad[4]^=255;
   const f=fixture({stored,fetcher:url=>{const chunk=table.chunks.find(item=>url.endsWith(item.file));return new Response(chunk.offset===0?bad:payload.subarray(chunk.offset,chunk.offset+chunk.bytes));}});
   await assert.rejects(f.cache.load(table),/Chunk digest or size differs/);
-  // Other workers may finish their independently valid chunks after rejection.
+  // Cancellation may race an already committed independently valid chunk.
   await new Promise(resolve=>setTimeout(resolve,20));
-  check(!stored.has(`${table.sha256}:0`),'A corrupt static chunk never becomes a durable cache entry or usable boot resource');
+  check(!stored.has('chunk:'+table.chunks[0].sha256),'A corrupt static chunk never becomes a durable cache entry or usable boot resource');
 }
 {
   let active=0,maximum=0;
@@ -164,6 +195,56 @@ for(const failure of ['reject','http','range']) {
   }});
   const loaded=await Promise.all([f.cache.load(table),f.cache.load(second)]);
   check(maximum===3&&Buffer.from(loaded[0].buffer).equals(payload),'WASM and core share one three-request concurrency limit across both boot resources');
+}
+// The same static-chunk transport applies to deferred PCKs, but each chunk
+// must belong to exactly its hash-named pack and contiguous declared position.
+{
+  const sha256=hash(payload),id='chapter2_large';
+  const boot=chunked(payload);
+  const table={id,file:`content/${id}-${sha256.slice(0,16)}.pck`,bytes:payload.length,sha256,transportChunks:boot.chunks.map((part,index)=>({...part,file:`content/chunks/${id}-${String(index+1).padStart(4,'0')}-${part.sha256.slice(0,16)}.bin`}))};
+  const f=fixture({nativeCrypto:true,fetcher:url=>{const part=table.transportChunks.find(item=>url.endsWith(item.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}});
+  const loaded=await f.cache.load(table);
+  check(Buffer.from(loaded.buffer).equals(payload)&&f.requests.length===3,'Deferred PCK static transport reconstructs and hashes the same original bytes');
+  for (const kind of ['count','offset','owner','sha-path','size','absolute','traversal']) {
+    const changed=structuredClone(table);
+    if(kind==='count')changed.transportChunks.pop();
+    if(kind==='offset')changed.transportChunks[1].offset--;
+    if(kind==='owner')changed.transportChunks[0].file=changed.transportChunks[0].file.replace(id,'chapter3_other');
+    if(kind==='sha-path')changed.transportChunks[0].sha256='0'.repeat(64);
+    if(kind==='size')changed.transportChunks[0].bytes--;
+    if(kind==='absolute')changed.transportChunks[0].file='/'+changed.transportChunks[0].file;
+    if(kind==='traversal')changed.transportChunks[0].file='content/../'+changed.transportChunks[0].file;
+    const reject=fixture({fetcher:()=>{throw new Error('Metadata must reject before network');}});
+    await assert.rejects(reject.cache.load(changed),/Invalid/);
+    check(reject.requests.length===0,'Malformed deferred chunk metadata rejects before network: '+kind);
+  }
+  const bad=f.stored.get('chunk:'+table.transportChunks[0].sha256);new Uint8Array(bad.bytes)[7]^=255;
+  const repair=fixture({stored:f.stored,nativeCrypto:true,fetcher:url=>{const part=table.transportChunks.find(item=>url.endsWith(item.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}});
+  const repaired=await repair.cache.load(table);
+  check(repair.requests.length===table.transportChunks.filter(part=>part.sha256===table.transportChunks[0].sha256).length&&Buffer.from(repaired.buffer).equals(payload),'Deferred chunks rehash persisted data and replace only blocks referencing the corrupted digest');
+}
+
+// Abort a load with workers holding all three slots and a second queued load;
+// neither queued cancellation nor late network settlement may leak slots.
+{
+  const table=chunked(payload),controller=new AbortController();
+  let released=0,restored=false;
+  const f=fixture({nativeCrypto:true,fetcher:(url,init)=>{
+    if(restored){const part=table.chunks.find(item=>url.endsWith(item.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}
+    return new Promise((_resolve,reject)=>{init.signal.addEventListener('abort',()=>{released++;reject(new Error('cancelled fixture'));},{once:true});});
+  }});
+  const pending=f.cache.load(table,{signal:controller.signal});
+  const queued=f.cache.load(table,{signal:controller.signal});
+  const settled=Promise.allSettled([pending,queued]);
+  for(let attempt=0;attempt<1000&&f.requests.length<3;attempt++)await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(f.requests.length,3);controller.abort();
+  const results=await settled;
+  check(results.every(item=>item.status==='rejected'&&item.reason.name==='AbortError')&&released===3&&f.requests.length===3,'Cancelling active and queued chunk workers releases every occupied slot without additional requests');
+  const early=new AbortController();early.abort();
+  await assert.rejects(f.cache.load(table,{signal:early.signal}),{name:'AbortError'});
+  check(f.requests.length===3,'An already cancelled resource never starts network work');
+  restored=true;const reloaded=await f.cache.load(table);
+  check(f.requests.length===6&&Buffer.from(reloaded.buffer).equals(payload),'The same cache can refill all three network slots and complete after queued and active cancellation');
 }
 for(const options of [{noIDB:true},{failWrites:true}]) {
   const f=fixture(options),loaded=await f.cache.load(resource);

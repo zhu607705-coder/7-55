@@ -1,0 +1,141 @@
+{
+  "schema": "755-liangzhu-art-provenance-v1",
+  "date": "2026-10-21",
+  "status": "integrated-and-accepted-local-godot-web-v2",
+  "request": "真实梁祝演出照片参考、原创匿名演员、细像素统一、一桌二椅台面、三场表演与电脑/手机QTE",
+  "visualDirection": {
+    "policy": "art/art_direction_v1.json",
+    "version": "1.1.0",
+    "density": "native1200x675 stage and120x160 actor frames; original240x135 composition retained",
+    "originalActors": true,
+    "photoPixelsInRuntime": false,
+    "photoFacesRetained": false,
+    "notASpecificRecordingReconstruction": true
+  },
+  "research": "LIANGZHU_PHOTO_RESEARCH_20261021.json",
+  "generation": {
+    "mode": "ChatGPT web image generation and web Remove Background UI via computer use; not API CLI or built-in image tool",
+    "stageConversation": "https://chatgpt.com/c/6ad81d56-c5b4-83e8-8ed5-d22ead81444a",
+    "actorConversation": "https://chatgpt.com/c/6ad81eb3-0560-83e8-8bfa-9c6ce5cdc33c",
+    "uploadedReferences": [
+      "commons_loutaihui_20191025_augustohai_original.jpg",
+      "hk_lcsd_shanghai_yueju_liangzhu_2015_original.jpg"
+    ],
+    "referenceRoles": "clothing/sleeve/headdress categories only; no original face, actor identification, stage-photo composition or original singing",
+    "stageFinalPrompt": "Create ONLY an empty theater background, no actors. Repaint blue-gray scrim, warm wooden floor, restrained coral curtains and small warm lanterns as FINE pixel art. Pixel edge20percent of coarse grid;5x native linear detail,1200x675, not240x135 upscaled. Fine wood seams, cloth folds and embroidered edges. Orthographic oblique top-down, broad visible floor, upright elevations, parallel axes without vanishing points. Muted navy/wood/cream/coral, maximum32 colors, crisp1px clusters, no antialiasing, smooth gradients or blur. No people, fans, butterflies, words, logos, UI, watermark, black gutters or emerald badges. Do not browse. Generate now.",
+    "actorFinalPrompt": "Original anonymous fine-pixel Yue-opera actors; uploaded photos are reference only, not edit targets.4columns by2rows, blue scholar then coral/cream Yingtai; each row neutral, step, raised empty sleeve/reaching hand, bow. Native480x320 atlas/120x160 frames, upright oblique-top-down proportions, consistent identity, complete sleeves, fixed foot baseline. Original small facial features and redesigned hats; no copied real faces. Limited project navy/blue/coral/paper/skin/gold palette, crisp1px detail, no coarse4x blocks or smooth gradients; no fans, butterflies, scenery, writing, grid, UI, logo or watermark. Transparent background. Generate image.",
+    "webEdit": "Used visible Remove Background tool on first actor result; downloaded second generated image. Alpha is checked from actual PNG rather than assuming the website supplied transparency.",
+    "attempts": [
+      {
+        "stage": "initial coarse stage request",
+        "result": "web assistant could not access research URL; no image on first attempt"
+      },
+      {
+        "stage": "coarse stage retry after supplying verified research meaning",
+        "result": "one image generated; superseded by later fine-pixel user revision"
+      },
+      {
+        "stage": "clipboard mismatch in stage conversation",
+        "result": "wrong coarse actor draft reached composer/submission; stopped generation, then verified corrected stage text using native AX setValue before sending"
+      },
+      {
+        "stage": "fine empty stage",
+        "result": "downloaded actual generated1672x941 master; requested dimensions not assumed delivered"
+      },
+      {
+        "stage": "fine actors",
+        "result": "downloaded1536x1024 master had opaque backdrop; retained as superseded diagnostic"
+      },
+      {
+        "stage": "web Remove Background",
+        "result": "downloaded1536x1024 RGBA master, actual alpha includes0..253; binary-alpha cleanup and8whole-silhouette extraction performed separately"
+      },
+      {
+        "stage": "one-table-two-chair",
+        "result": "Actual2048x768 original had variable-alpha glow backdrop; kept as source-only diagnostic."
+      },
+      {
+        "stage": "furniture web Remove Background",
+        "result": "Actual2059x764 RGBA variant, whole objects and legs visually reviewed before deterministic uniform fit/palette derivation."
+      }
+    ],
+    "furniturePromptContract": "Three separate original fine-pixel stage objects: embroidered coral-covered wooden opera table with complete legs and plain open book, two matching upright high-back wooden chairs. Same project wood/coral/cream/blue palette, orthographic oblique top-down, parallel axes, visible top planes, no diamond isometric or vanishing point. Requested 640x240 transparent sheet, target table160x100 and each chair60x120 after normalization; wide transparent gaps, complete silhouettes, no floor, actors, fans, butterflies, words, logos or UI. Fine1px detail, not enlarged coarse blocks.",
+    "furnitureWebEdit": "Visible Remove Background tool; output2059x764 differs from original2048x768, including some object edges. This is a newly generated background-removed variant, not a promise of byte-preserving photo matting. Binary alpha threshold removes the observed low-alpha red fringe; no clothing/material color key."
+  },
+  "sources": [
+    {
+      "path": "exports/verification/liangzhu_performance_20261021/source-art/liangzhu_stage_fine_master.png",
+      "size": [
+        1672,
+        941
+      ],
+      "sha256": "c184054fc1d849a316ae12c1ce5695b81262297a547a0b53d1ca54af2fcde03c"
+    },
+    {
+      "path": "exports/verification/liangzhu_performance_20261021/source-art/liangzhu_actors_fine_master.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "27128c164de8211b3caf3e99c563ce3cdca2cbde1ee977f16519e91d36a071b3",
+      "status": "opaque-background-diagnostic-not-runtime"
+    },
+    {
+      "path": "exports/verification/liangzhu_performance_20261021/source-art/liangzhu_actors_bg_removed_master.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "0502864a1fb2818cfeb26ae282a833d4f742960657507c132e40520d4beb174d"
+    },
+    {
+      "path": "exports/verification/liangzhu_performance_20261021/source-art/liangzhu_table_chairs_master.png",
+      "size": [
+        2048,
+        768
+      ],
+      "sha256": "2264295b27c08a9b218fb16341a35559e2dceb818ab7fcedfc4071df2c38f47b",
+      "status": "reference-master-not-runtime"
+    },
+    {
+      "path": "exports/verification/liangzhu_performance_20261021/source-art/liangzhu_table_chairs_transparent_master.png",
+      "size": [
+        2059,
+        764
+      ],
+      "sha256": "ccca1521319c9dd636f59b915c2e25008fe59b58c18856964559d1f975ad8f23",
+      "status": "reference-master-not-runtime"
+    }
+  ],
+  "motion": {
+    "durationSeconds": 54,
+    "beats": [
+      "同窗与十八相送",
+      "楼台会：婚事已定，相见难相守",
+      "后来山伯病逝、英台墓前与扇化双蝶"
+    ],
+    "timing": "Original54-second stage timeline; interactive QTE waits/retries add actual play time. Not timed from photographs.",
+    "qtes": [
+      "15s接扇：实体点按/键盘空格",
+      "29s回身：实体向左划动/左方向键",
+      "46s放蝶：同一输入源按住，扇页稳住后真实释放"
+    ],
+    "audio": "User confirmed2026-10-21: deliver playableQTE first, singing later. Current performance uses original authored Chinese subtitles only; no new vocal track or copied recording.",
+    "authority": "Runtime-only performance/QTE session; watching, successful QTE, retries, close and replay cannot submit rehearsal proof, grant items or mutate saves. Explicit passive playback has no QTE success receipts."
+  },
+  "skeleton": {
+    "implementation": "Godot Skeleton2D with15Bone2D joints per actor, real left/right wrist sockets and foot anchor; whole-cel animation plus rig attachments, not weighted mesh skinning.",
+    "reference": "https://github.com/godotengine/godot-demo-projects/tree/34fc99545fc41520a958248f607101e7d0b95b05/2d/skeleton",
+    "scope": "MIT-demo structural principles only; no demo character art or copied implementation. Left hand calibrated against final actor atlas skin pixels.",
+    "document": "LIANGZHU_ACTOR_RIG.md"
+  },
+  "audioDecision": "先完成可玩的QTE，唱段稍后接入（用户确认）",
+  "acceptance": {
+    "document": "LIANGZHU_QTE_ACCEPTANCE_20261021.json",
+    "sourceInputSha256": "7ac2e7c7d76b7501795009ad204a00281e8a1c291bc62204dacd475d147e29d9",
+    "browserProfiles": 10,
+    "browserChecks": 358,
+    "vocalTrack": "Deferred by explicit user choice",
+    "localPreview": "http://127.0.0.1:5241/"
+  }
+}

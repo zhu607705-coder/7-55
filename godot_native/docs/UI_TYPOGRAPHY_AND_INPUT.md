@@ -1,12 +1,12 @@
 # Native typography and shared controls
 
-The native UI keeps the original Fusion Pixel font and the source applications' distinct palettes. The shared rules follow `src/styles/base.css` and `docs/ui-motion-typography-standard.md`: body13, control label14, title18 and display24. The bundled font was compared with the original asset; replacing the font is not part of this change.
+The active native UI uses the project's **755 Morning Note / 晨札像素** pixel family: Regular400 for reading and Medium500 for headings/display. Its editable24-grid source, font files, coverage and original/OFL-derived boundary are documented in [the font library](MORNING_NOTE_FONT_LIBRARY.md). Fusion Pixel remains an explicit bundled fallback for absent symbols/user characters. Phone application palettes, original app icons, authored sizes and interaction rectangles remain local. `src/styles/base.css` and the original13/14/18/24 Web tokens describe the retained reference runtime; they are not a ban on the native pixel family.
 
 ## Theme boundaries
 
 `scripts/ui/native_ui_theme.gd` owns sharp borders, spacing, input colors and the complete normal, hover, pressed, disabled and focus states. A blue interlude button keeps its own palette and corner shape when pressed or focused. Editable text, placeholders and carets have explicit colors against their actual background.
 
-The phone has its own13/14 theme. Early phone pages are authored at378px and scaled to424px; their default control label is compensated for this scale, while explicitly sized source headers and artwork remain unchanged. The Library reservation page retains its intentional platform-sans exception. The world SubViewport receives a font-only theme because Control theme inheritance stops at that boundary; it does not inherit phone typography or button styling. Charging captions explicitly use the bundled font.
+Early phone pages are authored at378px and scaled to424px; their default control label is compensated for this scale, while explicitly sized source headers and artwork remain unchanged. The world SubViewport receives a font-only theme because Control theme inheritance stops at that boundary; it does not inherit phone button styling. The selected HUD/dialogue/journal roles and theater helper now use the same Morning Note family, preserving their own sizes, leading, colors, shadows and input behavior. Check-in and receipt text also use Morning Note. Text measurement uses the same face as drawing.
 
 The outer phone remains430×860. App pages own their internal scrolling. The outer shell can scroll long fallback pages without reserving a second scrollbar gutter that would widen the phone during a page transition.
 

@@ -9,10 +9,14 @@ func run()->void:
   check(launcher.text.is_empty(),"phone launcher is a silhouette, not a generic text rectangle")
   check(launcher.tooltip_text.contains("手机") and launcher.tooltip_text.contains("P"),"existing action and shortcut remain discoverable")
   check(launcher.size==Vector2(44,44),"small 20x30 drawing retains exact 44px touch target")
-  check(launcher.get_theme_stylebox("normal") is StyleBoxEmpty,"launcher has no full button background")
+  check(launcher.get_global_rect().end.is_equal_approx(shell.world_view.get_global_rect().end-Vector2(8,8)),"map phone icon uses the actual playfield's bottom-right corner")
+  check(launcher.get_theme_stylebox("normal") is StyleBoxFlat and launcher.get_theme_stylebox("normal").bg_color==Color("F4EAD5"),"phone uses the same opaque paper icon plate as tools and items")
   await click(launcher)
   check(shell.phone.visible and not shell.world_frame.visible,"actual pointer opens existing phone directly")
-  shell._return_from_phone();await frames()
+  var back:Button=shell.phone_world_return
+  check(back.text.is_empty() and back.get("glyph")=="map" and back.size==Vector2(44,44),"phone offers a map glyph with a physical44px hit target")
+  check(back.get_global_rect().end.is_equal_approx(Vector2(dimensions)-Vector2(12,12)),"phone return map icon uses the same bottom-right corner")
+  await click(back)
   check(shell.world_frame.visible,"existing return restores world")
  # First event on a fresh retained-world shell must work without a prior hover.
  # Keep raw MouseButton pairs: adding motion here would mask the init regression.

@@ -2,6 +2,12 @@ extends Node3D
 ## Native source mesh + original sampled IK, with a fixed glTF bone-bind correction.
 var asset_directory: String="res://assets/"
 var asset_prefix: String="rider"
+const CampusHuman=preload("res://scripts/presentation/chase3d/campus_human_rig.gd")
+const CampusPelican=preload("res://scripts/presentation/chase3d/campus_pelican_rig.gd")
+var pelican_enabled: bool=true
+var refined_human_enabled: bool=true
+var human_asset_path: String=CampusHuman.GENERATED_ASSET_PATH
+var campus_human: Node3D
 var manifest: Dictionary
 var bone_data: PackedFloat32Array
 var local_data: PackedFloat32Array
@@ -9,6 +15,7 @@ var visual: Node3D
 var nodes: Dictionary={}
 var bones: Dictionary={}
 var corrections: Dictionary={}
+var saddle: MeshInstance3D
 var last_steer: float=INF
 var last_phase: float=INF
 
@@ -28,7 +35,15 @@ func _ready() -> void:
 	for source: Dictionary in manifest.nodes:
 		var node: Node=nodes.get(source.name)
 		if node is Node3D: node.visible=source.visible
+		if str(source.original)=="canteen-chase-shaped-saddle" and node is MeshInstance3D:saddle=node
 	apply_pose(0,0)
+	if refined_human_enabled and asset_prefix=="rider":
+		campus_human=CampusPelican.new() if pelican_enabled else CampusHuman.new()
+		campus_human.generated_asset_path=human_asset_path
+		campus_human.name="CampusPelican" if pelican_enabled else "CampusHuman";add_child(campus_human)
+		for source: Dictionary in manifest.nodes:
+			if source.original=="quaternius-casual-character" and nodes.has(source.name):nodes[source.name].hide()
+		apply_pose(0,0)
 
 func _register(node: Node) -> void:
 	nodes[str(node.name)]=node
@@ -79,6 +94,15 @@ func apply_pose(steer: float,phase: float,reduced: bool=false) -> void:
 		var b: Transform3D=_bone_matrix(ids[2],i).interpolate_with(_bone_matrix(ids[3],i),index.pw)
 		var target: Transform3D=skeleton_spaces[entry.skeleton]*a.interpolate_with(b,index.sw)*corrections[name]
 		entry.skeleton.set_bone_global_pose(entry.bone,target)
+	if is_instance_valid(campus_human):
+		var contacts: Dictionary={}
+		for id: String in ["leftGrip","rightGrip","leftPedal","rightPedal"]:contacts[id]=global_transform.affine_inverse()*reference_world(id).origin
+		if is_instance_valid(saddle):contacts.seat=saddle_contact()
+		campus_human.apply_ride(contacts,phase,steer,reduced)
+
+func saddle_contact() -> Vector3:
+	var bounds: AABB=saddle.get_aabb()
+	return to_local(saddle.to_global(bounds.get_center()+Vector3(0,bounds.size.y*.5,0)))
 
 func spin_wheels(angle: float) -> void:
 	for id: String in ["rearWheel","frontWheel"]:

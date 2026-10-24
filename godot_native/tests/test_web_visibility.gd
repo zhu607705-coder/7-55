@@ -131,6 +131,7 @@ func run() -> void:
 	shell.active_game = null; game.queue_free()
 	check(state.d == before and FileAccess.get_file_as_bytes(state.SAVE_PATH) == primary, "all lifecycle probes preserve State and formal save bytes")
 	for item in [ordinary, manual, replaced, owned]: item.stop(); item.stream = null; item.queue_free()
+	test_deadline_shift_contract()
 	await test_director_clock()
 	await voice_host.shutdown(); voice_host.queue_free()
 	await shell.audio_director.shutdown()
@@ -138,6 +139,25 @@ func run() -> void:
 	shell.queue_free(); await process_frame
 	print("WEB_VISIBILITY: ", checks, " checks; ", failures, " failures")
 	quit(1 if failures else 0)
+
+func deadline_shifts_match(voice_shift: int, effect_shift: int, pending_shift: int, earliest: int, latest: int) -> bool:
+	return earliest <= latest and voice_shift == effect_shift and effect_shift == pending_shift and voice_shift >= earliest and voice_shift <= latest
+
+func test_deadline_shift_contract() -> void:
+	# Each initial deadline can be created on a different millisecond. Compare
+	# its own increment, not three final values against the first initial value.
+	check(deadline_shifts_match(1560 - 1500, 1561 - 1501, 1562 - 1502, 60, 60), "independent initial deadline milliseconds retain one exact shift")
+	# The live clock can advance between the pre-call read and resume_prefix's
+	# read. The observed bracket replaces no clock with a guessed tolerance.
+	check(deadline_shifts_match(61, 61, 61, 60, 61), "a resume clock crossing one millisecond stays inside the observed bracket")
+	for index in range(3):
+		for difference in [-1, 1]:
+			var shifts: Array[int] = [60, 60, 60]
+			shifts[index] += difference
+			check(not deadline_shifts_match(shifts[0], shifts[1], shifts[2], 60, 61), "deadline %s rejects a nonuniform %s millisecond shift" % [index, difference])
+	for shift in [59, 62, 200]:
+		check(not deadline_shifts_match(shift, shift, shift, 60, 61), "equal shift %s outside the active-clock bracket is rejected, including hidden wall time" % shift)
+	check(not deadline_shifts_match(60, 60, 60, 61, 60), "an inverted clock bracket cannot acknowledge a deadline shift")
 
 func test_director_clock() -> void:
 	var director: Node = Director.new(); root.add_child(director)
@@ -148,7 +168,9 @@ func test_director_clock() -> void:
 	director.voice = voice; director.voice_deadline = director.presentation_clock() + 500
 	director.effects.append({"player": effect, "id": "chapter4_prologue_test", "deadline": director.presentation_clock() + 500, "bus": ""})
 	director.scheduled.append({"id": "chapter4_prologue_test", "at": director.presentation_clock() + 500, "cue": {}, "sequence": 1})
-	var initial_deadline: int = director.voice_deadline
+	var initial_voice_deadline: int = director.voice_deadline
+	var initial_effect_deadline: int = director.effects[0].deadline
+	var initial_pending_at: int = director.scheduled[0].at
 	director.pause_prefix("chapter4_prologue_")
 	await create_timer(.03).timeout
 	check(director.pause_for_platform(), "first application pause acquires a single clock lease")
@@ -162,10 +184,17 @@ func test_director_clock() -> void:
 	check(director.scheduled[-1].at == clock + 400, "cues scheduled while hidden use the same frozen presentation clock")
 	director.resume_from_platform()
 	await create_timer(.03).timeout
-	var elapsed: int = director.presentation_clock() - int(director._paused_prefixes["chapter4_prologue_"])
+	var prefix_pause_at: int = director._paused_prefixes["chapter4_prologue_"]
+	var before_resume: int = director.presentation_clock()
+	var elapsed: int = before_resume - prefix_pause_at
 	director.resume_prefix("chapter4_prologue_")
+	var after_resume: int = director.presentation_clock()
+	var voice_shift: int = director.voice_deadline - initial_voice_deadline
+	var effect_shift: int = director.effects[0].deadline - initial_effect_deadline
+	var pending_shift: int = director.scheduled[0].at - initial_pending_at
+	var clock_evidence := str({"initial": [initial_voice_deadline, initial_effect_deadline, initial_pending_at], "current": [director.voice_deadline, director.effects[0].deadline, director.scheduled[0].at], "shifts": [voice_shift, effect_shift, pending_shift], "prefix_pause_at": prefix_pause_at, "before_resume": before_resume, "after_resume": after_resume})
 	check(elapsed >= 30 and elapsed < 130, "overlapping prefix excludes hidden wall time exactly once")
-	check(director.voice_deadline - initial_deadline == elapsed and director.effects[0].deadline - initial_deadline == elapsed and director.scheduled[0].at - initial_deadline == elapsed, "voice, effect and pending deadlines all use the same active-time domain")
+	check(deadline_shifts_match(voice_shift, effect_shift, pending_shift, elapsed, after_resume - prefix_pause_at), "voice, effect and pending deadlines all use the same active-time domain: " + clock_evidence)
 	var remaining: int = director.voice_deadline - director.presentation_clock()
 	check(remaining >= 460 and remaining <= 520, "overlap retains the authored remaining cutoff rather than adding background duration twice")
 	await director.shutdown(); director.queue_free(); await process_frame

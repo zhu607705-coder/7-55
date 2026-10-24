@@ -44,7 +44,9 @@ func run() -> void:
 		check(world.player==player_before and world.camera==camera_before and world.world_size==world_size_before,"HUD metrics do not mutate world geometry")
 		check(Layout.font_size(21,12,scale)*scale>=11.99,"touch captions keep12px physical text without moving controls")
 		var mode_rect: Rect2=world.hud_mode_rect()
-		check(Rect2(Vector2.ZERO,world.size).encloses(mode_rect),"mode hitbox is inside world HUD")
+		var mode_root:Rect2=shell.world_mode.get_global_rect()
+		check(shell.world_view.get_global_rect().encloses(mode_root) and mode_root.position.y>=shell.world_view.get_global_rect().end.y-60,"visible mode icon stays inside the actual game bottom edge")
+		check((shell.world_view.get_global_rect().position+mode_rect.position*scale).is_equal_approx(mode_root.position) and (mode_rect.size*scale).is_equal_approx(mode_root.size),"mode metadata matches the actual root button instead of a hidden top hitbox")
 		if scale<0.7 or world.mobile_exploration: check(mode_rect.size.y*scale>=28 and mode_rect.size.x*scale>=28,"compact mode hitbox exceeds28px")
 		var previous_mode: String=state.d.native.mode
 		var view_transform: Transform2D=shell.world_view.get_global_transform_with_canvas()

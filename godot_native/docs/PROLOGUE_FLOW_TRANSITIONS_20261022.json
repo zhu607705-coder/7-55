@@ -1,0 +1,81 @@
+{
+  "schema": "755-prologue-flow-transitions/v1",
+  "date": "2026-10-22",
+  "request": "User clarified that connecting paragraphs are slow; preserve reaction-critical target timing.",
+  "supersedes": "PROLOGUE_FAST_FLOW_20261022.json",
+  "sourceInputSha256": "8b28dddb92f26e697797e3fe05d1be22adc74e9157c0f19d7700c942b1d88fdc",
+  "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+  "sourceDirty": true,
+  "engine": "4.7.2.stable.official",
+  "pacing": {
+    "targetSpeedsRestored": [
+      360,
+      390,
+      420
+    ],
+    "spawnIntervalMsRestored": 950,
+    "boardSpeedRestored": 440,
+    "firstSpawnMsRestored": 350,
+    "retrySpawnMsRestored": 700,
+    "normalClueLeadInScale": 0.5,
+    "reducedMotionClueLeadInScale": 1.0,
+    "stageTransitionBeforeMs": 650,
+    "stageTransitionAfterMs": 280,
+    "nonInteractiveClueCloudSpeed": 430
+  },
+  "actualCaptureSeconds": [
+    0.8,
+    0.733333333333333,
+    0.733333333333333,
+    0.683333333333333,
+    0.683333333333333,
+    0.683333333333333
+  ],
+  "verification": {
+    "nativeSuites": 7,
+    "nativeReport": "/Users/zhu/Library/Application Support/755-tools/verification/flow-transitions-20261022/755-flow-transitions-native-20261022.json",
+    "browser": [
+      {
+        "kind": "desktop",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/flow-transitions-20261022/desktop/web-acceptance.json",
+        "sha256": "068445e2e0fcc46f48ca64c98caefb6c9b9310b41ac84b36265db3f8fb81a4f4"
+      },
+      {
+        "kind": "touch",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/flow-transitions-20261022/touch/web-acceptance.json",
+        "sha256": "3605da923f6fcffc9ea7115391a7f142838a0d8ffae0413e9368c88ba0ccf3d2"
+      }
+    ],
+    "exportVerifyOnly": true,
+    "retainedWebReleaseValidators": 38,
+    "retainedWebReport": "/Users/zhu/Library/Application Support/755-tools/verification/flow-transitions-20261022/retained-web-release-20261022.log",
+    "retainedWebScope": "Passed earlier in the same active task; no retained Web runtime/source changes were made during the correction."
+  },
+  "preserved": [
+    "original target reaction and window movement",
+    "original word order and swept geometry",
+    "six real captures",
+    "earned words on retry",
+    "original audio/dialogue and final hold",
+    "C2 controller-owned save handoff",
+    "full reduced-motion static reading interval"
+  ],
+  "delivery": {
+    "url": "http://127.0.0.1:5241/",
+    "export": "godot_native/exports/web-flow-transitions-20261022",
+    "httpManifestMatched": true,
+    "remotePublished": false
+  },
+  "cleanup": {
+    "temporaryPngsRemoved": 6,
+    "hashRecord": "/Users/zhu/Library/Application Support/755-tools/verification/flow-transitions-20261022/temporary-screenshot-hashes.json"
+  },
+  "limitations": [
+    "Touch acceptance is Chromium emulation, not a physical device.",
+    "No new full-game or Gecko/WebKit acceptance is claimed."
+  ]
+}

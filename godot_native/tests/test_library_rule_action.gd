@@ -57,12 +57,45 @@ func earned_shelf() -> Dictionary:
 	check(s.items.callNumber755 and s.ui.libraryFinalsPuzzle.callNumberCollected,"ordinary source actions earn the shelf item")
 	check(not s.ui.libraryFinalsPuzzle.archivedRuleCollected and not s.ui.libraryFinalsPuzzle.archivedRuleRead,"shelf fixture has not collected or acknowledged the rule")
 	return s
+func document_access() -> void:
+	var controller=Chapter.new()
+	var s: Dictionary=before_shelf.duplicate(true)
+	var items: Dictionary=s.items.duplicate(true)
+	var result: Dictionary=controller.dispatch(s,"lib_open_rule")
+	check(not result.has("page") and s.items==items and not s.ui.libraryFinalsPuzzle.archivedRuleRead,"unacquired rule cannot be opened or acknowledged through its document intent")
+	controller.dispatch(s,"lib_shelf")
+	items=s.items.duplicate(true)
+	# The retained paper belongs to the player, including after an ordinary
+	# library exit. No physical shelf replay or second item grant is needed.
+	controller.dispatch(s,"lib_exit")
+	result=controller.dispatch(s,"lib_open_rule")
+	check(result.get("page","")=="library_rule" and s.native.scene=="campus_bootstrap","acquired paper opens after leaving the Library without changing the retained scene")
+	check(s.items==items and not s.ui.libraryFinalsPuzzle.archivedRuleRead,"opening an acquired document preserves all items and does not acknowledge reading")
+	controller.dispatch(s,"lib_read_rule"); acknowledge(controller,s)
+	check(s.ui.libraryFinalsPuzzle.archivedRuleRead and s.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen,"explicit read and its authored briefing remain the only acknowledgement path outside the Library")
+	controller.dispatch(s,"lib_upload","archived_leave_rule")
+	check(not s.items.archivedLeaveRule,"ordinary public upload consumes its original rule item")
+	items=s.items.duplicate(true)
+	result=controller.dispatch(s,"lib_open_rule")
+	check(result.get("page","")=="library_rule" and s.items==items and not s.items.archivedLeaveRule,"reopening the acquired archive after upload never recreates a consumed original")
 func refresh() -> void:
 	shell._refresh(); await frames()
 	if state.get_phone_entry_session().phase=="loading": state.advance_phone_entry(1500); shell._refresh(); await frames()
 	shell.world.set_process(false)
 func reopen(page: String) -> void:
 	state.open_page(page); await refresh()
+func reopen_rule_by_pointer() -> void:
+	var header: Button=shell.page_body.find_child("PhoneNav_back",true,false)
+	check(header!=null and header.tooltip_text=="返回图书馆","rule reader exposes its ordinary Library header return")
+	if header==null: return
+	await click_at(screen_rect(header).get_center()); await refresh()
+	check(state.d.native.page=="library_app","actual rule header returns to Library home")
+	var target: Button=shell.page_body.find_child("LibraryApp_rule",true,false)
+	check(target!=null,"acquired rule has a persistent ordinary Library app entry")
+	if target==null: return
+	check(screen_rect(shell.phone_scroll).encloses(screen_rect(target)),"acquired rule entry is visible at the initial Library home scroll")
+	await click_at(screen_rect(target).get_center()); await refresh()
+	check(state.d.native.page=="library_rule","actual acquired-rule entry opens its existing reader")
 func fixture() -> void:
 	state.story_reset.emit(); state.d=before_shelf.duplicate(true)
 	shell.phone_builder.native_library.reset(); shell.compact_inventory_open=false
@@ -93,14 +126,15 @@ func assert_collapsed_rail(viewport: Vector2i) -> void:
 	if viewport.x<1100:
 		check(not shell.inventory_handle.is_visible_in_tree() and not shell.inventory_dock.is_visible_in_tree(),"compact phone surface has no inventory overlay")
 		shell._show_world_mobile(); await frames()
-		check(shell.inventory_handle.is_visible_in_tree() and not shell.inventory_dock.is_visible_in_tree(),"return to world retains collapsed inventory rail")
-		check(not screen_rect(shell.world_frame).intersects(screen_rect(shell.inventory_handle)),"collapsed inventory rail never covers world viewport")
+		check(not shell.inventory_handle.is_visible_in_tree() and shell.inventory_dock.is_visible_in_tree(),"return to world retains directly exposed items without a bag toggle")
+		check(screen_rect(shell.world_view).encloses(screen_rect(shell.inventory_dock)),"inline items remain inside the world without changing its viewport")
 		shell.mobile_world=false; shell._layout(); await frames()
 	else:
 		check(not shell.inventory_dock.is_visible_in_tree(),"desktop phone mode hides the world inventory")
 func run() -> void:
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()
 	before_shelf=earned_shelf()
+	document_access()
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames(); shell.set_process(false)
 	state.action_completed.connect(func(id,_before,_after,result): events.append({"id":id,"result":result.duplicate(true)}))
 	var source: Dictionary=DisplayFixture.library(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json")))
@@ -110,7 +144,7 @@ func run() -> void:
 		var items=state.d.items.duplicate(true); var puzzle=state.d.ui.libraryFinalsPuzzle.duplicate(true)
 		var phone_rect=screen_rect(shell.phone)
 		for repeat in range(3):
-			if repeat>0: await reopen("library_app"); await reopen("library_rule")
+			if repeat>0: await reopen_rule_by_pointer()
 			check_rule_text()
 			var matches=buttons("阅读旧版离座规则")
 			check(matches.size()==1,"existing controller action appears exactly once after open/reopen")
@@ -148,7 +182,7 @@ func run() -> void:
 				check(host.view.body.text==expected[host.current.line_index].text,"normal input preserves authored dialogue text")
 				await key(KEY_SPACE)
 			check(state.d.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen,"only full source dialogue acknowledgement completes briefing")
-		await reopen("library_app"); await reopen("library_rule")
+		await reopen_rule_by_pointer()
 		check_rule_text()
 		check(buttons("阅读旧版离座规则").is_empty(),"already read rule has no duplicate read action after reopen")
 		check(state.d.items==items and state.d.ui.libraryFinalsPhase=="evidence_gathering","repeated/reopened reading preserves source phase and items")
@@ -157,6 +191,8 @@ func run() -> void:
 		state.story_reset.emit(); state.d=before_shelf.duplicate(true); state.d.native.page="library_rule"; shell.mobile_world=false
 		await refresh()
 		check(buttons("阅读旧版离座规则").is_empty() and not state.d.ui.libraryFinalsPuzzle.archivedRuleRead,"missing shelf proof keeps the existing reading gate closed")
+		await reopen("library_app")
+		check(shell.page_body.find_child("LibraryApp_rule",true,false)==null,"Library home does not expose an unread document that has not been acquired")
 	await shell.shutdown(); shell.queue_free(); await frames()
 	var path=OS.get_environment("LIBRARY_RULE_REPORT")
 	if not path.is_empty():

@@ -1,5 +1,12 @@
 # User-selected UI fonts (2026-10-21)
 
+Historical preview mapping. The user's2026-10-23 instruction supersedes these
+font-family choices with the project Morning Note Regular/Medium faces. Existing
+surface geometry, sizes, colors, leading and shadows remain; the six older font
+files stay as source references and are excluded from production presets.
+See `docs/MORNING_NOTE_FONT_LIBRARY.md` from the native project root for the
+current source grids, coverage and runtime roles.
+
 Only the locked HUD-2 / interaction-1 / dialogue-2 / journal-3 / theater-1
 surfaces use `selected_ui_theme.gd`. Existing phone/application identities and
 `native_typography.gd` remain unchanged.

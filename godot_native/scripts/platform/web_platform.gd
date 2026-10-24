@@ -14,6 +14,7 @@ var state: Node
 var _browser: JavaScriptObject
 var _file_callback: JavaScriptObject
 var _visibility_callback: JavaScriptObject
+var _touch_cancel_callback: JavaScriptObject
 var _snapshot_left := 0.0
 var _document_hidden := false
 var _content_loading := false
@@ -35,19 +36,23 @@ var _save_sync_requests := 0
 var _save_last_sync_ms := 0
 # Observation only: count the original controller signal, never dispatch it.
 var _observed_dorm_prop_actions := 0
+var _accepted_theater_exits := 0
 
 func setup(owner_shell: Control, owner_state: Node) -> void:
 	shell = owner_shell
 	state = owner_state
 	if not state.action_completed.is_connected(_observe_world_action): state.action_completed.connect(_observe_world_action)
+	if not state.action_completed.is_connected(_observe_theater_exit): state.action_completed.connect(_observe_theater_exit)
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	if not OS.has_feature("web"): return
 	# Keep the transport private; the public surface can only read a fresh copy.
 	# A callback cannot return a value across Godot's JS bridge, hence the cache.
 	JavaScriptBridge.eval("""(() => {
+		window.install755SceneOrientation?.();
 		let snapshot = '{}';
 		let input = null;
 		let visibilityHandler = null;
+		let touchCancelHandler = null;
 		let saveWatch = null;
 		let saveUncommitted = false;
 		const beforeUnload = event => {
@@ -65,7 +70,7 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 			value: Object.freeze({ snapshot: () => JSON.parse(snapshot) })
 		});
 		window.__GODOT_755_HOST__ = {
-			publish: raw => { snapshot = raw; },
+			publish: raw => { snapshot = raw; window.__GODOT_755_ORIENTATION__?.update(JSON.parse(raw).presentation); },
 			install: receive => {
 				input = document.createElement('input');
 				input.type = 'file'; input.accept = '.json,application/json';
@@ -86,6 +91,15 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 				visibilityHandler = () => receive(document.hidden);
 				document.addEventListener('visibilitychange', visibilityHandler);
 				visibilityHandler();
+			},
+			observeTouchCancel: receive => {
+				// The pinned engine maps touchcancel to an ordinary release.
+				// Capture first, so native owners see a cancelled release instead.
+				touchCancelHandler = event => {
+					if (event.target !== document.getElementById('canvas')) return;
+					receive(JSON.stringify(Array.from(event.changedTouches, touch => touch.identifier)));
+				};
+				window.addEventListener('touchcancel', touchCancelHandler, true);
 			},
 			readLegacySave: index => {
 				const keys = ['seven_fifty_five_state', 'seven_fifty_five_state_backup'];
@@ -144,9 +158,11 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 			},
 			dispose: () => {
 				cancelSaveWatch();
+				window.__GODOT_755_ORIENTATION__?.dispose();
 				window.removeEventListener('beforeunload', beforeUnload);
 				if (input) input.remove();
 				if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
+				if (touchCancelHandler) window.removeEventListener('touchcancel', touchCancelHandler, true);
 				delete window.__GODOT_755__;
 			}
 		};
@@ -157,12 +173,24 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 	_browser.install(_file_callback)
 	_visibility_callback = JavaScriptBridge.create_callback(_on_browser_visibility)
 	_browser.observeVisibility(_visibility_callback)
+	_touch_cancel_callback = JavaScriptBridge.create_callback(_on_browser_touch_cancel)
+	_browser.observeTouchCancel(_touch_cancel_callback)
 	_save_callback = JavaScriptBridge.create_callback(_on_save_observation)
 	_persistence_host = _browser
 	_publish_snapshot()
 
 func _observe_world_action(action: String, _before: Dictionary, _after: Dictionary, _result: Dictionary) -> void:
 	if action == "c2_dorm_prop": _observed_dorm_prop_actions += 1
+
+func _on_browser_touch_cancel(args: Array) -> void:
+	if args.size()!=1 or not args[0] is String:return
+	var ids:Variant=JSON.parse_string(args[0])
+	if not ids is Array or ids.size()>32:return
+	for id:Variant in ids:
+		if not (id is int or id is float) or id<0 or id>2147483647 or id!=floorf(id):continue
+		var event:=InputEventScreenTouch.new()
+		event.index=int(id);event.pressed=false;event.canceled=true
+		Input.parse_input_event(event)
 
 func _current_save_digest() -> String:
 	return FileAccess.get_sha256(state.SAVE_PATH) if state != null and FileAccess.file_exists(state.SAVE_PATH) else ""
@@ -445,13 +473,13 @@ func _world_input_observation() -> Dictionary:
 		var local: Vector2 = (source - view.camera) * view.zoom + view.size / 2
 		target_rows.append({"id": str(target.get("id", "")), "label": str(target.get("label", "")), "point": _json_value(_world_root_point(local)), "worldPoint": _json_value(source), "distance": view._distance(target), "radius": float(target.get("radius", 100)) * (0.5 if view.scene_id == "dorm_hub" else 1.0)})
 	var owners: Array = []
-	for index: Variant in view.mobile_touch_roles:
-		owners.append({"index": index, "role": str(view.mobile_touch_roles[index].role)})
+	for index: Variant in view.direct_gestures.pointers:
+		owners.append({"index": index, "role": str(view.direct_gestures.pointers[index].role)})
 	var plaque: Dictionary = {"visible": false}
 	if is_instance_valid(view.selected_overlay):
 		var overlay: Control = view.selected_overlay
 		plaque = {"visible": overlay.plaque.is_visible_in_tree(), "rect": _rect(_control_rect(overlay.plaque)), "text": overlay.object_heading.text}
-	return {"dormPropActions": _observed_dorm_prop_actions, "geometryAvailable": geometry_available, "geometryFrame": observed.get("frame", -1) if geometry_available else -1, "stick": _json_value(_world_root_point(metrics.stick)) if geometry_available else null, "stickRect": _rect(Rect2(_world_root_point(stick.position), _world_root_point(stick.end) - _world_root_point(stick.position))) if geometry_available else {}, "confirmRect": _rect(metrics.interact) if geometry_available else {}, "targets": target_rows, "owners": owners, "mouseOwned": not view.mobile_mouse_gesture.is_empty(), "inventoryOwned": view._inventory_owns_pointer(), "modalVisible": is_instance_valid(shell.modal), "plaque": plaque}
+	return {"dormPropActions": _observed_dorm_prop_actions, "geometryAvailable": geometry_available, "geometryFrame": observed.get("frame", -1) if geometry_available else -1, "scheme": metrics.get("scheme", ""), "gestureArea": _rect(metrics.get("gestureArea", Rect2())), "stick": _json_value(_world_root_point(metrics.stick)) if geometry_available and metrics.has("stick") else null, "stickRect": _rect(Rect2(_world_root_point(stick.position), _world_root_point(stick.end) - _world_root_point(stick.position))) if geometry_available and stick.has_area() else {}, "confirmRect": _rect(metrics.get("interact", Rect2())), "targets": target_rows, "owners": owners, "mouseOwned": view.direct_gestures.pointers.has(-999), "routeWaypointCount":view._floor_route.size(), "inventoryOwned": view._inventory_owns_pointer(), "modalVisible": is_instance_valid(shell.modal), "plaque": plaque}
 
 func _visible_controls(node: Node, controls: Array, audio: Array, video: Array) -> void:
 	if node is Control and node.is_visible_in_tree() and (node.get_viewport() != shell.world_viewport or shell.world_frame.is_visible_in_tree()) and (node is BaseButton or node is LineEdit or node is Label or node.name == "ControlBrightness"):
@@ -462,6 +490,10 @@ func _visible_controls(node: Node, controls: Array, audio: Array, video: Array) 
 	if node is VideoStreamPlayer:
 		video.append({"name": str(node.name), "playing": node.is_playing(), "paused": node.paused, "position": node.stream_position, "stream": node.stream.resource_path if node.stream != null else ""})
 	for child: Node in node.get_children(): _visible_controls(child, controls, audio, video)
+
+func _observe_theater_exit(action: String,previous: Dictionary,_next: Dictionary,result: Dictionary) -> void:
+	if action=="c3_target:theater_exit" and str(previous.get("native",{}).get("scene",""))=="theater_interior" and str(result.get("scene",""))=="campus_qizhen_loop":
+		_accepted_theater_exits+=1
 
 func read_snapshot() -> Dictionary:
 	var controls: Array = []
@@ -474,6 +506,8 @@ func read_snapshot() -> Dictionary:
 		game = _properties(active, ["phase", "elapsed", "blocks", "misses", "hold_ms", "paused", "dragging", "done", "dialogue_index", "display_scale", "field", "mode", "running", "chase_presentation_error"])
 		game["script"] = active.get_script().resource_path
 		game["rect"] = _rect(active.get_global_rect())
+		if active.get_script().resource_path == "res://scripts/games/theater_shadow_rehearsal.gd":
+			game["rehearsal"] = active.geometry_snapshot()
 		if game.has("field"):
 			var field: Rect2 = active.get("field")
 			game["field"] = _rect(active.get_global_transform() * field)
@@ -490,20 +524,36 @@ func read_snapshot() -> Dictionary:
 				game.nativeChaseView["meshInstances"] = view.viewport3d.find_children("*", "MeshInstance3D", true, false).size() if is_instance_valid(view.viewport3d) else 0
 	var world: Dictionary = {}
 	if is_instance_valid(shell.world):
-		world = _properties(shell.world, ["scene_id", "player", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby", "mobile_exploration", "touch_axis", "facing", "player_flip", "mobile_confirmed_target_id"])
+		world = _properties(shell.world, ["scene_id", "player", "camera", "zoom", "size", "mobile_exploration", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby", "touch_axis", "facing", "player_flip", "mobile_confirmed_target_id"])
 		world["visible"] = shell.world_frame.is_visible_in_tree()
 		world["rect"] = _rect(shell.world_view.get_global_rect())
+		if is_instance_valid(shell.world.selected_overlay):
+			var overlay:Control=shell.world.selected_overlay
+			world["chrome"]={"taskColumnVisible":overlay.task.is_visible_in_tree(),"modeLabelVisible":overlay.mode.is_visible_in_tree(),"interactionRect":_rect(overlay.plaque.get_global_rect())}
+		if shell.world.has_method("background_plate_snapshot"): world["backgroundPlate"] = _json_value(shell.world.background_plate_snapshot())
+		if shell.world.has_method("interior_door_snapshot"): world["interiorDoor"] = _json_value(shell.world.interior_door_snapshot())
+		if shell.world.has_method("mobile_control_metrics") and world.get("mobile_exploration",false):
+			world["touchControls"] = _json_value(shell.world.mobile_control_metrics())
 		world["input"] = _world_input_observation()
+	world["acceptedTheaterExits"] = _accepted_theater_exits
+	var effect: Dictionary={}
+	if is_instance_valid(shell.world_effect):
+		effect=_properties(shell.world_effect,["phase","elapsed_ms","finished","was_cancelled"])
+		effect["script"]=shell.world_effect.get_script().resource_path
+		effect["blocksInput"]=shell.world_effect.get_meta("blocks_input",false)
+	world["worldEffect"]=effect
 	var save := FileAccess.get_file_as_string(state.SAVE_PATH) if FileAccess.file_exists(state.SAVE_PATH) else ""
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
+	var landscape_preferred: bool=shell.world_frame.is_visible_in_tree() or (is_instance_valid(shell.active_game) and shell.game_viewport.x>shell.game_viewport.y)
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "world": world, "phoneRect": _rect(shell.phone.get_global_rect()), "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()), "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _browser != null: _browser.dispose()
 	_browser = null
 	_file_callback = null
 	_visibility_callback = null
+	_touch_cancel_callback = null
 	_persistence_host = null
 	_save_callback = null
 	_save_token += 1

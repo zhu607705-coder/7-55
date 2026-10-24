@@ -1,0 +1,39 @@
+{
+  "schema": "755-rodin-asset-batch-v1",
+  "date": "2026-10-21",
+  "provider": "Hyper3D / Rodin",
+  "authorization": "User requested multiple orthogonal character views and improved reconstruction using existing selected Rodin credits",
+  "maxCredits": 1,
+  "expectedCreditsPerAsset": 1,
+  "referenceUse": "Original consistent fictional adult. Four checked elevations submitted in explicit F/B/L/R order. Top/bottom drafts are excluded while projection is corrected. Exact official back print applied only after unrigged silhouette review.",
+  "assets": [
+    {
+      "id": "campus_student_v3",
+      "referenceImages": [
+        "reference/student_v3/front.png",
+        "reference/student_v3/back.png",
+        "reference/student_v3/left.png",
+        "reference/student_v3/right.png"
+      ],
+      "request": {
+        "tier": "Gen-2.5-Extreme-High",
+        "mesh_mode": "Quad",
+        "quality": "high",
+        "quality_override": 65000,
+        "quad_normal": true,
+        "geometry_file_format": "glb",
+        "material": "PBR",
+        "texture_mode": "high",
+        "TAPose": false,
+        "is_symmetric": "balanced",
+        "image_label": [
+          "F",
+          "B",
+          "L",
+          "R"
+        ],
+        "seed": 7553
+      }
+    }
+  ]
+}

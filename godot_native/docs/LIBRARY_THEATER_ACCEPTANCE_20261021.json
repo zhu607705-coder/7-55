@@ -1,0 +1,152 @@
+{
+  "schema": "755-library-theater-direct-touch-acceptance-v1",
+  "verifiedAt": "2026-10-20T17:30:44.743Z",
+  "runtime": "independent-godot-web",
+  "engine": "4.7.2.stable.official",
+  "build": {
+    "directory": "exports/web-library-theater-tiled-20261021",
+    "sourceBaseCommit": "313885d6056de0e4fe3052469643627d23c2c021",
+    "sourceBaseTree": "1c1c403d1336bb0f794bfa9b4461196b66ef0709",
+    "sourceWasDirty": true,
+    "sourceInputSha256": "e4aa4a7ed98b83cd7ee82e9c36ae32fdbab0997249dc73f5c15699a491940c38",
+    "buildManifestSha256": "d9d12e7fd7a953932a9b6ced5f6ff9a7924e0ae247fc709cf5a5bbe1acae9391",
+    "initialPayloadBytes": 94729061,
+    "logicalPayloadBytes": 502828919,
+    "totalHostedBytes": 597200561,
+    "bootChunks": 91,
+    "resourceEntries": 2357,
+    "deferredPacks": 20,
+    "production": true,
+    "storyOnly": true,
+    "chapterShortcuts": false
+  },
+  "implemented": [
+    "Independent library objects, source-masked clean plate, restored printer inspection and original evidence gates",
+    "Independent theater objects, source footprints, three-act optional shadow rehearsal and original theater-to-lake handoff",
+    "Moving glass/exit leaves and fixed source-pixel south-wall bases share real body/path collision",
+    "Direct floor/entity touch, bounded automatic approach and original controller interaction exactly once",
+    "Fresh dorm touch movement follows the installed-gamepad and original manual-input authority",
+    "Portrait phone applications, capability-based landscape entry for world/activity surfaces, and optional paper gesture menu",
+    "Actual source-referenced web-generated rear-facing lamp and adopted web High copy",
+    "Lossless source-pixel panorama tiles bounded at 2048, for both the actual world and narrative card, with the oversized duplicate excluded from production"
+  ],
+  "browser": {
+    "theater": {
+      "path": "docs/THEATER_REHEARSAL_ACCEPTANCE_20261021.json",
+      "sha256": "d63633bf2f57c082fb06764cb889dc2614c38da8276cb910cc1e2739c86dc244",
+      "scope": "Final tiled candidate: one actual WebKit portrait-to-landscape touch case / 31 checks. Earlier three-engine nine-case / 231-check matrix is an explicitly separate baseline; compiled rehearsal resources and all six Chapter3 PCKs remain byte-identical. Main/world/platform changes have their own focused regression."
+    },
+    "interiorDoors": {
+      "path": "docs/INTERIOR_DOORS_ACCEPTANCE_20261021.json",
+      "sha256": "92f40714e6eb2e8056aa57b6010e72312bb8c9bb3c0b04b5eed7ae4e7cda1bf7",
+      "scope": "Final tiled artifact: doors, original theater-to-lake visual/controller handoff, fresh-dorm touch profiles, retained 30-second Firefox black-panorama negative control and exact ordinary-save fixture scope."
+    },
+    "finalFoundation": {
+      "path": "exports/verification/library_theater_rebuild_20261021/tiled-foundation-retina-touch-390/web-acceptance.json",
+      "sha256": "6949305b88b1eb380fc3cd7acd342fc4ed0e0c312035a81c317c65842c60ece3",
+      "scope": "Final artifact: actual DPR3 phone input, exact save acknowledgement, independent IndexedDB bytes, new-document Continue, native portable save export/import and malformed-import rejection.",
+      "passed": true,
+      "cases": 1,
+      "checks": 506
+    },
+    "earlierFoundation": {
+      "path": "exports/verification/library_theater_rebuild_20261021/web-foundation/web-acceptance.json",
+      "sha256": "2373a8a5e2ede003336c36a4ee396de347666f357efc767b4dbc2e220b0e576f",
+      "scope": "Earlier 05db469 input baseline, six desktop/mobile/DPR scenarios, 741 checks. Not represented as a six-case final-byte run."
+    },
+    "artifactRelationship": {
+      "path": "exports/verification/library_theater_rebuild_20261021/tiled-artifact-proof.json",
+      "sha256": "5544a32e8e15a1986ee71271c7875f0421b58efe98ee1d9bee5b627c43073c1e",
+      "scope": "Final tiled candidate versus rejected 7273 candidate: 16 changed runtime/build/derived inputs, 16 identical deferred PCKs and four changed Chapter3.5 PCKs. All 14 creative assets retain Chapter2/3 ownership; seven lossless tiles are Chapter3.5-owned; original oversized PNG/import/ctex are absent from production."
+    },
+    "actualComputerUse": {
+      "path": "exports/verification/library_theater_rebuild_20261021/computer-use.json",
+      "sha256": "a391e838fa4cfe5baa10f9410c62fb122af4b18b046327539742e7c820e559da",
+      "scope": "Earlier 7273 candidate in user Chrome: real boot, alarm, native file picker, ordinary rehearsal fixture, physical rack, adopted High copy and first unsolved act. The later tiled candidate has separate automated actual-browser evidence. No manual full campaign claim."
+    }
+  },
+  "native": {
+    "commonRegression": {
+      "path": "exports/verification/library_theater_rebuild_20261021/native-final.json",
+      "sha256": "27627b2ba269b7542b13c4104b64911b8d2996be233c6b537bc90417450db535",
+      "scope": "13 passing common stages after initial direct-touch integration: continuous chapter controllers, progressive devices, entry/Continue persistence and original SaveStore differential. Subsequent local input/door/view differences have separate focused evidence.",
+      "stages": 13,
+      "passed": true
+    },
+    "directTouchBaseline": {
+      "path": "exports/verification/direct_gestures_20261020/acceptance-v2-baseline.json",
+      "sha256": "c37577955af8386556129a4187e90163cb53aae508bf4e4b046c3507b6b337ac",
+      "scope": "18 stages / 11,984 checks before fine-pointer and first-dorm guard corrections; retained as a baseline."
+    },
+    "directTouchDelta": {
+      "path": "exports/verification/direct_gestures_20261020/acceptance-v3-delta.json",
+      "sha256": "fce3f5070ea5394e9d0fefcf7b706eef1304aa1b2673c71b0dc8211b37395821",
+      "scope": "Four affected regression stages / 1,830 checks on frozen c0fdcb53 world. Final wall and fresh-dorm/door deltas are indexed in interior-door acceptance."
+    },
+    "libraryObjects": {
+      "path": "exports/verification/library_rebuild_20261020/acceptance-final.json",
+      "sha256": "f0d9e8789c001fa2f10fd1ae2b5962ff85d7a93f11a985fc69663b6a6e1abbbf",
+      "scope": "53 strict object checks, 113 graphical checks and original-controller regressions; final object assets/layout are unchanged."
+    },
+    "theaterView": {
+      "path": "exports/verification/theater_rehearsal_20261020/butterfly-profile-native.json",
+      "sha256": "55fa352e3278b17ea7309dbdfe4654226fe9a4a93e4a7f915770128fe0d3ec8c",
+      "scope": "UI76 / Main177 passed with the final wing rendering; model/session remain unchanged."
+    },
+    "retainedWeb": {
+      "path": "exports/verification/library_theater_rebuild_20261020/web-baseline-release-receipt.json",
+      "sha256": "e5ddc7d7e3ef3275ff5448b29c63ec57f43395adc5d8b81b6a9642c911f280d2",
+      "scope": "38 retained Web release stages across initial run and four ffprobe-PATH retries; no retained TypeScript/Phaser source changed."
+    },
+    "tiledPanorama": {
+      "path": "docs/PANORAMA_TILING_ACCEPTANCE_20261021.json",
+      "sha256": "5b804a5907813485872e3f06baea6dd66dd1f5538f516c9f5ec3f4e728d6f3cd",
+      "scope": "Source-image reconstruction, bounded textures, exact crop/gutter coordinates, native graphical sampling and automatic clean-checkout generation. Sampling ambiguities and retained original attempts are recorded without relabeling failures."
+    },
+    "tiledPlatform": {
+      "path": "exports/verification/library_theater_rebuild_20261021/tiled-platform-native.json",
+      "sha256": "7ecec234861f6cd5bb8fc0bd26d3d287c73ffafe3db0bba07341c58091471a03",
+      "scope": "Actual readonly platform geometry and original save-import/export contract after adding tiled-background diagnostics."
+    },
+    "media": "719 original source assets synced; existing full-stream q8 native movie conversions passed. Neither raw MP4 was truncated or replaced."
+  },
+  "assets": {
+    "path": "docs/LIBRARY_THEATER_ART_PROMPTS_20261020.json",
+    "sha256": "b5bd089978eab24f6e9a1f467a254768713717f483811f808c877b5702b32d73",
+    "scope": "14 final PNG assets, raw generation provenance, exact web lamp prompt and alpha validation.",
+    "packPlacement": {
+      "path": "exports/verification/library_theater_rebuild_20261021/tiled-artifact-proof.json",
+      "sha256": "5544a32e8e15a1986ee71271c7875f0421b58efe98ee1d9bee5b627c43073c1e",
+      "scope": "All 14 creative PNGs remain in Chapter2/3 and seven automatically derived panorama tiles in Chapter3.5; none is core and the original oversized panorama is excluded from production."
+    }
+  },
+  "presentationCopy": {
+    "path": "docs/THEATER_REHEARSAL_COPY_PROVENANCE_20261020.json",
+    "sha256": "09537ab2a0771f2555a7fa02dac2e7adeaa3dda7dca653e40059f0df6f572d8a",
+    "scope": "Actual High3/5 web source, accepted sentences, accurate retained failure text, and unchanged model/layout digest."
+  },
+  "designResearch": [
+    {
+      "path": "docs/THEATER_REHEARSAL_RESEARCH_20261020.json",
+      "sha256": "d006da522af59cf3fed7559da21db23382becc7de699abed976098f095e06db0",
+      "scope": "Primary theater sources and source-specific design decisions."
+    },
+    {
+      "path": "docs/TOUCHABLE_INPUT_RESEARCH_20261020.json",
+      "sha256": "edd85ba97dee4ca49630b8dba44de56f75e3655b8eff9b726404a57e3e726e13",
+      "scope": "Pinned original repository research; no external code was executed or added as a dependency."
+    }
+  ],
+  "retainedLimits": [
+    "Latest desktop browser engines and touch/rotation simulation; Android/iPhone hardware and minimum historical browser versions remain unaccepted. Firefox phone simulation explicitly enables its touch preferences; default desktop profiles remain unchanged.",
+    "Portable fixtures pass the production save validator but include explicit source-checkpoint/position preparation. Automated controller continuity and these fixtures are not a fresh manual four-chapter playthrough.",
+    "This is a local dirty-source candidate. A GitHub commit, CI result, main merge, public deployment and formal release require their own recorded identities."
+  ],
+  "delivery": {
+    "status": "local-candidate-awaiting-exact-submission-scope",
+    "privateRepository": "zhu607705-coder/7-55-godot-20261020",
+    "reviewPr": "https://github.com/zhu607705-coder/7-55-godot-20261020/pull/1",
+    "publicDeploymentPerformed": false,
+    "serverDeploymentPerformed": false
+  }
+}

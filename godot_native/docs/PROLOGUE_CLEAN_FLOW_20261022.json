@@ -1,0 +1,75 @@
+{
+  "schema": "755-prologue-clean-flow/v1",
+  "date": "2026-10-22",
+  "request": "Delete failure explanation, retry, full-clue review and related controls; retain the clean continuous character flow.",
+  "sourceCommit": "830a848ad4c8cf570ab9076bcf286502adf97e74",
+  "sourceDirty": true,
+  "sourceInputSha256": "4d5484dab0f66eded4218c004a84c6a7dd7208f19d5f3e8e44deaffdd4dc379e",
+  "engine": "4.7.2.stable.official",
+  "removed": [
+    "failure title and reason panel",
+    "retry control",
+    "full-clue review",
+    "review close control and R shortcut",
+    "landing help control",
+    "idle footer"
+  ],
+  "behavior": "After a real model miss, continue the same stage, retaining completed stages, collected words and current keyboard/pointer grip; re-emit missing targets. Passive retries never complete progression.",
+  "preserved": [
+    "dense ASCII Hanzi flow and real error-window collision",
+    "authored clues and narration",
+    "explicit system pause and reduced-motion static clues",
+    "six physical captures, final hold, original dialogue and C2 save handoff",
+    "parchment check-in receipt"
+  ],
+  "verification": {
+    "nativeSuites": 7,
+    "nativeReport": "/Users/zhu/Library/Application Support/755-tools/verification/terminal-clean-20261022/755-terminal-clean-native-20261022.json",
+    "browser": [
+      {
+        "kind": "desktop",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/terminal-clean-20261022/desktop/web-acceptance.json",
+        "sha256": "79fd2a519cd5be8e980d2c8e793288e6019fc3124a7961f22e452b7cd9c7d119"
+      },
+      {
+        "kind": "touch",
+        "passed": true,
+        "checks": 542,
+        "report": "/Users/zhu/Library/Application Support/755-tools/verification/terminal-clean-20261022/touch/web-acceptance.json",
+        "sha256": "67eb78b2bfb369c3b54257a3a7bb66f8745b2ae87dbdbacaf84b25c9e692b79e"
+      }
+    ],
+    "retainedWebReleaseValidators": 38,
+    "sourceContentParity": true,
+    "exportVerifyOnly": true,
+    "initialBrowserRun": "Pause was visibly active, but its first snapshot predated bridge observation. Runner now polls the paused state before comparing frozen bodies; final runs passed."
+  },
+  "delivery": {
+    "url": "http://127.0.0.1:5241/",
+    "export": "godot_native/exports/web-terminal-clean-20261022",
+    "httpManifestMatched": true,
+    "userTabForceReloaded": false,
+    "userSaveModified": false,
+    "remotePublished": false
+  },
+  "reviewImages": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/terminal-clean-desktop-20261022.png",
+      "sha256": "7b0ab8d05b7d75e978960f79a1c4839bc1eed22b20ec195cbab441e67f387669"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/review/terminal-clean-touch-20261022.png",
+      "sha256": "240aecc3ea2ef923496c3300c252009cd642e34f5245b078bb74d03799ea8c58"
+    }
+  ],
+  "temporaryScreenshots": {
+    "hashRecord": "/Users/zhu/Library/Application Support/755-tools/verification/terminal-clean-20261022/temporary-screenshot-hashes.json",
+    "deleted": 18
+  },
+  "limitations": [
+    "Touch testing uses Chromium emulation, not a physical phone.",
+    "This scoped acceptance does not prove all chapters or Gecko/WebKit."
+  ]
+}
