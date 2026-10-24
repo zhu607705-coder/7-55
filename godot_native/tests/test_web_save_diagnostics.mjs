@@ -336,13 +336,34 @@ check('actual touch helper sends one start/end pair and retains both event bound
   assert.equal(trace[0].params.touchPoints.length, 1); assert.equal(trace[1].params.touchPoints.length, 0);
   assert.equal(trace[1].startedAt - trace[0].startedAt, 65); assert(trace.every(event => event.acknowledgedAt === event.endedAt));
 });
-// PhoneNotification occupies native layout while it is nonempty. A pair of
-// otherwise stable button frames cannot predict the layout after it disappears.
+// A notice above Save can still collapse/move its row in older layouts. The
+// fixed Settings footer can change below Save without delaying ordinary input.
 // These simulated snapshots verify driver gating, not actual browser timing.
 function saveNoticeSnapshot(frame, text = '存档已导入', name = 'PhoneNotification') {
   const value = saveSnapshot(frame);
   value.visibleControls.push({ name, text, rect: { x: 366, y: 130, width: 548, height: 38 } });
   return value;
+}
+const footerFirst = saveNoticeSnapshot(21), footerSecond = saveNoticeSnapshot(22);
+footerFirst.visibleControls[1].rect.y = 540;
+footerSecond.visibleControls[1].rect.y = 490;
+footerSecond.visibleControls[1].rect.height = 88;
+const footer = saveClickFixture({ touch: true, samples: [footerFirst, footerSecond] });
+await footer.context.saveProgressAndWait('notice changes in fixed Settings footer');
+check('changing footer notices permit one ordinary touch while Save stays stable across fresh frames', () => {
+  assert.equal(footer.beforeReads, 2); assert.equal(footer.clicks.length, 1);
+  assert.deepEqual([...footer.active.saveInputs[0].stableSampleFrames], [21, 22]);
+  assert(footer.active.saveInputs[0].geometrySamples.every(sample => sample.usable && sample.blockingNotice === null));
+  assert.deepEqual(footer.events.map(event => event.params.type), ['touchStart', 'touchEnd']);
+});
+for (const kind of ['overlap', 'missing-rect', 'invalid-rect']) {
+  const unsafe = saveNoticeSnapshot(1);
+  if (kind === 'overlap') unsafe.visibleControls[1].rect.y = 210;
+  if (kind === 'missing-rect') delete unsafe.visibleControls[1].rect;
+  if (kind === 'invalid-rect') unsafe.visibleControls[1].rect.y = NaN;
+  const blocked = saveClickFixture({ beforeSnapshot: index => ({ ...unsafe, sampleFrame: index + 1 }) });
+  await assert.rejects(blocked.context.saveProgressAndWait(`unsafe notice ${kind}`), /fresh native frames/);
+  check(`${kind} notice cannot authorize a guessed Save click`, () => assert.equal(blocked.clicks.length, 0));
 }
 const afterNotice = saveSnapshot(33); afterNotice.visibleControls[0].rect.y += 64; afterNotice.savePersistence.token = 8;
 const finalAfterNotice = structuredClone(afterNotice); finalAfterNotice.sampleFrame = 34; finalAfterNotice.savePersistence.token = 9;

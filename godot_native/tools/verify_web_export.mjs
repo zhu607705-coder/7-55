@@ -370,10 +370,6 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
   return saved;
 }
 function saveClickCandidate(value) {
-  // The ordinary notice can occupy a row above Settings actions, then collapse
-  // after two apparently stable frames. Observe its existing published Label;
-  // do not click a coordinate whose known temporary row can still disappear.
-  if (controls(value).some(control => control.name === 'PhoneNotification' && typeof control.text === 'string' && control.text.trim())) return null;
   const matches = controls(value).filter(control => control.name === 'SaveNativeProgress');
   const control = matches[0], rect = control?.rect, viewport = value?.viewport;
   // visibleControls is populated only from native Controls visible in the tree.
@@ -383,10 +379,21 @@ function saveClickCandidate(value) {
   // not a previous success/failure label that an unrelated autosave could reuse.
   if (matches.length !== 1 || control.text !== '保存进度' || control.disabled !== false || control.visible === false || value.documentHidden === true || !Number.isSafeInteger(value.sampleFrame) || value.sampleFrame < 0 || !Number.isSafeInteger(value.savePersistence?.token) || value.savePersistence.token < 0) return null;
   if (!rect || !viewport || ![rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height].every(Number.isFinite) || rect.width <= 0 || rect.height <= 0 || viewport.width <= 0 || viewport.height <= 0 || rect.x < 0 || rect.y < 0 || rect.x + rect.width > viewport.width || rect.y + rect.height > viewport.height) return null;
+  // Settings now has a fixed frame and a footer notice row. That row can
+  // resize/expire without shifting its top-aligned Save action. Still reject
+  // unknown, above-action or overlapping notices, including the old layout.
+  if (saveBlockingNotice(value, rect)) return null;
   const native = state(value)?.native;
   const context = { chapter: native?.chapter, mode: native?.mode, page: native?.page, scene: native?.scene };
   return { value, control, rect, viewport, context, frame: value.sampleFrame,
     key: JSON.stringify([control.name, control.text, rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height, context]) };
+}
+function saveBlockingNotice(value, rect) {
+  return controls(value).find(control => {
+    if (control.name !== 'PhoneNotification' || typeof control.text !== 'string' || !control.text.trim()) return false;
+    const notice = control.rect;
+    return !rect || !notice || ![notice.x, notice.y, notice.width, notice.height].every(Number.isFinite) || notice.width <= 0 || notice.height <= 0 || notice.y < rect.y + rect.height;
+  }) || null;
 }
 async function clickStableSaveControl(label) {
   const input = { label, geometryWaitBeganAt: Date.now(), controlName: 'SaveNativeProgress', touch: active.touch, geometrySamples: [] };
@@ -397,7 +404,7 @@ async function clickStableSaveControl(label) {
     prepared = await poll(async () => {
       const value = await snapshot(), candidate = saveClickCandidate(value);
       const sample = { sampleFrame: value?.sampleFrame, token: value?.savePersistence?.token, usable: !!candidate, matches: controls(value).filter(control => control.name === 'SaveNativeProgress').length, rect: candidate?.rect,
-        blockingNotice: controls(value).find(control => control.name === 'PhoneNotification' && typeof control.text === 'string' && control.text.trim()) || null };
+        blockingNotice: saveBlockingNotice(value, controls(value).find(control => control.name === 'SaveNativeProgress')?.rect) };
       const identity = JSON.stringify(sample);
       if (identity !== lastSample && input.geometrySamples.length < 160) { lastSample = identity; input.geometrySamples.push(sample); }
       if (!candidate) { previous = null; return null; }
