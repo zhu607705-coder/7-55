@@ -723,6 +723,18 @@ async function resourceLoadingCase() {
       await poll(async()=>{const s=await snapshot();return !gameOf(s)?.script && s.world?.visible && s.world.scene_id===item.scene;},'ordinary defense Exit exposes loaded canteen',20000);
       check(hash(JSON.stringify(state(await snapshot()).items))===items,'leaving the unfinished defense does not manufacture or consume items');
     }
+    if (item.scene === 'campus_qizhen_loop') {
+      const observed = await poll(async () => {
+        const value = await snapshot();
+        const caption = controls(value).find(control => control.type === 'Label' && /^(湿纸从剧场门边|路边只留下|水迹在湖畔)/.test(control.text));
+        return caption ? {value, caption} : null;
+      }, 'authored approach caption is actually visible', 8000);
+      const {value, caption} = observed, r = caption.rect;
+      const footer = controls(value).filter(control => ['WorldTasks','WorldMode','WorldPhoneButton'].includes(control.name) || control.itemId);
+      check(footer.length >= 3, `${active.id}: approach exposes its actual footer controls`);
+      check(footer.every(({rect:f}) => r.x+r.width<=f.x || f.x+f.width<=r.x || r.y+r.height<=f.y || f.y+f.height<=r.y), `${active.id}: approach caption clears the visible footer`, {caption, footer});
+      if (value.viewport.height > value.viewport.width) check(r.y >= value.world.rect.y+value.world.rect.height, `${active.id}: portrait film caption uses its lower letterbox`, {caption:r, film:value.world.rect});
+    }
     await assertLayout(`resource-${item.scene}`);
     active.screenshots.push(await screenshot(`${active.id}-resource-${item.scene}`));
     active.chapterResults.push({file:item.file,scene:ready.world.scene_id,content:ready.content,itemsSha256:items});

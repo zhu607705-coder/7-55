@@ -13,6 +13,8 @@ const output = path.resolve(opt('output', '/tmp/755-loading-profile.json'));
 const mobile = opt('viewport', 'desktop') === 'mobile';
 const width = mobile ? 390 : 1440, height = mobile ? 844 : 900, dpr = mobile ? 3 : 1;
 const mbps = Number(opt('mbps', '20')), latency = Number(opt('latency', '60'));
+const cpuRate = Number(opt('cpu-rate', '1'));
+if (!Number.isFinite(cpuRate) || cpuRate < 1 || cpuRate > 20) throw new Error('--cpu-rate must be between 1 and 20');
 const sampleMs = Number(opt('sample-ms', '8000'));
 const passNames = opt('passes', 'cold,warm-restart').split(',');
 if (!passNames.length || passNames.some(name => !['cold', 'warm-restart'].includes(name)) || passNames[0] !== 'cold') throw new Error('Measure cold before a same-profile warm restart');
@@ -22,8 +24,9 @@ const sha = value => createHash('sha256').update(value).digest('hex');
 const owned = await fs.mkdtemp(path.join(os.tmpdir(), '755-perf-browser-'));
 const profile = path.join(owned, 'profile');
 const report = {schema:'755-web-loading-profile-v1', startedAt:new Date().toISOString(), url,
-  environment:{width,height,dpr,mobile,mbps,latencyMs:latency,chrome,headless:true},
-  limitations:['Local HTTP with CDP network emulation; not measured production Internet throughput.',
+  environment:{width,height,dpr,mobile,mbps,latencyMs:latency,cpuRate,chrome,headless:true},
+  limitations:['The recorded URL is loaded with CDP network emulation; timings depend on its server and this host.',
+    'CPU slowdown is a browser simulation, not a measurement of a particular phone.',
     'Animation-frame cadence is browser scheduling, not a GPU frame profiler or physical phone result.',
     'Warm run restarts Chromium using the same isolated profile; user saves and browser are untouched.'], passes:[]};
 await fs.mkdir(path.dirname(output),{recursive:true});
@@ -65,6 +68,7 @@ async function run(label){
     const press=async()=>{await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await pause(65);await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});};
     const clickText=async text=>{const found=await poll(async()=>{const s=await snapshot();const c=s?.visibleControls?.find(c=>c.text===text&&!c.disabled);return c?{s,c}:null;},text,20000);const g=await evaluate('(()=>{const r=document.getElementById("canvas").getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};})()');const v=found.s.viewport;const r=found.c.rect;await tap(g.x+(r.x+r.width/2)/(v.width??v.size?.x)*g.width,g.y+(r.y+r.height/2)/(v.height??v.size?.y)*g.height);await pause(350);};
     await cdp.send('Page.enable');await cdp.send('Runtime.enable');await cdp.send('Network.enable');await cdp.send('Performance.enable');
+    await cdp.send('Emulation.setCPUThrottlingRate',{rate:cpuRate});
     await cdp.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:dpr,mobile});await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:mobile,maxTouchPoints:5});
     await cdp.send('Network.emulateNetworkConditions',{offline:false,latency,downloadThroughput:mbps*1000000/8,uploadThroughput:mbps*1000000/8,connectionType:'wifi'});
     await cdp.send('Page.addScriptToEvaluateOnNewDocument',{source:`(()=>{const p=window.__755Perf={frames:[],longTasks:[]};let last;function frame(now){if(last!==undefined&&p.frames.length<30000)p.frames.push([now,now-last]);last=now;requestAnimationFrame(frame);}requestAnimationFrame(frame);try{new PerformanceObserver(list=>{for(const e of list.getEntries())p.longTasks.push({start:e.startTime,duration:e.duration});}).observe({type:'longtask',buffered:true});}catch{}})();`});

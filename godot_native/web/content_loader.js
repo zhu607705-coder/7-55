@@ -13,13 +13,17 @@
     function compress(bytes, offset) {
       for (let i=0; i<16; i++) { const at=offset+i*4; words[i]=((bytes[at]<<24)|(bytes[at+1]<<16)|(bytes[at+2]<<8)|bytes[at+3])>>>0; }
       for (let i=16; i<64; i++) { const a=words[i-15], b=words[i-2]; words[i]=(words[i-16]+(rotate(a,7)^rotate(a,18)^(a>>>3))+words[i-7]+(rotate(b,17)^rotate(b,19)^(b>>>10)))>>>0; }
-      let [a,b,c,d,e,f,g,h]=state;
+      // This runs once per 64 bytes. Keep the working state scalar so verifying
+      // a full engine does not allocate hundreds of thousands of iterators,
+      // temporary arrays and callbacks on the browser's main thread.
+      let a=state[0],b=state[1],c=state[2],d=state[3],e=state[4],f=state[5],g=state[6],h=state[7];
       for (let i=0; i<64; i++) {
         const t1=(h+(rotate(e,6)^rotate(e,11)^rotate(e,25))+((e&f)^(~e&g))+constants[i]+words[i])>>>0;
         const t2=((rotate(a,2)^rotate(a,13)^rotate(a,22))+((a&b)^(a&c)^(b&c)))>>>0;
         h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
       }
-      [a,b,c,d,e,f,g,h].forEach((value,i)=>{state[i]=(state[i]+value)>>>0;});
+      state[0]=(state[0]+a)>>>0;state[1]=(state[1]+b)>>>0;state[2]=(state[2]+c)>>>0;state[3]=(state[3]+d)>>>0;
+      state[4]=(state[4]+e)>>>0;state[5]=(state[5]+f)>>>0;state[6]=(state[6]+g)>>>0;state[7]=(state[7]+h)>>>0;
     }
     return {
       update(bytes) {

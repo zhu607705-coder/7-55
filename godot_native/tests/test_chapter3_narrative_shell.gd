@@ -6,6 +6,31 @@ func check(ok: bool,label: String) -> void:
 	checks+=1
 	if not ok: errors+=1; push_error(label)
 func _initialize() -> void: call_deferred("run")
+func check_approach_layout(main:Control,host:Control,state:Node) -> void:
+	# The source sequence starts with a short silent beat. Inspect a real line,
+	# not the hidden panel retained from the earlier auntie conversation.
+	while host.current.elapsed_ms<float(host.current.lines[0].atMs):
+		host.tick(minf(100,float(host.current.lines[0].atMs)-host.current.elapsed_ms),true)
+	var prior_mobile:bool=main.mobile_world
+	var prior_scale:float=float(state.d.native.settings.get("text_scale",1.0))
+	for dimensions:Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(844,390),Vector2i(1280,720)]:
+		for text_scale:float in [1.0,1.4]:
+			root.size=dimensions;main.size=Vector2(dimensions);main.mobile_world=true
+			state.d.native.settings.text_scale=text_scale
+			var before:String=JSON.stringify(state.d)
+			var elapsed:float=host.current.elapsed_ms
+			main._layout();host.tick(0,true)
+			for frame in range(3):await process_frame
+			host.tick(0,true)
+			var panel:Rect2=host.view.panel.get_global_rect()
+			check(host.view.is_visible_in_tree() and Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(panel),"approach caption stays inside screen "+str(dimensions))
+			for control:Control in [main.world_tasks,main.world_mode,main.inventory_dock,main.mobile_back]:
+				check(not control.is_visible_in_tree() or not panel.intersects(control.get_global_rect()),"approach caption clears actual footer "+control.name+" "+str(dimensions))
+			if dimensions.y>dimensions.x:check(panel.position.y>=main.world_view.get_global_rect().end.y,"portrait approach uses the lower letterbox")
+			check(main.world.size==Vector2(960,540) and host.view.body.get_theme_font_size("font_size")>=14,"authored camera and readable native text survive resize")
+			check(JSON.stringify(state.d)==before and host.current.elapsed_ms==elapsed,"caption layout does not advance story or its clock")
+	state.d.native.settings.text_scale=prior_scale
+	root.size=Vector2i(1280,720);main.size=Vector2(1280,720);main.mobile_world=prior_mobile;main._layout();host.tick(0,true)
 func run() -> void:
 	var state: Node=root.get_node("State")
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"shell tests isolate production save writes")
@@ -58,6 +83,7 @@ func run() -> void:
 	host.tick(0,true)
 	check(host.current!=null and host.current.sequence_id=="qizhen_approach","real main attaches approach on world entry")
 	check(world.player==Vector2(7730,840) and host.blocks_movement(),"real world receives source start and cinematic lock")
+	await check_approach_layout(main,host,state)
 	starting=world.player; world.touch_axis=Vector2.RIGHT; world._process(.05); world.touch_axis=Vector2.ZERO
 	check(world.player==starting,"actual world movement cannot overwrite authored approach")
 	for _i in range(60): host.tick(100,true)
