@@ -848,6 +848,10 @@ async function reopenLibraryRuleThroughApp() {
   await clickControl('ZjudingApp_library', 'name');
   await clickControl('LibraryApp_rule', 'name');
 }
+function libraryContentReady(value) {
+  return value?.content?.blocking === false && (value.content.monolithic === true
+    || value.content.enabled === true && value.content.readyFamilies?.includes('chapter3'));
+}
 function libraryHandoffReady(value) {
   const native = state(value)?.native;
   return native?.chapter === 3 && native.scene === 'campus_bootstrap' && value.content?.blocking === false
@@ -900,10 +904,13 @@ async function libraryCase() {
   await poll(async () => controls(await snapshot()).some(c => c.text === '跳过演出'), 'earned022 seat starts its original transition');
   await clickControl('跳过演出', 'text');
   await clickControl('回到校园', 'text');
-  // State commits before required content finishes. F10 sent while the content
-  // coordinator owns SceneTree pause is lost, not queued. Keep this handoff's
-  // original default 20s deadline, including readiness, before one real input.
+  // State commits before required content finishes. Give the cold C3 download
+  // the same bounded budget as other deferred worlds, then retain the 20s UI
+  // handoff deadline. No input is sent while the coordinator owns the pause.
   active.library ||= {};
+  active.library.contentWait = { beganAt: Date.now(), timeoutMs: bootTimeout };
+  await poll(async () => libraryContentReady(await snapshot()), 'library exit C3 content is ready', bootTimeout);
+  active.library.contentWait.readyAt = Date.now();
   active.library.handoffWait = { beganAt: Date.now(), timeoutMs: 20000 };
   value = await poll(async () => { const s = await snapshot(); return libraryHandoffReady(s) ? s : null; }, 'ordinary022 arrival hands off to ready campus and Chapter3');
   active.library.handoffWait.readyAt = Date.now();

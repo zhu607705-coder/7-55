@@ -166,7 +166,7 @@ test('weather: original final assertion still rejects reward loss after the comp
 
 // This runs the actual 022 handoff wait and Settings input, not a substitute
 // State.act path. The mocked snapshots model the content coordinator's pause.
-const libraryReadySource = between(runner, 'function libraryHandoffReady(', 'async function libraryCase(');
+const libraryReadySource = between(runner, 'function libraryContentReady(', 'async function libraryCase(');
 const libraryHandoffSource = between(runner, '  // State commits before required content finishes.', ' await saveProgressAndWait(`${active.id} library handoff`)');
 const settingsSource = between(runner, 'async function settings()', 'async function importSave(');
 function librarySample(edit = () => {}) {
@@ -178,7 +178,7 @@ function librarySample(edit = () => {}) {
 function libraryFixture(sequence, settingsOpens = true) {
   let clock = 0, reads = 0;
   const keys = [], checks = [], delays = [];
-  const context = { Date: { now: () => clock },
+  const context = { Date: { now: () => clock }, bootTimeout: 60000,
     interval: async delay => { delays.push(delay); clock += delay; },
     snapshot: async () => {
       if (keys.length) return { visibleControls: settingsOpens ? [{ text: '导入存档' }] : [] };
@@ -193,8 +193,8 @@ function libraryFixture(sequence, settingsOpens = true) {
 test('library: actual content readiness precedes one F10; no fixed settling sleep', async () => {
   const f = libraryFixture([librarySample(s => { s.content.blocking = true; }), librarySample(s => { s.world.scene_id = 'library_interior'; }), librarySample()]);
   await f.run();
-  assert.deepEqual(f.keys, [{ key: 'F10', at: 200 }]); assert.equal(f.reads, 3);
-  assert.deepEqual(f.delays, [100, 100]); assert.equal(f.checks.length, 1); assert(f.checks[0].ok);
+  assert.deepEqual(f.keys, [{ key: 'F10', at: 100 }]); assert.equal(f.reads, 3);
+  assert.deepEqual(f.delays, [100]); assert.equal(f.checks.length, 1); assert(f.checks[0].ok);
 });
 for (const [name, edit] of [
   ['required content remains blocked', s => { s.content.blocking = true; }],
@@ -207,13 +207,21 @@ for (const [name, edit] of [
   ['disabled phone control', s => { s.visibleControls[0].disabled = true; }],
   ['phone control absent', s => { s.visibleControls = []; }],
 ]) {
-  test(`library: ${name} fails original 20s handoff deadline with zero F10`, async () => {
+  test(`library: ${name} fails its bounded readiness phase with zero F10`, async () => {
     const f = libraryFixture([librarySample(edit)]);
-    await assert.rejects(f.run(), /Timeout: ordinary022 arrival hands off to ready campus and Chapter3/);
-    assert.equal(f.clock, 20000); assert.equal(f.reads, 200); assert.deepEqual(f.keys, []);
+    const loading = ['required content remains blocked', 'C3 family not ready although not yet blocked', 'content status missing'].includes(name);
+    await assert.rejects(f.run(), loading ? /Timeout: library exit C3 content is ready/ : /Timeout: ordinary022 arrival hands off to ready campus and Chapter3/);
+    assert.equal(f.clock, loading ? 60000 : 20000); assert.equal(f.reads, loading ? 600 : 201); assert.deepEqual(f.keys, []);
     assert.equal(f.checks.length, 0); assert(f.delays.every(delay => delay === 100));
   });
 }
+test('library: a cold download longer than 20s does not consume the UI handoff budget', async () => {
+  const pending = Array.from({ length: 300 }, () => librarySample(s => { s.content.blocking = true; }));
+  const f = libraryFixture([...pending, librarySample()]);
+  await f.run();
+  assert.deepEqual(f.keys, [{ key: 'F10', at: 30000 }]);
+  assert.equal(f.checks.length, 1); assert(f.checks[0].ok);
+});
 test('library: ready monolithic content still uses the real input path', async () => {
   const f = libraryFixture([librarySample(s => { s.content = { monolithic: true, blocking: false }; })]);
   await f.run(); assert.deepEqual(f.keys, [{ key: 'F10', at: 0 }]);
