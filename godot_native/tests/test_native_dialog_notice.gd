@@ -149,7 +149,13 @@ func check_notice(context: String) -> void:
 	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(card),context+" card contained in viewport")
 	var found: Array[Control]=[];controls(shell.modal,found)
 	for child in found:
-		if child is BaseButton and child.is_visible_in_tree():check(not card.intersects(child.get_global_rect()),context+" notice avoids "+str(child.get("text")))
+		if child is BaseButton and child.is_visible_in_tree():
+			var visible_rect:=child.get_global_rect()
+			var ancestor:=child.get_parent() as Control
+			while is_instance_valid(ancestor):
+				if ancestor.clip_contents:visible_rect=visible_rect.intersection(ancestor.get_global_rect())
+				ancestor=ancestor.get_parent() as Control
+			check(not visible_rect.has_area() or not card.intersects(visible_rect),context+" notice avoids visible "+str(child.get("text")))
 	var box: VBoxContainer=shell.modal_panel.get_child(0)
 	check(not card.intersects(box.get_child(0).get_global_rect()),context+" title/header unobscured")
 	check(shell.toast.mouse_filter==Control.MOUSE_FILTER_IGNORE and shell.toast.focus_mode==Control.FOCUS_NONE,context+" card never intercepts pointer/focus")
@@ -168,7 +174,7 @@ func run() -> void:
 	check_picker_bounds("desktop")
 	var preserved_file: String=shell.file_dialog.current_file
 	var preserved_path: String=shell.file_dialog.current_dir
-	for viewport: Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1440,900)]:
+	for viewport: Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(844,390),Vector2i(1440,900)]:
 		root.size=viewport;shell._layout();await frames(5)
 		check_picker_bounds("live resize "+str(viewport))
 		check(shell.file_dialog.current_file==preserved_file and shell.file_dialog.current_dir==preserved_path,"resizing preserves current file and directory")
@@ -210,8 +216,10 @@ func run() -> void:
 		await key(KEY_F10);await frames()
 		shell._clear_notice_presentations()
 		var context:=str(viewport)
-		var body: Control=shell.modal_panel.get_child(0).get_child(2)
+		var body: Control=shell.modal_panel.get_meta("dialog_content").get_parent()
 		var original_height:=body.size.y
+		var original_save: Rect2=shell.save_progress_button.get_global_rect()
+		var original_panel: Rect2=shell.modal_panel.get_global_rect()
 		await click(button_with_text(shell.modal,"导出存档"));await frames(5)
 		check_picker_bounds(context)
 		shell.file_dialog.current_path=fixture;await frames()
@@ -230,6 +238,8 @@ func run() -> void:
 		await click(button_with_text(shell.modal,"保存进度"));await frames()
 		check(shell.toast.text=="测试会话不覆盖正式存档",context+" actual DEV save action displays result without persistence")
 		check_notice(context)
+		check(shell.save_progress_button.get_global_rect().is_equal_approx(original_save),context+" Save target stays fixed when a notice appears")
+		check(body.get_global_rect().encloses(original_save),context+" Save remains inside the visible scroll viewport")
 		check(body.size.y<original_height,context+" notice row reserves layout rather than covering actions")
 		var previous_focus=root.gui_get_focus_owner()
 		shell._feedback("已导出存档");await frames()
@@ -245,9 +255,21 @@ func run() -> void:
 		shell._process(10);await frames()
 		check(shell.toast.text.begins_with("导出失败"),context+" queued multiline error appears in source order")
 		check_notice(context+" multiline")
+		check(shell.save_progress_button.get_global_rect().is_equal_approx(original_save) and shell.modal_panel.get_global_rect().is_equal_approx(original_panel),context+" multiline notice cannot move the Save target or recenter the menu: save="+str(shell.save_progress_button.get_global_rect())+" original="+str(original_save)+" panel="+str(shell.modal_panel.get_global_rect())+" original="+str(original_panel))
+		# Expire the row between press and release, as a slow touch frame may do.
+		var presses: Array[int]=[0]
+		shell.save_progress_button.pressed.connect(func(): presses[0]+=1)
+		for down in [true,false]:
+			var event:=InputEventMouseButton.new();event.button_index=MOUSE_BUTTON_LEFT;event.position=original_save.get_center();event.global_position=event.position;event.pressed=down
+			root.push_input(event,true)
+			if down:shell._process(10)
+			await frames()
+		check(presses[0]==1,context+" one press still activates Save once when the footer expires before release")
+		check(shell.toast.text=="测试会话不覆盖正式存档",context+" stable target invokes the real Save handler without writing a formal save")
 		shell._process(10);await frames()
 		check(not shell.toast.visible and not shell.modal_notice_slot.visible,context+" expiry hides notice and removes reserved row")
 		check(is_equal_approx(body.size.y,original_height),context+" expiry restores original scroll space")
+		check(shell.save_progress_button.get_global_rect().is_equal_approx(original_save),context+" expiry leaves the Save target at its original position")
 		shell._feedback("已导出存档");await frames()
 		await click(button_with_text(shell.modal,"关闭"));await frames()
 		check(not is_instance_valid(shell.modal),context+" close button remains clickable with notice")

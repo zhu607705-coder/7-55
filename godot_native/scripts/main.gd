@@ -944,7 +944,7 @@ func _layout_modal() -> void:
 	var natural_height := dialog_limit
 	var content: VBoxContainer = modal_panel.get_meta("dialog_content",null)
 	var column: VBoxContainer = modal_panel.get_meta("dialog_column",null)
-	if is_instance_valid(content) and is_instance_valid(column):
+	if is_instance_valid(content) and is_instance_valid(column) and not modal_panel.get_meta("fixed_action_layout",false):
 		var chrome_height := modal_panel.get_theme_stylebox("panel").get_minimum_size().y
 		var visible_rows := 0
 		for row: Control in column.get_children():
@@ -1838,6 +1838,17 @@ func _show_settings() -> void:
 	# the same rule instead of mounting a second input owner over a live run.
 	if is_instance_valid(active_game): return
 	var box := _modal_base("控制中心","paper",true)
+	# Reading a queue must not move a pending Save/Export pointer target. Keep
+	# this menu's frame fixed and allocate notices below its scrolling actions.
+	# Generic story dialogs retain their content-sized layout and reading order.
+	modal_panel.set_meta("fixed_action_layout",true)
+	var column: VBoxContainer=modal_panel.get_meta("dialog_column")
+	column.move_child(modal_notice_slot,column.get_child_count()-1)
+	# Reserve the scrollbar gutter too: a taller notice may create overflow,
+	# but must not narrow/recenter a button between pointer press and release.
+	var actions_scroll:=box.get_parent() as ScrollContainer
+	actions_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_RESERVE
+	_layout_modal()
 	box.add_child(_button("当前：%s → 切换%s" % ["深色观察" if State.d.native.mode == "dark" else "浅色操作","浅色操作" if State.d.native.mode == "dark" else "深色观察"],func(): State.toggle_mode(); _show_settings()))
 	save_progress_button = _button("保存进度", _save_progress)
 	save_progress_button.name = "SaveNativeProgress"
