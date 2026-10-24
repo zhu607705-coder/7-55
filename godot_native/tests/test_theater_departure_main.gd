@@ -40,7 +40,8 @@ func fixture()->void:
 	state.d.native.positions={"theater_interior:":{"x":800.0,"y":820.0}}
 func freeze()->void:
 	shell.set_process(false);shell.world.set_process(false)
-	for host:Control in [shell.c3_narrative_host,shell.library_story_host,shell.c3_scene_host]:host.set_process(false)
+	for host:Control in [shell.c3_narrative_host,shell.library_story_host,shell.c3_scene_host]:
+		if is_instance_valid(host):host.set_process(false)
 	if is_instance_valid(shell.audio_director):shell.audio_director.set_process(false)
 func reset()->void:
 	fixture();shell._refresh();shell._show_world_mobile();await frames()

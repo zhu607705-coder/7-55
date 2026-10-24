@@ -156,3 +156,63 @@ test('weather: original final assertion still rejects reward loss after the comp
   await assert.rejects(f.weatherClaim(), /original weather drop remains gated behind actual exercise/);
   assert.deepEqual(f.clicks, expectedClicks); assert.equal(f.checks[0].ok, false);
 });
+
+// This runs the actual 022 handoff wait and Settings input, not a substitute
+// State.act path. The mocked snapshots model the content coordinator's pause.
+const libraryReadySource = between(runner, 'function libraryHandoffReady(', 'async function libraryCase(');
+const libraryHandoffSource = between(runner, '  // State commits before required content finishes.', ' await saveProgressAndWait(`${active.id} library handoff`)');
+const settingsSource = between(runner, 'async function settings()', 'async function importSave(');
+function librarySample(edit = () => {}) {
+  const value = { state: { native: { chapter: 3, scene: 'campus_bootstrap' }, ui: { libraryFinalsPhase: 'friend_contacted' }, canteenHunt: { active: true, phase: 'tracking' } },
+    content: { enabled: true, monolithic: false, blocking: false, readyFamilies: ['chapter2', 'chapter3'] },
+    world: { visible: true, scene_id: 'campus_bootstrap' }, visibleControls: [{ name: 'WorldPhoneButton', disabled: false }] };
+  edit(value); return value;
+}
+function libraryFixture(sequence, settingsOpens = true) {
+  let clock = 0, reads = 0;
+  const keys = [], checks = [], delays = [];
+  const context = { Date: { now: () => clock },
+    interval: async delay => { delays.push(delay); clock += delay; },
+    snapshot: async () => {
+      if (keys.length) return { visibleControls: settingsOpens ? [{ text: '导入存档' }] : [] };
+      return copy(sequence[Math.min(reads++, sequence.length - 1)]);
+    },
+    controls: value => value?.visibleControls || [], state: value => value?.state,
+    press: async key => { keys.push({ key, at: clock }); }, report: { checks }, active: { id: 'touch-390' },
+  };
+  const run = vm.runInNewContext(`${pollSource}\n${checkSource}\n${settingsSource}\n${libraryReadySource}\n(async()=>{let value;${libraryHandoffSource}})`, context);
+  return { run, keys, checks, delays, get clock() { return clock; }, get reads() { return reads; } };
+}
+test('library: actual content readiness precedes one F10; no fixed settling sleep', async () => {
+  const f = libraryFixture([librarySample(s => { s.content.blocking = true; }), librarySample(s => { s.world.scene_id = 'library_interior'; }), librarySample()]);
+  await f.run();
+  assert.deepEqual(f.keys, [{ key: 'F10', at: 200 }]); assert.equal(f.reads, 3);
+  assert.deepEqual(f.delays, [100, 100]); assert.equal(f.checks.length, 1); assert(f.checks[0].ok);
+});
+for (const [name, edit] of [
+  ['required content remains blocked', s => { s.content.blocking = true; }],
+  ['C3 family not ready although not yet blocked', s => { s.content.readyFamilies = ['chapter2']; }],
+  ['content status missing', s => { delete s.content; }],
+  ['wrong chapter', s => { s.state.native.chapter = 2; }],
+  ['old native scene', s => { s.state.native.scene = 'library_interior'; }],
+  ['old rendered scene', s => { s.world.scene_id = 'library_interior'; }],
+  ['world not visible', s => { s.world.visible = false; }],
+  ['disabled phone control', s => { s.visibleControls[0].disabled = true; }],
+  ['phone control absent', s => { s.visibleControls = []; }],
+]) {
+  test(`library: ${name} fails original 20s handoff deadline with zero F10`, async () => {
+    const f = libraryFixture([librarySample(edit)]);
+    await assert.rejects(f.run(), /Timeout: ordinary022 arrival hands off to ready campus and Chapter3/);
+    assert.equal(f.clock, 20000); assert.equal(f.reads, 200); assert.deepEqual(f.keys, []);
+    assert.equal(f.checks.length, 0); assert(f.delays.every(delay => delay === 100));
+  });
+}
+test('library: ready monolithic content still uses the real input path', async () => {
+  const f = libraryFixture([librarySample(s => { s.content = { monolithic: true, blocking: false }; })]);
+  await f.run(); assert.deepEqual(f.keys, [{ key: 'F10', at: 0 }]);
+});
+test('library: failed Settings input is never resent and retains its own original 20s deadline', async () => {
+  const f = libraryFixture([librarySample()], false);
+  await assert.rejects(f.run(), /Timeout: settings opened/);
+  assert.deepEqual(f.keys, [{ key: 'F10', at: 0 }]); assert.equal(f.clock, 20000);
+});

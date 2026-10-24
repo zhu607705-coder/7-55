@@ -21,6 +21,7 @@ var back_button: Button
 var title_label: Label
 var subtitle_label: Label
 var scroll: ScrollContainer
+var content_margin: MarginContainer
 var content: VBoxContainer
 var footer: VBoxContainer
 var footer_margin: MarginContainer
@@ -52,7 +53,7 @@ func _init() -> void:
 	scroll=ScrollContainer.new();scroll.name="PhoneAppScroll";scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_SHOW_NEVER;add_child(scroll)
 	scroll.get_v_scroll_bar().value_changed.connect(func(value: float) -> void: scroll_changed.emit(value))
-	var inset := MarginContainer.new();inset.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	var inset := MarginContainer.new();content_margin=inset;inset.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	inset.add_theme_constant_override("margin_left",18);inset.add_theme_constant_override("margin_right",18)
 	inset.add_theme_constant_override("margin_top",18);inset.add_theme_constant_override("margin_bottom",24);scroll.add_child(inset)
 	content=VBoxContainer.new();content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;content.add_theme_constant_override("separation",16);inset.add_child(content)
@@ -82,3 +83,11 @@ func _layout() -> void:
 	footer_margin.position=Vector2(0,size.y-footer_height);footer_margin.size=Vector2(size.x,footer_height)
 	footer_background.visible=footer_margin.visible;footer_background.position=footer_margin.position;footer_background.size=footer_margin.size
 	scroll.position=Vector2(0,66);scroll.size=Vector2(size.x,maxf(1,size.y-66-footer_height))
+
+func set_reading_left_gutter(logical_pixels: int) -> void:
+	# The host may reserve the existing collapsed bag's occupied column.
+	# Keep the app viewport, right edge, artwork and control ownership unchanged.
+	var inset:=maxi(18,logical_pixels)
+	if content_margin.get_theme_constant("margin_left")==inset:return
+	content_margin.add_theme_constant_override("margin_left",inset)
+	footer_margin.add_theme_constant_override("margin_left",inset)

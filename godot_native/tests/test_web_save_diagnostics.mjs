@@ -319,6 +319,80 @@ check('actual touch helper sends one start/end pair and retains both event bound
   assert.equal(trace[0].params.touchPoints.length, 1); assert.equal(trace[1].params.touchPoints.length, 0);
   assert.equal(trace[1].startedAt - trace[0].startedAt, 65); assert(trace.every(event => event.acknowledgedAt === event.endedAt));
 });
+// PhoneNotification occupies native layout while it is nonempty. A pair of
+// otherwise stable button frames cannot predict the layout after it disappears.
+// These simulated snapshots verify driver gating, not actual browser timing.
+function saveNoticeSnapshot(frame, text = '存档已导入', name = 'PhoneNotification') {
+  const value = saveSnapshot(frame);
+  value.visibleControls.push({ name, text, rect: { x: 366, y: 130, width: 548, height: 38 } });
+  return value;
+}
+const afterNotice = saveSnapshot(33); afterNotice.visibleControls[0].rect.y += 64; afterNotice.savePersistence.token = 8;
+const finalAfterNotice = structuredClone(afterNotice); finalAfterNotice.sampleFrame = 34; finalAfterNotice.savePersistence.token = 9;
+const noticeMoved = saveClickFixture({ touch: true, samples: [saveNoticeSnapshot(31), saveNoticeSnapshot(32), afterNotice, afterNotice, finalAfterNotice] });
+await noticeMoved.context.saveProgressAndWait('notice disappears and menu moves');
+check('two equal button frames under an active notice cannot seed the final two fresh frames', () => {
+  assert.equal(noticeMoved.beforeReads, 5);
+  assert.deepEqual([...noticeMoved.active.saveInputs[0].stableSampleFrames], [33, 34]);
+  assert.equal(noticeMoved.active.saveInputs[0].sampleFrame, 34);
+});
+check('notice removal uses the moved final rect and current token before one real input sequence', () => {
+  const input = noticeMoved.active.saveInputs[0];
+  assert.equal(noticeMoved.clicks.length, 1); assert.equal(noticeMoved.canvasReads.length, 1);
+  assert.equal(noticeMoved.canvasReads[0].beforeIndex, 5);
+  assert.equal(noticeMoved.canvasReads[0].at, noticeMoved.clicks[0].at);
+  assert.deepEqual(noticeMoved.clicks[0].point, { x: 640, y: 265.5 });
+  assert.equal(input.previousToken, 9); assert.equal(noticeMoved.active.saveAttempts[0].previousToken, 9);
+  assert.equal(noticeMoved.active.saveAttempts[0].observations[0].receipt.token, 10);
+  assert.deepEqual(noticeMoved.events.map(event => event.params.type), ['touchStart', 'touchEnd']);
+});
+check('geometry diagnostics retain the blocking notice and explicitly clear it on usable frames', () => {
+  const samples = noticeMoved.active.saveInputs[0].geometrySamples;
+  assert.deepEqual([...samples].map(sample => sample.sampleFrame), [31, 32, 33, 34]);
+  for (const sample of samples.slice(0, 2)) {
+    assert.equal(sample.usable, false); assert.equal(sample.blockingNotice.name, 'PhoneNotification');
+    assert.equal(sample.blockingNotice.text, '存档已导入'); assert.equal(sample.blockingNotice.rect.height, 38);
+  }
+  for (const sample of samples.slice(2)) { assert.equal(sample.usable, true); assert.equal(sample.blockingNotice, null); }
+});
+const permanentNotice = saveClickFixture({ beforeSnapshot: index => saveNoticeSnapshot(index + 1) });
+await assert.rejects(permanentNotice.context.saveProgressAndWait('notice never clears'), /fresh native frames/);
+check('permanent visible notice exhausts only the original geometry 20s with zero input', () => {
+  const input = permanentNotice.active.saveInputs[0];
+  assert.equal(permanentNotice.now, 21000); assert.equal(input.failedAt - input.geometryWaitBeganAt, 20000);
+  assert.equal(input.failureKind, 'save-control-not-stable'); assert.equal(input.dispatchStartedAt, undefined);
+  assert.equal(permanentNotice.clicks.length, 0); assert.equal(permanentNotice.events.length, 0); assert.equal(permanentNotice.canvasReads.length, 0);
+  assert.equal(permanentNotice.active.saveAttempts, undefined); assert.equal(permanentNotice.diskReads.length, 0);
+});
+check('permanent notice diagnostics keep the existing 160 sample cap without inventing usability', () => {
+  const samples = permanentNotice.active.saveInputs[0].geometrySamples;
+  assert.equal(samples.length, 160);
+  assert(samples.every(sample => sample.usable === false && sample.blockingNotice?.text === '存档已导入'));
+});
+const reappearingNotice = saveClickFixture({ samples: [saveSnapshot(41), saveNoticeSnapshot(42), saveSnapshot(43), saveSnapshot(44)] });
+await reappearingNotice.context.saveProgressAndWait('notice reappears during stability check');
+check('a notice appearing between usable frames resets stability even when the button rect never moves', () => {
+  const input = reappearingNotice.active.saveInputs[0];
+  assert.equal(reappearingNotice.beforeReads, 4); assert.deepEqual([...input.stableSampleFrames], [43, 44]);
+  assert.deepEqual([...input.geometrySamples].map(sample => sample.usable), [true, false, true, true]);
+  assert.equal(input.geometrySamples[1].blockingNotice.name, 'PhoneNotification');
+  assert.equal(reappearingNotice.clicks.length, 1); assert.equal(reappearingNotice.canvasReads[0].beforeIndex, 4);
+});
+for (const [label, text, name] of [
+  ['empty notification', '', 'PhoneNotification'],
+  ['whitespace notification', ' \t\n ', 'PhoneNotification'],
+  ['non-string notification', 7, 'PhoneNotification'],
+  ['unrelated label', '存档已导入', 'SettingsHelp'],
+  ['similar but different control name', '存档已导入', 'PhoneNotificationHistory']
+]) {
+  const fixture = saveClickFixture({ samples: [saveNoticeSnapshot(51, text, name), saveNoticeSnapshot(52, text, name)] });
+  await fixture.context.saveProgressAndWait(label);
+  check(`${label} does not create a speculative notice hold`, () => {
+    assert.equal(fixture.beforeReads, 2); assert.deepEqual([...fixture.active.saveInputs[0].stableSampleFrames], [51, 52]);
+    assert.equal(fixture.clicks.length, 1); assert.equal(fixture.active.saveInputs[0].preparedAt, 1100);
+    assert(fixture.active.saveInputs[0].geometrySamples.every(sample => sample.usable === true && sample.blockingNotice === null));
+  });
+}
 for (const kind of ['missing', 'duplicate', 'disabled', 'hidden', 'document-hidden', 'nan', 'zero-area', 'offscreen', 'bad-frame', 'bad-token']) {
   const invalid = saveSnapshot(1);
   if (kind === 'missing') invalid.visibleControls = [];

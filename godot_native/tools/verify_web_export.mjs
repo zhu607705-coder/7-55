@@ -370,6 +370,10 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
   return saved;
 }
 function saveClickCandidate(value) {
+  // The ordinary notice can occupy a row above Settings actions, then collapse
+  // after two apparently stable frames. Observe its existing published Label;
+  // do not click a coordinate whose known temporary row can still disappear.
+  if (controls(value).some(control => control.name === 'PhoneNotification' && typeof control.text === 'string' && control.text.trim())) return null;
   const matches = controls(value).filter(control => control.name === 'SaveNativeProgress');
   const control = matches[0], rect = control?.rect, viewport = value?.viewport;
   // visibleControls is populated only from native Controls visible in the tree.
@@ -392,7 +396,8 @@ async function clickStableSaveControl(label) {
   try {
     prepared = await poll(async () => {
       const value = await snapshot(), candidate = saveClickCandidate(value);
-      const sample = { sampleFrame: value?.sampleFrame, token: value?.savePersistence?.token, usable: !!candidate, matches: controls(value).filter(control => control.name === 'SaveNativeProgress').length, rect: candidate?.rect };
+      const sample = { sampleFrame: value?.sampleFrame, token: value?.savePersistence?.token, usable: !!candidate, matches: controls(value).filter(control => control.name === 'SaveNativeProgress').length, rect: candidate?.rect,
+        blockingNotice: controls(value).find(control => control.name === 'PhoneNotification' && typeof control.text === 'string' && control.text.trim()) || null };
       const identity = JSON.stringify(sample);
       if (identity !== lastSample && input.geometrySamples.length < 160) { lastSample = identity; input.geometrySamples.push(sample); }
       if (!candidate) { previous = null; return null; }
@@ -838,6 +843,13 @@ async function reopenLibraryRuleThroughApp() {
   await clickControl('ZjudingApp_library', 'name');
   await clickControl('LibraryApp_rule', 'name');
 }
+function libraryHandoffReady(value) {
+  const native = state(value)?.native;
+  return native?.chapter === 3 && native.scene === 'campus_bootstrap' && value.content?.blocking === false
+    && (value.content.monolithic === true || value.content.enabled === true && value.content.readyFamilies?.includes('chapter3'))
+    && value.world?.visible === true && value.world.scene_id === 'campus_bootstrap'
+    && controls(value).some(control => control.name === 'WorldPhoneButton' && control.disabled === false);
+}
 async function libraryCase() {
   if (!fixtureDir) throw new Error('Library continuity requires controller-earned portable boundaries');
   await importSave(path.join(fixtureDir, 'before_library_rule_read.json'));
@@ -883,9 +895,15 @@ async function libraryCase() {
   await poll(async () => controls(await snapshot()).some(c => c.text === '跳过演出'), 'earned022 seat starts its original transition');
   await clickControl('跳过演出', 'text');
   await clickControl('回到校园', 'text');
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.chapter === 3 && state(s)?.native.scene === 'campus_bootstrap' ? s : null; }, 'ordinary022 arrival hands off to campus and Chapter3');
+  // State commits before required content finishes. F10 sent while the content
+  // coordinator owns SceneTree pause is lost, not queued. Keep this handoff's
+  // original default 20s deadline, including readiness, before one real input.
+  active.library ||= {};
+  active.library.handoffWait = { beganAt: Date.now(), timeoutMs: 20000 };
+  value = await poll(async () => { const s = await snapshot(); return libraryHandoffReady(s) ? s : null; }, 'ordinary022 arrival hands off to ready campus and Chapter3');
+  active.library.handoffWait.readyAt = Date.now();
   check(state(value).ui.libraryFinalsPhase === 'friend_contacted' && state(value).canteenHunt.active && state(value).canteenHunt.phase === 'tracking', `${active.id}: original controller starts the canteen hunt at the library exit`);
-  await interval(900); await settings(); await saveProgressAndWait(`${active.id} library handoff`); await startStory(true);
+  await settings(); await saveProgressAndWait(`${active.id} library handoff`); await startStory(true);
   value = await snapshot();
   check(state(value).native.chapter === 3 && state(value).ui.libraryFinalsPhase === 'friend_contacted' && state(value).canteenHunt.active, `${active.id}: reload retains completed library handoff`);
   await poll(async () => { const s = await snapshot(); return !s.content?.blocking && s.world?.visible && s.world.scene_id === 'campus_bootstrap'; }, 'reloaded handoff presents the actual campus');

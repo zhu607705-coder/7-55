@@ -20,7 +20,8 @@ func run()->void:
 	check(not ResourceLoader.has_cached(Tiled.SOURCE),"oversized source texture is not cached before mounting Main")
 	root.size=Vector2i(390,844)
 	var shell:Control=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames(5)
-	for host in [shell.c3_narrative_host,shell.c3_scene_host,shell.library_story_host]:host.set_process(false)
+	for host in [shell.c3_narrative_host,shell.c3_scene_host,shell.library_story_host]:
+		if is_instance_valid(host):host.set_process(false)
 	shell.world.set_process(false)
 	var art:Control=shell.find_child("SourceTiledNarrativeArt",true,false)
 	check(art!=null and art.get_script().resource_path=="res://scripts/presentation/source_tiled_view.gd","real Main generic artwork branch mounts tiled narrative view")

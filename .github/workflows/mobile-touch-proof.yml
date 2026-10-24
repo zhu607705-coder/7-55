@@ -60,6 +60,41 @@ jobs:
           test -f "$UI_CAPTURE_DIR/symbol-captures.json"
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:|^ERROR:' "$UI_CAPTURE_DIR/render.log"
           node -e 'const fs=require("node:fs");const rows=JSON.parse(fs.readFileSync("phone-icon-proof/symbol-captures.json","utf8"));if(rows.length!==27||rows.some(x=>x.validation_only||x.error!==0))throw Error("Expected27 actual DEV-fixture PNG captures, not earned-campaign or headless proof");for(const r of rows)if(!fs.existsSync("phone-icon-proof/"+r.id+".png"))throw Error(r.id);'
+      - name: Capture existing recovered phone reading fixtures
+        run: |
+          set -euo pipefail
+          sandbox=$(mktemp -d /tmp/755-reading-proof-XXXXXX)
+          mkdir -p "$sandbox"/{data,config,cache,state}
+          export XDG_DATA_HOME="$sandbox/data" XDG_CONFIG_HOME="$sandbox/config"
+          export XDG_CACHE_HOME="$sandbox/cache" XDG_STATE_HOME="$sandbox/state"
+          export GODOT_TEST_USER_DATA_DIR="$sandbox/data/SevenFiftyFiveNative"
+          mkdir -p "$GODOT_TEST_USER_DATA_DIR"
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/reading-ui-proof"
+          mkdir -p "$UI_CAPTURE_DIR"
+          git rev-parse HEAD > "$UI_CAPTURE_DIR/source-sha.txt"
+          godot --version > "$UI_CAPTURE_DIR/engine-version.txt"
+          timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_ui_redesign.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
+          test -f "$UI_CAPTURE_DIR/captures.json"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:|^ERROR:' "$UI_CAPTURE_DIR/render.log"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {createHash} from 'node:crypto';
+          const directory = 'reading-ui-proof';
+          const sourceCommit = fs.readFileSync(`${directory}/source-sha.txt`, 'utf8').trim();
+          const engine = fs.readFileSync(`${directory}/engine-version.txt`, 'utf8').trim();
+          const rows = JSON.parse(fs.readFileSync(`${directory}/captures.json`, 'utf8'));
+          if (sourceCommit !== process.env.GITHUB_SHA || !engine.startsWith('4.7.1.stable.official') || !Array.isArray(rows) || !rows.length) throw Error('Missing exact-source official reading captures');
+          const required = ['1440x900', '390x844'].flatMap(size => ['c35_recovery', 'c35_network', 'c35_voice'].map(page => `${size}-${page}`));
+          if (required.some(id => rows.filter(row => row.id === id).length !== 1)) throw Error('Missing or duplicate recovered reading fixture');
+          const images = rows.map(row => {
+            if (row.validation_only || row.error !== 0 || !Number.isInteger(row.width) || row.width <= 0 || !Number.isInteger(row.height) || row.height <= 0 || !/^[a-zA-Z0-9_-]+$/.test(row.id)) throw Error('Not an actual successful reading PNG');
+            const bytes = fs.readFileSync(`${directory}/${row.id}.png`);
+            if (bytes.length <= 24 || bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a' || bytes.readUInt32BE(16) !== row.width || bytes.readUInt32BE(20) !== row.height) throw Error('Reading PNG dimensions or bytes disagree');
+            return {...row, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex')};
+          });
+          fs.writeFileSync(`${directory}/ci-reading-receipt.json`, JSON.stringify({sourceCommit, engine, images,
+            scope: 'Existing DEV fixtures rendered with the production renderer. Covers recovered reading pages, not earned campaign completion, dedicated catalogue geometry, or physical-device proof.'}, null, 2) + '\n');
+          NODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -67,6 +102,7 @@ jobs:
           path: |
             mobile-touch-proof/
             phone-icon-proof/
+            reading-ui-proof/
             mobile-touch-test-report.json
             mobile-touch-test-report.json.meta.json
           if-no-files-found: error

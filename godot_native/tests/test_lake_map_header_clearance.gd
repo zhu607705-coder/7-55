@@ -19,7 +19,11 @@ func run()->void:
 		var count:Label=shell.page_body.find_child("QizhenMapCount",true,false)
 		check(count!=null,"actual map count renders")
 		if count:
-			check(not count.get_global_rect().intersects(shell.phone_chrome.inventory_handle.get_global_rect()),"collapsed inventory handle never hides map count")
+			var bag: Rect2=shell.phone_chrome.inventory_handle.get_global_rect()
+			var paint: StyleBoxFlat=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
+			var shadow:=bag.grow(paint.shadow_size*shell.phone.scale.x);shadow.position+=paint.shadow_offset*shell.phone.scale.x
+			bag=bag.merge(shadow).merge(shell.phone_chrome.inventory_count.get_global_rect())
+			check(not count.get_global_rect().intersects(bag),"collapsed inventory paint/count never hides map count")
 			check(count.text=="已接入  0 / 3","header retains authored progress")
 			check(count.get_theme_font("font").get_string_size(count.text,HORIZONTAL_ALIGNMENT_LEFT,-1,count.get_theme_font_size("font_size")).x<=count.size.x,"count fits its reserved header column")
 		await shell.shutdown();shell.queue_free();await frames()
