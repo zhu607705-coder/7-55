@@ -2,6 +2,7 @@ extends SceneTree
 ## Source-guidance regression on copied dictionaries. Optional recorded input
 ## comes from C4_HANDOFF_INPUT; default is a synthetic source-data fixture.
 const Chapter=preload("res://scripts/chapters/chapter4.gd")
+const ClockChain=preload("res://scripts/games/chapter4_clock_chain.gd")
 var checks:=0
 var failures:=0
 var records:Array=[]
@@ -88,7 +89,9 @@ func all_task_branches() -> void:
 		var s: Dictionary=full.duplicate(true);s.chapter4.factIds.erase(entry[0])
 		objective(s,entry[1],"Source objective after missing "+entry[0])
 	var mismatch: Dictionary=earned.duplicate(true);mismatch.chapter4.timeState="1225_bakery"
-	objective(mismatch,"tune_clock_to_1850","Wrong time takes precedence over other missing records")
+	var mismatch_before:=JSON.stringify(mismatch)
+	check(Chapter.new().objective(mismatch)=="旧钟与终端 · "+str(ClockChain.data().stages[0]),"Wrong time asks for the current joint-clock discovery stage before other missing records")
+	check(JSON.stringify(mismatch)==mismatch_before,"Joint-clock objective remains read-only")
 	var c: RefCounted=Chapter.new()
 	for fact in ["a3_reference_observed","room204_residual_observed","room204_restored"]:
 		var state: Dictionary=earned.duplicate(true);add_facts(state,["a1_duty_board_reconstructed"]);state.chapter4.factIds.erase(fact)

@@ -58,7 +58,13 @@ func _restore(root: Control) -> void:
 	if control is LineEdit: control.caret_column=mini(restore_caret,control.text.length())
 
 func _text(b,root: Control,text: String,rect: Rect2,size: int=14,color: Color=INK) -> Label:
-	return b._label(root,text,rect,size,color)
+	# The source canvas is uniformly scaled inside the phone. Keep its right
+	# edge and type size; the left reading column clears the enlarged touch bag.
+	var reading_rect:=rect
+	if rect.position.y>=54 and rect.position.x<60:
+		reading_rect.position.x=60
+		reading_rect.size.x=rect.end.x-60
+	return b._label(root,text,reading_rect,size,color)
 
 func build(b) -> Control:
 	var p: Dictionary=b.s.ui.libraryFinalsPuzzle
