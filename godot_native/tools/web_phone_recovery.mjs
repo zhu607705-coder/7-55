@@ -1,5 +1,19 @@
 import path from 'node:path';
 
+// Opening the control center and publishing its native layout are separate
+// frames on slow renderers. Observe readiness without dispatching more input.
+export async function waitForBrightnessControl(h, afterFrame) {
+  return h.poll(async () => {
+    const value = await h.snapshot();
+    if (!Number.isSafeInteger(afterFrame) || !Number.isSafeInteger(value?.sampleFrame) || value.sampleFrame <= afterFrame || value.documentHidden === true) return null;
+    const matches = (value.visibleControls || []).filter(c => c.name === 'ControlBrightness');
+    if (matches.length !== 1 || matches[0].disabled !== false) return null;
+    const slider = matches[0], r = slider.rect, v = value.viewport;
+    if (!r || !v || ![r.x, r.y, r.width, r.height, v.width, v.height].every(Number.isFinite) || r.width <= 0 || r.height <= 0 || v.width <= 0 || v.height <= 0 || r.x < 0 || r.y < 0 || r.x + r.width > v.width || r.y + r.height > v.height) return null;
+    return { value, slider };
+  }, 'fresh native brightness control is visible and usable', 20000);
+}
+
 // Ordinary browser input only. The harness exposes a detached read-only Godot
 // snapshot, real CDP pointer input, and the shipped portable-save file picker.
 export async function phoneRecoveryCase(h) {
@@ -94,11 +108,11 @@ export async function phoneRecoveryCase(h) {
       `${h.id}: charging does not change brightness or award plant progression`);
     await shot(`dock-${percent}-charged`);
     await click('DeskPhonePickup'); await page('bonsai');
+    const brightnessOpening = await read();
     await click('ControlCenterTrigger');
-    const before = await read();
-    const slider = before.visibleControls.find(c => c.name === 'ControlBrightness');
+    const { value: before, slider } = await waitForBrightnessControl(h, brightnessOpening.sampleFrame);
     h.check(slider?.rect?.height > 0, `${h.id}: real brightness control geometry is observable`);
-    evidence.inputs.push({ name: 'ControlBrightness', method: h.touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', at: Date.now() });
+    evidence.inputs.push({ name: 'ControlBrightness', method: h.touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', at: Date.now(), sampleFrame: before.sampleFrame, rect: slider.rect });
     await h.clickPoint(await h.renderPoint({ x: slider.rect.x + slider.rect.width / 2, y: slider.rect.y + slider.rect.height * .05 }, before));
     await h.poll(async () => (await read()).state.ui.brightness >= 80, 'manual brightness reaches original plant threshold');
     await shot(`control-center-${percent}`);
@@ -136,10 +150,13 @@ export async function phoneRecoveryCase(h) {
     `${h.id}: switching cellular again cannot update the second-stage client or earn rain`);
   await click('HomeApp_wechat'); await click('TiyiOfficialAccount'); await shot('tiyi-official-account');
   await click('TiyiContact');
+  await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', 'ordinary Contact action reveals the official update entry');
   h.check((await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', `${h.id}: real Contact menu discovers the official download card`);
   await click('TiyiAcquireUpdate');
+  await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'package_ready', 'ordinary update acquisition produces the package');
   h.check((await read()).state.actOne.tiyiUpdateStage === 'package_ready', `${h.id}: ordinary simulated acquisition does not install automatically`);
   await shot('tiyi-package-ready'); await click('TiyiInstallUpdate');
+  await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'installed', 'ordinary explicit installation completes');
   value = await read('C2 installed through ordinary official-account buttons');
   h.check(value.state.actOne.tiyiUpdateStage === 'installed' && !value.state.actOne.exerciseStarted && !value.state.actOne.weatherWaterTaken,
     `${h.id}: explicit installation grants neither exercise nor rain`);
