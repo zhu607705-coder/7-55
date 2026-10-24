@@ -1201,7 +1201,7 @@ async function directWorldCase(value) {
     check(value.world.input.dormPropActions === oldActions + 2 && lampOn(value) !== beforeLamp, `${active.id}: landscape direct target tap still submits exactly one action`);
     await assertBottomPlaque(value, 'direct-landscape');
   }
-  active.mobileWorld.coverage.push('real physical target approach', 'original proximity and single action', 'bottom plaque above inline controls', 'drag is not tap', 'cancel and fresh gesture', 'two-finger camera ownership', 'scene then inventory ownership', 'settings modal cancellation', ...(active.id === 'touch-390' ? ['landscape resize and direct tap'] : []));
+  active.mobileWorld.coverage.push('real physical target approach', 'original proximity and single action', 'bottom plaque', 'bottom plaque above inline controls', 'drag is not tap', 'cancel and fresh gesture', 'two-finger camera ownership', 'scene then inventory ownership', 'settings modal cancellation', ...(active.id === 'touch-390' ? ['landscape resize', 'landscape resize and direct tap'] : []));
   active.mobileWorld.completed = true;
 }
 

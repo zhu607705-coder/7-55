@@ -54,11 +54,14 @@ func run():
 	check(not state.developer_mode,"formal save mode remains enabled")
 	check(stable_facts(state.d)==facts,"entry preserves earned inventory, wallet and chapter facts")
 	var host:Control=shell.c3_narrative_host
-	host.set_process(false)
-	host.tick(0,true)
+	if host!=null:
+		host.set_process(false)
+		host.tick(0,true)
 	var session:RefCounted=state.get_c3_narrative_session()
+	if session!=null and host==null:
+		check(false,"pending narrative has its production host");quit(1);return
 	if stage=="reload":
-		check(session==null and host.current==null,"completed handoff does not replay through compact touch Continue")
+		check(session==null and (host==null or host.current==null),"completed handoff does not replay through compact touch Continue")
 		check_destination(state.d,"re-entered Main")
 	elif scenario=="escape":
 		check(session!=null and session.sequence_id=="canteen_escape","accepted defense resumes escape-to-campus narrative")

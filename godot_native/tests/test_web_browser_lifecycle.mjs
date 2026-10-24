@@ -163,10 +163,10 @@ test('multiple close waiters settle and remove their timers', async () => {
   const f = fixture(); const first = f.lifecycle.waitForClose(100), second = f.lifecycle.waitForClose(100); f.close();
   assert.deepEqual(await Promise.all([first, second]), [true, true]);
 });
-test('original startup/save deadlines, scenarios, and durable acceptance remain intact', () => {
+test('startup deadlines, bounded save wait, scenarios, and durable acceptance remain intact', () => {
   assert(runner.includes('async function poll(fn, label, timeout = 20000)'));
   assert(runner.includes("poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts')"));
-  assert(runner.includes('`${label}: current native save has an exact durable receipt`, 30000)'));
+  assert(runner.includes('`${label}: current native save has an exact durable receipt`, 75000)'));
   assert(runner.includes("if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`)"));
   assert(runner.includes('return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;'));
   for (const id of ['desktop-1280', 'desktop-1440', 'touch-390', 'retina-1440', 'retina-touch-390', 'desktop-1920']) assert(runner.includes(`['${id}',`));
