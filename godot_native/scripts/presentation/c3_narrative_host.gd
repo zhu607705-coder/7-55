@@ -94,12 +94,19 @@ func _sync_view_layout() -> void:
 	# in the unused screen space instead of inflating it over the small film.
 	if is_instance_valid(shell) and owns_world_contract() and shell.size.y>shell.size.x:
 		var film:Rect2=shell.world_view.get_global_rect()
+		var top:float=film.end.y+8
 		var bottom:float=shell.size.y-12
-		if shell.inventory_handle.visible:bottom=minf(bottom,shell.inventory_handle.position.y-8)
-		if shell.inventory_dock.visible:bottom=minf(bottom,shell.inventory_dock.position.y-8)
-		if bottom-film.end.y>=100:
+		# Inline inventory lives inside the film. Only controls which actually
+		# enter the lower letterbox can reserve space in that caption region.
+		for control:Control in [shell.inventory_handle,shell.inventory_dock,shell.world_tasks]:
+			if not control.is_visible_in_tree():continue
+			var occupied:Rect2=control.get_global_rect()
+			if occupied.end.y<=top or occupied.position.y>=bottom:continue
+			if occupied.position.y<=top:top=occupied.end.y+8
+			else:bottom=minf(bottom,occupied.position.y-8)
+		if bottom-top>=100:
 			parent=self
-			view.screen_rect=Rect2(12,film.end.y+8,shell.size.x-24,bottom-film.end.y-8)
+			view.screen_rect=Rect2(12,top,shell.size.x-24,bottom-top)
 	if is_instance_valid(shell) and owns_world_contract() and parent==world:
 		var film:Rect2=shell.world_view.get_global_rect()
 		var right:float=shell.size.x-film.end.x-20
@@ -116,7 +123,9 @@ func _sync_view_layout() -> void:
 	if world.get("mobile_exploration")==true:
 		var safe: Rect2=world.exploration_safe_rect()
 		view.exploration_rect=Rect2(safe.position+Vector2(8,8),(safe.size-Vector2(16,16)).max(Vector2.ZERO))
-	elif parent==world and not owns_world_contract() and world.has_method("exploration_safe_rect"):
+	elif parent==world and world.has_method("exploration_safe_rect"):
+		# A full-width film still shares the visible footer with exploration.
+		# Camera ownership does not make that screen area available to prose.
 		var safe:Rect2=world.exploration_safe_rect()
 		view.exploration_rect=Rect2(safe.position+Vector2(8,8),safe.size-Vector2(16,16))
 
