@@ -5428,3 +5428,10 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Library exit now waits for actual C3 content readiness under the existing bounded cold-load budget before starting the unchanged 20-second interactive handoff check. No input retries, state writes, or missing-content bypass were added. Negative readiness and delayed-download regressions remain executable.
 - Combined validation: 15 relevant native tests passed with official Godot4.7.1; retained quick5/5, critical27/27, release38/38 passed. The browser-runner regression group passes, including pending-input, durable network response, and exact save receipt failure cases.
 - These local checks do not establish the final public Pages release. The merged commit must still build and pass its actual browser deployment gates; live identity and trailer recording receipts are kept outside the repository.
+
+
+## 2026-10-24 document-owned streaming acceptance
+
+- Actual Pages run40087505321 failed its initial-request check when an outgoing document emitted a blocked background C2 request during Page.reload. Requests were previously attributed solely by observation time.
+- Retain CDP frame/loader identity on every request and read the current main document from Page.getFrameTree before the pre-entry check. Only requests with a proven different loader are excluded; an early request from the current loader or an unknown loader still fails. Existing response-body hashes and navigation drains are unchanged.
+- Validation:134 browser-runner regressions passed. Actual local Chrome streaming run passed1052 checks, covering blocked background content, first-chapter input/save/reload, earned C2 import, visible retry, map keyboard movement and cache-only reload. This runner check used the prior local export with unchanged content-loading runtime; final new-commit Pages delivery remains a separate gate.
