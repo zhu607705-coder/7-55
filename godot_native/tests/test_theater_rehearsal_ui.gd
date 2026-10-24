@@ -52,6 +52,17 @@ func run() -> void:
 	check(view.drag_id.is_empty() and view.pointer_id==-99,"release clears drag ownership")
 	key(KEY_Z,true);key(KEY_Z,false);await process_frame
 	check(is_equal_approx(float(view.state.objects[0].x),before_x),"keyboard undo restores the prior physical pose")
+	var light_before:Dictionary=view.model.snapshot();var beam_before:Dictionary=view.light_geometry()
+	var light_start:Vector2=view.field.position+view.lamp_rect().get_center()/view.LOGICAL*view.field.size
+	var light_end:Vector2=light_start+Vector2(.4*56,-.9*22)/view.LOGICAL*view.field.size
+	mouse(light_start,true);motion(light_end);mouse(light_end,false);await process_frame
+	check(absf(view.state.lampX-.4)<.001 and absf(view.state.lampDepth-.9)<.001,"mouse drags the visible lamp in both physical axes from the first scene")
+	check(view.state.attempts==light_before.attempts and view.state.objects==light_before.objects and view.state.projections[0].radius>light_before.projections[0].radius,"dragging enlarges shadows without moving props or accidentally trying the puzzle")
+	check(view.light_geometry().origin.y<beam_before.origin.y and view.light_geometry().halfWidth<beam_before.halfWidth,"rendered beam follows the source and narrows as receiver distance decreases")
+	view._undo();check(view.state.lampX==light_before.lampX and view.state.lampDepth==light_before.lampDepth and view.state.projections==light_before.projections,"one undo restores the whole diagonal light gesture and all projections")
+	view.selected="lamp";key(KEY_UP,true);key(KEY_UP,false);await process_frame
+	check(absf(view.state.lampDepth-.12)<.001,"keyboard up moves the selected physical lamp toward the props")
+	view._undo();view.selected="left_fan"
 	view._help();var before: Dictionary=view.model.snapshot();key(KEY_RIGHT,true);await create_timer(.12).timeout;key(KEY_RIGHT,false)
 	check(view.model.snapshot()==before and view.help_panel.visible,"reading freezes keyboard motion and penalties")
 	view._close_help();view._pause();before=view.model.snapshot();key(KEY_RIGHT,true);await create_timer(.12).timeout;key(KEY_RIGHT,false)
@@ -82,6 +93,19 @@ func run() -> void:
 	view.configure_activity_layout(Vector2(844,390),false);await process_frame
 	start=point(view,"left_fan");touch(5,start,true);drag(5,start+Vector2(20,0));touch(1,p1,true);drag(1,p1+Vector2(30,0));before=view.model.snapshot();touch(1,p1+Vector2(30,0),false);touch(5,start+Vector2(20,0),false);await process_frame
 	check(view.model.snapshot()==before and not view.menu_open,"moving a multi-finger gesture cannot become an undo or accidental menu")
+	light_before=view.model.snapshot();light_start=view.field.position+view.lamp_rect().get_center()/view.LOGICAL*view.field.size
+	var lamp_size:Vector2=view.lamp_rect().size/view.LOGICAL*view.field.size
+	check(lamp_size.x>=44 and lamp_size.y>=44,"physical lamp retains a 44-pixel finger target in mobile landscape")
+	light_end=light_start+Vector2(.6*56,-1.1*22)/view.LOGICAL*view.field.size
+	touch(5,light_start,true);drag(5,light_end);touch(5,light_end,false);await process_frame
+	check(absf(view.state.lampDepth-1.1)<.001 and absf(view.state.lampX-.6)<.001 and view.state.attempts==light_before.attempts,"one finger moves both source axes without trial on release")
+	view._undo();check(view.state.projections==light_before.projections and view.state.lampDepth==light_before.lampDepth,"mobile undo restores shadows and lamp position together")
+	touch(5,light_start,true);drag(5,light_end);view._focus_out();before=view.model.snapshot();drag(5,light_end+Vector2(0,-30));touch(5,light_end,false);await process_frame
+	check(view.model.snapshot()==before and view.drag_id.is_empty() and view.menu_open,"focus loss cancels a lamp drag without a delayed move or trial")
+	view._close_menu();view._undo()
+	touch(5,light_start,true);drag(5,light_end);before=view.model.snapshot();view.configure_activity_layout(Vector2(900,430),false);drag(5,light_end+Vector2(30,0));touch(5,light_end,false);await process_frame
+	check(view.model.snapshot()==before and view.fingers.is_empty(),"resizing cancels source movement at stale pointer coordinates")
+	view._undo();view.configure_activity_layout(Vector2(844,390),false);await process_frame
 	var lamp:Vector2=view.field.position+Vector2(480,475)/view.LOGICAL*view.field.size
 	touch(5,lamp,true);touch(5,lamp,false);await process_frame
 	check(view.state.attempts>0 and view.state.screen=="playing","tapping the actual stage lamp runs an ordinary recoverable trial")

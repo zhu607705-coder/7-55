@@ -232,5 +232,140 @@
       "No physical phone or full natural campaign acceptance"
     ],
     "focusRecovery": "Closing an observation sheet after focus loss exposes the explicit resume menu; two additional UI checks passed."
+  },
+  "lightProjectionFollowup": {
+    "date": "2026-10-24",
+    "baseCommit": "bfa07ce1cb952b79b538d28043cc929b41d506c7",
+    "modelVersion": 3,
+    "features": [
+      "Direct two-axis lamp dragging in all three rounds",
+      "Shared source-distance projection for fans, screen and fixed pin",
+      "Clipped warm beam and receiver light patch",
+      "Calibration checks pin shadow position and length",
+      "Atomic gesture undo, keyboard, touch and interruption handling"
+    ],
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "native": [
+      {
+        "label": "test_liangzhu_performance.gd",
+        "passed": true,
+        "result": "LIANGZHU_VIEW: 90 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE: 32 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte_view.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE_VIEW: 61 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_controller.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_CONTROLLER: 54 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_main.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MAIN: 229 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_model.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MODEL: 81 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_performance.gd",
+        "passed": true,
+        "result": "REHEARSAL_PERFORMANCE: 45 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_ui.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_UI: 75 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_world_geometry.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_WORLD_GEOMETRY: 192 checks; 0 failures"
+      }
+    ],
+    "nativeChecks": 859,
+    "graphicalMain": {
+      "passed": true,
+      "checks": 229,
+      "entry": "Validated isolated c3-theater-program checkpoint; ordinary Main and actual input events"
+    },
+    "retainedWebReference": {
+      "quick": 5,
+      "critical": 27,
+      "release": 38,
+      "browserCases": 4,
+      "passed": true
+    },
+    "godotWeb": {
+      "exported": true,
+      "sourceDirty": true,
+      "sourceInputSha256": "0b04abecf55fab6db3aad2f51afeab55f09ce89f5fda35e2144c0cd02ad1b5f7",
+      "cases": [
+        {
+          "mode": "desktop",
+          "passed": true,
+          "viewport": [
+            1280,
+            720
+          ],
+          "checks": 851,
+          "input": "CDP mouse",
+          "runnerSha256": "1fde0685788b36709a24154aced5d301145a2a6487482dd25811d63a416c19cf"
+        },
+        {
+          "mode": "mobile",
+          "passed": true,
+          "viewport": [
+            844,
+            390
+          ],
+          "checks": 852,
+          "input": "CDP touch",
+          "runnerSha256": "1fde0685788b36709a24154aced5d301145a2a6487482dd25811d63a416c19cf"
+        }
+      ],
+      "entry": "Cold boot, ordinary phone flow, import of a validated isolated theater checkpoint, physical rack entry, lamp drag, undo, programme and curtain exit",
+      "deployed": false,
+      "fixtureSha256": "aa87a03adc349324afc1f1b7d1736714a7cfba70826c6d64cf8a95e86808163b"
+    },
+    "files": [
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "161780110920bd88f522f9a0ede4827ea1c677837505cf80cecf837d65936672"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal_model.gd",
+        "sha256": "1d174071ee0900be843261cbb97f8f76c687f956eaacd50021c3080e4a1c6e82"
+      },
+      {
+        "path": "godot_native/tests/helpers/theater_rehearsal_proof.gd",
+        "sha256": "0efa792db4594e334f701e727509670761ee632686269a02c409e813218c6f5d"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_main.gd",
+        "sha256": "8d08fc573b60a1d7a5e4467927284f9ce3d525641affa2378e77b8409c4f6605"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_model.gd",
+        "sha256": "145473824e19446a9685eb5c7c5b7c334e5ac1a171793b1fdfe3a71de6c410e0"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
+        "sha256": "47491855573bace12659224bb639f08ccd84dbad94bfac4cf6856cfdd4595872"
+      }
+    ],
+    "limitations": [
+      "Browser validation is Chromium desktop and simulated mobile touch; no physical phone or Gecko/WebKit claim",
+      "No natural full-campaign or online deployment acceptance"
+    ]
   }
 }

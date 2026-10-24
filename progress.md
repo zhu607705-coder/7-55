@@ -5283,3 +5283,12 @@ Removed rehearsal toolbar Watch/Observe and duplicate Watch menu entry. The tabl
 The complete PR worktree also passed retained Web validate:release: 38 validators and 4 browser smoke cases.
 
 Closing a reading sheet after window focus loss now exposes explicit resume. The targeted Main and UI rerun passed (224 and 65 checks).
+
+
+## 2026-10-24 — 剧场台灯两轴投影调节
+
+- 直接拖场景中的台灯：左右改变全体投影位置，前后改变源到道具、道具到纱幕的放大关系；三幕均可操作。暖色光束和纱幕亮区随灯移动，固定木钉影同时校准横向和长度。未新增操作工具栏。
+- 模型升级到 v3；两轴灯位一起记录、撤回、重排及回放，点灯试演保留原道具选择，拖动后才选中灯。保留既有一次性会话和可选排练无剧情/存档写入语义。
+- Godot 4.7.1：9组原生回归859项通过；实际图形Main检查229项通过，覆盖三幕、键鼠、模拟触摸、失焦/旋转取消和主备存档。quick 5、critical 27、保留Web release 38项及4浏览器场景通过。
+- 已用同版官方模板重新导出Godot Web；Chromium 1280×720鼠标与844×390模拟触摸，均经冷启动、手机入口、正式导入隔离校验检查点、实际扇架进入、双轴拖灯、撤回、节目册及幕缝退出通过；浏览器桥保持只读。导出源码摘要 0b04abecf55fab6db3aad2f51afeab55f09ce89f5fda35e2144c0cd02ad1b5f7。未声称实体手机、Gecko/WebKit、全剧情自然游玩或站点已发布。
+- 接续用户已授权的剧场箱子＋梁祝一起上传范围，更新原PR166，不合并或部署。证据见 THEATER_FAN_CHEST_ACCEPTANCE_20261024.json 的 lightProjectionFollowup；本机完整日志在 ~/Library/Application Support/755-tools/verification/theater-light-20261024。

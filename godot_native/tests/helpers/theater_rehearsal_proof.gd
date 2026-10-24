@@ -34,12 +34,14 @@ static func spread(model:RefCounted,id:String,value:float)->bool:
 	for i:int in range(1,steps+1):
 		if not model.apply({"kind":"spread","id":id,"value":lerpf(start,value,float(i)/steps)}):return false
 	return true
-static func lamp(model:RefCounted,value:float)->bool:
-	var start:float=model.snapshot().lampX
-	if is_equal_approx(start,value):return true
-	var steps:int=ceili(absf(value-start)/.5)
+static func lamp(model:RefCounted,value:float,depth:float=0.0)->bool:
+	var start:=Vector2(float(model.snapshot().lampX),float(model.snapshot().lampDepth))
+	var end:=Vector2(value,depth)
+	if start.is_equal_approx(end):return true
+	var steps:int=ceili(start.distance_to(end)/.5)
 	for i:int in range(1,steps+1):
-		if not model.apply({"kind":"lamp","x":lerpf(start,value,float(i)/steps)}):return false
+		var point:Vector2=start.lerp(end,float(i)/steps)
+		if not model.apply({"kind":"lamp","x":point.x,"depth":point.y}):return false
 	return true
 static func proof(config: Dictionary={}) -> Dictionary:
 	var model=Model.new()

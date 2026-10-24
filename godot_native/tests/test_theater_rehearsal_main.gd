@@ -86,12 +86,12 @@ func fold(game:Control,id:String,value:float,use_touch:bool)->void:
 		if candidate.id==id:check(absf(float(candidate.spread)-value)<.02,"Physical copper grip opens the actual fan: "+id)
 func move_lamp(game:Control,value:float,use_touch:bool)->void:
 	var start:Vector2=game.field.position+game.lamp_rect().get_center()/game.LOGICAL*game.field.size
-	var end:Vector2=start+Vector2((value-float(game.state.lampX))*56,0)/game.LOGICAL*game.field.size
+	var end:Vector2=start+Vector2((value-float(game.state.lampX))*56,float(game.state.lampDepth)*22)/game.LOGICAL*game.field.size
 	var transform:Transform2D=game.get_global_transform_with_canvas()
 	await pointer(transform*start,true,use_touch)
 	for i:int in range(1,9):await pointer_motion(transform*start.lerp(end,float(i)/8),use_touch)
 	await pointer(transform*end,false,use_touch)
-	check(absf(float(game.state.lampX)-value)<.02,"Real lamp drag moves the shared source without submitting a trial")
+	check(absf(float(game.state.lampX)-value)<.02 and absf(float(game.state.lampDepth))<.02,"Real lamp drag moves the shared source without submitting a trial")
 func object_point(game: Control,id: String="left_fan") -> Vector2:
 	for object:Dictionary in game.state.objects:
 		if object.id==id:return game.get_global_transform_with_canvas()*(game.field.position+game.prop_rect(object).get_center()/game.LOGICAL*game.field.size)

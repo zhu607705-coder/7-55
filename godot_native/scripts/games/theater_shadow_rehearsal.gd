@@ -253,7 +253,7 @@ func _cycle_selection() -> void:
 	for i in objects.size():
 		if objects[i].id==selected:selected=objects[(i+1)%objects.size()].id;queue_redraw();return
 func _nudge(delta: Vector2) -> void:
-	if selected=="lamp":_move_lamp(float(state.lampX)+delta.x);return
+	if selected=="lamp":_move_lamp(Vector2(float(state.lampX),float(state.lampDepth))+delta);return
 	var object: Dictionary=_selected_object()
 	if object.is_empty():return
 	if fold_keys and object.kind=="fan":_spread_prop(selected,float(object.spread)+delta.x*.5);return
@@ -285,26 +285,27 @@ func _spread_prop(id:String,value:float)->void:
 	for i:int in range(1,steps+1):
 		if not _apply({"kind":"spread","id":id,"value":lerpf(start,value,float(i)/steps)}):break
 
-func _move_lamp(value:float)->void:
+func _move_lamp(value:Vector2)->void:
 	if not state.get("lampMovable",false):return
-	value=clampf(value,-Model.LAMP_LIMIT,Model.LAMP_LIMIT)
-	var start:float=state.lampX
-	if is_equal_approx(start,value):return
-	var steps:int=ceili(absf(value-start)/.5)
+	value=value.clamp(Vector2(-Model.LAMP_LIMIT,Model.LAMP_DEPTH_MIN),Vector2(Model.LAMP_LIMIT,Model.LAMP_DEPTH_MAX))
+	var start:=Vector2(float(state.lampX),float(state.lampDepth))
+	if start.is_equal_approx(value):return
+	var steps:int=ceili(start.distance_to(value)/.5)
 	for i:int in range(1,steps+1):
-		if not _apply({"kind":"lamp","x":lerpf(start,value,float(i)/steps)}):break
+		var next:Vector2=start.lerp(value,float(i)/steps)
+		if not _apply({"kind":"lamp","x":next.x,"depth":next.y}):break
 
 func lamp_rect()->Rect2:
-	return Rect2(StagePlate.REHEARSAL_LAMP.position+Vector2(float(state.get("lampX",0.0))*56,0),StagePlate.REHEARSAL_LAMP.size)
+	return Rect2(StagePlate.REHEARSAL_LAMP.position+Vector2(float(state.get("lampX",0.0))*56,-float(state.get("lampDepth",0.0))*22),StagePlate.REHEARSAL_LAMP.size)
 
 func _begin_lamp(id:int,local:Vector2)->void:
 	pointer_id=id;lamp_armed=true;drag_id="lamp";drag_kind="lamp"
-	drag_offset=Vector2(float(state.lampX)*56,0)-_logical(local)
+	drag_offset=Vector2(float(state.lampX)*56,-float(state.lampDepth)*22)-_logical(local)
 	held.clear();grab_focus();queue_redraw()
 
 func _intro() -> void:
 	_clear_input();help_open=true;help_title.text="借扇成蝶"
-	help_body.text="扇影要合上幕上的旧痕。\n\n拖动底座移动道具，拉动扇骨铜扣开合，点灯试演。\n\n桌上节目册可翻阅线索，右侧拉绳开启合演，左侧幕缝退场。\n\n手机横屏，双指轻触撤回、按住打开排练单；键盘 Tab 选物、空格操作，方向键移动，Shift＋左右键开合，Esc 暂停。"
+	help_body.text="扇影要合上幕上的旧痕。\n\n拖底座移动道具，拉扇骨铜扣开合；台灯可左右、前后拖动，点灯试演。\n\n桌上节目册可翻阅线索，右侧拉绳开启合演，左侧幕缝退场。\n\n手机横屏，双指轻触撤回、按住打开排练单；键盘 Tab 选物、空格操作，方向键移动，Shift＋左右键开合，Esc 暂停。"
 	help_next.hide();help_close.text="开始排练";help_panel.show();_layout_reading();help_panel.move_to_front()
 func _help() -> void:
 	if disposed or done:return
@@ -312,7 +313,7 @@ func _help() -> void:
 	if int(state.hintTier)==0:model.apply({"kind":"hint"});state=model.snapshot()
 	help_title.text="节目册 · 排练手记"
 	help_close.text="合上册页"
-	help_body.text=Model.failure_text(str(state.failure))+"\n\n"+Model.hint(int(state.round),int(state.hintTier))+"\n\n拖底座移动；拉扇骨铜扣开合；点灯试演。键盘：Tab 选物，方向键移动，Shift＋左右键开合，空格试演，Z 撤回，R 重排。"
+	help_body.text=Model.failure_text(str(state.failure))+"\n\n"+Model.hint(int(state.round),int(state.hintTier))+"\n\n左右拖灯移影，前后拖灯缩放；点灯试演。拉扇骨铜扣开合。键盘：Tab 选物，方向键移动，Shift＋左右键开合，空格试演，Z 撤回，R 重排。"
 	help_next.visible=state.screen=="playing" and int(state.hintTier)<3;help_panel.show();_layout_reading();help_panel.move_to_front()
 func _next_hint() -> void:
 	if model==null or not help_open:return
@@ -453,7 +454,10 @@ func _drag_pointer(local: Vector2) -> void:
 	if drag_kind=="spread":
 		var object:Dictionary=_selected_object();var offset:Vector2=_logical(local)-FanView.pivot(prop_foot(object),object)
 		_spread_prop(drag_id,(rad_to_deg(atan2(offset.x,-offset.y))-15.0)/60.0);return
-	if drag_kind=="lamp":selected="lamp";_move_lamp((_logical(local).x+drag_offset.x)/56);return
+	if drag_kind=="lamp":
+		selected="lamp"
+		var source:Vector2=_logical(local)+drag_offset
+		_move_lamp(Vector2(source.x/56,-source.y/22));return
 	var point: Vector2=_logical(local)+drag_offset
 	_move_prop(drag_id,Vector2((point.x-480)/56,(450-point.y)/22))
 func _touch_begin(index: int,local: Vector2) -> bool:
@@ -594,11 +598,40 @@ func _wing(center: Vector2,radius: float,side: int,color: Color,outline: bool=fa
 		if outline:
 			piece.append(piece[0]);draw_polyline(piece,color,2.0,true)
 		else:draw_colored_polygon(piece,color)
+func light_geometry()->Dictionary:
+	# A fixed-divergence beam expands with source-to-receiver distance.
+	# Prop magnification uses that same distance in Model.project().
+	var distance:float=Model.SCREEN_DEPTH-float(state.get("lampDepth",0.0))
+	var origin:Vector2=lamp_rect().position+Vector2(46,10)
+	return {"origin":origin,"center":Vector2(480+float(state.get("lampX",0.0))*64,148),"halfWidth":distance*40.0,"halfHeight":distance*13.0}
+
+func _draw_light()->void:
+	var light:Dictionary=light_geometry()
+	var receiver:Rect2=StagePlate.REHEARSAL_RECEIVER
+	# Warm, broad bands retain the original hard-edged pixel art underneath.
+	for band:int in range(6):
+		var inset:float=float(band)*.045
+		var half_width:float=float(light.halfWidth)*(1.0-inset)
+		var left:float=maxf(receiver.position.x,float(light.center.x)-half_width)
+		var right:float=minf(receiver.end.x,float(light.center.x)+half_width)
+		draw_colored_polygon(PackedVector2Array([Vector2(left,receiver.end.y),Vector2(right,receiver.end.y),light.origin+Vector2(9,0),light.origin-Vector2(9,0)]),Color(.96,.82,.53,.012))
+	var clip:=PackedVector2Array([receiver.position,Vector2(receiver.end.x,receiver.position.y),receiver.end,Vector2(receiver.position.x,receiver.end.y)])
+	for band:int in range(8):
+		var ratio:float=1.0-float(band)*.045
+		var ellipse:=PackedVector2Array()
+		for point:int in range(64):
+			var angle:float=TAU*float(point)/64.0
+			ellipse.append(Vector2(light.center)+Vector2(cos(angle)*float(light.halfWidth),sin(angle)*float(light.halfHeight))*ratio)
+		for piece:PackedVector2Array in Geometry2D.intersect_polygons(ellipse,clip):
+			if piece.size()>2:draw_colored_polygon(piece,Color(.96,.87,.62,.045))
+	draw_circle(light.origin,6,Color("ead4a6"))
+
 func _draw_stage() -> void:
 	if not StagePlate.draw(self,textures.get("stage"),true):
 		draw_rect(Rect2(Vector2.ZERO,LOGICAL),Color("352d3a"));draw_rect(Rect2(50,250,860,260),Color("826449"))
 	# The gauze is a physical receiver; all silhouettes share its single plane.
-	draw_style_box(Ui.box(Color("d5ceab"),Color("7b6e52"),5,2,Vector2.ZERO),StagePlate.REHEARSAL_RECEIVER)
+	draw_style_box(Ui.box(Color("b8b092"),Color("7b6e52"),5,2,Vector2.ZERO),StagePlate.REHEARSAL_RECEIVER)
+	_draw_light()
 	var reduced:bool=bool(config.get("settings",{}).get("reducedMotion",false))
 	for target: Dictionary in state.targets:_wing(Vector2(480+float(target.center)*64,148),float(target.radius)*64,int(target.side),Color("aa9b70"),true,true,float(target.spread))
 	for shadow: Dictionary in state.projections:
@@ -606,12 +639,18 @@ func _draw_stage() -> void:
 		else:
 			var shadow_rect:=Rect2(480+(float(shadow.center)-float(shadow.radius))*64,61,float(shadow.radius)*128,176).intersection(StagePlate.REHEARSAL_RECEIVER)
 			if shadow_rect.has_area():draw_rect(shadow_rect,Color("34312bd9"))
-	if state.lampMovable:
+	if not state.witness.is_empty():
 		var target_x:float=480+float(state.witnessTarget)*64
 		var cast_x:float=480+float(state.witness.center)*64
-		draw_polyline(PackedVector2Array([Vector2(target_x-7,86),Vector2(target_x-7,69),Vector2(target_x+7,69),Vector2(target_x+7,86)]),Color("9A514A"),2)
-		draw_line(Vector2(cast_x,77),Vector2(cast_x,108),Color("34312b"),5)
-		draw_circle(Vector2(cast_x,78),4,Color("34312b"))
+		var cast_top:float=140.0-31.0*float(state.witness.magnification)
+		for y:float in [78.0,140.0]:
+			draw_line(Vector2(target_x-9,y),Vector2(target_x+9,y),Color("9A514A"),2)
+			draw_line(Vector2(target_x-9,y-4),Vector2(target_x-9,y+4),Color("9A514A"),2)
+			draw_line(Vector2(target_x+9,y-4),Vector2(target_x+9,y+4),Color("9A514A"),2)
+		var receiver:Rect2=StagePlate.REHEARSAL_RECEIVER
+		if cast_x>=receiver.position.x+3 and cast_x<=receiver.end.x-3:
+			draw_line(Vector2(cast_x,maxf(cast_top,receiver.position.y)),Vector2(cast_x,140),Color("34312b"),5)
+			if receiver.grow(-4).has_point(Vector2(cast_x,cast_top)):draw_circle(Vector2(cast_x,cast_top),4,Color("34312b"))
 		var pin:Vector2=prop_foot(Model.WITNESS)
 		draw_line(pin,pin-Vector2(0,42),Color("665C42"),5)
 		draw_circle(pin-Vector2(0,42),5,Color("C2A46F"))
@@ -620,7 +659,7 @@ func _draw_stage() -> void:
 		var alpha:float=1.0-trial_age/1.25
 		var edge_color:Color=Color("E5D7B4") if str(state.failure).is_empty() else Color("9A514A")
 		edge_color.a=alpha
-		if state.failure=="light_axis":draw_arc(Vector2(480+float(state.witnessTarget)*64,80),13,0,TAU,32,edge_color,2)
+		if state.failure=="light_axis":draw_arc(Vector2(480+float(state.witnessTarget)*64,109),34,0,TAU,32,edge_color,2)
 		else:
 			for target:Dictionary in state.targets:_wing(Vector2(480+float(target.center)*64,148),float(target.radius)*64,int(target.side),edge_color,true,true,float(target.spread))
 	for prop:Dictionary in StagePlate.furniture_entries("rehearsal"):StagePlate.draw_prop(self,textures,prop,true)
@@ -629,10 +668,9 @@ func _draw_stage() -> void:
 		draw_line(Vector2(480,121),Vector2(480,177),Color("292820"),4,true)
 		draw_polyline(PackedVector2Array([Vector2(480,127),Vector2(474,115),Vector2(470,113)]),Color("292820"),1.5,true)
 		draw_polyline(PackedVector2Array([Vector2(480,127),Vector2(486,115),Vector2(490,113)]),Color("292820"),1.5,true)
-	# Cables converge at the lamp. They are thin stage hardware, never answer rails.
+	# Props interrupt the visible cone; their silhouettes use model-owned rays.
 	for object: Dictionary in _sorted_props():
 		var foot: Vector2=prop_foot(object)
-		draw_line(Vector2(lamp_rect().get_center().x,475),foot,Color("b7a37155"),1.5,true)
 		if object.kind=="screen":
 			if not _draw_texture_fit("side_screen",prop_rect(object)):draw_style_box(Ui.box(Color("483b49"),Color("a8875d"),3,2,Vector2.ZERO),Rect2(foot+Vector2(-46,-126),Vector2(92,128)))
 		else:
@@ -640,9 +678,14 @@ func _draw_stage() -> void:
 		if object.id==selected:
 			# A subtle brass mark names current manipulation, not a target/range box.
 			draw_line(foot+Vector2(-13,13),foot+Vector2(13,13),Color("e3c18b"),3,true)
-	if state.lampMovable:
-		draw_line(Vector2(480-Model.LAMP_LIMIT*56,517),Vector2(480+Model.LAMP_LIMIT*56,517),Color("665C42"),4)
-		for x:int in [-1,0,1]:draw_line(Vector2(480+x*56,513),Vector2(480+x*56,521),Color("9D875E"),2)
+	# Two short dolly runners make both physical travel axes readable.
+	for side:float in [-1.0,1.0]:
+		var x:float=480.0+side*Model.LAMP_LIMIT*56.0
+		draw_line(Vector2(x,517-Model.LAMP_DEPTH_MAX*22),Vector2(x,517-Model.LAMP_DEPTH_MIN*22),Color("665C42"),3)
+	var lamp_base:=Vector2(lamp_rect().get_center().x,lamp_rect().end.y-7)
+	draw_line(Vector2(480-Model.LAMP_LIMIT*56,lamp_base.y),Vector2(480+Model.LAMP_LIMIT*56,lamp_base.y),Color("665C42"),3)
+	if selected=="lamp":
+		draw_line(lamp_base+Vector2(-20,5),lamp_base+Vector2(20,5),Color("e3c18b"),3)
 	var lamp:Rect2=lamp_rect()
 	if state.screen in ["round_complete","complete"]:
 		var pulse:float=1.0 if reduced else .7+.3*sin(presentation_clock*3)
@@ -691,7 +734,7 @@ func geometry_snapshot() -> Dictionary:
 		var actual:=Rect2(field.position+rect.position/LOGICAL*field.size,rect.size/LOGICAL*field.size)
 		stage_objects[id]=[actual.position.x,actual.position.y,actual.size.x,actual.size.y]
 	var lamp=Rect2(field.position+lamp_rect().position/LOGICAL*field.size,lamp_rect().size/LOGICAL*field.size)
-	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"selected":selected,"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
+	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"light":light_geometry(),"selected":selected,"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
 func _watch_performance() -> bool:
 	if disposed or done or is_instance_valid(performance):return false
 	var state_node:Node=get_node_or_null("/root/State")
