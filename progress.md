@@ -5270,6 +5270,19 @@ At cd359b9, retained Web CI and the actual Godot Web production build passed. Co
 
 Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic checks. A controlled 20ms delay around real WebCrypto reproduced the old turn-budget timeout; the corrected deadline version passed the same original loader assertions under that delay. Control scripts and logs stay outside the repository under the 20261024 merge verification directory. The runtime content loader hash remains 123525c2a5cebc21ca739eb1d70aa4caee4ac7f425d94341feac6d22b14b3036.
 
+## 2026-10-23 — Library seat object feedback
+
+Task: D:/Code/7-55-tasks/library-objects, codex/library-object-feedback-20261023, base cd359b9d50451ddb38a9e178281816da3d254f7a (PR #164 separated library assets). The fixed integration checkout and its UI/campus edits are preserved.
+
+Added bag inspection motion, note unfolding/lift and arrow-driven receipt extraction. Runtime-only poses read controller facts; story/mode gates, item transactions, collisions and existing shelf/stamp/eviction timelines stay unchanged. Moving paper picking follows its painted polygon. Reload, hiding and reduced motion settle to the earned state.
+
+Godot 4.7.1: sync/import and six isolated tests passed (72 seat, 113 layers, 52 rebuild, 211 printer, 55 picking, 1729 handoff; 2232 checks). GPU seat tests passed 72 checks at 1280x720, 390x844 and 844x390; 36 captures include inspected desktop/phone frames. The official Node runner refuses Windows; a private mirror uses a verified user-data probe and Windows isolation adapter, without editing the repository guard. No full-suite, browser or device acceptance claim.
+
+Preview/evidence: C:/Users/Turpitude/.codex/visualizations/2026/10/22/01a16442-a444-7781-92f4-e2160a20a18d/library-objects-20261023. open-preview.ps1 starts eligible fixtures with isolated saves; private-only 1/2/3 reset bag/note/receipt, F6 changes window size. Continue in this checkout.
+
+Delivery on 2026-10-24: the user deferred the Godot repository and selected only zhu607705-coder/7-55 for this delivery. Original PR #164 merged as 926cfe9; the task commit is based on that main, preserving its unrelated transport-fixture correction. Reuse codex/library-object-feedback-20261023 in this checkout. The three implementation/test files remain byte-identical to the isolated native/GPU test inputs. No Godot-repository branch or PR was published.
+
+Retained Web release: production build, offline build/artifact checks and four Chromium smoke routes passed. The initial release run passed 32/38 stages; all four media-related failures passed after adding existing ffmpeg/ffprobe to PATH. Prologue verification passed 52 checks with an explicit report path and the original LF fixture bytes on Windows (original working-tree line endings restored afterward). The remaining causal-flow runner uses URL.pathname as a Windows filesystem root and cannot load its unchanged source modules. These environment constraints do not establish a fully green release gate. No Godot WebAssembly or physical-device acceptance is claimed.
 
 ## 2026-10-24 剧场箱内与扇影交互
 
@@ -5339,3 +5352,7 @@ PR166 最终7bebe源的合并候选4e220681在生产构建、六视口基础验�
 ### 2026-10-24 流式故障验收跨文档观察
 
 6bddbb7的合并候选3bcc94a1已通过云端六视口1149项。后续流式故障检查读取到旧文档HTTP失败，但新引擎75个包仍missing、blocking=false；改为记录请求/失败时间，匹配本次刷新后的受控HTTP失败并等待当前原生回调。出现错误的阻塞覆盖层仍立即失败，旧文档和缺失回调不能冒充成功。游戏源代码未变化；失败证据保留，更新测试后继续完整云端验证。
+
+## 2026-10-24 — PR165 upstream synchronization
+
+User requested resolving the remaining original-repository PRs, synchronizing the branches and publishing the latest game before recording a feature trailer. PR165 is reconciled with deployed main 1322d94; only append-only progress notes conflicted, and both histories are retained. The three library implementation/test files are unchanged from d205847. The combined source passed seven isolated Godot 4.7.1 stages: save isolation, import/parse, object rebuild, printer, reveal handoff, seat motion and world layers. The original working directory's 160 tracked modifications and 393 untracked files remain untouched. Combined Web publication and PR163 reconciliation are recorded separately, not inferred from these scoped checks.
