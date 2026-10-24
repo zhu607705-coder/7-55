@@ -1167,7 +1167,8 @@ async function directWorldCase(value) {
   await worldTouches('touchStart', [{ ...point, id: 1 }]);
   await worldTouches('touchMove', [{ x: point.x - 35, y: point.y, id: 1 }]);
   await worldTouches('touchMove', [{ ...point, id: 1 }]); await worldTouches('touchEnd');
-  value = await mobileSample(value);
+  const dragFrame = value.sampleFrame;
+  value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > dragFrame && next.world.input.owners.length === 0 ? next : null; }, 'drag release reaches the actual scene owner', 5000);
   check(mobileFacts(value) === facts && !value.world.input.routeWaypointCount, `${active.id}: a drag returning to its start is neither a tap nor a walking route`);
   // Re-read the object's projected position after camera panning.
   const held = await renderPoint(worldTarget(value).point, value);
@@ -1191,11 +1192,14 @@ async function directWorldCase(value) {
   value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.owners?.length === 1 ? s : null; }, 'real inventory probe owns a scene pointer', 5000);
   check(value.world.input.owners.length === 1, `${active.id}: inventory probe starts with an actual held scene pointer`);
   await worldTouches('touchStart', [{ ...mapPoint, id: 1 }, { ...itemPoint, id: 2 }]);
-  value = await mobileSample(value, 100);
+  const inventoryFrame = value.sampleFrame;
+  value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > inventoryFrame && next.world.input.owners.length === 0 ? next : null; }, 'inline inventory touch reaches the actual scene owner', 5000);
   check(value.world.input.owners.length === 0 && !value.world.input.routeWaypointCount && mobileFacts(value) === facts, `${active.id}: touching the inline inventory cancels the held scene pointer without a route or object action`);
   await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-inventory-cancel');
   check(mobileFacts(value) === facts, `${active.id}: inventory cancellation retains items and source actions`);
-  await worldTouches('touchStart', [{ ...mapPoint, id: 1 }]); await press('F10');
+  await worldTouches('touchStart', [{ ...mapPoint, id: 1 }]);
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.owners?.length === 1 ? next : null; }, 'settings probe starts with an actual held scene pointer', 5000);
+  await press('F10');
   value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.modalVisible ? next : null; }, 'settings modal opens over a direct scene pointer');
   await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-modal');
   check(mobileFacts(value) === facts, `${active.id}: modal cancellation cannot activate the held source object`);
@@ -1204,6 +1208,7 @@ async function directWorldCase(value) {
   const currentTarget = worldTarget(value);
   const oldActions = value.world.input.dormPropActions;
   value = await worldTap(value, currentTarget.point);
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.dormPropActions > oldActions ? next : null; }, 'fresh target tap reaches the original object controller', 5000);
   check(value.world.input.dormPropActions === oldActions + 1 && lampOn(value) === beforeLamp, `${active.id}: a fresh ordinary target tap works after cancellation and reverses only the lamp`);
   value = await assertBottomPlaque(value, 'direct-resumed');
   if (active.id === 'touch-390') {
@@ -1212,6 +1217,7 @@ async function directWorldCase(value) {
     value = await assertWorldStopped(value, 'direct-orientation');
     check(state(value).native.scene === 'dorm_hub' && state(value).items.campusCard, `${active.id}: orientation preserves the earned scene and item`);
     value = await worldTap(value, worldTarget(value).point);
+    value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.dormPropActions > oldActions + 1 ? next : null; }, 'landscape target tap reaches the original object controller', 5000);
     check(value.world.input.dormPropActions === oldActions + 2 && lampOn(value) !== beforeLamp, `${active.id}: landscape direct target tap still submits exactly one action`);
     await assertBottomPlaque(value, 'direct-landscape');
   }
@@ -1468,7 +1474,9 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     } finally { await stderrFile.close(); }
     await mkdir(active.downloadDir);
     if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
-    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts'); const port = portFile.split('\n')[0]; lifecycle.evidence.portFileObservedAt = Date.now(); lifecycle.evidence.port = port; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+    // Hosted runners can take over 20s to launch Chrome after media conversion.
+    // This bounds test-process startup, independently of every game deadline.
+    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts', 60000); const port = portFile.split('\n')[0]; lifecycle.evidence.portFileObservedAt = Date.now(); lifecycle.evidence.port = port; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
     const target = targets.find(t => t.type === 'page');
     active.targetId = target.id;
     if (target.id && target.webSocketDebuggerUrl) lifecycle.evidence.portReadyAt = Date.now();

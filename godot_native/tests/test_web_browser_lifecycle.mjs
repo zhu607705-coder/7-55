@@ -165,7 +165,7 @@ test('multiple close waiters settle and remove their timers', async () => {
 });
 test('startup deadlines, bounded save wait, scenarios, and durable acceptance remain intact', () => {
   assert(runner.includes('async function poll(fn, label, timeout = 20000)'));
-  assert(runner.includes("poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts')"));
+  assert(runner.includes("poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts', 60000)"));
   assert(runner.includes('`${label}: current native save has an exact durable receipt`, 75000)'));
   assert(runner.includes("if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`)"));
   assert(runner.includes('return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;'));
@@ -272,4 +272,27 @@ test('a later moving actor or resurfaced pointer still fails cancellation accept
     const f = cancellationFixture([cancellationFrame(566)], later);
     await assert.rejects(f.run(cancellationFrame(562), 'unstable-cancel'), /stuck movement|stays released/);
   }
+});
+
+test('slow browser startup has a bounded host deadline and failed startup still closes before cleanup', async () => {
+  const directory = path.join(tmpdir(), '755-godot-web-browser-slow-start');
+  const cases = []; let persisted, removed, requestedTimeout;
+  const primary = new Error('Timeout: isolated Chromium starts');
+  const child = new EventEmitter(); child.pid = 12400; child.exitCode = null;
+  child.kill = signal => { child.exitCode = 0; child.emit('exit', 0, signal); child.emit('close', 0, signal); return true; };
+  const bodyEnd = runner.indexOf('\ntry {\n  const selected =', end);
+  const context = vm.createContext({ path, tmpdir, Date, setTimeout: trackedTimeout, clearTimeout: trackedClear, output: directory,
+    open: async () => ({fd: 2, close: async () => {}}), existsSync: () => false,
+    mkdtemp: async () => directory, mkdir: async () => {}, spawn: () => child, chrome: 'mock-not-launched', chromeArgs: [],
+    readFile: async () => { throw Object.assign(new Error('not ready'), {code: 'ENOENT'}); },
+    poll: async (read, label, timeout) => { requestedTimeout = timeout; assert.equal(label, 'isolated Chromium starts'); await assert.rejects(read(), {code: 'ENOENT'}); throw primary; },
+    rm: async target => { assert.equal(child.exitCode, 0); removed = target; }, report: {cases},
+    snapshot: async () => { throw new Error('no CDP session'); },
+    persist: async () => { persisted = JSON.parse(JSON.stringify(cases)); }
+  });
+  vm.runInContext(`${runner.slice(begin, end)}\nlet active;\n${runner.slice(end, bodyEnd)}`, context);
+  await assert.rejects(context.browserCase('mock-case', 1, 1, false), error => error === primary);
+  assert.equal(requestedTimeout, 60000); assert.equal(removed, directory);
+  assert.equal(persisted[0].passed, false); assert.equal(persisted[0].error, primary.stack);
+  assert(persisted[0].browserLifecycle.closedAt <= persisted[0].browserLifecycle.cleanup.removeStartedAt);
 });
