@@ -10,6 +10,7 @@ const StagePlate=preload("res://scripts/presentation/liangzhu_stage_plate.gd")
 const FanView=preload("res://scripts/presentation/theater_rehearsal_fan.gd")
 const Notebook=preload("res://scripts/presentation/theater_rehearsal_notebook.gd")
 const Folio=preload("res://scripts/presentation/theater_rehearsal_folio.gd")
+const Study=preload("res://scripts/presentation/theater_rehearsal_study.gd")
 const StageObjects=preload("res://scripts/presentation/theater_rehearsal_stage_objects.gd")
 const LOGICAL=Vector2(960,540)
 const ASSET_ROOT="res://assets/native/theater_rebuild_20261020/"
@@ -42,6 +43,7 @@ var notebook_open:=false
 var notebook_page:=0
 var notebook_pages:Dictionary={}
 var trial_records:Dictionary={}
+var study=Study.new()
 var field=Rect2()
 var selected := "left_fan"
 var paused := false
@@ -89,6 +91,7 @@ func setup(value: Dictionary) -> void:
 	config=value.duplicate(true);model=Model.new();state=model.snapshot()
 	selected="left_fan";paused=false;help_open=false;menu_open=false;done=false;disposed=false
 	notebook_open=false;notebook_page=0;notebook_pages.clear();trial_records.clear()
+	study=Study.new()
 	_clear_input();undo_groups.clear();last_round=-1
 	if is_inside_tree():_build();_refresh();_intro()
 
@@ -139,6 +142,7 @@ func _build() -> void:
 	help_close=Button.new();help_close.name="RehearsalCloseReading";help_close.text="回到舞台";help_close.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_close);help_close.pressed.connect(_close_help);heading.add_child(help_close)
 	help_content=BoxContainer.new();help_content.add_theme_constant_override("separation",28);help_content.size_flags_vertical=Control.SIZE_EXPAND_FILL;column.add_child(help_content)
 	notebook=Notebook.new();notebook.name="RehearsalInkDiagrams";notebook.size_flags_horizontal=Control.SIZE_EXPAND_FILL;notebook.size_flags_vertical=Control.SIZE_EXPAND_FILL;help_content.add_child(notebook)
+	notebook.tracing_aligned.connect(_on_tracing_aligned)
 	help_body=RichTextLabel.new();TheaterUi.text(help_body);help_body.bbcode_enabled=true;help_body.fit_content=false;help_body.scroll_active=true;help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_font_size_override("normal_font_size",18);help_body.add_theme_color_override("default_color",INK);help_body.size_flags_vertical=Control.SIZE_EXPAND_FILL;help_body.size_flags_horizontal=Control.SIZE_EXPAND_FILL;help_content.add_child(help_body)
 	help_navigation=HBoxContainer.new();help_navigation.add_theme_constant_override("separation",12);column.add_child(help_navigation)
 	help_previous=Button.new();help_previous.name="RehearsalPreviousPage";help_previous.text="前页";help_previous.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_previous);help_previous.pressed.connect(_previous_hint);help_navigation.add_child(help_previous)
@@ -227,7 +231,7 @@ func _hide_under_performance()->void:
 
 func _refresh() -> void:
 	if model==null:return
-	state=model.snapshot();title_label.text="借扇成蝶";status_label.text="%d/3 ·%s"%[int(state.round)+1,state.title]
+	state=model.snapshot();title_label.text="借扇成蝶";status_label.text="%d/3 ·%s"%[int(state.round)+1,["缺翼","重影","同灯"][int(state.round)]]
 	if int(state.round)!=last_round:undo_groups.clear();drag_steps=0;last_round=int(state.round)
 	controls.RehearsalNext.hide();controls.RehearsalTry.hide()
 	controls.RehearsalTry.text="收幕" if state.screen=="complete" else "演一遍"
@@ -244,7 +248,8 @@ func _apply(action: Dictionary) -> bool:
 			if not drag_id.is_empty():drag_steps+=1
 			else:undo_groups.append(1)
 		elif action.kind=="restart":undo_groups.append(1)
-		elif action.kind=="try":trial_records[int(model.state.round)]=model.snapshot()
+		elif action.kind=="try":
+			var trial:Dictionary=model.snapshot();trial_records[int(model.state.round)]=trial;study.record(trial)
 		_refresh()
 	return accepted
 func _undo() -> void:
@@ -343,13 +348,19 @@ func _help() -> void:
 	help_panel.show();help_panel.move_to_front()
 func _render_notebook()->void:
 	var record:Dictionary=trial_records.get(int(state.round),{})
-	help_title.text="排练手记";help_close.text="掩卷"
-	help_body.text=Notebook.page_text(int(state.round),notebook_page,record)
-	notebook.show_page(int(state.round),notebook_page,record)
+	help_title.text="蝶影残谱";help_close.text="掩卷"
+	var discovery:Dictionary=study.snapshot(int(state.round))
+	help_body.text=Notebook.page_text(int(state.round),notebook_page,record,discovery)
+	notebook.show_page(int(state.round),notebook_page,record,discovery)
 	help_page_label.text="%s / 三"%[ ["一","二","三"][notebook_page] ]
 	help_previous.disabled=notebook_page==0;help_next.disabled=notebook_page==2
 	notebook_pages[int(state.round)]=notebook_page
 	_layout_reading();help_body.scroll_to_line(0)
+func _on_tracing_aligned()->void:
+	if disposed or done or not help_open or not notebook_open:return
+	if study.seal(int(state.round)):
+		help_panel.turn_page(1,bool(config.get("settings",{}).get("reducedMotion",false)))
+		_render_notebook()
 func _next_hint() -> void:
 	if model==null or not help_open or not notebook_open or notebook_page>=2:return
 	notebook_page+=1
@@ -391,6 +402,7 @@ func _focus_out() -> void:
 func _visibility_changed() -> void:
 	if not visible:_focus_out()
 func _clear_input() -> void:
+	if is_instance_valid(notebook):notebook.cancel_drag()
 	if drag_steps>0:undo_groups.append(drag_steps);drag_steps=0
 	held.clear();pointer_id=-99;drag_id="";drag_kind="move";fold_keys=false;key_clock=0.0;fingers.clear();gesture_age=0;gesture_moved=false;gesture_consumed=false;two_fingers=false;lamp_armed=false
 	stage_pressed="";stage_hover="";stage_pull=0.0;stage_action="";stage_action_age=0.0;mouse_default_cursor_shape=Control.CURSOR_ARROW
@@ -548,6 +560,7 @@ func _input(event: InputEvent) -> void:
 	if disposed or done or not visible or model==null:return
 	if event is InputEventKey:
 		if event.echo:return
+		if help_open and notebook_open and notebook.handle_key(event):get_viewport().set_input_as_handled();return
 		if help_open and notebook_open and event.keycode in [KEY_PAGEUP,KEY_PAGEDOWN]:
 			if event.pressed:
 				if event.keycode==KEY_PAGEUP:_previous_hint()
@@ -780,7 +793,7 @@ func geometry_snapshot() -> Dictionary:
 		var actual:=Rect2(field.position+rect.position/LOGICAL*field.size,rect.size/LOGICAL*field.size)
 		stage_objects[id]=[actual.position.x,actual.position.y,actual.size.x,actual.size.y]
 	var lamp=Rect2(field.position+lamp_rect().position/LOGICAL*field.size,lamp_rect().size/LOGICAL*field.size)
-	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"notebook":{"open":notebook_open and help_open,"page":notebook_page,"recordedTrial":trial_records.has(int(state.round))},"light":light_geometry(),"selected":selected,"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
+	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"notebook":{"open":notebook_open and help_open,"page":notebook_page,"recordedTrial":trial_records.has(int(state.round)),"studyReady":study.snapshot(int(state.round)).ready,"studySealed":study.snapshot(int(state.round)).sealed,"tracing":notebook.tracing_geometry()},"light":light_geometry(),"selected":selected,"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
 func _watch_performance() -> bool:
 	if disposed or done or is_instance_valid(performance):return false
 	var state_node:Node=get_node_or_null("/root/State")

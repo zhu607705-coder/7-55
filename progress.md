@@ -5301,3 +5301,12 @@ Closing a reading sheet after window focus loss now exposes explicit resume. The
 - Godot4.7.1原生10组910项通过；实际图形Main229项、手记51项通过。四种尺寸覆盖1280×720、1440×900、844×390、390×844，包含鼠标/模拟触摸/键盘、失焦、减少动态效果和快照隔离。
 - 本轮源同步完成，无新媒体转换。保留Web参考版quick5和release38（含4个浏览器场景）通过。另行重新导出实际GodotWeb，Chromium桌面856项、模拟手机横屏857项通过：冷启动、手机入口、隔离检查点导入、实体扇架、拖灯/撤回/试演、实体节目册前后页与掩卷、幕缝退出。导出sourceInputSha256：2149c883dd574253cb9f3b270e2a4c1f96fa1ad8efbf275dea9e2562fbfab324。
 - 新程序几何与文案均为项目原创，沿用已有字体、舞台与人物；来源补记ASSETS.md，逐文件哈希/边界见THEATER_FAN_CHEST_ACCEPTANCE_20261024.json的notebookFollowup。证据位于755-tools/verification/theater-notebook-20261024。延续已授权梁祝批次更新PR166；未合并、未部署，未声称实体手机、其他浏览器或自然全剧情验收。
+
+
+## 2026-10-24 · 蝶影残谱与全关卡推理规范
+
+- 用户将“场景包装、实验发现规则、不能随便点完就过”推广到全游戏及北教每关。已写入AGENTS.md，并完成 `godot_native/docs/PUZZLE_DISCOVERY_20261024.md` 的逐关账本；北教仍是核对过实际代码的重构方案，本轮未替换其运行时代码。
+- 梁祝首个样本已经落地：残谱初始隐去完整规律，只保留残图和短批注；从真实试演收集只改变一个因素的影拓，再拖薄纸对印以读懂图解。同灯分别考察横移与纵深；翻页、同状态试演、同时乱动多项、未试演的移动或只点旧印不直接解锁规则。自主从现场推理仍能按原合法几何完成，读册不增加剧情门槛或第二套进度。
+- Godot4.7.1定向11组962项通过；5个引擎/解析/隔离/源对照支持阶段通过（一次未配置GODOT_BIN的调用失败，正确固定引擎后通过）。真实图形发现52项及Main229项通过。保留Web quick5/release38及4个浏览器场景通过。
+- 最终Godot Web桌面861项、模拟手机横屏862项通过，实际输入完成开合对照、生成影拓、拖纸套印、掩卷退出；截图核查最终纸片布局。sourceInputSha256：6fe4553f82c9d6d72e14cee4356e6ae3fbaa3d6527bf327d08377bfe8a8e49c1。未声称实体手机、Gecko/WebKit或全剧情自然游玩验收。
+- 原创程序纸片/旧印来源补记ASSETS.md；精确文件哈希与范围见验收JSON discoveryFollowup，本机日志保存在755-tools/verification/theater-discovery-20261024。沿用“箱子和梁祝一起上传”授权更新原草稿PR166，未合并或部署。

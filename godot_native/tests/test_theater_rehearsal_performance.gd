@@ -72,7 +72,7 @@ func run()->void:
 	# The observation book is also a physical object, never a duplicate toolbar action.
 	check(not view.controls.has("RehearsalHelp") and not view.menu_controls.has("RehearsalMenuWatch"),"Neither old Observe nor the duplicate menu Watch survives")
 	await stage_click(view,"programme")
-	check(view.help_open and view.state.hintTier==1 and view.help_title.text=="排练手记" and view.notebook.visible,"Clicking the table programme opens the first observation page")
+	check(view.help_open and view.state.hintTier==1 and view.help_title.text=="蝶影残谱" and view.notebook.visible,"Clicking the table programme opens the first observation page")
 	await key(KEY_V);await create_timer(.34).timeout
 	check(not is_instance_valid(view.performance) and view.help_open,"A key cannot pull the curtain through an open reading sheet")
 	await click(view.help_close)

@@ -528,5 +528,199 @@
       "Browser validation covers Chromium desktop and simulated mobile touch, not physical phones or Gecko/WebKit.",
       "No natural full-campaign, merged-main or online deployment acceptance."
     ]
+  },
+  "discoveryFollowup": {
+    "date": "2026-10-24",
+    "baseCommit": "04f00934d0fd22241d36c3151607dd2864b2496d",
+    "scope": "Optional damaged folio discovered through controlled trials and physical tracing registration; project-wide puzzle rules and audited north-building redesign ledger. North-building runtime not replaced in this follow-up.",
+    "authority": "Accepted trials are copied locally. Unchanged trials, multiple-factor changes, page cycling and live manipulation without a trial do not reveal full guidance. Reading or tracing never changes stage completion, model placement, story, inventory or save. Independent legitimate stage solutions remain valid.",
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "native": {
+      "passed": true,
+      "groups": 11,
+      "checks": 962,
+      "tests": [
+        {
+          "test": "test_liangzhu_performance.gd",
+          "checks": 90,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte.gd",
+          "checks": 32,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte_view.gd",
+          "checks": 61,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_controller.gd",
+          "checks": 54,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_discovery.gd",
+          "checks": 52,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_main.gd",
+          "checks": 229,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_model.gd",
+          "checks": 81,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_notebook.gd",
+          "checks": 51,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_performance.gd",
+          "checks": 45,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_ui.gd",
+          "checks": 75,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_world_geometry.gd",
+          "checks": 192,
+          "passed": true
+        }
+      ]
+    },
+    "nativeSupport": {
+      "passed": true,
+      "stages": [
+        "Native save isolation",
+        "Godot asset import and editor parse",
+        "Native startup",
+        "test_all_scripts_parse.gd",
+        "Source oracle tests/verify_source_model_parity.mjs"
+      ],
+      "note": "A first unconfigured invocation could not locate godot on PATH; corrected pinned-engine run passed these support stages. The complete unrelated campaign suite was not rerun."
+    },
+    "graphical": [
+      {
+        "test": "test_theater_rehearsal_discovery.gd",
+        "checks": 52,
+        "passed": true
+      },
+      {
+        "test": "test_theater_rehearsal_main.gd",
+        "checks": 229,
+        "passed": true
+      }
+    ],
+    "layoutViewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "retainedWebReference": {
+      "quick": 5,
+      "release": 38,
+      "browserCases": 4,
+      "passed": true,
+      "critical": "Prior lightProjectionFollowup only; no shared controller, save, bridge or input authority changed here."
+    },
+    "godotWeb": {
+      "exported": true,
+      "sourceDirty": true,
+      "sourceInputSha256": "6fe4553f82c9d6d72e14cee4356e6ae3fbaa3d6527bf327d08377bfe8a8e49c1",
+      "cases": [
+        {
+          "mode": "desktop",
+          "passed": true,
+          "viewport": [
+            1280,
+            720
+          ],
+          "checks": 861,
+          "input": "CDP mouse",
+          "runnerSha256": "ebb5b8dc3b0945b80bd34ad120a39f00f3f2f0f0d6d6a252735927a830d0ec1b"
+        },
+        {
+          "mode": "mobile",
+          "passed": true,
+          "viewport": [
+            844,
+            390
+          ],
+          "checks": 862,
+          "input": "CDP touch",
+          "runnerSha256": "ebb5b8dc3b0945b80bd34ad120a39f00f3f2f0f0d6d6a252735927a830d0ec1b"
+        }
+      ],
+      "entry": "Cold boot, ordinary phone, validated isolated checkpoint import, physical rack, lamp drag/undo/trial, notebook navigation, actual fan-spread experiment, click-only rejection, mouse/touch tracing drag, decoded page, physical curtain exit. Read-only snapshot bridge.",
+      "fixtureSha256": "aa87a03adc349324afc1f1b7d1736714a7cfba70826c6d64cf8a95e86808163b",
+      "deployed": false
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "01c68dd5fbae08327298754fad77bd6489e3f11575cd8dcdfde7dbed23e6184d"
+      },
+      {
+        "path": "godot_native/docs/PUZZLE_DISCOVERY_20261024.md",
+        "sha256": "aa47de14ff357a87fb4b65b0702627605f6b3752e7765d0e9c3e220b1aeebe81"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "a79eba0fa0440f82e732345634ac8778ca09bdff1a12370e391c238893067d5e"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_notebook.gd",
+        "sha256": "18db779926b986e95851eddde1a69d5bc37c894bf7079aeb2e374818e93853c8"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_study.gd",
+        "sha256": "00350c64ecf2f9063cc0d522ebc89fa9bb38d6436c045a8148f8a63a34c73eb0"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_tracing.gd",
+        "sha256": "d356294f0bf0f742e7c107dfbfae576d92e004ba1e9821c94681ebbf859b009c"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_discovery.gd",
+        "sha256": "bdaf89057e7539fe9ddc3e91c2bfdb73824084f9a4242c5c4bcd0cdd4e199679"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_notebook.gd",
+        "sha256": "fd49e37fc7c2bc6dfa459759df3a4ce31c6dee874212822f1eb6013c7cce926e"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_performance.gd",
+        "sha256": "a91845c764db0b43b14913d1c9e818983d71e2a5b2a798b71953bc3c4f4b0efb"
+      }
+    ],
+    "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/verification/theater-discovery-20261024",
+    "limitations": [
+      "North-building levels are source-audited redesign proposals, not completed runtime work.",
+      "Tracing and experiment notes persist only within the current optional rehearsal view.",
+      "Graphical suite preceded the final paper-position and old-print artwork adjustment; final actual Web mouse/touch acceptance and screenshots cover those adjustments.",
+      "Chromium and simulated mobile only; no physical phone, Gecko/WebKit, fresh full campaign, merged-main or deployment claim."
+    ]
   }
 }

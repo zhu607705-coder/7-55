@@ -1,7 +1,9 @@
 extends Control
 ## Illustrated rehearsal records. Only accepted trials supply the live ink trace.
+signal tracing_aligned
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const Model=preload("res://scripts/games/theater_shadow_rehearsal_model.gd")
+const Tracing=preload("res://scripts/presentation/theater_rehearsal_tracing.gd")
 const INK=Color("45423B")
 const FAINT=Color("AEA184")
 const RED=Color("9A514A")
@@ -25,18 +27,45 @@ const PAGES=[
 var round_index:=0
 var page_index:=0
 var trial:Dictionary={}
+var study:Dictionary={}
+var tracing:Control
 
 func _ready()->void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	resized.connect(queue_redraw)
+	tracing=Tracing.new();tracing.name="LooseRehearsalTracing";add_child(tracing);tracing.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tracing.aligned.connect(func():tracing_aligned.emit())
+	_sync_tracing()
 
-func show_page(round_id:int,page:int,last_trial:Dictionary)->void:
+func show_page(round_id:int,page:int,last_trial:Dictionary,discovery:Dictionary={})->void:
 	round_index=clampi(round_id,0,2);page_index=clampi(page,0,2)
-	trial=last_trial.duplicate(true);queue_redraw()
+	trial=last_trial.duplicate(true);study=discovery.duplicate(true);_sync_tracing();queue_redraw()
 
-static func page_text(round_id:int,page:int,last_trial:Dictionary)->String:
+func _sync_tracing()->void:
+	if not is_instance_valid(tracing):return
+	tracing.visible=page_index<2 and not study.get("sealed",false)
+	tracing.configure(round_index,study)
+func cancel_drag()->void:
+	if is_instance_valid(tracing):tracing.cancel_drag()
+func handle_key(event:InputEventKey)->bool:
+	return is_instance_valid(tracing) and tracing.is_visible_in_tree() and tracing.handle_key(event)
+func tracing_geometry()->Dictionary:
+	if not is_instance_valid(tracing) or not tracing.visible:return {}
+	var origin:Vector2=tracing.global_position+tracing.origin()
+	var paper:Rect2=Rect2(origin+tracing.sheet*tracing.fit(),tracing.EXTENT*tracing.fit())
+	var target:Rect2=Rect2(origin+tracing.TARGET*tracing.fit(),tracing.EXTENT*tracing.fit())
+	return {"sheet":[paper.position.x,paper.position.y,paper.size.x,paper.size.y],"target":[target.position.x,target.position.y,target.size.x,target.size.y],"ready":tracing.evidence_ready,"sealed":tracing.sealed}
+
+static func page_text(round_id:int,page:int,last_trial:Dictionary,discovery:Dictionary={})->String:
 	var note:Dictionary=PAGES[clampi(round_id,0,2)][clampi(page,0,2)]
 	var text:String="[b]%s[/b]\n\n[color=#9A514A]旧记[/color]  %s\n\n[color=#9A514A]试看[/color]  %s\n\n%s"%[note.title,note.record,note.experiment,note.question]
+	if not discovery.get("sealed",false):
+		var clues:Array=["纸上同一道扇轴旁，留着两笔不同的翼缘。断去的半页，似乎也拓自这把扇。","门前留了两张大小不同的扇影，扇骨的数目却一根不少。页边的脚印被擦去了。","两翼分站两边，一枚木钉始终未挪。旧印一处错开，一处长短不齐。"]
+		var instruction:String="册边夹着空试纸。点灯可以留影；留住别处，只改一处，才看得出两影之间发生了什么。"
+		if discovery.get("ready",false):instruction="两次试演已留下可相照的影拓。将散页覆回旧印，让三处断笔接续。"
+		elif round_id==2 and not discovery.get("pairs",{}).is_empty():instruction="已有一对影拓，另一处断痕仍未续上。错位与长短，是否来自同一种拨动？"
+		text="[b]%s[/b]\n\n%s\n\n[color=#9A514A]页边小记[/color]\n%s"%[["扇骨残页","门前残页","同灯残页"][clampi(round_id,0,2)],clues[clampi(round_id,0,2)],instruction]
+		if page==2:text="[b]试演留痕[/b]\n\n朱线是幕上的旧痕，墨影是上一次点灯留下的。\n\n掩卷后试着只改一处，再看这道影。"
 	if page==2:
 		var result:String="尚未留影。掩卷后点灯，才会记下本次试演。" if last_trial.is_empty() else ("上回试演，已与旧痕相合。" if str(last_trial.get("failure","")).is_empty() else "上回试演："+Model.failure_text(str(last_trial.failure)))
 		text+="\n\n[color=#9A514A]今试[/color]  "+result
@@ -88,10 +117,11 @@ func _draw_trial()->void:
 
 func _draw()->void:
 	if size.x<=0 or size.y<=0:return
+	if page_index<2 and not study.get("sealed",false):return
 	var fit:float=minf(size.x/360.0,size.y/270.0)
 	draw_set_transform((size-Vector2(360,270)*fit)/2,0,Vector2.ONE*fit)
-	_label(Vector2(16,24),["展扇图","远近图","借光图"][round_index],RED,20)
-	_label(Vector2(16,45),str(PAGES[round_index][page_index].caption),FAINT,14)
+	_label(Vector2(16,24),["展扇图","远近图","借光图"][round_index] if study.get("sealed",false) else "试演影拓",RED,20)
+	_label(Vector2(16,45),str(PAGES[round_index][page_index].caption) if study.get("sealed",false) else "朱线为旧痕，墨影为上回试演",FAINT,14)
 	if page_index==2:_draw_trial()
 	elif round_index==0:
 		_fan(Vector2(180,186),100,.34,FAINT);_fan(Vector2(180,186),100,1.0,INK)
