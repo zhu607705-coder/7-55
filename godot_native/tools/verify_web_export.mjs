@@ -485,6 +485,13 @@ async function saveProgressAndWait(label) {
     }
   } finally { await performance.finish(); }
 }
+function deferredRequestsBeforeStart(requests, deferredUrls, navigation, start) {
+  if (!navigation.document?.loaderId || !navigation.document.frameId) throw Error('Missing current top-level document identity');
+  // A queued request from the replaced page can arrive after Page.reload.
+  // Unknown identities remain included; only a proven old loader is excluded.
+  return requests.filter(request => request.at >= start && deferredUrls.has(request.url)
+    && (!request.loaderId || request.loaderId === navigation.document.loaderId));
+}
 async function startStory(reload = false) {
   if (reload) {
     await waitForPersistedSave(`${active.id} before actual reload`);
@@ -499,6 +506,10 @@ async function startStory(reload = false) {
   navigation.acknowledgedAt = Date.now();
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
+  const frameTree = await active.cdp.send('Page.getFrameTree');
+  const documentFrame = frameTree.frameTree?.frame;
+  navigation.document = { frameId: documentFrame?.id, loaderId: documentFrame?.loaderId };
+  if (!navigation.document.frameId || !navigation.document.loaderId) throw Error('Missing current top-level document identity');
   if (scenarios === 'phone-navigation') {
     const ready = await evaluate(`({detail:document.getElementById('loading-detail').textContent,hidden:document.getElementById('loading-detail').hidden,startHidden:document.getElementById('start-game').hidden})`);
     check(ready.hidden && ready.detail === '' && !ready.startHidden, `${active.id}: ready entry retains its button without cache helper copy`, ready);
@@ -510,9 +521,9 @@ async function startStory(reload = false) {
   }
   if (!reload && !active.coldBoot) await verifyColdBoot(start);
   if (active.streaming) {
-    const deferred = active.requests.filter(request => request.at >= start && active.deferredUrls.has(request.url));
+    const deferred = deferredRequestsBeforeStart(active.requests, active.deferredUrls, navigation, start);
     check(deferred.length === 0, `${active.id}: initial engine/first-chapter stage never requests deferred packs`, deferred);
-    active.streaming.boots.push({ at: start, reload, bootReadyMs, deferredRequestsBeforeStart: deferred.length, initialRequests: active.requests.filter(request => request.at >= start).map(request => ({ url: request.url, at: request.at })) });
+    active.streaming.boots.push({ at: start, reload, bootReadyMs, document: navigation.document, deferredRequestsBeforeStart: deferred.length, initialRequests: active.requests.filter(request => request.at >= start).map(request => ({ url: request.url, at: request.at })) });
   }
   const startRect = await evaluate("(()=>{const r=document.getElementById('start-game').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};})()"); await clickPoint(startRect);
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'running'"), 'Godot engine running', 60000);
@@ -1673,7 +1684,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
       if (method === 'Runtime.exceptionThrown') errors.push({ type: 'pageerror', ...params.exceptionDetails });
       if (method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(params.type)) { const text = params.args.map(a => a.value ?? a.description ?? '').join(' '); if (params.type === 'error' || /SCRIPT ERROR|Parse Error|Failed to load|ERROR:/.test(text)) errors.push({ type: params.type, text }); }
       if (method === 'Network.requestWillBeSent') {
-        const request = { requestId: params.requestId, url: params.request.url, at: Date.now(), range: params.request.headers.Range || params.request.headers.range || '', phase: active.faultPhase || '', controlled: active.controlledBlockedUrls.has(params.request.url) };
+        const request = { requestId: params.requestId, loaderId: params.loaderId, frameId: params.frameId, url: params.request.url, at: Date.now(), range: params.request.headers.Range || params.request.headers.range || '', phase: active.faultPhase || '', controlled: active.controlledBlockedUrls.has(params.request.url) };
         active.requests.push(request); active.requestsById.set(params.requestId, request);
       }
       if (method === 'Network.responseReceived') responses.set(params.requestId, { url: params.response.url, status: params.response.status, mimeType: params.response.mimeType, fromDiskCache: params.response.fromDiskCache || false, fromServiceWorker: params.response.fromServiceWorker || false });

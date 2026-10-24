@@ -264,3 +264,28 @@ test('a verified first chunk does not hide a second invalid response', async () 
   await assert.rejects(f.verify(), /observed deferred chunk passes independent response-byte verification/);
   assert.deepEqual(f.checks.map(row => row.ok), [true, false]); assert.equal(f.calls.length, 2);
 });
+
+const scopeSource = between('function deferredRequestsBeforeStart(', 'async function startStory(');
+const documentRequests = vm.runInNewContext(`${scopeSource}\ndeferredRequestsBeforeStart`);
+const scopeNavigation = { document: { frameId: 'main-frame', loaderId: 'new-document' } };
+const scopeUrls = new Set(['https://synthetic.invalid/content/c2.pck']);
+const scopeRequest = loaderId => ({ loaderId, frameId: 'main-frame', at: 1100, url: [...scopeUrls][0] });
+test('late old-document requests remain distinct from a newly loaded page', () => {
+  const old = scopeRequest('old-document'), current = scopeRequest('new-document');
+  assert.deepEqual(Array.from(documentRequests([old, current], scopeUrls, scopeNavigation, 1000)), [current]);
+  assert.equal(documentRequests([old], scopeUrls, scopeNavigation, 1000).length, 0);
+});
+test('a real current-document early deferred request still fails the empty-request gate', () => {
+  assert.equal(documentRequests([scopeRequest('new-document')], scopeUrls, scopeNavigation, 1000).length, 1);
+});
+test('unknown request identity cannot silently pass as an old document', () => {
+  assert.equal(documentRequests([scopeRequest('')], scopeUrls, scopeNavigation, 1000).length, 1);
+  assert.throws(() => documentRequests([], scopeUrls, {}, 1000), /Missing current top-level document identity/);
+});
+test('document scoping preserves time and exact deferred URL boundaries', () => {
+  const oldTime = { ...scopeRequest('new-document'), at: 999 };
+  const core = { ...scopeRequest('new-document'), url: 'https://synthetic.invalid/boot/core.bin' };
+  assert.equal(documentRequests([oldTime, core], scopeUrls, scopeNavigation, 1000).length, 0);
+  assert.match(runner, /loaderId: params.loaderId, frameId: params.frameId/);
+  assert.match(runner, /active.cdp.send\('Page.getFrameTree'\)/);
+});
