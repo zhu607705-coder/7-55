@@ -8,6 +8,8 @@ const TheaterUi=preload("res://scripts/ui/theater_typography.gd")
 const PerformanceView=preload("res://scripts/presentation/liangzhu_performance.gd")
 const StagePlate=preload("res://scripts/presentation/liangzhu_stage_plate.gd")
 const FanView=preload("res://scripts/presentation/theater_rehearsal_fan.gd")
+const Notebook=preload("res://scripts/presentation/theater_rehearsal_notebook.gd")
+const Folio=preload("res://scripts/presentation/theater_rehearsal_folio.gd")
 const StageObjects=preload("res://scripts/presentation/theater_rehearsal_stage_objects.gd")
 const LOGICAL=Vector2(960,540)
 const ASSET_ROOT="res://assets/native/theater_rebuild_20261020/"
@@ -31,6 +33,15 @@ var help_title: Label
 var help_body: RichTextLabel
 var help_next: Button
 var help_close: Button
+var help_previous: Button
+var help_page_label: Label
+var help_navigation: HBoxContainer
+var help_content: BoxContainer
+var notebook: Control
+var notebook_open:=false
+var notebook_page:=0
+var notebook_pages:Dictionary={}
+var trial_records:Dictionary={}
 var field=Rect2()
 var selected := "left_fan"
 var paused := false
@@ -77,6 +88,7 @@ const TOUCH_SLOP := 10.0
 func setup(value: Dictionary) -> void:
 	config=value.duplicate(true);model=Model.new();state=model.snapshot()
 	selected="left_fan";paused=false;help_open=false;menu_open=false;done=false;disposed=false
+	notebook_open=false;notebook_page=0;notebook_pages.clear();trial_records.clear()
 	_clear_input();undo_groups.clear();last_round=-1
 	if is_inside_tree():_build();_refresh();_intro()
 
@@ -119,12 +131,19 @@ func _build() -> void:
 	_button("RehearsalSelect","换一件",_cycle_selection)
 	for spec: Array in [["RehearsalLeft","←",Vector2(-0.12,0)],["RehearsalRight","→",Vector2(0.12,0)],["RehearsalForward","向幕",Vector2(0,0.12)],["RehearsalBack","向灯",Vector2(0,-0.12)]]:
 		var delta: Vector2=spec[2];_button(spec[0],spec[1],func():_nudge(delta))
-	help_panel=PanelContainer.new();help_panel.name="RehearsalReading";help_panel.add_theme_stylebox_override("panel",Ui.box(PAPER,Color("A39B87"),1,2,Vector2(18,16)));add_child(help_panel)
-	var column=VBoxContainer.new();column.add_theme_constant_override("separation",14);help_panel.add_child(column)
-	help_title=Label.new();help_title.add_theme_font_size_override("font_size",24);help_title.add_theme_color_override("font_color",INK);TheaterUi.heading(help_title);column.add_child(help_title)
-	help_body=RichTextLabel.new();TheaterUi.text(help_body);help_body.fit_content=false;help_body.scroll_active=true;help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_font_size_override("normal_font_size",18);help_body.add_theme_color_override("default_color",INK);help_body.size_flags_vertical=Control.SIZE_EXPAND_FILL;column.add_child(help_body)
-	help_next=Button.new();help_next.name="RehearsalNextHint";help_next.text="翻下一页";help_next.custom_minimum_size.y=44;TheaterUi.button(help_next);help_next.pressed.connect(_next_hint);column.add_child(help_next)
-	help_close=Button.new();help_close.name="RehearsalCloseReading";help_close.text="回到舞台";help_close.custom_minimum_size.y=44;TheaterUi.button(help_close,true);help_close.pressed.connect(_close_help);column.add_child(help_close)
+	help_panel=Folio.new();help_panel.name="RehearsalReading"
+	help_panel.add_theme_stylebox_override("panel",Ui.box(Color.TRANSPARENT,Color.TRANSPARENT,0,0,Vector2(36,26)));add_child(help_panel)
+	var column=VBoxContainer.new();column.add_theme_constant_override("separation",10);help_panel.add_child(column)
+	var heading=HBoxContainer.new();heading.add_theme_constant_override("separation",12);column.add_child(heading)
+	help_title=Label.new();help_title.add_theme_font_size_override("font_size",24);help_title.add_theme_color_override("font_color",INK);TheaterUi.heading(help_title);help_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;heading.add_child(help_title)
+	help_close=Button.new();help_close.name="RehearsalCloseReading";help_close.text="回到舞台";help_close.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_close);help_close.pressed.connect(_close_help);heading.add_child(help_close)
+	help_content=BoxContainer.new();help_content.add_theme_constant_override("separation",28);help_content.size_flags_vertical=Control.SIZE_EXPAND_FILL;column.add_child(help_content)
+	notebook=Notebook.new();notebook.name="RehearsalInkDiagrams";notebook.size_flags_horizontal=Control.SIZE_EXPAND_FILL;notebook.size_flags_vertical=Control.SIZE_EXPAND_FILL;help_content.add_child(notebook)
+	help_body=RichTextLabel.new();TheaterUi.text(help_body);help_body.bbcode_enabled=true;help_body.fit_content=false;help_body.scroll_active=true;help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_font_size_override("normal_font_size",18);help_body.add_theme_color_override("default_color",INK);help_body.size_flags_vertical=Control.SIZE_EXPAND_FILL;help_body.size_flags_horizontal=Control.SIZE_EXPAND_FILL;help_content.add_child(help_body)
+	help_navigation=HBoxContainer.new();help_navigation.add_theme_constant_override("separation",12);column.add_child(help_navigation)
+	help_previous=Button.new();help_previous.name="RehearsalPreviousPage";help_previous.text="前页";help_previous.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_previous);help_previous.pressed.connect(_previous_hint);help_navigation.add_child(help_previous)
+	help_page_label=Label.new();help_page_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;help_page_label.add_theme_color_override("font_color",Color("9A514A"));help_page_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;help_navigation.add_child(help_page_label)
+	help_next=Button.new();help_next.name="RehearsalNextHint";help_next.text="后页";help_next.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_next);help_next.pressed.connect(_next_hint);help_navigation.add_child(help_next)
 	help_panel.hide()
 	menu_panel=PanelContainer.new();menu_panel.name="RehearsalPaperMenu";menu_panel.add_theme_stylebox_override("panel",Ui.box(PAPER,Color("8d6b45"),2,4,Vector2(16,12)));add_child(menu_panel)
 	var menu_column=VBoxContainer.new();menu_column.add_theme_constant_override("separation",6);menu_panel.add_child(menu_column)
@@ -159,17 +178,23 @@ func _layout() -> void:
 	_layout_stage_hud();_hide_under_performance();queue_redraw()
 
 func _layout_reading() -> void:
-	if size.x<=32 or size.y<=48:return
-	var width: float=minf(680,size.x-32)
-	var font: Font=help_body.get_theme_font("normal_font")
-	var measured: float=font.get_multiline_string_size(help_body.text,HORIZONTAL_ALIGNMENT_LEFT,width-52,18).y
-	var lines: int=maxi(1,ceili(measured/font.get_height(18)))
-	var actions: int=2 if help_next.visible else 1
-	var content_height: float=measured+maxi(0,lines-1)*6+38+actions*44+(actions+1)*14+44
-	var top: float=24
-	var height: float=minf(maxf(240,content_height),size.y-top-24)
-	help_panel.position=Vector2((size.x-width)/2,maxf(top,(size.y-height)/2))
-	help_panel.size=Vector2(width,height)
+	if size.x<=80 or size.y<=80:return
+	var width:float=minf(960 if notebook_open else 720,size.x-32)
+	var stacked:bool=width<620
+	var height:float=minf(610 if stacked and notebook_open else 540 if notebook_open else 460,size.y-32)
+	help_content.vertical=stacked
+	help_content.add_theme_constant_override("separation",12 if stacked else 28)
+	notebook.visible=notebook_open;help_navigation.visible=notebook_open
+	notebook.custom_minimum_size=Vector2(0,176 if stacked else 0)
+	notebook.size_flags_stretch_ratio=.94
+	notebook.size_flags_vertical=Control.SIZE_FILL if stacked else Control.SIZE_EXPAND_FILL
+	help_body.add_theme_font_size_override("normal_font_size",17 if height<400 else 18)
+	help_body.add_theme_font_size_override("bold_font_size",19 if height<400 else 22)
+	help_body.add_theme_constant_override("line_separation",4 if height<400 else 6)
+	help_title.add_theme_font_size_override("font_size",22 if stacked else 24)
+	help_panel.divided=notebook_open and not stacked
+	help_panel.position=(size-Vector2(width,height))/2;help_panel.size=Vector2(width,height)
+	help_panel.queue_redraw()
 
 func _layout_stage_hud()->void:
 	if field.size.x<=0:return
@@ -219,6 +244,7 @@ func _apply(action: Dictionary) -> bool:
 			if not drag_id.is_empty():drag_steps+=1
 			else:undo_groups.append(1)
 		elif action.kind=="restart":undo_groups.append(1)
+		elif action.kind=="try":trial_records[int(model.state.round)]=model.snapshot()
 		_refresh()
 	return accepted
 func _undo() -> void:
@@ -304,22 +330,37 @@ func _begin_lamp(id:int,local:Vector2)->void:
 	held.clear();grab_focus();queue_redraw()
 
 func _intro() -> void:
-	_clear_input();help_open=true;help_title.text="借扇成蝶"
+	_clear_input();help_open=true;notebook_open=false;help_title.text="借扇成蝶"
 	help_body.text="扇影要合上幕上的旧痕。\n\n拖底座移动道具，拉扇骨铜扣开合；台灯可左右、前后拖动，点灯试演。\n\n桌上节目册可翻阅线索，右侧拉绳开启合演，左侧幕缝退场。\n\n手机横屏，双指轻触撤回、按住打开排练单；键盘 Tab 选物、空格操作，方向键移动，Shift＋左右键开合，Esc 暂停。"
-	help_next.hide();help_close.text="开始排练";help_panel.show();_layout_reading();help_panel.move_to_front()
+	help_close.text="开始排练";help_panel.show();_layout_reading();help_panel.move_to_front()
+	help_body.scroll_to_line(0)
 func _help() -> void:
 	if disposed or done:return
-	_clear_input();help_open=true
-	if int(state.hintTier)==0:model.apply({"kind":"hint"});state=model.snapshot()
-	help_title.text="节目册 · 排练手记"
-	help_close.text="合上册页"
-	help_body.text=Model.failure_text(str(state.failure))+"\n\n"+Model.hint(int(state.round),int(state.hintTier))+"\n\n左右拖灯移影，前后拖灯缩放；点灯试演。拉扇骨铜扣开合。键盘：Tab 选物，方向键移动，Shift＋左右键开合，空格试演，Z 撤回，R 重排。"
-	help_next.visible=state.screen=="playing" and int(state.hintTier)<3;help_panel.show();_layout_reading();help_panel.move_to_front()
+	_clear_input();help_open=true;notebook_open=true
+	if int(state.hintTier)==0 and state.screen=="playing":model.apply({"kind":"hint"});state=model.snapshot()
+	notebook_page=int(notebook_pages.get(int(state.round),0))
+	_render_notebook()
+	help_panel.show();help_panel.move_to_front()
+func _render_notebook()->void:
+	var record:Dictionary=trial_records.get(int(state.round),{})
+	help_title.text="排练手记";help_close.text="掩卷"
+	help_body.text=Notebook.page_text(int(state.round),notebook_page,record)
+	notebook.show_page(int(state.round),notebook_page,record)
+	help_page_label.text="%s / 三"%[ ["一","二","三"][notebook_page] ]
+	help_previous.disabled=notebook_page==0;help_next.disabled=notebook_page==2
+	notebook_pages[int(state.round)]=notebook_page
+	_layout_reading();help_body.scroll_to_line(0)
 func _next_hint() -> void:
-	if model==null or not help_open:return
-	model.apply({"kind":"hint"});state=model.snapshot();_help()
+	if model==null or not help_open or not notebook_open or notebook_page>=2:return
+	notebook_page+=1
+	help_panel.turn_page(1,bool(config.get("settings",{}).get("reducedMotion",false)))
+	if notebook_page>=int(state.hintTier) and state.screen=="playing":model.apply({"kind":"hint"});state=model.snapshot()
+	_render_notebook()
+func _previous_hint()->void:
+	if not help_open or not notebook_open or notebook_page<=0:return
+	notebook_page-=1;help_panel.turn_page(-1,bool(config.get("settings",{}).get("reducedMotion",false)));_render_notebook()
 func _close_help() -> void:
-	help_open=false;help_panel.hide();_clear_input();_layout();grab_focus()
+	help_open=false;help_panel.turn_amount=0.0;help_panel.hide();_clear_input();_layout();grab_focus()
 	if paused:_open_menu()
 func _open_menu() -> void:
 	if disposed or done or help_open:return
@@ -507,6 +548,11 @@ func _input(event: InputEvent) -> void:
 	if disposed or done or not visible or model==null:return
 	if event is InputEventKey:
 		if event.echo:return
+		if help_open and notebook_open and event.keycode in [KEY_PAGEUP,KEY_PAGEDOWN]:
+			if event.pressed:
+				if event.keycode==KEY_PAGEUP:_previous_hint()
+				else:_next_hint()
+			get_viewport().set_input_as_handled();return
 		if not stage_action.is_empty():
 			if event.pressed and event.keycode==KEY_ESCAPE:_clear_input();_open_menu()
 			get_viewport().set_input_as_handled();return
@@ -734,7 +780,7 @@ func geometry_snapshot() -> Dictionary:
 		var actual:=Rect2(field.position+rect.position/LOGICAL*field.size,rect.size/LOGICAL*field.size)
 		stage_objects[id]=[actual.position.x,actual.position.y,actual.size.x,actual.size.y]
 	var lamp=Rect2(field.position+lamp_rect().position/LOGICAL*field.size,lamp_rect().size/LOGICAL*field.size)
-	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"light":light_geometry(),"selected":selected,"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
+	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"notebook":{"open":notebook_open and help_open,"page":notebook_page,"recordedTrial":trial_records.has(int(state.round))},"light":light_geometry(),"selected":selected,"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
 func _watch_performance() -> bool:
 	if disposed or done or is_instance_valid(performance):return false
 	var state_node:Node=get_node_or_null("/root/State")

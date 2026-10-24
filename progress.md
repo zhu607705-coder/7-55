@@ -5292,3 +5292,12 @@ Closing a reading sheet after window focus loss now exposes explicit resume. The
 - Godot 4.7.1：9组原生回归859项通过；实际图形Main检查229项通过，覆盖三幕、键鼠、模拟触摸、失焦/旋转取消和主备存档。quick 5、critical 27、保留Web release 38项及4浏览器场景通过。
 - 已用同版官方模板重新导出Godot Web；Chromium 1280×720鼠标与844×390模拟触摸，均经冷启动、手机入口、正式导入隔离校验检查点、实际扇架进入、双轴拖灯、撤回、节目册及幕缝退出通过；浏览器桥保持只读。导出源码摘要 0b04abecf55fab6db3aad2f51afeab55f09ce89f5fda35e2144c0cd02ad1b5f7。未声称实体手机、Gecko/WebKit、全剧情自然游玩或站点已发布。
 - 接续用户已授权的剧场箱子＋梁祝一起上传范围，更新原PR166，不合并或部署。证据见 THEATER_FAN_CHEST_ACCEPTANCE_20261024.json 的 lightProjectionFollowup；本机完整日志在 ~/Library/Application Support/755-tools/verification/theater-light-20261024。
+
+
+## 2026-10-24 · 线装排练手记与试演墨影
+
+- 对应用户“排练手记深化、真正有古风感觉”：桌上节目册展开为线装暖纸旧册，三卷九页，墨线图解、朱笔批注和短纸角翻动。展扇、远近、借光分别解释底座/开合、整体尺寸/翼缘、木钉校灯/侧幕遮光。
+- 复看页只绘制本幕上次实际点灯试演的投影；朱线来自原目标，不提前生成试演记录，后续摆位不改写旧影。每幕记住当前页，重复翻阅不追加提示动作；翻页和展示不写剧情、道具或主/备份存档。触控按钮44px，Page Up/Down翻页，掩卷回舞台；短屏批注在纸内滚动。
+- Godot4.7.1原生10组910项通过；实际图形Main229项、手记51项通过。四种尺寸覆盖1280×720、1440×900、844×390、390×844，包含鼠标/模拟触摸/键盘、失焦、减少动态效果和快照隔离。
+- 本轮源同步完成，无新媒体转换。保留Web参考版quick5和release38（含4个浏览器场景）通过。另行重新导出实际GodotWeb，Chromium桌面856项、模拟手机横屏857项通过：冷启动、手机入口、隔离检查点导入、实体扇架、拖灯/撤回/试演、实体节目册前后页与掩卷、幕缝退出。导出sourceInputSha256：2149c883dd574253cb9f3b270e2a4c1f96fa1ad8efbf275dea9e2562fbfab324。
+- 新程序几何与文案均为项目原创，沿用已有字体、舞台与人物；来源补记ASSETS.md，逐文件哈希/边界见THEATER_FAN_CHEST_ACCEPTANCE_20261024.json的notebookFollowup。证据位于755-tools/verification/theater-notebook-20261024。延续已授权梁祝批次更新PR166；未合并、未部署，未声称实体手机、其他浏览器或自然全剧情验收。

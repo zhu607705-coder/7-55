@@ -127,7 +127,7 @@
     "The first graphical attempt recorded a Pause assertion failure during concurrent browser verification; the isolated rerun passed without weakening focus checks."
   ],
   "initialUploadCommit": "77d4fea12ff5a631ea471325194d73ae6847ca80",
-  "initialEvidenceNote": "Top-level native and files record the original upload. stageObjectFollowup supersedes changed files and their acceptance.",
+  "initialEvidenceNote": "Initial, stageObjectFollowup and lightProjectionFollowup retain their historical evidence; notebookFollowup records the current changed files and acceptance.",
   "stageObjectFollowup": {
     "date": "2026-10-24",
     "parentCommit": "77d4fea12ff5a631ea471325194d73ae6847ca80",
@@ -366,6 +366,167 @@
     "limitations": [
       "Browser validation is Chromium desktop and simulated mobile touch; no physical phone or Gecko/WebKit claim",
       "No natural full-campaign or online deployment acceptance"
+    ]
+  },
+  "notebookFollowup": {
+    "date": "2026-10-24",
+    "scope": "Illustrated stitched rehearsal notebook: three volumes, nine pages, original ink and vermilion diagrams, real last-trial traces, mouse/touch/keyboard navigation.",
+    "baseCommit": "6228d274e12b4bcd784835b40872bd2eb0d4c7c0",
+    "engine": "4.7.1.stable.official",
+    "authority": "Optional hint actions retain the existing model replay. Notes and last-trial copies remain view-local; reading grants no attempts, object placement, progression, items or save writes.",
+    "native": {
+      "passed": true,
+      "groups": 10,
+      "checks": 910,
+      "tests": [
+        {
+          "test": "test_liangzhu_performance.gd",
+          "checks": 90,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte.gd",
+          "checks": 32,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte_view.gd",
+          "checks": 61,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_controller.gd",
+          "checks": 54,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_main.gd",
+          "checks": 229,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_model.gd",
+          "checks": 81,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_notebook.gd",
+          "checks": 51,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_performance.gd",
+          "checks": 45,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_ui.gd",
+          "checks": 75,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_world_geometry.gd",
+          "checks": 192,
+          "passed": true
+        }
+      ]
+    },
+    "graphical": [
+      {
+        "test": "test_theater_rehearsal_main.gd",
+        "checks": 229,
+        "passed": true
+      },
+      {
+        "test": "test_theater_rehearsal_notebook.gd",
+        "checks": 51,
+        "passed": true
+      }
+    ],
+    "layoutViewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "retainedWebReference": {
+      "quick": 5,
+      "release": 38,
+      "browserCases": 4,
+      "passed": true,
+      "critical": "27 checks passed in the prior lightProjectionFollowup; no shared controller, save or input authority changed in this notebook follow-up."
+    },
+    "godotWeb": {
+      "exported": true,
+      "sourceDirty": true,
+      "sourceInputSha256": "2149c883dd574253cb9f3b270e2a4c1f96fa1ad8efbf275dea9e2562fbfab324",
+      "cases": [
+        {
+          "mode": "desktop",
+          "passed": true,
+          "viewport": [
+            1280,
+            720
+          ],
+          "checks": 856,
+          "input": "CDP mouse",
+          "runnerSha256": "cc1140447a278ffbebcfa2b66dd679317b991d4861ad35943b9ebbdeb4a812c0"
+        },
+        {
+          "mode": "mobile",
+          "passed": true,
+          "viewport": [
+            844,
+            390
+          ],
+          "checks": 857,
+          "input": "CDP touch",
+          "runnerSha256": "cc1140447a278ffbebcfa2b66dd679317b991d4861ad35943b9ebbdeb4a812c0"
+        }
+      ],
+      "entry": "Cold boot, ordinary phone, validated isolated theater checkpoint import, physical rack, lamp drag and undo, actual trial, physical programme, page controls and keyboard, close/reopen, physical curtain exit. Read-only snapshot bridge.",
+      "fixtureSha256": "aa87a03adc349324afc1f1b7d1736714a7cfba70826c6d64cf8a95e86808163b",
+      "deployed": false
+    },
+    "files": [
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "238d80b8b49a42af390c34a10eb7d4f8730db47544417d08ee31b234ce0a3bc4"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_folio.gd",
+        "sha256": "154d3bcc100fc4b7f7ff1ab3488d55174b09c37166e6103b251bdfcc98c704df"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_notebook.gd",
+        "sha256": "0ecc0d04b7114a8d8e5fa21a5e0c9b10cbce5434e89470561c81cd47321b1246"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_notebook.gd",
+        "sha256": "75eeb7b6c12222ea7bc213ed1a986ad655bf941130ea4cea8460adeb52dd5279"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_performance.gd",
+        "sha256": "deb05689d4708267fdb6936dd8657cecb0258219b1cc70a9111b001d79bb4da6"
+      }
+    ],
+    "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/verification/theater-notebook-20261024",
+    "limitations": [
+      "Trial traces and page position last only for the current rehearsal view; no persistent journal was added.",
+      "Browser validation covers Chromium desktop and simulated mobile touch, not physical phones or Gecko/WebKit.",
+      "No natural full-campaign, merged-main or online deployment acceptance."
     ]
   }
 }

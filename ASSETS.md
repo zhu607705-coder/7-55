@@ -210,3 +210,8 @@ The current native cycling avatar is an original17-bone weighted pelican with wa
 - Original built-in `image_gen` illustration: `godot_native/art_source/ending_resume_20261022/terminal_original.png`; retained under the existing `.gdignore`, excluded from runtime packs. No external game artwork, logos or third-party code copied. The generation service does not expose a model version.
 - Runtime vignette: `godot_native/assets/native/ending_resume/terminal_signal_20261022.png`,756×504 native pixels,378×252 authored UI placement, nearest filtering and unchanged3:2 aspect. Deterministic16-color normalization uses the existing terminal ramp plus campus metal/paper/ink colors. It depicts a terminal, paper receipt and suspended glyph window; it contains no actionable interface text.
 - Reproduction: `godot_native/tools/prepare_ending_resume_art.py`; exact generation prompt: `godot_native/docs/art/prompts/ending_resume_terminal_20261022.txt`; original/runtime SHA-256, dimensions and Pillow version: `godot_native/docs/art/ENDING_RESUME_ART_20261022.json`. Real headings, labels and controls remain native Godot elements.
+
+### 线装排练手记 — 2026-10-24
+
+- `godot_native/scripts/presentation/theater_rehearsal_folio.gd` 与 `theater_rehearsal_notebook.gd` 是本项目原创程序绘制：青灰封边、暖纸、缝线、墨线扇骨与光路、朱笔圈注、短纸角翻动。未引入外部图像、模型、字体或第三方绘图代码；字体及其许可继续复用既有原生舞台字体。
+- 三卷九页文案是本项目原创排练批注。复看页的墨影来自同一排练模型的真实试演快照，朱线来自既有目标几何；程序几何只读展示，不生成新线索事实或替代过关判定。素材与验证记录见 `godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 的 `notebookFollowup`。
