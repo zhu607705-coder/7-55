@@ -1,0 +1,726 @@
+{
+  "date": "2026-10-24",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "base": "926cfe9983bdb044850435dbb09c3bbe9d1d1ebe",
+  "scope": "Existing native theater chest plus fan rehearsal; separate from production deployment",
+  "native": [
+    {
+      "label": "test_liangzhu_actor_rig.gd",
+      "passed": true,
+      "result": "LIANGZHU_ACTOR_RIG: 345 checks; 0 failures"
+    },
+    {
+      "label": "test_liangzhu_performance_qte.gd",
+      "passed": true,
+      "result": "LIANGZHU_QTE: 32 checks; 0 failures"
+    },
+    {
+      "label": "test_liangzhu_performance_qte_view.gd",
+      "passed": true,
+      "result": "LIANGZHU_QTE_VIEW: 61 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_controller.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_CONTROLLER: 54 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_main.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_MAIN: 206 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_model.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_MODEL: 56 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_performance.gd",
+      "passed": true,
+      "result": "REHEARSAL_PERFORMANCE: 32 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_ui.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_UI: 78 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_world_geometry.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_WORLD_GEOMETRY: 192 checks; 0 failures"
+    }
+  ],
+  "gui": {
+    "checks": 206,
+    "failures": 0,
+    "viewport": [
+      "1280x720",
+      "1180x812",
+      "390x844 -> 844x390"
+    ],
+    "input": "Godot graphical window, real root input events, isolated original checkpoint, simulated touch"
+  },
+  "retainedWeb": {
+    "critical": "27 validators pass",
+    "release": "38 validators pass"
+  },
+  "chest": [
+    {
+      "label": "test_chapter3.gd",
+      "passed": true,
+      "result": "Chapter 3 checks: 73; failures: 0"
+    },
+    {
+      "label": "test_theater_chest_direct_gestures.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_DIRECT_GESTURES 203 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_chest_focus.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_FOCUS 328 checks; 0 failures; captures=[]"
+    },
+    {
+      "label": "test_theater_chest_mechanism.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_STORY: 103 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_chest_volume.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_VOLUME: 118 checks; 0 failures"
+    }
+  ],
+  "files": [
+    {
+      "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+      "sha256": "04a12fb3874a33b64720a6ff80d3dc2378d8f4980108764833a95b7b11180a0e"
+    },
+    {
+      "path": "godot_native/scripts/games/theater_shadow_rehearsal_model.gd",
+      "sha256": "048faff16d841c02dc7506de1dbd0aeef863afbb74bf3addf59cd35f841a1c14"
+    },
+    {
+      "path": "godot_native/scripts/presentation/theater_rehearsal_fan.gd",
+      "sha256": "189e2ecfe926eba42d9a5ba60dbce336dc9ec1c4baca10e4a0b3e06cd70aff30"
+    },
+    {
+      "path": "godot_native/tests/helpers/theater_rehearsal_proof.gd",
+      "sha256": "14caea489ae587a5f7accb0aed7fc70bf09e9bf44b848291afecf7e5a585a201"
+    },
+    {
+      "path": "godot_native/tests/test_theater_rehearsal_model.gd",
+      "sha256": "7d776f2a47b071258ee9a85f1f886109565dbdec393e8f24734b2d943b942324"
+    },
+    {
+      "path": "godot_native/tests/test_theater_rehearsal_main.gd",
+      "sha256": "525a0d5cb628a36ad26f429537a3d7d838151f57cb78d99f6ee1509e0b82ef24"
+    },
+    {
+      "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
+      "sha256": "4f363e4ca4bf38a93d772ae5ad8dfd59cb501ce2f7ad7be5426bb3220564bdb0"
+    }
+  ],
+  "limits": [
+    "Godot Web was not re-exported in this task.",
+    "No physical mobile device or full natural campaign acceptance.",
+    "The first graphical attempt recorded a Pause assertion failure during concurrent browser verification; the isolated rerun passed without weakening focus checks."
+  ],
+  "initialUploadCommit": "77d4fea12ff5a631ea471325194d73ae6847ca80",
+  "initialEvidenceNote": "Initial, stageObjectFollowup and lightProjectionFollowup retain their historical evidence; notebookFollowup records the current changed files and acceptance.",
+  "stageObjectFollowup": {
+    "date": "2026-10-24",
+    "parentCommit": "77d4fea12ff5a631ea471325194d73ae6847ca80",
+    "scope": "Scene-object observation and performance entry; no model, controller, item or save schema change",
+    "native": [
+      {
+        "label": "test_liangzhu_performance.gd",
+        "passed": true,
+        "result": "LIANGZHU_VIEW: 90 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE: 32 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte_view.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE_VIEW: 61 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_controller.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_CONTROLLER: 54 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_main.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MAIN: 224 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_model.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MODEL: 56 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_performance.gd",
+        "passed": true,
+        "result": "REHEARSAL_PERFORMANCE: 45 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_ui.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_UI: 65 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_world_geometry.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_WORLD_GEOMETRY: 192 checks; 0 failures"
+      }
+    ],
+    "graphicalInput": {
+      "passed": true,
+      "result": "THEATER_REHEARSAL_MAIN: 229 checks; 0 failures",
+      "entry": "Isolated validated c3-theater-program checkpoint; ordinary Main and input events",
+      "screens": [
+        "1280x720",
+        "1440x900",
+        "390x844",
+        "844x390"
+      ],
+      "touch": "simulated native touch, not physical phone"
+    },
+    "retainedWebRelease": {
+      "passed": true,
+      "validators": 38,
+      "browserCases": 4,
+      "scope": "Retained Web reference, built in the complete PR worktree; not a Godot Web export"
+    },
+    "files": [
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "8e68e50a26e96464a536514814525702fbee6529be8acc68a6f97ade475eb66b"
+      },
+      {
+        "path": "godot_native/scripts/presentation/liangzhu_performance.gd",
+        "sha256": "5d27b5765fba59cc449bb15211e347e7448137be4431884a4c6cbd29d8b16f55"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_stage_objects.gd",
+        "sha256": "8464b23f8fab13f007abbd12ae3b0b426f2951509d897536042247441c7a5e0b"
+      },
+      {
+        "path": "godot_native/tests/test_liangzhu_performance_qte_view.gd",
+        "sha256": "fe64b99eced7a48f7658bd8e87119f8747046e035efdfc164919306d9b8258b2"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_main.gd",
+        "sha256": "340c06c3b5bb8aeb612df21ccd7b9e1fc2bdb85981df7c12f1d6ca852ace8fb2"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_performance.gd",
+        "sha256": "a52e510327de56e99ffc76aa27526c33b976d5229dc9d82ab7620e0785745e70"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
+        "sha256": "812a5d668c17481580e28542296c0b679bb146c4f8ab050150e8f4578d3d09f4"
+      }
+    ],
+    "limits": [
+      "No new Godot Web export or production deployment",
+      "No physical phone or full natural campaign acceptance"
+    ],
+    "focusRecovery": "Closing an observation sheet after focus loss exposes the explicit resume menu; two additional UI checks passed."
+  },
+  "lightProjectionFollowup": {
+    "date": "2026-10-24",
+    "baseCommit": "bfa07ce1cb952b79b538d28043cc929b41d506c7",
+    "modelVersion": 3,
+    "features": [
+      "Direct two-axis lamp dragging in all three rounds",
+      "Shared source-distance projection for fans, screen and fixed pin",
+      "Clipped warm beam and receiver light patch",
+      "Calibration checks pin shadow position and length",
+      "Atomic gesture undo, keyboard, touch and interruption handling"
+    ],
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "native": [
+      {
+        "label": "test_liangzhu_performance.gd",
+        "passed": true,
+        "result": "LIANGZHU_VIEW: 90 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE: 32 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte_view.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE_VIEW: 61 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_controller.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_CONTROLLER: 54 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_main.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MAIN: 229 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_model.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MODEL: 81 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_performance.gd",
+        "passed": true,
+        "result": "REHEARSAL_PERFORMANCE: 45 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_ui.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_UI: 75 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_world_geometry.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_WORLD_GEOMETRY: 192 checks; 0 failures"
+      }
+    ],
+    "nativeChecks": 859,
+    "graphicalMain": {
+      "passed": true,
+      "checks": 229,
+      "entry": "Validated isolated c3-theater-program checkpoint; ordinary Main and actual input events"
+    },
+    "retainedWebReference": {
+      "quick": 5,
+      "critical": 27,
+      "release": 38,
+      "browserCases": 4,
+      "passed": true
+    },
+    "godotWeb": {
+      "exported": true,
+      "sourceDirty": true,
+      "sourceInputSha256": "0b04abecf55fab6db3aad2f51afeab55f09ce89f5fda35e2144c0cd02ad1b5f7",
+      "cases": [
+        {
+          "mode": "desktop",
+          "passed": true,
+          "viewport": [
+            1280,
+            720
+          ],
+          "checks": 851,
+          "input": "CDP mouse",
+          "runnerSha256": "1fde0685788b36709a24154aced5d301145a2a6487482dd25811d63a416c19cf"
+        },
+        {
+          "mode": "mobile",
+          "passed": true,
+          "viewport": [
+            844,
+            390
+          ],
+          "checks": 852,
+          "input": "CDP touch",
+          "runnerSha256": "1fde0685788b36709a24154aced5d301145a2a6487482dd25811d63a416c19cf"
+        }
+      ],
+      "entry": "Cold boot, ordinary phone flow, import of a validated isolated theater checkpoint, physical rack entry, lamp drag, undo, programme and curtain exit",
+      "deployed": false,
+      "fixtureSha256": "aa87a03adc349324afc1f1b7d1736714a7cfba70826c6d64cf8a95e86808163b"
+    },
+    "files": [
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "161780110920bd88f522f9a0ede4827ea1c677837505cf80cecf837d65936672"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal_model.gd",
+        "sha256": "1d174071ee0900be843261cbb97f8f76c687f956eaacd50021c3080e4a1c6e82"
+      },
+      {
+        "path": "godot_native/tests/helpers/theater_rehearsal_proof.gd",
+        "sha256": "0efa792db4594e334f701e727509670761ee632686269a02c409e813218c6f5d"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_main.gd",
+        "sha256": "8d08fc573b60a1d7a5e4467927284f9ce3d525641affa2378e77b8409c4f6605"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_model.gd",
+        "sha256": "145473824e19446a9685eb5c7c5b7c334e5ac1a171793b1fdfe3a71de6c410e0"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
+        "sha256": "47491855573bace12659224bb639f08ccd84dbad94bfac4cf6856cfdd4595872"
+      }
+    ],
+    "limitations": [
+      "Browser validation is Chromium desktop and simulated mobile touch; no physical phone or Gecko/WebKit claim",
+      "No natural full-campaign or online deployment acceptance"
+    ]
+  },
+  "notebookFollowup": {
+    "date": "2026-10-24",
+    "scope": "Illustrated stitched rehearsal notebook: three volumes, nine pages, original ink and vermilion diagrams, real last-trial traces, mouse/touch/keyboard navigation.",
+    "baseCommit": "6228d274e12b4bcd784835b40872bd2eb0d4c7c0",
+    "engine": "4.7.1.stable.official",
+    "authority": "Optional hint actions retain the existing model replay. Notes and last-trial copies remain view-local; reading grants no attempts, object placement, progression, items or save writes.",
+    "native": {
+      "passed": true,
+      "groups": 10,
+      "checks": 910,
+      "tests": [
+        {
+          "test": "test_liangzhu_performance.gd",
+          "checks": 90,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte.gd",
+          "checks": 32,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte_view.gd",
+          "checks": 61,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_controller.gd",
+          "checks": 54,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_main.gd",
+          "checks": 229,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_model.gd",
+          "checks": 81,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_notebook.gd",
+          "checks": 51,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_performance.gd",
+          "checks": 45,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_ui.gd",
+          "checks": 75,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_world_geometry.gd",
+          "checks": 192,
+          "passed": true
+        }
+      ]
+    },
+    "graphical": [
+      {
+        "test": "test_theater_rehearsal_main.gd",
+        "checks": 229,
+        "passed": true
+      },
+      {
+        "test": "test_theater_rehearsal_notebook.gd",
+        "checks": 51,
+        "passed": true
+      }
+    ],
+    "layoutViewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "retainedWebReference": {
+      "quick": 5,
+      "release": 38,
+      "browserCases": 4,
+      "passed": true,
+      "critical": "27 checks passed in the prior lightProjectionFollowup; no shared controller, save or input authority changed in this notebook follow-up."
+    },
+    "godotWeb": {
+      "exported": true,
+      "sourceDirty": true,
+      "sourceInputSha256": "2149c883dd574253cb9f3b270e2a4c1f96fa1ad8efbf275dea9e2562fbfab324",
+      "cases": [
+        {
+          "mode": "desktop",
+          "passed": true,
+          "viewport": [
+            1280,
+            720
+          ],
+          "checks": 856,
+          "input": "CDP mouse",
+          "runnerSha256": "cc1140447a278ffbebcfa2b66dd679317b991d4861ad35943b9ebbdeb4a812c0"
+        },
+        {
+          "mode": "mobile",
+          "passed": true,
+          "viewport": [
+            844,
+            390
+          ],
+          "checks": 857,
+          "input": "CDP touch",
+          "runnerSha256": "cc1140447a278ffbebcfa2b66dd679317b991d4861ad35943b9ebbdeb4a812c0"
+        }
+      ],
+      "entry": "Cold boot, ordinary phone, validated isolated theater checkpoint import, physical rack, lamp drag and undo, actual trial, physical programme, page controls and keyboard, close/reopen, physical curtain exit. Read-only snapshot bridge.",
+      "fixtureSha256": "aa87a03adc349324afc1f1b7d1736714a7cfba70826c6d64cf8a95e86808163b",
+      "deployed": false
+    },
+    "files": [
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "238d80b8b49a42af390c34a10eb7d4f8730db47544417d08ee31b234ce0a3bc4"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_folio.gd",
+        "sha256": "154d3bcc100fc4b7f7ff1ab3488d55174b09c37166e6103b251bdfcc98c704df"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_notebook.gd",
+        "sha256": "0ecc0d04b7114a8d8e5fa21a5e0c9b10cbce5434e89470561c81cd47321b1246"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_notebook.gd",
+        "sha256": "75eeb7b6c12222ea7bc213ed1a986ad655bf941130ea4cea8460adeb52dd5279"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_performance.gd",
+        "sha256": "deb05689d4708267fdb6936dd8657cecb0258219b1cc70a9111b001d79bb4da6"
+      }
+    ],
+    "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/verification/theater-notebook-20261024",
+    "limitations": [
+      "Trial traces and page position last only for the current rehearsal view; no persistent journal was added.",
+      "Browser validation covers Chromium desktop and simulated mobile touch, not physical phones or Gecko/WebKit.",
+      "No natural full-campaign, merged-main or online deployment acceptance."
+    ]
+  },
+  "discoveryFollowup": {
+    "date": "2026-10-24",
+    "baseCommit": "04f00934d0fd22241d36c3151607dd2864b2496d",
+    "scope": "Optional damaged folio discovered through controlled trials and physical tracing registration; project-wide puzzle rules and audited north-building redesign ledger. North-building runtime not replaced in this follow-up.",
+    "authority": "Accepted trials are copied locally. Unchanged trials, multiple-factor changes, page cycling and live manipulation without a trial do not reveal full guidance. Reading or tracing never changes stage completion, model placement, story, inventory or save. Independent legitimate stage solutions remain valid.",
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "native": {
+      "passed": true,
+      "groups": 11,
+      "checks": 962,
+      "tests": [
+        {
+          "test": "test_liangzhu_performance.gd",
+          "checks": 90,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte.gd",
+          "checks": 32,
+          "passed": true
+        },
+        {
+          "test": "test_liangzhu_performance_qte_view.gd",
+          "checks": 61,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_controller.gd",
+          "checks": 54,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_discovery.gd",
+          "checks": 52,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_main.gd",
+          "checks": 229,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_model.gd",
+          "checks": 81,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_notebook.gd",
+          "checks": 51,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_performance.gd",
+          "checks": 45,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_ui.gd",
+          "checks": 75,
+          "passed": true
+        },
+        {
+          "test": "test_theater_rehearsal_world_geometry.gd",
+          "checks": 192,
+          "passed": true
+        }
+      ]
+    },
+    "nativeSupport": {
+      "passed": true,
+      "stages": [
+        "Native save isolation",
+        "Godot asset import and editor parse",
+        "Native startup",
+        "test_all_scripts_parse.gd",
+        "Source oracle tests/verify_source_model_parity.mjs"
+      ],
+      "note": "A first unconfigured invocation could not locate godot on PATH; corrected pinned-engine run passed these support stages. The complete unrelated campaign suite was not rerun."
+    },
+    "graphical": [
+      {
+        "test": "test_theater_rehearsal_discovery.gd",
+        "checks": 52,
+        "passed": true
+      },
+      {
+        "test": "test_theater_rehearsal_main.gd",
+        "checks": 229,
+        "passed": true
+      }
+    ],
+    "layoutViewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "retainedWebReference": {
+      "quick": 5,
+      "release": 38,
+      "browserCases": 4,
+      "passed": true,
+      "critical": "Prior lightProjectionFollowup only; no shared controller, save, bridge or input authority changed here."
+    },
+    "godotWeb": {
+      "exported": true,
+      "sourceDirty": true,
+      "sourceInputSha256": "6fe4553f82c9d6d72e14cee4356e6ae3fbaa3d6527bf327d08377bfe8a8e49c1",
+      "cases": [
+        {
+          "mode": "desktop",
+          "passed": true,
+          "viewport": [
+            1280,
+            720
+          ],
+          "checks": 861,
+          "input": "CDP mouse",
+          "runnerSha256": "ebb5b8dc3b0945b80bd34ad120a39f00f3f2f0f0d6d6a252735927a830d0ec1b"
+        },
+        {
+          "mode": "mobile",
+          "passed": true,
+          "viewport": [
+            844,
+            390
+          ],
+          "checks": 862,
+          "input": "CDP touch",
+          "runnerSha256": "ebb5b8dc3b0945b80bd34ad120a39f00f3f2f0f0d6d6a252735927a830d0ec1b"
+        }
+      ],
+      "entry": "Cold boot, ordinary phone, validated isolated checkpoint import, physical rack, lamp drag/undo/trial, notebook navigation, actual fan-spread experiment, click-only rejection, mouse/touch tracing drag, decoded page, physical curtain exit. Read-only snapshot bridge.",
+      "fixtureSha256": "aa87a03adc349324afc1f1b7d1736714a7cfba70826c6d64cf8a95e86808163b",
+      "deployed": false
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "01c68dd5fbae08327298754fad77bd6489e3f11575cd8dcdfde7dbed23e6184d"
+      },
+      {
+        "path": "godot_native/docs/PUZZLE_DISCOVERY_20261024.md",
+        "sha256": "aa47de14ff357a87fb4b65b0702627605f6b3752e7765d0e9c3e220b1aeebe81"
+      },
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "a79eba0fa0440f82e732345634ac8778ca09bdff1a12370e391c238893067d5e"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_notebook.gd",
+        "sha256": "18db779926b986e95851eddde1a69d5bc37c894bf7079aeb2e374818e93853c8"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_study.gd",
+        "sha256": "00350c64ecf2f9063cc0d522ebc89fa9bb38d6436c045a8148f8a63a34c73eb0"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_tracing.gd",
+        "sha256": "d356294f0bf0f742e7c107dfbfae576d92e004ba1e9821c94681ebbf859b009c"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_discovery.gd",
+        "sha256": "bdaf89057e7539fe9ddc3e91c2bfdb73824084f9a4242c5c4bcd0cdd4e199679"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_notebook.gd",
+        "sha256": "fd49e37fc7c2bc6dfa459759df3a4ce31c6dee874212822f1eb6013c7cce926e"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_performance.gd",
+        "sha256": "a91845c764db0b43b14913d1c9e818983d71e2a5b2a798b71953bc3c4f4b0efb"
+      }
+    ],
+    "evidenceDirectory": "/Users/zhu/Library/Application Support/755-tools/verification/theater-discovery-20261024",
+    "limitations": [
+      "North-building levels are source-audited redesign proposals, not completed runtime work.",
+      "Tracing and experiment notes persist only within the current optional rehearsal view.",
+      "Graphical suite preceded the final paper-position and old-print artwork adjustment; final actual Web mouse/touch acceptance and screenshots cover those adjustments.",
+      "Chromium and simulated mobile only; no physical phone, Gecko/WebKit, fresh full campaign, merged-main or deployment claim."
+    ]
+  }
+}

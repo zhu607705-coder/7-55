@@ -230,9 +230,8 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 			await click(panel.close_button,"return from original power panel")
 		"c4_duty":
 			# Fresh source draft: elevator, 104, 105. Move the actual card twice.
-			await click(panel.find_child("down_main_elevator",true,false),"C4 duty first move")
-			await click(panel.find_child("down_main_elevator",true,false),"C4 duty second move")
-			await click(panel.submit_button,"C4 order submit")
+			await preload("res://tests/helpers/duty_board_driver.gd").solve(self,panel,false)
+			await preload("res://tests/helpers/duty_board_driver.gd").stamp(self,panel,false)
 			check(panel.session.completed and state.d.chapter4.factIds.has("a1_duty_board_reconstructed"),"real C4 order accepted")
 			await click(panel.close_button,"return from completed duty device")
 		"c4_numeric":

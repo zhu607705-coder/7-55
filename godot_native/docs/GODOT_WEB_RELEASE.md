@@ -119,3 +119,16 @@ GitHub `github-pages` 环境的发布分支权限继续限于原来允许的 `ma
 - [Godot 4.7 Web 导出预设实现](https://github.com/godotengine/godot/blob/4.7-stable/platform/web/export/export_plugin.cpp)
 - [Godot 4.7.1 官方下载与校验文件](https://github.com/godotengine/godot-builds/releases/tag/4.7.1-stable)
 - [GitHub Pages 容量限制](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
+
+
+## 2026-10-24 高像素密度发布续验
+
+PR166旧头4f660f的云端证据暴露三类问题：跨document重载后CDP无法读取已请求的块响应体；移动输入覆盖标签与工作流判定漂移；软件渲染DPR3下内容挂载及IDB落盘慢于旧期限。本批保留真实输入、完整字节哈希和原生/独立IDB摘要一致要求：响应体启用CDP durable messages并在重载前完成已请求的证据，覆盖标签与实际交互一致，旧存档首次挂载使用相同的有界启动期限。
+
+产品保存仍是Godot官方同步和只读IDB确认，没有第二写入者。同步间隔调整为2秒，最多30次、总期限60秒；浏览器验收等待75秒以收齐失败/成功收据。这是明确的时限调整，不宣称20秒内完成或证明云端失败由单一原因导致。旧失败证据保留，新提交需要重新验收。
+
+2026-10-24 PR166 合并候选 `4e220681` 的高密度手机输入检查在双指取消时，先读到仍占用两指的 frame563，失败后同一引擎快照 frame566 已正常清空。测试现在以实际输入释放为条件、最多等待5秒并记录中间帧与耗时；随后仍验证触点/方向轴持续清空、角色不再移动及调用方原有剧情事实不变检查。不会补发取消、写入游戏状态或修改产品输入。合成负控覆盖永不释放、旧帧、残留方向、后续重新占用和卡住移动；真实浏览器及云端重验另记。
+
+同日合并候选daef9348的DPR3物品栏手势在frame558仍读到场景触点，失败快照frame560已清空且inventoryOwned=true；同类拖动释放、物品栏接管及普通点按现在等待各自的实际控制器/输入结果，仍验证原始事实和恰好一次行动。该轮producer的Chrome进程未能在20秒内写出DevToolsActivePort，故将测试进程启动单独限制为60秒并保留超时退出/清理负控；游戏内启动、输入和保存期限不受其影响。
+
+合并候选3bcc94a1的六视口1149项通过；流式故障检查随后误用刷新前的HTTP失败记录，此时新引擎的75个包仍为missing且blocking=false。检查现在记录requestAt/failedAt，要求本次document刷新后的真实受控HTTP失败，再等待本次引擎的error状态；若出现blocking立即失败，不会等待其自行消失。旧文档、缺少原生回调、错误阻塞均有负控。

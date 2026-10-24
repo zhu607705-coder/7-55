@@ -1,0 +1,196 @@
+{
+  "stages": [
+    "辨别时间源",
+    "拼合现场记录",
+    "推算目标时刻",
+    "检查传动",
+    "校准双轮",
+    "消除三路漂移",
+    "联合验证"
+  ],
+  "sources": [
+    {
+      "id": "phone",
+      "title": "手机状态栏 · 07:55:23",
+      "body": "连续两次取样，秒位没有变化。"
+    },
+    {
+      "id": "hall",
+      "title": "旧钟机芯 · 现场脉冲",
+      "body": "指针会滑动，但每次拨动都会产生新的机械脉冲。"
+    },
+    {
+      "id": "cache",
+      "title": "旧终端缓存 · 08:00",
+      "body": "记录来自另一间教室，没有本次现场脉冲。"
+    }
+  ],
+  "channels": [
+    {
+      "id": "dial",
+      "label": "钟面采样",
+      "drift": 7
+    },
+    {
+      "id": "movement",
+      "label": "机芯回声",
+      "drift": -4
+    },
+    {
+      "id": "phone",
+      "label": "手机接收",
+      "drift": 23
+    }
+  ],
+  "repairs": [
+    {
+      "id": "minute_pawl",
+      "label": "压下分轮止逆爪"
+    },
+    {
+      "id": "hour_clutch",
+      "label": "接合时轮离合"
+    },
+    {
+      "id": "backlash",
+      "label": "收紧定位片游隙"
+    }
+  ],
+  "runs": {
+    "1225_bakery": {
+      "label": "麦穗刻印",
+      "symbol": "麦",
+      "hour": 12,
+      "minute": 25,
+      "fact": "hall_clock_inspected",
+      "repair": "minute_pawl",
+      "inspection": "钟壳夹着一张麦穗工单。试拨分轮后，长针退回一格，中心的小时轴没有跟着动。",
+      "repairHint": "分轮仍在回退，时轮没有被带动。止逆结构、时轮离合和定位片中，哪一个能阻止这次回退？",
+      "records": [
+        {
+          "id": "start",
+          "title": "麦穗 · 当班工单",
+          "body": "传送带在正午换班时归零。"
+        },
+        {
+          "id": "delay",
+          "title": "麦穗 · 送料计数片",
+          "body": "归零后计满二十五分钟，异物到达检修口。"
+        },
+        {
+          "id": "event",
+          "title": "钟壳内的麦穗拓印",
+          "body": "稳定刻度对应的是异物到达检修口的瞬间。"
+        },
+        {
+          "id": "night",
+          "title": "月牙 · 闭楼记录",
+          "body": "二十二时四十五分锁门，盖有月牙印。"
+        },
+        {
+          "id": "cache",
+          "title": "手机旧缓存",
+          "body": "08:00，另一间教室的签到开放记录。"
+        }
+      ],
+      "initialHour": 22,
+      "initialMinute": 45,
+      "drifts": [
+        7,
+        -4,
+        23
+      ],
+      "pulseInterval": 10
+    },
+    "1850_evening": {
+      "label": "书页刻印",
+      "symbol": "书",
+      "hour": 18,
+      "minute": 50,
+      "fact": "hour_hand_installed",
+      "repair": "hour_clutch",
+      "inspection": "装回的时针背面刻着书页。试拨小时轮，轴在转，短针却停在原处；长针保持不动。",
+      "repairHint": "小时轴在转，短针没有跟随。分轮不会回退，定位片也没有横向摆动。",
+      "records": [
+        {
+          "id": "start",
+          "title": "书页 · 时针背面",
+          "body": "晚课从十八时三十分开始。"
+        },
+        {
+          "id": "delay",
+          "title": "书页 · 课堂计时条",
+          "body": "铃响后二十分钟，投影切到最后一页。"
+        },
+        {
+          "id": "event",
+          "title": "书页 · 钟壳对照刻线",
+          "body": "锁定投影最后一页出现的瞬间。"
+        },
+        {
+          "id": "night",
+          "title": "麦穗 · 旧工单",
+          "body": "正午后的二十五分钟，对应传送带检修。"
+        },
+        {
+          "id": "cache",
+          "title": "手机旧缓存",
+          "body": "08:00，另一间教室的签到开放记录。"
+        }
+      ],
+      "initialHour": 12,
+      "initialMinute": 25,
+      "drifts": [
+        -9,
+        12,
+        -6
+      ],
+      "pulseInterval": 15
+    },
+    "2245_maintenance": {
+      "label": "扳手刻印",
+      "symbol": "修",
+      "hour": 22,
+      "minute": 45,
+      "fact": "positioning_plate_installed",
+      "repair": "backlash",
+      "inspection": "定位片背面露出扳手印。试拨时两根针都能跟随，松手后却一起左右摆动；固定槽留着一条缝。",
+      "repairHint": "两根针都能被带动，也不会持续倒退。松手后的摆动来自固定槽的空隙。",
+      "records": [
+        {
+          "id": "start",
+          "title": "扳手 · 定位片背面",
+          "body": "夜间检修从二十二时整开始。"
+        },
+        {
+          "id": "delay",
+          "title": "扳手 · 维修轮次",
+          "body": "每轮十五分钟，第三轮结束才切断主电源。"
+        },
+        {
+          "id": "event",
+          "title": "扳手 · 钟壳停机刻线",
+          "body": "稳定点应落在切断主电源的瞬间。"
+        },
+        {
+          "id": "night",
+          "title": "书页 · 旧课堂记录",
+          "body": "十八时三十分开始，二十分钟后投影翻页。"
+        },
+        {
+          "id": "cache",
+          "title": "手机旧缓存",
+          "body": "08:00，另一间教室的签到开放记录。"
+        }
+      ],
+      "initialHour": 18,
+      "initialMinute": 50,
+      "drifts": [
+        4,
+        -11,
+        18
+      ],
+      "pulseInterval": 6
+    }
+  }
+}

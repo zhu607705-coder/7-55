@@ -32,17 +32,19 @@ func campaign(r) -> void:
 	await mode(r,"light")
 	await act(r,"c4_catch_paper")
 	await act(r,"c4_clock")
-	await act(r,"c4_clock_set",{"time":"1225_bakery"})
+	await clock_chain(r,"1225_bakery")
 	await act(r,"c4_lamp_switch")
 	await act(r,"c4_hour_hand")
 	await act(r,"c4_install_hour")
-	await act(r,"c4_clock_set",{"time":"1850_evening"})
+	await clock_chain(r,"1850_evening")
 	if not r.check(r.state.d.chapter4.phase=="room204_restore","native bakery stop and hour-hand chain"): return
 	await mode(r,"dark")
 	await act(r,"c4_class104")
 	await act(r,"c4_history")
 	await mode(r,"light")
 	await act(r,"c4_class105")
+	await act(r,"c4_device_duty_board")
+	for event:Dictionary in preload("res://tests/helpers/duty_board_driver.gd").events():await act(r,"c4_duty_event",event)
 	await puzzle(r,"duty_board",{"a":"classroom_104","b":"classroom_105","c":"main_elevator"})
 	r.game=r.make_game(await act(r,"c4_elevator_align"))
 	if r.game==null: return
@@ -92,7 +94,7 @@ func campaign(r) -> void:
 	await act(r,"c4_deduce",{"arrival":"A3","unserved":"A2"})
 	if not await return_to_hall(r):return
 	await act(r,"c4_install_plate")
-	await act(r,"c4_clock_set",{"time":"2245_maintenance"})
+	await clock_chain(r,"2245_maintenance")
 	await act(r,"c4_maintenance")
 	await act(r,"c4_diagnose",{"wheel_sound":"latch","clock_jam":"gear_offset","oil_trace":"oil_shortage"})
 	await act(r,"c4_cart_cover")
@@ -337,3 +339,12 @@ func chase_pointer(view:Control,target:Vector2)->Vector2:
 	var local:Vector2=view.world_root.position+target*view.factor
 	var field:Rect2=view.field.grow(-2)
 	return view.position+Vector2(clampf(local.x,field.position.x,field.end.x),clampf(local.y,field.position.y,field.end.y))
+
+func clock_chain(r,id:String)->void:
+	await act(r,"c4_clock")
+	var request:Dictionary=await act(r,"c4_clock_begin")
+	if not r.check(request.has("clock"),"clock reasoning starts after source prerequisites"):return
+	for event in preload("res://tests/helpers/clock_chain_driver.gd").events(id):
+		var result:Dictionary=await act(r,"c4_clock_event",{"session":request.clock.session,"event":event})
+		if not r.check(result.get("accepted",false),"causal clock input "+str(event)):return
+	await act(r,"c4_clock_set",{"time":id,"session":request.clock.session})

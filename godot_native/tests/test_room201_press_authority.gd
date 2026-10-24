@@ -114,7 +114,7 @@ func test_order_and_install() -> void:
 	check(state.chapter4.phase=="maintenance_repair" and not state.items.clockPositioningPlate and "positioning_plate_installed" in state.chapter4.factIds,"A1 installation consumes exactly the original plate")
 	check(state.chapter4.timeState=="1850_evening","Installation does not silently advance the clock")
 	check(controller.dispatch(state,"c4_clock").get("page")=="c4_device","Installed plate exposes the existing manual clock detent")
-	controller.dispatch(state,"c4_clock_set",{"time":"2245_maintenance"})
+	preload("res://tests/helpers/clock_chain_driver.gd").complete(controller,state,"2245_maintenance")
 	check(state.chapter4.timeState=="2245_maintenance" and owner.validate_snapshot(state),"Original validated 22:45 clock action remains reachable and persistable")
 	before=JSON.stringify(state);controller.dispatch(state,"c4_install_plate")
 	check(JSON.stringify(state)==before,"Repeated install cannot recreate or consume any extra item")

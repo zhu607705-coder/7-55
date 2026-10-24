@@ -6,6 +6,7 @@ signal world_handoff_requested(fresh_success: bool)
 const Session = preload("res://scripts/ui/chapter4_device_session.gd")
 const View = preload("res://scripts/objects/room301_archive_view.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
+var evidence:Control
 var session: RefCounted
 var frame: PanelContainer
 var view: Control
@@ -43,6 +44,7 @@ func configure(id: String, state: Dictionary, font: Font = null) -> bool:
 	header.add_child(close_button)
 	hint=_label("",14); add_child(hint)
 	feedback=_label("",14); add_child(feedback)
+	evidence=preload("res://scripts/ui/device_evidence.gd").new();evidence.puzzle_id=id;evidence.source=session.source;add_child(evidence)
 	_refresh(); return true
 
 func _ready() -> void:
@@ -63,15 +65,8 @@ func layout_fullscreen(area: Rect2, insets: Vector4 = Vector4.ZERO) -> void:
 	if view==null: return
 	if size!=area.size or position!=area.position or _safe_insets!=insets: cancel_input()
 	_safe_insets=insets; position=area.position; size=area.size
-	safe_area=Rect2(Vector2(insets.x+14,insets.y+14),Vector2(maxf(1,size.x-insets.x-insets.z-28),maxf(1,size.y-insets.y-insets.w-28)))
-	var short_view:=size.y<540
-	header.position=safe_area.position; header.size=Vector2(safe_area.size.x,48)
-	title.add_theme_font_size_override("font_size",18 if size.x<500 else 21)
-	hint.position=safe_area.position+Vector2(0,52 if short_view else 55); hint.size=Vector2(safe_area.size.x,24 if short_view else 48)
-	feedback.position=Vector2(safe_area.position.x,safe_area.end.y-(28 if short_view else 42)); feedback.size=Vector2(safe_area.size.x,28 if short_view else 42)
-	view.position=Vector2.ZERO; view.size=size
-	var top:=hint.position.y+(28 if short_view else 52)
-	view.layout_scene(Rect2(Vector2(safe_area.position.x,top),Vector2(safe_area.size.x,maxf(90,feedback.position.y-top-(4 if short_view else 6)))))
+	safe_area=preload("res://scripts/ui/device_layout.gd").panel(self,area,_safe_insets)
+	if evidence!=null:evidence.size=size;evidence.layout_sheet()
 
 func set_input_mode(mode: String) -> void:
 	if mode not in ["keyboard","touch"] or mode==input_mode: return
@@ -107,6 +102,9 @@ func _submit() -> void:
 	submit_requested.emit(request.action,request.value,request.serial)
 
 func handle_key(event: InputEventKey) -> bool:
+	if evidence.opened:
+		if event.pressed and event.keycode in [KEY_ESCAPE,KEY_SPACE,KEY_ENTER]:evidence.close_sheet()
+		return true
 	if input_mode!="keyboard" or not event.pressed or event.echo or not is_visible_in_tree(): return false
 	if view.dragging: cancel_input()
 	if close_button.has_focus() and event.keycode in [KEY_ENTER,KEY_KP_ENTER,KEY_SPACE]: return false

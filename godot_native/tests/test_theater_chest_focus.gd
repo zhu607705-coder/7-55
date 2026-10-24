@@ -137,7 +137,7 @@ func verify_controls() -> void:
 	var panel: Control=shell.c3_device_panel
 	var viewport:=Rect2(Vector2.ZERO,Vector2(root.size))
 	var keys: Array=panel.controls.keys();keys.sort()
-	check(keys==["axle","bottom","butterfly","close","crank","drawer","fan","lamp","lid","note","slot0","slot1","slot2"],"inspection contains physical parts and exit")
+	check(keys==["axle","bottom","brush","butterfly","close","crank","drawer","fan","lamp","lid","note","slot0","slot1","slot2","vent_clue"],"inspection contains physical parts and exit")
 	for id: String in panel.controls:
 		var control: Control=panel.controls[id]
 		if not control.is_visible_in_tree():continue
@@ -174,6 +174,12 @@ func play_mechanism(touch: bool, label: String) -> bool:
 	await tap(panel.controls.drawer,touch)
 	if not require_panel(panel):return false
 	check(not panel.mechanism.get("drawer_open",true),"wrong arrangement keeps the real compartment shut")
+	check(not panel.controls.note.visible,"paper begins underneath physical pile")
+	for piece: String in ["butterfly","fan","lamp"]:
+		await tap(panel.controls[piece],touch)
+		if not await settle_parts():return false
+		check(piece in panel.mechanism.cleared,"pile movement persists: "+piece)
+	await capture(label+"-cleared")
 	await tap(panel.controls.note,touch)
 	if not await settle_parts():return false
 	check(panel.mechanism.get("clue_open",false) and panel.get_part_rect("note").size.x>160,"paper opens and its physical clue becomes readable")
@@ -199,12 +205,19 @@ func play_mechanism(touch: bool, label: String) -> bool:
 	if not require_panel(panel):return false
 	await tap(panel.controls.axle,touch)
 	if not await settle_parts():return false
-	check(panel.mechanism.slots==["fan","butterfly","lamp"] and panel.mechanism.turns==1,"one real crank input rotates the symbols into clue order")
+	check(panel.mechanism.slots==["fan","butterfly","lamp"] and panel.mechanism.turns==1,"one real crank input retracts the visible lock tongue")
 	await tap(panel.controls.drawer,touch)
 	if not await settle_parts():return false
 	check(panel.mechanism.get("drawer_open",false) and is_equal_approx(panel.contents.drawer_amount,1),"correct symbols let the player pull open the hidden compartment")
 	await capture(label+"-compartment")
-	check(state.d.items==items and state.d.theaterHunt==story,"optional mechanism never changes original mainline items or progression")
+	check(state.d.items==items and state.d.theaterHunt==story,"opening compartment has not collected the brush yet")
+	check(panel.controls.brush.visible and panel.controls.vent_clue.visible,"open compartment exposes brush and clue targets")
+	await tap(panel.controls.vent_clue,touch)
+	check(panel.mechanism.vent_clue_seen,"vent sketch is inspected through normal input")
+	await tap(panel.controls.brush,touch)
+	if not await settle_parts():return false
+	check(state.d.items.fluorescentBrush and panel.mechanism.brush_taken and not panel.controls.brush.visible,"physical pickup grants brush and removes its hotspot")
+	await capture(label+"-collected")
 	return true
 
 func exercise(dim: Vector2i) -> void:
@@ -230,7 +243,7 @@ func exercise(dim: Vector2i) -> void:
 	await frames()
 	check(shell.world.camera.is_equal_approx(original_camera) and is_equal_approx(shell.world.zoom,original_zoom) and shell.world.pan_offset.is_equal_approx(original_pan),"inspection exit restores camera, zoom and pan")
 	if not await scan():return
-	check(state.d.theaterHunt.propBoxOpened and not state.d.items.temporaryTheaterTicket and state.d.items.fluorescentBrush and accepted_scans==1,"world scanner immediately performs the original atomic ticket-to-brush transaction")
+	check(state.d.theaterHunt.propBoxOpened and not state.d.items.temporaryTheaterTicket and not state.d.items.fluorescentBrush and accepted_scans==1,"world scanner consumes ticket and only unlocks outer chest")
 	var earned_items: Dictionary=state.d.items.duplicate(true)
 	check(bool(shell.c3_device_panel.get_meta("scan_just_accepted",false)),"newly accepted scan is identified only for its visual opening")
 	if DisplayServer.get_name()!="headless" and not capture_directory().is_empty():
@@ -250,6 +263,7 @@ func exercise(dim: Vector2i) -> void:
 	await tap_floor(touch)
 	if not await until_panel(func():return shell.c3_device_panel.get_bottom_rect().size.is_equal_approx(bottom_size) and shell.c3_device_panel.focus_motion==null,"second bottom tap restores the fully framed object"):return
 	if not await play_mechanism(touch,label):return
+	earned_items=state.d.items.duplicate(true)
 	if not panel_valid():check(false,"inspection panel remains mounted after mechanism");return
 	await tap(shell.c3_device_panel.controls.close,touch)
 	if not await closed():return
@@ -259,7 +273,7 @@ func exercise(dim: Vector2i) -> void:
 	await capture(label+"-returned")
 	if not await open_box():return
 	check(shell.c3_device_panel.phase=="inside" and shell.c3_device_panel.lid_open==1.0,"already opened box restores directly to its open interior")
-	check(not shell.c3_device_panel.mechanism.get("drawer_open",true) and shell.c3_device_panel.mechanism.get("remaining",[]).size()==4,"reentry starts a fresh temporary mechanism")
+	check(shell.c3_device_panel.mechanism.get("drawer_open",false) and shell.c3_device_panel.mechanism.get("brush_taken",false) and shell.c3_device_panel.mechanism.get("remaining",[]).is_empty(),"reentry restores opened compartment and collected brush")
 	check(state.d.items==earned_items and accepted_scans==1,"reopening never replays ticket consumption or brush reward")
 	key(KEY_ESCAPE,true);key(KEY_ESCAPE,false)
 	if not await closed():return
@@ -267,6 +281,15 @@ func exercise(dim: Vector2i) -> void:
 	check(not is_instance_valid(shell.modal) and state.d.items==earned_items and accepted_scans==1,"spent ticket cannot repeat the scanner transaction")
 
 func interruptions_and_legacy() -> void:
+	await fixture(Vector2i(1440,900))
+	if await scan() and await inside():
+		await tap(shell.c3_device_panel.controls.butterfly)
+		await tap(shell.c3_device_panel.controls.close)
+		if not await closed():return
+		if await open_box():
+			check(shell.c3_device_panel.mechanism.cleared==["butterfly"],"closing during piece animation preserves accepted movement")
+			check(shell.c3_device_panel.contents.volume.tokens.butterfly.position.x==580+125,"reopening restores staged geometry, not the abandoned animation")
+			await tap(shell.c3_device_panel.controls.close);await closed()
 	await fixture(Vector2i(1440,900))
 	var items: Dictionary=state.d.items.duplicate(true)
 	if await open_box():

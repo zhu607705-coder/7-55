@@ -5269,3 +5269,73 @@ User explicitly requested merging the uploaded original-repository PR #164. Fetc
 At cd359b9, retained Web CI and the actual Godot Web production build passed. Content transport checks then failed at the fixture's resumed-chunk wait, which allowed only 500 immediate-loop turns despite real WebCrypto and deliberate timer yields. The same 50 checks passed locally. Replace that CPU-speed-dependent turn budget with a 5-second monotonic deadline and timer yields, retaining the original assertions, integrity checks, cancellation and native-mount acknowledgement. This is a Node transport-fixture correction, not evidence of actual browser or full native acceptance. Prior full native report completed 516 stages with 503 passes and 13 original failures, including a formal continuity timeout; three affected initialization fixtures passed separate corrected reruns. Preserve that evidence and the production deployment gate.
 
 Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic checks. A controlled 20ms delay around real WebCrypto reproduced the old turn-budget timeout; the corrected deadline version passed the same original loader assertions under that delay. Control scripts and logs stay outside the repository under the 20261024 merge verification directory. The runtime content loader hash remains 123525c2a5cebc21ca739eb1d70aa4caee4ac7f425d94341feac6d22b14b3036.
+
+
+## 2026-10-24 剧场箱内与扇影交互
+
+原箱子支持翻找、符号装配、转柄、夹层和荧光粉刷实体拾取；刷子改为有收腰木柄、金属折边及分束刷毛的原创几何。扇影排练增加铜扣开合、距离与共用灯源推理，实体灯接管试演和换幕。模型、触控撤回、原会话回放、实际图形窗口206项以及保留网页关键27项/发布38项检查通过。具体范围和限制见 `godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 与 `THEATER_FAN_CHAIN_20261024.md`；Godot Web尚未重新导出或发布。
+
+
+## 2026-10-24 Theater scene-object controls
+
+Removed rehearsal toolbar Watch/Observe and duplicate Watch menu entry. The table programme supplies observation, the right curtain toggle accepts a tap or short pull to start the performance, and the left curtain gap returns to the theater. Performance observation also belongs to a visible side-wing programme, outside actor QTE targets. Mouse, touch and Tab/Space operate the physical targets; resize, focus loss, dragged-away releases and modal sheets cancel stale input. Existing model, session, items and save schema are unchanged. Godot 4.7.1 passed 9 groups / 819 checks, plus 229 actual-window checks. The retained Web release result is recorded separately in the acceptance receipt. This remains source PR166, without a new Godot Web export or deployment.
+
+The complete PR worktree also passed retained Web validate:release: 38 validators and 4 browser smoke cases.
+
+Closing a reading sheet after window focus loss now exposes explicit resume. The targeted Main and UI rerun passed (224 and 65 checks).
+
+
+## 2026-10-24 — 剧场台灯两轴投影调节
+
+- 直接拖场景中的台灯：左右改变全体投影位置，前后改变源到道具、道具到纱幕的放大关系；三幕均可操作。暖色光束和纱幕亮区随灯移动，固定木钉影同时校准横向和长度。未新增操作工具栏。
+- 模型升级到 v3；两轴灯位一起记录、撤回、重排及回放，点灯试演保留原道具选择，拖动后才选中灯。保留既有一次性会话和可选排练无剧情/存档写入语义。
+- Godot 4.7.1：9组原生回归859项通过；实际图形Main检查229项通过，覆盖三幕、键鼠、模拟触摸、失焦/旋转取消和主备存档。quick 5、critical 27、保留Web release 38项及4浏览器场景通过。
+- 已用同版官方模板重新导出Godot Web；Chromium 1280×720鼠标与844×390模拟触摸，均经冷启动、手机入口、正式导入隔离校验检查点、实际扇架进入、双轴拖灯、撤回、节目册及幕缝退出通过；浏览器桥保持只读。导出源码摘要 0b04abecf55fab6db3aad2f51afeab55f09ce89f5fda35e2144c0cd02ad1b5f7。未声称实体手机、Gecko/WebKit、全剧情自然游玩或站点已发布。
+- 接续用户已授权的剧场箱子＋梁祝一起上传范围，更新原PR166，不合并或部署。证据见 THEATER_FAN_CHEST_ACCEPTANCE_20261024.json 的 lightProjectionFollowup；本机完整日志在 ~/Library/Application Support/755-tools/verification/theater-light-20261024。
+
+
+## 2026-10-24 · 线装排练手记与试演墨影
+
+- 对应用户“排练手记深化、真正有古风感觉”：桌上节目册展开为线装暖纸旧册，三卷九页，墨线图解、朱笔批注和短纸角翻动。展扇、远近、借光分别解释底座/开合、整体尺寸/翼缘、木钉校灯/侧幕遮光。
+- 复看页只绘制本幕上次实际点灯试演的投影；朱线来自原目标，不提前生成试演记录，后续摆位不改写旧影。每幕记住当前页，重复翻阅不追加提示动作；翻页和展示不写剧情、道具或主/备份存档。触控按钮44px，Page Up/Down翻页，掩卷回舞台；短屏批注在纸内滚动。
+- Godot4.7.1原生10组910项通过；实际图形Main229项、手记51项通过。四种尺寸覆盖1280×720、1440×900、844×390、390×844，包含鼠标/模拟触摸/键盘、失焦、减少动态效果和快照隔离。
+- 本轮源同步完成，无新媒体转换。保留Web参考版quick5和release38（含4个浏览器场景）通过。另行重新导出实际GodotWeb，Chromium桌面856项、模拟手机横屏857项通过：冷启动、手机入口、隔离检查点导入、实体扇架、拖灯/撤回/试演、实体节目册前后页与掩卷、幕缝退出。导出sourceInputSha256：2149c883dd574253cb9f3b270e2a4c1f96fa1ad8efbf275dea9e2562fbfab324。
+- 新程序几何与文案均为项目原创，沿用已有字体、舞台与人物；来源补记ASSETS.md，逐文件哈希/边界见THEATER_FAN_CHEST_ACCEPTANCE_20261024.json的notebookFollowup。证据位于755-tools/verification/theater-notebook-20261024。延续已授权梁祝批次更新PR166；未合并、未部署，未声称实体手机、其他浏览器或自然全剧情验收。
+
+
+## 2026-10-24 · 蝶影残谱与全关卡推理规范
+
+- 用户将“场景包装、实验发现规则、不能随便点完就过”推广到全游戏及北教每关。已写入AGENTS.md，并完成 `godot_native/docs/PUZZLE_DISCOVERY_20261024.md` 的逐关账本；北教仍是核对过实际代码的重构方案，本轮未替换其运行时代码。
+- 梁祝首个样本已经落地：残谱初始隐去完整规律，只保留残图和短批注；从真实试演收集只改变一个因素的影拓，再拖薄纸对印以读懂图解。同灯分别考察横移与纵深；翻页、同状态试演、同时乱动多项、未试演的移动或只点旧印不直接解锁规则。自主从现场推理仍能按原合法几何完成，读册不增加剧情门槛或第二套进度。
+- Godot4.7.1定向11组962项通过；5个引擎/解析/隔离/源对照支持阶段通过（一次未配置GODOT_BIN的调用失败，正确固定引擎后通过）。真实图形发现52项及Main229项通过。保留Web quick5/release38及4个浏览器场景通过。
+- 最终Godot Web桌面861项、模拟手机横屏862项通过，实际输入完成开合对照、生成影拓、拖纸套印、掩卷退出；截图核查最终纸片布局。sourceInputSha256：6fe4553f82c9d6d72e14cee4356e6ae3fbaa3d6527bf327d08377bfe8a8e49c1。未声称实体手机、Gecko/WebKit或全剧情自然游玩验收。
+- 原创程序纸片/旧印来源补记ASSETS.md；精确文件哈希与范围见验收JSON discoveryFollowup，本机日志保存在755-tools/verification/theater-discovery-20261024。沿用“箱子和梁祝一起上传”授权更新原草稿PR166，未合并或部署。
+
+
+## 2026-10-24 · 北教图面发现与全屏嵌字物件
+
+- 延续用户明确的代码改造、上传和部署授权，将三次校时/手机终端串成有存档的推理链，值班牌改为正反纸片连线与整体压印，301/302/201改为图面线索及实际尝试反馈；电梯直接拖记录条，保留既有线路、楼梯、维修和结局控制器。逐关真实范围补入PUZZLE_DISCOVERY_20261024.md。
+- 根据用户连续指出的全屏字体比例和文字未落在按键内部问题，共享全屏尺寸比例，301索引签/把手与纸夹压印重建独立Control，原生Label使用字体度量和内框居中。手机短横屏重排物件，302命中选择最近的可见拉环，避免小屏热区重叠。手机阅读页给侧边背包保留44px实际目标和阅读避让。
+- 定向已通过：三种全屏设备六种尺寸的字体/边界/只读纸页，独立嵌字对象长短标签、301实际抽屉/Main、302两阶段场景及存档、楼梯真实输入136项。其余北教、全流程和真实Web导出正在重新验收，未将旧失败报告改写为通过。
+- 发布修复基于PR166旧头4f660f的云端证据：块响应证据跨document丢失、覆盖标签漂移、DPR3加载/IDB较慢。保留严格字节和当前存档ACK，将实际保存预算明确改为60秒/每2秒最多30次，详见GODOT_WEB_RELEASE.md；未声称旧20秒性能。
+- 图面与物件程序几何为项目原创，ASSETS.md已登记。没有改写共享主工作区其他未上传内容；候选测试/截图均在仓库外隔离目录。新提交、云端结果与生产部署另行核对。
+
+提交前补验：保留Web quick5、critical27、release38（含4个真实浏览器场景）通过。首次critical因桌面进程PATH未提供既有ffprobe失败；补齐仓库外现有工具路径后原检查全部通过。纸夹按绘制比例同步实际Control高度，压印不再落到控件外；Main真实鼠标/模拟触控、设备面板、紧凑导航和嵌字对象4组重验通过。云端生产GodotWeb仍待新提交验证。
+
+
+发布续验补记：14380b9的云端生产导出成功，随后工作流自测发现改写覆盖文字破坏旧收据契约。改为生产者保留原稳定覆盖标识并额外记录新的具体动作，工作流仍检查原字段及真实触摸事件，不接受缺少证据。正式重进探针另有旧空对象假定：已结束演出可释放其host，探针必须容许已结束状态无host，同时断言待播会话必须有host。修正后隔离四章流程与逃离/入场/剧场介绍的interrupt、complete、reload共10阶段通过；第四章末段Continue通过。修正测试不修改正式存档或补造剧情事实。
+
+
+### 2026-10-24 云端双指取消观察竞态
+
+PR166 最终7bebe源的合并候选4e220681在生产构建、六视口基础验收1143项、流式故障/重试1042项、桌面与普通手机世界/充电恢复检查通过。DPR3世界组在取消手势的frame563读取到排队输入，失败快照frame566已释放；其充电恢复900项通过。只修测试观察：在5秒内等待实际触点/方向轴释放，保留中间帧和耗时，再验证500毫秒后仍释放且角色停止。保持真实CDP输入、控制器事实断言、存档摘要与全部发布门禁；不改产品，不补发取消。新增合成延迟与负控验证，云端重验待完成。
+
+
+### 2026-10-24 输入结果观察与云端浏览器启动
+
+2425110云端DPR3通过双指取消后，在物品栏接管的固定100毫秒观察处失败；frame558仍有map触点，失败快照frame560已变为空且inventoryOwned=true。拖动释放、物品栏接管、设置前实际持有触点、近处/横屏点击均使用原实际输入/控制器结果等待，仍严格检查事实不变与恰好一次动作。另独立Chrome进程启动由20秒改为有界60秒，以处理日志证明的进程尚未提供端口问题；不会改变产品加载、动作或保存期限，也不跳过失败。新增实际runner启动失败/清理负控，保留每次云端失败证据。
+
+
+### 2026-10-24 流式故障验收跨文档观察
+
+6bddbb7的合并候选3bcc94a1已通过云端六视口1149项。后续流式故障检查读取到旧文档HTTP失败，但新引擎75个包仍missing、blocking=false；改为记录请求/失败时间，匹配本次刷新后的受控HTTP失败并等待当前原生回调。出现错误的阻塞覆盖层仍立即失败，旧文档和缺失回调不能冒充成功。游戏源代码未变化；失败证据保留，更新测试后继续完整云端验证。

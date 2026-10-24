@@ -1,0 +1,105 @@
+{
+  "assetId": "theater-chest-fluorescent-brush",
+  "recordedAt": "2026-10-24T02:52:04.020Z",
+  "timezone": "Asia/Shanghai",
+  "userDirection": "箱内刷子的造型和质感",
+  "status": "Integrated in the local native chest; rendered desktop and portrait preview; awaiting visual feedback",
+  "provenance": {
+    "method": "Original procedural Godot geometry authored for this project; no external model, texture or new raster image",
+    "reference": "Existing fluorescentBrush item and the 755-campus-morning-32 project palette",
+    "beforeSource": "/Users/zhu/Library/Application Support/755-tools/verification/theater-brush-20261024/before-theater_chest_contents_3d.gd",
+    "beforeSha256": "091bcd870c8669b92f778ca12a7fdf7708dbdadfbb523b81c2a9f0c9cdc30db3"
+  },
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "baseCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "workingTree": "Uncommitted shared workspace; only the listed object files were authored for this change",
+  "technical": {
+    "projection": "Existing exact 90 degree orthographic chest camera",
+    "units": "One 3D unit per chest source pixel",
+    "restOrigin": [
+      936,
+      -20,
+      814
+    ],
+    "restRotationYDegrees": 11,
+    "approximateLocalFootprint": [
+      145,
+      42
+    ],
+    "scale": "Uniform, preserves existing pickup presentation",
+    "materials": "Project wood and grey steel ramps; matte natural bristles; green powder confined to tips",
+    "geometry": "Shaped eight-sided handle, hanging hole detail, folded ferrule, nine thin splayed tufts over a dense bristle body",
+    "hitArea": "Projected from the rebuilt brush silhouette; existing minimum touch target preserved"
+  },
+  "sourceFiles": [
+    {
+      "path": "godot_native/scripts/objects/theater_powder_brush.gd",
+      "sha256": "c50548de59e0cd11cf4b81279ac4eb3c50618a37bfe9f9d55408149b29200381"
+    },
+    {
+      "path": "godot_native/scripts/objects/theater_chest_contents_3d.gd",
+      "sha256": "4507cb018bdef16c52efba8dccbe2670f9bf9fb16a45a4c70b451d0fbff9622f"
+    }
+  ],
+  "validations": {
+    "sourceSync": "Completed; no media conversion required",
+    "native": [
+      {
+        "name": "test_theater_chest_focus.gd",
+        "passed": true,
+        "result": "THEATER_CHEST_FOCUS 328 checks; 0 failures; captures=[]"
+      },
+      {
+        "name": "test_theater_chest_volume.gd",
+        "passed": true,
+        "result": "THEATER_CHEST_VOLUME: 118 checks; 0 failures"
+      }
+    ],
+    "nativeReport": "/Users/zhu/Library/Application Support/755-tools/verification/theater-brush-20261024/native-final.json",
+    "desktop": {
+      "viewport": [
+        1280,
+        820
+      ],
+      "originalScannerAndMechanism": true,
+      "log": "/Users/zhu/Library/Application Support/755-tools/verification/theater-brush-20261024/desktop-preview.log",
+      "result": "35 checks; 0 failures"
+    },
+    "portrait": {
+      "viewport": [
+        390,
+        844
+      ],
+      "input": "Simulated root touch",
+      "log": "/Users/zhu/Library/Application Support/755-tools/verification/theater-brush-20261024/portrait-final.log",
+      "result": "35 checks; 0 failures"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-brush-20261024/brush-desktop.png",
+      "sha256": "1d468a8ee6512e36fa1eaa38c2352b96318ea8c50819ac80994347452c543cfc"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-brush-20261024/brush-portrait.png",
+      "sha256": "5d4599942a48530711b7d8dd1e0e62c0bae10a8248c09ccde81da2fe8ceaa102"
+    }
+  ],
+  "preview": {
+    "pid": 73633,
+    "project": "/Users/zhu/Library/Application Support/755-native-check-UQEYuB/workspace/godot_native",
+    "userData": "/Users/zhu/Library/Application Support/755-native-check-UQEYuB/data/SevenFiftyFiveNative",
+    "log": "/Users/zhu/Library/Application Support/755-tools/verification/theater-brush-20261024/desktop-preview.log",
+    "verifiedAlive": true,
+    "state": "Existing compartment opened through original controller intents; brush uncollected; disposable profile"
+  },
+  "limits": [
+    "Native local change; Web not re-exported or published",
+    "Simulated touch does not establish physical mobile acceptance"
+  ],
+  "preserved": [
+    "Original chest progression and item id",
+    "Original pickup transaction and use behavior",
+    "Original inventory icon and vent presentation"
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "schema": "755-theater-chest-story-acceptance-v1",
+  "recorded_at_utc": "2026-10-23T16:04:56.116930+00:00",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "head": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "dirty_worktree": true,
+  "scope": "Local native gameplay, no browser re-export or deployment",
+  "source_files": [
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/scripts/games/theater_chest_mechanism.gd",
+      "sha256": "733d1ed7b2d0a5f1e32cdd1a746a905c0e6f75da642ac6290e2a23737697907a"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/scripts/objects/theater_chest_contents.gd",
+      "sha256": "07a768e9d9f5a4de63cdbc7e90cdf78cd2ec8fcb3d0490ea416304137c590426"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/scripts/objects/theater_chest_contents_3d.gd",
+      "sha256": "58c0960b4b2ab5b96180dcf204e054d6d4c9cf1d47a2d97c3c06233a95938476"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/scripts/ui/theater_chest_closeup.gd",
+      "sha256": "75e097f6886047e617d39a45d274591594ac63b4d42485ad844ff228de598a55"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/scripts/chapters/chapter3.gd",
+      "sha256": "9123e390ad83ed1d6bfe01ed032744d3a0ed8df682c355e27807da1ea57d1987"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/scripts/state.gd",
+      "sha256": "ab722b7d83729f2444875a8cf685681ee360070fd6640e4a9e8d9fbb8dfd8304"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/scripts/save_migration.gd",
+      "sha256": "97b48162b75f78c383f7cec977b038f52f4e6dbc03b42641a70552c1dc70ff41"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/tests/test_theater_chest_mechanism.gd",
+      "sha256": "448d5f6c658b92feceb4120221587e256a838496da8831bca3476336d939d40c"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/tests/test_theater_chest_focus.gd",
+      "sha256": "4abbaf6a504e86945c6cee52923e9cd06ce7055b94072a06064ae100d973b79c"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/tests/test_theater_chest_volume.gd",
+      "sha256": "0912d08fc6f339afdb1391811477076861936a915cbf63f5a2daf250f6543c1e"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/tests/test_chapter3.gd",
+      "sha256": "8605a300201f41671769aa185d849ec9c6a211c06cc5654f936a5f3f0556e1f0"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/tests/campaign_chapter3.gd",
+      "sha256": "2e86258d765a9a21348bdfcb3c6e927f78ea2fa7ec6805e227d4b9939d9e1dec"
+    },
+    {
+      "path": "/Users/zhu/Downloads/755/godot_native/tests/test_theater_departure_main.gd",
+      "sha256": "f3abb0f87d1a570cc6c407e862c48a101c4f7e5a62a7288fa7ddb01390743789"
+    }
+  ],
+  "latest_native_stages": [
+    {
+      "label": "Godot asset import and editor parse",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_c3_devices_controls.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_chapter3.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_chapter3_reversal.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_full_campaign.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_save_domain_guard.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_save_integration.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_theater_chest_mechanism.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_theater_chest_focus.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_theater_chest_volume.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_theater_clue_main.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_theater_clue_reactions.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_theater_departure_main.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "test_theater_object_rebuild.gd",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "Source catalog tests/export_c3_devices_source.mjs",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "Source oracle tests/verify_source_model_parity.mjs",
+      "failed": false,
+      "status": 0
+    },
+    {
+      "label": "Original SaveStore differential",
+      "failed": false,
+      "status": 0
+    }
+  ],
+  "reports": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/reports/755-chest-story-final-20261023.json",
+      "sha256": "c2b4ff28fcab811f21df1edbe5b91d8d9c43e377b2264b3dcb2da2c27ff72a91"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/reports/755-chest-story-final-20261023.json.meta.json",
+      "sha256": "0227a9a3be6789e065f929555f81afb2143b367b1ebf160fc6c6cb68cfbfd7d7"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/reports/755-chest-story-departure-20261023.json",
+      "sha256": "6a876a1202dee30d24f1e30b085ac8c62e918c4d80e294ce325f67a5882ee645"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/reports/755-chest-story-final-visual-20261023.log",
+      "sha256": "48eefd29652be6a972d3b89adff38b10511958b71ee3e410a2b09049b83524b4"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/reports/755-chest-story-desktop-20261023.log",
+      "sha256": "ee2c1e4c69e0ef719c88c829edca98e12f6c38a5471f93994619636d6dd35c98"
+    }
+  ],
+  "visual_captures": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-assembled.png",
+      "sha256": "a4b84234b368f03404505ce3048828a4995d32ed41af3f75a79163f786b4de78"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-bottom-focused.png",
+      "sha256": "15c8e6021d55a3b64d335803a82decb1927da41dba79254f4dc841b99fcdc50a"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-bottom.png",
+      "sha256": "167c4faad7359514f3385b40d8bbcc425d2de13f5c31b81960b687fd8addcc4f"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-cleared.png",
+      "sha256": "f6cbba6a15d4bb92b771ec4b43ea0dd5d7c910600c40c6e89b28df1e77819310"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-closed.png",
+      "sha256": "9909c5c67a1e19f2197a07e81cf9b187f8cf481843239dcb67423a9217736f79"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-clue.png",
+      "sha256": "d531189bfcc8d0c5a08dce7e1783c98245c32bc99c2eb4eed14f9dd29c21b08d"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-collected.png",
+      "sha256": "2b36e260d05dfd710e88988de37aca4971e3d18f92bba2fc64719e551cc18ffb"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-compartment.png",
+      "sha256": "a5cb23986cab56898f4bbd97c8f3d0df5345485a4391da4fd8bb64b779f50397"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-opening-front.png",
+      "sha256": "8287d4dfca4d6bb31c625495380ef6927f5b4caefaa6eae3fdf412783a547679"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-opening-inner.png",
+      "sha256": "4839eabad6ba41bcbacabc787d2d968477ba4f9c111b782f11d94794aa2cf10e"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/desktop-returned.png",
+      "sha256": "b314c409c6502e27964bea6f32ac0a805da6eb3692d761b37b03087c18bd8216"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-assembled.png",
+      "sha256": "68f0e40b0b605756625e3d9c8052dbe6a06a0701a11c8ddc6beee7abdaae9a7a"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-bottom-focused.png",
+      "sha256": "b9e3a33944c11a2121f67739eb2ac30149a14d4ff5194e01af0898e4f78de9da"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-bottom.png",
+      "sha256": "5fedf77b081ac7b7063f2725c4cd09d696a0fdbcec3145d1ce6bbd24639a763c"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-cleared.png",
+      "sha256": "bcfb46fba23b4c4b31555130678915264aaaed32f9caf6d73a6c1c926779b026"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-closed.png",
+      "sha256": "43d3df564f0365d95cfff34384a8c88137adf79b00e35e84feabe435d237720a"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-clue.png",
+      "sha256": "b332972a33f8e4d1376674e2443655e0bf9703104d35ae6651ea568d0f3ea395"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-collected.png",
+      "sha256": "44c9ae06a59d2c0a5955fc6c17c8c41f8273bfa497524da559ae13afae8646b3"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-compartment.png",
+      "sha256": "550155fe606686576e29de2ea2c6a434f8506104b8ed84adcd23203337793b12"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-opening-front.png",
+      "sha256": "ac26d4072e0594ce139286baf418c63c15748691e29e8f93dcbcc3e8fbfe8b53"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-opening-inner.png",
+      "sha256": "4dc9f3df7c69c015b466da897df45fcff03c23e60d9cca250531646ceb213ead"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-story-20261023/final/mobile-returned.png",
+      "sha256": "9d6c89e6a5228bc91a4ba6269dfd54f62891e13c2df6e75d6760b2217c760899"
+    }
+  ],
+  "results": {
+    "native_latest": "17 stages passed across original run and departure-harness repair rerun",
+    "campaign": "Automated continuous chapters 1,2,3,4 passed",
+    "mechanism": "103 checks, including real disk Continue, native export/import, legacy browser owned/spent brush",
+    "input": "328 checks in real Main with injected mouse, keyboard and touch at desktop and 390x844",
+    "geometry": "118 checks including 90-degree orthographic source projection, pile movement, latch motion and collected brush removal",
+    "save_integration": "1829 checks and 236 real-file browser imports",
+    "save_differential": "572 original SaveStore cases"
+  },
+  "limitations": [
+    "GUI capture runs encountered normal focus-loss pause while the user interacted with the desktop. Both viewport main paths produced full real rendered stage captures; the final combined GUI run failed later interruption/focus waits. Do not call that entire GUI run a pass.",
+    "Physical mobile device not tested.",
+    "Continuous campaign is automated, not a manually earned campaign.",
+    "No browser build/export, browser lifecycle acceptance, deployment or commit in this turn."
+  ],
+  "repair_notes": [
+    "The departure test tried to freeze a lazily unmounted story host; it now skips absent optional hosts. All 203 assertions plus error scan pass on rerun.",
+    "Checkpoint numeric validation accepts JSON numeric types by value; persisted partial progress now reloads."
+  ],
+  "user_steering": "User subsequently requested deeper Rusty Lake-like calibration specifically in the north teaching building. No chest clock was added. Hall clock versus phone terminal is awaiting clarification."
+}

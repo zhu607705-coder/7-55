@@ -109,7 +109,7 @@ func refresh():
 	if not solved:last_auto_mask=null
 	retry.visible=solved and not pending and last_auto_mask==mask
 	retry.disabled=pending;close_button.disabled=pending
-	status_label.text="总负载过高。核对已记录的必要路线，关闭旁路回路。" if mask==int(grid_data.allOnMask) else feedback if not feedback.is_empty() else "正在同步配电状态……" if pending else "按下一区，会切换它自身和连线直接相接的区域。"
+	status_label.text="总负载过高。核对已记录的必要路线，关闭旁路回路。" if mask==int(grid_data.allOnMask) else feedback if not feedback.is_empty() else "正在同步配电状态……" if pending else "按动柜内开关，比较各区灯光与走线。"
 	fixture.queue_redraw();graph.queue_redraw();maybe_lock.call_deferred(mask)
 func toggle(index:int):
 	if not live or pending or not read_state.is_valid() or not context_valid(read_state.call()):return

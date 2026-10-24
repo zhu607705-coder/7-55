@@ -19,6 +19,7 @@ var press_outcome:=""
 var displayed_stage:="insert"
 var old_calibration:Dictionary={"horizontal":0,"vertical":0,"pressure":0}
 var dent:=false
+var last_imprint:Dictionary={}
 var fit:=1.0
 var origin:=Vector2.ZERO
 var play_area:=Rect2()
@@ -67,6 +68,7 @@ func present(value:Dictionary,already_recorded:bool,event:Dictionary={},reduce_m
 	else:motion=""
 	queue_redraw()
 func begin_press()->void:
+	last_imprint=checkpoint.calibration.duplicate(true)
 	cancel_gesture();motion="press";motion_time=0;press_outcome="";queue_redraw()
 func show_feedback(kind:String)->void:
 	if kind in ["success","imprint","imprinted","calibrated","press_success"]:

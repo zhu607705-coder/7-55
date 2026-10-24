@@ -39,6 +39,13 @@ func run():
 	check(game.selection==int(t.selectableStartMinSeconds)+1,"Right changes selected door start by exactly one second")
 	check(shifted.door.position.x>baseline.door.position.x and shifted.passenger==baseline.passenger,"Only blue door moves; yellow passenger window stays fixed")
 	check(shifted.rise_x>baseline.rise_x,"White rise marker follows door start")
+	var at:Vector2=panel.get_global_transform_with_canvas()*panel.geometry().door.get_center()
+	var down:=InputEventScreenTouch.new();down.index=0;down.position=at;down.pressed=true;root.push_input(down,true)
+	var drag:=InputEventScreenDrag.new();drag.index=0;drag.position=at+Vector2(panel.geometry().track.size.x/panel.geometry().duration*2,0);root.push_input(drag,true)
+	var up:=InputEventScreenTouch.new();up.index=0;up.position=drag.position;up.pressed=false;root.push_input(up,true)
+	check(game.selection==int(t.selectableStartMinSeconds)+3,"Actual touch drag moves the physical record two seconds")
+	check(panel.geometry().passenger==baseline.passenger,"Record drag cannot rewrite passenger evidence")
+
 	for i in 20:key(game,KEY_LEFT)
 	check(game.selection==int(t.selectableStartMinSeconds),"Earlier control clamps to original minimum")
 	for i in 20:key(game,KEY_RIGHT)
