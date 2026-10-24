@@ -2,6 +2,7 @@ extends Control
 const SelectedUi=preload("res://scripts/ui/selected_ui_theme.gd")
 ## Native phone and RPG shell. All story changes pass through State.
 var phone: PanelContainer
+var phone_page_margin: MarginContainer
 var phone_content: VBoxContainer
 var phone_padding: Control
 var phone_chrome: Control
@@ -258,7 +259,8 @@ func _build_shell() -> void:
 	page_body = VBoxContainer.new()
 	page_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	page_body.add_theme_constant_override("separation",0)
-	phone_scroll.add_child(page_body)
+	phone_page_margin=MarginContainer.new();phone_page_margin.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	phone_scroll.add_child(phone_page_margin);phone_page_margin.add_child(page_body)
 	var footer := HBoxContainer.new()
 	footer_row = footer
 	phone_content.add_child(footer)
@@ -638,6 +640,11 @@ func _layout() -> void:
 	phone.size = Vector2(430,860)
 	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
 	phone.visible = not mobile_world and not fitted_activity
+	# The edge inventory stays reachable; narrow reading pages reserve its width.
+	var reading:bool=str(State.d.native.page) in ["c4_notes","c4_device"]
+	var edge:float=maxf(38,44/maxf(.001,phone_scale))
+	var inset:int=ceili(edge+10) if reading and phone.position.x<edge*phone_scale+8 else 0
+	phone_page_margin.add_theme_constant_override("margin_left",inset)
 	phone_world_return.visible = phone.visible and has_world and not is_instance_valid(active_game)
 	phone_world_return.position = available-Vector2(56,56)
 	phone_world_return.size = Vector2(44,44)
@@ -1120,18 +1127,21 @@ func _open_chapter4_power(current: Dictionary) -> bool:
 	add_child(panel);_show_world_mobile();_layout_modal();_sync_inventory_dock_input();return true
 
 func _open_chapter4_clock(current: Dictionary) -> bool:
-	var choices:Array=[];var required:=""
-	for action in State.get_actions("c4_device"):
-		if action.id=="c4_clock_set":choices=action.inputs[0].options
-	for module in State.modules:
-		if module.has_method("_required_time"):required=module._required_time(current.chapter4)
-	var panel:Control=load("res://scripts/ui/chapter4_clock_panel.gd").new()
-	if not panel.configure(current,choices,required,font):panel.free();return false
 	_close_modal()
-	if is_instance_valid(modal):panel.free();return false
+	if is_instance_valid(modal):return false
+	var request:Dictionary=State.act("c4_clock_begin")
+	if not request.has("clock"):return false
+	var panel:Control=load("res://scripts/ui/chapter4_clock_panel.gd").new()
+	if not panel.configure(State.d,request.clock,font):panel.free();return false
 	var focused=get_viewport().gui_get_focus_owner();modal_previous_focus=weakref(focused) if focused!=null else null
-	modal=panel;modal_panel=panel.frame
+	modal=panel;modal_panel=panel.physical
 	panel.close_requested.connect(_close_modal)
+	panel.intent_requested.connect(func(event:Dictionary):
+		if modal!=panel:return
+		var result:Dictionary=State.act("c4_clock_event",{"session":panel.session,"event":event})
+		if is_instance_valid(panel) and modal==panel:panel.resolve(State.d,result)
+	)
+	panel.cancel_requested.connect(func(session:Dictionary):State.act("c4_clock_cancel",{"session":session}))
 	panel.submit_requested.connect(func(value:Dictionary):
 		var result:Dictionary=State.act("c4_clock_set",value)
 		if is_instance_valid(panel) and modal==panel:panel.resolve(State.d,result)

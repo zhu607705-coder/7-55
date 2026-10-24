@@ -367,9 +367,9 @@ jobs:
             const world = item.mobileWorld;
             if (!item.passed || world?.completed !== true || world.fixtureConstructionIsNotTouchEvidence !== true || !world.samples?.length || !world.coverage?.length) throw Error(`Incomplete mobile-world evidence: ${item.id}`);
             if (!item.imports?.some(input => input.filename === fixture.fixture && input.sha256 === fixture.sha256)) throw Error(`Browser did not import the recorded earned fixture: ${item.id}`);
-            if (item.touch && (!world.inputs?.some(input => input.method === 'Input.dispatchTouchEvent') || !world.coverage.includes('bottom plaque'))) throw Error(`Missing actual touch/plaque evidence: ${item.id}`);
+            if (item.touch && (!world.inputs?.some(input => input.method === 'Input.dispatchTouchEvent') || !world.coverage.includes('bottom plaque above inline controls'))) throw Error(`Missing actual touch/plaque evidence: ${item.id}`);
             if (!item.touch && !world.coverage.includes('PC direction + Space')) throw Error('Missing PC interaction regression');
-            if (item.id === 'touch-390' && !world.coverage.includes('landscape resize')) throw Error('Missing actual landscape resize coverage');
+            if (item.id === 'touch-390' && !world.coverage.includes('landscape resize and direct tap')) throw Error('Missing actual landscape resize coverage');
           }
           const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
             inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),

@@ -221,3 +221,9 @@ The current native cycling avatar is an original17-bone weighted pelican with wa
 
 - `godot_native/scripts/presentation/theater_rehearsal_tracing.gd` 新增原创程序几何：薄纸、朱墨三处套印记号、残扇骨、门前足痕和同灯旧印。影拓前后图形取自两次真实接受的试演快照；不以预制示例伪造玩家的尝试。未引入外部游戏图、模型、字体或绘图代码。
 - 缺笔文案、卷名和试演比较规则为项目原创，纸面/字体沿用既有手记许可。素材只读投影与本次会话记录，不写剧情或存档。对应证据见 `THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 的 `discoveryFollowup`。
+
+
+### 北教图面线索与嵌字物件 — 2026-10-24
+
+- 原创原生程序几何：`chapter4_evidence_folio.gd` 的残签、齿孔、剖面、线路与试压痕；`chapter4_paper_workbench.gd` 的正反纸条；`clock_delay_board.gd` 的多路延时线；`inset_option_key.gd` 的底板和原生居中文字。均复用项目既有字体与许可，不增加外部图像、模型或抄录游戏素材。
+- 301原柜体、302灯架/幕布、201压台以及旧钟素材继续使用原登记资源。所有可选纸面和试压残迹只呈现玩家输入；新持久配置由原生控制器保存与验证。实施范围见 `godot_native/docs/PUZZLE_DISCOVERY_20261024.md`。本批源代码位于 `godot_native/`，Web部署由既有Pages工作流构建，不另创建Release压缩包。

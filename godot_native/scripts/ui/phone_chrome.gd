@@ -593,7 +593,7 @@ func _layout_inventory_anchor() -> void:
 	# A collapsed drawer is always attached to the left side. Vertical dragging
 	# changes only its bounded y; it never becomes a navigation-bar control.
 	var factor: float=maxf(.001,get_global_transform().get_scale().x)
-	var edge: float=maxf(38,28.0/factor)
+	var edge: float=maxf(38,44.0/factor)
 	inventory_handle.size=Vector2(edge,maxf(63,44.0/factor))
 	inventory.size=inventory_handle.size
 	if _reading_inventory_anchor() and get_global_position().x>=edge*factor+8:

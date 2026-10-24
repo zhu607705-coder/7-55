@@ -1,6 +1,7 @@
 extends RefCounted
 ## An ephemeral source-panel draft. Never writes progression or a save.
 const SOURCE_PATH := "res://data/native/chapter4-device-source.json"
+const Duty = preload("res://scripts/games/chapter4_duty_board.gd")
 const PHYSICAL_PUZZLES: Array = ["power_topology","evacuation_route"]
 var source: Dictionary = {}
 var puzzle_id := ""
@@ -32,6 +33,7 @@ func open(id: String, state: Dictionary) -> bool:
 	pending_serial = 0
 	feedback = ""
 	draft = source.defaults.duplicate(true)
+	_duty_checkpoint(state)
 	opened = true
 	return true
 
@@ -138,6 +140,16 @@ func begin_submit() -> Dictionary:
 	pending_serial = serial
 	return {"action":("c4_device_" if activity else "c4_solve_")+puzzle_id,"value":value,"serial":pending_serial}
 
+func begin_object_event(event:Dictionary)->Dictionary:
+	if not editable() or puzzle_id!="duty_board": return {}
+	pending=true;feedback="";serial+=1;pending_serial=serial
+	return {"action":"c4_duty_event","value":event,"serial":pending_serial}
+
+func _duty_checkpoint(state:Dictionary)->void:
+	if puzzle_id!="duty_board": return
+	var cp:Dictionary=state.get("native",{}).get("c4_duty_board",Duty.initial())
+	draft.dutyOrder=cp.order.duplicate();draft.dutyBacks=cp.backs.duplicate(true)
+
 func resolve(request_serial: int, state: Dictionary, result: Dictionary) -> bool:
 	if not opened or not pending or request_serial != pending_serial: return false
 	pending = false
@@ -145,8 +157,8 @@ func resolve(request_serial: int, state: Dictionary, result: Dictionary) -> bool
 	# The controller uses handled/message for both failure and success. Only
 	# its persisted fact proves acceptance. No prose or local answer inference.
 	completed = definition.factId in state.get("chapter4",{}).get("factIds",[])
+	_duty_checkpoint(state)
 	feedback = "" if completed else str(result.get("message","当前组合与现场痕迹不一致，可以继续调整。"))
-	if not completed and feedback.is_empty(): feedback = "当前组合与现场痕迹不一致，可以继续调整。"
 	return true
 
 func update_authority(state: Dictionary) -> void:
@@ -154,6 +166,7 @@ func update_authority(state: Dictionary) -> void:
 	var facts: Array = state.get("chapter4",{}).get("factIds",[])
 	completed = definition.factId in facts
 	prerequisite_ready = _prerequisite(state)
+	_duty_checkpoint(state)
 
 func _prerequisite(state: Dictionary) -> bool:
 	if puzzle_id == "positioning_calibration": return bool(state.get("items",{}).get("clockPositioningPlate",false)) and "positioning_plate_collected" in state.get("chapter4",{}).get("factIds",[])

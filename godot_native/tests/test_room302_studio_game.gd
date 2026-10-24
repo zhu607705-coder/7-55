@@ -1,4 +1,5 @@
 extends SceneTree
+const Layout=preload("res://scripts/ui/device_layout.gd")
 const Model=preload("res://scripts/objects/room302_studio_model.gd")
 var checks:=0
 var failures:=0
@@ -44,7 +45,7 @@ func run()->void:
 	root.add_child(panel);await frames(3)
 	check(panel.checkpoint==layout and panel.view.lamps.size()==3,"Three native lamp sprites restore partial layout")
 	await frames(8)
-	check(panel.header.size.y<=48.1 and panel.close_button.size.y<=48.1,"Freshly mounted studio title cannot inflate header before first input")
+	check(is_equal_approx(panel.header.size.y,52*Layout.scale_for(panel.size)) and is_equal_approx(panel.close_button.size.y,panel.header.size.y),"Freshly mounted studio title cannot inflate header before first input")
 	check(panel.has_method("layout_fullscreen") and panel.frame==null and panel.get_global_rect()==Rect2(Vector2.ZERO,root.size),"Native game fills viewport without a nested panel frame")
 	for mode:String in ["keyboard","touch"]:
 		for dimensions:Vector2i in [Vector2i(390,844),Vector2i(430,932),Vector2i(844,390),Vector2i(1180,812)]:await check_layout(panel,dimensions,mode)
@@ -93,7 +94,7 @@ func run()->void:
 	var no_film:Dictionary=old_complete.duplicate(true);no_film.chapter4.factIds.erase("a3_archive_film_retrieved");no_film.chapter4.factIds.erase("a3_media_alignment_completed")
 	panel=load("res://scripts/objects/room302_studio_panel.gd").new();check(panel.configure("media_alignment",no_film,game_font),"Missing-film original information page still opens")
 	root.add_child(panel);await frames(2)
-	check(panel.session.operation_locked() and not panel.view.interactive and button_count(panel)==1,"Missing original film disables all new lamp/curtain controls")
+	check(panel.session.operation_locked() and not panel.view.interactive and panel.evidence.cover.visible,"Missing original film disables all new lamp/curtain controls")
 	panel.dispose_session();panel.queue_free();await frames()
 	for illegal:Dictionary in [dict_with_extra(first),dict_with_repeat(first)]:
 		var snapshot:Dictionary=state.d.duplicate(true);snapshot.native.c4_media_studio=illegal;check(not state.validate_snapshot(snapshot),"State rejects malformed optional studio checkpoint")
@@ -112,8 +113,8 @@ func check_layout(panel:Control,dimensions:Vector2i,mode:String)->void:
 	panel.layout_fullscreen(Rect2(Vector2.ZERO,Vector2(dimensions)),Vector4(13,29,17,23));await frames(5)
 	check(panel.color.a==1 and panel.size==Vector2(dimensions),"Opaque viewport "+mode+str(dimensions))
 	check(panel.close_button.get_global_rect().end.x<=dimensions.x-17 and panel.close_button.get_global_rect().position.y>=29,"Return stays in safe area "+mode+str(dimensions))
-	check(button_count(panel)==1,"Only Return is a button; no simulated controls "+mode+str(dimensions))
-	check(panel.header.size.y<=48.1 and panel.close_button.size.y<=48.1,"Compact one-line header stays48px "+mode+str(dimensions))
+	check(button_count(panel)==2 and button_count(panel.view)==0,"Only navigation and the physical loose sheet are buttons; scene operations remain objects "+mode+str(dimensions))
+	check(is_equal_approx(panel.header.size.y,52*Layout.scale_for(panel.size)) and is_equal_approx(panel.close_button.size.y,panel.header.size.y),"Header and return follow the same responsive dimensions "+mode+str(dimensions))
 	check(not panel.view.play_area.intersects(panel.feedback.get_rect()),"Scene reclaims former control-bar area "+mode+str(dimensions))
 	check(panel.hint.get_global_transform().get_scale().is_equal_approx(Vector2.ONE),"Text stays unscaled while native scene grows "+mode+str(dimensions))
 	check(panel.input_mode==mode and panel.view.touch_mode==(mode=="touch"),"Explicit profile, not width, chooses input layout")

@@ -4,6 +4,7 @@ signal choice_requested(key: String, value: String)
 signal drawer_requested
 signal motion_finished
 const ATLAS = preload("res://assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_archive_film_v01.png")
+const InsetKey=preload("res://scripts/objects/inset_option_key.gd")
 const Art=preload("res://scripts/objects/room301_archive_art.gd")
 # The original 96x82 object remains the only production art. These regions
 # separate its upper case, front board, paper stock and amber film.
@@ -11,6 +12,8 @@ const REGIONS := {"case":Rect2(0,0,96,82),"drawer":Rect2(13,48,65,24),"card":Rec
 const KEYS := ["yearBand","floor","purpose"]
 const DRAFT_KEYS := ["archiveYearBand","archiveFloor","archivePurpose"]
 const TITLES := ["年代", "楼层", "用途"]
+var index_keys:Array[Control]=[]
+var handle_key:Control
 var source: Dictionary = {}
 var draft: Dictionary = {}
 var interactive := false
@@ -45,6 +48,9 @@ var entry_ms := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	for i:int in 3:
+		var key:=InsetKey.new();key.name="IndexInset_"+KEYS[i];add_child(key);index_keys.append(key)
+	handle_key=InsetKey.new();handle_key.name="DrawerHandleInset";add_child(handle_key)
 	resized.connect(func(): cancel_gesture(); _layout())
 	_layout()
 
@@ -73,6 +79,8 @@ func _layout() -> void:
 	var short_view:=play_area.size.y<330
 	var object_bounds:=Rect2(play_area.position+Vector2(0,2 if short_view else 18),Vector2(play_area.size.x,maxf(1,play_area.size.y-(8 if short_view else 52))))
 	# Leave room below the box for its real downward drawer travel.
+	if short_view:
+		object_bounds.size.x=play_area.size.x*.39
 	cabinet = _fit_rect(REGIONS["case"],object_bounds)
 	var scale_factor := cabinet.size.x/96.0
 	drawer = Rect2(cabinet.position+REGIONS.drawer.position*scale_factor,REGIONS.drawer.size*scale_factor)
@@ -84,11 +92,14 @@ func _layout() -> void:
 	for row in range(3):
 		if source.is_empty(): continue
 		var center:=cabinet.position+Vector2(47,16+15*row)*scale_factor
-		index_targets.append({"row":row,"key":KEYS[row],"rect":Rect2(center-Vector2(width,height)/2,Vector2(width,height))})
-	queue_redraw()
+		var rect:=Rect2(center-Vector2(width,height)/2,Vector2(width,height))
+		if short_view:
+			rect=Rect2(Vector2(play_area.position.x+play_area.size.x*.43,play_area.get_center().y-86+row*60),Vector2(play_area.size.x*.55,52))
+		index_targets.append({"row":row,"key":KEYS[row],"rect":rect})
+	_sync_insets();queue_redraw()
 
 func index_label(row: int) -> String:
-	if observation: return str(source.traces.archive_index[row]).trim_prefix(TITLES[row]+"：")
+	if observation: return ["齿孔残号", "剖面取景", "胶片边角"][row]
 	var current: String=draft.get(DRAFT_KEYS[row],"")
 	for option: Dictionary in source.options[KEYS[row]]:
 		if not current.is_empty() and option.value==current: return str(option.label)
@@ -136,43 +147,16 @@ func _draw() -> void:
 		# lift runs only after the first successful panel closes in the world.
 		_text(Vector2(cabinet.get_center().x,cabinet.end.y+12),"旧导视胶片 · 已取出",16,Color("f1d18a"),true)
 	else:
-		_text(Vector2(handle.get_center().x,handle.get_center().y+2),"拉开",14,Color("33240f"),true)
-		_text(Vector2(cabinet.get_center().x,cabinet.position.y-8),"301 · 胶片索引抽屉",15,Color("c6b68e"),true)
-	for item: Dictionary in index_targets:
-		var row: int=item.row
-		var rect: Rect2=item.rect
+		_text(Vector2(cabinet.get_center().x,cabinet.position.y-8),"301 · 胶片索引抽屉",preload("res://scripts/ui/device_layout.gd").font_size(size,20),Color("c6b68e"),true)
+
+func _sync_insets()->void:
+	if index_keys.size()!=3 or index_targets.size()!=3 or handle_key==null:return
+	for item:Dictionary in index_targets:
+		var row:int=item.row;var rect:Rect2=item.rect
 		if dragging and gesture=="index" and gesture_card.row==row:rect.position.x+=clampf(drag_current.x-drag_start.x,-10,10)
-		_draw_index_strip(rect,row)
-
-func _draw_index_strip(rect: Rect2,row: int) -> void:
-	# A narrow paper strip lies on each existing archive card face. The user
-	# operates the drawer's index, rather than an external option questionnaire.
-	var brass:=StyleBoxFlat.new();brass.bg_color=Color("544026");brass.border_color=Color("997a48")
-	brass.set_border_width_all(2);brass.set_corner_radius_all(2)
-	draw_style_box(brass,rect.grow(3))
-	_paper(rect,true)
-	var label_width:=48.0 if narrow else 60.0
-	var divider:=rect.position.x+label_width
-	draw_line(Vector2(divider,rect.position.y+7),Vector2(divider,rect.end.y-7),Color("bca67e"),1,true)
-	_text(Vector2(rect.position.x+label_width/2,rect.get_center().y+6),TITLES[row],14,Color("735833"),true)
-	var value_center:=Vector2(divider+(rect.end.x-divider)/2,rect.get_center().y+6)
-	_text(value_center,index_label(row),15 if narrow else 18,Color("332c20"),true)
-	if not completed and not observation:
-		for sign_value in [-1,1]:
-			var at:=Vector2(divider+13 if sign_value<0 else rect.end.x-13,rect.get_center().y)
-			draw_colored_polygon(PackedVector2Array([at+Vector2(sign_value*3.5,0),at+Vector2(-sign_value*2.5,-4),at+Vector2(-sign_value*2.5,4)]),Color("92754c"))
-	if focused_row==row and interactive:
-		draw_line(rect.position+Vector2(8,rect.size.y-3),rect.end-Vector2(8,3),Color("947331"),2,true)
-
-func _paper(rect: Rect2, selected: bool) -> void:
-	# Native paper controls use the original object's cream/brass palette.
-	# Keep the small source handwriting out of the selectable labels.
-	var paper:=StyleBoxFlat.new(); paper.bg_color=Color("e0d1aa") if selected else Color("b8af92")
-	paper.border_color=Color("7a6140"); paper.set_border_width_all(2); paper.set_corner_radius_all(3)
-	paper.shadow_color=Color(0,0,0,.3); paper.shadow_size=2; paper.shadow_offset=Vector2(0,3)
-	draw_style_box(paper,rect)
-	for index in range(3):
-		draw_line(rect.position+Vector2(7,9+index*3),rect.position+Vector2(14,9+index*3),Color("9c8a62",.6),1)
+		index_keys[row].present(rect,TITLES[row],index_label(row),not completed and not observation,focused_row==row and interactive)
+	handle_key.visible=not completed
+	handle_key.present(handle,"","拉开",false,false,true)
 
 func begin_result(success: bool) -> void:
 	cancel_gesture()
@@ -188,13 +172,14 @@ func begin_result(success: bool) -> void:
 func _process(delta: float) -> void:
 	if entry_ms<220:
 		entry_ms=minf(220,entry_ms+clampf(delta,0,.06)*1000);queue_redraw()
-	if motion.is_empty(): return
+	if motion.is_empty():
+		_sync_insets();return
 	motion_time += clampf(delta,0,.06)
 	if motion == "open": drawer_open = smoothstep(0,.52,motion_time)
 	if motion_time >= (.52 if motion == "open" else .44):
 		motion = ""
 		motion_finished.emit()
-	queue_redraw()
+	_sync_insets();queue_redraw()
 
 func cancel_gesture() -> void:
 	dragging=false; pointer_kind=""; pointer_index=-1; pointer_device=0; gesture=""; gesture_card={}

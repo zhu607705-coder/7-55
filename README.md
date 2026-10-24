@@ -4,7 +4,7 @@
 
 《7:55》Godot 原生游戏与保留的网页版本。
 
-2026-10-24 剧场箱内与梁祝扇影交互源码提交：[玩法与操作](godot_native/docs/THEATER_FAN_CHAIN_20261024.md)、[验收范围](godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json)。包括实体刷子、直接翻找、扇骨开合与共同光源；实现位于 `godot_native/`。本批为源码上传，不含新的 Release 归档或线上部署。
+2026-10-24 剧场箱内与梁祝扇影交互源码提交：[玩法与操作](godot_native/docs/THEATER_FAN_CHAIN_20261024.md)、[验收范围](godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json)。包括实体刷子、直接翻找、扇骨开合与共同光源；实现位于 `godot_native/`。同批包含[北教发现式解谜与全屏物件排版](godot_native/docs/PUZZLE_DISCOVERY_20261024.md)。实现仍位于 `godot_native/`；Pages通过既有发布工作流从合入提交构建，实际发布结果以[部署工作流](https://github.com/zhu607705-coder/7-55/actions/workflows/deploy-pages.yml)为准，不另创建Release归档。
 
 项目原创源代码采用 [Apache License 2.0](LICENSE)，署名及第三方许可说明见 [NOTICE](NOTICE)。引擎、依赖、字体和素材保留各自许可，素材来源见 [ASSETS.md](ASSETS.md)。
 

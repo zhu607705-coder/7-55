@@ -119,3 +119,10 @@ GitHub `github-pages` 环境的发布分支权限继续限于原来允许的 `ma
 - [Godot 4.7 Web 导出预设实现](https://github.com/godotengine/godot/blob/4.7-stable/platform/web/export/export_plugin.cpp)
 - [Godot 4.7.1 官方下载与校验文件](https://github.com/godotengine/godot-builds/releases/tag/4.7.1-stable)
 - [GitHub Pages 容量限制](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
+
+
+## 2026-10-24 高像素密度发布续验
+
+PR166旧头4f660f的云端证据暴露三类问题：跨document重载后CDP无法读取已请求的块响应体；移动输入覆盖标签与工作流判定漂移；软件渲染DPR3下内容挂载及IDB落盘慢于旧期限。本批保留真实输入、完整字节哈希和原生/独立IDB摘要一致要求：响应体启用CDP durable messages并在重载前完成已请求的证据，覆盖标签与实际交互一致，旧存档首次挂载使用相同的有界启动期限。
+
+产品保存仍是Godot官方同步和只读IDB确认，没有第二写入者。同步间隔调整为2秒，最多30次、总期限60秒；浏览器验收等待75秒以收齐失败/成功收据。这是明确的时限调整，不宣称20秒内完成或证明云端失败由单一原因导致。旧失败证据保留，新提交需要重新验收。

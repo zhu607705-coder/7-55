@@ -3,6 +3,8 @@ extends ColorRect
 signal submit_requested(action: String, value: Dictionary, serial: int)
 signal close_requested
 const Session = preload("res://scripts/ui/chapter4_device_session.gd")
+const Workbench = preload("res://scripts/ui/chapter4_paper_workbench.gd")
+const Folio = preload("res://scripts/ui/chapter4_evidence_folio.gd")
 const Preview = preload("res://scripts/ui/chapter4_device_preview.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
 # Source device palette, scoped here; no shared theme changes.
@@ -20,6 +22,8 @@ var workspace: VBoxContainer
 var scroll: ScrollContainer
 var close_button: Button
 var submit_button: Button
+var workbench: Control
+var _paper_focus:=0
 var preview: Control
 var readout: Label
 var feedback_label: Label
@@ -100,7 +104,12 @@ func _finish_layout() -> void:
 
 func layout_panel(available: Vector2) -> void:
 	if frame == null: return
-	frame.size = Vector2(maxf(1,minf(760,available.x-24)),maxf(1,minf(760,available.y-24)))
+	var ui_scale:float=preload("res://scripts/ui/device_layout.gd").scale_for(available)
+	frame.size = Vector2(maxf(1,minf(800*ui_scale,available.x-24)),maxf(1,minf(800*ui_scale,available.y-24)))
+	for node in frame.find_children("*","Control",true,false):
+		if node.has_meta("device_font"):
+			node.add_theme_font_size_override("font_size",roundi(int(node.get_meta("device_font"))*ui_scale))
+		if node is Button:node.custom_minimum_size.y=48*ui_scale
 	frame.position = (available-frame.size)/2
 	if content_grid != null: content_grid.columns = 2 if frame.size.x >= 680 else 1
 
@@ -109,7 +118,8 @@ func label(text: String, pixels: int = 15, ink: Color = Color.TRANSPARENT) -> La
 	node.text = text
 	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	node.add_theme_font_size_override("font_size",pixels)
+	node.set_meta("device_font",maxi(18,pixels))
+	node.add_theme_font_size_override("font_size",maxi(18,pixels))
 	node.add_theme_color_override("font_color",text_ink if ink.a == 0 else ink)
 	return node
 
@@ -117,9 +127,10 @@ func button(text: String, key: String, callback: Callable) -> Button:
 	var node := Button.new()
 	node.text = text
 	node.name = key
-	node.custom_minimum_size.y = 44
+	node.custom_minimum_size.y = 48
+	node.set_meta("device_font",20)
 	node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	Ui.apply_button(node,surface,text_ink,border,0,2,14,Vector2(10,6),Color("ffcf55"))
+	Ui.apply_button(node,surface,text_ink,border,0,2,20,Vector2(10,6),Color("ffcf55"))
 	node.pressed.connect(callback)
 	return node
 
@@ -178,7 +189,15 @@ func refresh_view() -> void:
 	preview = null
 	readout = null
 	var kind: String = session.view_kind()
-	if kind == "controls":
+	if kind == "controls" and session.puzzle_id in ["duty_board","archive_index"]:
+		workbench=Workbench.new();workbench.name="PaperWorkbench";workbench.session=session;workbench.focus_index=_paper_focus
+		workbench.paper_event.connect(_paper_event)
+		workbench.archive_choice.connect(func(key:String,value:String):
+			_paper_focus=workbench.focus_index
+			_edited(session.choose(key,value)))
+		workbench.check_requested.connect(_submit_or_close)
+		figure.add_child(workbench)
+	elif kind == "controls":
 		var caption := HBoxContainer.new()
 		caption.add_theme_constant_override("separation",10)
 		var art_path: String = session.source.assets[session.puzzle_id].url
@@ -207,7 +226,7 @@ func refresh_view() -> void:
 			image.custom_minimum_size.y = 150
 			figure.add_child(image)
 		figure.add_child(label("记录完成" if session.completed else ("观察残留痕迹" if session.mode == "dark" else ("返回物件现场" if kind=="activity" else "扫描台尚未放入底片")),13,muted))
-	workspace.add_child(label(session.definition.darkPrompt if session.mode == "dark" else session.definition.lightPrompt))
+	workspace.add_child(label(Folio.caption(session.puzzle_id),14,muted))
 	match kind:
 		"completed":
 			workspace.add_child(label("记录完成",18,accent))
@@ -216,17 +235,23 @@ func refresh_view() -> void:
 			workspace.add_child(label("缺少可校准底片",18,accent))
 			workspace.add_child(label("扫描台里还没放底片。301 的索引抽屉存着旧导视胶片。"))
 		"observation":
-			for trace: String in session.source.traces[session.puzzle_id]: workspace.add_child(label("• "+trace))
+			var folio:=Folio.new();folio.puzzle_id=session.puzzle_id;folio.source=session.source
+			workspace.add_child(folio)
 		"activity":
 			workspace.add_child(label("操作现场装置",18,accent))
 			workspace.add_child(label("未完成的摆放会从这一处重新开始。可以随时返回现场。"))
-		"controls": _controls()
+		"controls":
+			if session.puzzle_id in ["duty_board","archive_index"]:
+				var folio:=Folio.new();folio.puzzle_id=session.puzzle_id;folio.source=session.source
+				workspace.add_child(folio)
+			else: _controls()
 	feedback_label = label(session.feedback,15,Color("9b3e2d") if session.mode == "light" else accent)
 	feedback_label.name = "DeviceFeedback"
 	feedback_label.visible = not session.feedback.is_empty()
 	workspace.add_child(feedback_label)
 	close_button.disabled = session.pending
 	submit_button.text = ("正在打开…" if session.pending else "操作现场装置") if kind=="activity" else ("返回现场" if kind != "controls" else ("正在核对…" if session.pending else "提交结果"))
+	submit_button.visible=not (kind=="controls" and session.puzzle_id in ["duty_board","archive_index"])
 	submit_button.disabled = session.pending or (kind == "controls" and not session.can_submit())
 	if is_inside_tree(): _restore_view.call_deferred(previous_scroll,_focus_key)
 
@@ -235,6 +260,12 @@ func _restore_view(previous_scroll: int, focus_key: String) -> void:
 	scroll.scroll_vertical = previous_scroll
 	var node := find_child(focus_key,true,false)
 	if node is Control and node.is_visible_in_tree() and (not node is BaseButton or not node.disabled): node.grab_focus()
+
+func _paper_event(event:Dictionary)->void:
+	_paper_focus=workbench.focus_index
+	var request:Dictionary=session.begin_object_event(event)
+	if request.is_empty():return
+	submit_requested.emit(request.action,request.value,request.serial)
 
 func _edited(changed: bool) -> void:
 	if changed: refresh_view()

@@ -8,6 +8,7 @@ const Model=preload("res://scripts/objects/room201_press_model.gd")
 const View=preload("res://scripts/objects/room201_press_view.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const FACT:="a2_positioning_plate_calibrated"
+var evidence:Control
 var session:RefCounted
 var frame:PanelContainer # Fullscreen lifecycle compatibility; deliberately no inner panel.
 var header:HBoxContainer
@@ -44,6 +45,7 @@ func configure(id:String,state:Dictionary,font:Font=null)->bool:
 	close_button.pressed.connect(func():if can_close():close_requested.emit());header.add_child(close_button)
 	hint=_label("",14);add_child(hint)
 	feedback=_label("",14);add_child(feedback)
+	evidence=preload("res://scripts/ui/device_evidence.gd").new();evidence.puzzle_id=id;evidence.source=session.source;add_child(evidence)
 	view.present(checkpoint,session.completed and plate_available,{},true)
 	_refresh_view();return true
 func _ready()->void:
@@ -62,16 +64,10 @@ func layout_fullscreen(viewport_rect:Rect2,safe_insets:Vector4=Vector4.ZERO)->vo
 	if view==null or header==null:return
 	if _safe_insets!=safe_insets or position!=viewport_rect.position or size!=viewport_rect.size:cancel_input()
 	_safe_insets=safe_insets;position=viewport_rect.position;size=viewport_rect.size
-	var margin:=14.0
-	safe_area=Rect2(Vector2(safe_insets.x+margin,safe_insets.y+margin),Vector2(maxf(1,size.x-safe_insets.x-safe_insets.z-2*margin),maxf(1,size.y-safe_insets.y-safe_insets.w-2*margin)))
-	header.position=safe_area.position;header.size=Vector2(safe_area.size.x,48)
-	title.add_theme_font_size_override("font_size",18 if size.x<500 else 21)
-	var compact:bool=size.y<560
-	hint.position=safe_area.position+Vector2(0,55);hint.size=Vector2(safe_area.size.x,34 if compact else 52)
-	feedback.position=Vector2(safe_area.position.x,safe_area.end.y-40);feedback.size=Vector2(safe_area.size.x,40)
-	view.position=Vector2.ZERO;view.size=size;view.touch_mode=input_mode=="touch"
-	var top:float=hint.position.y+(38 if compact else 56)
-	view.layout_scene(Rect2(Vector2(safe_area.position.x,top),Vector2(safe_area.size.x,maxf(80,feedback.position.y-top-8))))
+	safe_area=preload("res://scripts/ui/device_layout.gd").panel(self,viewport_rect,_safe_insets)
+	view.touch_mode=input_mode=="touch"
+	if evidence!=null:evidence.size=size;evidence.layout_sheet()
+
 func _schedule_layout()->void:
 	if _layout_pending or not is_inside_tree():return
 	_layout_pending=true;_finish_layout.call_deferred()
@@ -88,7 +84,7 @@ func _refresh_view()->void:
 	title.text="定位片，请坐好" if current_stage=="insert" else ("压一下，别嘴硬" if current_stage=="adjust" else "定位片终于服帖了")
 	if not plate_available:hint.text="卡槽空着。先从 204 讲台抽屉取出钟面定位片，再把它送进压床。"
 	elif session.completed:hint.text="三处压印已经咬合。原件可以带走，A1 旧钟正等着它。"
-	elif session.mode=="dark":hint.text="旧伤还在：看三处触点的磨痕和弹簧上的亮槽。切回浅色后可以动手。"
+	elif session.mode=="dark":hint.text="三处触点留下了磨痕，残签里还夹着试压纸。"
 	elif current_stage=="insert":hint.text="把手边的定位片推入压床。机器已经等得有点不耐烦了。" if input_mode=="touch" else "把手边的定位片拖进卡槽，或点它入座。Enter / 空格装板。"
 	else:hint.text="拖定位片对上旧痕，转手轮收紧弹簧，再拉下木柄压杆。" if input_mode=="touch" else "拖板对旧痕，转手轮蓄压，再拉压杆。方向键移轨 · Q/E收放弹簧 · Enter压印 · R复位。"
 	if view.interactive and not _editable():cancel_input()
@@ -106,6 +102,9 @@ func _submit()->void:
 	if not request.is_empty():
 		view.begin_press();_refresh_view();submit_requested.emit(request.action,request.value,request.serial)
 func handle_key(event:InputEventKey)->bool:
+	if evidence.opened:
+		if event.pressed and event.keycode in [KEY_ESCAPE,KEY_SPACE,KEY_ENTER]:evidence.close_sheet()
+		return true
 	if input_mode!="keyboard" or not event.pressed or event.echo or not is_visible_in_tree():return false
 	if close_button.has_focus() and event.keycode in [KEY_ENTER,KEY_KP_ENTER,KEY_SPACE]:return false
 	if event.keycode in [KEY_ENTER,KEY_KP_ENTER,KEY_SPACE]:_submit();return true

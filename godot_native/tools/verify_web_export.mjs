@@ -313,7 +313,7 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
     if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);
     const visible = !visibleSuccess || controls(value).some(c => c.name === 'SaveNativeProgress' && c.text === '已保存' && !c.disabled);
     return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;
-  }, `${label}: current native save has an exact durable receipt`, 30000);
+  }, `${label}: current native save has an exact durable receipt`, 75000);
   } catch (error) {
     diagnostics.stop('wait-failed');
     attempt.failedAt = Date.now();
@@ -335,7 +335,11 @@ async function saveProgressAndWait(label) {
   return waitForPersistedSave(label, before.savePersistence?.token ?? -1, true, saveInputBeganAt);
 }
 async function startStory(reload = false) {
-  if (reload) await waitForPersistedSave(`${active.id} before actual reload`);
+  if (reload) {
+    await waitForPersistedSave(`${active.id} before actual reload`);
+    // Finish byte evidence already requested before replacing its document.
+    await Promise.all(active.bootBodyJobs);
+  }
   const start = Date.now(); await active.cdp.send(reload ? 'Page.reload' : 'Page.navigate', reload ? { ignoreCache: true } : { url: active.url || url });
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
@@ -1205,7 +1209,7 @@ async function mobileWorldCase() {
   check(!!fixtureDir, 'mobile-world requires an explicit earned fixture directory (never a fabricated save)');
   active.mobileWorld = { fixtureConstructionIsNotTouchEvidence: true, inputs: [], samples: [], coverage: [], limitations: ['Chromium emulation, not physical phones or a manual campaign.', 'No notch/safe-area emulation is claimed by DeviceMetricsOverride; native safe-area regression is separate.'] };
   await importSave(path.join(fixtureDir, 'before_c2_dorm_exit.json'));
-  let value = await poll(async () => { const s = await snapshot(); return s?.world?.visible && s.world.scene_id === 'dorm_hub' && s.world.input && (!active.touch || s.world.input.geometryAvailable) && !s.world.input.modalVisible && !s.content.blocking ? s : null; }, 'ordinary earned import reaches the real dorm world', 60000);
+  let value = await poll(async () => { const s = await snapshot(); return s?.world?.visible && s.world.scene_id === 'dorm_hub' && s.world.input && (!active.touch || s.world.input.geometryAvailable) && !s.world.input.modalVisible && !s.content.blocking ? s : null; }, 'ordinary earned import reaches the real dorm world', bootTimeout);
   value = await mobileSample(value, importSettleMs);
   value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > value.sampleFrame && !next.world.subtitle && (!active.touch || next.world.input.geometryAvailable) ? next : null; }, 'import feedback finishes before any world gesture', 15000);
   check(state(value).actOne.manualControlTested && state(value).actOne.phase === 'movement_ready', 'earned C2 fixture contains the original unlocked movement and exit gates');
@@ -1489,7 +1493,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     // Retain the complete ~94 MB cold boot response set while the inspector
     // hashes real response bodies, even when local export I/O delays CDP.
     // This changes observation capacity only; HTTP/hash/cache checks stay strict.
-    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
+    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024, enableDurableMessages: true }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
     if (scenarios === 'streaming') await prepareStreamingFault();
     if (scenarios === 'boot-font-failure') {

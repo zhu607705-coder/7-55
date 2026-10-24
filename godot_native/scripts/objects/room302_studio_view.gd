@@ -60,11 +60,12 @@ func _layout()->void:
 	# Composition follows available geometry, not the last input device.
 	# A portrait window with a keyboard still needs the portrait arrangement.
 	var narrow:bool=play_area.size.y>play_area.size.x
-	design_size=Vector2(360,660) if narrow else Vector2(880,460)
-	lamp_positions=[Vector2(65,500),Vector2(180,430),Vector2(295,500)] if narrow else [Vector2(140,376),Vector2(345,376),Vector2(550,376)]
+	var short_wide:bool=not narrow and play_area.size.y<250
+	design_size=Vector2(360,660) if narrow else Vector2(880,310 if short_wide else 460)
+	lamp_positions=[Vector2(65,500),Vector2(180,430),Vector2(295,500)] if narrow else [Vector2(140,290 if short_wide else 376),Vector2(345,290 if short_wide else 376),Vector2(550,290 if short_wide else 376)]
 	shadow_positions=[Vector2(104,144),Vector2(180,105),Vector2(256,144)] if narrow else [Vector2(251,139),Vector2(345,139),Vector2(439,139)]
 	curtain_width=340 if narrow else 455
-	var caption_height:float=Typography.body_font().get_height(14)+4
+	var caption_height:float=Typography.body_font().get_height(caption_size())+4
 	var art_space:=Vector2(play_area.size.x,maxf(1,play_area.size.y-caption_height))
 	fit=minf(art_space.x/design_size.x,art_space.y/design_size.y);origin=play_area.position+(art_space-design_size*fit)/2
 	if stage_root!=null:
@@ -72,7 +73,7 @@ func _layout()->void:
 		curtain.position=Vector2(180,142) if narrow else Vector2(345,136)
 		curtain.scale=Vector2.ONE*(curtain_width/1419)
 		for i in range(lamps.size()):lamps[i].position=lamp_positions[i]
-		if check_station!=null:check_station.position=Vector2(180,642) if narrow else Vector2(770,428)
+		if check_station!=null:check_station.position=Vector2(180,642) if narrow else Vector2(770,300 if short_wide else 428)
 	queue_redraw()
 func present(value:Dictionary,already_recorded:bool,event:Dictionary={},reduce_motion:=false)->void:
 	var previous:Dictionary=checkpoint.duplicate(true)
@@ -153,9 +154,14 @@ func _pointer_down(point:Vector2)->bool:
 			var hit:=Rect2(center-Vector2(maxf(28,68*fit),110*fit),Vector2(maxf(56,136*fit),maxf(56,220*fit)))
 			if hit.has_point(point):lamp_pressed.emit(i);return true
 	elif displayed_stage=="curtain":
+		var nearest:Dictionary={}
+		var nearest_distance:float=INF
 		for handle:Dictionary in handle_definitions():
-			if point.distance_to(origin+Vector2(handle.point)*fit)<=maxf(24,13*fit):
-				studio_event_requested.emit({"kind":"step","axis":handle.axis,"delta":handle.delta});return true
+			var distance:float=point.distance_to(origin+Vector2(handle.point)*fit)
+			if distance<=maxf(24,13*fit) and distance<nearest_distance:
+				nearest=handle;nearest_distance=distance
+		if not nearest.is_empty():
+			studio_event_requested.emit({"kind":"step","axis":nearest.axis,"delta":nearest.delta});return true
 		if curtain_rect().has_point(source):drag_start=point;dragging=true;return true
 	return false
 func _pointer_up(point:Vector2)->bool:
@@ -194,7 +200,7 @@ func draw_projection(canvas:CanvasItem)->void:
 			var angle:float=PI/2 if i==1 else 0
 			var mirror:float=-1 if i==0 else 1
 			Shade.draw_symbol(canvas,Model.HATS[i],to,Color("dbecdb"),2,true,angle,mirror)
-			Shade.draw_symbol(canvas,hat,to+Vector2(0,7 if hat!=Model.HATS[i] else 0),Color("f1c168") if hat!=Model.HATS[i] else Color("f8e8bd"),3,false,angle,mirror)
+			Shade.draw_symbol(canvas,hat,to,Color("f1c168"),3,false,angle,mirror)
 	else:
 		var a:Dictionary=checkpoint.alignment
 		var point:=Vector2(float(a.xOffset)*16,float(a.yOffset)*16)
@@ -227,11 +233,11 @@ func draw_projection(canvas:CanvasItem)->void:
 	canvas.draw_set_transform(Vector2.ZERO)
 	if check_station!=null:
 		var rect:=scanner_caption_rect()
-		canvas.draw_string(Typography.body_font(),rect.position+Vector2(0,Typography.body_font().get_ascent(14)),SCANNER_CAPTION,HORIZONTAL_ALIGNMENT_CENTER,rect.size.x,14,Color("26372b"))
+		canvas.draw_string(Typography.body_font(),rect.position+Vector2(0,Typography.body_font().get_ascent(caption_size())),SCANNER_CAPTION,HORIZONTAL_ALIGNMENT_CENTER,rect.size.x,caption_size(),Color("26372b"))
 func scanner_caption_rect()->Rect2:
 	var font:Font=Typography.body_font()
-	var width:float=minf(play_area.size.x,font.get_string_size(SCANNER_CAPTION,HORIZONTAL_ALIGNMENT_LEFT,-1,14).x)
-	var height:float=font.get_height(14)
+	var width:float=minf(play_area.size.x,font.get_string_size(SCANNER_CAPTION,HORIZONTAL_ALIGNMENT_LEFT,-1,caption_size()).x)
+	var height:float=font.get_height(caption_size())
 	var foot:Vector2=origin+check_station.position*fit if check_station!=null else play_area.position
 	return Rect2(Vector2(clampf(foot.x-width/2,play_area.position.x,maxf(play_area.position.x,play_area.end.x-width)),clampf(foot.y+4,play_area.position.y,maxf(play_area.position.y,play_area.end.y-height))),Vector2(width,height))
 class ProjectionCanvas extends Control:
@@ -242,3 +248,5 @@ func _enter_tree()->void:
 	projection=ProjectionCanvas.new();projection.owner_view=self;projection.mouse_filter=Control.MOUSE_FILTER_IGNORE;projection.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child.call_deferred(projection)
 	set_process(true)
+
+func caption_size()->int:return preload("res://scripts/ui/device_layout.gd").font_size(size,20)

@@ -141,7 +141,7 @@ func finish_cross_floor_route()->bool:
 	var clock_panel:Control=shell.modal
 	check(is_instance_valid(clock_panel) and clock_panel.required_time=="2245_maintenance","installed plate opens the existing 22:45 detent control")
 	if not is_instance_valid(clock_panel):return false
-	await mouse_click(clock_panel.buttons[2]);await mouse_click(clock_panel.submit_button);await frames(5)
+	check(await preload("res://tests/helpers/clock_panel_driver.gd").play(clock_panel,mouse_click),"Actual linked-clock objects complete the installed plate route");await frames(5)
 	var stabilized:bool=state_node.d.chapter4.timeState=="2245_maintenance" and shell.modal==null and shell.world_frame.visible
 	check(stabilized,"actual old-clock controls stabilize22:45 and restore exploration")
 	return stabilized

@@ -29,6 +29,6 @@ func run():
 	check(chapter.objective(reload)=="回大厅装回旧时针","Source fact branch also restores collected guidance")
 	chapter.dispatch(state,"c4_install_hour")
 	check(not state.items.oldClockHourHand and state.chapter4.phase=="room204_restore","Existing install consumes once and advances original phase")
-	check(chapter.objective(state)==str(chapter.content.tasks.tune_clock_to_1850.label),"Later original time objective remains intact")
+	check(chapter.objective(state).begins_with("旧钟与终端"),"Later time objective points to the joint clock mechanism")
 	print("C4_BAKERY_OBJECTIVE ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

@@ -8,6 +8,7 @@ const Model=preload("res://scripts/objects/room302_studio_model.gd")
 const View=preload("res://scripts/objects/room302_studio_view.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
+var evidence:Control
 var session:RefCounted
 var frame:PanelContainer # Compatibility property: no nested panel is created.
 var header:HBoxContainer
@@ -44,6 +45,7 @@ func configure(id:String,state:Dictionary,font:Font=null)->bool:
 	close_button.pressed.connect(func():if can_close():close_requested.emit());header.add_child(close_button)
 	hint=_label("",14);add_child(hint)
 	feedback=_label("",14);add_child(feedback)
+	evidence=preload("res://scripts/ui/device_evidence.gd").new();evidence.puzzle_id=id;evidence.source=session.source;add_child(evidence)
 	view.present(checkpoint,session.completed,{},true)
 	_refresh_view();return true
 func _ready()->void:
@@ -63,15 +65,10 @@ func layout_fullscreen(viewport_rect:Rect2,safe_insets:Vector4=Vector4.ZERO)->vo
 	if view==null or header==null:return
 	if _safe_insets!=safe_insets or position!=viewport_rect.position or size!=viewport_rect.size:cancel_input()
 	_safe_insets=safe_insets;position=viewport_rect.position;size=viewport_rect.size
-	var margin:=16.0
-	safe_area=Rect2(Vector2(safe_insets.x+margin,safe_insets.y+margin),Vector2(maxf(1,size.x-safe_insets.x-safe_insets.z-2*margin),maxf(1,size.y-safe_insets.y-safe_insets.w-2*margin)))
-	header.position=safe_area.position;header.size=Vector2(safe_area.size.x,48)
-	var compact:bool=size.y<560
-	hint.position=safe_area.position+Vector2(0,56);hint.size=Vector2(safe_area.size.x,32 if compact else 48)
-	feedback.position=Vector2(safe_area.position.x,safe_area.end.y-34);feedback.size=Vector2(safe_area.size.x,34)
-	view.position=Vector2.ZERO;view.size=size;view.touch_mode=input_mode=="touch"
-	var top:float=hint.position.y+(38 if compact else 54)
-	view.layout_scene(Rect2(Vector2(safe_area.position.x,top),Vector2(safe_area.size.x,maxf(80,feedback.position.y-top-10))))
+	safe_area=preload("res://scripts/ui/device_layout.gd").panel(self,viewport_rect,_safe_insets)
+	view.touch_mode=input_mode=="touch"
+	if evidence!=null:evidence.size=size;evidence.layout_sheet()
+
 func _schedule_layout()->void:
 	if _layout_pending or not is_inside_tree():return
 	_layout_pending=true;_finish_layout.call_deferred()
@@ -87,7 +84,7 @@ func _refresh_view()->void:
 	var current_stage:String=Model.stage(checkpoint,session.completed)
 	title.text="灯罩抢岗位" if current_stage=="wardrobe" else ("幕布吞影" if current_stage=="curtain" else "影子收工了")
 	if session.operation_locked():hint.text="扫描台还没有底片。301的索引抽屉存着旧导视胶片。"
-	elif session.mode=="dark":hint.text=session.definition.darkPrompt
+	elif session.mode=="dark":hint.text="三处轮廓留在幕布上，残签夹着取景边角。"
 	elif session.completed:hint.text="入口、楼梯和荣誉墙都留在了胶片里。可以返回房间了。"
 	elif current_stage=="wardrobe":
 		hint.text="点一顶灯罩，再点另一顶交换。缺口决定影子，点扫描台核对。" if input_mode=="touch" else "点两顶灯罩交换，让缺口的影子回到虚线。1/2/3选灯，Enter核对。"
@@ -113,6 +110,9 @@ func _submit()->void:
 	var request:Dictionary=session.begin_submit()
 	if not request.is_empty():_refresh_view();submit_requested.emit(request.action,request.value,request.serial)
 func handle_key(event:InputEventKey)->bool:
+	if evidence.opened:
+		if event.pressed and event.keycode in [KEY_ESCAPE,KEY_SPACE,KEY_ENTER]:evidence.close_sheet()
+		return true
 	if input_mode!="keyboard" or not event.pressed or event.echo or not is_visible_in_tree():return false
 	if close_button.has_focus() and event.keycode in [KEY_ENTER,KEY_KP_ENTER,KEY_SPACE]:return false
 	var handled:=true
