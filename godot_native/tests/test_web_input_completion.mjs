@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { test } from 'node:test';
+import { waitForBrightnessControl } from '../tools/web_phone_recovery.mjs';
 
 const runner = await readFile(new URL('../tools/verify_web_export.mjs', import.meta.url), 'utf8');
 const phone = await readFile(new URL('../tools/web_phone_recovery.mjs', import.meta.url), 'utf8');
@@ -22,6 +23,38 @@ assert(factsSource);
 const claimSource = between(phone, "  await click('HomeWeatherOpen'); await click('WeatherWaterCard');", "  await shot('tiyi-weather-rain');");
 
 const copy = value => structuredClone(value);
+function brightnessSample(frame, edit = () => {}) {
+  const value = { sampleFrame: frame, documentHidden: false, viewport: { width: 390, height: 844 }, visibleControls: [{ name: 'ControlBrightness', disabled: false, rect: { x: 307, y: 117, width: 57, height: 104 } }] };
+  edit(value); return value;
+}
+function brightnessFixture(sequence) {
+  let clock = 0, reads = 0;
+  const poll = vm.runInNewContext(`${pollSource}\npoll`, { Date: { now: () => clock }, interval: async ms => { clock += ms; } });
+  const h = { poll, snapshot: async () => copy(sequence[Math.min(reads++, sequence.length - 1)]) };
+  return { h, get clock() { return clock; }, get reads() { return reads; } };
+}
+test('brightness waits through cached and not-yet-laid-out frames before using native geometry', async () => {
+  const f = brightnessFixture([brightnessSample(10), brightnessSample(11, s => { s.visibleControls = []; }), brightnessSample(12, s => { s.visibleControls[0].rect.height = 0; }), brightnessSample(13)]);
+  const result = await waitForBrightnessControl(f.h, 10);
+  assert.equal(result.value.sampleFrame, 13); assert.equal(f.reads, 4); assert.equal(f.clock, 300);
+  assert.deepEqual(result.slider.rect, { x: 307, y: 117, width: 57, height: 104 });
+});
+for (const [name, edit] of [
+  ['missing', s => { s.visibleControls = []; }],
+  ['duplicate', s => { s.visibleControls.push(copy(s.visibleControls[0])); }],
+  ['disabled', s => { s.visibleControls[0].disabled = true; }],
+  ['zero size', s => { s.visibleControls[0].rect.height = 0; }],
+  ['invalid size', s => { s.visibleControls[0].rect.width = NaN; }],
+  ['offscreen', s => { s.visibleControls[0].rect.x = 390; }],
+  ['hidden document', s => { s.documentHidden = true; }],
+  ['cached frame', s => { s.sampleFrame = 10; }],
+]) {
+  test(`brightness ${name} cannot produce guessed coordinates and expires within the original 20 seconds`, async () => {
+    const f = brightnessFixture([brightnessSample(11, edit)]);
+    await assert.rejects(waitForBrightnessControl(f.h, 10), /Timeout: fresh native brightness control/);
+    assert.equal(f.clock, 20000); assert.equal(f.reads, 200);
+  });
+}
 function worldSample(frame, edit = () => {}) {
   const value = { sampleFrame: frame, state: { native: { chapter: 2, scene: 'dorm_hub', dorm_props: { lamp_03_on: true } }, actOne: { phase: 'movement_ready' }, items: { campusCard: true }, wallet: { balance: 6 } }, world: { scene_id: 'dorm_hub', visible: true, player: { x: 100, y: 200 }, touch_axis: { x: 0, y: 0 }, input: { owners: [], mouseOwned: false, inventoryOwned: false, dormPropActions: 1 } } };
   edit(value); return value;
