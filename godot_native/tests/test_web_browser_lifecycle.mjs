@@ -296,3 +296,39 @@ test('slow browser startup has a bounded host deadline and failed startup still 
   assert.equal(persisted[0].passed, false); assert.equal(persisted[0].error, primary.stack);
   assert(persisted[0].browserLifecycle.closedAt <= persisted[0].browserLifecycle.cleanup.removeStartedAt);
 });
+
+function optionalFailureFixture(failures, frames, advance = () => {}) {
+  const start = runner.indexOf('async function observeOptionalBackgroundFailure(');
+  const end = runner.indexOf('async function streamingCase(', start);
+  assert(start > 0 && end > start);
+  const active = {streaming: {controlledFailures: failures}}; let reads = 0;
+  const context = vm.createContext({active,
+    snapshot: async () => frames[Math.min(reads++, frames.length - 1)],
+    poll: async (read, label, timeout) => {
+      assert.equal(timeout, 30000);
+      for (let i = 0; i < 5; i++) { advance(label, i, active); const value = await read(); if (value) return value; }
+      throw new Error(`Timeout: ${label}`);
+    },
+    check: (ok, label) => assert.ok(ok, label)
+  });
+  vm.runInContext(runner.slice(start, end), context);
+  return {run: context.observeOptionalBackgroundFailure, reads: () => reads};
+}
+const optionalMissing = {content: {blocking: false, packs: [{status: 'missing'}]}};
+const optionalError = {content: {blocking: false, packs: [{status: 'error'}]}};
+test('streaming waits for both current-document HTTP failure and the native error callback', async () => {
+  const f = optionalFailureFixture([{requestAt: 10}], [optionalMissing, optionalMissing, optionalError], (label, i, active) => {
+    if (label.startsWith('current document') && i === 2) active.streaming.controlledFailures.push({requestAt: 110});
+  });
+  assert.equal(await f.run(100), optionalError); assert.equal(f.reads(), 3);
+});
+test('old-document failure or a missing native callback cannot pass streaming acceptance', async () => {
+  for (const failures of [[{requestAt: 10}], [{requestAt: 110}]]) {
+    const f = optionalFailureFixture(failures, [optionalMissing]);
+    await assert.rejects(f.run(100), /Timeout:/);
+  }
+});
+test('an optional failure that blocks the actual game still fails immediately', async () => {
+  const f = optionalFailureFixture([{requestAt: 110}], [{content: {blocking: true, packs: [{status: 'error'}]}}]);
+  await assert.rejects(f.run(100), /optional background failure/); assert.equal(f.reads(), 1);
+});

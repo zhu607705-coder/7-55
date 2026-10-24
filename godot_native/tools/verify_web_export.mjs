@@ -981,12 +981,22 @@ function storyEvidence(value) {
   return { chapter: state(value)?.native.chapter, page: state(value)?.native.page, scene: state(value)?.native.scene, stateSha256: hash(JSON.stringify(state(value))), saveDigest: value.saveDigest, itemsSha256: hash(JSON.stringify(state(value)?.items)), walletSha256: hash(JSON.stringify(state(value)?.wallet)), actOnePhase: state(value)?.actOne.phase };
 }
 
+async function observeOptionalBackgroundFailure(documentStart) {
+  // Network errors from before Page.reload are retained as evidence. They are
+  // not proof that the new document's native callback has consumed its error.
+  await poll(() => active.streaming.controlledFailures.some(failure => failure.requestAt >= documentStart), 'current document encounters the controlled deferred-content block', 30000);
+  const value = await poll(async () => {
+    const next = await snapshot();
+    return next?.content?.blocking || next?.content?.packs.some(pack => pack.status === 'error') ? next : null;
+  }, 'current engine consumes the optional background failure', 30000);
+  check(!value.content.blocking && value.content.packs.some(pack => pack.status === 'error'), 'a real optional background failure does not show the required-content overlay', value.content);
+  return value;
+}
+
 async function streamingCase() {
   const fresh = await snapshot();
   check(state(fresh)?.native.chapter === 1 && !fresh.content?.blocking, 'fresh C1 ordinary phone interaction and save/reload remain usable with every deferred HTTP URL blocked');
-  await poll(() => active.streaming.controlledFailures.length > 0, 'background transport actually encounters the controlled deferred-content block', 30000);
-  const backgroundFailed = await snapshot();
-  check(!backgroundFailed.content.blocking && backgroundFailed.content.packs.some(pack => pack.status === 'error'), 'a real optional background failure does not show the required-content overlay');
+  const backgroundFailed = await observeOptionalBackgroundFailure(active.fresh.reloadRequestedAt);
   check(backgroundFailed.content.enabled && !backgroundFailed.content.monolithic && !backgroundFailed.content.manifestError, 'the running engine uses the content coordinator and a valid split manifest');
   active.streaming.freshWithBlockedBackground = { evidence: storyEvidence(backgroundFailed), content: backgroundFailed.content };
   console.log('desktop-1280: first-chapter input/save/reload survives deferred-content HTTP failure');
@@ -1503,7 +1513,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
       }
       if (method === 'Network.loadingFailed' && !params.canceled) {
         const request = active.requestsById.get(params.requestId);
-        const failure = { type: 'network', requestId: params.requestId, url: request?.url || '', phase: request?.phase || '', errorText: params.errorText, blockedReason: params.blockedReason || '' };
+        const failure = { type: 'network', requestId: params.requestId, requestAt: request?.at ?? 0, failedAt: Date.now(), url: request?.url || '', phase: request?.phase || '', errorText: params.errorText, blockedReason: params.blockedReason || '' };
         // Chromium 155 reports an empty errorText for Network.setBlockedURLs;
         // blockedReason=inspector and the exact active injected URL remain the
         // authoritative, narrowly scoped fault identity. Keep the raw event.
