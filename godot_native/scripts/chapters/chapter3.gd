@@ -6,7 +6,7 @@ const SceneSession = preload("res://scripts/presentation/c3_scene_session.gd")
 const RehearsalSession = preload("res://scripts/games/theater_rehearsal_session.gd")
 const RehearsalModel = preload("res://scripts/games/theater_shadow_rehearsal_model.gd")
 const ChestMechanism = preload("res://scripts/games/theater_chest_mechanism.gd")
-const CHEST_ACTIONS = ["c3_chest_begin", "c3_chest_inspect", "c3_chest_place", "c3_chest_turn", "c3_chest_open", "c3_chest_cancel"]
+const CHEST_ACTIONS = ["c3_chest_begin", "c3_chest_clear", "c3_chest_take", "c3_chest_clue", "c3_chest_inspect", "c3_chest_place", "c3_chest_turn", "c3_chest_open", "c3_chest_cancel"]
 var chest_mechanism: RefCounted
 var chest_serial: int = 0
 const REHEARSAL_TARGET = {"id":"theater_shadow_rehearsal","label":"借扇成蝶 · 舞台排练","kind":"rehearsal","x":560,"y":156,"width":120,"height":100,"proximity":68,"stand":{"x":560,"y":206}}
@@ -492,17 +492,18 @@ func cancel_chest_mechanism(token: Variant) -> bool:
 
 func _chest_ready(s: Dictionary) -> bool:
 	var theater: Dictionary = s.get("theaterHunt", {})
-	return str(s.get("runtimeMode", "")) == "rpg" and str(s.get("rpgScene", "")) == "theater_interior" and bool(theater.get("active", false)) and bool(theater.get("admitted", false)) and bool(theater.get("propBoxOpened", false)) and str(theater.get("phase", "")) == "prop_setup" and (can_operate(s, "theater_interior", "theater_prop_box") or can_operate(s, "theater_interior", "theater_prop_scanner"))
+	return str(s.get("runtimeMode", "")) == "rpg" and str(s.get("rpgScene", "")) == "theater_interior" and str(s.get("native",{}).get("scene","")) == "theater_interior" and bool(theater.get("active", false)) and bool(theater.get("admitted", false)) and bool(theater.get("propBoxOpened", false)) and (can_operate(s, "theater_interior", "theater_prop_box") or can_operate(s, "theater_interior", "theater_prop_scanner"))
 
 func _chest_action(s: Dictionary, action: String, value: Variant) -> Dictionary:
 	if not _chest_ready(s):
 		invalidate_chest_mechanism()
 		return {"handled": true, "ephemeral": true, "accepted": false, "message": "先在打开的道具箱旁查看。"}
 	if action == "c3_chest_begin":
+		var migrated: bool=not s.native.has("theater_chest")
 		if chest_mechanism == null:
 			chest_serial += 1
 			chest_mechanism = ChestMechanism.new(s, chest_serial)
-		return {"handled": true, "ephemeral": true, "accepted": true, "message": "", "mechanism": chest_mechanism.snapshot()}
+		return {"handled": true, "ephemeral": not migrated, "accepted": true, "message": "", "mechanism": chest_mechanism.snapshot()}
 	if chest_mechanism == null:
 		return {"handled": true, "ephemeral": true, "accepted": false, "message": "这次箱内查看已经结束。"}
 	return chest_mechanism.apply(s, action.trim_prefix("c3_chest_"), value)
@@ -744,20 +745,20 @@ func theater_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 			t.phase="spotlight_hunt"
 			return dispatch(s,"c3_spotlight")
 		"prop":
-			if t.phase!="prop_setup": return locked()
+			if t.phase!="prop_setup" and not t.propBoxOpened: return locked()
 			if dark:
 				t.propGhostRead=true
 				t.managerHintRead=true
 				return tell_lines(s,"theater_prop_ghost",[prose("chapter3-theater.content","prop.ghost"),prose("chapter3-theater.content","prop.managerHint")])
-			var inspection: Dictionary=response(prose("chapter3-theater.content","prop.opened" if t.propBoxOpened else "prop.locked"))
+			var inspection: Dictionary=response("箱盖已经打开，箱底的机关还在。" if t.propBoxOpened else prose("chapter3-theater.content","prop.locked"))
 			inspection.open_theater_device="chest"
 			return inspection
 		"scanner":
-			if t.phase!="prop_setup" or dark or not own(s,"temporaryTheaterTicket"): return locked()
+			if t.phase!="prop_setup" or dark or t.propBoxOpened or not own(s,"temporaryTheaterTicket"): return locked()
 			consume(s,"temporaryTheaterTicket")
-			s.items.fluorescentBrush=true
+			s.native.theater_chest=ChestMechanism.fresh()
 			t.propBoxOpened=true
-			var accepted: Dictionary=response(prose("chapter3-theater.content","prop.scannerAccepted"))
+			var accepted: Dictionary=response("扫描通过，箱盖的锁扣松开了。")
 			accepted.open_theater_device="chest"
 			return accepted
 		"vent":
@@ -796,7 +797,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 				list.append(rehearsal_target)
 				continue
 			var allowed: Array={"entry_ticket":["poster","kiosk","gate","charger"],"program_search":["console","program","charger"],"prop_setup":["prop","scanner","vent","charger"],"spotlight_ready":["console","charger"],"complete":["exit","charger"]}.get(s.theaterHunt.phase,["charger"])
-			if entry.kind not in allowed: continue
+			if entry.kind not in allowed and not (entry.kind=="prop" and s.theaterHunt.propBoxOpened): continue
 		if scene=="canteen_interior":
 			if not side_active(s.canteenHunt): continue
 			if entry.kind=="npc" and (s.native.mode!="light" or s.canteenHunt.phase not in ["tray_search","drink_mix"]): continue
@@ -838,6 +839,12 @@ func objective(s: Dictionary) -> String:
 	more=lake.objective(s)
 	if not more.is_empty(): return more
 	if s.theaterHunt.active and s.theaterHunt.phase!="complete":
+		if s.theaterHunt.phase=="prop_setup":
+			if not s.theaterHunt.propBoxOpened:return "用临时票解锁后台道具箱。"
+			var chest: Dictionary=s.native.get("theater_chest",{})
+			if own(s,"fluorescentBrush"):return "在后台通风口给纸条留下荧光痕迹。"
+			if chest.get("drawer_open",false):return "取出夹层里的荧光粉刷。"
+			return "翻找箱底，复原机关并打开夹层。"
 		return {"entry_ticket":"进入剧院","program_search":"取得节目单残页，确认节目顺序。","prop_setup":"让纸条留下能够被追光灯识别的痕迹。","spotlight_ready":"把追光灯遥控器接到灯控台。","spotlight_hunt":"控制光完成三幕演出。","reversal":"看清纸条真正的去向。"}.get(s.theaterHunt.phase,"")
 	if not s.canteenHunt.active: return ""
 	var current: Dictionary=CanteenObjective.current(s)

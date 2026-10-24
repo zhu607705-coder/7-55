@@ -1,5 +1,10 @@
 # 7:55 Release Assets
 
+## 20261024 — Theater chest and articulated fans
+
+- Original procedural brush geometry: [provenance](godot_native/docs/art/theater_powder_brush_20261024.json). Original articulated fan leaves: [implementation and scope](godot_native/docs/THEATER_FAN_CHAIN_20261024.md). Existing stage, actors and furniture are reused; no new third-party media or fonts.
+- Source upload into `godot_native/`; no new Release archive or production Web export. [Validation receipt](godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json) separates source checks, native graphical input and retained Web tests.
+
 ## 20261024 — Original-repository merge delivery
 
 - Delivery: [7-55 PR #164](https://github.com/zhu607705-coder/7-55/pull/164), target [main](https://github.com/zhu607705-coder/7-55/tree/main); implementation [godot_native](godot_native/README.md). This merge carries the 20261023 source and asset batch, plus a bounded async test-wait correction and current delivery records.

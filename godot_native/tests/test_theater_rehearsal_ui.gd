@@ -37,7 +37,7 @@ func run() -> void:
 		check(view.field.encloses(view.status_label.get_global_rect()),"Complete current-beat text stays on the stage-mounted cue sheet")
 		for button: Button in view.controls.values():
 			if button.visible:check(button.position.x>=0 and button.position.y>=0 and button.position.x+button.size.x<=size2.x+1 and button.position.y+button.size.y<=size2.y+1,"visible control remains inside available viewport: "+button.name)
-		check(view.field.end.y<view.controls.RehearsalTry.position.y,"stage and actual trial action do not overlap")
+		check(not view.controls.RehearsalTry.visible and not view.controls.RehearsalNext.visible,"stage trials and curtain changes use the physical lamp without a duplicate bottom action")
 	view.configure_activity_layout(Vector2(1280,720),false);await process_frame
 	var rapid_before: float=float(view.state.objects[0].x)
 	key(KEY_RIGHT,true);key(KEY_RIGHT,false);await process_frame

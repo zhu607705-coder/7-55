@@ -5269,3 +5269,8 @@ User explicitly requested merging the uploaded original-repository PR #164. Fetc
 At cd359b9, retained Web CI and the actual Godot Web production build passed. Content transport checks then failed at the fixture's resumed-chunk wait, which allowed only 500 immediate-loop turns despite real WebCrypto and deliberate timer yields. The same 50 checks passed locally. Replace that CPU-speed-dependent turn budget with a 5-second monotonic deadline and timer yields, retaining the original assertions, integrity checks, cancellation and native-mount acknowledgement. This is a Node transport-fixture correction, not evidence of actual browser or full native acceptance. Prior full native report completed 516 stages with 503 passes and 13 original failures, including a formal continuity timeout; three affected initialization fixtures passed separate corrected reruns. Preserve that evidence and the production deployment gate.
 
 Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic checks. A controlled 20ms delay around real WebCrypto reproduced the old turn-budget timeout; the corrected deadline version passed the same original loader assertions under that delay. Control scripts and logs stay outside the repository under the 20261024 merge verification directory. The runtime content loader hash remains 123525c2a5cebc21ca739eb1d70aa4caee4ac7f425d94341feac6d22b14b3036.
+
+
+## 2026-10-24 剧场箱内与扇影交互
+
+原箱子支持翻找、符号装配、转柄、夹层和荧光粉刷实体拾取；刷子改为有收腰木柄、金属折边及分束刷毛的原创几何。扇影排练增加铜扣开合、距离与共用灯源推理，实体灯接管试演和换幕。模型、触控撤回、原会话回放、实际图形窗口206项以及保留网页关键27项/发布38项检查通过。具体范围和限制见 `godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 与 `THEATER_FAN_CHAIN_20261024.md`；Godot Web尚未重新导出或发布。

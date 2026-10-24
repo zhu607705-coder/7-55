@@ -1,10 +1,11 @@
 extends Control
-## Original scanner transaction remains authoritative. The mounted mechanism
+## Controller transactions remain authoritative. The mounted mechanism
 ## submits controller intents; only its camera and object motion live here.
 signal closed(reason: String)
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const Chest=preload("res://scripts/objects/theater_chest_object.gd")
 const Contents=preload("res://scripts/objects/theater_chest_contents.gd")
+const Gestures=preload("res://scripts/ui/theater_chest_gestures.gd")
 const PAPER=Color("e8e0c8")
 class PartHotspot:
 	extends Button
@@ -44,6 +45,7 @@ var busy:=false
 var _reduced:=false
 var _fresh_open:=false
 var _begin_attempted:=false
+var gestures=Gestures.new()
 
 func setup(kind: String, reader: Callable, sink: Callable, _feedback_sink: Callable=Callable()) -> bool:
 	if kind!="chest" or not reader.is_valid():return false
@@ -62,6 +64,8 @@ func setup(kind: String, reader: Callable, sink: Callable, _feedback_sink: Calla
 	chest.move_child(contents,maxi(0,chest.get_child_count()-2));contents.hide()
 	title_label=_label("道具箱",20);title_label.hide()
 	feedback_label=_label("",16)
+	var feedback_back:=StyleBoxFlat.new();feedback_back.bg_color=Color(.09,.075,.06,.94)
+	feedback_back.set_content_margin_all(8);feedback_label.add_theme_stylebox_override("normal",feedback_back)
 	_hotspot("lid","查看箱盖",func():_say("箱盖还锁着。"))
 	_hotspot("bottom","靠近查看箱底",_inspect_bottom)
 	for piece: String in ["fan","butterfly","lamp","crank"]:
@@ -71,13 +75,15 @@ func setup(kind: String, reader: Callable, sink: Callable, _feedback_sink: Calla
 	_hotspot("axle","安装转柄 · 转动轮盘",_axle_pressed)
 	_hotspot("drawer","拉开夹层",_open_drawer)
 	_hotspot("note","展开纸条",_inspect_note)
+	_hotspot("brush","取出荧光粉刷",_take_brush)
+	_hotspot("vent_clue","查看通风口示意图",_inspect_vent_clue)
 	var back:=_hotspot("close","返回剧场",dismiss)
 	back.text="‹  返回剧场"
 	for key in ["normal","hover","pressed","hover_pressed"]:
 		var style:=StyleBoxFlat.new();style.bg_color=Color("292523") if key=="normal" else Color("44332d")
 		style.border_color=Color("70503b");style.set_border_width_all(1)
 		back.add_theme_stylebox_override(key,style)
-	configure_layout(Vector2(960,540),false);_sync_art()
+	gestures.bind(self);configure_layout(Vector2(960,540),false);_sync_art()
 	return true
 
 func _context_valid(s: Dictionary) -> bool:
@@ -86,7 +92,7 @@ func _context_valid(s: Dictionary) -> bool:
 
 func _mechanism_available() -> bool:
 	var theater: Dictionary=bound_state.get("theaterHunt",{})
-	return observed_open and str(theater.get("phase",""))=="prop_setup" and bool(theater.get("active",false)) and bool(theater.get("admitted",false))
+	return observed_open and bool(theater.get("active",false)) and bool(theater.get("admitted",false))
 
 func _label(value: String, font_size: int) -> Label:
 	var label:=Label.new();Typography.apply_body(label);label.text=value
@@ -114,11 +120,12 @@ func _hotspot(id: String, hint: String, action: Callable) -> Button:
 	add_child(button);controls[id]=button;return button
 
 func configure_layout(viewport: Vector2, compact: bool) -> void:
+	gestures.cancel()
 	compact_layout=compact;custom_minimum_size=Vector2.ZERO if compact else Vector2(960,540)
 	size=viewport if compact else Vector2(960,540)
 	if not is_instance_valid(chest):return
 	title_label.position=Vector2(16,12);title_label.size=Vector2(size.x-32,32)
-	feedback_label.position=Vector2(20,size.y-110);feedback_label.size=Vector2(size.x-40,44)
+	feedback_label.position=Vector2(20,size.y-136);feedback_label.size=Vector2(size.x-40,68)
 	_sync_art();queue_redraw()
 
 func _project(rect: Rect2) -> Rect2:
@@ -155,7 +162,7 @@ func _part_bounds(id: String) -> Rect2:
 func pick_part(point: Vector2) -> String:
 	# Visible silhouettes win before expanded touch targets. Overlapping targets
 	# can therefore stay generous without stealing the exposed face below them.
-	var order: Array[String]=["note","butterfly","fan","lamp","crank","axle","slot0","slot1","slot2","drawer"]
+	var order: Array[String]=["brush","vent_clue","note","butterfly","fan","lamp","crank","axle","slot0","slot1","slot2","drawer"]
 	if selected in order:order.erase(selected);order.push_front(selected)
 	var nearest:="";var distance:=INF
 	for id: String in order:
@@ -185,8 +192,12 @@ func _layout_controls() -> void:
 			if id in ["fan","butterfly","lamp","crank"]:control.visible=control.visible and id in mechanism.get("remaining",[])
 			if id=="axle":control.visible=control.visible and (selected.is_empty() or selected=="crank")
 			if id.begins_with("slot"):control.visible=control.visible and selected!="crank"
-			if bool(mechanism.get("drawer_open",false)) and id!="note":control.visible=false
-		control.disabled=not active or (id!="close" and (not transition_ready or busy or (focus_motion!=null and focus_motion.is_valid())))
+			if id=="note":control.visible=control.visible and mechanism.get("cleared",[]).size()==3
+			if id in ["brush","vent_clue"]:control.visible=control.visible and bool(mechanism.get("drawer_open",false)) and (id!="brush" or not bool(mechanism.get("brush_taken",false)))
+			if bool(mechanism.get("drawer_open",false)) and id not in ["note","brush","vent_clue"]:control.visible=false
+			# Zoomed notes/compartments expose only controls actually in the view.
+			control.visible=control.visible and Rect2(Vector2(0,48),Vector2(size.x,size.y-166)).encloses(Rect2(control.position,control.size))
+		control.disabled=not active or (id!="close" and (not transition_ready or busy or gestures.dragging() or (focus_motion!=null and focus_motion.is_valid())))
 	controls.note.tooltip_text="收起纸条" if reading else "展开纸条"
 	contents.visible=observed_open and not mechanism.is_empty()
 
@@ -202,7 +213,7 @@ func _begin_mechanism() -> void:
 	_begin_attempted=true
 	var result: Dictionary=dispatch.call("c3_chest_begin",{})
 	if not result.get("accepted",false):return
-	mechanism=result.get("mechanism",{});contents.set_state(mechanism,selected)
+	mechanism=result.get("mechanism",{});contents.drawer_amount=1.0 if mechanism.get("drawer_open",false) else 0.0;contents.set_state(mechanism,selected)
 	_say("")
 
 func _animate_open() -> void:
@@ -244,9 +255,19 @@ func _intent(action: String, payload: Dictionary={}) -> Dictionary:
 
 func _select_piece(piece: String) -> void:
 	if busy or not _refresh_context():return
+	if piece!="crank" and piece not in mechanism.get("cleared",[]):
+		var previous:=mechanism.duplicate(true)
+		var result:=_intent("clear",{"piece":piece})
+		if not result.get("accepted",false):return
+		selected="";contents.placement_piece=piece
+		contents.placement_to=preload("res://scripts/objects/theater_chest_contents_3d.gd").STAGING[piece]
+		contents.set_state(previous,"")
+		_animate_prop("placement_amount",0.0,1.0,.38,func():
+			contents.placement_piece="";contents.set_state(mechanism,selected))
+		return
 	selected="" if selected==piece else piece
 	contents.set_state(mechanism,selected);_layout_controls()
-	_say("" if selected.is_empty() else "把转柄装入中轴。" if piece=="crank" else "选一个轮盘凹槽放入。")
+	_say("" if selected.is_empty() else "把转柄装入中轴。" if piece=="crank" else "对照边缘缺口，放进合适的凹槽。")
 
 func _slot_pressed(index: int) -> void:
 	if selected.is_empty():
@@ -289,7 +310,7 @@ func _inspect_note() -> void:
 	if reading:
 		before_note_frame=frame_rect;before_note_focus=interior_focus
 		_animate_frame(Contents.part_rect("note").grow(34),1.0)
-		_say("从上方刻痕起，顺时针读。点击纸条收起。")
+		_say("缺口吻合后嵌入，顺时针转动，让连杆收回锁舌。点击纸条收起。")
 	else:
 		_animate_frame(before_note_frame if before_note_frame.has_area() else Chest.ART_BOUNDS,before_note_focus)
 		_say("")
@@ -302,6 +323,18 @@ func _open_drawer() -> void:
 	_animate_prop("drawer_amount",contents.drawer_amount,1.0,.55,func():
 		contents.set_state(mechanism,selected)
 		_animate_frame(Contents.DRAWER_RECT.grow(40),1.0))
+
+func _take_brush() -> void:
+	var previous:=mechanism.duplicate(true)
+	var result:=_intent("take")
+	if not result.get("accepted",false):return
+	contents.set_state(previous,"")
+	_animate_prop("pickup_amount",0.0,1.0,.4,func():
+		contents.pickup_amount=0.0;contents.set_state(mechanism,"")
+		_animate_frame(Contents.DRAWER_RECT.grow(40),1.0))
+
+func _inspect_vent_clue() -> void:
+	_intent("clue")
 
 func _animate_prop(property: String, from: float, to: float, duration: float, finished: Callable) -> void:
 	if prop_motion!=null and prop_motion.is_valid():prop_motion.kill()
@@ -354,6 +387,7 @@ func _cancel_mechanism() -> void:
 	mechanism={}
 
 func _stop_motion() -> void:
+	gestures.cancel()
 	for animation: Tween in [motion,focus_motion,prop_motion]:
 		if animation!=null and animation.is_valid():animation.kill()
 	motion=null;focus_motion=null;prop_motion=null;busy=false
@@ -365,7 +399,10 @@ func dismiss(reason: String="dismissed") -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouse or event is InputEventScreenTouch or event is InputEventScreenDrag:accept_event()
 
+func _input(event: InputEvent) -> void:gestures.input(event)
+
 func _notification(what: int) -> void:
+	if what in [NOTIFICATION_WM_WINDOW_FOCUS_OUT,NOTIFICATION_APPLICATION_FOCUS_OUT]:gestures.cancel()
 	for animation: Tween in [motion,focus_motion,prop_motion]:
 		if animation==null or not animation.is_valid():continue
 		if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT:animation.pause()

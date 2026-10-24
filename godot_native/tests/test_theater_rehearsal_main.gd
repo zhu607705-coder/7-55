@@ -41,16 +41,40 @@ func touch_button(button: Button) -> void:
 	var rect:=button.get_global_rect()
 	if not check(button.is_visible_in_tree() and not button.disabled and Rect2(Vector2.ZERO,Vector2(root.size)).encloses(rect),"Actual paper action is reachable by finger: "+button.name):return
 	await touch(8,rect.get_center(),true);await touch(8,rect.get_center(),false);await frames(2)
-func lamp(game: Control) -> void:
-	var local: Vector2=game.field.position+Vector2(480,475)/game.LOGICAL*game.field.size
+func lamp(game: Control,use_touch:bool=true) -> void:
+	var local: Vector2=game.field.position+game.lamp_rect().get_center()/game.LOGICAL*game.field.size
 	var point: Vector2=game.get_global_transform_with_canvas()*local
-	await touch(8,point,true);await touch(8,point,false);await frames(2)
+	await pointer(point,true,use_touch);await pointer(point,false,use_touch);await frames(2)
 func trial(game: Control,use_touch: bool) -> void:
-	if use_touch:await lamp(game)
-	else:await click(game.controls.RehearsalTry)
+	await lamp(game,use_touch)
 func next_stage(game: Control,use_touch: bool) -> void:
-	if use_touch:await lamp(game)
-	else:await click(game.controls.RehearsalNext)
+	await lamp(game,use_touch)
+func pointer(point:Vector2,down:bool,use_touch:bool)->void:
+	if use_touch:await touch(8,point,down);return
+	var input:=InputEventMouseButton.new();input.button_index=MOUSE_BUTTON_LEFT;input.position=point;input.global_position=point;input.pressed=down;root.push_input(input,true);await frames(1)
+func pointer_motion(point:Vector2,use_touch:bool)->void:
+	if use_touch:await finger_motion(8,point);return
+	var input:=InputEventMouseMotion.new();input.position=point;input.global_position=point;input.button_mask=MOUSE_BUTTON_MASK_LEFT;root.push_input(input,true);await frames(1)
+func fold(game:Control,id:String,value:float,use_touch:bool)->void:
+	var object:Dictionary={}
+	for candidate:Dictionary in game.state.objects:
+		if candidate.id==id:object=candidate.duplicate(true)
+	var start:Vector2=game.FanView.grip(game.prop_foot(object),object);object.spread=value
+	var end:Vector2=game.FanView.grip(game.prop_foot(object),object)
+	var transform:Transform2D=game.get_global_transform_with_canvas()
+	await pointer(transform*(game.field.position+start/game.LOGICAL*game.field.size),true,use_touch)
+	for i:int in range(1,9):await pointer_motion(transform*(game.field.position+start.lerp(end,float(i)/8)/game.LOGICAL*game.field.size),use_touch)
+	await pointer(transform*(game.field.position+end/game.LOGICAL*game.field.size),false,use_touch)
+	for candidate:Dictionary in game.state.objects:
+		if candidate.id==id:check(absf(float(candidate.spread)-value)<.02,"Physical copper grip opens the actual fan: "+id)
+func move_lamp(game:Control,value:float,use_touch:bool)->void:
+	var start:Vector2=game.field.position+game.lamp_rect().get_center()/game.LOGICAL*game.field.size
+	var end:Vector2=start+Vector2((value-float(game.state.lampX))*56,0)/game.LOGICAL*game.field.size
+	var transform:Transform2D=game.get_global_transform_with_canvas()
+	await pointer(transform*start,true,use_touch)
+	for i:int in range(1,9):await pointer_motion(transform*start.lerp(end,float(i)/8),use_touch)
+	await pointer(transform*end,false,use_touch)
+	check(absf(float(game.state.lampX)-value)<.02,"Real lamp drag moves the shared source without submitting a trial")
 func object_point(game: Control,id: String="left_fan") -> Vector2:
 	for object:Dictionary in game.state.objects:
 		if object.id==id:return game.get_global_transform_with_canvas()*(game.field.position+game.prop_rect(object).get_center()/game.LOGICAL*game.field.size)
@@ -178,18 +202,23 @@ func play(game: Control,use_touch: bool=false) -> Dictionary:
 	check(game.state.screen=="playing" and game.state.completedRounds==0 and game.state.failure=="shadow_position","Wrong trial retains the current physical scene for recovery")
 	if use_touch:await finger_drag(game,"left_fan",Vector2(0,5))
 	else:await repeat_key(KEY_RIGHT,17)
+	await trial(game,use_touch);check(game.state.failure=="fan_opening","First fan requires observation of opening after its center is aligned")
+	await fold(game,"left_fan",1.0,use_touch)
 	await trial(game,use_touch)
 	if not check(game.state.screen=="round_complete" and game.state.completedRounds==1,"Ordinary first-scene manipulation earns its actual shadow alignment"):return {}
 	await next_stage(game,use_touch)
 	if use_touch:await finger_drag(game,"left_fan",Vector2(0,6))
 	else:await repeat_key(KEY_UP,25)
+	await fold(game,"left_fan",.65,use_touch)
 	await trial(game,use_touch)
 	if not check(game.state.screen=="round_complete" and game.state.completedRounds==2,"Ordinary depth movement earns the second actual projection"):return {}
 	await next_stage(game,use_touch)
+	await move_lamp(game,.6,use_touch)
 	if use_touch:
-		await finger_drag(game,"side_screen",Vector2(4.4,8));await finger_drag(game,"left_fan",Vector2(0,4));await finger_drag(game,"right_fan",Vector2(0,6))
+		await finger_drag(game,"side_screen",Vector2(4.4,8));await finger_drag(game,"left_fan",Vector2(.36,4));await finger_drag(game,"right_fan",Vector2(.24,6))
 	else:
-		await repeat_key(KEY_RIGHT,15);await tap_key(KEY_TAB);await repeat_key(KEY_LEFT,15);await repeat_key(KEY_UP,17);await tap_key(KEY_TAB);await repeat_key(KEY_RIGHT,37)
+		await tap_key(KEY_TAB);await repeat_key(KEY_RIGHT,18);await tap_key(KEY_TAB);await repeat_key(KEY_LEFT,13);await repeat_key(KEY_UP,17);await tap_key(KEY_TAB);await repeat_key(KEY_RIGHT,37)
+	await fold(game,"left_fan",1.0,use_touch);await fold(game,"right_fan",.7,use_touch)
 	await trial(game,use_touch)
 	if not check(game.state.screen=="complete" and game.state.completedRounds==3,"Ordinary prop input composes both wings and removes the physical obstruction"):return {}
 	var proof: Dictionary=game.model.proof(game.config.session)

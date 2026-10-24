@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-24",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "base": "926cfe9983bdb044850435dbb09c3bbe9d1d1ebe",
+  "scope": "Existing native theater chest plus fan rehearsal; separate from production deployment",
+  "native": [
+    {
+      "label": "test_liangzhu_actor_rig.gd",
+      "passed": true,
+      "result": "LIANGZHU_ACTOR_RIG: 345 checks; 0 failures"
+    },
+    {
+      "label": "test_liangzhu_performance_qte.gd",
+      "passed": true,
+      "result": "LIANGZHU_QTE: 32 checks; 0 failures"
+    },
+    {
+      "label": "test_liangzhu_performance_qte_view.gd",
+      "passed": true,
+      "result": "LIANGZHU_QTE_VIEW: 61 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_controller.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_CONTROLLER: 54 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_main.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_MAIN: 206 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_model.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_MODEL: 56 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_performance.gd",
+      "passed": true,
+      "result": "REHEARSAL_PERFORMANCE: 32 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_ui.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_UI: 78 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_rehearsal_world_geometry.gd",
+      "passed": true,
+      "result": "THEATER_REHEARSAL_WORLD_GEOMETRY: 192 checks; 0 failures"
+    }
+  ],
+  "gui": {
+    "checks": 206,
+    "failures": 0,
+    "viewport": [
+      "1280x720",
+      "1180x812",
+      "390x844 -> 844x390"
+    ],
+    "input": "Godot graphical window, real root input events, isolated original checkpoint, simulated touch"
+  },
+  "retainedWeb": {
+    "critical": "27 validators pass",
+    "release": "38 validators pass"
+  },
+  "chest": [
+    {
+      "label": "test_chapter3.gd",
+      "passed": true,
+      "result": "Chapter 3 checks: 73; failures: 0"
+    },
+    {
+      "label": "test_theater_chest_direct_gestures.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_DIRECT_GESTURES 203 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_chest_focus.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_FOCUS 328 checks; 0 failures; captures=[]"
+    },
+    {
+      "label": "test_theater_chest_mechanism.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_STORY: 103 checks; 0 failures"
+    },
+    {
+      "label": "test_theater_chest_volume.gd",
+      "passed": true,
+      "result": "THEATER_CHEST_VOLUME: 118 checks; 0 failures"
+    }
+  ],
+  "files": [
+    {
+      "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+      "sha256": "04a12fb3874a33b64720a6ff80d3dc2378d8f4980108764833a95b7b11180a0e"
+    },
+    {
+      "path": "godot_native/scripts/games/theater_shadow_rehearsal_model.gd",
+      "sha256": "048faff16d841c02dc7506de1dbd0aeef863afbb74bf3addf59cd35f841a1c14"
+    },
+    {
+      "path": "godot_native/scripts/presentation/theater_rehearsal_fan.gd",
+      "sha256": "189e2ecfe926eba42d9a5ba60dbce336dc9ec1c4baca10e4a0b3e06cd70aff30"
+    },
+    {
+      "path": "godot_native/tests/helpers/theater_rehearsal_proof.gd",
+      "sha256": "14caea489ae587a5f7accb0aed7fc70bf09e9bf44b848291afecf7e5a585a201"
+    },
+    {
+      "path": "godot_native/tests/test_theater_rehearsal_model.gd",
+      "sha256": "7d776f2a47b071258ee9a85f1f886109565dbdec393e8f24734b2d943b942324"
+    },
+    {
+      "path": "godot_native/tests/test_theater_rehearsal_main.gd",
+      "sha256": "525a0d5cb628a36ad26f429537a3d7d838151f57cb78d99f6ee1509e0b82ef24"
+    },
+    {
+      "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
+      "sha256": "4f363e4ca4bf38a93d772ae5ad8dfd59cb501ce2f7ad7be5426bb3220564bdb0"
+    }
+  ],
+  "limits": [
+    "Godot Web was not re-exported in this task.",
+    "No physical mobile device or full natural campaign acceptance.",
+    "The first graphical attempt recorded a Pause assertion failure during concurrent browser verification; the isolated rerun passed without weakening focus checks."
+  ]
+}
