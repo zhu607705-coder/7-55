@@ -3,6 +3,7 @@ extends Control
 signal closed(reason:String)
 const Model=preload("res://scripts/presentation/liangzhu_performance_model.gd")
 const ActorRig=preload("res://scripts/presentation/liangzhu_actor_rig.gd")
+const StageObjects=preload("res://scripts/presentation/theater_rehearsal_stage_objects.gd")
 const StagePlate=preload("res://scripts/presentation/liangzhu_stage_plate.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const TheaterUi=preload("res://scripts/ui/theater_typography.gd")
@@ -138,7 +139,11 @@ func _build()->void:
 	caption=_label("PerformanceCaption",16)
 	pause_button=_button("PerformancePause","暂停",_toggle_pause)
 	return_button=_button("PerformanceReturn","返回排练",skip)
-	help_button=_button("PerformanceQteHelp","观察",_open_help)
+	# The transparent input surface follows the drawn book, not the window chrome.
+	help_button=_button("PerformanceProgramme","",_open_help)
+	help_button.tooltip_text="翻阅节目册";help_button.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
+	for style:String in ["normal","hover","pressed","focus","disabled"]:help_button.add_theme_stylebox_override(style,StyleBoxEmpty.new())
+	for signal_name:String in ["mouse_entered","mouse_exited","button_down","button_up"]:help_button.connect(signal_name,_redraw_stage)
 	retry_button=_button("PerformanceQteRetry","再接这一拍",_retry_qte)
 	qte_label=_label("PerformanceQtePrompt",16)
 	qte_label.add_theme_color_override("font_color",Color("FFF0B2"))
@@ -150,7 +155,7 @@ func _build()->void:
 func _build_help()->void:
 	help_panel=Panel.new();help_panel.name="PerformancePaperMenu";help_panel.add_theme_stylebox_override("panel",Ui.box(PAPER,Color("70503B"),1,0,Vector2(14,12)));stage_frame.add_child(help_panel)
 	help_body=Label.new();help_body.name="PerformanceHelpBody";TheaterUi.text(help_body);help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_color_override("font_color",INK);help_body.mouse_filter=Control.MOUSE_FILTER_IGNORE;help_panel.add_child(help_body)
-	for spec:Array in [["PerformanceHelpNext","再观察一层",_more_help],["PerformancePassive","从头观看",_start_passive],["PerformanceHelpClose","回到演出",_close_help]]:
+	for spec:Array in [["PerformanceHelpNext","翻下一页",_more_help],["PerformancePassive","从头观看",_start_passive],["PerformanceHelpClose","合上册页",_close_help]]:
 		var button:=Button.new();button.name=spec[0];button.text=spec[1];button.focus_mode=Control.FOCUS_ALL;TheaterUi.button(button,spec[0]=="PerformanceHelpClose");button.pressed.connect(spec[2]);help_panel.add_child(button)
 		if spec[0]=="PerformanceHelpNext":help_next=button
 		elif spec[0]=="PerformancePassive":passive_button=button
@@ -173,7 +178,7 @@ func _layout()->void:
 	title.add_theme_font_size_override("font_size",title_px);caption.add_theme_font_size_override("font_size",body_px)
 	var measured:float=caption.get_theme_font("font").get_multiline_string_size(caption.text,HORIZONTAL_ALIGNMENT_LEFT,maxf(1,(field.size.x-44)/fit),body_px).y*fit
 	var caption_height:float=maxf(52 if portrait else 46,ceilf(measured)+8)
-	var pause_rect:=Rect2();var return_rect:=Rect2();var help_rect:=Rect2()
+	var pause_rect:=Rect2();var return_rect:=Rect2()
 	if portrait:
 		# The complete frame and its adjoining caption form one centred unit.
 		# Text stays readable without drifting to the screen's distant edges.
@@ -183,13 +188,10 @@ func _layout()->void:
 		title_paper=Rect2(field.position.x+12,top,field.size.x-24,44)
 		caption_paper=Rect2(field.position.x+12,field.end.y+8,field.size.x-24,caption_height)
 		pause_rect=Rect2(field.position.x+12,caption_paper.end.y+8,96,44)
-		var gap:float=(field.size.x-24-304)/2.0
-		help_rect=Rect2(pause_rect.end.x+gap,pause_rect.position.y,84,44)
 		return_rect=Rect2(field.end.x-136,caption_paper.end.y+8,124,44)
 	else:
 		title_paper=Rect2(field.position+Vector2(12,12),Vector2(minf(230,maxf(100,field.size.x-384)),44))
 		pause_rect=Rect2(field.end.x-260,field.position.y+12,108,44)
-		help_rect=Rect2(field.end.x-356,field.position.y+12,84,44)
 		return_rect=Rect2(field.end.x-140,field.position.y+12,124,44)
 		caption_paper=Rect2(field.position.x+12,field.end.y-caption_height-12,field.size.x-24,caption_height)
 	stage_frame.position=field.position;stage_frame.size=StagePlate.WORLD_SIZE;stage_frame.scale=Vector2.ONE*fit
@@ -197,7 +199,7 @@ func _layout()->void:
 	_frame_rect(title_background,title_paper,fit);_frame_rect(title,title_paper.grow_individual(-10,-7,-10,-5),fit)
 	_frame_rect(caption_background,caption_paper,fit);_frame_rect(caption,caption_paper.grow_individual(-10,-4,-10,-4),fit)
 	_frame_rect(pause_button,pause_rect,fit);_frame_rect(return_button,return_rect,fit)
-	_frame_rect(help_button,help_rect,fit);_frame_rect(retry_button,pause_rect,fit)
+	_frame_rect(retry_button,pause_rect,fit)
 	for button:Button in [pause_button,return_button,help_button,retry_button]:button.add_theme_font_size_override("font_size",body_px)
 	# Measure at a finite width before placing the paper. A wrapping Label's
 	# transient minimum height must never push the actions below the viewport.
@@ -262,6 +264,7 @@ func _redraw_stage()->void:
 		stage_pose=capture_pose if not capture_pose.is_empty() else model.snapshot()
 		for actor:Dictionary in stage_pose.actors:
 			actor_rigs[actor.id].configure_pose(int(actor.frame),int(actor.row),actor.foot,bool(actor.flip),float(stage_pose.elapsedMs),bool(stage_pose.reducedMotion))
+	_update_programme_target()
 	_update_qte_target()
 	stage_canvas.queue_redraw();stage_viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
 
@@ -309,7 +312,7 @@ func _interrupt_qte(reason:String)->void:
 	if model!=null:model.interrupt_input(reason)
 
 func _open_help()->void:
-	if disposed or model==null or help_open:return
+	if disposed or model==null or help_open or _host_blocks_input():return
 	help_restore={"manual":model.manually_paused,"focus":model.focus_paused}
 	_interrupt_qte("help");model.pause();help_open=true
 	var qte:Dictionary=_qte()
@@ -344,6 +347,33 @@ func _submit_qte(phase:String,direction:String="",owner:String="keyboard")->Dict
 	if qte.is_empty():return {"accepted":false,"reason":"inactive"}
 	var result:Dictionary=model.qte_input(str(qte.action),phase,direction,owner)
 	_refresh();return result
+
+func programme_world_rect()->Rect2:
+	# A side-wing reading stand stays outside the actors' handoff and turn targets.
+	return StageObjects.BOOK
+
+func _update_programme_target()->void:
+	if field.size.x<=0:return
+	var rect:Rect2=programme_world_rect()
+	var fit:float=field.size.x/StagePlate.WORLD_SIZE.x
+	var center:Vector2=field.position+rect.get_center()*fit
+	var extent:Vector2=(rect.size*fit).max(Vector2(44,44))
+	_frame_rect(help_button,Rect2(center-extent/2,extent),fit)
+	help_button.visible=rect.has_area() and not help_open
+
+func _draw_programme(canvas:Node2D)->void:
+	var rect:Rect2=programme_world_rect()
+	if not rect.has_area():return
+	var factor:float=rect.size.x/StageObjects.BOOK.size.x
+	var offset:Vector2=rect.position-StageObjects.BOOK.position*factor
+	canvas.draw_set_transform(offset/4.0,0,Vector2.ONE*factor/4.0)
+	canvas.draw_line(Vector2(98,367),Vector2(98,411),Color("665C42"),4)
+	canvas.draw_line(Vector2(98,402),Vector2(76,418),Color("665C42"),4)
+	canvas.draw_line(Vector2(98,402),Vector2(119,417),Color("665C42"),4)
+	canvas.draw_line(Vector2(97,370),Vector2(97,405),Color("C2A46F"),1)
+	canvas.draw_line(Vector2(60,370),Vector2(136,374),Color("665C42"),4)
+	StageObjects.draw_programme(canvas,help_button.is_hovered(),.65 if help_button.is_pressed() else 0.0)
+	canvas.draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
 
 func _update_qte_target()->void:
 	qte_target=Rect2()
@@ -482,7 +512,7 @@ func geometry_snapshot()->Dictionary:
 	var furniture_data:Array=[]
 	for prop:Dictionary in StagePlate.furniture_entries("performance",stage_pose.get("stageProps",[])):
 		furniture_data.append({"id":prop.id,"rect":_rect_data(prop.rect),"foot":{"x":prop.foot.x,"y":prop.foot.y},"alpha":prop.alpha})
-	var result:Dictionary={"assetsReady":assets_ready,"furnitureReady":StagePlate.furniture_ready(textures),"furnitureCount":StagePlate.FURNITURE_IDS.filter(func(id:String)->bool:return textures.has(id)).size(),"furnitureLayout":"performance","furnitureManifest":StagePlate.FURNITURE_PATH,"furniture":furniture_data,"diagnostic":diagnostic,"assetIssues":asset_issues.duplicate(),"disposed":disposed,"logicalSize":{"x":240,"y":135},"rasterSize":{"x":1200,"y":675},"worldViewport":{"x":960,"y":540},"field":_rect_data(field),"frameOwner":str(stage_frame.get_path()) if is_instance_valid(stage_frame) else "","captionRect":_rect_data(caption_paper),"titleRect":_rect_data(title_paper),"elapsedMs":model.elapsed_ms if model!=null else 0.0,"paused":model.manually_paused or model.focus_paused if model!=null else false,"capture":not capture_pose.is_empty(),"actorRigs":rig_data,"fans":fan_data,"qteTarget":_rect_data(qte_target),"helpOpen":help_open,"pointerOwner":qte_pointer,"audioMode":"subtitle-only"}
+	var result:Dictionary={"assetsReady":assets_ready,"furnitureReady":StagePlate.furniture_ready(textures),"furnitureCount":StagePlate.FURNITURE_IDS.filter(func(id:String)->bool:return textures.has(id)).size(),"furnitureLayout":"performance","furnitureManifest":StagePlate.FURNITURE_PATH,"furniture":furniture_data,"diagnostic":diagnostic,"assetIssues":asset_issues.duplicate(),"disposed":disposed,"logicalSize":{"x":240,"y":135},"rasterSize":{"x":1200,"y":675},"worldViewport":{"x":960,"y":540},"field":_rect_data(field),"frameOwner":str(stage_frame.get_path()) if is_instance_valid(stage_frame) else "","captionRect":_rect_data(caption_paper),"titleRect":_rect_data(title_paper),"elapsedMs":model.elapsed_ms if model!=null else 0.0,"paused":model.manually_paused or model.focus_paused if model!=null else false,"capture":not capture_pose.is_empty(),"actorRigs":rig_data,"fans":fan_data,"qteTarget":_rect_data(qte_target),"programmeRect":_rect_data(help_button.get_global_rect()),"helpOpen":help_open,"pointerOwner":qte_pointer,"audioMode":"subtitle-only"}
 	if model!=null:result.merge({"status":model.status,"playbackMode":model.playback_mode,"qte":model.qte_snapshot(),"qteCompleted":model.qte_completed.keys(),"qteResults":model.qte_results.duplicate(true)},true)
 	return result
 
@@ -538,6 +568,7 @@ func draw_stage(canvas:Node2D)->void:
 	for entry:Dictionary in entries:
 		if entry.kind=="actor":_actor(canvas,entry.value)
 		else:StagePlate.draw_prop(canvas,textures,entry.value)
+	_draw_programme(canvas)
 	for fan:Dictionary in _resolved_fans(pose):
 		if fan.kind=="butterfly":_butterfly(canvas,fan)
 		else:_fan(canvas,fan.point,int(fan.spread),int(fan.side),float(fan.angle))

@@ -1,5 +1,11 @@
 # 7:55 Release Assets
 
+## 20261024 — Theater chest and articulated fans
+
+- Scene-object follow-up adds original procedural programme pages, a side-wing reading stand, curtain rope and curtain-gap feedback in `theater_rehearsal_stage_objects.gd`; it reuses the existing performance and introduces no external art.
+- Original procedural brush geometry: [provenance](godot_native/docs/art/theater_powder_brush_20261024.json). Original articulated fan leaves: [implementation and scope](godot_native/docs/THEATER_FAN_CHAIN_20261024.md). Existing stage, actors and furniture are reused; no new third-party media or fonts.
+- Source upload into `godot_native/`; no new Release archive or production Web export. [Validation receipt](godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json) separates source checks, native graphical input and retained Web tests.
+
 ## 20261024 — Original-repository merge delivery
 
 - Delivery: [7-55 PR #164](https://github.com/zhu607705-coder/7-55/pull/164), target [main](https://github.com/zhu607705-coder/7-55/tree/main); implementation [godot_native](godot_native/README.md). This merge carries the 20261023 source and asset batch, plus a bounded async test-wait correction and current delivery records.
@@ -204,3 +210,20 @@ The current native cycling avatar is an original17-bone weighted pelican with wa
 - Original built-in `image_gen` illustration: `godot_native/art_source/ending_resume_20261022/terminal_original.png`; retained under the existing `.gdignore`, excluded from runtime packs. No external game artwork, logos or third-party code copied. The generation service does not expose a model version.
 - Runtime vignette: `godot_native/assets/native/ending_resume/terminal_signal_20261022.png`,756×504 native pixels,378×252 authored UI placement, nearest filtering and unchanged3:2 aspect. Deterministic16-color normalization uses the existing terminal ramp plus campus metal/paper/ink colors. It depicts a terminal, paper receipt and suspended glyph window; it contains no actionable interface text.
 - Reproduction: `godot_native/tools/prepare_ending_resume_art.py`; exact generation prompt: `godot_native/docs/art/prompts/ending_resume_terminal_20261022.txt`; original/runtime SHA-256, dimensions and Pillow version: `godot_native/docs/art/ENDING_RESUME_ART_20261022.json`. Real headings, labels and controls remain native Godot elements.
+
+### 线装排练手记 — 2026-10-24
+
+- `godot_native/scripts/presentation/theater_rehearsal_folio.gd` 与 `theater_rehearsal_notebook.gd` 是本项目原创程序绘制：青灰封边、暖纸、缝线、墨线扇骨与光路、朱笔圈注、短纸角翻动。未引入外部图像、模型、字体或第三方绘图代码；字体及其许可继续复用既有原生舞台字体。
+- 三卷九页文案是本项目原创排练批注。复看页的墨影来自同一排练模型的真实试演快照，朱线来自既有目标几何；程序几何只读展示，不生成新线索事实或替代过关判定。素材与验证记录见 `godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 的 `notebookFollowup`。
+
+
+### 蝶影残谱：影拓与套印 — 2026-10-24
+
+- `godot_native/scripts/presentation/theater_rehearsal_tracing.gd` 新增原创程序几何：薄纸、朱墨三处套印记号、残扇骨、门前足痕和同灯旧印。影拓前后图形取自两次真实接受的试演快照；不以预制示例伪造玩家的尝试。未引入外部游戏图、模型、字体或绘图代码。
+- 缺笔文案、卷名和试演比较规则为项目原创，纸面/字体沿用既有手记许可。素材只读投影与本次会话记录，不写剧情或存档。对应证据见 `THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 的 `discoveryFollowup`。
+
+
+### 北教图面线索与嵌字物件 — 2026-10-24
+
+- 原创原生程序几何：`chapter4_evidence_folio.gd` 的残签、齿孔、剖面、线路与试压痕；`chapter4_paper_workbench.gd` 的正反纸条；`clock_delay_board.gd` 的多路延时线；`inset_option_key.gd` 的底板和原生居中文字。均复用项目既有字体与许可，不增加外部图像、模型或抄录游戏素材。
+- 301原柜体、302灯架/幕布、201压台以及旧钟素材继续使用原登记资源。所有可选纸面和试压残迹只呈现玩家输入；新持久配置由原生控制器保存与验证。实施范围见 `godot_native/docs/PUZZLE_DISCOVERY_20261024.md`。本批源代码位于 `godot_native/`，Web部署由既有Pages工作流构建，不另创建Release压缩包。

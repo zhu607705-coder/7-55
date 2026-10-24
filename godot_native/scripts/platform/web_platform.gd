@@ -6,9 +6,9 @@ const IMPORT_PATH := "user://web-save-import.json"
 const EXPORT_PATH := "user://web-save-export.json"
 const MAX_SAVE_BYTES := 48 * 1024 * 1024
 const SNAPSHOT_INTERVAL := 0.25
-const SAVE_SYNC_INTERVAL_MS := 500
-const SAVE_ATTEMPT_MS := 20000
-const MAX_SAVE_SYNC_REQUESTS := 40
+const SAVE_SYNC_INTERVAL_MS := 2000
+const SAVE_ATTEMPT_MS := 60000
+const MAX_SAVE_SYNC_REQUESTS := 30
 var shell: Control
 var state: Node
 var _browser: JavaScriptObject
@@ -108,14 +108,14 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 			},
 			watchSave: (token, absolutePath, receive) => {
 				cancelSaveWatch(); saveUncommitted = true;
-				const watch = { token, timer: null, timeout: null, deadline: Date.now() + 20000 };
+				const watch = { token, timer: null, timeout: null, deadline: Date.now() + 60000 };
 				saveWatch = watch;
 				const current = () => saveWatch === watch;
 				const fail = code => {
 					if (!current()) return;
 					cancelSaveWatch(); receive(token, null, code);
 				};
-				watch.timeout = setTimeout(() => fail('timeout'), 20000);
+				watch.timeout = setTimeout(() => fail('timeout'), 60000);
 				if (!/^\\/userfs\\/(?:[^/]+\\/)*save\\.json$/.test(absolutePath) || absolutePath.split('/').includes('..')) { fail('invalid_path'); return; }
 				if (typeof indexedDB === 'undefined') { fail('unavailable'); return; }
 				async function read() {

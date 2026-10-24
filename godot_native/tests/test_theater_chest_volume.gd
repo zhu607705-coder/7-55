@@ -142,6 +142,26 @@ func test_drawer() -> void:
 	volume.update_state(snapshot())
 	check(board.visible and is_equal_approx(mesh.size.y, full_depth), "fresh view restores the closed board geometry")
 
+func test_story_geometry() -> void:
+	var fresh:=snapshot()
+	volume.update_state(fresh)
+	var latched: Vector3=volume.latch.position
+	var shifted:=fresh.duplicate(true);shifted.cleared=["butterfly"]
+	volume.update_state(fresh,"","",0,0,0,"butterfly",Vector2.ZERO,Volume.STAGING.butterfly,1)
+	var moving: Transform3D=volume.tokens.butterfly.transform
+	volume.update_state(shifted)
+	check_pose(volume.tokens.butterfly.transform,moving,"clear-pile animation joins persisted staging pose")
+	check(volume.tokens.butterfly.position.y>0 and volume.tokens.fan.position.y!=volume.tokens.lamp.position.y,"remaining pile retains separate physical heights")
+	var assembly:=snapshot(["butterfly","lamp","fan"],true)
+	volume.update_state(assembly,"","",TAU/6)
+	check(volume.latch.position.x<latched.x and volume.latch.position.x>-50,"latch visibly retracts during cam rotation")
+	volume.update_state(snapshot(["fan","butterfly","lamp"],true,1))
+	check(is_equal_approx(volume.latch.position.x,-50),"settled turn leaves lock tongue clear of compartment")
+	check(volume.brush.visible and volume.brush.position.y<volume.drawer_board.position.y,"uncollected brush sits inside well below its cover")
+	var collected:=snapshot(["fan","butterfly","lamp"],true,1);collected.brush_taken=true
+	volume.update_state(collected)
+	check(not volume.brush.visible,"collected reward has no remaining physical mesh")
+
 func run() -> void:
 	var baseline: Array[WeakRef] = []
 	collect_3d(root, baseline)
@@ -162,6 +182,7 @@ func run() -> void:
 	test_placement("crank", snapshot(["fan", "butterfly", "lamp"], false, 1), snapshot(["fan", "butterfly", "lamp"], true, 1), "crank installation")
 	test_turn()
 	test_drawer()
+	test_story_geometry()
 	var owned: Array[WeakRef] = []
 	collect_3d(view, owned)
 	check(owned.size() > 10, "test mounted actual geometry, lights and camera")

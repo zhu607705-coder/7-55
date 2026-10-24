@@ -117,7 +117,7 @@ func run()->void:
 	panel.dispose_session();panel.queue_free();await frames();state=initial("dark");panel=ArchivePanel.new();panel.configure("archive_index",state);root.add_child(panel);await frames()
 	before=JSON.stringify(state);gesture(0,Vector2(-40,0));panel._submit()
 	check(not panel.view.interactive and JSON.stringify(state)==before,"Dark evidence remains read-only on the same attached strips")
-	check(panel.view.index_label(0)=="九十年代末","Dark label reads original source clue without invented answer")
+	check(panel.view.index_label(0)=="齿孔残号" and panel.evidence.puzzle_id=="archive_index","Dark drawer points to an inspectable artefact, not the answer range")
 	panel.dispose_session();panel.queue_free();await frames();test_motion()
 	print("ROOM301_INDEX_TABS: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)
 

@@ -3,7 +3,7 @@ extends Node2D
 var view:Control
 func _process(_delta:float)->void:queue_redraw()
 func _label(at:Vector2,text:String,pixels:=27,color:=Color("f0d6a0"))->void:
-	draw_string(view.get_theme_default_font(),at,text,HORIZONTAL_ALIGNMENT_LEFT,-1,maxi(pixels,ceili(14/maxf(.01,view.fit))),color)
+	draw_string(view.get_theme_default_font(),at,text,HORIZONTAL_ALIGNMENT_LEFT,-1,maxi(pixels,ceili(preload("res://scripts/ui/device_layout.gd").font_size(view.size,18)/maxf(.01,view.fit))),color)
 func _wear(at:Vector2,radius:float,bright:=false)->void:
 	var ink:=Color("dac693") if bright else Color("968462")
 	draw_arc(at+Vector2(1,2),radius,.25,2.95,26,Color("342a20"),4,true)
@@ -22,17 +22,21 @@ func _draw()->void:
 		if embossed:
 			var stamp:Vector2=sheet_at+local*view.carriage_art_scale()
 			draw_arc(stamp,17*view.carriage_art_scale(),0,TAU,32,Color("e5f2d5"),3,true)
-	if view.dent and view.checkpoint.inserted and not embossed and (view.motion!="press" or view.motion_time>=.51 or view.reduced):
-		var at:Vector2=sheet_at+Vector2(26,43)
-		draw_arc(at,18,.2,2.6,18,Color("424848"),3,true)
-		draw_arc(at+Vector2(1,-1),18,.2,2.6,18,Color("b8c9c0"),1.5,true)
+	if view.dent and view.checkpoint.inserted and not embossed and not view.last_imprint.is_empty() and (view.motion!="press" or view.motion_time>=.51 or view.reduced):
+		var im:Dictionary=view.last_imprint
+		var at:Vector2=view.center+Vector2(float(im.horizontal),float(im.vertical))*22
+		var pressure_delta:int=int(im.pressure)-int(source.pressure)
+		for local:Vector2 in contacts:
+			var stamp:Vector2=at+local*view.carriage_art_scale()
+			var radius:float=17*view.carriage_art_scale()
+			draw_arc(stamp,radius,.2,4.2 if pressure_delta<0 else TAU,30,Color("879a8b"),2 if pressure_delta<=0 else 5,true)
+			if pressure_delta>0:
+				for n:int in 5:draw_line(stamp+Vector2(radius,0).rotated(n*1.2),stamp+Vector2(radius+9,0).rotated(n*1.2),Color("454c43"),2)
 	var gauge_scale:float=.90 if view.narrow else 1.0
 	var pressure:float=view._visual_calibration().z
 	for i:int in range(5):
 		var at:Vector2=view.lever_pivot+Vector2(-1,90+i*28)*gauge_scale
-		var worn:bool=i==int(source.pressure)
-		draw_line(at-Vector2(7,0),at+Vector2(7,0),Color("e5d7b0") if worn else Color("775e36"),5 if worn else 2,true)
-		if worn:draw_line(at+Vector2(-7,3),at+Vector2(7,3),Color("453b2c"),2,true)
+		draw_line(at-Vector2(7,0),at+Vector2(7,0),Color("a18b61"),2,true)
 	var needle:Vector2=view.lever_pivot+Vector2(-24,90+pressure*28)*gauge_scale
 	draw_colored_polygon(PackedVector2Array([needle+Vector2(-9,-6),needle+Vector2(5,0),needle+Vector2(-9,6)]),Color("cfaa63"))
 	var handles:Array=view.rail_handles()

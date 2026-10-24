@@ -162,7 +162,7 @@ func act(action: String, value: Variant = null) -> Dictionary:
 	return {"handled":false,"message":"这个操作暂时不可用。"}
 
 func _accept_result(action: String,previous_state: Dictionary,result: Dictionary) -> Dictionary:
-	var ephemeral: bool=action in ["c3_rehearsal_begin","c3_rehearsal_result","c3_rehearsal_cancel","c3_chest_begin","c3_chest_inspect","c3_chest_place","c3_chest_turn","c3_chest_open","c3_chest_cancel"] and result.get("ephemeral",false)==true
+	var ephemeral: bool=action in ["c4_clock_begin","c4_clock_event","c4_clock_cancel","c3_rehearsal_begin","c3_rehearsal_result","c3_rehearsal_cancel","c3_chest_begin","c3_chest_clear","c3_chest_take","c3_chest_clue","c3_chest_inspect","c3_chest_place","c3_chest_turn","c3_chest_open","c3_chest_cancel"] and result.get("ephemeral",false)==true
 	var previous_page: String=str(previous_state.native.page)
 	var previous_network: String=str(previous_state.networkMode)
 	var previous_battery: int=int(previous_state.phoneBattery.percent)
@@ -383,6 +383,9 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 	if value.actOne.has("tiyiUpdateStage") and value.actOne.tiyiUpdateStage not in preload("res://scripts/chapters/tiyi_access.gd").STAGES: return false
 	if value.ui.has("homeDeskReturnScene") and value.ui.homeDeskReturnScene not in [null,"phone_home","bonsai"]: return false
 	# The studio checkpoint is optional for old saves; present checkpoints stay bounded.
+	if value.native.has("theater_chest") and not preload("res://scripts/games/theater_chest_mechanism.gd").valid(value): return false
+	if value.native.has("c4_clock_chain") and not preload("res://scripts/games/chapter4_clock_chain.gd").valid_state(value): return false
+	if value.native.has("c4_duty_board") and not preload("res://scripts/games/chapter4_duty_board.gd").valid(value.native.c4_duty_board): return false
 	if value.native.has("c4_plate_press") and not load("res://scripts/objects/room201_press_model.gd").valid(value.native.c4_plate_press): return false
 	if value.native.has("c4_media_studio") and not load("res://scripts/objects/room302_studio_model.gd").valid(value.native.c4_media_studio): return false
 	if int(value.native.chapter) != float(value.native.chapter) or int(value.native.chapter) < 1 or int(value.native.chapter) > 4: return false
@@ -567,6 +570,7 @@ func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 		q.legacyNetMaterialsConsumed=q.netCombined and q.lockerOpened and not q.magneticRodCombined
 
 func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
+	if snapshot.theaterHunt.propBoxOpened: preload("res://scripts/games/theater_chest_mechanism.gd").ensure(snapshot)
 	# Match source SaveStore: this is a bounded C1 desktop return location,
 	# not a persistent charging session or a later-chapter navigation grant.
 	if snapshot.actOne.phase!="prologue" or snapshot.flags.checkinDone or snapshot.runtimeMode!="phone" or snapshot.currentScene!="desktop": snapshot.ui.homeDeskReturnScene=null

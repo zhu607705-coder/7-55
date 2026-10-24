@@ -222,10 +222,10 @@ func _draw_seams() -> void:
 		if edge.kind!="perspective": continue
 		var a: Vector2=origin+Model.project(Model.position(level,state,edge.a),source.cameras[level.id],state.view)*scale_factor
 		var b: Vector2=origin+Model.project(Model.position(level,state,edge.b),source.cameras[level.id],state.view)*scale_factor
-		var color: Color=Color("5fe2c2") if edge.valid else Color("d89262")
-		if edge.valid: seam_overlay.draw_line(a-Vector2(5,0),b+Vector2(5,0),color,2)
-		else:
-			seam_overlay.draw_line(a-Vector2(5,0),a-Vector2(1,0),color,2); seam_overlay.draw_line(b+Vector2(1,0),b+Vector2(5,0),color,2)
+		var color:=Color("c3ae7f")
+		# Both ends retain the same worn stripe: geometry, not a green answer line.
+		seam_overlay.draw_line(a-Vector2(5,0),a-Vector2(1,0),color,2)
+		seam_overlay.draw_line(b+Vector2(1,0),b+Vector2(5,0),color,2)
 func _change_view(view: String) -> void:
 	if busy: return
 	var action: Dictionary={"type":"view","value":view}
