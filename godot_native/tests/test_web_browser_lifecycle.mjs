@@ -226,3 +226,50 @@ test('file-backed browser diagnostics retain stderr and real close before owned 
     await rm(logRoot, { recursive: true, force: true });
   }
 });
+
+// Replay the actual CI race: the render snapshot still owns two fingers after
+// CDP dispatch, then the engine consumes cancellation in a later frame.
+function cancellationFixture(frames, later) {
+  const start = runner.indexOf('async function assertWorldStopped(');
+  const finish = runner.indexOf('async function assertBottomPlaque(', start);
+  assert(start > 0 && finish > start);
+  const active = { id: 'cancel-fixture', mobileWorld: { samples: [] } };
+  let reads = 0;
+  const context = vm.createContext({ active, Date,
+    snapshot: async () => frames[Math.min(reads++, frames.length - 1)],
+    poll: async (read, label, timeout) => {
+      assert.equal(timeout, 5000, 'cancellation must have a finite deadline');
+      for (let i = 0; i < 6; i++) { const value = await read(); if (value) return value; }
+      throw new Error(`Timeout: ${label}`);
+    },
+    mobileSample: async () => later,
+    mobileFacts: () => 'unchanged fixture facts',
+    mobileDistance: (a, b) => Math.hypot(a.x - b.x, a.y - b.y),
+    check: (ok, label) => assert.ok(ok, label)
+  });
+  vm.runInContext(runner.slice(start, finish), context);
+  return { run: context.assertWorldStopped, active, reads: () => reads };
+}
+function cancellationFrame(frame, owners = [], x = 10, axis = 0) {
+  return { sampleFrame: frame, world: { player: {x, y: 10}, touch_axis: {x: axis, y: 0}, input: { owners, mouseOwned: false, inventoryOwned: false } } };
+}
+test('cancellation waits for consumed input, retaining the actual queued-frame evidence', async () => {
+  const fingers = [{index: 1, role: 'camera'}, {index: 2, role: 'camera'}];
+  const f = cancellationFixture([cancellationFrame(562, fingers), cancellationFrame(563, fingers), cancellationFrame(566)], cancellationFrame(572));
+  await f.run(cancellationFrame(562, fingers), 'direct-two-finger-cancel');
+  assert.equal(f.reads(), 3);
+  assert.deepEqual(Array.from(f.active.mobileWorld.cancellations[0].samples, row => row.frame), [563, 566]);
+  assert.equal(f.active.mobileWorld.cancellations[0].endFrame, 566);
+});
+test('cancellation fails when actual owners or axis never clear', async () => {
+  for (const stuck of [cancellationFrame(566, [{index: 1, role: 'camera'}]), cancellationFrame(566, [], 10, 1), cancellationFrame(562)]) {
+    const f = cancellationFixture([stuck], cancellationFrame(572));
+    await assert.rejects(f.run(cancellationFrame(562), 'stuck-cancel'), /Timeout:/);
+  }
+});
+test('a later moving actor or resurfaced pointer still fails cancellation acceptance', async () => {
+  for (const later of [cancellationFrame(572, [], 15), cancellationFrame(572, [{index: 2, role: 'camera'}])]) {
+    const f = cancellationFixture([cancellationFrame(566)], later);
+    await assert.rejects(f.run(cancellationFrame(562), 'unstable-cancel'), /stuck movement|stays released/);
+  }
+});

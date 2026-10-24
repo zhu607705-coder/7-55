@@ -1103,9 +1103,23 @@ async function assertStickHeld(value, label) {
   return held;
 }
 async function assertWorldStopped(value, label) {
-  value = await mobileSample(value);
+  // CDP acknowledges dispatch before Godot drains the browser input queue. A
+  // fresh render sample can still precede a queued two-finger cancellation.
+  const began = Date.now(), startFrame = value.sampleFrame;
+  const observation = { label, startFrame, startedAt: began, samples: [] };
+  (active.mobileWorld.cancellations ||= []).push(observation);
+  value = await poll(async () => {
+    const next = await snapshot();
+    if (!next?.world?.input || next.sampleFrame <= startFrame) return null;
+    const input = next.world.input;
+    if (observation.samples.at(-1)?.frame !== next.sampleFrame) observation.samples.push({ frame: next.sampleFrame, elapsedMs: Date.now() - began, owners: input.owners, mouseOwned: input.mouseOwned, inventoryOwned: input.inventoryOwned, axis: next.world.touch_axis });
+    return mobileDistance(next.world.touch_axis, { x: 0, y: 0 }) < .001 && input.owners.length === 0 && !input.mouseOwned && !input.inventoryOwned ? next : null;
+  }, `${label} is consumed by the actual engine input queue`, 5000);
+  observation.finishedAt = Date.now(); observation.endFrame = value.sampleFrame;
+  active.mobileWorld.samples.push({ at: Date.now(), sampleFrame: value.sampleFrame, world: value.world, facts: mobileFacts(value) });
   check(mobileDistance(value.world.touch_axis, { x: 0, y: 0 }) < .001 && value.world.input.owners.length === 0 && !value.world.input.mouseOwned && !value.world.input.inventoryOwned, `${active.id}: ${label} clears pointer owners and axis`, value.world.input);
   const after = await mobileSample(value, 500);
+  check(mobileDistance(after.world.touch_axis, { x: 0, y: 0 }) < .001 && after.world.input.owners.length === 0 && !after.world.input.mouseOwned && !after.world.input.inventoryOwned, `${active.id}: ${label} stays released in a later engine sample`, after.world.input);
   check(mobileDistance(value.world.player, after.world.player) < .5, `${active.id}: ${label} does not leave stuck movement`, { before: value.world.player, after: after.world.player });
   return after;
 }
