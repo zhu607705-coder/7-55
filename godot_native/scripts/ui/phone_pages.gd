@@ -1321,8 +1321,11 @@ func _cc98_thread(post: Dictionary) -> Control:
 	_label(root,"CC98小程序",Rect2(59,9,233,38),24,Color.WHITE)
 	_nav(root,"close","退出帖子，返回热门话题",func(): cc98_post=""; action_requested.emit("phone_refresh",{}),Rect2(328,6,40,44),Color("28769b"),Color.WHITE).name="Cc98CloseThread"
 	_label(root,"热门",Rect2(14,65,220,28),14,Color("337ea3"))
-	var text_left=48.0
-	var text_width=306.0
+	# The collapsed bag includes its touch-sized face, count badge and shadow.
+	# These authored canvases keep their right edge while reserving that column.
+	# Short 360x640 phones still keep a 44-physical-pixel drawer target.
+	var text_left=72.0
+	var text_width=282.0
 	var title_height=_cc98_text_height(str(post.title),text_width,23)
 	var title=_label(root,str(post.title),Rect2(text_left,104,text_width,title_height),23,Color("173143"))
 	title.name="Cc98ThreadTitle";title.vertical_alignment=VERTICAL_ALIGNMENT_TOP
@@ -1864,11 +1867,11 @@ func _library(page: String, view: Dictionary) -> Control:
 		_panel(root,Rect2(16,76,346,342),Color.WHITE,Color("c7d0da"),3,1)
 		# Keep rule text and its action clear of the collapsed phone inventory rail.
 		var rule_page=page=="library_rule"
-		var text_left=46 if rule_page else 31
+		var text_left=60 if rule_page else 31
 		_label(root,str(view.get("body","")),Rect2(text_left,91,346-text_left,310),20,Color("34445c"))
 		if page in ["library_record","library_rule"]:
 			var action_id="lib_read_rule" if rule_page else "lib_record"
-			var action_left=46 if rule_page else 16
+			var action_left=60 if rule_page else 16
 			for action: Dictionary in view.get("actions",[]):
 				if action.id!=action_id: continue
 				var read_action=_act(root,str(action.label),Rect2(action_left,434,362-action_left,48),str(action.id),null,BLUE,Color.WHITE,3,Color.TRANSPARENT)
