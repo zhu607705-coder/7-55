@@ -2,7 +2,6 @@ extends RefCounted
 ## CC98's existing investigation and four source evidence slots. Layout and local
 ## navigation only: every accepted upload remains an ordinary controller intent.
 const Typography=preload("res://scripts/ui/native_typography.gd")
-static var FONT: Font=Typography.body_font()
 const DropButton=preload("res://scripts/ui/phone_drop_button.gd")
 const Library=preload("res://scripts/chapters/library022.gd")
 const SOURCE="res://data/source/library-finals.content.json"
@@ -18,8 +17,17 @@ func reset() -> void:
 	feedback_text=""
 
 func height(text: String,width: float,font_size: int) -> float:
-	# Match Label's word-smart wrap with the actual native font, including newlines.
-	return ceil(FONT.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width,font_size,-1,TextServer.BREAK_MANDATORY|TextServer.BREAK_WORD_BOUND|TextServer.BREAK_ADAPTIVE).y)+4
+	# Measure through the same Label layout as the visible text. Font-only
+	# multiline metrics omit Label line spacing and fallback run heights.
+	var measure := Label.new()
+	Typography.apply_body(measure)
+	measure.add_theme_font_size_override("font_size",font_size)
+	measure.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	measure.size.x=width
+	measure.text=text
+	var result := ceilf(measure.get_minimum_size().y)+4
+	measure.free()
+	return result
 
 func label(b,root: Control,text: String,y: float,font_size: int=17,color: Color=Color("222322"),width: float=WIDTH,x: float=LEFT) -> Label:
 	var node: Label=b._label(root,text,Rect2(x,y,width,height(text,width,font_size)),font_size,color)

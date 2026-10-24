@@ -13,6 +13,69 @@ func check(ok: bool, message: String) -> void:
 func rect(control: Control) -> Rect2:
 	var transform := control.get_global_transform_with_canvas()
 	return Rect2(transform.origin,control.size*transform.get_scale())
+# The oracle uses painted rail geometry and the authored 18 px / 8 px contract,
+# never the current content margin or width to derive the expected result.
+func occupied_rail() -> Rect2:
+	var chrome: Control=main.phone_chrome
+	var handle := rect(chrome.inventory_handle)
+	var style: StyleBoxFlat=chrome.inventory_handle.get_theme_stylebox("normal")
+	var scale: float=absf(chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
+	var shadow := handle.grow(style.shadow_size*scale)
+	shadow.position+=style.shadow_offset*scale
+	return handle.merge(shadow).merge(rect(chrome.inventory_count))
+func expected_left(frame: Control) -> int:
+	if not main.phone_chrome.inventory_handle.is_visible_in_tree():return 18
+	var intrusion := occupied_rail().end.x-rect(frame).position.x
+	if intrusion<=0:return 18
+	return maxi(18,ceili(intrusion/absf(frame.get_global_transform_with_canvas().get_scale().x))+8)
+func reading_geometry_matches(frame: Control, left: int) -> bool:
+	var scale: float=absf(frame.get_global_transform_with_canvas().get_scale().x)
+	var app := rect(frame)
+	var content := rect(frame.content)
+	return absf((content.position.x-app.position.x)/scale-left)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5 and absf(frame.content.size.x-(424-left-18))<.5
+func semantic_controls(node: Node) -> Array:
+	var result: Array=[]
+	if (node is Label and not node.text.is_empty()) or node is Button:result.append(node)
+	for child in node.get_children():result.append_array(semantic_controls(child))
+	return result
+func visible_rect(control: Control) -> Rect2:
+	var bounds := rect(control)
+	var owner := control.get_parent()
+	while owner!=null:
+		if owner is Control and owner.clip_contents:bounds=bounds.intersection(rect(owner))
+		owner=owner.get_parent()
+	return bounds
+func check_reading_geometry(frame: Control, label: String) -> void:
+	var left := expected_left(frame)
+	var app := rect(frame)
+	var content := rect(frame.content)
+	var scale: float=absf(frame.get_global_transform_with_canvas().get_scale().x)
+	# Replace equal-margin and minimum-width assumptions without losing either contract.
+	check(absf((content.position.x-app.position.x)/scale-left)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5,"reading margins match occupied left rail and authored right 18: "+label)
+	check(absf(frame.content.size.x-(424-left-18))<.5,"reading area uses all available width without overflow: "+label)
+	if frame.footer.visible and frame.footer.get_child_count()>0:
+		check(frame.footer_margin.get_theme_constant("margin_left")==left and frame.footer_margin.get_theme_constant("margin_right")==18,"footer shares the safe reading column: "+label)
+	for fraction: float in [0.0,.5,1.0]:
+		var bar: VScrollBar=frame.scroll.get_v_scroll_bar()
+		frame.scroll.scroll_vertical=roundi((bar.max_value-bar.page)*fraction);await frames()
+		for control: Control in semantic_controls(frame.content):
+			if not control.is_visible_in_tree():continue
+			var visible := visible_rect(control)
+			if not visible.has_area():continue
+			check(rect(control).position.x>=app.position.x-.5 and rect(control).end.x<=app.end.x+.5,"reading text/action stays inside app: "+label+" / "+control.name)
+			check(not occupied_rail().intersects(visible),"painted inventory/count does not obscure reading text/action: "+label+" / "+control.name)
+	# An actual wrong margin must be rejected, not merely echoed by the oracle.
+	frame.content_margin.add_theme_constant_override("margin_left",left+10);await frames()
+	check(not reading_geometry_matches(frame,left),"geometry oracle rejects a wasted or incorrect left column: "+label)
+	main._layout();await frames()
+	check(reading_geometry_matches(frame,left),"normal layout restores the measured safe column: "+label)
+	# Presentation-only absence must release the reserved column, including desktop.
+	main.phone_chrome.inventory.hide();main._layout();await frames()
+	check(not main.phone_chrome.inventory_handle.is_visible_in_tree(),"negative fixture has no inventory occupancy: "+label)
+	check(reading_geometry_matches(frame,18),"no occupancy restores 18/18 margins and full 388 width: "+label)
+	check(frame.footer_margin.get_theme_constant("margin_left")==18 and frame.footer_margin.get_theme_constant("margin_right")==18,"no occupancy restores footer 18/18: "+label)
+	main.phone_chrome.inventory.show();main._layout();await frames()
+	check(reading_geometry_matches(frame,left),"returning inventory restores only its necessary safe column: "+label)
 func touch(control: Control) -> void:
 	check(control!=null,"touch target exists")
 	if control==null:return
@@ -111,10 +174,7 @@ func run() -> void:
 			check(frame.size==Vector2(424,814),"app fills the shared phone interior: "+page)
 			if frame.get_script()!=load("res://scripts/ui/phone_app_frame.gd"):
 				check(false,"specialized app is ready: "+page);continue
-			var app_bounds := rect(frame)
-			var content_bounds := rect(frame.content)
-			check(absf((content_bounds.position.x-app_bounds.position.x)-(app_bounds.end.x-content_bounds.end.x))<1,"reading area has equal side margins: "+page)
-			check(frame.content.size.x>=388,"reading area uses the recovered side column: "+page)
+			await check_reading_geometry(frame,page+" / "+str(dimensions))
 			var header_before := rect(frame.toolbar)
 			frame.scroll.scroll_vertical=10000;await frames()
 			check(rect(frame.toolbar)==header_before,"scroll keeps navigation fixed: "+page)

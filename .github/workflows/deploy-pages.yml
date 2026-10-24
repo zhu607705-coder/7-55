@@ -110,7 +110,9 @@ jobs:
           node godot_native/tests/test_web_acceptance_bundle.mjs
           node godot_native/tests/test_web_acceptance_workflow.mjs
           node godot_native/tests/test_web_browser_lifecycle.mjs
+          node godot_native/tests/test_web_network_observation.mjs
           node godot_native/tests/test_web_save_diagnostics.mjs
+          node godot_native/tests/test_web_input_completion.mjs
           node godot_native/tools/test_web_content_loader.mjs
           node godot_native/tools/test_web_resource_cache.mjs
           node godot_native/tools/test_web_boot_chunks.mjs
@@ -164,10 +166,29 @@ jobs:
             return {fixture, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex')};
           }
           const phoneRecoveryInputs = preparePhoneRecoveryInputs(output);
+          // The existing full-campaign recorder does not emit the library's
+          // unread-rule / before-opening boundaries. Earn those through the
+          // existing dedicated recorder, in a separate isolated save sandbox.
+          const librarySandbox = createNativeTestSandbox(path.resolve('godot_native'), '755-web-library-fixture-');
+          const libraryCommand = ['--headless', '--path', librarySandbox.project, '--script', 'res://tests/library_continuity_recorder.gd'];
+          const libraryReport = path.join(output, 'library-controller-report.json');
+          const libraryResult = spawnSync(process.env.GODOT_BIN || 'godot', libraryCommand, {
+            env: {...librarySandbox.env, LIBRARY_CAPTURE_DIR: output, CAMPAIGN_REPORT: libraryReport},
+            encoding: 'utf8', maxBuffer: 32 * 1024 * 1024
+          });
+          const libraryLog = `${libraryResult.stdout || ''}\n${libraryResult.stderr || ''}`;
+          fs.writeFileSync(path.join(output, 'library-controller.log'), libraryLog);
+          console.log(libraryLog);
+          if (libraryResult.error || libraryResult.status !== 0 || /(?:^|\n)(?:SCRIPT ERROR|ERROR):/.test(libraryLog)) throw Error(`Library fixture generation failed: ${libraryResult.error || libraryResult.status}`);
+          const libraryCampaign = JSON.parse(fs.readFileSync(libraryReport, 'utf8'));
+          if (libraryCampaign.failures !== 0 || !Number.isInteger(libraryCampaign.checks) || libraryCampaign.checks <= 0 || libraryCampaign.kind !== 'continuous-native-controller-campaign' || !libraryCampaign.notManualPlaythrough || !libraryCampaign.spatialSetupExplicit || ![1, 2].every(chapter => libraryCampaign.completedChapters?.includes(chapter))) throw Error('Missing successful controller-only library fixture provenance');
+          const libraryInputs = {recorder: 'res://tests/library_continuity_recorder.gd', command: libraryCommand, checks: libraryCampaign.checks,
+            fixtures: ['before_library_rule_read.json', 'before_library_022_opening.json'].map(portableFixture),
+            scope: 'Controller-earned library boundaries with explicit spatial setup; not complete natural-navigation proof.'};
           const provenance = {source: JSON.parse(fs.readFileSync('godot_native/exports/verification/ci-source.json', 'utf8')),
             recorder: 'res://tests/campaign_continuity_recorder.gd', command, checks: campaign.checks,
-            ...portableFixture('before_c2_dorm_exit.json'), streamingFixture: portableFixture('after_c2_dorm_exit.json'), phoneRecoveryInputs,
-            scope: 'Controller-earned snapshots with explicit spatial test setup, plus explicitly constructed legacy low-battery variants; not browser interaction or manual-navigation proof. Browser coverage is the separately executed mobile-world, streaming and phone-recovery scenarios.'};
+            ...portableFixture('before_c2_dorm_exit.json'), streamingFixture: portableFixture('after_c2_dorm_exit.json'), phoneRecoveryInputs, libraryInputs,
+            scope: 'Controller-earned snapshots with explicit spatial test setup, plus explicitly constructed legacy low-battery variants; not browser interaction or manual-navigation proof. Browser coverage is the separately executed mobile-world, streaming, phone-recovery and library-boundary scenarios.'};
           fs.writeFileSync(path.join(output, 'fixture-provenance.json'), JSON.stringify(provenance, null, 2) + '\n');
           console.log(JSON.stringify(provenance, null, 2));
           NODE
@@ -268,6 +289,10 @@ jobs:
             godot_native/exports/verification/web_ci/*.png
             godot_native/exports/verification/controller-earned/controller-campaign-report.json
             godot_native/exports/verification/controller-earned/controller-campaign.log
+            godot_native/exports/verification/controller-earned/library-controller-report.json
+            godot_native/exports/verification/controller-earned/library-controller.log
+            godot_native/exports/verification/controller-earned/before_library_rule_read.json
+            godot_native/exports/verification/controller-earned/before_library_022_opening.json
             godot_native/exports/verification/controller-earned/fixture-provenance.json
             godot_native/exports/verification/controller-earned/phone-recovery-inputs.json
             godot_native/exports/verification/controller-earned/before_c1_plant_light.json
@@ -293,7 +318,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # Bounded first isolation pass; three runners add up to 36 runner-minutes,
-    # not 12. Together with build the ceiling is 61 runner-minutes, not 25.
+    # not 12. Build + these profiles = 61 runner-minutes; two library consumers
+    # add at most 24 more (85 overall), not 24 minutes of serial wall time.
     timeout-minutes: 12
     permissions:
       contents: read
@@ -367,9 +393,11 @@ jobs:
             const world = item.mobileWorld;
             if (!item.passed || world?.completed !== true || world.fixtureConstructionIsNotTouchEvidence !== true || !world.samples?.length || !world.coverage?.length) throw Error(`Incomplete mobile-world evidence: ${item.id}`);
             if (!item.imports?.some(input => input.filename === fixture.fixture && input.sha256 === fixture.sha256)) throw Error(`Browser did not import the recorded earned fixture: ${item.id}`);
-            if (item.touch && (!world.inputs?.some(input => input.method === 'Input.dispatchTouchEvent') || !world.coverage.includes('bottom plaque'))) throw Error(`Missing actual touch/plaque evidence: ${item.id}`);
+            const plaque = world.coverage.includes('bottom plaque') || world.coverage.includes('bottom plaque above inline controls');
+            if (item.touch && (!world.inputs?.some(input => input.method === 'Input.dispatchTouchEvent') || !plaque)) throw Error(`Missing actual touch/plaque evidence: ${item.id}`);
             if (!item.touch && !world.coverage.includes('PC direction + Space')) throw Error('Missing PC interaction regression');
-            if (item.id === 'touch-390' && !world.coverage.includes('landscape resize')) throw Error('Missing actual landscape resize coverage');
+            const landscape = world.coverage.includes('landscape resize') || world.coverage.includes('landscape resize and direct tap');
+            if (item.id === 'touch-390' && !landscape) throw Error('Missing actual landscape resize coverage');
           }
           const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
             inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
@@ -438,9 +466,124 @@ jobs:
             godot_native/exports/verification/web_phone_recovery/
           if-no-files-found: warn
 
+  library_profiles:
+    name: Godot Web library boundaries (${{ matrix.profile }})
+    # Boundary-import continuity only, not the full bag/paper/stamp walking chain.
+    # Reuse this run's sealed export; never rebuild or publish from this job.
+    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [desktop-1280, touch-390]
+    env:
+      ACCEPTANCE_PROFILE: ${{ matrix.profile }}
+      ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
+      EXPECTED_PRODUCER_ATTEMPT: ${{ needs.build.outputs.producer_attempt }}
+    steps:
+      - name: Check out exact producer source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+
+      - name: Download this run's sealed producer inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.bundle_name }}
+          path: ${{ runner.temp }}/godot-web-inputs
+
+      - name: Verify exact source and every input byte
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-library-inputs.json
+
+      - name: Accept actual library boundary input for this profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-library-qa-site" godot_native/exports/verification/web_library
+          ln -s "$RUNNER_TEMP/godot-web-inputs/web-release" "$RUNNER_TEMP/godot-library-qa-site/7-55"
+          python3 -m http.server 5209 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-library-qa-site" > godot_native/exports/verification/web_library/http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5209/7-55/build-manifest.json
+          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5209/7-55/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_library \
+            --scenarios library --only "$ACCEPTANCE_PROFILE" \
+            --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_library/acceptance.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {createHash} from 'node:crypto';
+          const directory = 'godot_native/exports/verification/web_library';
+          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
+          const inputBundle = JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-library-inputs.json', 'utf8'));
+          const provenance = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/fixture-provenance.json`, 'utf8'));
+          const profile = {'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1]}[process.env.ACCEPTANCE_PROFILE];
+          const expectedFiles = ['before_library_rule_read.json', 'before_library_022_opening.json'];
+          const inputs = provenance.libraryInputs?.fixtures;
+          const runnerSha256 = createHash('sha256').update(fs.readFileSync('godot_native/tools/verify_web_export.mjs')).digest('hex');
+          if (!profile || report.scenarios !== 'library' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || report.runnerSha256 !== runnerSha256 || report.cases?.length !== 1) throw Error('Missing exact-source library browser case');
+          if (inputBundle.verified !== true || inputBundle.source?.checkedOutCommit !== process.env.GITHUB_SHA || inputBundle.receiptSha !== process.env.EXPECTED_RECEIPT_SHA || inputBundle.producerAttempt !== process.env.EXPECTED_PRODUCER_ATTEMPT || JSON.stringify(provenance.source) !== JSON.stringify(inputBundle.source)) throw Error('Library acceptance used different producer inputs');
+          if (provenance.libraryInputs?.recorder !== 'res://tests/library_continuity_recorder.gd' || !Number.isInteger(provenance.libraryInputs?.checks) || provenance.libraryInputs.checks <= 0 || !Array.isArray(inputs) || JSON.stringify(inputs.map(input => input.fixture)) !== JSON.stringify(expectedFiles)) throw Error('Missing earned library boundary provenance');
+          const item = report.cases[0], library = item.library;
+          if (item.id !== process.env.ACCEPTANCE_PROFILE || JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile) || !item.passed || !item.renderer?.webgl2) throw Error('Wrong actual library browser profile');
+          if (!library || !['completed', 'unreadReopen', 'explicitRead', 'reload'].every(key => library[key] === true) || library.handoff !== 'original skip-to-arrival button then ordinary return-to-campus' || library.fixtureBoundary !== 'controller-earned; not manual spatial navigation' || !library.dialogueSamples?.length) throw Error('Incomplete library boundary continuity');
+          for (const input of inputs) {
+            const bytes = fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/${input.fixture}`);
+            const digest = createHash('sha256').update(bytes).digest('hex');
+            if (input.bytes !== bytes.length || input.sha256 !== digest || !item.imports?.some(actual => actual.filename === input.fixture && actual.sha256 === digest && actual.bytes === bytes.length)) throw Error(`Library browser did not import exact earned bytes: ${input.fixture}`);
+          }
+          for (const stage of ['library-rule-entry', 'library-rule-reviewed', 'library-handoff']) {
+            const screenshot = item.screenshots?.find(file => file.path === `${item.id}-${stage}.png`);
+            if (!screenshot || !Number.isSafeInteger(screenshot.bytes) || screenshot.bytes <= 0 || !/^[a-f0-9]{64}$/.test(screenshot.sha256)) throw Error('Missing actual library screenshots');
+            const bytes = fs.readFileSync(`${directory}/${screenshot.path}`);
+            if (bytes.length !== screenshot.bytes || createHash('sha256').update(bytes).digest('hex') !== screenshot.sha256) throw Error('Library screenshot bytes differ from browser evidence');
+          }
+          for (const suffix of ['unread library rule', 'library handoff']) {
+            const label = `${item.id} ${suffix}`;
+            if (!item.saveInputs?.some(input => input.label === label && input.dispatchCompleted === true && input.touch === item.touch && input.events?.length) || !item.saveAttempts?.some(attempt => attempt.label === label && !attempt.failedAt && attempt.completedAt && attempt.disk?.entries?.length)) throw Error(`Missing explicit saved/reloaded library boundary: ${label}`);
+          }
+          const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine, runnerSha256,
+            inputBundle, inputs, cases: [{id: item.id, library, screenshots: item.screenshots}],
+            scope: 'Controller-earned boundary imports plus actual Chromium unread-rule reopening, explicit reading, exact save/reload and original skip-to-arrival handoff. Not complete natural navigation through the bag, paper, librarian stamp or PASS chain; not physical-device proof.'};
+          fs.writeFileSync(`${directory}/ci-library-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
+          console.log(JSON.stringify(receipt, null, 2));
+          NODE
+
+      - name: Preserve this profile's library evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-library-${{ matrix.profile }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-library-inputs.json
+            godot_native/exports/verification/web_library/
+          if-no-files-found: warn
+
   deploy:
     name: Publish Godot Web game
-    if: ${{ needs.build.result == 'success' && needs.browser_profiles.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
+    if: ${{ needs.build.result == 'success' && needs.browser_profiles.result == 'success' && needs.library_profiles.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
     permissions:
       pages: write
       id-token: write
@@ -448,7 +591,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [build, browser_profiles]
+    needs: [build, browser_profiles, library_profiles]
     steps:
       - name: Configure Pages
         uses: actions/configure-pages@v5

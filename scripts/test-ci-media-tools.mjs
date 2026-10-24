@@ -266,10 +266,27 @@ for (const [file, acceptance, budget] of WORKFLOWS) test(`${file}: helper fixtur
     assert(text.includes("'scripts/test-ci-media-tools.mjs'"));
   }
 });
-test('Godot Web baseline, streaming and independent profile browser commands remain', () => {
+test('Godot Web baseline, streaming, profile and library commands retain bounded read-only consumers', () => {
   const text = readFileSync(new URL('../.github/workflows/deploy-pages.yml', import.meta.url), 'utf8');
-  assert.equal((text.match(/node godot_native\/tools\/verify_web_export\.mjs/g) ?? []).length, 4);
-  for (const scenario of ['--scenarios streaming', '--scenarios mobile-world', '--scenarios phone-recovery']) assert(text.includes(scenario));
-  assert.match(text, /fail-fast: false/);
+  const build = text.split('  build:\n')[1].split('  browser_profiles:\n')[0];
+  const profiles = text.split('  browser_profiles:\n')[1].split('  library_profiles:\n')[0];
+  const library = text.split('  library_profiles:\n')[1].split('  deploy:\n')[0];
+  const commandCount = value => (value.match(/node godot_native\/tools\/verify_web_export\.mjs/g) ?? []).length;
+  assert.equal(commandCount(text), 5);
+  assert.equal(commandCount(build), 2, 'original baseline and streaming gates remain');
+  assert.equal(commandCount(profiles), 2, 'original world and phone gates remain');
+  assert.equal(commandCount(library), 1, 'library is one additional consumer, not a replacement');
+  assert(build.includes('--scenarios streaming'));
+  for (const scenario of ['--scenarios mobile-world', '--scenarios phone-recovery']) assert(profiles.includes(scenario));
+  assert(library.includes('--scenarios library --only "$ACCEPTANCE_PROFILE"'));
+  for (const consumer of [profiles, library]) {
+    assert.match(consumer, /needs: build/);
+    assert.match(consumer, /needs\.build\.outputs\.bundle_ready == 'true'/);
+    assert.match(consumer, /timeout-minutes: 12/);
+    assert.match(consumer, /permissions:\n      contents: read/);
+    assert.match(consumer, /fail-fast: false/);
+    assert.match(consumer, /node godot_native\/tools\/web_acceptance_bundle\.mjs verify/);
+    assert.doesNotMatch(consumer, /ensure-ci-media-tools|sudo |build_web\.mjs|continue-on-error|pages: write|id-token: write/);
+  }
 });
 console.log(`CI media tools: ${passed} fixture tests passed; no real APT/network/browser execution.`);

@@ -91,6 +91,27 @@ async function connect(wsUrl, onEvent) {
   ws.addEventListener('close', () => { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP connection closed')); } pending.clear(); });
   return { send(method, params = {}, timeoutMs = 30000) { return new Promise((resolve, reject) => { const id = ++sequence; const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout ${method}`)); }, timeoutMs); pending.set(id, { resolve, reject, timer }); ws.send(JSON.stringify({ id, method, params })); }); }, close() { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP closed')); } pending.clear(); ws.close(); } };
 }
+async function enableNetworkObservation(session) {
+  // CI Chrome 155 exposes this dedicated command. Keep the original caps;
+  // only response-body retention across renderer navigation changes. Missing
+  // protocol support is an explicit failure, never permission to skip hashes.
+  const observation = { startedAt: Date.now(), maxTotalBufferSize: 128 * 1024 * 1024,
+    maxResourceBufferSize: 2 * 1024 * 1024, durableMessages: false, navigations: [] };
+  session.networkObservation = observation;
+  try {
+    observation.browser = await session.cdp.send('Browser.getVersion');
+    const capacity = { maxTotalBufferSize: observation.maxTotalBufferSize, maxResourceBufferSize: observation.maxResourceBufferSize };
+    await session.cdp.send('Network.enable', capacity);
+    observation.networkEnabledAt = Date.now();
+    await session.cdp.send('Network.configureDurableMessages', capacity);
+    observation.durableMessages = true;
+    observation.confirmedAt = Date.now();
+  } catch (error) {
+    observation.failedAt = Date.now(); observation.error = error.message;
+    throw new Error(`Required durable network response observation failed: ${error.message}`, { cause: error });
+  }
+  return observation;
+}
 let active;
 let delivery;
 async function prepareDeliveryEvidence() {
@@ -173,7 +194,27 @@ async function snapshot() { return evaluate('window.__GODOT_755__?.snapshot?.() 
 const state = value => value?.state;
 async function key(key, code, down) { if (active.mobileWorld) active.mobileWorld.inputs.push({ at: Date.now(), method: 'Input.dispatchKeyEvent', key, code, down }); await active.cdp.send('Input.dispatchKeyEvent', { type: down ? 'keyDown' : 'keyUp', key, code, windowsVirtualKeyCode: ({ Enter: 13, Escape: 27, F10: 121, ArrowLeft: 37, ArrowRight: 39, ArrowUp: 38, ArrowDown: 40, Space: 32 })[code] || 0 }); }
 async function press(keyName, code = keyName) { await key(keyName, code, true); await interval(65); await key(keyName, code, false); }
-async function clickPoint(point, touch = active.touch) { if (active.mobileWorld) active.mobileWorld.inputs.push({ at: Date.now(), method: touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', point, touch }); if (touch) { await active.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...point, id: 1 }] }); await interval(65); await active.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); } else { await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point }); await active.cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point }); await interval(65); await active.cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point }); } }
+async function clickPoint(point, touch = active.touch, trace = null) {
+  if (active.mobileWorld) active.mobileWorld.inputs.push({ at: Date.now(), method: touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', point, touch });
+  const send = async (method, params) => {
+    const event = { method, params, startedAt: Date.now() }; trace?.push(event);
+    try { await active.cdp.send(method, params); event.acknowledgedAt = Date.now(); }
+    catch (error) { event.error = error.message; throw error; }
+    finally { event.endedAt = Date.now(); }
+  };
+  // CDP acknowledgements describe transport, not native action completion.
+  // Optional tracing changes neither the existing sequence nor its 65ms hold.
+  if (touch) {
+    await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...point, id: 1 }] });
+    await interval(65);
+    await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  } else {
+    await send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+    await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point });
+    await interval(65);
+    await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
+  }
+}
 async function canvasGeometry() { return evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas');if(!c)return null;const r=c.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,pixelWidth:c.width,pixelHeight:c.height};})()`); }
 async function renderPoint(point, value) { value ||= await snapshot(); const canvas = await canvasGeometry(); const viewport = value.viewport || {}; const width = viewport.width || viewport.size?.x || canvas.pixelWidth; const height = viewport.height || viewport.size?.y || canvas.pixelHeight; return { x: canvas.x + point.x / width * canvas.width, y: canvas.y + point.y / height * canvas.height }; }
 function controls(value) { return value?.visibleControls || []; }
@@ -328,19 +369,134 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
   check(primary?.sha256 === saved.saveDigest, `${label}: independent readonly IndexedDB primary matches the current native save`, { elapsedMs: Date.now() - began, receipt: saved.savePersistence, primary, diskReadMs: disk.readDurationMs });
   return saved;
 }
+function saveClickCandidate(value) {
+  // The ordinary notice can occupy a row above Settings actions, then collapse
+  // after two apparently stable frames. Observe its existing published Label;
+  // do not click a coordinate whose known temporary row can still disappear.
+  if (controls(value).some(control => control.name === 'PhoneNotification' && typeof control.text === 'string' && control.text.trim())) return null;
+  const matches = controls(value).filter(control => control.name === 'SaveNativeProgress');
+  const control = matches[0], rect = control?.rect, viewport = value?.viewport;
+  // visibleControls is populated only from native Controls visible in the tree.
+  // A duplicate, clipped/offscreen, disabled or cached-invalid target is not a
+  // usable click target. Repeated reads of one native frame do not prove settle.
+  // All explicit-save callers open Settings afresh. Require its initial label,
+  // not a previous success/failure label that an unrelated autosave could reuse.
+  if (matches.length !== 1 || control.text !== '保存进度' || control.disabled !== false || control.visible === false || value.documentHidden === true || !Number.isSafeInteger(value.sampleFrame) || value.sampleFrame < 0 || !Number.isSafeInteger(value.savePersistence?.token) || value.savePersistence.token < 0) return null;
+  if (!rect || !viewport || ![rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height].every(Number.isFinite) || rect.width <= 0 || rect.height <= 0 || viewport.width <= 0 || viewport.height <= 0 || rect.x < 0 || rect.y < 0 || rect.x + rect.width > viewport.width || rect.y + rect.height > viewport.height) return null;
+  const native = state(value)?.native;
+  const context = { chapter: native?.chapter, mode: native?.mode, page: native?.page, scene: native?.scene };
+  return { value, control, rect, viewport, context, frame: value.sampleFrame,
+    key: JSON.stringify([control.name, control.text, rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height, context]) };
+}
+async function clickStableSaveControl(label) {
+  const input = { label, geometryWaitBeganAt: Date.now(), controlName: 'SaveNativeProgress', touch: active.touch, geometrySamples: [] };
+  (active.saveInputs ||= []).push(input);
+  let previous, lastSample;
+  let prepared;
+  try {
+    prepared = await poll(async () => {
+      const value = await snapshot(), candidate = saveClickCandidate(value);
+      const sample = { sampleFrame: value?.sampleFrame, token: value?.savePersistence?.token, usable: !!candidate, matches: controls(value).filter(control => control.name === 'SaveNativeProgress').length, rect: candidate?.rect,
+        blockingNotice: controls(value).find(control => control.name === 'PhoneNotification' && typeof control.text === 'string' && control.text.trim()) || null };
+      const identity = JSON.stringify(sample);
+      if (identity !== lastSample && input.geometrySamples.length < 160) { lastSample = identity; input.geometrySamples.push(sample); }
+      if (!candidate) { previous = null; return null; }
+      if (!previous || candidate.frame <= previous.frame || candidate.key !== previous.key) {
+        if (!previous || candidate.frame !== previous.frame || candidate.key !== previous.key) previous = candidate;
+        return null;
+      }
+      // Read the actual DOM canvas immediately before this one dispatch, not
+      // coordinates retained from opening Settings or an earlier native frame.
+      const canvas = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas');if(!c)return null;const r=c.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,pixelWidth:c.width,pixelHeight:c.height,windowWidth:innerWidth,windowHeight:innerHeight,documentHidden:document.hidden};})()`);
+      if (!canvas || canvas.documentHidden || ![canvas.x, canvas.y, canvas.width, canvas.height, canvas.pixelWidth, canvas.pixelHeight, canvas.windowWidth, canvas.windowHeight].every(Number.isFinite) || [canvas.width, canvas.height, canvas.pixelWidth, canvas.pixelHeight, canvas.windowWidth, canvas.windowHeight].some(size => size <= 0)) { previous = null; return null; }
+      const r = candidate.rect, v = candidate.viewport;
+      const mappedRect = { x: canvas.x + r.x / v.width * canvas.width, y: canvas.y + r.y / v.height * canvas.height, width: r.width / v.width * canvas.width, height: r.height / v.height * canvas.height };
+      if (mappedRect.x < 0 || mappedRect.y < 0 || mappedRect.x + mappedRect.width > canvas.windowWidth || mappedRect.y + mappedRect.height > canvas.windowHeight) { previous = null; return null; }
+      const point = { x: mappedRect.x + mappedRect.width / 2, y: mappedRect.y + mappedRect.height / 2 };
+      Object.assign(input, { preparedAt: Date.now(), stableSampleFrames: [previous.frame, candidate.frame], sampleFrame: candidate.frame,
+        name: candidate.control.name, text: candidate.control.text, rect: r, viewport: v, canvas, mappedRect, point,
+        coordinateSource: 'fresh native visibleControls + immediately read DOM canvas boundingClientRect', uniqueControlMatches: 1,
+        previousToken: candidate.value.savePersistence?.token ?? -1, observedSaveDigest: candidate.value.saveDigest, observedContext: candidate.context });
+      return candidate;
+    }, `${label}: usable SaveNativeProgress geometry agrees across fresh native frames`, 20000);
+  } catch (error) { input.failedAt = Date.now(); input.failureKind = 'save-control-not-stable'; input.error = error.message; throw error; }
+  input.dispatchStartedAt = Date.now();
+  input.events = [];
+  try { await clickPoint(input.point, input.touch, input.events); input.dispatchCompleted = true; }
+  catch (error) { input.failureKind = 'save-input-dispatch-failed'; input.error = error.message; throw error; }
+  finally { input.dispatchEndedAt = Date.now(); }
+  return { input, before: prepared.value };
+}
+async function beginSavePerformance(label) {
+  const session = active;
+  const record = { schema: '755-save-performance-v1', label, timeDomain: 'timeTicks', startedAt: Date.now(),
+    scope: 'Two cumulative CDP metric samples surrounding geometry preparation, input, the original receipt wait and trailing independent IDB read (or the failed stage); not the exact 60s persistence interval.',
+    interpretation: 'Raw metrics only. CDP Frames counts DOM frames, not rendered frames or FPS; native process progress is available separately in existing sampleFrame observations.' };
+  (session.savePerformance ||= []).push(record);
+  const request = async (method, params = {}) => {
+    const row = { method, params, timeoutMs: 1000, nodeRequestAt: Date.now() };
+    try {
+      const result = await session.cdp.send(method, params, 1000);
+      row.nodeResponseAt = Date.now();
+      if (method === 'Performance.getMetrics') {
+        row.metrics = result?.metrics ?? null;
+        if (!Array.isArray(row.metrics)) row.error = 'Performance.getMetrics did not return a metrics array';
+      }
+    } catch (error) { row.nodeFailedAt = Date.now(); row.error = String(error?.message || error); }
+    finally { row.nodeFinishedAt = Date.now(); row.nodeElapsedMs = row.nodeFinishedAt - row.nodeRequestAt; }
+    return row;
+  };
+  // Diagnostic transport only, before looking up a stable click coordinate.
+  // No periodic sampling, injected page code, storage API or receipt-poll work.
+  record.enableWasAlreadyAttempted = !!session.savePerformanceEnable;
+  if (!session.savePerformanceEnable) {
+    // Mark before sending: a timeout leaves enable's outcome uncertain and is
+    // never permission to send it again in this browser session.
+    session.savePerformanceEnable = { attemptedAt: Date.now() };
+    record.enable = session.savePerformanceEnable;
+    Object.assign(record.enable, await request('Performance.enable', { timeDomain: 'timeTicks' }));
+  } else record.enable = session.savePerformanceEnable;
+  record.before = await request('Performance.getMetrics');
+  record.preInputFinishedAt = Date.now();
+  record.preInputDiagnosticMs = record.preInputFinishedAt - record.startedAt;
+  let finished = false;
+  return { finish: async () => {
+    if (finished) return;
+    finished = true;
+    record.after = await request('Performance.getMetrics');
+    record.finishedAt = Date.now();
+  } };
+}
 async function saveProgressAndWait(label) {
-  const before = await snapshot();
-  const saveInputBeganAt = Date.now();
-  await clickControl('SaveNativeProgress', 'name');
-  return waitForPersistedSave(label, before.savePersistence?.token ?? -1, true, saveInputBeganAt);
+  const performance = await beginSavePerformance(label);
+  try {
+    const { input } = await clickStableSaveControl(label);
+    // The token comes from the final stable pre-click sample: an autosave while
+    // the menu is settling cannot count as acknowledgement of this explicit Save.
+    // No separate activation deadline/retry: the current main single 75s receipt
+    // window covers both a newly observed token and its exact durable receipt.
+    const pending = waitForPersistedSave(label, input.previousToken, true, input.dispatchStartedAt);
+    const attempt = active.saveAttempts.at(-1); attempt.input = input;
+    try { return await pending; }
+    catch (error) {
+      const newTokenObserved = attempt.observations.some(row => row.receipt?.token > input.previousToken);
+      attempt.failureKind = newTokenObserved ? 'save-persistence-not-acknowledged' : 'save-input-not-acknowledged';
+      throw new Error(`${label}: ${newTokenObserved ? 'new native save token observed, but exact persistence acceptance failed' : 'no new native save token observed after the single dispatched input'}; ${error.message}`, { cause: error });
+    }
+  } finally { await performance.finish(); }
 }
 async function startStory(reload = false) {
   if (reload) {
     await waitForPersistedSave(`${active.id} before actual reload`);
-    // Finish byte evidence already requested before replacing its document.
+    // Preserve main's current-document evidence drain as well as the durable
+    // response store and per-navigation provenance used by this acceptance.
     await Promise.all(active.bootBodyJobs);
   }
-  const start = Date.now(); await active.cdp.send(reload ? 'Page.reload' : 'Page.navigate', reload ? { ignoreCache: true } : { url: active.url || url });
+  const start = Date.now();
+  const navigation = { method: reload ? 'Page.reload' : 'Page.navigate', requestedAt: start };
+  active.networkObservation?.navigations.push(navigation);
+  await active.cdp.send(navigation.method, reload ? { ignoreCache: true } : { url: active.url || url });
+  navigation.acknowledgedAt = Date.now();
   await poll(() => evaluate("document.documentElement.dataset.bootState === 'ready'"), 'Godot engine initialized and PCK preloaded', bootTimeout);
   const bootReadyMs = Date.now() - start;
   if (scenarios === 'phone-navigation') {
@@ -692,6 +848,17 @@ async function reopenLibraryRuleThroughApp() {
   await clickControl('ZjudingApp_library', 'name');
   await clickControl('LibraryApp_rule', 'name');
 }
+function libraryContentReady(value) {
+  return value?.content?.blocking === false && (value.content.monolithic === true
+    || value.content.enabled === true && value.content.readyFamilies?.includes('chapter3'));
+}
+function libraryHandoffReady(value) {
+  const native = state(value)?.native;
+  return native?.chapter === 3 && native.scene === 'campus_bootstrap' && value.content?.blocking === false
+    && (value.content.monolithic === true || value.content.enabled === true && value.content.readyFamilies?.includes('chapter3'))
+    && value.world?.visible === true && value.world.scene_id === 'campus_bootstrap'
+    && controls(value).some(control => control.name === 'WorldPhoneButton' && control.disabled === false);
+}
 async function libraryCase() {
   if (!fixtureDir) throw new Error('Library continuity requires controller-earned portable boundaries');
   await importSave(path.join(fixtureDir, 'before_library_rule_read.json'));
@@ -737,9 +904,18 @@ async function libraryCase() {
   await poll(async () => controls(await snapshot()).some(c => c.text === '跳过演出'), 'earned022 seat starts its original transition');
   await clickControl('跳过演出', 'text');
   await clickControl('回到校园', 'text');
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.chapter === 3 && state(s)?.native.scene === 'campus_bootstrap' ? s : null; }, 'ordinary022 arrival hands off to campus and Chapter3');
+  // State commits before required content finishes. Give the cold C3 download
+  // the same bounded budget as other deferred worlds, then retain the 20s UI
+  // handoff deadline. No input is sent while the coordinator owns the pause.
+  active.library ||= {};
+  active.library.contentWait = { beganAt: Date.now(), timeoutMs: bootTimeout };
+  await poll(async () => libraryContentReady(await snapshot()), 'library exit C3 content is ready', bootTimeout);
+  active.library.contentWait.readyAt = Date.now();
+  active.library.handoffWait = { beganAt: Date.now(), timeoutMs: 20000 };
+  value = await poll(async () => { const s = await snapshot(); return libraryHandoffReady(s) ? s : null; }, 'ordinary022 arrival hands off to ready campus and Chapter3');
+  active.library.handoffWait.readyAt = Date.now();
   check(state(value).ui.libraryFinalsPhase === 'friend_contacted' && state(value).canteenHunt.active && state(value).canteenHunt.phase === 'tracking', `${active.id}: original controller starts the canteen hunt at the library exit`);
-  await interval(900); await settings(); await saveProgressAndWait(`${active.id} library handoff`); await startStory(true);
+  await settings(); await saveProgressAndWait(`${active.id} library handoff`); await startStory(true);
   value = await snapshot();
   check(state(value).native.chapter === 3 && state(value).ui.libraryFinalsPhase === 'friend_contacted' && state(value).canteenHunt.active, `${active.id}: reload retains completed library handoff`);
   await poll(async () => { const s = await snapshot(); return !s.content?.blocking && s.world?.visible && s.world.scene_id === 'campus_bootstrap'; }, 'reloaded handoff presents the actual campus');
@@ -1113,6 +1289,7 @@ async function assertStickHeld(value, label) {
   return held;
 }
 async function assertWorldStopped(value, label) {
+  const previous = value;
   // CDP acknowledges dispatch before Godot drains the browser input queue. A
   // fresh render sample can still precede a queued two-finger cancellation.
   const began = Date.now(), startFrame = value.sampleFrame;
@@ -1121,10 +1298,12 @@ async function assertWorldStopped(value, label) {
   value = await poll(async () => {
     const next = await snapshot();
     if (!next?.world?.input || next.sampleFrame <= startFrame) return null;
+    const sameContext = state(next)?.native?.chapter === state(previous).native.chapter && state(next)?.native?.scene === state(previous).native.scene && next.world.scene_id === previous.world.scene_id && next.world.visible === previous.world.visible;
+    if (!sameContext) return null;
     const input = next.world.input;
     if (observation.samples.at(-1)?.frame !== next.sampleFrame) observation.samples.push({ frame: next.sampleFrame, elapsedMs: Date.now() - began, owners: input.owners, mouseOwned: input.mouseOwned, inventoryOwned: input.inventoryOwned, axis: next.world.touch_axis });
     return mobileDistance(next.world.touch_axis, { x: 0, y: 0 }) < .001 && input.owners.length === 0 && !input.mouseOwned && !input.inventoryOwned ? next : null;
-  }, `${label} is consumed by the actual engine input queue`, 5000);
+  }, `${active.id}: ${label} completed in the current world`, 5000);
   observation.finishedAt = Date.now(); observation.endFrame = value.sampleFrame;
   active.mobileWorld.samples.push({ at: Date.now(), sampleFrame: value.sampleFrame, world: value.world, facts: mobileFacts(value) });
   check(mobileDistance(value.world.touch_axis, { x: 0, y: 0 }) < .001 && value.world.input.owners.length === 0 && !value.world.input.mouseOwned && !value.world.input.inventoryOwned, `${active.id}: ${label} clears pointer owners and axis`, value.world.input);
@@ -1503,12 +1682,12 @@ async function browserCase(id, width, height, touch, dpr = 1) {
         network.set(response.url, { ...response, encodedDataLength: params.encodedDataLength });
         if (delivery.bootByUrl.has(response.url) || delivery.deferredChunksByUrl.has(response.url)) {
           const request = active.requestsById.get(params.requestId);
-          const row = { ...response, requestId: params.requestId, requestAt: request?.at ?? 0, range: request?.range ?? '', encodedDataLength: params.encodedDataLength, pending: true };
+          const row = { ...response, requestId: params.requestId, requestAt: request?.at ?? 0, range: request?.range ?? '', encodedDataLength: params.encodedDataLength, loadingFinishedAt: Date.now(), pending: true };
           (delivery.bootByUrl.has(response.url) ? active.bootResponses : active.deferredResponses).push(row);
           active.bootBodyJobs.push(active.cdp.send('Network.getResponseBody', { requestId: params.requestId }).then(result => {
             const bytes = Buffer.from(result.body, result.base64Encoded ? 'base64' : 'utf8');
-            row.bytes = bytes.length; row.sha256 = hash(bytes); row.pending = false;
-          }).catch(error => { row.error = error.message; row.pending = false; }));
+            row.bytes = bytes.length; row.sha256 = hash(bytes); row.pending = false; row.bodyObservedAt = Date.now();
+          }).catch(error => { row.error = error.message; row.pending = false; row.bodyFailedAt = Date.now(); }));
         }
       }
       if (method === 'Network.loadingFailed' && !params.canceled) {
@@ -1522,10 +1701,11 @@ async function browserCase(id, width, height, touch, dpr = 1) {
         else errors.push(failure);
       }
     });
-    // Retain the complete ~94 MB cold boot response set while the inspector
-    // hashes real response bodies, even when local export I/O delays CDP.
-    // This changes observation capacity only; HTTP/hash/cache checks stay strict.
-    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable'); await active.cdp.send('Network.enable', { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024, enableDurableMessages: true }); await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
+    // Confirm durable body observation before the first real navigation.
+    // Reload must not destroy evidence for an already-finished deferred chunk.
+    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable');
+    await enableNetworkObservation(active);
+    await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: touch }); await active.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 5 });
     await active.cdp.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: active.downloadDir, eventsEnabled: true });
     if (scenarios === 'streaming') await prepareStreamingFault();
     if (scenarios === 'boot-font-failure') {
@@ -1594,8 +1774,11 @@ async function browserCase(id, width, height, touch, dpr = 1) {
   } catch (e) { primaryError = e; if (!lifecycle.child) lifecycle.evidence.spawnSynchronousError = e.message; report.cases.push({ id, width, height, touch, dpr, passed: false, result, error: e.stack || String(e), coldBoot: active.coldBoot, bootResponses: active.bootResponses, fresh: active.fresh, imports: active.imports, durability: active.durability, streaming: active.streaming, mobileWorld: active.mobileWorld, phoneRecovery: active.phoneRecovery, phoneNavigation: active.phoneNavigation, library: active.library, bootFontFault: active.bootFontFault, bootTypography: active.bootTypography, screenshots: active.screenshots, errors, stderr }); try { report.cases.at(-1).lastSnapshot = await snapshot(); report.cases.at(-1).failureScreenshot = await screenshot(`${id}-failure`); } catch {} throw e; }
   finally {
     const caseRecord = report.cases.at(-1);
+    caseRecord.networkObservation = active.networkObservation;
     caseRecord.deferredChunkResponses = active.deferredResponses;
     caseRecord.saveAttempts = active.saveAttempts || [];
+    caseRecord.saveInputs = active.saveInputs || [];
+    caseRecord.savePerformance = active.savePerformance || [];
     await finishBrowserCase({ lifecycle, caseRecord, primaryError, bootBodyJobs: active.bootBodyJobs, cdp: active.cdp, persistEvidence: async () => {
       if (existsSync(stderrPath)) {
         const bytes = await readFile(stderrPath);

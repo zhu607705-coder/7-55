@@ -235,7 +235,7 @@ function cancellationFixture(frames, later) {
   assert(start > 0 && finish > start);
   const active = { id: 'cancel-fixture', mobileWorld: { samples: [] } };
   let reads = 0;
-  const context = vm.createContext({ active, Date,
+  const context = vm.createContext({ active, Date, state: value => value?.state,
     snapshot: async () => frames[Math.min(reads++, frames.length - 1)],
     poll: async (read, label, timeout) => {
       assert.equal(timeout, 5000, 'cancellation must have a finite deadline');
@@ -251,7 +251,7 @@ function cancellationFixture(frames, later) {
   return { run: context.assertWorldStopped, active, reads: () => reads };
 }
 function cancellationFrame(frame, owners = [], x = 10, axis = 0) {
-  return { sampleFrame: frame, world: { player: {x, y: 10}, touch_axis: {x: axis, y: 0}, input: { owners, mouseOwned: false, inventoryOwned: false } } };
+  return { sampleFrame: frame, state: {native: {chapter: 2, scene: 'dorm_hub'}}, world: {scene_id: 'dorm_hub', visible: true, player: {x, y: 10}, touch_axis: {x: axis, y: 0}, input: { owners, mouseOwned: false, inventoryOwned: false } } };
 }
 test('cancellation waits for consumed input, retaining the actual queued-frame evidence', async () => {
   const fingers = [{index: 1, role: 'camera'}, {index: 2, role: 'camera'}];
@@ -265,6 +265,13 @@ test('cancellation fails when actual owners or axis never clear', async () => {
   for (const stuck of [cancellationFrame(566, [{index: 1, role: 'camera'}]), cancellationFrame(566, [], 10, 1), cancellationFrame(562)]) {
     const f = cancellationFixture([stuck], cancellationFrame(572));
     await assert.rejects(f.run(cancellationFrame(562), 'stuck-cancel'), /Timeout:/);
+  }
+});
+test('a cleared snapshot from another chapter or world cannot acknowledge current cancellation', async () => {
+  for (const edit of [s => s.state.native.chapter = 3, s => s.state.native.scene = 'campus_bootstrap', s => s.world.scene_id = 'campus_bootstrap', s => s.world.visible = false]) {
+    const changed = cancellationFrame(566); edit(changed);
+    const f = cancellationFixture([changed], cancellationFrame(572));
+    await assert.rejects(f.run(cancellationFrame(562), 'wrong-context'), /Timeout:/);
   }
 });
 test('a later moving actor or resurfaced pointer still fails cancellation acceptance', async () => {

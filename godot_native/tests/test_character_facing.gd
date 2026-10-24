@@ -14,6 +14,7 @@ func run()->void:
 	state.developer_mode=true;state.d=state.initial()
 	state.d.native.scene="library_interior";state.d.actOne.controlsInstalled=true;state.d.actOne.movementEnabled=true
 	var world=load("res://scripts/world.gd").new();world.size=Vector2(960,540);root.add_child(world);world.set_process(false)
+	var chapter3_layers:RefCounted=world.chapter3_layers
 	world.chapter3_layers=null;world.library_layers=null;world.chapter4_layers=null
 	world.collisions=[];world.mask=PackedByteArray();world.targets=[];world.player=Vector2(500,500)
 	var rows:Array=[{"axis":Vector2.LEFT,"facing":"side","flip":true,"path":"player_side"},{"axis":Vector2.RIGHT,"facing":"side","flip":false,"path":"player_side"},{"axis":Vector2.UP,"facing":"up","flip":false,"path":"player_up"},{"axis":Vector2.DOWN,"facing":"down","flip":false,"path":"player_down"}]
@@ -108,6 +109,11 @@ func run()->void:
 	check(world.player_visual().direction=="left" and not world.player_visual().flip_h,"complete authored left cycle is selected without mirroring")
 	world.walk_clock=0;check(world.player_visual().texture==world.player_left_idle,"authored left idle shares renderer selection")
 	world.player_frames.left=[];world.player_left_idle=null
+	# Guard rendering belongs to its lazily loaded Chapter 4 scene.
+	state.d.native.scene="duan_yongping_temporal_maze";world.refresh_world();world.set_process(false)
+	check(world.guard_sheets.has_all(["side","up","down"]),"entering the guard scene loads every authored directional sheet")
+	if not world.guard_sheets.has_all(["side","up","down"]):
+		world.queue_free();quit(1);return
 	# Guard rendering uses its real directional sheets and freezes when stopped.
 	for row:Dictionary in rows:
 		world._apply_guard_motion(row.axis,row.axis,.12)
@@ -160,6 +166,7 @@ func run()->void:
 		var admission:Dictionary=c3.admission_pose(state.d)
 		check(entry.asset==admission.asset and entry.angle==admission.angle,"active admission retains scan/nod and authored pose")
 	# Canteen's separate renderer consumes the exact same selected texture/flip.
+	world.chapter3_layers=chapter3_layers
 	state.d=state.initial();state.d.native.scene="canteen_interior";world.scene_id="";world.refresh_world()
 	for row:Dictionary in rows:
 		world._apply_player_motion(row.axis,row.axis,.1)

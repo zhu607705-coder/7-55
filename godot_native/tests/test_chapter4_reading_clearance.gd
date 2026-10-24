@@ -14,6 +14,23 @@ func all_labels(n: Node) -> Array:
 	if n is Label:out.append(n)
 	for c in n.get_children():out.append_array(all_labels(c))
 	return out
+func bag_bounds() -> Rect2:
+	var bounds: Rect2=shell.phone_chrome.inventory_handle.get_global_rect()
+	var style: StyleBoxFlat=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
+	var shadow:=bounds.grow(style.shadow_size*shell.phone.scale.x)
+	shadow.position+=style.shadow_offset*shell.phone.scale.x
+	return bounds.merge(shadow).merge(shell.phone_chrome.inventory_count.get_global_rect())
+func maximum_safe_width() -> bool:
+	# The authored phone interior stays independent of extra wrapper padding.
+	var interior: Rect2=shell.phone_content.get_global_rect()
+	var reading_margin: MarginContainer=shell.page_body.get_node("FallbackReadingMargin")
+	var column: Rect2=reading_margin.get_child(0).get_global_rect()
+	var ui_scale: float=shell.phone.scale.x
+	var safe_left: float=interior.position.x+12*ui_scale
+	if bag_bounds().end.x>interior.position.x:
+		safe_left=maxf(safe_left,interior.position.x+(ceilf((bag_bounds().end.x-interior.position.x)/ui_scale)+8)*ui_scale)
+	var safe_right: float=interior.end.x-12*ui_scale
+	return absf(column.position.x-safe_left)<=1.01 and absf(column.end.x-safe_right)<=1.01
 func run() -> void:
 	state=root.get_node("State");state.d=state.initial();state.d.native.chapter=4;state.d.native.scene="duan_yongping_temporal_maze";state.d.native.mode="light"
 	state.d.chapter4.phase="maintenance_repair";state.d.chapter4.prologueSeen=true;state.d.chapter4.floor="A1";state.d.chapter4.timeState="2245_maintenance";state.d.chapter4.mode="light";state.d.native.c4_context="maintenance"
@@ -33,15 +50,25 @@ func run() -> void:
 					var bounds: Rect2=body.get_global_rect();var inner: Rect2=shell.phone_content.get_global_rect();var scale: float=shell.phone.scale.x
 					check(bounds.position.x>=inner.position.x+11.99*scale and bounds.end.x<=inner.end.x-11.99*scale,"Body has reading gutter on both sides "+str(dims)+page+context)
 					check(body.autowrap_mode==TextServer.AUTOWRAP_WORD_SMART,"Original clue wraps inside frame")
-					check(not shell.phone_chrome.inventory_handle.get_global_rect().intersects(bounds),"Collapsed bag clears clue body")
+					check(not bag_bounds().intersects(bounds),"Collapsed bag clears clue body")
+				check(maximum_safe_width(),"Single painted-bag gutter keeps the maximum safe reading width "+str(dims)+page+context)
 				var buttons:Array=[]
-				for c in shell.page_body.get_children():
+				for c in shell.page_body.find_children("*","Button",true,false):
 					if c is Button:buttons.append(c)
+				check(not buttons.is_empty(),"Actual fallback actions are present")
 				for b: Button in buttons:
-					check(not shell.phone_chrome.inventory_handle.get_global_rect().intersects(b.get_global_rect()),"Collapsed bag clears action/Return row")
+					check(not bag_bounds().intersects(b.get_global_rect()),"Collapsed bag clears action/Return row")
 				check(shell.title_label.text==str(view.get("title","7:55")),"Full original title unchanged")
 				check(shell.phone.size==Vector2(430,860),"Outer phone stays authored430x860")
 				check(shell.phone_chrome.inventory_handle.get_global_rect().size.x>=43.99,"Existing44physical bag target preserved")
+		# Deliberately inject the double-reservation regression; the geometry
+		# contract must reject it rather than accepting any non-overlapping width.
+		shell.phone_page_margin.add_theme_constant_override("margin_left",120);await frames()
+		shell._layout_phone_reading_gutters();await frames()
+		check(not maximum_safe_width(),"Extra outer reading inset is detected")
+		shell.phone_page_margin.add_theme_constant_override("margin_left",0);await frames()
+		shell._layout_phone_reading_gutters();await frames()
+		check(maximum_safe_width(),"Removing duplicate inset restores full safe column")
 		# Existing non-C4 fallback policies remain unchanged, including the
 		# separately frozen Recovery-reading candidate that is not merged here.
 		for page: String in ["cc98","phone_home","photos","c4_bio","c4_lamp"]:

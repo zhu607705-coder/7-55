@@ -15,6 +15,9 @@ func _initialize() -> void: call_deferred("run")
 func check(value: bool, message: String) -> void:
 	checks+=1
 	if not value: failures+=1; push_error("PHONE CHROME: "+message)
+func collapsed_handle_contract(size: Vector2, factor: float=1.0) -> bool:
+	# Current main1322: one44px physical minimum, preserving the source rail.
+	return size.is_equal_approx(Vector2(maxf(38,44.0/factor),maxf(63,44.0/factor)))
 func run() -> void:
 	var state=root.get_node("State")
 	state.developer_mode=true
@@ -39,7 +42,11 @@ func run() -> void:
 	check(chrome.status_bar.position==Vector2.ZERO and chrome.status_bar.size==Vector2(424,40),"40px absolute status overlay, no stacked content")
 	check(chrome.task_button.position==Vector2(174,5) and chrome.task_button.size==Vector2(76,30),"compact task button centered at y=5")
 	check(chrome.inventory.position==Vector2(0,240),"inventory starts left at source y240")
-	check(chrome.inventory_handle.size==Vector2(38,63),"closed handle source 26px icon, padding, arrow and borders")
+	check(collapsed_handle_contract(chrome.inventory_handle.size),"closed source handle retains main1322 44px physical target and63px height")
+	check(chrome.inventory_handle.get_global_rect().size.x>=43.99,"closed handle actual physical target is at least44px")
+	for wrong: Vector2 in [Vector2(38,63),Vector2(43,63),Vector2(44,62),Vector2(45,63)]:
+		check(not collapsed_handle_contract(wrong),"Wrong collapsed width or height fails the exact source contract "+str(wrong))
+	check(collapsed_handle_contract(Vector2(88,88),.5) and not collapsed_handle_contract(Vector2(56,88),.5),"Scale-aware contract cannot accept the old28px target")
 	check(chrome.inventory_handle.position==Vector2.ZERO and not chrome.inventory_body.visible,"inventory starts collapsed")
 	check(chrome.inventory_count.text=="2","closed badge counts actual ownership")
 	check(chrome.inventory_slots.get_child(0).item_id=="headphone","inventory follows authored order, not item config order")

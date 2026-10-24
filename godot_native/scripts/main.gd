@@ -640,11 +640,8 @@ func _layout() -> void:
 	phone.size = Vector2(430,860)
 	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
 	phone.visible = not mobile_world and not fitted_activity
-	# The edge inventory stays reachable; narrow reading pages reserve its width.
-	var reading:bool=str(State.d.native.page) in ["c4_notes","c4_device"]
-	var edge:float=maxf(38,44/maxf(.001,phone_scale))
-	var inset:int=ceili(edge+10) if reading and phone.position.x<edge*phone_scale+8 else 0
-	phone_page_margin.add_theme_constant_override("margin_left",inset)
+	# One measured reading gutter below reserves the painted bag + badge.
+	# Keep the upstream page wrapper, without stacking a second approximate inset.
 	phone_world_return.visible = phone.visible and has_world and not is_instance_valid(active_game)
 	phone_world_return.position = available-Vector2(56,56)
 	phone_world_return.size = Vector2(44,44)
@@ -717,6 +714,35 @@ func _layout() -> void:
 	_layout_modal()
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
 	_sync_selected_world_overlay()
+	_layout_phone_reading_gutters()
+
+func _layout_phone_reading_gutters() -> void:
+	if not is_instance_valid(page_body) or not is_instance_valid(phone_chrome):return
+	if str(State.d.native.page)=="zjuding" and phone_builder!=null:
+		phone_chrome._layout_inventory_anchor()
+		phone_builder.lake_apps.layout_map_header(page_body,phone_chrome)
+	var margin: MarginContainer=page_body.get_node_or_null("FallbackReadingMargin")
+	var app: Control
+	if page_body.get_child_count()>0 and str(page_body.get_child(0).name).begins_with("C35App_"):
+		app=page_body.get_child(0)
+	if margin==null and app==null:return
+	phone_chrome._layout_inventory_anchor()
+	var inset:=12 if margin!=null else 18
+	if not phone_chrome.inventory_open and phone_chrome.inventory_handle.is_visible_in_tree() and phone_chrome._reading_inventory_anchor():
+		var handle: Rect2=phone_chrome.inventory_handle.get_global_rect()
+		var paint: StyleBoxFlat=phone_chrome.inventory_handle.get_theme_stylebox("normal")
+		var paint_scale:float=absf(phone_chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
+		var shadow:=handle.grow(paint.shadow_size*paint_scale)
+		shadow.position+=paint.shadow_offset*paint_scale
+		handle=handle.merge(shadow).merge(phone_chrome.inventory_count.get_global_rect())
+		var target: Control=margin if margin!=null else app
+		var column: Rect2=target.get_global_rect()
+		var content_scale:=maxf(.001,absf(target.get_global_transform_with_canvas().get_scale().x))
+		# Reserve the full column because the handle remains vertically draggable.
+		if handle.end.x>column.position.x:
+			inset=maxi(inset,ceili((handle.end.x-column.position.x)/content_scale)+8)
+	if margin!=null:margin.add_theme_constant_override("margin_left",inset)
+	if app!=null:app.set_reading_left_gutter(inset)
 
 func _activity_owns_scene() -> bool:
 	# Layout adapters opt into one full-scene owner. The shared host opts in
@@ -1006,6 +1032,15 @@ func _refresh() -> void:
 	if is_instance_valid(phone_chrome): phone_chrome.refresh(State.d)
 	header_row.visible = custom_body == null and not bare
 	var handled_action_ids: Array = []
+	var fallback_parent: Control=page_body
+	if custom_body==null and page in ["c4_notes","c4_device","c3_lake"]:
+		# Keep the authored left-side bag; only this fallback reading surface
+		# reserves its occupied column. Actions share the same safe text edge.
+		var reading_margin:=MarginContainer.new();reading_margin.name="FallbackReadingMargin"
+		reading_margin.add_theme_constant_override("margin_right",12)
+		page_body.add_child(reading_margin)
+		var reading_column:=VBoxContainer.new();reading_column.add_theme_constant_override("separation",8)
+		reading_margin.add_child(reading_column);fallback_parent=reading_column
 	if custom_body:
 		custom_body.z_index = 65 if page=="control_center" else 0
 		if page == "cc98":
@@ -1022,7 +1057,7 @@ func _refresh() -> void:
 			artwork.name="SourceTiledNarrativeArt"
 			artwork.configure(State.asset(str(view.art)),bool(view.get("mirror_art",false)))
 			artwork.custom_minimum_size=Vector2(378,180)
-			page_body.add_child(artwork)
+			fallback_parent.add_child(artwork)
 		elif view.has("art") and ResourceLoader.exists(State.asset(str(view.art))):
 			var artwork := TextureRect.new()
 			artwork.texture = load(State.asset(str(view.art)))
@@ -1030,26 +1065,26 @@ func _refresh() -> void:
 			artwork.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			artwork.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			artwork.custom_minimum_size = Vector2(378,180)
-			page_body.add_child(artwork)
+			fallback_parent.add_child(artwork)
 		var body := _label(str(view.get("body","")),19)
 		body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		var body_inset:=maxi(int(view.get("body_inset",0)),12 if page in ["c4_notes","c4_device"] else 0)
+		var body_inset:=maxi(int(view.get("body_inset",0)),0)
 		if body_inset>0:
 			var body_margin:=MarginContainer.new()
 			body_margin.add_theme_constant_override("margin_left",body_inset)
 			body_margin.add_theme_constant_override("margin_right",body_inset)
-			page_body.add_child(body_margin);body_margin.add_child(body)
-		else: page_body.add_child(body)
+			fallback_parent.add_child(body_margin);body_margin.add_child(body)
+		else: fallback_parent.add_child(body)
 		for row in view.get("rows",[]):
 			if row is Dictionary:
 				var block := _label(str(row.get("title",""))+"\n"+str(row.get("body","")),17)
 				block.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-				page_body.add_child(block)
+				fallback_parent.add_child(block)
 			else:
 				var line := _label(str(row),17)
 				line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-				page_body.add_child(line)
+				fallback_parent.add_child(line)
 		if page == "phone_home" or page == "desktop":
 			_add_app_grid(page_body)
 	for action in view.actions:
@@ -1058,12 +1093,12 @@ func _refresh() -> void:
 		var copy: Dictionary = action.duplicate(true)
 		var button := _button(str(action.get("label",action.id)),func(): _invoke_action(copy))
 		button.disabled = bool(action.get("disabled",false))
-		page_body.add_child(button)
+		fallback_parent.add_child(button)
 	# Reconstructed phone apps own their viewport and inner scrolling. A second
 	# scene-return row below them scrolls the entire phone, including its header.
 	# The shared bottom-right PhoneWorldReturn already exposes that same action.
 	if not str(n.scene).is_empty() and not (custom_body and custom_body.get_meta("source_page",false)):
-		page_body.add_child(_button("返回现场",_show_world_mobile))
+		fallback_parent.add_child(_button("返回现场",_show_world_mobile))
 	_refresh_inventory_dock()
 	_refresh_control_center()
 	if world and world.has_method("refresh_world"): world.refresh_world()
