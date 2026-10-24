@@ -319,6 +319,7 @@ func _next_hint() -> void:
 	model.apply({"kind":"hint"});state=model.snapshot();_help()
 func _close_help() -> void:
 	help_open=false;help_panel.hide();_clear_input();_layout();grab_focus()
+	if paused:_open_menu()
 func _open_menu() -> void:
 	if disposed or done or help_open:return
 	_clear_input();menu_open=true;menu_panel.show();menu_panel.move_to_front()

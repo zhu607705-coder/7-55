@@ -5278,6 +5278,8 @@ Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic chec
 
 ## 2026-10-24 Theater scene-object controls
 
-Removed rehearsal toolbar Watch/Observe and duplicate Watch menu entry. The table programme supplies observation, the right curtain toggle accepts a tap or short pull to start the performance, and the left curtain gap returns to the theater. Performance observation also belongs to a visible side-wing programme, outside actor QTE targets. Mouse, touch and Tab/Space operate the physical targets; resize, focus loss, dragged-away releases and modal sheets cancel stale input. Existing model, session, items and save schema are unchanged. Godot 4.7.1 passed 9 groups / 817 checks, plus 229 actual-window checks. The retained Web release result is recorded separately in the acceptance receipt. This remains source PR166, without a new Godot Web export or deployment.
+Removed rehearsal toolbar Watch/Observe and duplicate Watch menu entry. The table programme supplies observation, the right curtain toggle accepts a tap or short pull to start the performance, and the left curtain gap returns to the theater. Performance observation also belongs to a visible side-wing programme, outside actor QTE targets. Mouse, touch and Tab/Space operate the physical targets; resize, focus loss, dragged-away releases and modal sheets cancel stale input. Existing model, session, items and save schema are unchanged. Godot 4.7.1 passed 9 groups / 819 checks, plus 229 actual-window checks. The retained Web release result is recorded separately in the acceptance receipt. This remains source PR166, without a new Godot Web export or deployment.
 
 The complete PR worktree also passed retained Web validate:release: 38 validators and 4 browser smoke cases.
+
+Closing a reading sheet after window focus loss now exposes explicit resume. The targeted Main and UI rerun passed (224 and 65 checks).

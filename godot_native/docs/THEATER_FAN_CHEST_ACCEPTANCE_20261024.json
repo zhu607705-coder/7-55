@@ -171,7 +171,7 @@
       {
         "label": "test_theater_rehearsal_ui.gd",
         "passed": true,
-        "result": "THEATER_REHEARSAL_UI: 63 checks; 0 failures"
+        "result": "THEATER_REHEARSAL_UI: 65 checks; 0 failures"
       },
       {
         "label": "test_theater_rehearsal_world_geometry.gd",
@@ -200,7 +200,7 @@
     "files": [
       {
         "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
-        "sha256": "baacf208764f7fe45733179313adc8adcab848bdece75eb9e65fd0c09c17b64a"
+        "sha256": "8e68e50a26e96464a536514814525702fbee6529be8acc68a6f97ade475eb66b"
       },
       {
         "path": "godot_native/scripts/presentation/liangzhu_performance.gd",
@@ -224,12 +224,13 @@
       },
       {
         "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
-        "sha256": "2fb870b1a92c79e381b310a720fbb91bb6245d34bdb73bac77a521d6f4022160"
+        "sha256": "812a5d668c17481580e28542296c0b679bb146c4f8ab050150e8f4578d3d09f4"
       }
     ],
     "limits": [
       "No new Godot Web export or production deployment",
       "No physical phone or full natural campaign acceptance"
-    ]
+    ],
+    "focusRecovery": "Closing an observation sheet after focus loss exposes the explicit resume menu; two additional UI checks passed."
   }
 }

@@ -39,6 +39,9 @@ func run() -> void:
 			if button.visible:check(button.position.x>=0 and button.position.y>=0 and button.position.x+button.size.x<=size2.x+1 and button.position.y+button.size.y<=size2.y+1,"visible control remains inside available viewport: "+button.name)
 		check(not view.controls.RehearsalTry.visible and not view.controls.RehearsalNext.visible,"stage trials and curtain changes use the physical lamp without a duplicate bottom action")
 	view.configure_activity_layout(Vector2(1280,720),false);await process_frame
+	view._intro();view._focus_out();view._close_help()
+	check(view.paused and view.menu_open and view.menu_panel.visible,"Closing a reading sheet after focus loss exposes explicit resume instead of an inert stage")
+	view._close_menu();check(not view.paused and not view.menu_open,"The visible resume action restores stage input after interrupted reading")
 	var rapid_before: float=float(view.state.objects[0].x)
 	key(KEY_RIGHT,true);key(KEY_RIGHT,false);await process_frame
 	check(is_equal_approx(float(view.state.objects[0].x),rapid_before+0.12),"a complete short key press in one rendering frame moves exactly once")
