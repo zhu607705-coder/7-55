@@ -36,7 +36,7 @@ func key(code:Key,down:bool)->void:
 func target(view:Control)->Vector2:
 	var q:Rect2=view.qte_target
 	check(q.size.x>=44 and q.size.y>=44 and view.field.encloses(q),"Expanded grip remains44CSS and follows the complete stage")
-	check(not q.intersects(view.return_button.get_global_rect()) and not q.intersects(view.caption_paper),"Entity input does not overlap subtitles or Return")
+	check(not q.intersects(view.return_button.get_global_rect()) and not q.intersects(view.caption_paper) and not q.intersects(view.help_button.get_global_rect()),"Actor input is separate from the side-wing programme, subtitles and Return")
 	return q.get_center()
 func run()->void:
 	fixture={"runtimeMode":"rpg","rpgScene":"theater_interior","rpgCheckpoint":"campus_theater_interior","native":{"scene":"theater_interior","mode":"light","settings":{"reduced_motion":false}},"theaterHunt":{"active":true,"admitted":true,"phase":"program_search"},"ui":{"controlCenterOpen":false}}
@@ -44,7 +44,8 @@ func run()->void:
 	for file:String in ["user://save.json","user://save.previous.json"]:durable[file]=FileAccess.get_file_as_string(file) if FileAccess.file_exists(file) else null
 	var view:Control=await mount(Vector2i(390,844))
 	view.tick(15,true);check(view.model.status=="waiting" and view.model.elapsed_ms==15000,"The first cue freezes at the authored handoff instead of advancing itself")
-	await click(view.help_button);await frames(6)
+	check(view.help_button.text.is_empty() and view.field.encloses(view.help_button.get_global_rect()),"Observation is attached to the visible book inside the stage, without an Observe label")
+	await touch(8,view.help_button.get_global_rect().get_center(),true);await touch(8,view.help_button.get_global_rect().get_center(),false);await frames(6)
 	var bounds:=Rect2(Vector2.ZERO,Vector2(root.size))
 	check(bounds.encloses(view.help_panel.get_global_rect()) and view.help_panel.get_global_rect().encloses(view.help_body.get_global_rect()),"The first-cue observation paper bounds its measured full text after settling")
 	for button:Button in [view.help_next,view.passive_button,view.help_close]:

@@ -125,5 +125,111 @@
     "Godot Web was not re-exported in this task.",
     "No physical mobile device or full natural campaign acceptance.",
     "The first graphical attempt recorded a Pause assertion failure during concurrent browser verification; the isolated rerun passed without weakening focus checks."
-  ]
+  ],
+  "initialUploadCommit": "77d4fea12ff5a631ea471325194d73ae6847ca80",
+  "initialEvidenceNote": "Top-level native and files record the original upload. stageObjectFollowup supersedes changed files and their acceptance.",
+  "stageObjectFollowup": {
+    "date": "2026-10-24",
+    "parentCommit": "77d4fea12ff5a631ea471325194d73ae6847ca80",
+    "scope": "Scene-object observation and performance entry; no model, controller, item or save schema change",
+    "native": [
+      {
+        "label": "test_liangzhu_performance.gd",
+        "passed": true,
+        "result": "LIANGZHU_VIEW: 90 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE: 32 checks; 0 failures"
+      },
+      {
+        "label": "test_liangzhu_performance_qte_view.gd",
+        "passed": true,
+        "result": "LIANGZHU_QTE_VIEW: 61 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_controller.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_CONTROLLER: 54 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_main.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MAIN: 224 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_model.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_MODEL: 56 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_performance.gd",
+        "passed": true,
+        "result": "REHEARSAL_PERFORMANCE: 45 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_ui.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_UI: 63 checks; 0 failures"
+      },
+      {
+        "label": "test_theater_rehearsal_world_geometry.gd",
+        "passed": true,
+        "result": "THEATER_REHEARSAL_WORLD_GEOMETRY: 192 checks; 0 failures"
+      }
+    ],
+    "graphicalInput": {
+      "passed": true,
+      "result": "THEATER_REHEARSAL_MAIN: 229 checks; 0 failures",
+      "entry": "Isolated validated c3-theater-program checkpoint; ordinary Main and input events",
+      "screens": [
+        "1280x720",
+        "1440x900",
+        "390x844",
+        "844x390"
+      ],
+      "touch": "simulated native touch, not physical phone"
+    },
+    "retainedWebRelease": {
+      "passed": true,
+      "validators": 38,
+      "browserCases": 4,
+      "scope": "Retained Web reference, built in the complete PR worktree; not a Godot Web export"
+    },
+    "files": [
+      {
+        "path": "godot_native/scripts/games/theater_shadow_rehearsal.gd",
+        "sha256": "baacf208764f7fe45733179313adc8adcab848bdece75eb9e65fd0c09c17b64a"
+      },
+      {
+        "path": "godot_native/scripts/presentation/liangzhu_performance.gd",
+        "sha256": "5d27b5765fba59cc449bb15211e347e7448137be4431884a4c6cbd29d8b16f55"
+      },
+      {
+        "path": "godot_native/scripts/presentation/theater_rehearsal_stage_objects.gd",
+        "sha256": "8464b23f8fab13f007abbd12ae3b0b426f2951509d897536042247441c7a5e0b"
+      },
+      {
+        "path": "godot_native/tests/test_liangzhu_performance_qte_view.gd",
+        "sha256": "fe64b99eced7a48f7658bd8e87119f8747046e035efdfc164919306d9b8258b2"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_main.gd",
+        "sha256": "340c06c3b5bb8aeb612df21ccd7b9e1fc2bdb85981df7c12f1d6ca852ace8fb2"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_performance.gd",
+        "sha256": "a52e510327de56e99ffc76aa27526c33b976d5229dc9d82ab7620e0785745e70"
+      },
+      {
+        "path": "godot_native/tests/test_theater_rehearsal_ui.gd",
+        "sha256": "2fb870b1a92c79e381b310a720fbb91bb6245d34bdb73bac77a521d6f4022160"
+      }
+    ],
+    "limits": [
+      "No new Godot Web export or production deployment",
+      "No physical phone or full natural campaign acceptance"
+    ]
+  }
 }

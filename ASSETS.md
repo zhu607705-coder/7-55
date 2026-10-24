@@ -2,6 +2,7 @@
 
 ## 20261024 — Theater chest and articulated fans
 
+- Scene-object follow-up adds original procedural programme pages, a side-wing reading stand, curtain rope and curtain-gap feedback in `theater_rehearsal_stage_objects.gd`; it reuses the existing performance and introduces no external art.
 - Original procedural brush geometry: [provenance](godot_native/docs/art/theater_powder_brush_20261024.json). Original articulated fan leaves: [implementation and scope](godot_native/docs/THEATER_FAN_CHAIN_20261024.md). Existing stage, actors and furniture are reused; no new third-party media or fonts.
 - Source upload into `godot_native/`; no new Release archive or production Web export. [Validation receipt](godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json) separates source checks, native graphical input and retained Web tests.
 

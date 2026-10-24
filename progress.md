@@ -5274,3 +5274,10 @@ Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic chec
 ## 2026-10-24 剧场箱内与扇影交互
 
 原箱子支持翻找、符号装配、转柄、夹层和荧光粉刷实体拾取；刷子改为有收腰木柄、金属折边及分束刷毛的原创几何。扇影排练增加铜扣开合、距离与共用灯源推理，实体灯接管试演和换幕。模型、触控撤回、原会话回放、实际图形窗口206项以及保留网页关键27项/发布38项检查通过。具体范围和限制见 `godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 与 `THEATER_FAN_CHAIN_20261024.md`；Godot Web尚未重新导出或发布。
+
+
+## 2026-10-24 Theater scene-object controls
+
+Removed rehearsal toolbar Watch/Observe and duplicate Watch menu entry. The table programme supplies observation, the right curtain toggle accepts a tap or short pull to start the performance, and the left curtain gap returns to the theater. Performance observation also belongs to a visible side-wing programme, outside actor QTE targets. Mouse, touch and Tab/Space operate the physical targets; resize, focus loss, dragged-away releases and modal sheets cancel stale input. Existing model, session, items and save schema are unchanged. Godot 4.7.1 passed 9 groups / 817 checks, plus 229 actual-window checks. The retained Web release result is recorded separately in the acceptance receipt. This remains source PR166, without a new Godot Web export or deployment.
+
+The complete PR worktree also passed retained Web validate:release: 38 validators and 4 browser smoke cases.

@@ -27,6 +27,16 @@ func tap_key(code: int,world_input: bool=false) -> void:
 		await frames(1)
 func repeat_key(code: int,count: int) -> void:
 	for i in count:await tap_key(code)
+func select_stage_object(game:Control,id:String)->void:
+	for i:int in range(game.state.objects.size()+4):
+		if game.selected==id:break
+		await tap_key(KEY_TAB)
+	check(game.selected==id,"Tab reaches the named physical object: "+id)
+func capture(label:String)->void:
+	var directory:String=OS.get_environment("THEATER_REHEARSAL_CAPTURE_DIR")
+	if directory.is_empty() or DisplayServer.get_name()=="headless":return
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(directory.path_join(label+".png"))
 func click(button: Button) -> void:
 	var rect=Rect2(button.get_global_transform_with_canvas().origin,button.size*button.get_global_transform_with_canvas().get_scale())
 	if not check(button.is_visible_in_tree() and not button.disabled and Rect2(Vector2.ZERO,Vector2(root.size)).encloses(rect),"Actual action is visible in native viewport: "+button.name):
@@ -45,6 +55,13 @@ func lamp(game: Control,use_touch:bool=true) -> void:
 	var local: Vector2=game.field.position+game.lamp_rect().get_center()/game.LOGICAL*game.field.size
 	var point: Vector2=game.get_global_transform_with_canvas()*local
 	await pointer(point,true,use_touch);await pointer(point,false,use_touch);await frames(2)
+func stage_object(game:Control,id:String,use_touch:bool=false)->void:
+	var rect:Rect2=game.stage_object_rect(id)
+	var local:Vector2=game.field.position+rect.get_center()/game.LOGICAL*game.field.size
+	var point:Vector2=game.get_global_transform_with_canvas()*local
+	check(game.field.has_point(local),"Physical stage action stays anchored in the actual scene: "+id)
+	await pointer(point,true,use_touch);await pointer(point,false,use_touch)
+	await create_timer(.34).timeout;await frames(2)
 func trial(game: Control,use_touch: bool) -> void:
 	await lamp(game,use_touch)
 func next_stage(game: Control,use_touch: bool) -> void:
@@ -217,7 +234,7 @@ func play(game: Control,use_touch: bool=false) -> Dictionary:
 	if use_touch:
 		await finger_drag(game,"side_screen",Vector2(4.4,8));await finger_drag(game,"left_fan",Vector2(.36,4));await finger_drag(game,"right_fan",Vector2(.24,6))
 	else:
-		await tap_key(KEY_TAB);await repeat_key(KEY_RIGHT,18);await tap_key(KEY_TAB);await repeat_key(KEY_LEFT,13);await repeat_key(KEY_UP,17);await tap_key(KEY_TAB);await repeat_key(KEY_RIGHT,37)
+		await select_stage_object(game,"left_fan");await repeat_key(KEY_RIGHT,18);await select_stage_object(game,"right_fan");await repeat_key(KEY_LEFT,13);await repeat_key(KEY_UP,17);await select_stage_object(game,"side_screen");await repeat_key(KEY_RIGHT,37)
 	await fold(game,"left_fan",1.0,use_touch);await fold(game,"right_fan",.7,use_touch)
 	await trial(game,use_touch)
 	if not check(game.state.screen=="complete" and game.state.completedRounds==3,"Ordinary prop input composes both wings and removes the physical obstruction"):return {}
@@ -250,7 +267,7 @@ func exercise(view: Vector2i,use_touch: bool=false) -> Dictionary:
 	check(not rejected.get("rehearsalAccepted",false) and controller().rehearsal_session.token==current,"Previous actual completion cannot finish or retire the replay")
 	if use_touch:
 		await touch_button(game.help_close);await menu_gesture(game);await touch_button(game.menu_controls.RehearsalMenuExit)
-	else:await click(game.controls.RehearsalExit)
+	else:await click(game.help_close);await stage_object(game,"exit")
 	await returned(point)
 	assert_unchanged(before,durable,"Replayed intro cancellation")
 	check(changes==change_count,"Rejected old result and replay Exit remain ephemeral")
@@ -296,7 +313,7 @@ func replacement_and_story_lock() -> void:
 	check(not state.cancel_progressive_activity("c3_rehearsal_cancel",{"session":old}),"Under story lock, stale exact cancellation cannot kill the fresh nonce")
 	check(controller().rehearsal_session.token==issued.game.session,"The fresh nonce survives stale cleanup while interaction is locked")
 	check(not state.cancel_progressive_activity("c3_rehearsal_result",{"session":issued.game.session}),"Cancellation API cannot dispatch a completion intent")
-	await click(next.controls.RehearsalExit);await frames(4)
+	await click(next.help_close);await stage_object(next,"exit");await frames(4)
 	check(shell.active_game==null and controller().rehearsal_session==null,"Actual Exit precisely cancels the live nonce during story lock")
 	assert_unchanged(before,durable,"Exact cancellation under narrative lock")
 	controller().story.cancel();controller().story=null;controller().story_request={};await frames(3)
@@ -313,14 +330,22 @@ func caption_owner() -> void:
 	var remaining:float=shell.story_caption_time;shell._layout_story_caption()
 	check(not shell.story_caption.visible and shell.story_caption.session==null and shell.world.subtitle.is_empty(),"Active rehearsal retires only the matching old world/window subtitle")
 	check(shell.story_caption_time==remaining and shell.story_caption_line.text=="灯下仍留着上一句旁白。","Exclusive stage ownership preserves the still-live original line and clock")
-	await click(game.controls.RehearsalWatch)
+	await click(game.help_close);await capture("stage-objects")
+	await stage_object(game,"programme")
+	check(game.help_open and game.state.hintTier==1,"Actual Main opens observation by clicking the on-table programme")
+	await capture("programme-open");await click(game.help_close)
+	await stage_object(game,"curtain")
 	if not check(is_instance_valid(game.performance),"Actual Main optional performance opens within the rehearsal owner"):return
-	game.performance.set_process(false);remaining=shell.story_caption_time;shell._layout_story_caption()
+	game.performance.set_process(false);game.performance.tick(2.0,true);await capture("curtain-performance")
+	await click(game.performance.help_button)
+	check(game.performance.help_open and game.performance.help_button.text.is_empty(),"The performance also observes through its real programme without a toolbar Observe label")
+	await capture("performance-programme-open");await click(game.performance.help_close)
+	remaining=shell.story_caption_time;shell._layout_story_caption()
 	check(not shell.story_caption.visible and shell.story_caption.session==null and shell.story_caption_time==remaining,"Performance subtitles never gain a parallel system-window caption")
 	check(game._hud_nodes().all(func(node:Control)->bool:return not node.visible),"Actual Main performance hides original local task and control surfaces")
 	await click(game.performance.return_button);await frames()
-	check(game.help_open and game.help_panel.visible and game.stage_hud.visible,"Closing the child restores the exact original reading and stage HUD")
-	await click(game.controls.RehearsalExit);await returned(point)
+	check(not game.help_open and not game.help_panel.visible and game.stage_hud.visible,"Closing the child restores the exact playable physical stage")
+	await stage_object(game,"exit");await returned(point)
 	shell._layout_story_caption()
 	check(shell.story_caption_surface=="world" and shell.world.subtitle==shell.story_caption_line.text,"Ordinary world caption ownership resumes after the activity closes")
 	shell.mobile_world=false;shell._layout();shell._layout_story_caption()

@@ -30,7 +30,7 @@ func run() -> void:
 		view._intro();await process_frame;await process_frame
 		var intro_button: Rect2=Rect2(view.get_global_transform_with_canvas().affine_inverse()*view.help_close.get_global_transform_with_canvas().origin,view.help_close.size)
 		check(Rect2(Vector2.ZERO,size2).encloses(intro_button),"real introduction button stays reachable after first text layout at "+str(size2))
-		check(not Rect2(view.help_panel.position,view.help_panel.size).intersects(Rect2(view.controls.RehearsalExit.position,view.controls.RehearsalExit.size)),"introduction never covers the actual Return control at "+str(size2))
+		check(view.help_panel.get_global_rect().encloses(view.help_close.get_global_rect()),"reading sheet keeps its own physical close action reachable at "+str(size2))
 		view._close_help()
 		check(absf(view.field.size.x/view.field.size.y-16.0/9)<0.001,"stage projection stays uniform at "+str(size2))
 		check(view.title_label.get_parent()==view.stage_hud and view.status_label.get_parent()==view.stage_hud,"Local rehearsal context shares the physical stage transform")
