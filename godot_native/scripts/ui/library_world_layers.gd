@@ -4,6 +4,7 @@ const Picker=preload("res://scripts/world_object_picker.gd")
 const ObjectRebuild=preload("res://scripts/ui/library_object_rebuild.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const PrinterObject=preload("res://scripts/ui/library_printer_object.gd")
+const SeatMotion=preload("res://scripts/presentation/library_seat_motion.gd")
 ## LibraryInteriorScene's source-pixel replacement layers and timed prop motion.
 ## Runtime-only presentation; reads persisted facts but never creates them.
 var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/library-world-source.json"))
@@ -12,6 +13,7 @@ var staff_art: Texture2D
 var stamp_art: Texture2D
 var rebuild: RefCounted=ObjectRebuild.new()
 var printer: RefCounted=PrinterObject.new()
+var seat: RefCounted=SeatMotion.new()
 var clock_ms: float=0
 var stamp_ms: float=-1
 var scanning_ms: float=-1
@@ -34,14 +36,11 @@ var shelf_frame: int=0
 var reveal_serial: int=0
 var cue_queue: Array=[]
 var broadcast_index: int=0
-var note_collected: bool=false
-var receipt_collected: bool=false
-var receipt_ms: float=-1
-var note_ms: float=-1
 var last_player:=Vector2.ZERO
 var pass_from:=Vector2.ZERO
 
 func sync(state: Dictionary,scene_changed: bool=false) -> void:
+	seat.sync(state,scene_changed)
 	var scene: String=str(state.get("native",{}).get("scene",""))
 	if scene!="library_interior":
 		if active: reveal_serial+=1
@@ -71,7 +70,6 @@ func sync(state: Dictionary,scene_changed: bool=false) -> void:
 		shelf_offset=int(source.shelf.shiftPx) if shelf_collected else 0
 		shelf_phase="complete" if shelf_collected else "idle"; shelf_frame=source.shelf.frames.size()-1 if shelf_collected else 0
 		shelf_animating=false; bag_animating=false; shelf_ms=0; bag_ms=0; broadcast_index=0
-		note_collected=bool(p.get("occupancyNoteCollected",false)); receipt_collected=bool(p.get("seatReceiptCollected",false)); receipt_ms=-1; note_ms=-1
 		stamped=bool(p.get("nonPersonProofStamped",false)); stamp_ms=-1; clock_ms=0; lost_stage=str(p.get("lostFoundStage","missing_report")); scanning_ms=0 if lost_stage=="scanning" else -1
 		cue_queue.clear(); return
 	if not stamped and p.get("nonPersonProofStamped",false): stamp_ms=0; scanning_ms=-1
@@ -82,27 +80,19 @@ func sync(state: Dictionary,scene_changed: bool=false) -> void:
 		shelf_animating=true; shelf_ms=0; shelf_offset=0; shelf_frame=0; shelf_phase="shaking"
 	if not bag_evicted and p.get("backpackEvicted",false):
 		bag_animating=true; bag_ms=0; broadcast_index=0; pass_from=last_player
-	if not receipt_collected and p.get("seatReceiptCollected",false): receipt_ms=0
-	if not note_collected and p.get("occupancyNoteCollected",false): note_ms=0
 	shelf_collected=bool(p.get("archivedRuleCollected",false)); bag_evicted=bool(p.get("backpackEvicted",false))
-	note_collected=bool(p.get("occupancyNoteCollected",false)); receipt_collected=bool(p.get("seatReceiptCollected",false))
 
 func tick(delta: float,state: Dictionary) -> void:
 	sync(state)
 	if not active or not is_finite(delta) or delta<=0: return
 	var ms: float=minf(delta,0.05)*1000
 	printer.advance(ms/1000.0)
+	seat.advance(ms/1000.0)
 	clock_ms+=ms
 	if scanning_ms>=0: scanning_ms+=ms
 	if stamp_ms>=0:
 		stamp_ms+=ms
 		if stamp_ms>=(StampMotion.REDUCED_MS if reduced else StampMotion.TOTAL_MS): stamp_ms=-1; clock_ms=0
-	if receipt_ms>=0:
-		receipt_ms+=ms
-		if receipt_ms>=1020: receipt_ms=-1
-	if note_ms>=0:
-		note_ms+=ms
-		if note_ms>=420: note_ms=-1
 	if shelf_animating:
 		shelf_ms+=ms
 		if reduced:
@@ -168,6 +158,10 @@ func _stepped(value: float) -> float:
 	return 0.0 if value<=0 else 1.0
 func backpack_pose() -> Dictionary:
 	var position:=Vector2(float(source.backpack.x),float(source.backpack.y)); var alpha: float=1
+	var angle: float=float(source.backpack.angle)
+	if not bag_evicted and rebuild.ready:
+		var inspect: Dictionary=seat.bag_pose()
+		position+=Vector2(inspect.offset); angle+=float(inspect.angle)
 	if bag_animating:
 		if bag_ms<bag_shake_ms():
 			var phase: float=fposmod(bag_ms,140)/70
@@ -176,7 +170,7 @@ func backpack_pose() -> Dictionary:
 			var ratio: float=_stepped((bag_ms-bag_shake_ms()-float(source.backpackTimeline.waitMs))/float(source.backpackTimeline.transferMs))
 			position=position.lerp(Vector2(334,634),ratio); alpha=1-ratio
 	var generated: bool=rebuild.ready
-	return {"position":position,"alpha":alpha,"visible":bag_animating or (generated and not bag_evicted),"scale":float(source.backpack.scale),"angle":float(source.backpack.angle),"depth":float(rebuild.layout.objects.backpack.depth) if generated else float(source.backpack.depth)}
+	return {"position":position,"alpha":alpha,"visible":bag_animating or (generated and not bag_evicted),"scale":float(source.backpack.scale),"angle":angle,"depth":float(rebuild.layout.objects.backpack.depth) if generated else float(source.backpack.depth)}
 func paper_pose() -> Dictionary:
 	var position:=Vector2(514,152); var alpha: float=0.45 if reduced else 0.18
 	var glow_alpha: float=0.12 if reduced else 0.04
@@ -197,7 +191,7 @@ func paper_pose() -> Dictionary:
 		if elapsed>reveal+hold: glow_position.y=(152 if reduced else 158)-16; glow_alpha=0
 	return {"position":position,"alpha":alpha,"glowAlpha":glow_alpha,"glowPosition":glow_position,"visible":shelf_animating}
 func debug_snapshot() -> Dictionary:
-	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":collision_rect(),"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":receipt_ms,"staff":staff_pose(),"stampMs":stamp_ms,"stamp":stamp_pose(),"objectRebuild":rebuild.snapshot(),"printer":printer.snapshot()}
+	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":collision_rect(),"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":seat.receipt_ms,"note":seat.note_pose(),"receipt":seat.receipt_pose(),"staff":staff_pose(),"stampMs":stamp_ms,"stamp":stamp_pose(),"objectRebuild":rebuild.snapshot(),"printer":printer.snapshot()}
 
 func owns_pick_target(id: String) -> bool:
 	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note"] or (rebuild.ready and id in ["catalog_terminal","printer","backpack","bag_photo","backpack_pass"])
@@ -210,6 +204,7 @@ func _floor_depth(baseline: float) -> float:
 	return baseline+float(source.playerDepthOffset)-PlayerMetrics.foot_rect(Vector2.ZERO).position.y
 func draw_back(canvas: CanvasItem,context: Dictionary,state: Dictionary) -> void:
 	if context.get("scene_id","")!="library_interior": return
+	seat.bind_view(canvas)
 	sync(state); last_player=context.get("player",Vector2.ZERO); _context(canvas,context)
 	if rebuild.ready:
 		# The world normally uses the clean plate directly, preserving its wash
@@ -251,12 +246,11 @@ func _draw_depth_pass(canvas: CanvasItem,context: Dictionary,state: Dictionary,f
 	canvas.draw_set_transform(Vector2.ZERO)
 	var bag: Dictionary=backpack_pose()
 	if bag.visible and _in_pass(float(bag.depth),context,front): _draw_backpack(canvas,context,bag)
-	var p: Dictionary=state.get("ui",{}).get("libraryFinalsPuzzle",{})
-	if _in_pass(602,context,front) and ((p.get("backpackInspected",false) and not note_collected) or note_ms>=0):
-		if note_ms<0: Picker.record(canvas,["occupancy_note"],Rect2(1261,407,42,30))
-		_draw_paper(canvas,context,Vector2(1282,422-(48*_stepped(note_ms/420) if note_ms>=0 else 0)),"纸条",Color("e9dcae"),1-_stepped(note_ms/420) if note_ms>=0 else 1)
-	if _in_pass(625,context,front) and receipt_ms>=0:
-		_draw_paper(canvas,context,Vector2(1300+100*_stepped(receipt_ms/520),421),"022",Color("f1ead8"),1,6*_stepped(receipt_ms/520))
+	var note: Dictionary=seat.note_pose()
+	if _in_pass(602,context,front) and note.visible:
+		if note.alpha>0.05: Picker.record(canvas,["occupancy_note"] if not seat.note_collected else [],SeatMotion.paper_geometry(note))
+		_draw_seat_paper(canvas,context,note,"纸条",Color("e9dcae"))
+	if _in_pass(625,context,front): _draw_receipt(canvas,context)
 	_draw_front_desk(canvas,context,front)
 	if front and bag_animating and bag_ms<620:
 		var ratio: float=_stepped(bag_ms/620); var at: Vector2=(pass_from+Vector2(0,-18)).lerp(Vector2(1255,373),ratio)
@@ -352,6 +346,41 @@ func _paper_local(canvas: CanvasItem,at: Vector2,text: String,color: Color,alpha
 func _draw_paper(canvas: CanvasItem,context: Dictionary,at: Vector2,text: String,color: Color,alpha: float,angle: float=0) -> void:
 	canvas.draw_set_transform(Vector2(context.get("origin",Vector2.ZERO))+at*float(context.get("zoom",1)),deg_to_rad(angle),Vector2.ONE*float(context.get("zoom",1)))
 	_paper_local(canvas,Vector2.ZERO,text,color,alpha); canvas.draw_set_transform(Vector2.ZERO)
+
+func _draw_seat_paper(canvas: CanvasItem,context: Dictionary,pose: Dictionary,label: String,color: Color) -> void:
+	var z: float=context.get("zoom",1.0)
+	var origin: Vector2=context.get("origin",Vector2.ZERO)
+	canvas.draw_set_transform(origin+Vector2(pose.position)*z,deg_to_rad(float(pose.angle)),Vector2.ONE*z)
+	var outline: PackedVector2Array=SeatMotion.paper_outline(pose)
+	var shadow:=PackedVector2Array()
+	for point: Vector2 in outline: shadow.append(point+Vector2(1,2))
+	canvas.draw_colored_polygon(shadow,Color("493c28",0.32*float(pose.alpha)))
+	color.a=float(pose.alpha); canvas.draw_colored_polygon(outline,color)
+	var edge:=outline.duplicate(); edge.append(edge[0])
+	canvas.draw_polyline(edge,Color("70654e",float(pose.alpha)),1)
+	if pose.width>=28:
+		var right: float=float(pose.width)/2; var top: float=-float(pose.height)/2
+		canvas.draw_colored_polygon(PackedVector2Array([Vector2(right-7,top),Vector2(right,top+7),Vector2(right-7,top+7)]),Color("c5b48b",float(pose.alpha)))
+		canvas.draw_line(Vector2(0,top-float(pose.bend)),Vector2(0,-top-float(pose.bend)),Color("b2a382",0.35*float(pose.alpha)),1)
+		canvas.draw_string(font,Vector2(-10,5-float(pose.bend)/2),label,HORIZONTAL_ALIGNMENT_LEFT,-1,9,Color("40372c",float(pose.alpha)))
+	canvas.draw_set_transform(Vector2.ZERO)
+
+func _draw_receipt(canvas: CanvasItem,context: Dictionary) -> void:
+	_context(canvas,context)
+	# The table's physical seam remains after acquisition; no hover decoration.
+	canvas.draw_line(SeatMotion.GAP_AT+Vector2(-13,3),SeatMotion.GAP_AT+Vector2(13,3),Color("514332"),2)
+	canvas.draw_set_transform(Vector2.ZERO)
+	var pose: Dictionary=seat.receipt_pose()
+	if not pose.visible: return
+	if pose.arrowAlpha>0:
+		_context(canvas,context)
+		var at: Vector2=pose.arrowPosition
+		var arrow:=PackedVector2Array()
+		for point: Vector2 in [Vector2(-16,-3),Vector2(3,-3),Vector2(3,-7),Vector2(13,0),Vector2(3,7),Vector2(3,3),Vector2(-16,3)]: arrow.append(at+point)
+		canvas.draw_colored_polygon(arrow,Color("e3bd65",float(pose.arrowAlpha)))
+		arrow.append(arrow[0]); canvas.draw_polyline(arrow,Color("4b3d27",float(pose.arrowAlpha)),1)
+		canvas.draw_set_transform(Vector2.ZERO)
+	_draw_seat_paper(canvas,context,pose,"022",Color("f1ead8"))
 
 func staff_pose() -> Dictionary:
 	var frame: int=0; var y: float=632

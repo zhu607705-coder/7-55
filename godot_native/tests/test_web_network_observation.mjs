@@ -8,11 +8,11 @@ import vm from 'node:vm';
 
 const runner = await readFile(new URL('../tools/verify_web_export.mjs', import.meta.url), 'utf8');
 const workflow = await readFile(new URL('../../.github/workflows/deploy-pages.yml', import.meta.url), 'utf8');
-function between(begin, end) {
-  const start = runner.indexOf(begin), stop = runner.indexOf(end, start + begin.length);
+function between(begin, end, source = runner) {
+  const start = source.indexOf(begin), stop = source.indexOf(end, start + begin.length);
   assert(start >= 0 && stop > start, `actual runner block exists: ${begin}`);
-  assert.equal(runner.indexOf(begin, start + begin.length), -1, `unambiguous runner block: ${begin}`);
-  return runner.slice(start, stop);
+  assert.equal(source.indexOf(begin, start + begin.length), -1, `unambiguous runner block: ${begin}`);
+  return source.slice(start, stop);
 }
 const helper = between('async function enableNetworkObservation(session)', '\nlet active;');
 const setup = between("    await active.cdp.send('Page.enable'); await active.cdp.send('Runtime.enable');", "    if (scenarios === 'mobile-world') await mobileWorldCase();");
@@ -20,7 +20,8 @@ const setup = between("    await active.cdp.send('Page.enable'); await active.cd
 // simulated or claimed as browser proof by this dependency-light test.
 const navigatePrefix = between('async function startStory(reload = false)', '  await poll(() => evaluate("document.documentElement.dataset.bootState');
 const bodyHandler = between("      if (method === 'Network.loadingFinished' && responses.has(params.requestId))", "      if (method === 'Network.loadingFailed' && !params.canceled)");
-const deferredGate = between('    await Promise.all(active.bootBodyJobs);', '    const chunkedOriginals =');
+const browserBody = between('async function browserCase(', '\ntry {\n  const selected =');
+const deferredGate = between('    await Promise.all(active.bootBodyJobs);', '    const chunkedOriginals =', browserBody);
 const checkSource = between('function check(ok, label, details)', 'async function persist()');
 const capacity = { maxTotalBufferSize: 128 * 1024 * 1024, maxResourceBufferSize: 2 * 1024 * 1024 };
 const version = { product: 'Chrome/155.0.8059.39', protocolVersion: '1.3', revision: 'synthetic-revision', jsVersion: 'synthetic-v8' };
@@ -41,7 +42,7 @@ function networkFixture({ hold, failAt, error = new Error('synthetic CDP failure
       'Browser.setDownloadBehavior', 'Page.navigate', 'Page.reload'].includes(method)) return {};
     forbidden.push(method); throw new Error(`unexpected CDP method: ${method}`);
   } };
-  const active = { id: 'touch-390', cdp, downloadDir: '/synthetic-downloads' };
+  const active = { id: 'touch-390', cdp, bootBodyJobs: [], downloadDir: '/synthetic-downloads' };
   const context = vm.createContext({ active, Date: { now: () => clock++ }, scenarios: 'all',
     width: 390, height: 844, touch: true, dpr: 1, url: 'https://synthetic.invalid/index.html',
     fetch: () => { forbidden.push('fetch'); throw new Error('HTTP fallback forbidden'); },
@@ -127,6 +128,27 @@ test('late rejected configuration is a failure, not a timeout permission to star
   assert.equal(f.calls.filter(row => row.method === 'Network.configureDurableMessages').length, 1);
 });
 
+test('reload waits for current-document response evidence before its one navigation', async () => {
+  const f = networkFixture(); await f.initialize();
+  const held = deferred(); f.active.bootBodyJobs.push(held.promise);
+  const pending = f.reload(); await settle();
+  assert.equal(f.calls.at(-1).method, 'save-before-reload');
+  assert.equal(f.calls.filter(c => c.method === 'Page.reload').length, 0);
+  assert.equal(f.active.networkObservation.navigations.length, 1);
+  held.resolve(); await pending;
+  assert.equal(f.calls.filter(c => c.method === 'Page.reload').length, 1);
+  assert.equal(f.active.networkObservation.navigations.length, 2);
+  assert.deepEqual(f.forbidden, []);
+});
+test('rejected current-document evidence prevents reload rather than replaying HTTP or skipping hashes', async () => {
+  const f = networkFixture(); await f.initialize();
+  const failure = new Error('actual body evidence failed');
+  f.active.bootBodyJobs.push(Promise.reject(failure));
+  await assert.rejects(f.reload(), error => error === failure);
+  assert.equal(f.calls.filter(c => c.method === 'Page.reload').length, 0);
+  assert.equal(f.active.networkObservation.navigations.length, 1);
+  assert.deepEqual(f.forbidden, []);
+});
 test('ordinary reload retains observation without reconfiguration or replay', async () => {
   const f = networkFixture(); await f.initialize(); await f.reload();
   assert.deepEqual(f.calls.slice(-2).map(row => row.method), ['save-before-reload', 'Page.reload']);

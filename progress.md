@@ -5279,6 +5279,19 @@ At cd359b9, retained Web CI and the actual Godot Web production build passed. Co
 
 Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic checks. A controlled 20ms delay around real WebCrypto reproduced the old turn-budget timeout; the corrected deadline version passed the same original loader assertions under that delay. Control scripts and logs stay outside the repository under the 20261024 merge verification directory. The runtime content loader hash remains 123525c2a5cebc21ca739eb1d70aa4caee4ac7f425d94341feac6d22b14b3036.
 
+## 2026-10-23 — Library seat object feedback
+
+Task: D:/Code/7-55-tasks/library-objects, codex/library-object-feedback-20261023, base cd359b9d50451ddb38a9e178281816da3d254f7a (PR #164 separated library assets). The fixed integration checkout and its UI/campus edits are preserved.
+
+Added bag inspection motion, note unfolding/lift and arrow-driven receipt extraction. Runtime-only poses read controller facts; story/mode gates, item transactions, collisions and existing shelf/stamp/eviction timelines stay unchanged. Moving paper picking follows its painted polygon. Reload, hiding and reduced motion settle to the earned state.
+
+Godot 4.7.1: sync/import and six isolated tests passed (72 seat, 113 layers, 52 rebuild, 211 printer, 55 picking, 1729 handoff; 2232 checks). GPU seat tests passed 72 checks at 1280x720, 390x844 and 844x390; 36 captures include inspected desktop/phone frames. The official Node runner refuses Windows; a private mirror uses a verified user-data probe and Windows isolation adapter, without editing the repository guard. No full-suite, browser or device acceptance claim.
+
+Preview/evidence: C:/Users/Turpitude/.codex/visualizations/2026/10/22/01a16442-a444-7781-92f4-e2160a20a18d/library-objects-20261023. open-preview.ps1 starts eligible fixtures with isolated saves; private-only 1/2/3 reset bag/note/receipt, F6 changes window size. Continue in this checkout.
+
+Delivery on 2026-10-24: the user deferred the Godot repository and selected only zhu607705-coder/7-55 for this delivery. Original PR #164 merged as 926cfe9; the task commit is based on that main, preserving its unrelated transport-fixture correction. Reuse codex/library-object-feedback-20261023 in this checkout. The three implementation/test files remain byte-identical to the isolated native/GPU test inputs. No Godot-repository branch or PR was published.
+
+Retained Web release: production build, offline build/artifact checks and four Chromium smoke routes passed. The initial release run passed 32/38 stages; all four media-related failures passed after adding existing ffmpeg/ffprobe to PATH. Prologue verification passed 52 checks with an explicit report path and the original LF fixture bytes on Windows (original working-tree line endings restored afterward). The remaining causal-flow runner uses URL.pathname as a Windows filesystem root and cannot load its unchanged source modules. These environment constraints do not establish a fully green release gate. No Godot WebAssembly or physical-device acceptance is claimed.
 ## 2026-10-24 — PR #163 compatibility and exact observation contracts
 
 - The user requested continuing the earlier PR delivery. Re-fetched actual Godot `main` at `926cfe9983bdb044850435dbb09c3bbe9d1d1ebe` and existing #163 head `34fb170`; #164 was already externally merged. Preserve both histories with a two-parent integration, not a force-push or replacement by the old Godot branch. The only content conflicts were the acceptance runner's terminal evidence and appended progress notes: retain both the save-input evidence and main's browser stderr evidence, and preserve both log histories.
@@ -5313,3 +5326,97 @@ Local follow-up passed 50 loader, 45 resource-cache and 138 save-diagnostic chec
 - Add the existing `capture_ui_redesign.gd` to the existing read-only mobile proof workflow, without editing its fixtures, adding installation/security authority or increasing the25-minute job limit. It has a180s bound and separate isolated save profile, records exact source/engine plus PNG dimensions/bytes/SHA, and requires the six pre-existing C35 recovery/network/voice portrait/desktop captures. This is DEV-fixture rendering, not earned campaign completion or dedicated catalogue visual proof. YAML/shell and16 source-extracted receipt positive/negative contracts pass; actual images must still be rendered and inspected in CI.
 - The scoped follow-up is19 paths:14 native compatibility files, the Web runner and its two existing test files, this progress log, and the existing mobile proof workflow. No PR166 changes, new branch, force-push, main write, merge, deadline relaxation, fixture omission or startup-budget increase. PR166's independently changing60s/75s save proposal is not adopted; exact combined-source compatibility must be evaluated separately.
 - Final pre-publication receipt: independent clean4de0753003c9716bdd93edffcda76cb178dbd8b0 affected set27/27 and inner Formal10/10 PASS; combined7/7 and Node39/204/31/25/93 PASS. Existing54 UI capture fixtures also construct successfully under isolated official4.7.1 `UI_CAPTURE_VALIDATE=1`; no PNGs are generated in that mode and real rendering remains a new-CI requirement. The old6ff Cross run40081701673 was externally observed cancelled at09:47:51; no agent cancellation was sent and its reason is not established. Fresh remote still6ff/main926 before this scoped publication.
+
+
+## 2026-10-24 剧场箱内与扇影交互
+
+原箱子支持翻找、符号装配、转柄、夹层和荧光粉刷实体拾取；刷子改为有收腰木柄、金属折边及分束刷毛的原创几何。扇影排练增加铜扣开合、距离与共用灯源推理，实体灯接管试演和换幕。模型、触控撤回、原会话回放、实际图形窗口206项以及保留网页关键27项/发布38项检查通过。具体范围和限制见 `godot_native/docs/THEATER_FAN_CHEST_ACCEPTANCE_20261024.json` 与 `THEATER_FAN_CHAIN_20261024.md`；Godot Web尚未重新导出或发布。
+
+
+## 2026-10-24 Theater scene-object controls
+
+Removed rehearsal toolbar Watch/Observe and duplicate Watch menu entry. The table programme supplies observation, the right curtain toggle accepts a tap or short pull to start the performance, and the left curtain gap returns to the theater. Performance observation also belongs to a visible side-wing programme, outside actor QTE targets. Mouse, touch and Tab/Space operate the physical targets; resize, focus loss, dragged-away releases and modal sheets cancel stale input. Existing model, session, items and save schema are unchanged. Godot 4.7.1 passed 9 groups / 819 checks, plus 229 actual-window checks. The retained Web release result is recorded separately in the acceptance receipt. This remains source PR166, without a new Godot Web export or deployment.
+
+The complete PR worktree also passed retained Web validate:release: 38 validators and 4 browser smoke cases.
+
+Closing a reading sheet after window focus loss now exposes explicit resume. The targeted Main and UI rerun passed (224 and 65 checks).
+
+
+## 2026-10-24 — 剧场台灯两轴投影调节
+
+- 直接拖场景中的台灯：左右改变全体投影位置，前后改变源到道具、道具到纱幕的放大关系；三幕均可操作。暖色光束和纱幕亮区随灯移动，固定木钉影同时校准横向和长度。未新增操作工具栏。
+- 模型升级到 v3；两轴灯位一起记录、撤回、重排及回放，点灯试演保留原道具选择，拖动后才选中灯。保留既有一次性会话和可选排练无剧情/存档写入语义。
+- Godot 4.7.1：9组原生回归859项通过；实际图形Main检查229项通过，覆盖三幕、键鼠、模拟触摸、失焦/旋转取消和主备存档。quick 5、critical 27、保留Web release 38项及4浏览器场景通过。
+- 已用同版官方模板重新导出Godot Web；Chromium 1280×720鼠标与844×390模拟触摸，均经冷启动、手机入口、正式导入隔离校验检查点、实际扇架进入、双轴拖灯、撤回、节目册及幕缝退出通过；浏览器桥保持只读。导出源码摘要 0b04abecf55fab6db3aad2f51afeab55f09ce89f5fda35e2144c0cd02ad1b5f7。未声称实体手机、Gecko/WebKit、全剧情自然游玩或站点已发布。
+- 接续用户已授权的剧场箱子＋梁祝一起上传范围，更新原PR166，不合并或部署。证据见 THEATER_FAN_CHEST_ACCEPTANCE_20261024.json 的 lightProjectionFollowup；本机完整日志在 ~/Library/Application Support/755-tools/verification/theater-light-20261024。
+
+
+## 2026-10-24 · 线装排练手记与试演墨影
+
+- 对应用户“排练手记深化、真正有古风感觉”：桌上节目册展开为线装暖纸旧册，三卷九页，墨线图解、朱笔批注和短纸角翻动。展扇、远近、借光分别解释底座/开合、整体尺寸/翼缘、木钉校灯/侧幕遮光。
+- 复看页只绘制本幕上次实际点灯试演的投影；朱线来自原目标，不提前生成试演记录，后续摆位不改写旧影。每幕记住当前页，重复翻阅不追加提示动作；翻页和展示不写剧情、道具或主/备份存档。触控按钮44px，Page Up/Down翻页，掩卷回舞台；短屏批注在纸内滚动。
+- Godot4.7.1原生10组910项通过；实际图形Main229项、手记51项通过。四种尺寸覆盖1280×720、1440×900、844×390、390×844，包含鼠标/模拟触摸/键盘、失焦、减少动态效果和快照隔离。
+- 本轮源同步完成，无新媒体转换。保留Web参考版quick5和release38（含4个浏览器场景）通过。另行重新导出实际GodotWeb，Chromium桌面856项、模拟手机横屏857项通过：冷启动、手机入口、隔离检查点导入、实体扇架、拖灯/撤回/试演、实体节目册前后页与掩卷、幕缝退出。导出sourceInputSha256：2149c883dd574253cb9f3b270e2a4c1f96fa1ad8efbf275dea9e2562fbfab324。
+- 新程序几何与文案均为项目原创，沿用已有字体、舞台与人物；来源补记ASSETS.md，逐文件哈希/边界见THEATER_FAN_CHEST_ACCEPTANCE_20261024.json的notebookFollowup。证据位于755-tools/verification/theater-notebook-20261024。延续已授权梁祝批次更新PR166；未合并、未部署，未声称实体手机、其他浏览器或自然全剧情验收。
+
+
+## 2026-10-24 · 蝶影残谱与全关卡推理规范
+
+- 用户将“场景包装、实验发现规则、不能随便点完就过”推广到全游戏及北教每关。已写入AGENTS.md，并完成 `godot_native/docs/PUZZLE_DISCOVERY_20261024.md` 的逐关账本；北教仍是核对过实际代码的重构方案，本轮未替换其运行时代码。
+- 梁祝首个样本已经落地：残谱初始隐去完整规律，只保留残图和短批注；从真实试演收集只改变一个因素的影拓，再拖薄纸对印以读懂图解。同灯分别考察横移与纵深；翻页、同状态试演、同时乱动多项、未试演的移动或只点旧印不直接解锁规则。自主从现场推理仍能按原合法几何完成，读册不增加剧情门槛或第二套进度。
+- Godot4.7.1定向11组962项通过；5个引擎/解析/隔离/源对照支持阶段通过（一次未配置GODOT_BIN的调用失败，正确固定引擎后通过）。真实图形发现52项及Main229项通过。保留Web quick5/release38及4个浏览器场景通过。
+- 最终Godot Web桌面861项、模拟手机横屏862项通过，实际输入完成开合对照、生成影拓、拖纸套印、掩卷退出；截图核查最终纸片布局。sourceInputSha256：6fe4553f82c9d6d72e14cee4356e6ae3fbaa3d6527bf327d08377bfe8a8e49c1。未声称实体手机、Gecko/WebKit或全剧情自然游玩验收。
+- 原创程序纸片/旧印来源补记ASSETS.md；精确文件哈希与范围见验收JSON discoveryFollowup，本机日志保存在755-tools/verification/theater-discovery-20261024。沿用“箱子和梁祝一起上传”授权更新原草稿PR166，未合并或部署。
+
+
+## 2026-10-24 · 北教图面发现与全屏嵌字物件
+
+- 延续用户明确的代码改造、上传和部署授权，将三次校时/手机终端串成有存档的推理链，值班牌改为正反纸片连线与整体压印，301/302/201改为图面线索及实际尝试反馈；电梯直接拖记录条，保留既有线路、楼梯、维修和结局控制器。逐关真实范围补入PUZZLE_DISCOVERY_20261024.md。
+- 根据用户连续指出的全屏字体比例和文字未落在按键内部问题，共享全屏尺寸比例，301索引签/把手与纸夹压印重建独立Control，原生Label使用字体度量和内框居中。手机短横屏重排物件，302命中选择最近的可见拉环，避免小屏热区重叠。手机阅读页给侧边背包保留44px实际目标和阅读避让。
+- 定向已通过：三种全屏设备六种尺寸的字体/边界/只读纸页，独立嵌字对象长短标签、301实际抽屉/Main、302两阶段场景及存档、楼梯真实输入136项。其余北教、全流程和真实Web导出正在重新验收，未将旧失败报告改写为通过。
+- 发布修复基于PR166旧头4f660f的云端证据：块响应证据跨document丢失、覆盖标签漂移、DPR3加载/IDB较慢。保留严格字节和当前存档ACK，将实际保存预算明确改为60秒/每2秒最多30次，详见GODOT_WEB_RELEASE.md；未声称旧20秒性能。
+- 图面与物件程序几何为项目原创，ASSETS.md已登记。没有改写共享主工作区其他未上传内容；候选测试/截图均在仓库外隔离目录。新提交、云端结果与生产部署另行核对。
+
+提交前补验：保留Web quick5、critical27、release38（含4个真实浏览器场景）通过。首次critical因桌面进程PATH未提供既有ffprobe失败；补齐仓库外现有工具路径后原检查全部通过。纸夹按绘制比例同步实际Control高度，压印不再落到控件外；Main真实鼠标/模拟触控、设备面板、紧凑导航和嵌字对象4组重验通过。云端生产GodotWeb仍待新提交验证。
+
+
+发布续验补记：14380b9的云端生产导出成功，随后工作流自测发现改写覆盖文字破坏旧收据契约。改为生产者保留原稳定覆盖标识并额外记录新的具体动作，工作流仍检查原字段及真实触摸事件，不接受缺少证据。正式重进探针另有旧空对象假定：已结束演出可释放其host，探针必须容许已结束状态无host，同时断言待播会话必须有host。修正后隔离四章流程与逃离/入场/剧场介绍的interrupt、complete、reload共10阶段通过；第四章末段Continue通过。修正测试不修改正式存档或补造剧情事实。
+
+
+### 2026-10-24 云端双指取消观察竞态
+
+PR166 最终7bebe源的合并候选4e220681在生产构建、六视口基础验收1143项、流式故障/重试1042项、桌面与普通手机世界/充电恢复检查通过。DPR3世界组在取消手势的frame563读取到排队输入，失败快照frame566已释放；其充电恢复900项通过。只修测试观察：在5秒内等待实际触点/方向轴释放，保留中间帧和耗时，再验证500毫秒后仍释放且角色停止。保持真实CDP输入、控制器事实断言、存档摘要与全部发布门禁；不改产品，不补发取消。新增合成延迟与负控验证，云端重验待完成。
+
+
+### 2026-10-24 输入结果观察与云端浏览器启动
+
+2425110云端DPR3通过双指取消后，在物品栏接管的固定100毫秒观察处失败；frame558仍有map触点，失败快照frame560已变为空且inventoryOwned=true。拖动释放、物品栏接管、设置前实际持有触点、近处/横屏点击均使用原实际输入/控制器结果等待，仍严格检查事实不变与恰好一次动作。另独立Chrome进程启动由20秒改为有界60秒，以处理日志证明的进程尚未提供端口问题；不会改变产品加载、动作或保存期限，也不跳过失败。新增实际runner启动失败/清理负控，保留每次云端失败证据。
+
+
+### 2026-10-24 流式故障验收跨文档观察
+
+6bddbb7的合并候选3bcc94a1已通过云端六视口1149项。后续流式故障检查读取到旧文档HTTP失败，但新引擎75个包仍missing、blocking=false；改为记录请求/失败时间，匹配本次刷新后的受控HTTP失败并等待当前原生回调。出现错误的阻塞覆盖层仍立即失败，旧文档和缺失回调不能冒充成功。游戏源代码未变化；失败证据保留，更新测试后继续完整云端验证。
+
+## 2026-10-24 — PR165 upstream synchronization
+
+User requested resolving the remaining original-repository PRs, synchronizing the branches and publishing the latest game before recording a feature trailer. PR165 is reconciled with deployed main 1322d94; only append-only progress notes conflicted, and both histories are retained. The three library implementation/test files are unchanged from d205847. The combined source passed seven isolated Godot 4.7.1 stages: save isolation, import/parse, object rebuild, printer, reveal handoff, seat motion and world layers. The original working directory's 160 tracked modifications and 393 untracked files remain untouched. Combined Web publication and PR163 reconciliation are recorded separately, not inferred from these scoped checks.
+
+## 2026-10-24 — Reconcile PR163 with externally merged PR166
+
+- Read-only GitHub evidence shows the repository owner merged PR166 head `1243e788722de22d414bd9dcaae9704b5202c90e` at10:03:52UTC into `main` as `1322d941191683a30c338123cc914399eac29826`, with parents926cfe99 and1243e788. This agent did not perform that merge. PR163 head5886f043 then became conflicting; its merge-ref1ef0f95 and CI evidence describe the earlier926 base only.
+- Integrate both histories, not an ours/theirs file replacement. Preserve all upstream theater/north-building controllers, assets, discovery gates and actual44px phone bag. Resolve the completed-narrative lazy-host probe with a strict pending-session/valid-host invariant. Preserve the new page wrapper but remove duplicate approximate padding; the existing measured bag+shadow+badge column remains the single reading-clearance authority. Its regression checks the widest safe column and deliberately injects an extra outer inset to prove redundant padding is rejected.
+- Main1322 has already changed production save synchronization to60s,2s intervals,max30 attempts; its JavaScript watchdog is also60s. The acceptance receipt window is75s, independent Chrome process startup60s, and ordinary cold dorm imports use the existing bootTimeout(default360s). Retain these upstream values. This compatibility is not a measured performance improvement and does not establish the previous20s/30s targets. The old evidence and descriptions above remain historical. Library initial import60s, library handoff20s, Settings20s and stable Save geometry20s remain unchanged.
+- Preserve PR163's final pre-click token, one completed actual input, two fresh stable geometries, visible-notice guard, exact native digest/ack and independent readonly IDB match. The complete receipt function is byte-identical to main1322(SHA256 `d9dfbcfe4f0d9c2761c50c09df556f2421b786b7b2038e237506f08ae30d57ab`). Update the source-executing positive/negative fixtures to this explicitly attributed current contract: a token first observed at74s cannot start a second75s window.
+- Combine upstream pre-reload response-evidence draining and current-document streaming-failure observation with PR163's fixed-cap dedicated durable-message command and navigation provenance. A pending body cannot reload, a rejected body cannot silently navigate/re-fetch/skip hashes. Keep both cancellation contracts: per-frame diagnostics plus same chapter/native scene/rendered scene/visibility, and a later sample that must still have no owners or axis. Preserve all source-action/fact and single-action checks.
+- Local Node22.23.3 passes input40, network33, save205, workflow25, media93 and save transport39. Lifecycle passes29/30 under that Node because this cloud environment injects an extra UNDICI-EHPA warning into the fixture's otherwise complete stderr; the exact assertion and proxy environment remain unchanged. Node24.22.1 separately passes30/30. These are contract tests, not successful browser performance or deployment evidence.
+- Previous588 Web failures remain separate: pre-navigation Chrome startup; desktop library cold C3 handoff missing7 packs at20s; retina dorm content not ready at60s; retina phone queued-notice geometry timeout with no Save input dispatched. Touch library877 and its14.973s handoff passed on that prior source. The bounded cache-write/download pipeline experiment is isolated outside this repository and is not included in this merge. No DPR, asset quality, content-family requirement or publishing permission is changed here.
+- New-combination focused native checks and exact-head CI/actual rendering receipts are recorded after their completion; earlier588 PNGs must not be presented as this combination's visual acceptance. Keep the same PR163 and branch, with no force-push, branch deletion, direct-main write or automatic merge.
+- Combination validation found two additional prior-size assumptions: the recovery rail expected the old28px formula, and the original phone-chrome test expected38×63 at scale1. Keep main's44px production rail, require its exact scale-aware size and add wrong-size negatives. Corrected isolated runs pass reading-anchor4100 and phone-chrome72; initial failed reports remain retained. The C4 single-gutter test passes310 including deliberate duplicate-padding rejection.
+- The enlarged actual44px rail also exposed a real short-landscape overlap in the lake map header(844×390: count x367.98..434.93; painted rail x334.73..382.03). Keep both original fonts/texts and the status's right edge336. Measure the actual nested frame transform, trim only transparent status padding first, and use a local two-row header only if genuinely needed. Shift each later row, target and scroll extent from its original stored y, never accumulate offsets. Main's existing layout signal applies the change; no per-frame loop or new gameplay authority. Final fixture test867/867 covers counts0..3 and solved, three required sizes plus260px short-height fallback, same-instance resize/portrait return, complete scroll reachability and actual GUI import clicks. A first expanded fixture used nonexistent Control.has_point; that test-only draft was corrected to Rect2 containment before the successful run, with the failed draft report retained.
+- Before that final local lake-header change, official4.7.1 compatibility validation passed import/parse, C35 app-frame1672, clock458, device38, catalogue282, lazy-host24, photo215, motion238, save-persistence, visibility45 and formal campaign/interrupt/complete/reload10/10. Final reading/rail/phone/map reruns are separately recorded above. These source-specific local results are not a full final-SHA Native or real-rendering claim. New CI must render and inspect its own lake-map/proof images; no old588 screenshot is substituted.
+
+### 2026-10-24 — PR163 reconciles externally merged library motion
+
+The pre-publication CAS observed main advance again at 10:50:29 UTC: PR165 was externally merged by zhu607705-coder as b36aed0955546171d7e63b34126300bb29b87777 (parents 1322d941 and 3fafc06c). The previously created c5649fd commit object was not published to any branch. All three library implementation/test files remain byte-identical to d205847 and are incorporated without redesign; both complete progress histories are retained. The final delivery uses existing PR163 and current main as its second parent, with no new branch, main push, force update or automatic merge. Focused combination results are recorded below; old 588 native/graphics evidence remains attributed to its older base.
+
+Final b36 combination focused validation: official Godot 4.7.1 import/editor parse passed, plus native save isolation and eight library stages (direct entry 406, entry flow 80, rebuilt objects 52, printer 211, return 156, reveal handoff 1729, seat motion 72, world layers 113 checks; 2819 checks with zero failures). These ten selected stages do not replace the full native suite or actual Web/browser/rendered acceptance. The three library source/test bytes remain identical to b36/d205847; final exact-source CI and lake-map rendered screenshots remain pending after publication.

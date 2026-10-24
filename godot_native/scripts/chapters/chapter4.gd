@@ -4,6 +4,10 @@ const MediaStudio = preload("res://scripts/objects/room302_studio_model.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const Room204 = preload("res://scripts/games/chapter4_room204_model.gd")
 const Progressive = preload("res://scripts/games/progressive_transport_model.gd")
+const ClockChain = preload("res://scripts/games/chapter4_clock_chain.gd")
+const DutyBoard = preload("res://scripts/games/chapter4_duty_board.gd")
+var clock_session: Dictionary = {}
+var clock_owner: Dictionary = {}
 const PROGRESSIVE_PUZZLES: Array = ["power_topology","evacuation_route"]
 var progressive_session: Dictionary = {}
 var progressive_owner: Dictionary = {}
@@ -68,6 +72,27 @@ func _required_time(c: Dictionary) -> String:
 	if c.phase=="room204_restore" and _has(c,"hour_hand_installed") and c.timeState!="1850_evening": return "1850_evening"
 	if c.phase=="maintenance_repair" and _has(c,"positioning_plate_installed") and c.timeState!="2245_maintenance": return "2245_maintenance"
 	return ""
+func _clock_context(s: Dictionary) -> bool:
+	var c: Dictionary=s.chapter4
+	return c.prologueSeen and c.floor=="A1" and c.mode=="light" and s.native.get("chapter",0)==4 and s.native.get("mode","")=="light" and s.native.get("scene","")==SCENE and s.get("runtimeMode","")=="rpg" and s.get("rpgScene","")==SCENE and s.native.get("c4_context","")=="clock" and not _required_time(c).is_empty()
+func _clock_current(s: Dictionary,value: Variant) -> bool:
+	return not clock_session.is_empty() and is_same(s,clock_owner) and _clock_context(s) and value is Dictionary and value.get("session")==clock_session and clock_session.target==_required_time(s.chapter4) and clock_session.phase==s.chapter4.phase and clock_session.time==s.chapter4.timeState
+func _clock_begin(s: Dictionary) -> Dictionary:
+	clock_session={};clock_owner={}
+	if not _clock_context(s): return _locked("clock_adjustment_required")
+	var target: String=_required_time(s.chapter4)
+	var checkpoint: Dictionary=ClockChain.current(s,target)
+	if checkpoint.is_empty(): return _locked("clock_adjustment_required")
+	clock_owner=s;clock_session={"nonce":Crypto.new().generate_random_bytes(16).hex_encode(),"target":target,"phase":s.chapter4.phase,"time":s.chapter4.timeState}
+	return _ok("",{"ephemeral":true,"clock":{"session":clock_session.duplicate(true),"target":target,"checkpoint":checkpoint}})
+func _clock_event(s: Dictionary,value: Variant) -> Dictionary:
+	if not _clock_current(s,value) or value.size()!=2: return _ok("这次校时已退出，请重新靠近旧钟。",{"ephemeral":true})
+	var target: String=clock_session.target
+	var result: Dictionary=ClockChain.transition(target,ClockChain.current(s,target),value.get("event"))
+	if result.accepted:
+		s.native.c4_clock_chain=ClockChain.storage(s)
+		s.native.c4_clock_chain.runs[target]=result.checkpoint
+	return _ok(result.message,{"ephemeral":not result.accepted,"clock":{"session":clock_session.duplicate(true),"target":target,"checkpoint":result.checkpoint,"motion":result.motion},"accepted":result.accepted})
 func _aligned(c: Dictionary) -> bool:
 	for p in content.phaseContracts:
 		if p.id==c.phase: return p.timeState==c.timeState
@@ -275,7 +300,7 @@ func actions(page: String,s: Dictionary) -> Array:
 	var id: String=s.native.get("c4_context","")
 	match id:
 		"clock":
-			if not _required_time(c).is_empty(): return [_action("c4_clock_set","确认钟面刻度",[_field("time","刻度",[_opt("1225_bakery","12:25"),_opt("1850_evening","18:50"),_opt("2245_maintenance","22:45")])])]
+			if not _required_time(c).is_empty(): return [_action("c4_clock","继续旧钟与终端的校时")]
 		"elevator":
 			var out: Array=[]
 			if c.mode=="dark": out.append(_action("c4_history","观察门体与乘客轨迹"))
@@ -317,6 +342,11 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 	if not action.begins_with("c4_"): return {}
 	if not _active(s): return _locked("prologue_requirements_unmet")
 	var c: Dictionary=s.chapter4
+	if action=="c4_clock_cancel":
+		if value is Dictionary and value.get("session")==clock_session: clock_session={};clock_owner={}
+		return _ok("",{"ephemeral":true})
+	if action=="c4_clock_begin": return _clock_begin(s)
+	if action=="c4_clock_event": return _clock_event(s,value)
 	if action=="c4_puzzle_cancel":
 		if value is Dictionary:cancel_progressive_session(value.get("session"))
 		return _ok()
@@ -348,8 +378,10 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 	if action=="c4_clock_set":
 		if not value is Dictionary or c.floor!="A1" or c.mode!="light" or _required_time(c).is_empty(): return _locked("clock_adjustment_required")
 		if value.get("time","")!=_required_time(c): return _ok("这个刻度没有停住。")
+		if value.size()!=2 or not _clock_current(s,value) or not ClockChain.completed(s,_required_time(c)): return _ok("旧钟与终端还没有完成联合验证。")
 		_time(c,value.time); c.timeAuthority="hall_clock"
 		if c.phase=="hall_clock_inspection": _phase(c,"bakery_hour_hand")
+		clock_session={};clock_owner={}
 		s.native.erase("c4_context"); return _ok(_dialogue("hall_clock.first_pull"),{"scene":SCENE})
 	# The source scene opens its clock panel locally before submitting the
 	# time-change intent. Native admission must also reach that control while
@@ -393,7 +425,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		_fact(c,"bakery_hour_hand_collected"); s.items.oldClockHourHand=true; return _ok(_dialogue("bakery.hour_hand_collected"))
 	if action=="c4_install_hour":
 		if c.phase!="bakery_hour_hand" or c.floor!="A1" or c.mode!="light" or not s.items.oldClockHourHand or not _all(c,["bakery_conveyor_lamp_inspected","bakery_hour_hand_exposed","bakery_hour_hand_collected"]): return _locked("hour_hand_required")
-		s.items.oldClockHourHand=false; _fact(c,"hour_hand_installed"); _phase(c,"room204_restore",true); return _ok("金属时针装回后，钟面出现了一处新的稳定刻度。")
+		s.items.oldClockHourHand=false; _fact(c,"hour_hand_installed"); _phase(c,"room204_restore",true); return _ok("时针装回，背面的书页刻印露出来。旧钟需要重新校准传动。")
 	if action in ["c4_class104","c4_class105"]:
 		if c.phase!="room204_restore" or c.floor!="A1" or c.mode!=("dark" if action=="c4_class104" else "light"): return _locked()
 		_facts(c,["classroom_104_chalk_residual_observed" if action=="c4_class104" else "classroom_105_terminal_replay_checked"])
@@ -532,6 +564,13 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		# State owns ordinary saves; the pure model owns only bounded object moves.
 		s.native.c4_media_studio=changed.checkpoint
 		return _ok(changed.message,{"studio_motion":changed.motion})
+	if action=="c4_duty_event":
+		if c.phase!="room204_restore" or c.floor!="A1" or c.mode!="light" or s.native.get("c4_context","")!="duty_board" or s.rpgScene!="duan_yongping_temporal_maze": return _locked()
+		if _has(c,"a1_duty_board_reconstructed"): return _ok("")
+		var draft: Dictionary=DutyBoard.transition(s.native.get("c4_duty_board",DutyBoard.initial()),value)
+		if draft.is_empty(): return _locked()
+		s.native.c4_duty_board=draft
+		return _ok("")
 	if action.begins_with("c4_device_"):
 		var id: String=action.trim_prefix("c4_device_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id): return _locked()
@@ -544,6 +583,9 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		var id: String=action.trim_prefix("c4_solve_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id) or c.mode!="light" or s.native.get("c4_context","")!=id: return _locked()
 		if id in PROGRESSIVE_PUZZLES: return _ok("请在现场移动物件，最后把通路和工具一起收好。")
+		if id=="duty_board" and not _has(c,extra.puzzles[id].factId):
+			var checkpoint: Variant=s.native.get("c4_duty_board",DutyBoard.initial())
+			if not DutyBoard.valid(checkpoint) or not DutyBoard.connected(checkpoint): return _ok("印泥在接缝处断开。纸片留在原位。")
 		if id=="positioning_calibration":
 			if not _plate_press_context(s): return _locked()
 			if _has(c,"a2_positioning_plate_calibrated"): return _ok(extra.puzzles[id].successText)
@@ -568,7 +610,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		_fact(c,extra.puzzles[id].factId); return _ok(extra.puzzles[id].successText)
 	if action=="c4_install_plate":
 		if c.phase!="room204_restore" or c.floor!="A1" or c.mode!="light" or not s.items.clockPositioningPlate or not _all(c,["room204_projection_composite_completed","positioning_plate_collected","a2_positioning_plate_calibrated","a2_power_topology_recovered","a2_evacuation_route_confirmed","elevator_stop_chain_reconstructed"]): return _locked("positioning_plate_required")
-		s.items.clockPositioningPlate=false; _fact(c,"positioning_plate_installed"); _phase(c,"maintenance_repair",true); return _ok("定位片归位后，钟面又有一处刻度不再回弹。")
+		s.items.clockPositioningPlate=false; _fact(c,"positioning_plate_installed"); _phase(c,"maintenance_repair",true); return _ok("定位片归位，扳手印对上钟壳的检修槽。终端可以读取这一轮记录了。")
 	if action=="c4_maintenance":
 		if c.phase!="maintenance_repair" or c.floor!="A1" or _has(c,"cart_wheel_inspected") or not _has(c,"maintenance_incident_linked"): return _locked("maintenance_incident_required")
 		s.native.c4_context="maintenance"; return _ok(_dialogue("maintenance.cleaner"),{"page":"c4_device"})
@@ -840,7 +882,9 @@ func objective(s: Dictionary) -> String:
 	var c: Dictionary=s.chapter4
 	if c.completed: return "签到完成 · 7:55"
 	if not c.prologueSeen: return "播放恢复回放"
-	if not _required_time(c).is_empty(): return content.tasks["pull_hall_clock" if c.phase=="hall_clock_inspection" else ("tune_clock_to_1850" if c.phase=="room204_restore" else "tune_clock_to_2245")].label
+	if not _required_time(c).is_empty():
+		var run:Dictionary=ClockChain.current(s,_required_time(c))
+		return "旧钟与终端 · "+("合上表冠" if run.get("step",0)==7 else str(ClockChain.data().stages[int(run.get("step",0))]))
 	if c.phase=="bakery_hour_hand":
 		# Source QuestModel selects the next existing task from the same earned
 		# item/facts. Keep the phase's first task only before the conveyor stops.

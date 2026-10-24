@@ -1,0 +1,211 @@
+{
+  "recordedAt": "2026-10-24T02:18:36.617Z",
+  "decision": {
+    "user": "收集、强化这套玩法不适合我们的游戏",
+    "adopted": "Existing theater chest direct object manipulation",
+    "rejected": "Courtyard collecting/upgrading prototype; retained only as historical experiment"
+  },
+  "baseCommit": "03790d8c951f5ec3b3aaa9727dafdbf40c001f70",
+  "branch": "codex/progressive-world-puzzles-20261020",
+  "workingTree": "Dirty shared workspace; these hashes identify the tested source. Unrelated changes were preserved. No commit, push, merge or deploy performed.",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "sourceSync": {
+    "completed": true,
+    "mediaConversion": "No new media in this change"
+  },
+  "sourceFiles": [
+    {
+      "path": "godot_native/scripts/ui/theater_chest_gestures.gd",
+      "sha256": "c75a246aac7387151ae7efa95e0db8635faa8d23df62fddac1f6bc94a755c08a"
+    },
+    {
+      "path": "godot_native/scripts/ui/theater_chest_closeup.gd",
+      "sha256": "66b06fa6145829e4ffc7236a5276d952a9d10f47313664fe1a3d5a047c8635f2"
+    },
+    {
+      "path": "godot_native/scripts/objects/theater_chest_contents.gd",
+      "sha256": "3a711e3dd612c06ab95936bf01b0d84eeed5a7ad901b8e8a962bc1ca15e98f0b"
+    },
+    {
+      "path": "godot_native/scripts/objects/theater_chest_contents_3d.gd",
+      "sha256": "091bcd870c8669b92f778ca12a7fdf7708dbdadfbb523b81c2a9f0c9cdc30db3"
+    },
+    {
+      "path": "godot_native/tests/test_theater_chest_direct_gestures.gd",
+      "sha256": "f0218928064bc7e515d9fd1515e7a10e2c6c76dc338877eed90625ea5f1c7df2"
+    },
+    {
+      "path": "godot_native/tests/test_theater_chest_focus.gd",
+      "sha256": "4abbaf6a504e86945c6cee52923e9cd06ce7055b94072a06064ae100d973b79c"
+    },
+    {
+      "path": "godot_native/docs/THEATER_CHEST_DIRECT_GESTURES_20261024.md",
+      "sha256": "c44f2151e192ad2a5c65e004aa10844236fcdf467b63597da3fc84e78995abae"
+    },
+    {
+      "path": "godot_native/docs/THEATER_CHEST_STORY_20261023.md",
+      "sha256": "0aa27b791acff994256b3626d00b27b95172d0028aef0790330979cc0a8e6c27"
+    },
+    {
+      "path": "godot_native/docs/COURTYARD_TRIAL_20261024.md",
+      "sha256": "f40b53fe4adf83af6f4d1c5d3ce7075664a2de9557607beee9b74b9150dd81b5"
+    }
+  ],
+  "native": {
+    "status": "passed",
+    "report": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/native-final.json",
+      "sha256": "e11c6cff4b44ad1911c0ae19050caa56d82386c804ef012ff78637829b594fa5"
+    },
+    "stages": [
+      {
+        "name": "test_theater_chest_direct_gestures.gd",
+        "status": "passed",
+        "result": "THEATER_CHEST_DIRECT_GESTURES 203 checks; 0 failures",
+        "startedAt": "2026-10-24T01:59:33.848Z",
+        "finishedAt": "2026-10-24T01:59:54.326Z"
+      },
+      {
+        "name": "test_theater_chest_focus.gd",
+        "status": "passed",
+        "result": "THEATER_CHEST_FOCUS 328 checks; 0 failures; captures=[]",
+        "startedAt": "2026-10-24T01:59:33.852Z",
+        "finishedAt": "2026-10-24T02:00:06.023Z"
+      },
+      {
+        "name": "test_theater_chest_mechanism.gd",
+        "status": "passed",
+        "result": "THEATER_CHEST_STORY: 103 checks; 0 failures",
+        "startedAt": "2026-10-24T02:00:06.027Z",
+        "finishedAt": "2026-10-24T02:00:06.556Z"
+      },
+      {
+        "name": "test_theater_chest_volume.gd",
+        "status": "passed",
+        "result": "THEATER_CHEST_VOLUME: 118 checks; 0 failures",
+        "startedAt": "2026-10-24T02:00:06.030Z",
+        "finishedAt": "2026-10-24T02:00:06.556Z"
+      }
+    ]
+  },
+  "guiPortrait": {
+    "status": "passed",
+    "viewport": [
+      390,
+      844
+    ],
+    "input": "Root-window simulated touch, not a physical mobile device",
+    "result": "102 checks; 0 failures",
+    "log": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/gui-portrait.log",
+      "sha256": "fe0fd99d9fe3a923169b42bc001cbb968bdd25be2f7051d97ebebe9c22c11af3"
+    }
+  },
+  "guiDesktop": {
+    "status": "manual smoke passed; full automated GUI stage not accepted",
+    "viewport": [
+      1280,
+      820
+    ],
+    "input": "Actual macOS pointer events and original manual QA controls",
+    "verified": [
+      "Foregrounding resumed the opening animation",
+      "Dragged the visible butterfly tile; screenshot captured held height and shadow",
+      "Release changed cleared from [] to [butterfly], with other puzzle fields unchanged",
+      "Clicked Return to theater; modal=false and objectFocus=false",
+      "F7 restarted the original scanner fixture; fresh opened chest ready for user"
+    ],
+    "log": {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/manual.log",
+      "sha256": "a8cbcbf412656b07a71c42411a50f60a7a8d44db392cc3b710f7302e4d6eb181"
+    }
+  },
+  "diagnosticAttempts": [
+    {
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/gui.log",
+        "sha256": "42f3b839abd81bcee400c6352fbd9cae54065bd7706a45e95128f3c46fa9dcac"
+      },
+      "accepted": false,
+      "result": "THEATER_CHEST_DIRECT_GESTURES 117 checks; 1 failures"
+    },
+    {
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/gui-desktop.log",
+        "sha256": "e38e5dedc0a8c37fbb58c279a9d6d6fe7361548f13805c303bb78d60c7989420"
+      },
+      "accepted": false,
+      "result": "THEATER_CHEST_DIRECT_GESTURES 6 checks; 1 failures"
+    },
+    {
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/gui-desktop-active.log",
+        "sha256": "a3fabc85e35cba99542c74f2dd560ecba2217a75eda0293a6e7bd5a11e2d669b"
+      },
+      "accepted": false,
+      "result": "THEATER_CHEST_DIRECT_GESTURES 6 checks; 1 failures"
+    },
+    {
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/gui-desktop-foreground.log",
+        "sha256": "f7009a94fc56a7c3a6b498624142592fe56d4f26dbc0611509a90c12814f5f35"
+      },
+      "accepted": false,
+      "result": "THEATER_CHEST_DIRECT_GESTURES 100 checks; 2 failures"
+    },
+    {
+      "log": {
+        "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/gui-desktop-pointer-focus.log",
+        "sha256": "7124ae849d95d6dabb3a1f5d5adcba65a3ac1f0258ea9fc02a8b02393e5cd17d"
+      },
+      "accepted": false,
+      "result": "THEATER_CHEST_DIRECT_GESTURES 100 checks; 43 failures"
+    }
+  ],
+  "diagnosticNote": "Automated GUI runs encountered window focus loss and animation/camera timeouts. A title-click retry interfered with the window/input context and caused cascading failures. Those runs are retained as failed diagnostics, not acceptance. The latest overwritten mouse captures were moved into failed-pointer-focus-captures and are excluded from accepted visual evidence.",
+  "screenshots": [
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/touch-assembled.png",
+      "sha256": "50e313954d551357162c312a70af29e2b570bd10efee847d70e83fc183c47666"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/touch-compartment.png",
+      "sha256": "550155fe606686576e29de2ea2c6a434f8506104b8ed84adcd23203337793b12"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/touch-handle-turned.png",
+      "sha256": "14fd4a48b1130b0d39edc7d5806c67691b9501c4ea2d589e601a363c9d813f3c"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/touch-hatch-in-hand.png",
+      "sha256": "9821a1acb7b92a50aafaa60d7e0ef35495d596c4522abf0c31954c1f9b4d07c0"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/touch-tile-in-hand.png",
+      "sha256": "a1e85509eed93c8949c9ff6138d8c005f6c6000659d3f367ecbcb9a9be36a094"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/manual/manual-001.png",
+      "sha256": "e6ca10c53039b8b0a24bdc8f72adec25faa41bd2f2cd20a7c8abc08952f9198f"
+    },
+    {
+      "path": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/manual/manual-002.png",
+      "sha256": "7fab04517022854ed9056b73d7fb0f5271f0a9e1c3c4476c13dfa3ab684ade09"
+    }
+  ],
+  "preview": {
+    "pid": 69409,
+    "project": "/Users/zhu/Library/Application Support/755-native-check-fJfclM/workspace/godot_native",
+    "userData": "/Users/zhu/Library/Application Support/755-native-check-fJfclM/data/SevenFiftyFiveNative",
+    "log": "/Users/zhu/Library/Application Support/755-tools/verification/theater-chest-direct-20261024/manual.log",
+    "startedAt": "2026-10-24T02:13:18.980Z",
+    "verifiedAlive": true,
+    "state": "Fresh original theater chest after F7 scanner reset; disposable save profile"
+  },
+  "limitations": [
+    "No new Web export or deployment",
+    "No physical mobile device acceptance",
+    "No earned full campaign playthrough",
+    "Full automated desktop GUI suite remains unaccepted because of foreground/focus interference; native headless coverage and the bounded real-pointer smoke are recorded separately"
+  ]
+}

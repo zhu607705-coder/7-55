@@ -163,10 +163,10 @@ test('multiple close waiters settle and remove their timers', async () => {
   const f = fixture(); const first = f.lifecycle.waitForClose(100), second = f.lifecycle.waitForClose(100); f.close();
   assert.deepEqual(await Promise.all([first, second]), [true, true]);
 });
-test('original startup/save deadlines, scenarios, and durable acceptance remain intact', () => {
+test('startup deadlines, bounded save wait, scenarios, and durable acceptance remain intact', () => {
   assert(runner.includes('async function poll(fn, label, timeout = 20000)'));
-  assert(runner.includes("poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts')"));
-  assert(runner.includes('`${label}: current native save has an exact durable receipt`, 30000)'));
+  assert(runner.includes("poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts', 60000)"));
+  assert(runner.includes('`${label}: current native save has an exact durable receipt`, 75000)'));
   assert(runner.includes("if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`)"));
   assert(runner.includes('return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;'));
   for (const id of ['desktop-1280', 'desktop-1440', 'touch-390', 'retina-1440', 'retina-touch-390', 'desktop-1920']) assert(runner.includes(`['${id}',`));
@@ -225,4 +225,117 @@ test('file-backed browser diagnostics retain stderr and real close before owned 
     if (lifecycle.closed) await rm(directory, { recursive: true, force: true });
     await rm(logRoot, { recursive: true, force: true });
   }
+});
+
+// Replay the actual CI race: the render snapshot still owns two fingers after
+// CDP dispatch, then the engine consumes cancellation in a later frame.
+function cancellationFixture(frames, later) {
+  const start = runner.indexOf('async function assertWorldStopped(');
+  const finish = runner.indexOf('async function assertBottomPlaque(', start);
+  assert(start > 0 && finish > start);
+  const active = { id: 'cancel-fixture', mobileWorld: { samples: [] } };
+  let reads = 0;
+  const context = vm.createContext({ active, Date, state: value => value?.state,
+    snapshot: async () => frames[Math.min(reads++, frames.length - 1)],
+    poll: async (read, label, timeout) => {
+      assert.equal(timeout, 5000, 'cancellation must have a finite deadline');
+      for (let i = 0; i < 6; i++) { const value = await read(); if (value) return value; }
+      throw new Error(`Timeout: ${label}`);
+    },
+    mobileSample: async () => later,
+    mobileFacts: () => 'unchanged fixture facts',
+    mobileDistance: (a, b) => Math.hypot(a.x - b.x, a.y - b.y),
+    check: (ok, label) => assert.ok(ok, label)
+  });
+  vm.runInContext(runner.slice(start, finish), context);
+  return { run: context.assertWorldStopped, active, reads: () => reads };
+}
+function cancellationFrame(frame, owners = [], x = 10, axis = 0) {
+  return { sampleFrame: frame, state: {native: {chapter: 2, scene: 'dorm_hub'}}, world: {scene_id: 'dorm_hub', visible: true, player: {x, y: 10}, touch_axis: {x: axis, y: 0}, input: { owners, mouseOwned: false, inventoryOwned: false } } };
+}
+test('cancellation waits for consumed input, retaining the actual queued-frame evidence', async () => {
+  const fingers = [{index: 1, role: 'camera'}, {index: 2, role: 'camera'}];
+  const f = cancellationFixture([cancellationFrame(562, fingers), cancellationFrame(563, fingers), cancellationFrame(566)], cancellationFrame(572));
+  await f.run(cancellationFrame(562, fingers), 'direct-two-finger-cancel');
+  assert.equal(f.reads(), 3);
+  assert.deepEqual(Array.from(f.active.mobileWorld.cancellations[0].samples, row => row.frame), [563, 566]);
+  assert.equal(f.active.mobileWorld.cancellations[0].endFrame, 566);
+});
+test('cancellation fails when actual owners or axis never clear', async () => {
+  for (const stuck of [cancellationFrame(566, [{index: 1, role: 'camera'}]), cancellationFrame(566, [], 10, 1), cancellationFrame(562)]) {
+    const f = cancellationFixture([stuck], cancellationFrame(572));
+    await assert.rejects(f.run(cancellationFrame(562), 'stuck-cancel'), /Timeout:/);
+  }
+});
+test('a cleared snapshot from another chapter or world cannot acknowledge current cancellation', async () => {
+  for (const edit of [s => s.state.native.chapter = 3, s => s.state.native.scene = 'campus_bootstrap', s => s.world.scene_id = 'campus_bootstrap', s => s.world.visible = false]) {
+    const changed = cancellationFrame(566); edit(changed);
+    const f = cancellationFixture([changed], cancellationFrame(572));
+    await assert.rejects(f.run(cancellationFrame(562), 'wrong-context'), /Timeout:/);
+  }
+});
+test('a later moving actor or resurfaced pointer still fails cancellation acceptance', async () => {
+  for (const later of [cancellationFrame(572, [], 15), cancellationFrame(572, [{index: 2, role: 'camera'}])]) {
+    const f = cancellationFixture([cancellationFrame(566)], later);
+    await assert.rejects(f.run(cancellationFrame(562), 'unstable-cancel'), /stuck movement|stays released/);
+  }
+});
+
+test('slow browser startup has a bounded host deadline and failed startup still closes before cleanup', async () => {
+  const directory = path.join(tmpdir(), '755-godot-web-browser-slow-start');
+  const cases = []; let persisted, removed, requestedTimeout;
+  const primary = new Error('Timeout: isolated Chromium starts');
+  const child = new EventEmitter(); child.pid = 12400; child.exitCode = null;
+  child.kill = signal => { child.exitCode = 0; child.emit('exit', 0, signal); child.emit('close', 0, signal); return true; };
+  const bodyEnd = runner.indexOf('\ntry {\n  const selected =', end);
+  const context = vm.createContext({ path, tmpdir, Date, setTimeout: trackedTimeout, clearTimeout: trackedClear, output: directory,
+    open: async () => ({fd: 2, close: async () => {}}), existsSync: () => false,
+    mkdtemp: async () => directory, mkdir: async () => {}, spawn: () => child, chrome: 'mock-not-launched', chromeArgs: [],
+    readFile: async () => { throw Object.assign(new Error('not ready'), {code: 'ENOENT'}); },
+    poll: async (read, label, timeout) => { requestedTimeout = timeout; assert.equal(label, 'isolated Chromium starts'); await assert.rejects(read(), {code: 'ENOENT'}); throw primary; },
+    rm: async target => { assert.equal(child.exitCode, 0); removed = target; }, report: {cases},
+    snapshot: async () => { throw new Error('no CDP session'); },
+    persist: async () => { persisted = JSON.parse(JSON.stringify(cases)); }
+  });
+  vm.runInContext(`${runner.slice(begin, end)}\nlet active;\n${runner.slice(end, bodyEnd)}`, context);
+  await assert.rejects(context.browserCase('mock-case', 1, 1, false), error => error === primary);
+  assert.equal(requestedTimeout, 60000); assert.equal(removed, directory);
+  assert.equal(persisted[0].passed, false); assert.equal(persisted[0].error, primary.stack);
+  assert(persisted[0].browserLifecycle.closedAt <= persisted[0].browserLifecycle.cleanup.removeStartedAt);
+});
+
+function optionalFailureFixture(failures, frames, advance = () => {}) {
+  const start = runner.indexOf('async function observeOptionalBackgroundFailure(');
+  const end = runner.indexOf('async function streamingCase(', start);
+  assert(start > 0 && end > start);
+  const active = {streaming: {controlledFailures: failures}}; let reads = 0;
+  const context = vm.createContext({active,
+    snapshot: async () => frames[Math.min(reads++, frames.length - 1)],
+    poll: async (read, label, timeout) => {
+      assert.equal(timeout, 30000);
+      for (let i = 0; i < 5; i++) { advance(label, i, active); const value = await read(); if (value) return value; }
+      throw new Error(`Timeout: ${label}`);
+    },
+    check: (ok, label) => assert.ok(ok, label)
+  });
+  vm.runInContext(runner.slice(start, end), context);
+  return {run: context.observeOptionalBackgroundFailure, reads: () => reads};
+}
+const optionalMissing = {content: {blocking: false, packs: [{status: 'missing'}]}};
+const optionalError = {content: {blocking: false, packs: [{status: 'error'}]}};
+test('streaming waits for both current-document HTTP failure and the native error callback', async () => {
+  const f = optionalFailureFixture([{requestAt: 10}], [optionalMissing, optionalMissing, optionalError], (label, i, active) => {
+    if (label.startsWith('current document') && i === 2) active.streaming.controlledFailures.push({requestAt: 110});
+  });
+  assert.equal(await f.run(100), optionalError); assert.equal(f.reads(), 3);
+});
+test('old-document failure or a missing native callback cannot pass streaming acceptance', async () => {
+  for (const failures of [[{requestAt: 10}], [{requestAt: 110}]]) {
+    const f = optionalFailureFixture(failures, [optionalMissing]);
+    await assert.rejects(f.run(100), /Timeout:/);
+  }
+});
+test('an optional failure that blocks the actual game still fails immediately', async () => {
+  const f = optionalFailureFixture([{requestAt: 110}], [{content: {blocking: true, packs: [{status: 'error'}]}}]);
+  await assert.rejects(f.run(100), /optional background failure/); assert.equal(f.reads(), 1);
 });

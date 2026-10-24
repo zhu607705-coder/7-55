@@ -1,17 +1,24 @@
 extends RefCounted
 ## Continuous lamp → prop → gauze projection. No story or save authority.
 const PUZZLE_ID := "theater_shadow_rehearsal"
-const VERSION := 1
+const VERSION := 3
 const MAX_ACTIONS := 2048
 const SCREEN_DEPTH := 10.0
 const FAN_RADIUS := 0.45
 const CENTER_TOLERANCE := 0.16
 const RADIUS_TOLERANCE := 0.075
 const MAX_MOVE := 0.55
+const SPREAD_TOLERANCE := 0.065
+const MAX_SPREAD_CHANGE := 0.2
+const LAMP_LIMIT := 1.25
+const LAMP_DEPTH_MIN := -0.5
+const LAMP_DEPTH_MAX := 1.5
+const WITNESS_SCALE_TOLERANCE := 0.1
+const WITNESS := {"id":"light_pin","kind":"pin","x":2.0,"depth":5.0}
 const LEVELS := [
-	{"id":"first_shadow","title":"一叶入幕","objects":[{"id":"left_fan","kind":"fan","x":-2.0,"depth":5.0,"side":-1,"depthMovable":false}],"targets":[{"side":-1,"center":0.0,"radius":0.9}]},
-	{"id":"near_and_far","title":"一程相送","objects":[{"id":"left_fan","kind":"fan","x":0.0,"depth":3.0,"side":-1,"depthMovable":true}],"targets":[{"side":-1,"center":0.0,"radius":0.75}]},
-	{"id":"two_wings","title":"双翼合幕","objects":[{"id":"left_fan","kind":"fan","x":-1.8,"depth":4.0,"radius":0.36,"side":-1,"depthMovable":true},{"id":"right_fan","kind":"fan","x":1.8,"depth":4.0,"radius":0.54,"side":1,"depthMovable":true},{"id":"side_screen","kind":"screen","x":0.0,"depth":8.0,"width":3.0,"depthMovable":false}],"targets":[{"side":-1,"center":0.0,"radius":0.9},{"side":1,"center":0.0,"radius":0.9}]}
+	{"id":"first_shadow","title":"展扇入幕","lampX":0.0,"lampDepth":0.0,"objects":[{"id":"left_fan","kind":"fan","x":-2.0,"depth":5.0,"spread":0.35,"side":-1,"depthMovable":false}],"targets":[{"side":-1,"center":0.0,"radius":0.9,"spread":1.0}]},
+	{"id":"near_and_far","title":"远近与开合","lampX":0.0,"lampDepth":0.0,"objects":[{"id":"left_fan","kind":"fan","x":0.0,"depth":3.0,"spread":1.0,"side":-1,"depthMovable":true}],"targets":[{"side":-1,"center":0.0,"radius":0.75,"spread":0.65}]},
+	{"id":"two_wings","title":"借光合蝶","lampX":-0.6,"lampDepth":1.2,"witnessCenter":3.4,"objects":[{"id":"left_fan","kind":"fan","x":-1.8,"depth":4.0,"radius":0.36,"spread":0.45,"side":-1,"depthMovable":true},{"id":"right_fan","kind":"fan","x":1.8,"depth":4.0,"radius":0.54,"spread":0.45,"side":1,"depthMovable":true},{"id":"side_screen","kind":"screen","x":0.0,"depth":8.0,"width":3.0,"depthMovable":false}],"targets":[{"side":-1,"center":0.0,"radius":0.9,"spread":1.0},{"side":1,"center":0.0,"radius":0.9,"spread":0.7}]}
 ]
 var state: Dictionary = {}
 var actions: Array = []
@@ -22,24 +29,29 @@ func _init() -> void:
 	_load_round()
 
 static func layout_digest() -> String:
-	return JSON.stringify({"version":VERSION,"levels":LEVELS,"screenDepth":SCREEN_DEPTH,"fanRadius":FAN_RADIUS,"centerTolerance":CENTER_TOLERANCE,"radiusTolerance":RADIUS_TOLERANCE,"maxMove":MAX_MOVE}).sha256_text()
+	return JSON.stringify({"version":VERSION,"levels":LEVELS,"screenDepth":SCREEN_DEPTH,"fanRadius":FAN_RADIUS,"centerTolerance":CENTER_TOLERANCE,"radiusTolerance":RADIUS_TOLERANCE,"maxMove":MAX_MOVE,"spreadTolerance":SPREAD_TOLERANCE,"maxSpreadChange":MAX_SPREAD_CHANGE,"lampLimit":LAMP_LIMIT,"lampDepthMin":LAMP_DEPTH_MIN,"lampDepthMax":LAMP_DEPTH_MAX,"witnessScaleTolerance":WITNESS_SCALE_TOLERANCE,"witness":WITNESS}).sha256_text()
 
 func _load_round() -> void:
 	state.objects=LEVELS[int(state.round)].objects.duplicate(true)
+	state.lampX=LEVELS[int(state.round)].lampX
+	state.lampDepth=LEVELS[int(state.round)].lampDepth
 	state.screen="playing";state.failure="";state.hintTier=0;state.attempts=0
 	history.clear()
 
-static func project(object: Dictionary) -> Dictionary:
-	var magnification: float=SCREEN_DEPTH/float(object.depth)
-	return {"id":object.id,"kind":object.kind,"side":int(object.get("side",0)),"center":float(object.x)*magnification,"radius":float(object.get("radius",FAN_RADIUS))*magnification if object.kind=="fan" else float(object.width)*magnification/2.0,"magnification":magnification}
+static func project(object: Dictionary,lamp_x:float=0.0,lamp_depth:float=0.0) -> Dictionary:
+	var magnification: float=(SCREEN_DEPTH-lamp_depth)/(float(object.depth)-lamp_depth)
+	return {"id":object.id,"kind":object.kind,"side":int(object.get("side",0)),"center":lamp_x+(float(object.x)-lamp_x)*magnification,"radius":float(object.get("radius",FAN_RADIUS))*magnification if object.kind=="fan" else float(object.get("width",0.04))*magnification/2.0,"spread":float(object.get("spread",1.0)),"magnification":magnification}
 
 func projections() -> Array:
 	var result: Array=[]
-	for object: Dictionary in state.objects:result.append(project(object))
+	for object: Dictionary in state.objects:result.append(project(object,float(state.lampX),float(state.lampDepth)))
 	return result
 
 func _mismatch() -> String:
 	var projected: Array=projections()
+	if LEVELS[int(state.round)].has("witnessCenter"):
+		var witness:Dictionary=project(WITNESS,float(state.lampX),float(state.lampDepth))
+		if absf(float(witness.center)-float(LEVELS[int(state.round)].witnessCenter))>CENTER_TOLERANCE or absf(float(witness.magnification)-2.0)>WITNESS_SCALE_TOLERANCE:return "light_axis"
 	for target: Dictionary in LEVELS[int(state.round)].targets:
 		var found: Dictionary={}
 		for shadow: Dictionary in projected:
@@ -49,6 +61,7 @@ func _mismatch() -> String:
 			if obstruction.kind=="screen" and absf(float(found.center)-float(obstruction.center))<float(found.radius)+float(obstruction.radius):return "blocked_light"
 		if absf(float(found.radius)-float(target.radius))>RADIUS_TOLERANCE:return "shadow_size"
 		if absf(float(found.center)-float(target.center))>CENTER_TOLERANCE:return "shadow_position"
+		if absf(float(found.spread)-float(target.spread))>SPREAD_TOLERANCE:return "fan_opening"
 	return ""
 
 func snapshot() -> Dictionary:
@@ -57,6 +70,9 @@ func snapshot() -> Dictionary:
 	result.title=LEVELS[int(state.round)].title
 	result.targets=LEVELS[int(state.round)].targets.duplicate(true)
 	result.projections=projections();result.undoAvailable=not history.is_empty()
+	result.lampMovable=true
+	result.witness=project(WITNESS,float(state.lampX),float(state.lampDepth)) if LEVELS[int(state.round)].has("witnessCenter") else {}
+	result.witnessTarget=LEVELS[int(state.round)].get("witnessCenter",0.0)
 	result.actionCount=actions.size()
 	return result
 
@@ -64,6 +80,9 @@ func _find(id: String) -> int:
 	for index in state.objects.size():
 		if state.objects[index].id==id:return index
 	return -1
+
+func _remember() -> void:
+	history.append({"objects":state.objects.duplicate(true),"lampX":state.lampX,"lampDepth":state.lampDepth})
 
 func apply(action: Variant) -> bool:
 	if not action is Dictionary or actions.size()>=MAX_ACTIONS or state.screen=="complete":return false
@@ -81,14 +100,27 @@ func apply(action: Variant) -> bool:
 		if not object.depthMovable and not is_equal_approx(next_depth,float(object.depth)):return false
 		if Vector2(next_x-float(object.x),next_depth-float(object.depth)).length()>MAX_MOVE+0.00001:return false
 		if is_equal_approx(next_x,float(object.x)) and is_equal_approx(next_depth,float(object.depth)):return false
-		history.append(state.objects.duplicate(true))
+		_remember()
 		object.x=next_x;object.depth=next_depth;state.failure=""
+	elif kind=="spread":
+		if state.screen!="playing" or action.size()!=3 or not action.get("id") is String or not _number(action.get("value")):return false
+		var index:int=_find(action.id)
+		if index<0 or state.objects[index].kind!="fan":return false
+		var object:Dictionary=state.objects[index];var value:float=float(action.value)
+		if value<0.25 or value>1.0 or absf(value-float(object.spread))>MAX_SPREAD_CHANGE+0.00001 or is_equal_approx(value,float(object.spread)):return false
+		_remember();object.spread=value;state.failure=""
+	elif kind=="lamp":
+		if state.screen!="playing" or action.size()!=3 or not _number(action.get("x")) or not _number(action.get("depth")):return false
+		var value:=Vector2(float(action.x),float(action.depth))
+		var previous:=Vector2(float(state.lampX),float(state.lampDepth))
+		if absf(value.x)>LAMP_LIMIT or value.y<LAMP_DEPTH_MIN or value.y>LAMP_DEPTH_MAX or value.distance_to(previous)>MAX_MOVE+0.00001 or value.is_equal_approx(previous):return false
+		_remember();state.lampX=value.x;state.lampDepth=value.y;state.failure=""
 	elif kind=="undo":
 		if action.size()!=1 or state.screen!="playing" or history.is_empty():return false
-		state.objects=history.pop_back();state.failure=""
+		var previous:Dictionary=history.pop_back();state.objects=previous.objects;state.lampX=previous.lampX;state.lampDepth=previous.lampDepth;state.failure=""
 	elif kind=="restart":
 		if action.size()!=1 or state.screen!="playing":return false
-		history.append(state.objects.duplicate(true));state.objects=LEVELS[int(state.round)].objects.duplicate(true);state.failure=""
+		_remember();state.objects=LEVELS[int(state.round)].objects.duplicate(true);state.lampX=LEVELS[int(state.round)].lampX;state.lampDepth=LEVELS[int(state.round)].lampDepth;state.failure=""
 	elif kind=="try":
 		if action.size()!=1 or state.screen!="playing":return false
 		state.failure=_mismatch()
@@ -121,11 +153,11 @@ static func replay(value: Variant) -> Dictionary:
 
 static func hint(round_index: int, tier: int) -> String:
 	var text: Array=[
-		["扇子和幕上的深色轮廓一起移动。","光从灯经过扇子，才落到后面的幕上。","留意扇面外沿与幕上留白的边缘。"],
-		["轮廓的位置相近，大小却还不同。","同一把扇子离灯远近不同，幕上的影子也会变化。","比较扇子向灯和向幕各移动一点后的轮廓。"],
-		["两片扇影之间还夹着一块宽影。","每一个会挡住灯光的实体，都会留在同一块幕上。","先分辨宽影来自哪一件道具，再看双翼各自的边缘。"]
+		["窄影跟着扇骨走，扇子还没有展开。","扇骨外沿的铜扣可以绕着扇轴拉开。","先移动底座对齐位置，再展开扇骨比较翼缘。"],
+		["只把影子缩小，翼缘仍然太宽。","前后移动同时改变高和宽，收扇只改变翼面的张开。","先比上下边缘决定远近，再用扇骨铜扣调整开合。"],
+		["右侧固定木钉的影子，还没同时贴住两端的刻线。","左右移灯，所有影子横移；把灯推近道具，所有影子放大。","先借木钉的长短与位置校灯并移开挡光侧幕，再分别调整两把大小不同的扇子。"]
 	]
 	return text[clampi(round_index,0,2)][clampi(tier-1,0,2)]
 
 static func failure_text(category: String) -> String:
-	return {"blocked_light":"幕上多了一片宽影。","shadow_size":"扇影的大小还没有对上留白。","shadow_position":"扇影和留白还没有贴合。","missing_wing":"另一侧的扇影还没有出现。"}.get(category,"")
+	return {"blocked_light":"幕上多了一片宽影。","shadow_size":"扇影的上下边缘还没有合上。","shadow_position":"扇影和留白还没有贴合。","fan_opening":"翼缘还没有展开到留白边缘。","light_axis":"木钉的影子偏离了刻线。","missing_wing":"另一侧的扇影还没有出现。"}.get(category,"")

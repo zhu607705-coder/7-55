@@ -24,6 +24,7 @@ const report = { schema: '755-web-save-transport-test-v1', source: platformPath,
   transportSha256: createHash('sha256').update(script).digest('hex'),
   semantics: 'Real inline transport; deterministic clock and simulated read-only IndexedDB. No actual save or database is modified.',
   checks: [], passed: false };
+const SAVE_DEADLINE_MS = 60000;
 const savePath = '/userfs/SevenFiftyFiveNative/save.json';
 function check(label, run) { run(); report.checks.push({ label, passed: true }); }
 async function settle() { for (let i = 0; i < 12; i++) await Promise.resolve(); }
@@ -141,7 +142,7 @@ try {
   delayed.host.dispose();
 
   for (const mode of ['unavailable', 'open-error', 'missing-store', 'new-database', 'read-error', 'abort']) {
-    const failed = fixture({ mode }); failed.watch(10); await failed.advance(21000);
+    const failed = fixture({ mode }); failed.watch(10); await failed.advance(SAVE_DEADLINE_MS + 1000);
     check(`${mode} never acknowledges saved bytes and reports failure`, () => {
       assert(failed.calls.some(call => call.args[1] == null && typeof call.args[2] === 'string' && call.args[2].length > 0));
       assert(!failed.calls.some(call => call.args[1] != null));
@@ -173,7 +174,7 @@ try {
     invalid.host.dispose();
   }
 
-  const missing = fixture({ mode: 'missing' }); missing.watch(20); await missing.advance(19999);
+  const missing = fixture({ mode: 'missing' }); missing.watch(20); await missing.advance(SAVE_DEADLINE_MS - 1);
   check('missing entry remains pending until the bounded timeout', () => {
     assert(!missing.calls.some(call => call.args[2])); assert(missing.guarded());
   });
@@ -183,8 +184,8 @@ try {
   });
   missing.host.dispose();
 
-  for (const [label, options] of [['open-never-settles', { mode: 'open-pending' }], ['get-settles-after-deadline', { readDelay: 25000 }]]) {
-    const stalled = fixture(options); stalled.watch(21); await stalled.advance(19999);
+  for (const [label, options] of [['open-never-settles', { mode: 'open-pending' }], ['get-settles-after-deadline', { readDelay: SAVE_DEADLINE_MS + 5000 }]]) {
+    const stalled = fixture(options); stalled.watch(21); await stalled.advance(SAVE_DEADLINE_MS - 1);
     check(`${label} has no premature completion`, () => assert.equal(stalled.calls.length, 0));
     await stalled.advance(1);
     check(`${label} reaches its watchdog deadline even with an unresolved database operation`, () => {

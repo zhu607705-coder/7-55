@@ -30,15 +30,18 @@ func run() -> void:
 		view._intro();await process_frame;await process_frame
 		var intro_button: Rect2=Rect2(view.get_global_transform_with_canvas().affine_inverse()*view.help_close.get_global_transform_with_canvas().origin,view.help_close.size)
 		check(Rect2(Vector2.ZERO,size2).encloses(intro_button),"real introduction button stays reachable after first text layout at "+str(size2))
-		check(not Rect2(view.help_panel.position,view.help_panel.size).intersects(Rect2(view.controls.RehearsalExit.position,view.controls.RehearsalExit.size)),"introduction never covers the actual Return control at "+str(size2))
+		check(view.help_panel.get_global_rect().encloses(view.help_close.get_global_rect()),"reading sheet keeps its own physical close action reachable at "+str(size2))
 		view._close_help()
 		check(absf(view.field.size.x/view.field.size.y-16.0/9)<0.001,"stage projection stays uniform at "+str(size2))
 		check(view.title_label.get_parent()==view.stage_hud and view.status_label.get_parent()==view.stage_hud,"Local rehearsal context shares the physical stage transform")
 		check(view.field.encloses(view.status_label.get_global_rect()),"Complete current-beat text stays on the stage-mounted cue sheet")
 		for button: Button in view.controls.values():
 			if button.visible:check(button.position.x>=0 and button.position.y>=0 and button.position.x+button.size.x<=size2.x+1 and button.position.y+button.size.y<=size2.y+1,"visible control remains inside available viewport: "+button.name)
-		check(view.field.end.y<view.controls.RehearsalTry.position.y,"stage and actual trial action do not overlap")
+		check(not view.controls.RehearsalTry.visible and not view.controls.RehearsalNext.visible,"stage trials and curtain changes use the physical lamp without a duplicate bottom action")
 	view.configure_activity_layout(Vector2(1280,720),false);await process_frame
+	view._intro();view._focus_out();view._close_help()
+	check(view.paused and view.menu_open and view.menu_panel.visible,"Closing a reading sheet after focus loss exposes explicit resume instead of an inert stage")
+	view._close_menu();check(not view.paused and not view.menu_open,"The visible resume action restores stage input after interrupted reading")
 	var rapid_before: float=float(view.state.objects[0].x)
 	key(KEY_RIGHT,true);key(KEY_RIGHT,false);await process_frame
 	check(is_equal_approx(float(view.state.objects[0].x),rapid_before+0.12),"a complete short key press in one rendering frame moves exactly once")
@@ -49,6 +52,17 @@ func run() -> void:
 	check(view.drag_id.is_empty() and view.pointer_id==-99,"release clears drag ownership")
 	key(KEY_Z,true);key(KEY_Z,false);await process_frame
 	check(is_equal_approx(float(view.state.objects[0].x),before_x),"keyboard undo restores the prior physical pose")
+	var light_before:Dictionary=view.model.snapshot();var beam_before:Dictionary=view.light_geometry()
+	var light_start:Vector2=view.field.position+view.lamp_rect().get_center()/view.LOGICAL*view.field.size
+	var light_end:Vector2=light_start+Vector2(.4*56,-.9*22)/view.LOGICAL*view.field.size
+	mouse(light_start,true);motion(light_end);mouse(light_end,false);await process_frame
+	check(absf(view.state.lampX-.4)<.001 and absf(view.state.lampDepth-.9)<.001,"mouse drags the visible lamp in both physical axes from the first scene")
+	check(view.state.attempts==light_before.attempts and view.state.objects==light_before.objects and view.state.projections[0].radius>light_before.projections[0].radius,"dragging enlarges shadows without moving props or accidentally trying the puzzle")
+	check(view.light_geometry().origin.y<beam_before.origin.y and view.light_geometry().halfWidth<beam_before.halfWidth,"rendered beam follows the source and narrows as receiver distance decreases")
+	view._undo();check(view.state.lampX==light_before.lampX and view.state.lampDepth==light_before.lampDepth and view.state.projections==light_before.projections,"one undo restores the whole diagonal light gesture and all projections")
+	view.selected="lamp";key(KEY_UP,true);key(KEY_UP,false);await process_frame
+	check(absf(view.state.lampDepth-.12)<.001,"keyboard up moves the selected physical lamp toward the props")
+	view._undo();view.selected="left_fan"
 	view._help();var before: Dictionary=view.model.snapshot();key(KEY_RIGHT,true);await create_timer(.12).timeout;key(KEY_RIGHT,false)
 	check(view.model.snapshot()==before and view.help_panel.visible,"reading freezes keyboard motion and penalties")
 	view._close_help();view._pause();before=view.model.snapshot();key(KEY_RIGHT,true);await create_timer(.12).timeout;key(KEY_RIGHT,false)
@@ -79,6 +93,19 @@ func run() -> void:
 	view.configure_activity_layout(Vector2(844,390),false);await process_frame
 	start=point(view,"left_fan");touch(5,start,true);drag(5,start+Vector2(20,0));touch(1,p1,true);drag(1,p1+Vector2(30,0));before=view.model.snapshot();touch(1,p1+Vector2(30,0),false);touch(5,start+Vector2(20,0),false);await process_frame
 	check(view.model.snapshot()==before and not view.menu_open,"moving a multi-finger gesture cannot become an undo or accidental menu")
+	light_before=view.model.snapshot();light_start=view.field.position+view.lamp_rect().get_center()/view.LOGICAL*view.field.size
+	var lamp_size:Vector2=view.lamp_rect().size/view.LOGICAL*view.field.size
+	check(lamp_size.x>=44 and lamp_size.y>=44,"physical lamp retains a 44-pixel finger target in mobile landscape")
+	light_end=light_start+Vector2(.6*56,-1.1*22)/view.LOGICAL*view.field.size
+	touch(5,light_start,true);drag(5,light_end);touch(5,light_end,false);await process_frame
+	check(absf(view.state.lampDepth-1.1)<.001 and absf(view.state.lampX-.6)<.001 and view.state.attempts==light_before.attempts,"one finger moves both source axes without trial on release")
+	view._undo();check(view.state.projections==light_before.projections and view.state.lampDepth==light_before.lampDepth,"mobile undo restores shadows and lamp position together")
+	touch(5,light_start,true);drag(5,light_end);view._focus_out();before=view.model.snapshot();drag(5,light_end+Vector2(0,-30));touch(5,light_end,false);await process_frame
+	check(view.model.snapshot()==before and view.drag_id.is_empty() and view.menu_open,"focus loss cancels a lamp drag without a delayed move or trial")
+	view._close_menu();view._undo()
+	touch(5,light_start,true);drag(5,light_end);before=view.model.snapshot();view.configure_activity_layout(Vector2(900,430),false);drag(5,light_end+Vector2(30,0));touch(5,light_end,false);await process_frame
+	check(view.model.snapshot()==before and view.fingers.is_empty(),"resizing cancels source movement at stale pointer coordinates")
+	view._undo();view.configure_activity_layout(Vector2(844,390),false);await process_frame
 	var lamp:Vector2=view.field.position+Vector2(480,475)/view.LOGICAL*view.field.size
 	touch(5,lamp,true);touch(5,lamp,false);await process_frame
 	check(view.state.attempts>0 and view.state.screen=="playing","tapping the actual stage lamp runs an ordinary recoverable trial")

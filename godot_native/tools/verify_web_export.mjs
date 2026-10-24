@@ -354,7 +354,7 @@ async function waitForPersistedSave(label, previousToken = -1, visibleSuccess = 
     if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);
     const visible = !visibleSuccess || controls(value).some(c => c.name === 'SaveNativeProgress' && c.text === '已保存' && !c.disabled);
     return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;
-  }, `${label}: current native save has an exact durable receipt`, 30000);
+  }, `${label}: current native save has an exact durable receipt`, 75000);
   } catch (error) {
     diagnostics.stop('wait-failed');
     attempt.failedAt = Date.now();
@@ -430,7 +430,7 @@ async function clickStableSaveControl(label) {
 async function beginSavePerformance(label) {
   const session = active;
   const record = { schema: '755-save-performance-v1', label, timeDomain: 'timeTicks', startedAt: Date.now(),
-    scope: 'Two cumulative CDP metric samples surrounding geometry preparation, input, the original receipt wait and trailing independent IDB read (or the failed stage); not the exact 20s persistence interval.',
+    scope: 'Two cumulative CDP metric samples surrounding geometry preparation, input, the original receipt wait and trailing independent IDB read (or the failed stage); not the exact 60s persistence interval.',
     interpretation: 'Raw metrics only. CDP Frames counts DOM frames, not rendered frames or FPS; native process progress is available separately in existing sampleFrame observations.' };
   (session.savePerformance ||= []).push(record);
   const request = async (method, params = {}) => {
@@ -473,7 +473,7 @@ async function saveProgressAndWait(label) {
     const { input } = await clickStableSaveControl(label);
     // The token comes from the final stable pre-click sample: an autosave while
     // the menu is settling cannot count as acknowledgement of this explicit Save.
-    // No separate activation deadline/retry: the original single 30s receipt
+    // No separate activation deadline/retry: the current main single 75s receipt
     // window covers both a newly observed token and its exact durable receipt.
     const pending = waitForPersistedSave(label, input.previousToken, true, input.dispatchStartedAt);
     const attempt = active.saveAttempts.at(-1); attempt.input = input;
@@ -486,7 +486,12 @@ async function saveProgressAndWait(label) {
   } finally { await performance.finish(); }
 }
 async function startStory(reload = false) {
-  if (reload) await waitForPersistedSave(`${active.id} before actual reload`);
+  if (reload) {
+    await waitForPersistedSave(`${active.id} before actual reload`);
+    // Preserve main's current-document evidence drain as well as the durable
+    // response store and per-navigation provenance used by this acceptance.
+    await Promise.all(active.bootBodyJobs);
+  }
   const start = Date.now();
   const navigation = { method: reload ? 'Page.reload' : 'Page.navigate', requestedAt: start };
   active.networkObservation?.navigations.push(navigation);
@@ -1145,12 +1150,22 @@ function storyEvidence(value) {
   return { chapter: state(value)?.native.chapter, page: state(value)?.native.page, scene: state(value)?.native.scene, stateSha256: hash(JSON.stringify(state(value))), saveDigest: value.saveDigest, itemsSha256: hash(JSON.stringify(state(value)?.items)), walletSha256: hash(JSON.stringify(state(value)?.wallet)), actOnePhase: state(value)?.actOne.phase };
 }
 
+async function observeOptionalBackgroundFailure(documentStart) {
+  // Network errors from before Page.reload are retained as evidence. They are
+  // not proof that the new document's native callback has consumed its error.
+  await poll(() => active.streaming.controlledFailures.some(failure => failure.requestAt >= documentStart), 'current document encounters the controlled deferred-content block', 30000);
+  const value = await poll(async () => {
+    const next = await snapshot();
+    return next?.content?.blocking || next?.content?.packs.some(pack => pack.status === 'error') ? next : null;
+  }, 'current engine consumes the optional background failure', 30000);
+  check(!value.content.blocking && value.content.packs.some(pack => pack.status === 'error'), 'a real optional background failure does not show the required-content overlay', value.content);
+  return value;
+}
+
 async function streamingCase() {
   const fresh = await snapshot();
   check(state(fresh)?.native.chapter === 1 && !fresh.content?.blocking, 'fresh C1 ordinary phone interaction and save/reload remain usable with every deferred HTTP URL blocked');
-  await poll(() => active.streaming.controlledFailures.length > 0, 'background transport actually encounters the controlled deferred-content block', 30000);
-  const backgroundFailed = await snapshot();
-  check(!backgroundFailed.content.blocking && backgroundFailed.content.packs.some(pack => pack.status === 'error'), 'a real optional background failure does not show the required-content overlay');
+  const backgroundFailed = await observeOptionalBackgroundFailure(active.fresh.reloadRequestedAt);
   check(backgroundFailed.content.enabled && !backgroundFailed.content.monolithic && !backgroundFailed.content.manifestError, 'the running engine uses the content coordinator and a valid split manifest');
   active.streaming.freshWithBlockedBackground = { evidence: storyEvidence(backgroundFailed), content: backgroundFailed.content };
   console.log('desktop-1280: first-chapter input/save/reload survives deferred-content HTTP failure');
@@ -1268,16 +1283,25 @@ async function assertStickHeld(value, label) {
 }
 async function assertWorldStopped(value, label) {
   const previous = value;
-  // The browser bridge publishes cached snapshots on the engine process loop.
-  // A newer frame alone is not acknowledgment of the just-delivered cancellation.
+  // CDP acknowledges dispatch before Godot drains the browser input queue. A
+  // fresh render sample can still precede a queued two-finger cancellation.
+  const began = Date.now(), startFrame = value.sampleFrame;
+  const observation = { label, startFrame, startedAt: began, samples: [] };
+  (active.mobileWorld.cancellations ||= []).push(observation);
   value = await poll(async () => {
     const next = await snapshot();
-    const sameContext = state(next)?.native?.chapter === state(previous).native.chapter && state(next)?.native?.scene === state(previous).native.scene && next?.world?.scene_id === previous.world.scene_id && next?.world?.visible === previous.world.visible;
-    return next?.sampleFrame > previous.sampleFrame && sameContext && mobileDistance(next.world.touch_axis, { x: 0, y: 0 }) < .001 && next.world.input.owners.length === 0 && !next.world.input.mouseOwned && !next.world.input.inventoryOwned ? next : null;
+    if (!next?.world?.input || next.sampleFrame <= startFrame) return null;
+    const sameContext = state(next)?.native?.chapter === state(previous).native.chapter && state(next)?.native?.scene === state(previous).native.scene && next.world.scene_id === previous.world.scene_id && next.world.visible === previous.world.visible;
+    if (!sameContext) return null;
+    const input = next.world.input;
+    if (observation.samples.at(-1)?.frame !== next.sampleFrame) observation.samples.push({ frame: next.sampleFrame, elapsedMs: Date.now() - began, owners: input.owners, mouseOwned: input.mouseOwned, inventoryOwned: input.inventoryOwned, axis: next.world.touch_axis });
+    return mobileDistance(next.world.touch_axis, { x: 0, y: 0 }) < .001 && input.owners.length === 0 && !input.mouseOwned && !input.inventoryOwned ? next : null;
   }, `${active.id}: ${label} completed in the current world`, 5000);
+  observation.finishedAt = Date.now(); observation.endFrame = value.sampleFrame;
   active.mobileWorld.samples.push({ at: Date.now(), sampleFrame: value.sampleFrame, world: value.world, facts: mobileFacts(value) });
   check(mobileDistance(value.world.touch_axis, { x: 0, y: 0 }) < .001 && value.world.input.owners.length === 0 && !value.world.input.mouseOwned && !value.world.input.inventoryOwned, `${active.id}: ${label} clears pointer owners and axis`, value.world.input);
   const after = await mobileSample(value, 500);
+  check(mobileDistance(after.world.touch_axis, { x: 0, y: 0 }) < .001 && after.world.input.owners.length === 0 && !after.world.input.mouseOwned && !after.world.input.inventoryOwned, `${active.id}: ${label} stays released in a later engine sample`, after.world.input);
   check(mobileDistance(value.world.player, after.world.player) < .5, `${active.id}: ${label} does not leave stuck movement`, { before: value.world.player, after: after.world.player });
   return after;
 }
@@ -1325,7 +1349,8 @@ async function directWorldCase(value) {
   await worldTouches('touchStart', [{ ...point, id: 1 }]);
   await worldTouches('touchMove', [{ x: point.x - 35, y: point.y, id: 1 }]);
   await worldTouches('touchMove', [{ ...point, id: 1 }]); await worldTouches('touchEnd');
-  value = await mobileSample(value);
+  const dragFrame = value.sampleFrame;
+  value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > dragFrame && next.world.input.owners.length === 0 ? next : null; }, 'drag release reaches the actual scene owner', 5000);
   check(mobileFacts(value) === facts && !value.world.input.routeWaypointCount, `${active.id}: a drag returning to its start is neither a tap nor a walking route`);
   // Re-read the object's projected position after camera panning.
   const held = await renderPoint(worldTarget(value).point, value);
@@ -1349,11 +1374,14 @@ async function directWorldCase(value) {
   value = await poll(async () => { const s = await snapshot(); return s?.world?.input?.owners?.length === 1 ? s : null; }, 'real inventory probe owns a scene pointer', 5000);
   check(value.world.input.owners.length === 1, `${active.id}: inventory probe starts with an actual held scene pointer`);
   await worldTouches('touchStart', [{ ...mapPoint, id: 1 }, { ...itemPoint, id: 2 }]);
-  value = await mobileSample(value, 100);
+  const inventoryFrame = value.sampleFrame;
+  value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > inventoryFrame && next.world.input.owners.length === 0 ? next : null; }, 'inline inventory touch reaches the actual scene owner', 5000);
   check(value.world.input.owners.length === 0 && !value.world.input.routeWaypointCount && mobileFacts(value) === facts, `${active.id}: touching the inline inventory cancels the held scene pointer without a route or object action`);
   await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-inventory-cancel');
   check(mobileFacts(value) === facts, `${active.id}: inventory cancellation retains items and source actions`);
-  await worldTouches('touchStart', [{ ...mapPoint, id: 1 }]); await press('F10');
+  await worldTouches('touchStart', [{ ...mapPoint, id: 1 }]);
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.owners?.length === 1 ? next : null; }, 'settings probe starts with an actual held scene pointer', 5000);
+  await press('F10');
   value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.modalVisible ? next : null; }, 'settings modal opens over a direct scene pointer');
   await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-modal');
   check(mobileFacts(value) === facts, `${active.id}: modal cancellation cannot activate the held source object`);
@@ -1362,6 +1390,7 @@ async function directWorldCase(value) {
   const currentTarget = worldTarget(value);
   const oldActions = value.world.input.dormPropActions;
   value = await worldTap(value, currentTarget.point);
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.dormPropActions > oldActions ? next : null; }, 'fresh target tap reaches the original object controller', 5000);
   check(value.world.input.dormPropActions === oldActions + 1 && lampOn(value) === beforeLamp, `${active.id}: a fresh ordinary target tap works after cancellation and reverses only the lamp`);
   value = await assertBottomPlaque(value, 'direct-resumed');
   if (active.id === 'touch-390') {
@@ -1370,10 +1399,11 @@ async function directWorldCase(value) {
     value = await assertWorldStopped(value, 'direct-orientation');
     check(state(value).native.scene === 'dorm_hub' && state(value).items.campusCard, `${active.id}: orientation preserves the earned scene and item`);
     value = await worldTap(value, worldTarget(value).point);
+    value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.dormPropActions > oldActions + 1 ? next : null; }, 'landscape target tap reaches the original object controller', 5000);
     check(value.world.input.dormPropActions === oldActions + 2 && lampOn(value) !== beforeLamp, `${active.id}: landscape direct target tap still submits exactly one action`);
     await assertBottomPlaque(value, 'direct-landscape');
   }
-  active.mobileWorld.coverage.push('real physical target approach', 'original proximity and single action', 'bottom plaque above inline controls', 'drag is not tap', 'cancel and fresh gesture', 'two-finger camera ownership', 'scene then inventory ownership', 'settings modal cancellation', ...(active.id === 'touch-390' ? ['landscape resize and direct tap'] : []));
+  active.mobileWorld.coverage.push('real physical target approach', 'original proximity and single action', 'bottom plaque', 'bottom plaque above inline controls', 'drag is not tap', 'cancel and fresh gesture', 'two-finger camera ownership', 'scene then inventory ownership', 'settings modal cancellation', ...(active.id === 'touch-390' ? ['landscape resize', 'landscape resize and direct tap'] : []));
   active.mobileWorld.completed = true;
 }
 
@@ -1381,7 +1411,7 @@ async function mobileWorldCase() {
   check(!!fixtureDir, 'mobile-world requires an explicit earned fixture directory (never a fabricated save)');
   active.mobileWorld = { fixtureConstructionIsNotTouchEvidence: true, inputs: [], samples: [], coverage: [], limitations: ['Chromium emulation, not physical phones or a manual campaign.', 'No notch/safe-area emulation is claimed by DeviceMetricsOverride; native safe-area regression is separate.'] };
   await importSave(path.join(fixtureDir, 'before_c2_dorm_exit.json'));
-  let value = await poll(async () => { const s = await snapshot(); return s?.world?.visible && s.world.scene_id === 'dorm_hub' && s.world.input && (!active.touch || s.world.input.geometryAvailable) && !s.world.input.modalVisible && !s.content.blocking ? s : null; }, 'ordinary earned import reaches the real dorm world', 60000);
+  let value = await poll(async () => { const s = await snapshot(); return s?.world?.visible && s.world.scene_id === 'dorm_hub' && s.world.input && (!active.touch || s.world.input.geometryAvailable) && !s.world.input.modalVisible && !s.content.blocking ? s : null; }, 'ordinary earned import reaches the real dorm world', bootTimeout);
   value = await mobileSample(value, importSettleMs);
   value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > value.sampleFrame && !next.world.subtitle && (!active.touch || next.world.input.geometryAvailable) ? next : null; }, 'import feedback finishes before any world gesture', 15000);
   check(state(value).actOne.manualControlTested && state(value).actOne.phase === 'movement_ready', 'earned C2 fixture contains the original unlocked movement and exit gates');
@@ -1626,7 +1656,9 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     } finally { await stderrFile.close(); }
     await mkdir(active.downloadDir);
     if (id === 'desktop-1440') { const negativeUrl = new URL(url); negativeUrl.searchParams.set('dev', '1'); negativeUrl.searchParams.set('devCheckpoint', 'c4-755-opening'); active.url = negativeUrl.href; }
-    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts'); const port = portFile.split('\n')[0]; lifecycle.evidence.portFileObservedAt = Date.now(); lifecycle.evidence.port = port; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+    // Hosted runners can take over 20s to launch Chrome after media conversion.
+    // This bounds test-process startup, independently of every game deadline.
+    const portFile = await poll(() => readFile(path.join(profile, 'DevToolsActivePort'), 'utf8'), 'isolated Chromium starts', 60000); const port = portFile.split('\n')[0]; lifecycle.evidence.portFileObservedAt = Date.now(); lifecycle.evidence.port = port; const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
     const target = targets.find(t => t.type === 'page');
     active.targetId = target.id;
     if (target.id && target.webSocketDebuggerUrl) lifecycle.evidence.portReadyAt = Date.now();
@@ -1653,7 +1685,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
       }
       if (method === 'Network.loadingFailed' && !params.canceled) {
         const request = active.requestsById.get(params.requestId);
-        const failure = { type: 'network', requestId: params.requestId, url: request?.url || '', phase: request?.phase || '', errorText: params.errorText, blockedReason: params.blockedReason || '' };
+        const failure = { type: 'network', requestId: params.requestId, requestAt: request?.at ?? 0, failedAt: Date.now(), url: request?.url || '', phase: request?.phase || '', errorText: params.errorText, blockedReason: params.blockedReason || '' };
         // Chromium 155 reports an empty errorText for Network.setBlockedURLs;
         // blockedReason=inspector and the exact active injected URL remain the
         // authoritative, narrowly scoped fault identity. Keep the raw event.

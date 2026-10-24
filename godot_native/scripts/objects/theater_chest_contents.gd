@@ -19,12 +19,14 @@ const PARTS: Dictionary={
 	"butterfly":Rect2(372,467,92,88),
 	"lamp":Rect2(351,508,92,88),
 	"crank":Rect2(900,425.5,200,129),
-	"note":Rect2(920,558,190,184),
+	"note":Rect2(310,445,230,180),
 	"slot0":Rect2(574,562,92,88),
 	"slot1":Rect2(655.406388,703,92,88),
 	"slot2":Rect2(492.593612,703,92,88),
 	"axle":Rect2(588,668,64,64),
 	"drawer":Rect2(941,841,128,34),
+	"brush":Rect2(881,793,122,42),
+	"vent_clue":Rect2(1021,779,115,68),
 }
 const BRASS:=Color("c79b62")
 const INK:=Color("44332d")
@@ -40,6 +42,8 @@ var clue_flip: float=0.0:
 	set(value):clue_flip=clampf(value,0.0,1.0);_clue_driven=true;queue_redraw()
 var drawer_amount: float=0.0:
 	set(value):drawer_amount=clampf(value,0.0,1.0);_drawer_driven=true;queue_redraw()
+var pickup_amount: float=0.0:
+	set(value):pickup_amount=clampf(value,0,1);queue_redraw()
 var placement_piece: String="":
 	set(value):placement_piece=value;queue_redraw()
 var placement_from:=Vector2.ZERO:
@@ -48,6 +52,11 @@ var placement_to:=Vector2.ZERO:
 	set(value):placement_to=value;queue_redraw()
 var placement_amount: float=0.0:
 	set(value):placement_amount=clampf(value,0.0,1.0);queue_redraw()
+var held_piece: String=""
+var held_offset:=Vector2.ZERO:
+	set(value):held_offset=value;_sync_volume();queue_redraw()
+var held_lift:=0.0:
+	set(value):held_lift=value;_sync_volume();queue_redraw()
 var kit: Texture2D
 var wood: Texture2D
 var volume_view: SubViewport
@@ -77,20 +86,35 @@ func set_state(value: Dictionary, selected_piece: String="") -> void:
 
 func _sync_volume() -> void:
 	if is_instance_valid(volume):
-		volume.update_state(snapshot,selected,hovered,turn_angle,clue_flip,drawer_amount,placement_piece,placement_from,placement_to,placement_amount)
+		volume.update_state(snapshot,selected,hovered,turn_angle,clue_flip,drawer_amount,placement_piece,placement_from,placement_to,placement_amount,pickup_amount,held_piece,held_offset,held_lift)
 		volume_view.render_target_update_mode=SubViewport.UPDATE_ONCE
 
 func get_part_polygon(id: String) -> PackedVector2Array:
 	if is_instance_valid(volume) and volume.has_method("projected_polygon"):
+		if id=="axle" and bool(snapshot.get("crank_installed",false)):
+			# The visible handle is the target once fitted, including its axle.
+			var handle: PackedVector2Array=volume.projected_polygon("crank")
+			var axle:=part_rect("axle")
+			handle.append_array(PackedVector2Array([axle.position,Vector2(axle.end.x,axle.position.y),axle.end,Vector2(axle.position.x,axle.end.y)]))
+			return Geometry2D.convex_hull(handle)
 		var points: PackedVector2Array=volume.projected_polygon(id)
 		if not points.is_empty():return points
 	var rect:=part_rect(id)
 	return PackedVector2Array([rect.position,Vector2(rect.end.x,rect.position.y),rect.end,Vector2(rect.position.x,rect.end.y)])
 
+func part_anchor(id: String) -> Vector2:
+	_sync_volume()
+	if is_instance_valid(volume):return volume.projected_anchor(id)
+	return part_rect(id).get_center()
+
+func preview_held(piece: String, offset: Vector2, lift: float) -> void:
+	held_piece=piece;held_offset=offset;held_lift=lift
+	_sync_volume();queue_redraw()
+
 func _draw() -> void:
 	if kit==null:return
 	if is_instance_valid(volume):
-		volume.update_state(snapshot,selected,hovered,turn_angle,clue_flip,drawer_amount,placement_piece,placement_from,placement_to,placement_amount)
+		volume.update_state(snapshot,selected,hovered,turn_angle,clue_flip,drawer_amount,placement_piece,placement_from,placement_to,placement_amount,pickup_amount,held_piece,held_offset,held_lift)
 		volume_view.render_target_update_mode=SubViewport.UPDATE_ONCE
 		_draw_drawer()
 		draw_texture(volume_view.get_texture(),Vector2.ZERO)
@@ -139,20 +163,28 @@ func _draw_rotor() -> void:
 	draw_set_transform(Vector2.ZERO)
 
 func _draw_note() -> void:
+	if snapshot.get("cleared",[]).size()<3:return
 	var target:=part_rect("note")
 	var flip:=clue_flip if _clue_driven else (1.0 if bool(snapshot.get("clue_open",false)) else 0.0)
 	var face:=absf(cos(PI*flip))
 	_projected_blit("note",target,face,target.get_center().x)
-	var order: Array=snapshot.get("clue_order",[])
-	if bool(snapshot.get("clue_open",false)) and flip>=.5 and order.size()==3:
-		for index: int in range(3):
-			var symbol:=str(order[index])
-			if symbol in ["fan","butterfly","lamp"]:
-				_projected_blit(symbol,Rect2(941+54*index,630,40,39),face,target.get_center().x)
-		for x: float in [988.0,1042.0]:
-			var center:=Vector2(target.get_center().x+(x-target.get_center().x)*face,649)
-			draw_line(center-Vector2(3*face,0),center+Vector2(3*face,0),INK,1.8)
-			draw_polyline(PackedVector2Array([center+Vector2(0,-3),center+Vector2(3*face,0),center+Vector2(0,3)]),INK,1.8)
+	if bool(snapshot.get("clue_open",false)) and flip>=.98:
+		# A physical assembly sketch: matching edge notches, then a cam turn.
+		# It does not repeat the earlier program-order puzzle's symbol sequence.
+		var paper:=Rect2(343,478,164,112)
+		draw_rect(paper,Color("c9b890"))
+		draw_rect(Rect2(357,491,52,40),INK,false,2)
+		draw_rect(Rect2(357,549,52,30),INK,false,2)
+		for x: float in [369,389]:
+			draw_rect(Rect2(x,520,7,12),INK)
+			draw_rect(Rect2(x,549,7,12),INK,false,2)
+		draw_line(Vector2(383,534),Vector2(383,544),INK,2)
+		draw_polyline(PackedVector2Array([Vector2(378,540),Vector2(383,545),Vector2(388,540)]),INK,2)
+		draw_arc(Vector2(458,525),24,-PI*.8,PI*.6,24,INK,2)
+		draw_polyline(PackedVector2Array([Vector2(445,545),Vector2(451,551),Vector2(453,542)]),INK,2)
+		draw_line(Vector2(458,525),Vector2(480,542),INK,3)
+		draw_line(Vector2(449,566),Vector2(489,566),INK,3)
+		draw_polyline(PackedVector2Array([Vector2(457,559),Vector2(449,566),Vector2(457,573)]),INK,2)
 	_highlight("note",target)
 
 func _draw_drawer() -> void:
@@ -160,17 +192,17 @@ func _draw_drawer() -> void:
 	draw_rect(DRAWER_RECT,Color("171514"))
 	# The clue is drawn on a cropped region of the same aged paper, under
 	# the actual 3D floor hatch and its solid inner lip.
-	var paper:=Rect2(879,779,252,71)
-	var paper_source:=Rect2(1113,680,378,106)
+	var paper:=part_rect("vent_clue")
+	var paper_source:=Rect2(1113,680,378,190)
 	draw_texture_rect_region(kit,_contain(paper_source,paper),paper_source,Color("ddcba8"))
 	var pencil:=Color("554639")
-	var duct:=Rect2(917,793,177,34)
-	draw_rect(duct,pencil,false,1)
-	for index: int in range(9):
-		var x: float=934+index*17
-		draw_line(Vector2(x,797),Vector2(x+.8,823),pencil,.8)
-	draw_polyline(PackedVector2Array([Vector2(891,814),Vector2(908,814),Vector2(908.5,836),Vector2(1114,837),Vector2(1114.5,805)]),pencil,1)
-	draw_polyline(PackedVector2Array([Vector2(1110,810),Vector2(1114.5,805),Vector2(1119,811)]),pencil,1)
+	var duct:=Rect2(1036,794,84,28)
+	draw_rect(duct,pencil,false,1.6)
+	for index: int in range(6):
+		var x: float=1043+index*13
+		draw_line(Vector2(x,797),Vector2(x,819),pencil,1)
+	draw_polyline(PackedVector2Array([Vector2(1029,815),Vector2(1029,835),Vector2(1123,835),Vector2(1123,824)]),pencil,1.5)
+	draw_polyline(PackedVector2Array([Vector2(1119,829),Vector2(1123,824),Vector2(1127,829)]),pencil,1.5)
 	if is_instance_valid(volume):return
 	var visible_height:=DRAWER_RECT.size.y*(1.0-progress)
 	if visible_height>0.1 and wood!=null:

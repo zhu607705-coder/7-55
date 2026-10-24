@@ -23,13 +23,17 @@ var later:Button
 var replay:Button
 var board:Button
 var back:Button
+var record_pointer:=-99
+var record_origin:=Vector2.ZERO
+var record_start:=0
+var last_touch:=-1000
 func configure(value:Dictionary) -> void:
 	timeline=value.duplicate(true)
 	selection=int(timeline.selectableStartMinSeconds)
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	heading=_label(22,"#f7f1dc");heading.text="18:50 / 一号电梯运行档案"
-	instruction=_label(18,"#a9bac7");instruction.text="调整蓝色门体区间，让它完整覆盖黄色人物进入区间。"
+	instruction=_label(18,"#a9bac7");instruction.text="拖动蓝色记录带，回放时观察门、乘客和上行指针。"
 	door_label=_label(16,"#79c5cf");door_label.text="门体开放"
 	passenger_label=_label(16,"#ffd36f");passenger_label.text="人物进入"
 	readout=_label(16,"#f7f1dc")
@@ -44,7 +48,8 @@ func _ready() -> void:
 	replay.add_theme_stylebox_override("normal",normal)
 	var pressed:=normal.duplicate();pressed.bg_color=Color("#b29549");replay.add_theme_stylebox_override("pressed",pressed)
 	replay.add_theme_color_override("font_color",Color("#111b24"))
-	resized.connect(_layout)
+	resized.connect(func():record_pointer=-99;_layout())
+	visibility_changed.connect(func():record_pointer=-99)
 	refresh(selection,stage,elapsed_ms,boarded,feedback)
 func _label(font_size:int,color:String) -> Label:
 	var label:=Label.new();label.add_theme_font_size_override("font_size",font_size);label.add_theme_color_override("font_color",Color(color));label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;label.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(label);return label
@@ -103,3 +108,31 @@ func _draw() -> void:
 	if stage=="replay":
 		var x:float=g.track.position.x+(selection+elapsed_ms/1000-float(timeline.timelineStartSeconds))/g.duration*g.track.size.x
 		draw_line(Vector2(x,chart.position.y),Vector2(x,chart.end.y),Color("#ffd36f"),2)
+
+func _notification(what:int)->void:
+	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT:record_pointer=-99
+func _gui_input(event:InputEvent)->void:
+	if stage!="select":return
+	if event is InputEventScreenTouch:
+		last_touch=Time.get_ticks_msec()
+		if event.pressed:record_down(event.index,event.position)
+		else:record_up(event.index,event.position,event.canceled)
+		accept_event()
+	elif event is InputEventScreenDrag and record_pointer==event.index:record_move(event.position);accept_event()
+	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and Time.get_ticks_msec()-last_touch>650:
+		if event.pressed:record_down(-1,event.position)
+		else:record_up(-1,event.position)
+		accept_event()
+	elif event is InputEventMouseMotion and record_pointer==-1:record_move(event.position);accept_event()
+func record_down(id:int,at:Vector2)->void:
+	if record_pointer!=-99 or not geometry().door.grow(14).has_point(at):return
+	record_pointer=id;record_origin=at;record_start=selection
+func record_move(at:Vector2)->void:
+	var g:Dictionary=geometry()
+	var target:int=clampi(record_start+roundi((at.x-record_origin.x)/g.track.size.x*g.duration),int(timeline.selectableStartMinSeconds),int(timeline.selectableStartMaxSeconds))
+	var count:int=target-selection
+	for i:int in absi(count):shifted.emit(1 if count>0 else -1)
+func record_up(id:int,at:Vector2,cancelled:bool=false)->void:
+	if record_pointer!=id:return
+	if not cancelled:record_move(at)
+	record_pointer=-99

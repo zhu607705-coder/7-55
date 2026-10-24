@@ -4,6 +4,10 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 // Execute the actual runner functions with simulated readonly IDB/CDP events.
 // This does not launch a browser or prove real persistence timing.
+// Current deadline contract comes from externally merged main
+// 1322d941191683a30c338123cc914399eac29826 (PR #166): production 60s,
+// sync interval 2s / at most 30 requests, acceptance 75s. Compatibility with
+// those limits is not evidence of a performance improvement over the old 20/30s.
 const draft = readFileSync(new URL('../tools/verify_web_export.mjs', import.meta.url), 'utf8');
 const source = draft.slice(draft.indexOf('function readOnlySaveProbe('), draft.indexOf('async function waitForPersistedSave('));
 const checks = [];
@@ -102,6 +106,9 @@ for (const [name, options] of Object.entries({ pendingOpen: { openPending: true 
   check(`${name} leaves no diagnostic timers`, () => assert.equal(fixture.timerCount, 0));
   if (name === 'lateOpen') check('late successful open is closed without issuing a get', () => { assert.equal(fixture.closes, 1); assert.equal(fixture.calls.length, 1); });
 }
+// These independent diagnostic-controller fixtures inject errors at arbitrary
+// fake times, including 20s. They test observation races, not the current native
+// watchdog duration; the actual production limits are asserted separately below.
 function controllerFixture(options = {}) {
   let now = 0, current = true; const requests = [];
   const context = vm.createContext({ Date, console }); vm.runInContext(source, context);
@@ -170,10 +177,10 @@ check('synchronous CDP send failure is also contained', () => assert.equal(throw
 for (const line of [
   "    if (receipt.error) throw new Error(`Browser save receipt failed: ${receipt.error}`);",
   "    return visible && !receipt.pending && receipt.digest && receipt.acknowledgedDigest === receipt.digest && receipt.digest === value.saveDigest ? value : null;",
-  "  }, `${label}: current native save has an exact durable receipt`, 30000);",
+  "  }, `${label}: current native save has an exact durable receipt`, 75000);",
   "  check(primary?.sha256 === saved.saveDigest, `${label}: independent readonly IndexedDB primary matches the current native save`, { elapsedMs: Date.now() - began, receipt: saved.savePersistence, primary, diskReadMs: disk.readDurationMs });"
 ]) {
-  check(`original acceptance line is byte-preserved: ${line.trim().slice(0, 70)}`, () => assert(draft.includes(line)));
+  check(`strict acceptance and bounded wait contract is retained: ${line.trim().slice(0, 70)}`, () => assert(draft.includes(line)));
 }
 check('only existing two full-store requests remain, no added getAll/key enumeration', () => {
   assert.equal((draft.match(/\.getAll\(/g) || []).length, 1);
@@ -228,6 +235,16 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
 const project = readFileSync(new URL('../project.godot', import.meta.url), 'utf8');
 const stateSource = readFileSync(new URL('../scripts/state.gd', import.meta.url), 'utf8');
 check('fixed key is grounded in current actual custom user directory and save path', () => { assert(project.includes('config/use_custom_user_dir=true')); assert(project.includes('config/custom_user_dir_name=\"SevenFiftyFiveNative\"')); assert(stateSource.includes('const SAVE_PATH := \"user://save.json\"')); });
+const webPlatformSource = readFileSync(new URL('../scripts/platform/web_platform.gd', import.meta.url), 'utf8');
+check('main 1322d941 production contract remains 60s with 2s sync interval and at most 30 requests', () => {
+  assert.match(webPlatformSource, /^const SAVE_ATTEMPT_MS := 60000$/m);
+  assert.match(webPlatformSource, /^const SAVE_SYNC_INTERVAL_MS := 2000$/m);
+  assert.match(webPlatformSource, /^const MAX_SAVE_SYNC_REQUESTS := 30$/m);
+  assert(webPlatformSource.includes('deadline: Date.now() + 60000'));
+  assert(webPlatformSource.includes("watch.timeout = setTimeout(() => fail('timeout'), 60000);"));
+  assert(webPlatformSource.includes('now_ms - _save_started_ms >= SAVE_ATTEMPT_MS or _save_sync_requests >= MAX_SAVE_SYNC_REQUESTS'));
+  assert(webPlatformSource.includes('now_ms - _save_last_sync_ms >= SAVE_SYNC_INTERVAL_MS'));
+});
 
 // Exercise the actual save target selection, ordinary click orchestration and
 // unchanged receipt poll against deterministic snapshots. These are regression
@@ -432,18 +449,28 @@ check('touch release failure retains acknowledged press and failed end, with no 
 const noToken = saveClickFixture({ afterSnapshot: (index, now, before) => saveSnapshot(3 + index, { visibleControls: [{ ...before.visibleControls[0], text: '已保存' }] }) });
 await assert.rejects(noToken.context.saveProgressAndWait('unacknowledged input'), /no new native save token observed/);
 check('old durable digest and old saved label never substitute for a new explicit-save token', () => {
-  const attempt = noToken.active.saveAttempts[0]; assert.equal(attempt.failedAt - attempt.beganAt, 30000); assert.equal(attempt.failureKind, 'save-input-not-acknowledged');
+  const attempt = noToken.active.saveAttempts[0]; assert.equal(attempt.failedAt - attempt.beganAt, 75000); assert.equal(attempt.failureKind, 'save-input-not-acknowledged');
   assert.equal(noToken.clicks.length, 1); assert.equal(noToken.accepted.length, 0); assert.equal(noToken.diskReads.length, 1);
 });
-const pendingSave = saveClickFixture({ afterSnapshot: (index, now) => saveSnapshot(3 + index, { saveDigest: targetDigest, savePersistence: { token: 4, digest: targetDigest, pending: now < 21165, error: now >= 21165 ? 'timeout' : '', acknowledgedDigest: '' } }) });
+const pendingSave = saveClickFixture({ afterSnapshot: (index, now) => saveSnapshot(3 + index, { saveDigest: targetDigest, savePersistence: { token: 4, digest: targetDigest, pending: now < 61165, error: now >= 61165 ? 'timeout' : '', acknowledgedDigest: '' } }) });
 await assert.rejects(pendingSave.context.saveProgressAndWait('native timeout'), /new native save token observed, but exact persistence acceptance failed.*timeout/);
-check('new-token production timeout is distinct and retains the same one 30s receipt window', () => { const attempt = pendingSave.active.saveAttempts[0]; assert.equal(attempt.failureKind, 'save-persistence-not-acknowledged'); assert.equal(attempt.failedAt - attempt.beganAt, 30000); assert.equal(pendingSave.clicks.length, 1); });
-const lateToken = saveClickFixture({ afterSnapshot: (index, now) => saveSnapshot(3 + index, { saveDigest: targetDigest, savePersistence: { token: now >= 30165 ? 4 : 3, digest: targetDigest, pending: true, error: '', acknowledgedDigest: '' } }) });
+check('new-token 60s production timeout remains failure within the single current 75s receipt window', () => {
+  const attempt = pendingSave.active.saveAttempts[0]; assert.equal(attempt.failureKind, 'save-persistence-not-acknowledged');
+  assert.equal(attempt.observations.find(row => row.receipt.error === 'timeout').elapsedMs, 60000);
+  assert.equal(attempt.failedAt - attempt.beganAt, 75000); assert.equal(pendingSave.clicks.length, 1);
+});
+// Receipt starts at fake time 1165; this token first arrives at +74s, only one
+// second before the current deadline. Its arrival must not open another window.
+const lateToken = saveClickFixture({ afterSnapshot: (index, now) => saveSnapshot(3 + index, { saveDigest: targetDigest, savePersistence: { token: now >= 75165 ? 4 : 3, digest: targetDigest, pending: true, error: '', acknowledgedDigest: '' } }) });
 await assert.rejects(lateToken.context.saveProgressAndWait('late native token'), /new native save token observed/);
-check('late new token does not start another 30s persistence phase', () => { const attempt = lateToken.active.saveAttempts[0]; assert.equal(attempt.failedAt - attempt.beganAt, 30000); assert.equal(lateToken.clicks.length, 1); });
+check('new token at 74s does not start another 75s persistence phase', () => {
+  const attempt = lateToken.active.saveAttempts[0];
+  assert.equal(attempt.observations.find(row => row.receipt.token === 4).elapsedMs, 74000);
+  assert.equal(attempt.failedAt - attempt.beganAt, 75000); assert.equal(lateToken.clicks.length, 1);
+});
 const wrongDigest = saveClickFixture({ afterSnapshot: index => saveSnapshot(3 + index, { visibleControls: [{ ...saveSnapshot(1).visibleControls[0], text: '已保存' }], saveDigest: targetDigest, savePersistence: { token: 4, digest: targetDigest, acknowledgedDigest: oldDigest, pending: false, error: '' } }) });
 await assert.rejects(wrongDigest.context.saveProgressAndWait('wrong receipt hash'), /exact persistence acceptance failed/);
-check('new token plus visible saved label cannot bypass exact receipt digest agreement', () => { assert.equal(wrongDigest.accepted.length, 0); assert.equal(wrongDigest.active.saveAttempts[0].failedAt - wrongDigest.active.saveAttempts[0].beganAt, 30000); });
+check('new token plus visible saved label cannot bypass exact receipt digest agreement', () => { assert.equal(wrongDigest.accepted.length, 0); assert.equal(wrongDigest.active.saveAttempts[0].failedAt - wrongDigest.active.saveAttempts[0].beganAt, 75000); });
 const wrongDisk = saveClickFixture({ diskDigest: oldDigest });
 await assert.rejects(wrongDisk.context.saveProgressAndWait('wrong primary hash'), /independent readonly IndexedDB primary/);
 check('successful receipt cannot bypass independent primary-file digest agreement', () => assert.equal(wrongDisk.accepted.length, 0));
@@ -471,7 +498,7 @@ check('raw metrics retain future names without deriving FPS from CDP Frames', ()
   assert.equal(record.before.metrics.find(m => m.name === 'Frames').value, 1);
   assert.equal(record.after.metrics.find(m => m.name === 'UnknownFutureMetric').value, 7);
   assert.match(record.scope, /geometry preparation.*trailing independent IDB read/);
-  assert.match(record.scope, /not the exact 20s persistence interval/);
+  assert.match(record.scope, /not the exact 60s persistence interval/);
   assert.match(record.interpretation, /Frames counts DOM frames, not rendered frames or FPS/);
   assert.equal(record.fps, undefined);
 });
@@ -520,15 +547,15 @@ check('missing metrics remain unavailable diagnostics, not fabricated performanc
 });
 const originalFailure = saveClickFixture({ performanceFailure: () => 'diagnostic unsupported', afterSnapshot: (index, now, before) => before });
 await assert.rejects(originalFailure.context.saveProgressAndWait('original missing token'), /no new native save token observed.*Timeout/);
-check('diagnostic failures cannot replace the original missing-token failure or 30s deadline', () => {
-  const attempt = originalFailure.active.saveAttempts[0]; assert.equal(attempt.failedAt - attempt.beganAt, 30000);
+check('diagnostic failures cannot replace the missing-token failure or current 75s deadline', () => {
+  const attempt = originalFailure.active.saveAttempts[0]; assert.equal(attempt.failedAt - attempt.beganAt, 75000);
   assert.equal(attempt.failureKind, 'save-input-not-acknowledged'); assert.equal(originalFailure.performanceCalls.at(-1).diskReads, 1);
 });
 const timedFailure = saveClickFixture({ performanceDelay: 1000, performanceFailure: () => 'CDP timeout', afterSnapshot: (index, now, before) => before });
 await assert.rejects(timedFailure.context.saveProgressAndWait('bounded metric timeouts'), /no new native save token observed.*Timeout/);
-check('three bounded diagnostic timeouts remain outside the unchanged 30s receipt window', () => {
+check('three bounded diagnostic timeouts remain outside the current single 75s receipt window', () => {
   const attempt = timedFailure.active.saveAttempts[0], p = timedFailure.active.savePerformance[0];
-  assert.equal(p.preInputDiagnosticMs, 2000); assert.equal(attempt.failedAt - attempt.beganAt, 30000);
+  assert.equal(p.preInputDiagnosticMs, 2000); assert.equal(attempt.failedAt - attempt.beganAt, 75000);
   assert.equal(p.after.nodeRequestAt, attempt.failedAt); assert.equal(p.after.nodeElapsedMs, 1000);
   assert.equal(timedFailure.performanceCalls.length, 3);
   assert(!timedFailure.performanceCalls.some(row => row.at >= attempt.beganAt && row.at < attempt.failedAt));
@@ -545,9 +572,9 @@ check('geometry and dispatch failures retain bounded post-metrics without save a
 const finishOnce = saveClickFixture(); const observation = await finishOnce.context.beginSavePerformance('idempotent finish');
 await observation.finish(); await observation.finish();
 check('repeated diagnostic finish cannot issue another read or timer', () => { assert.equal(finishOnce.performanceCalls.length, 3); assert.equal(finishOnce.delays.length, 0); });
-check('complete receipt poll retains its pre-diagnostic byte identity', () => {
+check('complete receipt poll retains current main 1322d941 byte identity, including its 75s bound', () => {
   const receipt = draft.slice(draft.indexOf('async function waitForPersistedSave('), draft.indexOf('function saveClickCandidate('));
-  assert.equal(createHash('sha256').update(receipt).digest('hex'), 'fd7644312fd9890e68c968eb5745b97fdea989d75bf186637f0135120adcbba3');
+  assert.equal(createHash('sha256').update(receipt).digest('hex'), 'd9dfbcfe4f0d9c2761c50c09df556f2421b786b7b2038e237506f08ae30d57ab');
   assert(!receipt.includes('Performance.'));
 });
 check('performance helper has no script injection, storage write, handler or timer', () => {

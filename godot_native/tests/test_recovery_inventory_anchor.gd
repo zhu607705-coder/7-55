@@ -118,7 +118,8 @@ func run():
    check(chrome.inventory_handle.get_global_rect().size.is_equal_approx(handle.size),"close restores same collapsed target size")
    check(chrome.inventory.position.x<=0 and chrome.inventory.position.y==lower,"close retains left rail and deliberate vertical position")
    s.native.page="cc98";chrome.refresh(s);await settle()
-   check(chrome.inventory.position.x==0 and chrome.inventory_handle.size==Vector2(maxf(38,28.0/factor),maxf(63,44.0/factor)),"other pages retain source rail")
+   # main1322 keeps one44px physical minimum for every collapsed rail.
+   check(chrome.inventory.position.x==0 and chrome.inventory_handle.size==Vector2(maxf(38,44.0/factor),maxf(63,44.0/factor)),"other pages retain current44px source rail")
    phone.queue_free();await process_frame
  var route=Chrome.new();root.add_child(route)
  for completed:bool in [false,true]:

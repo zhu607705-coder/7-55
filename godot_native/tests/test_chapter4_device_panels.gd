@@ -96,6 +96,7 @@ func run() -> void:
 	quit(1 if failures else 0)
 
 func test_model(entry: Dictionary) -> void:
+	if entry.id=="duty_board":return # Durable paper strips have their own controller/save/input suite.
 	var id: String = entry.id
 	if id in Session.PHYSICAL_PUZZLES:
 		test_physical_model(entry)
@@ -234,10 +235,8 @@ func configure_panel_answer(panel: Control, answer: Dictionary) -> void:
 					check(up != null and not up.disabled,"Native order button is enabled")
 					up.pressed.emit()
 		"archive_index":
-			for key: String in ["yearBand","floor","purpose"]:
-				var node: OptionButton = panel.find_child("choice_"+key,true,false)
-				for index in range(source.options[key].size()):
-					if source.options[key][index].value == answer[key]: node.item_selected.emit(index); break
+			for key:String in ["yearBand","floor","purpose"]:
+				panel.workbench.archive_choice.emit(key,answer[key])
 		"media_alignment", "positioning_calibration":
 			for key: String in source.ranges[session.puzzle_id]:
 				while int(session.draft[session.axis_key()][key]) != int(answer[key]):
@@ -253,6 +252,7 @@ func configure_panel_answer(panel: Control, answer: Dictionary) -> void:
 				node.pressed.emit()
 
 func test_panel(entry: Dictionary, dimensions: Vector2i) -> void:
+	if entry.id=="duty_board":return # Covered by test_chapter4_duty_discovery and real Main input.
 	if entry.id in Session.PHYSICAL_PUZZLES:
 		await test_physical_panel(entry,dimensions)
 		return
@@ -265,7 +265,7 @@ func test_panel(entry: Dictionary, dimensions: Vector2i) -> void:
 	for frame in range(3): await process_frame
 	var viewport_rect := Rect2(Vector2.ZERO,Vector2(dimensions))
 	check(viewport_rect.encloses(panel.frame.get_global_rect()),entry.id+" frame contained "+str(dimensions))
-	check(panel.frame.get_global_rect().encloses(panel.submit_button.get_global_rect()),entry.id+" footer contained "+str(dimensions))
+	check(not panel.submit_button.visible or panel.frame.get_global_rect().encloses(panel.submit_button.get_global_rect()),entry.id+" footer contained "+str(dimensions))
 	check(panel.scroll.get_h_scroll_bar().max_value <= panel.scroll.get_h_scroll_bar().page+1,entry.id+" no horizontal overflow "+str(dimensions))
 	for node in panel.find_children("*","Button",true,false):
 		check(node.size.y >= 43.9,entry.id+" 44px touch target "+node.name)
@@ -345,7 +345,7 @@ func test_physical_panel(entry: Dictionary,dimensions: Vector2i) -> void:
 	root.add_child(panel)
 	for i in range(7):await process_frame
 	check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(panel.frame.get_global_rect()),entry.id+" restore frame contained "+str(dimensions))
-	check(panel.frame.get_global_rect().encloses(panel.submit_button.get_global_rect()),entry.id+" restore action contained "+str(dimensions))
+	check(not panel.submit_button.visible or panel.frame.get_global_rect().encloses(panel.submit_button.get_global_rect()),entry.id+" restore action contained "+str(dimensions))
 	check(panel.scroll.get_h_scroll_bar().max_value<=panel.scroll.get_h_scroll_bar().page+1,entry.id+" restore view has no horizontal overflow")
 	check(panel.preview==null and panel.find_children("edge_*","Button",true,false).is_empty() and panel.find_children("up_*","Button",true,false).is_empty(),entry.id+" no old answer checklist or order buttons")
 	for node in panel.find_children("*","Button",true,false):
@@ -385,7 +385,7 @@ func test_readonly_panel(entry: Dictionary, dimensions: Vector2i, mode: String, 
 	check(panel.preview == null,entry.id+" readonly preview shows source asset")
 	check(panel.find_children("*","Button",true,false).size() == 2,entry.id+" readonly shows only two close controls")
 	check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(panel.frame.get_global_rect()),entry.id+" readonly frame containment")
-	check(panel.frame.get_global_rect().encloses(panel.submit_button.get_global_rect()),entry.id+" readonly footer containment")
+	check(not panel.submit_button.visible or panel.frame.get_global_rect().encloses(panel.submit_button.get_global_rect()),entry.id+" readonly footer containment")
 	check(panel.scroll.get_h_scroll_bar().max_value <= panel.scroll.get_h_scroll_bar().page+1,entry.id+" readonly no horizontal overflow")
 	check(panel.bg == Color("071f2b") if mode == "dark" else panel.bg == Color("e8e5d7"),entry.id+" source light/dark palette")
 	var visible_text: PackedStringArray = []
@@ -393,7 +393,9 @@ func test_readonly_panel(entry: Dictionary, dimensions: Vector2i, mode: String, 
 		visible_text.append(node.text)
 		check(node.get_theme_font_size("font_size") >= 13,entry.id+" readable readonly label")
 	if not completed and mode == "dark" and film:
-		for trace: String in source.traces[entry.id]: check(visible_text.has("• "+trace),entry.id+" exact rendered source observation row")
+		check(not visible_text.has(source.definitions[entry.id].darkPrompt),entry.id+" observation no longer prints the solution prompt")
+		var folios:=panel.find_children("*","Control",true,false).filter(func(node):return node.get_script()==preload("res://scripts/ui/chapter4_evidence_folio.gd"))
+		check(folios.size()==1 and folios[0].puzzle_id==entry.id,entry.id+" observation renders the matching visual evidence")
 	if entry.id == "media_alignment" and not film:
 		check(visible_text.has("缺少可校准底片"),"Missing film explains prerequisite in both modes")
 		check(not visible_text.has("• "+source.traces.media_alignment[0]),"Missing film takes precedence over observation controls")

@@ -51,9 +51,10 @@ test('world: cached and newer-but-unsettled frames do not acknowledge cancellati
   const result = await f.assertWorldStopped(before(), 'inventory cancellation');
   assert.equal(result.sampleFrame, 13);
   assert.deepEqual(f.samples.map(s => s.sampleFrame), [12, 13]);
-  assert.equal(f.checks.length, 2); assert(f.checks.every(row => row.ok));
+  assert.equal(f.checks.length, 3); assert(f.checks.every(row => row.ok));
   assert.match(f.checks[0].label, /clears pointer owners and axis/);
-  assert.match(f.checks[1].label, /does not leave stuck movement/);
+  assert.match(f.checks[1].label, /stays released in a later engine sample/);
+  assert.match(f.checks[2].label, /does not leave stuck movement/);
   assert.deepEqual(f.delays, [100, 100, 500]);
   assert.equal(f.inputCalls, 0);
 });
@@ -93,6 +94,12 @@ test('world: malformed snapshot is not a successful cancellation', async () => {
 test('world: the existing 500ms player-stability assertion remains a failure gate', async () => {
   const f = fixture([worldSample(11), worldSample(12, s => { s.world.player.x += .5; })]);
   await assert.rejects(f.assertWorldStopped(before(), 'inventory cancellation'), /does not leave stuck movement/);
+  assert.equal(f.checks[0].ok, true); assert.equal(f.checks[1].ok, true); assert.equal(f.checks[2].ok, false);
+  assert.deepEqual(f.delays, [500]); assert.equal(f.inputCalls, 0);
+});
+test('world: a later resurfaced owner still fails the upstream continuous-release gate', async () => {
+  const f = fixture([worldSample(11), worldSample(12, s => { s.world.input.owners = [{index: 1, role: 'camera'}]; })]);
+  await assert.rejects(f.assertWorldStopped(before(), 'inventory cancellation'), /stays released in a later engine sample/);
   assert.equal(f.checks[0].ok, true); assert.equal(f.checks[1].ok, false);
   assert.deepEqual(f.delays, [500]); assert.equal(f.inputCalls, 0);
 });

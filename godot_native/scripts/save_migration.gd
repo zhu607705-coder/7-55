@@ -145,6 +145,7 @@ func _decode_one(payload: Dictionary, defaults: Dictionary) -> Dictionary:
 	if clean.chapter4.completed:
 		native["c4_closure_proof"] = {"source":"browser_save","source_version":version,"fact":"exterior_closure_acknowledged","normalizer_sha256":provenance.normalizer_sha256}
 	clean["native"] = native
+	if clean.theaterHunt.propBoxOpened: preload("res://scripts/games/theater_chest_mechanism.gd").ensure(clean)
 	if defaults.get("cc98") is Dictionary: clean["cc98"] = defaults.cc98.duplicate(true)
 	return {"ok":true,"state":clean,"message":"网页版存档已迁移。","source_version":version,"warnings":[]}
 

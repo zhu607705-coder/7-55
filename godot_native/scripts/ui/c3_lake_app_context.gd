@@ -125,10 +125,10 @@ func map_page(b,root: Control) -> void:
 	b._label(inner,"保留原始来源，核对三条地点记录",Rect2(85,60,266,30),13,b.MUTED)
 	var frame:=DropButton.new(); frame.position=Vector2(14,118); frame.size=Vector2(350,392); frame.name="QizhenMapDrop"; frame.focus_mode=Control.FOCUS_NONE
 	frame.add_theme_stylebox_override("normal",b._style(Color("f8fbf8"),Color("214f59"),0,4)); frame.item_dropped.connect(func(item): import_map(b,item)); inner.add_child(frame)
-	b._panel(frame,Rect2(4,4,342,55),INK)
+	b._panel(frame,Rect2(4,4,342,55),INK).name="QizhenMapHeader"
 	# Reserve the existing collapsed inventory handle gutter; do not move its drag target.
 	b._label(frame,"已接入  %d / 3"%count,Rect2(58,13,145,36),22,Color("ffe27b")).name="QizhenMapCount"
-	b._label(frame,"入口已标记" if solved else "待核对" if count==3 else "收集中",Rect2(216,17,120,29),14,Color("d6f0d9") if solved else Color("c5dcda"),HORIZONTAL_ALIGNMENT_RIGHT)
+	b._label(frame,"入口已标记" if solved else "待核对" if count==3 else "收集中",Rect2(216,17,120,29),14,Color("d6f0d9") if solved else Color("c5dcda"),HORIZONTAL_ALIGNMENT_RIGHT).name="QizhenMapStatus"
 	for i in range(ROWS.size()):
 		var row: Array=ROWS[i]; var added: bool=q.mapClueIds.has(row[1]); var owned: bool=b.s.items.get(row[0],false); var y: float=60+i*109
 		b._panel(frame,Rect2(4,y,342,109),Color("e8f2df") if added else Color("f8fbf8"),Color("b6c9c7"),0,1)
@@ -154,6 +154,46 @@ func map_page(b,root: Control) -> void:
 		b._button(inner,"前往大地图上的启真湖入口",Rect2(28,y+191,322,49),func(): b.zjuding_page="hub"; b.action_requested.emit("c3_map_enter",null),TEAL,Color.WHITE).name="QizhenMapEnter"
 		y+=272
 	inner.custom_minimum_size.y=y+24; inner.size.y=inner.custom_minimum_size.y
+	frame.set_meta("map_inner_height",inner.custom_minimum_size.y)
+	for child: Node in frame.get_children():
+		if child is Control and child.position.y>=60:child.set_meta("map_row_y",child.position.y)
+	for child: Node in inner.get_children():
+		if child is Control and child.position.y>=526:child.set_meta("map_after_y",child.position.y)
+func layout_map_header(page_body: Control,chrome: Control) -> void:
+	var frame: Control=page_body.find_child("QizhenMapDrop",true,false)
+	if frame==null:return
+	var count: Label=frame.get_node("QizhenMapCount")
+	var status: Label=frame.get_node("QizhenMapStatus")
+	var header: Control=frame.get_node("QizhenMapHeader")
+	var left:=58.0
+	if not chrome.inventory_open and chrome.inventory_handle.is_visible_in_tree():
+		var handle: Rect2=chrome.inventory_handle.get_global_rect()
+		var paint: StyleBoxFlat=chrome.inventory_handle.get_theme_stylebox("normal")
+		var paint_scale:float=absf(chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
+		var shadow:=handle.grow(paint.shadow_size*paint_scale);shadow.position+=paint.shadow_offset*paint_scale
+		handle=handle.merge(shadow).merge(chrome.inventory_count.get_global_rect())
+		var scale:float=maxf(.001,absf(frame.get_global_transform_with_canvas().get_scale().x))
+		left=maxf(left,ceilf((handle.end.x-frame.get_global_rect().position.x)/scale)+8)
+	# The short landscape phone has less logical width after the actual44px
+	# rail. Keep both original font sizes and complete strings; stack only this
+	# header after first trimming the right-aligned status's transparent padding;
+	# shift every following row and its scroll extent together only if needed.
+	var status_width:=120.0
+	if left+145+8>216:
+		status_width=ceilf(status.get_theme_font("font").get_string_size(status.text,HORIZONTAL_ALIGNMENT_LEFT,-1,status.get_theme_font_size("font_size")).x)+2
+	var extra:=25.0 if left+145+8+status_width>336 else 0.0
+	var key:=Vector3(left,extra,status_width)
+	if frame.get_meta("map_layout_key",Vector3(-1,-1,-1))==key:return
+	frame.set_meta("map_layout_key",key)
+	count.position=Vector2(left,8 if extra>0 else 13);count.size=Vector2(145,36)
+	status.position=Vector2(336-status_width,45 if extra>0 else 17);status.size=Vector2(status_width,29)
+	header.size=Vector2(342,55+extra);frame.size=Vector2(350,392+extra)
+	for child: Node in frame.get_children():
+		if child is Control and child.has_meta("map_row_y"):child.position.y=float(child.get_meta("map_row_y"))+extra
+	var inner: Control=frame.get_parent()
+	for child: Node in inner.get_children():
+		if child is Control and child.has_meta("map_after_y"):child.position.y=float(child.get_meta("map_after_y"))+extra
+	inner.custom_minimum_size.y=float(frame.get_meta("map_inner_height"))+extra;inner.size.y=inner.custom_minimum_size.y
 func weather_context(s: Dictionary) -> bool:
 	return s.qizhenLake.active and s.qizhenLake.phase not in ["inactive","location_search","lake_unlocked"]
 func weather_available(s: Dictionary) -> bool:

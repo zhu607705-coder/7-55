@@ -8,12 +8,12 @@ func run() -> void:
 		var c:Dictionary=state_node.d.chapter4
 		c.phase="hall_clock_inspection";c.timeState="2245_opening";c.factIds=["external_time_rejected","hall_clock_inspected"];c.floor="A1";c.mode="light"
 		state_node.d.native.c4_context="clock"
-		for target:String in ["close_button","back_button"]:
+		for target:String in ["close_button"]:
 			for code:int in [KEY_ENTER,KEY_KP_ENTER,KEY_SPACE]:
 				check(shell._open_chapter4_clock(state_node.d),"clock opens for focused return test")
 				await frames()
 				var panel=shell.modal
-				panel.choose(0) # Valid answer: an accidental shortcut would advance the story.
+				check(panel.checkpoint.step==0,"fresh mechanism has no completed chain")
 				panel.get(target).grab_focus();await frames(1)
 				check(root.gui_get_focus_owner()==panel.get(target),"clock return has actual GUI focus")
 				await press_key(code)
@@ -22,9 +22,10 @@ func run() -> void:
 		check(shell._open_chapter4_clock(state_node.d),"clock reopens for unchanged shortcut")
 		await frames()
 		var panel=shell.modal
-		panel.choose(0);panel.buttons[0].grab_focus()
+		panel.grab_focus()
 		await press_key(KEY_ENTER)
-		check(state_node.d.chapter4.timeState=="1225_bakery" and shell.modal==null,"clock Enter still submits away from return")
+		check(state_node.d.chapter4.timeState=="2245_opening" and shell.modal==panel,"bare Enter cannot bypass the unverified clock chain")
+		await press_key(KEY_ESCAPE)
 		await prepare(view,"c4-755-room204-1850")
 		# Explicit source checkpoint seam: earn no progression via presentation.
 		state_node.d.chapter4.floor="A2"

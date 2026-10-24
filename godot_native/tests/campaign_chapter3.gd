@@ -77,6 +77,13 @@ func run(runner: SceneTree) -> void:
 	at("theater_light_console")
 	await r.step("c3_program_submit",c.PROGRAM_ORDER)
 	await interact("theater_prop_scanner")
+	var chest: Dictionary=(await r.step("c3_chest_begin")).mechanism
+	for piece: String in ["butterfly","fan","lamp"]:await r.step("c3_chest_clear",{"session":chest.session,"piece":piece})
+	for index: int in range(3):await r.step("c3_chest_place",{"session":chest.session,"piece":["butterfly","lamp","fan"][index],"slot":index})
+	await r.step("c3_chest_place",{"session":chest.session,"piece":"crank","slot":"axle"})
+	await r.step("c3_chest_turn",{"session":chest.session,"direction":1})
+	await r.step("c3_chest_open",{"session":chest.session})
+	await r.step("c3_chest_take",{"session":chest.session})
 	await interact("theater_backstage_vent")
 	await interact("theater_light_console")
 	for round_id in range(3):
