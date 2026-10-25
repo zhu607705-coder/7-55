@@ -37,7 +37,7 @@ func run()->void:
 		for x in image.get_width():
 			var pixel:Color=image.get_pixel(x,y)
 			if pixel.a>0:colors[pixel.to_html(false)]=true
-	check(colors.size()<=6,'Desk uses restrained shared wood/ink palette')
+	check(colors.size()<=6,'Legacy collision-reference desk retains original palette (not rendered as the new desk)')
 	for object:Dictionary in objects.data.desks:
 		var graphic:Rect2=objects.desk_rect(object);var bases:Array=objects.desk_solids(object)
 		check(is_equal_approx(graphic.size.x/240,graphic.size.y/279),'Each prop preserves uniform source scale')
@@ -98,8 +98,8 @@ func run()->void:
 			check((objects.wall_tint.r+objects.wall_tint.g+objects.wall_tint.b)/3<.65,'Night wall adopts source time lighting '+time_id)
 		var source_image:Image=time_plate.get_image()
 		if source_image.is_compressed():source_image.decompress()
-		var clue:Color=objects.wall_composite.get_image().get_pixel((1360-1226)*3,(530-473)*3)
-		check(clue.is_equal_approx(source_image.get_pixel(1360,530)),'Authored clue pixels do not receive generated-material tint twice '+time_id)
+		var clue:Color=objects.wall_composite.get_image().get_pixel((1324-1226)*3,(574-473)*3)
+		check(clue.is_equal_approx(source_image.get_pixel(1324,574)),'Preserved chalk shelf pixels do not receive generated-material tint twice '+time_id)
 	objects.configure('theater_interior','',plate)
 	check(not objects.active and objects.adjusted_collisions(original)==original,'Leaving A1 restores source-only collision behavior')
 	world.queue_free();await frames(3)

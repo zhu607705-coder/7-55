@@ -1,0 +1,237 @@
+[
+  {
+    "local_file": "/workspace/shared/north-web-assets/batch2/blackboard_105_web_master.png",
+    "conversation_url": "https://chatgpt.com/c/6addf524-7170-83e8-8938-b09f6602237b",
+    "reference_files": "blackboard105_4x.png",
+    "reference_directory": "/workspace/shared/north-next5-reference",
+    "source_sample_or_bbox": [
+      1328,
+      498,
+      158,
+      62
+    ],
+    "generation_route": "ChatGPT website via cloud browser, no API",
+    "library_file_id": "libfile_61d97994822481919b4dca9199ed466d",
+    "file_id": "file_0000000047f081f5a949123d9c556046",
+    "library_name": "像素风木框空白黑板.png",
+    "bytes": 1376801,
+    "sha256": "b9267de9e737b504d2c84b329a78e1de6b3bc844b0c4a23c9b08bb55c4cfb41c",
+    "image_size": [
+      2002,
+      786
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "bbox_alpha_gt_0": [
+      0,
+      21,
+      2001,
+      786
+    ],
+    "bbox_alpha_gt_8": [
+      86,
+      87,
+      1919,
+      699
+    ],
+    "visible_aspect_ratio": 2.9950980392156863,
+    "qa_status": "Single-object structure and alpha checked. Original masters unmodified. Scene integration pending worker validation.",
+    "qa_limits": "Low-alpha outliers exist; threshold required. Generated visible aspect differs from requested envelope; use uniform scale, not stretching."
+  },
+  {
+    "local_file": "/workspace/shared/north-web-assets/batch2/notice_105_web_master.png",
+    "conversation_url": "https://chatgpt.com/c/6addf565-b448-83e8-b4d2-be2f8aafcf30",
+    "reference_files": "notice105_4x.png",
+    "reference_directory": "/workspace/shared/north-next5-reference",
+    "source_sample_or_bbox": [
+      1240,
+      512,
+      47,
+      26
+    ],
+    "generation_route": "ChatGPT website via cloud browser, no API",
+    "library_file_id": "libfile_efedbb3cbe988191852e21b6418c5097",
+    "file_id": "file_000000002aac81f585de0e164ab5010a",
+    "library_name": "复古金色像素画框.png",
+    "bytes": 739714,
+    "sha256": "d998ca2cbf9aeb1f5cbad497d38894866cd87f978966af6563e27e50da8cb435",
+    "image_size": [
+      1686,
+      933
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "bbox_alpha_gt_0": [
+      113,
+      9,
+      1667,
+      933
+    ],
+    "bbox_alpha_gt_8": [
+      257,
+      168,
+      1429,
+      772
+    ],
+    "visible_aspect_ratio": 1.9403973509933774,
+    "qa_status": "Single-object structure and alpha checked. Original masters unmodified. Scene integration pending worker validation.",
+    "qa_limits": "Low-alpha outliers exist; threshold required. Generated visible aspect differs from requested envelope; use uniform scale, not stretching."
+  },
+  {
+    "local_file": "/workspace/shared/north-web-assets/batch2/plant_105_web_master.png",
+    "conversation_url": "https://chatgpt.com/c/6addf592-c9b0-83e8-815e-e26ad2f42d16",
+    "reference_files": "plant105_4x.png",
+    "reference_directory": "/workspace/shared/north-next5-reference",
+    "source_sample_or_bbox": [
+      1580,
+      553,
+      25,
+      49
+    ],
+    "generation_route": "ChatGPT website via cloud browser, no API",
+    "library_file_id": "libfile_c02017f69e8081918dfb4d8d7998f37a",
+    "file_id": "file_000000004ed881f5b4e62d97a9fac68e",
+    "library_name": "复古像素风繁茂盆栽植物.png",
+    "bytes": 767784,
+    "sha256": "aa28c391e96bbf7db1d24a39a55d0fadd6a2d2d7193229f9d40d20dde95d1171",
+    "image_size": [
+      896,
+      1756
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "bbox_alpha_gt_0": [
+      0,
+      24,
+      878,
+      1740
+    ],
+    "bbox_alpha_gt_8": [
+      113,
+      159,
+      782,
+      1603
+    ],
+    "visible_aspect_ratio": 0.4632963988919668,
+    "qa_status": "Single-object structure and alpha checked. Original masters unmodified. Scene integration pending worker validation.",
+    "qa_limits": "Low-alpha outliers exist; threshold required. Generated visible aspect differs from requested envelope; use uniform scale, not stretching."
+  },
+  {
+    "local_file": "/workspace/shared/north-web-assets/batch2/desk_student_web_master.png",
+    "conversation_url": "https://chatgpt.com/c/6addf5ef-1b0c-83e8-9f67-552c441c429f",
+    "reference_files": "current_combined_desk_3x.png + source_desk104_4x.png",
+    "reference_directory": "/workspace/shared/north-next5-reference",
+    "source_sample_or_bbox": null,
+    "generation_route": "ChatGPT website via cloud browser, no API",
+    "library_file_id": "libfile_fb84d09075508191ada73cbd0bd01c14",
+    "file_id": "file_00000000439881f583aba7b6959bb5c1",
+    "library_name": "像素木质课桌精灵图.png",
+    "bytes": 748259,
+    "sha256": "26960e9d1e7fb1dd6cc340aeb3bdc13446dec823769561b1f54f2cb5ce435c5e",
+    "image_size": [
+      1278,
+      1230
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "bbox_alpha_gt_0": [
+      0,
+      4,
+      1254,
+      1230
+    ],
+    "bbox_alpha_gt_8": [
+      112,
+      116,
+      1171,
+      1100
+    ],
+    "visible_aspect_ratio": 1.076219512195122,
+    "qa_status": "Single-object structure and alpha checked. Original masters unmodified. Scene integration pending worker validation.",
+    "qa_limits": "Low-alpha outliers exist; threshold required. Generated visible aspect differs from requested envelope; use uniform scale, not stretching."
+  },
+  {
+    "local_file": "/workspace/shared/north-web-assets/batch2/chair_student_web_master.png",
+    "conversation_url": "https://chatgpt.com/c/6addf63e-e544-83e8-8b95-9ab88d92b840",
+    "reference_files": "current_combined_desk_3x.png + source_desk104_4x.png",
+    "reference_directory": "/workspace/shared/north-next5-reference",
+    "source_sample_or_bbox": null,
+    "generation_route": "ChatGPT website via cloud browser, no API",
+    "library_file_id": "libfile_173236f82f508191b1ebb06a354506bd",
+    "file_id": "file_00000000ec4c81f5bddf9f7a9d60e482",
+    "library_name": "像素风木制学校椅精灵.png",
+    "bytes": 435028,
+    "sha256": "3264b0569805ed31a181e0189f1fc68f0429c65c8f39f8a8b91026c673dad532",
+    "image_size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "bbox_alpha_gt_0": [
+      0,
+      39,
+      1216,
+      1212
+    ],
+    "bbox_alpha_gt_8": [
+      342,
+      177,
+      911,
+      1078
+    ],
+    "visible_aspect_ratio": 0.6315205327413984,
+    "qa_status": "Single-object structure and alpha checked. Original masters unmodified. Scene integration pending worker validation.",
+    "qa_limits": "Low-alpha outliers exist; threshold required. Generated visible aspect differs from requested envelope; use uniform scale, not stretching.",
+    "scene_status": "superseded; archival v1 only, not registered or shipped in current preview",
+    "superseded_by": "chair_student_web_master_v2.png"
+  },
+  {
+    "local_master": "chair_student_web_master_v2.png",
+    "sha256": "2c10ac82e23c58e62b1d13d669bdbad84cad01c2fd7b556c495875372a48c142",
+    "library_file_id": "libfile_dac6a3b9e9748191831710681b26249f",
+    "file_id": "file_00000000084c81f5823530423b1de62a",
+    "supersedesSceneUseOnly": "chair_student_web_master.png",
+    "rawV1PreservedAt": "/workspace/shared/north-web-assets/batch2/chair_student_web_master.png",
+    "sceneFit": "uniform width24 height30.31; original foot baseline; foot envelope gap<1 source pixel per side",
+    "id": "student_chair",
+    "texture": "res://assets/native/north_objects_20261025/chair_student_web_master_v2.png",
+    "conversation_url": "https://chatgpt.com/c/6addf63e-e544-83e8-8b95-9ab88d92b840",
+    "generation_route": "ChatGPT web image edit in original chair conversation",
+    "library_name": "像素木椅图标.png",
+    "bytes": 669772,
+    "image_size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "bbox_alpha_gt_8": [
+      220,
+      115,
+      1034,
+      1143
+    ],
+    "scene_status": "current preview registration; floor-cleanup acceptance remains incomplete",
+    "revision_purpose": "Wider physical backrest, seat and leg stance; not a stretched image",
+    "master_editing": "none; source bytes unchanged"
+  }
+]

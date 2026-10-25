@@ -1,0 +1,666 @@
+{
+  "schema": "north-generated-objects-v1",
+  "sceneId": "duan_yongping_temporal_maze",
+  "floor": "A1",
+  "worldSize": [
+    1672,
+    941
+  ],
+  "desk": {
+    "texture": "res://assets/native/north_objects_20261025/student_desk.png",
+    "visibleRect": [
+      1,
+      1,
+      240,
+      279
+    ],
+    "scale": 0.2,
+    "footprints": [
+      [
+        15,
+        222,
+        210,
+        28
+      ],
+      [
+        60,
+        250,
+        120,
+        29
+      ]
+    ]
+  },
+  "desks": [
+    {
+      "id": "desk_104_1_1",
+      "sourceCollisionId": "a1_furniture_011",
+      "centerX": 1299,
+      "baselineY": 348,
+      "cleanRect": [
+        1272,
+        287,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        287,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_1_2",
+      "sourceCollisionId": "a1_furniture_012",
+      "centerX": 1376,
+      "baselineY": 348,
+      "cleanRect": [
+        1349,
+        287,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        287,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_1_3",
+      "sourceCollisionId": "a1_furniture_013",
+      "centerX": 1453,
+      "baselineY": 348,
+      "cleanRect": [
+        1426,
+        287,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        287,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_1_4",
+      "sourceCollisionId": "a1_furniture_014",
+      "centerX": 1531,
+      "baselineY": 348,
+      "cleanRect": [
+        1504,
+        287,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        287,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_2_1",
+      "sourceCollisionId": "a1_furniture_020",
+      "centerX": 1299,
+      "baselineY": 410,
+      "cleanRect": [
+        1272,
+        349,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        349,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_2_2",
+      "sourceCollisionId": "a1_furniture_019",
+      "centerX": 1376,
+      "baselineY": 410,
+      "cleanRect": [
+        1349,
+        349,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        349,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_2_3",
+      "sourceCollisionId": "a1_furniture_001",
+      "centerX": 1453,
+      "baselineY": 410,
+      "cleanRect": [
+        1426,
+        349,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        349,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_2_4",
+      "sourceCollisionId": "a1_furniture_016",
+      "centerX": 1531,
+      "baselineY": 410,
+      "cleanRect": [
+        1504,
+        349,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        349,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_3_1",
+      "sourceCollisionId": "a1_furniture_021",
+      "centerX": 1299,
+      "baselineY": 471,
+      "cleanRect": [
+        1272,
+        410,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        410,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_3_2",
+      "sourceCollisionId": "a1_furniture_022",
+      "centerX": 1376,
+      "baselineY": 471,
+      "cleanRect": [
+        1349,
+        410,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        410,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_3_3",
+      "sourceCollisionId": "a1_furniture_023",
+      "centerX": 1453,
+      "baselineY": 471,
+      "cleanRect": [
+        1426,
+        410,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        410,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_104_3_4",
+      "sourceCollisionId": "a1_furniture_024",
+      "centerX": 1531,
+      "baselineY": 471,
+      "cleanRect": [
+        1504,
+        410,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        410,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_1_1",
+      "sourceCollisionId": "a1_furniture_025",
+      "centerX": 1299,
+      "baselineY": 675,
+      "cleanRect": [
+        1272,
+        614,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        614,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_1_2",
+      "sourceCollisionId": "a1_furniture_026",
+      "centerX": 1376,
+      "baselineY": 675,
+      "cleanRect": [
+        1349,
+        614,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        614,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_1_3",
+      "sourceCollisionId": "a1_furniture_027",
+      "centerX": 1453,
+      "baselineY": 675,
+      "cleanRect": [
+        1426,
+        614,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        614,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_1_4",
+      "sourceCollisionId": "a1_furniture_028",
+      "centerX": 1531,
+      "baselineY": 675,
+      "cleanRect": [
+        1504,
+        614,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        614,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_2_1",
+      "sourceCollisionId": "a1_furniture_032",
+      "centerX": 1299,
+      "baselineY": 736,
+      "cleanRect": [
+        1272,
+        675,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        675,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_2_2",
+      "sourceCollisionId": "a1_furniture_031",
+      "centerX": 1376,
+      "baselineY": 736,
+      "cleanRect": [
+        1349,
+        675,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        675,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_2_3",
+      "sourceCollisionId": "a1_furniture_030",
+      "centerX": 1453,
+      "baselineY": 736,
+      "cleanRect": [
+        1426,
+        675,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        675,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_2_4",
+      "sourceCollisionId": "a1_furniture_029",
+      "centerX": 1531,
+      "baselineY": 736,
+      "cleanRect": [
+        1504,
+        675,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        675,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_3_1",
+      "sourceCollisionId": "a1_furniture_033",
+      "centerX": 1299,
+      "baselineY": 797,
+      "cleanRect": [
+        1272,
+        736,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        736,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_3_2",
+      "sourceCollisionId": "a1_furniture_034",
+      "centerX": 1376,
+      "baselineY": 797,
+      "cleanRect": [
+        1349,
+        736,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        736,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_3_3",
+      "sourceCollisionId": "a1_furniture_035",
+      "centerX": 1453,
+      "baselineY": 797,
+      "cleanRect": [
+        1426,
+        736,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        736,
+        30,
+        63
+      ]
+    },
+    {
+      "id": "desk_105_3_4",
+      "sourceCollisionId": "a1_furniture_036",
+      "centerX": 1531,
+      "baselineY": 797,
+      "cleanRect": [
+        1504,
+        736,
+        54,
+        63
+      ],
+      "donorRect": [
+        1240,
+        736,
+        30,
+        63
+      ]
+    }
+  ],
+  "wall": {
+    "texture": "res://assets/native/north_objects_20261025/wall_face.png",
+    "visibleRect": [
+      1,
+      1,
+      557,
+      180
+    ],
+    "destinationRect": [
+      1226,
+      473,
+      381,
+      123
+    ],
+    "baselineY": 584,
+    "collisionId": "a1_air_wall_005",
+    "preservedSourceParts": [
+      {
+        "id": "notice_frame",
+        "polygon": [
+          [
+            1240,
+            512
+          ],
+          [
+            1287,
+            512
+          ],
+          [
+            1287,
+            538
+          ],
+          [
+            1240,
+            538
+          ]
+        ]
+      },
+      {
+        "id": "blackboard",
+        "polygon": [
+          [
+            1328,
+            498
+          ],
+          [
+            1486,
+            498
+          ],
+          [
+            1486,
+            560
+          ],
+          [
+            1328,
+            560
+          ]
+        ]
+      },
+      {
+        "id": "chalk_shelf",
+        "polygon": [
+          [
+            1319,
+            566
+          ],
+          [
+            1494,
+            566
+          ],
+          [
+            1494,
+            581
+          ],
+          [
+            1319,
+            581
+          ]
+        ]
+      },
+      {
+        "id": "lectern",
+        "polygon": [
+          [
+            1383,
+            564
+          ],
+          [
+            1429,
+            564
+          ],
+          [
+            1429,
+            610
+          ],
+          [
+            1383,
+            610
+          ]
+        ]
+      },
+      {
+        "id": "bookcase",
+        "polygon": [
+          [
+            1533,
+            519
+          ],
+          [
+            1578,
+            519
+          ],
+          [
+            1578,
+            596
+          ],
+          [
+            1533,
+            596
+          ]
+        ]
+      },
+      {
+        "id": "plant",
+        "polygon": [
+          [
+            1590,
+            553
+          ],
+          [
+            1594,
+            557
+          ],
+          [
+            1597,
+            553
+          ],
+          [
+            1600,
+            561
+          ],
+          [
+            1604,
+            561
+          ],
+          [
+            1605,
+            567
+          ],
+          [
+            1602,
+            580
+          ],
+          [
+            1604,
+            583
+          ],
+          [
+            1604,
+            596
+          ],
+          [
+            1599,
+            602
+          ],
+          [
+            1587,
+            601
+          ],
+          [
+            1582,
+            594
+          ],
+          [
+            1583,
+            581
+          ],
+          [
+            1580,
+            574
+          ],
+          [
+            1581,
+            564
+          ],
+          [
+            1586,
+            563
+          ]
+        ]
+      }
+    ],
+    "donorRect": [
+      1240,
+      450,
+      30,
+      20
+    ]
+  }
+}

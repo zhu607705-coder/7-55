@@ -5478,3 +5478,11 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 北教 A1 24 组桌椅与一段墙采用生成美术+独立标定，校正桌椅落地碰撞和墙前后脚点遮挡；最终 248 项新测试、既有章节场景 576 项、启动分包 68 条归属及 quick 5 验证器通过；release 34 项首次通过，补齐宿主 ffprobe 后其余 4 项补跑通过。仍是 A1 首批，未声称全北教完成。
 - 用户已确认将上述 14 个新增改动文件通过独立 PR 发布，与七文件 PR #171 隔离；提交前验证和实际发布结果分别记录。PR #171 已合并/部署 a08da50b，公网资源加载及重载检查桌面 543、模拟触屏 546 项通过，发布脚本逐字节匹配。
 - 45 秒宣传片已导出并在 Shotcut 检查 2 视频轨、音乐/音效/配音预留 3 音轨；另附可移动的编辑工程、字体许可与原始录制。详见 `godot_native/docs/THEATER_CHROME_NORTH_OBJECTS_20261025.md`。
+
+## 2026-10-25 — 北教 53 物件显式调试预览
+
+- 保留 7 类网页透明母版、53 个独立节点与椅 v2；补齐现用素材 provenance。
+- 合并主线 PR173；普通启动复用主线原配置，不创建新独立物件。仅 developer policy 允许且 `NORTH_PROP_OBJECT_PREVIEW=1` 启用预览；正式导出拒绝。
+- 104/105 净地板未完成：拒收的 donor/程序地板实验已备份撤下，网格错位网页候选未接入。不能把透明素材或 headless 测试通过当作地板视觉通过。
+- 专项 5/5（729 checks）与默认五时态主线资源逐像素/碰撞比较通过；Web quick 5/5。原生总验证仍运行；Web release 35/38，single-file 构建 exit137 导致后两项缺输出，待资源释放重试。当前 GPU 重跑受 display 限制，历史真实截图仅保留原覆盖范围。
+- 见 `godot_native/docs/NORTH_OBJECT_PREVIEW_20261025.md`、同目录 acceptance JSON 与 sample README。此检查点仅供 Draft PR，不是完成整层重建、可合并或可发布声明。

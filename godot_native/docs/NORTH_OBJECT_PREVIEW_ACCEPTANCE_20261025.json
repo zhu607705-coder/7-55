@@ -1,0 +1,123 @@
+{
+  "schema": "north-object-preview-checkpoint-v1",
+  "date": "2026-10-25",
+  "status": "debug-preview-only; clean-floor acceptance blocked",
+  "mainBaseline": "abd8b0028e8443795518243da7930ee760bc92e9",
+  "mergedBaseHead": "562d392a2e10876536812ff1dc5abcf75dc050f0",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "sourceHashes": {
+    "godot_native/scripts/world.gd": "750c3e385286690a497ac7b6dd2b74f2ba8bdc8b4e3470eb4b3f8b8974646c10",
+    "godot_native/scripts/presentation/north_generated_objects.gd": "6cdaa3fb032b44ee07c86cf300b2fccd4f254760d61b340863a0c889e7afcc73",
+    "godot_native/scripts/objects/north_prop_scene.gd": "35425063e1d44f3d07e29b8195fdd4dd22af220905c6e49caa7f72136e5e4cd6",
+    "godot_native/data/native/north-baseline-objects.json": "d689820ba7c791fcd846dce209e358616c118a4c2672ecbc64485a7b0c878500",
+    "godot_native/data/native/north-generated-objects.json": "beb29459500d86b63fdfb284cf4c2e327b309a7422b60634b204e7b4b6aec19d",
+    "godot_native/shaders/north_prop_alpha_cutoff.gdshader": "b065e925680d4c3ac0ef328ae9cfae2806146c55042f346d7317a124af171f3e",
+    "godot_native/tests/test_north_preview_gate.gd": "062dacaa6c2f02b5fc63eff0f06520c0acb3fa8d1e783d25bcbdd38fbbe0c0aa",
+    "godot_native/tests/test_north_independent_props.gd": "b73df83e9f4f014a3e9a606664019ce712295d1d9fb6b6a14fa223b10ecad6ef",
+    "godot_native/tests/test_north_prop_fail_closed.gd": "2522070c698f8f176b2ecbaa5467be8b1b723034d9c3bcf3992614af89790957"
+  },
+  "targeted": {
+    "passed": true,
+    "stages": 5,
+    "checks": 729,
+    "failures": 0,
+    "labels": [
+      "test_liangzhu_performance_qte_view.gd",
+      "test_north_generated_objects.gd",
+      "test_north_independent_props.gd",
+      "test_north_preview_gate.gd",
+      "test_north_prop_fail_closed.gd"
+    ]
+  },
+  "defaultMainFiveTimeComparison": {
+    "cases": [
+      {
+        "collisionsEqual": true,
+        "configEqual": true,
+        "passed": true,
+        "time": "0755_morning",
+        "tintsEqual": true,
+        "wallCompositeEveryPixelEqual": true
+      },
+      {
+        "collisionsEqual": true,
+        "configEqual": true,
+        "passed": true,
+        "time": "2245_opening",
+        "tintsEqual": true,
+        "wallCompositeEveryPixelEqual": true
+      },
+      {
+        "collisionsEqual": true,
+        "configEqual": true,
+        "passed": true,
+        "time": "2245_maintenance",
+        "tintsEqual": true,
+        "wallCompositeEveryPixelEqual": true
+      },
+      {
+        "collisionsEqual": true,
+        "configEqual": true,
+        "passed": true,
+        "time": "0754_blackout",
+        "tintsEqual": true,
+        "wallCompositeEveryPixelEqual": true
+      },
+      {
+        "collisionsEqual": true,
+        "configEqual": true,
+        "passed": true,
+        "time": "1225_bakery",
+        "tintsEqual": true,
+        "wallCompositeEveryPixelEqual": true
+      }
+    ],
+    "passed": true,
+    "referenceCommit": "abd8b0028e8443795518243da7930ee760bc92e9",
+    "scope": "Actual headless resource composition and calibrated geometry, not GPU screenshots"
+  },
+  "sourceSync": "passed; 721 source assets",
+  "mediaConversion": "both complete streams validated; original MP4s unchanged",
+  "webQuick": {
+    "passed": true,
+    "validators": 5
+  },
+  "nativeAggregate": {
+    "status": "running at checkpoint publication",
+    "completedStages": 112,
+    "failedStages": 0,
+    "log": "native-full.log",
+    "note": "Publication is a draft preview, not an aggregate pass. Final results will be recorded in the PR."
+  },
+  "webRelease": {
+    "passed": false,
+    "passedValidators": 35,
+    "totalValidators": 38,
+    "failed": [
+      {
+        "stage": "build:single:unchecked",
+        "status": 137,
+        "reason": "system Killed; resource termination"
+      },
+      {
+        "stage": "verify:single",
+        "reason": "dependent demo output absent"
+      },
+      {
+        "stage": "verify:browser-smoke",
+        "reason": "dependent demo output absent"
+      }
+    ],
+    "retry": "after native aggregate releases resources"
+  },
+  "graphics": {
+    "rerun": "blocked: current cloud executor could not connect to X11/Wayland display",
+    "historicalEvidenceOnly": true,
+    "scope": "Previous actual five-time/occlusion/base-alpha captures are not current-checkpoint GPU acceptance."
+  },
+  "unresolved": [
+    "104/105 clean floor separation and seams",
+    "Current-checkpoint GPU rendering and browser/device visual acceptance"
+  ],
+  "remoteActionsAtReceiptCreation": "none"
+}

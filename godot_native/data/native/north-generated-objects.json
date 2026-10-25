@@ -1,5 +1,5 @@
 {
-  "schema": "north-generated-objects-v1",
+  "schema": "north-generated-objects-v3",
   "sceneId": "duan_yongping_temporal_maze",
   "floor": "A1",
   "worldSize": [
@@ -482,48 +482,6 @@
     "collisionId": "a1_air_wall_005",
     "preservedSourceParts": [
       {
-        "id": "notice_frame",
-        "polygon": [
-          [
-            1240,
-            512
-          ],
-          [
-            1287,
-            512
-          ],
-          [
-            1287,
-            538
-          ],
-          [
-            1240,
-            538
-          ]
-        ]
-      },
-      {
-        "id": "blackboard",
-        "polygon": [
-          [
-            1328,
-            498
-          ],
-          [
-            1486,
-            498
-          ],
-          [
-            1486,
-            560
-          ],
-          [
-            1328,
-            560
-          ]
-        ]
-      },
-      {
         "id": "chalk_shelf",
         "polygon": [
           [
@@ -543,117 +501,6 @@
             581
           ]
         ]
-      },
-      {
-        "id": "lectern",
-        "polygon": [
-          [
-            1383,
-            564
-          ],
-          [
-            1429,
-            564
-          ],
-          [
-            1429,
-            610
-          ],
-          [
-            1383,
-            610
-          ]
-        ]
-      },
-      {
-        "id": "bookcase",
-        "polygon": [
-          [
-            1533,
-            519
-          ],
-          [
-            1578,
-            519
-          ],
-          [
-            1578,
-            596
-          ],
-          [
-            1533,
-            596
-          ]
-        ]
-      },
-      {
-        "id": "plant",
-        "polygon": [
-          [
-            1590,
-            553
-          ],
-          [
-            1594,
-            557
-          ],
-          [
-            1597,
-            553
-          ],
-          [
-            1600,
-            561
-          ],
-          [
-            1604,
-            561
-          ],
-          [
-            1605,
-            567
-          ],
-          [
-            1602,
-            580
-          ],
-          [
-            1604,
-            583
-          ],
-          [
-            1604,
-            596
-          ],
-          [
-            1599,
-            602
-          ],
-          [
-            1587,
-            601
-          ],
-          [
-            1582,
-            594
-          ],
-          [
-            1583,
-            581
-          ],
-          [
-            1580,
-            574
-          ],
-          [
-            1581,
-            564
-          ],
-          [
-            1586,
-            563
-          ]
-        ]
       }
     ],
     "donorRect": [
@@ -661,6 +508,366 @@
       450,
       30,
       20
+    ],
+    "sourceExclusions": [
+      [
+        1381,
+        564,
+        55,
+        54
+      ],
+      [
+        1533,
+        519,
+        45,
+        77
+      ],
+      [
+        1328,
+        498,
+        158,
+        62
+      ],
+      [
+        1240,
+        512,
+        47,
+        26
+      ],
+      [
+        1578,
+        553,
+        29,
+        57
+      ]
+    ],
+    "restoredSourceParts": [
+      {
+        "id": "chalk_shelf_behind_lectern",
+        "rect": [
+          1381,
+          566,
+          55,
+          15
+        ],
+        "donorRect": [
+          1438,
+          566,
+          55,
+          15
+        ]
+      }
     ]
+  },
+  "props": [
+    {
+      "id": "lectern_105",
+      "nodeName": "Lectern105",
+      "texture": "res://assets/native/north_objects_20261025/lectern_105_web_master.png",
+      "textureSize": [
+        1254,
+        1254
+      ],
+      "visibleRect": [
+        127,
+        172,
+        1000,
+        909
+      ],
+      "scale": 0.046,
+      "centerX": 1406,
+      "baselineY": 610,
+      "sourceRect": [
+        1381,
+        564,
+        55,
+        54
+      ],
+      "tintSampleRect": [
+        1391,
+        584,
+        30,
+        15
+      ],
+      "interactionTargetId": "a1_classroom_105_lectern_terminal",
+      "cleanup": [
+        {
+          "rect": [
+            1381,
+            596,
+            55,
+            18
+          ],
+          "donorRect": [
+            1438,
+            596,
+            55,
+            18
+          ]
+        },
+        {
+          "rect": [
+            1381,
+            614,
+            55,
+            4
+          ],
+          "donorRect": [
+            1483,
+            614,
+            20,
+            4
+          ]
+        }
+      ],
+      "sha256": "4885bd57881a6061f606cbd5eff714c79e563df03e51a0e5471b1177c0ad4412",
+      "sourceUrl": "https://chatgpt.com/c/6addef8a-1078-83e8-8644-c5ee01439c26",
+      "alphaCutoff": 0.03137254901960784,
+      "sourceForegroundIds": [
+        "a1_foreground_019"
+      ]
+    },
+    {
+      "id": "bookcase_105",
+      "nodeName": "Bookcase105",
+      "texture": "res://assets/native/north_objects_20261025/bookcase_105_web_master.png",
+      "textureSize": [
+        959,
+        1640
+      ],
+      "visibleRect": [
+        138,
+        143,
+        683,
+        1301
+      ],
+      "scale": 0.05918524212144504,
+      "centerX": 1555.5,
+      "baselineY": 596,
+      "sourceRect": [
+        1533,
+        519,
+        45,
+        77
+      ],
+      "tintSampleRect": [
+        1537,
+        538,
+        35,
+        45
+      ],
+      "cleanup": [],
+      "sha256": "51490dee6c1a5073204b74bc8c298420371f51db57cbe6153de2138b25ac761e",
+      "sourceUrl": "https://chatgpt.com/c/6addefc1-0134-83e8-8548-31ec8e61beb3",
+      "alphaCutoff": 0.03137254901960784,
+      "sourceForegroundIds": []
+    },
+    {
+      "id": "blackboard_105",
+      "nodeName": "Blackboard105",
+      "texture": "res://assets/native/north_objects_20261025/blackboard_105_web_master.png",
+      "textureSize": [
+        2002,
+        786
+      ],
+      "visibleRect": [
+        86,
+        87,
+        1833,
+        612
+      ],
+      "scale": 0.0861974904528096,
+      "alphaCutoff": 0.03137254901960784,
+      "sha256": "b9267de9e737b504d2c84b329a78e1de6b3bc844b0c4a23c9b08bb55c4cfb41c",
+      "sourceUrl": "https://chatgpt.com/c/6addf524-7170-83e8-8938-b09f6602237b",
+      "centerX": 1407,
+      "baselineY": 555.4,
+      "depthBaselineY": 584,
+      "renderMode": "wall_attached",
+      "sourceRect": [
+        1328,
+        498,
+        158,
+        62
+      ],
+      "tintSampleRect": [
+        1340,
+        510,
+        120,
+        35
+      ],
+      "cleanup": [],
+      "sourceForegroundIds": []
+    },
+    {
+      "id": "notice_105",
+      "nodeName": "NoticeFrame105",
+      "texture": "res://assets/native/north_objects_20261025/notice_105_web_master.png",
+      "textureSize": [
+        1686,
+        933
+      ],
+      "visibleRect": [
+        257,
+        168,
+        1172,
+        604
+      ],
+      "scale": 0.04010238907849829,
+      "alphaCutoff": 0.03137254901960784,
+      "sha256": "d998ca2cbf9aeb1f5cbad497d38894866cd87f978966af6563e27e50da8cb435",
+      "sourceUrl": "https://chatgpt.com/c/6addf565-b448-83e8-b4d2-be2f8aafcf30",
+      "centerX": 1263.5,
+      "baselineY": 538,
+      "depthBaselineY": 584,
+      "renderMode": "wall_attached",
+      "sourceRect": [
+        1240,
+        512,
+        47,
+        26
+      ],
+      "tintSampleRect": [
+        1247,
+        519,
+        30,
+        12
+      ],
+      "cleanup": [],
+      "sourceForegroundIds": []
+    },
+    {
+      "id": "plant_105",
+      "nodeName": "Plant105",
+      "texture": "res://assets/native/north_objects_20261025/plant_105_web_master.png",
+      "textureSize": [
+        896,
+        1756
+      ],
+      "visibleRect": [
+        113,
+        159,
+        669,
+        1444
+      ],
+      "scale": 0.03393351800554017,
+      "alphaCutoff": 0.03137254901960784,
+      "sha256": "aa28c391e96bbf7db1d24a39a55d0fadd6a2d2d7193229f9d40d20dde95d1171",
+      "sourceUrl": "https://chatgpt.com/c/6addf592-c9b0-83e8-815e-e26ad2f42d16",
+      "centerX": 1592.5,
+      "baselineY": 602,
+      "sourceRect": [
+        1578,
+        553,
+        29,
+        57
+      ],
+      "tintSampleRect": [
+        1586,
+        562,
+        14,
+        35
+      ],
+      "cleanup": [
+        {
+          "rect": [
+            1578,
+            596,
+            29,
+            14
+          ],
+          "donorRect": [
+            1502,
+            596,
+            29,
+            14
+          ]
+        }
+      ],
+      "sourceForegroundIds": []
+    }
+  ],
+  "deskParts": [
+    {
+      "id": "student_table",
+      "nodeName": "StudentTable",
+      "texture": "res://assets/native/north_objects_20261025/desk_student_web_master.png",
+      "textureSize": [
+        1278,
+        1230
+      ],
+      "visibleRect": [
+        112,
+        116,
+        1059,
+        984
+      ],
+      "scale": 0.0453257790368272,
+      "alphaCutoff": 0.03137254901960784,
+      "sha256": "26960e9d1e7fb1dd6cc340aeb3bdc13446dec823769561b1f54f2cb5ce435c5e",
+      "sourceUrl": "https://chatgpt.com/c/6addf5ef-1b0c-83e8-9f67-552c441c429f",
+      "baselineOffsetY": -5.8,
+      "renderMode": "desk_part"
+    },
+    {
+      "id": "student_chair",
+      "nodeName": "StudentChair",
+      "texture": "res://assets/native/north_objects_20261025/chair_student_web_master_v2.png",
+      "textureSize": [
+        1254,
+        1254
+      ],
+      "visibleRect": [
+        220,
+        115,
+        814,
+        1028
+      ],
+      "scale": 0.029484029484029485,
+      "alphaCutoff": 0.03137254901960784,
+      "sha256": "2c10ac82e23c58e62b1d13d669bdbad84cad01c2fd7b556c495875372a48c142",
+      "sourceUrl": "https://chatgpt.com/c/6addf63e-e544-83e8-8b95-9ab88d92b840",
+      "baselineOffsetY": 0,
+      "renderMode": "desk_part",
+      "fitNote": "Uniform width24, height30.31: body matches existing24px chair base; feet band22.91px, subpixel margin0.545px/side."
+    }
+  ],
+  "palette": {
+    "name": "755-campus-morning-32",
+    "colors": [
+      "202B35",
+      "344452",
+      "526B7A",
+      "7993A1",
+      "A9BCC2",
+      "D8C7A0",
+      "F4EAD5",
+      "FFF0B2",
+      "44332D",
+      "70503B",
+      "A1744E",
+      "C79B62",
+      "766E63",
+      "A39B87",
+      "C5C1A9",
+      "E8E0C8",
+      "243F5A",
+      "385B79",
+      "547F9D",
+      "83A7B6",
+      "2D443E",
+      "49634A",
+      "72865C",
+      "A9B577",
+      "6F483E",
+      "A76A4C",
+      "D89C6A",
+      "F0C895",
+      "9A514A",
+      "C77964",
+      "D3A451",
+      "F4CD77"
+    ],
+    "policy": "Native shader snaps base asset colors before source-time/mode lighting. Raw web masters remain unchanged."
   }
 }
