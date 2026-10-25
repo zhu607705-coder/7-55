@@ -4,6 +4,8 @@ const Picker=preload("res://scripts/world_object_picker.gd")
 const Room = preload("res://scripts/games/chapter4_room204_model.gd")
 const PhaseLayers = preload("res://scripts/ui/chapter4_phase_layers.gd")
 const ArchiveMotion = preload("res://scripts/objects/room301_archive_motion.gd")
+const ElevatorButton = preload("res://scripts/objects/chapter4_elevator_button.gd")
+var elevator_button:Node2D
 var phases: RefCounted=PhaseLayers.new()
 var archive_motion: RefCounted=ArchiveMotion.new()
 static var presentation: Dictionary={}
@@ -48,7 +50,7 @@ func tick(delta: float,state: Dictionary) -> void:
 	for id in moves.keys():
 		if clock_ms-float(moves[id].start)>=480: moves.erase(id)
 func owns_pick_target(id: String) -> bool:
-	return id.begins_with("a1_hall_clock") or id in ["a1_front_desk_attendant","a2_elevator_attendant","a3_reference_teacher","a1_bakery_inspection_lamp","a1_bakery_hour_hand_pickup","a1_noticeboard_paper","a1_campus_card_reader","a1_attendance_paper_slot"] or not phases.alumni.filter(func(person):return str(person.targetId)==id).is_empty()
+	return (is_instance_valid(elevator_button) and elevator_button.owns_target(id)) or id.begins_with("a1_hall_clock") or id in ["a1_front_desk_attendant","a2_elevator_attendant","a3_reference_teacher","a1_bakery_inspection_lamp","a1_bakery_hour_hand_pickup","a1_noticeboard_paper","a1_campus_card_reader","a1_attendance_paper_slot"] or not phases.alumni.filter(func(person):return str(person.targetId)==id).is_empty()
 
 func register_frame(canvas: CanvasItem,ids: Array,sheet_id: String,frame_id: String,pos: Vector2,angle: float,scale_value: float) -> void:
 	var sheet: Dictionary=Room.data().sheets[sheet_id]; var frame: Dictionary=sheet.frames[frame_id]
@@ -81,6 +83,7 @@ func draw_before_furniture(canvas: CanvasItem,context: Dictionary,state: Diction
 		_draw_bakery_people(canvas,context,state,true)
 	else:
 		if not _active(context,state): return
+		if is_instance_valid(elevator_button):elevator_button.paint(canvas,context,state)
 		var c: Dictionary=state.chapter4
 		phases.draw_back(self,canvas,context,state)
 		if Room.presentation(state)=="interactive" and (c.mode=="dark" or presentation.get("kind","")=="projection"):
@@ -90,7 +93,8 @@ func draw_before_furniture(canvas: CanvasItem,context: Dictionary,state: Diction
 		_draw_bakery_people(canvas,context,state,false)
 func draw_after_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	if not _active(context,state): return
-	archive_motion.draw(self,canvas,context,state,front)
+	# Room301's independent case owns the visible drawer; this layer owns only
+	# the original modal-lifetime motion, never an extra cabinet at the door.
 	var c: Dictionary=state.chapter4
 	if front:
 		if presentation.get("kind","")=="projection" and state.chapter4.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y<475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
@@ -132,6 +136,7 @@ func collisions(state: Dictionary) -> Array:
 		if _native_owns(e.kind+":"+e.id): out.append(native_prop.footprint_bounds(e.kind+":"+e.id))
 		else: out.append(Room.entity_collision(e))
 	out.append_array(phases.collisions(state))
+	out.append_array(ElevatorButton.collision_rects(state))
 	var c: Dictionary=state.get("chapter4",{})
 	if c.get("floor","")=="A1" and c.get("phase","")=="bakery_hour_hand" and c.get("timeState","")=="1225_bakery":
 		var foot: Dictionary=source.playerFootBoxContract.worldFootBox

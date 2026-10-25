@@ -382,6 +382,7 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 	if not allow_legacy_v35_fields and (not value.actOne.has("tiyiUpdateStage") or not value.ui.has("homeDeskReturnScene")): return false
 	if value.actOne.has("tiyiUpdateStage") and value.actOne.tiyiUpdateStage not in preload("res://scripts/chapters/tiyi_access.gd").STAGES: return false
 	if value.ui.has("homeDeskReturnScene") and value.ui.homeDeskReturnScene not in [null,"phone_home","bonsai"]: return false
+	if value.native.has("campus_network_account") and not preload("res://scripts/chapters/campus_network_account.gd").valid(value.native.campus_network_account):return false
 	# The studio checkpoint is optional for old saves; present checkpoints stay bounded.
 	if value.native.has("theater_chest") and not preload("res://scripts/games/theater_chest_mechanism.gd").valid(value): return false
 	if value.native.has("c4_clock_chain") and not preload("res://scripts/games/chapter4_clock_chain.gd").valid_state(value): return false

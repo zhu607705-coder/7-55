@@ -299,7 +299,8 @@ func _build() -> void:
 	inventory_arrow=_label(inventory_handle,"›",15,Color("e8e4d8")); inventory_arrow.position=Vector2(5,38); inventory_arrow.size=Vector2(26,15); inventory_arrow.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	inventory_count=_label(inventory_handle,"0",9,Color.WHITE); inventory_count.name="InventoryCount"; inventory_count.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	inventory_count.add_theme_stylebox_override("normal",_style(RED,Color("101116"),2))
-	brightness_veil=ColorRect.new(); brightness_veil.name="BrightnessVeil"; brightness_veil.color=Color("05060c"); brightness_veil.mouse_filter=Control.MOUSE_FILTER_IGNORE; brightness_veil.z_index=55; brightness_veil.size=CONTENT_SIZE; add_child(brightness_veil)
+	# Phone glass sits above apps, Control Center and phone documents without owning input.
+	brightness_veil=ColorRect.new(); brightness_veil.name="BrightnessVeil"; brightness_veil.mouse_filter=Control.MOUSE_FILTER_IGNORE; brightness_veil.z_index=200; brightness_veil.size=CONTENT_SIZE; add_child(brightness_veil)
 	pixel_grid=PixelGrid.new(); pixel_grid.name="PixelGrid"; pixel_grid.size=CONTENT_SIZE; pixel_grid.z_index=60; add_child(pixel_grid)
 	acquisition=Panel.new(); acquisition.name="InventoryAcquisition"; acquisition.mouse_filter=Control.MOUSE_FILTER_IGNORE; acquisition.size=Vector2(42,42); acquisition.pivot_offset=Vector2(21,21); acquisition.z_index=4; acquisition.visible=false
 	acquisition.add_theme_stylebox_override("panel",_style(Color("f7f1d7"),Color("101116"),2,Color(0,0,0,0.38),Vector2(3,3))); inventory.add_child(acquisition)
@@ -312,6 +313,15 @@ func _build() -> void:
 		shadow.color=Color(0.08,0.12,0.15,0.18)
 		target.get_parent().add_child(shadow); target.get_parent().move_child(shadow,target.get_index())
 	set_process(true)
+
+func set_display_brightness(value: float) -> void:
+	if is_instance_valid(brightness_veil):
+		# Keep the darkest setting usable while making the whole 0–100 range visible.
+		brightness_veil.color=Color(0,0,0,(1-clampf(value,0,100)/100.0)*0.65)
+
+func _notification(what: int) -> void:
+	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT or (what==NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree()):
+		set_display_brightness(float(state.get("ui",{}).get("brightness",70)))
 
 func refresh(next_state: Dictionary) -> void:
 	_build()
@@ -329,7 +339,7 @@ func refresh(next_state: Dictionary) -> void:
 	task_button.visible=not bare and show_task_bar and _task_visible()
 	_refresh_status()
 	_refresh_task()
-	brightness_veil.color=Color(5/255.0,6/255.0,12/255.0,clampf((70.0-float(ui.get("brightness",70)))/70.0,0,1)*0.3)
+	set_display_brightness(float(ui.get("brightness",70)))
 	var next_owned: Array=[]
 	for id in ITEM_ORDER:
 		if state.get("items",{}).get(id,false): next_owned.append(id)

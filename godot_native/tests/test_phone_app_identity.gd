@@ -36,13 +36,28 @@ func fixture(kind:String,state:Dictionary,view:Dictionary={},presence_audit:bool
 	var fresh:Control=b._weather() if kind=="weather" else b._tiyi(view)
 	var holder=Control.new();holder.theme=Ui.make_theme(load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"));root.add_child(holder);holder.add_child(fresh)
 	await frames()
-	check(expected.labels==labels(fresh),kind+" retains exact authored Label text")
+	var dashboard=kind=="tiyi" and not presence_audit
+	if dashboard:
+		for original_text in expected.labels:check(labels(fresh).has(original_text),"rebuilt Tiyi retains authored action text: "+original_text)
+		check(fresh.name=="TiyiDashboard" and labels(fresh).has("课外锻炼") and labels(fresh).has("评分次数"),"Tiyi labels are native controls")
+	else:check(expected.labels==labels(fresh),kind+" retains exact authored Label text")
 	var ab=expected.buttons;var bb=buttons(fresh)
 	for list in [ab,bb]:
 		for item in list:
 			# Anonymous nav names vary by global instance sequence.
 			if item.name.begins_with("@"):item.name="anonymous"
-	check(ab==bb,kind+" retains every button text/disabled/tooltip/rect")
+	if dashboard:
+		# The user requested a native rebuild. Keep action identity and semantics;
+		# new responsive geometry is exercised in test_tiyi_visual_layout.gd.
+		for original in ab:
+			var matched=bb.filter(func(button):return button.name==original.name)
+			check(matched.size()==1,"original Tiyi control remains unique: "+original.name)
+			if matched.size()==1:
+				for key in ["text","disabled","tooltip"]:
+					if key=="text" and original.name=="PhoneNav_exit":
+						check(fresh.find_child("PhoneNav_exit",true,false).get_meta("phone_nav_kind")=="exit","rebuilt header owns one actual exit mark")
+					else:check(matched[0][key]==original[key],"original Tiyi "+original.name+" "+key)
+	else:check(ab==bb,kind+" retains every button text/disabled/tooltip/rect")
 	check(expected.actions==b.handled,kind+" retains handled action IDs")
 	if presence_audit:
 		check_presence_identity(fresh)

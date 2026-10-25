@@ -3,6 +3,7 @@ const PlatePress = preload("res://scripts/objects/room201_press_model.gd")
 const MediaStudio = preload("res://scripts/objects/room302_studio_model.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const Room204 = preload("res://scripts/games/chapter4_room204_model.gd")
+const Room301Layout=preload("res://scripts/objects/room301_exhibit_layout.gd")
 const Progressive = preload("res://scripts/games/progressive_transport_model.gd")
 const ClockChain = preload("res://scripts/games/chapter4_clock_chain.gd")
 const DutyBoard = preload("res://scripts/games/chapter4_duty_board.gd")
@@ -788,6 +789,9 @@ func _target(id: String,label: String,action: String,c: Dictionary,mode: String=
 			if entity.targetId==id: bounds=entity.installationBounds; radius=float(entity.proximity)
 	if id=="a2_room204_residual_group": bounds=layout.room204Runtime.residualGroupBounds; radius=76
 	if id=="a2_room204_podium_drawer": bounds=layout.room204Runtime.podium.drawerBounds; radius=60
+	if id=="a3_301_archive_index":
+		var area:=Room301Layout.archive_bounds()
+		bounds={"x":area.position.x,"y":area.position.y,"width":area.size.x,"height":area.size.y};radius=52
 	if id=="a1_hall_clock_minute_endpoint": bounds=layout.finalClockRuntime.endpoint.installationBounds; radius=float(layout.finalClockRuntime.endpoint.proximity)
 	if id=="a1_power_panel": bounds=layout.lightGridRuntime.panel.installationBounds; radius=float(layout.lightGridRuntime.panel.proximity)
 	if id=="a2_202_projection": bounds=layout.finalMinuteRuntime.installationBounds; radius=float(layout.finalMinuteRuntime.proximity)

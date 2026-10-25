@@ -70,27 +70,19 @@ func witness_footer(b,root: Control,y: float) -> void:
 	save.add_theme_stylebox_override("disabled",b._style(Color("dce9f7"),Color("0a3777"),0,3))
 	if found: b._label(root,content.locationSearch.cc98.system+"\n"+content.locationSearch.cc98.player,Rect2(23,y+114,332,65),16,b.MUTED)
 	root.custom_minimum_size.y=y+(210 if found else 135); root.size.y=root.custom_minimum_size.y
-func append_friend(b,root: Control) -> void:
+func append_friend(b,root: VBoxContainer) -> void:
 	if not active(b.s): return
 	if b.s.qizhenLake.lakeClueFound: chat_step=3
 	elif chat_started<0: chat_started=Time.get_ticks_msec()
 	var rows: Array=[]
-	var y: float=595
 	for i in range(content.locationSearch.wechat.size()):
 		var text: String=content.locationSearch.wechat[i]
-		var self_reply: bool=text.begins_with("自动回复：")
-		var row:=Control.new(); row.name="QizhenChatLine_"+str(i); row.position=Vector2(0,y); row.size=Vector2(378,98); root.add_child(row)
-		if not self_reply:
-			b._panel(row,Rect2(16,3,40,40),Color("d5ba8b"),Color("a6a6a6"),3,1)
-			b._label(row,"/",Rect2(16,3,40,40),27,Color("644845"),HORIZONTAL_ALIGNMENT_CENTER)
-		var x: float=30 if self_reply else 68
-		b._panel(row,Rect2(x,0,287,87),Color("a7e775") if self_reply else Color.WHITE,Color("89be69") if self_reply else Color("d4d8d4"),3,1)
-		b._label(row,text,Rect2(x+11,7,263,74),18,b.INK)
-		rows.append(row); y+=100
-	var save: Button=b._button(root,"已保存地点词：湖面" if b.s.qizhenLake.lakeClueFound else "保存地点词：湖面",Rect2(20,y,338,48),func(): b.action_requested.emit("c3_clue:lake",null),Color("f5d75e"),Color("28251d"),0,Color("28251d"))
-	save.name="WechatLakeKeyword"; save.disabled=b.s.qizhenLake.lakeClueFound
-	save.add_theme_color_override("font_disabled_color",Color("355b4b"))
-	save.add_theme_stylebox_override("disabled",b._style(Color("dce7df"),Color("6c8177"),0,3))
+		var row=b._wechat_message(root,text,text.begins_with("自动回复："),"QizhenChatLine_"+str(i))
+		rows.append(row)
+	var save: Button=b.wechat_social.button(root,"已保存地点词：湖面" if b.s.qizhenLake.lakeClueFound else "保存地点词：湖面",func(): b.action_requested.emit("c3_clue:lake",null),"WechatLakeKeyword",true)
+	save.disabled=b.s.qizhenLake.lakeClueFound
+	save.add_theme_color_override("font_disabled_color",Color("36546f"))
+	save.add_theme_stylebox_override("disabled",b._style(Color("dce9f7"),Color("0a3777"),4,1))
 	var update=func():
 		if not is_instance_valid(root): return
 		if b.s.qizhenLake.lakeClueFound: chat_step=3
@@ -100,9 +92,8 @@ func append_friend(b,root: Control) -> void:
 		for i in range(rows.size()): rows[i].visible=i<chat_step
 		save.visible=chat_step==3
 	update.call()
-	var timer:=Timer.new(); timer.wait_time=.02; timer.timeout.connect(update); root.add_child(timer)
-	root.ready.connect(func(): timer.start())
-	root.custom_minimum_size.y=y+76; root.size.y=root.custom_minimum_size.y
+	var timer:=Timer.new();timer.wait_time=.02;timer.timeout.connect(update);root.add_child(timer)
+	root.ready.connect(func():timer.start())
 func import_map(b,item: String) -> void:
 	if not active(b.s): map_feedback="当前没有需要合并的地点线索。"
 	else:

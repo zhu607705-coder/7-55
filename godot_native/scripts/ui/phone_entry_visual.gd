@@ -104,7 +104,7 @@ func _process(_delta: float) -> void:
 			var vectors: Array=[Vector2(-180,-320),Vector2(160,-260),Vector2(-220,300),Vector2(230,260)]
 			var rotations: Array=[-260,200,300,-220]
 			for i in range(4):
-				digits[i].position=Vector2(81+i*34,37)+vectors[i]*progress; digits[i].rotation=deg_to_rad(rotations[i])*progress; digits[i].modulate.a=1-progress
+				digits[i].position=Vector2(digits[i].get_meta("flight_origin",Vector2(81+i*34,37)))+vectors[i]*progress; digits[i].rotation=deg_to_rad(rotations[i])*progress; digits[i].modulate.a=1-progress
 	elif kind=="crash" and is_instance_valid(group):
 		var sample:=crash_sample(session.elapsed_ms-3000) if session.phase in ["crashing","exiting"] else crash_sample(0)
 		var center:=surface.size/2

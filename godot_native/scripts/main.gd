@@ -1009,6 +1009,7 @@ func _refresh() -> void:
 	if phone_builder == null and ResourceLoader.exists("res://scripts/ui/phone_pages.gd"):
 		phone_builder = load("res://scripts/ui/phone_pages.gd").new()
 		phone_builder.connect("action_requested",_on_phone_action)
+		phone_builder.brightness_preview_requested.connect(_preview_phone_brightness)
 		phone_builder.connect("page_requested",_on_phone_page)
 		if phone_builder.has_signal("presentation_requested"): phone_builder.connect("presentation_requested",_play_presentation_cue)
 		if phone_builder.has_signal("document_requested"): phone_builder.connect("document_requested",_open_phone_document)
@@ -2689,6 +2690,7 @@ func _on_phone_action(id: String,value: Variant) -> void:
 	match id:
 		"native_control_center_close":
 			State.d.ui.controlCenterOpen=false
+			_preview_phone_brightness(-1)
 			_refresh_control_center()
 			return
 		"native_save_tools": _show_settings(); return
@@ -2706,6 +2708,11 @@ func _on_phone_action(id: String,value: Variant) -> void:
 			if str(action.id)==id: _invoke_action(action); return
 	State.act(id,value)
 
+func _preview_phone_brightness(value: float) -> void:
+	# Drag feedback is presentation-only; release still commits through the controller.
+	if is_instance_valid(phone_chrome):
+		phone_chrome.set_display_brightness(float(State.d.ui.brightness) if value<0 else value)
+
 func _refresh_control_center() -> void:
 	if is_instance_valid(control_center):
 		phone.remove_child(control_center)
@@ -2715,6 +2722,7 @@ func _refresh_control_center() -> void:
 	if control_builder==null:
 		control_builder=load("res://scripts/ui/phone_pages.gd").new()
 		control_builder.action_requested.connect(_on_phone_action)
+		control_builder.brightness_preview_requested.connect(_preview_phone_brightness)
 		control_builder.page_requested.connect(_on_phone_page)
 		control_builder.presentation_requested.connect(_play_presentation_cue)
 	control_center=control_builder.build("control_center",State.get_view("control_center"),State.d)

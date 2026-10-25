@@ -1,4 +1,5 @@
 extends RefCounted
+const Identity=preload("res://scripts/ui/native_tiyi_identity.gd")
 ## Source RouteAuditPanel fields and evidence. All saved facts stay controller-owned.
 const FIELDS=[
 	{"id":"arrival","key":"auditArrivalMinutes","label":"到座耗时","unit":"分钟","min":0,"max":12,"default":5,"hint":"入口小屏 · 计算时间差"},
@@ -70,10 +71,10 @@ func build(b) -> Control:
 	var p: Dictionary=b.s.ui.libraryFinalsPuzzle
 	_sync(p)
 	var passed=bool(p.presenceProofCollected)
-	var root: Control=b._base(Color("edf2f7"),1084)
+	var root: Control=b._base(Identity.BACKGROUND,1084)
 	root.name="TiyiPresenceForm"
 	if not b.handled.has("lib_audit"): b.handled.append("lib_audit")
-	b._header(root,"浙大体艺",Color("3b79e9"),Color.WHITE,func(): b.page_requested.emit("phone_home"),"exit","退出浙大体艺，返回手机主页")
+	b._header(root,"浙大体艺",Color.WHITE,Identity.INK,func(): b.page_requested.emit("phone_home"),"exit","退出浙大体艺，返回手机主页")
 	b._panel(root,Rect2(38,67,326,125),Color.WHITE,Color("b8c9db"),8,1)
 	_text(b,root,"补录成功" if passed else "本人来过证明补录单",Rect2(50,80,302,30),20,BLUE).name="TiyiPresenceTitle"
 	_text(b,root,"系统已承认你确实来过图书馆" if passed else "待补录 · 先核对三项调查材料",Rect2(50,114,302,24),14,MUTED)

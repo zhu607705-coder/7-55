@@ -6,9 +6,8 @@ signal motion_finished
 const ATLAS = preload("res://assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_archive_film_v01.png")
 const InsetKey=preload("res://scripts/objects/inset_option_key.gd")
 const Art=preload("res://scripts/objects/room301_archive_art.gd")
-# The original 96x82 object remains the only production art. These regions
-# separate its upper case, front board, paper stock and amber film.
-const REGIONS := {"case":Rect2(0,0,96,82),"drawer":Rect2(13,48,65,24),"card":Rect2(25,20,41,22),"film":Rect2(53,30,18,17)}
+# Physical closeup of the case's drawer; controls sit on its paper channels.
+const REGIONS := {"case":Rect2(Vector2.ZERO,Art.SIZE),"drawer":Rect2(7,58,82,20),"card":Rect2(25,20,41,22),"film":Rect2(53,30,18,17)}
 const KEYS := ["yearBand","floor","purpose"]
 const DRAFT_KEYS := ["archiveYearBand","archiveFloor","archivePurpose"]
 const TITLES := ["年代", "楼层", "用途"]
@@ -87,11 +86,11 @@ func _layout() -> void:
 	handle_base = Rect2(drawer.position+drawer.size*Vector2(.24,.32),drawer.size*Vector2(.52,.56))
 	if handle_base.size.y < 44: handle_base = handle_base.grow((44-handle_base.size.y)/2.0)
 	film = _fit_rect(REGIONS.film,Rect2(cabinet.position+Vector2(cabinet.size.x*.17,cabinet.size.y*.19),cabinet.size*Vector2(.66,.54)))
-	var width:=cabinet.size.x*.64
+	var width:=cabinet.size.x*.72
 	var height:=maxf(44.0,9.4*scale_factor)
 	for row in range(3):
 		if source.is_empty(): continue
-		var center:=cabinet.position+Vector2(47,16+15*row)*scale_factor
+		var center:=cabinet.position+Vector2(48,17+18*row)*scale_factor
 		var rect:=Rect2(center-Vector2(width,height)/2,Vector2(width,height))
 		if short_view:
 			rect=Rect2(Vector2(play_area.position.x+play_area.size.x*.43,play_area.get_center().y-86+row*60),Vector2(play_area.size.x*.55,52))
@@ -138,8 +137,7 @@ func _entry_pull() -> float:
 func _draw() -> void:
 	if source.is_empty() or not cabinet.has_area(): return
 	var shade := Color("90c4cf") if observation else Color.WHITE
-	# Keep the source sprite's uniform scale and registration. The front board
-	# moves separately; no generated replacement artwork is used.
+	# The paper channels stay registered while the real wooden front moves.
 	var pull:float=(visual_drawer().position.y-drawer.position.y)/(cabinet.size.x/96.0)
 	Art.render(self,cabinet,pull,0.0 if completed else 1.0,Vector2.ZERO,shade)
 	if completed:

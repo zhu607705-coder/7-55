@@ -3512,16 +3512,32 @@
       "portraitUrl": "res://assets/rpg/portraits/chapter4/alumni/yang_wei_v01.png",
       "floor": 3,
       "frameBounds": {
-        "x": 526,
-        "y": 627,
-        "width": 73,
-        "height": 99
+        "x": 1034,
+        "y": 72,
+        "width": 44,
+        "height": 59.6712328767
       },
       "imageBounds": {
-        "x": 536,
-        "y": 637,
-        "width": 53,
-        "height": 79
+        "x": 1040.0273972603,
+        "y": 78.0273972603,
+        "width": 31.9452054795,
+        "height": 47.6164383562
+      },
+      "drawRuntimeFrame": true,
+      "displayBaselineY": 142,
+      "floorRepair": {
+        "bounds": {
+          "x": 523,
+          "y": 624,
+          "width": 80,
+          "height": 105
+        },
+        "sourceBounds": {
+          "x": 523,
+          "y": 513,
+          "width": 80,
+          "height": 105
+        }
       }
     }
   ],

@@ -61,6 +61,8 @@ func _run() -> void:
 	s.ui.brightness=85; s.ui.musicPlaying=true
 	await click(node("LowPowerToggle"))
 	expect(s.phoneBattery.lowPowerMode and s.ui.brightness==45 and not s.ui.musicPlaying,"low power caps brightness and pauses source music")
+	c.dispatch(s,"phone_settings_brightness",100)
+	expect(s.ui.brightness==45,"Settings obeys the same low-power cap as Control Center")
 	c.dispatch(s,"c1_network","cellular"); s.phoneBattery.percent=1; c.dispatch(s,"c1_network","campus_wifi")
 	expect(s.phoneBattery.percent==1,"network switch preserves source 1 percent reserve")
 	await show("phone_home")
@@ -138,6 +140,24 @@ func _run() -> void:
 		p.settings_page=section
 		await show("settings")
 		expect(body.size.x==424 and body.get_meta("source_page",false),"Settings "+section+" uses the source-width native layout")
+	# Optional billing uses receipts, never the story wallet or attendance.
+	var store=root.get_node("State")
+	var account=preload("res://scripts/chapters/campus_network_account.gd")
+	store.d=store.initial();store.d.native.page="zjuding"
+	var untouched=JSON.stringify([store.d.wallet,store.d.flags,store.d.items,store.d.actOne,store.d.networkMode])
+	c.dispatch(store.d,"phone_network_review","duplicate_billing")
+	expect(not account.account(store.d).resolved,"guessing a cause without documents cannot clear arrears")
+	c.dispatch(store.d,"phone_network_document","bill")
+	c.dispatch(store.d,"phone_network_document","receipt")
+	c.dispatch(store.d,"phone_network_review","signal_issue")
+	expect(not account.account(store.d).resolved,"unrelated signal complaint preserves arrears")
+	c.dispatch(store.d,"phone_network_review","duplicate_billing")
+	expect(account.account(store.d).resolved,"matching inspected documents resolves duplicate billing")
+	expect(JSON.stringify([store.d.wallet,store.d.flags,store.d.items,store.d.actOne,store.d.networkMode])==untouched,"billing cannot spend story money or unlock attendance and chapters")
+	expect(store.validate_snapshot(store.d) and store.save_game(),"billing state passes native save validation")
+	store.d=store.initial();expect(store.load_game() and account.account(store.d).resolved,"billing survives real native save and reload")
+	var forged=store.d.duplicate(true);forged.native.campus_network_account.receipt_seen=false
+	expect(not store.validate_snapshot(forged),"save rejects settlement without receipt evidence")
 	var bundle={"posts":Store.defaults(),"questPostOverrides":{"act-two-gamepad-market":{"body":"导入的虚构正文"}}}
 	expect(Store.validate_bundle(bundle) and Store.import_bundle(bundle)==OK,"explicit separate-storage bundle imports successfully")
 	expect(Store.quest_posts(fresh())[0].body=="导入的虚构正文","bundle quest body survives fresh story state")

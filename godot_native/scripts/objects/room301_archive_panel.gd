@@ -85,7 +85,7 @@ func _refresh() -> void:
 	elif session.mode=="dark":
 		hint.text="抽屉边留下了三条索引痕迹。看清年代、楼层和用途，再切回浅色动手。"
 	else:
-		hint.text="点按索引签，或左右滑动切换内容。选好后，拉开黄铜把手。" if input_mode=="touch" else "拨动抽屉上的三条索引签，再拉把手。↑↓选签 · ←→切换 · Enter检索。"
+		hint.text=""
 
 func _choose(key: String, value: String) -> void:
 	if not view.interactive or not session.choose(key,value): return

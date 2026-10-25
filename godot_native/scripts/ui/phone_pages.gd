@@ -7,22 +7,32 @@ signal action_requested(action_id: String, value: Variant)
 signal page_requested(page: String)
 signal presentation_requested(cue: String)
 signal document_requested(config: Dictionary)
+signal brightness_preview_requested(value: float)
 const OpeningPresentation = preload("res://scripts/ui/native_opening_presentation.gd")
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const PhonePalette = preload("res://scripts/ui/phone_palette.gd")
+const WechatBubble=preload("res://scripts/ui/wechat_message_bubble.gd")
+const WechatSocial=preload("res://scripts/ui/wechat_social_pages.gd")
+const WechatChrome=preload("res://scripts/ui/wechat_chrome.gd")
+var wechat_social=WechatSocial.new()
 const PhotoEvidence = preload("res://scripts/ui/photo_evidence_surface.gd")
 const WeatherIcon = preload("res://scripts/ui/native_weather_icon.gd")
 const TiyiIdentity = preload("res://scripts/ui/native_tiyi_identity.gd")
+var tiyi_identity=TiyiIdentity.new()
 const TiyiAccess = preload("res://scripts/chapters/tiyi_access.gd")
 var tiyi_official_open=false
 const TiyiSevenArt = preload("res://scripts/ui/tiyi_seven_art.gd")
+const SettingsChrome=preload("res://scripts/ui/phone_settings_chrome.gd")
+const CampusServices=preload("res://scripts/ui/phone_campus_services.gd")
+var campus_services=CampusServices.new()
 const SettingsGear = preload("res://scripts/ui/native_settings_gear.gd")
 const TiyiPresence = preload("res://scripts/ui/native_tiyi_presence.gd")
 var tiyi_presence = TiyiPresence.new()
 const EndingResume = preload("res://scripts/ui/native_ending_resume.gd")
 const CheckinPage = preload("res://scripts/ui/native_checkin_page.gd")
 var checkin_page = CheckinPage.new()
+var checkin_return="learn"
 const LearnPage = preload("res://scripts/ui/native_learn_page.gd")
 var learn_page = LearnPage.new()
 const HomeArt = preload("res://scripts/ui/phone_home_art.gd")
@@ -71,6 +81,8 @@ const PhoneChrome = preload("res://scripts/ui/phone_chrome.gd")
 const Posts = preload("res://scripts/data/cc98_store.gd")
 var settings_page = "root"
 var settings_query = ""
+var settings_scroll=0
+var settings_direction=0
 var cc98_tab = "hot"
 var cc98_board = ""
 var cc98_post = ""
@@ -96,13 +108,15 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 	s = state
 	bonsai_growth.route(page)
 	entry_session.route(s)
+	wechat_social.route(s,page,previous_page)
+	tiyi_identity.route(s,page)
 	lake_apps.route(previous_page,page,s)
 	if page != previous_page and page != "control_center":
 		if page!="wechat": tiyi_official_open=false
 		if not page.begins_with("library_"): native_library.reset()
 		if page!="checkin": checkin_page.reset()
 		if page!="tiyi": tiyi_presence.reset()
-		if page == "settings": settings_page = "root"; settings_query = ""
+		if page == "settings" and previous_page!="control_center": settings_page = "root"; settings_query = ""; settings_scroll=0
 		if page != "cc98":
 			cc98_login.reset()
 			cc98_investigation.reset()
@@ -279,6 +293,11 @@ func back_navigation(surface: Control) -> bool:
 	if not is_instance_valid(chosen): return false
 	chosen.pressed.emit()
 	return true
+
+func _return_checkin() -> void:
+	if checkin_return=="smart_classroom":
+		zjuding_page="hub";zjuding_panel="smart_classroom";zjuding_overlay="";page_requested.emit("zjuding")
+	else:_return_zjuding("learn")
 
 func _return_zjuding(page: String = "hub") -> void:
 	zjuding_page=page; zjuding_panel=""; zjuding_overlay=""
@@ -464,7 +483,7 @@ func _home() -> Control:
 		_label(note,"记录恢复",Rect2(54,7,230,21),16)
 		_label(note,"检测到 7 分 55 秒未同步记录",Rect2(54,30,268,19),10,MUTED)
 		_label(note,"现在",Rect2(317,7,32,20),10,Color("c85454"))
-	elif not s.flags.codeScattered or s.actOne.phase == "friend_message_required":
+	elif (_friend_stage()=="prologue" and not s.flags.codeScattered) or (_friend_stage()=="followup" and s.actOne.phase=="friend_message_required"):
 		var note = _page(root,"",Rect2(12,4,352,50),"wechat",Color("f6f2e7"))
 		_app_icon(_panel(note,Rect2(10,8,34,34),Color("61b58c"),INK,4,1),"wechat",.7)
 		_label(note,"朋友",Rect2(54,4,232,22),16)
@@ -526,7 +545,7 @@ func _home_open_notification(root: Control, notice: Dictionary) -> void:
 	else: page_requested.emit(notice.route)
 
 func _build_home_apps(root: Control) -> void:
-	var colors={"wechat":Color("61b58c"),"tiyi":Color("e8893f"),"zjuding":Color("ece9df"),"settings":Color("777989"),"photos":Color("eee5dd"),"timeline_recovery":Color("a0bdbd"),"voice_memos":Color("d89e96"),"cc98":Color("4d7ed9"),"control_center":Color("756aa9"),"clock":Color("e8e5db")}
+	var colors={"wechat":Color("61b58c"),"tiyi":TiyiIdentity.BLUE,"zjuding":Color("ece9df"),"settings":Color("777989"),"photos":Color("eee5dd"),"timeline_recovery":Color("a0bdbd"),"voice_memos":Color("d89e96"),"cc98":Color("4d7ed9"),"control_center":Color("756aa9"),"clock":Color("e8e5db")}
 	var order=Utilities.normalized_order(s.ui.homeAppOrder)
 	var layout={"order":order.duplicate(),"buttons":{},"slots":{},"labels":{},"changed":false}
 	var visible_ids=_home_visible_app_ids(order)
@@ -643,32 +662,44 @@ func _home_edit_visuals(root: Control, layout: Dictionary) -> void:
 			remove.name="Remove_"+str(id)
 
 func _wechat(_view: Dictionary) -> Control:
-	for id in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: handled.append(id)
-	if tiyi_official_open and TiyiAccess.update_required(s): return _tiyi_official_account()
+	for id in ["c1_friend","c1_avatar","c2_friend_exchange","c2_mentor","c3_clue:lake","c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: handled.append(id)
+	if tiyi_official_open: return _tiyi_official_account()
 	if friend_open: return _friend_chat()
-	var root=_base(PhonePalette.BACKGROUND,APP_HEIGHT)
-	_panel(root,Rect2(0,0,378,47),PhonePalette.CHROME,PhonePalette.LINE,0,1)
-	_nav(root,"exit","退出微信，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(7,1,40,44),PhonePalette.CHROME)
-	_label(root,"微信",Rect2(54,5,270,37),18,INK,HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(root,Rect2(0,47,378,33),PhonePalette.BACKGROUND)
-	var search := LineEdit.new();search.name="WechatSearch";search.position=Vector2(12,49);search.size=Vector2(354,28)
-	search.placeholder_text="搜索";search.text=wechat_query;Typography.apply_body(search);search.add_theme_font_size_override("font_size",15)
-	NativeUi.apply_input(search,PhonePalette.SURFACE,PhonePalette.INK,Color.TRANSPARENT,4,15,Vector2(8,4),PhonePalette.ACCENT);root.add_child(search)
+	var social_page: Control=wechat_social.build_extra(self)
+	if social_page!=null:return social_page
+	var root=_base(Color.WHITE,APP_HEIGHT)
+	_panel(root,Rect2(0,0,378,52),PhonePalette.CHROME)
+	_nav(root,"exit","退出微信，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(6,3,40,44),PhonePalette.CHROME)
+	_label(root,"微信",Rect2(70,7,222,36),wechat_social.font_size(self,20),INK,HORIZONTAL_ALIGNMENT_CENTER)
+	var search_toggle=_button(root,"",Rect2(286,3,40,44),func():wechat_social.search_open=not wechat_social.search_open;action_requested.emit("phone_refresh",null),PhonePalette.CHROME,INK,0,Color.TRANSPARENT)
+	search_toggle.name="WechatSearchToggle";search_toggle.tooltip_text="搜索"
+	WechatChrome.icon(search_toggle,"search",Rect2(8,9,25,25))
+	var add=_button(root,"",Rect2(330,3,42,44),func():wechat_social.tab="contacts";action_requested.emit("phone_refresh",null),PhonePalette.CHROME,INK,0,Color.TRANSPARENT)
+	add.name="WechatOpenContacts";add.tooltip_text="通讯录"
+	WechatChrome.icon(add,"plus",Rect2(7,8,28,28))
+	var searching: bool=wechat_social.search_open or not wechat_query.is_empty()
+	var search := LineEdit.new();search.name="WechatSearch";search.position=Vector2(12,56);search.size=Vector2(354,34);search.visible=searching
+	search.placeholder_text="搜索";search.text=wechat_query;Typography.apply_body(search);search.add_theme_font_size_override("font_size",16)
+	NativeUi.apply_input(search,PhonePalette.SURFACE,PhonePalette.INK,Color.TRANSPARENT,4,16,Vector2(8,4),PhonePalette.ACCENT);root.add_child(search)
+	var column=wechat_social.feed(self,root,98 if searching else 52,68,"chats",0)
+	column.add_theme_constant_override("separation",0)
+	var margins=column.get_parent() as MarginContainer
+	margins.add_theme_constant_override("margin_top",0);margins.add_theme_constant_override("margin_bottom",0)
 	var search_rows: Array[Dictionary]=[]
-	var preview="你到底到哪了？" if lake_apps.active(s) else "签上了吗？？" if s.actOne.phase=="friend_message_required" else "这是签到码 ▓▓▓▓" if s.flags.codeScattered else "速来！老师开始雷达签到！"
+	var font_scale: float=clampf(float(s.get("native",{}).get("settings",{}).get("text_scale",1.0)),.85,1.35)
+	var preview=_friend_preview()
 	var movement=s.actOne.phase in ["movement_required","reservation_briefing_required","reservation_required","movement_ready"]
-	var rows=[["文件传输助手","[图片]","09:28",Color("10af42")],["朋友",preview,"07:55",Color("a9c5e8")],["室友","晚上一起去食堂吃饭呀~","07:21",Color("72bb50")],["导师","头像框中间多了一条被封住的竖线。" if movement and not s.actOne.mentorLineReleased else "请把实验报告的初稿发我一下。","07:18",Color("9c80d8")]]
+	var rows=[["文件传输助手",wechat_social.social_copy.conversation.helper,"09:28",Color("10af42")],["朋友",preview,"07:55",Color("a9c5e8")],["室友",wechat_social.social_copy.conversation.roommate,"07:21",Color("72bb50")],["导师","头像框中间多了一条被封住的竖线。" if movement and not s.actOne.mentorLineReleased else wechat_social.social_copy.conversation.mentor,"07:18",Color("9c80d8")]]
 	for i in range(4):
-		var row: Array=rows[i]; var index=i; var y=80+i*70
-		var button=_button(root,"",Rect2(0,y,378,70),func():
-			if index==1:
-				friend_open=true
-				action_requested.emit("c1_friend" if s.actOne.phase=="prologue" and not s.flags.codeScattered else "phone_refresh",null)
-			else: _toast(root,["文件传输助手：只有你给自己发的表情包。","","室友：还有 12 秒进入梦乡最深处。","导师：实验报告仍然不会自己完成。"][index]),Color.WHITE,INK,0,Color.TRANSPARENT)
+		var row: Array=rows[i]; var index=i
+		var button=WechatChrome.conversation(column,row[0],row[1],row[2],font_scale,i<2)
+		button.pressed.connect(func():
+			if index==1:_open_wechat_friend()
+			else:wechat_social.open_panel(self,{0:"helper",2:"roommate",3:"mentor"}[index]))
 		button.name="WechatRow_"+str(index)
 		search_rows.append({"control":button,"text":str(row[0])+" "+str(row[1])})
-		_panel(button,Rect2(0,69,378,1),PhonePalette.LINE)
-		var avatar=_panel(button,Rect2(12,10,47,47),row[3],Color("6d7b80"),0,2)
+		var slot=button.find_child("AvatarSlot",true,false)
+		var avatar=_panel(slot,Rect2(0,0,48,48),row[3],Color.TRANSPARENT,5,0)
 		if i==0:
 			_panel(avatar,Rect2(11,13,23,20),Color.WHITE)
 			var triangle=Polygon2D.new(); triangle.position=Vector2(19,17); triangle.polygon=PackedVector2Array([Vector2(0,0),Vector2(8,5),Vector2(0,10)]); triangle.color=row[3]; avatar.add_child(triangle)
@@ -679,10 +710,9 @@ func _wechat(_view: Dictionary) -> Control:
 					var hanging=_panel(avatar,Rect2(7,40,5,18),Color("16273f"))
 					root.ready.connect(func():
 						var swing=hanging.create_tween().set_loops(); swing.tween_property(hanging,"rotation",deg_to_rad(-14),.5); swing.tween_property(hanging,"rotation",deg_to_rad(10),.5))
-			var target=_button(button,"",Rect2(12,10,47,47),func():
-				if not s.flags.codeScattered or s.flags.slashTaken:
-					friend_open=true
-					action_requested.emit("c1_friend" if s.actOne.phase=="prologue" and not s.flags.codeScattered else "phone_refresh",null)
+			var target=_button(slot,"",Rect2(0,0,48,48),func():
+				if _friend_stage()!="prologue" or not s.flags.codeScattered or s.flags.slashTaken:
+					_open_wechat_friend()
 				else: action_requested.emit("c1_avatar",null),Color.TRANSPARENT,INK,0,Color.TRANSPARENT); target.name="WechatFriendAvatar"
 			for mode in ["normal","pressed","hover"]: target.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 		elif i==2: _panel(avatar,Rect2(11,11,23,23),Color.TRANSPARENT,Color("264b2d"),0,4)
@@ -691,126 +721,120 @@ func _wechat(_view: Dictionary) -> Control:
 			if movement:
 				_panel(avatar,Rect2(13,7,19,5),Color("cbc4d8"),Color("554963"),0,1)
 				_panel(avatar,Rect2(13,33,19,5),Color("cbc4d8"),Color("554963"),0,1)
-				_drop_action(button,Rect2(12,10,47,47),"c2_mentor").name="WechatMentorAvatar"
-		_label(button,row[0],Rect2(74,12,249,26),16)
-		var caption=_label(button,row[1],Rect2(74,42,242,20),12,Color("8a8a8a"))
-		caption.autowrap_mode=TextServer.AUTOWRAP_OFF; caption.clip_text=true; caption.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
-		_label(button,row[2],Rect2(323,14,43,18),10,Color("999999"),HORIZONTAL_ALIGNMENT_RIGHT)
+				_drop_action(slot,Rect2(0,0,48,48),"c2_mentor").name="WechatMentorAvatar"
 	if s.ui.autoRotate and s.actOne.phase=="prologue" and s.flags.codeScattered and not s.flags.slashHalfDropped: _animate_rotation(root,root,"slash")
-	if TiyiAccess.update_required(s) and not lake_apps.active(s):
-		var official=_button(root,"",Rect2(0,360,378,70),func(): tiyi_official_open=true; action_requested.emit("phone_refresh",null),Color.WHITE,INK,0,Color.TRANSPARENT)
-		official.name="TiyiOfficialAccount"
-		search_rows.append({"control":official,"text":"浙大体育与艺术 公众号 体艺"})
-		_label(official,"体艺",Rect2(12,375-360,47,36),16,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
-		_label(official,"浙大体育与艺术",Rect2(74,10,290,26),16)
-		_label(official,"公众号 · 修读办法 / 场馆预约 / 联系我们",Rect2(74,39,290,24),11,MUTED)
-	_panel(root,Rect2(0,APP_HEIGHT-55,378,55),PhonePalette.CHROME,PhonePalette.LINE,0,1)
-	for i in range(4):
-		var color=PhonePalette.ACCENT if i==0 else PhonePalette.INK
-		var icon=_panel(root,Rect2(38+i*94.5,APP_HEIGHT-46,18,18),color if i==0 else Color.TRANSPARENT,color,9 if i in [1,2] else 1,2)
-		_label(root,["聊天","联系人","发现","我的"][i],Rect2(i*94.5,APP_HEIGHT-22,94.5,17),10,color,HORIZONTAL_ALIGNMENT_CENTER)
-	var empty := _label(root,"没有找到相关会话",Rect2(20,112,338,32),16,MUTED,HORIZONTAL_ALIGNMENT_CENTER);empty.name="WechatNoResults"
+	var official=WechatChrome.conversation(column,"浙大体育与艺术","修读手记 · 场馆日常 · 联系我们","昨天",font_scale)
+	official.pressed.connect(func():tiyi_official_open=true;action_requested.emit("phone_refresh",null));official.name="TiyiOfficialAccount"
+	var tiyi_avatar=_panel(official.find_child("AvatarSlot",true,false),Rect2(0,0,48,48),TiyiIdentity.BLUE,Color.TRANSPARENT,5,0)
+	TiyiIdentity.add_runner(tiyi_avatar,Rect2(1,1,46,46))
+	search_rows.append({"control":official,"text":"浙大体育与艺术 公众号 体艺"})
+	var accounts=WechatChrome.conversation(column,"公众号",str(wechat_social.campus.name)+" · 历史文章","昨天",font_scale)
+	accounts.pressed.connect(func():wechat_social.open_panel(self,"officials"));accounts.name="WechatPublicAccounts"
+	var account_avatar=_panel(accounts.find_child("AvatarSlot",true,false),Rect2(0,0,48,48),Color("1689e9"),Color.TRANSPARENT,5,0)
+	WechatChrome.icon(account_avatar,"officials",Rect2(9,8,30,32),Color.WHITE)
+	search_rows.append({"control":accounts,"text":"公众号 校园后勤服务 浙大体育与艺术 历史文章"})
+	wechat_social.footer(self,root)
+	var empty := _label(root,wechat_social.word("no_results"),Rect2(20,112,338,32),16,MUTED,HORIZONTAL_ALIGNMENT_CENTER);empty.name="WechatNoResults"
 	var filter_rows := func(query: String) -> void:
 		wechat_query=query
-		var top := 80.0
+		var count := 0
 		for row: Dictionary in search_rows:
 			var visible_row: bool=query.strip_edges().is_empty() or query.to_lower() in str(row.text).to_lower()
 			row.control.visible=visible_row
-			if visible_row:row.control.position.y=top;top+=70
-		empty.visible=top==80.0
+			if visible_row:count+=1
+		empty.visible=count==0
 	search.text_changed.connect(filter_rows);filter_rows.call(wechat_query)
 	handled.append("c1_friend"); handled.append("c2_friend_exchange")
 	return root
 
 func _tiyi_official_account() -> Control:
-	var root=_base(PhonePalette.BACKGROUND,APP_HEIGHT)
-	root.name="TiyiOfficialAccountPage"
-	root.set_meta("handles_all_actions",true)
-	_panel(root,Rect2(0,0,378,54),PhonePalette.CHROME)
-	_button(root,"‹",Rect2(8,5,40,44),func(): tiyi_official_open=false; action_requested.emit("phone_refresh",null),PhonePalette.CHROME,INK,0,Color.TRANSPARENT).name="TiyiOfficialBack"
-	_label(root,"浙大体育与艺术",Rect2(52,8,274,37),17,INK,HORIZONTAL_ALIGNMENT_CENTER)
-	_label(root,"公众号",Rect2(16,75,346,28),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
-	_label(root,"在底部「联系我们」查看体艺下载卡。",Rect2(22,111,334,48),15,INK,HORIZONTAL_ALIGNMENT_CENTER)
-	var stage: String=str(s.actOne.get("tiyiUpdateStage","not_started"))
-	if stage!="not_started":
-		var card=_panel(root,Rect2(22,183,334,330),Color.WHITE,Color("cbd3d9"),8,1)
-		card.name="TiyiDownloadCard"
-		_label(card,"浙大体艺 APP",Rect2(16,15,302,35),22,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
-		_label(card,"游戏内更新",Rect2(16,57,302,26),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
-		_label(card,"仅模拟扫码、获取和安装。\n不调用设备权限，不下载真实应用。",Rect2(20,103,294,62),14,INK,HORIZONTAL_ALIGNMENT_CENTER)
-		if stage=="official_entry_found":
-			_act(card,"模拟扫码获取更新",Rect2(25,194,284,52),"c2_tiyi_acquire",null,Color("168c54"),Color.WHITE,6).name="TiyiAcquireUpdate"
-			_label(card,"需要网络连接",Rect2(20,265,294,28),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
-		elif stage=="package_ready":
-			_label(card,"更新包已就绪",Rect2(20,172,294,28),14,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
-			_act(card,"安装更新",Rect2(25,218,284,52),"c2_tiyi_install",null,Color("168c54"),Color.WHITE,6).name="TiyiInstallUpdate"
-		else:
-			_label(card,"更新已安装",Rect2(20,172,294,28),16,Color("168c54"),HORIZONTAL_ALIGNMENT_CENTER)
-			_page(card,"返回桌面，重新进入体艺",Rect2(25,218,284,52),"phone_home").name="TiyiUpdateReturnHome"
-	_panel(root,Rect2(0,APP_HEIGHT-57,378,57),PhonePalette.CHROME,PhonePalette.LINE,0,1)
-	_label(root,"修读办法",Rect2(0,APP_HEIGHT-48,126,38),14,INK,HORIZONTAL_ALIGNMENT_CENTER)
-	_label(root,"场馆预约",Rect2(126,APP_HEIGHT-48,126,38),14,INK,HORIZONTAL_ALIGNMENT_CENTER)
-	_act(root,"联系我们",Rect2(252,APP_HEIGHT-55,126,53),"c2_tiyi_discover",null,PhonePalette.CHROME,INK,0,PhonePalette.LINE).name="TiyiContact"
-	return root
+	return wechat_social.tiyi_account(self)
+
+func _friend_stage() -> String:
+	if lake_apps.active(s):return "lake"
+	if int(s.native.get("chapter",1))>=3:return "archive"
+	if int(s.native.get("chapter",1))<=1 and s.actOne.phase=="prologue" and not s.flags.checkinDone:return "prologue"
+	return "followup"
+
+func _friend_preview() -> String:
+	match _friend_stage():
+		"lake":return "你到底到哪了？"
+		"archive":return "查看聊天记录"
+		"followup":return "签上了吗？？" if s.actOne.phase=="friend_message_required" else "？你没睡醒吧"
+	return "这是签到码 ▢▢▢▢" if s.flags.codeScattered else "速来！老师开始雷达签到！"
+
+func _open_wechat_friend() -> void:
+	friend_open=true;wechat_social.history_open=false
+	action_requested.emit("c1_friend" if _friend_stage()=="prologue" and not s.flags.codeScattered else "phone_refresh",null)
+
+func _wechat_message(parent: Control, text: String, outgoing: bool=false, id: String="") -> WechatBubble:
+	var row=WechatBubble.new()
+	row.configure(text,outgoing,wechat_social.font_size(self,18))
+	if not id.is_empty():row.name=id
+	parent.add_child(row)
+	return row
+
+func _friend_history(parent: Control) -> void:
+	wechat_social.copy(parent,"较早的消息 · 07:55",wechat_social.font_size(self,12),PhonePalette.MUTED)
+	_wechat_message(parent,"速来！老头突然开始点名了，学在浙大雷达签到！")
+	if s.flags.codeScattered:_wechat_message(parent,"这是签到码 ▢▢▢▢")
 
 func _friend_chat() -> Control:
-	var root=_base(PhonePalette.BACKGROUND,620)
-	_panel(root,Rect2(0,0,378,57),PhonePalette.CHROME)
-	_button(root,"‹",Rect2(9,9,38,38),func(): friend_open=false; lake_apps.friend_closed(); action_requested.emit("c1_friend_cancel" if s.actOne.phase=="prologue" else "phone_refresh",null),PhonePalette.CHROME,INK,0,Color.TRANSPARENT).name="FriendChatBack"
-	_label(root,"朋友",Rect2(59,9,239,38),23)
-	_panel(root,Rect2(16,83,40,40),Color("d5ba8b"),Color("a6a6a6"),3,1)
-	_label(root,"/",Rect2(16,83,40,40),27,Color("644845"),HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(root,Rect2(68,80,287,58),Color.WHITE,Color("d4d8d4"),3,1)
-	_label(root,"速来！老头突然开始点名了，学在浙大雷达签到！",Rect2(79,87,263,43),18)
-	var message=Control.new(); message.size=Vector2(378,86); message.position=Vector2(0,157); root.add_child(message)
-	_panel(message,Rect2(16,3,40,40),Color("d5ba8b"),Color("a6a6a6"),3,1)
-	_label(message,"/",Rect2(16,3,40,40),27,Color("644845"),HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(message,Rect2(68,0,287, 70.0),Color.WHITE,Color("d4d8d4"),3,1)
-	_label(message,"这是签到码",Rect2(80,7,245,27),18)
-	var digits: Array=[]
-	for i in range(4):
-		var digit=_label(message,"▓",Rect2(81+i*34,37,28,28),22,INK,HORIZONTAL_ALIGNMENT_CENTER)
-		digits.append(digit)
-	if s.flags.codeScattered:
-		for digit in digits: digit.text="▢"; digit.modulate=Color("bbbbbb")
-		if s.actOne.phase=="prologue":
-			_label(root,"任务：找回四位签到码",Rect2(20,290,338,50),19,Color("5d4407"),HORIZONTAL_ALIGNMENT_CENTER)
-		else:
-			_panel(root,Rect2(16,261,40,40),Color("d5ba8b"),Color("a6a6a6"),3,1)
-			_panel(root,Rect2(68,259,138,49),Color.WHITE,Color("d4d8d4"),3,1)
-			_label(root,"签上了吗？？",Rect2(81,265,112,36),19)
-			var reply=_panel(root,Rect2(28,340,282,88),PhonePalette.SELF_BUBBLE,PhonePalette.ACCENT,4,0)
-			reply.name="WechatSelfReply"
-			var own_avatar := _panel(reply,Rect2(294,0,40,40),Color("83a7b6"),Color.TRANSPARENT,4,0);own_avatar.name="WechatSelfAvatar"
-			_label(own_avatar,"我",Rect2(0,0,40,40),18,INK,HORIZONTAL_ALIGNMENT_CENTER)
-			var tail := Polygon2D.new();tail.polygon=PackedVector2Array([Vector2(282,14),Vector2(288,20),Vector2(282,26)]);tail.color=PhonePalette.SELF_BUBBLE;reply.add_child(tail)
-			_label(reply,"没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。",Rect2(13,7,259,74),18)
-			var question=_panel(root,Rect2(68,441,175,49),Color.WHITE,Color("d4d8d4"),3,1)
-			_label(question,"？你没睡醒吧",Rect2(8,6,159,36),22)
+	var root=_base(PhonePalette.BACKGROUND,APP_HEIGHT)
+	var stage=_friend_stage()
+	wechat_social.header(self,root,"朋友",func(): friend_open=false;lake_apps.friend_closed();action_requested.emit("c1_friend_cancel" if stage=="prologue" else "phone_refresh",null),"FriendChatBack")
+	var column=wechat_social.feed(self,root,57,0,"",0)
+	if stage!="prologue":
+		wechat_social.button(column,wechat_social.word("history_close") if wechat_social.history_open else wechat_social.word("history"),func():wechat_social.history_open=not wechat_social.history_open;action_requested.emit("phone_refresh",null),"WechatEarlierMessages")
+		if wechat_social.history_open:_friend_history(column)
+		if stage=="lake":
+			lake_apps.append_friend(self,column)
+		elif stage=="followup":
+			_wechat_message(column,"签上了吗？？",false,"WechatFollowupQuestion")
+			var reply=_wechat_message(column,"没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。",true,"WechatFollowupReply")
+			reply.bubble.name="WechatSelfReply";reply.avatar.name="WechatSelfAvatar"
+			var question=_wechat_message(column,"？你没睡醒吧",false,"WechatFollowupAnswer")
 			if s.actOne.phase=="friend_message_required":
-				reply.visible=false; question.visible=false
+				reply.visible=false;question.visible=false
 				root.ready.connect(func():
-					var tween=root.create_tween(); tween.tween_interval(.7)
-					tween.tween_callback(func(): reply.visible=true)
-					tween.tween_interval(.85); tween.tween_callback(func(): question.visible=true)
-					tween.tween_interval(.6); tween.tween_callback(func(): action_requested.emit("c2_friend_exchange",null)))
-			else: _label(root,"任务：找到系统",Rect2(20,534,338,48),19,Color("5d4407"),HORIZONTAL_ALIGNMENT_CENTER)
+					var tween=root.create_tween();tween.tween_interval(.7)
+					tween.tween_callback(func():reply.visible=true)
+					tween.tween_interval(.85);tween.tween_callback(func():question.visible=true)
+					tween.tween_interval(.6);tween.tween_callback(func():action_requested.emit("c2_friend_exchange",null)))
+		else:
+			wechat_social.copy(column,wechat_social.word("no_messages"),wechat_social.font_size(self,14),PhonePalette.MUTED)
+			# An earned earlier exchange remains readable, without presenting its
+			# old task as the current objective of a later chapter.
+			if wechat_social.history_open:
+				_wechat_message(column,"签上了吗？？")
+				_wechat_message(column,"没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。",true)
+				_wechat_message(column,"？你没睡醒吧")
 	else:
-		message.visible=false
-		var burst=_panel(root,Rect2(13,280,352,206),Color("100d13"),Color("74232c"),0,2)
-		burst.visible=false
-		_panel(burst,Rect2(158,14,36,36),Color("3a0d10"),Color("d43a3a"),18,8)
-		_label(burst,"等等——人还在被窝里就想隔空签到？",Rect2(12,62,328,59),20,Color("ff7070"),HORIZONTAL_ALIGNMENT_CENTER)
-		_label(burst,"想得美！这分我今天扣定了！",Rect2(12,123,328,29),18,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-		var laugh=_label(burst,"签到码给你拆碎咯，慢慢找去吧哈哈哈！",Rect2(12,163,328,31),15,Color("ffb1b1"),HORIZONTAL_ALIGNMENT_CENTER); laugh.visible=false
-		var skip=_button(root,"",Rect2(0,60,378,560),func(): entry_session.skip_friend(),Color.TRANSPARENT,Color.TRANSPARENT,0,Color.TRANSPARENT)
-		skip.name="FriendAttackSkip"; skip.mouse_filter=Control.MOUSE_FILTER_IGNORE; skip.focus_mode=Control.FOCUS_NONE
-		for mode in ["normal","hover","pressed","focus"]: skip.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
-		message.name="FriendCodeMessage"; burst.name="FriendAttackBurst"; laugh.name="FriendAttackLaugh"
-		EntryVisual.bind_friend(root,entry_session,message,burst,laugh,digits,skip,PHONE_SCALE)
-
-	handled.append("c1_friend"); handled.append("c1_avatar"); handled.append("c2_friend_exchange")
-	lake_apps.append_friend(self,root)
+		_wechat_message(column,"速来！老头突然开始点名了，学在浙大雷达签到！",false,"WechatOpeningMessage")
+		var message=_wechat_message(column,"这是签到码",false,"FriendCodeMessage")
+		var glyphs:=Control.new();glyphs.custom_minimum_size.y=42;message.content.add_child(glyphs)
+		var digits: Array=[]
+		for i in range(4):
+			var digit=_label(glyphs,"▢" if s.flags.codeScattered else "▓",Rect2(i*34,0,28,42),wechat_social.font_size(self,22),Color("bbbbbb") if s.flags.codeScattered else INK,HORIZONTAL_ALIGNMENT_CENTER)
+			digit.set_meta("flight_origin",Vector2(i*34,0));digits.append(digit)
+		if s.flags.codeScattered:
+			wechat_social.copy(column,"任务：找回四位签到码",wechat_social.font_size(self,17),MUTED)
+		else:
+			message.visible=false
+			var burst:=PanelContainer.new();burst.name="FriendAttackBurst";burst.position=Vector2(13,280);burst.size.x=352
+			var skin=_style(Color("100d13"),Color("74232c"),0,2)
+			skin.content_margin_left=14;skin.content_margin_right=14;skin.content_margin_top=14;skin.content_margin_bottom=14
+			burst.add_theme_stylebox_override("panel",skin);root.add_child(burst)
+			var attack_copy:=VBoxContainer.new();attack_copy.add_theme_constant_override("separation",14);burst.add_child(attack_copy)
+			wechat_social.copy(attack_copy,"等等——人还在被窝里就想隔空签到？",wechat_social.font_size(self,20),Color("ff7070"))
+			wechat_social.copy(attack_copy,"想得美！这分我今天扣定了！",wechat_social.font_size(self,18),Color.WHITE)
+			var laugh=wechat_social.copy(attack_copy,"签到码给你拆碎咯，慢慢找去吧哈哈哈！",wechat_social.font_size(self,15),Color("ffb1b1"))
+			laugh.name="FriendAttackLaugh";laugh.visible=false;burst.visible=false
+			var skip=_button(root,"",Rect2(0,60,378,APP_HEIGHT-60),func():entry_session.skip_friend(),Color.TRANSPARENT,Color.TRANSPARENT,0,Color.TRANSPARENT)
+			skip.name="FriendAttackSkip";skip.mouse_filter=Control.MOUSE_FILTER_IGNORE;skip.focus_mode=Control.FOCUS_NONE
+			for mode in ["normal","hover","pressed","focus"]:skip.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
+			EntryVisual.bind_friend(root,entry_session,message,burst,laugh,digits,skip,PHONE_SCALE)
+	handled.append("c1_friend");handled.append("c1_avatar");handled.append("c2_friend_exchange")
 	return root
 
 func _conversation(_view: Dictionary) -> Control:
@@ -926,6 +950,7 @@ func _controls() -> Control:
 		brightness.value=clampf(round(100*(1-y/104.0)),0,45 if s.phoneBattery.lowPowerMode else 100)
 		fill.position.y=102-brightness.value; fill.size.y=brightness.value
 		slider.tooltip_text="亮度 %d%%" % int(brightness.value)
+		brightness_preview_requested.emit(brightness.value)
 	slider.gui_input.connect(func(event):
 		if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
 			if event.pressed: brightness.held=true; slider.grab_focus(); update.call(event.position.y)
@@ -936,6 +961,7 @@ func _controls() -> Control:
 			var value=clampf(brightness.value+(10 if event.keycode==KEY_UP else -10),0,45 if s.phoneBattery.lowPowerMode else 100)
 			brightness.value=value; update.call(104*(1-value/100)); action_requested.emit("c1_brightness",value); slider.accept_event())
 	handled.append("c1_brightness")
+	root.tree_exiting.connect(func(): brightness_preview_requested.emit(-1))
 	var toggle_data=[["⟳","自动旋转",""],["≋","振动","振动一直开着。它见证了闹钟的一切。"],["✈","飞行模式","飞行模式？你连教室都飞不到。"],["☾","勿扰","勿扰模式无法阻挡早八。"]]
 	for i in range(4):
 		var data: Array=toggle_data[i]
@@ -1461,13 +1487,6 @@ func _zju_identity() -> bool:
 func _zju_library_access() -> bool:
 	return s.actOne.phase in ["reservation_required","movement_ready","complete"] or s.ui.librarySeatReserved or s.ui.libraryFinalsPhase!="idle"
 
-func _zju_available(app: Array) -> bool:
-	match app[6]:
-		"always": return true
-		"map": return s.actOne.phase!="prologue" and s.actOne.dormHubUnlocked
-		"library": return _zju_library_access()
-		_: return _zju_identity()
-
 func _zju_open(id: String) -> void:
 	zjuding_overlay=""; zjuding_detail=""; zjuding_feedback_status=""
 	if id=="learn": zjuding_page="learn"; zjuding_panel=""; action_requested.emit("phone_refresh",{})
@@ -1475,6 +1494,8 @@ func _zju_open(id: String) -> void:
 	elif id=="directory": page_requested.emit("directory")
 	elif id=="campus_card": page_requested.emit("campus_card")
 	elif id=="campus_map":
+		if s.actOne.phase=="prologue" or not s.actOne.dormHubUnlocked:
+			zjuding_panel="campus_map"; action_requested.emit("phone_refresh",{});return
 		if s.qizhenLake.active and s.qizhenLake.phase!="inactive":
 			var solved: bool=s.qizhenLake.phase!="location_search"
 			if solved and ((s.rpgScene=="campus_qizhen_loop" and s.rpgCheckpoint=="campus_qizhen_gate") or (s.rpgScene=="qizhen_lake" and s.qizhenLake.phase!="lake_unlocked")):
@@ -1492,6 +1513,8 @@ func _zju_scroll(root: Control, top: float = 0) -> Control:
 	var scroll=ScrollContainer.new(); scroll.position=Vector2(0,top); scroll.size=Vector2(378,APP_HEIGHT-top-60)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; scroll.name="ZjudingScroll"; root.add_child(scroll)
 	var content=_base(Color("f4f7fd"),APP_HEIGHT-top-60); content.custom_minimum_size.x=378; content.size.x=378; scroll.add_child(content)
+	# Touch drags must reach the scroll owner through the content surface.
+	content.mouse_filter=Control.MOUSE_FILTER_PASS
 	return content
 
 func _zju_nav(root: Control, active: String = "home") -> void:
@@ -1499,24 +1522,17 @@ func _zju_nav(root: Control, active: String = "home") -> void:
 	var tabs=[["home","⌂","首页"],["contacts","◉","通讯录"],["all_apps","▦","工作台"],["messages","✦","消息"],["profile","◎","我的"]]
 	for i in range(5):
 		var tab: Array=tabs[i]; var rect=Rect2(i*75.6,APP_HEIGHT-57,75.6,54)
-		if tab[0]=="home" or _zju_identity():
-			var button=_button(root,tab[1]+"\n"+tab[2],rect,func():
-				if tab[0]=="home": _zju_back()
-				else: _zju_open(tab[0]),Color("e8f0ff") if active==tab[0] else Color("fbfcfe"),Color("1454bd") if active==tab[0] else Color("798493"),0,Color.TRANSPARENT)
-			button.add_theme_font_size_override("font_size",12); button.name="ZjudingTab_"+str(tab[0])
-		else: _label(root,tab[1],rect,22,Color("abb4c2"),HORIZONTAL_ALIGNMENT_CENTER)
+		var button=_button(root,tab[1]+"\n"+tab[2],rect,func():
+			if tab[0]=="home": _zju_back()
+			else: _zju_open(tab[0]),Color("e8f0ff") if active==tab[0] else Color("fbfcfe"),Color("1454bd") if active==tab[0] else Color("798493"),0,Color.TRANSPARENT)
+		button.add_theme_font_size_override("font_size",12); button.name="ZjudingTab_"+str(tab[0])
 
 func _zju_app_tile(root: Control, app: Array, rect: Rect2) -> void:
-	var enabled=_zju_available(app)
-	var target: Control
-	if enabled:
-		target=_button(root,"",rect,func(): _zju_open(app[0]),Color.WHITE,BLUE,0,Color.TRANSPARENT)
-		target.name="ZjudingApp_"+str(app[0])
-	else:
-		target=_panel(root,rect,Color.WHITE); target.name="ZjudingLocked_"+str(app[0])
+	var target=_button(root,"",rect,func(): _zju_open(app[0]),Color.WHITE,BLUE,0,Color.TRANSPARENT)
+	target.name="ZjudingApp_"+str(app[0])
 	var icon=_panel(target,Rect2((rect.size.x-38)/2,10,38,38),Color(app[3]),Color("9ea7b8"),0,2)
 	_label(icon,app[2],Rect2(0,0,38,38),22,Color("174d9d"),HORIZONTAL_ALIGNMENT_CENTER)
-	var label=_label(target,app[1],Rect2(0,53,rect.size.x,24),12,INK if enabled else Color("a0a8b5"),HORIZONTAL_ALIGNMENT_CENTER)
+	var label=_label(target,app[1],Rect2(0,53,rect.size.x,24),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
 	label.autowrap_mode=TextServer.AUTOWRAP_OFF; label.clip_text=true; label.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
 
 func _zjuding() -> Control:
@@ -1538,8 +1554,7 @@ func _zjuding() -> Control:
 		_button(body,"林星宇" if identity else "用户",Rect2(59,15,46,46),func(): zjuding_overlay="profile"; action_requested.emit("phone_refresh",{}),Color("e9f1ff"),BLUE,0,Color("88aee8")).name="ZjudingProfileMenu"
 		_label(body,"林星宇" if identity else "身份未读取",Rect2(115,14,125,29),21,INK)
 		_label(body,"浙江大学",Rect2(115,43,125,23),12,Color("777777"))
-		if identity: _button(body,"⌕　百事通",Rect2(249,18,117,38),func(): zjuding_overlay="search"; action_requested.emit("phone_refresh",{}),Color("f7f7f9"),MUTED,0,Color("b9bbc1")).name="ZjudingSearchOpen"
-		else: _label(body,"⌕　百事通",Rect2(249,18,117,38),16,Color("a5aab2"),HORIZONTAL_ALIGNMENT_CENTER)
+		_button(body,"⌕　百事通",Rect2(249,18,117,38),func(): zjuding_overlay="search"; action_requested.emit("phone_refresh",{}),Color("f7f7f9"),MUTED,0,Color("b9bbc1")).name="ZjudingSearchOpen"
 		var card=_panel(body,Rect2(11,74,356,230),Color("0755b9"),Color("063f90"),0,2)
 		for x in [26,152,262]: _panel(card,Rect2(x,17,53,39),Color(.7,.85,1,.13))
 		if s.actOne.phase in ["system_required","inventory_required","system_return_required","reservation_briefing_required"]:
@@ -1559,8 +1574,7 @@ func _zjuding() -> Control:
 				var action=_button(card,icons[i]+"\n"+titles[i],rect,func(): _zju_open(id),Color("0755b9"),Color.WHITE,0,Color.TRANSPARENT)
 				action.add_theme_font_size_override("font_size",13); action.name="ZjudingShortcut_"+id
 			else: _label(card,icons[i],rect,34,Color("a6c0e3"),HORIZONTAL_ALIGNMENT_CENTER)
-		if identity: _button(body,"⌕　搜索应用与服务             搜索",Rect2(18,312,342,39),func(): zjuding_overlay="search"; action_requested.emit("phone_refresh",{}),Color.WHITE,MUTED,0,Color("a8b5cb")).name="ZjudingSearchBar"
-		else: _label(body,"⌕　浙大百事通                    搜索",Rect2(18,312,342,39),16,Color("a4acb8"))
+		_button(body,"⌕　搜索应用与服务             搜索",Rect2(18,312,342,39),func(): zjuding_overlay="search"; action_requested.emit("phone_refresh",{}),Color.WHITE,MUTED,0,Color("a8b5cb")).name="ZjudingSearchBar"
 		_panel(body,Rect2(11,360,356,273),Color.WHITE,Color("d4e1f7"),0,2)
 		for i in range(ZJU_APPS.size()): _zju_app_tile(body,ZJU_APPS[i],Rect2(16+i%5*69.5,365+int(i/5)*85.5,69.5,85.5))
 		_zju_nav(root)
@@ -1583,25 +1597,12 @@ func _zju_row(body: Control, y: float, title: String, detail: String, label: Str
 		button.add_theme_font_size_override("font_size",12)
 
 func _zju_utility(root: Control) -> void:
-	var titles={"smart_classroom":"智云课堂","network_account":"网络账户","logistics":"后勤服务","lost_found":"失物招领","visitor_preview":"访客预约预览","language_cards":"慧学外语","feedback_draft":"开发者反馈","all_apps":"全部应用","contacts":"通讯录","messages":"消息","profile":"我的"}
+	var titles={"smart_classroom":"智云课堂","network_account":"网络缴费","campus_map":"校园地图","logistics":"后勤服务","lost_found":"失物招领","visitor_preview":"访客预约预览","language_cards":"慧学外语","feedback_draft":"开发者反馈","all_apps":"全部应用","contacts":"通讯录","messages":"消息","profile":"我的"}
 	_header(root,titles.get(zjuding_panel,"浙大钉"),Color("f8faff"),BLUE,_zju_back,"back","返回浙大钉")
 	var body=_zju_scroll(root,57)
 	var network={"campus_wifi":"校园网已连接","cellular":"当前使用移动数据","offline":"当前处于离线状态"}.get(s.networkMode,"")
 	match zjuding_panel:
-		"smart_classroom":
-			_zju_summary(body,"本机课程预览","3 门课程","查看课程日程和缓存说明，不产生签到或成绩记录。")
-			var courses=[["化学工程基础","周一 08:00 · 北教学区 A-204","课程资料已缓存在本机。"],["数据方法与 AI4S","周三 13:15 · 线上课堂","最近一次课件仅供预览。"],["实验室安全","周五 10:00 · 东教学区 3-106","安全提醒已读取，不产生签到记录。"]]
-			var y=137.0
-			for course in courses:
-				var selected=zjuding_detail==course[0]
-				_zju_row(body,y,course[0],course[1]+("\n"+course[2] if selected else ""),"收起" if selected else "查看",func(): zjuding_detail="" if selected else course[0]; action_requested.emit("phone_refresh",{}),112 if selected else 82)
-				y+=122 if selected else 92
-		"network_account":
-			_zju_summary(body,"当前连接",network,"页面只读取本机网络状态，不扣费、不充值、不生成账单。")
-			_zju_row(body,137,"校园网 · "+("可用" if s.networkMode=="campus_wifi" else "未连接"),"浙大钉与 CC98 需要校园网。")
-			_zju_row(body,229,"移动数据 · "+("使用中" if s.networkMode=="cellular" else "备用"),"浙大体艺的网络规则与浙大钉不同。")
-			_button(body,"收起连接说明" if zjuding_detail=="network" else "查看连接说明",Rect2(13,325,352,42),func(): zjuding_detail="" if zjuding_detail=="network" else "network"; action_requested.emit("phone_refresh",{}),Color("edf3ff"),BLUE).name="ZjudingNetworkDetails"
-			if zjuding_detail=="network": _label(body,"如需切换网络，请返回手机控制中心。本页不会自动修改网络模式。",Rect2(20,384,338,66),14,MUTED)
+		"smart_classroom","network_account","campus_map","language_cards": campus_services.build(self,body,zjuding_panel)
 		"contacts":
 			_zju_summary(body,"校园公开联络表","3 个服务联络点","号码来自当前游戏内容，页面不会直接拨号。")
 			var contacts=[["校园服务台","87950000"],["游戏联络台","3250100755"],["体艺值班台","87951234"]]
@@ -1611,12 +1612,12 @@ func _zju_utility(root: Control) -> void:
 			if zjuding_panel=="profile": _zju_summary(body,"校园身份","林星宇" if _zju_identity() else "身份未读取","3250100755" if _zju_identity() else "取得电子校园卡后显示")
 			else: _zju_summary(body,"校园服务聚合","后勤状态台","所有条目只读取已开放的本地功能，未提交任何报修工单。")
 			_zju_row(body,137,"当前网络",network,"详情",func(): _zju_open("network_account"))
-			_zju_row(body,229,"图书馆预约" if zjuding_panel=="profile" else "图书馆服务","座位 "+str(s.ui.librarySelectedSeat) if s.ui.librarySeatReserved else "当前无预约","查看",func(): _zju_open("library") if _zju_library_access() else null)
+			_zju_row(body,229,"图书馆预约" if zjuding_panel=="profile" else "图书馆服务","座位 "+str(s.ui.librarySelectedSeat) if s.ui.librarySeatReserved else "当前无预约","查看",func(): _zju_open("library"))
 			if zjuding_panel=="profile":
 				_zju_row(body,321,"电子校园卡","已读取" if _zju_identity() else "未读取","查看",func(): _zju_open("campus_card") if _zju_identity() else null)
 				_zju_row(body,413,"开发者反馈","GitHub Issues","查看",func(): _zju_open("feedback_draft"))
 			else:
-				_zju_row(body,321,"校园导航","已开放" if s.actOne.dormHubUnlocked else "当前阶段未开放","进入",func(): _zju_open("campus_map") if s.actOne.dormHubUnlocked else null)
+				_zju_row(body,321,"校园导航","已开放" if s.actOne.dormHubUnlocked else "当前阶段未开放","进入",func(): _zju_open("campus_map"))
 				_zju_row(body,413,"服务联络","部门黄页可用","查看",func(): _zju_open("contacts"))
 		"messages":
 			var messages=[["校园网状态",network,""]]
@@ -1626,18 +1627,8 @@ func _zju_utility(root: Control) -> void:
 			for i in range(messages.size()):
 				var entry: Array=messages[i]
 				_zju_row(body,137+i*92,entry[0],entry[1],"查看",Callable() if entry[2].is_empty() else func(): _zju_open(entry[2]))
-		"language_cards":
-			_zju_summary(body,"本地微卡片","校园场景外语","点击卡片查看中文释义与场景例句。")
-			var words=[["wayfinding","导向；路径识别","Wayfinding signs connect the lobby and classrooms."],["reflection","倒影；反射","The reflection appears below the bridge."],["maintenance","维修；保养","The maintenance cart is parked by the service door."]]
-			for i in range(words.size()):
-				var word: Array=words[i]; var selected=zjuding_detail==word[0]
-				var card=_button(body,"",Rect2(13,137+i*130,352,118),func(): zjuding_detail="" if selected else word[0]; action_requested.emit("phone_refresh",{}),Color("e8f0fa") if selected else Color.WHITE,INK,0,Color("bccbe0"))
-				card.name="ZjudingWord_"+str(word[0])
-				_label(card,word[1] if selected else "点击查看释义",Rect2(13,8,326,22),12,BLUE)
-				_label(card,word[0],Rect2(13,35,326,32),25,INK)
-				_label(card,word[2] if selected else "EN / ZH",Rect2(13,75,326,35),11,MUTED)
 		"all_apps":
-			_zju_summary(body,"统一应用目录","工作台","应用状态与首页、搜索完全一致。未开放项保留原名称与静态图标。")
+			_zju_summary(body,"统一应用目录","工作台","所有校园服务都可打开，办理条件在各自页面查看。")
 			var y=137.0
 			for category in [["learning","学习"],["campus","校园"],["service","服务"],["library","图书馆"]]:
 				_label(body,category[1],Rect2(13,y,350,32),20,BLUE); y+=36
@@ -1714,8 +1705,8 @@ func _zju_sheet(root: Control) -> void:
 		var matches: Array=[]
 		for i in range(ZJU_APPS.size()):
 			var app: Array=ZJU_APPS[i]
-			var button=_button(results,app[1]+("　未开放" if not _zju_available(app) else "　›"),Rect2(0,0,326,39),func(): _zju_open(app[0]),Color.WHITE,BLUE,0,Color("bdcce1"))
-			button.disabled=not _zju_available(app); button.name="ZjudingSearch_"+str(app[0]); button.set_meta("query_text",app[0]+" "+app[1]+" "+app[5]); matches.append(button)
+			var button=_button(results,app[1]+"　›",Rect2(0,0,326,39),func(): _zju_open(app[0]),Color.WHITE,BLUE,0,Color("bdcce1"))
+			button.name="ZjudingSearch_"+str(app[0]); button.set_meta("query_text",app[0]+" "+app[1]+" "+app[5]); matches.append(button)
 		var filter=func(query: String):
 			zjuding_query=query; var count=0
 			for button in matches:
@@ -1731,40 +1722,11 @@ func _zju_sheet(root: Control) -> void:
 				else: _zju_open("profile"),Color.WHITE,BLUE,0,Color("315d9e")).name="ZjudingMenu_"+str(i)
 
 func _tiyi(view: Dictionary) -> Control:
-	var root = _base(Color("eef0f4"),APP_HEIGHT)
 	if entry_session.phase!="ready":
-		root.free()
 		return _entry_loading("tiyi")
 	if str(view.get("title","")).contains("补录") and str(s.ui.libraryFinalsPhase)=="evidence_gathering":
-		root.free()
 		return tiyi_presence.build(self)
-	# Source CSS preserves the 852/1846 image ratio at the full phone height.
-	var source_height=854.0/PHONE_SCALE
-	var source_width=source_height*852.0/1846.0
-	var source_left=(378-source_width)/2
-	var tiyi_plate:=_image(root,"ui/tiyi_main.png",Rect2(source_left,-40/PHONE_SCALE,source_width,source_height)); tiyi_plate.name="TiyiSourcePlate"
-	var exit_button=_nav(root,"exit","退出浙大体艺，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(9,7,40,44),PAPER)
-	# This plate already contains its original back arrow. Keep one target
-	# over that arrow instead of painting an unrelated X across it.
-	exit_button.text=""
-	for child in exit_button.get_children(): child.queue_free()
-	for mode in ["normal","pressed","hover"]: exit_button.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
-	if bool(s.flags.tiyiCountTaken): TiyiSevenArt.apply_taken(tiyi_plate)
-	if s.actOne.phase=="prologue":
-		if not bool(s.flags.tiyiCountTaken): TiyiSevenArt.bind_source(root,tiyi_plate)
-		var hotspot=Rect2(source_left+source_width*(.141-.254/2),source_height*(.274-.088/2)-40/PHONE_SCALE,source_width*.254,source_height*.088)
-		var count=_act(root,"",hotspot,"c1_tiyi_digit",null,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
-		count.name="TiyiCount47"; count.tooltip_text="运动打卡次数 47"
-		if bool(s.flags.tiyiCountTaken): count.tooltip_text="原记录47次，数字7已记下"
-		for mode in ["normal","hover","pressed"]: count.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
-	if s.actOne.phase in ["movement_required","reservation_briefing_required","reservation_required","movement_ready"] and s.ui.libraryFinalsPhase=="idle":
-		var exercise=_act(root,"",Rect2((378-318/PHONE_SCALE)/2,APP_HEIGHT-(106+76)/PHONE_SCALE,318/PHONE_SCALE,76/PHONE_SCALE),"c2_exercise",null,Color("2f86dd") if not s.actOne.exerciseStarted else Color("4bad70"),Color.WHITE,10,Color("194f8d"))
-		exercise.disabled=s.actOne.exerciseStarted; exercise.name="TiyiExercise"
-		TiyiIdentity.style_exercise(exercise,s.actOne.exerciseStarted)
-		_label(exercise,"课外锻炼进行中" if s.actOne.exerciseStarted else "开始虚拟定位",Rect2(10,8,263,27),13,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-		if not s.actOne.exerciseStarted: _label(exercise,"10 分钟跑完 3 km · 点击生成轨迹" if s.actOne.characterNamed else "请先在部门黄页确认参加者",Rect2(10,36,263,23),12,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-
-	return root
+	return tiyi_identity.build(self)
 
 func _weather() -> Control:
 	# Weather identity: clear condition silhouette, cool sky palette, calm cards.
@@ -1941,76 +1903,49 @@ func _settings(view: Dictionary) -> Control:
 	var title = "设置"
 	for entry in rows:
 		if entry[0]==settings_page: title = entry[2]
-	var root = _base(Color("d9e0e3"),740 if settings_page=="desktop" else 620)
-	_panel(root,Rect2(0,0,378,60),Color("f2f0e6"),Color("17202a"),0,2)
-	_button(root,"‹",Rect2(7,11,36,38),func():
-		if settings_page=="root": page_requested.emit("phone_home")
-		else: settings_page="root"; action_requested.emit("phone_refresh",{}),Color("f2f0e6"),INK,0,Color.TRANSPARENT).name="SettingsBack"
-	_label(root,"PHONE SYSTEM",Rect2(52,7,245,18),10,MUTED)
-	_label(root,title,Rect2(52,27,266,25),17,Color("17202a"))
-	_label(root,"07:55",Rect2(318,14,52,32),12,INK)
+	var root = _base(Color("f2f2f7"),740 if settings_page=="desktop" else APP_HEIGHT)
+	SettingsChrome.header(self,root,title)
 	if settings_page=="root":
-		var search = _line_edit(root,"搜索设置项",Rect2(13,72,352,40),settings_query)
-		search.name="SettingsSearch"
-		var controls: Array = []
-		for index in range(rows.size()):
-			var entry: Array = rows[index]
-			var row = _button(root,"",Rect2(13,125+index*59,352,59),func(): settings_page=entry[0]; action_requested.emit("phone_refresh",{}),Color("e9edf0"),INK,0,Color("9ca8ad"))
-			row.name="Settings_"+entry[0]
-			_panel(row,Rect2(9,13,30,30),Color("1e6f9b"))
-			_label(row,entry[1],Rect2(9,13,30,30),16,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-			_label(row,entry[2],Rect2(49,7,273,24),16,Color("17202a"))
-			_label(row,entry[3],Rect2(49,32,273,18),11,MUTED)
-			_label(row,"›",Rect2(326,12,20,32),24,MUTED)
-			controls.append(row)
-		var filter = func(query: String):
-			settings_query=query
-			var y=125
-			for i in range(rows.size()):
-				controls[i].visible = query.strip_edges().is_empty() or (str(rows[i][2])+str(rows[i][3])).contains(query.strip_edges())
-				if controls[i].visible: controls[i].position.y=y; y+=59
-		search.text_changed.connect(filter)
-		filter.call(settings_query)
+		SettingsChrome.index(self,root,rows,campus_services.copy.settings.search_no_results)
 		return root
 	_label(root,title,Rect2(13,75,352,36),21,Color("17202a"))
 	match settings_page:
 		"network":
 			_settings_pairs(root,[["当前网络",{"campus_wifi":"ZJUWLAN","cellular":"移动数据","offline":"离线"}.get(s.networkMode,"")],["CC98","可访问" if s.networkMode=="campus_wifi" else "等待校园网"]],125)
-			_page(root,"打开控制中心切换网络",Rect2(13,232,352,44),"control_center",Color("f2f0e6"))
+			_page(root,"打开控制中心切换网络",Rect2(13,232,352,44),"control_center",Color.WHITE)
 		"sound":
-			var button=_act(root,"",Rect2(13,125,352,70),"phone_music_mute",null,Color("f2f0e6"))
+			var button=_act(root,"",Rect2(13,125,352,70),"phone_music_mute",null,Color.WHITE)
 			button.name="BackgroundMusicToggle"
 			_label(button,"背景音乐",Rect2(12,6,260,30),18)
 			_label(button,"语音与操作音效保持开启",Rect2(12,37,260,24),12,MUTED)
-			_panel(button,Rect2(277,18,61,32),Color("1e6f9b"))
+			_panel(button,Rect2(277,18,61,32),Color("34a853"))
 			_label(button,"关闭" if s.ui.musicMuted else "开启",Rect2(277,18,61,32),16,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 		"display":
-			_panel(root,Rect2(13,125,352,100),Color("e9edf0"),INK,0,2)
+			_panel(root,Rect2(13,125,352,100),Color.WHITE,INK,0,2)
 			_label(root,"屏幕亮度",Rect2(26,136,268,29),18)
 			var value=_label(root,str(int(s.ui.brightness))+"%",Rect2(303,136,50,29),18,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
 			_brightness_slider(root,Rect2(26,178,326,34),100,"phone_settings_brightness",value).name="SettingsBrightness"
-			_label(root,"照片取证会读取这个亮度值。",Rect2(13,240,352,44),14,Color("505b61"))
 		"desktop":
 			_label(root,"桌面也支持长按图标进入编辑。这里可用按钮精确调整顺序。",Rect2(13,115,352,52),14,Color("505b61"))
 			_panel(root,Rect2(13,178,352,62),Color("18242d"))
 			_label(root,"旧截图第一排",Rect2(25,184,328,19),11,Color("8dc4df"))
-			_label(root,"微信　浙大钉　照片　CC98",Rect2(25,207,328,27),18,Color("e9edf0"))
+			_label(root,"微信　浙大钉　照片　CC98",Rect2(25,207,328,27),18,Color.WHITE)
 			var order=Utilities.normalized_order(s.ui.homeAppOrder)
 			for i in range(order.size()):
 				var id=str(order[i])
 				var y=253+i*43
-				_panel(root,Rect2(13,y,352,43),Color("e9edf0"),Color("a7b0b4"),0,1)
+				_panel(root,Rect2(13,y,352,43),Color.WHITE,Color("e5e5ea"),0,1)
 				_label(root,"%s. %s" % [i+1,Utilities.LABELS[id]],Rect2(24,y+5,238,33),16)
-				var up=_act(root,"↑",Rect2(272,y+6,39,31),"phone_app_move",{"id":id,"offset":-1},Color("f2f0e6")); up.disabled=i==0; up.name="MoveUp_"+id
-				var down=_act(root,"↓",Rect2(316,y+6,39,31),"phone_app_move",{"id":id,"offset":1},Color("f2f0e6")); down.disabled=i==order.size()-1; down.name="MoveDown_"+id
-			_act(root,"恢复默认顺序",Rect2(13,696,352,40),"phone_app_reset",null,Color("f2f0e6")).name="RestoreDefaultOrder"
+				var up=_act(root,"↑",Rect2(272,y+6,39,31),"phone_app_move",{"id":id,"offset":-1},Color.WHITE); up.disabled=i==0; up.name="MoveUp_"+id
+				var down=_act(root,"↓",Rect2(316,y+6,39,31),"phone_app_move",{"id":id,"offset":1},Color.WHITE); down.disabled=i==order.size()-1; down.name="MoveDown_"+id
+			_act(root,"恢复默认顺序",Rect2(13,696,352,40),"phone_app_reset",null,Color.WHITE).name="RestoreDefaultOrder"
 		"apps":
 			var y=122
 			if s.ui.hiddenHomeAppIds.is_empty(): _label(root,"没有从桌面移除的可选应用。",Rect2(13,y,352,46),15,MUTED); y+=52
 			for id in s.ui.hiddenHomeAppIds:
-				_panel(root,Rect2(13,y,352,48),Color("e9edf0"),INK,0,1)
+				_panel(root,Rect2(13,y,352,48),Color.WHITE,INK,0,1)
 				_label(root,Utilities.LABELS.get(id,id),Rect2(24,y+5,249,38),18)
-				_act(root,"恢复",Rect2(287,y+6,65,36),"phone_app_restore",id,Color("f2f0e6")).name="Restore_"+str(id)
+				_act(root,"恢复",Rect2(287,y+6,65,36),"phone_app_restore",id,Color.WHITE).name="Restore_"+str(id)
 				y+=52
 			_label(root,"当前允许从桌面移除　浙大体艺" if Utilities.can_remove(s,"tiyi") else "当前阶段还没有可删除的可选应用。",Rect2(13,y+5,352,54),15,MUTED)
 			_label(root,"微信、照片、CC98、浙大钉、设置等剧情应用只能移动。",Rect2(13,y+70,352,65),15,MUTED)
@@ -2020,20 +1955,20 @@ func _settings(view: Dictionary) -> Control:
 			var records=[["07:48","天气","天气卡片刷新","1%"],["07:55","照片","重新建立 IMG_0755 索引","7%"],["07:52","微信","同步两条新消息","1%"],["07:55","时钟","系统时间被后台唤醒","5%"],["07:55","浙大钉","恢复 A2 室内定位","6%"],["08:02","CC98","读取热门话题缓存","1%"]]
 			for i in range(records.size()):
 				var r: Array=records[i]; var y=174+i*60
-				_panel(root,Rect2(13,y,352,60),Color("e9edf0"),Color("a7b0b4"),0,1)
+				_panel(root,Rect2(13,y,352,60),Color.WHITE,Color("e5e5ea"),0,1)
 				_label(root,r[0],Rect2(22,y+14,50,30),12)
 				_label(root,r[1],Rect2(79,y+5,231,25),16)
 				_label(root,r[2],Rect2(79,y+30,231,23),12,MUTED)
 				_label(root,r[3],Rect2(322,y+14,33,30),12,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
 		"about":
 			_settings_pairs(root,[["游戏时间","07:55"],["存档","自动保存与上一版本恢复"],["桌面应用",str(_home_visible_app_ids().size())+" 个可见"]],125)
-			_act(root,"存档管理",Rect2(13,289,352,44),"native_save_tools",null,Color("f2f0e6")).name="NativeSaveTools"
+			_act(root,"存档管理",Rect2(13,289,352,44),"native_save_tools",null,Color.WHITE).name="NativeSaveTools"
 			_label(root,"原生版工具 · 导入、导出与开发调试",Rect2(13,345,352,30),12,MUTED)
 	return root
 
 func _settings_pairs(root: Control, entries: Array, start: float) -> void:
 	for i in range(entries.size()):
-		_panel(root,Rect2(13,start+i*48,352,48),Color("e9edf0"),Color("a7b0b4"),0,1)
+		_panel(root,Rect2(13,start+i*48,352,48),Color.WHITE,Color("e5e5ea"),0,1)
 		_label(root,str(entries[i][0]),Rect2(24,start+i*48+8,149,32),16)
 		_label(root,str(entries[i][1]),Rect2(158,start+i*48+8,194,32),13,Color("58666d"),HORIZONTAL_ALIGNMENT_RIGHT)
 
@@ -2049,7 +1984,12 @@ func _brightness_slider(root: Control, rect: Rect2, maximum: float, id: String, 
 	var slider=HSlider.new()
 	slider.position=rect.position; slider.size=rect.size
 	slider.min_value=0; slider.max_value=maximum; slider.value=s.ui.brightness
-	slider.value_changed.connect(func(v): output.text=str(int(v))+"%")
+	slider.value_changed.connect(func(v):
+		var accepted=clampf(v,0,45 if s.phoneBattery.lowPowerMode else maximum)
+		slider.set_value_no_signal(accepted)
+		output.text=str(int(accepted))+"%"
+		brightness_preview_requested.emit(accepted))
+	root.tree_exiting.connect(func(): brightness_preview_requested.emit(-1))
 	slider.drag_ended.connect(func(changed):
 		if changed: action_requested.emit(id,slider.value))
 	slider.gui_input.connect(func(event):
@@ -2087,12 +2027,7 @@ func _app_icon(root: Control, id: String, factor: float = 1.0) -> void:
 			_panel(icon,Rect2(21,20,23,19),Color("edf8ed"),Color.TRANSPARENT,10)
 			for position in [Vector2(13,17),Vector2(23,17),Vector2(26,26),Vector2(35,26)]: _panel(icon,Rect2(position,Vector2(3,3)),Color("61b58c"))
 		"tiyi":
-			_panel(icon,Rect2(26,6,8,8),Color.WHITE,Color.TRANSPARENT,4)
-			var body = _panel(icon,Rect2(21,16,8,16),Color.WHITE)
-			body.rotation = .25
-			for limb in [[27,19,14,5,-.55],[13,20,14,5,.65],[13,32,20,5,-.78],[25,32,17,5,.55]]:
-				var segment = _panel(icon,Rect2(limb[0],limb[1],limb[2],limb[3]),Color.WHITE)
-				segment.rotation = limb[4]
+			TiyiIdentity.add_runner(icon,Rect2(0,0,48,48))
 		"zjuding": _image(icon,"ui/zjuding.png",Rect2(3.5,3.5,41,41))
 		"photos":
 			for petal in [[10,11,"e88a9f"],[25,11,"7fb0e8"],[10,27,"8fce7c"],[25,27,"e8a05f"]]: _panel(icon,Rect2(petal[0],petal[1],16,16),Color(petal[2]),Color.TRANSPARENT,8)
@@ -2131,16 +2066,12 @@ func _entry_loading(app: String) -> Control:
 		loading.size=Vector2(378,APP_HEIGHT)
 		root.add_child(loading)
 	else:
-		var loading:=_image(root,"ui/"+app+"_loading.png",Rect2(0,0,378,APP_HEIGHT))
-		loading.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		if entry_session.tiyi_update_blocked:
-			# The referenced old client shows a blank lower panel before returning.
-			# This is an in-game presentation, not a device permission request.
-			_panel(root,Rect2(0,APP_HEIGHT*.39,378,APP_HEIGHT*.61),Color("fafafa"))
+		TiyiIdentity.loading(self,root)
 	var dots: Array=[]
 	if app in ["tiyi","zjuding"]:
 		for i in range(3):
 			var dot:=_panel(root,Rect2(Vector2((378*PHONE_SCALE-52)/2+i*20,APP_HEIGHT*PHONE_SCALE-(128 if app=="tiyi" else 96)-12)/PHONE_SCALE,Vector2(12,12)/PHONE_SCALE),Color("4d7ed9") if app=="tiyi" else Color("9db9e8"),Color(0,0,0,.25),0,2)
+			if app=="tiyi":dot.position.y=APP_HEIGHT*.32+218
 			dot.name="EntryLoadingDot"+str(i); dot.set_meta("rest_y",dot.position.y); dots.append(dot)
 	if app=="zjuding" and entry_session.blocked_hint_sent:
 		var caption_height: float=PhoneNotice.FONT.get_height(int(round(NativeUi.FONT_BODY/PHONE_SCALE)))+14/PHONE_SCALE

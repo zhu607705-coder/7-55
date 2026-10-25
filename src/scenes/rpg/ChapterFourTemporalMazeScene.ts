@@ -1245,6 +1245,11 @@ private alumniPanel: Phaser.GameObjects.Container | null = null;
 private alumniPanelFigure: ChapterFourAlumniHonorWallFigure | null = null;
 
 private alumniWallObjects: Phaser.GameObjects.GameObject[] = [];
+private alumniFloorRepairs: Array<{
+  floor: DisplayFloor;
+  image: Phaser.GameObjects.Image;
+  sourceBounds: Readonly<MapRect>;
+}> = [];
 
 private elevatorPhase: ElevatorPhase = "idle";
 
@@ -1660,6 +1665,7 @@ update(_time: number, delta: number): void {
     this.updateHallClockMotion(delta);
     if (this.guardCaptureActive) return;
     this.syncProjection();
+    this.syncAlumniFloorRepairs();
     this.syncStairPreludeEffects(_time);
     if (Phaser.Input.Keyboard.JustDown(this.retryWarmupKey)) this.retryRequiredWarmupPhase();
     this.syncWarmupStatus();
@@ -2356,7 +2362,21 @@ private createAlumniHonorWallPortraits(): void {
     )) return;
     for (const figure of CHAPTER_FOUR_ALUMNI_HONOR_WALL) {
       const floor = getFloor(figure.floor);
-      const wallDisplayDepth = PLAYER_DEPTH_BASE + (figure.floor === 1 ? 160 : 840);
+      const wallDisplayDepth = PLAYER_DEPTH_BASE + ("displayBaselineY" in figure
+        ? figure.displayBaselineY : figure.floor === 1 ? 160 : 840);
+      if ("floorRepair" in figure) {
+        const repair = figure.floorRepair;
+        const image = this.add.image(
+          floor.offsetX + repair.bounds.x - repair.sourceBounds.x,
+          repair.bounds.y - repair.sourceBounds.y,
+          this.backgrounds.get(floor.displayFloor)?.texture.key ?? basePlateFor(floor.storyFloor)
+        ).setOrigin(0).setCrop(
+          repair.sourceBounds.x, repair.sourceBounds.y,
+          repair.sourceBounds.width, repair.sourceBounds.height
+        ).setDepth(1);
+        this.alumniFloorRepairs.push({ floor: floor.displayFloor, image, sourceBounds: repair.sourceBounds });
+        this.alumniWallObjects.push(image);
+      }
       this.textures.get(figure.portraitTextureKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
       if ("drawRuntimeFrame" in figure && figure.drawRuntimeFrame) {
         const frame = this.add.rectangle(
@@ -2384,6 +2404,21 @@ private createAlumniHonorWallPortraits(): void {
       ).setDisplaySize(figure.imageBounds.width, figure.imageBounds.height)
         .setDepth(wallDisplayDepth + 2);
       this.alumniWallObjects.push(matte, portrait);
+    }
+    this.syncAlumniFloorRepairs();
+  }
+
+private syncAlumniFloorRepairs(): void {
+    for (const repair of this.alumniFloorRepairs) {
+      const background = this.backgrounds.get(repair.floor);
+      if (!repair.image.active || !background?.active) continue;
+      if (repair.image.texture.key !== background.texture.key) {
+        repair.image.setTexture(background.texture.key, "__BASE").setCrop(
+          repair.sourceBounds.x, repair.sourceBounds.y,
+          repair.sourceBounds.width, repair.sourceBounds.height
+        );
+      }
+      repair.image.setVisible(background.visible);
     }
   }
 
@@ -9624,6 +9659,7 @@ private resetRestartLifecycleState(): void {
     this.alumniPanel = null;
     this.alumniPanelFigure = null;
     this.alumniWallObjects = [];
+    this.alumniFloorRepairs = [];
 
     this.elevatorPhase = "idle";
     this.elevatorTargetFloor = null;

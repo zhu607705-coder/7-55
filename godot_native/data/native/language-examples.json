@@ -1,0 +1,152 @@
+{
+  "ui": {
+    "title": "校园词汇",
+    "subtitle": "双语例句",
+    "show_translation": "显示译文",
+    "hide_translation": "隐藏译文",
+    "search_placeholder": "输入英文单词或中文词义搜索",
+    "no_results": "未找到匹配的词条"
+  },
+  "entries": [
+    {
+      "id": "timetable",
+      "word": "timetable",
+      "meaning": "时间表；课程表",
+      "example_en": "She checked her timetable between lectures to see which classroom came next.",
+      "example_zh": "她在两节课之间查看课程表，确认下一间教室。"
+    },
+    {
+      "id": "reflection",
+      "word": "reflection",
+      "meaning": "倒影；反射",
+      "example_en": "The early morning reflection of trees trembled slightly across the quiet lake.",
+      "example_zh": "清晨树木的倒影在宁静的湖面微微晃动。"
+    },
+    {
+      "id": "canteen",
+      "word": "canteen",
+      "meaning": "食堂；餐厅",
+      "example_en": "Students gathered in the busy canteen to eat lunch together after morning classes.",
+      "example_zh": "上午的课程结束后，学生们聚在热闹的食堂一起吃午饭。"
+    },
+    {
+      "id": "catalog",
+      "word": "catalog",
+      "meaning": "目录；检索目录",
+      "example_en": "The reader noted the call number from the catalog and located the book.",
+      "example_zh": "读者记下目录中的索书号，找到了那本书。"
+    },
+    {
+      "id": "stationery",
+      "word": "stationery",
+      "meaning": "文具",
+      "example_en": "He bought basic stationery including several notebooks and black pens from the store.",
+      "example_zh": "他从商店买了几本笔记本、黑笔等常用文具。"
+    },
+    {
+      "id": "roommate",
+      "word": "roommate",
+      "meaning": "室友",
+      "example_en": "My roommate offered to turn off the desk lamp so I could sleep.",
+      "example_zh": "室友主动提出关掉台灯，好让我睡觉。"
+    },
+    {
+      "id": "umbrella",
+      "word": "umbrella",
+      "meaning": "雨伞",
+      "example_en": "Two classmates shared a large umbrella while walking across the wet campus lawn.",
+      "example_zh": "两位同班同学共撑一把大伞，走过潮湿的校园草坪。"
+    },
+    {
+      "id": "silhouette",
+      "word": "silhouette",
+      "meaning": "影子；剪影",
+      "example_en": "Moving the handheld fan closer to the fixed light cast a much larger silhouette.",
+      "example_zh": "将手中的扇子向固定的灯靠近，投出了大得多的影子。"
+    },
+    {
+      "id": "seminar",
+      "word": "seminar",
+      "meaning": "讨论课；研讨班",
+      "example_en": "During the afternoon seminar, everyone shared their thoughts on the assigned reading.",
+      "example_zh": "在下午的讨论课上，每个人都分享了对指定阅读材料的想法。"
+    },
+    {
+      "id": "wayfinding",
+      "word": "wayfinding",
+      "meaning": "导向标识；寻路",
+      "example_en": "Clear wayfinding signs help visitors choose the correct corridor inside the hall.",
+      "example_zh": "清晰的导向标识帮助访客在大厅内选对走廊。"
+    },
+    {
+      "id": "laundry",
+      "word": "laundry",
+      "meaning": "待洗衣物；洗衣",
+      "example_en": "He carried a basket of laundry to the washing machines in the basement.",
+      "example_zh": "他提着一篮待洗的衣服，走到地下室的洗衣机旁。"
+    },
+    {
+      "id": "deadline",
+      "word": "deadline",
+      "meaning": "截止时间",
+      "example_en": "The student finished typing her essay a few minutes before the deadline.",
+      "example_zh": "这名学生在截止时间前几分钟打完了文章。"
+    },
+    {
+      "id": "borrow",
+      "word": "borrow",
+      "meaning": "借入；借阅",
+      "example_en": "I need to borrow two reference books for this week's group assignment.",
+      "example_zh": "为了本周的小组作业，我需要借阅两本参考书。"
+    },
+    {
+      "id": "scholarship",
+      "word": "scholarship",
+      "meaning": "奖学金",
+      "example_en": "She submitted an application for the academic scholarship after receiving good semester grades.",
+      "example_zh": "在取得良好的学期成绩后，她提交了学业奖学金申请。"
+    },
+    {
+      "id": "interval",
+      "word": "interval",
+      "meaning": "间隔；间歇",
+      "example_en": "The listener carefully compared the interval between successive ticks from the old clock.",
+      "example_zh": "听钟的人仔细比较了连续滴答声之间的间隔。"
+    },
+    {
+      "id": "recipe",
+      "word": "recipe",
+      "meaning": "菜谱；食谱",
+      "example_en": "They tried a simple pasta recipe together in the shared dormitory kitchen.",
+      "example_zh": "他们在宿舍公用厨房里照着一道简单的菜谱，一起做意面。"
+    },
+    {
+      "id": "maintenance",
+      "word": "maintenance",
+      "meaning": "维护；保养",
+      "example_en": "This shared campus bicycle needs urgent maintenance due to loose pedals.",
+      "example_zh": "这辆校园共享单车的脚踏松了，急需维修。"
+    },
+    {
+      "id": "archive",
+      "word": "archive",
+      "meaning": "档案；档案室",
+      "example_en": "Each old document rests in the archive sorted by era, place, and purpose.",
+      "example_zh": "每份旧文件都按时期、地点和用途分类，存放在档案室里。"
+    },
+    {
+      "id": "reservation",
+      "word": "reservation",
+      "meaning": "预约",
+      "example_en": "He showed his reservation on the screen before entering the group study room.",
+      "example_zh": "进小组研修室前，他在屏幕上出示了预约记录。"
+    },
+    {
+      "id": "receipt",
+      "word": "receipt",
+      "meaning": "回执；收条",
+      "example_en": "The student compared the transaction number on the bill with the payment receipt.",
+      "example_zh": "学生对照付款回执，核对账单上的交易编号。"
+    }
+  ]
+}

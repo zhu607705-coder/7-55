@@ -109,8 +109,13 @@ func home(b) -> Control:
 	if b.s.ui.libraryFinalsPuzzle.archivedRuleCollected: apps.append(["rule","旧版离座规则","规",true])
 	for i in range(apps.size()):
 		var app: Array=apps[i]; var point=Vector2(23+(i%4)*83,149+int(i/4)*79)
-		if not app[3]: b._label(inner,"xxx",Rect2(point,Vector2(75,71)),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER).name="LibraryLocked_"+app[0]; continue
 		var open_app=func():
+			if not app[3]:
+				var text=str(app[1])+"\n"+b.campus_services.copy.library.borrow_status_val
+				if app[0] in ["reserve","space"]:text=str(app[1])+"\n"+b.campus_services.copy.library.seat_reserve_status
+				elif app[0] in ["catalog","recovery","return"]:text=str(app[1])+"\n当前还没有相关现场记录。"
+				service_info(b,root,app[1],text)
+				return
 			match app[0]:
 				"catalog": b.page_requested.emit("library_catalog")
 				"reserve": goto(b,"spaces")
@@ -128,18 +133,26 @@ func home(b) -> Control:
 		b._label(alert,"022 座位恢复申请已开放",Rect2(12,6,303,24),15,BLUE)
 		b._label(alert,"帖子当前排名 01，可提交三项证明。",Rect2(12,30,303,23),12,MUTED)
 		y+=74
-	for i in range(3):
-		b._panel(inner,Rect2(14,y,345,112),Color.WHITE,Color("a7a49c"),0,3)
-		b._label(inner,"xxx",Rect2(26,y+9,268,26),19)
-		b._label(inner,"xxx",Rect2(307,y+9,39,26),12,Color("a4722f"))
-		for row in range(2):
-			b._panel(inner,Rect2(26,y+42+row*31,319,1),Color("d2cec4"))
-			b._label(inner,"xxx",Rect2(26,y+45+row*31,268,24),13)
-			b._label(inner,"xxx",Rect2(307,y+45+row*31,39,24),12,Color("a4722f"))
-		y+=124
+	var info=b.campus_services.copy.library
+	for entry in [[info.open_hours_label,info.open_hours_val],[info.borrow_status_label,info.borrow_status_val],[info.seat_reserve_label,"座位 "+str(b.s.ui.librarySelectedSeat) if b.s.ui.librarySeatReserved else info.seat_reserve_status]]:
+		b._panel(inner,Rect2(14,y,345,82),Color.WHITE,Color("d8dce2"),0,1)
+		b._label(inner,str(entry[0]),Rect2(27,y+10,317,25),17)
+		b._label(inner,str(entry[1]),Rect2(27,y+43,317,27),14,MUTED)
+		y+=93
 	inner.custom_minimum_size.y=y+12
 	bottom_nav(b,root)
 	return root
+
+func service_info(b,root: Control,title: String,text: String) -> void:
+	var overlay=Control.new();overlay.name="LibraryServiceInfo";overlay.size=root.size;overlay.mouse_filter=Control.MOUSE_FILTER_STOP;overlay.z_index=20;root.add_child(overlay)
+	b._panel(overlay,Rect2(Vector2.ZERO,overlay.size),Color(0,0,0,.25))
+	b._panel(overlay,Rect2(18,174,342,266),Color.WHITE,Color("d8dce2"),9,1)
+	var close: Button=b._nav(overlay,"close","返回图书馆",func():overlay.queue_free(),Rect2(310,186,38,38),Color.WHITE,INK)
+	close.name="LibraryServiceClose"
+	b._label(overlay,title,Rect2(35,189,260,34),21)
+	b._label(overlay,text,Rect2(35,240,304,128),16,MUTED)
+	b._button(overlay,"返回图书馆",Rect2(35,379,304,42),func():overlay.queue_free(),Color("eef3fa"),BLUE,5,Color("d8dce2")).name="LibraryServiceDone"
+	close.grab_focus.call_deferred()
 
 func rooms(b) -> Array:
 	if selected_library=="基础馆":

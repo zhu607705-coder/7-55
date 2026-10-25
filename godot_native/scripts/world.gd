@@ -17,6 +17,9 @@ const DirectWorldGestures=preload("res://scripts/direct_world_gestures.gd")
 const TargetApproach=preload("res://scripts/target_approach.gd")
 const NorthObjects=preload("res://scripts/presentation/north_generated_objects.gd")
 var north_objects:RefCounted=NorthObjects.new()
+const Room301Layout=preload("res://scripts/objects/room301_exhibit_layout.gd")
+var room301_exhibit:Node2D
+var elevator_button:Node2D
 const SourceTiledTexture=preload("res://scripts/presentation/source_tiled_texture.gd")
 # This chapter-owned script and its setup textures are loaded only after the
 # incoming scene's WebContent pack is ready. An inactive canteen is retained
@@ -192,6 +195,13 @@ func _ensure_scene_visuals(incoming: String) -> void:
 		guard_model=load("res://scripts/games/chapter4_guard_model.gd")
 		guard_sheet=load("res://assets/rpg/npcs/finale/guard_walk_8frame.png")
 		guard_sheets={"side":guard_sheet,"up":load("res://assets/rpg/npcs/finale/guard_walk_up_8frame.png"),"down":load("res://assets/rpg/npcs/finale/guard_walk_down_8frame.png")}
+	if incoming=="duan_yongping_temporal_maze" and not is_instance_valid(room301_exhibit):
+		room301_exhibit=load("res://scripts/objects/room301_exhibit_adapter.gd").new()
+		add_child(room301_exhibit);room301_exhibit.setup(self)
+	if incoming=="duan_yongping_temporal_maze" and not is_instance_valid(elevator_button):
+		elevator_button=load("res://scripts/objects/chapter4_elevator_button.gd").new()
+		add_child(elevator_button);elevator_button.setup(self)
+		chapter4_layers.elevator_button=elevator_button
 
 func _receive_teleport(point: Array) -> void:
 	if OS.has_feature("web"):
@@ -325,6 +335,10 @@ func refresh_world() -> void:
 	if scene_id=="library_interior" and library_layers!=null and library_layers.rebuild.ready:background=library_layers.rebuild.clean_plate
 	north_objects.configure(scene_id,floor_id,background)
 	collisions=north_objects.adjusted_collisions(collisions)
+	if is_instance_valid(room301_exhibit):
+		room301_exhibit.configure(scene_id,floor_id,background)
+		if room301_exhibit.active:collisions=Room301Layout.adjusted_collisions(collisions)
+	if is_instance_valid(elevator_button):elevator_button.sync(State.d,scene_id,background)
 	player = Vector2(float(spawn.get("x",world_size.x/2)),float(spawn.get("y",world_size.y*.8)))
 	var stored: Dictionary = State.d.native.get("positions",{}).get(world_key,{})
 	if not stored.is_empty() and not explicit_lake_entry: player = Vector2(float(stored.x),float(stored.y))
@@ -845,6 +859,7 @@ func _record_plate_targets() -> void:
 	for target: Dictionary in plate_targets:
 		if target.has("art") or target.get("follow_player",false): continue
 		if is_instance_valid(native_canteen) and native_canteen.owns_target(str(target.get("id",""))):continue
+		if is_instance_valid(room301_exhibit) and room301_exhibit.owns_target(str(target.get("id",""))):continue
 		if library_layers!=null and scene_id=="library_interior" and library_layers.owns_pick_target(str(target.get("id",""))): continue
 		if chapter3_layers!=null and chapter3_layers.owns_pick_target(target,State.d): continue
 		if chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and chapter4_layers.owns_pick_target(str(target.get("id",""))): continue
@@ -872,6 +887,7 @@ func _render_context() -> Dictionary:
 	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id","")),"background":background,"mode_mix":mode_mix}
 func _draw() -> void:
 	if mobile_exploration:mobile_control_metrics()
+	if is_instance_valid(elevator_button):elevator_button.sync(State.d,scene_id,background)
 	if is_instance_valid(kayak_visual):kayak_visual.sync()
 	if is_instance_valid(native_dorm):
 		native_dorm.sync(State.d,scene_id)
@@ -879,6 +895,11 @@ func _draw() -> void:
 	# Retire every existing adapter before a scene-specific early return.
 	if is_instance_valid(room204_object):room204_object.sync(State.d,scene_id)
 	if is_instance_valid(native_canteen):native_canteen.sync(State.d,scene_id)
+	if is_instance_valid(room301_exhibit):
+		room301_exhibit.visible=room301_exhibit.active and Room301Layout.active(scene_id,_last_floor)
+		if room301_exhibit.visible:
+			room301_exhibit.configure_view(_render_context())
+			return
 	if is_instance_valid(native_canteen) and native_canteen.is_active():
 		draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
 		native_canteen.configure_view(size/2-camera*zoom,zoom,player)
@@ -943,6 +964,7 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	if scene_id=="theater_interior" and chapter3_layers!=null:
 		chapter3_layers.theater_rebuild.draw_background(canvas,layer_context,State.d)
 	north_objects.draw_background(canvas,layer_context)
+	if is_instance_valid(room301_exhibit) and room301_exhibit.active:room301_exhibit.clean_floor(canvas,layer_context)
 	canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.03,.15,.26,mode_mix*.3))
 	_draw_floor_route(origin,canvas)
 	if chapter3_layers!=null: chapter3_layers.draw_back(canvas,layer_context,State.d)
