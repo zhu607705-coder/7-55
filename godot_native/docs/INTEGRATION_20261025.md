@@ -28,6 +28,7 @@
 
 <!-- submission-files -->
 
+- `docs/game-text-by-chapter.md`
 - `godot_native/assets/native/north_objects_20261025/blackboard_105_web_master.png`
 - `godot_native/assets/native/north_objects_20261025/bookcase_105_web_master.png`
 - `godot_native/assets/native/north_objects_20261025/chair_student_web_master_v2.png`
