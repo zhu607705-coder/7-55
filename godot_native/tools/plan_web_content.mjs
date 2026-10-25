@@ -77,6 +77,7 @@ function classify(name) {
   if (/^assets\/(objectized\/chapter4|native\/(stair_b|endless_stair_b3|canruo))\//.test(name)) return 'chapter4';
   if (/^assets\/native\/chapter35_recovery_/.test(name)) return 'chapter35';
   if (/^assets\/native\/(qizhen_rain_rescue|lake_assembly|kayak)\//.test(name)) return 'chapter35';
+  if (/^assets\/native\/north_objects_20261025\//.test(name)) return 'chapter4';
   if (/^assets\/native\/library_rebuild_20261020\//.test(name)) return 'chapter2';
   if (/^assets\/native\/(theater_rebuild_20261020|liangzhu_performance_20261021|theater_chest_20261023)\//.test(name)) return 'chapter3';
   if (/^assets\/native\/(canteen_objects|mixer|chapter3|canteen_animation|canteen_door)\//.test(name)) return 'chapter3';

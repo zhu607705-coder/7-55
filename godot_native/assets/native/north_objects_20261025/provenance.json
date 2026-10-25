@@ -1,0 +1,56 @@
+{
+  "tool": "OpenAI image_gen",
+  "generatedAt": "2026-10-24",
+  "normalizedAt": "2026-10-25",
+  "reference": "src/assets/rpg/interiors/finale/chapter4-755/base/a1.png",
+  "style": "orthographic oblique, warm plaster, blue-grey trim, restrained wood grain, transparent cutouts",
+  "palette": "755-campus-morning-32",
+  "normalization": "alpha threshold128; nearest uniform resize; material subset of shared palette without dithering; 3px modal color cleanup with original alpha retained; one transparent border",
+  "sourceArchive": "/Users/zhu/Downloads/755-north-art-source-20261025",
+  "assets": [
+    {
+      "id": "student_desk",
+      "source": "student_desk_master.png",
+      "sourceSha256": "bf3e7601181c8a546e41ea272a8ae5adc5ba497666800780c6b69d84eca09df5",
+      "sourceCrop": [
+        188,
+        294,
+        935,
+        1162
+      ],
+      "size": [
+        242,
+        281
+      ],
+      "visibleRect": [
+        1,
+        1,
+        240,
+        279
+      ],
+      "sha256": "3c4a384c57fc43e322c69c336849daa89b323811091e3adfba18a3eacb3cc53c"
+    },
+    {
+      "id": "wall_face",
+      "source": "wall_horizontal_master.png",
+      "sourceSha256": "596399bd660f08ec77306e44075ba22075a92dc6a7af61902e04b43d3d17cda9",
+      "sourceCrop": [
+        590,
+        185,
+        1532,
+        489
+      ],
+      "size": [
+        559,
+        182
+      ],
+      "visibleRect": [
+        1,
+        1,
+        557,
+        180
+      ],
+      "sha256": "e2a5cddd35711afa85f2951d5f7a460f68c05678339f765cda07b1f5bdeb6619"
+    }
+  ]
+}
