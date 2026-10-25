@@ -54,6 +54,8 @@ try {
   // A later asset with a real transitive boot preload must still be core.
   resource('assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_archive_film_v01.png', 'core');
   resource('assets/native/kayak/hull.svg', 'core');
+  resource('assets/native/north_objects_20261025/student_desk.png', 'chapter4');
+  resource('assets/native/north_objects_20261025/wall_face.png', 'chapter4');
   resource('assets/ui/tiyi_main.png', 'core');
   records.set('assets/unknown_owner.bin', Buffer.from('retain unknown ownership'));
   expected.set('assets/unknown_owner.bin', 'core');

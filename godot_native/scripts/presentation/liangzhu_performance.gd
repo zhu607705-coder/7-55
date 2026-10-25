@@ -7,6 +7,7 @@ const StageObjects=preload("res://scripts/presentation/theater_rehearsal_stage_o
 const StagePlate=preload("res://scripts/presentation/liangzhu_stage_plate.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const TheaterUi=preload("res://scripts/ui/theater_typography.gd")
+const StageChrome=preload("res://scripts/ui/theater_stage_chrome.gd")
 const ASSET_ROOT="res://assets/native/liangzhu_performance_20261021/"
 const PAPER=Color("F4EAD5")
 const INK=Color("202B35")
@@ -25,8 +26,8 @@ var stage_viewport:SubViewport
 var stage_canvas:Node2D
 var stage_image:TextureRect
 var stage_frame:Control
-var title_background:ColorRect
-var caption_background:ColorRect
+var title_background:Control
+var caption_background:Control
 var title:Label
 var caption:Label
 var pause_button:Button
@@ -116,9 +117,8 @@ func _label(id:String,pixels:int)->Label:
 	node.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;add_child(node);return node
 
 func _button(id:String,text:String,action:Callable)->Button:
-	var node:=Button.new();node.name=id;node.text=text;node.focus_mode=Control.FOCUS_NONE
-	TheaterUi.button(node,id=="PerformanceQteRetry")
-	node.pressed.connect(action);add_child(node);return node
+	var node:Button=StageChrome.button(id,text,action)
+	TheaterUi.text(node);add_child(node);return node
 
 func _build()->void:
 	if built:return
@@ -133,10 +133,13 @@ func _build()->void:
 	stage_image=TextureRect.new();stage_image.name="PerformanceStage";stage_image.texture=stage_viewport.get_texture()
 	stage_image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;stage_image.stretch_mode=TextureRect.STRETCH_SCALE
 	stage_image.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST;stage_image.mouse_filter=Control.MOUSE_FILTER_IGNORE;stage_frame.add_child(stage_image)
-	title_background=ColorRect.new();title_background.color=PAPER;title_background.mouse_filter=Control.MOUSE_FILTER_IGNORE;stage_frame.add_child(title_background)
-	caption_background=ColorRect.new();caption_background.color=PAPER;caption_background.mouse_filter=Control.MOUSE_FILTER_IGNORE;stage_frame.add_child(caption_background)
+	title_background=StageChrome.surface();stage_frame.add_child(title_background)
+	caption_background=StageChrome.surface(true);stage_frame.add_child(caption_background)
 	title=_label("PerformanceTitle",20);title.text="梁祝 · 扇影";TheaterUi.heading(title)
 	caption=_label("PerformanceCaption",16)
+	for label:Label in [title,caption]:
+		label.add_theme_color_override("font_color",StageChrome.PAPER)
+		label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	pause_button=_button("PerformancePause","暂停",_toggle_pause)
 	return_button=_button("PerformanceReturn","返回排练",skip)
 	# The transparent input surface follows the drawn book, not the window chrome.
@@ -174,7 +177,7 @@ func _layout()->void:
 	field=Rect2((size-Vector2(width,width*9.0/16.0))/2.0,Vector2(width,width*9.0/16.0))
 	var portrait:bool=size.x<size.y
 	var fit:float=field.size.x/StagePlate.WORLD_SIZE.x
-	var title_px:int=ceili(20.0/fit);var body_px:int=ceili(16.0/fit)
+	var title_px:int=ceili(20.0/fit);var body_px:int=ceili(18.0/fit)
 	title.add_theme_font_size_override("font_size",title_px);caption.add_theme_font_size_override("font_size",body_px)
 	var measured:float=caption.get_theme_font("font").get_multiline_string_size(caption.text,HORIZONTAL_ALIGNMENT_LEFT,maxf(1,(field.size.x-44)/fit),body_px).y*fit
 	var caption_height:float=maxf(52 if portrait else 46,ceilf(measured)+8)

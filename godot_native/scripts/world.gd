@@ -15,6 +15,8 @@ const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 const LibraryEntranceDoor = preload("res://scripts/presentation/library_entrance_door.gd")
 const DirectWorldGestures=preload("res://scripts/direct_world_gestures.gd")
 const TargetApproach=preload("res://scripts/target_approach.gd")
+const NorthObjects=preload("res://scripts/presentation/north_generated_objects.gd")
+var north_objects:RefCounted=NorthObjects.new()
 const SourceTiledTexture=preload("res://scripts/presentation/source_tiled_texture.gd")
 # This chapter-owned script and its setup textures are loaded only after the
 # incoming scene's WebContent pack is ready. An inactive canteen is retained
@@ -321,6 +323,8 @@ func refresh_world() -> void:
 		if not image_path.is_empty() and ResourceLoader.exists(State.asset(image_path)):background=load(State.asset(image_path))
 		else:background=null
 	if scene_id=="library_interior" and library_layers!=null and library_layers.rebuild.ready:background=library_layers.rebuild.clean_plate
+	north_objects.configure(scene_id,floor_id,background)
+	collisions=north_objects.adjusted_collisions(collisions)
 	player = Vector2(float(spawn.get("x",world_size.x/2)),float(spawn.get("y",world_size.y*.8)))
 	var stored: Dictionary = State.d.native.get("positions",{}).get(world_key,{})
 	if not stored.is_empty() and not explicit_lake_entry: player = Vector2(float(stored.x),float(stored.y))
@@ -938,6 +942,7 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	elif background:canvas.draw_texture_rect(background,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),false)
 	if scene_id=="theater_interior" and chapter3_layers!=null:
 		chapter3_layers.theater_rebuild.draw_background(canvas,layer_context,State.d)
+	north_objects.draw_background(canvas,layer_context)
 	canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.03,.15,.26,mode_mix*.3))
 	_draw_floor_route(origin,canvas)
 	if chapter3_layers!=null: chapter3_layers.draw_back(canvas,layer_context,State.d)
@@ -945,6 +950,7 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	library_door.draw(canvas,layer_context,false)
 func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin: Vector2=layer_context.origin
+	north_objects.draw_objects(canvas,layer_context,false)
 	var actor:Dictionary=player_visual()
 	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
@@ -968,8 +974,10 @@ func _draw_actor_foreground(canvas: CanvasItem,layer_context: Dictionary) -> voi
 	for target in ordered_targets:
 		if _target_point(target).y > player.y: _draw_target(target,origin,canvas)
 	if chapter3_layers!=null: chapter3_layers.draw_front(canvas,layer_context,State.d)
+	north_objects.draw_objects(canvas,layer_context,true)
 	if background or background_is_tiled:
 		for cover in foreground:
+			if north_objects.owns_cover(cover):continue
 			if scene_id=="theater_interior" and chapter3_layers!=null and chapter3_layers.theater_rebuild.owns_legacy_cover(cover): continue
 			if scene_id=="duan_yongping_temporal_maze" and chapter4_layers!=null and chapter4_layers.bakery_foreground_below_player(cover,State.d): continue
 			var baseline := float(cover.get("baselineY",cover.get("sortY",cover.get("bottom",0))))
