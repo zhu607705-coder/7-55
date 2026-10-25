@@ -78,7 +78,11 @@ export function inheritedTestOverrides(root, env = process.env) {
   for (const match of source.matchAll(/(?:get_environment\(|process\.env\[|os\.environ\.get\()\s*['"]([A-Z][A-Z0-9_]*)['"]|process\.env\.([A-Z][A-Z0-9_]*)/g)) names.add(match[1] || match[2]);
  }
  for (const directory of ['godot_native/tests', 'godot_native/tools', 'godot_native/scripts', 'scripts']) visit(path.join(root, directory));
- const isolated = new Set(['CI','GITHUB_OUTPUT','GITHUB_EVENT_NAME','GITHUB_RUN_ATTEMPT','GITHUB_RUN_ID','GITHUB_SHA','GODOT_BIN','NATIVE_TEST_JOBS','GODOT_TEST_REPORT','GODOT_TEST_PAUSE_FILE','BUCT_V4_QA_DIR','HOME','TMPDIR','TMP','TEMP','PATH','XDG_DATA_HOME','XDG_CONFIG_HOME','XDG_CACHE_HOME','XDG_STATE_HOME','XDG_RUNTIME_DIR','GODOT_TEST_USER_DATA_DIR','GODOT_NATIVE_TEST_NONCE']);
+ // Hosted runners also set CHROME_BIN and USER. Their only scanned consumers
+ // are separate Web browser tools and deploy_web_server's host metadata, not
+ // native catalog stages. Keep their values in the environment identity, but
+ // do not mistake them for native fixture/output overrides.
+ const isolated = new Set(['CI','GITHUB_OUTPUT','GITHUB_EVENT_NAME','GITHUB_RUN_ATTEMPT','GITHUB_RUN_ID','GITHUB_SHA','CHROME_BIN','USER','GODOT_BIN','NATIVE_TEST_JOBS','GODOT_TEST_REPORT','GODOT_TEST_PAUSE_FILE','BUCT_V4_QA_DIR','HOME','TMPDIR','TMP','TEMP','PATH','XDG_DATA_HOME','XDG_CONFIG_HOME','XDG_CACHE_HOME','XDG_STATE_HOME','XDG_RUNTIME_DIR','GODOT_TEST_USER_DATA_DIR','GODOT_NATIVE_TEST_NONCE']);
  return [...names].filter(key => env[key] && !isolated.has(key)).sort();
 }
 export function completedStageIdentity(identity, stage, before, after) {

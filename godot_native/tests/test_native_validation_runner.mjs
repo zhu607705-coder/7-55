@@ -152,6 +152,14 @@ test('external fixture paths cannot authorize resume by stable path spelling', (
  assert.deepEqual(inheritedTestOverrides(path.dirname(project), {CODEX_PRIMARY_RUNTIME_ROOT:'/opt/runtime', BROWSER_MANAGEMENT_SOCKET_PATH:'/tmp/socket'}), []);
 });
 
+test('hosted browser/account defaults do not serialize native readers or hide real overrides', () => {
+ const env = {CI:'true',USER:'runner',CHROME_BIN:'/usr/bin/google-chrome',BUCT_V4_QA_DIR:'/tmp/native-qa',GODOT_TEST_REPORT:'/tmp/native-report.json'};
+ assert.deepEqual(inheritedTestOverrides(path.dirname(project), env), []);
+ for (const name of ['WORLD_SCRIPT_PATH','LAMP_SOURCE_FRAMES','CANTEEN_SOURCE_ROOT','SOURCE_REPO_ROOT']) {
+  assert.deepEqual(inheritedTestOverrides(path.dirname(project), {...env,[name]:'/tmp/mutable-input'}), [name]);
+ }
+});
+
 test('workspace lock excludes a second process and can be released without stale ownership', async () => {
  const {acquireNativeWorkspaceLock} = await import('../tools/native_validation_lock.mjs');
  const temporary = fs.mkdtempSync(path.join(os.tmpdir(),'755-lock-test-'));

@@ -121,8 +121,9 @@ Preflight runs on every formal attempt. Reuse then requires identical:
 
 The environment itself is not written to the report, only its hash. Known
 externally supplied fixture/source/output controls deny resume and force serial
-execution; external Node/Python/LD loaders deny resume as well. CI run metadata
-stays fingerprinted but does not force serial execution. No blanket `GITHUB_*`
+execution; external Node/Python/LD loaders deny resume as well. CI run metadata,
+the separate Web tools' `CHROME_BIN`, and deployment host metadata `USER` stay
+fingerprinted but do not force native serial execution. No blanket `GITHUB_*`
 exemption is used. Legacy label-only reports are refused. Mismatches are refused
 without overwriting the prior report. Use a new report for changed content.
 A final input recheck detects mutation during execution, invalidates reuse and
@@ -158,3 +159,24 @@ ordinary browser, mobile, library and streaming-failure/retry gates are retained
   execution of this new harness. Existing media was copied independently for the
   smoke; no media re-encode or bulk import was repeated. The new formal prepared
   input check correctly rejects the absent new media receipt in that old copy.
+
+### Hosted checkpoint and default-environment correction
+
+- Head `502e4b716ee16ece21def45cd4be35070d153011`, tree `d99bffd5`, passed all
+  four workflows. Native run `40204036543` completed **529 passed + 1 audited
+  deduplicated**, with zero failed, blocked or not-run stages. Exact-content
+  completion passed; Web ordinary/streaming and all five profile jobs passed.
+- Its report reveals **jobs=1**, not 2: the broad conservative scan mistook
+  hosted `CHROME_BIN` and `USER` for native fixture controls. Their only actual
+  consumers are separate browser tools and deployment host metadata. The narrow
+  correction exempts exactly these two names; native external-input denial stays
+  covered. The native catalog does not execute those browser/deployment tools.
+- Preserve that hosted serial baseline: runner wall **3,209.184 s**, summed
+  stage time **3,195.045 s**; 481 reader stages **2,757.655 s**, 48 exclusive
+  stages **437.390 s**. Observed maximum concurrent stages was **1**. This is
+  not evidence of a parallel speedup, and is not compared with another host.
+- Correction checks: **17/17** runner contracts and a real pinned-engine smoke
+  under `CI=true USER=runner CHROME_BIN=/usr/bin/google-chrome` passed. The two
+  model stages started `15:49:23.155Z` / `15:49:23.182Z` and overlapped for
+  **1,199 ms**; metadata records jobs=2. This remains **2 passed, 528 not-run**.
+  A complete hosted run of the corrected parallel harness remains pending.
