@@ -201,7 +201,7 @@ func _ensure_scene_visuals(incoming: String) -> void:
 	if incoming=="duan_yongping_temporal_maze" and not is_instance_valid(room301_exhibit):
 		room301_exhibit=load("res://scripts/objects/room301_exhibit_adapter.gd").new()
 		add_child(room301_exhibit);room301_exhibit.setup(self)
-	if incoming=="duan_yongping_temporal_maze" and not is_instance_valid(elevator_button):
+	if incoming=="duan_yongping_temporal_maze" and chapter4_layers!=null and not is_instance_valid(elevator_button):
 		elevator_button=load("res://scripts/objects/chapter4_elevator_button.gd").new()
 		add_child(elevator_button);elevator_button.setup(self)
 		chapter4_layers.elevator_button=elevator_button

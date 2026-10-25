@@ -664,11 +664,16 @@ func _layout() -> void:
 	border.content_margin_left=margin; border.content_margin_right=margin
 	border.content_margin_top=margin; border.content_margin_bottom=margin
 	if compact:
-		world_frame.scale=Vector2.ONE
 		var insets:=_world_safe_insets()
-		world_frame.position=Vector2(insets.x+2,insets.y+2)
-		world_extent=available-Vector2(insets.x+insets.z+8,insets.y+insets.w+8)
-		world_frame.size=world_extent+Vector2.ONE*4
+		var safe_extent:=available-Vector2(insets.x+insets.z+4,insets.y+insets.w+4)
+		var frame_extent:=world_extent+Vector2.ONE*4
+		var world_scale:=maxf(.01,minf(safe_extent.x/frame_extent.x,safe_extent.y/frame_extent.y))
+		# Compact input and readable root-space controls do not change the map's
+		# authored landscape viewport. A portrait window letterboxes it until
+		# the device rotates; desktop narrow windows use the same projection.
+		world_frame.scale=Vector2.ONE*world_scale
+		world_frame.position=Vector2(insets.x+2,insets.y+2)+(safe_extent-frame_extent*world_scale)/2
+		world_frame.size=frame_extent
 	else:
 		world_frame.size=Vector2(980,560)
 		var world_scale:=minf((available.x-4)/980.0,(available.y-4)/560.0)

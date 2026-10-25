@@ -18,6 +18,23 @@ func check(value: bool, message: String) -> void:
 func collapsed_handle_contract(size: Vector2, factor: float=1.0) -> bool:
 	# Current main1322: one44px physical minimum, preserving the source rail.
 	return size.is_equal_approx(Vector2(maxf(38,44.0/factor),maxf(63,44.0/factor)))
+func single_text_layer(label: Label) -> void:
+	if DisplayServer.get_name()=="headless":return
+	# A transparent native font must leave exactly the same pixels as hiding
+	# the label. A second custom draw pass ignores that font color and fails.
+	var ink:Color=label.get_theme_color("font_color")
+	label.hide();await process_frame;await RenderingServer.frame_post_draw
+	var empty:Image=root.get_texture().get_image()
+	label.add_theme_color_override("font_color",Color.TRANSPARENT);label.show()
+	await process_frame;await RenderingServer.frame_post_draw
+	var transparent:Image=root.get_texture().get_image()
+	var area:Rect2i=Rect2i(label.get_global_rect()).intersection(Rect2i(Vector2i.ZERO,empty.get_size()))
+	var same:=true
+	for y in range(area.position.y,area.end.y):
+		for x in range(area.position.x,area.end.x):
+			if empty.get_pixel(x,y)!=transparent.get_pixel(x,y):same=false
+	check(same,"Status text honors native font transparency without an extra text layer: "+label.text)
+	label.add_theme_color_override("font_color",ink)
 func run() -> void:
 	var state=root.get_node("State")
 	state.developer_mode=true
@@ -52,6 +69,8 @@ func run() -> void:
 	check(chrome.inventory_slots.get_child(0).item_id=="headphone","inventory follows authored order, not item config order")
 	check(chrome.time_label.get_theme_font("font")==preload("res://scripts/ui/native_typography.gd").body_font(),"same shared UI family for status text")
 	check(chrome.time_label.text=="07:55" and chrome.time_trusted,"initial trustworthy 07:55")
+	await single_text_layer(chrome.time_label)
+	await single_text_layer(chrome.battery_number)
 	check(chrome.time_box.visible and chrome.time_label.is_visible_in_tree(),"opened phone presents a legible unboxed system clock")
 	check(chrome.status_bar.get_node_or_null("TimeShadow")==null,"removed clock leaves no shadow placeholder")
 	check(chrome.get_node_or_null("TaskTriggerShadow")==null and chrome.status_bar.get_node_or_null("ControlCenterTriggerShadow")==null,"unboxed status and task controls leave no grey shadow blocks")

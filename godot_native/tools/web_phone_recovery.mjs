@@ -14,6 +14,64 @@ export async function waitForBrightnessControl(h, afterFrame) {
   }, 'fresh native brightness control is visible and usable', 20000);
 }
 
+async function continuousExercise(h, evidence) {
+  const initial = await h.poll(async () => {
+    const s = await h.snapshot();
+    return s.activeGame?.script === 'res://scripts/games/virtual_run.gd' && s.visibleControls.some(c => c.name === 'RunProgress') ? s : null;
+  }, 'ordinary exercise opens the continuous running track');
+  // Authored 430x820 exercise layout and stadium centreline. These coordinates
+  // generate only ordinary pointer input, never game properties or progress.
+  const radius = 83, straight = 130, quarter = Math.PI * radius / 2, length = Math.PI * radius * 2 + straight * 2;
+  const fractions = [0, .075, .175, .275, .375, .475, .575, .675, .775, .875, 1];
+  function pointAt(distance) {
+    let d = Math.min(length, Math.max(0, distance));
+    if (d <= quarter) return { x: 180 + Math.cos(Math.PI / 2 + d / radius) * radius, y: 245 + Math.sin(Math.PI / 2 + d / radius) * radius };
+    d -= quarter;
+    if (d <= straight) return { x: 97, y: 245 - d };
+    d -= straight;
+    if (d <= Math.PI * radius) return { x: 180 + Math.cos(Math.PI + d / radius) * radius, y: 115 + Math.sin(Math.PI + d / radius) * radius };
+    d -= Math.PI * radius;
+    if (d <= straight) return { x: 263, y: 115 + d };
+    d -= straight;
+    return { x: 180 + Math.cos(d / radius) * radius, y: 245 + Math.sin(d / radius) * radius };
+  }
+  function screenPoint(p, s) {
+    const r = s.activeGame.rect, scale = r.width / 430;
+    // track=(14,186,402,394), fit=1, centred source origin=(21,23).
+    return { x: r.x + (35 + p.x) * scale, y: r.y + (209 + p.y) * scale };
+  }
+  const count = s => Number(s.visibleControls.find(c => c.name === 'RunProgress')?.text.match(/(\d+)\s*\/\s*10/)?.[1]);
+  h.check(count(initial) === 0, `${h.id}: exercise starts with zero controller-earned fixes`);
+  for (let segment = 0; segment < 10; segment++) {
+    let s = await h.snapshot(), last = await h.renderPoint(screenPoint(pointAt(fractions[segment] * length), s), s);
+    h.check(count(s) === segment, `${h.id}: segment ${segment + 1} starts at the previous genuine checkpoint`);
+    evidence.inputs.push({ method: h.touch ? 'ordinaryTouchDrag' : 'ordinaryMouseDrag', name: 'VirtualRunTrack', segment: segment + 1, at: Date.now() });
+    await h.pointer('start', last);
+    try {
+      const start = fractions[segment] * length, finish = fractions[segment + 1] * length;
+      const steps = Math.ceil((finish - start) / 2);
+      for (let step = 1; step <= steps; step++) {
+        last = await h.renderPoint(screenPoint(pointAt(start + (finish - start) * step / steps), s), s);
+        await h.pointer('move', last); await h.interval(80);
+        if (step % 8 === 0) {
+          s = await h.snapshot();
+          if (count(s) === segment + 1) break;
+        }
+      }
+      s = await h.poll(async () => {
+        const current = await h.snapshot();
+        return count(current) === segment + 1 ? current : null;
+      }, `continuous pointer traversal completes running segment ${segment + 1}`, 8000);
+      evidence.samples.push({ label: `continuous exercise segment ${segment + 1}`, at: Date.now(), progress: s.visibleControls.find(c => c.name === 'RunProgress').text });
+    } finally { await h.pointer('end', last); }
+  }
+  const accepted = await h.poll(async () => {
+    const s = await h.snapshot();
+    return s.state.actOne.exerciseStarted && s.visibleControls.some(c => c.name === 'ReturnToTiyi') ? s : null;
+  }, 'ten continuous exercise traces accepted by the original authority');
+  h.check(count(accepted) === 10, `${h.id}: accepted exercise retains all ten genuine fixes`);
+}
+
 // Ordinary browser input only. The harness exposes a detached read-only Godot
 // snapshot, real CDP pointer input, and the shipped portable-save file picker.
 export async function phoneRecoveryCase(h) {
@@ -164,8 +222,7 @@ export async function phoneRecoveryCase(h) {
   await h.settings(); await h.saveProgressAndWait('installed Tiyi before reload'); await h.startStory(true);
   h.check((await read()).state.actOne.tiyiUpdateStage === 'installed', `${h.id}: real browser reload retains installation`);
   await click('HomeApp_tiyi'); await click('TiyiExercise');
-  for (let point = 1; point <= 10; point++) await click(`Fix${point}`);
-  await h.poll(async () => (await read()).state.actOne.exerciseStarted, 'ten actual exercise point presses accepted');
+  await continuousExercise(h, evidence);
   await shot('tiyi-real-exercise'); await click('ReturnToTiyi'); await home();
   await click('HomeWeatherOpen'); await click('WeatherWaterCard');
   // CDP delivery plus a fixed delay does not acknowledge the engine's cached
@@ -177,7 +234,7 @@ export async function phoneRecoveryCase(h) {
   value = await read('C2 original weather rain earned after exercise');
   h.check(value.state.actOne.weatherWaterTaken && value.state.items.weatherWater, `${h.id}: original weather drop remains gated behind actual exercise`);
   await shot('tiyi-weather-rain'); await h.assertLayout('Tiyi two-stage recovery');
-  evidence.coverage.push('C2 repeated cellular trick refused', 'official account Contact acquisition and explicit installation', 'ordinary installation save/reload', 'ten actual exercise points then weather rain');
+  evidence.coverage.push('C2 repeated cellular trick refused', 'official account Contact acquisition and explicit installation', 'ordinary installation save/reload', 'ten continuous exercise traces then weather rain');
   evidence.completed = true;
   return evidence;
 }

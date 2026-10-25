@@ -1750,6 +1750,10 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     if (scenarios === 'mobile-world') await mobileWorldCase();
     else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
+      pointer: async (phase, point) => {
+        if (touch) await active.cdp.send('Input.dispatchTouchEvent', {type: phase === 'start' ? 'touchStart' : phase === 'move' ? 'touchMove' : 'touchEnd', touchPoints: phase === 'end' ? [] : [{...point, id: 4}]});
+        else await active.cdp.send('Input.dispatchMouseEvent', {type: phase === 'start' ? 'mousePressed' : phase === 'move' ? 'mouseMoved' : 'mouseReleased', button: 'left', buttons: phase === 'end' ? 0 : 1, clickCount: 1, ...point});
+      },
       assertLayout, settings, saveProgressAndWait, startStory, record: value => { active.phoneRecovery = value; }, capture: value => active.screenshots.push(value) });
     else if (scenarios === 'phone-navigation') active.phoneNavigation = await phoneNavigationCase({ id, touch, fixtureDir,
       snapshot, clickControl, renderPoint, poll, check, interval, screenshot, importSave, assertLayout, press,

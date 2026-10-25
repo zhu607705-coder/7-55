@@ -110,23 +110,23 @@ func home(b) -> Control:
 	for i in range(apps.size()):
 		var app: Array=apps[i]; var point=Vector2(23+(i%4)*83,149+int(i/4)*79)
 		var open_app=func():
-			if not app[3]:
-				var text=str(app[1])+"\n"+b.campus_services.copy.library.borrow_status_val
-				if app[0] in ["reserve","space"]:text=str(app[1])+"\n"+b.campus_services.copy.library.seat_reserve_status
-				elif app[0] in ["catalog","recovery","return"]:text=str(app[1])+"\n当前还没有相关现场记录。"
-				service_info(b,root,app[1],text)
-				return
 			match app[0]:
 				"catalog": b.page_requested.emit("library_catalog")
 				"reserve": goto(b,"spaces")
 				"recovery": open_recovery(b)
 				"return": b.action_requested.emit("lib_enter",null)
 				"rule": b.action_requested.emit("lib_open_rule",null)
-		var target: Button=b._button(inner,"",Rect2(point,Vector2(75,71)),open_app,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
-		target.name="LibraryApp_"+app[0]
+		var target: Control
+		if app[3]:
+			target=b._button(inner,"",Rect2(point,Vector2(75,71)),open_app,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
+			target.name="LibraryApp_"+app[0]
+		else:
+			target=Control.new();target.position=point;target.size=Vector2(75,71)
+			target.mouse_filter=Control.MOUSE_FILTER_IGNORE;target.focus_mode=Control.FOCUS_NONE;inner.add_child(target)
 		b._panel(target,Rect2(15,0,46,46),Color("0f66b7"),Color("073f7c"),0,3)
 		b._label(target,str(app[2]),Rect2(15,0,46,46),14 if app[0]=="recovery" else 23,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-		b._label(target,str(app[1]),Rect2(0,50,75,21),10,INK,HORIZONTAL_ALIGNMENT_CENTER)
+		var name: Label=b._label(target,str(app[1]),Rect2(0,50,75,21),10,INK,HORIZONTAL_ALIGNMENT_CENTER)
+		if not app[3]:name.name="LibraryLocked_"+app[0]
 	var y=403
 	if b.s.ui.libraryFinalsPhase=="top_ten_reached":
 		var alert: Button=b._button(inner,"",Rect2(14,y,345,61),func(): open_recovery(b),Color("e9f3ff"),BLUE,0,BLUE); alert.name="LibraryRecoveryAlert"
@@ -142,17 +142,6 @@ func home(b) -> Control:
 	inner.custom_minimum_size.y=y+12
 	bottom_nav(b,root)
 	return root
-
-func service_info(b,root: Control,title: String,text: String) -> void:
-	var overlay=Control.new();overlay.name="LibraryServiceInfo";overlay.size=root.size;overlay.mouse_filter=Control.MOUSE_FILTER_STOP;overlay.z_index=20;root.add_child(overlay)
-	b._panel(overlay,Rect2(Vector2.ZERO,overlay.size),Color(0,0,0,.25))
-	b._panel(overlay,Rect2(18,174,342,266),Color.WHITE,Color("d8dce2"),9,1)
-	var close: Button=b._nav(overlay,"close","返回图书馆",func():overlay.queue_free(),Rect2(310,186,38,38),Color.WHITE,INK)
-	close.name="LibraryServiceClose"
-	b._label(overlay,title,Rect2(35,189,260,34),21)
-	b._label(overlay,text,Rect2(35,240,304,128),16,MUTED)
-	b._button(overlay,"返回图书馆",Rect2(35,379,304,42),func():overlay.queue_free(),Color("eef3fa"),BLUE,5,Color("d8dce2")).name="LibraryServiceDone"
-	close.grab_focus.call_deferred()
 
 func rooms(b) -> Array:
 	if selected_library=="基础馆":

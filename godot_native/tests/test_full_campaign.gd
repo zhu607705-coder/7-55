@@ -181,6 +181,23 @@ func make_game(request: Dictionary) -> Control:
 	elif result.has_method("start"): result.start(config)
 	return result
 
+func run_exercise_segment() -> void:
+	# Same ordinary pointer contract as test_virtual_run_controls: keep the
+	# cursor inside the lane and steer slowly enough through signal interference.
+	var before:int=game.completed
+	var down:=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true
+	down.position=game.track.to_screen(game.motion.position);down.global_position=down.position;root.push_input(down,true)
+	for frame:int in range(1600):
+		var offset:Vector2=game.motion.goal()-game.motion.position
+		var motion:=InputEventMouseMotion.new();motion.button_mask=MOUSE_BUTTON_MASK_LEFT
+		motion.position=game.track.to_screen(game.motion.position+offset.limit_length(16));motion.global_position=motion.position
+		root.push_input(motion,true);game._step(1.0/60)
+		if game.completed!=before or game.pending_result:break
+	var up:=InputEventMouseButton.new();up.button_index=MOUSE_BUTTON_LEFT
+	up.position=game.track.to_screen(game.motion.position);up.global_position=up.position;root.push_input(up,true)
+	await process_frame
+	check(game.completed==before+1,"continuous exercise pointer route reaches segment "+str(before+1))
+
 func beginning() -> void:
 	for id in ["c1_start_alarm","c1_dismiss_alarm","c1_wake","c1_enter_home"]: await step(id)
 	await show_phone("wechat")
@@ -241,8 +258,9 @@ func beginning() -> void:
 	await show_phone("tiyi")
 	game=make_game(await step("c2_exercise"))
 	if game==null: return
-	for i in range(10): game.target.pressed.emit()
-	check(game_results.size()==1 and state.d.actOne.exerciseStarted,"actual ten run point inputs")
+	for i in range(10):await run_exercise_segment()
+	check(game_results==[{"failed":false,"points":10,"elapsedSeconds":600,"distanceMeters":3000}] and state.d.actOne.exerciseStarted and game.motion.receipts.size()==11,"ten continuous exercise traces submit original 600-second / 3000-metre proof")
+	trace.append({"virtualRun":{"segments":game.completed,"receipts":game.motion.receipts.size(),"retries":game.motion.retries,"proof":game_results.duplicate(true)},"input":"ordinary held pointer/motion events with real movement stepping"})
 	game.free(); game=null
 	for pair in [["c2_weather_drop",null],["c2_mentor","weatherWater"],["c2_triangle",null],["c2_triangle",null],["c2_triangle",null],["c1_combine",["pushTriangle","mentorLine"]],["c2_balance","rightArrow"],["c1_network","校园网"],["c2_card_identity",null],["c2_login",{"student_id":"3250100755","password":"ZJU1897!"}],["c2_purchase_gamepad",null],["c2_use_gamepad",null]]: await step(pair[0],pair[1])
 	# A real world movement callback will be plugged here; no synthetic summary.
