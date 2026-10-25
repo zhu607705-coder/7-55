@@ -179,6 +179,11 @@ func _layout()->void:
 	var fit:float=field.size.x/StagePlate.WORLD_SIZE.x
 	var title_px:int=ceili(20.0/fit);var body_px:int=ceili(18.0/fit)
 	title.add_theme_font_size_override("font_size",title_px);caption.add_theme_font_size_override("font_size",body_px)
+	for button:Button in [pause_button,return_button,help_button,retry_button]:button.add_theme_font_size_override("font_size",body_px)
+	# Button text and timber margins impose a real minimum width. Measure before
+	# placing either action so the larger Retry cannot steal Return's left edge.
+	var pause_width:float=maxf(96 if portrait else 108,ceilf(maxf(pause_button.get_combined_minimum_size().x,retry_button.get_combined_minimum_size().x)*fit))
+	var return_width:float=maxf(124,ceilf(return_button.get_combined_minimum_size().x*fit))
 	var measured:float=caption.get_theme_font("font").get_multiline_string_size(caption.text,HORIZONTAL_ALIGNMENT_LEFT,maxf(1,(field.size.x-44)/fit),body_px).y*fit
 	var caption_height:float=maxf(52 if portrait else 46,ceilf(measured)+8)
 	var pause_rect:=Rect2();var return_rect:=Rect2()
@@ -190,12 +195,12 @@ func _layout()->void:
 		field.position.y=top+52
 		title_paper=Rect2(field.position.x+12,top,field.size.x-24,44)
 		caption_paper=Rect2(field.position.x+12,field.end.y+8,field.size.x-24,caption_height)
-		pause_rect=Rect2(field.position.x+12,caption_paper.end.y+8,96,44)
-		return_rect=Rect2(field.end.x-136,caption_paper.end.y+8,124,44)
+		pause_rect=Rect2(field.position.x+12,caption_paper.end.y+8,pause_width,44)
+		return_rect=Rect2(field.end.x-12-return_width,caption_paper.end.y+8,return_width,44)
 	else:
 		title_paper=Rect2(field.position+Vector2(12,12),Vector2(minf(230,maxf(100,field.size.x-384)),44))
-		pause_rect=Rect2(field.end.x-260,field.position.y+12,108,44)
-		return_rect=Rect2(field.end.x-140,field.position.y+12,124,44)
+		return_rect=Rect2(field.end.x-16-return_width,field.position.y+12,return_width,44)
+		pause_rect=Rect2(return_rect.position.x-12-pause_width,field.position.y+12,pause_width,44)
 		caption_paper=Rect2(field.position.x+12,field.end.y-caption_height-12,field.size.x-24,caption_height)
 	stage_frame.position=field.position;stage_frame.size=StagePlate.WORLD_SIZE;stage_frame.scale=Vector2.ONE*fit
 	stage_image.position=Vector2.ZERO;stage_image.size=StagePlate.WORLD_SIZE
@@ -203,7 +208,6 @@ func _layout()->void:
 	_frame_rect(caption_background,caption_paper,fit);_frame_rect(caption,caption_paper.grow_individual(-10,-4,-10,-4),fit)
 	_frame_rect(pause_button,pause_rect,fit);_frame_rect(return_button,return_rect,fit)
 	_frame_rect(retry_button,pause_rect,fit)
-	for button:Button in [pause_button,return_button,help_button,retry_button]:button.add_theme_font_size_override("font_size",body_px)
 	# Measure at a finite width before placing the paper. A wrapping Label's
 	# transient minimum height must never push the actions below the viewport.
 	var menu_width:float=minf(360,size.x-32)

@@ -83,7 +83,9 @@ func owns_cover(cover:Dictionary)->bool:
 	return active and cover.get("id","")=="a1_classroom_partition_face"
 
 func wall_in_front(player:Vector2)->bool:
-	return active and Metrics.foot_rect(player).end.y<float(data.wall.baselineY)
+	# The source collider permits exact contact at its north edge. Keep that
+	# legal stand behind the wall until the feet actually cross the baseline.
+	return active and Metrics.foot_rect(player).end.y<=float(data.wall.baselineY)
 
 func _project(area:Rect2,context:Dictionary)->Rect2:
 	return Rect2(Vector2(context.origin)+area.position*float(context.zoom),area.size*float(context.zoom))

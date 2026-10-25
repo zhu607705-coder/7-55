@@ -38,6 +38,38 @@ func target(view:Control)->Vector2:
 	check(q.size.x>=44 and q.size.y>=44 and view.field.encloses(q),"Expanded grip remains44CSS and follows the complete stage")
 	check(not q.intersects(view.return_button.get_global_rect()) and not q.intersects(view.caption_paper) and not q.intersects(view.help_button.get_global_rect()),"Actor input is separate from the side-wing programme, subtitles and Return")
 	return q.get_center()
+func control_boundaries()->void:
+	closed.clear()
+	var view:Control=await mount(Vector2i(1280,720))
+	var pressed:Dictionary={"retry":0,"return":0}
+	view.retry_button.pressed.connect(func():pressed.retry+=1)
+	view.return_button.pressed.connect(func():pressed["return"]+=1)
+	view.tick(15,true);view.tick(60,true)
+	# Include larger-to-smaller resizes: stale minimum sizes must not overlap.
+	for viewport:Vector2i in [Vector2i(1280,720),Vector2i(1920,1080),Vector2i(1440,900),Vector2i(844,390),Vector2i(390,844),Vector2i(360,640),Vector2i(1280,720)]:
+		root.size=viewport;view.configure_activity_layout(Vector2(viewport));await frames(4)
+		check(view.model.status=="failure" and view.retry_button.is_visible_in_tree(),"Boundary check uses the actual failed-QTE Retry at "+str(viewport))
+		var retry:Rect2=view.retry_button.get_global_rect();var back:Rect2=view.return_button.get_global_rect()
+		check(not retry.intersects(back),"Retry and Return never share a hit area at "+str(viewport))
+		var bounds:=Rect2(Vector2.ZERO,Vector2(viewport))
+		check(bounds.encloses(retry) and bounds.encloses(back),"Both failed-QTE actions remain inside the viewport at "+str(viewport))
+		check(view.caption.get_theme_font_size("font_size")*view.stage_frame.scale.x>=18,"The enlarged subtitle remains at least 18 screen pixels")
+		var attempts:int=view.model.qte_snapshot().attempts
+		var prior:int=pressed.retry
+		var edge:=Vector2(retry.end.x-5,retry.get_center().y)
+		await mouse_at(edge,true);await mouse_at(edge,false)
+		check(pressed.retry==prior+1 and pressed["return"]==0 and closed.is_empty(),"Retry's right edge belongs only to Retry at "+str(viewport))
+		check(view.model.status=="waiting" and view.model.qte_snapshot().attempts==attempts+1,"The real edge click retries exactly one local cue")
+		view.tick(60,true);await frames()
+	var prior:int=pressed.retry
+	# Original desktop failure: Retry used to steal this point inside Return.
+	var return_edge:=Vector2(1145,30)
+	check(view.return_button.get_global_rect().has_point(return_edge),"Original reported point remains inside the visible Return sign")
+	await mouse_at(return_edge,true);await mouse_at(return_edge,false)
+	check(pressed["return"]==1 and pressed.retry==prior and closed==["skipped"] and view.disposed,"Return's left edge closes once without triggering Retry")
+	await mouse_at(return_edge,true);await mouse_at(return_edge,false)
+	check(closed==["skipped"] and pressed["return"]==1,"Repeated click after dismissal cannot invoke the disposed controls")
+	view.queue_free();await frames();closed.clear()
 func run()->void:
 	fixture={"runtimeMode":"rpg","rpgScene":"theater_interior","rpgCheckpoint":"campus_theater_interior","native":{"scene":"theater_interior","mode":"light","settings":{"reduced_motion":false}},"theaterHunt":{"active":true,"admitted":true,"phase":"program_search"},"ui":{"controlCenterOpen":false}}
 	var before:Dictionary=fixture.duplicate(true);var durable:Dictionary={}
@@ -98,6 +130,7 @@ func run()->void:
 	view.tick(54,true);check(closed==["finished"] and view.model.qte_completed.is_empty() and view.model.qte_results.is_empty(),"Passive completion never masquerades as three successful QTEs")
 	check(fixture==before,"Every ordinary input path preserves the entire source game state")
 	view.queue_free();await frames()
+	await control_boundaries()
 	for file:String in durable:
 		var value:Variant=FileAccess.get_file_as_string(file) if FileAccess.file_exists(file) else null
 		check(value==durable[file],"QTEs and viewing preserve durable save bytes: "+file)

@@ -65,6 +65,15 @@ func run()->void:
 	check(world.can_stand(anchor_for_feet(Vector2(1308,552))),'Partition painted face remains walk-behind space')
 	check(not world.can_stand(anchor_for_feet(Vector2(1308,590))),'Authored solid partition base still blocks')
 	check(objects.wall_in_front(anchor_for_feet(Vector2(1308,552))),'A legal stand behind the wall receives source 22 percent reveal')
+	var wall_contact:=Vector2(1308,545)
+	check(Metrics.foot_rect(wall_contact).end.y==float(objects.data.wall.baselineY),'Regression fixture touches the authored wall baseline exactly')
+	for offset:float in [-.02,0.0,.02]:
+		var at:Vector2=wall_contact+Vector2(0,offset)
+		check(world.can_stand(at)==(offset<=0),'Wall contact preserves the source collision boundary at '+str(offset))
+		check(objects.wall_in_front(at)==(offset<=0),'Wall remains in front through exact contact, but not beyond its baseline at '+str(offset))
+	var wall_stop:Vector2=world._c4_axis_destination(wall_contact-Vector2(0,3),Vector2(0,10))
+	check(world.can_stand(wall_stop) and absf(Metrics.foot_rect(wall_stop).end.y-float(objects.data.wall.baselineY))<.01,'Actual downward sweep stops at the authored partition base')
+	check(objects.wall_in_front(wall_stop),'Swept wall contact retains the foreground reveal instead of popping behind the player')
 	check(not objects.wall_in_front(anchor_for_feet(Vector2(1308,605))),'Standing beyond solid base renders player fully in front')
 	var floor:Dictionary=world.spec.layout.floors[0]
 	check(world.can_stand(Vector2(float(floor.safeSpawn.x),float(floor.safeSpawn.y))),'Authored A1 safe spawn remains legal')
