@@ -1,0 +1,11 @@
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createNativeTestSandbox} from '../../tools/native_test_sandbox.mjs';
+const project=path.resolve(import.meta.dirname,'../..');
+const fixture=createNativeTestSandbox(project);
+fixture.env.NORTH_PROP_OBJECT_PREVIEW='1';
+const child=spawn(process.env.GODOT_BIN||'godot',['--audio-driver','Dummy','--path',fixture.project,'--script',process.env.NORTH_PROP_CAPTURE_ALPHA_PROBE==='1'?'res://tests/capture_north_wall_reveal.gd':process.env.NORTH_PROP_CAPTURE_PALETTE_PROBE==='1'?'res://tests/capture_north_palette_alpha.gd':'res://tests/capture_north_independent_props.gd',...process.argv.slice(2)],{env:fixture.env,stdio:['inherit','inherit','pipe'],timeout:180000});
+let errors='';
+child.stderr.on('data',chunk=>{errors+=chunk.toString();process.stderr.write(chunk);});
+child.on('error',error=>{console.error(error.message);process.exitCode=2;});
+child.on('close',code=>{process.exitCode=code===0 && /(?:^|\n)(?:ERROR:|SCRIPT ERROR:)/.test(errors)?1:(code??2);});

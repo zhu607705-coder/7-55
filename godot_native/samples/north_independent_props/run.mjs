@@ -1,0 +1,11 @@
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createNativeTestSandbox} from '../../tools/native_test_sandbox.mjs';
+const project=path.resolve(import.meta.dirname,'../..');
+const fixture=createNativeTestSandbox(project);
+fixture.env.NORTH_PROP_OBJECT_PREVIEW='1';
+const godot=process.env.GODOT_BIN||'godot';
+console.log(`Disposable preview profile: ${fixture.userData}`);
+const child=spawn(godot,['--path',fixture.project,'--script','res://samples/north_independent_props/play.gd',...process.argv.slice(2)],{env:fixture.env,stdio:'inherit'});
+child.on('error',error=>{console.error(error.message);process.exitCode=2;});
+child.on('close',code=>{process.exitCode=code??2;});

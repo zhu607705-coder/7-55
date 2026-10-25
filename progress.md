@@ -5528,3 +5528,10 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 网络缴费新增可选账务核对：查看待缴账单与回执后选择重复计费，校验通过才保存结算；错误原因、缺少凭据、伪造结算和重复提交均受控。旧存档可不带新增字段，不动原钱包、网络模式与主线证据。新增文案继续使用 Gemini 3.8 Flash / 低的场景描述与 Humanizer-zh 审阅。
 - 按用户要求缩减重复检查：最近集中原生 5/5 通过，复用未受影响的前轮 release 38/38 和相关剧情验证。实际网页桌面 934、触屏 935 项内部断言通过（7 组相关流程，多数断言为资源完整性）；实测账单滚动受阻后修正触摸传递。最后只补雷达容器布局等待，最终导出 source-input f265d3ef4dcfb7a01fc008e56ff7b18afd031c5277c7a5e895ec71887e6ea7fa，触屏流程 935 项再次通过，并以 Computer Use 在 390×844/430×860 确认结果位于底栏上方。
 - 失败诊断与版本边界记录在交付说明中；当前仅为本地 Godot 4.7.1 候选和预览，不等于实体手机验收或线上发布。临时截图检查后清理，课程页用户预览单独保留。
+## 2026-10-25 — 北教 53 物件显式调试预览
+
+- 保留 7 类网页透明母版、53 个独立节点与椅 v2；补齐现用素材 provenance。
+- 合并主线 PR173；普通启动复用主线原配置，不创建新独立物件。仅 developer policy 允许且 `NORTH_PROP_OBJECT_PREVIEW=1` 启用预览；正式导出拒绝。
+- 104/105 净地板未完成：拒收的 donor/程序地板实验已备份撤下，网格错位网页候选未接入。不能把透明素材或 headless 测试通过当作地板视觉通过。
+- 专项 5/5（729 checks）与默认五时态主线资源逐像素/碰撞比较通过；Web quick 5/5。原生总验证仍运行；Web release 35/38，single-file 构建 exit137 导致后两项缺输出，待资源释放重试。当前 GPU 重跑受 display 限制，历史真实截图仅保留原覆盖范围。
+- 见 `godot_native/docs/NORTH_OBJECT_PREVIEW_20261025.md`、同目录 acceptance JSON 与 sample README。此检查点仅供 Draft PR，不是完成整层重建、可合并或可发布声明。
