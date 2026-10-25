@@ -5486,3 +5486,11 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 104/105 净地板未完成：拒收的 donor/程序地板实验已备份撤下，网格错位网页候选未接入。不能把透明素材或 headless 测试通过当作地板视觉通过。
 - 专项 5/5（729 checks）与默认五时态主线资源逐像素/碰撞比较通过；Web quick 5/5。原生总验证仍运行；Web release 35/38，single-file 构建 exit137 导致后两项缺输出，待资源释放重试。当前 GPU 重跑受 display 限制，历史真实截图仅保留原覆盖范围。
 - 见 `godot_native/docs/NORTH_OBJECT_PREVIEW_20261025.md`、同目录 acceptance JSON 与 sample README。此检查点仅供 Draft PR，不是完成整层重建、可合并或可发布声明。
+
+
+## 2026-10-25 — staged validation efficiency (PR174 candidate)
+
+- Native validation uses continuous capped workers (default2) behind exclusive preparation/fixture barriers; exact staged profiles and conservative shared/unknown-file full fallback replace ambiguous name matching. Proven fixture consumers close their producer dependencies; failed preparation cannot bless stale consumers. Full remains final acceptance, not a focused-run claim.
+- Schema2 evidence requires exact source/untracked/generated/imported/dependency/tool/argument/environment/producer bytes for reuse; legacy or uncertain external-input receipts are refused. Source sync, media conversion and validation share a project lock. No regression files removed; eight duplicate native-CI invocations consolidated and one audited identical-script execution reports its explicit evidence alias.
+- Web acceptance now fans out from one sealed artifact into ordinary+streaming, world/phone and library jobs; all remain required for deploy. Controlled fault injection is cleared only after CDP confirms unblock, with strict real-network error checks unchanged. Exact attribution of the earlier failed request to the race remains an inference.
+- Verified: native runner deterministic contracts; actual pinned4.7.1 save isolation plus two-GD jobs2 smoke (partial, not full); workflow29, sealed bundle40, streaming12 and network observation37 deterministic checks. Hosted fanout/Chrome transport and a complete new-harness run remain not-run. Old immutable gameplay tree e99f7a94 completed529/529 under the old runner; it is not mislabeled new-harness evidence. Details and measured timing: godot_native/docs/NATIVE_VALIDATION_STAGES.md.

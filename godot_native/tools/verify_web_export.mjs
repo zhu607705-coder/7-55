@@ -1219,9 +1219,16 @@ async function streamingCase() {
   active.streaming.requiredFailure = { at: Date.now(), evidence: frozen, content: whileBlocked.content, retryControl: controls(whileBlocked).find(control => control.name === 'RetryRequiredContent') };
   active.screenshots.push(await screenshot('desktop-streaming-required-retry'));
 
-  active.faultPhase = 'c2-user-retry-recovery';
-  active.controlledBlockedUrls.clear();
+  active.faultPhase = 'c2-deferred-unblock-pending';
+  active.streaming.unblock = { requestedAt: Date.now() };
   await active.cdp.send('Network.setBlockedURLs', { urls: [] });
+  active.streaming.unblock.acknowledgedAt = Date.now();
+  // Requests can still encounter our block while the disable command awaits
+  // acknowledgement. Keep their request-time fault identity until that point;
+  // a later loadingFailed event must use the existing per-request snapshot.
+  active.controlledBlockedUrls.clear();
+  active.faultPhase = 'c2-user-retry-recovery';
+  active.streaming.unblock.retryRequestedAt = Date.now();
   await clickControl('RetryRequiredContent', 'name');
   const ready = await poll(async () => {
     const value = await snapshot();

@@ -114,6 +114,8 @@
     "verify:canteen-chase-model": "node scripts/verify-canteen-chase-model.mjs",
     "native:sync": "node godot_native/tools/sync_source.mjs",
     "native:media": "bash godot_native/tools/convert_media.sh",
+    "native:validate:runner": "node --test godot_native/tests/test_native_validation_runner.mjs",
+    "native:plan": "node godot_native/tools/validate_native.mjs --plan",
     "native:validate": "node godot_native/tools/validate_native.mjs",
     "native:package": "node godot_native/tools/package_project.mjs",
     "native:package:all": "node godot_native/tools/package_integration.mjs",
