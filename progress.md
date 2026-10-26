@@ -1,4 +1,23 @@
+## 2026-10-26 文案局部复核
+
+- 5 个既有论坛/交易测试共 990 checks / 0 failures，含 BD、资料上传布局、目击帖顺序、6 元手柄交易、旧默认帖迁移。新 runner 执行完整准备闭包后 10 stages pass / 522 not-run，明确 partial；全脚本 974 份解析通过。Web quick 5/5，171 叶显示修订和中文/有声合同通过。
+- 新媒体准备回执首次缺失导致阻断，配置已有 ffmpeg/ffprobe 完整转换两段视频后按新合同通过；不删除旧失败记录。
+
+## 2026-10-26 论坛场景文案回填
+
+- 实际 Gemini 3.8 Flash / 低 Computer Use 场景生成，Humanizer-zh 事实/口吻审阅；323 个源文本叶、28 个返修叶按白名单合并，13 个文件旧/新 SHA 核验后回填。52 个普通主帖、165 条可改回复、54 个动态故事字段；p02[1]、全部元数据和非目标有声文本保留。6 组 native 镜像深比较通过；24 个旧普通帖覆盖移除。
+- 既有存档默认帖子迁移只更新已知旧默认的 title/body，玩家自定义及故事覆盖保持；模型代码未执行，原回传仅作字面数据。
+- 受影响论坛与交易检查、最终精确提交 CI、合并和 Pages 部署分别记录，当前不声称发布完成。
+
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
+
+## 2026-10-26 PR #174 最新 CI 集成与旋转壳层修复候选
+
+- 继续纳入 PR #174 最新 `33cc4991b7d0ada3d65baaca146c62359f5fbf56` 的全部 20 个 CI、工具、测试与记录文件，逐文件校对 Git blob 并保留提交祖先。完整检查、producer 独占/依赖闭包与失败阻断、GPU/PCK/浏览器门禁保留；默认两个连续 worker，去除同语义重复调用。Web 普通与 streaming 从 build 分离后，与手机/地图及图书馆 profiles 并行消费同一 sealed artifact，发布须等待全部分支成功。
+- `verify_web_export.mjs` 同时保留 streaming 的 CDP 解除阻断确认顺序与本轮连续跑步的 `phoneRecovery.pointer` 驱动。现有 plan/list 测试实际发现 JSON stdout 被过早退出截在 65,536 字节；仅修 runner 等待输出写完，未放宽测试。三个 CI 工具专项 **58/58 通过、0 跳过**，只列计划仍不启动引擎；原失败与最终日志各自保留。
+- 干净 `3064f8c8839dad1c9d591ec3c04b8d5271941224` 新导出的桌面、390×844 触屏精简复核 **596 项 / 2 cases 通过**，来源输入为 `9f33417eb8d59c3aab8a0b7fc664573c83990b7d12a6202b5319bcf0b9edd5be`。这不是此前 5251 旧导出 919/920 项报告的重复声明。
+- 横屏返回竖屏的有效负控复现 canvas/布局视口变为 **844×1827、scale 0.462085…**；原生地图始终 `960×540`。同一导出使用仅修改 canvas 固定定位与 CSS 尺寸的壳层候选后，正控 **507 项 / 1 case 通过**，回到 **390×844、scale 1**，实际往返成功。相应规则纳入 Web 壳层候选，负控与早期焦点驱动失败保留。
+- 精确范围、外部报告及去重提交清单见 [统一集成记录](godot_native/docs/INTEGRATION_20261025.md)。该文件历史日期保留。本条不声明后续远端 CI 已全绿、已完成最终合并/部署或论坛 Gemini 文案已经回填。
 
 ## 2026-10-25 PR #175 CI 修复候选
 
@@ -5544,3 +5563,17 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 104/105 净地板未完成：拒收的 donor/程序地板实验已备份撤下，网格错位网页候选未接入。不能把透明素材或 headless 测试通过当作地板视觉通过。
 - 专项 5/5（729 checks）与默认五时态主线资源逐像素/碰撞比较通过；Web quick 5/5。原生总验证仍运行；Web release 35/38，single-file 构建 exit137 导致后两项缺输出，待资源释放重试。当前 GPU 重跑受 display 限制，历史真实截图仅保留原覆盖范围。
 - 见 `godot_native/docs/NORTH_OBJECT_PREVIEW_20261025.md`、同目录 acceptance JSON 与 sample README。此检查点仅供 Draft PR，不是完成整层重建、可合并或可发布声明。
+
+
+## 2026-10-25 — staged validation efficiency (PR174 candidate)
+
+- Native validation uses continuous capped workers (default2) behind exclusive preparation/fixture barriers; exact staged profiles and conservative shared/unknown-file full fallback replace ambiguous name matching. Proven fixture consumers close their producer dependencies; failed preparation cannot bless stale consumers. Full remains final acceptance, not a focused-run claim.
+- Schema2 evidence requires exact source/untracked/generated/imported/dependency/tool/argument/environment/producer bytes for reuse; legacy or uncertain external-input receipts are refused. Source sync, media conversion and validation share a project lock. No regression files removed; eight duplicate native-CI invocations consolidated and one audited identical-script execution reports its explicit evidence alias.
+- Web acceptance now fans out from one sealed artifact into ordinary+streaming, world/phone and library jobs; all remain required for deploy. Controlled fault injection is cleared only after CDP confirms unblock, with strict real-network error checks unchanged. Exact attribution of the earlier failed request to the race remains an inference.
+- Verified: native runner deterministic contracts; actual pinned4.7.1 save isolation plus two-GD jobs2 smoke (partial, not full); workflow29, sealed bundle40, streaming12 and network observation37 deterministic checks. Hosted fanout/Chrome transport and a complete new-harness run remain not-run. Old immutable gameplay tree e99f7a94 completed529/529 under the old runner; it is not mislabeled new-harness evidence. Details and measured timing: godot_native/docs/NATIVE_VALIDATION_STAGES.md.
+
+## 2026-10-25 — hosted native default-environment correction
+
+- PR174 head502e4b7 passed all four workflows, including native529 passes plus one audited deduplicated entry, exact-content completion, GPU/exported-PCK gates and real Web ordinary/streaming/profile acceptance.
+- Final report exposed a conservative fallback: inherited CHROME_BIN and USER forced jobs1. Neither controls a native catalog stage (separate Web browser executable and deployment host metadata only). Exempt exactly those two names while retaining environment identity and real external-fixture denial; no coverage or gate removed.
+- Preserve the actual hosted serial baseline: run40204036543 wall3209.184s, observed peak1. Correction contracts17/17 and pinned4.7.1 two-GD smoke under those hosted defaults pass, with1199ms overlap/jobs2. Focused smoke is2pass/528not-run, not full acceptance. Corrected hosted parallel run remains pending; no measured speedup claimed.

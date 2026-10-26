@@ -22,15 +22,39 @@
     "description": "第一章的实体入口。标签上只印着 7:55。"
   },
   "areas": [
-    { "id": "north_gate", "label": "南大门" },
-    { "id": "bridge", "label": "启真湖桥" },
-    { "id": "library", "label": "基础馆" },
-    { "id": "game_kiosk", "label": "校园地图终端" }
+    {
+      "id": "north_gate",
+      "label": "南大门"
+    },
+    {
+      "id": "bridge",
+      "label": "启真湖桥"
+    },
+    {
+      "id": "library",
+      "label": "基础馆"
+    },
+    {
+      "id": "game_kiosk",
+      "label": "校园地图终端"
+    }
   ],
   "departments": [
-    { "id": "campus_service", "label": "校园服务台", "phone": "87950000" },
-    { "id": "game_support", "label": "游戏联络台", "phone": "3250100755" },
-    { "id": "sports_desk", "label": "体艺值班台", "phone": "87951234" }
+    {
+      "id": "campus_service",
+      "label": "校园服务台",
+      "phone": "87950000"
+    },
+    {
+      "id": "game_support",
+      "label": "游戏联络台",
+      "phone": "3250100755"
+    },
+    {
+      "id": "sports_desk",
+      "label": "体艺值班台",
+      "phone": "87951234"
+    }
   ],
   "objectives": {
     "prologue": "完成签到",
@@ -112,15 +136,24 @@
       "segments": [
         {
           "text": "Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it?",
-          "profile": { "speed": 0.93, "pitch": -4 }
+          "profile": {
+            "speed": 0.93,
+            "pitch": -4
+          }
         },
         {
           "text": "I suppose you will have to get up, drag yourself to class, and deal with it.",
-          "profile": { "speed": 0.98, "pitch": -4 }
+          "profile": {
+            "speed": 0.98,
+            "pitch": -4
+          }
         },
         {
           "text": "Good luck, kid! I am leaving!",
-          "profile": { "speed": 1.03, "pitch": -4 }
+          "profile": {
+            "speed": 1.03,
+            "pitch": -4
+          }
         }
       ]
     },
@@ -263,11 +296,11 @@
     "avatar": "anonymous",
     "rank": "06",
     "board": "二手市场",
-    "title": "6块出游戏手柄，寝室自提",
+    "title": "毕业出老旧手柄6元仅限寝室自提",
     "replies": "19",
     "views": "982",
     "time": "26-07-11 07:55",
-    "body": "方向键、摇杆和一个不太灵的 A 键都在。只收 6 元，不议价，也不接受 0.06 元分期。",
+    "body": "方向键和摇杆都能用，但A键有点卡得用力按。一口价6元，别拿0.06来私信分期了，不包邮只能寝室自提。",
     "action": "支付 6 元购买手柄"
   }
 }

@@ -40,6 +40,28 @@ func _run() -> void:
 	expect(DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(test_directory))==OK,"isolated test store directory is created")
 	Store.posts_path=test_directory.path_join("posts.json"); Store.quest_path=test_directory.path_join("quest.json")
 	expect(Store.restore_defaults()==OK,"isolated test stores start writable")
+	var default_posts: Array=Store.defaults()
+	var historical: Dictionary=Store.source("cc98.post-default-history").posts
+	var legacy_posts: Array=default_posts.duplicate(true)
+	for post in legacy_posts:
+		post.title=historical[post.id].title[0];post.body=historical[post.id].body[0]
+	legacy_posts[0].author="player author";legacy_posts[0].time="player time"
+	legacy_posts[1].title+=" ";legacy_posts[1].body+="\n"
+	legacy_posts[2].body="player body";legacy_posts[3].title="player title"
+	var explicit_quest: Dictionary={"title":legacy_posts[0].title,"body":legacy_posts[0].body}
+	expect(historical.size()==52 and not historical.has("act-two-gamepad-market"),"default prose history covers only52 ordinary posts")
+	expect(Store.import_bundle({"posts":legacy_posts,"questPostOverrides":{"act-two-gamepad-market":explicit_quest}})==OK,"whole-row old editor store imports normally")
+	var upgraded_posts: Array=Store.load_posts()
+	var follows_source: bool=true
+	for index in range(upgraded_posts.size()):
+		if index in [1,2,3]:continue
+		follows_source=follows_source and upgraded_posts[index].title==default_posts[index].title and upgraded_posts[index].body==default_posts[index].body
+	expect(follows_source,"exact historical titles and bodies yield to the current source")
+	expect(upgraded_posts[0].author=="player author" and upgraded_posts[0].time=="player time","default prose upgrade preserves independently edited metadata")
+	expect(upgraded_posts[1].title==legacy_posts[1].title and upgraded_posts[1].body==legacy_posts[1].body,"nonexact player prose survives without trimming or fuzzy matching")
+	expect(upgraded_posts[2].title==default_posts[2].title and upgraded_posts[2].body=="player body" and upgraded_posts[3].title=="player title" and upgraded_posts[3].body==default_posts[3].body,"title and body upgrades preserve the other independently edited field")
+	expect(Store.load_quest_overrides().get("act-two-gamepad-market")==explicit_quest,"explicit quest overrides are never upgraded even when text matches old defaults")
+	expect(Store.restore_defaults()==OK,"default upgrade checks leave a fresh isolated editor store")
 	await show("settings")
 	node("SettingsSearch").text="桌面"
 	node("SettingsSearch").text_changed.emit("桌面")

@@ -9,10 +9,12 @@ import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 
 const workflow = readFileSync(new URL('../../.github/workflows/deploy-pages.yml', import.meta.url), 'utf8');
-const build = workflow.split('  build:\n')[1].split('  browser_profiles:\n')[0];
-const profilesJob = workflow.split('  browser_profiles:\n')[1].split('  library_profiles:\n')[0];
-const libraryJob = workflow.split('  library_profiles:\n')[1]?.split('  deploy:\n')[0];
-const deploy = workflow.split('  deploy:\n')[1];
+// Only split at job-level YAML keys, never let a newly inserted job become part
+// of its predecessor and accidentally satisfy that predecessor's assertions.
+const jobsSource = workflow.split('\njobs:\n')[1];
+const headings = [...jobsSource.matchAll(/^  ([a-z][a-z0-9_]*):\n/gm)];
+const jobs = Object.fromEntries(headings.map((match, index) => [match[1], jobsSource.slice(match.index + match[0].length, headings[index + 1]?.index)]));
+const { build, browser_baseline: baselineJob, browser_profiles: profilesJob, library_profiles: libraryJob, deploy } = jobs;
 const profiles = ['desktop-1280', 'touch-390', 'retina-touch-390'];
 const sha = 'a'.repeat(40), fixtureHash = 'b'.repeat(64);
 const dimensions = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] };
@@ -30,15 +32,154 @@ function receiptCode(name, job = profilesJob) {
 const worldCode = receiptCode('Accept actual world input for this profile');
 const phoneCode = receiptCode('Accept actual early charging and two-stage Tiyi phone input');
 
+await test('one producer fans out to all acceptance jobs; publishing waits for every branch', () => {
+  assert.deepEqual(Object.keys(jobs), ['build', 'browser_baseline', 'browser_profiles', 'library_profiles', 'deploy']);
+  assert.doesNotMatch(build, /^    needs:/m);
+  for (const name of ['browser_baseline', 'browser_profiles', 'library_profiles']) {
+    assert.equal(jobs[name].match(/^    needs: (.+)$/m)?.[1], 'build', `${name} must not wait for another acceptance job`);
+    assert.equal(jobs[name].match(/^    if: \$\{\{ (.*?) \}\}$/m)?.[1], "!cancelled() && needs.build.outputs.bundle_ready == 'true'");
+  }
+  assert.deepEqual(deploy.match(/^    needs: \[([^\]]+)\]$/m)?.[1].split(',').map(name => name.trim()),
+    ['build', 'browser_baseline', 'browser_profiles', 'library_profiles']);
+  assert.equal((workflow.match(/node godot_native\/tools\/build_web\.mjs/g) || []).length, 1, 'only one heavy export across all jobs');
+});
+
+await test('baseline consumes verified producer bytes without skipping either original browser invocation', () => {
+  assert.match(baselineJob, /runs-on: ubuntu-latest/);
+  assert.match(baselineJob, /^    timeout-minutes: 15$/m);
+  assert.match(baselineJob, /permissions:\n      contents: read/);
+  assert.match(baselineJob, /ref: \$\{\{ github.sha \}\}/);
+  assert.match(baselineJob, /node-version: 22\.23\.3/);
+  assert.match(baselineJob, /ACCEPTANCE_HEAD_SHA: \$\{\{ github.event.pull_request.head.sha \|\| github.sha \}\}/);
+  assert.match(baselineJob, /ACCEPTANCE_BASE_SHA: \$\{\{ github.event.pull_request.base.sha \|\| '' \}\}/);
+  assert.match(baselineJob, /EXPECTED_RECEIPT_SHA: \$\{\{ needs.build.outputs.receipt_sha \}\}/);
+  assert.match(baselineJob, /EXPECTED_PRODUCER_ATTEMPT: \$\{\{ needs.build.outputs.producer_attempt \}\}/);
+  assert.doesNotMatch(baselineJob, /npm ci|build_web\.mjs|sync_source\.mjs|convert_media|continue-on-error|pages: write|id-token: write|deploy-pages@|upload-pages-artifact@/);
+  const names = [...baselineJob.matchAll(/^      - name: (.+)$/gm)].map(match => match[1]);
+  assert.deepEqual(names, ['Check out exact producer source', 'Set up Node.js 22', "Download this run's sealed producer inputs",
+    'Verify exact source and every input byte', 'Accept actual Godot Web input and persisted reload at Pages subpath',
+    'Preserve baseline and streaming evidence']);
+  for (const name of names.slice(0, -1)) assert.doesNotMatch(step(name, baselineJob), /^        if:/m, `${name} must require prior success and cannot skip itself`);
+  const download = step("Download this run's sealed producer inputs", baselineJob);
+  assert.match(download, /uses: actions\/download-artifact@v4/);
+  assert.match(download, /name: \$\{\{ needs.build.outputs.bundle_name \}\}/);
+  assert.match(download, /path: \$\{\{ runner.temp \}\}\/godot-web-inputs/);
+  assert.doesNotMatch(download, /run-id:|repository:|github-token:/, 'only this workflow run may supply the artifact');
+  const verify = step('Verify exact source and every input byte', baselineJob);
+  assert.match(verify, /node godot_native\/tools\/web_acceptance_bundle.mjs verify/);
+  for (const option of ['--bundle-dir "$RUNNER_TEMP/godot-web-inputs"', '--receipt-sha "$EXPECTED_RECEIPT_SHA"',
+    '--producer-attempt "$EXPECTED_PRODUCER_ATTEMPT"', '--output-receipt godot_native/exports/verification/verified-baseline-inputs.json']) assert.ok(verify.includes(option));
+  const acceptance = step('Accept actual Godot Web input and persisted reload at Pages subpath', baselineJob);
+  assert.match(acceptance, /timeout-minutes: 12/);
+  assert.match(acceptance, /shell: bash\n        run: \|\n          set -euo pipefail/);
+  assert.match(acceptance, /ln -s "\$RUNNER_TEMP\/godot-web-inputs\/web-release" "\$RUNNER_TEMP\/godot-qa-site\/7-55"/);
+  const invocations = [...acceptance.matchAll(/          node godot_native\/tools\/verify_web_export\.mjs \\\n(?:            .*\n)+/g)]
+    .map(match => match[0].replace(/[ \t]*\\\n\s*/g, ' ').trim());
+  const command = 'node godot_native/tools/verify_web_export.mjs --url http://127.0.0.1:5207/7-55/ --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release"';
+  const browser = '--chrome "$godot_web_chrome" --chrome-arg --use-angle=swiftshader --chrome-arg --enable-unsafe-swiftshader --boot-timeout 180000';
+  assert.deepEqual(invocations, [
+    `${command} --output godot_native/exports/verification/web_ci ${browser} 2>&1 | tee godot_native/exports/verification/web_ci/acceptance.log`,
+    `${command} --output godot_native/exports/verification/web_streaming --scenarios streaming --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" ${browser} 2>&1 | tee godot_native/exports/verification/web_streaming/acceptance.log`
+  ]);
+  assert.match(acceptance, /inputBundle: JSON.parse\(fs.readFileSync\('godot_native\/exports\/verification\/verified-baseline-inputs.json'/);
+  const evidence = step('Preserve baseline and streaming evidence', baselineJob);
+  assert.match(evidence, /if: always\(\)/);
+  assert.match(evidence, /uses: actions\/upload-artifact@v4/);
+  assert.match(evidence, /name: godot-web-baseline-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
+  for (const file of ['verified-baseline-inputs.json', 'web_ci/', 'web_streaming/']) assert.ok(evidence.includes(`godot_native/exports/verification/${file}`));
+});
+
+await test('moved streaming validator still rejects every missing original fault/retry/reload requirement', () => {
+  // Synthetic contract receipts execute the actual inline validator. They do
+  // not replace running the real browser or prove the controlled network fault.
+  const code = receiptCode('Accept actual Godot Web input and persisted reload at Pages subpath', baselineJob);
+  const root = mkdtempSync(path.join(tmpdir(), '755-streaming-workflow-receipt-'));
+  try {
+    const verification = path.join(root, 'godot_native/exports/verification');
+    const directory = path.join(verification, 'web_streaming');
+    const earned = path.join(root, 'inputs/godot-web-inputs/controller-earned');
+    for (const folder of [directory, earned]) mkdirSync(folder, { recursive: true });
+    const fixture = { fixture: 'after_c2_dorm_exit.json', sha256: fixtureHash };
+    const bundle = { verified: true, source: { checkedOutCommit: sha }, receiptSha: 'e'.repeat(64), producerAttempt: '1' };
+    writeFileSync(path.join(earned, 'fixture-provenance.json'), JSON.stringify({ streamingFixture: fixture }));
+    writeFileSync(path.join(verification, 'verified-baseline-inputs.json'), JSON.stringify(bundle));
+    const run = (mutate = () => {}) => {
+      const report = { passed: true, exportManifest: { sourceCommit: sha, engine: '4.7.1.stable.official' },
+        cases: [{ id: 'desktop-1280', passed: true, imports: [{ filename: fixture.fixture, sha256: fixture.sha256 }],
+          streaming: { controlledFailures: [{ url: 'synthetic.pck' }],
+            freshWithBlockedBackground: { evidence: { chapter: 1 }, content: { blocking: false } },
+            requiredFailure: { content: { blocking: true, retryVisible: true } },
+            recovery: { realKeyboardMovement: true, content: { blocking: false } },
+            reload: { oldDocumentTimeOrigin: 1, newDocumentTimeOrigin: 2, afterEvidence: { chapter: 2 }, chapter2HttpRequests: [], cache: { keys: ['synthetic'] } } } }] };
+      mutate(report);
+      writeFileSync(path.join(directory, 'web-acceptance.json'), JSON.stringify(report));
+      return spawnSync(process.execPath, ['--input-type=module'], { input: code, cwd: root,
+        env: { ...process.env, GITHUB_SHA: sha, RUNNER_TEMP: path.join(root, 'inputs') }, encoding: 'utf8' });
+    };
+    const valid = run();
+    assert.equal(valid.status, 0, valid.stderr);
+    const receipt = JSON.parse(readFileSync(path.join(directory, 'ci-streaming-receipt.json'), 'utf8'));
+    assert.deepEqual(receipt.inputBundle, bundle);
+    assert.equal(receipt.verified.length, 4);
+    for (const [label, mutate] of [
+      ['failed report', r => { r.passed = false; }],
+      ['wrong source', r => { r.exportManifest.sourceCommit = 'c'.repeat(40); }],
+      ['wrong engine', r => { r.exportManifest.engine = '4.6.3.stable.official'; }],
+      ['missing case', r => { r.cases = []; }],
+      ['extra case', r => { r.cases.push(structuredClone(r.cases[0])); }],
+      ['wrong case', r => { r.cases[0].id = 'touch-390'; }],
+      ['failed case', r => { r.cases[0].passed = false; }],
+      ['missing import', r => { r.cases[0].imports = []; }],
+      ['wrong fixture hash', r => { r.cases[0].imports[0].sha256 = 'c'.repeat(64); }],
+      ['missing controlled failure', r => { r.cases[0].streaming.controlledFailures = []; }],
+      ['wrong fresh chapter', r => { r.cases[0].streaming.freshWithBlockedBackground.evidence.chapter = 2; }],
+      ['background blocks C1', r => { r.cases[0].streaming.freshWithBlockedBackground.content.blocking = true; }],
+      ['required fault not blocking', r => { r.cases[0].streaming.requiredFailure.content.blocking = false; }],
+      ['missing retry', r => { r.cases[0].streaming.requiredFailure.content.retryVisible = false; }],
+      ['missing real keyboard', r => { r.cases[0].streaming.recovery.realKeyboardMovement = false; }],
+      ['recovery still blocking', r => { r.cases[0].streaming.recovery.content.blocking = true; }],
+      ['missing reload', r => { delete r.cases[0].streaming.reload; }],
+      ['same document', r => { r.cases[0].streaming.reload.newDocumentTimeOrigin = 1; }],
+      ['wrong reloaded chapter', r => { r.cases[0].streaming.reload.afterEvidence.chapter = 1; }],
+      ['missing reload network record', r => { delete r.cases[0].streaming.reload.chapter2HttpRequests; }],
+      ['network instead of cache', r => { r.cases[0].streaming.reload.chapter2HttpRequests.push({}); }],
+      ['missing cache keys', r => { r.cases[0].streaming.reload.cache.keys = []; }]
+    ]) assert.notEqual(run(mutate).status, 0, `${label} must not pass the moved validator`);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+await test('PRs never upload deployable Pages assets, and neither upload nor publication ignores failed gates', () => {
+  const expression = step('Upload Pages artifact', build).match(/^        if: \$\{\{ (.*?) \}\}$/m)?.[1];
+  assert.ok(expression);
+  const upload = new Function('success', 'github', `return (${expression});`);
+  const publishExpression = deploy.match(/^    if: \$\{\{ (.*?) \}\}$/m)?.[1];
+  const publish = new Function('needs', 'github', `return (${publishExpression});`);
+  const names = ['build', 'browser_baseline', 'browser_profiles', 'library_profiles'];
+  const results = ['success', 'failure', 'cancelled', 'skipped'];
+  for (const event_name of ['pull_request', 'push', 'workflow_dispatch']) {
+    for (const ref of ['refs/heads/main', 'refs/heads/codex/godot-complete-20261019', 'refs/heads/unapproved']) {
+      const github = { event_name, ref };
+      const authorized = event_name !== 'pull_request' && ref !== 'refs/heads/unapproved';
+      for (const succeeded of [true, false]) assert.equal(upload(() => succeeded, github), authorized && succeeded);
+      for (const a of results) for (const b of results) for (const c of results) for (const d of results) {
+        const values = [a, b, c, d];
+        const needs = Object.fromEntries(names.map((name, index) => [name, { result: values[index] }]));
+        assert.equal(publish(needs, github), authorized && values.every(result => result === 'success'), `${event_name}/${ref}/${values.join(',')}`);
+      }
+    }
+  }
+});
+
 await test('bounded three-profile isolation retains the original gates and deployment protection', () => {
   assert.match(build, /timeout-minutes: 25/);
-  assert.match(build, /Accept actual Godot Web input[\s\S]*?timeout-minutes: 12/);
+  assert.match(baselineJob, /Accept actual Godot Web input[\s\S]*?timeout-minutes: 12/);
   assert.equal((build.match(/node godot_native\/tools\/build_web\.mjs/g) || []).length, 1);
-  assert.equal((build.match(/node godot_native\/tools\/verify_web_export\.mjs/g) || []).length, 2);
-  assert.match(build, /--scenarios streaming/);
-  assert.doesNotMatch(build, /--only |--scenarios (?:mobile-world|phone-recovery)/);
+  assert.doesNotMatch(build, /verify_web_export\.mjs/);
+  assert.equal((baselineJob.match(/node godot_native\/tools\/verify_web_export\.mjs/g) || []).length, 2);
+  assert.match(baselineJob, /--scenarios streaming/);
+  assert.doesNotMatch(baselineJob, /--only |--scenarios (?:mobile-world|phone-recovery)/);
   assert.match(profilesJob, /needs: build/);
-  assert.match(profilesJob, /timeout-minutes: 12/);
+  assert.match(profilesJob, /timeout-minutes: 18/);
   assert.match(profilesJob, /fail-fast: false/);
   const actualProfiles = profilesJob.match(/profile: \[([^\]]+)\]/)[1].split(',').map(v => v.trim());
   assert.deepEqual(actualProfiles, profiles);
@@ -47,14 +188,14 @@ await test('bounded three-profile isolation retains the original gates and deplo
   assert.match(profilesJob, /--scenarios phone-recovery --only "\$ACCEPTANCE_PROFILE"/);
   assert.ok(profilesJob.indexOf('--scenarios mobile-world') < profilesJob.indexOf('--scenarios phone-recovery'));
   assert.match(step('Accept actual early charging and two-stage Tiyi phone input'), /if: \$\{\{ !cancelled\(\) && steps\.verify_inputs\.outcome == 'success' \}\}/);
-  assert.match(step('Accept actual early charging and two-stage Tiyi phone input'), /timeout-minutes: 8/);
+  assert.match(step('Accept actual early charging and two-stage Tiyi phone input'), /timeout-minutes: 12/);
   assert.doesNotMatch(profilesJob, /npm ci|continue-on-error|build_web\.mjs/);
   assert.equal((profilesJob.match(/--boot-timeout 180000/g) || []).length, 2);
   assert.equal((profilesJob.match(/--chrome-arg --use-angle=swiftshader/g) || []).length, 2);
   assert.match(step("Preserve this profile's independent browser evidence"), /if: always\(\)/);
   assert.match(profilesJob, /name: godot-web-profile-\$\{\{ matrix.profile \}\}-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
-  assert.match(deploy, /needs: \[build, browser_profiles, library_profiles\]/);
-  assert.match(deploy, /needs\.build\.result == 'success' && needs\.browser_profiles\.result == 'success'/);
+  assert.match(deploy, /needs: \[build, browser_baseline, browser_profiles, library_profiles\]/);
+  assert.match(deploy, /needs\.build\.result == 'success' && needs\.browser_baseline\.result == 'success' && needs\.browser_profiles\.result == 'success'/);
   assert.match(deploy, /&& needs\.library_profiles\.result == 'success'/);
   assert.match(deploy, /github\.event_name == 'push' \|\| github\.event_name == 'workflow_dispatch'/);
   assert.match(deploy, /github\.ref == 'refs\/heads\/main' \|\| github\.ref == 'refs\/heads\/codex\/godot-complete-20261019'/);
@@ -63,9 +204,9 @@ await test('bounded three-profile isolation retains the original gates and deplo
   assert.doesNotMatch(workflow, /continue-on-error|pull_request_target/);
 });
 
-await test('sealed inputs allow independent profile diagnostics after a baseline failure only', () => {
-  assert.ok(build.indexOf('Seal exact-source browser acceptance inputs') < build.indexOf('Accept actual Godot Web input and persisted reload'));
-  assert.ok(build.indexOf('Transfer immutable acceptance inputs to profile runners') < build.indexOf('Accept actual Godot Web input and persisted reload'));
+await test('sealed inputs allow independent profile diagnostics after producer post-transfer failure only', () => {
+  assert.ok(build.indexOf('Seal exact-source browser acceptance inputs') < build.indexOf('Transfer immutable acceptance inputs to profile runners'));
+  assert.doesNotMatch(build, /Accept actual Godot Web input/);
   assert.match(build, /bundle_ready: \$\{\{ steps.transfer_inputs.outcome == 'success' \}\}/);
   assert.match(build, /Transfer immutable acceptance inputs to profile runners\n        id: transfer_inputs/);
   const expression = profilesJob.match(/^    if: \$\{\{ (.*?) \}\}$/m)?.[1];
@@ -74,7 +215,7 @@ await test('sealed inputs allow independent profile diagnostics after a baseline
   const allowed = new Function('cancelled', 'needs', `return (${expression});`);
   const evaluate = (result, ready, cancelled = false) => allowed(() => cancelled, { build: { result, outputs: { bundle_ready: ready } } });
   assert.equal(evaluate('success', 'true'), true);
-  assert.equal(evaluate('failure', 'true'), true, 'baseline failure must retain independent diagnostics');
+  assert.equal(evaluate('failure', 'true'), true, 'post-transfer producer failure must retain independent diagnostics');
   assert.equal(evaluate('failure', 'false'), false, 'producer failure must not run consumers');
   assert.equal(evaluate('failure', undefined), false, 'missing bundle must not run consumers');
   assert.equal(evaluate('success', 'false'), false, 'an incomplete bundle must not run consumers');
@@ -232,7 +373,7 @@ await test('library profiles reuse the same sealed source in two read-only bound
   assert.match(step("Preserve this profile's library evidence", libraryJob), /if: always\(\)/);
   assert.match(libraryJob, /name: godot-web-library-\$\{\{ matrix.profile \}\}-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
 });
-await test('library diagnostics require a sealed producer, while deployment requires all three jobs', () => {
+await test('library diagnostics require a sealed producer, while deployment requires all four jobs', () => {
   const expression = libraryJob.match(/^    if: \$\{\{ (.*?) \}\}$/m)?.[1];
   assert.equal(expression, "!cancelled() && needs.build.outputs.bundle_ready == 'true'");
   const allowed = new Function('cancelled', 'needs', `return (${expression});`);
@@ -243,7 +384,7 @@ await test('library diagnostics require a sealed producer, while deployment requ
   assert.equal(allowed(() => true, { build: { outputs: { bundle_ready: 'true' } } }), false);
   const deployExpression = deploy.match(/^    if: \$\{\{ (.*?) \}\}$/m)?.[1];
   const publish = new Function('needs', 'github', `return (${deployExpression});`);
-  const ready = { build: { result: 'success' }, browser_profiles: { result: 'success' }, library_profiles: { result: 'success' } };
+  const ready = { build: { result: 'success' }, browser_baseline: { result: 'success' }, browser_profiles: { result: 'success' }, library_profiles: { result: 'success' } };
   for (const event_name of ['push', 'workflow_dispatch']) for (const ref of ['refs/heads/main', 'refs/heads/codex/godot-complete-20261019']) {
     assert.equal(publish(ready, { event_name, ref }), true);
     for (const job of Object.keys(ready)) for (const result of ['failure', 'cancelled', 'skipped']) {

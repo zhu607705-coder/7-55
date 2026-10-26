@@ -18,7 +18,7 @@ func run() -> void:
 	check(art.position+art.offset*art.scale==(Room.rect(frame.sourceTrim).position-Room.point(frame.pivot))*.25,"Second table preserves its own pivot")
 	check(art.texture==adapter.table.get_node("OriginalAppearance").texture,"Original immutable atlas shared without duplicating image")
 	check(second.get_node("Solid")!=adapter.table.get_node("Solid"),"Each object has independent native body ownership")
-	var before:=JSON.stringify(state.d);var original: Array=Room.collisions(state.d)
+	var before:=JSON.stringify(state.d);var original: Array=expected_collisions()
 	check(world.chapter4_layers.collisions(state.d)==original,"All source collider records exactly preserved")
 	var plain: RefCounted=Layers.new()
 	for x in range(158,233,3):
@@ -57,7 +57,7 @@ func run() -> void:
 			remaining-=1;adapter.sync(state.d,world.scene_id)
 			check(adapter.tables.size()==remaining and adapter.source_space.get_child_count()==remaining,"Retire exactly one native object in either original order")
 			check(state.d.chapter4.room204Placements.size()==(2-remaining)*3,"Controller grants only original three-piece group")
-			check(world.chapter4_layers.collisions(state.d)==Room.collisions(state.d),"Retirement leaves no stale or duplicate physical owner")
+			check(world.chapter4_layers.collisions(state.d)==expected_collisions(),"Retirement leaves no stale or duplicate physical owner")
 			chapter.dispatch(state.d,"c4_group_"+group_id,{"groupId":group_id,"targetGroupId":group_id,"orientation":"up","drop":[target.get_center().x,target.get_center().y]})
 			check(state.d.chapter4.room204Placements.size()==(2-remaining)*3,"Repeat cannot duplicate original placements")
 		check(not adapter.has_objects() and not adapter.visible,"Both restored groups retire the complete two-object adapter")

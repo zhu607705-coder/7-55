@@ -111,6 +111,7 @@ jobs:
           node godot_native/tests/test_web_acceptance_workflow.mjs
           node godot_native/tests/test_web_browser_lifecycle.mjs
           node godot_native/tests/test_web_network_observation.mjs
+          node godot_native/tests/test_web_streaming_fault_lifecycle.mjs
           node godot_native/tests/test_web_save_diagnostics.mjs
           node godot_native/tests/test_web_input_completion.mjs
           node godot_native/tools/test_web_content_loader.mjs
@@ -216,60 +217,6 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Accept actual Godot Web input and persisted reload at Pages subpath
-        timeout-minutes: 12
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/godot-qa-site"
-          mkdir -p godot_native/exports/verification/web_ci
-          mkdir -p godot_native/exports/verification/web_streaming
-          ln -s "$GITHUB_WORKSPACE/godot_native/exports/web-release" "$RUNNER_TEMP/godot-qa-site/7-55"
-          python3 -m http.server 5207 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-qa-site" > godot_native/exports/verification/web_ci/http.log 2>&1 &
-          godot_web_http_pid=$!
-          trap 'kill "$godot_web_http_pid" 2>/dev/null || true' EXIT
-          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5207/7-55/build-manifest.json
-          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
-          node godot_native/tools/verify_web_export.mjs \
-            --url http://127.0.0.1:5207/7-55/ \
-            --export-dir godot_native/exports/web-release \
-            --output godot_native/exports/verification/web_ci \
-            --chrome "$godot_web_chrome" \
-            --chrome-arg --use-angle=swiftshader \
-            --chrome-arg --enable-unsafe-swiftshader \
-            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_ci/acceptance.log
-          # Independently prove optional-vs-required deferred-content behavior
-          # with the existing single-desktop streaming fault/retry scenario.
-          node godot_native/tools/verify_web_export.mjs \
-            --url http://127.0.0.1:5207/7-55/ \
-            --export-dir godot_native/exports/web-release \
-            --output godot_native/exports/verification/web_streaming \
-            --scenarios streaming \
-            --fixtures godot_native/exports/verification/controller-earned \
-            --chrome "$godot_web_chrome" \
-            --chrome-arg --use-angle=swiftshader \
-            --chrome-arg --enable-unsafe-swiftshader \
-            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_streaming/acceptance.log
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const directory = 'godot_native/exports/verification/web_streaming';
-          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
-          const fixture = JSON.parse(fs.readFileSync('godot_native/exports/verification/controller-earned/fixture-provenance.json', 'utf8')).streamingFixture;
-          if (!report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || report.cases.length !== 1 || report.cases[0].id !== 'desktop-1280' || !report.cases[0].passed) throw Error('Missing exact-source desktop streaming browser case');
-          const item = report.cases[0], streaming = item.streaming;
-          if (!item.imports?.some(input => input.filename === fixture.fixture && input.sha256 === fixture.sha256)) throw Error('Streaming browser did not import the recorded earned C2 fixture');
-          if (!streaming?.controlledFailures?.length || streaming.freshWithBlockedBackground?.evidence.chapter !== 1 || streaming.freshWithBlockedBackground.content.blocking) throw Error('Missing actual first-chapter use with deferred HTTP blocked');
-          if (!streaming.requiredFailure?.content.blocking || !streaming.requiredFailure.content.retryVisible || streaming.recovery?.realKeyboardMovement !== true || streaming.recovery.content.blocking) throw Error('Missing required-content failure and real user-retry map recovery');
-          const reload = streaming.reload;
-          if (!reload || reload.oldDocumentTimeOrigin === reload.newDocumentTimeOrigin || reload.afterEvidence?.chapter !== 2 || !Array.isArray(reload.chapter2HttpRequests) || reload.chapter2HttpRequests.length !== 0 || !reload.cache?.keys?.length) throw Error('Missing cache-only real-document C2 reload');
-          const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
-            fixtureSha256: fixture.sha256, case: item.id, controlledDeferredFailures: streaming.controlledFailures.length,
-            verified: ['C1 input/save/reload with deferred URLs blocked', 'C2 required-content failure/retry preserves state', 'recovered map accepts keyboard', 'verified cache-only C2 document reload'],
-            scope: 'Existing Chromium streaming fault scenario using an ordinary controller-earned C2 save; not a manual or four-chapter Web campaign.'};
-          fs.writeFileSync(`${directory}/ci-streaming-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
-          console.log(JSON.stringify(receipt, null, 2));
-          NODE
-
       - name: Preserve build evidence
         uses: actions/upload-artifact@v4
         if: always()
@@ -284,9 +231,6 @@ jobs:
             godot_native/exports/verification/ci-source.json
             godot_native/exports/verification/bundle-receipt.json
             godot_native/exports/verification/godot-web-build/*.log
-            godot_native/exports/verification/web_ci/*.json
-            godot_native/exports/verification/web_ci/*.log
-            godot_native/exports/verification/web_ci/*.png
             godot_native/exports/verification/controller-earned/controller-campaign-report.json
             godot_native/exports/verification/controller-earned/controller-campaign.log
             godot_native/exports/verification/controller-earned/library-controller-report.json
@@ -299,9 +243,6 @@ jobs:
             godot_native/exports/verification/controller-earned/before_c1_tiyi_digit.json
             godot_native/exports/verification/controller-earned/before_c2_tiyi_update.json
             godot_native/exports/verification/controller-earned/compat-c1-battery-*-v35.json
-            godot_native/exports/verification/web_streaming/*.json
-            godot_native/exports/verification/web_streaming/*.log
-            godot_native/exports/verification/web_streaming/*.png
           if-no-files-found: warn
 
       - name: Upload Pages artifact
@@ -311,16 +252,123 @@ jobs:
         with:
           path: godot_native/exports/web-release
 
-  browser_profiles:
-    name: Godot Web input (${{ matrix.profile }})
-    # A failed baseline still permits independent diagnostics from sealed inputs.
+  browser_baseline:
+    name: Godot Web baseline and streaming
+    # Consume the same sealed inputs in parallel with world/phone/library profiles.
+    # Never export, regenerate fixtures, or mutate the producer's assets here.
     if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
     needs: build
     runs-on: ubuntu-latest
-    # Bounded first isolation pass; three runners add up to 36 runner-minutes,
-    # not 12. Build + these profiles = 61 runner-minutes; two library consumers
-    # add at most 24 more (85 overall), not 24 minutes of serial wall time.
-    timeout-minutes: 12
+    # Keep the original 12-minute acceptance budget plus input-transfer overhead.
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
+      EXPECTED_PRODUCER_ATTEMPT: ${{ needs.build.outputs.producer_attempt }}
+    steps:
+      - name: Check out exact producer source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+
+      - name: Download this run's sealed producer inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.bundle_name }}
+          path: ${{ runner.temp }}/godot-web-inputs
+
+      - name: Verify exact source and every input byte
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-baseline-inputs.json
+
+      - name: Accept actual Godot Web input and persisted reload at Pages subpath
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-qa-site"
+          mkdir -p godot_native/exports/verification/web_ci
+          mkdir -p godot_native/exports/verification/web_streaming
+          ln -s "$RUNNER_TEMP/godot-web-inputs/web-release" "$RUNNER_TEMP/godot-qa-site/7-55"
+          python3 -m http.server 5207 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-qa-site" > godot_native/exports/verification/web_ci/http.log 2>&1 &
+          godot_web_http_pid=$!
+          trap 'kill "$godot_web_http_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5207/7-55/build-manifest.json
+          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5207/7-55/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_ci \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_ci/acceptance.log
+          # Independently prove optional-vs-required deferred-content behavior
+          # with the existing single-desktop streaming fault/retry scenario.
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5207/7-55/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_streaming \
+            --scenarios streaming \
+            --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_streaming/acceptance.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const directory = 'godot_native/exports/verification/web_streaming';
+          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
+          const fixture = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/fixture-provenance.json`, 'utf8')).streamingFixture;
+          if (!report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || report.cases.length !== 1 || report.cases[0].id !== 'desktop-1280' || !report.cases[0].passed) throw Error('Missing exact-source desktop streaming browser case');
+          const item = report.cases[0], streaming = item.streaming;
+          if (!item.imports?.some(input => input.filename === fixture.fixture && input.sha256 === fixture.sha256)) throw Error('Streaming browser did not import the recorded earned C2 fixture');
+          if (!streaming?.controlledFailures?.length || streaming.freshWithBlockedBackground?.evidence.chapter !== 1 || streaming.freshWithBlockedBackground.content.blocking) throw Error('Missing actual first-chapter use with deferred HTTP blocked');
+          if (!streaming.requiredFailure?.content.blocking || !streaming.requiredFailure.content.retryVisible || streaming.recovery?.realKeyboardMovement !== true || streaming.recovery.content.blocking) throw Error('Missing required-content failure and real user-retry map recovery');
+          const reload = streaming.reload;
+          if (!reload || reload.oldDocumentTimeOrigin === reload.newDocumentTimeOrigin || reload.afterEvidence?.chapter !== 2 || !Array.isArray(reload.chapter2HttpRequests) || reload.chapter2HttpRequests.length !== 0 || !reload.cache?.keys?.length) throw Error('Missing cache-only real-document C2 reload');
+          const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
+            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-baseline-inputs.json', 'utf8')),
+            fixtureSha256: fixture.sha256, case: item.id, controlledDeferredFailures: streaming.controlledFailures.length,
+            verified: ['C1 input/save/reload with deferred URLs blocked', 'C2 required-content failure/retry preserves state', 'recovered map accepts keyboard', 'verified cache-only C2 document reload'],
+            scope: 'Existing Chromium streaming fault scenario using an ordinary controller-earned C2 save; not a manual or four-chapter Web campaign.'};
+          fs.writeFileSync(`${directory}/ci-streaming-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
+          console.log(JSON.stringify(receipt, null, 2));
+          NODE
+
+      - name: Preserve baseline and streaming evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-baseline-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-baseline-inputs.json
+            godot_native/exports/verification/web_ci/
+            godot_native/exports/verification/web_streaming/
+          if-no-files-found: warn
+
+  browser_profiles:
+    name: Godot Web input (${{ matrix.profile }})
+    # Baseline failure cannot block these independent sealed-input diagnostics.
+    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
+    needs: build
+    runs-on: ubuntu-latest
+    # Three profile runners add up to 54 runner-minutes, not 18. Including
+    # build (25), baseline (15) and two library profiles (24), the declared
+    # job budgets total 118 runner-minutes; that is not serial wall time.
+    timeout-minutes: 18
     permissions:
       contents: read
     strategy:
@@ -409,8 +457,10 @@ jobs:
 
       - name: Accept actual early charging and two-stage Tiyi phone input
         # Independent diagnostic gate: an earlier browser failure still fails the job.
+        # Two continuous ten-segment runs use real pointer timing. DPR3 software
+        # rendering exceeded the former eight-minute bound without a failed assertion.
         if: ${{ !cancelled() && steps.verify_inputs.outcome == 'success' }}
-        timeout-minutes: 8
+        timeout-minutes: 12
         shell: bash
         run: |
           set -euo pipefail
@@ -583,7 +633,7 @@ jobs:
 
   deploy:
     name: Publish Godot Web game
-    if: ${{ needs.build.result == 'success' && needs.browser_profiles.result == 'success' && needs.library_profiles.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
+    if: ${{ needs.build.result == 'success' && needs.browser_baseline.result == 'success' && needs.browser_profiles.result == 'success' && needs.library_profiles.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
     permissions:
       pages: write
       id-token: write
@@ -591,7 +641,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [build, browser_profiles, library_profiles]
+    needs: [build, browser_baseline, browser_profiles, library_profiles]
     steps:
       - name: Configure Pages
         uses: actions/configure-pages@v5

@@ -1,0 +1,137 @@
+{
+  "schema": "755-cc98-copy-provenance-v1",
+  "date": "2026-10-26",
+  "generation": {
+    "method": "Computer Use in Gemini web UI",
+    "model": "Gemini 3.8 Flash",
+    "reasoning": "低",
+    "promptPolicy": "Scene briefs and protected facts only; no sample prose; model code was not executed"
+  },
+  "review": {
+    "skill": "Humanizer-zh",
+    "source": "https://github.com/op7418/Humanizer-zh/blob/main/SKILL.md",
+    "sourceRevisionDate": "2026-09-23",
+    "method": "Manual fact and voice review; flagged leaves returned to Gemini"
+  },
+  "scope": {
+    "ordinaryPosts": 52,
+    "ordinaryTitles": 52,
+    "ordinaryBodies": 52,
+    "generatedReplies": 165,
+    "frozenReply": {
+      "id": "p02",
+      "index": 1,
+      "sha256": "134766a5ee67d14bb474ab51d4fa8774ffaef702e84be100e29b6cba5fceeb9e"
+    },
+    "storyLeaves": 54,
+    "totalRewrittenSourceLeaves": 323,
+    "correctedLeaves": 28
+  },
+  "protected": [
+    "all post IDs, authors, reply indices, boards, timestamps, attachments and statistics",
+    "gamepad 6 yuan / 600 cents and rejected 0.06 yuan installment",
+    "library four-upload ordering and BD digits / floors; exact floor-12 parser phrase",
+    "theater 0832 and network/phase semantics",
+    "lake three-source location chain without final answer disclosure",
+    "chapter-4 course index is observational, not transport authority",
+    "non-target narration/audio/controller fields"
+  ],
+  "evidence": {
+    "rawInputs": [
+      {
+        "file": "batch-1.json",
+        "sha256": "4fb1cc701533d432ef5e60548c03c9543e346d59f4647690fa7153e1daa1fd95"
+      },
+      {
+        "file": "batch-2.json",
+        "sha256": "bbfe4740b2d4f56ff9a75bd9775f8593110612861d96265ea9e14f5550bd0fd9"
+      },
+      {
+        "file": "batch-3.json",
+        "sha256": "fb63924ff6ddc5b1ad64a6d40fff8539bd6321f4af9e52bcba9b64be7a0524d6"
+      },
+      {
+        "file": "batch-4.json",
+        "sha256": "31c406b22e254d6a37f743c6e2565614f205abe1919c27d00c8674890b47483d"
+      },
+      {
+        "file": "story.json",
+        "sha256": "329ee6f31131944add5b8d34463ff0b2f45c57fc9b32b4498d3a6fef0cb12a1e"
+      }
+    ],
+    "correctionInputSha256": "6e9ac04667fe129b54fcddf887c694690cf5f169356bb1bb0ae0276c5444656a",
+    "restrictedMergeReportSha256": "d038f295c638e6f52c305b4a7d0e0cc3f87fa7264a5a17241c94302cd99394d2",
+    "humanizerFactReviewSha256": "b4b0f2a26bdd9173191b1940819217d37dfefae500f961b7387b80d7e2113b25",
+    "restrictedSourceLeaves": 323,
+    "metadataUnchanged": true,
+    "sourceNativeMirrorsChecked": 6,
+    "supersededOrdinaryOverridesRemoved": 24
+  },
+  "files": [
+    {
+      "path": "godot_native/data/source/cc98.posts.json",
+      "sha256": "49df2ef77cab793f5531ab04143109e3e3711199ed7e512d1b2f71842e67fe8f"
+    },
+    {
+      "path": "src/data/cc98.posts.json",
+      "sha256": "49df2ef77cab793f5531ab04143109e3e3711199ed7e512d1b2f71842e67fe8f"
+    },
+    {
+      "path": "godot_native/data/source/act-one-bootstrap.content.json",
+      "sha256": "48cba2a7d78ebf0cf3b24fb4efd27882e2e6db0bfe184623c166d51ed4acb1ce"
+    },
+    {
+      "path": "godot_native/data/source/chapter3-qizhen-lake.content.json",
+      "sha256": "489813454db18bf9687f673a3c215a89fc243bd0f46e2f73b4c622f7a631404f"
+    },
+    {
+      "path": "godot_native/data/source/chapter3-theater.content.json",
+      "sha256": "50a24375146fd8e8c63bdaeb5f5c59f75b13788850c553fda3cfab8c8abab975"
+    },
+    {
+      "path": "godot_native/data/source/chapter4-cc98.content.json",
+      "sha256": "28d8f17507e3dc51839fc589ff505b1f54319e817b6acc10c2b9a8657e13dced"
+    },
+    {
+      "path": "godot_native/data/source/library-finals.content.json",
+      "sha256": "dac2456fa7722dfad920b29a3fe36141ef58ad2199850a79492a12c95e893776"
+    },
+    {
+      "path": "src/data/act-one-bootstrap.content.json",
+      "sha256": "5e7b33bb3d3eddf750800b0bdf06f8b9f3aa6331c45dfc66a2bc974cd563a5d8"
+    },
+    {
+      "path": "src/data/chapter3-qizhen-lake.content.json",
+      "sha256": "cd93706d5a1f8d3b67799d18841dc2aac2b4cb9d1df7d5fde2f8893ebf2594ec"
+    },
+    {
+      "path": "src/data/chapter3-theater.content.json",
+      "sha256": "56e049f439c02f64c51905d20b465f2edfc82774eee61d6f15e7a410d1cd2adc"
+    },
+    {
+      "path": "src/data/chapter4-cc98.content.json",
+      "sha256": "28d8f17507e3dc51839fc589ff505b1f54319e817b6acc10c2b9a8657e13dced"
+    },
+    {
+      "path": "src/data/library-finals.content.json",
+      "sha256": "d207a0e910c254c19a3b6e5807976e6bd635b71d7dab1bfaca134e3cd19e71a0"
+    },
+    {
+      "path": "godot_native/data/zh_text_revisions.json",
+      "sha256": "036b545ea55d91eb89171880f6a63afe1d9e5f2e0651fcf67a3c4ea153727ce0"
+    }
+  ],
+  "runtimeAcceptance": {
+    "status": "affected_existing_tests_passed",
+    "godot": "4.7.1.stable.official.a13da4feb",
+    "profile": "changed",
+    "selectedStagesPassed": 10,
+    "notRunStages": 522,
+    "forumChecks": 990,
+    "failures": 0,
+    "webQuick": "5/5",
+    "sourceRevisions": "171 exact fields; protected and unlisted fields unchanged",
+    "audioContract": "unchanged",
+    "fullCiMergeDeployment": "pending"
+  }
+}

@@ -1219,9 +1219,16 @@ async function streamingCase() {
   active.streaming.requiredFailure = { at: Date.now(), evidence: frozen, content: whileBlocked.content, retryControl: controls(whileBlocked).find(control => control.name === 'RetryRequiredContent') };
   active.screenshots.push(await screenshot('desktop-streaming-required-retry'));
 
-  active.faultPhase = 'c2-user-retry-recovery';
-  active.controlledBlockedUrls.clear();
+  active.faultPhase = 'c2-deferred-unblock-pending';
+  active.streaming.unblock = { requestedAt: Date.now() };
   await active.cdp.send('Network.setBlockedURLs', { urls: [] });
+  active.streaming.unblock.acknowledgedAt = Date.now();
+  // Requests can still encounter our block while the disable command awaits
+  // acknowledgement. Keep their request-time fault identity until that point;
+  // a later loadingFailed event must use the existing per-request snapshot.
+  active.controlledBlockedUrls.clear();
+  active.faultPhase = 'c2-user-retry-recovery';
+  active.streaming.unblock.retryRequestedAt = Date.now();
   await clickControl('RetryRequiredContent', 'name');
   const ready = await poll(async () => {
     const value = await snapshot();
@@ -1357,7 +1364,44 @@ async function assertBottomPlaque(value, label) {
   active.screenshots.push(await screenshot(`${active.id}-${label}-confirmed-bottom`));
   return later;
 }
+async function rotateMobileWorld(value, portrait, label) {
+  const width = portrait ? 390 : 844, height = portrait ? 844 : 390;
+  const before = mobileFacts(value), player = value.world.player, visible = value.world.visible;
+  const metrics = { width, height, screenWidth: width, screenHeight: height, deviceScaleFactor: active.dpr, mobile: true,
+    screenOrientation: { type: portrait ? 'portraitPrimary' : 'landscapePrimary', angle: portrait ? 0 : 90 } };
+  active.mobileWorld.inputs.push({ at: Date.now(), method: 'Emulation.setDeviceMetricsOverride', label, metrics });
+  await active.cdp.send('Emulation.setDeviceMetricsOverride', metrics);
+  value = await poll(async () => {
+    const next = await snapshot();
+    return next?.sampleFrame > value.sampleFrame && next.viewport.width === width && next.viewport.height === height
+      && next.world.visible === visible && (!visible || next.world.input.geometryAvailable) ? next : null;
+  }, `${active.id}: ${label} reaches fresh native viewport geometry`, 15000);
+  const browser = await evaluate(`(() => {const r=document.getElementById('canvas').getBoundingClientRect(),v=window.visualViewport;return {width:innerWidth,height:innerHeight,visualWidth:v.width,visualHeight:v.height,scale:v.scale,canvas:{x:r.x,y:r.y,width:r.width,height:r.height}}})()`);
+  check(browser.width === width && browser.height === height && Math.abs(browser.visualWidth - width) < 1 && Math.abs(browser.visualHeight - height) < 1 && Math.abs(browser.scale - 1) < .001
+    && Math.abs(browser.canvas.x) < 1 && Math.abs(browser.canvas.y) < 1 && Math.abs(browser.canvas.width - width) < 1 && Math.abs(browser.canvas.height - height) < 1,
+  `${active.id}: ${label} keeps the real canvas inside the device viewport without page shrink`, browser);
+  check(value.world.size.x === 960 && value.world.size.y === 540 && Math.abs(value.world.rect.width / value.world.rect.height - 16 / 9) < .005,
+    `${active.id}: ${label} retains the canonical landscape map projection`, value.world);
+  check(mobileFacts(value) === before && mobileDistance(value.world.player, player) < .5, `${active.id}: ${label} cannot move the actor or change earned facts`);
+  (active.mobileWorld.rotations ||= []).push({ label, at: Date.now(), browser, viewport: value.viewport, worldSize: value.world.size, worldRect: value.world.rect });
+  return value;
+}
 async function directWorldCase(value) {
+  if (!inRect(worldTarget(value).point, value.world.rect, 8)) {
+    // The fixed landscape camera no longer gains vertical extent in a portrait
+    // window. Use its shipped two-finger zoom, without relocating the actor or
+    // injecting camera values, to frame the same distant interaction fixture.
+    const facts = mobileFacts(value), player = value.world.player, beforeZoom = value.world.zoom;
+    const rect = value.world.rect, center = { x: rect.x + rect.width / 2, y: rect.y + rect.height * .35 }, spread = rect.width * .14;
+    const points = async ratio => Promise.all([-1, 1].map(async (side, index) => ({ ...await renderPoint({ x: center.x + side * spread * ratio, y: center.y }, value), id: index + 1 })));
+    const start = await points(1);
+    await worldTouches('touchStart', [start[0]]); await worldTouches('touchStart', start);
+    await poll(async () => { const next = await snapshot(); return next?.world?.input?.owners?.length === 2 && next.world.input.owners.every(owner => owner.role === 'camera') ? next : null; }, 'real two-finger camera ownership frames the distant target', 5000);
+    for (let step = 1; step <= 5; step++) { await worldTouches('touchMove', await points(1 - step * .08)); await interval(65); }
+    await worldTouches('touchEnd');
+    value = await mobileSample(value);
+    check(value.world.zoom < beforeZoom && mobileFacts(value) === facts && mobileDistance(value.world.player, player) < .5, `${active.id}: ordinary pinch changes only the camera framing`, { beforeZoom, zoom: value.world.zoom });
+  }
   const input = value.world.input, target = worldTarget(value), start = value.world.player;
   check(value.world.mobile_exploration && input.stick === null && !input.stickRect.width && !input.confirmRect.width, `${active.id}: local direct scene has no fixed joystick or confirmation button`);
   check(target.distance > target.radius && inRect(target.point, value.world.rect, 8), `${active.id}: real lamp begins visible and beyond its source proximity`, target);
@@ -1381,7 +1425,7 @@ async function directWorldCase(value) {
   check(worldTarget(value).distance <= worldTarget(value).radius && value.world.input.dormPropActions === beforeActions + 1 && lampOn(value) !== beforeLamp, `${active.id}: physical arrival accepts exactly one original lamp interaction`);
   value = await mobileSample(value, 650);
   check(value.world.input.dormPropActions === beforeActions + 1, `${active.id}: emulated mouse and settled arrival cannot double-submit`);
-  value = await assertBottomPlaque(value, 'direct-portrait');
+  value = await assertBottomPlaque(value, 'direct-landscape');
   const facts = mobileFacts(value), point = await renderPoint(worldTarget(value).point, value);
   await worldTouches('touchStart', [{ ...point, id: 1 }]);
   await worldTouches('touchMove', [{ x: point.x - 35, y: point.y, id: 1 }]);
@@ -1430,17 +1474,32 @@ async function directWorldCase(value) {
   value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.dormPropActions > oldActions ? next : null; }, 'fresh target tap reaches the original object controller', 5000);
   check(value.world.input.dormPropActions === oldActions + 1 && lampOn(value) === beforeLamp, `${active.id}: a fresh ordinary target tap works after cancellation and reverses only the lamp`);
   value = await assertBottomPlaque(value, 'direct-resumed');
-  if (active.id === 'touch-390') {
-    await active.cdp.send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: active.dpr, mobile: true });
-    value = await poll(async () => { const next = await snapshot(); return next?.viewport?.width > next.viewport.height && next.world.input.geometryAvailable ? next : null; }, 'landscape layout reaches the actual direct scene');
+  {
+    const heldPoint = await renderPoint(worldTarget(value).point, value);
+    await worldTouches('touchStart', [{ ...heldPoint, id: 1 }]);
+    value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.owners?.length === 1 ? next : null; }, 'rotation starts with a real held scene pointer', 5000);
+    value = await rotateMobileWorld(value, true, 'direct-portrait-return');
     value = await assertWorldStopped(value, 'direct-orientation');
+    await worldTouches('touchCancel');
+    await acceptPortraitFallback();
     check(state(value).native.scene === 'dorm_hub' && state(value).items.campusCard, `${active.id}: orientation preserves the earned scene and item`);
+    value = await rotateMobileWorld(value, false, 'direct-landscape-return');
     value = await worldTap(value, worldTarget(value).point);
     value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.dormPropActions > oldActions + 1 ? next : null; }, 'landscape target tap reaches the original object controller', 5000);
     check(value.world.input.dormPropActions === oldActions + 2 && lampOn(value) !== beforeLamp, `${active.id}: landscape direct target tap still submits exactly one action`);
-    await assertBottomPlaque(value, 'direct-landscape');
+    value = await assertBottomPlaque(value, 'direct-landscape-return');
   }
-  active.mobileWorld.coverage.push('real physical target approach', 'original proximity and single action', 'bottom plaque', 'bottom plaque above inline controls', 'drag is not tap', 'cancel and fresh gesture', 'two-finger camera ownership', 'scene then inventory ownership', 'settings modal cancellation', ...(active.id === 'touch-390' ? ['landscape resize', 'landscape resize and direct tap'] : []));
+  const beforePhone = mobileFacts(value), playerBeforePhone = value.world.player;
+  await clickControl('WorldPhoneButton', 'name');
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.visible === false && state(next)?.native?.page === 'phone_home' ? next : null; }, 'ordinary world corner returns to phone home');
+  check(Math.abs(value.phoneRect.width / 430 - value.phoneRect.height / 860) < .005, `${active.id}: phone return retains its portrait logical viewport`, value.phoneRect);
+  value = await rotateMobileWorld(value, true, 'phone-portrait-return');
+  await clickControl('PhoneWorldReturn', 'name');
+  await acceptPortraitFallback();
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.visible && next.world.input.geometryAvailable ? next : null; }, 'ordinary phone corner restores the same retained map');
+  check(mobileFacts(value) === beforePhone && mobileDistance(value.world.player, playerBeforePhone) < .5 && value.world.size.x === 960 && value.world.size.y === 540,
+    `${active.id}: phone and orientation round trip preserve source player, items and accepted actions`);
+  active.mobileWorld.coverage.push('real physical target approach', 'original proximity and single action', 'bottom plaque', 'bottom plaque above inline controls', 'drag is not tap', 'cancel and fresh gesture', 'two-finger camera ownership', 'scene then inventory ownership', 'settings modal cancellation', 'landscape resize', 'landscape resize and direct tap', 'portrait phone and landscape map round trip');
   active.mobileWorld.completed = true;
 }
 
@@ -1481,7 +1540,12 @@ async function mobileWorldCase() {
     active.screenshots.push(await screenshot(`${active.id}-pc-space-campus`));
     return;
   }
-  if (value.world.input.scheme === 'direct_world') { await directWorldCase(value); return; }
+  // Touch gameplay uses the canonical landscape map, rather than assuming the
+  // distant source target fits a portrait letterbox beneath physical-size HUD.
+  if (value.world.input.scheme === 'direct_world') {
+    value = await rotateMobileWorld(value, false, 'landscape-before-map-input');
+    await directWorldCase(value); return;
+  }
   check(value.world.mobile_exploration && inRect({ x: value.world.input.stickRect.x, y: value.world.input.stickRect.y }, value.world.rect) && inRect({ x: value.world.input.stickRect.x + value.world.input.stickRect.width, y: value.world.input.stickRect.y + value.world.input.stickRect.height }, value.world.rect) && value.world.input.confirmRect.width === 0 && value.world.input.confirmRect.height === 0, `${active.id}: mobile movement pad overlays the actual world without a confirm button`);
   const original = mobileFacts(value), target = worldTarget(value), beforeFarTap = value.world.player;
   check(target.distance > target.radius && inRect(target.point, value.world.rect, 8), `${active.id}: far lamp is visibly on-screen and outside the original proximity radius`, target);

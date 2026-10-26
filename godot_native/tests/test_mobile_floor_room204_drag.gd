@@ -9,6 +9,9 @@ func room_fixture(dimensions: Vector2i,source: Vector2,group_id: String) -> Vect
 	state.d.chapter4.factIds=["misaligned_stair_solved","a3_reference_observed","room204_residual_observed"]
 	root.size=dimensions;shell.size=Vector2(dimensions);shell.mobile_world=true;shell.compact_inventory_open=false
 	shell.world.world_key="";shell._refresh();await frames(6);shell.world.set_process(false)
+	if dimensions.y>dimensions.x:
+		check(shell.world.size==Vector2(960,540),"portrait device keeps the map's landscape viewport before rotation "+case_name)
+		root.size=Vector2i(dimensions.y,dimensions.x);shell.size=Vector2(root.size);shell._layout();await frames(4)
 	var w=shell.world
 	var target: Dictionary={}
 	for group in Room.data().groups:

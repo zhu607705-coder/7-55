@@ -1641,8 +1641,8 @@ func _direct_touch_role(local:Vector2)->String:
 		# Real entities keep their authored hit/distance/mode rules before water.
 		if not _pick_target(point).is_empty():return "map"
 		var paddles:Dictionary=kayak_paddle_rects()
-		for side:String in paddles:
-			if paddles[side].has_point(local):return "paddle_"+side
+		var side:String=kayak_visual.paddle_side_at(local,paddles)
+		if not side.is_empty():return "paddle_"+side
 		# A stroke may start in the visible water beside the moving boat. A tap
 		# on this water stays neutral; the actual paddle still accepts a tap.
 		var beside:Vector2=(point-player).rotated(-float(kayak.heading)-PI/2)

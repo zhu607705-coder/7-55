@@ -18,6 +18,7 @@ var world_frame: PanelContainer
 var world: Control
 var world_viewport: SubViewport
 var world_view: SubViewportContainer
+var world_surface_context: Array=[]
 var status_label: Label
 var title_label: Label
 var quest_label: Label
@@ -762,7 +763,11 @@ func _authored_world_contract() -> bool:
 func _configure_world_surface(extent: Vector2,compact: bool) -> void:
 	if not is_instance_valid(world): return
 	var dimensions:=Vector2i(maxi(1,int(extent.x)),maxi(1,int(extent.y)))
-	var changed: bool=world_viewport.size!=dimensions or world.mobile_exploration!=compact
+	# A fixed logical viewport can still move/scale on rotation. Retire pointers
+	# against that old rendered transform before accepting another root event.
+	var context: Array=[dimensions,compact,world_frame.get_global_transform_with_canvas()]
+	var changed: bool=world_viewport.size!=dimensions or world.mobile_exploration!=compact or context!=world_surface_context
+	world_surface_context=context
 	world_view.custom_minimum_size=Vector2(dimensions)
 	world_view.size=Vector2(dimensions)
 	world.custom_minimum_size=Vector2(dimensions)

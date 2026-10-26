@@ -32,7 +32,7 @@ func source_at(at: Vector2) -> Vector2:
 func source_screen(point: Vector2) -> Vector2:
 	return world_screen((point-shell.world.camera)*shell.world.zoom+shell.world.size/2)
 func wheel() -> void:
-	var e:=InputEventMouseButton.new();e.position=Vector2(195,408);e.global_position=e.position;e.button_index=MOUSE_BUTTON_WHEEL_DOWN;e.pressed=true;event(e)
+	var e:=InputEventMouseButton.new();e.position=shell.world_view.get_global_rect().get_center();e.global_position=e.position;e.button_index=MOUSE_BUTTON_WHEEL_DOWN;e.pressed=true;event(e)
 	e=e.duplicate();e.pressed=false;event(e);await frames(4)
 func reset_route() -> void:
 	state.story_reset.emit();state.d=baseline.duplicate(true)
@@ -43,7 +43,8 @@ func reset_route() -> void:
 	check(shell.world.player.distance_to(START)<.002,"normal Main load retains ordinary starting position")
 	for i in 4: await wheel()
 	check(is_equal_approx(shell.world.zoom,.45),"four recorded root wheel events derive minimum zoom .45")
-	check(shell.world_view.get_global_rect()==Rect2(4,4,382,836),"390x844 map fills the viewport behind the inline controls")
+	var painted:Rect2=shell.world_view.get_global_rect()
+	check(shell.world.size==Vector2(960,540) and is_equal_approx(painted.size.x/painted.size.y,16.0/9.0) and Rect2(Vector2.ZERO,shell.size).encloses(painted),"rotated window retains the landscape map and inline controls")
 	shell.world._floor_planner=CountPlanner.new()
 func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	var w=shell.world
@@ -58,7 +59,7 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	check(w._floor_status=="moving" and not w._floor_route.is_empty(),"root input starts an actual floor route")
 	check(w._floor_planner.calls==old_calls+1,"exactly one unchanged planner call per request")
 	check(w._floor_goal.distance_to(expected)<.002,"accepted marker is the resolved full-foot center")
-	if raw_valid:check(w._floor_goal==raw,"valid raw floor intent remains exact")
+	if raw_valid:check(w._floor_goal.distance_to(raw)<.001,"valid raw floor intent remains exact within source transform precision")
 	await snapshot(str(records.size())+"-accepted")
 	check(w._floor_goal.distance_to(raw)*w.zoom<=Tap.PIXEL_RADIUS+.001,"correction is bounded in physical pixels")
 	check(planning_us<200000 and w._canteen_floor_tap.candidate_count<=Tap.MAX_CANDIDATES,"correction and planning remain bounded")
@@ -94,7 +95,7 @@ func replay_approach() -> void:
 func rejection(at: Vector2,label: String) -> void:
 	var w=shell.world;var position: Vector2=w.player;var before:=story();var count:=actions.size()
 	var raw:=source_at(at);root_tap(at)
-	check(w._floor_status=="blocked" and w._floor_route.is_empty() and w._floor_goal==raw,label+" retains blocked marker at raw request")
+	check(w._floor_status=="blocked" and w._floor_route.is_empty() and w._floor_goal.distance_to(raw)<.001,label+" retains blocked marker at raw request within source transform precision")
 	await frames(2)
 	check(w.player==position and story()==before and actions.size()==count,label+" has no movement or progression")
 func snapshot(name: String) -> void:
@@ -123,6 +124,9 @@ func run() -> void:
 	state.developer_mode=true;baseline=state.d.duplicate(true)
 	check(state.d.canteenHunt.returnedTrayIds.size()==4 and not state.d.canteenHunt.queueChallengeSeen,"post-trays baseline keeps unseen queue; fixture origin is explicit")
 	root.size=Vector2i(390,844);shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames(8)
+	# The phone starts portrait; source-floor interaction follows an actual
+	# landscape map rotation rather than extending the map to portrait height.
+	root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout();await frames(4)
 	state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))
 	state.feedback.connect(func(line):feedback.append(line))
 	for using_touch in [false,true]:
@@ -140,7 +144,11 @@ func run() -> void:
 	# Reuse current legal start for negative requests through the same root path.
 	var w=shell.world
 	await rejection(source_screen(Vector2(620,239)),"solid wall center")
-	await rejection(source_screen(Vector2(w.camera.x,-1)),"outside visible source world")
+	var outside:=Vector2(w.camera.x,-1)
+	check(not w.exploration_safe_rect(true).has_point((outside-w.camera)*w.zoom+w.size/2),"outside-world replay is outside the current landscape input region")
+	var outside_calls:int=w._floor_planner.calls;var outside_position:Vector2=w.player;var outside_story:=story()
+	root_tap(source_screen(outside));await frames(2)
+	check(w._floor_planner.calls==outside_calls and w._floor_route.is_empty() and w.player==outside_position and story()==outside_story,"offscreen source request cannot enter the planner or change gameplay")
 	# Actual opaque actor pixels and reserved HUD input retain their ownership.
 	w.set_process(false);await frames(2)
 	var actor:=Vector2.INF

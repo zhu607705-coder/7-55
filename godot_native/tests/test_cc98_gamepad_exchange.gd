@@ -1,6 +1,7 @@
 extends SceneTree
 const UI = preload("res://scripts/ui/native_ui_theme.gd")
 const DisplayFixture = preload("res://tests/zh_text_fixture.gd")
+const PostSource = preload("res://scripts/data/cc98_store.gd")
 ## Source-phase fixtures exercise the real transaction surface and authority.
 ## This does not stand in for an earned manual campaign run.
 var state: Node
@@ -68,7 +69,8 @@ func check_geometry(purchased: bool = false) -> void:
 	check(contained(drawing.get_global_rect(), preview.get_global_rect()), "gamepad is centered inside its illustration panel")
 	var recipient: Label = named(panel, "Cc98GamepadRecipient")
 	check(recipient.get_line_count() == recipient.get_visible_line_count(), "all recipient text remains readable")
-	check(named(panel, "Cc98GamepadPostBody").text == "方向键、摇杆和一个不太灵的 A 键都在。只收 6 元，不议价，也不接受 0.06 元分期。", "complete authored post body retained")
+	var authored_post: Dictionary = PostSource.source("act-one-bootstrap.content").cc98ExchangePost
+	check(named(panel, "Cc98GamepadPostBody").text == authored_post.body, "complete current authored post body retained")
 	check(button.text == ("回寝室试用手柄" if purchased else "支付 6 元购买手柄"), "source action copy retained")
 func run() -> void:
 	state = root.get_node("State"); state.developer_mode = true; state.d = state.initial()

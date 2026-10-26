@@ -31,6 +31,8 @@ func run() -> void:
  for dims: Vector2i in [Vector2i(390,844),Vector2i(430,860)]:
   await reset(dims)
   for side: String in ["left","right"]:
+   var physical:Vector2=shell.world.kayak_paddle_rects()[side].size*shell.world.hud_display_scale()
+   check(physical.x>=43.99 and physical.y>=43.99,"moving paddle retains a physical44px target "+side+str(dims))
    var p:=center(side);var n:=count()
    await mouse(p,true);check(count()==n,"press waits for release "+side+str(dims))
    await mouse(p,false);check(count()==n+1,"actual moving paddle release strokes once "+side+str(dims))
