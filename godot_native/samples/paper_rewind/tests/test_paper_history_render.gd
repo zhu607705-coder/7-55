@@ -46,10 +46,10 @@ func run() -> void:
 	var unbounded: Image = await settled_image()
 	check(changes(b,unbounded,bounds).y > 100,"Negative control detects unbounded recorded child drawing")
 	view.stage.history_window.clip_contents = true
-	view.stage.history_window.visible=false
 	view.model.seek(2.5)
 	view.stage.folder_open_amount=0.56
 	view.stage.refresh()
+	view.stage.history_window.visible=false
 	var lit: Image=await settled_image()
 	view.stage.current_world.sun.light_energy=0.0
 	var unlit: Image=await settled_image()

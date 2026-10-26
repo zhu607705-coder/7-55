@@ -277,6 +277,13 @@ func thumb_preview_rect() -> Rect2:
 	return Rect2(preview-Vector2(20,24),Vector2(40,48))
 
 func _draw_grip_preview() -> void:
+	# Projected trajectory stays above the viewport texture, never a second sheet.
+	if paper_grip.held or model.mode == "failed":
+		var path := PackedVector2Array()
+		var start := maxf(0.0,model.time-2.4) if paper_grip.held else 0.0
+		var finish := minf(7.8,model.time+0.45) if paper_grip.held else 7.8
+		for i: int in range(32): path.append(world_to_local(Model.free_position(lerpf(start,finish,i/31.0))))
+		grip_preview.draw_polyline(path,Color(INTERACTION,0.40),1.5,true)
 	if not paper_grip.held or model.paper_collected: return
 	# One small direction cue clears the thumb. No duplicate paper/connector box.
 	var p := thumb_preview_rect().get_center()

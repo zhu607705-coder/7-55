@@ -36,6 +36,10 @@ func run() -> void:
 	check(stage.current_world.paper.material_override.transparency==BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR,"Paper alpha silhouette participates in depth and shadows")
 	var arrays: Array=stage.current_world.paper.mesh.surface_get_arrays(0)
 	check(arrays[Mesh.ARRAY_NORMAL][0].dot(Vector3.UP)>0.99,"Paper face normal points above desk after axis swap")
+	stage.folder_open_amount=0; stage.refresh()
+	check(stage.current_world.pocket_front.position.y+0.12<0.087,"Closed pocket fits under the physical cover")
+	stage.folder_open_amount=1; stage.refresh()
+	check(is_zero_approx(stage.current_world.pocket_front.position.y),"Opened pocket retains approved z=12 contact plane")
 	check(stage.current_world.meshes.size()<70,"Mesh count is bounded for the small mobile scene")
 	print("PAPER_WORLD_3D checks=%d failures=%d actual_render=false"%[checks,failures])
 	view.queue_free(); await process_frame

@@ -8,6 +8,8 @@ var camera: Camera3D
 var sun: DirectionalLight3D
 var stage: Control
 var recorded := false
+var pocket_front: MeshInstance3D
+var pocket_lip: MeshInstance3D
 var cover_hinge: Node3D
 var paper: MeshInstance3D
 var residual: MeshInstance3D
@@ -36,7 +38,7 @@ func setup(owner_stage: Control, is_recorded: bool) -> void:
 	sun=DirectionalLight3D.new(); sun.name="WindowDaylight"
 	sun.light_color=Color("fff0d4"); sun.light_energy=1.05
 	sun.shadow_enabled=true
-	sun.shadow_bias=0.02; sun.shadow_normal_bias=0.1
+	sun.shadow_bias=0.1; sun.shadow_normal_bias=1.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
 	sun.directional_shadow_max_distance=35
 	add_child(sun)
@@ -143,9 +145,9 @@ func _build_folder() -> void:
 	_box("FolderBaseThickness",Vector3(r.get_center().x,r.get_center().y,3),Vector3(r.size.x,r.size.y,6),card)
 	_quad("FolderBaseArtwork",stage._plane_quad(r,6.1),_material(Color.WHITE,stage.folder_base),stage.folder_base)
 	var pocket := Rect2(Vector2(r.position.x,r.position.y+r.size.y*stage.folder_pocket_start),Vector2(r.size.x,r.size.y*(1-stage.folder_pocket_start)))
-	_quad("RaisedPocketFront",stage._plane_quad(pocket,12),_material(Color.WHITE,stage.folder_base),stage.folder_base,Rect2(0,stage.folder_pocket_start,1,1-stage.folder_pocket_start))
+	pocket_front=_quad("RaisedPocketFront",stage._plane_quad(pocket,12),_material(Color.WHITE,stage.folder_base),stage.folder_base,Rect2(0,stage.folder_pocket_start,1,1-stage.folder_pocket_start))
 	# Thin folded lip is geometry; the paper is depth-occluded by the actual pocket.
-	_box("PocketFoldThickness",Vector3(pocket.get_center().x,pocket.position.y,11),Vector3(pocket.size.x,1.6,2),card)
+	pocket_lip=_box("PocketFoldThickness",Vector3(pocket.get_center().x,pocket.position.y,11),Vector3(pocket.size.x,1.6,2),card)
 	cover_hinge=Node3D.new(); cover_hinge.name="CoverSpineHinge"; cover_hinge.position=space(Vector3(r.position.x,r.position.y,8)); add_child(cover_hinge)
 	var cover_rect := Rect2(0,0,r.size.x,r.size.y)
 	var front := _material(Color.WHITE,stage.folder_cover)
@@ -158,7 +160,13 @@ func _build_folder() -> void:
 func update_scene() -> void:
 	if not paper: return
 	receiver_material.emission=Color("969b90")*0.05 if stage.broadcast_quiet else Color("eee8cf")*0.35
-	cover_hinge.rotation.z=0.0 if recorded else stage.folder_open_amount*PI
+	var opening: float=0.0 if recorded else stage.folder_open_amount
+	cover_hinge.rotation.z=opening*PI
+	# Closed card pocket is compressed below the cover; opening releases its fold.
+	# Fully open height stays at the approved contact/occlusion plane (12 units).
+	var pocket_height := lerpf(6.4,12.0,smoothstep(0.08,0.48,opening))
+	pocket_front.position.y=(pocket_height-12.0)*UNIT
+	pocket_lip.position.y=(pocket_height-1.0)*UNIT
 	var time: float=stage.history_time if recorded else stage.model.time
 	var point: Vector2=Model.free_position(time) if recorded else stage.model.paper_position()
 	var grounded: bool=not recorded and stage.model.catch_time>=0
