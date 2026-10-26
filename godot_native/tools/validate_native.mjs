@@ -6,17 +6,20 @@ import {createValidationCatalog, planValidation, PREFLIGHT} from './native_valid
 import {acquireNativeWorkspaceLock} from './native_validation_lock.mjs';
 import {scheduleValidation} from './native_validation_scheduler.mjs';
 import {validationIdentity, stageIdentity, fixtureIdentity, canReuse, fileDigest, inheritedTestOverrides, completedStageIdentity} from './native_validation_identity.mjs';
+import {selectShard} from './native_validation_shards.mjs';
+import {verifyBundle} from './native_validation_bundle.mjs';
 
 const project = path.resolve(import.meta.dirname, '..'), root = path.dirname(project);
 const executable = process.env.GODOT_BIN || 'godot';
 const options = {profile: 'full', tests: [], changedFiles: []};
 let resume = false, inspect = false, filter = null, changedSince = null;
+const transport = {};
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
  const flag = argv[i];
  if (['--plan', '--list'].includes(flag)) {inspect = true; continue;}
  if (flag === '--resume') {resume = true; continue;}
- if (!['--profile', '--test', '--changed-file', '--changed-since', '--filter'].includes(flag)) throw Error(`Unknown argument ${flag}`);
+ if (!['--profile', '--test', '--changed-file', '--changed-since', '--filter', '--shard', '--prepared-bundle', '--receipt-sha', '--producer-attempt', '--head', '--base'].includes(flag)) throw Error(`Unknown argument ${flag}`);
  const value = argv[++i];
  if (!value || value.startsWith('--')) throw Error(`${flag} requires a value`);
  if (flag === '--profile') options.profile = value;
@@ -24,6 +27,10 @@ for (let i = 0; i < argv.length; i++) {
  if (flag === '--changed-file') options.changedFiles.push(value.replaceAll('\\', '/'));
  if (flag === '--changed-since') changedSince = value;
  if (flag === '--filter') filter = new RegExp(value);
+ if (['--shard', '--prepared-bundle', '--receipt-sha', '--producer-attempt', '--head', '--base'].includes(flag)) {
+  if (Object.hasOwn(transport, flag)) throw Error(`Duplicate argument ${flag}`);
+  transport[flag] = value;
+ }
 }
 if (changedSince) {
  const git = args => {const r = spawnSync('git', args, {cwd: root, encoding: 'utf8'}); if (r.status !== 0) throw Error(r.stderr); return r.stdout.split('\0').filter(Boolean);};
@@ -31,7 +38,16 @@ if (changedSince) {
  options.changedFiles.push(...git(['diff', '--name-only', '-z', revision, '--']), ...git(['ls-files', '--others', '--exclude-standard', '-z']));
 }
 const catalog = createValidationCatalog(project, executable);
-const plan = planValidation(catalog, {...options, filter});
+let shard = null;
+if (transport['--shard']) {
+ if (resume || filter || changedSince || options.profile !== 'full' || options.tests.length || options.changedFiles.length) throw Error('Shards cannot combine with resume, raw filter or focused profiles');
+ const match = /^(\d+)\/([1-6])$/.exec(transport['--shard']);
+ if (!match) throw Error('--shard requires zero-based INDEX/COUNT (count 1..6)');
+ shard = {...selectShard(catalog, root, Number(match[1]), Number(match[2])), index:Number(match[1]), count:Number(match[2])};
+ if (!inspect && !['--prepared-bundle','--receipt-sha','--producer-attempt','--head'].every(key => transport[key])) throw Error('A shard requires verified same-run prepared inputs');
+} else if (Object.keys(transport).length) throw Error('Prepared-input options require --shard');
+if (options.profile === 'prepare' && (resume || filter || options.tests.length || options.changedFiles.length)) throw Error('Preparation must run its exact fresh mandatory stages');
+const plan = shard ? shard.plan : planValidation(catalog, {...options, filter});
 if (inspect) {
  const output = JSON.stringify({...plan, stages: plan.stages.map(s => ({...s, status: 'not-run'}))}, null, 2) + '\n';
  // Pipes flush asynchronously. Do not truncate a large plan by exiting while
@@ -48,6 +64,8 @@ if (!Number.isInteger(jobs) || jobs < 1 || jobs > 4) throw Error('NATIVE_TEST_JO
 const inheritedOverrides = inheritedTestOverrides(root);
 const externalLoaders = ['NODE_PATH', 'NODE_OPTIONS', 'PYTHONPATH', 'PYTHONHOME', 'LD_PRELOAD', 'LD_LIBRARY_PATH'].filter(key => process.env[key]);
 if (resume && [...inheritedOverrides, ...externalLoaders].length) throw Error(`Resume refused with external fixture/output/module overrides: ${[...inheritedOverrides, ...externalLoaders].join(', ')}`);
+if ((shard || options.profile === 'prepare') && [...inheritedOverrides, ...externalLoaders].length) throw Error(`Prepared validation refused with external input/output/module overrides: ${[...inheritedOverrides, ...externalLoaders].join(', ')}`);
+if (shard && !report) throw Error('A shard requires GODOT_TEST_REPORT for complete aggregation');
 if (inheritedOverrides.length && jobs > 1) {
  console.warn(`Using jobs=1 for unreviewed test fixture/output overrides: ${inheritedOverrides.join(', ')}`);
  jobs = 1;
@@ -63,9 +81,11 @@ let identity = null;
 let reportEnabled = !resume; // Refused resumes must not overwrite prior evidence.
 const meta = {schema: 2, startedAt: new Date().toISOString(), project, executable, jobs,
  profile: plan.profile, effectiveProfile: plan.effectiveProfile, partial: plan.partial, reasons: plan.reasons,
- identity: null, resumable: false, finalAcceptance: plan.finalAcceptance,
+ identity: null, resumable: false, inputChangedDuringRun: false, finalAcceptance: plan.finalAcceptance,
  gitHead: spawnSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).stdout?.trim(),
  gitTree: spawnSync('git', ['rev-parse', 'HEAD^{tree}'], {cwd: root, encoding: 'utf8'}).stdout?.trim()};
+if (shard) meta.shard = {index:shard.index,count:shard.count,planSha256:shard.shards.sha256,ownedIds:[...shard.owned],
+ run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,producerAttempt:transport['--producer-attempt'],receiptSha:transport['--receipt-sha']};
 function atomicWrite(file, value) {
  fs.mkdirSync(path.dirname(file), {recursive: true});
  const temporary = `${file}.${process.pid}.tmp`;
@@ -73,7 +93,7 @@ function atomicWrite(file, value) {
 }
 function writeReport() {
  if (!report || !reportEnabled) return;
- meta.summary = Object.fromEntries(['not-run', 'pass', 'failed', 'blocked', 'deduplicated'].map(status => [status, rows.filter(r => r.result === status).length]));
+ meta.summary = Object.fromEntries(['not-run', 'pass', 'prepared', 'failed', 'blocked', 'deduplicated'].map(status => [status, rows.filter(r => r.result === status).length]));
  meta.selected = plan.stages.length; meta.total = rows.length;
  // Metadata first: a crash cannot associate new rows with a stale identity.
  atomicWrite(`${report}.meta.json`, meta); atomicWrite(report, rows);
@@ -84,7 +104,7 @@ const releaseLock = acquireNativeWorkspaceLock(project, 'native validation');
 async function run(stage) {
  const row = byId.get(stage.id);
  for (const dependency of filter ? [] : stage.dependencies) {
-  if (byId.get(dependency)?.result !== 'pass') {blocked(stage, `Dependency did not pass: ${dependency}`); return false;}
+  if (!['pass', ...(shard ? ['prepared'] : [])].includes(byId.get(dependency)?.result)) {blocked(stage, `Dependency did not pass: ${dependency}`); return false;}
  }
  const isPreflight = PREFLIGHT.includes(stage.id);
  const fixtureBefore = fixtureIdentity(root, stage.id);
@@ -131,7 +151,21 @@ async function run(stage) {
 }
 try {
  writeReport();
- const preflight = plan.stages.filter(s => PREFLIGHT.includes(s.id));
+ let prepared = null;
+ if (shard) {
+  prepared = verifyBundle({root,bundleDir:transport['--prepared-bundle'],receiptSha:transport['--receipt-sha'],producerAttempt:transport['--producer-attempt'],
+   expected:{commit:process.env.GITHUB_SHA,tree:meta.gitTree,head:transport['--head'],base:transport['--base'] || null,
+    event:process.env.GITHUB_EVENT_NAME,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT}});
+  for (const row of prepared.preparationRows.filter(r => r.selected)) Object.assign(byId.get(row.id), {
+   result:'prepared',failed:false,status:0,preparedReceiptSha:prepared.receiptSha,
+   reason:'Successful same-run producer evidence, not a fresh consumer execution.'});
+  meta.preparedFixtureSha256 = fixtureIdentity(root);
+  if (meta.preparedFixtureSha256 !== prepared.preparedFixtureSha256) throw Error('Consumer fixture outputs differ from the sealed producer bytes');
+  meta.shard.preparationInputSha256 = prepared.preparationMeta.identity.input.sha256;
+ }
+ // Imports/producer results transfer only through the verified immutable bundle.
+ // Save isolation is cheap and environment-specific, so rerun it on every host.
+ const preflight = shard ? [catalog.find(s => s.id === 'Native save isolation')] : plan.stages.filter(s => PREFLIGHT.includes(s.id));
  let ready = true;
  for (const stage of preflight) {
   if (!ready) {blocked(stage, 'Mandatory preflight failed'); continue;}
@@ -145,6 +179,7 @@ try {
   const extraExcludes = report && !path.relative(root, report).startsWith('..') ? [path.relative(root, report), path.relative(root, `${report}.meta.json`)] : [];
   if (report || resume) {
    identity = validationIdentity(root, {executable, jobs, extraExcludes});
+   if (prepared && identity.input.sha256 !== prepared.preparationMeta.identity.input.sha256) throw Error('Consumer source/dependency/import bytes differ from prepared inputs');
    if (resume && previous.identity.sha256 !== identity.sha256) throw Error('Resume refused: exact source/dependency/import/tool/environment identity changed; start a new report');
    reportEnabled = true; meta.identity = identity; meta.resumable = !inheritedOverrides.length && !externalLoaders.length; writeReport();
   }
@@ -163,6 +198,7 @@ try {
   if (identity) {
    const after = validationIdentity(root, {executable, jobs, extraExcludes});
    if (after.sha256 !== identity.sha256) {meta.resumable = false; meta.inputChangedDuringRun = true; process.exitCode = 1; console.error('Validation inputs changed during execution; evidence is not an exact-content completion and cannot resume.');}
+   if (shard && fixtureIdentity(root) !== meta.preparedFixtureSha256) {meta.resumable = false; meta.inputChangedDuringRun = true; process.exitCode = 1; console.error('Prepared fixture outputs changed during reader shard execution.');}
   }
  }
  if (rows.some(row => row.selected && ['failed', 'blocked', 'not-run'].includes(row.result))) process.exitCode = 1;

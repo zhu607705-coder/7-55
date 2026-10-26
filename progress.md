@@ -1,3 +1,12 @@
+## 2026-10-26 C2 分片就绪修正
+
+- bd0dfab的retina C2失败artifact显示必需内容仅17,836,924/105,841,080 bytes，15包requested、实际scene为空，测试点击被加载遮罩正确拦截。驱动先按既有bootTimeout等待内容与真实寝室恢复，再唯一点击；20s交互可见断言保留。相关Node三文件100/0，真实新导出待验收，不当作已修复运行时bug。
+
+## 2026-10-26 最新 PR174 分片接入
+
+- 保存论坛与横屏检查点158c6df后，fetch到bd0dfab并纳入其27文件完整CI分片增量。逐项解决4处重叠，保留真实连续定位/旋转、stdout flush、网络解除确认和严格完整汇总。10个Node合同共277项最终通过；bundle首次mac路径guard失败与物理TMPDIR正控分开保留。
+- 按新文本来源重建normalizer、library与chapter3故事派生物，三个--check通过；未更改历史不可变票务存档。最终导出/CI/合并/Pages仍待精确集成提交。
+
 ## 2026-10-26 文案局部复核
 
 - 5 个既有论坛/交易测试共 990 checks / 0 failures，含 BD、资料上传布局、目击帖顺序、6 元手柄交易、旧默认帖迁移。新 runner 执行完整准备闭包后 10 stages pass / 522 not-run，明确 partial；全脚本 974 份解析通过。Web quick 5/5，171 叶显示修订和中文/有声合同通过。
@@ -5577,3 +5586,19 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - PR174 head502e4b7 passed all four workflows, including native529 passes plus one audited deduplicated entry, exact-content completion, GPU/exported-PCK gates and real Web ordinary/streaming/profile acceptance.
 - Final report exposed a conservative fallback: inherited CHROME_BIN and USER forced jobs1. Neither controls a native catalog stage (separate Web browser executable and deployment host metadata only). Exempt exactly those two names while retaining environment identity and real external-fixture denial; no coverage or gate removed.
 - Preserve the actual hosted serial baseline: run40204036543 wall3209.184s, observed peak1. Correction contracts17/17 and pinned4.7.1 two-GD smoke under those hosted defaults pass, with1199ms overlap/jobs2. Focused smoke is2pass/528not-run, not full acceptance. Corrected hosted parallel run remains pending; no measured speedup claimed.
+
+
+## 2026-10-26 — bounded full-validation sharding candidate
+
+- Preserved all 530 native stage descriptors: nine fresh preparation stages seal exact source/import/producer bytes; six isolated two-worker jobs own 521 entries exactly once. GPU/exported-PCK checks remain mandatory, and the original native required-check name now gates a fail-closed full aggregate. Same-run failed-job retries cannot mix producer receipts or fall back from a failed latest shard attempt.
+- Web retains every ordinary/streaming/world/phone/library scenario. Thirteen bounded artifact consumers split only independent profile/fixture boundaries; controller fixture producers overlap only after import/export. Complete receipts and all seventeen reports remain mandatory. HTTPS-first signed APT avoids the measured failing transport route without relaxing authenticity.
+- Independent static review found no remaining correctness blocker; complete native catalog comparison shows zero changed/removed stage descriptors. Native contracts cover partition/producer closure/content transport/aggregate negatives/workflow gates. Web workflow and runner contracts plus 186 media tests pass. Real new-pipeline integration and exact-head hosted timing are not yet reported as complete.
+- Measured prior head33cc499: native runner28m07.530s, complete native workflow31m23s, Godot Web17m14s. Predicted native shard duration~265s is not a sub-ten-minute claim. Web input transfer rises~4.42→9.57GB/run; bundle stored once for one day. Standard runners on this public repo require no purchased runner; account storage allowance is unknown. Details and bounded budgets: godot_native/docs/NATIVE_VALIDATION_STAGES.md.
+
+- Follow-on bounded transport optimization retains the complete native logical inventory but references exact tracked/source-synced bytes in each same-source checkout; about1.115GB per consumer need not be resent. Source commit/manifest/path/hash/mode checks and private reconstruction remain mandatory. First immutable local preparation (c4080a4) passed9/9 with no input drift; it is partial preparation evidence, not full validation or hosted timing.
+
+
+- Real sparse transport integration at local1af555a/tree f7c3b4bf passed fresh preparation9/9 and all92 owned shard5 stages plus host save isolation;93freshpass+8prepared+429notrun, no final source/import/fixture drift. Full logical inputs1.891GB reconstructed from actual779.886MB level0 ZIP plus1.115GB exact checkout references. Seal43.014s, restore27.018s on this cloud host; no hosted speedup or full-under10 claim.
+- Added an empty, explicit future-reader registry with execution/input/sandbox-output/dependency/resource/timing contracts. New readers stay in bounded dependency-aware workers and co-located shards; unsupported shared writers/weights fail clearly. Declared doc/test inputs and affected transitive consumers force conservative full-parallel selection before shortcuts.71 focused contracts retain all530 legacy descriptors and the partition hash. Main recheckedabd8b00; PR175 remains separate with overlapping phone-driver updates requiring later coordination, not silently imported or repaired here.
+
+- Final additive scheduler smoke at local94b4850 passed two real pinned4.7.1 model stages with1,687ms overlap/jobs2 and unchanged inputs (2pass/528notrun, not full). A historical530-ID fixture now scopes golden preservation independently of live catalog size; regression proves an auto-discovered531st GD joins exactlyone of6shards without rewriting that fixture.72 focused tests pass. Remaining last delta is tests/documentation only; no unrelated PR175 content imported.

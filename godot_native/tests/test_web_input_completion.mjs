@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { test } from 'node:test';
-import { waitForBrightnessControl } from '../tools/web_phone_recovery.mjs';
+import { waitForBrightnessControl, waitForC2DormContent } from '../tools/web_phone_recovery.mjs';
 
 const runner = await readFile(new URL('../tools/verify_web_export.mjs', import.meta.url), 'utf8');
 const phone = await readFile(new URL('../tools/web_phone_recovery.mjs', import.meta.url), 'utf8');
@@ -56,6 +56,41 @@ for (const [name, edit] of [
     assert.equal(f.clock, 20000); assert.equal(f.reads, 200);
   });
 }
+function phoneContentSample(edit = () => {}) {
+  const value = { documentHidden: false, content: { blocking: false }, state: { native: { chapter: 2, scene: 'dorm_hub' } }, world: { visible: true, scene_id: 'dorm_hub' } };
+  edit(value); return value;
+}
+function phoneContentFixture(sequence) {
+  const f = brightnessFixture(sequence);
+  f.h.bootTimeout = 180000;
+  return f;
+}
+test('C2 import waits for required packs and actual dorm restoration before its unique phone action', async () => {
+  const loading = phoneContentSample(s => { s.content.blocking = true; s.world.scene_id = ''; });
+  const f = phoneContentFixture([loading, phoneContentSample(s => { s.world.scene_id = ''; }), phoneContentSample()]);
+  const ready = await waitForC2DormContent(f.h);
+  assert.equal(ready.world.scene_id, 'dorm_hub'); assert.equal(f.reads, 3); assert.equal(f.clock, 200);
+  const surface = between(phone, '  async function ensurePhoneSurface() {', '  async function closeInventory() {');
+  assert.ok(surface.indexOf('await waitForC2DormContent(h)') < surface.indexOf("await click('WorldPhoneButton')"));
+  assert.equal((surface.match(/await click\('WorldPhoneButton'\)/g) || []).length, 1);
+  assert.match(surface, /!current\.world\.visible && current\.visibleControls\.some\(c => c\.name === 'ControlCenterTrigger'\)/);
+  assert.match(surface, /'ordinary world-to-phone navigation exposes the phone surface'\);/);
+  assert.match(runner, /phoneRecoveryCase\(\{ id, touch, fixtureDir, group: active\.phoneGroup, bootTimeout,/);
+});
+for (const [name, edit] of [
+  ['loading cover', s => { s.content.blocking = true; }],
+  ['missing content evidence', s => { delete s.content; }],
+  ['unrestored world', s => { s.world.scene_id = ''; }],
+  ['wrong actual scene', s => { s.world.scene_id = 'campus_bootstrap'; }],
+  ['wrong imported chapter', s => { s.state.native.chapter = 1; }],
+  ['wrong imported scene', s => { s.state.native.scene = 'campus_bootstrap'; }],
+  ['hidden document', s => { s.documentHidden = true; }],
+]) test(`C2 content ${name} cannot release input and retains the original 180-second content budget`, async () => {
+  const f = phoneContentFixture([phoneContentSample(edit)]);
+  await assert.rejects(waitForC2DormContent(f.h), /Timeout: required imported C2 content/);
+  assert.equal(f.clock, 180000); assert.equal(f.reads, 1800);
+});
+
 function worldSample(frame, edit = () => {}) {
   const value = { sampleFrame: frame, state: { native: { chapter: 2, scene: 'dorm_hub', dorm_props: { lamp_03_on: true } }, actOne: { phase: 'movement_ready' }, items: { campusCard: true }, wallet: { balance: 6 } }, world: { scene_id: 'dorm_hub', visible: true, player: { x: 100, y: 200 }, touch_axis: { x: 0, y: 0 }, input: { owners: [], mouseOwned: false, inventoryOwned: false, dormPropActions: 1 } } };
   edit(value); return value;

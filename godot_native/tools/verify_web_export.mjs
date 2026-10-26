@@ -8,6 +8,7 @@ import { mkdir, mkdtemp, readFile, readdir, writeFile, rm, open } from 'node:fs/
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { phoneRecoveryCase } from './web_phone_recovery.mjs';
+import { phoneGroups, assertPhoneCoverage } from './web_phone_shards.mjs';
 import { phoneNavigationCase } from './web_phone_navigation.mjs';
 
 const args = process.argv.slice(2);
@@ -21,6 +22,9 @@ const c1Fixture = option('c1-fixture', process.env.GODOT_WEB_C1_FIXTURE || (fixt
 const legacySave = option('legacy-save', process.env.GODOT_WEB_LEGACY_SAVE);
 const only = option('only', 'all');
 const scenarios = option('scenarios', 'all');
+const phoneGroup = option('phone-group', 'all');
+phoneGroups(phoneGroup);
+if (phoneGroup !== 'all' && scenarios !== 'phone-recovery') throw Error('--phone-group requires phone-recovery');
 if (!['all', 'bike', 'media', 'durability', 'durability-switch', 'streaming', 'mobile-world', 'phone-recovery', 'phone-navigation', 'corners', 'checkin', 'words', 'library', 'boot-font-failure', 'resource-loading'].includes(scenarios)) throw new Error(`Unknown scenario: ${scenarios}`);
 const importSettleMs = Number(option('import-settle-ms', 1600));
 const bootTimeout = Number(option('boot-timeout', 360000));
@@ -53,7 +57,7 @@ if (args.includes('--self-test-paths')) {
 }
 const interval = ms => new Promise(resolve => setTimeout(resolve, ms));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
-const report = { schema: '755-godot-web-acceptance-v1', startedAt: new Date().toISOString(), url, scenarios,
+const report = { schema: '755-godot-web-acceptance-v1', startedAt: new Date().toISOString(), url, scenarios, phoneGroup,
   passed: false, checks: [], cases: [], network: [], errors: [], limitations: [
     'Automated browser input and actual Godot clocks; this does not prove human audio audibility or a fresh manual four-chapter campaign.',
     'Chapter saves must be ordinary validated portable saves earned by a recorded controller campaign. Import is performed through the shipped file picker.',
@@ -74,6 +78,9 @@ if (scenarios === 'phone-navigation') {
 if (scenarios === 'phone-recovery') {
   const dependency = await readFile(new URL('./web_phone_recovery.mjs', import.meta.url));
   report.phoneRecoveryRunnerSha256 = hash(dependency);
+  const shardDependency = await readFile(new URL('./web_phone_shards.mjs', import.meta.url));
+  report.phoneShardRunnerSha256 = hash(shardDependency);
+  await writeFile(path.join(output, 'phone-shard-runner.mjs'), shardDependency);
   await writeFile(path.join(output, 'phone-recovery-runner.mjs'), dependency);
 }
 function check(ok, label, details) { const row = { ok: !!ok, label, ...(details === undefined ? {} : { details }) }; report.checks.push(row); if (!ok) throw new Error(label); }
@@ -1742,7 +1749,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
   const temp = await mkdtemp(path.join(tmpdir(), '755-godot-web-browser-')); const profile = path.join(temp, 'profile'); const errors = []; const network = new Map(); const responses = new Map();
   const lifecycle = createBrowserLifecycle(temp); let stderr = '';
   const stderrPath = path.join(output, `${id}-browser-stderr.log`);
-  active = { id, width, height, touch, dpr, imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], deferredResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') };
+  active = { id, width, height, touch, dpr, phoneGroup: report.phoneGroup ?? 'all', imports: [], screenshots: [], mediaObservations: [], requests: [], requestsById: new Map(), bootResponses: [], deferredResponses: [], bootBodyJobs: [], controlledBlockedUrls: new Set(), downloadDir: path.join(temp, 'downloads') };
   let result, primaryError;
   try {
     // Preserve stderr in full. Chromium helpers may inherit a pipe beyond the
@@ -1812,7 +1819,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     }
     result = await freshCase(['mobile-world', 'phone-recovery', 'phone-navigation', 'library', 'boot-font-failure'].includes(scenarios));
     if (scenarios === 'mobile-world') await mobileWorldCase();
-    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir,
+    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, group: active.phoneGroup, bootTimeout,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
       pointer: async (phase, point) => {
         if (touch) await active.cdp.send('Input.dispatchTouchEvent', {type: phase === 'start' ? 'touchStart' : phase === 'move' ? 'touchMove' : 'touchEnd', touchPoints: phase === 'end' ? [] : [{...point, id: 4}]});
@@ -1848,7 +1855,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
       if (scenarios === 'streaming') await streamingCase();
     } else if (touch && scenarios === 'all') await c1Case(false);
     if (scenarios === 'mobile-world') check(active.mobileWorld?.completed === true && active.mobileWorld.coverage.length > 0 && active.imports.some(item => item.filename === 'before_c2_dorm_exit.json'), `${id}: requested mobile-world scenario completed with actual inputs and earned file import`);
-    if (scenarios === 'phone-recovery') check(active.phoneRecovery?.completed === true && active.phoneRecovery.coverage.length === 9 && active.phoneRecovery.inputs.length > 0, `${id}: requested phone recovery flows completed with ordinary input`);
+    if (scenarios === 'phone-recovery') { assertPhoneCoverage(active.phoneRecovery, active.phoneGroup); check(true, `${id}: requested phone recovery flows completed with ordinary input`); }
     if (scenarios === 'phone-navigation') check(active.phoneNavigation?.completed === true && active.phoneNavigation.coverage.length === 4, `${id}: phone navigation and authentication passed with ordinary input`);
     if (scenarios === 'library') check(active.library?.completed === true, `${id}: requested Library continuity scenario completed`);
     const transportUrls = new Set(delivery.transport.map(asset => asset.url));

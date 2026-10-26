@@ -22,11 +22,11 @@
     },
     {
       "path": "src/data/chapter3-theater.content.json",
-      "sha256": "64b39d68be3aabc604a9eb32fa99f3362ae9e884fe23f6c45ff902ac09350a50"
+      "sha256": "56e049f439c02f64c51905d20b465f2edfc82774eee61d6f15e7a410d1cd2adc"
     },
     {
       "path": "src/data/chapter3-qizhen-lake.content.json",
-      "sha256": "820966de831d6129c40579115823887a3f86ce638d28ebe7cc06a5c72f80cbf7"
+      "sha256": "cd93706d5a1f8d3b67799d18841dc2aac2b4cb9d1df7d5fde2f8893ebf2594ec"
     },
     {
       "path": "src/data/maps/zijingang-campus-loop-runtime.json",

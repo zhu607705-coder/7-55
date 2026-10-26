@@ -1,6 +1,6 @@
-# 2026-10-26 统一交付候选
+# 2026-10-26 统一交付记录
 
-本记录供 PR [#175](https://github.com/zhu607705-coder/7-55/pull/175) 收口使用，尚未确认最终提交、完整 CI、主线合并或部署。当前已提交基准为 `3064f8c8839dad1c9d591ec3c04b8d5271941224`；PR #174 最新提交 `33cc4991b7d0ada3d65baaca146c62359f5fbf56` 正在本地合并，另有后续修复待提交。以下局部结果不能替代最终精确提交的发布验收。
+本记录保存 PR [#175](https://github.com/zhu607705-coder/7-55/pull/175) 最终发布前的源码检查点；随后到达的完整 CI、合并和部署结果以该 PR 的精确提交与工作流为准。当前已提交基准为 `3064f8c8839dad1c9d591ec3c04b8d5271941224`；PR #174 的 `33cc499` 已纳入检查点 `158c6df`，最新 `bd0dfab34128c18436224aa539817e4fe9be9cf2` 正在本地合并，另有后续修复待提交。以下局部结果不能替代最终精确提交的发布验收。
 
 ## 本轮范围
 
@@ -52,6 +52,20 @@ Web 只生产一份 sealed export/fixture，再由普通/streaming baseline、�
 - 新 runner 的 changed profile 选择 5 个既有论坛/交易阶段，并执行准备输入、存档隔离、导入、启动及全脚本解析闭包：10 stages pass、0 failed/blocked，522 not-run，明确为 partial。5 个论坛阶段合计 990 checks / 0 failures。
 - `validate:quick` 5/5；中文显示覆盖 171 叶与有声文本合同通过。首次执行因新媒体回执缺失被阻断，按新工具用现有 ffmpeg/ffprobe 完整转换两段视频后通过，原失败日志保留。
 - `test_cc98_gamepad_exchange.gd` 的完整正文断言改为比较当前批准源正文，交易金额/权限/视觉边界的原断言保留；不复制旧文案作为另一个文本权威。
+
+## 20261026 最新 CI 分片接入
+
+重新 fetch 发现 PR #174 又推进至 `bd0dfab`，本轮继续保留该提交祖先。其 27 文件增量把完整原生检查分为封存准备和 6 个双 worker shard，并严格汇总；新增 reader 自动进入依赖计划，未知输入保守执行全量。Web 13 个 consumer 覆盖 17 份报告，完整 sealed 产物和精确 source/receipt 身份不变；缺片、重复、旧 attempt、失败和取消均拒绝当作全绿。原生/GPU gate 与 Web gate 各自必须成功。
+
+- 4 处合并冲突逐项解决；保留本地 plan stdout flush、真实连续跑步 pointer、地图实际旋转和确认解除网络拦截的顺序。
+- c2 phone shard 使用连续轨迹，coverage 与对应测试同步；不恢复旧 Fix1–10 点击循环。实际慢项 phone job/step 使用 18/12 分钟，其他 world job 保留 12 分钟；Web 声明超时总上限为 230 runner-min，不是实测耗时或账单。
+- 10 个直接相关 Node 合同共 277 项最终通过。初次 bundle 55 项因 macOS `/var` 软链接触发既有 fail-closed guard；只为该专项指定仓库外物理 TMPDIR 后 86/0，其余 9 文件 191/0。原失败保留，未放松路径 guard。
+- 新源文案使三个派生输入陈旧：重建 normalizer、library story 与 chapter3 narrative fixture；三个原 `--check` 均通过。Normalizer 仅变化 4 个湖区论坛字符串与源哈希，未改存档规则。
+- 远端 `bd0dfab` 的独立基线：Native、retained Web 和 cross-PR 成功；Godot Web 的 retina c2 phone 失败，汇总正确拒绝发布。该结果不替代本轮集成提交的验收。
+
+## C2 独立分片的真实内容就绪
+
+失败 artifact 证明内容仍被必需加载遮罩覆盖：17,836,924 / 105,841,080 bytes，15 包 requested，readyFamilies 为空，实际 scene_id 为空。唯一一次手机按钮输入被遮罩正确拦截。驱动改为使用原 bootTimeout 等遮罩解除、第二章状态及实际寝室场景恢复后再唯一点击；原 20 秒手机可见断言保留，不重试点按、不写状态、不绕开内容门禁。3 个相关 Node 文件 100/0（与前述277有重叠，不累计）；新集成导出中的 retina C2 实际复核仍 pending。
 
 ## 发布状态与边界
 

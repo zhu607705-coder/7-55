@@ -69,7 +69,7 @@ CSS 候选将 canvas 固定于视口并以 CSS 保持全宽全高，避免 Godot
 
 ## 提交范围
 
-当前整合保留 PR #174 祖先，按用户整体合并授权纳入下面的 156 个去重路径。排除 node_modules 链接、忽略的 source 镜像/导出/缓存、外部 QA 与新公众号研究资料库。完成日期为 20261026，新收口记录见 [交付记录](INTEGRATION_RELEASE_20261026.md)。
+当前整合保留 PR #174 至 bd0dfab 的祖先，按用户整体合并授权纳入以下 174 个路径；排除 node_modules、导出/缓存、外部 QA 与独立公众号资料库。完成日期为20261026，发布检查点见[交付记录](INTEGRATION_RELEASE_20261026.md)。
 
 ```text
 .github/workflows/deploy-pages.yml
@@ -163,6 +163,9 @@ godot_native/tests/capture_north_independent_props.gd
 godot_native/tests/capture_north_palette_alpha.gd
 godot_native/tests/capture_north_wall_reveal.gd
 godot_native/tests/capture_virtual_run.gd
+godot_native/tests/fixtures/chapter3_narrative_source.json
+godot_native/tests/fixtures/library_story_source.json
+godot_native/tests/fixtures/native_validation_baseline_33cc499.json
 godot_native/tests/test_canteen_queue_floor_tap.gd
 godot_native/tests/test_canteen_waiting_portrait.gd
 godot_native/tests/test_cc98_gamepad_exchange.gd
@@ -176,7 +179,11 @@ godot_native/tests/test_mobile_direct_touch.gd
 godot_native/tests/test_mobile_floor_room204_drag.gd
 godot_native/tests/test_mobile_floor_route.gd
 godot_native/tests/test_native_learn_page.gd
+godot_native/tests/test_native_validation_bundle.mjs
+godot_native/tests/test_native_validation_registration.mjs
 godot_native/tests/test_native_validation_runner.mjs
+godot_native/tests/test_native_validation_shards.mjs
+godot_native/tests/test_native_validation_workflow.mjs
 godot_native/tests/test_north_generated_objects.gd
 godot_native/tests/test_north_independent_props.gd
 godot_native/tests/test_north_preview_gate.gd
@@ -198,24 +205,35 @@ godot_native/tests/test_virtual_run_authority.gd
 godot_native/tests/test_virtual_run_controls.gd
 godot_native/tests/test_virtual_run_main_lifecycle.gd
 godot_native/tests/test_web_acceptance_workflow.mjs
+godot_native/tests/test_web_controller_fixtures.mjs
 godot_native/tests/test_web_input_completion.mjs
+godot_native/tests/test_web_phone_shards.mjs
 godot_native/tests/test_web_streaming_fault_lifecycle.mjs
 godot_native/tests/test_wechat_reference_ui.gd
 godot_native/tests/test_wechat_social_pages.gd
 godot_native/tests/test_zh_text_display.gd
 godot_native/tests/verify_native_prepared_inputs.mjs
 godot_native/tools/convert_media.sh
+godot_native/tools/native_validation_aggregate.mjs
+godot_native/tools/native_validation_bundle.mjs
 godot_native/tools/native_validation_identity.mjs
 godot_native/tools/native_validation_lock.mjs
 godot_native/tools/native_validation_plan.mjs
+godot_native/tools/native_validation_registration.mjs
 godot_native/tools/native_validation_scheduler.mjs
+godot_native/tools/native_validation_shards.mjs
+godot_native/tools/native_validation_timings.json
+godot_native/tools/prepare_web_controller_fixtures.mjs
 godot_native/tools/sync_source.mjs
 godot_native/tools/validate_native.mjs
 godot_native/tools/verify_web_export.mjs
 godot_native/tools/web_phone_recovery.mjs
+godot_native/tools/web_phone_shards.mjs
 godot_native/web/index.html
 package.json
 progress.md
+scripts/ensure-ci-media-tools.mjs
+scripts/test-ci-media-tools.mjs
 scripts/verify-chapter4-temporal-maze.mjs
 src/data/ChapterFourAlumniHonorWall.ts
 src/data/act-one-bootstrap.content.json
