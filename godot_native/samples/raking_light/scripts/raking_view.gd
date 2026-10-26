@@ -122,6 +122,10 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_cancel"): _suspend()
 
 func _down(id: int, point: Vector2) -> void:
+	# Native controls are drawn above the draggable history surface. Keep input
+	# in that same order, including when history has been parked under the menu.
+	for button: Button in [menu_button,resume,retry,cancel]:
+		if button and button.is_visible_in_tree() and button.get_global_rect().has_point(point): return
 	var object := _target(point)
 	if model.start(id,object):
 		pointer_positions[id]=point
