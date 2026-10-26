@@ -65,6 +65,25 @@ func run() -> void:
 		check(feedback.cue.is_empty() and JSON.stringify(state_node.d)==before and action_count==accepted,"mouse skip is presentation-only")
 		state_node.act("c4_history");await frames(2)
 		check(feedback.cue.is_empty(),"repeated accepted observation does not replay feedback")
+	# Real renderer found the compact comparison overlapping the retained world
+	# subtitle; measure both existing surfaces, not just the new host's bounds.
+	for view: Vector2i in [Vector2i(1280,720),Vector2i(390,844),Vector2i(360,780),Vector2i(844,390)]:
+		await mount("comparison",view);await earn("comparison")
+		var cue_view: Control=shell.chapter4_time_feedback
+		var geometry: Dictionary=cue_view.comparison_layout()
+		var actual_rect: Rect2=cue_view.get_global_transform_with_canvas()*Rect2(geometry.origin,Vector2(geometry.width,geometry.height))
+		var hud: Dictionary=shell.world.hud_metrics(shell.world._hud_line())
+		var canvas: Transform2D=shell.world_view.get_global_transform_with_canvas()*Transform2D(0,shell.world_view.size/Vector2(shell.world_viewport.size),0,Vector2.ZERO)*shell.world.get_global_transform_with_canvas()
+		print("C4_VISUAL_BOUNDS ",view," comparison=",actual_rect," skip=",cue_view.skip_button.get_global_rect()," notice=",canvas*hud.body_rect," surface=",cue_view.surface_rect())
+		check(not shell.world.subtitle.is_empty(),"comparison retains the original earned-action notice "+str(view))
+		check(not actual_rect.intersects(canvas*hud.body_rect),"comparison including 7m55 delta does not overlap the real existing notice "+str(view))
+		check(not actual_rect.intersects(cue_view.skip_button.get_global_rect()),"comparison and skip touch target remain separate "+str(view))
+		check(cue_view.font.get_string_size("07:47:05",HORIZONTAL_ALIGNMENT_LEFT,-1,int(geometry.get("time_font",21))).x<float(geometry.strip_width)-8,"compact timestamp remains legible and unclipped "+str(view))
+	for view: Vector2i in [Vector2i(1280,720),Vector2i(390,844),Vector2i(844,390)]:
+		await mount("restoration",view);await earn("restoration")
+		var cue_view: Control=shell.chapter4_time_feedback
+		for slot: Dictionary in Fixture.Room.data().layout.slotTargets:
+			check(cue_view.surface_rect().has_point(cue_view._world_transform()*Fixture.Room.point(slot.center)),"actual completed 204 target is in the QA camera, not the east corridor: "+str(view)+" "+str(slot.slotId))
 	await mount("restoration")
 	await earn("restoration")
 	var feedback: Control=shell.chapter4_time_feedback

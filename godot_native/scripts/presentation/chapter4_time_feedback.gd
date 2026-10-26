@@ -164,22 +164,37 @@ func comparison_layout() -> Dictionary:
 	var area:=surface_rect();var width:=minf(338,area.size.x-24)
 	# Two small evidence strips, not a modal or a new task page. The ordinary
 	# 07:55:23 stale phone reading and six-second elevator proof are not changed.
+	var compact:=baseline_world_visible and area.size.y<280
+	# Portrait exploration retains its authored landscape viewport. Put the
+	# evidence pair beside (not beneath) skip, above the unchanged world HUD.
 	var origin:=Vector2(area.get_center().x-width*.5,area.position.y+48)
-	var stacked:=width<280
-	return {"origin":origin,"width":width,"strip_width":width if stacked else (width-12)*.5,"height":149 if stacked else 86,"stacked":stacked}
+	if compact:
+		width=maxf(1,skip_button.position.x-area.position.x-20)
+		origin=area.position+Vector2(12,8)
+	var stacked:=not compact and width<280
+	var label_font:=12 if compact else 14
+	var time_font:=16 if compact else 21
+	var delta_font:=14 if compact else 16
+	var label_y:=font.get_ascent(label_font) if compact else 17.0
+	var time_y:=label_y+font.get_descent(label_font)+font.get_ascent(time_font) if compact else 42.0
+	var strip_height:=time_y+font.get_descent(time_font) if compact else 53.0
+	var line_y:=strip_height+2 if compact else (127.0 if stacked else 64.0)
+	var delta_y:=line_y+font.get_ascent(delta_font) if compact else (146.0 if stacked else 83.0)
+	return {"origin":origin,"width":width,"strip_width":width if stacked else (width-12)*.5,"height":delta_y+font.get_descent(delta_font)+1,"stacked":stacked,"compact":compact,
+		"strip_height":strip_height,"label_y":label_y,"time_y":time_y,"label_font":label_font,"time_font":time_font,"delta_font":delta_font,"line_y":line_y,"delta_y":delta_y}
 
 func _draw_comparison(pose: Dictionary) -> void:
 	var geometry:=comparison_layout();var origin: Vector2=geometry.origin;var width: float=geometry.width;var strip: float=geometry.strip_width
 	var alpha: float=pose.alpha;var offset: float=pose.offset
 	for i in 2:
 		var p:=origin+(Vector2(0,i*63) if geometry.stacked else Vector2(i*(strip+12),0))+Vector2(offset if i==0 else -offset,0)
-		draw_rect(Rect2(p,Vector2(strip,53)),Color("17252d",.94*alpha))
-		draw_line(p+Vector2(0,53),p+Vector2(strip,53),Color("a8c8c6",alpha),2)
-		_text("本地回放" if i==0 else "教室记录",p+Vector2(strip*.5,17),14,Color("dce6dd",alpha),true)
-		_text("07:47:05" if i==0 else "07:55:00",p+Vector2(strip*.5,42),21,Color("f1dfaf",alpha),true)
-	var center:=origin+Vector2(width*.5,127 if geometry.stacked else 64)
+		draw_rect(Rect2(p,Vector2(strip,geometry.strip_height)),Color("17252d",.94*alpha))
+		draw_line(p+Vector2(0,geometry.strip_height),p+Vector2(strip,geometry.strip_height),Color("a8c8c6",alpha),2)
+		_text("本地回放" if i==0 else "教室记录",p+Vector2(strip*.5,geometry.label_y),geometry.label_font,Color("dce6dd",alpha),true)
+		_text("07:47:05" if i==0 else "07:55:00",p+Vector2(strip*.5,geometry.time_y),geometry.time_font,Color("f1dfaf",alpha),true)
+	var center:=origin+Vector2(width*.5,geometry.line_y)
 	draw_line(center+Vector2(-width*.36,0),center+Vector2(width*.36*float(pose.settle),0),Color("b6d7d1",alpha),1.5)
-	_text("相差 7分55秒",center+Vector2(0,19),16,Color("f0e9d7",alpha),true)
+	_text("相差 7分55秒",origin+Vector2(width*.5,geometry.delta_y),geometry.delta_font,Color("f0e9d7",alpha),true)
 
 func _world_transform() -> Transform2D:
 	var context: Dictionary=world._render_context()

@@ -5638,3 +5638,9 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 再fetch到175=`59b32c6553cd29994d61fe225af2375a3c09308d`，独立trial的Main补丁无冲突，451专项和其11项surface-order通过。另复现175原有startup ownership断言差异：archive film实际分到chapter4、旧测试期望core；移走本改动、还原175原Main仍同样失败，最新 main 与175文件树一致，重放后此项仍失败；未顺手改测试或分包规则。
 - 本轮本地release未重复：保留Web源码未改，此云先前单文件构建137为历史，不冒充本轮35/38。新Draft现有Web CI将对精确head执行release；完整原生与其余CI结果另记。没有改workflow/降低门禁。
 - GPU外观、实际截图/录像与物理手机仍未验：沿用已知显示/沙箱限制，不重试绕行、不使用用户电脑。真实Main QA/录制命令与内容/日志哈希见 `godot_native/docs/CHAPTER4_TIME_FEEDBACK_20261026.md` 及验收JSON。未ready、请求review、合并或部署。
+
+### 2026-10-26：真实录制发现的两处可见性修正
+
+- PR179首版40b2134的Web release、cross、完整native及Godot Web四项CI均成功；另建capture-only分支，没有重跑它们或改现有工作流。首轮录制因冷导入占用录制限时退出124，保留失败；拆分准备并以临时QA配置覆盖四个录制尺寸后，06e5d1d/run40266176335真实Mesa/llvmpipe录制两尺寸各6.83秒/30fps/无音轨。
+- 实际抽帧揭出竖屏比较差值撞到原通知、204源检查点站在东侧走廊。只将紧凑比较排到略过按钮左侧，按字体ascent/descent计算包络；只把QA站位改为真实204中间走道，不重排全局通知或改正式场景。新增实际HUD不相交和12目标可见性回归：修前38个目标失败，修后526/0。旧桌面两个有效片段已明确剪为两段预览交付，不冒充三段完成。
+- 独立复审通过；新版完整外观需锁定新游戏head再录，物理手机仍未验。新head必跑CI结果另记，不挪用首版全绿；无ready/review/merge/deploy。

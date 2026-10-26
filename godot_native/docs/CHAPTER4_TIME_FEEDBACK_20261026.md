@@ -6,7 +6,7 @@
 
 | 已发生的控制器事件 | 新增反馈 | 时长 |
 | --- | --- | --- |
-| 首次获得 `a1_time_route_compared` | 两条记录短移对齐：本地回放 **07:47:05** / 教室记录 **07:55:00**，标明相差 **7分55秒**；窄手机改为上下排列 | 1.1秒 |
+| 首次获得 `a1_time_route_compared` | 两条记录短移对齐：本地回放 **07:47:05** / 教室记录 **07:55:00**，标明相差 **7分55秒**；窄手机改为上下排列；竖屏世界的横向视口则放在略过按钮左侧 | 1.1秒 |
 | 原900ms投影证明通过，首次获得 `room204_projection_completed` | 复用204源残影与当前已完成桌椅的实际槽位，短暂贴合、淡去 | 1.2秒 |
 | `c4_install_minute` 获准并进入 `morning_checkin` | 在原钟面轴心把分针从54分扣到55分，再出现手机07:55同步符号 | 1.1秒 |
 
@@ -50,7 +50,7 @@ GODOT_BIN=/path/to/Godot-4.7.1 node godot_native/tools/run_chapter4_time_feedbac
 
 - 新专项：实际Main树、三种真实Window尺寸1280×720/390×844/844×390、窄手机字宽、SubViewport映射、鼠标/键盘/触摸略过、后续Space、重复/取消/重载/新游戏/同帧转场等。
 - 保留900ms投影、钟面交互、卡/纸独立接受、收尾存档与实际Main设备输入回归。专项数字和最终文件/日志哈希见同目录验收收据。
-- **云端GPU外观验收未完成。** 先前显示Unix socket/沙箱启动受限，本轮没有绕过或重试该限制，没有使用用户电脑，没有生成虚假的截图或视频。Headless几何/行为通过不等于材质、构图、光影或物理手机验收。
+- **新版完整外观验收仍待重录。** 本机显示Unix socket/沙箱限制未绕过、未重试，也未使用用户电脑。后来在仓库既有受支持 GitHub-hosted Mesa/llvmpipe 路线上录到真实引擎影片（[run40266176335](https://github.com/zhu607705-coder/7-55/actions/runs/40266176335)，游戏head40b2134）：桌面核对与分针同步可见；竖屏差值与原通知相交，204 QA机位站在了东侧走廊。本次仅修反馈紧凑排布与QA检查点机位，并补真实HUD包络和12槽位可见性测试；原通知、正式镜头与地图不改。旧视频不代表本修订已验收，Headless通过也不等于物理手机验收。
 - 最新main与PR175兼容试验、远端精确head的CI状态在本PR说明单独记录；未合并、部署或请求自动代码审查。
 
 实现参考了仓库指定的 [Godot动画技能](https://github.com/gamedev-skills/awesome-gamedev-agent-skills/blob/38a4c2500eeb5ff9ac084336b8f66108069d2f8d/skills/godot/godot-animation/SKILL.md)；保留4.7.1与GL Compatibility，不增加引擎或第三方依赖。
