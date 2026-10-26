@@ -8,6 +8,7 @@ import path from 'node:path';
 import {createNativeTestSandbox} from '../godot_native/tools/native_test_sandbox.mjs';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
+import {collectGodotProjectNamespaces,isExistingLocalGodotResource} from './godot-project-namespaces.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'godot_native/docs/PR_INTEGRATION_SOURCES_20261018.json'),'utf8'));
 const report={kind:'cross-pr-source-and-runtime-compatibility',base:manifest.base,checks:[],runs:[],notManualPlaythrough:true,physicalMobileTest:false};
@@ -35,7 +36,10 @@ const sourceCheck=spawnSync(process.execPath,[path.join(root,'godot_native/tests
 check(sourceCheck.status===0,'native rescue adapter provenance and adapted-source hashes');
 report.sourceCheckOutput=(sourceCheck.stdout||'')+(sourceCheck.stderr||'');
 const projectRoots=[...new Set(manifest.sources.map(s=>s.project_root))];
-function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.name==='.godot'?[]:e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
+const namespaceRegression=spawnSync(process.execPath,[path.join(root,'scripts/test-godot-project-namespaces.mjs')],{cwd:root,encoding:'utf8'});
+check(namespaceRegression.status===0,'nested project namespace regression including missing-child negative fixture');
+report.namespaceRegressionOutput=(namespaceRegression.stdout||'')+(namespaceRegression.stderr||'');
+const namespaces=collectGodotProjectNamespaces(projectRoots.map(relative=>path.join(root,relative)));
 // PR #118 deliberately permits one unauthored idle asset. Require its exact
 // guarded load and the real side-art mirror; all other resources stay required.
 const optionalLeftIdle='res://assets/rpg/player/player_left_idle.png';
@@ -51,21 +55,20 @@ function hasGuardedLeftIdleFallback(text,project){
   &&/if direction=="side" and player_side_idle!=null:\s*texture=player_side_idle/.test(text)
   &&/return \{[^\n]*"flip_h":flip/.test(text);
 }
-for(const relative of projectRoots){
- const project=path.join(root,relative),uids=new Map();
- for(const p of walk(project)){
+for(const [project,files] of namespaces){
+ const relative=path.relative(root,project).split(path.sep).join('/'),uids=new Map();
+ for(const p of files){
   if(p.endsWith('.uid')){const id=fs.readFileSync(p,'utf8').trim();check(!uids.has(id),`${relative}: unique UID ${path.relative(project,p)}`);uids.set(id,p);}
   if(!/\.(gd|tscn|tres)$/.test(p)||/(?:^|\/)(?:tests|tools)\//.test(path.relative(project,p)))continue;
   const text=fs.readFileSync(p,'utf8');
   const references=[...text.matchAll(/(?:preload|load|ResourceLoader\.(?:load|exists))\(\s*["'](res:\/\/[^"']+)["']/g),...text.matchAll(/\bpath="(res:\/\/[^"]+)"/g)];
   for(const m of references){
    if(m[1].includes('%')||!path.extname(m[1]))continue;
-   const target=path.resolve(project,m[1].slice(6));
    const owner=path.relative(project,p);
    if(relative==='godot_native'&&owner==='scripts/world.gd'&&m[1]===optionalLeftIdle){
     check(hasGuardedLeftIdleFallback(text,project),`${relative}: optional left idle has exists guard and real mirrored side fallback`);
    }else{
-    check(target.startsWith(project+path.sep)&&fs.existsSync(target),`${relative}: local resource ${m[1]} from ${owner}`);
+    check(isExistingLocalGodotResource(project,m[1]),`${relative}: local resource ${m[1]} from ${owner}`);
    }
   }
  }
