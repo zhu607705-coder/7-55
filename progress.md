@@ -5629,3 +5629,12 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 ## 2026-10-26 final modal fixture synchronization
 
 - Exact 14c Web aggregation passed all13 logical consumers /17 reports; PR deploy correctly skipped. Native seven shards, graphics and preparation passed; one obsolete canteen fixture still required modal.z_index==100. The existing assertion now checks ordering above scene/narrative/phone glass, preserving all original lifecycle and progression checks; isolated11/0. A bounded complete test search found no other affected modal constant. This is fixture maintenance, not a newly found product defect or adversarial reward. Runtime remains byte-for-byte unchanged by this last fix.
+
+## 2026-10-26 Chapter4 三处收尾反馈动画（独立于 PR176）
+
+- 初建于 main `abd8b0028`，发布前再 fetch 并重放到已合入 PR175 的最新 main `f18cee570f3684e7cd87b6c0f0844f805f3d88c4`；分支 `dot/chapter4-time-feedback-20261026`。Main 仅8行懒挂载/退出接入，只读观察新获得的时间核对、204投影完成、最后一分钟安装事实；分别1.1/1.2/1.1秒。复用原钟面与204素材；07:47:05和07:55:00相差475秒，未混同电梯六秒、开场未更新的07:55:23或3F参照房。原900ms证明、卡/纸独立交付、5800/3600ms楼外收尾不变。
+- 正式界面没有新增控制面板或按钮排；仅无底色的轻量略过入口。键鼠触略过只取消视觉，不写事实；不抢焦点/不拦移动，取消后真实Space仍路由。覆盖减弱动态静态结果、重载字典身份、同帧切页、新小游戏/弹窗、零面积、跨SubViewport映射与窄手机字宽。独立审查所提问题均已修复。
+- 最新 main 上官方4.7.1：新增451/451，原10项相关回归全过（含979脚本解析及175的surface-order），Web quick5/5，2966静态检查通过。旧基线68项Web分包检查曾通过；最新基线失败另列，不算本分支全绿。QA场景实跑headless三段自动播放；PNG/movie预检在headless非零拒绝，不生成视觉证明。
+- 再fetch到175=`59b32c6553cd29994d61fe225af2375a3c09308d`，独立trial的Main补丁无冲突，451专项和其11项surface-order通过。另复现175原有startup ownership断言差异：archive film实际分到chapter4、旧测试期望core；移走本改动、还原175原Main仍同样失败，最新 main 与175文件树一致，重放后此项仍失败；未顺手改测试或分包规则。
+- 本轮本地release未重复：保留Web源码未改，此云先前单文件构建137为历史，不冒充本轮35/38。新Draft现有Web CI将对精确head执行release；完整原生与其余CI结果另记。没有改workflow/降低门禁。
+- GPU外观、实际截图/录像与物理手机仍未验：沿用已知显示/沙箱限制，不重试绕行、不使用用户电脑。真实Main QA/录制命令与内容/日志哈希见 `godot_native/docs/CHAPTER4_TIME_FEEDBACK_20261026.md` 及验收JSON。未ready、请求review、合并或部署。

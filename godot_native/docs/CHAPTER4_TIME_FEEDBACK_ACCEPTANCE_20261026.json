@@ -1,0 +1,155 @@
+{
+  "kind": "production-chapter4-earned-fact-feedback",
+  "recorded_at_utc": "2026-10-26T03:33:52.223305+00:00",
+  "base_main": "f18cee570f3684e7cd87b6c0f0844f805f3d88c4",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "renderer_contract": "GL Compatibility",
+  "visual_acceptance": false,
+  "physical_mobile_acceptance": false,
+  "new_checks": 451,
+  "original_regressions": [
+    {
+      "name": "test_all_scripts_parse.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 27713,
+      "error": null
+    },
+    {
+      "name": "test_chapter4.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 2066,
+      "error": null
+    },
+    {
+      "name": "test_projection_handoff_source.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 2240,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_clock_handoff.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 1900,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_closure_admission.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 10770,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_closure_save_mode.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 2216,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_checkin_drop.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 7090,
+      "error": null
+    },
+    {
+      "name": "test_room204_residual_target.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 3431,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_device_main.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 16154,
+      "error": null
+    },
+    {
+      "name": "test_canteen_native_layers.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 8644,
+      "error": null
+    }
+  ],
+  "quick": {
+    "validators": 5,
+    "status": "pass"
+  },
+  "static_cross_pr": {
+    "checks": 2966,
+    "failures": 0
+  },
+  "web_startup_ownership": {
+    "status": "baseline_failure_reproduced",
+    "actual": "chapter4_a3_archive_film_v01.png.import classified chapter4",
+    "old_assertion_expected": "core",
+    "same_on_unmodified_pr175": true,
+    "not_changed_in_this_patch": true
+  },
+  "preview_autoplay": {
+    "status": "pass",
+    "headless": true,
+    "not_visual_evidence": true
+  },
+  "recording_negative_checks": {
+    "png_headless_exit": 2,
+    "movie_preflight_headless_exit": 2,
+    "actual_images_or_video_created": false
+  },
+  "local_release": {
+    "status": "not_run",
+    "reason": "Unchanged retained Web source; historical same-cloud single-file build was killed137. Do not relabel historical35/38 as a run on this candidate. Existing exact-head remote Web CI must execute validate:release."
+  },
+  "compatibility": {
+    "pr175_head": "59b32c6553cd29994d61fe225af2375a3c09308d",
+    "main_patch_applies_cleanly": true,
+    "focused_checks": 451,
+    "focused_failures": 0,
+    "existing_modal_surface_order_checks": 11,
+    "existing_modal_surface_order_failures": 0,
+    "existing175_startup_ownership": "failed identically with and without all candidate changes: chapter4_a3_archive_film_v01.png.import classified chapter4, old assertion expects core; not changed here",
+    "sibling_branch_modified": false,
+    "rebased_onto_latest_main": true,
+    "latest_main_tree_equals_pr175": true,
+    "native_ci": "Current main includes sealed preparation and eight runtime shards; workflows unchanged by this patch"
+  },
+  "limitations": [
+    "GPU rendering not attempted after prior cloud display/socket/sandbox limitation; no user-computer access or workaround.",
+    "Headless layout/behavior and existing game GPU CI cannot prove this new animation appearance.",
+    "Full native suite and remote exact-head CI pending publication."
+  ],
+  "file_sha256": {
+    "godot_native/scripts/main.gd": "8a83388098d449849f325784fb344d8bf0788228f3438b42a66e2cfc2dbfa9f0",
+    "godot_native/scripts/presentation/chapter4_time_feedback.gd": "8457a8ae0a7ba5be6e77404096b166b87ecb9f58d0a5914d175c3ea2a4604151",
+    "godot_native/scripts/presentation/chapter4_time_feedback_model.gd": "1ad15a269081bdc921eacf4e1d4c8920cedf859e83a1a664397bab9bbc6eb950",
+    "godot_native/tests/chapter4_time_feedback_preview.gd": "f410041ec670470ff3f9850bfc8f532dbed5dfac207a0b838c3f640506f508d3",
+    "godot_native/tests/chapter4_time_feedback_preview.tscn": "4d981208c09962be146a24d400b5e4b47e1b9f8495117a2cd854d056aacc6daa",
+    "godot_native/tests/helpers/chapter4_time_feedback_fixture.gd": "4f0c6106aad201264ec41dcf0e55113c5b9e05d8cf14d797d34b807c18df073c",
+    "godot_native/tests/test_pr_integration_chapter4_time_feedback.gd": "aeb1707fffbed5f8e1bd164643e6c8c7110988abdb5f9071884ec03b60c77721",
+    "godot_native/tools/run_chapter4_time_feedback.mjs": "237c9fa527a70a50b4b96a6e88006cbf9b7b0be921a7ccad74e7f2f485db4c7e"
+  },
+  "log_sha256": {
+    "rebased-source-sync.log": "472afb6bdc41f6e55bafc36b302f80ee619da278bb7d1f026d55ee39b372a2ae",
+    "rebased-focused.log": "6c553768f3b8a5743fb813b0ba2b80699d8f4207753adf0f8c8b4e18adf60a5e",
+    "rebased-regressions.json": "f915960de301fe7aae8466f28332a4acc72314af58d90c11fac5ce66d9459443",
+    "rebased-web-quick.log": "2c1edd401670f24498d76d14560383fcbe6fce852455d77a14b5589f4ed22b89",
+    "rebased-integration-static.log": "fc81b31e79f7f21ca6ba7dd683d750378b33f256803f08e660e69d35d064ea5d",
+    "rebased-web-startup.log": "00c9a0a7dcf19b482765305209b1ce66dc6a93fa0c428fb3f1760a5a84c7f8a6",
+    "rebased-preview-autoplay.log": "1f4aefb7bdaa3aac5c3ea38b8d505eb0d072d02dfef33d1c42767bcd075bbb24",
+    "capture-rejection.log": "429323bae3ff770dc602b7a2bfac1e3f79c036cb60ef0c6d0bbf9d62968939a5",
+    "movie-rejection.log": "75d2b9ee0d7d2d23f945c0fd5bbc79d32996ecfd2201df233de365e5d884a178",
+    "compat175-final-focused.log": "048c981f93fe50df0d7af6aedf882cd9b08dfb01a0b0f10cf139d7677e5af2ae",
+    "compat175-surface-order.log": "fccf1f138f9870f2adf3d3906e970387eaa28b8a82d8d7c46355c7b1797a2130",
+    "compat175-baseline-web-startup.log": "0f8e87f8298be5b6a9800d16d29b48b1bd8c46d3e458c4e1c3291677236f7fe7",
+    "compat175-web-startup.log": "0f8e87f8298be5b6a9800d16d29b48b1bd8c46d3e458c4e1c3291677236f7fe7"
+  },
+  "initial_base_main": "abd8b0028e8443795518243da7930ee760bc92e9"
+}
