@@ -46,6 +46,24 @@ func run() -> void:
 	var unbounded: Image = await settled_image()
 	check(changes(b,unbounded,bounds).y > 100,"Negative control detects unbounded recorded child drawing")
 	view.stage.history_window.clip_contents = true
+	view.stage.history_window.visible=false
+	view.model.seek(2.5)
+	view.stage.folder_open_amount=0.56
+	view.stage.refresh()
+	var lit: Image=await settled_image()
+	view.stage.current_world.sun.light_energy=0.0
+	var unlit: Image=await settled_image()
+	check(changes(lit,unlit,Rect2(Vector2.ZERO,root.size)).x>1000,"Real light changes mesh illumination, not painted tint")
+	view.stage.current_world.sun.light_energy=1.05
+	view.stage.current_world.sun.shadow_enabled=false
+	var no_shadows: Image=await settled_image()
+	check(changes(lit,no_shadows,Rect2(Vector2.ZERO,root.size)).x>50,"Actual shadow-map occlusion changes rendered scene pixels")
+	view.stage.current_world.sun.shadow_enabled=true
+	var output: String=OS.get_environment("PAPER_RENDER_ARTIFACT_DIR")
+	if not output.is_empty():
+		lit.save_png(output.path_join("real3d-lit.png"))
+		unlit.save_png(output.path_join("real3d-light-off.png"))
+		no_shadows.save_png(output.path_join("real3d-shadows-off.png"))
 	view.queue_free(); await process_frame
 	print("PAPER_HISTORY_RENDER failures=",failures," renderer=",DisplayServer.get_name())
 	quit(1 if failures else 0)

@@ -41,7 +41,7 @@ function run(label, args) {
 }
 try {
   run('Fresh standalone import', ['--editor','--import','--quit']);
-  for (const test of ['test_paper_rewind.gd','test_paper_rewind_input.gd','test_paper_rewind_two_hands.gd']) run(test, ['--script',`res://tests/${test}`]);
+  for (const test of ['test_paper_rewind.gd','test_paper_rewind_input.gd','test_paper_rewind_two_hands.gd','test_paper_world_3d.gd']) run(test, ['--script',`res://tests/${test}`]);
   run('Ordinary standalone startup', ['--quit-after','10']);
   for (const {file,bytes} of sentinels) if (!fs.readFileSync(file).equals(bytes)) throw Error(`Formal save sentinel changed: ${path.basename(file)}`);
   report.formalSaveSentinelsUnchanged = true;

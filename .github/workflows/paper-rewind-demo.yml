@@ -27,6 +27,7 @@ jobs:
     env:
       GODOT_SILENCE_ROOT_WARNING: '1'
       LIBGL_ALWAYS_SOFTWARE: '1'
+      PAPER_RENDER_ARTIFACT_DIR: ${{ github.workspace }}/paper-rewind-demo
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Install pinned Godot and supported graphical recording tools
