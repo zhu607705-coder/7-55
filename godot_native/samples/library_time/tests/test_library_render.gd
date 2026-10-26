@@ -23,6 +23,7 @@ func run() -> void:
 	for index: int in range(2): past_before.append(view.history_viewports[index].get_texture().get_image())
 	for index: int in range(2):
 		var world=view.history_worlds[index]
+		# Remove every mesh of this physical occluder, including rim/handle/binder.
 		for blocker: MeshInstance3D in world.blockers: blocker.hide()
 		await settle()
 		var unblocked: Image=view.history_viewports[index].get_texture().get_image()

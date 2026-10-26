@@ -106,13 +106,13 @@ func _build_occluder() -> void:
 	if phase==0:
 		# A full opaque return tote blocks the lower symbol, not the upper symbol.
 		blockers.append(box("MorningReturnTote",Vector3(.98,1.20,1.03),Vector3(1.72,.88,.32),tote,null,true))
-		box("ToteRim",Vector3(.98,1.67,1.03),Vector3(1.78,.06,.38),material(Color("91a39b")),null,true)
-		for x: float in [.14,1.80]: box("ToteHandle",Vector3(x,1.78,1.04),Vector3(.06,.20,.06),tote,null,true)
+		blockers.append(box("ToteRim",Vector3(.98,1.67,1.03),Vector3(1.78,.06,.38),material(Color("91a39b")),null,true))
+		for x: float in [.14,1.80]: blockers.append(box("ToteHandle",Vector3(x,1.78,1.04),Vector3(.06,.20,.06),tote,null,true))
 	else:
 		# A hanging folio masks the upper symbol. Its bottom edge leaves the bars visible.
 		blockers.append(box("AfternoonHangingFolio",Vector3(.98,2.16,1.02),Vector3(1.72,.65,.08),paper,null,true))
-		box("FolioBinder",Vector3(.98,2.50,1.02),Vector3(1.78,.08,.12),material(Color("806b52")),null,true)
-		for x: float in [.05,1.75]: box("FolioClip",Vector3(x,2.59,1.02),Vector3(.05,.18,.10),material(Color("bdab76")),null,true)
+		blockers.append(box("FolioBinder",Vector3(.98,2.50,1.02),Vector3(1.78,.08,.12),material(Color("806b52")),null,true))
+		for x: float in [.05,1.75]: blockers.append(box("FolioClip",Vector3(x,2.59,1.02),Vector3(.05,.18,.10),material(Color("bdab76")),null,true))
 
 func configure_camera(viewport_size: Vector2) -> void:
 	if phase>=0:
