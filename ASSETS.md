@@ -1,5 +1,11 @@
 # 7:55 Release Assets
 
+## 20261026 — North photo-referenced object candidates
+
+- [11 independent transparent PNG candidates](godot_native/art_source/north_photo_objects_20261026/README.md), with [stable IDs, original hashes, photograph links/dates, unknown faces, alpha QA and advisory pivots/scales](godot_native/art_source/north_photo_objects_20261026/objects.json).
+- Source PNG bytes are unchanged. Public reference photographs, failed versions and private generation transcripts are not redistributed. These are AI-generated art interpretations, not current as-built furnishings or measured geometry.
+- Authoring-only under the existing `art_source/.gdignore`; no runtime placements, collision/navigation, production entry or export changes. No full game/visual acceptance is claimed. [Read-only validation](godot_native/tools/verify_north_photo_objects.mjs) and [negative regressions](godot_native/tools/test_north_photo_objects.mjs) are included.
+
 ## 20261024 — Theater chest and articulated fans
 
 - Scene-object follow-up adds original procedural programme pages, a side-wing reading stand, curtain rope and curtain-gap feedback in `theater_rehearsal_stage_objects.gd`; it reuses the existing performance and introduces no external art.
