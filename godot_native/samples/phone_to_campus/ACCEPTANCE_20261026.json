@@ -13,7 +13,10 @@
     "godot_native/samples/phone_to_campus/preview/timeline.gd": "44cf16981d13434f125dabdd164f5b06df269731424a91a15d1e6f07fbec7797",
     "godot_native/samples/phone_to_campus/preview/transition.gd": "e74b559efc337418327833bb683c301c7391f00e8d8179a3ce485290619a5b5d",
     "godot_native/samples/phone_to_campus/preview/transition.tscn": "d58d8d7f41e3a87c87aa4c3604235177fcc72b34149a155d86eed621763e3ef5",
-    "godot_native/samples/phone_to_campus/run.mjs": "6b3813ea3b2fb6cc19158bcd396037eeefb2d4845a77ec55cc20b3005b3d4c99"
+    "godot_native/samples/phone_to_campus/run.mjs": "8631ee62fdbbad8b2e142cfd2513771647e73ddfd48ac18c17a65197ad62b54d",
+    "scripts/godot-project-namespaces.mjs": "e7f7c48a24d5aa78e0eb6f8344ebf531027af8b3604b81d336543bb2c1dbfe3b",
+    "scripts/test-godot-project-namespaces.mjs": "dcc89d45483c222c15e8c757b05c49ba2a6d7d1d73d850b1075dc3b2ff805bea",
+    "scripts/verify-native-pr-integration.mjs": "18a67476b235f37863731104116b2666e1399629ea9e04a8dd5a51bdd2ac8403"
   },
   "checks": {
     "sample_import_parse": "passed",
@@ -61,7 +64,26 @@
     "full_native_suite": "not_run; sample-only change",
     "actual_gpu_capture": "blocked",
     "actual_browser_visual": "not_run",
-    "physical_mobile": "not_run"
+    "physical_mobile": "not_run",
+    "cross_pr_static": {
+      "checks": 2363,
+      "failures": 0,
+      "runtime_stages": 0
+    },
+    "namespace_helper_regression": {
+      "checks": 13,
+      "failures": 0,
+      "includes_missing_child_negative_fixture": true
+    },
+    "actual_validator_negative_fixture": "passed: a temporary missing child resource failed against child namespace, then clean scan passed",
+    "sample_rerun_after_namespace_fix": "1329/1329 passed",
+    "prior_head_remote_web_release": {
+      "head": "5c0d789ab1755e954fe26f8a661f80cd8887c963",
+      "run": 40250593697,
+      "passed": 38,
+      "total": 38,
+      "scope": "prior head only; subsequent scanner correction awaits its own CI"
+    }
   },
   "review_fixes": [
     "real Window resize rather than changing content_scale_size in QA",
@@ -85,7 +107,10 @@
     "tests.log": "184031cb68fb5ee96589150b4f993f7f80c21080c934be60913087b453e14cd7",
     "web-quick.log": "ee087cba90a8ea0ca1f162bed979a7f6e2d6265b041d279244463c3d329bd3ed",
     "web-release.log": "fe9603bb1bbe459e22c9f1b68f3b7f1679a037000bcd582a1183afab08afa578",
-    "capture-rejection.log": "d8daad6a32d3f9ea5327281e3a4753c5a7adb5cb1738410ad76efc7865b8de77"
+    "capture-rejection.log": "d8daad6a32d3f9ea5327281e3a4753c5a7adb5cb1738410ad76efc7865b8de77",
+    "integration-static.log": "45cabd8cbd11abf951aaa275f1771d2bdca704e78d221d4023d4abd66f160436",
+    "integration-negative.log": "045c2d4e938705057b786b03e609f34872043687ec2cae0a8cbb3054093337a7",
+    "tests-after-namespace-fix.log": "c48e807fb55e68d3c850efccda2d545e239c5c8900ac3a09fa9f3736d5278f2a"
   },
   "font": {
     "source": "godot_native/ui_assets/fonts/MorningNote-Regular.ttf",
@@ -93,5 +118,6 @@
     "license": "MORNING_NOTE_OFL.txt",
     "use": "byte-verified local preparation, not tracked duplicate"
   },
-  "publication": "separate Draft PR; no ready/reviewer request/merge/deploy; exact remote SHA and CI reported in PR after publication"
+  "publication": "separate Draft PR; no ready/reviewer request/merge/deploy; exact remote SHA and CI reported in PR after publication",
+  "ci_correction": "Initial cross-PR scanner ignored nested project roots and misresolved 7 preview resources against godot_native. It now scans every nested project in its own namespace, including .gdignore previews, verifies generated font source bytes, and runs this preview import + behavior test before all unchanged runtime suites."
 }

@@ -39,6 +39,12 @@ const projectRoots=[...new Set(manifest.sources.map(s=>s.project_root))];
 const namespaceRegression=spawnSync(process.execPath,[path.join(root,'scripts/test-godot-project-namespaces.mjs')],{cwd:root,encoding:'utf8'});
 check(namespaceRegression.status===0,'nested project namespace regression including missing-child negative fixture');
 report.namespaceRegressionOutput=(namespaceRegression.stdout||'')+(namespaceRegression.stderr||'');
+const phonePreviewRoot='godot_native/samples/phone_to_campus/preview';
+if(fs.existsSync(path.join(root,phonePreviewRoot,'project.godot'))){
+ const prepared=spawnSync(process.execPath,[path.join(root,'godot_native/samples/phone_to_campus/run.mjs'),'--prepare-only'],{cwd:root,encoding:'utf8'});
+ check(prepared.status===0,'phone-to-campus preview verifies original font bytes before namespace checks');
+ report.phonePreviewPreparation=(prepared.stdout||'')+(prepared.stderr||'');
+}
 const namespaces=collectGodotProjectNamespaces(projectRoots.map(relative=>path.join(root,relative)));
 // PR #118 deliberately permits one unauthored idle asset. Require its exact
 // guarded load and the real side-art mirror; all other resources stay required.
@@ -103,6 +109,10 @@ function run(relative,label,args){
  console.log(`${passed?'PASS':'FAIL'} ${relative}: ${label}`);if(!passed)console.error(output.slice(-16000));
 }
 if(mode!=='static'&&!failures){
+ if(namespaces.has(path.join(root,phonePreviewRoot))){
+  run(phonePreviewRoot,'fresh process preview import',['--editor','--import','--quit']);
+  run(phonePreviewRoot,'test_transition.gd',['--script','res://test_transition.gd']);
+ }
  for(const [relative,tests] of suites){
   if(mode==='examples'&&relative==='godot_native')continue;
   run(relative,'fresh process asset import',['--editor','--import','--quit']);

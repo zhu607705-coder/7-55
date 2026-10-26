@@ -81,6 +81,8 @@ GODOT_BIN=/path/to/Godot-4.7.1 node godot_native/samples/phone_to_campus/run.mjs
 本次 dot 云执行器没有可用图形显示：新建云显示的 Unix socket 失败，沙箱升级在执行前出现只读路径基础设施错误。没有使用用户电脑，也没有绕过限制。
 因此 **本次没有可交付的真实渲染截图/视频；光照、构图、材质仍待视觉验收**。
 
+跨 PR 验证器会自动发现嵌套 `project.godot`，按各自 `res://` 根逐一检查；即使父目录含 `.gdignore` 也不漏掉独立源码。手机样例在现有 cross-PR runtime 中另行导入并跑专项，原正式 suites 保留。命名空间负例确认：父项目存在同名文件不能掩盖子项目缺资源。
+
 精确测试结果和输入哈希见 `ACCEPTANCE_20261026.json`。这不是正式版本、完整原生 530 项回归、浏览器发布或可合并声明。
 
 ## 参考

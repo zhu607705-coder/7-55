@@ -17,6 +17,10 @@ if (crypto.createHash('sha256').update(font).digest('hex') !== expectedFont) {
 fs.mkdirSync(path.join(project, 'generated'), { recursive: true });
 fs.writeFileSync(path.join(project, 'generated/MorningNote-Regular.ttf'), font);
 fs.copyFileSync(path.join(native, 'ui_assets/fonts/MORNING_NOTE_OFL.txt'), path.join(project, 'generated/MORNING_NOTE_OFL.txt'));
+if (process.argv.includes('--prepare-only')) {
+  console.log('PHONE_CAMPUS_PREPARE font SHA-256 verified; existing font and OFL copied');
+  process.exit(0);
+}
 const env = { ...process.env };
 // Keep editor caches and this presentation's user:// isolated from formal saves.
 for (const [name, folder] of [['XDG_DATA_HOME', 'data'], ['XDG_CONFIG_HOME', 'config'], ['XDG_CACHE_HOME', 'cache']]) {
