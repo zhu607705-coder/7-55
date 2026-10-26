@@ -392,6 +392,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 func _input(event: InputEvent) -> void:
+	if stage and (event is InputEventKey or event is InputEventMouseButton or event is InputEventScreenTouch):
+		stage.paper_grip.keyboard_focus_visible = event is InputEventKey
 	# Scene objects own independent fingers. Only secondary menu controls share
 	# a mouse bridge. Global touch-to-mouse emulation is disabled in this project.
 	if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device == -1:

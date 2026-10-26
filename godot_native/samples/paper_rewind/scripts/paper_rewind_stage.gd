@@ -32,6 +32,8 @@ var _folder_from := 0.0
 var _folder_elapsed := 0.0
 const INTERACTION := Color("eee0b6")
 const HISTORY := Color("9db8c8")
+const FOLDER_LIGHT := Color(1.0,0.98,0.92,1.0)
+const PAPER_LIGHT := Color(0.97,0.95,0.89,1.0)
 var _projection := Vector2.ONE
 var _world_offset := Vector2.ZERO
 var _world_scale := 1.0
@@ -66,9 +68,9 @@ func _ready() -> void:
 
 func _layout() -> void:
 	# Perspective is composed for the device, not a letterboxed landscape panel.
-	_projection = Vector2(size.x / 960.0, size.y * 0.30 / 133.0)
+	_projection = Vector2(size.x / 960.0, size.y * 0.35 / 133.0)
 	_world_scale = minf(_projection.x, _projection.y)
-	_world_offset = Vector2(0, size.y * 0.35 - 170.0 * _projection.y)
+	_world_offset = Vector2(0, size.y * 0.32 - 170.0 * _projection.y)
 	if folder_button:
 		folder_button.position = folder_leaf_rect().position
 		folder_button.size = folder_leaf_rect().size
@@ -170,7 +172,7 @@ func art_scale() -> float:
 	return minf(clampf(size.x / 390.0, 0.82, 1.6), size.y / 650.0)
 
 func paper_extent() -> Vector2:
-	return Vector2(64,74) * art_scale()
+	return Vector2(72,84) * art_scale()
 
 func folder_leaf_rect() -> Rect2:
 	# Align the receiving edge with the very first swept contact, not with an
@@ -194,44 +196,47 @@ func _environment(c: CanvasItem, shift: Vector2, past: bool) -> void:
 	# Camera remains isotropic for every physical object. Layout changes positions,
 	# never the shape of a folder, notebook, window or sheet.
 	var unit := art_scale()
-	var top := size.y * 0.29
+	var top := size.y * 0.25
 	c.draw_rect(Rect2(-shift,size),Color("243b3d"))
-	var window := Rect2(Vector2(-18,18)*unit-shift,Vector2(178,190)*unit)
+	var window := Rect2(Vector2(-12,16)*unit-shift,Vector2(154,164)*unit)
 	c.draw_rect(window.grow(6*unit),Color("14292e"))
 	c.draw_rect(window,Color("849b91"))
 	# Existing campus foliage, cropped in the renderer (source bytes untouched).
 	# Crop contains no chroma-key pixels and uses the same aspect as this window.
-	c.draw_texture_rect_region(WINDOW_CANOPY,window,Rect2(575,340,370,395),Color(0.64,0.72,0.63,1))
-	c.draw_rect(window,Color(0.21,0.32,0.29,0.24))
-	c.draw_rect(Rect2(window.position+Vector2(81,0)*unit,Vector2(7,190)*unit),Color("465e58"))
-	c.draw_rect(Rect2(window.position+Vector2(0,78)*unit,Vector2(178,7)*unit),Color("465e58"))
-	c.draw_rect(Rect2(window.position+Vector2(-3,190)*unit,Vector2(190,10)*unit),Color("839188"))
+	c.draw_texture_rect_region(WINDOW_CANOPY,window,Rect2(575,340,370,395),Color(0.48,0.52,0.47,1))
+	c.draw_rect(window,Color(0.27,0.31,0.29,0.50))
+	c.draw_rect(Rect2(window.position+Vector2(71,0)*unit,Vector2(6,164)*unit),Color("465e58"))
+	c.draw_rect(Rect2(window.position+Vector2(0,68)*unit,Vector2(154,6)*unit),Color("465e58"))
+	c.draw_rect(Rect2(window.position+Vector2(-3,164)*unit,Vector2(166,8)*unit),Color("63756b"))
 	var radio := Rect2(Vector2(size.x-116*unit,84*unit)-shift,Vector2(88,42)*unit)
 	c.draw_rect(radio.grow(3),Color("1b282b"))
 	c.draw_rect(radio,Color("4c5145"))
 	for i: int in range(16): c.draw_line(radio.position+Vector2(6+i*4,7)*unit,radio.position+Vector2(6+i*4,34)*unit,Color("273536"),unit,true)
 	c.draw_circle(radio.position+Vector2(79,20)*unit,3.5*unit,Color("69766c") if broadcast_quiet else INTERACTION)
-	# Close tabletop extends out of the camera; a bevel retains believable thickness.
-	for i: int in range(80):
-		var y := top + (size.y-top)*i/80.0
-		var col := Color("94704c").lerp(Color("ae8556"),float(i)/80.0)
-		c.draw_rect(Rect2(Vector2(0,y)-shift,Vector2(size.x,(size.y-top)/80.0+1)),col)
-	for board: int in range(4):
-		var y := lerpf(top,size.y-36*unit,board/4.0)
-		if board > 0:
-			c.draw_line(Vector2(0,y)-shift,Vector2(size.x,y)-shift,Color(0.24,0.16,0.10,0.22),unit)
-			c.draw_line(Vector2(0,y+unit)-shift,Vector2(size.x,y+unit)-shift,Color(0.94,0.79,0.55,0.17),unit)
-		for mark: int in range(11):
-			var x := fmod(mark*71.0+board*29.0,maxf(1,size.x))
-			var grain_y := y+12*unit+fmod(mark*19.0+board*7.0,maxf(1,(size.y-top)/4-24*unit))
-			var length := (12+posmod(mark*7,23))*unit
-			c.draw_line(Vector2(x,grain_y).round()-shift,Vector2(minf(size.x,x+length),grain_y).round()-shift,Color(0.29,0.19,0.12,0.10),unit)
-	# Thin lit bevel over a darker front face. Shadows follow the upper-left window.
-	var edge_y := size.y-32*unit
-	c.draw_rect(Rect2(Vector2(0,edge_y)-shift,Vector2(size.x,4*unit)),Color("c19a69"))
-	c.draw_rect(Rect2(Vector2(0,edge_y+4*unit)-shift,Vector2(size.x,28*unit)),Color("6c5038"))
-	c.draw_line(Vector2(0,edge_y+6*unit)-shift,Vector2(size.x,edge_y+6*unit)-shift,Color("503e2f"),unit)
-	c.draw_colored_polygon(PackedVector2Array([Vector2(18*unit,top)-shift,Vector2(143*unit,top)-shift,Vector2(size.x*0.77,edge_y)-shift,Vector2(size.x*0.36,edge_y)-shift]),Color(0.98,0.91,0.65,0.055))
+	# One continuous wood surface: long, low-contrast fibres, not UI separators.
+	# The near edge ends before the frame, exposing thickness and the space below.
+	var edge_y := size.y-76*unit
+	for i: int in range(72):
+		var y := top + (edge_y-top)*i/72.0
+		var col := Color("80664d").lerp(Color("9b7b56"),float(i)/72.0)
+		c.draw_rect(Rect2(Vector2(0,y)-shift,Vector2(size.x,(edge_y-top)/72.0+1)),col)
+	for grain: int in range(12):
+		var start_x := -32*unit + fmod(grain*83.0,maxf(1,size.x*0.58))
+		var baseline := lerpf(top+18*unit,edge_y-22*unit,grain/12.0)
+		var length := minf(size.x-start_x,(110+posmod(grain*37,190))*unit)
+		var points := PackedVector2Array()
+		for point_index: int in range(18):
+			var amount := point_index/17.0
+			var y := baseline + (sin(amount*PI*1.3+grain*0.8)*3.0+amount*4.0)*unit
+			points.append(Vector2(start_x+length*amount,y).round()-shift)
+		c.draw_polyline(points,Color(0.28,0.19,0.13,0.085),unit,false)
+	# Broad window light is quiet; the paper, rather than foliage, is the highlight.
+	c.draw_colored_polygon(PackedVector2Array([Vector2(8*unit,top)-shift,Vector2(145*unit,top)-shift,Vector2(size.x*0.87,edge_y)-shift,Vector2(size.x*0.30,edge_y)-shift]),Color(0.98,0.91,0.71,0.045))
+	var bevel := PackedVector2Array([Vector2(0,edge_y)-shift,Vector2(size.x-12*unit,edge_y)-shift,Vector2(size.x,edge_y-8*unit)-shift,Vector2(size.x,edge_y-4*unit)-shift,Vector2(size.x-12*unit,edge_y+4*unit)-shift,Vector2(0,edge_y+4*unit)-shift])
+	c.draw_colored_polygon(bevel,Color("b29670"))
+	var front := PackedVector2Array([Vector2(0,edge_y+4*unit)-shift,Vector2(size.x-12*unit,edge_y+4*unit)-shift,Vector2(size.x,edge_y-4*unit)-shift,Vector2(size.x,edge_y+12*unit)-shift,Vector2(size.x-12*unit,edge_y+20*unit)-shift,Vector2(0,edge_y+20*unit)-shift])
+	c.draw_colored_polygon(front,Color("66503b"))
+	c.draw_line(Vector2(0,edge_y+20*unit)-shift,Vector2(size.x-12*unit,edge_y+20*unit)-shift,Color(0.10,0.13,0.12,0.55),3*unit)
 	if not reduced_motion:
 		for i: int in range(3):
 			var p := Vector2(20+fmod(environment_time*27+i*32,120),top+22+i*12)-shift
@@ -252,7 +257,7 @@ func _folder(c: CanvasItem, shift: Vector2, opened: float, front: bool) -> void:
 		c.draw_rect(Rect2(base.position+Vector2(2,4)*unit,base.size+Vector2(2,1)*unit),Color(0.15,0.10,0.06,0.16))
 		c.draw_rect(Rect2(base.position+Vector2(2,5)*unit,base.size),Color("6f5134"))
 		if folder_base:
-			c.draw_texture_rect(folder_base,base,false)
+			c.draw_texture_rect(folder_base,base,false,FOLDER_LIGHT)
 		else:
 			c.draw_rect(base,Color("c8a06a"))
 			c.draw_rect(base.grow(-5*unit),Color("ddc08a"))
@@ -260,6 +265,11 @@ func _folder(c: CanvasItem, shift: Vector2, opened: float, front: bool) -> void:
 		# Genuine two-leaf folder: the cover turns around its long spine, not a
 		# shape-swap or a vertically stretched rectangle.
 		var cover := PackedVector2Array([Vector2(hinge_x,base.position.y),Vector2(edge_x,base.position.y-lift),Vector2(edge_x,base.end.y-lift),Vector2(hinge_x,base.end.y)])
+		if opened > 0.04 and absf(cos(angle)) > 0.015:
+			var cover_shadow := PackedVector2Array()
+			var offset := Vector2(3+sin(angle)*10,4+sin(angle)*9)*unit
+			for point: Vector2 in cover: cover_shadow.append(point+offset)
+			c.draw_colored_polygon(cover_shadow,Color(0.14,0.11,0.08,0.11))
 		if absf(cos(angle)) > 0.015:
 			var face: Texture2D = folder_inside if opened > 0.5 else folder_cover
 			if face:
@@ -271,7 +281,7 @@ func _folder(c: CanvasItem, shift: Vector2, opened: float, front: bool) -> void:
 					texture = face.atlas
 					for index: int in range(uv.size()):
 						uv[index] = (face.region.position+uv[index]*face.region.size)/texture.get_size()
-				var shade := Color.WHITE.darkened(sin(angle)*0.14)
+				var shade := FOLDER_LIGHT.darkened(sin(angle)*0.18)
 				c.draw_polygon(cover,PackedColorArray([shade]),uv,texture)
 			else:
 				c.draw_colored_polygon(cover,Color("b58a51").lerp(Color("d6b67d"),opened))
@@ -291,7 +301,7 @@ func _folder(c: CanvasItem, shift: Vector2, opened: float, front: bool) -> void:
 		var y := base.position.y+base.size.y*folder_pocket_start
 		if folder_base:
 			var texture_size := folder_base.get_size()
-			c.draw_texture_rect_region(folder_base,Rect2(Vector2(base.position.x,y),Vector2(base.size.x,base.size.y*(1.0-folder_pocket_start))),Rect2(Vector2(0,texture_size.y*folder_pocket_start),Vector2(texture_size.x,texture_size.y*(1.0-folder_pocket_start))))
+			c.draw_texture_rect_region(folder_base,Rect2(Vector2(base.position.x,y),Vector2(base.size.x,base.size.y*(1.0-folder_pocket_start))),Rect2(Vector2(0,texture_size.y*folder_pocket_start),Vector2(texture_size.x,texture_size.y*(1.0-folder_pocket_start))),FOLDER_LIGHT)
 			return
 		c.draw_colored_polygon(PackedVector2Array([Vector2(base.position.x,y+6*unit),Vector2(base.end.x,y),base.end,Vector2(base.position.x,base.end.y)]),Color("c29a60"))
 		c.draw_line(Vector2(base.position.x,y+6*unit),Vector2(base.end.x,y),Color("ead09e"),1.5*unit,true)
@@ -314,9 +324,9 @@ func _paper(c: CanvasItem, shift: Vector2, point: Vector2, paper_time: float, gr
 	var settle := 1.0
 	if grounded and model.catch_time >= 0 and collect < 0:
 		settle = clampf((paper_time-model.catch_time)/Model.SETTLE_DURATION,0.0,1.0)
-	var shadow_offset := lerpf(22.0,2.0,settle) if grounded else 30.0
+	var shadow_offset := lerpf(18.0,1.5,settle) if grounded else 28.0
 	shadow_offset += lift*16.0
-	var shadow_center := center + Vector2(2,shadow_offset)*scale
+	var shadow_center := center + Vector2(3,shadow_offset)*scale
 	c.draw_set_transform(shadow_center,0,Vector2(1,0.16))
 	c.draw_circle(Vector2.ZERO,23.0*scale,Color(0.12,0.09,0.07,(0.12 if grounded else 0.07)*tint.a))
 	c.draw_set_transform(Vector2.ZERO)
@@ -328,7 +338,7 @@ func _paper(c: CanvasItem, shift: Vector2, point: Vector2, paper_time: float, gr
 	if collect >= 0: angle = -0.12*lift if not reduced_motion else 0.0
 	if not grounded and collect < 0 and not recorded: extent *= 1.0-grip_amount*0.035
 	c.draw_set_transform(center,angle)
-	c.draw_texture_rect(FLIGHT[frame],Rect2(-extent*0.5,extent),false,tint)
+	c.draw_texture_rect(FLIGHT[frame],Rect2(-extent*0.5,extent),false,tint if recorded else tint*PAPER_LIGHT)
 	c.draw_set_transform(Vector2.ZERO)
 
 func _paint_record(canvas: CanvasItem) -> void:

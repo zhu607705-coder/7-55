@@ -176,6 +176,8 @@ func _run() -> void:
 		check(physical_page.intersects(view.stage.open_folder_surface_rect()), "First logical catch visibly touches an actual open folder leaf at " + str(dimensions))
 		check(view.stage.folder_leaf_rect().has_point(view.stage.world_to_local(Model.REST_POINT)), "Resting paper is on the visible accepting page at " + str(dimensions))
 		check(is_equal_approx(view.stage.folder_leaf_rect().size.y / view.stage.folder_leaf_rect().size.x, sqrt(2.0)), "Folder retains physical A4 proportions at " + str(dimensions))
+		check(Rect2(Vector2.ZERO,view.stage.size).encloses(view.stage.open_folder_surface_rect().grow(4*view.stage.art_scale())), "Larger open folder and its edge stay entirely inside camera at " + str(dimensions))
+		check(view.stage.folder_button.get_rect().is_equal_approx(view.stage.folder_leaf_rect()), "Folder input surface uses the same new camera geometry at " + str(dimensions))
 		for paper_time: float in [0.0, 1.2, 4.8, 6.5, 7.8]:
 			view.model.time = paper_time
 			var preview: Rect2 = view.stage.thumb_preview_rect()

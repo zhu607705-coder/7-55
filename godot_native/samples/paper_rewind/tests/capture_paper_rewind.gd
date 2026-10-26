@@ -59,7 +59,7 @@ func _run() -> void:
 	root.add_child(overlay)
 	var history_start: Vector2 = view.stage.history_window.get_global_rect().get_center()
 	var history_end := history_start + Vector2(-135,30)
-	var history_park := Vector2(history_start.x, root.size.y * 0.18)
+	var history_park := Vector2(history_start.x, root.size.y * 0.165)
 	var last_history := history_start
 	var last_paper := Vector2.ZERO
 	var folder := Vector2.ZERO
@@ -132,8 +132,13 @@ func _draw_overlay() -> void:
 		if current_frame > marker.until:
 			continue
 		var color := Color("eee7d7")
-		overlay.draw_circle(marker.point,18,Color(color,0.08))
-		overlay.draw_arc(marker.point,18,0,TAU,40,Color(color,0.70),1.5,true)
-		overlay.draw_string(font,marker.point + Vector2(-4,6),str(id + 1),HORIZONTAL_ALIGNMENT_LEFT,-1,18,color)
+		# Neutral evidence markers remain readable over both paper and dark history.
+		# The number sits outside the sheet, not on its focal stamp or crease.
+		var dark := Color(0.13,0.17,0.16,0.8)
+		overlay.draw_arc(marker.point,18,0,TAU,40,dark,3.5,true)
+		overlay.draw_arc(marker.point,18,0,TAU,40,Color(color,0.85),1.5,true)
+		var label_point: Vector2 = marker.point+Vector2(22,-18)
+		overlay.draw_string(font,label_point+Vector2(1,1),str(id+1),HORIZONTAL_ALIGNMENT_LEFT,-1,18,dark)
+		overlay.draw_string(font,label_point,str(id+1),HORIZONTAL_ALIGNMENT_LEFT,-1,18,color)
 	var bottom := float(root.size.y)
 	overlay.draw_string(font,Vector2(12,bottom - 12),"自动双触点 · 非物理手机",HORIZONTAL_ALIGNMENT_LEFT,root.size.x - 24,14,Color("d3ded4"))
