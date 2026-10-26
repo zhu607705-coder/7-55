@@ -40,19 +40,43 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
       - name: Synchronize original resources
         run: node godot_native/tools/sync_source.mjs
+      - name: Import separately and recheck actual feedback contracts
+        timeout-minutes: 5
+        run: GODOT_BIN=godot node godot_native/tools/run_chapter4_time_feedback.mjs --test
       - name: Record actual portrait and desktop QA scenes
         timeout-minutes: 6
         run: |
-          cat > "$RUNNER_TEMP/godot-video" <<'SH'
-          #!/usr/bin/env bash
-          exec /usr/local/bin/godot --resolution "$C4_VIDEO_SIZE" --audio-driver Dummy "$@"
-          SH
-          chmod +x "$RUNNER_TEMP/godot-video"
-          export GODOT_BIN="$RUNNER_TEMP/godot-video"
+          cat > "$RUNNER_TEMP/capture-feedback.mjs" <<'JS'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {spawnSync} from 'node:child_process';
+          import {pathToFileURL} from 'node:url';
+          const root=process.env.GITHUB_WORKSPACE;
+          const {createNativeTestSandbox}=await import(pathToFileURL(path.join(root,'godot_native/tools/native_test_sandbox.mjs')));
+          const source=path.join(root,'godot_native'), fixture=createNativeTestSandbox(source,'755-feedback-video-');
+          const [width,height]=process.env.C4_VIDEO_SIZE.split('x').map(Number);
+          if(![[390,844],[1280,720]].some(d=>d[0]===width&&d[1]===height))throw Error('Unapproved recording size');
+          const project=path.join(fixture.root,'workspace/godot_native');fs.mkdirSync(project,{recursive:true});
+          for(const sibling of ['src','public','node_modules'])fs.symlinkSync(path.join(root,sibling),path.join(fixture.root,'workspace',sibling));
+          for(const entry of fs.readdirSync(source))if(entry!=='project.godot')fs.symlinkSync(path.join(source,entry),path.join(project,entry));
+          let config=fs.readFileSync(path.join(source,'project.godot'),'utf8');
+          for(const [key,value] of Object.entries({viewport_width:width,viewport_height:height,window_width_override:width,window_height_override:height})){
+            const before=config;config=config.replace(new RegExp('^window/size/'+key+'=.*$','m'),'window/size/'+key+'='+value);
+            if(before===config)throw Error('Expected original window setting missing or unexpectedly already matches: '+key);
+          }
+          fs.writeFileSync(path.join(project,'project.godot'),config);
+          const env={...fixture.env,C4_FEEDBACK_AUTOPLAY:'1',C4_FEEDBACK_REQUIRE_GRAPHICAL:'1'};
+          try{
+            const result=spawnSync('godot',['--path',project,'--audio-driver','Dummy','--write-movie',process.argv[2],'--fixed-fps','30','res://tests/chapter4_time_feedback_preview.tscn'],{env,stdio:'inherit',timeout:120000});
+            if(result.error)throw result.error;process.exitCode=result.status??1;
+          }finally{fs.rmSync(fixture.root,{recursive:true,force:true});}
+          JS
+          node --check "$RUNNER_TEMP/capture-feedback.mjs"
+          printf '%s\n' 'QA-only viewport/window sizes overridden in a temporary project config; original game scripts, scenes and assets unchanged. MovieMaker 30fps, real Mesa renderer.' >> feedback-video/README.txt
           for view in portrait desktop; do
             if [ "$view" = portrait ]; then export C4_VIDEO_SIZE=390x844; else export C4_VIDEO_SIZE=1280x720; fi
-            timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 1600x1000x24' \
-              node godot_native/tools/run_chapter4_time_feedback.mjs --movie "$GITHUB_WORKSPACE/feedback-video/$view.avi" \
+            timeout 130 xvfb-run --auto-servernum --server-args='-screen 0 1600x1000x24' \
+              node "$RUNNER_TEMP/capture-feedback.mjs" "$GITHUB_WORKSPACE/feedback-video/$view.avi" \
               2>&1 | tee "feedback-video/$view-render.log"
             ! grep -E 'ERROR:|Parse Error:|Failed to load script|Accepted feedback did not start|requires a supported graphical renderer' "feedback-video/$view-render.log"
             test -s "feedback-video/$view.avi"
