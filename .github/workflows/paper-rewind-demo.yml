@@ -52,7 +52,7 @@ jobs:
           godot --headless --audio-driver Dummy --path /tmp/paper-rewind-movie-project --editor --import --quit 2>&1 | tee paper-rewind-demo/import.log
           timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
             godot --path /tmp/paper-rewind-movie-project --rendering-method gl_compatibility \
-            --audio-driver Dummy --resolution 390,844 --fixed-fps 30 \
+            --audio-driver Dummy --resolution 390x844 --fixed-fps 30 \
             --write-movie "$GITHUB_WORKSPACE/paper-rewind-demo/paper-rewind.avi" \
             --script res://tests/capture_paper_rewind.gd -- --require-rendering 2>&1 | tee paper-rewind-demo/capture.log
           ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' paper-rewind-demo/import.log paper-rewind-demo/capture.log
