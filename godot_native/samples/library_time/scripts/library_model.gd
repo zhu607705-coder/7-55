@@ -18,7 +18,7 @@ var suspended := false
 
 func start(id: int, target: String) -> bool:
 	if suspended or completed: return false
-	if target not in ["history0","history1"] and not target.begins_with("book:"): return false
+	if target not in ["history0","history1","book:0","book:1","book:2","book:3","book:4","book:5"]: return false
 	if target.begins_with("book:"):
 		var book := int(target.substr(5))
 		if book<0 or book>5 or selected_book!=-1: return false

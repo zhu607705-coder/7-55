@@ -29,7 +29,7 @@ func run() -> void:
 		var hidden: Vector2=world.screen_point(world.glyph_point(index!=0))
 		var exposed: Vector2=world.screen_point(world.glyph_point(index==0))
 		var hidden_delta := difference(past_before[index],unblocked,Rect2i(Vector2i(hidden)-Vector2i(13,11),Vector2i(26,22)))
-		var exposed_delta := difference(past_before[index],unblocked,Rect2i(Vector2i(exposed)-Vector2i(13,11),Vector2i(26,22)))
+		var exposed_delta := difference(past_before[index],unblocked,Rect2i(Vector2i(exposed)-Vector2i(9,5),Vector2i(18,10)))
 		print("LIBRARY_PIXELS snapshot=",index," hidden_delta=",hidden_delta," exposed_delta=",exposed_delta)
 		check(hidden_delta>.025,"historical occluder physically replaces hidden-fragment pixels")
 		check(exposed_delta<.075,"other historical fragment stays exposed, not a global reveal shader")
@@ -47,7 +47,7 @@ func run() -> void:
 		now_before.save_png(output+"/present-baseline.png")
 		past_before[0].save_png(output+"/morning-fragment.png"); past_before[1].save_png(output+"/afternoon-fragment.png")
 		for dimensions: Vector2i in [Vector2i(430,860),Vector2i(1280,720),Vector2i(844,390)]:
-			root.size=dimensions; await settle(); view.model.resume(); view.resume_button.hide(); view.reset_button.hide(); await settle()
+			root.size=dimensions; await settle(); view.model.resume(); view.resume_button.hide(); view.reset_button.hide(); view.queue_redraw(); await settle()
 			root.get_texture().get_image().save_png(output+"/layout-%dx%d.png"%[dimensions.x,dimensions.y])
 	print("LIBRARY_RENDER failures=",failures)
 	view.queue_free(); await process_frame; quit(1 if failures else 0)

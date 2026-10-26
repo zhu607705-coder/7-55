@@ -81,18 +81,21 @@ func _build_shelf() -> void:
 
 func _book(id: int, p: Vector3) -> void:
 	var pivot := Node3D.new(); pivot.name="Book_%d"%id; pivot.position=p; add_child(pivot); books[id]=pivot; base_positions[id]=p
-	var cover := material(Color("627b70") if id>=3 else Color("ad8c60")); var ink := material(Color("ebe2c6"))
+	var upper_is_ring := id>=3
+	var lower_count := id%3+1
+	pivot.set_meta("upper_mark","ring" if upper_is_ring else "triangle"); pivot.set_meta("lower_bars",lower_count)
+	var cover := material(Color("627b70")); var ink := material(Color("ebe2c6"))
 	box("ClothCover",Vector3.ZERO,Vector3(.49,1.36,.56),cover,pivot,true)
 	box("PaperPages",Vector3(.02,0,-.02),Vector3(.42,1.28,.48),material(Color("c5c1a7")),pivot)
 	box("Spine",Vector3(0,0,.286),Vector3(.49,1.36,.025),cover,pivot)
 	for y: float in [-.57,.57]: box("BindingBand",Vector3(0,y,.306),Vector3(.47,.035,.022),ink,pivot)
-	if id>=3:
+	if upper_is_ring:
 		var ring := MeshInstance3D.new(); var mesh := TorusMesh.new(); mesh.inner_radius=.105; mesh.outer_radius=.143; mesh.rings=24; mesh.ring_segments=12
 		ring.mesh=mesh; ring.material_override=ink; ring.position=Vector3(0,.27,.32); ring.rotation.x=PI*.5; pivot.add_child(ring)
 	else:
 		var a := Vector2(0,.42); var b := Vector2(-.15,.16); var c := Vector2(.15,.16)
 		_line(pivot,a,b,ink); _line(pivot,b,c,ink); _line(pivot,c,a,ink)
-	for bar: int in range(id%3+1): box("LowerBar",Vector3(0,-.18-bar*.105,.32),Vector3(.27,.038,.025),ink,pivot)
+	for bar: int in range(lower_count): box("LowerBar",Vector3(0,-.18-bar*.105,.32),Vector3(.27,.038,.025),ink,pivot)
 
 func _line(parent: Node3D, a: Vector2, b: Vector2, m: Material) -> void:
 	var segment := box("TriangleInlay",Vector3((a.x+b.x)*.5,(a.y+b.y)*.5,.32),Vector3(.035,a.distance_to(b),.025),m,parent)
@@ -102,14 +105,14 @@ func _build_occluder() -> void:
 	var tote := material(Color("435f62")); var paper := material(Color("bcae8b"))
 	if phase==0:
 		# A full opaque return tote blocks the lower symbol, not the upper symbol.
-		blockers.append(box("MorningReturnTote",Vector3(.98,1.25,1.03),Vector3(1.72,1.04,.32),tote,null,true))
-		box("ToteRim",Vector3(.98,1.80,1.03),Vector3(1.78,.06,.38),material(Color("91a39b")),null,true)
-		for x: float in [.18,1.76]: box("ToteHandle",Vector3(x,1.89,1.04),Vector3(.10,.20,.06),tote,null,true)
+		blockers.append(box("MorningReturnTote",Vector3(.98,1.20,1.03),Vector3(1.72,.88,.32),tote,null,true))
+		box("ToteRim",Vector3(.98,1.67,1.03),Vector3(1.78,.06,.38),material(Color("91a39b")),null,true)
+		for x: float in [.14,1.80]: box("ToteHandle",Vector3(x,1.78,1.04),Vector3(.06,.20,.06),tote,null,true)
 	else:
 		# A hanging folio masks the upper symbol. Its bottom edge leaves the bars visible.
-		blockers.append(box("AfternoonHangingFolio",Vector3(.98,2.04,1.02),Vector3(1.72,.65,.08),paper,null,true))
-		box("FolioBinder",Vector3(.98,2.38,1.02),Vector3(1.78,.08,.12),material(Color("806b52")),null,true)
-		for x: float in [.05,1.75]: box("FolioClip",Vector3(x,2.47,1.02),Vector3(.05,.18,.10),material(Color("bdab76")),null,true)
+		blockers.append(box("AfternoonHangingFolio",Vector3(.98,2.16,1.02),Vector3(1.72,.65,.08),paper,null,true))
+		box("FolioBinder",Vector3(.98,2.50,1.02),Vector3(1.78,.08,.12),material(Color("806b52")),null,true)
+		for x: float in [.05,1.75]: box("FolioClip",Vector3(x,2.59,1.02),Vector3(.05,.18,.10),material(Color("bdab76")),null,true)
 
 func configure_camera(viewport_size: Vector2) -> void:
 	if phase>=0:
@@ -134,8 +137,21 @@ func screen_point(p: Vector3) -> Vector2: return camera.unproject_position(p)
 func glyph_point(top: bool) -> Vector3:
 	return books[4].to_global(Vector3(0,.27 if top else -.24,.34))
 
+func fragment_probes(top: bool) -> Array[Vector3]:
+	var probes: Array[Vector3]=[]
+	# Validate the complete exposed mark, not a blank point in the ring's hole.
+	if top:
+		for offset: Vector2 in [Vector2(-.14,.27),Vector2(.14,.27),Vector2(0,.41),Vector2(0,.13)]:
+			probes.append(books[4].to_global(Vector3(offset.x,offset.y,.34)))
+	else:
+		for y: float in [-.18,-.285]:
+			for x: float in [-.13,.13]: probes.append(books[4].to_global(Vector3(x,y,.34)))
+	probes.append(REFERENCE)
+	return probes
+
 func visible_from_camera(p: Vector3) -> bool:
-	var q := PhysicsRayQueryParameters3D.create(camera.global_position,p)
+	var screen := camera.unproject_position(p)
+	var q := PhysicsRayQueryParameters3D.create(camera.project_ray_origin(screen),p)
 	q.collide_with_areas=false
 	return get_world_3d().direct_space_state.intersect_ray(q).is_empty()
 

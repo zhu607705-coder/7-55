@@ -74,7 +74,7 @@ func _process(delta: float) -> void:
 func history_visible(index: int) -> bool:
 	if model.suspended or not history_images[index].is_visible_in_tree(): return false
 	var world: Node3D=history_worlds[index]
-	var points := [world.glyph_point(index==0),World.REFERENCE]
+	var points: Array[Vector3]=world.fragment_probes(index==0)
 	for p: Vector3 in points:
 		if not world.visible_from_camera(p): return false
 		var screen: Vector2=history_rects[index].position+world.screen_point(p)
@@ -139,7 +139,8 @@ func _move(id: int, p: Vector2) -> void:
 
 func _up(id: int) -> void:
 	var visible := book_visible(model.selected_book) if model.selected_book>=0 else true
-	model.release(id,visible); pointers.erase(id)
+	if model.release(id,visible): pointers.clear()
+	else: pointers.erase(id)
 
 func _suspend() -> void:
 	model.suspend(); pointers.clear()
