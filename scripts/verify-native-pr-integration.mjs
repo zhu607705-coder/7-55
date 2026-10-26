@@ -8,7 +8,7 @@ import path from 'node:path';
 import {createNativeTestSandbox} from '../godot_native/tools/native_test_sandbox.mjs';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {collectGodotProjectNamespaces,isExistingLocalGodotResource} from './godot-project-namespaces.mjs';
+import {collectGodotProjectNamespaces,isExistingLocalGodotResource,appendTestsToGodotProject} from './godot-project-namespaces.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'godot_native/docs/PR_INTEGRATION_SOURCES_20261018.json'),'utf8'));
 const report={kind:'cross-pr-source-and-runtime-compatibility',base:manifest.base,checks:[],runs:[],notManualPlaythrough:true,physicalMobileTest:false};
@@ -39,6 +39,19 @@ const projectRoots=[...new Set(manifest.sources.map(s=>s.project_root))];
 const namespaceRegression=spawnSync(process.execPath,[path.join(root,'scripts/test-godot-project-namespaces.mjs')],{cwd:root,encoding:'utf8'});
 check(namespaceRegression.status===0,'nested project namespace regression including missing-child negative fixture');
 report.namespaceRegressionOutput=(namespaceRegression.stdout||'')+(namespaceRegression.stderr||'');
+// One project-ID registry composes independent PR previews without array-position ownership.
+// A branch may carry either preview or both; present projects are always scanned and tested.
+const previewProjects=[
+ {project:'godot_native/samples/phone_to_campus/preview',tests:['res://test_transition.gd'],prepare:['godot_native/samples/phone_to_campus/run.mjs','--prepare-only']},
+ {project:'godot_native/samples/north_real_plan_preview',tests:['res://tests/test_preview.gd'],prepare:[]}
+].filter(preview=>fs.existsSync(path.join(root,preview.project,'project.godot')));
+report.previewProjects=previewProjects.map(({project,tests})=>({project,tests}));
+for(const preview of previewProjects){
+ if(!preview.prepare.length)continue;
+ const prepared=spawnSync(process.execPath,[path.join(root,preview.prepare[0]),...preview.prepare.slice(1)],{cwd:root,encoding:'utf8'});
+ check(prepared.status===0,`${preview.project}: verify original font bytes before namespace checks`);
+ report.previewPreparation=(report.previewPreparation||[]).concat({project:preview.project,output:(prepared.stdout||'')+(prepared.stderr||'')});
+}
 const namespaces=collectGodotProjectNamespaces(projectRoots.map(relative=>path.join(root,relative)));
 // PR #118 deliberately permits one unauthored idle asset. Require its exact
 // guarded load and the real side-art mirror; all other resources stay required.
@@ -79,7 +92,6 @@ check(config.includes('run/main_scene="res://scenes/entry.tscn"'),'formal produc
 const chapter4=fs.readFileSync(path.join(root,'godot_native/scripts/chapters/chapter4.gd'),'utf8');
 check(chapter4.includes('chapter4_chase_stair_model.gd')&&!chapter4.includes('chapter4_endless_stair_model.gd'),'unapproved twelve/two-flight replacement cannot impersonate formal chase proof');
 const suites=[
- ['godot_native/samples/north_real_plan_preview',['test_preview.gd']],
  ['godot_native',['test_rain_rescue.gd','test_lake_live_world.gd','test_lake_entry_heading.gd','test_lake_app_routes.gd','test_chapter3.gd','test_lake_shell_input.gd','test_chapter4_post_stair_return.gd','test_endless_stair_integration.gd','test_character_facing.gd','test_qizhen_swan_entrance.gd']],
  ['samples/qizhen-rain-rescue-native',['test_rescue.gd','test_rescue_input.gd']],
  ['examples/qizhen_playable_chase',['test_paddling.gd','test_paddling_cadence.gd','test_paddling_cadence_matrix.gd','test_paddling_geometry.gd','test_playable_chase_model.gd','test_playable_chase_inputs.gd']],
@@ -87,7 +99,14 @@ const suites=[
  ['examples/blender_stair_sample/preview',['test_blender_sample.gd','test_blender_sample_camera_input.gd','test_endless_stair_beam.gd']]
 ];
 const mainTests=fs.readdirSync(path.join(root,'godot_native/tests')).filter(f=>/^test_(?:pr_integration|c3_swan|rain_rescue)/.test(f)&&f.endsWith('.gd'));
-suites[0][1].push(...mainTests);
+appendTestsToGodotProject(suites,'godot_native',mainTests);
+// Fail wrong project ownership before any expensive import. No formal tests move to a preview.
+for(const [relative,tests] of suites)for(const file of new Set(tests)){
+ check(fs.existsSync(path.join(root,relative,'tests',file)),`${relative}: registered runtime test exists ${file}`);
+}
+for(const preview of previewProjects)for(const file of new Set(preview.tests)){
+ check(isExistingLocalGodotResource(path.join(root,preview.project),file),`${preview.project}: registered preview test exists ${file}`);
+}
 const mode=process.argv.includes('--runtime')?'runtime':process.argv.includes('--examples')?'examples':'static';
 function run(relative,label,args){
  const fixture=createNativeTestSandbox(path.join(root,relative));
@@ -104,6 +123,10 @@ function run(relative,label,args){
  console.log(`${passed?'PASS':'FAIL'} ${relative}: ${label}`);if(!passed)console.error(output.slice(-16000));
 }
 if(mode!=='static'&&!failures){
+ for(const preview of previewProjects){
+  run(preview.project,'fresh process preview import',['--editor','--import','--quit']);
+  for(const file of new Set(preview.tests))run(preview.project,file,['--script',file]);
+ }
  for(const [relative,tests] of suites){
   if(mode==='examples'&&relative==='godot_native')continue;
   run(relative,'fresh process asset import',['--editor','--import','--quit']);

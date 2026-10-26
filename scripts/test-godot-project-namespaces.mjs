@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import { collectGodotProjectNamespaces, isExistingLocalGodotResource } from './godot-project-namespaces.mjs';
+import { collectGodotProjectNamespaces, isExistingLocalGodotResource, appendTestsToGodotProject } from './godot-project-namespaces.mjs';
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), '755-project-namespaces-'));
 let checks = 0;
@@ -34,5 +34,14 @@ try {
   check(!isExistingLocalGodotResource(child, 'res://parent_only.gd'), 'negative: parent file cannot mask broken child reference');
   check(!isExistingLocalGodotResource(child, 'res://../../../../outside.gd'), 'namespace traversal remains rejected');
   check(!isExistingLocalGodotResource(child, 'user://save.json'), 'user data never treated as project resource');
+  for (const reversed of [false, true]) {
+    const suites = [['preview', ['test_preview.gd']], ['godot_native', ['test_story.gd']]];
+    if (reversed) suites.reverse();
+    appendTestsToGodotProject(suites, 'godot_native', ['test_discovered.gd']);
+    check(suites.find(([root]) => root === 'godot_native')[1].includes('test_discovered.gd'), 'formal tests bind by identity regardless of suite order');
+    check(suites.find(([root]) => root === 'preview')[1].join(',') === 'test_preview.gd', 'preview never inherits formal tests');
+  }
+  assert.throws(() => appendTestsToGodotProject([['preview', []]], 'godot_native', ['test.gd']), /exactly one/); checks++;
+  assert.throws(() => appendTestsToGodotProject([['godot_native', []], ['godot_native', []]], 'godot_native', ['test.gd']), /exactly one/); checks++;
   console.log(`GODOT_PROJECT_NAMESPACES checks=${checks} failures=0`);
 } finally { fs.rmSync(temp, { recursive: true, force: true }); }

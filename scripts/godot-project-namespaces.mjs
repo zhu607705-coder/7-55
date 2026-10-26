@@ -34,3 +34,10 @@ export function isExistingLocalGodotResource(project, reference) {
   const target = path.resolve(project, reference.slice(6));
   return target.startsWith(project + path.sep) && fs.existsSync(target);
 }
+
+/** Runtime tests belong to a named project, never to a mutable array position. */
+export function appendTestsToGodotProject(suites, project, tests) {
+  const matches = suites.filter(([candidate]) => candidate === project);
+  if (matches.length !== 1) throw new Error(`Expected exactly one test suite for ${project}`);
+  matches[0][1].push(...tests);
+}

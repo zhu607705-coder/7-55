@@ -1,6 +1,6 @@
 {
   "schema": "north-real-plan-preview-acceptance-v1",
-  "recordedUtc": "2026-10-26T00:56:56Z",
+  "recordedUtc": "2026-10-26T01:19:53Z",
   "baseCommit": "abd8b0028e8443795518243da7930ee760bc92e9",
   "engine": "4.7.1.stable.official.a13da4feb",
   "scope": "Independent historical-source and approximate 1F-art preview; no playable real-plan topology or production entry",
@@ -60,6 +60,17 @@
       "checks": 2356,
       "runtimeStages": 0,
       "failures": 0
+    },
+    {
+      "stage": "Suite registration order / missing / duplicate identity regression",
+      "checks": 19,
+      "failures": 0
+    },
+    {
+      "stage": "Cross-PR static after identity-safe registration and test-file preflight",
+      "checks": 2387,
+      "runtimeStages": 0,
+      "failures": 0
     }
   ],
   "failed": [
@@ -108,14 +119,51 @@
     "godot_native/samples/north_real_plan_preview/run_checks.mjs": "3fe299f9d5804a6400ac653e70d11f492ef8db1c6b2e72f7c5904c27c513b48d",
     "godot_native/samples/north_real_plan_preview/tests/test_preview.gd": "db8fae2945bc853de69dfcd3100f95663f02d78cff5fa08616432f031d0fe586",
     "godot_native/tests/test_north_real_plan_registry.gd": "9193cb08437ea18d3bbcfdcdf170fe9189e296a40a1fef0cd1832a2e08f54aa8",
-    "scripts/godot-project-namespaces.mjs": "e7f7c48a24d5aa78e0eb6f8344ebf531027af8b3604b81d336543bb2c1dbfe3b",
-    "scripts/test-godot-project-namespaces.mjs": "dcc89d45483c222c15e8c757b05c49ba2a6d7d1d73d850b1075dc3b2ff805bea",
-    "scripts/verify-native-pr-integration.mjs": "c1336b24087a7c758f58111e81e52ac4a32c67c29f0ba98be7eca0753593a60e"
+    "scripts/godot-project-namespaces.mjs": "c44085f5de30dcaa4208e6d1531da0ca21779aa73bb4b5912e5c8065ca809595",
+    "scripts/test-godot-project-namespaces.mjs": "9c55e31beee702346e67ebdf545fbe22d08e48425d9c7a42f49c680d9223c1f6",
+    "scripts/verify-native-pr-integration.mjs": "92d284c363c0c06a9d5386519f5f6560a48462acf023b1ece70a0edf9a986654"
   },
   "ciIntegration": {
     "nativeAutoDiscoveredTest": "test_north_real_plan_registry.gd",
     "nestedPreviewRuntimeSuite": "godot_native/samples/north_real_plan_preview/tests/test_preview.gd",
     "sharedNamespaceFixSourceCommit": "db08aac434ec9dbe0981d0db71ae4f9a90ca1085",
     "semantics": "Every independent project remains scanned under its own res:// root; .gdignore does not omit source checks."
+  },
+  "followup": {
+    "observedHead": "7da6edda92017774aa6077a66080d5b70f1cf12e",
+    "webCi": {
+      "runId": 40252042644,
+      "result": "success",
+      "releaseValidators": 38
+    },
+    "crossPrCi": {
+      "runId": 40252042533,
+      "result": "failure",
+      "cause": "New North suite at index zero received six discovered formal tests through legacy suites[0] registration. Actual North import/test_preview and original suite executions passed."
+    },
+    "candidateFix": "Attach discovered tests by unique godot_native project identity; preflight every registered test file. No tests removed or exempted. Final exact-head runtime CI remains required.",
+    "godotWebCi": {
+      "runId": 40252042592,
+      "result": "success",
+      "head": "7da6edda92017774aa6077a66080d5b70f1cf12e",
+      "scope": "Production build, three world/phone input profiles and two library profiles; publish skipped"
+    },
+    "latestRepositoryCompatibility": {
+      "main": "abd8b0028e8443795518243da7930ee760bc92e9",
+      "pr174": "bd0dfab34128c18436224aa539817e4fe9be9cf2",
+      "pr176": "05e464e7b9cfdd3a783782fc82443612bedebbb2",
+      "pr177": "7da6edda92017774aa6077a66080d5b70f1cf12e",
+      "combinedScanner": "Shared verifier uses explicit preview project IDs and per-project test paths. Phone font preparation and explicit runtime checks are retained when its separate project exists; no phone content is copied into this branch. Formal suites unchanged and discovered formal tests bind by godot_native identity.",
+      "separateCombinedTrialEvidence": {
+        "namespaceChecks": 19,
+        "staticChecks": 2400,
+        "phoneChecks": 1329,
+        "northChecks": 306,
+        "registryChecks": 99,
+        "failures": 0,
+        "attribution": "Independent trial worktree validated by phone-preview worker; not this PR exact-head CI."
+      },
+      "remainingMergeNotes": "Sibling PRs were not merged. Concurrent progress.md additions need reconciliation at integration."
+    }
   }
 }

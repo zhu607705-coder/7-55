@@ -5487,3 +5487,5 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 通过：官方4.7.1独立项目导入/解析、306项真实Control输入/布局和资料检查、99项自动注册来源回归、正常启动、Web quick5/5。Web release35/38通过；单文件构建退出137，后续结构与浏览器验证因demo缺失失败；原因未确认，不称OOM，也未重试完整构建。
 - 未运行：完整原生汇总、生产Godot Web/PCK/浏览器、图形截图和实体手机验收。当前云端没有可用图形显示，不能把无图形界面布局测试或原图总览当作运行截图。分支保持Draft，不声称18层可玩还原或合并就绪。证据见样例ACCEPTANCE_20261026.json。
 - 复用已单独验证的通用嵌套Godot资源命名空间修复（db08aac）；并为本样例登记跨PR原生运行测试。仍扫描每个子项目，不用.gdignore或samples豁免缺失资源。13项负例与本分支2356项静态检查通过；清洁解包的独立预览再次通过306+99项和正常启动。
+- PR177初版7da6edd的远端Web CI release38/38通过；cross-PR实际运行暴露旧suites[0]注册在新增首项后误分6个正式测试。改按唯一godot_native身份绑定，新增顺序交换/缺失/重复身份负例和运行前脚本存在性检查；19项正反例、2387项静态检查通过。未删除、跳过或豁免正式测试；修复后精确head运行仍待CI。
+- 按用户要求重新fetch main/174/176/177；main仍abd8b002，无需合并新main。与Phone作者完成独立合流试验，采用共同preview project-ID注册，保留两端准备/独立运行和原正式suites；本分支19负例+2387静态再过，联合trial另过2400静态/Phone1329/North306+99。只复用共享验证器，未合入兄弟样例；progress追加段留待最终集成时协调。旧head7da6edd的生产Godot Web及全部浏览器profile也已通过，Publish skipped。
