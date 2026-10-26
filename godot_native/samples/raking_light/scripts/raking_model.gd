@@ -3,7 +3,7 @@ extends RefCounted
 const HOLD_SECONDS := 1.4
 var paper_tilt := Vector2.ZERO
 var lamp_azimuth := 28.0
-var lamp_elevation := 55.0
+var lamp_elevation := 80.0
 var owners: Dictionary = {}
 var stable_time := 0.0
 var quiet_time := 0.0
@@ -28,7 +28,7 @@ func drag(id: int, delta: Vector2) -> void:
 			if delta.length()>0.25: paper_moved=true; quiet_time=0; stable_time=0
 		"lamp":
 			lamp_azimuth=clampf(lamp_azimuth+delta.x*0.40,-145,145)
-			lamp_elevation=clampf(lamp_elevation-delta.y*0.30,8,65)
+			lamp_elevation=clampf(lamp_elevation-delta.y*0.50,8,82)
 			if delta.length()>0.25: lamp_moved=true; quiet_time=0; stable_time=0
 
 func release(id: int) -> void:
@@ -50,7 +50,7 @@ func resume() -> void:
 
 func reset() -> void:
 	cancel_all()
-	paper_tilt=Vector2.ZERO; lamp_azimuth=28; lamp_elevation=55
+	paper_tilt=Vector2.ZERO; lamp_azimuth=28; lamp_elevation=80
 	completed=false; completion_count=0; suspended=false
 	paper_moved=false; lamp_moved=false
 

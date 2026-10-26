@@ -96,7 +96,7 @@ func _init() -> void:
 	model.drag(0,Vector2(100000,-100000)); model.release(0)
 	check(absf(model.paper_tilt.x)<=18 and absf(model.paper_tilt.y)<=18,"Paper tilt remains in safe physical limits")
 	model.start(1,"lamp"); model.drag(1,Vector2(-100000,100000)); model.release(1)
-	check(model.lamp_azimuth>=-145 and model.lamp_azimuth<=145 and model.lamp_elevation>=8 and model.lamp_elevation<=65,"Lamp motion remains in reachable physical limits")
+	check(model.lamp_azimuth>=-145 and model.lamp_azimuth<=145 and model.lamp_elevation>=8 and model.lamp_elevation<=82,"Lamp motion remains in reachable physical limits")
 	model.reset(); prepare(model); observe(model,0.6)
 	var timer: float=model.stable_time
 	for dt: float in [-1.0,0.0,NAN,INF]: model.update(dt,GOOD)

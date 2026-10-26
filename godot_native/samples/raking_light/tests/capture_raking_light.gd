@@ -25,7 +25,7 @@ func run() -> void:
 			shade=view.lamp_hit_point(); touch(1,shade,true)
 		if frame==111:
 			check(view.model.owners.get(0)=="paper" and view.model.owners.get(1)=="lamp","two physical objects retain separate touch owners")
-		if frame>110 and frame<=230: drag(1,shade+Vector2(-140,123)*float(frame-110)/120.0)
+		if frame>110 and frame<=230: drag(1,shade+Vector2(-140,124)*float(frame-110)/120.0)
 		if frame==235: touch(0,last[0],false); touch(1,last[1],false)
 		if frame==300:
 			print("RAKING_POSE ",view.model.paper_tilt," ",view.model.lamp_azimuth," ",view.model.lamp_elevation," metrics=",view.metrics)

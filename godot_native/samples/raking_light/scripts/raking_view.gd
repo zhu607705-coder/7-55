@@ -83,9 +83,33 @@ func _process(delta: float) -> void:
 	# Recorded lighting is immutable. It is not a control for the current lamp.
 	recorded_world.update_scene(Vector2(9,-6),-28,18,0,false)
 	metrics=current_world.visibility_metrics()
+	# A lit groove hidden behind the historical window is not an observation.
+	# Keep physical illumination unchanged, but require enough of the actual
+	# projected groove samples to remain unobscured in the current view as well.
+	metrics["world_coverage"]=metrics.get("coverage",0.0)
+	metrics["screen_coverage"]=_visible_groove_ratio()
+	metrics["coverage"]=minf(metrics.world_coverage,metrics.screen_coverage)
 	model.update(delta,metrics)
 
 	queue_redraw()
+
+func _visible_groove_ratio() -> float:
+	if not current_image.is_visible_in_tree() or current_world.groove_probes.is_empty(): return 0.0
+	# Startup/minimized windows can briefly have no usable layout at all.
+	if current_rect.size.x<=0 or current_rect.size.y<=0 or size.x<=0 or size.y<=0: return 0.0
+	var visible_count:=0.0
+	for probe: Dictionary in current_world.groove_probes:
+		var p: Vector2=probe.p
+		var world_point: Vector3=current_world.paper_pivot.to_global(Vector3(p.x,World.groove_height(p),p.y))
+		var screen: Vector2=current_rect.position+current_world.screen_point(world_point)
+		if not current_rect.has_point(screen) or not Rect2(Vector2.ZERO,size).has_point(screen): continue
+		if history_image.is_visible_in_tree() and history_rect.size.x>0 and history_rect.size.y>0 and history_rect.grow(3).has_point(screen): continue
+		var blocked:=false
+		for button: Button in [menu_button,resume,retry,cancel]:
+			if button and button.is_visible_in_tree() and button.get_global_rect().has_point(screen):
+				blocked=true; break
+		if not blocked: visible_count+=1.0
+	return visible_count/current_world.groove_probes.size()
 
 func paper_polygon() -> PackedVector2Array:
 	var points := PackedVector2Array()

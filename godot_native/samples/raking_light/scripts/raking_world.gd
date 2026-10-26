@@ -63,7 +63,7 @@ func setup(recorded: bool=false) -> void:
 	shade.mesh=cone; shade.material_override=lamp_material; shade.rotation.x=PI*0.5; lamp_head.add_child(shade)
 	var bulb := material(Color("fff2c2")); bulb.emission_enabled=true; bulb.emission=Color("ffe4a2")*1.2
 	box("VisibleBulb",Vector3(0,0,-0.155),Vector3(0.28,0.14,0.03),bulb,lamp_head)
-	lamp=SpotLight3D.new(); lamp.name="ActualRakingLamp"; lamp.light_color=Color("ffe8b7"); lamp.light_energy=3.0
+	lamp=SpotLight3D.new(); lamp.name="ActualRakingLamp"; lamp.light_color=Color("ffe8b7"); lamp.light_energy=1.4
 	lamp.spot_range=7.0; lamp.spot_angle=51.0; lamp.spot_attenuation=0.35; lamp.spot_angle_attenuation=0.4
 	lamp.shadow_enabled=true; lamp.shadow_bias=0.1; lamp.shadow_normal_bias=1.0
 	lamp.position=Vector3(0,0,-0.22); lamp_head.add_child(lamp)
@@ -138,9 +138,10 @@ func update_scene(tilt: Vector2, azimuth: float, elevation: float, progress: flo
 	paper_pivot.position.y=maxf(PAPER_CENTER.y,0.33-lowest)
 	var lamp_point := paper_pivot.position+Vector3(cos(az)*cos(el),sin(el),sin(az)*cos(el))*2.95
 	lamp_head.position=lamp_point; lamp_head.look_at(paper_pivot.position)
-	lamp_base.position=Vector3(lamp_point.x,0.07,lamp_point.z)
+	lamp_base.position=Vector3(PAPER_CENTER.x+cos(az)*2.60,0.07,PAPER_CENTER.z+sin(az)*2.0)
 	lamp_arm.position=(lamp_point+lamp_base.position)*0.5
-	lamp_arm.scale.y=lamp_point.y-lamp_base.position.y
+	lamp_arm.basis=Basis(Quaternion(Vector3.UP,(lamp_point-lamp_base.position).normalized()))
+	lamp_arm.scale.y=lamp_point.distance_to(lamp_base.position)
 	for i: int in range(pins.size()): pins[i].position.y=0.16+0.18*clampf(progress*3.0-i,0,1)
 	door_hinge.rotation.y=move_toward(door_hinge.rotation.y,deg_to_rad(-82.0) if complete else 0.0,maxf(delta,0)*1.4)
 
