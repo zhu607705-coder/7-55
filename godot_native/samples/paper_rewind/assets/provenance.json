@@ -42,12 +42,12 @@
       "sha256": "54ccc3c2dd8bd01ea9c336f0f5b28a719ff172bb4dca67ae190eefce4de2ebd4",
       "bytes": 2115495,
       "runtimeCrop": [
-        575,
+        603,
         340,
-        370,
+        314,
         395
       ],
-      "processing": "Source unchanged; no chroma-key pixels in selected region; cropped and dimmed in renderer only."
+      "processing": "Source unchanged; crop matches the 334x420 world-space glass plane before the shared orthographic projection; no chroma-key pixels in selected region; dimmed only in renderer."
     },
     {
       "path": "assets/folder_cover_front.png",

@@ -250,8 +250,9 @@ func _environment(c: CanvasItem, shift: Vector2, past: bool) -> void:
 	if graybox:
 		_surface(c,glass,Color("a2aaa6"),shift)
 	else:
-		var canopy := AtlasTexture.new(); canopy.atlas=WINDOW_CANOPY; canopy.region=Rect2(575,340,370,395)
+		var canopy := AtlasTexture.new(); canopy.atlas=WINDOW_CANOPY; canopy.region=Rect2(603,340,314,395)
 		_surface(c,glass,Color(0.48,0.52,0.47),shift,canopy)
+		_surface(c,glass,Color(0.27,0.31,0.29,0.50),shift)
 	# Recess reveals and an actual horizontal sill, not a screen-space stripe.
 	_surface(c,[Vector3(18,12,538),Vector3(388,12,538),Vector3(370,-8,520),Vector3(36,-8,520)],Color("7a817b"),shift)
 	_surface(c,[Vector3(18,12,82),Vector3(36,-8,100),Vector3(36,-8,520),Vector3(18,12,538)],Color("505c57"),shift)
