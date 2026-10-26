@@ -5625,3 +5625,7 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Preserved the newest PR174 ancestry and full eight-shard/nine-consumer fail-closed gates. The single C2 readiness helper retains native.scene, actual dorm/packs/button checks and 29 contracts; continuous input, original 20s interaction, rotation and network acknowledgement remain. Only retina C2 keeps 18/12 minute limits, backed by f7 actual 536s/578s.
 - Ten focused Node contracts finally pass 208 checks; 212 diagnostic forwarding assertions remain. Eight duplicate readiness cases were removed in favor of the stronger upstream set. A macOS synthetic preparation fixture gained only its required minimal project configuration; its original failure remains recorded. No runtime or path guard was relaxed.
 - Final exact-head export, CI, merge and Pages receipts remain separate pending steps.
+
+## 2026-10-26 final modal fixture synchronization
+
+- Exact 14c Web aggregation passed all13 logical consumers /17 reports; PR deploy correctly skipped. Native seven shards, graphics and preparation passed; one obsolete canteen fixture still required modal.z_index==100. The existing assertion now checks ordering above scene/narrative/phone glass, preserving all original lifecycle and progression checks; isolated11/0. A bounded complete test search found no other affected modal constant. This is fixture maintenance, not a newly found product defect or adversarial reward. Runtime remains byte-for-byte unchanged by this last fix.

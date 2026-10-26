@@ -69,7 +69,7 @@ CSS 候选将 canvas 固定于视口并以 CSS 保持全宽全高，避免 Godot
 
 ## 提交范围
 
-Current integration scope: 185 paths, including PR174 through b4686628 and the measured UI/source-fixture corrections. Excludes node_modules, generated exports/cache, external QA and the standalone research library. Release checkpoint: [20261026](INTEGRATION_RELEASE_20261026.md).
+Current integration scope: 186 paths, including PR174 through b4686628 and the final relative modal-order fixture correction. Excludes node_modules, generated exports/cache, external QA and the standalone research/adversarial authoring tools. Release checkpoint: [20261026](INTEGRATION_RELEASE_20261026.md).
 
 ```text
 .github/workflows/deploy-pages.yml
@@ -168,6 +168,7 @@ godot_native/tests/fixtures/chapter3_narrative_source.json
 godot_native/tests/fixtures/library_story_source.json
 godot_native/tests/fixtures/native_validation_baseline_33cc499.json
 godot_native/tests/fixtures/native_validation_timings_33cc499.json
+godot_native/tests/test_canteen_native_layers.gd
 godot_native/tests/test_canteen_queue_floor_tap.gd
 godot_native/tests/test_canteen_waiting_portrait.gd
 godot_native/tests/test_cc98_gamepad_exchange.gd
