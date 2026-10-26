@@ -70,8 +70,10 @@ func run() -> void:
 	await rendered_frame()
 	var off: Image=view.current_viewport.get_texture().get_image()
 	var history_off: Image=view.history_viewport.get_texture().get_image()
+	var off_exposure:=paper_exposure(off)
 	var on_contrast:=groove_contrast(on); var off_contrast:=groove_contrast(off)
-	check(image_difference(on,off)>0.01,"Actual current-world pixels respond to the physical lamp")
+	# Compare the actual paper region, not a viewport-wide average diluted by the room.
+	check(absf(on_exposure.mean-off_exposure.mean)>0.025 and image_difference(on,off)>0.002,"Actual paper pixels respond to the physical lamp")
 	check(on_contrast>off_contrast+0.02,"Actual groove-side contrast is stronger under the raking lamp than with it off")
 	check(on_contrast>frontal_contrast+0.02 and on_contrast>frontal_contrast*1.4,"At an identical paper pose, raking light reveals more groove contrast than the near-normal lamp")
 	check(entry_exposure.white_fraction<=0.02 and entry_exposure.clipped_fraction<=0.10,"Entry paper is not made unreadable by white or channel clipping")
@@ -86,5 +88,5 @@ func run() -> void:
 		on.save_png(directory.path_join("raking-lamp-on.png"))
 		off.save_png(directory.path_join("raking-lamp-off.png"))
 		full_on.save_png(directory.path_join("raking-physical-light-frame.png"))
-	print("RAKING_RENDER checks=",checks," failures=",failures," on_contrast=",on_contrast," off_contrast=",off_contrast," frontal_contrast=",frontal_contrast," entry_exposure=",entry_exposure," frontal_exposure=",frontal_exposure," raking_exposure=",on_exposure," image_delta=",image_difference(on,off)," adapter=",RenderingServer.get_video_adapter_name())
+	print("RAKING_RENDER checks=",checks," failures=",failures," on_contrast=",on_contrast," off_contrast=",off_contrast," frontal_contrast=",frontal_contrast," entry_exposure=",entry_exposure," frontal_exposure=",frontal_exposure," raking_exposure=",on_exposure," paper_lamp_delta=",absf(on_exposure.mean-off_exposure.mean)," image_delta=",image_difference(on,off)," adapter=",RenderingServer.get_video_adapter_name())
 	view.queue_free(); await process_frame; quit(1 if failures else 0)

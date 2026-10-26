@@ -63,7 +63,7 @@ func setup(recorded: bool=false) -> void:
 	shade.mesh=cone; shade.material_override=lamp_material; shade.rotation.x=PI*0.5; lamp_head.add_child(shade)
 	var bulb := material(Color("fff2c2")); bulb.emission_enabled=true; bulb.emission=Color("ffe4a2")*1.2
 	box("VisibleBulb",Vector3(0,0,-0.155),Vector3(0.28,0.14,0.03),bulb,lamp_head)
-	lamp=SpotLight3D.new(); lamp.name="ActualRakingLamp"; lamp.light_color=Color("ffe8b7"); lamp.light_energy=1.4
+	lamp=SpotLight3D.new(); lamp.name="ActualRakingLamp"; lamp.light_color=Color("ffe8b7"); lamp.light_energy=0.18
 	lamp.spot_range=7.0; lamp.spot_angle=51.0; lamp.spot_attenuation=0.35; lamp.spot_angle_attenuation=0.4
 	lamp.shadow_enabled=true; lamp.shadow_bias=0.1; lamp.shadow_normal_bias=1.0
 	lamp.position=Vector3(0,0,-0.22); lamp_head.add_child(lamp)
