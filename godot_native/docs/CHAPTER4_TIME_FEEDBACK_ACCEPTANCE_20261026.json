@@ -1,0 +1,181 @@
+{
+  "kind": "production-chapter4-earned-fact-feedback",
+  "recorded_at_utc": "2026-10-26T04:12:11.989344+00:00",
+  "base_main": "f18cee570f3684e7cd87b6c0f0844f805f3d88c4",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "renderer_contract": "GL Compatibility",
+  "visual_acceptance": false,
+  "physical_mobile_acceptance": false,
+  "new_checks": 526,
+  "original_regressions": [
+    {
+      "name": "test_all_scripts_parse.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 37345,
+      "error": null
+    },
+    {
+      "name": "test_chapter4.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 2631,
+      "error": null
+    },
+    {
+      "name": "test_projection_handoff_source.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 2398,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_clock_handoff.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 3051,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_closure_admission.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 16774,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_closure_save_mode.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 4038,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_checkin_drop.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 9736,
+      "error": null
+    },
+    {
+      "name": "test_room204_residual_target.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 4518,
+      "error": null
+    },
+    {
+      "name": "test_chapter4_device_main.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 14951,
+      "error": null
+    },
+    {
+      "name": "test_canteen_native_layers.gd",
+      "passed": true,
+      "exit": 0,
+      "elapsedMs": 7761,
+      "error": null
+    }
+  ],
+  "quick": {
+    "validators": 5,
+    "status": "pass"
+  },
+  "static_cross_pr": {
+    "checks": 2966,
+    "failures": 0
+  },
+  "web_startup_ownership": {
+    "status": "baseline_failure_reproduced",
+    "actual": "chapter4_a3_archive_film_v01.png.import classified chapter4",
+    "old_assertion_expected": "core",
+    "same_on_unmodified_pr175": true,
+    "not_changed_in_this_patch": true
+  },
+  "preview_autoplay": {
+    "status": "pass",
+    "headless": true,
+    "not_visual_evidence": true
+  },
+  "recording_negative_checks": {
+    "png_headless_exit": 2,
+    "movie_preflight_headless_exit": 2,
+    "actual_images_or_video_created": false
+  },
+  "local_release": {
+    "status": "not_run",
+    "reason": "Unchanged retained Web source; historical same-cloud single-file build was killed137. Do not relabel historical35/38 as a run on this candidate. Existing exact-head remote Web CI must execute validate:release."
+  },
+  "compatibility": {
+    "pr175_head": "59b32c6553cd29994d61fe225af2375a3c09308d",
+    "main_patch_applies_cleanly": true,
+    "focused_checks": 451,
+    "focused_failures": 0,
+    "existing_modal_surface_order_checks": 11,
+    "existing_modal_surface_order_failures": 0,
+    "existing175_startup_ownership": "failed identically with and without all candidate changes: chapter4_a3_archive_film_v01.png.import classified chapter4, old assertion expects core; not changed here",
+    "sibling_branch_modified": false,
+    "rebased_onto_latest_main": true,
+    "latest_main_tree_equals_pr175": true,
+    "native_ci": "Current main includes sealed preparation and eight runtime shards; workflows unchanged by this patch"
+  },
+  "limitations": [
+    "Local display/socket/sandbox restriction remains; no local renderer retry or user-computer access.",
+    "Previous-head actual hosted video revealed two visibility issues. Corrected full video and exact-head CI remain pending this follow-up publication.",
+    "Physical mobile-device acceptance is not established by simulated windows or hosted capture."
+  ],
+  "file_sha256": {
+    "godot_native/scripts/main.gd": "8a83388098d449849f325784fb344d8bf0788228f3438b42a66e2cfc2dbfa9f0",
+    "godot_native/scripts/presentation/chapter4_time_feedback.gd": "db0cd0bc21824d4cb140a9c421c604a2d4734f9548a19a3049296bb4e73eef23",
+    "godot_native/scripts/presentation/chapter4_time_feedback_model.gd": "1ad15a269081bdc921eacf4e1d4c8920cedf859e83a1a664397bab9bbc6eb950",
+    "godot_native/tests/chapter4_time_feedback_preview.gd": "f410041ec670470ff3f9850bfc8f532dbed5dfac207a0b838c3f640506f508d3",
+    "godot_native/tests/chapter4_time_feedback_preview.tscn": "4d981208c09962be146a24d400b5e4b47e1b9f8495117a2cd854d056aacc6daa",
+    "godot_native/tests/helpers/chapter4_time_feedback_fixture.gd": "3b3550e13f78c09e2df5324023ded4f0b685951bf9f11e9a90f7b818c491becf",
+    "godot_native/tests/test_pr_integration_chapter4_time_feedback.gd": "016942d63746013769440c475d182d596c78cba0f247d293ee9a12d49153c084",
+    "godot_native/tools/run_chapter4_time_feedback.mjs": "237c9fa527a70a50b4b96a6e88006cbf9b7b0be921a7ccad74e7f2f485db4c7e"
+  },
+  "log_sha256": {
+    "visual-fix-final-focused.log": "9807eb8f51a8a4c5d7de11be0ac4ff78e8320c9b132337351cd21520c03a0027",
+    "visual-fix-oldcode-negative.log": "0b0488dadb812dec483c061ea2729a1a9d3a8ec0e1e4483f800fc7cba06f9d9f",
+    "visual-fix-regressions.json": "2b40d0b89b2e20198d9393bded4a8b2b7f885d4aa403f7024ccc1afb0407d2b1",
+    "visual-fix-quick.log": "7c375a1a21f57f78d65e8d68e31f4f2ef2581af294a1c257785bad1d51bfed02",
+    "visual-fix-static.log": "fc81b31e79f7f21ca6ba7dd683d750378b33f256803f08e660e69d35d064ea5d",
+    "visual-fix-autoplay.log": "1f4aefb7bdaa3aac5c3ea38b8d505eb0d072d02dfef33d1c42767bcd075bbb24"
+  },
+  "initial_base_main": "abd8b0028e8443795518243da7930ee760bc92e9",
+  "visual_follow_up": {
+    "previous_game_head": "40b21340b5c0969f0aae12f533cb84d4c1ef3f5a",
+    "previous_recording_head": "06e5d1d89af9bc6c7375f0d3c2559a4a119230e4",
+    "previous_recording_run": 40266176335,
+    "renderer": "Mesa llvmpipe OpenGL Compatibility, actual Godot MovieMaker",
+    "observed_issues": [
+      "Portrait delta overlapped original world notice",
+      "QA restoration checkpoint camera stood in the unrelated east corridor"
+    ],
+    "scope_of_fix": [
+      "Compact comparison beside existing skip with font-metric envelope",
+      "QA checkpoint aisle position only; no production camera or world layout changes"
+    ],
+    "old_code_negative": {
+      "checks": 526,
+      "failures": 38,
+      "normal_exit": 1,
+      "breakdown": "2 notice overlaps plus36 offscreen target checks; no missing-field exceptions"
+    },
+    "corrected_head_visual_acceptance": "pending fresh recording; not inferred from geometry",
+    "partial_delivery": "Only two valid desktop beats cut from actual previous video; explicitly labelled not a full3-beat demonstration"
+  },
+  "previous_head_remote_ci": {
+    "head": "40b21340b5c0969f0aae12f533cb84d4c1ef3f5a",
+    "all_four_success": true,
+    "runs": [
+      40264904293,
+      40264904294,
+      40264904388,
+      40264904300
+    ],
+    "not_results_for_this_follow_up": true
+  }
+}

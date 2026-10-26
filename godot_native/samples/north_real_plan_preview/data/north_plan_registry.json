@@ -1,0 +1,567 @@
+{
+  "schemaVersion": 1,
+  "scope": "read_only_historical_plan_and_art_preview",
+  "asOf": "2026-10-26",
+  "currentSurveyVerified": false,
+  "navigationEnabled": false,
+  "sourceBinaryRedistribution": "not_included; university licensing not established",
+  "campusLocator": {
+    "noticeUrl": "https://zdzsc.zju.edu.cn/2025/0619/c87242a3063052/page.htm",
+    "relationship": "North3/North4 in northern row; North1/North2 in southern row",
+    "use": "relationship only, not metric placement or a source-pixel transform"
+  },
+  "sources": {
+    "north1_archive": {
+      "title": "浙江大学 2023 年硕士研究生招生考试考生须知（2022-12-22）",
+      "noticeUrl": "https://www.grs.zju.edu.cn/yjszs/2022/1222/c28498a2704403/page.htm",
+      "archiveUrl": "https://www.grs.zju.edu.cn/_upload/article/files/73/04/b9a23c234a20bb5f82e8de56394d/ded9a2dc-9935-47ca-9d81-9eca4513aaee.rar",
+      "kind": "historical_exam_reference"
+    },
+    "north2_archive": {
+      "title": "浙江大学 2023 年硕士研究生招生考试考生须知（2022-12-22）",
+      "noticeUrl": "https://www.grs.zju.edu.cn/yjszs/2022/1222/c28498a2704403/page.htm",
+      "archiveUrl": "https://www.grs.zju.edu.cn/_upload/article/files/73/04/b9a23c234a20bb5f82e8de56394d/42f4653c-97dd-4073-9f0d-cee308009382.rar",
+      "kind": "historical_exam_reference"
+    },
+    "north3_archive": {
+      "title": "浙江大学研究生招生官方考生通知（2025-12-13）",
+      "noticeUrl": "https://www.grs.zju.edu.cn/yjszs/2025/1213/c28498a3118922/page.htm",
+      "archiveUrl": "https://www.grs.zju.edu.cn/_upload/article/files/3e/d7/0fc8a3c54818b89e201500f70fa7/c70f435e-bf90-43cf-8ad4-d7ba4b9758b9.rar",
+      "kind": "historical_exam_reference"
+    },
+    "north4_archive": {
+      "title": "浙江大学研究生招生官方考生通知（2025-12-13）",
+      "noticeUrl": "https://www.grs.zju.edu.cn/yjszs/2025/1213/c28498a3118922/page.htm",
+      "archiveUrl": "https://www.grs.zju.edu.cn/_upload/article/files/3e/d7/0fc8a3c54818b89e201500f70fa7/f2465e7d-73f0-40bb-b0bd-8cbc04ed60db.rar",
+      "kind": "historical_exam_reference"
+    }
+  },
+  "buildings": [
+    {
+      "id": "north1",
+      "name": "北教1",
+      "sourceId": "north1_archive",
+      "documentedFloorNumbers": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "currentTotalFloorCount": null,
+      "drawingDate": "2022.03.18",
+      "sourceFormat": "pdf",
+      "sourceCaveat": "历史考试参考图，不能作为2026年现状建筑实测图。上层可能有退台、屋面和局部翼楼，必须逐层核对。",
+      "orientationNote": "保持各座一层候选原始方向，不旋转、不镜像。候选与图纸未做像素配准；地理北向未在本预览核验。",
+      "artCaveat": "上部服务区仍有重复器具形状；咖啡区边界需核查。",
+      "floors": [
+        {
+          "id": "north1:f1",
+          "number": 1,
+          "sourceId": "north1_archive",
+          "sourceMember": "北教1#平面01.pdf",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "approximate_candidate",
+          "art": {
+            "path": "res://assets/north1-floor1-empty-architecture-candidate-v2.png",
+            "sha256": "d8efe40c8a30574140865d0306aa625cd792812ec034cf5cc2f230bf8a6d48fa",
+            "dimensions": [
+              1448,
+              1086
+            ],
+            "registration": "unregistered_approximation",
+            "alphaValues": [
+              0,
+              255
+            ],
+            "rgbPolicy": "original_v2_rgb_unchanged"
+          },
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north1:f2",
+          "number": 2,
+          "sourceId": "north1_archive",
+          "sourceMember": "北教1#平面02.pdf",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north1:f3",
+          "number": 3,
+          "sourceId": "north1_archive",
+          "sourceMember": "北教1#平面03.pdf",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north1:f4",
+          "number": 4,
+          "sourceId": "north1_archive",
+          "sourceMember": "北教1#平面04.pdf",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "north2",
+      "name": "北教2",
+      "sourceId": "north2_archive",
+      "documentedFloorNumbers": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "currentTotalFloorCount": null,
+      "drawingDate": "未确认",
+      "sourceFormat": "raster_png",
+      "sourceCaveat": "历史考试参考图，不能作为2026年现状建筑实测图。上层可能有退台、屋面和局部翼楼，必须逐层核对。北2附件标签有楼名笔误；正文与内部文件名支持北2身份。",
+      "orientationNote": "保持各座一层候选原始方向，不旋转、不镜像。候选与图纸未做像素配准；地理北向未在本预览核验。",
+      "artCaveat": "原图边缘不全的、房间比例和门洞尚未配准；不是北1的镜像复制。",
+      "floors": [
+        {
+          "id": "north2:f1",
+          "number": 1,
+          "sourceId": "north2_archive",
+          "sourceMember": "北教2-1楼.png",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "approximate_candidate",
+          "art": {
+            "path": "res://assets/north2-floor1-empty-architecture-candidate-v2.png",
+            "sha256": "7d24d5121bfb9649ea4381656083150057c40901fcf4fe8b21100239d40379db",
+            "dimensions": [
+              1536,
+              1024
+            ],
+            "registration": "unregistered_approximation",
+            "alphaValues": [
+              0,
+              255
+            ],
+            "rgbPolicy": "original_v2_rgb_unchanged"
+          },
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north2:f2",
+          "number": 2,
+          "sourceId": "north2_archive",
+          "sourceMember": "北教2-2楼.png",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north2:f3",
+          "number": 3,
+          "sourceId": "north2_archive",
+          "sourceMember": "北教2-3楼.png",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north2:f4",
+          "number": 4,
+          "sourceId": "north2_archive",
+          "sourceMember": "北教2-4楼.png",
+          "sourceMemberVerification": "prior_archive_inspection",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "north3",
+      "name": "北教3",
+      "sourceId": "north3_archive",
+      "documentedFloorNumbers": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "currentTotalFloorCount": null,
+      "drawingDate": "2022.03.20",
+      "sourceFormat": "pdf",
+      "sourceCaveat": "历史考试参考图，不能作为2026年现状建筑实测图。上层可能有退台、屋面和局部翼楼，必须逐层核对。",
+      "orientationNote": "保持各座一层候选原始方向，不旋转、不镜像。候选与图纸未做像素配准；地理北向未在本预览核验。",
+      "artCaveat": "中央消防通行区保留空铺地；服务隔墙、门洞及外楼梯仍近似。",
+      "floors": [
+        {
+          "id": "north3:f1",
+          "number": 1,
+          "sourceId": "north3_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "approximate_candidate",
+          "art": {
+            "path": "res://assets/north3-floor1-empty-architecture-candidate-v2.png",
+            "sha256": "09dd7e5c8c2dbd3faaca4f736733599d5f4dc2c61097ddbec26bcd9c67673e22",
+            "dimensions": [
+              1448,
+              1086
+            ],
+            "registration": "unregistered_approximation",
+            "alphaValues": [
+              0,
+              255
+            ],
+            "rgbPolicy": "original_v2_rgb_unchanged"
+          },
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north3:f2",
+          "number": 2,
+          "sourceId": "north3_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north3:f3",
+          "number": 3,
+          "sourceId": "north3_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north3:f4",
+          "number": 4,
+          "sourceId": "north3_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north3:f5",
+          "number": 5,
+          "sourceId": "north3_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "north4",
+      "name": "北教4",
+      "sourceId": "north4_archive",
+      "documentedFloorNumbers": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "currentTotalFloorCount": null,
+      "drawingDate": "2022.03.20",
+      "sourceFormat": "pdf",
+      "sourceCaveat": "历史考试参考图，不能作为2026年现状建筑实测图。上层可能有退台、屋面和局部翼楼，必须逐层核对。",
+      "orientationNote": "保持各座一层候选原始方向，不旋转、不镜像。候选与图纸未做像素配准；地理北向未在本预览核验。",
+      "artCaveat": "保留门开启曲线及平面辅助痕迹；礼堂与梯间尺寸需配准。",
+      "floors": [
+        {
+          "id": "north4:f1",
+          "number": 1,
+          "sourceId": "north4_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "approximate_candidate",
+          "art": {
+            "path": "res://assets/north4-floor1-empty-architecture-candidate-v2.png",
+            "sha256": "ef16b6327547cc7539360db241fb47c234bcb48126ef28db1e2f2d1159660594",
+            "dimensions": [
+              1448,
+              1086
+            ],
+            "registration": "unregistered_approximation",
+            "alphaValues": [
+              0,
+              255
+            ],
+            "rgbPolicy": "original_v2_rgb_unchanged"
+          },
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north4:f2",
+          "number": 2,
+          "sourceId": "north4_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north4:f3",
+          "number": 3,
+          "sourceId": "north4_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north4:f4",
+          "number": 4,
+          "sourceId": "north4_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        },
+        {
+          "id": "north4:f5",
+          "number": 5,
+          "sourceId": "north4_archive",
+          "sourceMember": null,
+          "sourceMemberVerification": "pending_transfer_of_prior_source_evidence",
+          "artStatus": "not_created",
+          "art": null,
+          "geometry": {
+            "status": "not_extracted",
+            "coordinateSpace": null,
+            "walkablePolygons": [],
+            "solidPolygons": [],
+            "rooms": [],
+            "portals": [],
+            "evidence": []
+          },
+          "objectLayer": {
+            "status": "unplaced",
+            "instances": []
+          }
+        }
+      ]
+    }
+  ]
+}

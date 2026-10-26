@@ -107,6 +107,7 @@ var c3_narrative_host: Control
 const CanteenObjective = preload("res://scripts/presentation/canteen_objective.gd")
 const NativeJournalView = preload("res://scripts/ui/native_journal_view.gd")
 const ObservationComparisonSession = preload("res://scripts/presentation/observation_comparison_session.gd")
+var chapter4_time_feedback: Control
 const ObservationComparisonView = preload("res://scripts/ui/observation_comparison_view.gd")
 var observation_comparison_session = ObservationComparisonSession.new()
 const PhotoBrightnessSession = preload("res://scripts/ui/photo_brightness_session.gd")
@@ -2475,6 +2476,12 @@ func _sync_story_hosts() -> void:
 	# chapter >= 3 would strand the real Library -> Canteen handoff.
 	if State.d.is_empty() or not is_instance_valid(world): return
 	var scene: String=str(State.d.native.get("scene",""))
+	if chapter4_time_feedback == null and scene=="duan_yongping_temporal_maze":
+		chapter4_time_feedback=load("res://scripts/presentation/chapter4_time_feedback.gd").new()
+		add_child(chapter4_time_feedback)
+		chapter4_time_feedback.setup(world,world_view,phone,func() -> Dictionary: return State.d,func() -> Dictionary: return {"game":active_game,"modal":modal,"document":phone_document,"control":State.d.ui.controlCenterOpen})
+		State.action_completed.connect(chapter4_time_feedback.observe)
+		State.story_reset.connect(chapter4_time_feedback.reset)
 	var needs_library: bool=int(State.d.native.chapter)==2 and str(State.d.ui.libraryFinalsPhase)!="idle"
 	var needs_scene: bool=scene=="canteen_interior" or State.get_scene_session()!=null
 	var needs_narrative: bool=scene in ["canteen_interior","theater_interior","campus_qizhen_loop"] or State.get_c3_narrative_session()!=null
@@ -2766,6 +2773,7 @@ func shutdown() -> void:
 	# Native audio retires on the mixer thread. Await the real owners before
 	# immediate test/standalone exit instead of leaking a still-playing stream.
 	set_process(false)
+	if is_instance_valid(chapter4_time_feedback): chapter4_time_feedback.cancel()
 	if is_instance_valid(object_focus):object_focus.request_close(true)
 	if is_instance_valid(world): world.set_process(false)
 	if is_instance_valid(c3_scene_host): c3_scene_host.reset(); c3_scene_host.set_process(false)
