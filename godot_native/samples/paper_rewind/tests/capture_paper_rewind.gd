@@ -7,7 +7,6 @@ var view: Control
 var overlay: Control
 var markers: Dictionary = {}
 var current_frame := 0
-var caption := "拖动蓝色观察窗：只看过去，不改现在"
 var failures := 0
 
 func _initialize() -> void:
@@ -76,7 +75,6 @@ func _run() -> void:
 			drag(1,last_history,p); last_history = p
 		if frame == 205: touch(1,history_start,false)
 		if frame == 235:
-			caption = "左手抓纸：纸停住，桌面仍在现在"
 			last_paper = view.stage.paper_grip.get_global_rect().get_center()
 			touch(0,last_paper,true)
 		if frame > 235 and frame <= 280:
@@ -84,26 +82,22 @@ func _run() -> void:
 			var p := paper_point(at_time)
 			drag(0,last_paper,p); last_paper = p
 		if frame == 295:
-			caption = "左手不松开，右手直接翻开文件夹"
 			folder = view.stage.folder_button.get_global_rect().get_center()
 			touch(1,folder,true)
 		if frame == 315:
 			touch(1,folder,false)
 		if frame == 316:
 			check(view.model.folder_open and view.stage.paper_grip.held,"Right folder opens while left paper stays captured")
-		if frame == 330: caption = "继续倒退纸张，文件夹没有倒退"
 		if frame > 330 and frame <= 375:
 			var at_time := lerpf(2.5,0.8,float(frame - 330)/45.0)
 			var p := paper_point(at_time)
 			drag(0,last_paper,p); last_paper = p
 		if frame == 390:
 			touch(0,last_paper,false)
-			caption = "松开左手：纸沿新落点进入夹层"
 		if frame == 391:
 			check(view.model.mode == "forward" and view.model.folder_open,"Releasing owner resumes with environment retained")
 		if frame == 565:
 			check(view.model.mode == "landed" and view.model.completion_count == 0,"Real catch lands before explicit collection")
-			caption = "落稳后，直接点纸收起"
 		if frame == 585:
 			last_paper = view.stage.paper_grip.get_global_rect().get_center()
 			touch(0,last_paper,true)
@@ -111,7 +105,6 @@ func _run() -> void:
 			touch(0,last_paper,false)
 		if frame == 596:
 			check(view.model.mode == "solved" and view.model.paper_collected,"Explicit paper tap collects once")
-			caption = "倒退的是纸；改过的桌面留在现在"
 		overlay.queue_redraw()
 		await process_frame
 	check(view.model.completion_count == 1,"Recording completed exactly one local collection")
@@ -131,6 +124,4 @@ func _draw_overlay() -> void:
 		overlay.draw_arc(marker.point,18,0,TAU,40,color,2.0,true)
 		overlay.draw_string(font,marker.point + Vector2(-4,6),str(id + 1),HORIZONTAL_ALIGNMENT_LEFT,-1,18,color)
 	var bottom := float(root.size.y)
-	overlay.draw_rect(Rect2(8,bottom - 76,root.size.x - 16,68),Color(0.06,0.10,0.13,0.96))
-	overlay.draw_string(font,Vector2(18,bottom - 51),caption,HORIZONTAL_ALIGNMENT_LEFT,root.size.x - 36,17,Color("e9e4d4"))
-	overlay.draw_string(font,Vector2(18,bottom - 22),"真实引擎 · 自动双触点演示 · 非物理手机",HORIZONTAL_ALIGNMENT_LEFT,root.size.x - 36,14,Color("a9c0bf"))
+	overlay.draw_string(font,Vector2(12,bottom - 12),"自动双触点 · 非物理手机",HORIZONTAL_ALIGNMENT_LEFT,root.size.x - 24,12,Color("d3ded4"))

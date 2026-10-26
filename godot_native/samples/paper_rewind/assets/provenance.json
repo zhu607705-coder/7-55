@@ -11,6 +11,30 @@
       "source": "godot_native/ui_assets/fonts/MorningNote-Regular.ttf",
       "sha256": "7a90f1a996c6e5b124644fc12bac9f8c41f13976f767d3ac5a75f0e796a6e2ae",
       "bytes": 416616
+    },
+    {
+      "path": "assets/paper_flight_1.png",
+      "source": "src/assets/rpg/theater/generated/paper/paper_flight_1.png",
+      "sha256": "a7a65b1b682ac9ad22bd97f6476c488027f55fc78e21fbf75f2572282c8271d8",
+      "bytes": 6018
+    },
+    {
+      "path": "assets/paper_flight_2.png",
+      "source": "src/assets/rpg/theater/generated/paper/paper_flight_2.png",
+      "sha256": "bb006bbff0978ab40d205a7a9a338ccfa6cf5e3cf27b781810c122ec7f378f5a",
+      "bytes": 4958
+    },
+    {
+      "path": "assets/paper_flight_3.png",
+      "source": "src/assets/rpg/theater/generated/paper/paper_flight_3.png",
+      "sha256": "5eaba412d350415aff3dfec744517b5ef7889b474ee41440ed7d8fb939424970",
+      "bytes": 6041
+    },
+    {
+      "path": "assets/paper_flight_4.png",
+      "source": "src/assets/rpg/theater/generated/paper/paper_flight_4.png",
+      "sha256": "0f4c0f8913ab364d53782e50393825073a515b950a8bb0328b0eb1fb16f9b5bb",
+      "bytes": 5421
     }
   ],
   "graphicPrototype": "Folder, desk, broadcast display and frame are original procedural Godot drawing, not final room artwork.",

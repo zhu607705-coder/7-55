@@ -1,6 +1,11 @@
 name: Paper rewind portrait demonstration
 
 on:
+  push:
+    branches: [dot/paper-rewind-visual-proof-20261026]
+    paths:
+      - 'godot_native/samples/paper_rewind/**'
+      - '.github/workflows/paper-rewind-demo.yml'
   pull_request:
     paths:
       - 'godot_native/samples/paper_rewind/**'
@@ -67,6 +72,8 @@ jobs:
             -of json paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 > paper-rewind-demo/video-metadata.json
           node -e 'const r=require("./paper-rewind-demo/video-metadata.json"); if(r.format.duration<23||r.format.duration>26||r.streams[0].width!==390||r.streams[0].height!==844)process.exit(1)'
           ffmpeg -hide_banner -loglevel error -y -ss 10.4 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/two-touch-frame.png
+          ffmpeg -hide_banner -loglevel error -y -ss 0.8 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/first-frame.png
+          ffmpeg -hide_banner -loglevel error -y -ss 16.8 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/landing-frame.png
           printf '%s\n' 'Actual Godot 4.7.1 GL Compatibility output. Automated two-touch portrait demonstration, not physical-phone verification. No formal story integration or saved-game proof.' > paper-rewind-demo/README.txt
       - uses: actions/upload-artifact@v4
         if: always()

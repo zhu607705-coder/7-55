@@ -9,6 +9,7 @@ var world_rect := Rect2(580, 40, 330, 190)
 var world_scale := 1.0
 var reduced_motion := false
 var _dragging := false
+var paint_record: Callable
 
 func _ready() -> void:
 	clip_contents = true
@@ -18,21 +19,15 @@ func _ready() -> void:
 	tooltip_text = "拖动观察窗；焦点在窗上时，用方向键移动"
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color("344f62"))
-	# A faded old desktop, seen through the window rather than moved with it.
-	var table := Rect2(Vector2(70, 286) - world_rect.position, Vector2(806, 176))
-	draw_rect(Rect2(table.position * world_scale, table.size * world_scale), Color("536574"))
-	var old_folder := Rect2((Vector2(485, 279) - world_rect.position) * world_scale, Vector2(230, 69) * world_scale)
-	draw_rect(old_folder, Color("7e8988"))
-	var point: Vector2 = (Model.free_position(record_time) - world_rect.position) * world_scale
-	draw_texture_rect(PAPER, Rect2(point - Vector2(24, 29) * world_scale, Vector2(48, 58) * world_scale), false, Color(0.65, 0.85, 1.0, 0.75))
-	if not reduced_motion:
-		for index: int in range(5):
-			var p := Vector2(125 + index * 85.0, 185 + index * 12.0)
-			draw_line((p - world_rect.position) * world_scale, (p + Vector2(46, 0) - world_rect.position) * world_scale, Color("91b7c7"), 1.5)
-	draw_rect(Rect2(0, 0, size.x, 26), Color("203644"))
-	draw_string(get_theme_default_font(), Vector2(8, 19), "过去 · 只读", HORIZONTAL_ALIGNMENT_LEFT, size.x - 16, 16, Color("d4e9e6"))
-	draw_rect(Rect2(Vector2.ONE, size - Vector2.ONE * 2), Color("c1e0d9") if has_focus() else Color("7fa8b9"), false, 2)
+	if paint_record.is_valid(): paint_record.call(self)
+	draw_rect(Rect2(Vector2.ZERO,size),Color(0.13,0.36,0.43,0.22))
+	for y: int in range(0,int(size.y),5): draw_line(Vector2(0,y),Vector2(size.x,y),Color(0.70,0.88,0.85,0.04),1)
+	draw_rect(Rect2(Vector2.ONE*3,size-Vector2.ONE*6),Color("263f46"),false,6)
+	draw_rect(Rect2(Vector2.ONE*2,size-Vector2.ONE*4),Color("a8c9bd"),false,1.5)
+	# An etched clock and backward tick distinguish the recorded layer without a label.
+	draw_arc(Vector2(18,18),8,0,TAU,24,Color("c0d7cc"),1.5,true)
+	draw_line(Vector2(18,18),Vector2(18,12),Color("c0d7cc"),1.5)
+	draw_line(Vector2(18,18),Vector2(13,20),Color("c0d7cc"),1.5)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:

@@ -15,8 +15,8 @@ func _ready() -> void:
 	tooltip_text = "纸张"
 
 func _draw() -> void:
-	if has_focus():
-		draw_rect(Rect2(Vector2.ONE * 2, size - Vector2.ONE * 4), Color("bedcd5"), false, 2)
+	if held:
+		draw_arc(size * 0.5, size.x * 0.46, -0.5, 2.7, 32, Color(0.72,0.91,0.83,0.6), 2, true)
 
 func _gui_input(event: InputEvent) -> void:
 	if touch_held and (event is InputEventMouseButton or event is InputEventMouseMotion):

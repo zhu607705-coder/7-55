@@ -7,7 +7,6 @@ const FONT = preload("res://assets/MorningNote-Regular.ttf")
 var model := Model.new()
 var stage: Control
 var content: VBoxContainer
-var status: Label
 var clock_label: Label
 var slider: HSlider
 var actions: GridContainer
@@ -17,7 +16,6 @@ var retry_button: Button
 var reset_button: Button
 var skip_button: Button
 var reduced: CheckButton
-var broadcast_label: Label
 var sound_toggle: CheckButton
 var broadcast_player: AudioStreamPlayer
 var help_label: Label
@@ -37,6 +35,9 @@ func _ready() -> void:
 	_build_ui()
 	resized.connect(_layout)
 	_layout()
+	# Enter a living scene: the first sheet really flies, without a Start prompt.
+	model.time = 0.0
+	model.start()
 	_refresh()
 	stage.paper_grip.grab_focus()
 
@@ -74,18 +75,12 @@ func _build_ui() -> void:
 	var margin := MarginContainer.new()
 	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for side: String in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 16)
+		margin.add_theme_constant_override("margin_" + side, 0)
 	scroll.add_child(margin)
 	content = VBoxContainer.new()
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	content.add_theme_constant_override("separation", 10)
+	content.add_theme_constant_override("separation", 0)
 	margin.add_child(content)
-	var title := _label("7:55  /  一页未落定", 27)
-	title.name = "Title"
-	content.add_child(title)
-	var subtitle := _label("独立机制样例 · 不读取或写入正式进度", 17)
-	subtitle.modulate = Color("a9c0bf")
-	content.add_child(subtitle)
 	stage = Stage.new()
 	stage.name = "Desk"
 	stage.model = model
@@ -100,26 +95,23 @@ func _build_ui() -> void:
 	_touch_controls.append(stage.folder_button)
 	_touch_controls.append(stage.paper_grip)
 	_touch_controls.append(stage.history_window)
-	broadcast_label = _label("", 18)
-	broadcast_label.name = "BroadcastFeedback"
-	content.add_child(broadcast_label)
-	status = _label("", 21)
-	status.name = "Status"
-	status.custom_minimum_size.y = 52
-	content.add_child(status)
 	options_button = Button.new()
 	options_button.name = "Options"
-	options_button.text = "选项"
-	options_button.custom_minimum_size = Vector2(96, 44)
+	options_button.text = "···"
+	options_button.accessibility_name = "设置和操作帮助"
+	options_button.custom_minimum_size = Vector2(48, 44)
 	options_button.size_flags_horizontal = Control.SIZE_SHRINK_END
-	options_button.pressed.connect(func() -> void: secondary.visible = not secondary.visible)
-	content.add_child(options_button)
+	options_button.pressed.connect(_toggle_options)
+	add_child(options_button)
 	_touch_controls.append(options_button)
 	secondary = VBoxContainer.new()
 	secondary.name = "SecondaryOptions"
 	secondary.visible = false
 	secondary.add_theme_constant_override("separation", 8)
 	content.add_child(secondary)
+	var settings_title := _label("设置 / 独立样例（不写入正式进度）", 20)
+	settings_title.custom_minimum_size.y = 58
+	secondary.add_child(settings_title)
 	clock_label = _label("", 18)
 	clock_label.name = "TimePreview"
 	secondary.add_child(clock_label)
@@ -202,9 +194,17 @@ func _layout() -> void:
 		_cancel_touch()
 		model.pause()
 	_last_layout_size = size
-	var width := maxf(280.0, size.x - 32.0)
-	stage.custom_minimum_size.y = clampf(width * 9.0 / 16.0, 157.5, 390.0)
+	var width := maxf(280.0, size.x)
+	stage.custom_minimum_size.y = size.y
+	options_button.position = Vector2(size.x - 60, 12)
 	actions.columns = 2 if width < 600.0 else 3
+
+func _toggle_options() -> void:
+	_cancel_touch()
+	model.pause()
+	secondary.visible = not secondary.visible
+	stage.visible = not secondary.visible
+	get_node("Scroll").scroll_vertical = 0
 
 func _process(delta: float) -> void:
 	model.advance(delta)
@@ -213,26 +213,15 @@ func _process(delta: float) -> void:
 	stage.history_time = 4.8 if stage.reduced_motion else fmod(presentation_time, Model.DURATION)
 	stage.environment_time = presentation_time
 	stage.broadcast_quiet = fmod(presentation_time, 8.0) >= 3.5
+	stage.animate(delta)
 	_refresh()
 
 func _refresh() -> void:
 	if not stage:
 		return
 	stage.refresh()
-	var state_text := ""
-	match model.mode:
-		"intro": state_text = "风把这一页吹向桌沿。可以先碰一碰纸张、文件夹和蓝色观察窗。"
-		"forward": state_text = "纸张向前。" if model.catch_time < 0.0 else "纸张沿着新的落点，滑入夹层。"
-		"rewind": state_text = "纸张正在倒退。" + ("文件夹仍然撑开。" if model.folder_open else "桌面没有变化。")
-		"paused": state_text = "纸张停在这里。抓住它，沿着轨迹拖动，松手继续。"
-		"failed": state_text = "纸张飞离桌面，留下了一道纸影。"
-		"landed": state_text = "纸张留在了夹层里。现在可以亲手收起它。"
-		"solved": state_text = "你收起了纸张。倒退的是纸，改变后的桌面留在现在。"
-		"cancelled": state_text = "已离开样例。没有完成或写入任何正式谜题。"
-	status.text = state_text
 	var direction := "倒带" if model.mode == "rewind" else ("播放" if model.mode == "forward" else "静止")
 	clock_label.text = "当前纸张 %.1f / %.1f 秒 · %s   |   文件夹：%s" % [model.time, Model.DURATION, direction, "撑开" if model.folder_open else "合上"]
-	broadcast_label.text = "广播：%s  ·  蓝色观察窗可拖动，只读旧记录" % ("停顿" if stage.broadcast_quiet else "播报中")
 	_update_sound()
 	slider.set_value_no_signal(model.time)
 	slider.editable = model.mode not in ["intro", "solved", "cancelled"]
@@ -281,6 +270,7 @@ func _reset() -> void:
 	_focus_suspended = false
 	stage.reset_history()
 	secondary.visible = false
+	stage.visible = true
 	_refresh()
 	stage.paper_grip.grab_focus()
 
@@ -401,6 +391,7 @@ func _input(event: InputEvent) -> void:
 			touch_sessions[event.index] = {"target": target, "last": event.position}
 			match target:
 				"paper": stage.paper_grip.begin_touch(event.position)
+				"folder": stage.folder_drag_preview = 0.12
 				"history": stage.history_window.grab_focus()
 				"ui": _touch_mouse(event.position, true)
 			get_viewport().set_input_as_handled()
@@ -418,6 +409,7 @@ func _input(event: InputEvent) -> void:
 		session.last = event.position
 		match session.target:
 			"paper": stage.paper_grip.move_touch(event.position)
+			"folder": stage.folder_drag_preview = clampf(stage.folder_drag_preview - delta.y / 90.0, 0.12, 0.95)
 			"history": stage.move_history(delta)
 			"ui":
 				var motion := InputEventMouseMotion.new()
@@ -456,6 +448,7 @@ func _end_touch(session: Dictionary, point: Vector2, cancelled: bool) -> void:
 	match session.target:
 		"paper": stage.paper_grip.end_touch(cancelled or not get_viewport_rect().has_point(point))
 		"folder":
+			stage.folder_drag_preview = 0.0
 			if not cancelled and stage.folder_button.get_global_rect().has_point(point):
 				_open_folder()
 		"history": stage.history_window.cancel_drag()

@@ -43,7 +43,8 @@ func mouse(point: Vector2, down: bool) -> void:
 	await frames(1)
 
 func click(control: Control) -> void:
-	view.get_node("Scroll").ensure_control_visible(control)
+	if view.get_node("Scroll").is_ancestor_of(control):
+		view.get_node("Scroll").ensure_control_visible(control)
 	await frames(2)
 	var point := control.get_global_rect().get_center()
 	await mouse(point, true)
@@ -89,6 +90,9 @@ func _run() -> void:
 	root.add_child(view)
 	await frames(4)
 	view.set_process(false)
+	check(view.model.mode == "forward" and view.model.time > 0, "First entry is actual moving paper, not a written start screen")
+	view._reset()
+	await frames(3)
 	check(view.model.mode == "intro" and not view.secondary.visible and not view.slider.is_visible_in_tree(), "Entry has scene objects, not a primary button row or timeline")
 	var untouched: Dictionary = view.model.snapshot()
 	var old_window: Rect2 = view.stage.history_rect
