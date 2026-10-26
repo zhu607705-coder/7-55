@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {appendRegisteredStages, registrationFields} from './native_validation_registration.mjs';
 export const FIXTURE_WRITERS = ['test_canteen_defense.gd', 'test_minigame_models.gd', 'test_photo_brightness_consumer.gd'];
 export const PREFLIGHT = ['Prepared source and media inputs', 'Native save isolation', 'Godot asset import and editor parse', 'Native startup', 'test_all_scripts_parse.gd'];
+export const PREPARATION_IDS = [...PREFLIGHT, 'Source catalog tests/export_lake_live_source_fixtures.mjs', ...FIXTURE_WRITERS];
 export const NORTH_TARGETED = ['test_north_generated_objects.gd', 'test_north_independent_props.gd', 'test_north_preview_gate.gd', 'test_north_prop_fail_closed.gd'];
 export const NORTH_AFFECTED = ['test_world.gd', 'test_chapter4_contact_movement.gd', 'test_chapter4_phase_world.gd', 'test_world_guard.gd', 'test_chapter4_world.gd', 'test_chapter4_context_exterior.gd', 'test_interior_door_collision.gd', 'test_world_object_picking.gd', 'test_direct_world_input.gd', 'test_direct_world_gestures.gd', 'test_world_input_animation.gd', 'test_world_presentation_lifecycle.gd', 'test_selected_world_native_layer.gd', 'test_mobile_floor_route.gd', 'test_mobile_floor_exact_arrival.gd'];
 const DEPENDENCIES = new Map();
@@ -12,7 +14,7 @@ consumers('test_photo_brightness_consumer.gd', ['Photo brightness source lifecyc
 DEPENDENCIES.set('test_chapter3.gd', ['test_canteen_defense.gd', 'test_minigame_models.gd']);
 const LAKE_PREPARATION = 'Source catalog tests/export_lake_live_source_fixtures.mjs';
 consumers(LAKE_PREPARATION, ['test_lake_live_world.gd']);
-export function createValidationCatalog(project, executable = 'godot') {
+export function createValidationCatalog(project, executable = 'godot', options = {}) {
  const stages = [];
  const run = (label, args, command = executable) => stages.push({id: label, label, args, command, exclusive: !label.endsWith('.gd') || FIXTURE_WRITERS.includes(label), dependencies: DEPENDENCIES.get(label) || []});
  run('Prepared source and media inputs', [path.join(project, 'tests/verify_native_prepared_inputs.mjs')], process.execPath);
@@ -52,17 +54,24 @@ run('Original SaveStore differential', [path.join(project,'tests/verify_save_mig
  // Existing fixture consumers can sort before their writer; run selected writers
  // first in their authored relative order, then keep reader order stable.
  const order = [...PREFLIGHT, LAKE_PREPARATION, ...FIXTURE_WRITERS];
- return [...order.map(id => stages.find(s => s.id === id)), ...stages.filter(s => !order.includes(s.id))];
+ return appendRegisteredStages([...order.map(id => stages.find(s => s.id === id)), ...stages.filter(s => !order.includes(s.id))], {project, executable, ...options});
 }
 function northPath(file) {
  return ['godot_native/scripts/objects/north_prop_scene.gd', 'godot_native/scripts/presentation/north_generated_objects.gd', 'godot_native/shaders/north_prop_alpha_cutoff.gdshader', 'godot_native/data/native/north-baseline-objects.json', 'godot_native/data/native/north-generated-objects.json'].includes(file)
    || file.startsWith('godot_native/assets/native/north_objects_20261025/');
 }
 export function planValidation(catalog, {profile = 'full', tests = [], changedFiles = [], filter = null} = {}) {
- const profiles = ['full', 'preflight', 'north-targeted', 'north', 'changed'];
+ const profiles = ['full', 'preflight', 'prepare', 'north-targeted', 'north', 'changed'];
  if (!profiles.includes(profile)) throw Error(`Unknown profile ${profile}`);
  if (filter && (profile !== 'full' || tests.length || changedFiles.length)) throw Error('--filter is a raw diagnostic; do not combine it with profiles or changed/test selection');
  const byId = new Map(catalog.map(s => [s.id, s]));
+ const registered = catalog.filter(stage => stage.registration), registeredPrerequisites = new Set();
+ function recordPrerequisite(id) {
+  if (registeredPrerequisites.has(id)) return;
+  registeredPrerequisites.add(id);
+  for (const dependency of byId.get(id)?.dependencies || []) recordPrerequisite(dependency);
+ }
+ for (const stage of registered) for (const dependency of stage.dependencies) recordPrerequisite(dependency);
  const selected = new Set(); const reasons = []; let effectiveProfile = profile;
  const add = id => {if (!byId.has(id)) throw Error(`Unknown exact stage ID: ${id}`); selected.add(id);};
  if (filter) {
@@ -71,18 +80,29 @@ export function planValidation(catalog, {profile = 'full', tests = [], changedFi
    effectiveProfile = 'raw-diagnostic'; reasons.push('Raw regex selection: prerequisites and producer closure are NOT guaranteed.');
  } else {
    PREFLIGHT.forEach(add);
+   if (profile === 'prepare') PREPARATION_IDS.forEach(add);
    tests.forEach(add);
    if (profile === 'changed' && !tests.length && !changedFiles.length) throw Error('--profile changed requires --test or --changed-file/--changed-since');
    let full = profile === 'full'; let north = profile === 'north';
    if (profile === 'north-targeted') NORTH_TARGETED.forEach(add);
    for (const file of changedFiles) {
      const id = path.posix.basename(file);
-     if (file === `godot_native/tests/${id}` && byId.has(id)) add(id);
+     // Declarations augment the conservative impact map; they must not be
+     // bypassed by documentation or exact-test shortcuts. Do not infer that
+     // undeclared paths are safe: unknown changes still use the full fallback.
+     const registeredInput = registered.some(stage => stage.registration.inputs.some(input => file === input || file.startsWith(`${input}/`)));
+     const registeredDependency = file === `godot_native/tests/${id}` && registeredPrerequisites.has(id);
+     if (registeredInput || registeredDependency) {
+      full = true; reasons.push(`Conservative full parallel fallback for registered input or dependent reader: ${file}`);
+     } else if (file === `godot_native/tests/${id}` && byId.has(id)) add(id);
      else if (northPath(file)) north = true;
      else if (/^(?:docs\/|godot_native\/docs\/).*\.(?:md|txt)$/.test(file) || file === 'progress.md') reasons.push(`Documentation only: ${file}`);
      else {full = true; reasons.push(`Conservative full fallback for shared or unclassified input: ${file}`);}
    }
    if (north) [...NORTH_TARGETED, ...NORTH_AFFECTED].forEach(add);
+   if (changedFiles.length && [...selected].some(id => !PREFLIGHT.includes(id) && registeredPrerequisites.has(id))) {
+    full = true; reasons.push('Conservative full parallel fallback for registered input or dependent reader: affected prerequisite selected');
+   }
    if (full) {catalog.forEach(s => add(s.id)); effectiveProfile = 'full';}
    // Small audited dependency manifest, not an inferred giant graph.
    function close(id) {for (const dep of byId.get(id).dependencies) if (!selected.has(dep)) {add(dep); close(dep);}}
@@ -91,5 +111,5 @@ export function planValidation(catalog, {profile = 'full', tests = [], changedFi
  const stages = catalog.filter(s => selected.has(s.id));
  return {profile, effectiveProfile, partial: selected.size !== catalog.length || !!filter,
    finalAcceptance: 'A full exact-content run is still required; focused profiles are not release acceptance.',
-   reasons, stages, rows: catalog.map(s => ({id: s.id, selected: selected.has(s.id), status: 'not-run', dependencies: s.dependencies, exclusive: s.exclusive}))};
+   reasons, stages, rows: catalog.map(s => ({id: s.id, selected: selected.has(s.id), status: 'not-run', dependencies: s.dependencies, exclusive: s.exclusive, ...registrationFields(s)}))};
 }

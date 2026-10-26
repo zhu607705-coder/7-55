@@ -8,13 +8,37 @@ on:
 permissions:
   contents: read
 jobs:
-  native-parse-and-tests:
+  contracts:
+    name: Native validation contracts
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '24.21.0'
+      - name: Verify fail-closed planning, transport, sharding and aggregation
+        run: |
+          node --test godot_native/tests/test_native_validation_runner.mjs godot_native/tests/test_native_validation_registration.mjs godot_native/tests/test_native_validation_bundle.mjs godot_native/tests/test_native_validation_shards.mjs godot_native/tests/test_native_validation_workflow.mjs
+          node scripts/test-ci-media-tools.mjs
+
+  prepare:
+    name: Prepare immutable native inputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    outputs:
+      bundle_name: ${{ steps.bundle.outputs.bundle_name }}
+      receipt_sha: ${{ steps.bundle.outputs.receipt_sha }}
+      producer_attempt: ${{ steps.bundle.outputs.producer_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
       - name: Install pinned official Godot
         run: |
           curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
@@ -23,29 +47,147 @@ jobs:
           sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
       - name: Install locked source-test dependencies
-        run: npm ci --ignore-scripts
-      - name: Verify native validation planner and scheduler
-        run: node --test godot_native/tests/test_native_validation_runner.mjs
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Synchronize original assets and state
         run: node godot_native/tools/sync_source.mjs
-      - name: Verify deterministic source catalogs
+      - name: Prepare deterministic source catalogs
         run: |
           node godot_native/tools/build-save-normalizer.mjs
           node godot_native/tools/export-audio-director.mjs
-          node godot_native/tests/export_lake_live_source_fixtures.mjs --check
           git diff --exit-code -- godot_native/data/native/save_normalizer.json godot_native/data/native/audio-director-source.json
-      - name: Convert source movies for native playback
+      - name: Convert complete source movies
         run: |
-          node scripts/test-ci-media-tools.mjs
           node scripts/ensure-ci-media-tools.mjs
           bash godot_native/tools/convert_media.sh
-      - name: Import, parse, and test native runtime
+      - name: Validate preflight and produce fixtures exclusively
         env:
-          GODOT_TEST_REPORT: native-test-report.json
-          BUCT_V4_QA_DIR: ${{ github.workspace }}/.buct-north-large-native-ci
+          GODOT_TEST_REPORT: ${{ runner.temp }}/native-preparation/native-prepare.json
+          NATIVE_TEST_JOBS: '2'
+        run: node godot_native/tools/validate_native.mjs --profile prepare
+      - name: Freeze source-bound imported inputs
+        id: bundle
         run: |
-          mkdir -p "$BUCT_V4_QA_DIR"
-          node godot_native/tools/validate_native.mjs
+          base='${{ github.event.pull_request.base.sha || '' }}'
+          args=(); if test -n "$base"; then args+=(--base "$base"); fi
+          node godot_native/tools/native_validation_bundle.mjs create \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-inputs" \
+            --head '${{ github.event.pull_request.head.sha || github.sha }}' "${args[@]}" \
+            --preparation-report "$RUNNER_TEMP/native-preparation/native-prepare.json"
+          cp "$RUNNER_TEMP/native-inputs/bundle-receipt.json" "$RUNNER_TEMP/native-preparation/"
+      - name: Transfer immutable prepared inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.bundle.outputs.bundle_name }}
+          path: ${{ runner.temp }}/native-inputs
+          include-hidden-files: true
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+      - name: Preserve preparation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-preparation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-preparation
+          if-no-files-found: error
+
+  runtime:
+    name: Native runtime shard ${{ matrix.shard }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - name: Install pinned official Godot
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Install locked source-test dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Download immutable native inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.prepare.outputs.bundle_name }}
+          path: ${{ runner.temp }}/native-inputs
+      - name: Verify and restore same-run prepared project
+        run: |
+          base='${{ github.event.pull_request.base.sha || '' }}'
+          args=(); if test -n "$base"; then args+=(--base "$base"); fi
+          node godot_native/tools/native_validation_bundle.mjs restore \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-inputs" \
+            --head '${{ github.event.pull_request.head.sha || github.sha }}' "${args[@]}" \
+            --receipt-sha '${{ needs.prepare.outputs.receipt_sha }}' \
+            --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \
+            --output-receipt "$RUNNER_TEMP/native-inputs-verified.json"
+      - name: Run every owned stage against frozen producer inputs
+        env:
+          GODOT_TEST_REPORT: ${{ runner.temp }}/native-result/native-test-report.json
+          NATIVE_TEST_JOBS: '2'
+        run: |
+          base='${{ github.event.pull_request.base.sha || '' }}'
+          args=(); if test -n "$base"; then args+=(--base "$base"); fi
+          node godot_native/tools/validate_native.mjs --shard '${{ matrix.shard }}/6' \
+            --prepared-bundle "$RUNNER_TEMP/native-inputs" \
+            --receipt-sha '${{ needs.prepare.outputs.receipt_sha }}' \
+            --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \
+            --head '${{ github.event.pull_request.head.sha || github.sha }}' "${args[@]}"
+      - name: Preserve exact shard evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-shard-${{ github.run_id }}-${{ needs.prepare.outputs.producer_attempt }}-${{ matrix.shard }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-result
+          if-no-files-found: error
+
+  graphics:
+    name: Native GPU and exported PCK contracts
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - name: Install pinned official Godot
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Install locked source-test dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Download immutable native inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.prepare.outputs.bundle_name }}
+          path: ${{ runner.temp }}/native-inputs
+      - name: Verify and restore same-run prepared project
+        run: |
+          base='${{ github.event.pull_request.base.sha || '' }}'
+          args=(); if test -n "$base"; then args+=(--base "$base"); fi
+          node godot_native/tools/native_validation_bundle.mjs restore \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-inputs" \
+            --head '${{ github.event.pull_request.head.sha || github.sha }}' "${args[@]}" \
+            --receipt-sha '${{ needs.prepare.outputs.receipt_sha }}' \
+            --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \
+            --output-receipt "$RUNNER_TEMP/native-inputs-verified.json"
       - name: Verify Wenli exterior source and GPU contracts
         run: |
           command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
@@ -85,44 +227,64 @@ jobs:
           godot --headless --audio-driver Dummy --path godot_native --export-pack 'Linux x86_64' "$BUCT_EXPORTED_QA_DIR/campuses.pck"
           timeout 180 godot --headless --audio-driver Dummy --main-pack "$BUCT_EXPORTED_QA_DIR/campuses.pck" --script "$GITHUB_WORKSPACE/godot_native/tests/verify_exported_campuses.gd"
           BUCT_EXPECT_SOURCELESS=1 timeout 60 godot --headless --audio-driver Dummy --main-pack "$BUCT_EXPORTED_QA_DIR/campuses.pck" --script "$GITHUB_WORKSPACE/godot_native/tests/test_buct_changping_source_texture.gd"
-      - uses: actions/upload-artifact@v4
+      - name: Preserve GPU and package evidence
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: native-test-report
+          name: native-gpu-package-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            native-test-report.json
-            native-test-report.json.meta.json
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: changping-north-large-native-proof
-          path: .buct-north-large-native-ci/
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: wenli-exterior-proof
-          path: .buct-wenli-ci/gpu/
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: wenli-hd-region-proof
-          path: .buct-wenli-hd-ci/
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: changping-north-hd-proof
-          path: |
+            .buct-wenli-ci/gpu/
+            .buct-wenli-hd-ci/
             .buct-north-ci/gpu/
             .buct-north-ci/*.json
             .buct-north-ci/north-package-*/summary.json
             .buct-north-ci/north-package-*/*/validation.log
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        if: always()
+            .buct-exported-ci/result.json
+          include-hidden-files: true
+          if-no-files-found: warn
+
+  native-parse-and-tests:
+    name: native-parse-and-tests
+    if: ${{ always() }}
+    needs: [contracts, prepare, runtime, graphics]
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
         with:
-          name: exported-campus-contract
-          path: .buct-exported-ci/result.json
-          if-no-files-found: ignore
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - name: Require every producer, consumer and external gate
+        run: |
+          test '${{ needs.contracts.result }}' = success
+          test '${{ needs.prepare.result }}' = success
+          test '${{ needs.runtime.result }}' = success
+          test '${{ needs.graphics.result }}' = success
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-preparation-${{ github.run_id }}-${{ needs.prepare.outputs.producer_attempt }}
+          path: ${{ runner.temp }}/native-preparation
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: native-shard-${{ github.run_id }}-${{ needs.prepare.outputs.producer_attempt }}-*
+          path: ${{ runner.temp }}/native-fragments
+          merge-multiple: false
+      - name: Prove complete exact-source coverage, not just successful partial jobs
+        run: |
+          node godot_native/tools/native_validation_aggregate.mjs \
+            --preparation-dir "$RUNNER_TEMP/native-preparation" \
+            --reports-dir "$RUNNER_TEMP/native-fragments" \
+            --receipt-sha '${{ needs.prepare.outputs.receipt_sha }}' \
+            --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \
+            --prepare-status '${{ needs.prepare.result }}' --shards-status '${{ needs.runtime.result }}' \
+            --graphics-status '${{ needs.graphics.result }}' --contracts-status '${{ needs.contracts.result }}' \
+            --output "$RUNNER_TEMP/native-final/native-test-report.json"
+      - name: Preserve full aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-test-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-final
+          if-no-files-found: warn

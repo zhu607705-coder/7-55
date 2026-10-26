@@ -46,6 +46,7 @@ node godot_native/tools/validate_native.mjs --profile full --resume
 | Profile | Selected coverage beyond mandatory preflight |
 | --- | --- |
 | `preflight` | None; useful for finding setup/parse failures first |
+| `prepare` | Exact nine fresh preflight/fixture stages; only for sealed CI preparation, never full acceptance |
 | `north-targeted` | Four exact `test_north_*` object/preview regressions |
 | `north` | Those four plus explicit world, collision, picking, movement, lifecycle and mobile-floor checks |
 | `changed` | Explicit test IDs, known module mapping and producer dependencies; unknown/shared runtime changes escalate to full |
@@ -106,7 +107,8 @@ coverage. Mandatory-preflight failure blocks the remaining selected stages.
 ## Resume is evidence reuse, not label reuse
 
 Reports remain JSON row arrays with a schema-2 `.meta.json` sidecar. Each row has
-an explicit `result`: `not-run`, `pass`, `failed`, `blocked`, or `deduplicated`.
+an explicit `result`: `not-run`, `pass`, `prepared`, `failed`, `blocked`, or `deduplicated`.
+`prepared` means authenticated producer evidence, not a fresh consumer pass.
 `reused: true` identifies an earlier pass reused under the same identity. The
 summary distinguishes selected coverage from the complete catalog;
 `fullSuitePassed` cannot be true for a filtered or narrow run.
@@ -180,3 +182,219 @@ ordinary browser, mobile, library and streaming-failure/retry gates are retained
   model stages started `15:49:23.155Z` / `15:49:23.182Z` and overlapped for
   **1,199 ms**; metadata records jobs=2. This remains **2 passed, 528 not-run**.
   A complete hosted run of the corrected parallel harness remains pending.
+
+
+## Bounded full-suite CI sharding (2026-10-26 candidate)
+
+```text
+source contracts ──────────────────────────────────────────┐
+source/media → nine fresh preparation stages → sealed inputs│
+                                              ├→ shard 0 ─┤
+                                              ├→ shard 1 ─┤
+                                              ├→ shard 2 ─┤
+                                              ├→ shard 3 ─┤
+                                              ├→ shard 4 ─┤
+                                              ├→ shard 5 ─┤
+                                              └→ GPU/PCK ─┤
+                                    exact full aggregate ←┘
+```
+
+The native catalog still has **530 unchanged stage descriptors**. Preparation
+owns nine entries. Six fixed standard-hosted jobs own the remaining 521 entries,
+exactly once. Each job has two continuous workers and its own checkout, imported
+cache and user-data sandbox. Exclusive stages remain exclusive inside that job;
+all shared fixture writers finish before any reader artifact is published.
+The same original `native-parse-and-tests` required-check name is the final gate.
+
+`native_validation_timings.json` records durations from successful baseline run
+`40208985927`, head `33cc4991b7d0ada3d65baaca146c62359f5fbf56`.
+Deterministic partitioning balances predicted two-worker schedules, including
+exclusive barriers. Durations affect placement only, never selection, timeouts
+or success. New stages receive a conservative default estimate and stay covered.
+The audited identical-script pair stays together. A new unprepared cross-shard
+dependency fails planning rather than silently assuming it passed elsewhere.
+
+```sh
+# Inspection does not execute tests or require a prepared artifact.
+node godot_native/tools/validate_native.mjs --profile prepare --plan
+node godot_native/tools/validate_native.mjs --shard 0/6 --plan
+```
+
+Execution requires a same-run sealed bundle and explicit trusted producer SHA,
+producer attempt and source head/base. `native_validation_bundle.mjs` hashes
+all transported bytes and records source commit/tree, run/attempt, Godot binary,
+preparation reports, imports and fixed producer outputs. The v2 transport keeps
+its complete logical file inventory, but does not resend exact tracked native
+files or source-synced assets already available in the exact-source checkout.
+Each reference binds the source path, tracked commit, bytes/hash and file mode;
+synced aliases also bind the checked-in asset manifest. Missing, mutated or
+misdirected references fail: there is no remote fetch or unchecked fallback.
+Consumers reconstruct with ordinary private copies, never shared hardlinks,
+and verify the complete resulting project, including all borrowed bytes.
+Consumers verify before restoration, restore signed file modes, rerun host save isolation, then require
+an exact source/dependency/import hash and frozen fixture hash. Both are checked
+again at completion. Imported preparations are `prepared`, not fabricated fresh
+passes. Shards cannot combine with resume, filters or focused profiles, and
+cannot claim `fullSuitePassed` independently.
+
+`native_validation_aggregate.mjs` requires every dependency job to succeed,
+validates the complete catalog/partition and each owned stage identity, and emits
+one full report. Missing, extra, duplicate, failed, blocked, reused, mismatched,
+stale-producer or changed-input evidence fails. Failed-job reruns may reuse
+successful **same-run, same-producer** fragments from earlier consumer attempts.
+For each shard, only its latest available attempt counts; an unsuccessful latest
+attempt cannot fall back to an older pass. Re-running preparation creates a new
+producer receipt, so old fragments cannot mix with its new inputs. Cancellation
+or skipped required jobs cannot produce a green aggregate. No fail-fast matrix
+cancellation hides independent diagnostics.
+
+### Complete-workflow target and resource tradeoff
+
+The corrected baseline completed all four workflows. Native report wall time was
+**1,687.530 s (28m07.530s)**, and its complete workflow took **31m23s**.
+Reader-pool cumulative work was 2,566.590 s, with 387.034 s in exclusive stages.
+Godot Web's full workflow took **17m14s**: its build took 516 s and the slowest
+retina world/phone consumer 513 s. These are hosted measurements, not local/remote
+speedup comparisons.
+
+The candidate estimates about **265 s per native reader shard**, plus preparation,
+transfer, setup, GPU/package work and aggregation. This is not a measured sub-ten-
+minute result. Web preparation now overlaps independent controller-fixture
+producers after export, and thirteen bounded acceptance consumers preserve all
+six ordinary cases, streaming failure/retry, three world profiles, the complete
+phone gate set for each original profile, and two library profiles. The long
+retina phone flow is split only at existing independent fixture imports; its
+Chapter 2 save/reload/ten-input/weather chain remains intact. A strict aggregate
+requires all thirteen receipts and all seventeen reports.
+
+HTTPS-first media provisioning retains the original signed/trusted APT source,
+TLS and signature checks. It removes a measured failed HTTP route from the
+baseline critical path; the bounded original route remains a fallback. This
+neither skips media conversion nor relaxes package authenticity.
+
+All jobs use existing standard hosted runners. Repository visibility was public
+when checked; standard public-repository runner minutes are free under GitHub's
+published policy. Account-specific storage allowance remains unverified. The
+736 MB sealed Web artifact is retained once for one day, but thirteen consumers
+transfer roughly **9.57 GB**, versus 4.42 GB previously. Its payload is not pruned:
+the full manifest and deferred-request gates require the existing byte set.
+The initial `c4080a4` inventory found 488,439,485 bytes of tracked native files
+and 626,525,838 bytes of exact synced source assets: **1,114,965,323 logical bytes**
+that need not transfer per consumer. Final receipt totals vary with source edits. This is not an archive-size measurement;
+imports, reconstructed disk use, hashing work and all tests remain. Actual final
+archive bytes and reconstruction timing must be recorded separately.
+Estimated Web compute is **37–40 runner-minutes**, versus about 35.5 previously;
+native six-way sharding duplicates checkout/tooling/verification overhead, not
+regression execution. Estimated complete compute, including retained Web and
+cross-PR checks, is **89–100 runner-minutes**, versus the prior measured **78.82**.
+This estimate is not billed usage; report actual job timestamps after the run.
+Native has a declared 84 runner-minute timeout ceiling,
+Web acceptance jobs 200 per attempt (excluding optional deploy, skipped on PRs);
+these are safety ceilings, not measured usage or expected billing.
+Intermediate north-package PCKs/copied runtime trees are excluded from evidence
+uploads; GPU proofs, JSON summaries and validation logs remain.
+
+Acceptance must record the next exact-head hosted workflow start-to-final-gate
+wall clock, queue time separately, actual summed job time and artifact sizes.
+Do not report an estimate, a shard-only time or a timeout as under-ten-minute full
+acceptance. No local full-suite rerun is needed to reconstruct the baseline.
+
+## Add a future reader stage without restoring serial CI
+
+`native_validation_registration.mjs` provides an explicit, additive reader
+contract. Its registry is empty by default. The historical 530-stage subset,
+ordering, barriers, and the nine preparation producers remain unchanged.
+The historical golden is a separate immutable ID subset, not a live catalog-size
+limit: newly discovered GD tests join scheduling and aggregation automatically.
+Top-level `test_*.gd` / `smoke_*.gd` discovery remains compatible. For a new stage
+with an explicit I/O or dependency contract, use a nested entry so it is not also
+auto-discovered. Add a reviewed `registerStage(...)` to
+`NATIVE_STAGE_REGISTRATIONS`; this example is **not enabled**:
+
+```js
+registerStage({
+  id: 'Future reader contract',
+  execution: 'node', // godot | node | python | bash; fixed executable mapping
+  entry: 'godot_native/tests/registered/future_reader.mjs',
+  inputs: ['godot_native/tests/registered/future_reader.mjs', 'src/data/items.config.json'],
+  outputs: [], // or [{scope: 'sandbox', path: 'summary.json'}]
+  dependencies: ['test_minigame_models.gd'], // exact stage IDs
+  exclusive: false,
+  resources: {slots: 1},
+  durationHintMs: 15000,
+})
+```
+
+- New readers use the current continuous worker pool and six-shard partition.
+  Default cost is one worker slot. The global cap stays `NATIVE_TEST_JOBS=1..4`;
+  CI uses two. Other slot weights/resource classes are rejected, not silently
+  approximated. Use `exclusive: true` for a reviewed drain barrier, not as
+  permission to write shared inputs.
+- Declared reader chains are co-located. Only appended registrations receive a
+  stable topological order. Missing IDs and cycles fail before execution. Ready
+  independent readers can run while a prerequisite is pending; the existing
+  evidence guard blocks dependents after a prerequisite fails.
+  Depend on `test_buct_haidian.gd`, not its audited `test_buct_rongmao.gd` alias:
+  alias evidence is finalized after dispatch, so that dependency is rejected.
+- `inputs` are declarations, **not** an exhaustive affected-test map or a weaker
+  fingerprint. Exact whole-input/environment identities remain authoritative.
+  Explicit `--test ID` closes prerequisites. Changed files matching a declared
+  input (including a directory prefix), or an exact test with a registered
+  dependent, conservatively select full parallel coverage **before** prose/test
+  shortcuts. Known affected-module selections also propagate to registered
+  consumers via full fallback. Transitive consumers therefore cannot be omitted.
+  Unknown/new runtime paths also select full parallel coverage, not a serial fallback.
+- Outputs may use only the stage's private sandbox. For Node/Python/Bash, resolve
+  a declared sandbox path under `GODOT_TEST_USER_DATA_DIR`; Godot uses `user://`.
+  This declaration is not an OS security boundary: review the implementation;
+  a process can still violate its declared I/O. `createNativeTestSandbox` supplies
+  a distinct `GODOT_TEST_USER_DATA_DIR` for each invocation; do not replace it.
+  No stage may share those temporary outputs with another reader. Dependency
+  edges order checks; they do not create a cross-stage sandbox data channel.
+- Shared writers are rejected. Adding one requires a separate audit of
+  `PREPARATION_IDS`, `PRODUCER_OUTPUTS`, immutable transport, and its consumers.
+  Do not disguise a writer as a reader or add fixture writes to auto-discovered
+  tests. The existing final input/fixture guards remain mandatory.
+- Optional duration hints apply only without a valid observed timing. They never
+  change coverage. Registration metadata survives plan/report rows and is bound
+  into the new stage's descriptor and execution identity; legacy descriptors and
+  identities keep their existing shape.
+
+Run the fast contract suite after registration changes:
+
+```sh
+node --test godot_native/tests/test_native_validation_registration.mjs \
+  godot_native/tests/test_native_validation_runner.mjs \
+  godot_native/tests/test_native_validation_shards.mjs \
+  godot_native/tests/test_native_validation_workflow.mjs
+```
+
+
+### Real transport integration checkpoint (local candidate `1af555a`)
+
+Pinned Godot `4.7.1.stable.official.a13da4feb` passed nine fresh preparation stages
+and all 92 owned stages of shard 5/6 after restoration into an independent clean
+checkout. The consumer also freshly passed its host save-isolation guard:
+**93 fresh passes, 8 authenticated prepared results, 429 not-run**. Final source,
+import and fixture identities were unchanged. This is partial integration, not
+full acceptance; the following additive registry retains the same 530 legacy
+descriptors and partition hash under its 71 passing focused contracts.
+
+The complete logical native input set was 1,891,039,216 bytes. Verified source
+references represented 1,114,980,040 bytes. A real local ZIP at deflate level 0,
+with files only and normalized extracted modes, was **779,885,566 bytes**.
+Measured seal time was 43.014 s; archive 3.019 s; extraction 1.702 s; full private
+restore/verification 27.018 s. These are local cloud measurements, not hosted
+artifact-network times. The 92-stage shard took 566.281 s with observed peak two;
+its 1,033.585 summed stage-seconds are not a full-workflow or CPU-usage metric.
+Do not compare this different host with the hosted 265-second shard estimate as
+a controlled speedup test. New exact-head hosted timing remains required.
+
+
+The additive dependency-aware scheduler was also exercised with actual pinned
+Godot at local `94b4850`: observation-comparison and theater-rehearsal models
+both passed, with 1,687 ms overlap at jobs=2 and no input drift. That remains
+**2 passed / 528 not-run** diagnostic evidence. Subsequent changes only scoped
+historical golden tests away from the live catalog count and documented results.
+The final focused suite passes **72/72**, including a newly discovered 531st GD
+stage entering exactly one shard without editing the historical baseline fixture.

@@ -11,6 +11,7 @@ const SOURCE = `# Public Ubuntu source; preserve comments and every other byte.\
 const MIRRORS = 'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\nhttps://archive.ubuntu.com/ubuntu/\tpriority:2\nhttps://security.ubuntu.com/ubuntu/\tpriority:3\n';
 const TEMP_MIRROR = '/tmp/755-ci-media-fixture/mirrors.txt';
 const hash = value => createHash('sha256').update(value).digest('hex');
+const sourceOptions = call => call.args.filter(arg => arg.startsWith('Dir::Etc::'));
 let passed = 0;
 function test(name, body) { body(); passed += 1; console.log(`PASS ${name}`); }
 
@@ -55,11 +56,27 @@ test('already available: both actual version commands, no APT or source reads', 
   assert.deepEqual(r.result, { installed: false, fallback: false });
   assert.deepEqual(r.calls.map(c => [c.command, c.args]), [['ffmpeg', ['-version']], ['ffprobe', ['-version']]]);
 });
-for (const initial of [[0, 1], [1, 0], [1, 1]]) test(`missing tools ${initial}: primary acquisition and both final versions`, () => {
+test('available versions do not require any readable APT source paths', () => {
+  const calls = [];
+  const result = ensureCiMediaTools({
+    execute: (command, args) => { calls.push([command, args]); return { status: 0 }; },
+    sourcePath: '/nonexistent-755-media-source', mirrorPath: '/nonexistent-755-media-mirrors',
+    temporaryParent: '/nonexistent-755-media-parent', log: () => {},
+  });
+  assert.deepEqual(result, { installed: false, fallback: false });
+  assert.deepEqual(calls, [['ffmpeg', ['-version']], ['ffprobe', ['-version']]]);
+});
+for (const initial of [[0, 1], [1, 0], [1, 1]]) test(`missing tools ${initial}: HTTPS first, no original acquisition, both final versions`, () => {
   const r = scenario({ initial });
   assert.ifError(r.error);
   assert.deepEqual(r.result, { installed: true, fallback: false });
   assert.deepEqual(r.calls.map(c => c.phase), ['ffmpeg', 'ffprobe', 'index', 'download', 'install', 'ffmpeg', 'ffprobe']);
+  const apt = r.calls.filter(c => c.command === 'sudo');
+  assert.equal(sourceOptions(apt[0]).length, 2);
+  for (const call of apt) assert.deepEqual(sourceOptions(call), sourceOptions(apt[0]));
+  assert(apt[0].args.includes('60s'));
+  assert(apt[1].args.includes('180s'));
+  assert(!r.logs.some(line => line.includes('original APT configuration')));
 });
 for (const command of ['ffmpeg', 'ffprobe']) test(`${command} ENOENT allows normal tool installation`, () => {
   const r = scenario({ responses: { [`${command}1`]: { status: null, error: { code: 'ENOENT' } } } });
@@ -78,24 +95,31 @@ for (const failure of [
   assert.match(r.error?.message ?? '', /version process failed; installation not permitted/);
   assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
 });
-test('primary timeout causes exactly one fallback with the stated wall clocks', () => {
+test('HTTPS timeout causes exactly one original-route fallback with unchanged route wall clocks', () => {
   const r = scenario({ responses: { download1: 124 } });
   assert.ifError(r.error);
   assert.equal(r.result.fallback, true);
   assert.deepEqual(r.calls.filter(c => ['index', 'download'].includes(c.phase)).map(c => c.args.slice(0, 7)), [
     ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', '60s', 'apt-get', '-o'],
-    ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', '120s', 'apt-get', '-o'],
-    ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', '60s', 'apt-get', '-o'],
     ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', '180s', 'apt-get', '-o'],
+    ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', '60s', 'apt-get', '-o'],
+    ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', '120s', 'apt-get', '-o'],
   ]);
+  const apt = r.calls.filter(c => c.command === 'sudo');
+  assert.equal(sourceOptions(apt[0]).length, 2);
+  assert.deepEqual(sourceOptions(apt[1]), sourceOptions(apt[0]));
+  for (const call of apt.slice(2)) assert.deepEqual(sourceOptions(call), []);
+  const routes = r.logs.filter(line => line.includes(' index (60s)'));
+  assert.match(routes[0], /existing official HTTPS mirrors only/);
+  assert.match(routes[1], /original APT configuration/);
 });
-test('primary index failure skips its download, then acquires once from fallback', () => {
+test('HTTPS index failure skips its download, then acquires once from original configuration', () => {
   const r = scenario({ responses: { index1: 100 } });
   assert.ifError(r.error);
   assert.deepEqual(r.calls.filter(c => c.command === 'sudo').map(c => c.phase), ['index', 'index', 'download', 'install']);
 });
-for (const failure of [100, 137]) test(`acquisition failure ${JSON.stringify(failure)} has one fallback`, () => {
-  const r = scenario({ responses: { download1: failure } });
+for (const failure of [100, 124, 137]) for (const phase of ['index', 'download']) test(`${phase} acquisition failure ${failure} has one original-route fallback`, () => {
+  const r = scenario({ responses: { [`${phase}1`]: failure } });
   assert.ifError(r.error);
   assert.equal(r.calls.filter(c => c.phase === 'index').length, 2);
   assert.equal(r.calls.filter(c => c.phase === 'install').length, 1);
@@ -113,19 +137,23 @@ for (const failure of [
   { status: 124, signal: 'SIGTERM' },
   { status: 137, error: { code: 'EPERM' } },
   {}, null, undefined, 'invalid', { status: '100' },
-]) test(`executor/cancellation failure ${JSON.stringify(failure)} is fatal without another sudo`, () => {
-  const r = scenario({ responses: { index1: failure } });
+]) for (const phase of ['index', 'download']) for (const route of [1, 2]) test(`route ${route} ${phase} executor/cancellation failure ${JSON.stringify(failure)} is fatal without another sudo`, () => {
+  const responses = route === 1 ? {} : { index1: 100 };
+  responses[`${phase}${route === 2 && phase === 'download' ? 1 : route}`] = failure;
+  const r = scenario({ responses });
   assert.match(r.error?.message ?? '', /acquisition process failed.*no route retry/);
-  assert.equal(r.calls.filter(c => c.command === 'sudo').length, 1);
+  assert.equal(r.calls.filter(c => c.command === 'sudo').length, route + (phase === 'download' ? 1 : 0));
+  assert.equal(r.calls.at(-1).phase, phase);
   assert.equal(r.calls.filter(c => c.phase === 'install').length, 0);
 });
-for (const responses of [{ index1: 124, index2: 124 }, { download1: 124, download2: 100 }]) test(`fallback failure never installs: ${JSON.stringify(responses)}`, () => {
+for (const failure of [100, 124, 137]) for (const responses of [{ index1: 124, index2: failure }, { download1: 124, download2: failure }]) test(`original fallback failure never installs: ${JSON.stringify(responses)}`, () => {
   const r = scenario({ responses });
   assert.match(r.error?.message ?? '', /both bounded acquisition attempts failed/);
   assert.equal(r.calls.filter(c => c.phase === 'index').length, 2);
   assert.equal(r.calls.filter(c => c.phase === 'install').length, 0);
 });
-for (const responses of [{ install1: 100 }, { download1: 124, install1: 100 }]) test(`install failure never retries or starts another fallback: ${JSON.stringify(responses)}`, () => {
+for (const failure of [100, 124, 137, { status: null, signal: 'SIGTERM' }, { status: 0, error: { code: 'EPERM' } }, null])
+for (const responses of [{ install1: failure }, { download1: 124, install1: failure }]) test(`install failure never retries or starts another fallback: ${JSON.stringify(responses)}`, () => {
   const r = scenario({ responses });
   assert.match(r.error?.message ?? '', /installation failed; not retried/);
   assert.equal(r.calls.at(-1).phase, 'install');
@@ -136,8 +164,13 @@ for (const final of [[1, 0], [0, 1]]) test(`post-install version failure ${final
   assert.match(r.error?.message ?? '', /version check failed/);
   assert.equal(r.calls.filter(c => c.phase === 'install').length, 1);
 });
-test('fallback installation retains exact source options, never wraps dpkg in timeout', () => {
-  const r = scenario({ responses: { download1: 124 }, inspect(call) {
+for (const command of ['ffmpeg', 'ffprobe']) for (const failure of [{ status: null, signal: 'SIGTERM' }, { status: null, error: { code: 'EACCES' } }]) test(`post-install ${command} executor failure never re-enters acquisition`, () => {
+  const r = scenario({ responses: { [`${command}2`]: failure } });
+  assert.match(r.error?.message ?? '', /version process failed; installation not permitted/);
+  assert.deepEqual(r.calls.filter(c => c.command === 'sudo').map(c => c.phase), ['index', 'download', 'install']);
+});
+for (const responses of [{}, { download1: 124 }]) test(`each route installs only with its acquired source options, never wraps dpkg in timeout: ${JSON.stringify(responses)}`, () => {
+  const r = scenario({ responses, inspect(call) {
     const sourceArg = call.args.find(arg => arg.startsWith('Dir::Etc::sourcelist='));
     if (!sourceArg) return;
     const path = sourceArg.split('=')[1];
@@ -154,9 +187,9 @@ test('fallback installation retains exact source options, never wraps dpkg in ti
   } });
   assert.ifError(r.error);
   const apt = r.calls.filter(c => c.command === 'sudo');
-  const optionPairs = c => c.args.filter(arg => arg.startsWith('Dir::Etc::'));
-  assert.deepEqual(optionPairs(apt[0]), []);
-  assert.deepEqual(optionPairs(apt.at(-1)), optionPairs(apt.at(-2)));
+  assert.equal(sourceOptions(apt[0]).length, 2);
+  assert.deepEqual(sourceOptions(apt.at(-1)), sourceOptions(apt.at(-2)));
+  assert.equal(sourceOptions(apt.at(-1)).length, Object.hasOwn(responses, 'download1') ? 0 : 2);
   const install = apt.at(-1);
   assert.deepEqual(install.args.slice(0, 2), ['-n', 'apt-get']);
   assert(!install.args.includes('timeout'));
@@ -174,11 +207,15 @@ test('public temporary permissions remain correct under restrictive umask', () =
 });
 test('all APT invocations preserve authentication; update fails on any index error', () => {
   const r = scenario({ responses: { download1: 124 } });
+  assert.ifError(r.error);
   for (const c of r.calls.filter(c => c.command === 'sudo')) {
-    for (const value of ['APT::Get::AllowUnauthenticated=false', 'Acquire::AllowInsecureRepositories=false', 'Acquire::AllowDowngradeToInsecureRepositories=false', 'Acquire::https::Verify-Peer=true', 'Acquire::https::Verify-Host=true', 'Acquire::Check-Valid-Until=true']) assert(c.args.includes(value));
+    for (const value of ['APT::Get::AllowUnauthenticated=false', 'Acquire::AllowInsecureRepositories=false', 'Acquire::AllowDowngradeToInsecureRepositories=false', 'Acquire::https::Verify-Peer=true', 'Acquire::https::Verify-Host=true', 'Acquire::Check-Valid-Until=true', 'Acquire::Check-Date=true']) {
+      assert.deepEqual(c.args.filter(arg => arg.startsWith(`${value.split('=')[0]}=`)), [value]);
+      assert.equal(c.args[c.args.indexOf(value) - 1], '-o');
+    }
     if (c.phase === 'index') assert(c.args.includes('APT::Update::Error-Mode=any'));
     else assert(c.args.includes('--no-install-recommends'));
-    assert(!c.args.includes('--ignore-missing'));
+    for (const flag of ['--ignore-missing', '--allow-unauthenticated', '--allow-insecure-repositories']) assert(!c.args.includes(flag));
   }
 });
 test('source hash and approved HTTPS only are logged, not source comments or vendor config', () => {
@@ -205,6 +242,7 @@ for (const [name, source] of Object.entries({
   'continuation field': SOURCE.replace('Suites: noble noble-updates', 'Suites: noble\n noble-updates'),
   'control character': SOURCE + '\0',
   'invalid UTF-8': Buffer.from([0xff, 0xfe]),
+  'legacy sources.list shape': 'deb http://archive.ubuntu.com/ubuntu/ noble main universe\n',
 })) test(`reject ${name} before any APT command`, () => {
   const r = scenario({ source });
   assert(r.error);
@@ -216,6 +254,9 @@ for (const [name, mirrors] of Object.entries({
   'credentials': MIRRORS.replace('https://archive.', 'https://user:password@archive.'),
   'missing existing official route': MIRRORS.split('\n').slice(0, 2).join('\n'),
   'duplicate mirror': MIRRORS + MIRRORS.split('\n')[1] + '\n',
+  'invalid UTF-8': Buffer.from([0xff, 0xfe]),
+  'unknown priority': MIRRORS.replace('priority:2', 'priority:0'),
+  'extra mirror metadata': MIRRORS.replace('priority:2', 'priority:2 trusted=yes'),
 })) test(`reject mirror ${name}, never invent a fallback host`, () => {
   const r = scenario({ mirrors });
   assert(r.error);
@@ -238,10 +279,15 @@ test('existing release suites are preserved, not pinned or rewritten to Noble', 
 test('unsafe temporary URI or original mirror path is rejected', () => {
   for (const path of ['/tmp/has space', '/etc/apt/apt-mirrors.txt', 'relative', '/tmp/x\nTrusted: yes']) assert.throws(() => prepareFallback(SOURCE, MIRRORS, path));
 });
-test('executor exception is fatal and cleans temporary files without retry', () => {
-  const r = scenario({ responses: { index1: new Error('executor fixture fault') } });
+for (const [phase, responses, aptCount] of [
+  ['index', {}, 1], ['download', {}, 2], ['install', {}, 3],
+  ['index', { download1: 124 }, 3], ['download', { download1: 124 }, 4], ['install', { download1: 124 }, 5],
+]) test(`executor exception during ${phase} is fatal and cleans temporary files without retry (${aptCount} APT calls)`, () => {
+  const occurrence = Object.hasOwn(responses, 'download1') && phase !== 'install' ? 2 : 1;
+  const r = scenario({ responses: { ...responses, [`${phase}${occurrence}`]: new Error('executor fixture fault') } });
   assert.match(r.error?.message ?? '', /executor fixture fault/);
-  assert.equal(r.calls.filter(c => c.command === 'sudo').length, 1);
+  assert.equal(r.calls.filter(c => c.command === 'sudo').length, aptCount);
+  assert.equal(r.calls.at(-1).phase, phase);
 });
 test('module import did not invoke the real CLI', () => {
   assert.equal(typeof ensureCiMediaTools, 'function');

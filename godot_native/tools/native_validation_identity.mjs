@@ -61,7 +61,7 @@ export function validationIdentity(root, {executable, jobs, env = process.env, e
  return {...details, sha256: digest(details)}; // Never serialize secret environment values.
 }
 export function stageIdentity(identity, stage, fixtureSha256) {
- return digest({identity: identity.sha256, command: stage.command, args: stage.args, fixtureSha256});
+ return digest({identity: identity.sha256, command: stage.command, args: stage.args, fixtureSha256, ...(stage.registration ? {registration:stage.registration} : {})});
 }
 export function canReuse(row, key) {return row?.result === 'pass' && row.failed === false && row.identity === key;}
 
