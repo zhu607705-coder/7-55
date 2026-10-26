@@ -100,9 +100,11 @@ func draw_pass(canvas:CanvasItem,phase:int)->void:
 		0:
 			world.object_picker.clear();world._record_plate_targets()
 			world._draw_base_pass(canvas,context)
-			world.chapter4_layers.draw_back(canvas,context,world.get_node("/root/State").d)
+			if not world.north_source_objects.active:world.chapter4_layers.draw_back(canvas,context,world.get_node("/root/State").d)
 			_register(back_props)
-		1:world._draw_actor_pass(canvas,context)
+		1:
+			if world.north_source_objects.active:world.chapter4_layers.draw_back(canvas,context,world.get_node("/root/State").d)
+			world._draw_actor_pass(canvas,context)
 		2:
 			_register(front_props)
 			world.chapter4_layers.draw_front(canvas,context,world.get_node("/root/State").d)

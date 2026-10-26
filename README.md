@@ -1,5 +1,7 @@
 # 7:55
 
+20261026北教整合：[A1–A3对象接入、墙面修复及草稿合流](godot_native/docs/NORTH_PRODUCTION_OBJECTS_20261026.md)。
+
 [![Web CI](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml)
 
 《7:55》Godot 原生游戏与保留的网页版本。

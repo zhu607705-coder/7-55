@@ -17,6 +17,7 @@ const DirectWorldGestures=preload("res://scripts/direct_world_gestures.gd")
 const TargetApproach=preload("res://scripts/target_approach.gd")
 const NorthObjects=preload("res://scripts/presentation/north_generated_objects.gd")
 var north_objects:RefCounted=NorthObjects.new()
+var north_source_objects:Node2D
 const Room301Layout=preload("res://scripts/objects/room301_exhibit_layout.gd")
 var room301_exhibit:Node2D
 var elevator_button:Node2D
@@ -176,6 +177,7 @@ func _ready() -> void:
 	kayak_visual=KayakObject.new();kayak_visual.name="NativeKayak";add_child(kayak_visual);kayak_visual.setup(self)
 	if north_objects.independent_preview:
 		north_props=load("res://scripts/objects/north_prop_scene.gd").new();north_props.name="NorthIndependentProps";add_child(north_props);north_props.setup(self)
+	north_source_objects=load("res://scripts/objects/north_floor_source_objects.gd").new();add_child(north_source_objects);north_source_objects.setup(self)
 	refresh_world()
 
 func _ensure_scene_visuals(incoming: String) -> void:
@@ -343,6 +345,7 @@ func refresh_world() -> void:
 		room301_exhibit.configure(scene_id,floor_id,background)
 		if room301_exhibit.active:collisions=Room301Layout.adjusted_collisions(collisions)
 	if is_instance_valid(elevator_button):elevator_button.sync(State.d,scene_id,background)
+	north_source_objects.configure(scene_id,floor_id,background,collisions)
 	player = Vector2(float(spawn.get("x",world_size.x/2)),float(spawn.get("y",world_size.y*.8)))
 	var stored: Dictionary = State.d.native.get("positions",{}).get(world_key,{})
 	if not stored.is_empty() and not explicit_lake_entry: player = Vector2(float(stored.x),float(stored.y))
@@ -900,6 +903,7 @@ func _draw() -> void:
 	# Retire every existing adapter before a scene-specific early return.
 	if is_instance_valid(room204_object):room204_object.sync(State.d,scene_id)
 	if is_instance_valid(native_canteen):native_canteen.sync(State.d,scene_id)
+	if is_instance_valid(north_source_objects) and north_source_objects.active:north_source_objects.configure_view(_render_context())
 	if is_instance_valid(room301_exhibit):
 		room301_exhibit.visible=room301_exhibit.active and Room301Layout.active(scene_id,_last_floor)
 		if room301_exhibit.visible:
@@ -920,6 +924,7 @@ func _draw() -> void:
 	if is_instance_valid(north_props) and north_props.active:
 		north_props.configure_view(size/2-camera*zoom,zoom,player,mode_mix)
 		return
+	if is_instance_valid(north_source_objects) and north_source_objects.active and north_source_objects.fallback:return
 	object_picker.clear()
 	_record_plate_targets()
 	var context:=_render_context()
@@ -929,6 +934,18 @@ func _draw() -> void:
 	_draw_actor_pass(self,context)
 	if chapter4_layers!=null: chapter4_layers.draw_front(self,context,State.d)
 	_draw_tail_pass(self,context)
+func draw_north_source_pass(canvas:CanvasItem,stage:int)->void:
+	if not is_instance_valid(north_source_objects) or not north_source_objects.active:return
+	var context:=_render_context()
+	if stage in [0,3]:
+		object_picker.clear();_record_plate_targets();_draw_base_pass(canvas,context)
+	elif stage==1:
+		if chapter4_layers!=null:chapter4_layers.draw_back(canvas,context,State.d)
+		_draw_actor_pass(canvas,context)
+	else:
+		if stage==2 and chapter4_layers!=null:chapter4_layers.draw_front(canvas,context,State.d)
+		_draw_tail_pass(canvas,context)
+
 func draw_north_prop_pass(canvas:CanvasItem,stage:int)->void:
 	if not is_instance_valid(north_props) or not north_props.active:return
 	var context:=_render_context()
@@ -936,8 +953,8 @@ func draw_north_prop_pass(canvas:CanvasItem,stage:int)->void:
 		object_picker.clear()
 		_record_plate_targets()
 		_draw_base_pass(canvas,context)
-		if chapter4_layers!=null:chapter4_layers.draw_back(canvas,context,State.d)
 	elif stage==1:
+		if chapter4_layers!=null:chapter4_layers.draw_back(canvas,context,State.d)
 		_draw_actor_pass(canvas,context,true)
 	elif stage==3:
 		north_objects.draw_wall_reveal(canvas,context)
@@ -966,7 +983,7 @@ func draw_room204_object_pass(canvas: CanvasItem,before: bool) -> void:
 	if before:
 		object_picker.clear()
 		_record_plate_targets()
-		_draw_base_pass(canvas,context)
+		if north_source_objects.host_kind!="room204":_draw_base_pass(canvas,context)
 		if front:
 			chapter4_layers.draw_back(canvas,context,State.d)
 			_draw_actor_pass(canvas,context)
@@ -978,14 +995,16 @@ func draw_room204_object_pass(canvas: CanvasItem,before: bool) -> void:
 		if not front:
 			_draw_actor_pass(canvas,context)
 			chapter4_layers.draw_front(canvas,context,State.d)
-		_draw_tail_pass(canvas,context)
+		if north_source_objects.host_kind!="room204":_draw_tail_pass(canvas,context)
 func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin: Vector2=layer_context.origin
 	canvas.draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
 	if scene_id.is_empty(): return
 	if background_is_tiled:
 		if background_tiles.ensure_loaded():background_tiles.draw_region(canvas,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),Rect2(Vector2.ZERO,background_tiles.get_size()))
-	elif background:canvas.draw_texture_rect(background,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),false)
+	elif background:
+		var visual_plate:Texture2D=north_source_objects.clean_plate if is_instance_valid(north_source_objects) and north_source_objects.active else background
+		canvas.draw_texture_rect(visual_plate,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),false)
 	if scene_id=="theater_interior" and chapter3_layers!=null:
 		chapter3_layers.theater_rebuild.draw_background(canvas,layer_context,State.d)
 	north_objects.draw_background(canvas,layer_context)

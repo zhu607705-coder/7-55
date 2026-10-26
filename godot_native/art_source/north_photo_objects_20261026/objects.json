@@ -1,0 +1,754 @@
+{
+  "schema_version": 1,
+  "catalog_id": "north_photo_objects_20261026",
+  "status": "photo_grounded_art_candidates_not_integrated",
+  "asset_count": 11,
+  "generation": {
+    "route": "ChatGPT web image generation",
+    "date": "2026-10-26",
+    "references": "public real photographs only",
+    "existing_generated_scene_uploaded": false,
+    "local_pixel_edits": false
+  },
+  "rights": {
+    "source_photos_redistributed": false,
+    "source_photo_license": "Not asserted. Linked public photographs retain their original rights; public access is not an open license.",
+    "artwork_note": "AI-generated interpretation, not a university photograph, endorsed replica, manufacturer specification or measured fixture."
+  },
+  "coordinate_contract": {
+    "origin": "top_left_of_full_native_png_canvas",
+    "units": "native_image_pixels",
+    "bbox": "[left, top, right_exclusive, bottom_exclusive] at alpha >= 128; visual QA only",
+    "pivot": "Advisory attachment hint; no calibrated world coordinates. Preserve identity and native canvas.",
+    "scale": "Uniform only; preview target width is artistic, not a real measurement.",
+    "collision": "No visual bbox or alpha mask is collision/navigation geometry.",
+    "integration": "Future object instances remain separate from clean building plates, controller state and verified geometry."
+  },
+  "sources": [
+    {
+      "id": "zju_logistics_cafe",
+      "authority": "Zhejiang University Logistics official guide",
+      "page_url": "https://zulg.zju.edu.cn/guide/food.htm",
+      "published_date": null,
+      "event_date": null,
+      "capture_date": null,
+      "date_note": "Undated guide photograph; does not establish current 2026 fixtures.",
+      "location_context": "Guide identifies 北区教学楼教1-104 cafe."
+    },
+    {
+      "id": "zju_smart_2022",
+      "authority": "Zhejiang University official account on The Paper",
+      "page_url": "https://m.thepaper.cn/baijiahao_20011689",
+      "published_date": "2022-09-22",
+      "event_date": null,
+      "capture_date": null,
+      "date_note": "Publication date only; no separate capture date. Historical reference, not 2026 as-built proof.",
+      "location_context": "North teaching complex; only signage confirms more precise locations for two images."
+    },
+    {
+      "id": "zju_mse_2025",
+      "authority": "Zhejiang University School of Materials Science and Engineering",
+      "page_url": "https://mse.zju.edu.cn/2025/0610/c51029a3060469/page.htm",
+      "published_date": "2025-06-10",
+      "event_date": "2025-05-22",
+      "capture_date": null,
+      "date_note": "Article dates the pictured teaching event; exact photo capture timestamp not supplied.",
+      "location_context": "North teaching building; specific block, floor and room not stated."
+    }
+  ],
+  "objects": [
+    {
+      "id": "north1_104_microwave",
+      "label": "微波炉",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north1_104_microwave_photo_ref_web_v1.png",
+        "original_download_name": "north1-104-microwave-photo-ref-web-v1.png",
+        "sha256": "39e1b9f9ae1d600ae55b2cea4216a7d72a46c0de941c55fa747a918fb80324e9",
+        "bytes": 682235,
+        "width": 1254,
+        "height": 1254,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_logistics_cafe",
+        "image_url": "https://zulg.zju.edu.cn/__local/F/C0/06/18715141EF892D7F9B9B39B9FFE_6C5F60E9_15D7F.jpg",
+        "location": {
+          "scope": "room",
+          "building": "north1",
+          "floor": 1,
+          "room": "104",
+          "basis": "Official guide address; artwork is not a measured fixture."
+        },
+        "observed_features": "White enclosure, dark front window, right-side two control dials",
+        "interpretive_or_unseen_parts": "Hidden sides, vent/feet details and orthographic game view are simplified artistic completion"
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          628.0,
+          967
+        ],
+        "anchor_role": "bottom-center support/contact point",
+        "target_visible_width_px": 48,
+        "uniform_scale": 0.043836,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 910955,
+        "opaque255_pixels": 2002,
+        "partial_alpha_pixels": 659559,
+        "visible_bbox_alpha128": [
+          81,
+          341,
+          1176,
+          968
+        ],
+        "reported_core_alpha_range": [
+          250,
+          254
+        ],
+        "notes": "Single complete object; no wall/floor/labels. Body nearly opaque250..254 and faint low-alpha exterior outliers retained."
+      }
+    },
+    {
+      "id": "north1_104_loveseat",
+      "label": "灰色弧背双人沙发",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north1_104_loveseat_photo_ref_web_v1.png",
+        "original_download_name": "north1-104-loveseat-photo-ref-web-v1.png",
+        "sha256": "dbbf8b771e75de050cacc9b2299c4a95cb488c5e498dea9befabe8a7da54224e",
+        "bytes": 2091175,
+        "width": 1254,
+        "height": 1254,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_logistics_cafe",
+        "image_url": "https://zulg.zju.edu.cn/__local/F/C0/06/18715141EF892D7F9B9B39B9FFE_6C5F60E9_15D7F.jpg",
+        "location": {
+          "scope": "room",
+          "building": "north1",
+          "floor": 1,
+          "room": "104",
+          "basis": "Official guide address; artwork is not a measured fixture."
+        },
+        "observed_features": "Dark warm-gray curved wraparound back/arms and two seat cushions",
+        "interpretive_or_unseen_parts": "Photo-obscured base and viewpoint conversion are artistic completion"
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          627.0,
+          958
+        ],
+        "anchor_role": "bottom-center support/contact point",
+        "target_visible_width_px": 96,
+        "uniform_scale": 0.079012,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 879393,
+        "opaque255_pixels": 693123,
+        "partial_alpha_pixels": 0,
+        "visible_bbox_alpha128": [
+          20,
+          325,
+          1235,
+          959
+        ],
+        "reported_core_alpha_range": [
+          255,
+          255
+        ],
+        "notes": "Webpage-provided transparent attachment; binary alpha0/255, one opaque component. RGB bytes equal to the webpage RGB original. Raw RGB checkerboard image excluded from delivery."
+      }
+    },
+    {
+      "id": "north1_104_pendant",
+      "label": "黄铜吊灯",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north1_104_pendant_photo_ref_web_v2.png",
+        "original_download_name": "north1-104-pendant-photo-ref-web-v2.png",
+        "sha256": "3b1156817312ebd6dedda4f9a05f756128f0d951c519c3c674e62b7491e0f92a",
+        "bytes": 555820,
+        "width": 1254,
+        "height": 1254,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_logistics_cafe",
+        "image_url": "https://zulg.zju.edu.cn/__local/F/C0/06/18715141EF892D7F9B9B39B9FFE_6C5F60E9_15D7F.jpg",
+        "location": {
+          "scope": "room",
+          "building": "north1",
+          "floor": 1,
+          "room": "104",
+          "basis": "Official guide address; artwork is not a measured fixture."
+        },
+        "observed_features": "Simple shallow broad brass shade, narrow neck and suspension cable",
+        "interpretive_or_unseen_parts": "Top surface, cable length and unseen attachment details are artistic completion"
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          626.5,
+          37
+        ],
+        "anchor_role": "top suspension point",
+        "target_visible_width_px": 32,
+        "uniform_scale": 0.037296,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 1211290,
+        "opaque255_pixels": 712,
+        "partial_alpha_pixels": 360514,
+        "visible_bbox_alpha128": [
+          198,
+          37,
+          1056,
+          1165
+        ],
+        "reported_core_alpha_range": [
+          247,
+          254
+        ],
+        "notes": "One directed correction changed underside view to elevated top view. No external light pool. Body nearly opaque247..254 and faint low-alpha edge outliers retained."
+      }
+    },
+    {
+      "id": "north3_109_doorplate",
+      "label": "北3-109电子门牌外壳",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north3_109_doorplate_photo_ref_web_v1.png",
+        "original_download_name": "north3-109-doorplate-photo-ref-web-v1.png",
+        "sha256": "33eaa672dcb64169e8973c167d35e858df1363ede025509a64ad21116ceae163",
+        "bytes": 770961,
+        "width": 1254,
+        "height": 1254,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_smart_2022",
+        "image_url": "https://imagepphcloud.thepaper.cn/pph/image/217/242/11.gif",
+        "location": {
+          "scope": "room_sign",
+          "building": "north3",
+          "floor": null,
+          "room": "109",
+          "basis": "Photographed sign reads 北3教学楼109教室; floor not independently stated."
+        },
+        "observed_features": "Charcoal landscape bezel, slim silver rim and green status strips on both sides.",
+        "interpretive_or_unseen_parts": "Shallow top/right thickness and reflections are interpretive. Screen deliberately blank for later independent UI, not photographed operating state."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          624.5,
+          629.5
+        ],
+        "anchor_role": "mount-center",
+        "target_visible_width_px": 32,
+        "uniform_scale": 0.028985507246376812,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 900764,
+        "opaque255_pixels": 2042,
+        "partial_alpha_pixels": 669710,
+        "visible_bbox_alpha128": [
+          73,
+          328,
+          1177,
+          932
+        ],
+        "reported_core_alpha_range": [
+          248,
+          254
+        ],
+        "notes": "Shallow top/right thickness and reflections are interpretive. Screen deliberately blank for later independent UI, not photographed operating state. Native soft alpha retained; no local edge retouch."
+      }
+    },
+    {
+      "id": "north_complex_locker",
+      "label": "储物柜",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north_complex_locker_photo_ref_web_v2.png",
+        "original_download_name": "north-complex-locker-photo-ref-web-v2.png",
+        "sha256": "2974263c9f814ad7c8f5e9d3358147e4904efc7fe80a3184adaf899e67a2c37f",
+        "bytes": 618863,
+        "width": 1254,
+        "height": 1254,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_smart_2022",
+        "image_url": "https://imagepphcloud.thepaper.cn/pph/image/217/242/4.gif",
+        "location": {
+          "scope": "complex_only",
+          "building": null,
+          "floor": null,
+          "room": null,
+          "basis": "Source establishes North complex only; no precise placement."
+        },
+        "observed_features": "Two cream door rows, dark recessed pulls and thin control column of front-right cabinet.",
+        "interpretive_or_unseen_parts": "Hidden rear and plinth simplified. One camera correction aligns front width horizontally. Cabinet dimensions and detail proportions not measured."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          627.5,
+          948
+        ],
+        "anchor_role": "bottom-center",
+        "target_visible_width_px": 128,
+        "uniform_scale": 0.13141683778234087,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 995826,
+        "opaque255_pixels": 818,
+        "partial_alpha_pixels": 575872,
+        "visible_bbox_alpha128": [
+          141,
+          356,
+          1115,
+          949
+        ],
+        "reported_core_alpha_range": [
+          250,
+          254
+        ],
+        "notes": "Hidden rear and plinth simplified. One camera correction aligns front width horizontally. Cabinet dimensions and detail proportions not measured. Native soft alpha retained; no local edge retouch."
+      }
+    },
+    {
+      "id": "north_complex_speaker",
+      "label": "壁挂音箱",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north_complex_speaker_photo_ref_web_v1.png",
+        "original_download_name": "north-complex-speaker-photo-ref-web-v1.png",
+        "sha256": "6f9404cbe136da9d7b67676acccd20b95575fbda32115029d951544cdd9ef32e",
+        "bytes": 686811,
+        "width": 1322,
+        "height": 1190,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_mse_2025",
+        "image_url": "https://mse.zju.edu.cn/_upload/article/images/d5/de/ec252c2b44139c3bb7cec071d5d3/cb012df0-cf39-4d3b-9ce6-3d31dd6f5c44.jpg",
+        "location": {
+          "scope": "complex_only",
+          "building": null,
+          "floor": null,
+          "room": null,
+          "basis": "Source establishes North complex only; no precise placement."
+        },
+        "observed_features": "Vertically elongated oval black wall speaker in classroom photo.",
+        "interpretive_or_unseen_parts": "Rear bracket and grille pattern minimally reconstructed from distant photo, not manufacturer specification."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          693.5,
+          611.5
+        ],
+        "anchor_role": "mount-center",
+        "target_visible_width_px": 24,
+        "uniform_scale": 0.034482758620689655,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 1106837,
+        "opaque255_pixels": 802,
+        "partial_alpha_pixels": 465541,
+        "visible_bbox_alpha128": [
+          346,
+          194,
+          1042,
+          1030
+        ],
+        "reported_core_alpha_range": [
+          250,
+          254
+        ],
+        "notes": "Rear bracket and grille pattern minimally reconstructed from distant photo, not manufacturer specification. Native soft alpha retained; no local edge retouch."
+      }
+    },
+    {
+      "id": "north3_building_display",
+      "label": "北3楼宇信息屏外壳",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north3_building_display_photo_ref_web_v1.png",
+        "original_download_name": "north3-building-display-photo-ref-web-v1.png",
+        "sha256": "c30f962b74b97dcbf3c17a00f3b97089e294824cbc69991f9d5c6c4c7956ca3d",
+        "bytes": 1104697,
+        "width": 1672,
+        "height": 940,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_smart_2022",
+        "image_url": "https://imagepphcloud.thepaper.cn/pph/image/217/242/15.gif",
+        "location": {
+          "scope": "building_sign",
+          "building": "north3",
+          "floor": null,
+          "room": null,
+          "basis": "Photographed screen identifies 北3教学楼; floor unknown."
+        },
+        "observed_features": "Large horizontal black-framed North3 information display, no floor stand.",
+        "interpretive_or_unseen_parts": "Screen made blank/off for later independent UI. Generated proportions slightly wider than photographic appearance; not exact device geometry."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          838.0,
+          467.0
+        ],
+        "anchor_role": "mount-center",
+        "target_visible_width_px": 112,
+        "uniform_scale": 0.07915194346289753,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 590580,
+        "opaque255_pixels": 1719,
+        "partial_alpha_pixels": 979381,
+        "visible_bbox_alpha128": [
+          131,
+          129,
+          1546,
+          806
+        ],
+        "reported_core_alpha_range": [
+          249,
+          254
+        ],
+        "notes": "Screen made blank/off for later independent UI. Generated proportions slightly wider than photographic appearance; not exact device geometry. Native soft alpha retained; no local edge retouch."
+      }
+    },
+    {
+      "id": "north_complex_clock",
+      "label": "数字钟空白外壳",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north_complex_clock_photo_ref_web_v1.png",
+        "original_download_name": "north-complex-clock-photo-ref-web-v1.png",
+        "sha256": "4b6003304b970c0ce813b05cd032bc6d59c510e83962673d0210c5293e1560ee",
+        "bytes": 682112,
+        "width": 1927,
+        "height": 816,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_mse_2025",
+        "image_url": "https://mse.zju.edu.cn/_upload/article/images/d5/de/ec252c2b44139c3bb7cec071d5d3/cb012df0-cf39-4d3b-9ce6-3d31dd6f5c44.jpg",
+        "location": {
+          "scope": "complex_only",
+          "building": null,
+          "floor": null,
+          "room": null,
+          "basis": "Source establishes North complex only; no precise placement."
+        },
+        "observed_features": "Wide thin black digital wall-clock casing above teaching board.",
+        "interpretive_or_unseen_parts": "Display deliberately unlit/no digits so game can show time separately. Side controls, thickness and proportions are interpretive."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          962.5,
+          413.5
+        ],
+        "anchor_role": "mount-center",
+        "target_visible_width_px": 40,
+        "uniform_scale": 0.025031289111389236,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 931943,
+        "opaque255_pixels": 512,
+        "partial_alpha_pixels": 639977,
+        "visible_bbox_alpha128": [
+          164,
+          207,
+          1762,
+          621
+        ],
+        "reported_core_alpha_range": [
+          249,
+          254
+        ],
+        "notes": "Display deliberately unlit/no digits so game can show time separately. Side controls, thickness and proportions are interpretive. Native soft alpha retained; no local edge retouch."
+      }
+    },
+    {
+      "id": "north_complex_double_door",
+      "label": "关闭双门叶组件",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north_complex_double_door_photo_ref_web_v2.png",
+        "original_download_name": "north-complex-double-door-photo-ref-web-v2.png",
+        "sha256": "5162ddda669d90093779c588ec86bde6663dc22407675fb5a2755058c938a385",
+        "bytes": 989680,
+        "width": 1313,
+        "height": 1198,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_mse_2025",
+        "image_url": "https://mse.zju.edu.cn/_upload/article/images/d5/de/ec252c2b44139c3bb7cec071d5d3/cb012df0-cf39-4d3b-9ce6-3d31dd6f5c44.jpg",
+        "location": {
+          "scope": "complex_only",
+          "building": null,
+          "floor": null,
+          "room": null,
+          "basis": "Source establishes North complex only; no precise placement."
+        },
+        "observed_features": "Brown paired wooden leaves, narrow vertical vision glass on each leaf, metal handles.",
+        "interpretive_or_unseen_parts": "Photo hides lower region. v2 removes erroneous outer doorframe; slight width-axis slope remains. Pair is one closed-state sprite, not split animation leaves or calibrated doorway."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          658.0,
+          1136
+        ],
+        "anchor_role": "bottom-center",
+        "target_visible_width_px": 64,
+        "uniform_scale": 0.08366013071895424,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 781300,
+        "opaque255_pixels": 1354,
+        "partial_alpha_pixels": 790320,
+        "visible_bbox_alpha128": [
+          276,
+          74,
+          1041,
+          1137
+        ],
+        "reported_core_alpha_range": [
+          251,
+          254
+        ],
+        "notes": "Photo hides lower region. v2 removes erroneous outer doorframe; slight width-axis slope remains. Pair is one closed-state sprite, not split animation leaves or calibrated doorway. Native soft alpha retained; no local edge retouch."
+      }
+    },
+    {
+      "id": "north_complex_power_module",
+      "label": "桌面电源模块",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north_complex_power_module_photo_ref_web_v2.png",
+        "original_download_name": "north-complex-power-module-photo-ref-web-v2.png",
+        "sha256": "82f793929a76a77c4bd638420ea57b6773fd280e5dd57d117c82e2746426d94c",
+        "bytes": 1019125,
+        "width": 1774,
+        "height": 887,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_smart_2022",
+        "image_url": "https://imagepphcloud.thepaper.cn/pph/image/217/242/19.jpg",
+        "location": {
+          "scope": "complex_only",
+          "building": null,
+          "floor": null,
+          "room": null,
+          "basis": "Source establishes North complex only; no precise placement."
+        },
+        "observed_features": "Black wedge housing, pale sloped front face, dual outlet patterns and small left ports.",
+        "interpretive_or_unseen_parts": "v2 removes exterior smoky halo and makes front width horizontal. Socket holes are artistic approximations, not electrical specification; rear hidden."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          908.5,
+          759
+        ],
+        "anchor_role": "bottom-center",
+        "target_visible_width_px": 24,
+        "uniform_scale": 0.017518248175182483,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 885227,
+        "opaque255_pixels": 1518,
+        "partial_alpha_pixels": 686793,
+        "visible_bbox_alpha128": [
+          224,
+          181,
+          1594,
+          760
+        ],
+        "reported_core_alpha_range": [
+          249,
+          254
+        ],
+        "notes": "v2 removes exterior smoky halo and makes front width horizontal. Socket holes are artistic approximations, not electrical specification; rear hidden. Native soft alpha retained; no local edge retouch."
+      }
+    },
+    {
+      "id": "north_complex_study_divider",
+      "label": "自习隔板",
+      "status": "candidate_not_integrated",
+      "image": {
+        "path": "png/north_complex_study_divider_photo_ref_web_v2.png",
+        "original_download_name": "north-complex-study-divider-photo-ref-web-v2.png",
+        "sha256": "9bd1c8c5965cf02cb4e3912e82da20981ce47b53f0ac59a847761145fc926c87",
+        "bytes": 1456697,
+        "width": 2172,
+        "height": 724,
+        "mode": "RGBA",
+        "native_png_unchanged": true
+      },
+      "photo_evidence": {
+        "source_id": "zju_smart_2022",
+        "image_url": "https://imagepphcloud.thepaper.cn/pph/image/217/242/1.jpg",
+        "location": {
+          "scope": "complex_only",
+          "building": null,
+          "floor": null,
+          "room": null,
+          "basis": "Source establishes North complex only; no precise placement."
+        },
+        "observed_features": "Single straight mustard/olive desktop privacy board, pale thin trim.",
+        "interpretive_or_unseen_parts": "Small mounting tabs and reverse face are simplified. v2 fixes horizontal alignment; some low-alpha colored fringe remains, not final edge retouch."
+      },
+      "preview": {
+        "pivot_canvas_px": [
+          1087.0,
+          606
+        ],
+        "anchor_role": "bottom-center",
+        "target_visible_width_px": 96,
+        "uniform_scale": 0.04745427582797825,
+        "is_measured": false
+      },
+      "placement": {
+        "world_coordinates": null,
+        "measured_dimensions": null,
+        "collision_geometry": null,
+        "navigation_geometry": null,
+        "instances": []
+      },
+      "alpha_qa": {
+        "min": 0,
+        "max": 255,
+        "transparent_pixels": 657199,
+        "opaque255_pixels": 3860,
+        "partial_alpha_pixels": 911469,
+        "visible_bbox_alpha128": [
+          76,
+          145,
+          2099,
+          607
+        ],
+        "reported_core_alpha_range": [
+          249,
+          254
+        ],
+        "notes": "Small mounting tabs and reverse face are simplified. v2 fixes horizontal alignment; some low-alpha colored fringe remains, not final edge retouch. Native soft alpha retained; no local edge retouch."
+      }
+    }
+  ]
+}
