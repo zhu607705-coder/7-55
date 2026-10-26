@@ -1,0 +1,85 @@
+name: Chapter4 feedback video proof
+on:
+  push:
+    branches: [dot/chapter4-feedback-video-20261026]
+    paths: ['.github/workflows/chapter4-feedback-proof.yml']
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_GAME_SHA: 40b21340b5c0969f0aae12f533cb84d4c1ef3f5a
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - name: Bind recording to reviewed game bytes
+        run: |
+          git fetch --depth=1 origin "$EXPECTED_GAME_SHA"
+          git diff --exit-code "$EXPECTED_GAME_SHA" HEAD -- . ':!.github/workflows/chapter4-feedback-proof.yml'
+          mkdir -p feedback-video
+          git rev-parse HEAD > feedback-video/recording-head.txt
+          printf '%s\n' "$EXPECTED_GAME_SHA" > feedback-video/game-head.txt
+          printf '%s\n' 'Automated QA source-checkpoint demonstration of real Main/controller feedback, not continuous gameplay or physical mobile testing. Silent recording; no voice/audio claims.' > feedback-video/README.txt
+      - name: Install pinned existing renderer and encoder
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version | tee feedback-video/engine.txt
+          if ! command -v xvfb-run || ! command -v ffmpeg; then sudo apt-get update; sudo apt-get install -y xvfb ffmpeg; fi
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Synchronize original resources
+        run: node godot_native/tools/sync_source.mjs
+      - name: Record actual portrait and desktop QA scenes
+        timeout-minutes: 6
+        run: |
+          cat > "$RUNNER_TEMP/godot-video" <<'SH'
+          #!/usr/bin/env bash
+          exec /usr/local/bin/godot --resolution "$C4_VIDEO_SIZE" --audio-driver Dummy "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/godot-video"
+          export GODOT_BIN="$RUNNER_TEMP/godot-video"
+          for view in portrait desktop; do
+            if [ "$view" = portrait ]; then export C4_VIDEO_SIZE=390x844; else export C4_VIDEO_SIZE=1280x720; fi
+            timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 1600x1000x24' \
+              node godot_native/tools/run_chapter4_time_feedback.mjs --movie "$GITHUB_WORKSPACE/feedback-video/$view.avi" \
+              2>&1 | tee "feedback-video/$view-render.log"
+            ! grep -E 'ERROR:|Parse Error:|Failed to load script|Accepted feedback did not start|requires a supported graphical renderer' "feedback-video/$view-render.log"
+            test -s "feedback-video/$view.avi"
+            ffmpeg -hide_banner -y -i "feedback-video/$view.avi" -an -c:v libx264 -preset fast -crf 20 -pix_fmt yuv420p -movflags +faststart "feedback-video/$view.mp4"
+            ffprobe -v error -show_format -show_streams -of json "feedback-video/$view.mp4" > "feedback-video/$view-probe.json"
+            python3 - "$view" "$C4_VIDEO_SIZE" <<'PY'
+          import json, pathlib, sys
+          view, dimensions = sys.argv[1:]
+          data = json.loads(pathlib.Path(f'feedback-video/{view}-probe.json').read_text())
+          video = [s for s in data['streams'] if s['codec_type'] == 'video']
+          width, height = map(int, dimensions.split('x'))
+          assert len(video) == 1 and video[0]['width'] == width and video[0]['height'] == height, data
+          assert 5 <= float(data['format']['duration']) <= 60, data
+          assert not any(s['codec_type'] == 'audio' for s in data['streams']), data
+          PY
+            rm "feedback-video/$view.avi"
+          done
+          sha256sum feedback-video/*.mp4 > feedback-video/video-sha256.txt
+      - name: Preserve real recording and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chapter4-feedback-video-${{ github.sha }}
+          path: |
+            feedback-video/*.mp4
+            feedback-video/*.json
+            feedback-video/*.txt
+            feedback-video/*.log
+          if-no-files-found: error
+          retention-days: 7
