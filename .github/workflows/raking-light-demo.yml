@@ -18,6 +18,7 @@ jobs:
     env:
       GODOT_SILENCE_ROOT_WARNING: '1'
       LIBGL_ALWAYS_SOFTWARE: '1'
+      RAKING_RENDER_ARTIFACT_DIR: ${{ github.workspace }}/raking-light-demo
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Install pinned Godot and supported graphical recording tools
@@ -66,6 +67,13 @@ jobs:
           ffmpeg -hide_banner -loglevel error -y -ss 7.5 -i raking-light-demo/raking-light-two-touch.mp4 -frames:v 1 raking-light-demo/raking.png
           ffmpeg -hide_banner -loglevel error -y -ss 12 -i raking-light-demo/raking-light-two-touch.mp4 -frames:v 1 raking-light-demo/complete.png
           printf '%s\n' 'Actual Godot 4.7.1 GL mesh/normal/light output. Automated touch, not physical phone verification. Independent classroom prototype; no formal map/evidence/save changes.' > raking-light-demo/README.txt
+      - name: Check actual groove contrast and read-only history pixels
+        run: |
+          timeout 60 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path godot_native/samples/raking_light --rendering-method gl_compatibility \
+            --audio-driver Dummy --script res://tests/test_raking_render.gd 2>&1 | tee raking-light-demo/pixels.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' raking-light-demo/pixels.log
+          grep -q 'RAKING_RENDER.*failures=0' raking-light-demo/pixels.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:

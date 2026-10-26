@@ -41,7 +41,7 @@ func setup(recorded: bool=false) -> void:
 	var environment := WorldEnvironment.new(); env=Environment.new()
 	env.background_mode=Environment.BG_COLOR; env.background_color=Color("263633")
 	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color=Color("bfcdc6"); env.ambient_light_energy=0.23
+	env.ambient_light_color=Color("adc2c2") if is_recorded else Color("bfcdc6"); env.ambient_light_energy=0.23
 	env.tonemap_mode=Environment.TONE_MAPPER_LINEAR
 	environment.environment=env; add_child(environment)
 	camera=Camera3D.new(); camera.projection=Camera3D.PROJECTION_ORTHOGONAL; camera.current=true
@@ -63,9 +63,9 @@ func setup(recorded: bool=false) -> void:
 	shade.mesh=cone; shade.material_override=lamp_material; shade.rotation.x=PI*0.5; lamp_head.add_child(shade)
 	var bulb := material(Color("fff2c2")); bulb.emission_enabled=true; bulb.emission=Color("ffe4a2")*1.2
 	box("VisibleBulb",Vector3(0,0,-0.155),Vector3(0.28,0.14,0.03),bulb,lamp_head)
-	lamp=SpotLight3D.new(); lamp.name="ActualRakingLamp"; lamp.light_color=Color("ffe8b7"); lamp.light_energy=5.2
+	lamp=SpotLight3D.new(); lamp.name="ActualRakingLamp"; lamp.light_color=Color("ffe8b7"); lamp.light_energy=3.0
 	lamp.spot_range=7.0; lamp.spot_angle=51.0; lamp.spot_attenuation=0.35; lamp.spot_angle_attenuation=0.4
-	lamp.shadow_enabled=true; lamp.shadow_bias=0.015; lamp.shadow_normal_bias=0.035
+	lamp.shadow_enabled=true; lamp.shadow_bias=0.1; lamp.shadow_normal_bias=1.0
 	lamp.position=Vector3(0,0,-0.22); lamp_head.add_child(lamp)
 	for i: int in range(PATH.size()-1):
 		var a: Vector2=PATH[i]; var b: Vector2=PATH[i+1]; var tangent: Vector2=(b-a).normalized()
@@ -93,11 +93,11 @@ func _build_room() -> void:
 	box("ChalkRail",Vector3(-1.55,0.77,-3.52),Vector3(4.0,0.10,0.20),wood)
 	for i: int in range(3): box("Chalk",Vector3(-2.5+i*0.30,0.84,-3.51),Vector3(0.18,0.04,0.04),material(Color("dad8b8")))
 	# A physical local preview hatch opens after sustained observation; no router call.
-	box("PreviewFrameLeft",Vector3(2.07,1.12,-3.65),Vector3(0.12,2.0,0.22),wood)
-	box("PreviewFrameRight",Vector3(3.18,1.12,-3.65),Vector3(0.12,2.0,0.22),wood)
-	box("PreviewFrameTop",Vector3(2.62,2.1,-3.65),Vector3(1.22,0.12,0.22),wood)
-	box("UnvisitedPreview",Vector3(2.62,1.12,-3.70),Vector3(1.02,1.90,0.05),material(Color("b2b89a")))
-	door_hinge=Node3D.new(); door_hinge.position=Vector3(2.12,1.12,-3.48); add_child(door_hinge)
+	box("PreviewFrameLeft",Vector3(1.52,1.12,-3.65),Vector3(0.12,2.0,0.22),wood)
+	box("PreviewFrameRight",Vector3(2.63,1.12,-3.65),Vector3(0.12,2.0,0.22),wood)
+	box("PreviewFrameTop",Vector3(2.07,2.1,-3.65),Vector3(1.22,0.12,0.22),wood)
+	box("UnvisitedPreview",Vector3(2.07,1.12,-3.70),Vector3(1.02,1.90,0.05),material(Color("b2b89a")))
+	door_hinge=Node3D.new(); door_hinge.position=Vector3(1.57,1.12,-3.48); add_child(door_hinge)
 	box("LocalPreviewDoor",Vector3(0.50,0,0),Vector3(1,1.86,0.11),material(Color("425e52")),door_hinge)
 	box("PreviewHandle",Vector3(0.86,-0.13,0.11),Vector3(0.06,0.19,0.05),material(Color("c1ab72")),door_hinge)
 	# A strip of paper tabs rises gradually, giving a diegetic stability cue.
@@ -111,7 +111,7 @@ func _paper_mesh() -> ArrayMesh:
 	for j: int in range(NZ+1):
 		for i: int in range(NX+1):
 			var p := Vector2((float(i)/NX-0.5)*PAPER_SIZE.x,(float(j)/NZ-0.5)*PAPER_SIZE.y)
-			v.append(Vector3(p.x,groove_height(p),p.y)); n.append(surface_normal(p))
+			v.append(Vector3(p.x,0.0 if is_recorded else groove_height(p),p.y)); n.append(Vector3.UP if is_recorded else surface_normal(p))
 	for j: int in range(NZ):
 		for i: int in range(NX):
 			var a := j*(NX+1)+i; var b := a+1; var c := a+NX+1; var d := c+1
@@ -125,7 +125,9 @@ func configure_camera(viewport_size: Vector2, history: bool=false) -> void:
 	var back := right.cross(up)
 	camera.transform=Transform3D(Basis(right,up,back),Vector3(0,0.45,-0.15)+back*22)
 	camera.size=maxf(5.0,6.7*viewport_size.y/maxf(viewport_size.x,1))
-	if history: camera.size=3.3
+	if history:
+		camera.size=4.1
+		camera.position=Vector3(0.65,0.80,-0.30)+back*22
 
 func update_scene(tilt: Vector2, azimuth: float, elevation: float, progress: float, complete: bool, delta: float=0.0) -> void:
 	paper_pivot.basis=Basis(Vector3.RIGHT,deg_to_rad(tilt.x))*Basis(Vector3.FORWARD,deg_to_rad(tilt.y))

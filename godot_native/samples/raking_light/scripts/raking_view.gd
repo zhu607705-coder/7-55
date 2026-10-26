@@ -11,15 +11,13 @@ var current_rect := Rect2()
 var history_rect := Rect2()
 var history_offset := Vector2.ZERO
 var pointer_positions: Dictionary={}
-var title: Label
-var instruction: Label
-var status: Label
-var history_caption: Label
 var retry: Button
 var cancel: Button
 var resume: Button
 var current_image: TextureRect
 var history_image: TextureRect
+var menu_button: Button
+var menu_open := false
 var last_size := Vector2.ZERO
 var metrics: Dictionary={}
 
@@ -29,13 +27,11 @@ func _ready() -> void:
 	current_viewport=_viewport(); current_world=World.new(); current_viewport.add_child(current_world); current_world.setup(false)
 	history_viewport=_viewport(); recorded_world=World.new(); history_viewport.add_child(recorded_world); recorded_world.setup(true)
 	current_image=_image(current_viewport); history_image=_image(history_viewport)
-	title=_label("斜光找压痕",24,Color("e8ddbe"))
-	instruction=_label("抬一抬纸边，再把灯压低。",17,Color("c8cdbf"))
-	history_caption=_label("旧时光 · 只读光向",15,Color("d4d2bd"))
-	status=_label("拖纸边调整倾斜 · 拖灯罩移动光源",16,Color("d6d6c1"))
-	retry=_button("重新摆放",func(): model.reset(); pointer_positions.clear(); resume.hide())
+	retry=_button("重新摆放",func(): model.reset(); pointer_positions.clear(); _close_menu())
 	cancel=_button("暂停",func(): _suspend())
-	resume=_button("继续观察",func(): model.resume(); resume.hide())
+	resume=_button("继续",func(): model.resume(); _close_menu())
+	menu_button=_button("···",func(): _suspend())
+	retry.hide(); cancel.hide(); resume.hide()
 	resized.connect(_layout)
 	_layout()
 
@@ -61,27 +57,25 @@ func _layout() -> void:
 	if last_size!=Vector2.ZERO and last_size!=size: _suspend()
 	last_size=size
 	var wide := size.x>700
-	current_rect=Rect2(0,222,size.x,maxf(250,size.y-292))
-	if wide: current_rect=Rect2(size.x*0.29,86,size.x*0.71,size.y-156)
+	current_rect=Rect2(0,0,size.x,size.y)
+	if wide: current_rect=Rect2(size.x*0.29,0,size.x*0.71,size.y)
 	current_viewport.size=Vector2i(current_rect.size); current_image.position=current_rect.position; current_image.size=current_rect.size
 	current_world.configure_camera(current_rect.size)
-	var history_size := Vector2(minf(358,size.x-32),150)
+	var history_size := Vector2(minf(278,size.x-78),150)
 	if wide: history_size=Vector2(size.x*0.27,190)
-	history_rect=Rect2(Vector2(16,92)+history_offset,history_size)
+	history_rect=Rect2(Vector2(16,16)+history_offset,history_size)
 	_clamp_history()
 	history_viewport.size=Vector2i(history_rect.size); history_image.position=history_rect.position; history_image.size=history_rect.size
 	recorded_world.configure_camera(history_rect.size,true)
-	title.position=Vector2(18,15); instruction.position=Vector2(18,49)
-	history_caption.position=history_rect.position+Vector2(10,8)
-	status.position=Vector2(16,size.y-67)
-	retry.position=Vector2(16,size.y-36); retry.size=Vector2(110,30)
-	cancel.position=Vector2(size.x-102,size.y-36); cancel.size=Vector2(86,30)
-	resume.position=Vector2(size.x*0.5-72,size.y*0.57); resume.size=Vector2(144,44); resume.visible=model.suspended
+	retry.position=Vector2(size.x-148,99); retry.size=Vector2(132,36)
+	cancel.position=Vector2(size.x-148,141); cancel.size=Vector2(132,36)
+	resume.position=Vector2(size.x-148,57); resume.size=Vector2(132,36); resume.visible=model.suspended
+	menu_button.position=Vector2(size.x-54,12); menu_button.size=Vector2(38,36)
 	queue_redraw()
 
 func _clamp_history() -> void:
 	history_rect.position.x=clampf(history_rect.position.x,6,maxf(6,size.x-history_rect.size.x-6))
-	history_rect.position.y=clampf(history_rect.position.y,80,maxf(80,size.y-history_rect.size.y-90))
+	history_rect.position.y=clampf(history_rect.position.y,12,maxf(12,size.y-history_rect.size.y-12))
 
 func _process(delta: float) -> void:
 	if not current_world: return
@@ -90,11 +84,7 @@ func _process(delta: float) -> void:
 	recorded_world.update_scene(Vector2(9,-6),-28,18,0,false)
 	metrics=current_world.visibility_metrics()
 	model.update(delta,metrics)
-	if model.completed: status.text="压痕已看清，后方预览门打开。"
-	elif model.suspended: status.text="已松开双手。继续后重新稳定观察。"
-	elif model.stable_time>0.05: status.text="就是这束斜光。稳住，看清整条压痕。"
-	elif metrics.get("incidence",90)>24: status.text="光还太正。把灯罩向下拖，轻抬纸边。"
-	else: status.text="慢慢侧移灯罩，让光扫过整张纸。"
+
 	queue_redraw()
 
 func paper_polygon() -> PackedVector2Array:
@@ -143,8 +133,8 @@ func _move(id: int, point: Vector2) -> void:
 	var delta: Vector2=point-pointer_positions[id]; pointer_positions[id]=point
 	if model.owners[id]=="history":
 		history_rect.position+=delta; _clamp_history()
-		history_offset=history_rect.position-Vector2(16,92)
-		history_image.position=history_rect.position; history_caption.position=history_rect.position+Vector2(10,8)
+		history_image.position=history_rect.position
+		history_offset=history_rect.position-Vector2(16,16)
 	else: model.drag(id,delta*390.0/maxf(320,current_rect.size.x))
 	get_viewport().set_input_as_handled()
 
@@ -153,7 +143,11 @@ func _up(id: int) -> void:
 
 func _suspend() -> void:
 	model.suspend(); pointer_positions.clear()
-	if resume: resume.show()
+	if resume:
+		menu_open=true; resume.show(); retry.show(); cancel.hide()
+
+func _close_menu() -> void:
+	menu_open=false; resume.hide(); retry.hide(); cancel.hide()
 
 func _notification(what: int) -> void:
 	if what==NOTIFICATION_APPLICATION_FOCUS_OUT or what==NOTIFICATION_WM_WINDOW_FOCUS_OUT or what==NOTIFICATION_APPLICATION_PAUSED: _suspend()
@@ -162,6 +156,11 @@ func _draw() -> void:
 	if not current_world: return
 	# Only handle affordances and history frame are 2D; the paper marks are lit geometry.
 	draw_style_box(_frame_style(),history_rect.grow(3))
+	var clock_center := history_rect.position+Vector2(19,19)
+	draw_circle(clock_center,12,Color(0.09,0.15,0.15,0.85))
+	draw_arc(clock_center,8,0,TAU,32,Color("c5d2c9"),1.2,true)
+	draw_line(clock_center,clock_center+Vector2(0,-5),Color("c5d2c9"),1.2,true)
+	draw_line(clock_center,clock_center+Vector2(-4,2),Color("c5d2c9"),1.2,true)
 	var hand := Color(0.88,0.79,0.54,0.70)
 	if not model.completed:
 		draw_arc(paper_hit_point(),23,0,TAU,48,hand,1.5,true)
