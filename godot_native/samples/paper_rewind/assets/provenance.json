@@ -1,0 +1,18 @@
+{
+  "assets": [
+    {
+      "path": "assets/paper.png",
+      "source": "src/assets/rpg/theater/generated/paper/paper_flight_0.png",
+      "sha256": "bffbfe118f3b2383dcef99037c0c2d260105013b9357413ec21f8a97fe411b93",
+      "bytes": 6386
+    },
+    {
+      "path": "assets/MorningNote-Regular.ttf",
+      "source": "godot_native/ui_assets/fonts/MorningNote-Regular.ttf",
+      "sha256": "7a90f1a996c6e5b124644fc12bac9f8c41f13976f767d3ac5a75f0e796a6e2ae",
+      "bytes": 416616
+    }
+  ],
+  "graphicPrototype": "Folder, desk, broadcast display and frame are original procedural Godot drawing, not final room artwork.",
+  "audio": "Original low-volume procedural non-voice tone; optional; never a rule gate."
+}
