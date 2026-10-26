@@ -60,4 +60,6 @@ node tools/run.mjs --web /path/to/output
 
 `tests/capture_paper_rewind.gd` 用普通触摸事件驱动 24 秒竖屏完整路径，并绘制两个触点标记。专用 GitHub Actions `Paper rewind portrait demonstration` 在托管 Xvfb/GL 环境运行 Godot Movie Maker，再生成 MP4 与校验元数据。画面标注自动演示而非物理手机测试。headless 排练只证明输入路径，不能当成已经录到视频。
 
-最近已审实际录像：[703eeb4 / run40279935023](https://github.com/zhu607705-coder/7-55/actions/runs/40279935023)，390×844、30 FPS、24.1 秒。历史层边界含负对照5项、普通双触点流程6项通过。左右手通过真实对象事件驱动，非物理手机实测。美术/动作改动与限制见 [VISUAL_POLISH](docs/VISUAL_POLISH_20261026.md)，本轮证据见 [对象场景验收记录](docs/ACCEPTANCE_OBJECT_SCENE_20261026.json)。最初的 ACCEPTANCE_20261026.json 保留原始交付的历史测试范围，不代表当前画面。
+最近已审实际录像：[5fe726e / run40317077487](https://github.com/zhu607705-coder/7-55/actions/runs/40317077487)，390×844、30 FPS、24.1 秒。历史层边界含负对照5项、普通双触点流程6项通过。墙窗、窗台、桌面、文件夹和纸共用一个斜俯视正交投影；鼠标和触摸使用同一个平面逆投影。A4 比例在世界空间检查，不再错误要求投影后屏幕矩形仍为√2。
+
+[灰模结构实录 ec2b43c](https://github.com/zhu607705-coder/7-55/actions/runs/40314222557)获得初步方向认可后，现有素材才贴回同一几何。旧827f8c6的混合视角已被替代，不作为当前空间验收。当前证据见 [投影纠正记录](docs/ACCEPTANCE_PROJECTION_20261026.json)。[上一轮对象记录](docs/ACCEPTANCE_OBJECT_SCENE_20261026.json)及最初 ACCEPTANCE_20261026.json 保留各自当时范围。物理手机/最终美术验收仍未完成。

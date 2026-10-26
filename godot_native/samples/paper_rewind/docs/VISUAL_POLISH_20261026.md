@@ -35,5 +35,27 @@ clipping (including a negative control) and the six-step two-touch movie are
 verified separately on the supported hosted GL renderer. Neither headless tests
 nor automated touch movies are physical-phone acceptance or final-art approval.
 
-Original PR180 is held until actual preview frames have been reviewed. No Main,
+PR180 stays Draft; each update follows actual rendered review. No Main,
 controller, formal item/proof/save, deployment, merge or review request changes.
+
+## Shared projection correction after user review
+
+The user identified mixed viewing angles in827f8c6. Earlier focus/material
+polish did not prove a coherent room. The corrected graybox uses one fixed
+orthographic projection (50-degree elevation,8-degree yaw) for wall, window,
+sill, desk thickness, folder hinge/pocket and paper corners. Physical A4 is
+measured before projection. Native mouse and touch share its plane inverse;
+path seeking samples the actually projected trajectory. No puzzle rule changed.
+
+Grayboxec2b43c was rendered and provisionally accepted as the spatial basis.
+Material5fe726e uses the same geometry and original source PNGs. Existing
+foliage is cropped to the world glass aspect before projection. Actual contact,
+pocket occlusion and manual collection were inspected again, along with the
+real-renderer history boundary positive/negative checks. The small rectangular
+paper shadow and partially cropped receiver are recorded limitations, not
+reasons for another automatic iteration. See ACCEPTANCE_PROJECTION_20261026.json.
+
+The first material capture40315322734 never reached rendering: signed Ubuntu
+dependency downloads stalled until the job bound. The capture-only preparation
+fix keeps engine SHA/real-render guards and repository permissions unchanged;
+run40317077487 succeeded. Headless results do not substitute for these frames.

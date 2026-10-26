@@ -1,12 +1,11 @@
 extends RefCounted
-## A1 production keeps the existing wall/combined-desk pilot. The 53-object
-## reconstruction is an explicit debug-only preview until clean floors pass QA.
+## A1's 53 independent objects are the ordinary production presentation.
 ## Source-native cleanup samples the current time plate; no mother image is edited.
 ## No input or progression authority. Missing chapter art preserves the source plate.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const DeveloperPolicy=preload("res://scripts/developer_tools_policy.gd")
 const PREVIEW_ENV:="NORTH_PROP_OBJECT_PREVIEW"
-var independent_preview:=false
+var independent_preview:=true
 var data:Dictionary
 var active:=false
 var desk_texture:Texture2D
@@ -23,8 +22,7 @@ const COMPOSITE_SCALE:=3
 var issues:Array[String]=[]
 
 func _init()->void:
-	independent_preview=preview_allowed(DeveloperPolicy.available(),OS.get_environment(PREVIEW_ENV))
-	var path:="res://data/native/north-generated-objects.json" if independent_preview else "res://data/native/north-baseline-objects.json"
+	var path:="res://data/native/north-generated-objects.json"
 	data=JSON.parse_string(FileAccess.get_file_as_string(path))
 
 static func preview_allowed(developer_available:bool,requested:String)->bool:
@@ -156,15 +154,17 @@ func wall_rect()->Rect2:
 func _build_wall_composite(source:Image)->void:
 	# Flatten one wall plus same-source evidence once, so the reveal-alpha pass
 	# never paints a translucent wall stripe over a previously drawn blackboard.
-	var material:Image=wall_texture.get_image()
-	if material.is_compressed():material.decompress()
 	var combined:=Image.create(1143,435,false,Image.FORMAT_RGBA8)
-	material=material.get_region(Rect2i(rect(data.wall.visibleRect)))
-	for y in material.get_height():
-		for x in material.get_width():material.set_pixel(x,y,material.get_pixel(x,y)*wall_tint)
 	var destination:=wall_rect()
-	material.resize(roundi(destination.size.x*COMPOSITE_SCALE),roundi(destination.size.y*COMPOSITE_SCALE),Image.INTERPOLATE_NEAREST)
-	combined.blit_rect(material,Rect2i(Vector2i.ZERO,material.get_size()),Vector2i((destination.position-WALL_COMPOSITE_BOUNDS.position)*COMPOSITE_SCALE))
+	# A continuous, source-lit plaster surface replaces the noisy generated
+	# patchwork. Original coping/skirting pixels meet the adjoining wall exactly.
+	# This material is rebuilt from the active time plate, never daytime-tinted
+	# over a night plate. Wall feet and the 22% reveal stay source-authored.
+	for y:int in range(473,596):
+		var color:Color=source.get_pixel(1300,y)
+		for x:int in range(1226,1607):
+			var pixel:Color=source.get_pixel(x,y) if y<498 or y>=581 else color
+			combined.fill_rect(Rect2i((x-1226)*COMPOSITE_SCALE,(y-473)*COMPOSITE_SCALE,COMPOSITE_SCALE,COMPOSITE_SCALE),pixel)
 	for part:Dictionary in data.wall.preservedSourceParts:
 		var polygon:=PackedVector2Array()
 		for row:Array in part.polygon:polygon.append(Vector2(float(row[0]),float(row[1])))

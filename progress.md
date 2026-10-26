@@ -5630,6 +5630,49 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 
 - Exact 14c Web aggregation passed all13 logical consumers /17 reports; PR deploy correctly skipped. Native seven shards, graphics and preparation passed; one obsolete canteen fixture still required modal.z_index==100. The existing assertion now checks ordering above scene/narrative/phone glass, preserving all original lifecycle and progression checks; isolated11/0. A bounded complete test search found no other affected modal constant. This is fixture maintenance, not a newly found product defect or adversarial reward. Runtime remains byte-for-byte unchanged by this last fix.
 
+## 2026-10-26：北教真实资料与四栋一层独立预览
+
+- 新增独立 Godot 4.7.1 资料预览，不替换正式入口、A1/A2/A3、控制器或存档。北1/2各4张、北3/4各5张历史分层图登记为资料覆盖，不冒充现状总层数；未知原始文件名、几何及跨层连接保持明确未核验。
+- 四张已批准透明一层候选 PNG 原样纳入；可选建筑/楼层、等比平移缩放和查看来源。上层清空旧图并显示“仅资料”，不复制一层。room/polygon/portal/objectLayer接口独立登记；文字标签框及生成图都不产生碰撞。
+- 通过：官方4.7.1独立项目导入/解析、306项真实Control输入/布局和资料检查、99项自动注册来源回归、正常启动、Web quick5/5。Web release35/38通过；单文件构建退出137，后续结构与浏览器验证因demo缺失失败；原因未确认，不称OOM，也未重试完整构建。
+- 未运行：完整原生汇总、生产Godot Web/PCK/浏览器、图形截图和实体手机验收。当前云端没有可用图形显示，不能把无图形界面布局测试或原图总览当作运行截图。分支保持Draft，不声称18层可玩还原或合并就绪。证据见样例ACCEPTANCE_20261026.json。
+- 复用已单独验证的通用嵌套Godot资源命名空间修复（db08aac）；并为本样例登记跨PR原生运行测试。仍扫描每个子项目，不用.gdignore或samples豁免缺失资源。13项负例与本分支2356项静态检查通过；清洁解包的独立预览再次通过306+99项和正常启动。
+- PR177初版7da6edd的远端Web CI release38/38通过；cross-PR实际运行暴露旧suites[0]注册在新增首项后误分6个正式测试。改按唯一godot_native身份绑定，新增顺序交换/缺失/重复身份负例和运行前脚本存在性检查；19项正反例、2387项静态检查通过。未删除、跳过或豁免正式测试；修复后精确head运行仍待CI。
+- 按用户要求重新fetch main/174/176/177；main仍abd8b002，无需合并新main。与Phone作者完成独立合流试验，采用共同preview project-ID注册，保留两端准备/独立运行和原正式suites；本分支19负例+2387静态再过，联合trial另过2400静态/Phone1329/North306+99。只复用共享验证器，未合入兄弟样例；progress追加段留待最终集成时协调。旧head7da6edd的生产Godot Web及全部浏览器profile也已通过，Publish skipped。
+
+## 2026-10-26 PR177 与当前主线整合
+
+- 按用户指定的177/178/179范围处理草稿。合入当前main f18cee57，保留原准备、8分片和正式Web验收；只协调progress追加段，不改玩法、存档、生产素材或测试门槛。独立楼层资料预览仍不等同于18层可走。精确整合head需重新通过既有CI后才合并。
+
+## 2026-10-26 北教实拍参照独立对象候选（单独资产 Draft）
+
+- 重新 fetch 最新 main `abd8b0028e8443795518243da7930ee760bc92e9`，独立工作分支提交11张原样 PNG（10,658,176字节）：北1-104咖啡区3件、教学/公共区8件。不修改 #174 验证优化、#176 过场或 #177 楼层预览分支，不修改游戏交互/地图/碰撞。生成已停止，游戏设计留待提交后讨论。
+- 候选位于既有 `.gdignore` 保护的 `godot_native/art_source/north_photo_objects_20261026`。来源 registry 保留稳定 ID、实拍页面/图片直链、发布日期与拍摄日期不确定性、已知位置层级、可见特征和补全面、原始 SHA256/尺寸/alpha。楼群级参考不擅自分配到具体楼栋/楼层。预览 pivot/等比缩放不是实测；实例、世界坐标和几何为空。
+- 11张PNG均逐张目视检查且字节等于两批已交付原件；只规范文件名，未改绘、缩放、裁剪或修alpha。沙发二值alpha，其余主体接近不透明并保留少量低alpha彩边。真实照片、失败版本、纯文字概念门、聊天/工具记录均不入库。
+- 只读manifest校验11/11与20项正反例通过；复用仓库现有 PNG decoder，无新依赖。局部 Web quick 5/5 通过。未在本分支重跑完整本地 release 或530阶段原生套件：先前相同云环境 single-file构建被终止137，不归因OOM；本轮仅资产候选，完整门禁交由精确 Draft head 的自动 CI，结果不得借用其他PR。无真实游戏内视觉/实体手机验收；本次不是生产素材落位或完整楼层复原。
+
+## 2026-10-26 Chapter4 三处收尾反馈动画（独立于 PR176）
+
+- 初建于 main `abd8b0028`，发布前再 fetch 并重放到已合入 PR175 的最新 main `f18cee570f3684e7cd87b6c0f0844f805f3d88c4`；分支 `dot/chapter4-time-feedback-20261026`。Main 仅8行懒挂载/退出接入，只读观察新获得的时间核对、204投影完成、最后一分钟安装事实；分别1.1/1.2/1.1秒。复用原钟面与204素材；07:47:05和07:55:00相差475秒，未混同电梯六秒、开场未更新的07:55:23或3F参照房。原900ms证明、卡/纸独立交付、5800/3600ms楼外收尾不变。
+- 正式界面没有新增控制面板或按钮排；仅无底色的轻量略过入口。键鼠触略过只取消视觉，不写事实；不抢焦点/不拦移动，取消后真实Space仍路由。覆盖减弱动态静态结果、重载字典身份、同帧切页、新小游戏/弹窗、零面积、跨SubViewport映射与窄手机字宽。独立审查所提问题均已修复。
+- 最新 main 上官方4.7.1：新增451/451，原10项相关回归全过（含979脚本解析及175的surface-order），Web quick5/5，2966静态检查通过。旧基线68项Web分包检查曾通过；最新基线失败另列，不算本分支全绿。QA场景实跑headless三段自动播放；PNG/movie预检在headless非零拒绝，不生成视觉证明。
+- 再fetch到175=`59b32c6553cd29994d61fe225af2375a3c09308d`，独立trial的Main补丁无冲突，451专项和其11项surface-order通过。另复现175原有startup ownership断言差异：archive film实际分到chapter4、旧测试期望core；移走本改动、还原175原Main仍同样失败，最新 main 与175文件树一致，重放后此项仍失败；未顺手改测试或分包规则。
+- 本轮本地release未重复：保留Web源码未改，此云先前单文件构建137为历史，不冒充本轮35/38。新Draft现有Web CI将对精确head执行release；完整原生与其余CI结果另记。没有改workflow/降低门禁。
+- GPU外观、实际截图/录像与物理手机仍未验：沿用已知显示/沙箱限制，不重试绕行、不使用用户电脑。真实Main QA/录制命令与内容/日志哈希见 `godot_native/docs/CHAPTER4_TIME_FEEDBACK_20261026.md` 及验收JSON。未ready、请求review、合并或部署。
+
+### 2026-10-26：真实录制发现的两处可见性修正
+
+- PR179首版40b2134的Web release、cross、完整native及Godot Web四项CI均成功；另建capture-only分支，没有重跑它们或改现有工作流。首轮录制因冷导入占用录制限时退出124，保留失败；拆分准备并以临时QA配置覆盖四个录制尺寸后，06e5d1d/run40266176335真实Mesa/llvmpipe录制两尺寸各6.83秒/30fps/无音轨。
+- 实际抽帧揭出竖屏比较差值撞到原通知、204源检查点站在东侧走廊。只将紧凑比较排到略过按钮左侧，按字体ascent/descent计算包络；只把QA站位改为真实204中间走道，不重排全局通知或改正式场景。新增实际HUD不相交和12目标可见性回归：修前38个目标失败，修后526/0。旧桌面两个有效片段已明确剪为两段预览交付，不冒充三段完成。
+- 独立复审通过；新版完整外观需锁定新游戏head再录，物理手机仍未验。新head必跑CI结果另记，不挪用首版全绿；无ready/review/merge/deploy。
+
+## 2026-10-26 北教三层对象正式接入与草稿整合
+
+- 合流177的楼宇资料、178的11件原始候选、179的三段已获准事实反馈。解决progress追加冲突，保留当前main的准备、8分片与正式Web验收。
+- A1默认启用53件对象；A1/A2/A3另登记51/124/144个固定源图对象，保留301与204已有独立对象。修复分隔墙杂色与光照取样；静态源裁框继续沿用原前景遮罩，动态门/人物在其后绘制。
+- 通过网页版Pro复核算法，并复现矩形裁框遮人问题；采用原遮罩和不可变像素归属重建修正。未把矩形裁片称为可任意移动的完整对象。具体实现、范围和证据边界见NORTH_PRODUCTION_OBJECTS_20261026.md。
+- 本地完成聚焦原生、实际GPU、命名空间与候选哈希检查；正式CI及公网验收须对最终整合head另行确认。
+
 ## 2026-10-26 — independent two-hand paper-rewind slice
 
 - Added `godot_native/samples/paper_rewind/` on current main `f18cee5`, not a formal menu/controller hook. A1 `c4_catch_paper` was inspected and deliberately not replaced: it grants the opening attendance-record paper, not a closing proof.
@@ -5648,3 +5691,12 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Removed duplicate paper boxes, history scanlines/heavy rims, dense background lines and unrelated notebook. Reused unchanged campus foliage for a low-contrast window crop. Added three original cloud-web-generated folder faces with untouched source PNGs, explicit atlas rectangles and measured pocket seam; no generated 256x362 or final-pixel-art claim.
 - New focused checks: model68, object/input/geometry85, two-hand35, namespace19, clean import/startup and unchanged save sentinels. Supported hosted GL run40279935023 on703eeb4 (tree57a0e6e) passes5 history pixel checks including negative control and6 ordinary-touch flow assertions; actual390x844/30fps/24.1s MP4 and before/after real frames were inspected.
 - This closes the previous geometry/contact/history occlusion problems and materially improves object structure. Still simplified art, no physical-phone/browser manual or novice timing acceptance. Original PR180 remains Draft; exact updated-head full CI is checked separately, with no merge/review/deployment request.
+
+## 2026-10-26 — paper sample unified projection after user correction
+
+- Focus preview827f8c6 improved subject size/contrast but mixed a near-top-down desk with a frontal wall window. The user correctly rejected that spatial relationship; it is not retained as completed visual acceptance.
+- Rebuilt only the isolated sample presentation around one orthographic3D-to-2D camera: elevation50°, yaw8°, shared wall/window/sill/desk/hinge/pocket/paper axes. A4 is checked in world space, native mouse and touch use the same plane inverse, and path seeking samples projected paper positions. Model, raw PNG bytes, formal controller/save/proof rules remain unchanged.
+- Grayboxec2b43c/run40314222557 received provisional user approval of the space, then existing materials were restored on unchanged geometry. Actual material5fe726e/run40317077487 passes5 real-renderer history pixel checks and6 ordinary two-touch flow checks. Implementer/parent/independent reviewer inspected first/hold/fold/contact/landed/collect frames and full sequence; no core open finding. Physical-mobile/final-art acceptance is not claimed.
+- Focused local checks: model68, input/projection118, two-hand35, clean import/startup and unchanged save sentinels; shared namespace19 positive/negative checks. Small rectangular paper shadow and receiver crop are retained as local presentation limits, without more unsolicited recording.
+- The first material recording40315322734 timed out while Ubuntu mirror dependencies downloaded; it never ran the game. A bounded capture-only dependency fix preserves package signatures, pinned engine SHA, real-renderer guards and workflow permissions.
+- Latest main0713f509 is incorporated into this working branch without modifying main or merging PR180. Both progress histories are preserved, all main verifier projects remain, and only the conditional paper project is appended. Original Draft180 full CI is checked on its eventual new head; no review, ready, merge or deployment requested.

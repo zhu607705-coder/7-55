@@ -32,7 +32,10 @@ func run()->void:
 	var family:RefCounted=world.north_objects;var scene:Node2D=world.north_props
 	check(family.active and scene.active,"Complete real family activates independent nodes")
 	if not family.active:world.queue_free();await frames();quit(1);return
-	check(scene.objects.size()==53 and scene.behind_space.get_child_count()+scene.front_space.get_child_count()==53,"Exactly one Node2D per prop and per separate desk/chair, never a flattened wall surrogate")
+	var placed:=0
+	for object:Node2D in scene.objects.values():
+		if object.get_parent() in [scene.behind_space,scene.front_space]:placed+=1
+	check(scene.objects.size()==53 and placed==53,"Exactly one Node2D per generated prop and separate desk/chair; source-floor layers retain their own owner")
 	check(scene.passes[0].get_index()<scene.behind_space.get_index() and scene.behind_space.get_index()<scene.passes[1].get_index() and scene.passes[1].get_index()<scene.front_space.get_index() and scene.front_space.get_index()<scene.passes[3].get_index(),"Render passes preserve source actor sandwich without elevating the world above UI")
 	var bible:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://docs/art/art_direction_v1.json"))
 	check(family.data.palette.colors==bible.palette.colors and family.data.palette.colors.size()==32,"All new base-art colors use the locked shared32 palette before time lighting")
