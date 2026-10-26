@@ -1,0 +1,97 @@
+{
+  "schema": "755-phone-campus-poc-acceptance-v1",
+  "date": "2026-10-26",
+  "baseline": "abd8b0028e8443795518243da7930ee760bc92e9",
+  "status": "isolated_unintegrated_prototype_visual_qa_blocked",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "renderer_requested": "gl_compatibility",
+  "test_renderer": "headless_dummy",
+  "code_sha256": {
+    "godot_native/samples/phone_to_campus/preview/capture.gd": "3cbf74111b2c3618fa811873aa4fe240676eb8859764a784164adb92a84301bc",
+    "godot_native/samples/phone_to_campus/preview/project.godot": "fd4601724f59bad6591617af8e10a08a4bd7beaec367aeda9867410e4d365f2a",
+    "godot_native/samples/phone_to_campus/preview/test_transition.gd": "7b9337777310647581eab5c49d41d84a90af17853ae9a716f5bdb91f423fa484",
+    "godot_native/samples/phone_to_campus/preview/timeline.gd": "44cf16981d13434f125dabdd164f5b06df269731424a91a15d1e6f07fbec7797",
+    "godot_native/samples/phone_to_campus/preview/transition.gd": "e74b559efc337418327833bb683c301c7391f00e8d8179a3ce485290619a5b5d",
+    "godot_native/samples/phone_to_campus/preview/transition.tscn": "d58d8d7f41e3a87c87aa4c3604235177fcc72b34149a155d86eed621763e3ef5",
+    "godot_native/samples/phone_to_campus/run.mjs": "6b3813ea3b2fb6cc19158bcd396037eeefb2d4845a77ec55cc20b3005b3d4c99"
+  },
+  "checks": {
+    "sample_import_parse": "passed",
+    "sample_behavior_assertions": 1329,
+    "sample_behavior_failures": 0,
+    "window_sizes": [
+      [
+        1280,
+        720
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ]
+    ],
+    "window_tests_change_content_scale_size": false,
+    "headless_capture_rejection": "passed; exit1, no image output",
+    "web_quick": "5/5 passed",
+    "web_release": {
+      "passed": 35,
+      "total": 38,
+      "status": "failed",
+      "failures": [
+        {
+          "stage": "build:single:unchecked",
+          "status": 137,
+          "observation": "process Killed; memory/resource cause suspected, no OOM evidence"
+        },
+        {
+          "stage": "verify:single",
+          "status": 1,
+          "observation": "demo missing after terminated single-file build"
+        },
+        {
+          "stage": "verify:browser-smoke",
+          "status": 1,
+          "observation": "Vite preview refused missing demo; browser did not run"
+        }
+      ]
+    },
+    "full_native_suite": "not_run; sample-only change",
+    "actual_gpu_capture": "blocked",
+    "actual_browser_visual": "not_run",
+    "physical_mobile": "not_run"
+  },
+  "review_fixes": [
+    "real Window resize rather than changing content_scale_size in QA",
+    "global Space shortcut before focused Button ui_accept",
+    "contact gradient above road receiver top",
+    "reduced-motion OFF retains settled frame; repeated Skip idempotent"
+  ],
+  "isolation": {
+    "production_project_entry_state_and_export_presets": "unchanged from baseline",
+    "parent_resource_boundary": "sample root .gdignore",
+    "story_autoloads": false,
+    "story_save_or_progress_writes": false,
+    "original_maps_or_assets_changed": false,
+    "phone_texture_size": [
+      430,
+      860
+    ]
+  },
+  "visual_limit": "New cloud X display could not open Unix sockets. Escalation failed before execution with bwrap read-only-path infrastructure error. No user computer access, workaround retry, screenshot fabrication, or visual acceptance claim.",
+  "logs_sha256": {
+    "tests.log": "184031cb68fb5ee96589150b4f993f7f80c21080c934be60913087b453e14cd7",
+    "web-quick.log": "ee087cba90a8ea0ca1f162bed979a7f6e2d6265b041d279244463c3d329bd3ed",
+    "web-release.log": "fe9603bb1bbe459e22c9f1b68f3b7f1679a037000bcd582a1183afab08afa578",
+    "capture-rejection.log": "d8daad6a32d3f9ea5327281e3a4753c5a7adb5cb1738410ad76efc7865b8de77"
+  },
+  "font": {
+    "source": "godot_native/ui_assets/fonts/MorningNote-Regular.ttf",
+    "sha256": "7a90f1a996c6e5b124644fc12bac9f8c41f13976f767d3ac5a75f0e796a6e2ae",
+    "license": "MORNING_NOTE_OFL.txt",
+    "use": "byte-verified local preparation, not tracked duplicate"
+  },
+  "publication": "separate Draft PR; no ready/reviewer request/merge/deploy; exact remote SHA and CI reported in PR after publication"
+}
