@@ -1,0 +1,121 @@
+{
+  "schema": "north-real-plan-preview-acceptance-v1",
+  "recordedUtc": "2026-10-26T00:56:56Z",
+  "baseCommit": "abd8b0028e8443795518243da7930ee760bc92e9",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "scope": "Independent historical-source and approximate 1F-art preview; no playable real-plan topology or production entry",
+  "passed": [
+    {
+      "stage": "Clean independent-project import/parse",
+      "status": "passed"
+    },
+    {
+      "stage": "Headless actual Control layout, keyboard, routed pointer, touch-state and registry tests",
+      "checks": 306,
+      "failures": 0,
+      "viewports": [
+        "1280x820",
+        "390x844",
+        "844x540",
+        "360x640"
+      ]
+    },
+    {
+      "stage": "Auto-discovered native source-registry regression",
+      "checks": 99,
+      "failures": 0
+    },
+    {
+      "stage": "Ordinary independent-project startup",
+      "status": "passed"
+    },
+    {
+      "stage": "Retained Web validate:quick",
+      "validatorsPassed": 5,
+      "validatorsTotal": 5
+    },
+    {
+      "stage": "Retained Web validate:release partial",
+      "validatorsPassed": 35,
+      "validatorsTotal": 38
+    },
+    {
+      "stage": "Cleanly extracted portable source ZIP",
+      "checks": 405,
+      "failures": 0,
+      "stages": [
+        "fresh import/parse",
+        "preview UI/data",
+        "native registry",
+        "ordinary startup"
+      ]
+    },
+    {
+      "stage": "Nested-project namespace negative fixtures",
+      "checks": 13,
+      "failures": 0
+    },
+    {
+      "stage": "Cross-PR static resource/UID/provenance validation",
+      "checks": 2356,
+      "runtimeStages": 0,
+      "failures": 0
+    }
+  ],
+  "failed": [
+    {
+      "stage": "build:single:unchecked",
+      "status": 137,
+      "observation": "Process printed Killed after transforming 778 modules. Cause not established; no repeated full attempt."
+    },
+    {
+      "stage": "verify:single",
+      "status": 1,
+      "observation": "demo directory absent after interrupted single-file build"
+    },
+    {
+      "stage": "verify:browser-smoke",
+      "status": 1,
+      "observation": "Vite preview could not start because demo directory was absent"
+    }
+  ],
+  "notRun": [
+    "Full native aggregate suite locally; new registry test will be discovered by CI",
+    "Production Godot Web export and browser acceptance",
+    "Rendered GPU/font/layout screenshot acceptance: cloud display unavailable",
+    "Physical mobile-device acceptance",
+    "Playable floor geometry, room polygons, staircase connectivity or full chapter acceptance"
+  ],
+  "sourceLimits": [
+    "4/4/5/5 are documented historical sheet counts, not verified current total floors",
+    "North3/North4 original archive member names still pending; null values are intentional",
+    "All four 1F plates are unregistered art candidates; no generated art, alpha masks or label boxes used as collision geometry"
+  ],
+  "inputArt": "Four approved RGBA originals preserved byte-for-byte; no repaint, scaling, mirrored building or upper-floor clone",
+  "reviewState": "Draft only; not ready for merge or release",
+  "testedSourceSha256": {
+    "godot_native/samples/north_real_plan_preview/assets/MorningNote-Regular.ttf": "7a90f1a996c6e5b124644fc12bac9f8c41f13976f767d3ac5a75f0e796a6e2ae",
+    "godot_native/samples/north_real_plan_preview/assets/north1-floor1-empty-architecture-candidate-v2.png": "d8efe40c8a30574140865d0306aa625cd792812ec034cf5cc2f230bf8a6d48fa",
+    "godot_native/samples/north_real_plan_preview/assets/north2-floor1-empty-architecture-candidate-v2.png": "7d24d5121bfb9649ea4381656083150057c40901fcf4fe8b21100239d40379db",
+    "godot_native/samples/north_real_plan_preview/assets/north3-floor1-empty-architecture-candidate-v2.png": "09dd7e5c8c2dbd3faaca4f736733599d5f4dc2c61097ddbec26bcd9c67673e22",
+    "godot_native/samples/north_real_plan_preview/assets/north4-floor1-empty-architecture-candidate-v2.png": "ef16b6327547cc7539360db241fb47c234bcb48126ef28db1e2f2d1159660594",
+    "godot_native/samples/north_real_plan_preview/data/north_plan_registry.json": "8ee19a2d53716e1fc5364ed6572547760981c50fa5414dfc97624128ae35c186",
+    "godot_native/samples/north_real_plan_preview/plate_view.gd": "8fdd45078d5f2c15a24383fd5d8a69612fb0f904f43e11a2c3d0d65e470bb13d",
+    "godot_native/samples/north_real_plan_preview/preview.gd": "4a3673671a06f37bbd578803d4b68bdbba6e4bff7f45f5647dc3070380de5c54",
+    "godot_native/samples/north_real_plan_preview/preview.tscn": "179008573d251efec72e23c5865a16844909ef362d1c89d05b436f1663b006b7",
+    "godot_native/samples/north_real_plan_preview/project.godot": "29921e00210a49fc7bf9d79415ee2df049092019d9d40a1664268d70d36d04c5",
+    "godot_native/samples/north_real_plan_preview/registry.gd": "32a66a77bb79af37ab306bcc864d8a96d14289cf76967de6b957138644a6358f",
+    "godot_native/samples/north_real_plan_preview/run_checks.mjs": "3fe299f9d5804a6400ac653e70d11f492ef8db1c6b2e72f7c5904c27c513b48d",
+    "godot_native/samples/north_real_plan_preview/tests/test_preview.gd": "db8fae2945bc853de69dfcd3100f95663f02d78cff5fa08616432f031d0fe586",
+    "godot_native/tests/test_north_real_plan_registry.gd": "9193cb08437ea18d3bbcfdcdf170fe9189e296a40a1fef0cd1832a2e08f54aa8",
+    "scripts/godot-project-namespaces.mjs": "e7f7c48a24d5aa78e0eb6f8344ebf531027af8b3604b81d336543bb2c1dbfe3b",
+    "scripts/test-godot-project-namespaces.mjs": "dcc89d45483c222c15e8c757b05c49ba2a6d7d1d73d850b1075dc3b2ff805bea",
+    "scripts/verify-native-pr-integration.mjs": "c1336b24087a7c758f58111e81e52ac4a32c67c29f0ba98be7eca0753593a60e"
+  },
+  "ciIntegration": {
+    "nativeAutoDiscoveredTest": "test_north_real_plan_registry.gd",
+    "nestedPreviewRuntimeSuite": "godot_native/samples/north_real_plan_preview/tests/test_preview.gd",
+    "sharedNamespaceFixSourceCommit": "db08aac434ec9dbe0981d0db71ae4f9a90ca1085",
+    "semantics": "Every independent project remains scanned under its own res:// root; .gdignore does not omit source checks."
+  }
+}
