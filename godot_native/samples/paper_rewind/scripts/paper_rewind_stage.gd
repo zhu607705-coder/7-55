@@ -11,7 +11,7 @@ var folder_button: Button
 var paper_grip: Control
 var history_window: Control
 var grip_preview: Control
-var history_rect := Rect2(540, 78, 360, 160)
+var history_rect := Rect2(430, 180, 430, 75)
 var history_time := 4.8
 var environment_time := 0.0
 var broadcast_quiet := false
@@ -53,12 +53,12 @@ func _ready() -> void:
 
 func _layout() -> void:
 	# Perspective is composed for the device, not a letterboxed landscape panel.
-	_projection = Vector2(size.x / 960.0, size.y / 540.0)
+	_projection = Vector2(size.x / 960.0, size.y * 0.30 / 133.0)
 	_world_scale = minf(_projection.x, _projection.y)
-	_world_offset = Vector2.ZERO
+	_world_offset = Vector2(0, size.y * 0.35 - 170.0 * _projection.y)
 	if folder_button:
-		folder_button.position = world_to_local(Model.FOLDER_RECT.position)
-		folder_button.size = (Model.FOLDER_RECT.size * _projection).max(Vector2(44,44))
+		folder_button.position = folder_leaf_rect().position
+		folder_button.size = folder_leaf_rect().size
 		_layout_grip()
 		_layout_history()
 		grip_preview.queue_redraw()
@@ -98,7 +98,7 @@ func move_history(screen_delta: Vector2) -> void:
 	_layout_history()
 
 func reset_history() -> void:
-	history_rect = Rect2(540, 78, 360, 160)
+	history_rect = Rect2(430, 180, 430, 75)
 	history_time = 4.8
 	folder_open_amount = 0
 	folder_drag_preview = 0
@@ -139,76 +139,94 @@ func _line(c: CanvasItem, a: Vector2, b: Vector2, color: Color, width: float, sh
 func _rect(c: CanvasItem, rect: Rect2, color: Color, shift: Vector2) -> void:
 	c.draw_rect(Rect2(world_to_local(rect.position) - shift, rect.size * _projection), color)
 
+func art_scale() -> float:
+	return clampf(size.x / 390.0, 0.82, 1.6)
+
+func folder_leaf_rect() -> Rect2:
+	var extent := Vector2(116,154) * art_scale()
+	return Rect2(world_to_local(Model.REST_POINT) - extent*0.5,extent)
+
 func _environment(c: CanvasItem, shift: Vector2, past: bool) -> void:
-	# Soft campus-window light and a close, deep tabletop. No explanatory labels.
-	for i: int in range(54):
-		var tone := Color("243c43").lerp(Color("4f6661"), float(i)/54.0)
-		_rect(c, Rect2(0,i*10,960,11), tone, shift)
-	_rect(c, Rect2(25,-30,370,240), Color("172d35"), shift)
-	_rect(c, Rect2(43,-22,335,213), Color("a8c8bf"), shift)
-	for i: int in range(12):
-		var x := 50.0 + i * 29
-		_rect(c, Rect2(x, 105 + sin(i * 2.4)*28, 24, 89), Color("748f89"), shift)
-	_rect(c, Rect2(198,-25,12,220), Color("3b5356"), shift)
-	_rect(c, Rect2(41,74,340,9), Color("3b5356"), shift)
-	_rect(c, Rect2(23,191,384,18), Color("708278"), shift)
-	_line(c,Vector2(23,191),Vector2(407,191),Color("c2c5a2"),3,shift)
-	# Radio grille and lamp: feedback lives on the object, not in a status row.
-	_rect(c, Rect2(690,28,181,58), Color("263338"), shift)
-	_rect(c, Rect2(703,34,145,43), Color("464b45"), shift)
-	for i: int in range(14):
-		_line(c,Vector2(711+i*9,39),Vector2(711+i*9,69),Color("252e30"),2,shift)
-	c.draw_circle(world_to_local(Vector2(854,57))-shift,4,Color("83bda6") if broadcast_quiet else Color("ecc48b"))
-	# Continuous bevel, plank grain, worn edge and long contact shadows.
-	_poly(c,[Vector2(-100,193),Vector2(1000,178),Vector2(1110,540),Vector2(-150,540)],Color("473b31"),shift)
-	_poly(c,[Vector2(-100,187),Vector2(1000,172),Vector2(1060,493),Vector2(-130,493)],Color("98724e"),shift)
-	for i: int in range(92):
-		var y := 190.0 + i*3.25
-		var col := Color(0.25,0.17,0.10,0.08 + 0.035*sin(i*1.3))
+	# Camera remains isotropic for every physical object. Layout changes positions,
+	# never the shape of a folder, notebook, window or sheet.
+	var unit := art_scale()
+	var top := size.y * 0.29
+	c.draw_rect(Rect2(-shift,size),Color("243b3d"))
+	var window := Rect2(Vector2(-18,18)*unit-shift,Vector2(178,190)*unit)
+	c.draw_rect(window.grow(6*unit),Color("14292e"))
+	c.draw_rect(window,Color("acc7bd"))
+	for i: int in range(7):
+		var p := window.position+Vector2(i*27,125+sin(i*2.2)*15)*unit
+		c.draw_colored_polygon(PackedVector2Array([p+Vector2(-12,0)*unit,p+Vector2(8,-22)*unit,p+Vector2(32,0)*unit,p+Vector2(32,65)*unit,p+Vector2(-12,65)*unit]),Color("718f81"))
+	c.draw_rect(Rect2(window.position+Vector2(81,0)*unit,Vector2(7,190)*unit),Color("465e58"))
+	c.draw_rect(Rect2(window.position+Vector2(0,78)*unit,Vector2(178,7)*unit),Color("465e58"))
+	c.draw_rect(Rect2(window.position+Vector2(-3,190)*unit,Vector2(190,10)*unit),Color("839188"))
+	var radio := Rect2(Vector2(size.x-116*unit,84*unit)-shift,Vector2(88,42)*unit)
+	c.draw_rect(radio.grow(3),Color("1b282b"))
+	c.draw_rect(radio,Color("4c5145"))
+	for i: int in range(16): c.draw_line(radio.position+Vector2(6+i*4,7)*unit,radio.position+Vector2(6+i*4,34)*unit,Color("273536"),unit,true)
+	c.draw_circle(radio.position+Vector2(79,20)*unit,3.5*unit,Color("83bda6") if broadcast_quiet else Color("ecc48b"))
+	# Close tabletop extends out of the camera; a bevel retains believable thickness.
+	for i: int in range(80):
+		var y := top + (size.y-top)*i/80.0
+		var col := Color("94704c").lerp(Color("ae8556"),float(i)/80.0)
+		c.draw_rect(Rect2(Vector2(0,y)-shift,Vector2(size.x,(size.y-top)/80.0+1)),col)
+	for i: int in range(72):
+		var y := top + (size.y-top)*i/72.0
 		var points := PackedVector2Array()
-		for j: int in range(17): points.append(world_to_local(Vector2(j*64-24,y+2.0*sin(j*0.8+i*1.7)))-shift)
-		c.draw_polyline(points,col,1.3,true)
-	for y: float in [242.0, 318.0, 405.0, 489.0]:
-		_line(c,Vector2(-20,y),Vector2(990,y-5),Color(0.27,0.17,0.10,0.25),1.2,shift)
-	_line(c,Vector2(0,493),Vector2(960,493),Color("d2ae75"),3,shift)
-	_line(c,Vector2(0,502),Vector2(960,502),Color("382d29"),4,shift)
-	# Glancing light stays in the present even when the page reverses.
-	_poly(c,[Vector2(80,189),Vector2(320,186),Vector2(680,492),Vector2(310,492)],Color(0.99,0.91,0.60,0.09),shift)
-	# A small stack of ruled notebooks at the edge establishes scale/depth.
-	_poly(c,[Vector2(90,397),Vector2(330,408),Vector2(306,464),Vector2(69,452)],Color("253b40"),shift)
-	_poly(c,[Vector2(88,388),Vector2(328,399),Vector2(307,452),Vector2(68,441)],Color("d4c5a1"),shift)
-	for i: int in range(4): _line(c,Vector2(72,442+i*2),Vector2(307,453+i*2),Color("887a60"),1,shift)
-	_poly(c,[Vector2(90,380),Vector2(331,391),Vector2(310,444),Vector2(69,433)],Color("3b6263"),shift)
-	_line(c,Vector2(110,381),Vector2(89,434),Color("8aa094"),2,shift)
-	# Wind is always environmental; its rhythm does not run on the paper clock.
+		for j: int in range(18): points.append(Vector2(j*size.x/17.0,y+2.0*sin(j*0.8+i*1.7)*unit)-shift)
+		c.draw_polyline(points,Color(0.26,0.15,0.08,0.10),unit,true)
+	for f: float in [0.25,0.57,0.9]:
+		var y := lerpf(top,size.y,f)
+		c.draw_line(Vector2(0,y)-shift,Vector2(size.x,y-8*unit)-shift,Color(0.29,0.18,0.10,0.24),unit,true)
+	c.draw_rect(Rect2(Vector2(0,size.y-34*unit)-shift,Vector2(size.x,34*unit)),Color("5b4432"))
+	c.draw_line(Vector2(0,size.y-34*unit)-shift,Vector2(size.x,size.y-34*unit)-shift,Color("d6b380"),3*unit)
+	c.draw_colored_polygon(PackedVector2Array([Vector2(18,top)-shift,Vector2(143*unit,top)-shift,Vector2(size.x*0.77,size.y-35*unit)-shift,Vector2(size.x*0.36,size.y-35*unit)-shift]),Color(0.98,0.91,0.65,0.09))
+	var book := Vector2(31*unit,size.y-134*unit)-shift
+	var book_points := PackedVector2Array([book,book+Vector2(117,9)*unit,book+Vector2(107,77)*unit,book+Vector2(-8,64)*unit])
+	c.draw_colored_polygon(book_points,Color("dbca9d"))
+	for i: int in range(3): c.draw_line(book+Vector2(-7,66+i*2)*unit,book+Vector2(107,79+i*2)*unit,Color("8d7e60"),unit)
+	c.draw_colored_polygon(PackedVector2Array([book-Vector2(0,5)*unit,book+Vector2(117,4)*unit,book+Vector2(108,70)*unit,book+Vector2(-8,58)*unit]),Color("416360"))
+	c.draw_line(book+Vector2(11,-4)*unit,book+Vector2(3,60)*unit,Color("92a18b"),2*unit)
 	if not reduced_motion:
 		for i: int in range(3):
-			var x := 65.0 + fmod(environment_time*60+i*77,310.0)
-			_line(c,Vector2(x,200+i*17),Vector2(x+52,196+i*17),Color(0.9,0.96,0.88,0.19),1.2,shift)
-	if past: _rect(c,Rect2(0,0,960,540),Color(0.10,0.25,0.34,0.27),shift)
+			var p := Vector2(20+fmod(environment_time*27+i*32,120),top+22+i*12)-shift
+			c.draw_line(p,p+Vector2(30,-4)*unit,Color(0.92,0.97,0.86,0.20),unit,true)
+	if past: c.draw_rect(Rect2(-shift,size),Color(0.10,0.25,0.34,0.18))
 
 func _folder(c: CanvasItem, shift: Vector2, opened: float, front: bool) -> void:
-	# Hinge projects continuously from the closed cover to its raised catch plane.
-	var hinge := 344.0
-	var top := hinge - 84.0 * cos(opened * PI * 0.45)
-	var lift := 110.0 * sin(opened * PI * 0.45)
-	var top_y := top - lift
+	var base := folder_leaf_rect()
+	base.position -= shift
+	var unit := art_scale()
+	var hinge_x := base.position.x
+	var angle := opened*PI
+	var edge_x := hinge_x + base.size.x*cos(angle)
+	var lift := sin(angle)*34*unit
 	if not front:
-		_poly(c,[Vector2(474,276),Vector2(726,280),Vector2(735,373),Vector2(482,378)],Color(0.14,0.10,0.07,0.35),shift)
-		_poly(c,[Vector2(485,274),Vector2(711,278),Vector2(719,365),Vector2(485,369)],Color("9c713d"),shift)
-		_poly(c,[Vector2(491,278),Vector2(704,282),Vector2(710,357),Vector2(491,360)],Color("c4a16a"),shift)
-		for i: int in range(3): _line(c,Vector2(490,361+i*2),Vector2(713,358+i*2),Color("e1c590"),1,shift)
-		# Back leaf can stand upright while the receiving face remains on the desk.
-		_poly(c,[Vector2(485,hinge),Vector2(715,hinge),Vector2(701,top_y),Vector2(496,top_y-4)],Color("b98e54").lerp(Color("e1c28a"),opened),shift)
-		_line(c,Vector2(496,top_y-4),Vector2(701,top_y),Color("f0d7a4"),2,shift)
-		_line(c,Vector2(490,hinge-3),Vector2(711,hinge-3),Color("705333"),2,shift)
-		for x: float in [520.0,677.0]:
-			_line(c,Vector2(x,hinge-5),Vector2(x,hinge+7),Color("d7d5b1"),3,shift)
+		c.draw_rect(base.grow(7*unit),Color(0.15,0.10,0.06,0.18))
+		c.draw_rect(Rect2(base.position+Vector2(2,5)*unit,base.size),Color("6f5134"))
+		c.draw_rect(base,Color("c8a06a"))
+		c.draw_rect(base.grow(-5*unit),Color("ddc08a"))
+		for i: int in range(3): c.draw_line(base.position+Vector2(3,base.size.y-3+i*2),base.end+Vector2(-2,-3+i*2),Color("eed3a0"),unit)
+		# Genuine two-leaf folder: the cover turns around its long spine, not a
+		# shape-swap or a vertically stretched rectangle.
+		var cover := PackedVector2Array([Vector2(hinge_x,base.position.y),Vector2(edge_x,base.position.y-lift),Vector2(edge_x,base.end.y-lift),Vector2(hinge_x,base.end.y)])
+		c.draw_colored_polygon(cover,Color("b58a51").lerp(Color("d6b67d"),opened))
+		c.draw_line(cover[1],cover[2],Color("ead09b"),2*unit,true)
+		c.draw_line(cover[0],cover[1],Color("ead09b"),unit,true)
+		c.draw_line(cover[3],cover[2],Color("775330"),2*unit,true)
+		c.draw_line(Vector2(hinge_x,base.position.y),Vector2(hinge_x,base.end.y),Color("765631"),4*unit,true)
+		if opened>0.45:
+			# Metal clip and folded hinge make the accepting page unambiguous.
+			var clip := Rect2(base.position+Vector2(8,12)*unit,Vector2(18,base.size.y/unit-24)*unit)
+			c.draw_rect(clip,Color("6f7770"))
+			c.draw_line(clip.position+Vector2(3,2)*unit,Vector2(clip.position.x+3*unit,clip.end.y-2*unit),Color("d5d9ba"),3*unit,true)
+			for f: float in [0.2,0.8]: c.draw_circle(Vector2(clip.get_center().x,lerpf(clip.position.y,clip.end.y,f)),3*unit,Color("344746"))
 	else:
-		# Shallow lip, not an opaque bar over the whole collected page.
-		_poly(c,[Vector2(486,334),Vector2(715,334),Vector2(719,365),Vector2(485,369)],Color("c39b60"),shift)
-		_line(c,Vector2(486,334),Vector2(715,334),Color("eed3a0"),2,shift)
-		_line(c,Vector2(485,369),Vector2(719,365),Color("765333"),2,shift)
+		# A thin retaining pocket occludes only the lower part of the resting page.
+		var y := base.position.y+base.size.y*0.64
+		c.draw_colored_polygon(PackedVector2Array([Vector2(base.position.x,y+6*unit),Vector2(base.end.x,y),base.end,Vector2(base.position.x,base.end.y)]),Color("c29a60"))
+		c.draw_line(Vector2(base.position.x,y+6*unit),Vector2(base.end.x,y),Color("ead09e"),1.5*unit,true)
 
 func _paper(c: CanvasItem, shift: Vector2, point: Vector2, paper_time: float, grounded: bool, tint: Color = Color.WHITE, collect: float = -1.0) -> void:
 	var center := world_to_local(point) - shift

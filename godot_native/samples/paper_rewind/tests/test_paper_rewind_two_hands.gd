@@ -141,8 +141,8 @@ func _run() -> void:
 	view._reset()
 	await frames(3)
 	var untouched: Dictionary = view.model.snapshot()
-	view.stage.history_rect.position = Vector2(580, 160)
-	view.stage._layout_history()
+	view.stage.history_rect.position = view.model.paper_position() - view.stage.history_rect.size * 0.5
+	view.stage.move_history(Vector2.ZERO)
 	var covered_paper: Vector2 = view.stage.paper_grip.get_global_rect().get_center()
 	await touch(0, covered_paper, true)
 	check(view.touch_sessions[0].target == "history", "top read-only window owns a press above physical paper")

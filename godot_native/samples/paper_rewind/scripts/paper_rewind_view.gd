@@ -210,7 +210,7 @@ func _process(delta: float) -> void:
 	model.advance(delta)
 	if not _focus_suspended and model.mode not in ["cancelled", "solved"]:
 		presentation_time += delta
-	stage.history_time = 4.8 if stage.reduced_motion else fmod(presentation_time, Model.DURATION)
+	stage.history_time = 4.8 if stage.reduced_motion else 3.8 + fmod(presentation_time, 1.4)
 	stage.environment_time = presentation_time
 	stage.broadcast_quiet = fmod(presentation_time, 8.0) >= 3.5
 	stage.animate(delta)

@@ -10,6 +10,8 @@ var world_scale := 1.0
 var reduced_motion := false
 var _dragging := false
 var paint_record: Callable
+var record_canvas: Control
+var frame_canvas: Control
 
 func _ready() -> void:
 	clip_contents = true
@@ -17,17 +19,35 @@ func _ready() -> void:
 	mouse_default_cursor_shape = Control.CURSOR_MOVE
 	accessibility_name = "过去的观察窗，只读。拖动或用方向键移动。"
 	tooltip_text = "拖动观察窗；焦点在窗上时，用方向键移动"
+	# Control.clip_contents clips children, not this Control's own draw commands.
+	# Keep recorded geometry in a real clipped child; no past pixel escapes.
+	record_canvas = Control.new()
+	record_canvas.name = "ClippedRecording"
+	record_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	record_canvas.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	record_canvas.draw.connect(func() -> void:
+		if paint_record.is_valid(): paint_record.call(record_canvas))
+	add_child(record_canvas)
+	frame_canvas = Control.new()
+	frame_canvas.name = "GlassRim"
+	frame_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame_canvas.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame_canvas.draw.connect(_draw_frame)
+	add_child(frame_canvas)
 
 func _draw() -> void:
-	if paint_record.is_valid(): paint_record.call(self)
-	draw_rect(Rect2(Vector2.ZERO,size),Color(0.13,0.36,0.43,0.22))
-	for y: int in range(0,int(size.y),5): draw_line(Vector2(0,y),Vector2(size.x,y),Color(0.70,0.88,0.85,0.04),1)
-	draw_rect(Rect2(Vector2.ONE*3,size-Vector2.ONE*6),Color("263f46"),false,6)
-	draw_rect(Rect2(Vector2.ONE*2,size-Vector2.ONE*4),Color("a8c9bd"),false,1.5)
+	if record_canvas: record_canvas.queue_redraw()
+	if frame_canvas: frame_canvas.queue_redraw()
+
+func _draw_frame() -> void:
+	frame_canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(0.13,0.36,0.43,0.22))
+	for y: int in range(0,int(size.y),5): frame_canvas.draw_line(Vector2(0,y),Vector2(size.x,y),Color(0.70,0.88,0.85,0.04),1)
+	frame_canvas.draw_rect(Rect2(Vector2.ONE*3,size-Vector2.ONE*6),Color("263f46"),false,6)
+	frame_canvas.draw_rect(Rect2(Vector2.ONE*2,size-Vector2.ONE*4),Color("a8c9bd"),false,1.5)
 	# An etched clock and backward tick distinguish the recorded layer without a label.
-	draw_arc(Vector2(18,18),8,0,TAU,24,Color("c0d7cc"),1.5,true)
-	draw_line(Vector2(18,18),Vector2(18,12),Color("c0d7cc"),1.5)
-	draw_line(Vector2(18,18),Vector2(13,20),Color("c0d7cc"),1.5)
+	frame_canvas.draw_arc(Vector2(18,18),8,0,TAU,24,Color("c0d7cc"),1.5,true)
+	frame_canvas.draw_line(Vector2(18,18),Vector2(18,12),Color("c0d7cc"),1.5)
+	frame_canvas.draw_line(Vector2(18,18),Vector2(13,20),Color("c0d7cc"),1.5)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
