@@ -1,0 +1,5 @@
+7:55 standalone two-time library observation prototype.
+Original procedural shelf/occluder/book geometry and level model.
+Morning Note font is inherited under OFL (see assets/MORNING_NOTE_OFL.txt).
+The four portable helpers are copied from ../observation_kit; that directory documents
+provenance from the prior paper and classroom samples. No prior level model is imported.
