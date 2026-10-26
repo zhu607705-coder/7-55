@@ -90,6 +90,7 @@ func _run() -> void:
 	root.add_child(view)
 	await frames(4)
 	view.set_process(false)
+	check(10.0-view.stage.PAPER_SIZE.length()*0.5*sin(view.stage.MAX_FLUTTER)>8.0,"Every flying-paper corner stays above the desk and closed cover")
 	check(view.model.mode == "forward" and view.model.time > 0, "First entry is actual moving paper, not a written start screen")
 	view._reset()
 	await frames(3)
@@ -174,10 +175,34 @@ func _run() -> void:
 		var contact_point: Vector2 = view.stage.world_to_local(contact_model.catch_position)
 		var physical_page := Rect2(contact_point-view.stage.paper_extent()*0.5,view.stage.paper_extent())
 		check(physical_page.intersects(view.stage.open_folder_surface_rect()), "First logical catch visibly touches an actual open folder leaf at " + str(dimensions))
+		var contact3: Vector3 = view.stage.model_to_space(contact_model.catch_position)
+		var actual_paper: PackedVector2Array = view.stage._project_quad(view.stage._plane_quad(Rect2(Vector2(contact3.x,contact3.y)-view.stage.PAPER_SIZE*0.5,view.stage.PAPER_SIZE),contact3.z))
+		var actual_open: Rect2 = view.stage.folder_world_rect()
+		actual_open.position.x -= actual_open.size.x; actual_open.size.x *= 2
+		var actual_folder: PackedVector2Array = view.stage._project_quad(view.stage._plane_quad(actual_open,6))
+		check(not Geometry2D.intersect_polygons(actual_paper,actual_folder).is_empty(),"First catch intersects actual projected surfaces, not only their bounds at "+str(dimensions))
+
 		check(view.stage.folder_leaf_rect().has_point(view.stage.world_to_local(Model.REST_POINT)), "Resting paper is on the visible accepting page at " + str(dimensions))
-		check(is_equal_approx(view.stage.folder_leaf_rect().size.y / view.stage.folder_leaf_rect().size.x, sqrt(2.0)), "Folder retains physical A4 proportions at " + str(dimensions))
+		check(is_equal_approx(view.stage.folder_world_rect().size.y / view.stage.folder_world_rect().size.x, sqrt(2.0)), "Folder retains world-space A4 proportions under the shared projection at " + str(dimensions))
 		check(Rect2(Vector2.ZERO,view.stage.size).encloses(view.stage.open_folder_surface_rect().grow(4*view.stage.art_scale())), "Larger open folder and its edge stay entirely inside camera at " + str(dimensions))
 		check(view.stage.folder_button.get_rect().is_equal_approx(view.stage.folder_leaf_rect()), "Folder input surface uses the same new camera geometry at " + str(dimensions))
+		var camera = view.stage.camera
+		var r: Rect2 = view.stage.folder_world_rect()
+		var center3 := Vector3(r.get_center().x,r.get_center().y,6)
+		check(camera.unproject_plane(camera.project(center3),6).distance_to(center3)<0.001,"Projected folder inverse recovers exact plane coordinates at "+str(dimensions))
+		var leaf: PackedVector2Array = view.stage.folder_leaf_polygon()
+		var x_axis: Vector2 = camera.project(Vector3(1,0,0))-camera.project(Vector3.ZERO)
+		var y_axis: Vector2 = camera.project(Vector3(0,1,0))-camera.project(Vector3.ZERO)
+		check(absf((leaf[1]-leaf[0]).normalized().cross(x_axis.normalized()))<0.001 and absf((leaf[3]-leaf[0]).normalized().cross(y_axis.normalized()))<0.001,"Folder and room use identical projected x/depth axes at "+str(dimensions))
+		var corner: Vector2 = view.stage.folder_leaf_rect().position+Vector2.ONE
+		check(not view.stage.folder_hit(corner) and view.stage.folder_hit(camera.project(center3)),"Inverse polygon hit rejects empty bbox corner and accepts visible leaf at "+str(dimensions))
+		check(not view.stage.folder_button._has_point(corner-view.stage.folder_button.position),"Native mouse uses the same polygon hit as touch at "+str(dimensions))
+		var round_trip := true
+		for at_time: float in [0.0,1.2,4.8,6.5,7.8]:
+			var model_point: Vector2 = Model.free_position(at_time)
+			round_trip = round_trip and view.stage.local_to_world(view.stage.world_to_local(model_point)).distance_to(model_point)<0.001
+		check(round_trip,"Visible path and input inverse agree across full paper trajectory at "+str(dimensions))
+
 		for paper_time: float in [0.0, 1.2, 4.8, 6.5, 7.8]:
 			view.model.time = paper_time
 			var preview: Rect2 = view.stage.thumb_preview_rect()

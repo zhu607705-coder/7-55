@@ -433,9 +433,7 @@ func _input(event: InputEvent) -> void:
 			"paper": stage.paper_grip.move_touch(event.position)
 			"folder":
 				# Pull left around the visible long spine. Upward lift remains a fallback.
-				var distance: Vector2 = event.position-session.start
-				var leaf: Rect2 = stage.folder_leaf_rect()
-				stage.folder_drag_preview = clampf(0.12 + maxf(-distance.x/(leaf.size.x*1.45),-distance.y/(leaf.size.y*0.8)),0.0,0.95)
+				stage.folder_drag_preview = stage.folder_drag_amount(session.start-stage.global_position,event.position-stage.global_position)
 			"history": stage.move_history(delta)
 			"ui":
 				var motion := InputEventMouseMotion.new()
@@ -461,7 +459,7 @@ func _touch_target(point: Vector2) -> String:
 		return "history"
 	if stage.paper_grip.is_visible_in_tree() and stage.paper_grip.get_global_rect().has_point(point):
 		return "paper"
-	if not stage.folder_button.disabled and stage.folder_button.get_global_rect().has_point(point):
+	if not stage.folder_button.disabled and stage.folder_hit(point-stage.global_position):
 		return "folder"
 	for control: Control in _touch_controls:
 		if control in [stage.history_window, stage.paper_grip, stage.folder_button]:
@@ -476,8 +474,8 @@ func _end_touch(session: Dictionary, point: Vector2, cancelled: bool) -> void:
 		"folder":
 			var pulled: bool = stage.folder_drag_preview >= 0.48 and point.distance_to(session.start) >= 6
 			stage.folder_drag_preview = 0.0
-			var on_original: bool = stage.folder_button.get_global_rect().has_point(point)
-			var on_opened: bool = stage.open_folder_surface_rect().grow(16).has_point(point-stage.global_position)
+			var on_original: bool = stage.folder_hit(point-stage.global_position)
+			var on_opened: bool = stage.folder_hit(point-stage.global_position,true,16.0)
 			if not cancelled and get_viewport_rect().has_point(point) and (on_original or pulled and on_opened):
 				_open_folder()
 		"history": stage.history_window.cancel_drag()

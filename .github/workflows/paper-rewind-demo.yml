@@ -57,13 +57,13 @@ jobs:
           godot --headless --audio-driver Dummy --path /tmp/paper-rewind-movie-project --editor --import --quit 2>&1 | tee paper-rewind-demo/import.log
           timeout 45 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
             godot --path /tmp/paper-rewind-movie-project --rendering-method gl_compatibility --audio-driver Dummy \
-            --script res://tests/test_paper_history_render.gd 2>&1 | tee paper-rewind-demo/history-pixel.log
+            --script res://tests/test_paper_history_render.gd -- --graybox 2>&1 | tee paper-rewind-demo/history-pixel.log
           grep -q 'PAPER_HISTORY_RENDER failures=0' paper-rewind-demo/history-pixel.log
           timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
             godot --path /tmp/paper-rewind-movie-project --rendering-method gl_compatibility \
             --audio-driver Dummy --resolution 390x844 --fixed-fps 30 \
             --write-movie "$GITHUB_WORKSPACE/paper-rewind-demo/paper-rewind.avi" \
-            --script res://tests/capture_paper_rewind.gd -- --require-rendering 2>&1 | tee paper-rewind-demo/capture.log
+            --script res://tests/capture_paper_rewind.gd -- --require-rendering --graybox 2>&1 | tee paper-rewind-demo/capture.log
           ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' paper-rewind-demo/import.log paper-rewind-demo/history-pixel.log paper-rewind-demo/capture.log
           grep -q 'PAPER_REWIND_VIDEO.*failures=0' paper-rewind-demo/capture.log
           grep -q 'PAPER_REWIND_RENDERER display=' paper-rewind-demo/capture.log
