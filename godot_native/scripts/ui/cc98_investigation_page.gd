@@ -25,6 +25,10 @@ func height(text: String,width: float,font_size: int) -> float:
 	measure.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	measure.size.x=width
 	measure.text=text
+	# Detached Controls still cache the default font until a theme notification.
+	# Shape with the bundled font now, as Main does before mounting this page,
+	# so longer replies reserve their real height before positioning actions.
+	measure.propagate_notification(Control.NOTIFICATION_THEME_CHANGED)
 	var result := ceilf(measure.get_minimum_size().y)+4
 	measure.free()
 	return result

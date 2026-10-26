@@ -90,6 +90,7 @@ func run() -> void:
 		text_input.queue_free(); await frames()
 		shell._show_settings(); await frames()
 		var modal: Control=shell.modal
+		check(modal.z_index>shell.phone_chrome.brightness_veil.z_index,"global save menu is above phone glass across its entire surface")
 		await key(KEY_P)
 		check(shell.modal==modal and shell.phone.visible,"shortcut does not steal modal ownership")
 		await key(KEY_ESCAPE)

@@ -5602,3 +5602,8 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Added an empty, explicit future-reader registry with execution/input/sandbox-output/dependency/resource/timing contracts. New readers stay in bounded dependency-aware workers and co-located shards; unsupported shared writers/weights fail clearly. Declared doc/test inputs and affected transitive consumers force conservative full-parallel selection before shortcuts.71 focused contracts retain all530 legacy descriptors and the partition hash. Main recheckedabd8b00; PR175 remains separate with overlapping phone-driver updates requiring later coordination, not silently imported or repaired here.
 
 - Final additive scheduler smoke at local94b4850 passed two real pinned4.7.1 model stages with1,687ms overlap/jobs2 and unchanged inputs (2pass/528notrun, not full). A historical530-ID fixture now scopes golden preservation independently of live catalog size; regression proves an auto-discovered531st GD joins exactlyone of6shards without rewriting that fixture.72 focused tests pass. Remaining last delta is tests/documentation only; no unrelated PR175 content imported.
+## 2026-10-26 f7 完整检查后收口
+
+- f7全部真实Web consumer、retainedWeb和cross-PR通过；source-contract VM新增bootTimeout夹具未补，修复后212诊断/39传输通过。
+- 原生三项剩余：CC98离树字体量高真实布局修复后282/447通过及两尺寸GPU确认；湖区完整源顺序/数量109通过；冻结相机的旋转fixture恢复普通follow后12路线102通过。原功能断言保留。
+- 全局F10弹窗在手机玻璃上方，消除中央灰条，手机内调光范围不变，surface442/chrome72通过。f7实际RetinaC2 887/0，人工301/手机/论坛/亮度普通输入通过。

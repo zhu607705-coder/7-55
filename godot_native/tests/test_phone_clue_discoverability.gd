@@ -32,6 +32,14 @@ func capture(name:String)->void:
  DirAccess.make_dir_recursive_absolute(folder);await create_timer(1.4).timeout;await RenderingServer.frame_post_draw
  check(root.get_texture().get_image().save_png(folder.path_join(name+".png"))==OK,"capture "+name)
 func run()->void:
+ var source:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter3-qizhen-lake.content.json"))
+ var expected_replies:Array[String]=[]
+ var source_replies:Array=source.locationSearch.cc98.replies
+ check(source_replies.size()==3,"source witness retains all three authored replies")
+ for i:int in range(source_replies.size()):
+  var prefix:String="%d楼："%[3,8,14][i]
+  check(str(source_replies[i]).begins_with(prefix),"source witness floor prefix retained "+str(i))
+  expected_replies.append(str(source_replies[i]).trim_prefix(prefix))
  state=root.get_node("State");state.developer_mode=true;state.begin_checkpoint("c1-home")
  shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
  for dim:Vector2i in [Vector2i(390,844),Vector2i(360,640),Vector2i(430,932)]:
@@ -56,7 +64,8 @@ func run()->void:
    check(reply!=null and reply.get_line_count()==reply.get_visible_line_count(),"all authored witness reply lines fit "+str(i))
    if i>0:check(rect(labels[i-1]).end.y<rect(reply).position.y,"reply order and separation retained")
   check(rect(node("Cc98BridgeKeyword")).position.y>rect(labels.back()).end.y,"original keyword summary remains after all replies")
-  check(node("Cc98ThreadBody").text+labels.map(func(label):return label.text).reduce(func(a,b):return a+b,"")=="如题。刚看到它往有水的地方移动。方向靠近桥。最后一次看到它时，纸边还在滴水。","source body and complete reply sequence preserved")
+  check(node("Cc98ThreadBody").text=="如题。" and labels.map(func(label):return label.text)==expected_replies,"source body and complete reply sequence preserved")
+  check(shell.page_body.find_children("Cc98ThreadReply_*","Label",true,false).size()==expected_replies.size(),"source replies render exactly once without duplicates")
   var rail_clear=true;var sampled_lines=0
   var chrome=shell.phone_chrome
   for fraction:float in [0.0,0.25,0.5,0.75,1.0]:

@@ -69,7 +69,7 @@ CSS 候选将 canvas 固定于视口并以 CSS 保持全宽全高，避免 Godot
 
 ## 提交范围
 
-当前整合保留 PR #174 至 bd0dfab 的祖先，按用户整体合并授权纳入以下 174 个路径；排除 node_modules、导出/缓存、外部 QA 与独立公众号资料库。完成日期为20261026，发布检查点见[交付记录](INTEGRATION_RELEASE_20261026.md)。
+Current integration scope: 179 paths. Excludes node_modules, generated exports/cache, external QA and the standalone research library. Latest release checkpoint: [20261026](INTEGRATION_RELEASE_20261026.md).
 
 ```text
 .github/workflows/deploy-pages.yml
@@ -139,6 +139,7 @@ godot_native/scripts/presentation/north_generated_objects.gd
 godot_native/scripts/presentation/world_object_focus.gd
 godot_native/scripts/state.gd
 godot_native/scripts/ui/c3_lake_app_context.gd
+godot_native/scripts/ui/cc98_investigation_page.gd
 godot_native/scripts/ui/chapter4_phase_layers.gd
 godot_native/scripts/ui/chapter4_world_layers.gd
 godot_native/scripts/ui/native_checkin_page.gd
@@ -178,7 +179,9 @@ godot_native/tests/test_lake_paddle_pointer.gd
 godot_native/tests/test_mobile_direct_touch.gd
 godot_native/tests/test_mobile_floor_room204_drag.gd
 godot_native/tests/test_mobile_floor_route.gd
+godot_native/tests/test_mobile_floor_route_orientations.gd
 godot_native/tests/test_native_learn_page.gd
+godot_native/tests/test_native_surface_modes.gd
 godot_native/tests/test_native_validation_bundle.mjs
 godot_native/tests/test_native_validation_registration.mjs
 godot_native/tests/test_native_validation_runner.mjs
@@ -191,6 +194,7 @@ godot_native/tests/test_north_prop_fail_closed.gd
 godot_native/tests/test_phone_anchor02_tiyi.gd
 godot_native/tests/test_phone_app_identity.gd
 godot_native/tests/test_phone_chrome.gd
+godot_native/tests/test_phone_clue_discoverability.gd
 godot_native/tests/test_phone_library_login.gd
 godot_native/tests/test_phone_navigation.gd
 godot_native/tests/test_phone_utilities.gd
@@ -208,6 +212,7 @@ godot_native/tests/test_web_acceptance_workflow.mjs
 godot_native/tests/test_web_controller_fixtures.mjs
 godot_native/tests/test_web_input_completion.mjs
 godot_native/tests/test_web_phone_shards.mjs
+godot_native/tests/test_web_save_diagnostics.mjs
 godot_native/tests/test_web_streaming_fault_lifecycle.mjs
 godot_native/tests/test_wechat_reference_ui.gd
 godot_native/tests/test_wechat_social_pages.gd

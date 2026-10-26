@@ -1355,7 +1355,9 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	modal.focus_mode = Control.FOCUS_ALL
 	modal.mouse_filter = Control.MOUSE_FILTER_STOP
 	modal.theme = NativeUi.make_theme(Typography.body_font(),16,16)
-	modal.z_index = 100
+	# Global dialogs sit outside the simulated phone glass. Phone apps,
+	# documents and the in-phone Control Center keep their brightness veil.
+	modal.z_index = 300
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
 	modal.color = Color.TRANSPARENT if surface.begins_with("selected_") else Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76)
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1518,7 +1520,7 @@ func _open_c3_device(kind: String, fresh_chest_scan := false) -> void:
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	modal.mouse_filter=Control.MOUSE_FILTER_STOP
 	modal.focus_mode=Control.FOCUS_ALL
-	modal.z_index=100
+	modal.z_index=300
 	add_child(modal)
 	var canteen_device: bool=kind.begins_with("drink:") or kind in ["menu","bike"]
 	var panel_script: String="res://scripts/ui/theater_chest_closeup.gd" if kind=="chest" else "res://scripts/ui/c3_canteen_device_panel.gd" if canteen_device else "res://scripts/ui/c3_mixer_panel.gd" if kind=="mixer" else "res://scripts/ui/c3_theater_device_panel.gd"
