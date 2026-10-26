@@ -20,7 +20,8 @@ static func prepare(state: Node,kind: String) -> void:
 		c.room204Placements=[]
 		for group: Dictionary in Room.data().groups:
 			for mapping: Dictionary in group.mappings:c.room204Placements.append({"pieceId":mapping.pieceId,"slotId":mapping.slotId,"orientation":"up"})
-		state.d.native.player={"x":1325,"y":430}
+		# Stand in the actual 204 centre aisle, not the unrelated east corridor.
+		state.d.native.player={"x":230,"y":710}
 	else:
 		c.phase="return_to_clock";c.floor="A1";c.mode="light";c.guardMode="absent";state.d.native.mode="light"
 		c.timeState="0754_blackout";c.worldTimeSeconds=28440;c.buildingTimeSeconds=28440;c.phoneStatusTimeSeconds=28440;c.phoneStatusTimeTrusted=true
