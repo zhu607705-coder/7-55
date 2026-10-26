@@ -1819,7 +1819,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     }
     result = await freshCase(['mobile-world', 'phone-recovery', 'phone-navigation', 'library', 'boot-font-failure'].includes(scenarios));
     if (scenarios === 'mobile-world') await mobileWorldCase();
-    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, group: active.phoneGroup, bootTimeout,
+    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, bootTimeout, group: active.phoneGroup,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
       pointer: async (phase, point) => {
         if (touch) await active.cdp.send('Input.dispatchTouchEvent', {type: phase === 'start' ? 'touchStart' : phase === 'move' ? 'touchMove' : 'touchEnd', touchPoints: phase === 'end' ? [] : [{...point, id: 4}]});

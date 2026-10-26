@@ -7,17 +7,18 @@ import os from 'node:os';
 import {registerStage,NATIVE_STAGE_REGISTRATIONS} from '../tools/native_validation_registration.mjs';
 import {createValidationCatalog,planValidation,PREPARATION_IDS} from '../tools/native_validation_plan.mjs';
 import {scheduleValidation} from '../tools/native_validation_scheduler.mjs';
-import {createShardPlan,selectShard,stageDescriptor,estimateShard} from '../tools/native_validation_shards.mjs';
+import {createShardPlan,selectShard,stageDescriptor,estimateShard,NATIVE_SHARD_COUNT} from '../tools/native_validation_shards.mjs';
 import {digest,stageIdentity} from '../tools/native_validation_identity.mjs';
 const project=path.resolve(import.meta.dirname,'..'),root=path.dirname(project);
 const legacy=createValidationCatalog(project,'/fake/godot',{registrations:[]});
 const baseline=JSON.parse(fs.readFileSync(new URL('./fixtures/native_validation_baseline_33cc499.json',import.meta.url)));
 const baselineIds=new Set(baseline.stageIds);
+const historicalTimings=JSON.parse(fs.readFileSync(new URL('./fixtures/native_validation_timings_33cc499.json',import.meta.url))).durationMs;
 function assertHistoricalSubset(stages,base){
  const subset=stages.filter(stage=>baselineIds.has(stage.id));
  assert.deepEqual(subset.map(stage=>stage.id),baseline.stageIds,'Every historical stage remains, in historical relative order');
  assert.equal(digest(subset.map(stage=>stageDescriptor(stage,base))),baseline.descriptorSha256);
- assert.equal(createShardPlan(subset,base).sha256,baseline.partitionSha256);
+ assert.equal(createShardPlan(subset,base,{count:6,durations:historicalTimings}).sha256,baseline.partitionSha256);
 }
 
 const spec=(id,extra={})=>({id,execution:'node',entry:`godot_native/tests/registered/${id}.mjs`,inputs:[`godot_native/tests/registered/${id}.mjs`],outputs:[],dependencies:[],...extra});
@@ -40,7 +41,7 @@ test('a new automatically discovered GD stage joins all scheduling without editi
   assert.equal(discovered.length,legacy.length+1);assertHistoricalSubset(discovered,temporary);
   const full=planValidation(discovered),partition=createShardPlan(full.stages,temporary);
   assert.equal(full.stages.length,discovered.length);assert.equal(partition.shards.flatMap(shard=>shard.ids).filter(value=>value===id).length,1);
-  assert.equal(partition.count,6);assert.equal(partition.jobs,2);
+  assert.equal(partition.count,NATIVE_SHARD_COUNT);assert.equal(partition.jobs,2);
  }finally{fs.rmSync(temporary,{recursive:true,force:true});}
 });
 test('registered readers append with one pool slot, explicit I/O and normal worker semantics',()=>{
@@ -92,7 +93,7 @@ test('unknown and new runtime/helper changes select full coverage with six manag
  const stages=catalog([spec('reader')]);
  for(const changed of ['src/new-runtime.ts','godot_native/tests/registered/unclassified.gd','unknown/new-file']){
   const selected=planValidation(stages,{profile:'changed',changedFiles:[changed]});assert.equal(selected.effectiveProfile,'full');assert.equal(selected.stages.length,stages.length);
-  const sharded=createShardPlan(selected.stages,root);assert.equal(sharded.count,6);assert.equal(sharded.jobs,2);assert.ok(sharded.shards.every(shard=>shard.ids.length>0));
+  const sharded=createShardPlan(selected.stages,root);assert.equal(sharded.count,NATIVE_SHARD_COUNT);assert.equal(sharded.jobs,2);assert.ok(sharded.shards.every(shard=>shard.ids.length>0));
  }
 });
 test('continuous readiness dispatch fills free slots without launching an unfinished dependent',async()=>{
@@ -150,7 +151,7 @@ test('registered inputs precede prose and exact-test shortcuts; dependency consu
   const stages=catalog(registrations),selected=planValidation(stages,{profile:'changed',changedFiles:[file]});
   assert.equal(selected.effectiveProfile,'full');assert.equal(selected.stages.length,stages.length);
   assert.ok(selected.reasons.some(reason=>reason.includes('registered input or dependent reader')));
-  assert.equal(createShardPlan(selected.stages,root).count,6);
+  assert.equal(createShardPlan(selected.stages,root).count,NATIVE_SHARD_COUNT);
  }
  const unrelated=planValidation(catalog([doc]),{profile:'changed',changedFiles:['docs/unrelated.md']});
  assert.equal(unrelated.stages.length,5);assert.equal(unrelated.effectiveProfile,'changed');

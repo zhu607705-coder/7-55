@@ -6,7 +6,7 @@ import {createValidationCatalog, planValidation, PREFLIGHT} from './native_valid
 import {acquireNativeWorkspaceLock} from './native_validation_lock.mjs';
 import {scheduleValidation} from './native_validation_scheduler.mjs';
 import {validationIdentity, stageIdentity, fixtureIdentity, canReuse, fileDigest, inheritedTestOverrides, completedStageIdentity} from './native_validation_identity.mjs';
-import {selectShard} from './native_validation_shards.mjs';
+import {selectShard,NATIVE_SHARD_COUNT} from './native_validation_shards.mjs';
 import {verifyBundle} from './native_validation_bundle.mjs';
 
 const project = path.resolve(import.meta.dirname, '..'), root = path.dirname(project);
@@ -41,8 +41,8 @@ const catalog = createValidationCatalog(project, executable);
 let shard = null;
 if (transport['--shard']) {
  if (resume || filter || changedSince || options.profile !== 'full' || options.tests.length || options.changedFiles.length) throw Error('Shards cannot combine with resume, raw filter or focused profiles');
- const match = /^(\d+)\/([1-6])$/.exec(transport['--shard']);
- if (!match) throw Error('--shard requires zero-based INDEX/COUNT (count 1..6)');
+ const match = /^(\d+)\/([1-9]\d*)$/.exec(transport['--shard']);
+ if (!match) throw Error(`--shard requires zero-based INDEX/COUNT (count 1..${NATIVE_SHARD_COUNT})`);
  shard = {...selectShard(catalog, root, Number(match[1]), Number(match[2])), index:Number(match[1]), count:Number(match[2])};
  if (!inspect && !['--prepared-bundle','--receipt-sha','--producer-attempt','--head'].every(key => transport[key])) throw Error('A shard requires verified same-run prepared inputs');
 } else if (Object.keys(transport).length) throw Error('Prepared-input options require --shard');
@@ -50,8 +50,8 @@ if (options.profile === 'prepare' && (resume || filter || options.tests.length |
 const plan = shard ? shard.plan : planValidation(catalog, {...options, filter});
 if (inspect) {
  const output = JSON.stringify({...plan, stages: plan.stages.map(s => ({...s, status: 'not-run'}))}, null, 2) + '\n';
- // Pipes flush asynchronously. Do not truncate a large plan by exiting while
- // stdout still owns buffered JSON; inspecting must remain nonexecuting.
+ // Pipes flush asynchronously. Inspection must not truncate a large plan or run
+ // an engine while a slower consumer still owns buffered JSON.
  await new Promise((resolve, reject) => process.stdout.write(output, error => error ? reject(error) : resolve()));
  process.exit(0);
 }

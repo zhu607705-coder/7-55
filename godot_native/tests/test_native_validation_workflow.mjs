@@ -2,28 +2,29 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
+import {NATIVE_SHARD_COUNT} from '../tools/native_validation_shards.mjs';
 const source=fs.readFileSync(new URL('../../.github/workflows/godot-native-ci.yml',import.meta.url),'utf8');
 const matches=[...source.matchAll(/^  ([a-z][a-z0-9-]*):\n/gm)];
 const jobs=Object.fromEntries(matches.filter(m=>source.indexOf('jobs:\n')<m.index).map((m,i,a)=>[m[1],source.slice(m.index,a[i+1]?.index??source.length)]));
-test('bounded six-shard architecture retains original final required-check identity',()=>{
+test('bounded eight-shard architecture retains original final required-check identity',()=>{
  assert.deepEqual(Object.keys(jobs),['contracts','prepare','runtime','graphics','native-parse-and-tests']);
- assert.match(jobs.runtime,/fail-fast: false/);assert.match(jobs.runtime,/max-parallel: 6/);assert.match(jobs.runtime,/shard: \[0, 1, 2, 3, 4, 5\]/);
+ assert.match(jobs.runtime,/fail-fast: false/);assert.equal(Number(jobs.runtime.match(/max-parallel: (\d+)/)[1]),NATIVE_SHARD_COUNT);assert.deepEqual(JSON.parse(jobs.runtime.match(/shard: (\[[^\n]+\])/)[1]),Array.from({length:NATIVE_SHARD_COUNT},(_,i)=>i));
  assert.match(jobs.runtime,/NATIVE_TEST_JOBS: '2'/);assert.doesNotMatch(source,/continue-on-error|runs-on:.*(?:large|gpu-|self-hosted)/);
  assert.match(jobs['native-parse-and-tests'],/name: native-parse-and-tests/);
 });
 test('producer retains exact preflight, complete media and all prepared source gates',()=>{
- for(const command of ['sync_source.mjs','build-save-normalizer.mjs','export-audio-director.mjs','ensure-ci-media-tools.mjs','convert_media.sh','validate_native.mjs --profile prepare','native_validation_bundle.mjs create'])assert.ok(jobs.prepare.includes(command),command);
+ for(const command of ['sync_source.mjs','build-save-normalizer.mjs','export-audio-director.mjs','prepare_import_media.mjs --install-media','validate_native.mjs --profile prepare','native_validation_bundle.mjs create'])assert.ok(jobs.prepare.includes(command),command);
  assert.match(jobs.prepare,/git diff --exit-code -- godot_native\/data\/native\/save_normalizer.json godot_native\/data\/native\/audio-director-source.json/);
  assert.doesNotMatch(jobs.prepare,/--filter|--skip-import|--resume/);
 });
 test('all native input consumers use isolated checkouts and verified producer receipts',()=>{
  for(const name of ['runtime','graphics']){
-  const body=jobs[name];assert.match(body,/needs: prepare/);assert.match(body,/ref: \$\{\{ github.sha \}\}/);
+  const body=jobs[name];assert.match(body,/needs: \[prepare, contracts\]/);assert.match(body,/ref: \$\{\{ github.sha \}\}/);
   assert.match(body,/native_validation_bundle.mjs restore/);assert.match(body,/--receipt-sha '\$\{\{ needs.prepare.outputs.receipt_sha \}\}'/);
   assert.match(body,/--producer-attempt '\$\{\{ needs.prepare.outputs.producer_attempt \}\}'/);
   assert.match(body,/name: \$\{\{ needs.prepare.outputs.bundle_name \}\}/);
  }
- assert.match(jobs.runtime,/validate_native.mjs --shard '\$\{\{ matrix.shard \}\}\/6'/);
+ assert.ok(jobs.runtime.includes(`validate_native.mjs --shard '\${{ matrix.shard }}/${NATIVE_SHARD_COUNT}'`));
  assert.doesNotMatch(jobs.runtime,/--editor|--import|sync_source.mjs|convert_media.sh|--resume/);
 });
 test('unchanged GPU, north route and complete exported-package contracts remain mandatory',()=>{

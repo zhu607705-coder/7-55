@@ -69,7 +69,7 @@ CSS 候选将 canvas 固定于视口并以 CSS 保持全宽全高，避免 Godot
 
 ## 提交范围
 
-Current integration scope: 179 paths. Excludes node_modules, generated exports/cache, external QA and the standalone research library. Latest release checkpoint: [20261026](INTEGRATION_RELEASE_20261026.md).
+Current integration scope: 185 paths, including PR174 through b4686628 and the measured UI/source-fixture corrections. Excludes node_modules, generated exports/cache, external QA and the standalone research library. Release checkpoint: [20261026](INTEGRATION_RELEASE_20261026.md).
 
 ```text
 .github/workflows/deploy-pages.yml
@@ -167,6 +167,7 @@ godot_native/tests/capture_virtual_run.gd
 godot_native/tests/fixtures/chapter3_narrative_source.json
 godot_native/tests/fixtures/library_story_source.json
 godot_native/tests/fixtures/native_validation_baseline_33cc499.json
+godot_native/tests/fixtures/native_validation_timings_33cc499.json
 godot_native/tests/test_canteen_queue_floor_tap.gd
 godot_native/tests/test_canteen_waiting_portrait.gd
 godot_native/tests/test_cc98_gamepad_exchange.gd
@@ -201,6 +202,7 @@ godot_native/tests/test_phone_utilities.gd
 godot_native/tests/test_photo_brightness_consumer.gd
 godot_native/tests/test_portrait_exploration.gd
 godot_native/tests/test_portrait_scene_contracts.gd
+godot_native/tests/test_preparation_pipeline.mjs
 godot_native/tests/test_room204_native_object.gd
 godot_native/tests/test_room204_second_table.gd
 godot_native/tests/test_room301_archive_main.gd
@@ -209,6 +211,7 @@ godot_native/tests/test_virtual_run_authority.gd
 godot_native/tests/test_virtual_run_controls.gd
 godot_native/tests/test_virtual_run_main_lifecycle.gd
 godot_native/tests/test_web_acceptance_workflow.mjs
+godot_native/tests/test_web_consumer_source_closure.mjs
 godot_native/tests/test_web_controller_fixtures.mjs
 godot_native/tests/test_web_input_completion.mjs
 godot_native/tests/test_web_phone_shards.mjs
@@ -218,7 +221,9 @@ godot_native/tests/test_wechat_reference_ui.gd
 godot_native/tests/test_wechat_social_pages.gd
 godot_native/tests/test_zh_text_display.gd
 godot_native/tests/verify_native_prepared_inputs.mjs
+godot_native/tools/build_web.mjs
 godot_native/tools/convert_media.sh
+godot_native/tools/managed_validation_process.mjs
 godot_native/tools/native_validation_aggregate.mjs
 godot_native/tools/native_validation_bundle.mjs
 godot_native/tools/native_validation_identity.mjs
@@ -228,6 +233,7 @@ godot_native/tools/native_validation_registration.mjs
 godot_native/tools/native_validation_scheduler.mjs
 godot_native/tools/native_validation_shards.mjs
 godot_native/tools/native_validation_timings.json
+godot_native/tools/prepare_import_media.mjs
 godot_native/tools/prepare_web_controller_fixtures.mjs
 godot_native/tools/sync_source.mjs
 godot_native/tools/validate_native.mjs

@@ -4,7 +4,7 @@ import {digest} from './native_validation_identity.mjs';
 import {PREPARATION_IDS} from './native_validation_plan.mjs';
 import {registrationFields} from './native_validation_registration.mjs';
 
-export const NATIVE_SHARD_COUNT = 6;
+export const NATIVE_SHARD_COUNT = 8;
 const observed = JSON.parse(fs.readFileSync(new URL('./native_validation_timings.json', import.meta.url), 'utf8')).durationMs;
 export function stageDescriptor(stage, root) {
  const portable = value => value === root ? '$ROOT' : value.startsWith(`${root}${path.sep}`) ? `$ROOT/${path.relative(root, value).split(path.sep).join('/')}` : value;
@@ -24,7 +24,7 @@ export function estimateShard(stages, durations = observed, jobs = 2) {
 }
 /** Timing only chooses owners. Every catalog entry remains mandatory. */
 export function createShardPlan(catalog, root, {count = NATIVE_SHARD_COUNT, durations = observed} = {}) {
- if (!Number.isInteger(count) || count < 1 || count > NATIVE_SHARD_COUNT) throw Error('Native shard count must be 1..6');
+ if (!Number.isInteger(count) || count < 1 || count > NATIVE_SHARD_COUNT) throw Error(`Native shard count must be 1..${NATIVE_SHARD_COUNT}`);
  if (new Set(catalog.map(s => s.id)).size !== catalog.length) throw Error('Duplicate native catalog ID');
  const byId = new Map(catalog.map(s => [s.id, s]));
  for (const id of PREPARATION_IDS) if (!byId.has(id)) throw Error(`Missing preparation stage ${id}`);
