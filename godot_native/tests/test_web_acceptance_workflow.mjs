@@ -37,16 +37,19 @@ const fixtureHelper = readFileSync(new URL('../tools/prepare_web_controller_fixt
 const consumerNames = ['browser_baseline', 'browser_streaming', 'browser_profiles', 'phone_profiles', 'library_profiles'];
 const gateNames = ['build', 'browser_contracts', ...consumerNames, 'browser_coverage'];
 
-await test('one immutable producer fans out to exactly thirteen bounded browser consumers', () => {
+await test('one immutable producer fans out to nine bounded jobs and thirteen logical consumers', () => {
   assert.deepEqual(Object.keys(jobs), [...gateNames, 'deploy']);
   assert.doesNotMatch(build, /^    needs:/m);
   for (const name of consumerNames) {
     const job = jobs[name];
-    assert.equal(job.match(/^    needs: (.+)$/m)?.[1], 'build');
+    assert.equal(job.match(/^    needs: (.+)$/m)?.[1], '[build, browser_contracts]');
     assert.equal(job.match(/^    if: \$\{\{ (.*?) \}\}$/m)?.[1], "!cancelled() && needs.build.outputs.bundle_ready == 'true'");
     assert.match(job, /runs-on: ubuntu-latest/);
     assert.match(job, /permissions:\n      contents: read/);
     assert.match(job, /ref: \$\{\{ github.sha \}\}/);
+    const checkout = step('Check out exact producer source', job);
+    assert.match(checkout, /filter: blob:none/);
+    assert.match(checkout, /sparse-checkout: godot_native\/tools\n/);
     assert.match(job, /node-version: 22\.23\.3/);
     assert.match(job, /EXPECTED_RECEIPT_SHA: \$\{\{ needs.build.outputs.receipt_sha \}\}/);
     assert.match(job, /EXPECTED_PRODUCER_ATTEMPT: \$\{\{ needs.build.outputs.producer_attempt \}\}/);
@@ -57,16 +60,19 @@ await test('one immutable producer fans out to exactly thirteen bounded browser 
     const verify = step('Verify exact source and every input byte', job);
     for (const option of ['--bundle-dir "$RUNNER_TEMP/godot-web-inputs"', '--receipt-sha "$EXPECTED_RECEIPT_SHA"', '--producer-attempt "$EXPECTED_PRODUCER_ATTEMPT"']) assert.ok(verify.includes(option));
     for (const match of job.matchAll(/^      - name: (.+)$/gm)) {
+      if (['browser_streaming','browser_profiles','library_profiles'].includes(name) && ['Verify exact source and every phone input byte', 'Accept actual early charging and two-stage Tiyi phone input', "Preserve this phone group's browser evidence"].includes(match[1])) continue; // Exact independent gates and artifact conditions are exercised below.
       if (match[1].startsWith('Preserve')) assert.match(step(match[1], job), /if: always\(\)/);
       else assert.doesNotMatch(step(match[1], job), /^        if:/m, `${name}/${match[1]} cannot skip a gate`);
     }
   }
   assert.match(baselineJob, /max-parallel: 2/);
   assert.match(profilesJob, /max-parallel: 3/);
-  assert.match(phoneJob, /max-parallel: 5/);
+  assert.match(phoneJob, /max-parallel: 1/);
   assert.match(libraryJob, /max-parallel: 2/);
-  assert.deepEqual([...phoneJob.matchAll(/          - profile: (.+)\n            group: (.+)/g)].map(m => m.slice(1)), [['desktop-1280','all'],['touch-390','all'],['retina-touch-390','charging'],['retina-touch-390','c1-tiyi'],['retina-touch-390','c2-tiyi']]);
-  assert.deepEqual(profilesJob.match(/profile: \[([^\]]+)\]/)[1].split(',').map(x => x.trim()), profiles);
+  assert.equal(2 + 1 + 3 + 1 + 2, 9, 'bounded physical job count');
+  assert.deepEqual(phoneRows(), [['retina-touch-390','c2-tiyi']]);
+  assert.deepEqual(pairedRows(profilesJob), [['desktop-1280','desktop-1280','all'],['touch-390','retina-touch-390','charging'],['retina-touch-390','','']]);
+  assert.deepEqual(pairedRows(libraryJob), [['desktop-1280','',''],['touch-390','retina-touch-390','c1-tiyi']]);
   assert.equal((workflow.match(/node godot_native\/tools\/build_web\.mjs/g) || []).length, 1);
   assert.match(step('Accept actual world input for this profile'), /--scenarios mobile-world --only "\$ACCEPTANCE_PROFILE"/);
   const phone = step('Accept actual early charging and two-stage Tiyi phone input', phoneJob);
@@ -80,6 +86,85 @@ await test('one immutable producer fans out to exactly thirteen bounded browser 
   }
 });
 
+function pairedRows(job) {
+  return [...job.matchAll(/          - profile: (.+)\n            phone_profile: (.+)\n            phone_group: (.+)/g)].map(m => m.slice(1).map(value => value === "''" ? '' : value));
+}
+function phoneRows() { return [...phoneJob.matchAll(/          - profile: (.+)\n            group: (.+)/g)].map(m => m.slice(1)); }
+function assertPhoneKeys(pairs) {
+  const keys = pairs.map(pair => pair.join('/')).sort();
+  assert.deepEqual(keys, ['desktop-1280/all','touch-390/all','retina-touch-390/charging','retina-touch-390/c1-tiyi','retina-touch-390/c2-tiyi'].sort());
+  assert.equal(new Set(keys).size, 5, 'No phone group is omitted or duplicated across physical jobs');
+}
+await test('duration-balanced pairs preserve five exact phone keys and thirteen logical artifacts', () => {
+  const phonePairs = [...pairedRows(profilesJob), ...pairedRows(libraryJob)].filter(row => row[1]).map(row => row.slice(1));
+  phonePairs.push(['touch-390','all'], ...phoneRows());
+  assertPhoneKeys(phonePairs);
+  assert.throws(() => assertPhoneKeys(phonePairs.slice(1)), /Assertion/);
+  assert.throws(() => assertPhoneKeys([...phonePairs, phonePairs[0]]), /Assertion/);
+  assert.throws(() => assertPhoneKeys(phonePairs.map((row, i) => i === 0 ? ['unknown','all'] : row)), /Assertion/);
+  const artifactKeys = ['baseline-standard','baseline-wide','streaming',
+    ...pairedRows(profilesJob).map(row => `world-${row[0]}`),
+    ...phonePairs.map(row => `phone-${row.join('-')}`), ...pairedRows(libraryJob).map(row => `library-${row[0]}`)];
+  assert.equal(artifactKeys.length, 13);
+  assert.equal(new Set(artifactKeys).size, 13);
+  assert.equal(6 + 1 + 3 + phonePairs.length + 2, 17, 'All original independent browser reports remain mandatory');
+});
+await test('all balanced phone invocations retain identical commands, validators and isolated evidence', () => {
+  const title = 'Accept actual early charging and two-stage Tiyi phone input';
+  const separate = step(title, phoneJob);
+  for (const [name, job, first] of [['world',profilesJob,'Preserve this profile\'s independent browser evidence'], ['streaming',streamingJob,'Preserve streaming evidence'], ['library',libraryJob,'Preserve this profile\'s library evidence']]) {
+    const combined = step(title, job), paired = name !== 'streaming';
+    assert.equal(combined.split('        run: |\n')[1].trim(), separate.split('        run: |\n')[1].trim());
+    assert.equal(receiptCode(title, job), phoneCode);
+    assert.equal((job.match(/node godot_native\/tools\/verify_web_export\.mjs/g) || []).length, 2);
+    assert.match(combined, /timeout-minutes: 8/);
+    assert.match(combined, /--output godot_native\/exports\/verification\/web_phone_recovery/);
+    assert.ok(job.indexOf(first) < job.indexOf(title));
+    if (paired) {
+      assert.match(combined, /ACCEPTANCE_PROFILE: \$\{\{ matrix.phone_profile \}\}/);
+      assert.match(combined, /ACCEPTANCE_PHONE_GROUP: \$\{\{ matrix.phone_group \}\}/);
+    } else {
+      assert.match(combined, /ACCEPTANCE_PROFILE: touch-390\n/);
+      assert.match(combined, /ACCEPTANCE_PHONE_GROUP: all\n/);
+    }
+    const artifact = step("Preserve this phone group's browser evidence", job);
+    if (paired) assert.match(artifact, /name: godot-web-phone-\$\{\{ matrix.phone_profile \}\}-\$\{\{ matrix.phone_group \}\}-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
+    else assert.match(artifact, /name: godot-web-phone-touch-390-all-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
+    assert.match(artifact, /verified-inputs\.json/);
+    assert.match(artifact, /web_phone_recovery\//);
+    assert.doesNotMatch(artifact, /web_mobile_world\/|web_streaming\/|web_library\//);
+    if (!paired) assert.match(artifact, /if: always\(\)/);
+    else {
+      const expression = artifact.match(/^        if: \$\{\{ (.*?) \}\}$/m)?.[1];
+      assert.equal(expression, "always() && matrix.phone_profile != ''");
+      const preserve = new Function('always','matrix',`return (${expression});`);
+      for (const profile of ['',...profiles]) assert.equal(preserve(() => true,{phone_profile:profile}), profile !== '');
+    }
+  }
+});
+await test('paired cases continue after the first browser fails but never after input verification fails', () => {
+  const title = 'Accept actual early charging and two-stage Tiyi phone input';
+  for (const [name,job] of [['world',profilesJob],['streaming',streamingJob],['library',libraryJob]]) {
+    assert.match(step('Verify exact source and every input byte',job), /id: verify_inputs/);
+    const checked = [[step(title,job),name === 'world' ? 'verify_inputs' : 'verify_phone_inputs']];
+    if (name !== 'world') {
+      const verify = step('Verify exact source and every phone input byte',job);
+      assert.match(verify, /id: verify_phone_inputs/);
+      assert.equal(verify.split('        run: |\n')[1].trim(),step('Verify exact source and every input byte',phoneJob).split('        run: |\n')[1].trim());
+      checked.push([verify,'verify_inputs']);
+    }
+    for (const [body,prerequisite] of checked) {
+      const expression = body.match(/^        if: \$\{\{ (.*?) \}\}$/m)?.[1];
+      const profileGate = name === 'streaming' ? '' : "matrix.phone_profile != '' && ";
+      assert.equal(expression, `!cancelled() && ${profileGate}steps.${prerequisite}.outcome == 'success'`);
+      const allowed = new Function('cancelled','steps','matrix',`return (${expression});`);
+      for (const outcome of ['success','failure','skipped','cancelled',undefined]) for (const cancelled of [true,false]) for (const phone_profile of ['',...profiles]) for (const firstOutcome of ['success','failure','skipped']) {
+        assert.equal(allowed(() => cancelled,{[prerequisite]:{outcome},first_browser:{outcome:firstOutcome}},{phone_profile}), !cancelled && outcome === 'success' && (name === 'streaming' || phone_profile !== ''));
+      }
+    }
+  }
+});
+
 await test('balanced baseline batches retain all six original default cases and separate streaming', () => {
   assert.deepEqual([...baselineJob.matchAll(/          - batch: (.+)\n            profiles: (.+)/g)].map(m => m.slice(1)), [['standard','desktop-1280 touch-390 retina-1440'],['wide','desktop-1440 retina-touch-390 desktop-1920']]);
   const baseline = step('Accept actual Godot Web input and persisted reload at Pages subpath', baselineJob);
@@ -90,7 +175,7 @@ await test('balanced baseline batches retain all six original default cases and 
   assert.match(baseline, /report.scenarios !== 'all'/);
   assert.match(baseline, /report.cases\?\.length !== 1/);
   assert.match(streamingJob, /--scenarios streaming/);
-  assert.doesNotMatch(streamingJob, /--only /);
+  assert.doesNotMatch(step('Accept actual streaming failure retry and persisted reload', streamingJob), /--only /);
   assert.match(streamingJob, /timeout-minutes: 12/);
   assert.match(streamingJob, /--fixtures "\$RUNNER_TEMP\/godot-web-inputs\/controller-earned"/);
 });
@@ -325,12 +410,12 @@ const libraryProfiles = ['desktop-1280', 'touch-390'];
 const libraryFiles = ['before_library_rule_read.json', 'before_library_022_opening.json'];
 const receiptHash = 'e'.repeat(64);
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
-await test('library profiles reuse the same sealed source in two read-only bounded runners', () => {
-  assert.match(libraryJob, /needs: build/);
+await test('both library profiles retain bounded fresh runners and original separate evidence', () => {
+  assert.match(libraryJob, /needs: \[build, browser_contracts\]/);
   assert.match(libraryJob, /timeout-minutes: 12/);
   assert.match(libraryJob, /permissions:\n      contents: read/);
   assert.match(libraryJob, /fail-fast: false/);
-  assert.deepEqual(libraryJob.match(/profile: \[([^\]]+)\]/)[1].split(',').map(v => v.trim()), libraryProfiles);
+  assert.deepEqual(pairedRows(libraryJob).map(row => row[0]), ['desktop-1280','touch-390']);
   assert.match(libraryJob, /ref: \$\{\{ github.sha \}\}/);
   assert.match(libraryJob, /node-version: 22\.23\.3/);
   assert.match(libraryJob, /name: \$\{\{ needs.build.outputs.bundle_name \}\}/);
@@ -340,7 +425,7 @@ await test('library profiles reuse the same sealed source in two read-only bound
   assert.match(verify, /--receipt-sha "\$EXPECTED_RECEIPT_SHA"/);
   assert.match(verify, /--producer-attempt "\$EXPECTED_PRODUCER_ATTEMPT"/);
   assert.match(verify, /--output-receipt godot_native\/exports\/verification\/verified-library-inputs.json/);
-  assert.equal((libraryJob.match(/node godot_native\/tools\/verify_web_export\.mjs/g) || []).length, 1);
+  assert.equal((libraryJob.match(/node godot_native\/tools\/verify_web_export\.mjs/g) || []).length, 2);
   assert.match(libraryJob, /--scenarios library --only "\$ACCEPTANCE_PROFILE"/);
   assert.match(libraryJob, /--export-dir "\$RUNNER_TEMP\/godot-web-inputs\/web-release"/);
   assert.match(libraryJob, /--fixtures "\$RUNNER_TEMP\/godot-web-inputs\/controller-earned"/);
@@ -373,10 +458,19 @@ await test('library diagnostics require a sealed producer, while deployment requ
   assert.equal(publish(ready, { event_name: 'workflow_dispatch', ref: 'refs/heads/unapproved' }), false);
 });
 await test('producer joins two isolated existing recorders after completed export and before sealing', () => {
-  const fixtureStep = step('Generate controller-earned fixture for mobile browser input', build);
-  assert.match(fixtureStep, /node godot_native\/tools\/prepare_web_controller_fixtures.mjs/);
-  assert.ok(build.indexOf('Build actual production Godot HTML') < build.indexOf('Generate controller-earned fixture'));
-  assert.ok(build.indexOf('Generate controller-earned fixture') < build.indexOf('Seal exact-source browser acceptance inputs'));
+  const preparation = step('Install media converter', build);
+  assert.ok(preparation.indexOf('node godot_native/tools/sync_source.mjs') < preparation.indexOf('node godot_native/tools/prepare_import_media.mjs --install-media'));
+  assert.match(preparation, /node godot_native\/tools\/prepare_import_media.mjs --install-media/);
+  const production = step('Build actual production Godot HTML, WebAssembly and PCK',build);
+  assert.match(production, /run: node godot_native\/tools\/build_web.mjs --skip-prepare --prepare-controller-fixtures/);
+  assert.doesNotMatch(production, /--skip-import/);
+  const fixtureStep = step('Check controller-earned fixture for mobile browser input', build);
+  assert.match(fixtureStep, /id: phone_recovery_inputs/);
+  assert.match(fixtureStep, /run: node godot_native\/tests\/test_phone_recovery_inputs.mjs --fixtures godot_native\/exports\/verification\/controller-earned/);
+  assert.doesNotMatch(workflow, /node godot_native\/tools\/prepare_web_controller_fixtures.mjs/);
+  assert.ok(build.indexOf('Install media converter') < build.indexOf('Build actual production Godot HTML'));
+  assert.ok(build.indexOf('Build actual production Godot HTML') < build.indexOf('Check controller-earned fixture'));
+  assert.ok(build.indexOf('Check controller-earned fixture') < build.indexOf('Seal exact-source browser acceptance inputs'));
   assert.match(fixtureHelper, /campaign_continuity_recorder\.gd/);
   assert.match(fixtureHelper, /library_continuity_recorder\.gd/);
   assert.match(fixtureHelper, /Promise.allSettled/);
@@ -384,6 +478,9 @@ await test('producer joins two isolated existing recorders after completed expor
   const evidence = step('Preserve build evidence', build);
   for (const filename of ['library-controller.log', 'library-controller-report.json', ...libraryFiles]) assert.ok(evidence.includes(`godot_native/exports/verification/controller-earned/${filename}`));
   assert.match(evidence, /controller-earned-diagnostics\//);
+  assert.match(evidence, /verification\/import-media\//);
+  assert.match(evidence, /controller-fixture-process\.log/);
+  assert.match(evidence, /controller-fixture-process\.json/);
 });
 
 function librarySample(profile) {
@@ -524,7 +621,7 @@ await test('source-only contracts remain required but never delay or mutate prod
   assert.doesNotMatch(contracts, /^    needs:|build_web\.mjs|--export|verify_web_export\.mjs|sync_source\.mjs|convert_media\.sh/m);
   assert.match(contracts, /ref: \$\{\{ github.sha \}\}/);
   assert.match(contracts, /test "\$\(git rev-parse HEAD\)" = "\$GITHUB_SHA"/);
-  for (const file of ['test_web_acceptance_workflow.mjs','test_web_phone_shards.mjs','test_web_controller_fixtures.mjs','test_web_browser_lifecycle.mjs','test_web_network_observation.mjs','test_web_streaming_fault_lifecycle.mjs','test_web_save_diagnostics.mjs','test_web_input_completion.mjs']) {
+  for (const file of ['test_web_acceptance_workflow.mjs','test_web_consumer_source_closure.mjs','test_preparation_pipeline.mjs','test_web_phone_shards.mjs','test_web_controller_fixtures.mjs','test_web_browser_lifecycle.mjs','test_web_network_observation.mjs','test_web_streaming_fault_lifecycle.mjs','test_web_save_diagnostics.mjs','test_web_input_completion.mjs']) {
     assert.equal((workflow.match(new RegExp(`node godot_native/tests/${file.replaceAll('.', '\\.')}`, 'g')) || []).length,1);
     assert.ok(contracts.includes(file));assert.ok(!build.includes(file));
   }

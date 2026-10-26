@@ -72,3 +72,54 @@ await test('each selected group requires its complete distinct exact-source inpu
   assert.deepEqual(phoneInputs(fixtures,'c2-tiyi').map(x=>x.filename),['second']);
   for (const mutate of [x=>x.variants.pop(),x=>x.variants.push(input('extra')),x=>x.variants[1]=x.variants[0],x=>delete x.earned.secondTiyi,x=>x.earned.firstTiyi.sha256='bad']) {const bad=structuredClone(fixtures);mutate(bad);assert.throws(()=>phoneInputs(bad));}
 });
+
+const readyC2 = () => ({sampleFrame:20, documentHidden:false,
+  state:{native:{chapter:2}}, viewport:{width:390,height:844},
+  content:{enabled:true,blocking:false,manifestError:'',requiredIds:[],readyFamilies:['chapter2'],packs:[{id:'chapter2_001',family:'chapter2',status:'ready',error:''}]},
+  world:{visible:true,scene_id:'dorm_hub',backgroundPlate:{ready:true},input:{modalVisible:false,geometryAvailable:true}},
+  visibleControls:[{name:'WorldPhoneButton',disabled:false,rect:{x:334,y:788,width:44,height:44}}]});
+const syntheticPoll = async (fn, label, timeout) => {
+  assert.equal(timeout,180000,'content uses the existing bounded boot timeout, not the ordinary 20s input timeout');
+  for(let i=0;i<3;i++){const value=await fn();if(value)return value;}
+  throw Error(`synthetic timeout: ${label}`);
+};
+await test('cold C2 sends no phone input until required packs and a fresh real world are ready',async()=>{
+  const pending=readyC2();pending.sampleFrame=10;pending.content.blocking=true;pending.content.readyFamilies=[];pending.content.packs[0].status='requested';pending.world.scene_id='';pending.world.backgroundPlate.ready=false;
+  let reads=0, inputs=0, recorded;
+  const stop=Error('stop after the single real phone tap');
+  await assert.rejects(phoneRecoveryCase({group:'c2-tiyi',touch:true,bootTimeout:180000,fixtureDir:'/synthetic',record(value){recorded=value;},
+    async importSave(){},async snapshot(){reads++;assert.equal(inputs,0);return reads<3?pending:readyC2();},
+    poll:syntheticPoll,async clickControl(name){assert.equal(name,'WorldPhoneButton');assert.equal(reads,3);inputs++;throw stop;}}),error=>error===stop);
+  assert.equal(inputs,1);assert.equal(recorded.completed,false);assert.deepEqual(recorded.coverage,[]);
+  assert.equal(recorded.contentWait.sampleFrame,20);assert.equal(recorded.contentWait.timeoutMs,180000);
+  assert.deepEqual(recorded.contentWait.requiredIds,[],'successful engine clears transient waiters');
+  assert.deepEqual(recorded.contentWait.chapter2Ids,['chapter2_001']);
+});
+for(const [label,change] of [
+  ['blocking overlay',s=>s.content.blocking=true],['incomplete required pack',s=>s.content.packs[0].status='requested'],
+  ['missing family pack',s=>s.content.packs=[]],['unready active required pack',s=>s.content.requiredIds=['unknown']],['missing required-ID observation',s=>delete s.content.requiredIds],
+  ['family not mounted',s=>s.content.readyFamilies=[]],['wrong chapter',s=>s.state.native.chapter=1],
+  ['world not restored',s=>s.world.scene_id=''],['background absent',s=>s.world.backgroundPlate.ready=false],
+  ['modal input owner',s=>s.world.input.modalVisible=true],['touch geometry absent',s=>s.world.input.geometryAvailable=false],
+  ['stale frame',s=>s.sampleFrame=10],['hidden document',s=>s.documentHidden=true],
+  ['disabled button',s=>s.visibleControls[0].disabled=true],['duplicate button',s=>s.visibleControls.push(structuredClone(s.visibleControls[0]))],
+  ['out of bounds button',s=>s.visibleControls[0].rect.x=390]
+]) await test(`cold C2 ${label} times out without dispatch or partial success`,async()=>{
+  const pending=readyC2();change(pending);let inputs=0,recorded,reads=0;
+  await assert.rejects(phoneRecoveryCase({group:'c2-tiyi',touch:true,bootTimeout:180000,fixtureDir:'/synthetic',record(value){recorded=value;},async importSave(){},
+    async snapshot(){reads++;return reads===1?{...readyC2(),sampleFrame:10}:pending;},poll:syntheticPoll,async clickControl(){inputs++;}}),/synthetic timeout/);
+  assert.equal(inputs,0);assert.equal(recorded.completed,false);assert.deepEqual(recorded.coverage,[]);
+});
+for(const kind of ['manifest','pack']) await test(`cold C2 ${kind} errors fail before any tap, with no retry`,async()=>{
+  const broken=readyC2();if(kind==='manifest')broken.content.manifestError='hash mismatch';else broken.content.packs[0].error='hash mismatch';
+  let polls=0,inputs=0;
+  await assert.rejects(phoneRecoveryCase({group:'c2-tiyi',touch:true,bootTimeout:180000,fixtureDir:'/synthetic',record(){},async importSave(){},async snapshot(){return broken;},
+    async poll(fn){polls++;return fn();},async clickControl(){inputs++;}}),/C2 phone content failed:.*hash mismatch/);
+  assert.equal(polls,1);assert.equal(inputs,0);
+});
+await test('phone readiness does not globally block save imports or the streaming fault scenario',()=>{
+  const source=readFileSync(new URL('../tools/verify_web_export.mjs',import.meta.url),'utf8');
+  assert.match(source,/phoneRecoveryCase\(\{ id, touch, fixtureDir, bootTimeout, group:/);
+  const importer=source.slice(source.indexOf('async function importSave('),source.indexOf('async function importSave(')+4500);
+  assert.doesNotMatch(importer,/waitForC2PhoneWorld/);
+});

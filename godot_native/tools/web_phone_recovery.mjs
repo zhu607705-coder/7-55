@@ -1,6 +1,32 @@
 import path from 'node:path';
 import {phoneGroups, runPhoneRecoveryGroups} from './web_phone_shards.mjs';
 
+// Save acceptance is not content readiness. In the cold C2-only shard, the
+// required chapter packs can still occlude the world after the save is accepted.
+// Observe their real completion before sending the one ordinary phone tap.
+export async function waitForC2PhoneWorld(h, afterFrame) {
+  const result = await h.poll(async () => {
+    const value = await h.snapshot(), content = value?.content;
+    const required = content?.requiredIds;
+    const packs = Array.isArray(content?.packs) ? content.packs : [];
+    const chapterPacks = packs.filter(pack => pack.family === 'chapter2');
+    const failed = packs.find(pack => (pack.family === 'chapter2' || required?.includes(pack.id)) && (pack.error || pack.status === 'error'));
+    if (content?.manifestError || failed) return {error: content.manifestError || `${failed.id}: ${failed.error || failed.status}`};
+    if (!Number.isSafeInteger(afterFrame) || !Number.isSafeInteger(value?.sampleFrame) || value.sampleFrame <= afterFrame || value.documentHidden === true) return null;
+    // requiredIds lists active waiters and is normally empty after success.
+    // The manifest-backed family, not that transient list, proves all C2 packs.
+    if (value.state?.native?.chapter !== 2 || content?.enabled !== true || content.blocking !== false || !content.readyFamilies?.includes('chapter2') || chapterPacks.length === 0 || !chapterPacks.every(pack => pack.status === 'ready') || !Array.isArray(required) || !required.every(id => packs.some(pack => pack.id === id && pack.status === 'ready'))) return null;
+    if (value.world?.visible !== true || value.world.scene_id !== 'dorm_hub' || value.world.backgroundPlate?.ready !== true || value.world.input?.modalVisible !== false || (h.touch && value.world.input.geometryAvailable !== true)) return null;
+    const controls = (value.visibleControls || []).filter(control => control.name === 'WorldPhoneButton');
+    if (controls.length !== 1 || controls[0].disabled !== false) return null;
+    const r = controls[0].rect, v = value.viewport;
+    if (!r || !v || ![r.x, r.y, r.width, r.height, v.width, v.height].every(Number.isFinite) || r.width <= 0 || r.height <= 0 || v.width <= 0 || v.height <= 0 || r.x < 0 || r.y < 0 || r.x + r.width > v.width || r.y + r.height > v.height) return null;
+    return {value};
+  }, 'cold C2 required content and restored dorm world are ready before phone input', h.bootTimeout);
+  if (result.error) throw Error(`C2 phone content failed: ${result.error}`);
+  return result.value;
+}
+
 // Opening the control center and publishing its native layout are separate
 // frames on slow renderers. Observe readiness without dispatching more input.
 export async function waitForBrightnessControl(h, afterFrame) {
@@ -38,7 +64,13 @@ export async function phoneRecoveryCase(h) {
   async function ensurePhoneSurface() {
     // An earned C2 save restores the world even while native.page remembers an
     // app. Open the actual phone through its shipped world button, not that field.
-    if ((await read()).world.visible) await click('WorldPhoneButton');
+    const imported = await read();
+    if (imported.world.visible) {
+      evidence.contentWait = {beganAt: Date.now(), timeoutMs: h.bootTimeout};
+      const ready = await waitForC2PhoneWorld(h, imported.sampleFrame);
+      Object.assign(evidence.contentWait, {finishedAt: Date.now(), sampleFrame: ready.sampleFrame, requiredIds: ready.content.requiredIds, readyFamilies: ready.content.readyFamilies, chapter2Ids: ready.content.packs.filter(pack => pack.family === 'chapter2').map(pack => pack.id)});
+      await click('WorldPhoneButton');
+    }
     const value = await h.poll(async () => {
       const current = await read();
       return !current.world.visible && current.visibleControls.some(c => c.name === 'ControlCenterTrigger') ? current : null;

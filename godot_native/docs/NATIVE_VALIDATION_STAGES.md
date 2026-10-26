@@ -195,19 +195,21 @@ source/media → nine fresh preparation stages → sealed inputs│
                                               ├→ shard 3 ─┤
                                               ├→ shard 4 ─┤
                                               ├→ shard 5 ─┤
+                                              ├→ shard 6 ─┤
+                                              ├→ shard 7 ─┤
                                               └→ GPU/PCK ─┤
                                     exact full aggregate ←┘
 ```
 
 The native catalog still has **530 unchanged stage descriptors**. Preparation
-owns nine entries. Six fixed standard-hosted jobs own the remaining 521 entries,
+owns nine entries. Eight fixed standard-hosted jobs own the remaining entries,
 exactly once. Each job has two continuous workers and its own checkout, imported
 cache and user-data sandbox. Exclusive stages remain exclusive inside that job;
 all shared fixture writers finish before any reader artifact is published.
 The same original `native-parse-and-tests` required-check name is the final gate.
 
 `native_validation_timings.json` records durations from successful baseline run
-`40208985927`, head `33cc4991b7d0ada3d65baaca146c62359f5fbf56`.
+`40251695425`, head `bd0dfab34128c18436224aa539817e4fe9be9cf2`.
 Deterministic partitioning balances predicted two-worker schedules, including
 exclusive barriers. Durations affect placement only, never selection, timeouts
 or success. New stages receive a conservative default estimate and stay covered.
@@ -217,7 +219,7 @@ dependency fails planning rather than silently assuming it passed elsewhere.
 ```sh
 # Inspection does not execute tests or require a prepared artifact.
 node godot_native/tools/validate_native.mjs --profile prepare --plan
-node godot_native/tools/validate_native.mjs --shard 0/6 --plan
+node godot_native/tools/validate_native.mjs --shard 0/8 --plan
 ```
 
 Execution requires a same-run sealed bundle and explicit trusted producer SHA,
@@ -257,40 +259,75 @@ Godot Web's full workflow took **17m14s**: its build took 516 s and the slowest
 retina world/phone consumer 513 s. These are hosted measurements, not local/remote
 speedup comparisons.
 
-The candidate estimates about **265 s per native reader shard**, plus preparation,
-transfer, setup, GPU/package work and aggregation. This is not a measured sub-ten-
-minute result. Web preparation now overlaps independent controller-fixture
-producers after export, and thirteen bounded acceptance consumers preserve all
-six ordinary cases, streaming failure/retry, three world profiles, the complete
-phone gate set for each original profile, and two library profiles. The long
-retina phone flow is split only at existing independent fixture imports; its
-Chapter 2 save/reload/ten-input/weather chain remains intact. A strict aggregate
-requires all thirteen receipts and all seventeen reports.
+First sharded hosted head `bd0dfab` completed native full acceptance in **13m01s**:
+530 entries =529 fresh passes + one audited alias, no omitted entries or input
+drift. All six reader jobs actually reached concurrency two. That is a complete
+workflow comparison with31m23s, not a comparison with the28m07s runner-only time.
+Godot Web took13m21s and **failed** its isolated cold C2 phone case. The screenshot
+and snapshot show a still-blocking C2 download when the original phone tap was
+sent. This is not a passing full validation result. Its aggregate correctly failed.
+All four workflows consumed **101.15 observed runner-minutes**, versus78.82 in
+the previous successful baseline; this failed attempt is not a billed-usage quote.
+Concurrent PR176/177 jobs also delayed browser dispatch, but queue time alone does
+not explain the miss: Web producer441s + longest consumer215s already exceeds10m.
 
-HTTPS-first media provisioning retains the original signed/trusted APT source,
-TLS and signature checks. It removes a measured failed HTTP route from the
-baseline critical path; the bounded original route remains a fallback. This
-neither skips media conversion nor relaxes package authenticity.
+The follow-on candidate is bounded to **eight native reader jobs and nine Web
+input consumers**, plus one native GPU/PCK job. Two slots remain for retained Web
+and cross-PR validation, for a maximum20 within these workflows. Source-contract
+jobs finish before consumer fanout. Other PRs can still use the same account pool;
+coordinate benchmark pushes rather than cancelling their required checks.
+Native placement uses measured durations only. The historical six-shard golden
+uses its recorded old timings; it does not freeze the live catalog or shard count.
+No persistence stage is reclassified or removed for this change.
 
-All jobs use existing standard hosted runners. Repository visibility was public
-when checked; standard public-repository runner minutes are free under GitHub's
-published policy. Account-specific storage allowance remains unverified. The
-736 MB sealed Web artifact is retained once for one day, but thirteen consumers
-transfer roughly **9.57 GB**, versus 4.42 GB previously. Its payload is not pruned:
-the full manifest and deferred-request gates require the existing byte set.
-The initial `c4080a4` inventory found 488,439,485 bytes of tracked native files
-and 626,525,838 bytes of exact synced source assets: **1,114,965,323 logical bytes**
-that need not transfer per consumer. Final receipt totals vary with source edits. This is not an archive-size measurement;
-imports, reconstructed disk use, hashing work and all tests remain. Actual final
-archive bytes and reconstruction timing must be recorded separately.
-Estimated Web compute is **37–40 runner-minutes**, versus about 35.5 previously;
-native six-way sharding duplicates checkout/tooling/verification overhead, not
-regression execution. Estimated complete compute, including retained Web and
-cross-PR checks, is **89–100 runner-minutes**, versus the prior measured **78.82**.
-This estimate is not billed usage; report actual job timestamps after the run.
-Native has a declared 84 runner-minute timeout ceiling,
-Web acceptance jobs 200 per attempt (excluding optional deploy, skipped on PRs);
-these are safety ceilings, not measured usage or expected billing.
+Web groups whole existing cases by observed duration, not viewport affinity.
+Each case still starts a fresh Chromium process/profile, uses ordinary input,
+and writes its original independent report and receipt. All **13 logical receipt
+keys and17 reports** remain required. A failed first case cannot make an unrun
+second case pass; independent diagnostics can continue after the first failure,
+while the required aggregate rejects any failed/missing evidence. Consumers
+sparsely check out the exact tools source, but still receive and verify the entire
+sealed site and fixture inventory. Missing helper files fail the closure contract.
+
+Two preparation overlaps do not remove an import or a test:
+
+1. `prepare_import_media.mjs` copies the unchanged converter and both complete MP4
+   inputs into a temporary media project. Its media install/conversion overlaps
+   a **strict** preliminary import of the source project. Media outputs never
+   enter that project until both children have closed, source hashes still match,
+   and both full-stream output receipts validate. The original formal import/parse
+   still runs after publication. Failure/cancellation joins peers and publishes no
+   success receipt; missing-media diagnostics are not ignored. Only media files
+   are isolated: the existing signed APT installer still changes system packages
+   on this disposable runner. Cancelling the job/group can interrupt that install;
+   no durable/user machine is used.
+2. `build_web.mjs --prepare-controller-fixtures` starts the two original recorders
+   only after export closes. They read the frozen source/import cache, use separate
+   user-data/capture directories, and overlap post-export packing in its separate
+   temporary project. Both close before build success or bundle sealing. This
+   overlaps about29s of the observed packaging phase, **not** the following9s
+   external content checks.
+
+A bounded same-cloud preparation experiment observed strict cold import119.460s,
+complete media conversion52.068s, and combined preparation99.237s plus the retained
+final import7.309s. Thus observed sequential phases total171.528s versus106.546s
+for the new shape. Execution order/OS cache and CPU contention confound the exact
+speedup; these are not hosted full-workflow timings or an under10m claim. All engine
+runs exited0 without SCRIPT ERROR/ERROR. The C2 readiness regression has28 pure
+checks; local Chromium could not start because of a platform socket restriction,
+so actual cold-C2 browser acceptance remains for the next exact-head hosted run.
+
+HTTPS-first media provisioning retains signed/trusted APT sources, TLS and
+signature checks. All jobs remain standard hosted runners, with no paid runner
+purchase. Repository visibility is public; account-specific artifact storage
+allowance remains unverified. The736,179,678-byte sealed Web artifact is retained
+once for one day and downloaded nine times (~6.626GB). The777,665,242-byte measured
+native transport is needed by eight readers plus GPU (~6.999GB); it still avoids
+resending~1.115GB of exactly referenced source bytes per consumer. These measured
+artifact sizes come from `bd0dfab`, not a promise that future content is identical.
+Actual new compute, queue time and full required-gate wall time must be recorded
+from its hosted run. **The under10m target is not yet achieved.**
+
 Intermediate north-package PCKs/copied runtime trees are excluded from evidence
 uploads; GPU proofs, JSON summaries and validation logs remain.
 
@@ -325,7 +362,7 @@ registerStage({
 })
 ```
 
-- New readers use the current continuous worker pool and six-shard partition.
+- New readers use the current continuous worker pool and bounded eight-shard partition.
   Default cost is one worker slot. The global cap stays `NATIVE_TEST_JOBS=1..4`;
   CI uses two. Other slot weights/resource classes are rejected, not silently
   approximated. Use `exclusive: true` for a reviewed drain barrier, not as

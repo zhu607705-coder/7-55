@@ -303,9 +303,19 @@ const WORKFLOWS = [
 for (const [file, acceptance, budget] of WORKFLOWS) test(`${file}: helper fixture test precedes install; original gate remains`, () => {
   const text = readFileSync(new URL(`../.github/workflows/${file}`, import.meta.url), 'utf8');
   const commands = text.match(/^\s+node scripts\/(?:test|ensure)-ci-media-tools\.mjs\s*$/gm)?.map(line => line.trim());
-  assert.deepEqual(commands, ['node scripts/test-ci-media-tools.mjs', 'node scripts/ensure-ci-media-tools.mjs']);
+  const parallelPreparation = ['godot-native-ci.yml', 'deploy-pages.yml'].includes(file);
+  if (parallelPreparation) {
+    assert.deepEqual(commands, ['node scripts/test-ci-media-tools.mjs']);
+    const helper = readFileSync(new URL('../godot_native/tools/prepare_import_media.mjs', import.meta.url), 'utf8');
+    assert.match(text, /node godot_native\/tools\/prepare_import_media\.mjs --install-media/);
+    assert(helper.includes("path.join(root,'scripts/ensure-ci-media-tools.mjs')"));
+    assert(helper.includes('"$1" "$2" && NODE_BIN="$1" bash "$3"'), 'original checked installer finishes before isolated conversion');
+    assert(text.indexOf('prepare_import_media.mjs --install-media') < text.search(acceptance));
+  } else {
+    assert.deepEqual(commands, ['node scripts/test-ci-media-tools.mjs', 'node scripts/ensure-ci-media-tools.mjs']);
+    assert(text.indexOf('node scripts/ensure-ci-media-tools.mjs') < text.search(acceptance));
+  }
   assert.match(text, acceptance);
-  assert(text.indexOf('node scripts/ensure-ci-media-tools.mjs') < text.search(acceptance));
   if (budget) assert.match(text, budget);
   if (file !== 'web-ci.yml') {
     assert(text.includes("'scripts/ensure-ci-media-tools.mjs'"));
@@ -318,15 +328,15 @@ test('Godot Web baseline, streaming, profile and library commands retain bounded
   const profiles = text.split('  browser_profiles:\n')[1].split('  library_profiles:\n')[0];
   const library = text.split('  library_profiles:\n')[1].split('  deploy:\n')[0];
   const commandCount = value => (value.match(/node godot_native\/tools\/verify_web_export\.mjs/g) ?? []).length;
-  assert.equal(commandCount(text), 5);
-  assert.equal(commandCount(build), 2, 'original baseline and streaming gates remain');
-  assert.equal(commandCount(profiles), 2, 'original world and phone gates remain');
-  assert.equal(commandCount(library), 1, 'library is one additional consumer, not a replacement');
+  assert.equal(commandCount(text), 8);
+  assert.equal(commandCount(build), 3, 'original baseline, streaming and combined touch-phone gates remain');
+  assert.equal(commandCount(profiles), 3, 'original world, combined phone and separate retina phone gates remain');
+  assert.equal(commandCount(library), 2, 'both library profiles plus paired retina C1 retain separate invocations');
   assert(build.includes('--scenarios streaming'));
   for (const scenario of ['--scenarios mobile-world', '--scenarios phone-recovery']) assert(profiles.includes(scenario));
   assert(library.includes('--scenarios library --only "$ACCEPTANCE_PROFILE"'));
   for (const consumer of [profiles, library]) {
-    assert.match(consumer, /needs: build/);
+    assert.match(consumer, /needs: \[build, browser_contracts\]/);
     assert.match(consumer, /needs\.build\.outputs\.bundle_ready == 'true'/);
     assert.match(consumer, /timeout-minutes: 12/);
     assert.match(consumer, /permissions:\n      contents: read/);

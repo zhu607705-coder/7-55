@@ -1762,7 +1762,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     }
     result = await freshCase(['mobile-world', 'phone-recovery', 'phone-navigation', 'library', 'boot-font-failure'].includes(scenarios));
     if (scenarios === 'mobile-world') await mobileWorldCase();
-    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, group: active.phoneGroup,
+    else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, bootTimeout, group: active.phoneGroup,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
       assertLayout, settings, saveProgressAndWait, startStory, record: value => { active.phoneRecovery = value; }, capture: value => active.screenshots.push(value) });
     else if (scenarios === 'phone-navigation') active.phoneNavigation = await phoneNavigationCase({ id, touch, fixtureDir,

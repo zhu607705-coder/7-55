@@ -205,7 +205,7 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
   check(`${scenarios}: original acceptance profile coverage remains exact`, () => assert.deepEqual(Array.from(selected, row => row[0]), expectedProfiles));
   for (const [id, , , touch] of selected) {
     const calls = [], initialized = [];
-    const context = { scenarios, id, touch, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
+    const context = { scenarios, id, touch, bootTimeout:180000, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
     for (const name of ['snapshot', 'clickControl', 'clickPoint', 'renderPoint', 'poll', 'check', 'interval', 'screenshot', 'importSave', 'assertLayout', 'settings', 'saveProgressAndWait', 'startStory', 'press']) context[name] = () => {};
     for (const name of ['mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async () => { calls.push(name); return {}; };
     context.freshCase = async focused => { initialized.push(focused); return {}; };

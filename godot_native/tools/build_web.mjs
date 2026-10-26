@@ -9,6 +9,7 @@ import { createBootChunks, verifyBootChunks } from './web_boot_chunks.mjs';
 import { applyWebAudioCompatibility, verifyWebAudioCompatibility } from './web_audio_compat.mjs';
 import { prepareWebCompression, verifyWebCompression } from './web_precompress.mjs';
 import { bootTypographySources, installBootTypography, verifyBootTypography } from './web_boot_typography.mjs';
+import { startValidationProcess } from './managed_validation_process.mjs';
 
 // This builds the independent Godot project. The retained Vite/React build is
 // deliberately not an input, fallback, or output of this command.
@@ -20,11 +21,16 @@ const version = '4.7.1.stable.official';
 const preset = 'Web production';
 const output = path.resolve(args.find(value => value.startsWith('--output='))?.slice(9) || path.join(project, 'exports/web-release'));
 const verifyOnly = args.includes('--verify-only');
+const prepareFixtures = args.includes('--prepare-controller-fixtures');
+if (prepareFixtures && verifyOnly) throw Error('Controller fixtures require a fresh completed export');
+let fixtureProcess, fixtureOverlapStartedAt, buildCancelled = false;
+const cancelFixture = () => { buildCancelled = true; fixtureProcess?.stop('Web build cancelled'); };
+if (prepareFixtures) { process.once('SIGINT', cancelFixture); process.once('SIGTERM', cancelFixture); }
 const monolithic = args.includes('--monolithic');
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const relative = file => path.relative(project, file).split(path.sep).join('/');
 const limits = { siteBytes: 950_000_000, packBytes: 800_000_000, wasmBytes: 70_000_000, deferredPackBytes: CONTENT_PACK_LIMIT };
-const deliveryTools = ['tools/build_web.mjs', 'tools/build_panorama_tiles.mjs', 'tools/convert_media.sh', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs', 'tools/web_content_chunks.mjs', 'tools/web_story_content_policy.mjs', 'tools/web_boot_chunks.mjs', 'tools/web_audio_compat.mjs', 'tools/web_boot_typography.mjs', 'tools/web_precompress.mjs', 'tools/serve_web.mjs'];
+const deliveryTools = ['tools/build_web.mjs', 'tools/managed_validation_process.mjs', 'tools/build_panorama_tiles.mjs', 'tools/convert_media.sh', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs', 'tools/web_content_chunks.mjs', 'tools/web_story_content_policy.mjs', 'tools/web_boot_chunks.mjs', 'tools/web_audio_compat.mjs', 'tools/web_boot_typography.mjs', 'tools/web_precompress.mjs', 'tools/serve_web.mjs'];
 const bootArtSource = 'web/boot_art/morning_room.webp';
 const bootArtPlaceholder = '__755_BOOT_ART_MORNING_ROOM__';
 const browserSources = ['web/index.html', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
@@ -182,6 +188,7 @@ function readPck(filename, full = false) {
   return pack;
 }
 
+try {
 validatePreset();
 // Clean checkouts do not contain generated panorama tiles. Prepare their
 // source copy before checking it; verification-only and --skip-prepare still
@@ -213,6 +220,15 @@ if (!verifyOnly) {
   if (!args.includes('--skip-import')) runGodot('import', ['--headless', '--path', project, '--editor', '--import']);
   sourceBeforeExport = sourceInventory().digest;
   runGodot('export', ['--headless', '--path', project, '--export-release', preset, path.join(output, 'index.html')]);
+  // Import/export have CLOSED. The two recorders now read this frozen source
+  // cache while pack postprocessing writes only its own separate temp project
+  // and export directory. The helper keeps separate user:// and capture paths.
+  if (prepareFixtures) {
+    fixtureOverlapStartedAt = Date.now();
+    fixtureProcess = startValidationProcess(process.execPath,
+    [path.join(project, 'tools/prepare_web_controller_fixtures.mjs')],
+    {cwd: root, logFile: path.join(project, 'exports/verification/controller-fixture-process.log')});
+  }
   audioCompatibility = applyWebAudioCompatibility(output, version);
   fs.copyFileSync(path.join(project, 'web/content_loader.js'), path.join(output, 'content-loader.js'));
   fs.copyFileSync(path.join(project, 'web/scene_orientation.js'), path.join(output, 'scene-orientation.js'));
@@ -344,3 +360,12 @@ fs.writeFileSync(path.join(output, 'pack-inventory.json'), JSON.stringify(pack, 
 fs.writeFileSync(path.join(output, 'build-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 fs.writeFileSync(path.join(output, '.nojekyll'), '');
 console.log(JSON.stringify({ output, sourceCommit: commit, sourceInputSha256: source.digest, payloadBytes: siteBytes, logicalPayloadBytes, initialPayloadBytes, initialGzipPayloadBytes, bootChunkFiles: boot?.files ?? 0, coreFiles: pack.count, fullFiles: content?.inventory.full.count ?? pack.count, deferredPacks: content?.manifest.packs.length ?? 0, excludedSourceBytes: manifest.excludedSourceBytes }, null, 2));
+if (fixtureProcess) {
+  const postprocessingFinishedAt = Date.now(), child = await fixtureProcess.completion;
+  fs.writeFileSync(path.join(project, 'exports/verification/controller-fixture-process.json'), JSON.stringify({fixtureOverlapStartedAt, postprocessingFinishedAt, child, scope: 'Observed preparation overlap only; not browser acceptance.'}, null, 2)+'\n');
+}
+if (buildCancelled) throw Error('Web build cancelled');
+} finally {
+  if (fixtureProcess) await fixtureProcess.stopAndJoin();
+  process.removeListener('SIGINT', cancelFixture); process.removeListener('SIGTERM', cancelFixture);
+}
