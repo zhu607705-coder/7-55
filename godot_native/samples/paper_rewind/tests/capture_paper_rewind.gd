@@ -59,6 +59,7 @@ func _run() -> void:
 	root.add_child(overlay)
 	var history_start: Vector2 = view.stage.history_window.get_global_rect().get_center()
 	var history_end := history_start + Vector2(-135,30)
+	var history_park := Vector2(history_start.x, root.size.y * 0.18)
 	var last_history := history_start
 	var last_paper := Vector2.ZERO
 	var folder := Vector2.ZERO
@@ -71,9 +72,15 @@ func _run() -> void:
 		if frame == 100: touch(1,history_end,false)
 		if frame == 150: touch(1,history_end,true)
 		if frame > 150 and frame <= 195:
-			var p := history_end.lerp(history_start,float(frame - 150)/45.0)
+			var p := history_end.lerp(history_park,float(frame - 150)/45.0)
 			drag(1,last_history,p); last_history = p
-		if frame == 205: touch(1,history_start,false)
+		if frame == 205: touch(1,history_park,false)
+		if frame == 206:
+			var unobstructed := true
+			for i: int in range(40):
+				var p := paper_point(i * 7.8 / 39.0)
+				unobstructed = unobstructed and not view.stage.history_window.get_global_rect().intersects(Rect2(p-view.stage.paper_extent()*0.5,view.stage.paper_extent()))
+			check(unobstructed,"Ordinary dragging parks history clear of the entire current flight and contact path")
 		if frame == 235:
 			last_paper = view.stage.paper_grip.get_global_rect().get_center()
 			touch(0,last_paper,true)

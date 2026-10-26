@@ -140,11 +140,28 @@ func _rect(c: CanvasItem, rect: Rect2, color: Color, shift: Vector2) -> void:
 	c.draw_rect(Rect2(world_to_local(rect.position) - shift, rect.size * _projection), color)
 
 func art_scale() -> float:
-	return clampf(size.x / 390.0, 0.82, 1.6)
+	return minf(clampf(size.x / 390.0, 0.82, 1.6), size.y / 650.0)
+
+func paper_extent() -> Vector2:
+	return Vector2(64,74) * art_scale()
 
 func folder_leaf_rect() -> Rect2:
-	var extent := Vector2(116,154) * art_scale()
-	return Rect2(world_to_local(Model.REST_POINT) - extent*0.5,extent)
+	# Align the receiving edge with the very first swept contact, not with an
+	# unrelated screen rectangle. Shape stays A4; the model is unchanged.
+	var first_time := (Model.CATCH_RECT.position.x - 8.0 - 110.0) / 98.0
+	var first := world_to_local(Model.free_position(first_time))
+	var rest := world_to_local(Model.REST_POINT)
+	var half_height := paper_extent().y * 0.5
+	var top := first.y + half_height - 8.0 * art_scale()
+	var bottom := rest.y + half_height + 18.0 * art_scale()
+	var height := bottom - top
+	var width := height / sqrt(2.0)
+	return Rect2(Vector2(rest.x-width*0.5,top),Vector2(width,height))
+
+func open_folder_surface_rect() -> Rect2:
+	# Both physical leaves can receive the first contact after the cover opens.
+	var leaf := folder_leaf_rect()
+	return Rect2(leaf.position-Vector2(leaf.size.x,0),Vector2(leaf.size.x*2,leaf.size.y))
 
 func _environment(c: CanvasItem, shift: Vector2, past: bool) -> void:
 	# Camera remains isotropic for every physical object. Layout changes positions,
@@ -181,7 +198,7 @@ func _environment(c: CanvasItem, shift: Vector2, past: bool) -> void:
 		c.draw_line(Vector2(0,y)-shift,Vector2(size.x,y-8*unit)-shift,Color(0.29,0.18,0.10,0.24),unit,true)
 	c.draw_rect(Rect2(Vector2(0,size.y-34*unit)-shift,Vector2(size.x,34*unit)),Color("5b4432"))
 	c.draw_line(Vector2(0,size.y-34*unit)-shift,Vector2(size.x,size.y-34*unit)-shift,Color("d6b380"),3*unit)
-	c.draw_colored_polygon(PackedVector2Array([Vector2(18,top)-shift,Vector2(143*unit,top)-shift,Vector2(size.x*0.77,size.y-35*unit)-shift,Vector2(size.x*0.36,size.y-35*unit)-shift]),Color(0.98,0.91,0.65,0.09))
+	c.draw_colored_polygon(PackedVector2Array([Vector2(18*unit,top)-shift,Vector2(143*unit,top)-shift,Vector2(size.x*0.77,size.y-35*unit)-shift,Vector2(size.x*0.36,size.y-35*unit)-shift]),Color(0.98,0.91,0.65,0.09))
 	var book := Vector2(31*unit,size.y-134*unit)-shift
 	var book_points := PackedVector2Array([book,book+Vector2(117,9)*unit,book+Vector2(107,77)*unit,book+Vector2(-8,64)*unit])
 	c.draw_colored_polygon(book_points,Color("dbca9d"))
@@ -211,7 +228,8 @@ func _folder(c: CanvasItem, shift: Vector2, opened: float, front: bool) -> void:
 		# Genuine two-leaf folder: the cover turns around its long spine, not a
 		# shape-swap or a vertically stretched rectangle.
 		var cover := PackedVector2Array([Vector2(hinge_x,base.position.y),Vector2(edge_x,base.position.y-lift),Vector2(edge_x,base.end.y-lift),Vector2(hinge_x,base.end.y)])
-		c.draw_colored_polygon(cover,Color("b58a51").lerp(Color("d6b67d"),opened))
+		if absf(cos(angle)) > 0.015:
+			c.draw_colored_polygon(cover,Color("b58a51").lerp(Color("d6b67d"),opened))
 		c.draw_line(cover[1],cover[2],Color("ead09b"),2*unit,true)
 		c.draw_line(cover[0],cover[1],Color("ead09b"),unit,true)
 		c.draw_line(cover[3],cover[2],Color("775330"),2*unit,true)
@@ -224,14 +242,14 @@ func _folder(c: CanvasItem, shift: Vector2, opened: float, front: bool) -> void:
 			for f: float in [0.2,0.8]: c.draw_circle(Vector2(clip.get_center().x,lerpf(clip.position.y,clip.end.y,f)),3*unit,Color("344746"))
 	else:
 		# A thin retaining pocket occludes only the lower part of the resting page.
-		var y := base.position.y+base.size.y*0.64
+		var y := base.position.y+base.size.y*0.82
 		c.draw_colored_polygon(PackedVector2Array([Vector2(base.position.x,y+6*unit),Vector2(base.end.x,y),base.end,Vector2(base.position.x,base.end.y)]),Color("c29a60"))
 		c.draw_line(Vector2(base.position.x,y+6*unit),Vector2(base.end.x,y),Color("ead09e"),1.5*unit,true)
 
 func _paper(c: CanvasItem, shift: Vector2, point: Vector2, paper_time: float, grounded: bool, tint: Color = Color.WHITE, collect: float = -1.0) -> void:
 	var center := world_to_local(point) - shift
-	var scale := clampf(size.x / 520.0, 0.95, 1.5)
-	var extent := Vector2(64,74)*scale
+	var scale := art_scale()
+	var extent := paper_extent()
 	if collect >= 0:
 		center += Vector2(-size.x*0.12, size.y*0.48) * collect*collect
 		extent *= 1.0 + collect*0.7
@@ -248,6 +266,7 @@ func _paper(c: CanvasItem, shift: Vector2, point: Vector2, paper_time: float, gr
 	c.draw_set_transform(Vector2.ZERO)
 
 func _paint_record(canvas: CanvasItem) -> void:
+	if size.x <= 1 or size.y <= 1: return
 	var shift := history_window.position
 	_environment(canvas,shift,true)
 	_folder(canvas,shift,0.0,false)
@@ -255,7 +274,7 @@ func _paint_record(canvas: CanvasItem) -> void:
 	_folder(canvas,shift,0.0,true)
 
 func _draw() -> void:
-	if not model: return
+	if not model or size.x <= 1 or size.y <= 1: return
 	_environment(self,Vector2.ZERO,false)
 	_folder(self,Vector2.ZERO,folder_open_amount,false)
 	if paper_grip.held or model.mode == "failed":

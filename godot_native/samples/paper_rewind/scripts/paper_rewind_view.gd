@@ -36,7 +36,9 @@ func _ready() -> void:
 	resized.connect(_layout)
 	_layout()
 	# Enter a living scene: the first sheet really flies, without a Start prompt.
-	model.time = 0.0
+	# Preserve the approved entry point: it has already passed the closed folder.
+	# Auto-flight must not introduce an early-tap bypass of the rewind experiment.
+	model.time = Model.ENTRY_TIME
 	model.start()
 	_refresh()
 	stage.paper_grip.grab_focus()

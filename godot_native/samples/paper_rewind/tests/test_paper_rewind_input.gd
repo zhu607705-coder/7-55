@@ -149,6 +149,14 @@ func _run() -> void:
 		check(view.stage.paper_grip.size.x >= 48 and view.stage.paper_grip.size.y >= 48, "Paper gesture target remains at least 48px at " + str(dimensions))
 		check(view.stage.folder_button.size.x >= 44 and view.stage.folder_button.size.y >= 44, "Folder surface remains at least 44px at " + str(dimensions))
 		check(Rect2(0, 0, 960, 540).encloses(view.stage.history_rect), "Historical window remains bounded at " + str(dimensions))
+		var contact_model := Model.new()
+		contact_model.start(); contact_model.seek(0); contact_model.open_folder(); contact_model.play()
+		while contact_model.catch_time < 0 and contact_model.mode == "forward": contact_model.advance(Model.TICK)
+		var contact_point: Vector2 = view.stage.world_to_local(contact_model.catch_position)
+		var physical_page := Rect2(contact_point-view.stage.paper_extent()*0.5,view.stage.paper_extent())
+		check(physical_page.intersects(view.stage.open_folder_surface_rect()), "First logical catch visibly touches an actual open folder leaf at " + str(dimensions))
+		check(view.stage.folder_leaf_rect().has_point(view.stage.world_to_local(Model.REST_POINT)), "Resting paper is on the visible accepting page at " + str(dimensions))
+		check(is_equal_approx(view.stage.folder_leaf_rect().size.y / view.stage.folder_leaf_rect().size.x, sqrt(2.0)), "Folder retains physical A4 proportions at " + str(dimensions))
 		for paper_time: float in [0.0, 1.2, 4.8, 6.5, 7.8]:
 			view.model.time = paper_time
 			var preview: Rect2 = view.stage.thumb_preview_rect()
