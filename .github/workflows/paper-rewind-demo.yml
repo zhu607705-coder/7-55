@@ -91,7 +91,7 @@ jobs:
           ffmpeg -hide_banner -loglevel error -y -ss 10.4 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/two-touch-frame.png
           ffmpeg -hide_banner -loglevel error -y -ss 0.8 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/first-frame.png
           ffmpeg -hide_banner -loglevel error -y -ss 16.8 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/landing-frame.png
-          printf '%s\n' 'Actual Godot 4.7.1 GL Compatibility output. Automated two-touch portrait demonstration, not physical-phone verification. No formal story integration or saved-game proof.' > paper-rewind-demo/README.txt
+          printf '%s\n' 'Actual Godot 4.7.1 GL Compatibility 3D mesh/material/light/shadow output; distant foliage is unlit artwork. Automated two-touch portrait demonstration, not physical-phone verification. No formal story integration or saved-game proof.' > paper-rewind-demo/README.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -105,6 +105,6 @@
       "approval": "Candidate for actual rendered preview, not final-art approval."
     }
   ],
-  "graphicPrototype": "Separate generated folder faces mapped to original physical geometry; existing campus foliage reused unchanged. Desk/radio/frame remain local Godot drawing. Preview artwork, not final room acceptance.",
+  "graphicPrototype": "Original generated folder faces and existing paper/foliage PNGs unchanged. Physical room, table, folder and paper now use actual Godot 3D meshes, shared orthographic Camera3D, materials and shadow-casting light. Only distant foliage is unlit background. Small playable rendering study, not final scene art.",
   "audio": "Original low-volume procedural non-voice tone; optional; never a rule gate."
 }
