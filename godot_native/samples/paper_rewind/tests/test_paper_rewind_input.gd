@@ -94,6 +94,21 @@ func _run() -> void:
 	view._reset()
 	await frames(3)
 	check(view.model.mode == "intro" and not view.secondary.visible and not view.slider.is_visible_in_tree(), "Entry has scene objects, not a primary button row or timeline")
+	var presentation_snapshot: Dictionary = view.model.snapshot()
+	view.stage.folder_drag_preview = 0.7
+	view.stage.animate(0.035)
+	check(view.stage.folder_open_amount > 0 and view.stage.folder_open_amount < 0.7, "Cover follows drag continuously rather than shape-swapping")
+	view.stage.animate(0.2)
+	check(is_equal_approx(view.stage.folder_open_amount,0.7) and view.model.snapshot() == presentation_snapshot, "Preview hinge reaches hand position without committing environment")
+	view.stage.folder_drag_preview = 0
+	view.stage.animate(0.2)
+	check(is_zero_approx(view.stage.folder_open_amount) and not view.model.folder_open, "Cancelled cover preview closes without opening model")
+	view.stage.paper_grip.held = true
+	view.stage.animate(0.06)
+	check(view.stage.grip_amount > 0 and view.stage.grip_amount < 1 and view.model.snapshot() == presentation_snapshot, "Grip compression is continuous and presentation-only")
+	view.stage.paper_grip.held = false
+	view.stage.animate(0.3)
+	check(is_zero_approx(view.stage.grip_amount), "Released grip relaxes without a bounce")
 	var untouched: Dictionary = view.model.snapshot()
 	var old_window: Rect2 = view.stage.history_rect
 	var point: Vector2 = view.stage.history_window.get_global_rect().get_center()
@@ -120,6 +135,10 @@ func _run() -> void:
 	check(view.model.mode == "landed" and view.model.completion_count == 0, "Real contact lands but never auto-collects")
 	await click(view.stage.paper_grip)
 	check(view.model.mode == "solved" and view.model.paper_collected and not view.stage.paper_grip.visible, "Clicking landed paper manually collects it and removes its physical sprite/hit target")
+	view.stage.animate(0.18)
+	check(view.stage.collection_amount > 0 and view.stage.collection_amount < 0.3 and view.model.completion_count == 1, "Manual collection begins with a separate short lift phase")
+	view.stage.animate(0.8)
+	check(view.stage.collection_amount == 1 and view.model.completion_count == 1, "Carry-away animation ends without a second completion")
 	await reset_scene()
 	await click(view.stage.paper_grip)
 	view.model.advance(20); view._refresh()

@@ -2,6 +2,9 @@ extends Control
 
 const Model = preload("res://scripts/paper_rewind_model.gd")
 const Stage = preload("res://scripts/paper_rewind_stage.gd")
+const FOLDER_BASE = preload("res://assets/folder_base.png")
+const FOLDER_INSIDE = preload("res://assets/folder_cover_inside.png")
+const FOLDER_COVER = preload("res://assets/folder_cover_front.png")
 const FONT = preload("res://assets/MorningNote-Regular.ttf")
 
 var model := Model.new()
@@ -57,7 +60,7 @@ func _build_ui() -> void:
 	for state: String in ["normal", "hover", "pressed", "disabled", "focus"]:
 		var style := StyleBoxFlat.new()
 		style.bg_color = Color("2a4149") if state != "pressed" else Color("526a6b")
-		style.border_color = Color("a9c8c4") if state == "focus" else Color("5f7d80")
+		style.border_color = Stage.INTERACTION if state == "focus" else Color("5f7d80")
 		style.set_border_width_all(2 if state == "focus" else 1)
 		style.set_corner_radius_all(4)
 		style.content_margin_left = 12
@@ -86,6 +89,10 @@ func _build_ui() -> void:
 	stage = Stage.new()
 	stage.name = "Desk"
 	stage.model = model
+	stage.folder_cover = _face_texture(FOLDER_COVER,Rect2(34,58,988,1389))
+	stage.folder_inside = _face_texture(FOLDER_INSIDE,Rect2(44,60,953,1392))
+	stage.folder_base = _face_texture(FOLDER_BASE,Rect2(45,55,951,1397))
+	stage.folder_pocket_start = (1146.0-55.0)/1397.0
 	stage.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_child(stage)
 	stage.folder_button.pressed.connect(_open_folder)
@@ -104,6 +111,8 @@ func _build_ui() -> void:
 	options_button.custom_minimum_size = Vector2(48, 44)
 	options_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	options_button.pressed.connect(_toggle_options)
+	for state: String in ["normal", "hover", "pressed"]:
+		options_button.add_theme_stylebox_override(state,StyleBoxEmpty.new())
 	add_child(options_button)
 	_touch_controls.append(options_button)
 	secondary = VBoxContainer.new()
@@ -165,10 +174,19 @@ func _build_ui() -> void:
 	broadcast_player.stream = _broadcast_tone()
 	broadcast_player.volume_db = -36.0
 	add_child(broadcast_player)
-	help_label = _label("直接操作画面：拖动蓝色观察窗；按住纸张或纸影，沿轨迹往回拖。一只手留住纸，另一只手翻开文件夹；松开抓纸的手才继续。落稳后点击纸张收起。\n单指 / 鼠标也可以先布置桌面，再拖回纸张。键盘后备：Tab 选择物件，Enter / 空格操作；观察窗用方向键移动；纸张用左右键倒带，Enter 继续或收取。P 暂停，R 倒带，F 文件夹，Esc 离开。\n蓝窗只显示旧记录，不会拿出过去的物件。只有当前这张纸能局部倒带。广播停顿与声音、指示条同步，但不限制操作，不会停止世界。\n重试纸张保留桌面布置；重置全部还原样例。减少动态移除转动和残影，并将旧记录定格；当前纸张的必要运动保留。广播音为原型提示音，不是正式台词。", 18)
+	help_label = _label("直接操作画面：拖动蓝色观察窗；按住纸张或纸影，沿轨迹往回拖。一只手留住纸，另一只手翻开文件夹；松开抓纸的手才继续。落稳后点击纸张收起。\n单指 / 鼠标也可以先布置桌面，再拖回纸张。键盘后备：Tab 选择物件，Enter / 空格操作；观察窗用方向键移动；纸张用左右键倒带，Enter 继续或收取。P 暂停，R 倒带，F 文件夹，Esc 离开。\n蓝窗只显示旧记录，不会拿出过去的物件。只有当前这张纸能局部倒带。广播停顿与声音、收音机指示灯同步，但不限制操作，不会停止世界。\n重试纸张保留桌面布置；重置全部还原样例。减少动态移除纸张转动，并将旧记录定格；当前纸张的必要运动保留。广播音为原型提示音，不是正式台词。", 18)
 	help_label.name = "HelpText"
 	help_label.visible = false
 	secondary.add_child(help_label)
+
+func _face_texture(source: Texture2D, source_rect: Rect2) -> AtlasTexture:
+	# Original generated pixels are retained. Only transparent canvas padding is
+	# omitted by this atlas region; geometry/pivots still belong to Stage.
+	var face := AtlasTexture.new()
+	face.atlas = source
+	face.region = source_rect
+	face.filter_clip = true
+	return face
 
 func _label(text: String, font_size: int) -> Label:
 	var label := Label.new()
@@ -390,7 +408,7 @@ func _input(event: InputEvent) -> void:
 				return # Ordinary scrolling outside scene controls stays available.
 			if target.is_empty() or _target_owned(target):
 				target = "blocked"
-			touch_sessions[event.index] = {"target": target, "last": event.position}
+			touch_sessions[event.index] = {"target": target, "last": event.position, "start": event.position}
 			match target:
 				"paper": stage.paper_grip.begin_touch(event.position)
 				"folder": stage.folder_drag_preview = 0.12
@@ -411,7 +429,11 @@ func _input(event: InputEvent) -> void:
 		session.last = event.position
 		match session.target:
 			"paper": stage.paper_grip.move_touch(event.position)
-			"folder": stage.folder_drag_preview = clampf(stage.folder_drag_preview - delta.y / 90.0, 0.12, 0.95)
+			"folder":
+				# Pull left around the visible long spine. Upward lift remains a fallback.
+				var distance: Vector2 = event.position-session.start
+				var leaf: Rect2 = stage.folder_leaf_rect()
+				stage.folder_drag_preview = clampf(0.12 + maxf(-distance.x/(leaf.size.x*1.45),-distance.y/(leaf.size.y*0.8)),0.0,0.95)
 			"history": stage.move_history(delta)
 			"ui":
 				var motion := InputEventMouseMotion.new()
@@ -450,8 +472,11 @@ func _end_touch(session: Dictionary, point: Vector2, cancelled: bool) -> void:
 	match session.target:
 		"paper": stage.paper_grip.end_touch(cancelled or not get_viewport_rect().has_point(point))
 		"folder":
+			var pulled: bool = stage.folder_drag_preview >= 0.48 and point.distance_to(session.start) >= 6
 			stage.folder_drag_preview = 0.0
-			if not cancelled and stage.folder_button.get_global_rect().has_point(point):
+			var on_original: bool = stage.folder_button.get_global_rect().has_point(point)
+			var on_opened: bool = stage.open_folder_surface_rect().grow(16).has_point(point-stage.global_position)
+			if not cancelled and get_viewport_rect().has_point(point) and (on_original or pulled and on_opened):
 				_open_folder()
 		"history": stage.history_window.cancel_drag()
 		"ui": _touch_mouse(Vector2(-1000, -1000) if cancelled else point, false)

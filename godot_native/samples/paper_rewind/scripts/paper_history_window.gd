@@ -40,14 +40,13 @@ func _draw() -> void:
 	if frame_canvas: frame_canvas.queue_redraw()
 
 func _draw_frame() -> void:
-	frame_canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(0.13,0.36,0.43,0.22))
-	for y: int in range(0,int(size.y),5): frame_canvas.draw_line(Vector2(0,y),Vector2(size.x,y),Color(0.70,0.88,0.85,0.04),1)
-	frame_canvas.draw_rect(Rect2(Vector2.ONE*3,size-Vector2.ONE*6),Color("263f46"),false,6)
-	frame_canvas.draw_rect(Rect2(Vector2.ONE*2,size-Vector2.ONE*4),Color("a8c9bd"),false,1.5)
-	# An etched clock and backward tick distinguish the recorded layer without a label.
-	frame_canvas.draw_arc(Vector2(18,18),8,0,TAU,24,Color("c0d7cc"),1.5,true)
-	frame_canvas.draw_line(Vector2(18,18),Vector2(18,12),Color("c0d7cc"),1.5)
-	frame_canvas.draw_line(Vector2(18,18),Vector2(13,20),Color("c0d7cc"),1.5)
+	# One functional edge separates the read-only layer; no nested decorative rim.
+	var ink := Color("9db8c8")
+	frame_canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(0.20,0.32,0.42,0.14))
+	frame_canvas.draw_rect(Rect2(Vector2.ONE,size-Vector2.ONE*2),ink,false,1.5)
+	frame_canvas.draw_arc(Vector2(17,17),7,0,TAU,24,ink,1.5,true)
+	frame_canvas.draw_line(Vector2(17,17),Vector2(17,12),ink,1.5)
+	frame_canvas.draw_line(Vector2(17,17),Vector2(13,19),ink,1.5)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:

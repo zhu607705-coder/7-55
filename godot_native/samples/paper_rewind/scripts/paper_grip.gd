@@ -15,8 +15,10 @@ func _ready() -> void:
 	tooltip_text = "纸张"
 
 func _draw() -> void:
-	if held:
-		draw_arc(size * 0.5, size.x * 0.46, -0.5, 2.7, 32, Color(0.72,0.91,0.83,0.6), 2, true)
+	# Keyboard focus gets a small open underline, not another enclosing frame.
+	if has_focus() and not held and not touch_held:
+		var p := size*0.5+Vector2(0,28)
+		draw_line(p-Vector2(12,0),p+Vector2(12,0),Color("eee0b6"),2,true)
 
 func _gui_input(event: InputEvent) -> void:
 	if touch_held and (event is InputEventMouseButton or event is InputEventMouseMotion):

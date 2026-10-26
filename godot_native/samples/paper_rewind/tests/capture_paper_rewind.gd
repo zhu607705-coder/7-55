@@ -63,6 +63,7 @@ func _run() -> void:
 	var last_history := history_start
 	var last_paper := Vector2.ZERO
 	var folder := Vector2.ZERO
+	var folder_last := Vector2.ZERO
 	for frame: int in range(720):
 		current_frame = frame
 		if frame == 45: touch(1,history_start,true)
@@ -89,11 +90,15 @@ func _run() -> void:
 			var p := paper_point(at_time)
 			drag(0,last_paper,p); last_paper = p
 		if frame == 295:
-			folder = view.stage.folder_button.get_global_rect().get_center()
+			folder = view.stage.folder_button.get_global_rect().get_center()+Vector2(view.stage.folder_button.size.x*0.28,0)
 			touch(1,folder,true)
-		if frame == 315:
-			touch(1,folder,false)
-		if frame == 316:
+			folder_last = folder
+		if frame > 295 and frame <= 320:
+			var p := folder-Vector2(view.stage.folder_button.size.x*1.3,0)*smoothstep(0,1,float(frame-295)/25.0)
+			drag(1,folder_last,p); folder_last = p
+		if frame == 325:
+			touch(1,folder_last,false)
+		if frame == 326:
 			check(view.model.folder_open and view.stage.paper_grip.held,"Right folder opens while left paper stays captured")
 		if frame > 330 and frame <= 375:
 			var at_time := lerpf(2.5,0.8,float(frame - 330)/45.0)
@@ -126,9 +131,9 @@ func _draw_overlay() -> void:
 		var marker: Dictionary = markers[id]
 		if current_frame > marker.until:
 			continue
-		var color := Color("9bd8d2") if id == 0 else Color("efc784")
-		overlay.draw_circle(marker.point,18,Color(color,0.18))
-		overlay.draw_arc(marker.point,18,0,TAU,40,color,2.0,true)
+		var color := Color("eee7d7")
+		overlay.draw_circle(marker.point,18,Color(color,0.08))
+		overlay.draw_arc(marker.point,18,0,TAU,40,Color(color,0.70),1.5,true)
 		overlay.draw_string(font,marker.point + Vector2(-4,6),str(id + 1),HORIZONTAL_ALIGNMENT_LEFT,-1,18,color)
 	var bottom := float(root.size.y)
-	overlay.draw_string(font,Vector2(12,bottom - 12),"自动双触点 · 非物理手机",HORIZONTAL_ALIGNMENT_LEFT,root.size.x - 24,12,Color("d3ded4"))
+	overlay.draw_string(font,Vector2(12,bottom - 12),"自动双触点 · 非物理手机",HORIZONTAL_ALIGNMENT_LEFT,root.size.x - 24,14,Color("d3ded4"))

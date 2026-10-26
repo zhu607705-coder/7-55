@@ -35,8 +35,76 @@
       "source": "src/assets/rpg/theater/generated/paper/paper_flight_4.png",
       "sha256": "0f4c0f8913ab364d53782e50393825073a515b950a8bb0328b0eb1fb16f9b5bb",
       "bytes": 5421
+    },
+    {
+      "path": "assets/window_canopy.png",
+      "source": "src/assets/rpg/props/landscape-source/tree_grove.png",
+      "sha256": "54ccc3c2dd8bd01ea9c336f0f5b28a719ff172bb4dca67ae190eefce4de2ebd4",
+      "bytes": 2115495,
+      "runtimeCrop": [
+        575,
+        340,
+        370,
+        395
+      ],
+      "processing": "Source unchanged; no chroma-key pixels in selected region; cropped and dimmed in renderer only."
+    },
+    {
+      "path": "assets/folder_cover_front.png",
+      "source": "Original 755-kraft-folder-cover-front-web-v2.png; generated for 7:55 in user-authorized cloud web image workflow, 2026-10-26",
+      "sha256": "f25717f3f00f7edcb08f657c40378697907fc0d754b956f2cd72b86982161170",
+      "bytes": 2607237,
+      "nativeSize": [
+        1055,
+        1491
+      ],
+      "runtimeAtlasRegion": [
+        34,
+        58,
+        988,
+        1389
+      ],
+      "processing": "Original PNG unchanged. Runtime AtlasTexture excludes transparent padding; fixed A4 geometry is unchanged.",
+      "approval": "Candidate for actual rendered preview, not final-art approval."
+    },
+    {
+      "path": "assets/folder_cover_inside.png",
+      "source": "Original 755-kraft-folder-cover-inside-web-v2.png; generated for 7:55 in user-authorized cloud web image workflow, 2026-10-26",
+      "sha256": "e135da23532431617ae3f1ca0fc6c42adec60c4d608964f6c75f83fdcc79c69a",
+      "bytes": 2432971,
+      "nativeSize": [
+        1039,
+        1513
+      ],
+      "runtimeAtlasRegion": [
+        44,
+        60,
+        953,
+        1392
+      ],
+      "processing": "Original PNG unchanged. Runtime AtlasTexture excludes transparent padding. Material is mapped to fixed physical A4 plane; original generated ratio differs by about 3.2%.",
+      "approval": "Candidate for actual rendered preview, not final-art approval."
+    },
+    {
+      "path": "assets/folder_base.png",
+      "source": "Original 755-kraft-folder-base-page-web-v1-RGBA-candidate.png; generated for 7:55 in user-authorized cloud web image workflow, 2026-10-26",
+      "sha256": "55b2ca50e090a33bbcc30804cea626cb9295f9b74122941c69796af2f9c3e6d2",
+      "bytes": 2383947,
+      "nativeSize": [
+        1039,
+        1513
+      ],
+      "runtimeAtlasRegion": [
+        45,
+        55,
+        951,
+        1397
+      ],
+      "pocketForegroundSourceY": 1146,
+      "processing": "Original PNG unchanged. Runtime AtlasTexture excludes transparent padding. Pocket lip measured at source y1146..1148; actual measured lip supplies the foreground occlusion crop, not requested 82%.",
+      "approval": "Candidate for actual rendered preview, not final-art approval."
     }
   ],
-  "graphicPrototype": "Folder, desk, broadcast display and frame are original procedural Godot drawing, not final room artwork.",
+  "graphicPrototype": "Separate generated folder faces mapped to original physical geometry; existing campus foliage reused unchanged. Desk/radio/frame remain local Godot drawing. Preview artwork, not final room acceptance.",
   "audio": "Original low-volume procedural non-voice tone; optional; never a rule gate."
 }
