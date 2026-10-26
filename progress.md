@@ -1,4 +1,56 @@
+## 2026-10-26 C2 分片就绪修正
+
+- bd0dfab的retina C2失败artifact显示必需内容仅17,836,924/105,841,080 bytes，15包requested、实际scene为空，测试点击被加载遮罩正确拦截。驱动先按既有bootTimeout等待内容与真实寝室恢复，再唯一点击；20s交互可见断言保留。相关Node三文件100/0，真实新导出待验收，不当作已修复运行时bug。
+
+## 2026-10-26 最新 PR174 分片接入
+
+- 保存论坛与横屏检查点158c6df后，fetch到bd0dfab并纳入其27文件完整CI分片增量。逐项解决4处重叠，保留真实连续定位/旋转、stdout flush、网络解除确认和严格完整汇总。10个Node合同共277项最终通过；bundle首次mac路径guard失败与物理TMPDIR正控分开保留。
+- 按新文本来源重建normalizer、library与chapter3故事派生物，三个--check通过；未更改历史不可变票务存档。最终导出/CI/合并/Pages仍待精确集成提交。
+
+## 2026-10-26 文案局部复核
+
+- 5 个既有论坛/交易测试共 990 checks / 0 failures，含 BD、资料上传布局、目击帖顺序、6 元手柄交易、旧默认帖迁移。新 runner 执行完整准备闭包后 10 stages pass / 522 not-run，明确 partial；全脚本 974 份解析通过。Web quick 5/5，171 叶显示修订和中文/有声合同通过。
+- 新媒体准备回执首次缺失导致阻断，配置已有 ffmpeg/ffprobe 完整转换两段视频后按新合同通过；不删除旧失败记录。
+
+## 2026-10-26 论坛场景文案回填
+
+- 实际 Gemini 3.8 Flash / 低 Computer Use 场景生成，Humanizer-zh 事实/口吻审阅；323 个源文本叶、28 个返修叶按白名单合并，13 个文件旧/新 SHA 核验后回填。52 个普通主帖、165 条可改回复、54 个动态故事字段；p02[1]、全部元数据和非目标有声文本保留。6 组 native 镜像深比较通过；24 个旧普通帖覆盖移除。
+- 既有存档默认帖子迁移只更新已知旧默认的 title/body，玩家自定义及故事覆盖保持；模型代码未执行，原回传仅作字面数据。
+- 受影响论坛与交易检查、最终精确提交 CI、合并和 Pages 部署分别记录，当前不声称发布完成。
+
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
+
+## 2026-10-26 PR #174 最新 CI 集成与旋转壳层修复候选
+
+- 继续纳入 PR #174 最新 `33cc4991b7d0ada3d65baaca146c62359f5fbf56` 的全部 20 个 CI、工具、测试与记录文件，逐文件校对 Git blob 并保留提交祖先。完整检查、producer 独占/依赖闭包与失败阻断、GPU/PCK/浏览器门禁保留；默认两个连续 worker，去除同语义重复调用。Web 普通与 streaming 从 build 分离后，与手机/地图及图书馆 profiles 并行消费同一 sealed artifact，发布须等待全部分支成功。
+- `verify_web_export.mjs` 同时保留 streaming 的 CDP 解除阻断确认顺序与本轮连续跑步的 `phoneRecovery.pointer` 驱动。现有 plan/list 测试实际发现 JSON stdout 被过早退出截在 65,536 字节；仅修 runner 等待输出写完，未放宽测试。三个 CI 工具专项 **58/58 通过、0 跳过**，只列计划仍不启动引擎；原失败与最终日志各自保留。
+- 干净 `3064f8c8839dad1c9d591ec3c04b8d5271941224` 新导出的桌面、390×844 触屏精简复核 **596 项 / 2 cases 通过**，来源输入为 `9f33417eb8d59c3aab8a0b7fc664573c83990b7d12a6202b5319bcf0b9edd5be`。这不是此前 5251 旧导出 919/920 项报告的重复声明。
+- 横屏返回竖屏的有效负控复现 canvas/布局视口变为 **844×1827、scale 0.462085…**；原生地图始终 `960×540`。同一导出使用仅修改 canvas 固定定位与 CSS 尺寸的壳层候选后，正控 **507 项 / 1 case 通过**，回到 **390×844、scale 1**，实际往返成功。相应规则纳入 Web 壳层候选，负控与早期焦点驱动失败保留。
+- 精确范围、外部报告及去重提交清单见 [统一集成记录](godot_native/docs/INTEGRATION_20261025.md)。该文件历史日期保留。本条不声明后续远端 CI 已全绿、已完成最终合并/部署或论坛 Gemini 文案已经回填。
+
+## 2026-10-25 PR #175 CI 修复候选
+
+- 补齐 13 个运行时、生成数据和既有验收驱动文件：旧连续定位 `Fix` / `target` 点击驱动改为真实按下、沿轨迹拖动、松手；十段轨迹、600 秒、3000 米及控制器门槛保留。四章流程 1170 项、0 失败并重新生成 controller-earned fixtures；不直接写入完成进度。
+- Web 恢复驱动使用普通鼠标和触屏输入，桌面 919 项、390×844 触屏 920 项均为 0 失败。两份报告复用 5251 的既有 source-input `0c648d292dcd6befc92012b3c01c34d57bb4ca8d892d2cb5f22adf2675679a02`，验证的是连续输入驱动；当前修复候选的新导出、远端 CI、合并及部署另行确认。
+- 同步生成的 `save_normalizer.json`；补轻量 world fixture 的 `chapter4_layers` 空值保护。图书馆锁定槽保留名称与图标，改成无焦点静态对象，点击不弹说明、不发意图；解锁仍由控制器在原槽位恢复按钮，现有专项 139 项、0 失败。状态栏交由原生 `Label` 绘制一次，去除重复手绘造成的叠字。
+- 紧凑窗口地图仍为 `960×540`，手机仍为 `430×860`；地图只做等比缩放与留边，既有实际输入驱动按可见变换定位。场景视口 282、实际输入 312、食堂最终等待 140 项均通过；Web orientation helper 20 项通过来自协作代理最终报告。早期食堂失败记录保留，最终结论用独立报告，不混加为全游戏人工验收。
+- 详情及外部证据索引见 [统一集成记录](godot_native/docs/INTEGRATION_20261025.md)。论坛全帖的 Gemini 场景生成及后续审阅仍在进行，本条不声明文案已完成回填或发布。
+
+## 2026-10-25 统一合并手机、北教与 PR #174
+
+- 用户明确要求整体合并，范围为全部当前手机/301 源码素材、PR #174 及本轮亮度、A3 墙体、画像和电梯按钮修复。已 read-only fetch `origin/pr-174`；集成前 HEAD 与 origin/main 同为 `abd8b0028e8443795518243da7930ee760bc92e9`，各自独有提交均为 0，PR 独有提交为 1。`node_modules`、生成导出、缓存及外部 QA 不提交。
+- 删除显示设置的照片取证提示，接入拖动时的纯视觉预览；0–100 全段调光，手机应用/控制中心/文档共用玻璃层。松手仍走原控制器，设置尊重低电量上限。72/50/260 项既有检查通过。
+- A3 补六处墙脚/外围实体，保留八个必须通行区；旧实现 18 项失败的有效负控修后 135 项通过，源拓扑 5687 项通过。三层电梯按钮实际图形与热点统一，保留门禁并补闭门门槛，现有 world 44 项通过。杨卫旧地上金框恢复为同源地砖，画像、金框、传记热点移至北墙，既有 phase world 552 项、TS 与素材/来源对应通过。
+- 已创建统一集成分支，保留 PR #174 原提交并合并本地 72 文件；冲突仅在 world 声明与 progress 追加段，均保留两方内容。合并后七个相关原生阶段通过；quick 先发现文字索引引用过期，重新生成后 text:check 通过，随集成纳入生成索引，共 101 文件。
+- 实现范围、PR #174 调试门控与最终浏览器/交付边界见 [统一集成记录](godot_native/docs/INTEGRATION_20261025.md)。
+
+## 2026-10-25 PR #173 合并、301 展室对象与外语例句
+
+- 用户要求合并现有 PR，核对 #173 的 5 文件范围、精确 head 和全部 9 项成功检查后，取消草稿并 squash 合并为 `abd8b0028e8443795518243da7930ee760bc92e9`。本地快进到同一 main，保留尚未提交的手机候选；Pages 发布流程成功。以下新改造尚未提交或部署。
+- 将门口含义不清的胶片索引木台收回中央展柜，301 展室拆为 33 个独立对象，渲染、交互与实体基座均来自同一源像素清单。原场景材料与八份文献保留；新生成展柜与抽屉为透明独立素材，按等比源裁片接入。入口和侧过道清空，补齐立柜、盆栽实际碰撞，抽屉顶部操作段落按用户要求删除。
+- 慧学外语由四组扩为 20 组 Gemini 3.8 Flash／低生成、Humanizer-zh 审阅的双语例句：14 组日常校园内容，6 组暗示联系图书馆检索、梁祝扇影、北教校时、301 档案和校园网账单。逐句用途与不泄露的答案已在作者文档说明；界面不标出线索。新增英文词/中文词义搜索、清空及无结果状态，译文就地展开，不改剧情事实或添加通关条件。后续游戏文案仍只给场景和约束，不提供范文。
+- 验证仅针对受影响路径：抽屉 84 项、真实 Main 95 项通过；新增例句后只复用手机导航检查和导入解析。素材来源、提示词、行为范围及后续浏览器结果见 [301 展室对象记录](godot_native/docs/ROOM301_EXHIBIT_20261025.md)。
+- 最终扩词导航 241 项通过；实际浏览器验证展室入口往返、展柜打开与返回，以及 430×860／390×844 的词条检索、译文开合和长列表底部。只读检索不改剧情；没有重复全游戏回归。最终本地 Web 来源输入为 `0c648d292dcd6befc92012b3c01c34d57bb4ca8d892d2cb5f22adf2675679a02`，预览端口 5251；尚未提交、推送或替换线上版本。
 
 ## 2026-10-25 PR #172 按钮命中与北教墙体接触回归
 
@@ -5478,3 +5530,102 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 北教 A1 24 组桌椅与一段墙采用生成美术+独立标定，校正桌椅落地碰撞和墙前后脚点遮挡；最终 248 项新测试、既有章节场景 576 项、启动分包 68 条归属及 quick 5 验证器通过；release 34 项首次通过，补齐宿主 ffprobe 后其余 4 项补跑通过。仍是 A1 首批，未声称全北教完成。
 - 用户已确认将上述 14 个新增改动文件通过独立 PR 发布，与七文件 PR #171 隔离；提交前验证和实际发布结果分别记录。PR #171 已合并/部署 a08da50b，公网资源加载及重载检查桌面 543、模拟触屏 546 项通过，发布脚本逐字节匹配。
 - 45 秒宣传片已导出并在 Shotcut 检查 2 视频轨、音乐/音效/配音预留 3 音轨；另附可移动的编辑工程、字体许可与原始录制。详见 `godot_native/docs/THEATER_CHROME_NORTH_OBJECTS_20261025.md`。
+
+## 2026-10-25：微信会话阶段、气泡与开场内容
+
+- 线上读取确认玩家处于第二章 friend_message_required；朋友会话却由第一章 codeScattered 决定后续内容。改为当前章节/阶段优先，旧记录手动展开，保留原主线台词、配音和事件时序。
+- 独立消息对象用 Container 计算换行与内边距，聊天/文章滚动显示。开场可浏览两个公众号、9 篇内容、4 条朋友圈及真实联系人页面；点赞、筛选和阅读位置保持为浏览状态，原更新和地点词取证仍由控制器验证。
+- 按用户纠正，重新通过 Computer Use 在 Gemini 3.8 Flash / 低的空白对话中只提供场景，弃用此前示例稿；最终草稿经 Humanizer-zh 审阅后集中放在 native 文案 JSON。
+- quick 5/5；相关 native 10 阶段通过（页面/流程 1269 项，另含来源、音文和时序核对）；最终文案校正后气泡/社交 122 项再次通过。release 首次因 ffprobe 未在 PATH 导致 4 项失败，使用宿主已有工具后重跑 38/38 通过。
+- 最终 Godot 4.7.1 Web 导出 source-input 51ddbf7b1a2b3cae655f4fb8fc03ada45750fc6b21850a4703a7c7ef532e0072；实际 Chrome 桌面与 DPR3 模拟触屏各 882 项通过。用线上第二章存档副本经正式导入验证正确朋友会话、原流程推进和手动展开历史，另以普通输入验证公众号/朋友圈浏览与点赞不改剧情。检查实际手机气泡与滚动，无页面报错；这不等于实体手机或全游戏验收。
+- 这是基于 0c01f5c 的本地候选，未提交、合并或发布；当时 10 文件范围见 godot_native/docs/WECHAT_SOCIAL_20261025.md；后续扩展以 TIYI_VISUAL_20261025.md 为准，既有 node_modules 链接及导出不提交。
+
+## 2026-10-25：浙大体艺图标与原生界面
+
+- 用户澄清问题主要是图标与样式。将越界的分散肢体改为一个有边距的跑步图标，桌面、启动页和主页共享蓝色与轮廓。体艺主页重建为原生文字、统计卡、菜单、详情页和自适应按钮，保留原金色 7 的裁片和原领取动作。
+- 四个菜单具备实际返回链；资料来自已知状态，空记录不伪造。四条新增说明使用 Gemini 3.8 Flash / 低，仅给场景，再按 Humanizer-zh 审阅。没有变更网络、更新、运动或证据控制器。
+- quick 5/5、release 38/38；体艺布局 250、数字提取 360、应用身份 210、手机导航 216 项通过，相关更新、补录、生命周期、通知和微信回归通过。修正简化夹具缺少字号字段的问题，并保留失败与重跑证据。实际 Godot GPU 图标、主页和大字号已检查，最终 Web 检查待补记。
+- 当时与尚未提交的微信批次合计 18 文件，后续扩展详见 godot_native/docs/TIYI_VISUAL_20261025.md；未提交、合并或上线。
+
+
+## 2026-10-25：手机微信参考与连续虚拟定位
+
+- 根据用户新手机截图重建会话行、顶部搜索和底部四栏，复用原故事头像机关与更新入口；大字号使用独立列及容器高度，摘要超长省略。
+- 原十次点按改为连续拖动 GPS 轨迹。鼠标、触屏和方向键控制同一对象，空格慢行；后续可见干扰区要求速度控制，失败回到最近记录点。点击目标不能推进，失焦/松手停止，完成仍由原控制器接受同一证据结果。
+- 新提示经 Gemini 3.8 Flash / 低的场景描述生成、Humanizer-zh 压缩；已通过原生输入、干扰失败/恢复、控制器拒绝、Main 结果保留及微信字体布局检查；release 重新执行 38/38 通过。最终网页导出 source-input 71e55f6e7dfc0e6b08dd45174a2878f37b62662656e7f2e0d8d7d6c3ba852ccb，浏览器完整流程验收待补记。
+- 当时完整未提交范围为 29 文件，后续扩展清单见 godot_native/docs/TIYI_VISUAL_20261025.md；未暂存、合并或上线。
+
+
+## 2026-10-25：校园服务入口、真实课程层级、系统图标与直道跑场
+
+- 完整候选扩展为 41 文件（25 修改、16 新增），以 `godot_native/docs/TIYI_VISUAL_20261025.md` 清单为准，替代前述 10/18/29 文件中间范围。只读 fetch 后 HEAD 与 origin/main 同为 0c01f5c，本地独有提交 0、远端 main 独有提交 0；未暂存、提交、合并或部署，既有 node_modules 链接不提交。
+- 操场改为两段直道与两端半圆，绘制、连续移动、检查点与边界使用同一曲线；保留十段轨迹、600 秒/3000 米及原控制器结果，不再通过依次点击目标完成。
+- 浙大钉全部 11 个应用从开局可进入，具体办理条件在页内说明。地图保留出寝室前限制；图书馆移除 xxx 占位并提供详情。设置替换为原创语义图形、白色分组列表、实际子页返回和搜索状态保留。
+- 通过 Computer Use 查看用户提供的学在浙大页面，按“我的课程 → 课程 → 点名记录 / 课堂直录播”分层重建游戏入口，未复制账号、成绩、个人课程或凭证。智云课堂显示原创微积分课堂片段与回放；数字签到回到原控制器，雷达在寝室返回范围不符且不写签到事实。补齐返回来源与雷达结果的实际可见性。
+- 网络缴费新增可选账务核对：查看待缴账单与回执后选择重复计费，校验通过才保存结算；错误原因、缺少凭据、伪造结算和重复提交均受控。旧存档可不带新增字段，不动原钱包、网络模式与主线证据。新增文案继续使用 Gemini 3.8 Flash / 低的场景描述与 Humanizer-zh 审阅。
+- 按用户要求缩减重复检查：最近集中原生 5/5 通过，复用未受影响的前轮 release 38/38 和相关剧情验证。实际网页桌面 934、触屏 935 项内部断言通过（7 组相关流程，多数断言为资源完整性）；实测账单滚动受阻后修正触摸传递。最后只补雷达容器布局等待，最终导出 source-input f265d3ef4dcfb7a01fc008e56ff7b18afd031c5277c7a5e895ec71887e6ea7fa，触屏流程 935 项再次通过，并以 Computer Use 在 390×844/430×860 确认结果位于底栏上方。
+- 失败诊断与版本边界记录在交付说明中；当前仅为本地 Godot 4.7.1 候选和预览，不等于实体手机验收或线上发布。临时截图检查后清理，课程页用户预览单独保留。
+## 2026-10-25 — 北教 53 物件显式调试预览
+
+- 保留 7 类网页透明母版、53 个独立节点与椅 v2；补齐现用素材 provenance。
+- 合并主线 PR173；普通启动复用主线原配置，不创建新独立物件。仅 developer policy 允许且 `NORTH_PROP_OBJECT_PREVIEW=1` 启用预览；正式导出拒绝。
+- 104/105 净地板未完成：拒收的 donor/程序地板实验已备份撤下，网格错位网页候选未接入。不能把透明素材或 headless 测试通过当作地板视觉通过。
+- 专项 5/5（729 checks）与默认五时态主线资源逐像素/碰撞比较通过；Web quick 5/5。原生总验证仍运行；Web release 35/38，single-file 构建 exit137 导致后两项缺输出，待资源释放重试。当前 GPU 重跑受 display 限制，历史真实截图仅保留原覆盖范围。
+- 见 `godot_native/docs/NORTH_OBJECT_PREVIEW_20261025.md`、同目录 acceptance JSON 与 sample README。此检查点仅供 Draft PR，不是完成整层重建、可合并或可发布声明。
+
+
+## 2026-10-25 — staged validation efficiency (PR174 candidate)
+
+- Native validation uses continuous capped workers (default2) behind exclusive preparation/fixture barriers; exact staged profiles and conservative shared/unknown-file full fallback replace ambiguous name matching. Proven fixture consumers close their producer dependencies; failed preparation cannot bless stale consumers. Full remains final acceptance, not a focused-run claim.
+- Schema2 evidence requires exact source/untracked/generated/imported/dependency/tool/argument/environment/producer bytes for reuse; legacy or uncertain external-input receipts are refused. Source sync, media conversion and validation share a project lock. No regression files removed; eight duplicate native-CI invocations consolidated and one audited identical-script execution reports its explicit evidence alias.
+- Web acceptance now fans out from one sealed artifact into ordinary+streaming, world/phone and library jobs; all remain required for deploy. Controlled fault injection is cleared only after CDP confirms unblock, with strict real-network error checks unchanged. Exact attribution of the earlier failed request to the race remains an inference.
+- Verified: native runner deterministic contracts; actual pinned4.7.1 save isolation plus two-GD jobs2 smoke (partial, not full); workflow29, sealed bundle40, streaming12 and network observation37 deterministic checks. Hosted fanout/Chrome transport and a complete new-harness run remain not-run. Old immutable gameplay tree e99f7a94 completed529/529 under the old runner; it is not mislabeled new-harness evidence. Details and measured timing: godot_native/docs/NATIVE_VALIDATION_STAGES.md.
+
+## 2026-10-25 — hosted native default-environment correction
+
+- PR174 head502e4b7 passed all four workflows, including native529 passes plus one audited deduplicated entry, exact-content completion, GPU/exported-PCK gates and real Web ordinary/streaming/profile acceptance.
+- Final report exposed a conservative fallback: inherited CHROME_BIN and USER forced jobs1. Neither controls a native catalog stage (separate Web browser executable and deployment host metadata only). Exempt exactly those two names while retaining environment identity and real external-fixture denial; no coverage or gate removed.
+- Preserve the actual hosted serial baseline: run40204036543 wall3209.184s, observed peak1. Correction contracts17/17 and pinned4.7.1 two-GD smoke under those hosted defaults pass, with1199ms overlap/jobs2. Focused smoke is2pass/528not-run, not full acceptance. Corrected hosted parallel run remains pending; no measured speedup claimed.
+
+
+## 2026-10-26 — bounded full-validation sharding candidate
+
+- Preserved all 530 native stage descriptors: nine fresh preparation stages seal exact source/import/producer bytes; six isolated two-worker jobs own 521 entries exactly once. GPU/exported-PCK checks remain mandatory, and the original native required-check name now gates a fail-closed full aggregate. Same-run failed-job retries cannot mix producer receipts or fall back from a failed latest shard attempt.
+- Web retains every ordinary/streaming/world/phone/library scenario. Thirteen bounded artifact consumers split only independent profile/fixture boundaries; controller fixture producers overlap only after import/export. Complete receipts and all seventeen reports remain mandatory. HTTPS-first signed APT avoids the measured failing transport route without relaxing authenticity.
+- Independent static review found no remaining correctness blocker; complete native catalog comparison shows zero changed/removed stage descriptors. Native contracts cover partition/producer closure/content transport/aggregate negatives/workflow gates. Web workflow and runner contracts plus 186 media tests pass. Real new-pipeline integration and exact-head hosted timing are not yet reported as complete.
+- Measured prior head33cc499: native runner28m07.530s, complete native workflow31m23s, Godot Web17m14s. Predicted native shard duration~265s is not a sub-ten-minute claim. Web input transfer rises~4.42→9.57GB/run; bundle stored once for one day. Standard runners on this public repo require no purchased runner; account storage allowance is unknown. Details and bounded budgets: godot_native/docs/NATIVE_VALIDATION_STAGES.md.
+
+- Follow-on bounded transport optimization retains the complete native logical inventory but references exact tracked/source-synced bytes in each same-source checkout; about1.115GB per consumer need not be resent. Source commit/manifest/path/hash/mode checks and private reconstruction remain mandatory. First immutable local preparation (c4080a4) passed9/9 with no input drift; it is partial preparation evidence, not full validation or hosted timing.
+
+
+- Real sparse transport integration at local1af555a/tree f7c3b4bf passed fresh preparation9/9 and all92 owned shard5 stages plus host save isolation;93freshpass+8prepared+429notrun, no final source/import/fixture drift. Full logical inputs1.891GB reconstructed from actual779.886MB level0 ZIP plus1.115GB exact checkout references. Seal43.014s, restore27.018s on this cloud host; no hosted speedup or full-under10 claim.
+- Added an empty, explicit future-reader registry with execution/input/sandbox-output/dependency/resource/timing contracts. New readers stay in bounded dependency-aware workers and co-located shards; unsupported shared writers/weights fail clearly. Declared doc/test inputs and affected transitive consumers force conservative full-parallel selection before shortcuts.71 focused contracts retain all530 legacy descriptors and the partition hash. Main recheckedabd8b00; PR175 remains separate with overlapping phone-driver updates requiring later coordination, not silently imported or repaired here.
+
+- Final additive scheduler smoke at local94b4850 passed two real pinned4.7.1 model stages with1,687ms overlap/jobs2 and unchanged inputs (2pass/528notrun, not full). A historical530-ID fixture now scopes golden preservation independently of live catalog size; regression proves an auto-discovered531st GD joins exactlyone of6shards without rewriting that fixture.72 focused tests pass. Remaining last delta is tests/documentation only; no unrelated PR175 content imported.
+## 2026-10-26 f7 完整检查后收口
+
+- f7全部真实Web consumer、retainedWeb和cross-PR通过；source-contract VM新增bootTimeout夹具未补，修复后212诊断/39传输通过。
+- 原生三项剩余：CC98离树字体量高真实布局修复后282/447通过及两尺寸GPU确认；湖区完整源顺序/数量109通过；冻结相机的旋转fixture恢复普通follow后12路线102通过。原功能断言保留。
+- 全局F10弹窗在手机玻璃上方，消除中央灰条，手机内调光范围不变，surface442/chrome72通过。f7实际RetinaC2 887/0，人工301/手机/论坛/亮度普通输入通过。
+
+
+## 2026-10-26 — measured sharding follow-up, bounded eight/nine budget
+
+- Exact hosted bd0dfab/tree26027b completed full native aggregation:529pass+1audited alias, zero omitted/failed/blocked entries and stable inputs, all reader pools peak2. Native complete workflow13m01s versus previous31m23s; runner-only28m07s is not the comparator. Web13m21s failed cold C2 while required content was still blocking; final aggregate correctly failed. Total observed attempt compute101.15runner-min versus previous78.82. Under10m remains unmet; concurrent PR queues are not the only cause.
+- C2 phone input now waits for fresh actual C2 packs/world/button readiness, then sends the original single tap and preserves installation→save/reload→ten-input→weather gates.28pure contracts pass. Actual local Chromium was blocked before game launch by platform socket permissions; the normal escalation path also failed before execution. No protected path was accessed or bypass attempted. Browser acceptance awaits exact-head hosted CI.
+- Follow-on shape:8native shards,9duration-balanced complete Web consumers, original13logical receipts/17reports, source contracts finished before fanout, strict full aggregates unchanged. Native GPU/PCK plus retained Web/cross-PR jobs bring the within-repository peak budget to20. No paid runner or missing test buys the target. Persistence-stage classification and command semantics remain unchanged; new auto-discovered/registered stages still join the live partition.
+- Strict preliminary import now overlaps complete media preparation in a separate temporary output project; source/output hashes and whole-stream receipts are checked before publication, and the original final import remains. Same-cloud focused phases: cold import119.460s; isolated media52.068s; parallel99.237s + final import7.309s, all exit0/noengine errors. Cache/order/contention limit direct extrapolation. Web fixture recorders start only after export closes and must join before sealing; sparse consumers retain the complete sealed byte inventory. Further exact-head hosted evidence is pending.
+
+- Actual local post-export overlap smoke completed: original full controller campaign1160checks/4chapters and library136checks/2chapters, zero failures, plus31earned-input contracts. Packing overlapped the fixture helper for45.569s; observed fixture-child closure138.399s. This dirty-harness local producer test is not browser acceptance or an exact-head full run. Independent review found and reproduced a descendant-cancellation gap; the managed process now drains its own complete group even after the direct child exits, with SIGTERM-ignoring descendant regressions.
+
+- Latest remote fetch before final candidate: main remainsabd8b00; PR174bd0dfab; PR175f7de542 now includesbd0 ancestry; PR17605e464e and PR177ec6f125 remain separate. Future integration must reconcile the phone continuousExercise/rotation/readiness/timeout changes and workflow contracts, not overwrite either side. The shared --plan pipe truncation was independently reproduced at65,535bytes and fixed by awaiting stdout completion, matching the already-present175 fix without importing its unrelated game changes.
+
+## 2026-10-26 final b468 integration checkpoint
+
+- Preserved the newest PR174 ancestry and full eight-shard/nine-consumer fail-closed gates. The single C2 readiness helper retains native.scene, actual dorm/packs/button checks and 29 contracts; continuous input, original 20s interaction, rotation and network acknowledgement remain. Only retina C2 keeps 18/12 minute limits, backed by f7 actual 536s/578s.
+- Ten focused Node contracts finally pass 208 checks; 212 diagnostic forwarding assertions remain. Eight duplicate readiness cases were removed in favor of the stronger upstream set. A macOS synthetic preparation fixture gained only its required minimal project configuration; its original failure remains recorded. No runtime or path guard was relaxed.
+- Final exact-head export, CI, merge and Pages receipts remain separate pending steps.
+
+## 2026-10-26 final modal fixture synchronization
+
+- Exact 14c Web aggregation passed all13 logical consumers /17 reports; PR deploy correctly skipped. Native seven shards, graphics and preparation passed; one obsolete canteen fixture still required modal.z_index==100. The existing assertion now checks ordering above scene/narrative/phone glass, preserving all original lifecycle and progression checks; isolated11/0. A bounded complete test search found no other affected modal constant. This is fixture maintenance, not a newly found product defect or adversarial reward. Runtime remains byte-for-byte unchanged by this last fix.

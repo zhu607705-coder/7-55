@@ -39,6 +39,8 @@ On touch devices, tap clear floor to walk and tap a visible object to approach i
 
 `node godot_native/tools/validate_native.mjs` runs native project import/parse, a startup smoke and any checked-in Godot test scripts. It fails on Godot's script-error output as well as nonzero exit codes. Root `npm run validate:critical` remains the original web regression suite; passing it does not prove native parity. Source-differential Node checks need the complete original repository and its locked dependencies; the portable native-only source ZIP is self-contained for importing, running and editing the game, not for executing those original-TypeScript comparison tools.
 
+See [staged native validation](docs/NATIVE_VALIDATION_STAGES.md) for exact profiles, nonexecuting plans, fixture dependencies, the jobs=2 worker pool and fail-closed resume. Prepare source/media first; focused or raw-filter runs are never a full pass.
+
 ## Current intentional limitations
 
 - Browser SaveStore versions2–35 import through the original source-generated normalizer. Differential verification and actual import/reload/Chapter2 continuation are covered by native tests. Invalid native domains recover from the validated previous snapshot; transport/stair/closure proof remains required. See `docs/SAVE_COMPATIBILITY.md`.

@@ -197,6 +197,12 @@ assert(dispatchStart >= 0 && dispatchEnd > dispatchStart);
 const dispatch = draft.slice(dispatchStart, dispatchEnd);
 const selectedExpression = draft.match(/^  const selected = (.+);$/m)?.[1];
 assert(selectedExpression);
+const bootTimeoutExpression = draft.match(/^const bootTimeout = (.+);$/m)?.[1];
+assert(bootTimeoutExpression);
+// Exercise the actual option initializer with a nondefault CLI value so the
+// dispatch must forward the configured deadline instead of a fallback constant.
+const bootTimeout = vm.runInNewContext(bootTimeoutExpression, { option: name => { assert.equal(name, 'boot-timeout'); return '420000'; } });
+assert.equal(bootTimeout, 420000);
 const baselineProfiles = ['desktop-1280', 'desktop-1440', 'touch-390', 'retina-1440', 'retina-touch-390', 'desktop-1920'];
 const focusedProfiles = ['desktop-1280', 'touch-390', 'retina-touch-390'];
 for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'phone-recovery', 'corners', 'checkin', 'words', 'durability', 'durability-switch', 'resource-loading']) {
@@ -204,10 +210,10 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
   const expectedProfiles = scenarios === 'streaming' ? ['desktop-1280'] : ['mobile-world', 'phone-recovery'].includes(scenarios) ? focusedProfiles : baselineProfiles;
   check(`${scenarios}: original acceptance profile coverage remains exact`, () => assert.deepEqual(Array.from(selected, row => row[0]), expectedProfiles));
   for (const [id, , , touch] of selected) {
-    const calls = [], initialized = [];
-    const context = { scenarios, id, touch, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
+    const calls = [], initialized = [], recoveryInputs = [];
+    const context = { scenarios, id, touch, bootTimeout, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
     for (const name of ['snapshot', 'clickControl', 'clickPoint', 'renderPoint', 'poll', 'check', 'interval', 'screenshot', 'importSave', 'assertLayout', 'settings', 'saveProgressAndWait', 'startStory', 'press']) context[name] = () => {};
-    for (const name of ['mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async () => { calls.push(name); return {}; };
+    for (const name of ['mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async options => { calls.push(name); if (name === 'phoneRecoveryCase') recoveryInputs.push(options); return {}; };
     context.freshCase = async focused => { initialized.push(focused); return {}; };
     await vm.runInNewContext(`(async () => { let result; ${dispatch} })()`, context);
     const expected = [];
@@ -230,6 +236,7 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
       assert.deepEqual(initialized, [['mobile-world', 'phone-recovery'].includes(scenarios)]);
       assert.deepEqual(calls, expected);
     });
+    if (scenarios === 'phone-recovery') check(`${scenarios}/${id}: configured boot deadline reaches recovery`, () => { assert.equal(recoveryInputs.length, 1); assert.equal(recoveryInputs[0].bootTimeout, bootTimeout); });
   }
 }
 const project = readFileSync(new URL('../project.godot', import.meta.url), 'utf8');

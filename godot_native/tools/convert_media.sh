@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 MEDIA_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# Share the validator/source-sync lock. user:// isolation does not isolate res://.
+mkdir -p "$MEDIA_ROOT/.validation"
+if ! mkdir "$MEDIA_ROOT/.validation/runner.lock"; then
+  echo "Native workspace busy; do not convert media during source sync/import/validation" >&2
+  exit 1
+fi
+printf 'media conversion shell pid=%s\n' "$$" > "$MEDIA_ROOT/.validation/runner.lock/owner.txt"
+trap 'rm -f "$MEDIA_ROOT/.validation/runner.lock/owner.txt"; rmdir "$MEDIA_ROOT/.validation/runner.lock"' EXIT
 "${NODE_BIN:-node}" - "$MEDIA_ROOT" "$@" <<'NODE'
 // libtheora -q is VBR; combining it with -b does not impose a file-size cap.
 // Keep q8 unless the actual result exceeds the delivery budget. Retry a bounded
@@ -86,6 +94,16 @@ for (const { input, output } of inputs) {
     reports.push(row);
     console.log(JSON.stringify({ input, output, quality, attempts, bytes: row.bytes, maxBytes, fullStreamValidation: true }));
   } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
+}
+// A formal validation run checks this receipt, not mere .ogv existence.
+// Custom single-clip regressions do not certify production preparation.
+if (!options.has('input')) {
+  const receipt = path.join(mediaRoot, '.validation', 'media-prepared.json');
+  fs.mkdirSync(path.dirname(receipt), { recursive: true });
+  fs.writeFileSync(receipt, JSON.stringify({
+    converterSha256: crypto.createHash('sha256').update(fs.readFileSync(path.join(mediaRoot, 'tools/convert_media.sh'))).digest('hex'),
+    reports: reports.map(row => ({ input: path.relative(mediaRoot, row.input), output: path.relative(mediaRoot, row.output), sourceSha256: row.sourceSha256, outputSha256: row.outputSha256, fullStreamValidation: row.fullStreamValidation }))
+  }, null, 2) + '\n');
 }
 if (options.has('report')) {
   const filename = path.resolve(options.get('report'));

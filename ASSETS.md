@@ -227,3 +227,7 @@ The current native cycling avatar is an original17-bone weighted pelican with wa
 
 - 原创原生程序几何：`chapter4_evidence_folio.gd` 的残签、齿孔、剖面、线路与试压痕；`chapter4_paper_workbench.gd` 的正反纸条；`clock_delay_board.gd` 的多路延时线；`inset_option_key.gd` 的底板和原生居中文字。均复用项目既有字体与许可，不增加外部图像、模型或抄录游戏素材。
 - 301原柜体、302灯架/幕布、201压台以及旧钟素材继续使用原登记资源。所有可选纸面和试压残迹只呈现玩家输入；新持久配置由原生控制器保存与验证。实施范围见 `godot_native/docs/PUZZLE_DISCOVERY_20261024.md`。本批源代码位于 `godot_native/`，Web部署由既有Pages工作流构建，不另创建Release压缩包。
+
+## 20261026 手机、301 与北教素材整合
+
+本轮源码范围、原生/保留 Web 检查与发布状态见 [20261026 交付记录](godot_native/docs/INTEGRATION_RELEASE_20261026.md)。论坛文案按 Gemini 场景生成与 Humanizer-zh 审阅回填；原始证据、元数据和隐藏标记保留。既有 20261025 素材目录保留生成日期；本轮沿用 Pages 发布链，不新建 Release 压缩包。

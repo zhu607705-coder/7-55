@@ -4,6 +4,7 @@ extends RefCounted
 const SOURCE=preload("res://assets/ui/tiyi_main.png")
 const SOURCE_SIZE=Vector2(852,1846)
 const SEVEN_REGION=Rect2(126,458,68,98)
+const COUNT_REGION=Rect2(40,458,154,98)
 const CUTOUT_SHADER="""shader_type canvas_item;
 void fragment() {
     vec4 c=texture(TEXTURE,UV);
@@ -25,7 +26,15 @@ void fragment() {
     }
     COLOR=c;
 }"""
+const COUNT_TAKEN_SHADER="""shader_type canvas_item;
+void fragment() {
+    vec4 c=texture(TEXTURE,UV);
+    c.a*=1.0-step(0.86,min(c.r,min(c.g,c.b)));
+    if (UV.x>=126.0/852.0 && UV.x<194.0/852.0) { c.a=0.0; }
+    COLOR=c;
+}"""
 static var _cutout: AtlasTexture
+static var _count: AtlasTexture
 static var _cutout_material: ShaderMaterial
 static var _taken_material: ShaderMaterial
 static func material_for(code: String) -> ShaderMaterial:
@@ -40,11 +49,26 @@ static func cutout_material() -> ShaderMaterial:
 	if _cutout_material==null: _cutout_material=material_for(CUTOUT_SHADER)
 	return _cutout_material
 static func apply_taken(plate: TextureRect) -> void:
+	if plate.texture is AtlasTexture and plate.texture.region==COUNT_REGION:
+		style_count(plate,true)
+		return
 	if _taken_material==null: _taken_material=material_for(TAKEN_SHADER)
 	plate.material=_taken_material
 static func source_rect(plate: TextureRect) -> Rect2:
-	var scale: Vector2=plate.size/SOURCE_SIZE
-	return Rect2(plate.position+SEVEN_REGION.position*scale,SEVEN_REGION.size*scale)
+	var region: Rect2=plate.texture.region if plate.texture is AtlasTexture else Rect2(Vector2.ZERO,SOURCE_SIZE)
+	var factor: float=minf(plate.size.x/region.size.x,plate.size.y/region.size.y)
+	var origin=plate.position+(plate.size-region.size*factor)/2
+	return Rect2(origin+(SEVEN_REGION.position-region.position)*factor,SEVEN_REGION.size*factor)
+
+static func count_texture() -> AtlasTexture:
+	if _count==null:
+		_count=AtlasTexture.new();_count.atlas=SOURCE;_count.region=COUNT_REGION
+	return _count
+
+static func style_count(plate: TextureRect,taken: bool) -> void:
+	# Atlas UVs still address the original source image. Retain the original
+	# gold 7 and navy 4, removing only their photographed paper background.
+	plate.material=material_for(COUNT_TAKEN_SHADER if taken else CUTOUT_SHADER)
 static func bind_source(parent: Control,plate: TextureRect) -> Control:
 	var marker:=Control.new(); marker.name="TiyiSevenPickupSource"
 	var rect:=source_rect(plate); marker.position=rect.position; marker.size=rect.size

@@ -19,3 +19,6 @@ data/source/
 # GLB import extracts these embedded textures; authored tracked textures remain
 # tracked and are still included in Web and native exports.
 assets/native/stair_b/*_pixel_albedo.png
+
+# Native validation workspace lock and generated media preparation receipt.
+.validation/

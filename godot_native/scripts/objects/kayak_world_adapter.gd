@@ -53,7 +53,29 @@ func paddle_input_bounds(side:String)->Rect2:
 	for point:Vector2 in blade.polygon:points.append(blade_transform*point)
 	var area:=Rect2(points[0],Vector2.ZERO)
 	for point:Vector2 in points:area=area.expand(point)
-	return area.grow(maxf(6.0,14.0/maxf(.01,world.hud_display_scale())))
+	area=area.grow(maxf(6.0,14.0/maxf(.01,world.hud_display_scale())))
+	var minimum:=Vector2.ONE*44.0/maxf(.01,world.hud_display_scale())
+	return Rect2(area.get_center()-area.size.max(minimum)/2,area.size.max(minimum))
+
+func paddle_side_at(point:Vector2,bounds:Dictionary)->String:
+	if not active or not is_instance_valid(rig):return ""
+	var canvas_point:Vector2=world.get_global_transform_with_canvas()*point
+	# Visible paddles own their painted pixels. Their physical touch expansion
+	# must not turn the separately visible hull/actor into an invisible stroke.
+	for side:String in bounds:
+		var paddle:Node2D=rig.get_node("BodyRoll/"+side.capitalize()+"Paddle")
+		var shaft:Line2D=paddle.get_node("ShaftOutline")
+		var local:Vector2=shaft.get_global_transform_with_canvas().affine_inverse()*canvas_point
+		for index:int in range(1,shaft.points.size()):
+			if Geometry2D.get_closest_point_to_segment(local,shaft.points[index-1],shaft.points[index]).distance_to(local)<=shaft.width/2:return side
+		var blade:Polygon2D=paddle.get_node("BladePivot/Blade")
+		if Geometry2D.is_point_in_polygon(blade.get_global_transform_with_canvas().affine_inverse()*canvas_point,blade.polygon):return side
+	for path:String in ["BodyRoll/Hull","BodyRoll/SeatedPlayer"]:
+		var sprite:Sprite2D=rig.get_node(path)
+		if sprite.is_pixel_opaque(sprite.get_global_transform_with_canvas().affine_inverse()*canvas_point):return ""
+	for side:String in bounds:
+		if bounds[side].has_point(point):return side
+	return ""
 
 func visible_input_bounds()->Rect2:
 	if not active or not is_instance_valid(rig):return Rect2()

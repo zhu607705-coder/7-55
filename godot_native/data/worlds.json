@@ -41,7 +41,7 @@
     "src/core/PhoneChargingStation.ts": "50cf6303341bd4ce09f3b6830f98beb6e9af4e92e1309ffd6053525033c7b83e",
     "src/scenes/rpg/TheaterInteriorModel.ts": "4bbab5e08b9c079b2d2928e82c1773d7d731230132d3c6946a21ff89861e97d7",
     "src/scenes/rpg/QizhenLakeModel.ts": "c3dcb8a53effbf911628d036403f75919e33b044eaaf6fcec043f0406167e8e7",
-    "src/data/chapter4-three-floor-maze.layout.json": "c21c507e2a3496b101a1aa80b3b95d76471ca33e4b43c2d3b214e09660beaad2",
+    "src/data/chapter4-three-floor-maze.layout.json": "560472c51b77073ab99a72e2d7a6aa7d5bc07ed8ae661b48e9ca7e1db6a39d0d",
     "src/data/chapter4-temporal-maze.topology.json": "d71fe5bd87114ccd6ee96a1ec2d6634d43dad42383779b3da1f9f937b182e9a5",
     "src/data/chapter4-755.content.json": "889a07673bb83de5812d51c66046745787d84aea27b983efc56a5ecf7cf41d1c",
     "src/scenes/rpg/ZijingangCampusLayout.ts": "8118aea8d588284a726cb8e8aca4aacae1327039b4bbeb8aef23004255b28df6"
@@ -14326,6 +14326,90 @@
                 "y": 147,
                 "width": 32,
                 "height": 35
+              },
+              {
+                "id": "a3_perimeter_west",
+                "sourceAnnotationId": "a3-ann-036",
+                "label": "A3 西侧外墙实体",
+                "x": 12,
+                "y": 0,
+                "width": 38,
+                "height": 941,
+                "adjustment": {
+                  "kind": "visible_wall_base_repair",
+                  "provenance": "user_browser_comment_2026_10_25",
+                  "preservesRequiredPassages": true
+                }
+              },
+              {
+                "id": "a3_perimeter_east",
+                "sourceAnnotationId": "a3-ann-037",
+                "label": "A3 东侧外墙实体",
+                "x": 1628,
+                "y": 0,
+                "width": 44,
+                "height": 941,
+                "adjustment": {
+                  "kind": "visible_wall_base_repair",
+                  "provenance": "user_browser_comment_2026_10_25",
+                  "preservesRequiredPassages": true
+                }
+              },
+              {
+                "id": "a3_perimeter_north",
+                "sourceAnnotationId": "a3-ann-038",
+                "label": "A3 北侧外墙封边",
+                "x": 0,
+                "y": 0,
+                "width": 1672,
+                "height": 42,
+                "adjustment": {
+                  "kind": "visible_wall_base_repair",
+                  "provenance": "user_browser_comment_2026_10_25",
+                  "preservesRequiredPassages": true
+                }
+              },
+              {
+                "id": "a3_perimeter_south",
+                "sourceAnnotationId": "a3-ann-039",
+                "label": "A3 南侧窗带外墙实体",
+                "x": 0,
+                "y": 840,
+                "width": 1672,
+                "height": 101,
+                "adjustment": {
+                  "kind": "visible_wall_base_repair",
+                  "provenance": "user_browser_comment_2026_10_25",
+                  "preservesRequiredPassages": true
+                }
+              },
+              {
+                "id": "a3_hall_north_base_west",
+                "sourceAnnotationId": "a3-ann-040",
+                "label": "A3 大厅北墙西段墙脚",
+                "x": 504,
+                "y": 136,
+                "width": 223,
+                "height": 11,
+                "adjustment": {
+                  "kind": "visible_wall_base_repair",
+                  "provenance": "user_browser_comment_2026_10_25",
+                  "preservesRequiredPassages": true
+                }
+              },
+              {
+                "id": "a3_hall_north_base_east",
+                "sourceAnnotationId": "a3-ann-041",
+                "label": "A3 大厅北墙东段墙脚",
+                "x": 1016,
+                "y": 136,
+                "width": 138,
+                "height": 11,
+                "adjustment": {
+                  "kind": "visible_wall_base_repair",
+                  "provenance": "user_browser_comment_2026_10_25",
+                  "preservesRequiredPassages": true
+                }
               }
             ],
             "walkableRegions": [

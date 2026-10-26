@@ -26,6 +26,9 @@ func verify_copy(expected: Array, tag: String) -> void:
 		if flash!=null and flash.get("text")==value:found.append(flash)
 		check(not found.is_empty(),tag+" uses revised copy: "+value)
 		for label: Control in found:
+			# Hidden containers have no laid-out visual bounds. Measure these lines
+			# again in their authored visible attack/scatter phase below.
+			if not label.is_visible_in_tree():continue
 			if label is Label:check(label.get_line_count()<=label.get_visible_line_count(),tag+" no clipped lines: "+value)
 			else:
 				check(label==flash and flash.tooltip_text==value.replace("\n",""),tag+" native flash owns revised glyphs and accessible copy")
@@ -48,7 +51,9 @@ func run() -> void:
 		state.d.native.wake_warned=true;shell._refresh();await frames()
 		verify_copy(["还睡？！\n早八要迟到了！！"],"flash "+str(viewport))
 		state.d=state.initial();state.d.native.page="wechat";state.d.flags.codeScattered=false;shell._refresh();await frames()
-		shell.phone_builder.friend_open=true;shell._refresh();await frames()
+		shell.phone_builder._open_wechat_friend();shell._refresh();await frames()
+		shell._process(14.0);await frames()
+		check(shell.page_body.find_child("FriendAttackBurst",true,false).is_visible_in_tree(),"authored attack is visible before measuring its text")
 		verify_copy(["速来！老头突然开始点名了，学在浙大雷达签到！","等等——人还在被窝里就想隔空签到？","想得美！这分我今天扣定了！","签到码给你拆碎咯，慢慢找去吧哈哈哈！"],"friend attack "+str(viewport))
 		state.d.flags.codeScattered=true;state.d.actOne.phase="system_required";shell._refresh();await frames()
 		verify_copy(["签上了吗？？","没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。","？你没睡醒吧"],"friend reply "+str(viewport))

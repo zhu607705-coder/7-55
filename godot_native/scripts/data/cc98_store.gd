@@ -38,11 +38,18 @@ static func load_posts() -> Array:
 		if post is Dictionary and post.get("id") is String and str(post.id) not in QUEST_IDS:
 			by_id[post.id] = post
 	var known: Array = []
+	var parsed_history: Variant = source("cc98.post-default-history")
+	var history: Dictionary = parsed_history.get("posts",{}) if parsed_history is Dictionary else {}
 	for post in baseline:
 		known.append(post.id)
 		if by_id.has(post.id):
 			var authored_replies=post.get("threadReplies")
-			post.merge(_editable(by_id[post.id]),true)
+			var edits: Dictionary = _editable(by_id[post.id])
+			var previous: Dictionary = history.get(post.id,{})
+			# Older editors saved every default row; only exact known prose follows source updates.
+			for field in ["title","body"]:
+				if previous.get(field) is Array and edits.get(field) in previous[field]: edits.erase(field)
+			post.merge(edits,true)
 			post.merge(_auxiliary(by_id[post.id]),true)
 			if authored_replies is Array: post.threadReplies=authored_replies
 	# Authored replies always come from current source. Valid extra fictional posts survive.

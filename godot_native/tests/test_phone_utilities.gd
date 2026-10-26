@@ -40,6 +40,28 @@ func _run() -> void:
 	expect(DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(test_directory))==OK,"isolated test store directory is created")
 	Store.posts_path=test_directory.path_join("posts.json"); Store.quest_path=test_directory.path_join("quest.json")
 	expect(Store.restore_defaults()==OK,"isolated test stores start writable")
+	var default_posts: Array=Store.defaults()
+	var historical: Dictionary=Store.source("cc98.post-default-history").posts
+	var legacy_posts: Array=default_posts.duplicate(true)
+	for post in legacy_posts:
+		post.title=historical[post.id].title[0];post.body=historical[post.id].body[0]
+	legacy_posts[0].author="player author";legacy_posts[0].time="player time"
+	legacy_posts[1].title+=" ";legacy_posts[1].body+="\n"
+	legacy_posts[2].body="player body";legacy_posts[3].title="player title"
+	var explicit_quest: Dictionary={"title":legacy_posts[0].title,"body":legacy_posts[0].body}
+	expect(historical.size()==52 and not historical.has("act-two-gamepad-market"),"default prose history covers only52 ordinary posts")
+	expect(Store.import_bundle({"posts":legacy_posts,"questPostOverrides":{"act-two-gamepad-market":explicit_quest}})==OK,"whole-row old editor store imports normally")
+	var upgraded_posts: Array=Store.load_posts()
+	var follows_source: bool=true
+	for index in range(upgraded_posts.size()):
+		if index in [1,2,3]:continue
+		follows_source=follows_source and upgraded_posts[index].title==default_posts[index].title and upgraded_posts[index].body==default_posts[index].body
+	expect(follows_source,"exact historical titles and bodies yield to the current source")
+	expect(upgraded_posts[0].author=="player author" and upgraded_posts[0].time=="player time","default prose upgrade preserves independently edited metadata")
+	expect(upgraded_posts[1].title==legacy_posts[1].title and upgraded_posts[1].body==legacy_posts[1].body,"nonexact player prose survives without trimming or fuzzy matching")
+	expect(upgraded_posts[2].title==default_posts[2].title and upgraded_posts[2].body=="player body" and upgraded_posts[3].title=="player title" and upgraded_posts[3].body==default_posts[3].body,"title and body upgrades preserve the other independently edited field")
+	expect(Store.load_quest_overrides().get("act-two-gamepad-market")==explicit_quest,"explicit quest overrides are never upgraded even when text matches old defaults")
+	expect(Store.restore_defaults()==OK,"default upgrade checks leave a fresh isolated editor store")
 	await show("settings")
 	node("SettingsSearch").text="桌面"
 	node("SettingsSearch").text_changed.emit("桌面")
@@ -61,6 +83,8 @@ func _run() -> void:
 	s.ui.brightness=85; s.ui.musicPlaying=true
 	await click(node("LowPowerToggle"))
 	expect(s.phoneBattery.lowPowerMode and s.ui.brightness==45 and not s.ui.musicPlaying,"low power caps brightness and pauses source music")
+	c.dispatch(s,"phone_settings_brightness",100)
+	expect(s.ui.brightness==45,"Settings obeys the same low-power cap as Control Center")
 	c.dispatch(s,"c1_network","cellular"); s.phoneBattery.percent=1; c.dispatch(s,"c1_network","campus_wifi")
 	expect(s.phoneBattery.percent==1,"network switch preserves source 1 percent reserve")
 	await show("phone_home")
@@ -138,6 +162,24 @@ func _run() -> void:
 		p.settings_page=section
 		await show("settings")
 		expect(body.size.x==424 and body.get_meta("source_page",false),"Settings "+section+" uses the source-width native layout")
+	# Optional billing uses receipts, never the story wallet or attendance.
+	var store=root.get_node("State")
+	var account=preload("res://scripts/chapters/campus_network_account.gd")
+	store.d=store.initial();store.d.native.page="zjuding"
+	var untouched=JSON.stringify([store.d.wallet,store.d.flags,store.d.items,store.d.actOne,store.d.networkMode])
+	c.dispatch(store.d,"phone_network_review","duplicate_billing")
+	expect(not account.account(store.d).resolved,"guessing a cause without documents cannot clear arrears")
+	c.dispatch(store.d,"phone_network_document","bill")
+	c.dispatch(store.d,"phone_network_document","receipt")
+	c.dispatch(store.d,"phone_network_review","signal_issue")
+	expect(not account.account(store.d).resolved,"unrelated signal complaint preserves arrears")
+	c.dispatch(store.d,"phone_network_review","duplicate_billing")
+	expect(account.account(store.d).resolved,"matching inspected documents resolves duplicate billing")
+	expect(JSON.stringify([store.d.wallet,store.d.flags,store.d.items,store.d.actOne,store.d.networkMode])==untouched,"billing cannot spend story money or unlock attendance and chapters")
+	expect(store.validate_snapshot(store.d) and store.save_game(),"billing state passes native save validation")
+	store.d=store.initial();expect(store.load_game() and account.account(store.d).resolved,"billing survives real native save and reload")
+	var forged=store.d.duplicate(true);forged.native.campus_network_account.receipt_seen=false
+	expect(not store.validate_snapshot(forged),"save rejects settlement without receipt evidence")
 	var bundle={"posts":Store.defaults(),"questPostOverrides":{"act-two-gamepad-market":{"body":"导入的虚构正文"}}}
 	expect(Store.validate_bundle(bundle) and Store.import_bundle(bundle)==OK,"explicit separate-storage bundle imports successfully")
 	expect(Store.quest_posts(fresh())[0].body=="导入的虚构正文","bundle quest body survives fresh story state")

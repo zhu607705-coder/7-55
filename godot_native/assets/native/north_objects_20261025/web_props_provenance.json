@@ -1,0 +1,53 @@
+{
+  "schema": "north-web-props-provenance-v1",
+  "generatedAt": "2026-10-25",
+  "tool": "ChatGPT web image generation",
+  "reference": "res://assets/rpg/interiors/finale/chapter4-755/base/a1.png",
+  "deliveredBy": "generate_north_web_assets",
+  "rawMastersPreserved": true,
+  "rasterEdits": "none; copied raw downloaded bytes unchanged",
+  "runtimePreparation": "Raw web masters unchanged. Native Sprite2D region crop and uniform fit; nearest sampling; alpha<0.5 discarded, accepted base alpha=1; base colors quantized into locked shared32 before source-time and mode lighting. Wall-mounted reveal is a separate one-pass 0.78 CanvasGroup.",
+  "assets": [
+    {
+      "id": "lectern_105",
+      "texture": "res://assets/native/north_objects_20261025/lectern_105_web_master.png",
+      "textureSize": [
+        1254,
+        1254
+      ],
+      "visibleRect": [
+        127,
+        172,
+        1000,
+        909
+      ],
+      "scale": 0.046,
+      "centerX": 1406,
+      "baselineY": 610,
+      "sha256": "4885bd57881a6061f606cbd5eff714c79e563df03e51a0e5471b1177c0ad4412",
+      "sourceUrl": "https://chatgpt.com/c/6addef8a-1078-83e8-8644-c5ee01439c26",
+      "alphaCutoff": 0.03137254901960784
+    },
+    {
+      "id": "bookcase_105",
+      "texture": "res://assets/native/north_objects_20261025/bookcase_105_web_master.png",
+      "textureSize": [
+        959,
+        1640
+      ],
+      "visibleRect": [
+        138,
+        143,
+        683,
+        1301
+      ],
+      "scale": 0.05918524212144504,
+      "centerX": 1555.5,
+      "baselineY": 596,
+      "sha256": "51490dee6c1a5073204b74bc8c298420371f51db57cbe6153de2138b25ac761e",
+      "sourceUrl": "https://chatgpt.com/c/6addefc1-0134-83e8-8548-31ec8e61beb3",
+      "alphaCutoff": 0.03137254901960784
+    }
+  ],
+  "acceptance": "source pixels viewed and hashes/dimensions verified; actual scene graphical acceptance pending"
+}

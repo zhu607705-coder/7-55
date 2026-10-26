@@ -14,7 +14,7 @@
     },
     {
       "path": "src/data/library-finals.content.json",
-      "sha256": "e5a17a58e1bbf20fd2497f6d57957c57a947cec119a88f88ac4290b2f244868b"
+      "sha256": "d207a0e910c254c19a3b6e5807976e6bd635b71d7dab1bfaca134e3cd19e71a0"
     },
     {
       "path": "src/modules/LibraryFinalsController.ts",

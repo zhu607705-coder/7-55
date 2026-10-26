@@ -147,7 +147,7 @@ func run() -> void:
 	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
 	var tick:=Time.get_ticks_usec()
 	var obstacles: Array=w._floor_obstacles()
-	var proof: Array=w._floor_planner.plan(w.player,GOAL-Metrics.FOOT_CENTER_OFFSET,obstacles,w._floor_bounds,w._floor_stand,func(a: Vector2,b: Vector2): return w._floor_segment_clear(a,b,obstacles,true))
+	var proof: Array=w._floor_planner.plan(w.player,w._floor_goal-Metrics.FOOT_CENTER_OFFSET,obstacles,w._floor_bounds,w._floor_stand,func(a: Vector2,b: Vector2): return w._floor_segment_clear(a,b,obstacles,true))
 	var micros:=Time.get_ticks_usec()-tick
 	check(proof==w._floor_route,"planner is deterministic for same source world")
 	check(micros<200000,"bounded visible planner stays below200ms on test host")

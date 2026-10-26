@@ -132,7 +132,7 @@ export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, 
     chmodSync(emptySources, 0o755);
     chmodSync(temporarySource, 0o644);
     chmodSync(temporaryMirrors, 0o644);
-    const fallbackOptions = ['-o', `Dir::Etc::sourcelist=${temporarySource}`, '-o', `Dir::Etc::sourceparts=${emptySources}`];
+    const httpsOptions = ['-o', `Dir::Etc::sourcelist=${temporarySource}`, '-o', `Dir::Etc::sourceparts=${emptySources}`];
     const network = (seconds, options, operation) => {
       const result = execute('sudo', ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', `${seconds}s`, 'apt-get', ...SECURITY, ...options, ...operation]);
       log(`CI media tools: ${operation.includes('update') ? 'index' : 'download-only'} returned ${JSON.stringify({ status: result?.status ?? null, signal: result?.signal ?? null })}`);
@@ -147,12 +147,17 @@ export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, 
       return network(60, options, ['-o', 'APT::Update::Error-Mode=any', 'update'])
         && network(seconds, options, ['--yes', '--no-install-recommends', '--download-only', 'install', 'ffmpeg']);
     };
-    let options = [];
+    // Prefer the official HTTPS mirrors already validated above. The hosted
+    // runner's first original mirror can stall; do not pay its timeout before
+    // trying these existing routes. Unknown source shapes still fail closed.
+    let options = httpsOptions;
+    // Keep the public result shape: fallback reports use of the second route,
+    // which is now the unchanged original APT configuration.
     let fallback = false;
-    if (!acquire('original APT configuration', options, 120)) {
+    if (!acquire('existing official HTTPS mirrors only', options, 180)) {
       fallback = true;
-      options = fallbackOptions;
-      requireCondition(acquire('existing official HTTPS mirrors only', options, 180), 'both bounded acquisition attempts failed; installation not attempted');
+      options = [];
+      requireCondition(acquire('original APT configuration', options, 120), 'both bounded acquisition attempts failed; installation not attempted');
     }
     // No retry/fallback after dpkg starts, and no network or wall-clock kill here.
     requireCondition(success(execute('sudo', ['-n', 'apt-get', ...SECURITY, ...options, '--yes', '--no-install-recommends', '--no-download', 'install', 'ffmpeg'])), 'no-download installation failed; not retried');

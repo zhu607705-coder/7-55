@@ -29,7 +29,7 @@ func presentation() -> Dictionary:
 func check_top_row() -> void:
 	var tasks:Control=shell.world_tasks
 	check(tasks.is_visible_in_tree() and not tasks.disabled,"compact world exposes enabled direct Tasks entry")
-	check(tasks.text.is_empty() and tasks.get("glyph")=="journal" and tasks.size==Vector2(44,44) and tasks.scale==Vector2.ONE,"journal is a quiet glyph with a physical44px target")
+	check(tasks.text.is_empty() and tasks.get("glyph")=="journal" and tasks.size.is_equal_approx(Vector2(44,44)) and tasks.scale==Vector2.ONE and tasks.get_global_rect().size.x>=43.99 and tasks.get_global_rect().size.y>=43.99,"journal is a quiet glyph with a physical44px target")
 	check(shell.world_view.get_global_rect().encloses(tasks.get_global_rect()) and tasks.position.y>=shell.world_view.get_global_rect().end.y-60,"journal fits the actual game image's lower edge")
 	check(not tasks.get_global_rect().intersects(shell.mobile_back.get_global_rect()),"Tasks does not cover return-to-phone")
 	check(shell.world_view.get_global_rect().encloses(tasks.get_global_rect()),"system icon overlays the playfield without reserving an outer toolbar")

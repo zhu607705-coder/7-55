@@ -98,21 +98,19 @@ jobs:
           godot --version
 
       - name: Install media converter
+        # Media conversion writes only its private temp project while the cold
+        # import owns the real project. Final import/export remain mandatory.
         run: |
           node scripts/test-ci-media-tools.mjs
-          node scripts/ensure-ci-media-tools.mjs
+          node godot_native/tools/sync_source.mjs
+          node godot_native/tools/prepare_import_media.mjs --install-media
 
       - name: Build actual production Godot HTML, WebAssembly and PCK
-        run: node godot_native/tools/build_web.mjs
+        run: node godot_native/tools/build_web.mjs --skip-prepare --prepare-controller-fixtures
 
       - name: Check content transport and lossless pack partition
         run: |
           node godot_native/tests/test_web_acceptance_bundle.mjs
-          node godot_native/tests/test_web_acceptance_workflow.mjs
-          node godot_native/tests/test_web_browser_lifecycle.mjs
-          node godot_native/tests/test_web_network_observation.mjs
-          node godot_native/tests/test_web_save_diagnostics.mjs
-          node godot_native/tests/test_web_input_completion.mjs
           node godot_native/tools/test_web_content_loader.mjs
           node godot_native/tools/test_web_resource_cache.mjs
           node godot_native/tools/test_web_boot_chunks.mjs
@@ -134,65 +132,10 @@ jobs:
           console.log(JSON.stringify({ commit: m.sourceCommit, inputs: m.sourceInputSha256, initialPayloadBytes: m.initialPayloadBytes, payloadBytes: m.totalPayloadBytes, pack: m.pack, content: m.content }, null, 2));
           NODE
 
-      - name: Generate controller-earned fixture for mobile browser input
+      - name: Check controller-earned fixture for mobile browser input
         id: phone_recovery_inputs
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import {createHash} from 'node:crypto';
-          import {spawnSync} from 'node:child_process';
-          import {createNativeTestSandbox} from './godot_native/tools/native_test_sandbox.mjs';
-          import {preparePhoneRecoveryInputs} from './godot_native/tools/prepare_phone_recovery_inputs.mjs';
-          const output = path.resolve('godot_native/exports/verification/controller-earned');
-          fs.mkdirSync(output, {recursive: true});
-          const sandbox = createNativeTestSandbox(path.resolve('godot_native'), '755-web-controller-fixture-');
-          const campaignReport = path.join(output, 'controller-campaign-report.json');
-          const command = ['--headless', '--path', sandbox.project, '--script', 'res://tests/campaign_continuity_recorder.gd'];
-          const result = spawnSync(process.env.GODOT_BIN || 'godot', command, {
-            env: {...sandbox.env, CONTINUITY_CAPTURE_DIR: output, CAMPAIGN_REPORT: campaignReport},
-            encoding: 'utf8', maxBuffer: 32 * 1024 * 1024
-          });
-          const log = `${result.stdout || ''}\n${result.stderr || ''}`;
-          fs.writeFileSync(path.join(output, 'controller-campaign.log'), log);
-          console.log(log);
-          if (result.error || result.status !== 0 || /(?:^|\n)(?:SCRIPT ERROR|ERROR):/.test(log)) throw Error(`Controller fixture generation failed: ${result.error || result.status}`);
-          const campaign = JSON.parse(fs.readFileSync(campaignReport, 'utf8'));
-          if (campaign.failures !== 0 || !Number.isInteger(campaign.checks) || campaign.checks <= 0 || campaign.kind !== 'continuous-native-controller-campaign' || !campaign.notManualPlaythrough || !campaign.spatialSetupExplicit) throw Error('Missing successful controller-only fixture provenance');
-          function portableFixture(fixture) {
-            const bytes = fs.readFileSync(path.join(output, fixture));
-            const save = JSON.parse(bytes);
-            if (save.format !== '7-55-godot-native' || save.version !== 1 || !save.state) throw Error(`Missing ordinary portable C2 fixture: ${fixture}`);
-            return {fixture, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex')};
-          }
-          const phoneRecoveryInputs = preparePhoneRecoveryInputs(output);
-          // The existing full-campaign recorder does not emit the library's
-          // unread-rule / before-opening boundaries. Earn those through the
-          // existing dedicated recorder, in a separate isolated save sandbox.
-          const librarySandbox = createNativeTestSandbox(path.resolve('godot_native'), '755-web-library-fixture-');
-          const libraryCommand = ['--headless', '--path', librarySandbox.project, '--script', 'res://tests/library_continuity_recorder.gd'];
-          const libraryReport = path.join(output, 'library-controller-report.json');
-          const libraryResult = spawnSync(process.env.GODOT_BIN || 'godot', libraryCommand, {
-            env: {...librarySandbox.env, LIBRARY_CAPTURE_DIR: output, CAMPAIGN_REPORT: libraryReport},
-            encoding: 'utf8', maxBuffer: 32 * 1024 * 1024
-          });
-          const libraryLog = `${libraryResult.stdout || ''}\n${libraryResult.stderr || ''}`;
-          fs.writeFileSync(path.join(output, 'library-controller.log'), libraryLog);
-          console.log(libraryLog);
-          if (libraryResult.error || libraryResult.status !== 0 || /(?:^|\n)(?:SCRIPT ERROR|ERROR):/.test(libraryLog)) throw Error(`Library fixture generation failed: ${libraryResult.error || libraryResult.status}`);
-          const libraryCampaign = JSON.parse(fs.readFileSync(libraryReport, 'utf8'));
-          if (libraryCampaign.failures !== 0 || !Number.isInteger(libraryCampaign.checks) || libraryCampaign.checks <= 0 || libraryCampaign.kind !== 'continuous-native-controller-campaign' || !libraryCampaign.notManualPlaythrough || !libraryCampaign.spatialSetupExplicit || ![1, 2].every(chapter => libraryCampaign.completedChapters?.includes(chapter))) throw Error('Missing successful controller-only library fixture provenance');
-          const libraryInputs = {recorder: 'res://tests/library_continuity_recorder.gd', command: libraryCommand, checks: libraryCampaign.checks,
-            fixtures: ['before_library_rule_read.json', 'before_library_022_opening.json'].map(portableFixture),
-            scope: 'Controller-earned library boundaries with explicit spatial setup; not complete natural-navigation proof.'};
-          const provenance = {source: JSON.parse(fs.readFileSync('godot_native/exports/verification/ci-source.json', 'utf8')),
-            recorder: 'res://tests/campaign_continuity_recorder.gd', command, checks: campaign.checks,
-            ...portableFixture('before_c2_dorm_exit.json'), streamingFixture: portableFixture('after_c2_dorm_exit.json'), phoneRecoveryInputs, libraryInputs,
-            scope: 'Controller-earned snapshots with explicit spatial test setup, plus explicitly constructed legacy low-battery variants; not browser interaction or manual-navigation proof. Browser coverage is the separately executed mobile-world, streaming, phone-recovery and library-boundary scenarios.'};
-          fs.writeFileSync(path.join(output, 'fixture-provenance.json'), JSON.stringify(provenance, null, 2) + '\n');
-          console.log(JSON.stringify(provenance, null, 2));
-          NODE
-          node godot_native/tests/test_phone_recovery_inputs.mjs --fixtures godot_native/exports/verification/controller-earned
+        # build_web joins both recorders before returning; never regenerate here.
+        run: node godot_native/tests/test_phone_recovery_inputs.mjs --fixtures godot_native/exports/verification/controller-earned
 
       - name: Seal exact-source browser acceptance inputs
         id: acceptance_bundle
@@ -216,60 +159,6 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Accept actual Godot Web input and persisted reload at Pages subpath
-        timeout-minutes: 12
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/godot-qa-site"
-          mkdir -p godot_native/exports/verification/web_ci
-          mkdir -p godot_native/exports/verification/web_streaming
-          ln -s "$GITHUB_WORKSPACE/godot_native/exports/web-release" "$RUNNER_TEMP/godot-qa-site/7-55"
-          python3 -m http.server 5207 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-qa-site" > godot_native/exports/verification/web_ci/http.log 2>&1 &
-          godot_web_http_pid=$!
-          trap 'kill "$godot_web_http_pid" 2>/dev/null || true' EXIT
-          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5207/7-55/build-manifest.json
-          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
-          node godot_native/tools/verify_web_export.mjs \
-            --url http://127.0.0.1:5207/7-55/ \
-            --export-dir godot_native/exports/web-release \
-            --output godot_native/exports/verification/web_ci \
-            --chrome "$godot_web_chrome" \
-            --chrome-arg --use-angle=swiftshader \
-            --chrome-arg --enable-unsafe-swiftshader \
-            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_ci/acceptance.log
-          # Independently prove optional-vs-required deferred-content behavior
-          # with the existing single-desktop streaming fault/retry scenario.
-          node godot_native/tools/verify_web_export.mjs \
-            --url http://127.0.0.1:5207/7-55/ \
-            --export-dir godot_native/exports/web-release \
-            --output godot_native/exports/verification/web_streaming \
-            --scenarios streaming \
-            --fixtures godot_native/exports/verification/controller-earned \
-            --chrome "$godot_web_chrome" \
-            --chrome-arg --use-angle=swiftshader \
-            --chrome-arg --enable-unsafe-swiftshader \
-            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_streaming/acceptance.log
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const directory = 'godot_native/exports/verification/web_streaming';
-          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
-          const fixture = JSON.parse(fs.readFileSync('godot_native/exports/verification/controller-earned/fixture-provenance.json', 'utf8')).streamingFixture;
-          if (!report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || report.cases.length !== 1 || report.cases[0].id !== 'desktop-1280' || !report.cases[0].passed) throw Error('Missing exact-source desktop streaming browser case');
-          const item = report.cases[0], streaming = item.streaming;
-          if (!item.imports?.some(input => input.filename === fixture.fixture && input.sha256 === fixture.sha256)) throw Error('Streaming browser did not import the recorded earned C2 fixture');
-          if (!streaming?.controlledFailures?.length || streaming.freshWithBlockedBackground?.evidence.chapter !== 1 || streaming.freshWithBlockedBackground.content.blocking) throw Error('Missing actual first-chapter use with deferred HTTP blocked');
-          if (!streaming.requiredFailure?.content.blocking || !streaming.requiredFailure.content.retryVisible || streaming.recovery?.realKeyboardMovement !== true || streaming.recovery.content.blocking) throw Error('Missing required-content failure and real user-retry map recovery');
-          const reload = streaming.reload;
-          if (!reload || reload.oldDocumentTimeOrigin === reload.newDocumentTimeOrigin || reload.afterEvidence?.chapter !== 2 || !Array.isArray(reload.chapter2HttpRequests) || reload.chapter2HttpRequests.length !== 0 || !reload.cache?.keys?.length) throw Error('Missing cache-only real-document C2 reload');
-          const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
-            fixtureSha256: fixture.sha256, case: item.id, controlledDeferredFailures: streaming.controlledFailures.length,
-            verified: ['C1 input/save/reload with deferred URLs blocked', 'C2 required-content failure/retry preserves state', 'recovered map accepts keyboard', 'verified cache-only C2 document reload'],
-            scope: 'Existing Chromium streaming fault scenario using an ordinary controller-earned C2 save; not a manual or four-chapter Web campaign.'};
-          fs.writeFileSync(`${directory}/ci-streaming-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
-          console.log(JSON.stringify(receipt, null, 2));
-          NODE
-
       - name: Preserve build evidence
         uses: actions/upload-artifact@v4
         if: always()
@@ -284,9 +173,10 @@ jobs:
             godot_native/exports/verification/ci-source.json
             godot_native/exports/verification/bundle-receipt.json
             godot_native/exports/verification/godot-web-build/*.log
-            godot_native/exports/verification/web_ci/*.json
-            godot_native/exports/verification/web_ci/*.log
-            godot_native/exports/verification/web_ci/*.png
+            godot_native/exports/verification/import-media/
+            godot_native/exports/verification/controller-fixture-process.log
+            godot_native/exports/verification/controller-fixture-process.json
+            godot_native/exports/verification/controller-earned-diagnostics/
             godot_native/exports/verification/controller-earned/controller-campaign-report.json
             godot_native/exports/verification/controller-earned/controller-campaign.log
             godot_native/exports/verification/controller-earned/library-controller-report.json
@@ -299,9 +189,6 @@ jobs:
             godot_native/exports/verification/controller-earned/before_c1_tiyi_digit.json
             godot_native/exports/verification/controller-earned/before_c2_tiyi_update.json
             godot_native/exports/verification/controller-earned/compat-c1-battery-*-v35.json
-            godot_native/exports/verification/web_streaming/*.json
-            godot_native/exports/verification/web_streaming/*.log
-            godot_native/exports/verification/web_streaming/*.png
           if-no-files-found: warn
 
       - name: Upload Pages artifact
@@ -311,24 +198,58 @@ jobs:
         with:
           path: godot_native/exports/web-release
 
-  browser_profiles:
-    name: Godot Web input (${{ matrix.profile }})
-    # A failed baseline still permits independent diagnostics from sealed inputs.
-    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
-    needs: build
+  browser_contracts:
+    name: Verify browser validation source contracts
     runs-on: ubuntu-latest
-    # Bounded first isolation pass; three runners add up to 36 runner-minutes,
-    # not 12. Build + these profiles = 61 runner-minutes; two library consumers
-    # add at most 24 more (85 overall), not 24 minutes of serial wall time.
-    timeout-minutes: 12
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact validator source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+      - name: Test independent source contracts without exporting or running browsers
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node godot_native/tests/test_web_acceptance_workflow.mjs
+          node godot_native/tests/test_web_consumer_source_closure.mjs
+          node godot_native/tests/test_preparation_pipeline.mjs
+          node godot_native/tests/test_web_phone_shards.mjs
+          node godot_native/tests/test_web_controller_fixtures.mjs
+          node godot_native/tests/test_web_browser_lifecycle.mjs
+          node godot_native/tests/test_web_network_observation.mjs
+          node godot_native/tests/test_web_streaming_fault_lifecycle.mjs
+          node godot_native/tests/test_web_save_diagnostics.mjs
+          node godot_native/tests/test_web_input_completion.mjs
+
+  browser_baseline:
+    name: Godot Web baseline (${{ matrix.batch }})
+    # Consume the same sealed inputs in parallel with world/phone/library profiles.
+    # Never export, regenerate fixtures, or mutate the producer's assets here.
+    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
+    needs: [build, browser_contracts]
+    runs-on: ubuntu-latest
+    # Keep the original 12-minute acceptance budget plus input-transfer overhead.
+    timeout-minutes: 15
     permissions:
       contents: read
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
-        profile: [desktop-1280, touch-390, retina-touch-390]
+        include:
+          - batch: standard
+            profiles: desktop-1280 touch-390 retina-1440
+          - batch: wide
+            profiles: desktop-1440 retina-touch-390 desktop-1920
     env:
-      ACCEPTANCE_PROFILE: ${{ matrix.profile }}
+      ACCEPTANCE_BATCH: ${{ matrix.batch }}
+      ACCEPTANCE_BASELINE_PROFILES: ${{ matrix.profiles }}
       ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
       EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
@@ -338,6 +259,291 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          filter: blob:none
+          sparse-checkout: godot_native/tools
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+
+      - name: Download this run's sealed producer inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.bundle_name }}
+          path: ${{ runner.temp }}/godot-web-inputs
+
+      - name: Verify exact source and every input byte
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-baseline-inputs.json
+
+      - name: Accept actual Godot Web input and persisted reload at Pages subpath
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-qa-site"
+          mkdir -p godot_native/exports/verification/web_ci
+          ln -s "$RUNNER_TEMP/godot-web-inputs/web-release" "$RUNNER_TEMP/godot-qa-site/7-55"
+          python3 -m http.server 5207 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-qa-site" > godot_native/exports/verification/web_ci/http.log 2>&1 &
+          godot_web_http_pid=$!
+          trap 'kill "$godot_web_http_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5207/7-55/build-manifest.json
+          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
+          for profile in $ACCEPTANCE_BASELINE_PROFILES; do
+            mkdir -p "godot_native/exports/verification/web_ci/$profile"
+            node godot_native/tools/verify_web_export.mjs \
+              --url http://127.0.0.1:5207/7-55/ \
+              --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+              --output "godot_native/exports/verification/web_ci/$profile" \
+              --only "$profile" \
+              --chrome "$godot_web_chrome" \
+              --chrome-arg --use-angle=swiftshader \
+              --chrome-arg --enable-unsafe-swiftshader \
+              --boot-timeout 180000 2>&1 | tee "godot_native/exports/verification/web_ci/$profile/acceptance.log"
+          done
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const expected = {standard: ['desktop-1280', 'touch-390', 'retina-1440'], wide: ['desktop-1440', 'retina-touch-390', 'desktop-1920']}[process.env.ACCEPTANCE_BATCH];
+          if (!expected || expected.join(' ') !== process.env.ACCEPTANCE_BASELINE_PROFILES) throw Error('Unknown or incomplete baseline batch');
+          const reports = expected.map(profile => JSON.parse(fs.readFileSync(`godot_native/exports/verification/web_ci/${profile}/web-acceptance.json`, 'utf8')));
+          for (const [index, report] of reports.entries()) {
+            if (report.scenarios !== 'all' || report.passed !== true || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || report.cases?.length !== 1 || report.cases[0].id !== expected[index] || report.cases[0].passed !== true) throw Error('Missing exact-source ordinary baseline profile');
+          }
+          const receipt = {batch: process.env.ACCEPTANCE_BATCH, sourceCommit: process.env.GITHUB_SHA,
+            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-baseline-inputs.json', 'utf8')),
+            cases: reports.flatMap(report => report.cases.map(item => ({id: item.id, passed: item.passed}))), scope: 'Original ordinary browser baseline, split only at independent fresh-profile boundaries.'};
+          fs.writeFileSync('godot_native/exports/verification/web_ci/ci-baseline-receipt.json', JSON.stringify(receipt, null, 2) + '\n');
+          NODE
+
+      - name: Preserve this batch's baseline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-baseline-${{ matrix.batch }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-baseline-inputs.json
+            godot_native/exports/verification/web_ci/
+          if-no-files-found: warn
+
+  browser_streaming:
+    name: Godot Web streaming and ordinary touch phone input
+    # Separate fresh browser invocations retain streaming and touch-phone gates.
+    # One full immutable download serves two independent logical artifact keys.
+    # Never export, regenerate fixtures, or mutate the producer's assets here.
+    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
+    needs: [build, browser_contracts]
+    runs-on: ubuntu-latest
+    # Keep the original 12-minute acceptance budget plus input-transfer overhead.
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
+      EXPECTED_PRODUCER_ATTEMPT: ${{ needs.build.outputs.producer_attempt }}
+    steps:
+      - name: Check out exact producer source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          filter: blob:none
+          sparse-checkout: godot_native/tools
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+
+      - name: Download this run's sealed producer inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.bundle_name }}
+          path: ${{ runner.temp }}/godot-web-inputs
+
+      - name: Verify exact source and every input byte
+        id: verify_inputs
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-streaming-inputs.json
+
+      - name: Accept actual streaming failure retry and persisted reload
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-qa-site"
+          mkdir -p godot_native/exports/verification/web_ci
+          mkdir -p godot_native/exports/verification/web_streaming
+          ln -s "$RUNNER_TEMP/godot-web-inputs/web-release" "$RUNNER_TEMP/godot-qa-site/7-55"
+          python3 -m http.server 5207 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-qa-site" > godot_native/exports/verification/web_ci/http.log 2>&1 &
+          godot_web_http_pid=$!
+          trap 'kill "$godot_web_http_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5207/7-55/build-manifest.json
+          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5207/7-55/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_streaming \
+            --scenarios streaming \
+            --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_streaming/acceptance.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const directory = 'godot_native/exports/verification/web_streaming';
+          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
+          const fixture = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/fixture-provenance.json`, 'utf8')).streamingFixture;
+          if (!report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || report.cases.length !== 1 || report.cases[0].id !== 'desktop-1280' || !report.cases[0].passed) throw Error('Missing exact-source desktop streaming browser case');
+          const item = report.cases[0], streaming = item.streaming;
+          if (!item.imports?.some(input => input.filename === fixture.fixture && input.sha256 === fixture.sha256)) throw Error('Streaming browser did not import the recorded earned C2 fixture');
+          if (!streaming?.controlledFailures?.length || streaming.freshWithBlockedBackground?.evidence.chapter !== 1 || streaming.freshWithBlockedBackground.content.blocking) throw Error('Missing actual first-chapter use with deferred HTTP blocked');
+          if (!streaming.requiredFailure?.content.blocking || !streaming.requiredFailure.content.retryVisible || streaming.recovery?.realKeyboardMovement !== true || streaming.recovery.content.blocking) throw Error('Missing required-content failure and real user-retry map recovery');
+          const reload = streaming.reload;
+          if (!reload || reload.oldDocumentTimeOrigin === reload.newDocumentTimeOrigin || reload.afterEvidence?.chapter !== 2 || !Array.isArray(reload.chapter2HttpRequests) || reload.chapter2HttpRequests.length !== 0 || !reload.cache?.keys?.length) throw Error('Missing cache-only real-document C2 reload');
+          const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
+            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-streaming-inputs.json', 'utf8')),
+            fixtureSha256: fixture.sha256, case: item.id, controlledDeferredFailures: streaming.controlledFailures.length,
+            verified: ['C1 input/save/reload with deferred URLs blocked', 'C2 required-content failure/retry preserves state', 'recovered map accepts keyboard', 'verified cache-only C2 document reload'],
+            scope: 'Existing Chromium streaming fault scenario using an ordinary controller-earned C2 save; not a manual or four-chapter Web campaign.'};
+          fs.writeFileSync(`${directory}/ci-streaming-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
+          console.log(JSON.stringify(receipt, null, 2));
+          NODE
+
+      - name: Preserve streaming evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-streaming-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-streaming-inputs.json
+            godot_native/exports/verification/web_ci/http.log
+            godot_native/exports/verification/web_streaming/
+          if-no-files-found: warn
+
+      - name: Verify exact source and every phone input byte
+        id: verify_phone_inputs
+        if: ${{ !cancelled() && steps.verify_inputs.outcome == 'success' }}
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-inputs.json
+
+      - name: Accept actual early charging and two-stage Tiyi phone input
+        if: ${{ !cancelled() && steps.verify_phone_inputs.outcome == 'success' }}
+        env:
+          ACCEPTANCE_PROFILE: touch-390
+          ACCEPTANCE_PHONE_GROUP: all
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p godot_native/exports/verification/web_phone_recovery
+          mkdir -p "$RUNNER_TEMP/godot-phone-qa-site"
+          ln -s "$RUNNER_TEMP/godot-web-inputs/web-release" "$RUNNER_TEMP/godot-phone-qa-site/7-55"
+          python3 -m http.server 5208 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-phone-qa-site" > godot_native/exports/verification/web_phone_recovery/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5208/7-55/build-manifest.json
+          godot_web_chrome="${GODOT_WEB_CHROME:-${CHROME_BIN:-$(command -v google-chrome || command -v chromium || command -v chromium-browser)}}"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5208/7-55/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_phone_recovery \
+            --scenarios phone-recovery --only "$ACCEPTANCE_PROFILE" \
+            --phone-group "$ACCEPTANCE_PHONE_GROUP" \
+            --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
+          const directory = 'godot_native/exports/verification/web_phone_recovery';
+          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
+          const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
+          const expected = [process.env.ACCEPTANCE_PROFILE];
+          const group = process.env.ACCEPTANCE_PHONE_GROUP;
+          const inputs = phoneInputs(fixtures, group);
+          if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
+          const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
+          for (const item of report.cases) {
+            if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
+            assertPhoneCoverage(item.phoneRecovery, group);
+            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
+            if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
+          }
+          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
+            runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
+            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
+            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
+            scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
+          fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
+          console.log(JSON.stringify(receipt, null, 2));
+          NODE
+
+      - name: Preserve this phone group's browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-phone-touch-390-all-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-inputs.json
+            godot_native/exports/verification/web_phone_recovery/
+          if-no-files-found: warn
+
+  browser_profiles:
+    name: Godot Web world and balanced phone input (${{ matrix.profile }})
+    # Baseline failure cannot block these independent sealed-input diagnostics.
+    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
+    needs: [build, browser_contracts]
+    runs-on: ubuntu-latest
+    # Nine physical consumers keep all 13 artifact keys and 17 reports. Pairs use
+    # observed whole-case durations; profiles never share a browser/save directory.
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - profile: desktop-1280
+            phone_profile: desktop-1280
+            phone_group: all
+          - profile: touch-390
+            phone_profile: retina-touch-390
+            phone_group: charging
+          - profile: retina-touch-390
+            phone_profile: ''
+            phone_group: ''
+    env:
+      ACCEPTANCE_PROFILE: ${{ matrix.profile }}
+      ACCEPTANCE_PHONE_GROUP: ${{ matrix.phone_group }}
+      ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
+      EXPECTED_PRODUCER_ATTEMPT: ${{ needs.build.outputs.producer_attempt }}
+    steps:
+      - name: Check out exact producer source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          filter: blob:none
+          sparse-checkout: godot_native/tools
 
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
@@ -407,9 +613,21 @@ jobs:
           console.log(JSON.stringify(receipt, null, 2));
           NODE
 
+      - name: Preserve this profile's independent browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-world-${{ matrix.profile }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-inputs.json
+            godot_native/exports/verification/web_mobile_world/
+          if-no-files-found: warn
+
       - name: Accept actual early charging and two-stage Tiyi phone input
-        # Independent diagnostic gate: an earlier browser failure still fails the job.
-        if: ${{ !cancelled() && steps.verify_inputs.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.phone_profile != '' && steps.verify_inputs.outcome == 'success' }}
+        env:
+          ACCEPTANCE_PROFILE: ${{ matrix.phone_profile }}
+          ACCEPTANCE_PHONE_GROUP: ${{ matrix.phone_group }}
         timeout-minutes: 8
         shell: bash
         run: |
@@ -427,6 +645,7 @@ jobs:
             --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
             --output godot_native/exports/verification/web_phone_recovery \
             --scenarios phone-recovery --only "$ACCEPTANCE_PROFILE" \
+            --phone-group "$ACCEPTANCE_PHONE_GROUP" \
             --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" \
             --chrome "$godot_web_chrome" \
             --chrome-arg --use-angle=swiftshader \
@@ -434,54 +653,61 @@ jobs:
             --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
           const directory = 'godot_native/exports/verification/web_phone_recovery';
           const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
           const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
           const expected = [process.env.ACCEPTANCE_PROFILE];
-          const inputs = [...fixtures.variants, fixtures.earned.firstTiyi, fixtures.earned.secondTiyi];
+          const group = process.env.ACCEPTANCE_PHONE_GROUP;
+          const inputs = phoneInputs(fixtures, group);
           if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
           const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
           for (const item of report.cases) {
             if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
-            if (!item.passed || !item.phoneRecovery?.completed || item.phoneRecovery.coverage.length !== 9 || !item.phoneRecovery.inputs.length || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
+            assertPhoneCoverage(item.phoneRecovery, group);
+            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
             if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
           }
-          const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
+          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
             runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
             inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
-            inputs, cases: report.cases.map(item => ({id: item.id, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
+            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
             scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
           fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
           console.log(JSON.stringify(receipt, null, 2));
           NODE
 
-      - name: Preserve this profile's independent browser evidence
-        if: always()
+      - name: Preserve this phone group's browser evidence
+        if: ${{ always() && matrix.phone_profile != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: godot-web-profile-${{ matrix.profile }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: godot-web-phone-${{ matrix.phone_profile }}-${{ matrix.phone_group }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             godot_native/exports/verification/verified-inputs.json
-            godot_native/exports/verification/web_mobile_world/
             godot_native/exports/verification/web_phone_recovery/
           if-no-files-found: warn
 
-  library_profiles:
-    name: Godot Web library boundaries (${{ matrix.profile }})
-    # Boundary-import continuity only, not the full bag/paper/stamp walking chain.
-    # Reuse this run's sealed export; never rebuild or publish from this job.
+  phone_profiles:
+    name: Godot Web phone (${{ matrix.profile }}, ${{ matrix.group }})
+    # Baseline failure cannot block these independent sealed-input diagnostics.
     if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
-    needs: build
+    needs: [build, browser_contracts]
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    # The complete C2 save/reload/exercise/weather chain stays independent.
+    # Other phone cases run as fresh invocations alongside shorter whole cases.
+    timeout-minutes: 18
     permissions:
       contents: read
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
-        profile: [desktop-1280, touch-390]
+        include:
+          - profile: retina-touch-390
+            group: c2-tiyi
     env:
       ACCEPTANCE_PROFILE: ${{ matrix.profile }}
+      ACCEPTANCE_PHONE_GROUP: ${{ matrix.group }}
       ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
       EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
@@ -491,6 +717,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          filter: blob:none
+          sparse-checkout: godot_native/tools
 
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
@@ -504,6 +732,124 @@ jobs:
           path: ${{ runner.temp }}/godot-web-inputs
 
       - name: Verify exact source and every input byte
+        id: verify_inputs
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-inputs.json
+
+      - name: Accept actual early charging and two-stage Tiyi phone input
+        # Continuous ten-segment pointer runs exceeded the former eight-minute
+        # DPR3 software-rendering bound without a failed interaction assertion.
+        timeout-minutes: 12
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p godot_native/exports/verification/web_phone_recovery
+          mkdir -p "$RUNNER_TEMP/godot-phone-qa-site"
+          ln -s "$RUNNER_TEMP/godot-web-inputs/web-release" "$RUNNER_TEMP/godot-phone-qa-site/7-55"
+          python3 -m http.server 5208 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-phone-qa-site" > godot_native/exports/verification/web_phone_recovery/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5208/7-55/build-manifest.json
+          godot_web_chrome="${GODOT_WEB_CHROME:-${CHROME_BIN:-$(command -v google-chrome || command -v chromium || command -v chromium-browser)}}"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5208/7-55/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_phone_recovery \
+            --scenarios phone-recovery --only "$ACCEPTANCE_PROFILE" \
+            --phone-group "$ACCEPTANCE_PHONE_GROUP" \
+            --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
+          const directory = 'godot_native/exports/verification/web_phone_recovery';
+          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
+          const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
+          const expected = [process.env.ACCEPTANCE_PROFILE];
+          const group = process.env.ACCEPTANCE_PHONE_GROUP;
+          const inputs = phoneInputs(fixtures, group);
+          if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
+          const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
+          for (const item of report.cases) {
+            if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
+            assertPhoneCoverage(item.phoneRecovery, group);
+            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
+            if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
+          }
+          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
+            runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
+            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
+            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
+            scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
+          fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
+          console.log(JSON.stringify(receipt, null, 2));
+          NODE
+
+      - name: Preserve this phone group's browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-phone-${{ matrix.profile }}-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-inputs.json
+            godot_native/exports/verification/web_phone_recovery/
+          if-no-files-found: warn
+
+  library_profiles:
+    name: Godot Web library boundaries (${{ matrix.profile }})
+    # Boundary-import continuity only, not the full bag/paper/stamp walking chain.
+    # Reuse this run's sealed export; never rebuild or publish from this job.
+    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
+    needs: [build, browser_contracts]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - profile: desktop-1280
+            phone_profile: ''
+            phone_group: ''
+          - profile: touch-390
+            phone_profile: retina-touch-390
+            phone_group: c1-tiyi
+    env:
+      ACCEPTANCE_PROFILE: ${{ matrix.profile }}
+      ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
+      EXPECTED_PRODUCER_ATTEMPT: ${{ needs.build.outputs.producer_attempt }}
+    steps:
+      - name: Check out exact producer source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          filter: blob:none
+          sparse-checkout: godot_native/tools
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+
+      - name: Download this run's sealed producer inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.bundle_name }}
+          path: ${{ runner.temp }}/godot-web-inputs
+
+      - name: Verify exact source and every input byte
+        id: verify_inputs
         run: |
           node godot_native/tools/web_acceptance_bundle.mjs verify \
             --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
@@ -581,9 +927,228 @@ jobs:
             godot_native/exports/verification/web_library/
           if-no-files-found: warn
 
+      - name: Verify exact source and every phone input byte
+        id: verify_phone_inputs
+        if: ${{ !cancelled() && matrix.phone_profile != '' && steps.verify_inputs.outcome == 'success' }}
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-inputs.json
+
+      - name: Accept actual early charging and two-stage Tiyi phone input
+        if: ${{ !cancelled() && matrix.phone_profile != '' && steps.verify_phone_inputs.outcome == 'success' }}
+        env:
+          ACCEPTANCE_PROFILE: ${{ matrix.phone_profile }}
+          ACCEPTANCE_PHONE_GROUP: ${{ matrix.phone_group }}
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p godot_native/exports/verification/web_phone_recovery
+          mkdir -p "$RUNNER_TEMP/godot-phone-qa-site"
+          ln -s "$RUNNER_TEMP/godot-web-inputs/web-release" "$RUNNER_TEMP/godot-phone-qa-site/7-55"
+          python3 -m http.server 5208 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-phone-qa-site" > godot_native/exports/verification/web_phone_recovery/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5208/7-55/build-manifest.json
+          godot_web_chrome="${GODOT_WEB_CHROME:-${CHROME_BIN:-$(command -v google-chrome || command -v chromium || command -v chromium-browser)}}"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5208/7-55/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_phone_recovery \
+            --scenarios phone-recovery --only "$ACCEPTANCE_PROFILE" \
+            --phone-group "$ACCEPTANCE_PHONE_GROUP" \
+            --fixtures "$RUNNER_TEMP/godot-web-inputs/controller-earned" \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
+          const directory = 'godot_native/exports/verification/web_phone_recovery';
+          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
+          const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
+          const expected = [process.env.ACCEPTANCE_PROFILE];
+          const group = process.env.ACCEPTANCE_PHONE_GROUP;
+          const inputs = phoneInputs(fixtures, group);
+          if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
+          const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
+          for (const item of report.cases) {
+            if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
+            assertPhoneCoverage(item.phoneRecovery, group);
+            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
+            if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
+          }
+          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
+            runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
+            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
+            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
+            scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
+          fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
+          console.log(JSON.stringify(receipt, null, 2));
+          NODE
+
+      - name: Preserve this phone group's browser evidence
+        if: ${{ always() && matrix.phone_profile != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-phone-${{ matrix.phone_profile }}-${{ matrix.phone_group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-inputs.json
+            godot_native/exports/verification/web_phone_recovery/
+          if-no-files-found: warn
+
+  browser_coverage:
+    name: Verify complete exact-source Web coverage
+    if: ${{ !cancelled() }}
+    needs: [build, browser_contracts, browser_baseline, browser_streaming, browser_profiles, phone_profiles, library_profiles]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    env:
+      ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
+      EXPECTED_PRODUCER_ATTEMPT: ${{ needs.build.outputs.producer_attempt }}
+      ACCEPTANCE_JOB_RESULTS: ${{ toJSON(needs) }}
+    steps:
+      - name: Require every producer and consumer job
+        run: |
+          node --input-type=module <<'NODE'
+          const needs = JSON.parse(process.env.ACCEPTANCE_JOB_RESULTS);
+          const expected = ['build', 'browser_contracts', 'browser_baseline', 'browser_streaming', 'browser_profiles', 'phone_profiles', 'library_profiles'];
+          if (JSON.stringify(Object.keys(needs).sort()) !== JSON.stringify(expected.sort()) || expected.some(name => needs[name].result !== 'success')) throw Error('Every Web producer and consumer job must succeed');
+          NODE
+      - name: Check out exact validator source only
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          filter: blob:none
+          sparse-checkout: godot_native/tools
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+      - name: Download baseline evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: godot-web-baseline-*-${{ github.run_id }}-*
+          path: ${{ runner.temp }}/godot-web-evidence
+          merge-multiple: false
+      - name: Download streaming evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: godot-web-streaming-${{ github.run_id }}-*
+          path: ${{ runner.temp }}/godot-web-evidence
+          merge-multiple: false
+      - name: Download world evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: godot-web-world-*-${{ github.run_id }}-*
+          path: ${{ runner.temp }}/godot-web-evidence
+          merge-multiple: false
+      - name: Download phone evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: godot-web-phone-*-${{ github.run_id }}-*
+          path: ${{ runner.temp }}/godot-web-evidence
+          merge-multiple: false
+      - name: Download library evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: godot-web-library-*-${{ github.run_id }}-*
+          path: ${{ runner.temp }}/godot-web-evidence
+          merge-multiple: false
+      - name: Verify exhaustive browser coverage and shared provenance
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {createHash} from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
+          import {assertPhoneCoverage, assertPhoneShardUnion} from './godot_native/tools/web_phone_shards.mjs';
+          const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+          const requireValue = (value, message) => { if (!value) throw Error(message); };
+          const run = process.env.GITHUB_RUN_ID, attempt = process.env.GITHUB_RUN_ATTEMPT;
+          const expectedSource = {event: process.env.GITHUB_EVENT_NAME, head: process.env.ACCEPTANCE_HEAD_SHA,
+            base: process.env.ACCEPTANCE_BASE_SHA || null, checkedOutCommit: process.env.GITHUB_SHA,
+            tree: execFileSync('git', ['rev-parse', 'HEAD^{tree}'], {encoding: 'utf8'}).trim(), run,
+            attempt: process.env.EXPECTED_PRODUCER_ATTEMPT, dirty: false};
+          requireValue(execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).trim() === expectedSource.checkedOutCommit, 'Aggregate checkout differs from trigger');
+          requireValue(/^[a-f0-9]{64}$/.test(process.env.EXPECTED_RECEIPT_SHA || '') && /^[1-9][0-9]*$/.test(expectedSource.attempt || '') && Number(expectedSource.attempt) <= Number(attempt), 'Missing trusted producer output');
+          const root = path.join(process.env.RUNNER_TEMP, 'godot-web-evidence');
+          const profiles = ['desktop-1280', 'touch-390', 'retina-touch-390'];
+          const dimensions = {'desktop-1280': [1280,720,false,1], 'desktop-1440': [1440,900,false,1], 'touch-390': [390,844,true,1], 'retina-1440': [1440,900,false,2], 'retina-touch-390': [390,844,true,3], 'desktop-1920': [1920,1080,false,1]};
+          const plan = [];
+          const add = (key, bundle, receipt, cases) => plan.push({key, bundle, receipt, cases});
+          for (const [batch, ids] of Object.entries({standard: ['desktop-1280','touch-390','retina-1440'], wide: ['desktop-1440','retina-touch-390','desktop-1920']})) add(`baseline-${batch}`, 'verified-baseline-inputs.json', 'web_ci/ci-baseline-receipt.json', ids.map(id => [`web_ci/${id}/web-acceptance.json`, id, 'all']));
+          add('streaming', 'verified-streaming-inputs.json', 'web_streaming/ci-streaming-receipt.json', [['web_streaming/web-acceptance.json','desktop-1280','streaming']]);
+          for (const id of profiles) add(`world-${id}`, 'verified-inputs.json', 'web_mobile_world/ci-mobile-world-receipt.json', [['web_mobile_world/web-acceptance.json',id,'mobile-world']]);
+          for (const [id, group] of [['desktop-1280','all'],['touch-390','all'],['retina-touch-390','charging'],['retina-touch-390','c1-tiyi'],['retina-touch-390','c2-tiyi']]) add(`phone-${id}-${group}`, 'verified-inputs.json', 'web_phone_recovery/ci-phone-recovery-receipt.json', [['web_phone_recovery/web-acceptance.json',id,'phone-recovery',group]]);
+          for (const id of ['desktop-1280','touch-390']) add(`library-${id}`, 'verified-library-inputs.json', 'web_library/ci-library-receipt.json', [['web_library/web-acceptance.json',id,'library']]);
+          // A failed-only rerun keeps successful jobs' older same-run evidence.
+          // Select the newest artifact per fixed consumer key, never a successful
+          // fallback behind a newer failed report. Producer/source/hash identity
+          // remains exact, so rerunning the producer invalidates older inputs.
+          const selected = new Map();
+          for (const name of fs.readdirSync(root)) {
+            const item = plan.find(candidate => name.startsWith(`godot-web-${candidate.key}-${run}-`));
+            requireValue(item, `Unknown browser artifact: ${name}`);
+            const producerPrefix = `godot-web-${item.key}-${run}-`, consumerAttempt = name.slice(producerPrefix.length);
+            requireValue(/^[1-9][0-9]*$/.test(consumerAttempt) && Number.isSafeInteger(Number(consumerAttempt)) && Number(consumerAttempt) <= Number(attempt), `Invalid/future artifact attempt: ${name}`);
+            const previous = selected.get(item.key);
+            requireValue(!previous || previous.consumerAttempt !== consumerAttempt, `Duplicate consumer key/attempt: ${name}`);
+            if (!previous || Number(consumerAttempt) > Number(previous.consumerAttempt)) selected.set(item.key, {name, consumerAttempt});
+          }
+          requireValue(selected.size === plan.length, 'Missing browser consumer artifact');
+          const names = plan.map(item => selected.get(item.key).name);
+          const digest = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+          const runnerSha256 = digest('godot_native/tools/verify_web_export.mjs');
+          const phoneSha256 = digest('godot_native/tools/web_phone_recovery.mjs');
+          const phoneShardSha256 = digest('godot_native/tools/web_phone_shards.mjs');
+          const retina = [], covered = []; let commonBundle;
+          for (const [index, item] of plan.entries()) {
+            const folder = path.join(root, names[index]), consumerAttempt = selected.get(item.key).consumerAttempt;
+            const read = relative => JSON.parse(fs.readFileSync(path.join(folder, relative), 'utf8'));
+            const bundle = read(item.bundle), receipt = read(item.receipt);
+            requireValue(bundle.verified === true && equal(bundle.source, expectedSource) && bundle.receiptSha === process.env.EXPECTED_RECEIPT_SHA && bundle.producerAttempt === expectedSource.attempt && bundle.consumerAttempt === consumerAttempt, `Different source/run/attempt or unverified bytes: ${item.key}`);
+            const {consumerAttempt: _consumerAttempt, ...sealedBundle} = bundle;
+            if (!commonBundle) commonBundle = sealedBundle;
+            requireValue(equal(sealedBundle, commonBundle) && equal(receipt.inputBundle, bundle) && receipt.sourceCommit === expectedSource.checkedOutCommit, `Different sealed inventory or receipt: ${item.key}`);
+            const ids = item.cases.map(row => row[1]);
+            requireValue(item.key === 'streaming' ? receipt.case === 'desktop-1280' && receipt.verified?.length === 4 : equal(receipt.cases?.map(row => row.id), ids), `Missing scenario receipt cases: ${item.key}`);
+            for (const [file, id, scenario, group] of item.cases) {
+              const report = read(file), c = report.cases?.[0];
+              requireValue(report.passed === true && report.scenarios === scenario && report.runnerSha256 === runnerSha256 && report.exportManifest?.sourceCommit === expectedSource.checkedOutCommit && report.exportManifest?.engine === '4.7.1.stable.official' && report.cases?.length === 1 && c.id === id && c.passed === true && equal([c.width,c.height,c.touch,c.dpr], dimensions[id]) && c.renderer?.webgl2 === true, `Wrong or incomplete real browser case: ${item.key}/${id}`);
+              requireValue(Array.isArray(report.checks) && report.checks.length > 0 && report.checks.every(check => check.ok === true) && Array.isArray(report.errors) && report.errors.length === 0, `Missing or failed browser assertions: ${item.key}`);
+              if (scenario === 'phone-recovery') {
+                requireValue(report.phoneRecoveryRunnerSha256 === phoneSha256 && report.phoneShardRunnerSha256 === phoneShardSha256 && receipt.group === group && receipt.cases[0].group === group && equal(receipt.cases[0].coverage, c.phoneRecovery?.coverage), 'Different phone runner/group evidence');
+                assertPhoneCoverage(c.phoneRecovery, group);
+                if (id === 'retina-touch-390') retina.push(c.phoneRecovery);
+              }
+              covered.push({id, scenario, consumerAttempt, ...(group ? {group} : {})});
+            }
+          }
+          assertPhoneShardUnion(retina);
+          requireValue(covered.length === 17, 'Browser coverage count differs');
+          fs.mkdirSync('godot_native/exports/verification', {recursive:true});
+          fs.writeFileSync('godot_native/exports/verification/web-coverage.json', JSON.stringify({passed:true, source:expectedSource, inputBundle:commonBundle, artifacts:names, covered, scope:'Exhaustive existing automated browser gates; not manual or physical-device acceptance.'}, null, 2) + '\n');
+          console.log(`Exact-source Web coverage PASS: ${names.length} consumer artifacts; ${covered.length} browser reports; all nine phone gates for every original phone profile.`);
+          NODE
+      - name: Preserve exhaustive coverage receipt
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: godot-web-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: godot_native/exports/verification/web-coverage.json
+          if-no-files-found: warn
   deploy:
     name: Publish Godot Web game
-    if: ${{ needs.build.result == 'success' && needs.browser_profiles.result == 'success' && needs.library_profiles.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
+    if: ${{ needs.build.result == 'success' && needs.browser_contracts.result == 'success' && needs.browser_baseline.result == 'success' && needs.browser_streaming.result == 'success' && needs.browser_profiles.result == 'success' && needs.phone_profiles.result == 'success' && needs.library_profiles.result == 'success' && needs.browser_coverage.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
     permissions:
       pages: write
       id-token: write
@@ -591,7 +1156,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [build, browser_profiles, library_profiles]
+    needs: [build, browser_contracts, browser_baseline, browser_streaming, browser_profiles, phone_profiles, library_profiles, browser_coverage]
     steps:
       - name: Configure Pages
         uses: actions/configure-pages@v5

@@ -1,6 +1,8 @@
+import {acquireNativeWorkspaceLock} from './native_validation_lock.mjs';
 import {synchronizeSourceTextRevisions} from './apply-zh-text-revisions.mjs';
 import { stripTypeScriptTypes } from 'node:module';import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';import crypto from 'node:crypto';
 const root=path.resolve(import.meta.dirname,'../..');const dest=path.join(root,'godot_native');
+const releaseWorkspaceLock=acquireNativeWorkspaceLock(dest,'source synchronization');
 // The Web JSON is the sole authored clue text. Native reads a build-time copy.
 const wordSource=path.join(root,'src/data/prologue-interception.content.json');
 const wordTarget=path.join(dest,'data/native/prologue-interception.content.json');
@@ -35,3 +37,5 @@ fs.mkdirSync(path.join(dest,'data/native'),{recursive:true});fs.writeFileSync(pa
 // The full source sync deterministically creates portable GPU-sized tiles.
 // Prologue-only early exits above intentionally never generate other assets.
 await import('./build_panorama_tiles.mjs');
+
+releaseWorkspaceLock();

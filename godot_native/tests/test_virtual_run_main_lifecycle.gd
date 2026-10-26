@@ -38,6 +38,7 @@ func prepare(view: Vector2i) -> void:
 	state_node.act("c2_exercise")
 	await frames(3)
 	game = shell.active_game
+	game.set_process(false)
 	check(is_instance_valid(game),"ordinary exercise authority mounts the native run")
 
 func run() -> void:
@@ -46,9 +47,9 @@ func run() -> void:
 	for view: Vector2i in [Vector2i(390,844),Vector2i(430,860)]:
 		await prepare(view)
 		var attempt := game
-		for i in range(9): await mouse_click(game.target)
+		for i in range(9): await steer_segment()
 		check(not state_node.d.actOne.exerciseStarted and shell.active_game == attempt,"nine real controls retain an incomplete mounted attempt")
-		await mouse_click(game.target)
+		await steer_segment()
 		check(state_node.d.actOne.exerciseStarted,"Main submits tenth control proof immediately")
 		check(is_instance_valid(attempt) and shell.active_game == attempt and attempt.accepted,"Main retains the exact accepted game instance")
 		check(attempt.return_button.visible and attempt.completed == 10,"retained result exposes explicit return with all ten fixes")
@@ -80,17 +81,17 @@ func run() -> void:
 		var repeated_open: Dictionary = state_node.act("c2_exercise")
 		check(not repeated_open.has("game") and shell.active_game == null,"ordinary completed story cannot open the fresh run used by the next fixture")
 	await prepare(Vector2i(390,844))
-	for i in range(9): await mouse_click(game.target)
+	for i in range(9): await steer_segment()
 	state_node.d.actOne.characterNamed = false
 	var rejected := game
-	await mouse_click(game.target)
+	await steer_segment()
 	check(not state_node.d.actOne.exerciseStarted and shell.active_game == rejected,"rejected proof leaves story incomplete and retains the attempt")
 	check(rejected.completed == 9 and not rejected.accepted and "身份失效" in rejected.status.text,"Main passes actual rejection back to ninth point")
 	check(shell.toast.text.is_empty(),"rejected game feedback also owns its clear retry/exit message")
 	await press_key(KEY_ESCAPE)
 	check(shell.active_game == null and not state_node.d.actOne.exerciseStarted,"actual Esc exits rejected run without success")
 	await prepare(Vector2i(390,844))
-	await mouse_click(game.target)
+	await steer_segment()
 	await mouse_click(game.exit_button)
 	check(shell.active_game == null and not state_node.d.actOne.exerciseStarted,"partial close submits no result")
 	state_node.act("c2_exercise")

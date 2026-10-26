@@ -3,6 +3,7 @@ const Chapter=preload("res://scripts/chapters/chapter4.gd")
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
 const Layers=preload("res://scripts/ui/chapter4_world_layers.gd")
 const Effect=preload("res://scripts/ui/chapter4_world_handoff.gd")
+const ElevatorButton=preload("res://scripts/objects/chapter4_elevator_button.gd")
 var checks: int=0
 var failures: int=0
 var state: Dictionary={}
@@ -12,11 +13,14 @@ class Surface extends Control:
 	var player_point:=Vector2(230,650)
 	var draw_order:Array=[]
 	var draw_pass:String=""
-	func register_object_surface(ids:Array,_geometry:Dictionary) -> void:
+	var picker=preload("res://scripts/world_object_picker.gd").new()
+	func register_object_surface(ids:Array,geometry:Dictionary) -> void:
+		picker.add(ids,geometry)
 		if ids.has("a1_bakery_inspection_lamp"):draw_order.append(draw_pass+":lamp")
 	func _draw() -> void:
 		if not layers: return
 		draw_order.clear()
+		picker.clear()
 		var context: Dictionary={"origin":Vector2(-20,-420),"zoom":1.0,"player":player_point,"scene_id":"duan_yongping_temporal_maze","floor":state.chapter4.floor}
 		draw_pass="back";layers.draw_back(self,context,state)
 		draw_order.append("player")
@@ -84,7 +88,7 @@ func run() -> void:
 	layers.tick(0.016,state); holder.queue_redraw(); await process_frame; await process_frame
 	state.chapter4.mode="dark"; Layers.presentation={"kind":"projection","elapsedMs":400}; holder.queue_redraw(); await process_frame; await process_frame
 	state.chapter4.floor="A1"; state.chapter4.phase="bakery_hour_hand"; state.chapter4.timeState="1225_bakery"; state.chapter4.factIds=[]; Layers.presentation={"kind":"bakery_stop","elapsedMs":550}; holder.queue_redraw(); await process_frame; await process_frame
-	check(layers.collisions(state).size()==3,"Bakery moving crowd supplies three source player-foot colliders")
+	check(layers.collisions(state).size()==4,"Bakery crowd retains three foot colliders plus the closed elevator sill")
 	# ChapterFourElevatorDepthModel.ts places the player at9900. The source
 	# bakery machinery stays below4400, including at the actual hidden-avatar
 	# save and at the authored lamp standing point (foot centre at374,390).
@@ -98,6 +102,27 @@ func run() -> void:
 			effect.elapsed_ms=stamp; effect.queue_redraw(); await process_frame; await process_frame
 		effect.cancel(); await process_frame
 	check(Layers.presentation.is_empty(),"Cancelled world effect clears runtime animation state")
+	var call_button=ElevatorButton.new();holder.add_child(call_button);call_button.setup(holder);call_button.set_process_input(false)
+	layers.elevator_button=call_button
+	for floor_id:String in ["A1","A2","A3"]:
+		state=fresh();state.chapter4.floor=floor_id;holder.state=state
+		var plate=load("res://assets/rpg/interiors/finale/chapter4-755/base/"+floor_id.to_lower()+".png")
+		call_button.sync(state,state.native.scene,plate);holder.queue_redraw();await process_frame;await process_frame
+		var targets:Array=chapter.targets(state.native.scene,state)
+		check(holder.picker.pick(call_button.source_rect.get_center(),targets).get("id","")=="main_elevator","Visible call plate picks original elevator intent on "+floor_id)
+		var old_anchor:Dictionary=targets.filter(func(t):return t.id=="main_elevator")[0]
+		check(holder.picker.pick(Vector2(old_anchor.position[0],old_anchor.position[1]),targets).get("id","")!="main_elevator","Elevator click geometry is on the panel, not the former floor point on "+floor_id)
+		var floor:Dictionary=layers.source.floors[int(floor_id.trim_prefix("A"))-1]
+		var sill:Rect2=ElevatorButton.collision_rects(state)[0]
+		check(sill.end.y==float(floor.elevator.visibleBounds.y)+float(floor.elevator.visibleBounds.height) and sill.has_point(Vector2(floor.elevator.doorCenter.x,sill.get_center().y)),"Closed sill blocks the visible aperture on "+floor_id)
+		check(not sill.has_point(Vector2(floor.elevator.standPosition.x,floor.elevator.standPosition.y)),"Call stand stays open on "+floor_id)
+		var before:String=JSON.stringify(state)
+		call_button._action_completed("c4_elevator",state,state,{})
+		check(call_button.snapshot().pressed and JSON.stringify(state)==before,"Press feedback never grants facts or transport on "+floor_id)
+	state.native.mode="dark";state.chapter4.mode="dark";holder.queue_redraw();await process_frame;await process_frame
+	check(holder.picker.pick(call_button.source_rect.get_center(),chapter.targets(state.native.scene,state)).get("id","")=="elevator_record","Same physical panel exposes the existing dark record intent")
+	call_button.sync(state,"library_interior",null)
+	check(not call_button.active and ElevatorButton.collision_rects({"native":{"scene":"library_interior"}}).is_empty(),"Button and sill retire outside the teaching building")
 	holder.queue_free(); await process_frame
 	print("CHAPTER4_WORLD_TESTS ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

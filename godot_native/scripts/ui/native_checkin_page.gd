@@ -15,7 +15,7 @@ func build(b) -> Control:
 	var root: Control=b._base(Color("eef2f7"),b.APP_HEIGHT); root.set_meta("handles_all_actions",true);root.name="NativeCheckinPage"
 	for x in range(0,424,12): b._panel(root,b._home_rect(x,40,2,814),Color(.09,.58,.72,.04))
 	for y in range(40,854,12): b._panel(root,b._home_rect(0,y,424,2),Color(.09,.58,.72,.05))
-	b._nav(root,"back","返回学在浙大",func(): b._return_zjuding("learn"),b._home_rect(18,52,44,44),Color.TRANSPARENT)
+	b._nav(root,"back","返回学在浙大",b._return_checkin,b._home_rect(18,52,44,44),Color.TRANSPARENT)
 	b._label(root,"学在浙大 · 课堂签到",b._home_rect(62,52,300,44),18,b.INK,HORIZONTAL_ALIGNMENT_CENTER)
 	b._panel(root,b._home_rect(18,110,388,141),Color("fff8e2"),b.INK,0,2)
 	b._label(root,"高等数学（早八特供版）",b._home_rect(34,125,335,24),18)

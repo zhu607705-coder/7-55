@@ -19,6 +19,11 @@ func run() -> void:
 		var rotated:=Vector2i(844,390) if dimensions.x<dimensions.y else Vector2i(430,860)
 		root.size=rotated;shell.size=Vector2(rotated);shell._layout();await frames()
 		check(shell.world._floor_route.is_empty() and shell.world._floor_goal==Vector2.INF and shell.world.player==position,"orientation change cancels route and marker before movement")
+		# route_fixture freezes processing for deterministic movement. Restore the
+		# ordinary camera follow after resized root-space controls have settled.
+		shell.world._update_camera()
 		var return_goal:Vector2=Metrics.foot_rect(start).get_center()
+		var local:Vector2=(return_goal-shell.world.camera)*shell.world.zoom+shell.world.size/2
+		check(shell.world_view.get_global_rect().has_point(source_screen(return_goal)) and shell.world.exploration_safe_rect(true).has_point(local) and shell.world._direct_touch_role(local)=="map","return tap stays on actual visible map floor after the frozen camera follows resized controls")
 		await tap_ground(return_goal);await walk_route(return_goal)
 	await finish("MOBILE_FLOOR_ROUTE_ORIENTATIONS")

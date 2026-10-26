@@ -20,11 +20,11 @@
       "系统：论坛有人路过，馆藏里也留着借阅记录。"
     ],
     "cc98": {
-      "title": "【求助】剧院门口飞出一张湿纸，有人看见吗",
+      "title": "求助，刚刚剧场门口漂走的湿纸有人看到吗？",
       "replies": [
-        "3楼：刚看到它往有水的地方移动。",
-        "8楼：方向靠近桥。",
-        "14楼：最后一次看到它时，纸边还在滴水。"
+        "3楼：刚才顺着风向看，好像朝有水的地方飘过去了。",
+        "8楼：我就看到湿纸当时漂移的方向是在靠近桥那边。",
+        "14楼：擦肩而过扫到一眼，掉下来时纸角还直滴水。"
       ],
       "system": "系统：论坛线索指向湖区和桥。",
       "player": "玩家：继续找能区分地点的信息。"
@@ -32,11 +32,26 @@
     "catalog": {
       "query": "签到记录夹页",
       "fields": [
-        ["馆藏状态", "异常外借"],
-        ["湿度", "偏高"],
-        ["定位方式", "失效"],
-        ["最近特征", "水面反射区域"],
-        ["备注", "当前页码只出现在倒影中"]
+        [
+          "馆藏状态",
+          "异常外借"
+        ],
+        [
+          "湿度",
+          "偏高"
+        ],
+        [
+          "定位方式",
+          "失效"
+        ],
+        [
+          "最近特征",
+          "水面反射区域"
+        ],
+        [
+          "备注",
+          "当前页码只出现在倒影中"
+        ]
       ],
       "player": "玩家：需要在湖面倒影里确认位置。",
       "system": "系统：已记录倒影条件。"
@@ -72,17 +87,17 @@
     "kayakCollected": "皮划艇已确认。两支桨没有放在器材架上，继续沿码头寻找。",
     "leftPaddleCollected": "柳树枝长度合适，已作为左桨。还要找另一侧的桨。",
     "rightPaddleCollected": "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。",
-    "outfitComplete": "皮划艇和两支临时桨都已收齐。"
-    ,"safetyRainBlock": "值班老师：现在天气不能下水。你要坚持，可以继续靠近码头试试。"
-    ,"safetyWarningRepeated": "值班老师：雨还没停，不能下水。"
-    ,"rainReturnBlocked": "值班老师：衣服还没干，又来？雨没停，先别下水。"
-    ,"forcedLaunch": "你还是把皮划艇推下水，顶着雨划离了码头。"
-    ,"forcedCapsize": "连续几桨后，侧风把船身压向一边，皮划艇失去平衡。"
-    ,"forcedRescue": "值班老师和安全员把你救上岸。"
-    ,"safetyCleared": "值班老师：现在可以下水。"
-    ,"safetyAlreadyCleared": "值班老师：现在可以下水。"
-    ,"afterRainProof": "这是下过雨的证明"
-    ,"boardRainRejected": "现在天气不能下水。"
+    "outfitComplete": "皮划艇和两支临时桨都已收齐。",
+    "safetyRainBlock": "值班老师：现在天气不能下水。你要坚持，可以继续靠近码头试试。",
+    "safetyWarningRepeated": "值班老师：雨还没停，不能下水。",
+    "rainReturnBlocked": "值班老师：衣服还没干，又来？雨没停，先别下水。",
+    "forcedLaunch": "你还是把皮划艇推下水，顶着雨划离了码头。",
+    "forcedCapsize": "连续几桨后，侧风把船身压向一边，皮划艇失去平衡。",
+    "forcedRescue": "值班老师和安全员把你救上岸。",
+    "safetyCleared": "值班老师：现在可以下水。",
+    "safetyAlreadyCleared": "值班老师：现在可以下水。",
+    "afterRainProof": "这是下过雨的证明",
+    "boardRainRejected": "现在天气不能下水。"
   },
   "boarding": {
     "title": "上船平衡",
@@ -172,8 +187,14 @@
     }
   },
   "reflection": {
-    "dialogue": ["玩家：纸条只在倒影里出现。", "系统：深色观察可以记录它的坐标。"],
-    "afterPaper": ["系统：位置已记录。", "浅色操作可在浮排边捞起漂浮的钓鱼竿。"],
+    "dialogue": [
+      "玩家：纸条只在倒影里出现。",
+      "系统：深色观察可以记录它的坐标。"
+    ],
+    "afterPaper": [
+      "系统：位置已记录。",
+      "浅色操作可在浮排边捞起漂浮的钓鱼竿。"
+    ],
     "lightWater": "水纹围成一圈，可以朝那里抛竿。",
     "darkWater": "深色观察显示纸条倒影和物品位置。",
     "wrong": "该位置没有记录到目标。",
@@ -181,15 +202,23 @@
     "task": "在启真湖找到纸条"
   },
   "signs": {
-    "dialogue": ["旧指示牌已作为右桨。"],
-    "labels": ["禁止游泳", "小码头", "浮排河道"],
+    "dialogue": [
+      "旧指示牌已作为右桨。"
+    ],
+    "labels": [
+      "禁止游泳",
+      "小码头",
+      "浮排河道"
+    ],
     "wrong": "该操作不符合当前阶段。",
     "correct": "右桨已安装。",
     "coordinateDark": "倒影坐标已记录。",
     "coordinateLight": "浅色操作可在对应水纹抛竿。"
   },
   "decoy": {
-    "dialogue": ["任务：把假纸条固定到钓鱼竿上作饵。"],
+    "dialogue": [
+      "任务：把假纸条固定到钓鱼竿上作饵。"
+    ],
     "missingCoordinate": "深色观察可补充确认坐标；浅色操作也可以直接尝试。",
     "correct": "系统：假纸条已装成诱饵，固定到鱼钩上。",
     "darkReveal": "倒影中出现可抛竿的位置。",
@@ -199,9 +228,13 @@
     "lightPrompt": "当前为浅色操作。",
     "darkPrompt": "当前为深色观察。",
     "modeLocked": "当前阶段无法切换观察模式。",
-    "wrongDialogue": ["操作没有命中当前目标。"],
+    "wrongDialogue": [
+      "操作没有命中当前目标。"
+    ],
     "wrong": "未命中目标。",
-    "successDialogue": ["目标已命中。"]
+    "successDialogue": [
+      "目标已命中。"
+    ]
   },
   "toolChain": {
     "keyCaught": "钓起一把生锈的柜门钥匙。",
@@ -272,76 +305,155 @@
     "steps": {
       "findRod": {
         "label": "在大湖面捞起钓鱼竿",
-        "hints": ["浅色操作时，在大湖面浮排边捞起钓鱼竿。", "深色观察可先记录纸条倒影，但不限制捞竿。"]
+        "hints": [
+          "浅色操作时，在大湖面浮排边捞起钓鱼竿。",
+          "深色观察可先记录纸条倒影，但不限制捞竿。"
+        ]
       },
       "attachDecoy": {
         "label": "把假纸条装上钓鱼竿作饵",
-        "hints": ["把假纸条拖到大湖面的纸条倒影上装饵。", "直接对倒影抛竿只会穿过去。"]
+        "hints": [
+          "把假纸条拖到大湖面的纸条倒影上装饵。",
+          "直接对倒影抛竿只会穿过去。"
+        ]
       },
       "catchKey": {
         "label": "钓起水下的小金属物",
-        "hints": ["深色观察可记录钥匙倒影坐标，也可在浅色操作直接尝试。", "浅色操作时，皮划艇到达金色水纹外圈附近后，把钓鱼竿拖入水纹。", "音符沿 A、S、D 三列向下移动；短块到白线时点按，长条头端到线时按住，尾端过线后松开。"]
+        "hints": [
+          "深色观察可记录钥匙倒影坐标，也可在浅色操作直接尝试。",
+          "浅色操作时，皮划艇到达金色水纹外圈附近后，把钓鱼竿拖入水纹。",
+          "音符沿 A、S、D 三列向下移动；短块到白线时点按，长条头端到线时按住，尾端过线后松开。"
+        ]
       },
       "openLocker": {
         "label": "用钥匙打开码头储物柜",
-        "hints": ["带着生锈的柜门钥匙回小码头。", "靠近储物柜，把钥匙拖到锁孔。"]
+        "hints": [
+          "带着生锈的柜门钥匙回小码头。",
+          "靠近储物柜，把钥匙拖到锁孔。"
+        ]
       },
       "catchNetFrame": {
         "label": "查看旧木桩下的框状物",
-        "hints": ["深色观察可记录网框倒影坐标，也可在浅色操作直接尝试。", "浅色操作时，皮划艇到达金色网框水纹外圈附近后开始节奏钓取。"]
+        "hints": [
+          "深色观察可记录网框倒影坐标，也可在浅色操作直接尝试。",
+          "浅色操作时，皮划艇到达金色网框水纹外圈附近后开始节奏钓取。"
+        ]
       },
       "combineNet": {
         "label": "组合尼龙绳和破损网框",
-        "hints": ["浮标组合位在大湖面。", "把尼龙绳或破损网框拖进组合位，也可以在道具栏内直接组合。"]
+        "hints": [
+          "浮标组合位在大湖面。",
+          "把尼龙绳或破损网框拖进组合位，也可以在道具栏内直接组合。"
+        ]
       },
       "retrieveTin": {
         "label": "用临时抄网捞起密封饲料盒",
-        "hints": ["从大湖北侧进入浮排直河道。", "抄网可以伸到浮排下方，托住那个罐子。"]
+        "hints": [
+          "从大湖北侧进入浮排直河道。",
+          "抄网可以伸到浮排下方，托住那个罐子。"
+        ]
       },
       "openTin": {
         "label": "在浮排硬边撬开密封饲料盒",
-        "hints": ["密封饲料盒要借浮排硬边撬开。", "把密封饲料盒拖到浮排硬边开罐位。"]
+        "hints": [
+          "密封饲料盒要借浮排硬边撬开。",
+          "把密封饲料盒拖到浮排硬边开罐位。"
+        ]
       },
       "catchFish": {
         "label": "用鱼饲料颗粒钓一条小鲤鱼",
-        "hints": ["深色观察可记录鱼群水纹坐标，也可在浅色操作直接尝试。", "浅色操作时，皮划艇到达金色鱼群水纹外圈附近后，把鱼饲料颗粒拖入水纹。"]
+        "hints": [
+          "深色观察可记录鱼群水纹坐标，也可在浅色操作直接尝试。",
+          "浅色操作时，皮划艇到达金色鱼群水纹外圈附近后，把鱼饲料颗粒拖入水纹。"
+        ]
       },
       "combineMagneticRod": {
         "label": "组合磁性扣和钓鱼竿",
-        "hints": ["把黑天鹅磁性扣拖到钓鱼竿上，或去船头磁吸组合位。", "组合位在黑天鹅围栏外的水面。"]
+        "hints": [
+          "把黑天鹅磁性扣拖到钓鱼竿上，或去船头磁吸组合位。",
+          "组合位在黑天鹅围栏外的水面。"
+        ]
       },
       "capturePaper": {
         "label": "用磁性钓鱼竿吸住纸条本体",
-        "hints": ["深色观察可确认纸条坐标；浅色操作可直接尝试。", "皮划艇到达金色纸条水纹外圈附近后，把磁性钓鱼竿拖入水纹，完成最终八小节节奏钓取。"]
+        "hints": [
+          "深色观察可确认纸条坐标；浅色操作可直接尝试。",
+          "皮划艇到达金色纸条水纹外圈附近后，把磁性钓鱼竿拖入水纹，完成最终八小节节奏钓取。"
+        ]
       }
     }
   },
   "journal": {
     "titles": [
-      { "id": "title_makeshift_boat", "text": "【记录】启真湖首航：船是捡的，桨是凑的，人是活的" },
-      { "id": "title_no_capsize", "text": "启真湖划船一圈没翻，特此发帖留念" },
-      { "id": "title_wind_at_center", "text": "在湖心漂了一下午，课表上没有这一项" }
+      {
+        "id": "title_makeshift_boat",
+        "text": "【记录】启真湖首航：船是捡的，桨是凑的，人是活的"
+      },
+      {
+        "id": "title_no_capsize",
+        "text": "启真湖划船一圈没翻，特此发帖留念"
+      },
+      {
+        "id": "title_wind_at_center",
+        "text": "在湖心漂了一下午，课表上没有这一项"
+      }
     ],
     "statuses": [
-      { "id": "status_still_afloat", "text": "人还在湖上，船还浮着" },
-      { "id": "status_arms_gone", "text": "两条胳膊已报废，但不亏" },
-      { "id": "status_claim_floor", "text": "上岸再整理，先占个楼" }
+      {
+        "id": "status_still_afloat",
+        "text": "人还在湖上，船还浮着"
+      },
+      {
+        "id": "status_arms_gone",
+        "text": "两条胳膊已报废，但不亏"
+      },
+      {
+        "id": "status_claim_floor",
+        "text": "上岸再整理，先占个楼"
+      }
     ],
     "spotCaptions": {
       "dock": [
-        { "id": "caption_dock_depart", "text": "出发位打卡。临时装备已经固定，先试着划离码头。" },
-        { "id": "caption_dock_return", "text": "回码头补一张。能完整地划回来，我自己都没想到。" },
-        { "id": "caption_dock_gear", "text": "器材架空了一半，这艘皮划艇暂时归我保管。" }
+        {
+          "id": "caption_dock_depart",
+          "text": "出发位打卡。临时装备已经固定，先试着划离码头。"
+        },
+        {
+          "id": "caption_dock_return",
+          "text": "回码头补一张。能完整地划回来，我自己都没想到。"
+        },
+        {
+          "id": "caption_dock_gear",
+          "text": "器材架空了一半，这艘皮划艇暂时归我保管。"
+        }
       ],
       "reflection": [
-        { "id": "caption_reflection_mirror", "text": "水静下来才拍清倒影，没敢再划桨。" },
-        { "id": "caption_reflection_ripple", "text": "刚按快门就来一圈水纹，倒影当场断开，凑合看。" },
-        { "id": "caption_reflection_wait", "text": "为了等水静下来，在湖心多漂了十分钟，值。" }
+        {
+          "id": "caption_reflection_mirror",
+          "text": "水静下来才拍清倒影，没敢再划桨。"
+        },
+        {
+          "id": "caption_reflection_ripple",
+          "text": "刚按快门就来一圈水纹，倒影当场断开，凑合看。"
+        },
+        {
+          "id": "caption_reflection_wait",
+          "text": "为了等水静下来，在湖心多漂了十分钟，值。"
+        }
       ],
       "swan_cove": [
-        { "id": "caption_swan_stare", "text": "黑天鹅隔着围栏盯着我看了很久，没敢再靠近。" },
-        { "id": "caption_swan_turn", "text": "按下快门那一下它正好转头，气场很足。" },
-        { "id": "caption_swan_gone", "text": "围栏空了，水面只剩一圈还没散的水痕。" }
+        {
+          "id": "caption_swan_stare",
+          "text": "黑天鹅隔着围栏盯着我看了很久，没敢再靠近。"
+        },
+        {
+          "id": "caption_swan_turn",
+          "text": "按下快门那一下它正好转头，气场很足。"
+        },
+        {
+          "id": "caption_swan_gone",
+          "text": "围栏空了，水面只剩一圈还没散的水痕。"
+        }
       ]
     },
     "tagLabels": {
@@ -398,30 +510,120 @@
     },
     "replyPools": {
       "main": [
-        { "id": "reply_main_bd_queue", "personaId": "late-printer", "text": "bd。楼主发帖时间已记录，比我昨晚的打印队列靠前。", "likes": "46" },
-        { "id": "reply_main_wind_pass", "personaId": "yuquan-wind", "text": "下午路过启真湖看见这艘船了，湖心风不小，照片倒是拍得挺稳。", "likes": "38" },
-        { "id": "reply_main_sign_paddle", "personaId": "socket-observer", "text": "右边那支桨看着眼熟，像是器材架旁边立了很久的旧牌子。", "likes": "27" },
-        { "id": "reply_main_rider_follow", "personaId": "qiushi-rider", "text": "每天骑车绕湖一圈，头回见有人划这个。先收藏，翻了记得回来更新。", "likes": "52" },
-        { "id": "reply_main_budget_tour", "personaId": "six-cent-rich", "text": "余额 0.06 元，租船押金都付不起，看楼主发帖就当自己划过。", "likes": "63" },
-        { "id": "reply_main_audit_hold", "personaId": "wild-auditor", "text": "无审核权限，仅存档湖心主图一张。船的来源建议楼主自行补充说明。", "likes": "31" }
+        {
+          "id": "reply_main_bd_queue",
+          "personaId": "late-printer",
+          "text": "bd。楼主发帖时间已记录，比我昨晚的打印队列靠前。",
+          "likes": "46"
+        },
+        {
+          "id": "reply_main_wind_pass",
+          "personaId": "yuquan-wind",
+          "text": "下午路过启真湖看见这艘船了，湖心风不小，照片倒是拍得挺稳。",
+          "likes": "38"
+        },
+        {
+          "id": "reply_main_sign_paddle",
+          "personaId": "socket-observer",
+          "text": "右边那支桨看着眼熟，像是器材架旁边立了很久的旧牌子。",
+          "likes": "27"
+        },
+        {
+          "id": "reply_main_rider_follow",
+          "personaId": "qiushi-rider",
+          "text": "每天骑车绕湖一圈，头回见有人划这个。先收藏，翻了记得回来更新。",
+          "likes": "52"
+        },
+        {
+          "id": "reply_main_budget_tour",
+          "personaId": "six-cent-rich",
+          "text": "余额 0.06 元，租船押金都付不起，看楼主发帖就当自己划过。",
+          "likes": "63"
+        },
+        {
+          "id": "reply_main_audit_hold",
+          "personaId": "wild-auditor",
+          "text": "无审核权限，仅存档湖心主图一张。船的来源建议楼主自行补充说明。",
+          "likes": "31"
+        }
       ],
       "dock": [
-        { "id": "reply_dock_shelf_gap", "personaId": "qiushi-rider", "text": "这个码头我天天推车经过，器材架今天确实空了一格，原来在你这。", "likes": "18" },
-        { "id": "reply_dock_borrowed", "personaId": "socket-observer", "text": "架空位 +1，东西记得还。上次有人借桨借了半个学期。", "likes": "22" },
-        { "id": "reply_dock_planks", "personaId": "six-cent-rich", "text": "码头木板数过了，翘起来三块，踩中间那块最稳，不用谢。", "likes": "15" },
-        { "id": "reply_dock_closed_loop", "personaId": "wild-auditor", "text": "出发位与回位经比对为同一码头，行程闭环，予以存档。", "likes": "12" }
+        {
+          "id": "reply_dock_shelf_gap",
+          "personaId": "qiushi-rider",
+          "text": "这个码头我天天推车经过，器材架今天确实空了一格，原来在你这。",
+          "likes": "18"
+        },
+        {
+          "id": "reply_dock_borrowed",
+          "personaId": "socket-observer",
+          "text": "架空位 +1，东西记得还。上次有人借桨借了半个学期。",
+          "likes": "22"
+        },
+        {
+          "id": "reply_dock_planks",
+          "personaId": "six-cent-rich",
+          "text": "码头木板数过了，翘起来三块，踩中间那块最稳，不用谢。",
+          "likes": "15"
+        },
+        {
+          "id": "reply_dock_closed_loop",
+          "personaId": "wild-auditor",
+          "text": "出发位与回位经比对为同一码头，行程闭环，予以存档。",
+          "likes": "12"
+        }
       ],
       "reflection": [
-        { "id": "reply_reflection_opposite_shore", "personaId": "yuquan-wind", "text": "这张倒影我在对岸目击过拍摄过程，水面确实静了一阵，就一阵。", "likes": "41" },
-        { "id": "reply_reflection_wait_water", "personaId": "late-printer", "text": "等水静下来要多久？我在岸边计时到五分钟就放弃了，楼主有耐心。", "likes": "19" },
-        { "id": "reply_reflection_old_hand", "personaId": "qiushi-rider", "text": "湖心倒影，老港人都知道这个机位。下班绕过去看一眼，血压能低点。", "likes": "26" },
-        { "id": "reply_reflection_no_edit", "personaId": "wild-auditor", "text": "倒影中船身与人物比例一致，未发现修图痕迹，通过。", "likes": "33" }
+        {
+          "id": "reply_reflection_opposite_shore",
+          "personaId": "yuquan-wind",
+          "text": "这张倒影我在对岸目击过拍摄过程，水面确实静了一阵，就一阵。",
+          "likes": "41"
+        },
+        {
+          "id": "reply_reflection_wait_water",
+          "personaId": "late-printer",
+          "text": "等水静下来要多久？我在岸边计时到五分钟就放弃了，楼主有耐心。",
+          "likes": "19"
+        },
+        {
+          "id": "reply_reflection_old_hand",
+          "personaId": "qiushi-rider",
+          "text": "湖心倒影，老港人都知道这个机位。下班绕过去看一眼，血压能低点。",
+          "likes": "26"
+        },
+        {
+          "id": "reply_reflection_no_edit",
+          "personaId": "wild-auditor",
+          "text": "倒影中船身与人物比例一致，未发现修图痕迹，通过。",
+          "likes": "33"
+        }
       ],
       "swan_cove": [
-        { "id": "reply_swan_stare_contest", "personaId": "socket-observer", "text": "黑天鹅盯人是常规项目，建议不要长时间对视，赢不了。", "likes": "44" },
-        { "id": "reply_swan_head_turn", "personaId": "yuquan-wind", "text": "它转头那下我正好路过。楼主退得挺快，照片居然没糊。", "likes": "37" },
-        { "id": "reply_swan_budget", "personaId": "six-cent-rich", "text": "这鹅一天的伙食费超过我的余额，楼主别跟它比气场，比不过。", "likes": "58" },
-        { "id": "reply_swan_watermark", "personaId": "wild-auditor", "text": "空围栏这张亦已存档。水痕未散，后续动向保持观察。", "likes": "21" }
+        {
+          "id": "reply_swan_stare_contest",
+          "personaId": "socket-observer",
+          "text": "黑天鹅盯人是常规项目，建议不要长时间对视，赢不了。",
+          "likes": "44"
+        },
+        {
+          "id": "reply_swan_head_turn",
+          "personaId": "yuquan-wind",
+          "text": "它转头那下我正好路过。楼主退得挺快，照片居然没糊。",
+          "likes": "37"
+        },
+        {
+          "id": "reply_swan_budget",
+          "personaId": "six-cent-rich",
+          "text": "这鹅一天的伙食费超过我的余额，楼主别跟它比气场，比不过。",
+          "likes": "58"
+        },
+        {
+          "id": "reply_swan_watermark",
+          "personaId": "wild-auditor",
+          "text": "空围栏这张亦已存档。水痕未散，后续动向保持观察。",
+          "likes": "21"
+        }
       ]
     }
   }

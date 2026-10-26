@@ -84,6 +84,7 @@ func manual_minute(state: Dictionary) -> bool:
 	return (c.get("phase","")=="maintenance_repair" and c.get("timeState","")=="2245_maintenance" and "clock_gear_repaired" in facts) or (c.get("phase","")=="return_to_clock" and state.get("items",{}).get("finalMinute",false))
 func draw_back(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state: Dictionary) -> void:
 	var c: Dictionary=state.chapter4
+	_draw_honor_floor_repairs(owner,canvas,context,state)
 	if c.floor=="A1":
 		_draw_clock(owner,canvas,context,state)
 		if c.phase in ["blackout_light_grid","final_chase"]:
@@ -294,9 +295,22 @@ func _portrait_environment(owner:RefCounted,canvas:CanvasItem,context:Dictionary
 			var overlap:Rect2=covered.intersection(Room.rect(source.lightGridRuntime.visualRegions[i].bounds))
 			if overlap.has_area():canvas.draw_rect(overlap,Color("020711",.08 if (int(state.chapter4.lightGrid.mask)&(1<<i))!=0 else .7))
 	canvas.draw_set_transform(Vector2.ZERO)
+func honor_floor_repairs(state: Dictionary) -> Array:
+	var out: Array=[]
+	for person: Dictionary in honor_figures(state):
+		if person.has("floorRepair"): out.append(person.floorRepair)
+	return out
+func _draw_honor_floor_repairs(owner:RefCounted,canvas:CanvasItem,context:Dictionary,state:Dictionary)->void:
+	var plate:Texture2D=context.get("background")
+	if plate==null:return
+	for patch:Dictionary in honor_floor_repairs(state):
+		var bounds:Rect2=Room.rect(patch.bounds)
+		owner._world(canvas,context)
+		canvas.draw_texture_rect_region(plate,bounds,Room.rect(patch.sourceBounds))
+		_portrait_environment(owner,canvas,context,state,bounds)
 func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	for person in honor_figures(state):
-		if not _depth(context,162 if int(person.floor)==1 else 842,front): continue
+		if not _depth(context,float(person.get("displayBaselineY",162 if int(person.floor)==1 else 842)),front): continue
 		var frame: Rect2=Room.rect(person.frameBounds); var image_bounds: Rect2=Room.rect(person.imageBounds)
 		var tint:Color=portrait_tint(owner,context,state,person)
 		Picker.record(canvas,[str(person.targetId)],frame)

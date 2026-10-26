@@ -18,6 +18,7 @@ const pollSource = between(runner, 'async function poll(', 'async function shaFi
 const checkSource = between(runner, 'function check(', 'async function persist(');
 const sampleSource = between(runner, 'async function mobileSample(', 'async function worldTouches(');
 const stoppedSource = between(runner, 'async function assertWorldStopped(', 'async function assertBottomPlaque(');
+const rotateSource = between(runner, 'async function rotateMobileWorld(', 'async function directWorldCase(');
 const factsSource = runner.split('\n').find(line => line.startsWith('const mobileFacts ='));
 assert(factsSource);
 const claimSource = between(phone, "  await click('HomeWeatherOpen'); await click('WeatherWaterCard');", "  await shot('tiyi-weather-rain');");
@@ -59,6 +60,47 @@ function worldSample(frame, edit = () => {}) {
   const value = { sampleFrame: frame, state: { native: { chapter: 2, scene: 'dorm_hub', dorm_props: { lamp_03_on: true } }, actOne: { phase: 'movement_ready' }, items: { campusCard: true }, wallet: { balance: 6 } }, world: { scene_id: 'dorm_hub', visible: true, player: { x: 100, y: 200 }, touch_axis: { x: 0, y: 0 }, input: { owners: [], mouseOwned: false, inventoryOwned: false, dormPropActions: 1 } } };
   edit(value); return value;
 }
+function rotationFixture(portrait, dpr, editBrowser = () => {}, editNext = () => {}) {
+  const width = portrait ? 390 : 844, height = portrait ? 844 : 390;
+  const previous = worldSample(10, s => { s.viewport = { width: height, height: width }; });
+  const next = worldSample(11, s => {
+    s.viewport = { width, height }; s.world.size = { x: 960, y: 540 };
+    s.world.rect = { x: 0, y: 0, width: 320, height: 180 }; s.world.input.geometryAvailable = true;
+    editNext(s);
+  });
+  const browser = { width, height, visualWidth: width, visualHeight: height, scale: 1, canvas: { x: 0, y: 0, width, height } };
+  editBrowser(browser);
+  const calls = [], checks = [], evidence = { inputs: [] }; let clock = 0, reads = 0;
+  const rotate = vm.runInNewContext(`${pollSource}\n${checkSource}\n${factsSource}\nconst mobileDistance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);\n${rotateSource}\nrotateMobileWorld`, {
+    Date: { now: () => clock }, interval: async ms => { clock += ms; },
+    snapshot: async () => copy(reads++ === 0 ? previous : next), state: value => value.state,
+    evaluate: async () => copy(browser), report: { checks },
+    active: { id: 'retina-touch-390', dpr, mobileWorld: evidence, cdp: { send: async (method, params) => { calls.push({ method, params: copy(params) }); } } },
+  });
+  return { previous, rotate: () => rotate(previous, portrait, 'actual rotation'), calls, checks, evidence, get reads() { return reads; } };
+}
+test('world rotation sends real screen metrics at the original DPR and waits for fresh landscape-map geometry', async () => {
+  for (const [portrait, dpr] of [[false, 1], [true, 3]]) {
+    const f = rotationFixture(portrait, dpr); const value = await f.rotate();
+    assert.equal(f.reads, 2); assert.equal(value.sampleFrame, 11);
+    assert.deepEqual(f.calls, [{ method: 'Emulation.setDeviceMetricsOverride', params: {
+      width: portrait ? 390 : 844, height: portrait ? 844 : 390,
+      screenWidth: portrait ? 390 : 844, screenHeight: portrait ? 844 : 390,
+      deviceScaleFactor: dpr, mobile: true, screenOrientation: { type: portrait ? 'portraitPrimary' : 'landscapePrimary', angle: portrait ? 0 : 90 },
+    } }]);
+    assert(f.checks.every(row => row.ok)); assert.equal(f.evidence.rotations.length, 1);
+  }
+});
+test('world rotation rejects the previous landscape canvas widening a portrait layout viewport', async () => {
+  const f = rotationFixture(true, 3, b => { b.width = 844; b.height = 1827; b.scale = .462085; b.canvas.width = 844; b.canvas.height = 1827; });
+  await assert.rejects(f.rotate(), /without page shrink/);
+  assert.equal(f.checks[0].ok, false); assert.equal(f.evidence.rotations, undefined);
+});
+test('world rotation cannot hide actor relocation behind correct viewport metrics', async () => {
+  const f = rotationFixture(false, 1, () => {}, s => { s.world.player.x += 1; });
+  await assert.rejects(f.rotate(), /cannot move the actor or change earned facts/);
+  assert.equal(f.checks.at(-1).ok, false); assert.equal(f.evidence.rotations, undefined);
+});
 function fixture(sequence) {
   let clock = 0, reads = 0, inputCalls = 0;
   const delays = [], checks = [], samples = [], clicks = [], labels = [];

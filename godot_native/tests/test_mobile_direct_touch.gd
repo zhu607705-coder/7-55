@@ -109,7 +109,9 @@ func assert_layout(insets: Vector4) -> void:
 		if control.visible:check(safe.encloses(control.get_global_rect()),control.name+" fits platform safe area")
 	check(not shell.inventory_handle.visible,"local bag toggle remains removed")
 	check(not shell.inventory_dock.visible or shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"existing inline inventory remains inside game viewport")
-	check(shell.mobile_back.position.y>shell.size.y*.6 and shell.mobile_back.position.x>shell.size.x*.6,"phone icon stays in bottom right")
+	var map:Rect2=shell.world_view.get_global_rect()
+	var back:Rect2=shell.mobile_back.get_global_rect()
+	check(absf(back.end.x-(map.end.x-8))<.01 and absf(back.end.y-(map.end.y-8))<.01 and back.size.x>=44 and back.size.y>=44,"phone icon retains a physical44px target in the map's bottom right")
 	check(shell.world.size==Vector2(shell.world_viewport.size),"world pixels match SubViewport exactly")
 	observations.append({"size":str(shell.size),"safe":str(safe),"world":str(shell.world_frame.get_global_rect()),"gestureArea":str(metrics.gestureArea)})
 

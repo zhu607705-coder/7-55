@@ -1,0 +1,43 @@
+{
+  "path": "/workspace/shared/north-web-assets/batch2/chair_student_web_master_v2.png",
+  "size": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "sha256": "2c10ac82e23c58e62b1d13d669bdbad84cad01c2fd7b556c495875372a48c142",
+  "alpha_extrema": [
+    0,
+    255
+  ],
+  "thresholds": {
+    "8": {
+      "bbox": [
+        220,
+        115,
+        1034,
+        1143
+      ],
+      "width": 814,
+      "height": 1028,
+      "width_height_ratio": 0.791828793774319,
+      "bottom_5_percent_foot_span": 779,
+      "foot_span_at_height_30": 22.733463035019454,
+      "body_width_at_height_30": 23.75486381322957
+    },
+    "128": {
+      "bbox": [
+        220,
+        116,
+        1034,
+        1142
+      ],
+      "width": 814,
+      "height": 1026,
+      "width_height_ratio": 0.7933723196881092,
+      "bottom_5_percent_foot_span": 777,
+      "foot_span_at_height_30": 22.719298245614034,
+      "body_width_at_height_30": 23.801169590643276
+    }
+  }
+}

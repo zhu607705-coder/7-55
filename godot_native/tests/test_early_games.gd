@@ -64,9 +64,16 @@ func _run() -> void:
 	run.set_process(false)
 	var runs: Array = []
 	run.finished.connect(func(r): runs.append(r))
-	for i in range(9): run._point()
+	run.start({})
+	for i in range(1800):
+		run.pointer_id=-1;run.pointer_target=run.motion.position+(run.motion.goal()-run.motion.position).limit_length(16)
+		run._step(.05)
+		if run.completed==9:break
 	check(runs.is_empty(),"partial virtual run cannot complete")
-	run._point()
+	for i in range(400):
+		run.pointer_id=-1;run.pointer_target=run.motion.position+(run.motion.goal()-run.motion.position).limit_length(16)
+		run._step(.05)
+		if run.pending_result:break
 	check(runs.size()==1 and runs[0].distanceMeters==3000,"tenth point yields authored run")
 	run.queue_free()
 	var stamp = Stamp.new()
