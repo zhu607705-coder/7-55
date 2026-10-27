@@ -1,0 +1,97 @@
+name: Library two-time observation demonstration
+on:
+  push:
+    branches: [dot/library-two-times-20261026]
+    paths: ['godot_native/samples/library_time/**', 'godot_native/samples/observation_kit/**', '.github/workflows/library-time-demo.yml']
+  pull_request:
+    paths: ['godot_native/samples/library_time/**', 'godot_native/samples/observation_kit/**', '.github/workflows/library-time-demo.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: library-time-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GODOT_SILENCE_ROOT_WARNING: '1'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      LIBRARY_RENDER_ARTIFACT_DIR: ${{ github.workspace }}/library-time-demo
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Install pinned Godot and supported graphical recording tools
+        run: |
+          # A previous capture timed out fetching optional codec packages from
+          # azure.archive.ubuntu.com. Keep signed Ubuntu packages, bound downloads,
+          # and do not upgrade/reinstall tools already available on this runner.
+          missing=()
+          command -v xvfb-run >/dev/null || missing+=(xvfb)
+          command -v ffmpeg >/dev/null || missing+=(ffmpeg)
+          dpkg-query -W -f='${Status}' libgl1-mesa-dri 2>/dev/null | grep -q 'install ok installed' || missing+=(libgl1-mesa-dri)
+          if [ "${#missing[@]}" -gt 0 ]; then
+            if [ -f /etc/apt/apt-mirrors.txt ]; then
+              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+            fi
+            timeout 90 sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+            timeout 180 sudo apt-get -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install "${missing[@]}"
+          fi
+          curl --fail --location --connect-timeout 15 --max-time 90 --retry 1 --retry-max-time 120 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Isolated import, geometry, ownership and cancellation tests
+        run: |
+          node godot_native/samples/library_time/tools/run.mjs
+          node godot_native/samples/library_time/tests/test_isolation.mjs
+          node godot_native/samples/observation_kit/tools/sync_kit.mjs --check
+          node godot_native/samples/observation_kit/tools/test_kit.mjs
+      - name: Record ordinary double-touch input with actual GL rendering
+        run: |
+          mkdir -p library-time-demo
+          git rev-parse HEAD > library-time-demo/source-sha.log
+          godot --headless --audio-driver Dummy --path godot_native/samples/library_time --editor --import --quit 2>&1 | tee library-time-demo/import.log
+          timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path godot_native/samples/library_time --rendering-method gl_compatibility \
+            --audio-driver Dummy --resolution 390x844 --fixed-fps 30 \
+            --write-movie "$GITHUB_WORKSPACE/library-time-demo/library-time.avi" \
+            --script res://tests/capture_library_time.gd -- --require-rendering 2>&1 | tee library-time-demo/capture.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' library-time-demo/import.log library-time-demo/capture.log
+          grep -q 'LIBRARY_VIDEO.*failures=0' library-time-demo/capture.log
+          grep -q 'LIBRARY_RENDERER X11' library-time-demo/capture.log
+      - name: Encode inspectable portrait output
+        run: |
+          ffmpeg -hide_banner -loglevel error -y -i library-time-demo/library-time.avi -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart -an library-time-demo/library-time-two-touch.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=width,height,r_frame_rate -of json library-time-demo/library-time-two-touch.mp4 > library-time-demo/video-metadata.json
+          ffmpeg -hide_banner -loglevel error -y -ss 0.7 -i library-time-demo/library-time-two-touch.mp4 -frames:v 1 library-time-demo/entry.png
+          ffmpeg -hide_banner -loglevel error -y -ss 5.2 -i library-time-demo/library-time-two-touch.mp4 -frames:v 1 library-time-demo/compare.png
+          ffmpeg -hide_banner -loglevel error -y -ss 15 -i library-time-demo/library-time-two-touch.mp4 -frames:v 1 library-time-demo/complete.png
+          printf '%s\n' 'Actual Godot 4.7.1 GL bookshelf with two physically occluded historical worlds. Automated touch, not physical phone verification. Independent library prototype; no formal map/evidence/save changes.' > library-time-demo/README.txt
+      - name: Verify ordinary screen-touch safety menu and occlusion on target graphical engine
+        run: |
+          timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 1200x1000x24' \
+            godot --path godot_native/samples/library_time --rendering-method gl_compatibility \
+            --audio-driver Dummy --resolution 390x844 --script res://tests/test_library_input.gd 2>&1 | tee library-time-demo/graphical-input.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' library-time-demo/graphical-input.log
+          grep -q 'LIBRARY_INPUT.*failures=0' library-time-demo/graphical-input.log
+      - name: Check actual read-only history and present-book pixels
+        run: |
+          timeout 60 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path godot_native/samples/library_time --rendering-method gl_compatibility \
+            --audio-driver Dummy --script res://tests/test_library_render.gd 2>&1 | tee library-time-demo/pixels.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' library-time-demo/pixels.log
+          grep -q 'LIBRARY_RENDER.*failures=0' library-time-demo/pixels.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: library-time-two-touch-portrait
+          path: |
+            library-time-demo/*.mp4
+            library-time-demo/*.png
+            library-time-demo/*.log
+            library-time-demo/*.json
+            library-time-demo/README.txt
+          retention-days: 7
+          if-no-files-found: error
