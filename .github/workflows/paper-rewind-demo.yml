@@ -1,0 +1,106 @@
+name: Paper rewind portrait demonstration
+
+on:
+  push:
+    branches: [dot/paper-rewind-visual-proof-20261026]
+    paths:
+      - 'godot_native/samples/paper_rewind/**'
+      - '.github/workflows/paper-rewind-demo.yml'
+  pull_request:
+    paths:
+      - 'godot_native/samples/paper_rewind/**'
+      - '.github/workflows/paper-rewind-demo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paper-rewind-demo-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  record:
+    name: Record actual Godot two-touch portrait play
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GODOT_SILENCE_ROOT_WARNING: '1'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      PAPER_RENDER_ARTIFACT_DIR: ${{ github.workspace }}/paper-rewind-demo
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Install pinned Godot and supported graphical recording tools
+        run: |
+          # A previous capture timed out fetching optional codec packages from
+          # azure.archive.ubuntu.com. Keep signed Ubuntu packages, bound downloads,
+          # and do not upgrade/reinstall tools already available on this runner.
+          missing=()
+          command -v xvfb-run >/dev/null || missing+=(xvfb)
+          command -v ffmpeg >/dev/null || missing+=(ffmpeg)
+          dpkg-query -W -f='${Status}' libgl1-mesa-dri 2>/dev/null | grep -q 'install ok installed' || missing+=(libgl1-mesa-dri)
+          if [ "${#missing[@]}" -gt 0 ]; then
+            if [ -f /etc/apt/apt-mirrors.txt ]; then
+              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+            fi
+            timeout 90 sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+            timeout 180 sudo apt-get -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install "${missing[@]}"
+          fi
+          curl --fail --location --connect-timeout 15 --max-time 90 --retry 1 --retry-max-time 120 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Verify clean standalone sample
+        run: node godot_native/samples/paper_rewind/tools/run.mjs --test
+      - name: Record real engine output with two ordinary touch inputs
+        run: |
+          mkdir -p paper-rewind-demo
+          git rev-parse HEAD > paper-rewind-demo/source-sha.log
+          cp -a godot_native/samples/paper_rewind /tmp/paper-rewind-movie-project
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('/tmp/paper-rewind-movie-project/project.godot')
+          text = p.read_text()
+          for key, value in [('viewport_width', 390), ('viewport_height', 844), ('window_width_override', 390), ('window_height_override', 844)]:
+              text = re.sub(rf'(?m)^window/size/{key}=\d+$', f'window/size/{key}={value}', text)
+          p.write_text(text)
+          PY
+          godot --headless --audio-driver Dummy --path /tmp/paper-rewind-movie-project --editor --import --quit 2>&1 | tee paper-rewind-demo/import.log
+          timeout 45 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path /tmp/paper-rewind-movie-project --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://tests/test_paper_history_render.gd 2>&1 | tee paper-rewind-demo/history-pixel.log
+          grep -q 'PAPER_HISTORY_RENDER failures=0' paper-rewind-demo/history-pixel.log
+          timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path /tmp/paper-rewind-movie-project --rendering-method gl_compatibility \
+            --audio-driver Dummy --resolution 390x844 --fixed-fps 30 \
+            --write-movie "$GITHUB_WORKSPACE/paper-rewind-demo/paper-rewind.avi" \
+            --script res://tests/capture_paper_rewind.gd -- --require-rendering 2>&1 | tee paper-rewind-demo/capture.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' paper-rewind-demo/import.log paper-rewind-demo/history-pixel.log paper-rewind-demo/capture.log
+          grep -q 'PAPER_REWIND_VIDEO.*failures=0' paper-rewind-demo/capture.log
+          grep -q 'PAPER_REWIND_RENDERER display=' paper-rewind-demo/capture.log
+      - name: Encode portable review video and inspect duration
+        run: |
+          ffmpeg -hide_banner -loglevel error -y -i paper-rewind-demo/paper-rewind.avi \
+            -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -movflags +faststart -an \
+            paper-rewind-demo/paper-rewind-two-touch-portrait.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=width,height,r_frame_rate \
+            -of json paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 > paper-rewind-demo/video-metadata.json
+          node -e 'const r=require("./paper-rewind-demo/video-metadata.json"); if(r.format.duration<23||r.format.duration>26||r.streams[0].width!==390||r.streams[0].height!==844)process.exit(1)'
+          ffmpeg -hide_banner -loglevel error -y -ss 10.4 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/two-touch-frame.png
+          ffmpeg -hide_banner -loglevel error -y -ss 0.8 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/first-frame.png
+          ffmpeg -hide_banner -loglevel error -y -ss 16.8 -i paper-rewind-demo/paper-rewind-two-touch-portrait.mp4 -frames:v 1 paper-rewind-demo/landing-frame.png
+          printf '%s\n' 'Actual Godot 4.7.1 GL Compatibility 3D mesh/material/light/shadow output; distant foliage is unlit artwork. Automated two-touch portrait demonstration, not physical-phone verification. No formal story integration or saved-game proof.' > paper-rewind-demo/README.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: paper-rewind-two-touch-portrait
+          path: |
+            paper-rewind-demo/*.mp4
+            paper-rewind-demo/*.png
+            paper-rewind-demo/*.json
+            paper-rewind-demo/*.log
+            paper-rewind-demo/README.txt
+          retention-days: 7
+          if-no-files-found: error

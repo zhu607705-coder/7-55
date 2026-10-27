@@ -1,0 +1,3 @@
+7:55 standalone raking-light classroom prototype.
+Original procedural geometry/code; inherited Morning Note font under OFL (see assets).
+Camera convention follows existing paper_rewind at PR180 head91fd722 without runtime imports.
