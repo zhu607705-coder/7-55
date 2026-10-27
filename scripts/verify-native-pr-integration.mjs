@@ -43,7 +43,8 @@ report.namespaceRegressionOutput=(namespaceRegression.stdout||'')+(namespaceRegr
 // A branch may carry either preview or both; present projects are always scanned and tested.
 const previewProjects=[
  {project:'godot_native/samples/phone_to_campus/preview',tests:['res://test_transition.gd'],prepare:['godot_native/samples/phone_to_campus/run.mjs','--prepare-only']},
- {project:'godot_native/samples/north_real_plan_preview',tests:['res://tests/test_preview.gd'],prepare:[]}
+ {project:'godot_native/samples/north_real_plan_preview',tests:['res://tests/test_preview.gd'],prepare:[]},
+ {project:'godot_native/samples/paper_rewind',tests:['res://tests/test_paper_rewind.gd','res://tests/test_paper_rewind_input.gd','res://tests/test_paper_rewind_two_hands.gd','res://tests/test_paper_world_3d.gd'],prepare:[]}
 ].filter(preview=>fs.existsSync(path.join(root,preview.project,'project.godot')));
 report.previewProjects=previewProjects.map(({project,tests})=>({project,tests}));
 for(const preview of previewProjects){

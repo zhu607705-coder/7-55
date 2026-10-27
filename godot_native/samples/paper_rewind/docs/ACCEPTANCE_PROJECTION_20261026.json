@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-26",
+  "recordedCommit": "5fe726eddfde86eda878d4d550e290cf1c8f1353",
+  "recordedTree": "4da805d079a41d7e73553ce97d253aabdc68389f",
+  "recordedBaseCommit": "f18cee570f3684e7cd87b6c0f0844f805f3d88c4",
+  "publicationBaseCommit": "0713f50999ac1516d732b69a1b40ce946bd5c723",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "checks": {
+    "model": 68,
+    "ordinaryInputProjectionAndGeometry": 118,
+    "twoHandOwnership": 35,
+    "namespacePositiveNegative": 19,
+    "realRendererHistoryPixelsIncludingNegativeControl": 5,
+    "ordinaryTwoTouchRecordedFlow": 6
+  },
+  "freshImport": true,
+  "ordinaryStandaloneStartup": true,
+  "formalSaveSentinelsUnchanged": true,
+  "projection": {
+    "kind": "shared orthographic 3D-to-2D",
+    "worldAxes": [
+      "x across table",
+      "y table depth towards viewer",
+      "z vertical height"
+    ],
+    "elevationDegrees": 50,
+    "yawDegrees": 8,
+    "sameFunctionForWallWindowSillTableFolderAndPaper": true,
+    "inversePlaneHitForNativeMouseAndTouch": true,
+    "physicalA4CheckedInWorldSpace": true
+  },
+  "graybox": {
+    "commit": "ec2b43c030cac2a66317ec85a73473d59945ed6c",
+    "run": 40314222557,
+    "artifact": 12645763358,
+    "sha256": "a8bd6bb76f7140cd49ebb5204d5a73299014add0b7736826094df73d68ddcace",
+    "userFeedback": "2026-10-26 11:41:50 UTC: 现在这个大致才是对的",
+    "scope": "provisional structural direction, not final art"
+  },
+  "hostedRender": {
+    "run": 40317077487,
+    "artifact": 12647068586,
+    "sha256": "833c9d542624a76ff194f0beee7aa93651d577ef8bbf44bc2023a8ce3a29ae9b",
+    "dimensions": [
+      390,
+      844
+    ],
+    "fps": 30,
+    "frames": 723,
+    "seconds": 24.1,
+    "display": "X11",
+    "adapter": "llvmpipe LLVM20.1.2",
+    "automatedTouch": true
+  },
+  "supersededPreview": {
+    "commit": "827f8c65e810c7e0775b2cd778d0456d4426be85",
+    "reason": "User correctly identified mixed wall/table projection; focus and material polish did not establish spatial consistency."
+  },
+  "firstMaterialRun": {
+    "run": 40315322734,
+    "conclusion": "cancelled at job bound during slow Ubuntu mirror dependency downloads; no test or recording executed",
+    "repair": "same pinned engine and renderer guards; skip already installed tools, use signed official Ubuntu HTTPS mirror and bounded apt/curl downloads; no workflow permissions changed"
+  },
+  "review": {
+    "actualFirstHoldFoldContactLandedCollectionFrames": true,
+    "fullContactSheet": true,
+    "implementerParentAndIndependentReviewer": true,
+    "coreFindingsOpen": 0
+  },
+  "physicalMobileAcceptance": false,
+  "browserManualAcceptance": false,
+  "noviceTimingMeasured": false,
+  "formalStoryIntegration": false,
+  "finalArtAcceptance": false,
+  "sourceSha256": {
+    "scripts/paper_rewind_view.gd": "b541c450d43c87e0c61eb8d195dbaf6023ce44f4ff54a368c19617defa8cfb91",
+    "scripts/paper_grip.gd": "36413bc734f2e48fddf01394f3a53976a59a3dac059df8e76f215b0080f731d3",
+    "scripts/paper_rewind_model.gd": "bf228f42220c23de7e9cce1f63cdc3d55c1567970963992ab33098acd83b8c61",
+    "scripts/paper_rewind_stage.gd": "6ea5e124772188fc8d654245d66c900eba9e55ab356d4ed10a6d9e124b2273bf",
+    "scripts/paper_history_window.gd": "9ebd56cd067ed960c29394635d935eafc9409fd70c1ca8a19115583c9465e08d",
+    "tests/test_paper_rewind_input.gd": "3a6c167f34acad38946ad6ba72a24f714966e339afcecca50575f1b3c18656c1",
+    "tests/test_paper_rewind_two_hands.gd": "b728f2e9d6cfaaa92d31bebaffda91bd0fcb26fd35eba2b88c3a03a22cd82c76",
+    "tests/test_paper_rewind.gd": "a94e929309144fe69c51b7c0c3dcb46467b78142c4980713544888570ca2fc6b",
+    "tests/capture_paper_rewind.gd": "0c92751b3dffc71ed544a91de6058d6aec0d8c82166bf21fe48d6f5bcb242fc6",
+    "tests/test_paper_history_render.gd": "9839d51e0313016681c383e0a55826e5df116a629434837754866898c00562c6",
+    "project.godot": "8cede90a9e06be70983afcf7f9cd288f671fb82757d92d0d8dbafdc17fe1b6eb",
+    "assets/provenance.json": "ae31402ba2cbdc06ce1f5d4d3868953595f9eb1aefdafb9934ec2a40d8a41948",
+    "scripts/paper_scene_projection.gd": "f64a812794eaa185e0276ad099be740e43a0992322e4dc67b3bc7a82ef827479",
+    "scripts/paper_folder_hit.gd": "f7b8b3a69c5c265e52a016cd23451d2ab2564caf0dea8eb3441029c14c6338ca"
+  },
+  "limits": [
+    "Standalone sample only; no formal Main/controller/menu/save/item-proof integration.",
+    "Original PNG bytes retained; texture quads use the approved geometry, not separate screen rectangles.",
+    "Simplified rectangular flying-paper shadow and partly cropped receiver remain local presentation limitations; no extra recording delayed this delivery.",
+    "Full integration CI must be checked on the eventual updated PR head against current main, not replaced by prior-head results."
+  ]
+}
