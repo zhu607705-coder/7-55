@@ -81,6 +81,17 @@ jobs:
             --audio-driver Dummy --script res://tests/test_raking_render.gd 2>&1 | tee raking-light-demo/pixels.log
           ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' raking-light-demo/pixels.log
           grep -q 'RAKING_RENDER.*failures=0' raking-light-demo/pixels.log
+      - name: Verify full keyboard solution and released landscape grip with actual GL
+        run: |
+          for test in keyboard reachability; do
+            timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1200x1000x24' \
+              godot --path godot_native/samples/raking_light --rendering-method gl_compatibility \
+              --audio-driver Dummy --resolution 390x844 --script "res://tests/test_raking_${test}.gd" 2>&1 | tee "raking-light-demo/graphical-${test}.log"
+            ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' "raking-light-demo/graphical-${test}.log"
+          done
+          grep -q 'RAKING_KEYBOARD.*failures=0.*renderer=X11' raking-light-demo/graphical-keyboard.log
+          grep -q 'RAKING_REACHABILITY.*failures=0' raking-light-demo/graphical-reachability.log
+          grep -q 'RAKING_REACHABILITY_RENDERER X11' raking-light-demo/graphical-reachability.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
