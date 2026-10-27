@@ -1,0 +1,27 @@
+; An isolated art review, with no story autoloads or save access.
+config_version=5
+
+[application]
+config/name="7:55 · A3 整层物件审阅"
+config/description="Art candidates and independent transparent props; not gameplay."
+run/main_scene="res://preview.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/use_custom_user_dir=true
+config/custom_user_dir_name="SevenFiftyFiveNorthCleanReview"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=760
+window/size/window_width_override=1280
+window/size/window_height_override=760
+window/size/min_width=360
+window/size/min_height=360
+
+[input_devices]
+pointing/emulate_mouse_from_touch=false
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.055, 0.07, 0.09, 1)

@@ -1,0 +1,22 @@
+{
+  "generator": "OpenAI image_gen",
+  "date": "2026-10-27",
+  "items": [
+    {
+      "id": "a3_blackboard_wide",
+      "file": "exec-e6b91585-75d7-4aed-aac8-65fff9932a25.png"
+    },
+    {
+      "id": "a3_stage_wide",
+      "file": "exec-6b1fa9d8-40da-4957-a0d8-828486ed18d8.png"
+    },
+    {
+      "id": "a3_exhibit_case_compact",
+      "file": "exec-18e8e825-62c8-4685-b482-0481772353af.png"
+    },
+    {
+      "id": "a3_case_exact",
+      "file": "exec-c643ab9d-dbce-483b-8c84-53bc0195379e.png"
+    }
+  ]
+}

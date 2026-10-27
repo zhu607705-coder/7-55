@@ -5709,3 +5709,22 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - First actual3D preview0d14ed9/run40325449516 exposed self-shadow acne, closed-pocket stacking and missing overlay trajectory. Corrected27e8b4f/run40326253437 removes those issues, preserves input geometry, and passes seven real-renderer pixel tests (five historical-layer checks plus real light/shadow on-off comparisons) and six normal two-touch flow checks. Implementer/parent/independent inspection covers flip/contact/pocket/collection; source PNG bytes remain original.
 - Existing221 local checks plus28 Camera3D/ray/inverse/isolated-world/material/normal/pocket-depth checks pass, with clean import/startup and unchanged formal-save sentinels; namespace19 checks pass. Register the new sample-only world test alongside existing paper tests without removing other verifier projects.
 - Actual390x844/30fps/24.1s video delivered before PR CI. This is rasterized 3D lighting, not photorealistic or flexible-sheet physics. Both full-size viewports remain unmeasured on physical mobile; no final art/browser-manual/novice-time acceptance. Update original Draft180 only after actual preview review, then monitor exact-head CI; no review/ready/merge/deployment.
+
+## 2026-10-27 北教 A3 空底与独立物件审阅候选
+
+- 按用户调整转向 A3，基于已获取的 `origin/main` `0713f509` 在独立工作区制作，不覆盖他人正在处理的楼层或原工作区。保留 `1672 × 941` 原图参考和空建筑底图，生成透明物件并按源像素清单试排 237 个独立实例；报告厅 44 座、303 教室 24 组桌椅，六位校友使用既有肖像。
+- Godot 4.7.1 审阅工程支持空底、独立物件和原图切换、透明像素点击、缩放拖动；桌面和 390 × 844 窗口进行了画面检查。审阅工程测试、透明通道与局部建筑位置检查结果见其 README；这些不构成正式游戏验收。
+- 用户确认保留本轮 A3 素材及进度记录后，重新获取远端并将本分支从 `0713f509` 快进到 `6288b515`（23 个提交）。核对的 A3 原图、北教及 301 物件清单未变；62 个本地审阅文件的 SHA-256 在同步前后一致。
+- 按用户要求，用同一 Godot 绘制路径导出 `1672 × 941` 的无工具栏整层合成图，并直接打开独立物件模式供查看。同步后再次执行审阅工程测试：486 项、0 失败；合成图保存在本机审阅目录，未作为正式游戏替换资产。
+- 根据用户指出的画像落地、左下摄影室过空与电脑比例问题，将六幅画像移回可见墙面并用统一相框内口定位；摄影室按原图补右侧摄影机、上下机柜、竖屏和桌边柜，重画控制桌深度并校准主/副屏大小和桌面支点。当前为 247 个摆放实例、47 个使用贴图、0 个未映射来源组；Godot 4.7.1 审阅检查 526 项、0 失败，透明通道/边界/哈希检查通过，已导出整层 v2 并检查 390 × 844 窗口。仍是独立审阅工程，未接入正式关卡。
+- 301 历史画面为空框、部分档案细节为占位，摄影室一个来源对象组仍需核实；墙面局部约一像素偏差，正式运行时的物件覆盖、碰撞、遮挡、时态与剧情尚未接入或验证。未提交、推送或部署。
+- 按用户明确要求移除荣誉室外走廊上的独立金色画框（`hall_dark_plaque`），重新导出整层 v3；当前 246 个摆放实例、46 个使用贴图，Godot 4.7.1 审阅检查 524 项、0 失败。人物部分的后续要求尚待用户补充完整。
+- 用户在回应注释中明确要求开始做人物画像交互动画。A3 审阅工程现支持六幅画像从墙面展开资料、淡入切换、收回、鼠标/触屏及 Space/左右键/Esc、减少动画；使用原有肖像与六人作者资料，无正式剧情进度写入。修复介绍面板初始换行撑高和方向键被按钮焦点拦截的问题；摆放审阅 524 项、交互专项 26 项通过，实际 GUI 桌面/390 × 844 捕获各 8 项。桌面录制驱动曾发生窗口焦点与原生指针覆盖注入坐标，统一焦点和指针后重新验证并录制。仍为独立审阅场景，未提交、推送或接入正式关卡。
+- 用户澄清所指是正式游戏 NPC，画像交互也保留。正式 A1 前台、A2 电梯值班人员和 A3 参照教师接入运行时靠近/交谈/恢复待机反馈，复用原姿态与原台词，保留位置、出现条件及固定脚点；减少动画设置生效。26 项 NPC 专项通过；真实桌面键盘演示 8 项、390 × 844 触屏演示 9 项通过。审阅使用隔离开发存档，不代表赚取了剧情门槛。
+- 用户进一步要求先建立整层空间质量关，特别指出可走到电梯顶部。新增统一地面包络、非地面补集和脚底排序规则；键盘接触、触屏寻路及原有安全恢复共用完整脚框，不以人物中心排序，不将前景裁片直接当空气墙。保留 A1 两条作者允许的画像墙后通道。A3 讲台实体面从既有来源对象登记取得同一边界/基线，供玩家和 NPC 共用，教师腿部不再露在台面上。
+- 空间专项当前 2067 项通过，含全部楼层玩家与 NPC 共享同一遮挡数组、22% 墙面揭示不重复叠加的检查。相关原生人物朝向、第四章世界/阶段、接触移动、物件拾取、触屏路径、301 档案、独立物件与生成物件回归已通过。新增整层空间审阅和实际电梯边界操作录制入口；完整原生验收另行运行，专项通过不视为所有室内细节、美术替换、Godot Web 发布或实机验收。当前仍为 `6288b515` 之上的本地未提交修改，无推送或部署。
+- 204 原生物件的旧遮挡断言同步到脚底契约：仍检查原生根节点移动会带动遮挡切换，并新增“脚已跨过基线、身体中心尚未跨线”的反例，防止退回身体中心排序。
+- 用户要求将空间规则应用到其他所有地图：正式八类运行时、十三张地图变体统一注册地面/围墙；宿舍排除黑边，图书馆延用实际墙脚，校园与侧景分别检查脚框覆盖的全部掩码格，湖区检查完整旋转船体和可见码头步行区域。键盘接触、触屏路径与安全恢复共用通行判断；人物/NPC/门/家具与来源前景使用脚底基线，保留原剧情和存档权限。
+- 校园美术地图同步使用原脚圈半径检查铺装并集边缘，内部接缝不生成空气墙；寻路连线也检查整条脚圈路径。修复斜边编译被包含边缘的点测试吞掉、旧试验路径点压在路沿、原生分离后边缘姿态未复核的问题。既有建筑/树干脚圈膨胀保留一次；原始行走速度、脚圈和人物比例不变。
+- 新增 `WORLD_SPACE.md`、全地图独立审阅入口与全变体专项；真实桌面与 390 × 844 缩放窗口十三图普通输入审阅各 57 项、0 失败、0 非法姿态帧。覆盖数和完整验收结论以最终报告为准，不将开发检查点审阅当作剧情赚取、Web 发布或实机验收。仍为本地未提交变更。
+- 完整回归首轮完成 532 项通过、4 项失败后，核实并修正了四处差异：沿墙滑动的旧整步停位断言、图书馆椅子的旧脚框上沿断言、剧场后台被过早截断的原有通道，以及同一玩家深度侧内独立物件缺少相互排序导致的拾取顺序。保留后台作者允许的胸箱侧站位，墙脚与身体接触仍按真实边界检查；湖区兼容区域字段也与可见底图使用同一来源。最终完整验收以审阅目录中的 `world_space_native_validation.json` 及其 metadata 为准。

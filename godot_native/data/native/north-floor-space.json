@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "scene": "duan_yongping_temporal_maze",
+  "sourceSize": [1672, 941],
+  "contract": {
+    "coordinates": "unchanged source pixels",
+    "grounding": "the complete shared player foot rectangle must be covered by the union of ground regions",
+    "depth": "shared player foot bottom against authored object baseline",
+    "interiorSolids": "existing floor layout, phase geometry and runtime prop footprints remain authoritative",
+    "occlusion": "existing source masks retain their authored baselines and partial reveal",
+    "reviewScope": "continuous exterior envelope and existing native depth consumers; this is not acceptance of every interior furnishing"
+  },
+  "floors": {
+    "A1": {
+      "groundRegions": [
+        {"id": "main_floor", "rect": [43, 149, 1589, 732]},
+        {"id": "source_approved_west_portrait_passage", "rect": [50, 47, 630, 102]},
+        {"id": "source_approved_east_portrait_passage", "rect": [1141, 51, 448, 98]},
+        {"id": "main_entrance_threshold", "rect": [657, 881, 359, 60]}
+      ]
+    },
+    "A2": {
+      "groundRegions": [
+        {"id": "main_floor", "rect": [45, 146, 1583, 720]},
+        {"id": "elevator_stair_landing", "rect": [535, 136, 626, 10]}
+      ]
+    },
+    "A3": {
+      "solidFaceSourceIds": ["a3_class303_lectern"],
+      "groundRegions": [
+        {"id": "main_floor", "rect": [50, 147, 1574, 687]},
+        {"id": "west_south_corridor", "rect": [508, 834, 103, 11]},
+        {"id": "east_south_corridor", "rect": [1066, 834, 97, 11]}
+      ]
+    }
+  }
+}

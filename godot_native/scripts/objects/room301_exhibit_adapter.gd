@@ -4,6 +4,7 @@ extends Node2D
 const Layout=preload("res://scripts/objects/room301_exhibit_layout.gd")
 const Prop=preload("res://scripts/objects/room301_exhibit_prop.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const FloorSpace=preload("res://scripts/space/north_floor_space.gd")
 class DrawPass extends Node2D:
 	var adapter:Node2D
 	var phase:=0
@@ -66,11 +67,10 @@ func configure_view(context:Dictionary)->void:
 	if not active:return
 	source_space.position=context.origin;source_space.scale=Vector2.ONE*float(context.zoom)
 	source_space.modulate=Color.WHITE.lerp(Color(.03,.15,.26),float(context.get("mode_mix",0))*.3)
-	var foot:float=Metrics.foot_rect(context.player).end.y
 	back_props.clear();front_props.clear()
 	for prop:Node2D in props.values():
 		if prop.definition.has("parentId"):continue
-		var front:bool=float(prop.definition.baselineY)>foot
+		var front:bool=FloorSpace.in_front(float(prop.definition.baselineY),context.player)
 		prop.z_index=1 if front else -1
 		(front_props if front else back_props).append(prop)
 	for list:Array[Node2D] in [back_props,front_props]:

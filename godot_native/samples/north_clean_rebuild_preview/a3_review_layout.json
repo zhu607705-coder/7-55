@@ -1,0 +1,3701 @@
+{
+  "source": "north-floor-source-objects.json + room301-exhibit.json + ChapterFourAlumniHonorWall.ts",
+  "worldSize": [
+    1672,
+    941
+  ],
+  "status": "review_only_approximate_visual_placements",
+  "unmappedSourceIds": [],
+  "placements": [
+    {
+      "id": "honor_floor_trim",
+      "texture": "a3_honor_floor_border",
+      "bounds": [
+        698,
+        657,
+        271,
+        133
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_west_planter",
+      "texture": "a3_hall_planter",
+      "bounds": [
+        624,
+        243,
+        81,
+        225
+      ],
+      "sourceId": "a3_west_planter",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_east_planter",
+      "texture": "a3_hall_planter",
+      "bounds": [
+        899,
+        246,
+        79,
+        222
+      ],
+      "sourceId": "a3_east_planter",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_stage",
+      "texture": "a3_stage_wide",
+      "bounds": [
+        1259,
+        147,
+        316,
+        57
+      ],
+      "sourceId": "a3_report_stage",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_lectern",
+      "texture": "a3_report_lectern",
+      "bounds": [
+        1365,
+        141,
+        33,
+        42
+      ],
+      "sourceId": "a3_report_lectern",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_screen",
+      "texture": "a3_projection_screen",
+      "bounds": [
+        1286,
+        58,
+        195,
+        73
+      ],
+      "sourceId": "a3_report_screen",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_left_plant",
+      "texture": "a3_plant",
+      "bounds": [
+        1178,
+        96,
+        53,
+        82
+      ],
+      "sourceId": "a3_report_left_plant",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_right_plant",
+      "texture": "a3_plant",
+      "bounds": [
+        1554,
+        96,
+        53,
+        82
+      ],
+      "sourceId": "a3_report_right_plant",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_speaker",
+      "texture": "a3_wall_speaker",
+      "bounds": [
+        1243,
+        82,
+        24,
+        42
+      ],
+      "sourceId": "a3_report_speaker",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_honor_left_case",
+      "texture": "a3_trophy_cabinet",
+      "bounds": [
+        635,
+        602,
+        60,
+        94
+      ],
+      "sourceId": "a3_honor_left_case",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_honor_right_case",
+      "texture": "a3_trophy_cabinet",
+      "bounds": [
+        976,
+        602,
+        47,
+        88
+      ],
+      "sourceId": "a3_honor_right_case",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_honor_south_left_case",
+      "texture": "a3_case_exact",
+      "bounds": [
+        654,
+        773,
+        127,
+        58
+      ],
+      "sourceId": "a3_honor_south_left_case",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_honor_south_center_case",
+      "texture": "a3_case_exact",
+      "bounds": [
+        787,
+        773,
+        127,
+        58
+      ],
+      "sourceId": "a3_honor_south_center_case",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_honor_south_right_case",
+      "texture": "a3_case_exact",
+      "bounds": [
+        920,
+        773,
+        127,
+        58
+      ],
+      "sourceId": "a3_honor_south_right_case",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_media_green_screen",
+      "texture": "a3_green_screen",
+      "bounds": [
+        174,
+        510,
+        188,
+        89
+      ],
+      "sourceId": "a3_media_green_screen",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_media_left_lamp",
+      "texture": "a3_studio_light",
+      "bounds": [
+        117,
+        512,
+        50,
+        91
+      ],
+      "sourceId": "a3_media_left_lamp",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_media_right_lamp",
+      "texture": "a3_studio_light",
+      "bounds": [
+        365,
+        512,
+        50,
+        91
+      ],
+      "sourceId": "a3_media_right_lamp",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_media_control_desk",
+      "texture": "a3_console_desk_v3",
+      "bounds": [
+        142,
+        747,
+        234,
+        77
+      ],
+      "sourceId": "a3_media_control_desk",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_media_left_rack",
+      "texture": "a3_empty_rack",
+      "bounds": [
+        65,
+        504,
+        38,
+        113
+      ],
+      "sourceId": "a3_media_left_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_blackboard",
+      "texture": "a3_blackboard_wide",
+      "bounds": [
+        1284,
+        512,
+        214,
+        42
+      ],
+      "sourceId": "a3_class303_blackboard",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_lectern",
+      "texture": "class_lectern",
+      "bounds": [
+        1360,
+        557,
+        65,
+        45
+      ],
+      "sourceId": "a3_class303_lectern",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_left_shelf",
+      "texture": "a3_class_shelf",
+      "bounds": [
+        1185,
+        519,
+        52,
+        78
+      ],
+      "sourceId": "a3_class303_left_shelf",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_right_shelf",
+      "texture": "a3_class_shelf",
+      "bounds": [
+        1553,
+        519,
+        52,
+        78
+      ],
+      "sourceId": "a3_class303_right_shelf",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_left_plant",
+      "texture": "a3_plant",
+      "bounds": [
+        1237,
+        552,
+        34,
+        45
+      ],
+      "sourceId": "a3_class303_left_plant",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_right_plant",
+      "texture": "a3_plant",
+      "bounds": [
+        1519,
+        552,
+        34,
+        45
+      ],
+      "sourceId": "a3_class303_right_plant",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_0_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1194,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_0_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_0_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1226,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_0_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_0_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1258,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_0_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_0_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1290,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_0_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_0_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1322,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_0_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_1_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1416,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_1_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_1_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1448,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_1_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_1_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1480,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_1_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_1_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1512,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_1_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_1_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1544,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_1_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_0_1_5",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1576,
+        217,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_0_1_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_0_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1194,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_0_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_0_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1226,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_0_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_0_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1258,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_0_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_0_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1290,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_0_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_0_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1322,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_0_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_1_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1416,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_1_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_1_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1448,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_1_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_1_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1480,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_1_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_1_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1512,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_1_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_1_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1544,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_1_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_1_1_5",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1576,
+        254,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_1_1_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_0_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1194,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_0_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_0_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1226,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_0_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_0_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1258,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_0_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_0_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1290,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_0_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_0_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1322,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_0_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_1_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1416,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_1_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_1_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1448,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_1_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_1_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1480,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_1_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_1_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1512,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_1_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_1_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1544,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_1_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_2_1_5",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1576,
+        291,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_2_1_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_0_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1194,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_0_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_0_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1226,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_0_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_0_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1258,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_0_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_0_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1290,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_0_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_0_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1322,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_0_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_1_0",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1416,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_1_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_1_1",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1448,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_1_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_1_2",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1480,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_1_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_1_3",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1512,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_1_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_1_4",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1544,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_1_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_report_seat_3_1_5",
+      "texture": "a3_report_seat",
+      "bounds": [
+        1576,
+        328,
+        30,
+        34
+      ],
+      "sourceId": "a3_report_seat_3_1_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_0_0",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1214,
+        606,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_0_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_0_0",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1221,
+        633,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_0_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_0_1",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1274,
+        606,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_0_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_0_1",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1281,
+        633,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_0_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_0_2",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1334,
+        606,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_0_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_0_2",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1341,
+        633,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_0_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_0_3",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1420,
+        606,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_0_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_0_3",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1427,
+        633,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_0_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_0_4",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1480,
+        606,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_0_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_0_4",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1487,
+        633,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_0_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_0_5",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1540,
+        606,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_0_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_0_5",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1547,
+        633,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_0_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_1_0",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1214,
+        656,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_1_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_1_0",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1221,
+        683,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_1_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_1_1",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1274,
+        656,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_1_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_1_1",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1281,
+        683,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_1_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_1_2",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1334,
+        656,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_1_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_1_2",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1341,
+        683,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_1_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_1_3",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1420,
+        656,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_1_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_1_3",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1427,
+        683,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_1_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_1_4",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1480,
+        656,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_1_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_1_4",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1487,
+        683,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_1_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_1_5",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1540,
+        656,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_1_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_1_5",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1547,
+        683,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_1_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_2_0",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1214,
+        706,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_2_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_2_0",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1221,
+        733,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_2_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_2_1",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1274,
+        706,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_2_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_2_1",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1281,
+        733,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_2_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_2_2",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1334,
+        706,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_2_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_2_2",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1341,
+        733,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_2_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_2_3",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1420,
+        706,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_2_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_2_3",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1427,
+        733,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_2_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_2_4",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1480,
+        706,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_2_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_2_4",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1487,
+        733,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_2_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_2_5",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1540,
+        706,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_2_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_2_5",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1547,
+        733,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_2_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_3_0",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1214,
+        756,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_3_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_3_0",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1221,
+        783,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_3_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_3_1",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1274,
+        756,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_3_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_3_1",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1281,
+        783,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_3_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_3_2",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1334,
+        756,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_3_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_3_2",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1341,
+        783,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_3_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_3_3",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1420,
+        756,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_3_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_3_3",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1427,
+        783,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_3_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_3_4",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1480,
+        756,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_3_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_3_4",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1487,
+        783,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_3_4",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_desk_3_5",
+      "texture": "a3_class_desk",
+      "bounds": [
+        1540,
+        756,
+        39,
+        28
+      ],
+      "sourceId": "a3_class303_desk_3_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_class303_chair_3_5",
+      "texture": "a3_class_chair",
+      "bounds": [
+        1547,
+        783,
+        27,
+        26
+      ],
+      "sourceId": "a3_class303_chair_3_5",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_camera_upper",
+      "texture": "media_camera",
+      "bounds": [
+        67,
+        617,
+        68,
+        74
+      ],
+      "sourceId": "a3_media_left_camera",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_camera_lower",
+      "texture": "media_camera",
+      "bounds": [
+        67,
+        688,
+        68,
+        77
+      ],
+      "sourceId": "a3_media_left_camera",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_camera_right",
+      "texture": "a3_studio_right_camera",
+      "bounds": [
+        431,
+        710,
+        53,
+        67
+      ],
+      "sourceId": "a3_media_right_camera",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "report_right_speaker",
+      "texture": "a3_wall_speaker",
+      "bounds": [
+        1504,
+        82,
+        24,
+        42
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_west_left_0",
+      "texture": "hall_bench",
+      "bounds": [
+        621,
+        265,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_west_left_1",
+      "texture": "hall_bench",
+      "bounds": [
+        621,
+        357,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_west_right_0",
+      "texture": "hall_bench",
+      "bounds": [
+        690,
+        265,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_west_right_1",
+      "texture": "hall_bench",
+      "bounds": [
+        690,
+        357,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_east_left_0",
+      "texture": "hall_bench",
+      "bounds": [
+        895,
+        265,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_east_left_1",
+      "texture": "hall_bench",
+      "bounds": [
+        895,
+        357,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_east_right_0",
+      "texture": "hall_bench",
+      "bounds": [
+        964,
+        265,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_bench_east_right_1",
+      "texture": "hall_bench",
+      "bounds": [
+        964,
+        357,
+        18,
+        90
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_content_wall_archive_00",
+      "texture": "a3_archive_document",
+      "bounds": [
+        115,
+        79,
+        23,
+        33
+      ],
+      "sourceId": "301:wall_archive_00",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_archive_00",
+      "texture": "a3_frame",
+      "bounds": [
+        110,
+        74,
+        33,
+        43
+      ],
+      "sourceId": "301:wall_archive_00",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_content_wall_archive_01",
+      "texture": "a3_archive_document",
+      "bounds": [
+        152,
+        79,
+        22,
+        33
+      ],
+      "sourceId": "301:wall_archive_01",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_archive_01",
+      "texture": "a3_frame",
+      "bounds": [
+        147,
+        74,
+        32,
+        43
+      ],
+      "sourceId": "301:wall_archive_01",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_content_wall_archive_02",
+      "texture": "a3_archive_document",
+      "bounds": [
+        191,
+        75,
+        28,
+        37
+      ],
+      "sourceId": "301:wall_archive_02",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_archive_02",
+      "texture": "a3_frame",
+      "bounds": [
+        186,
+        70,
+        38,
+        47
+      ],
+      "sourceId": "301:wall_archive_02",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_archive_03",
+      "texture": "a3_exhibit_wide_frame",
+      "bounds": [
+        234,
+        65,
+        97,
+        56
+      ],
+      "sourceId": "301:wall_archive_03",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_content_wall_archive_04",
+      "texture": "a3_archive_document",
+      "bounds": [
+        348,
+        77,
+        43,
+        34
+      ],
+      "sourceId": "301:wall_archive_04",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_archive_04",
+      "texture": "a3_frame",
+      "bounds": [
+        343,
+        72,
+        53,
+        44
+      ],
+      "sourceId": "301:wall_archive_04",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_content_wall_archive_05",
+      "texture": "a3_archive_document",
+      "bounds": [
+        412,
+        78,
+        30,
+        33
+      ],
+      "sourceId": "301:wall_archive_05",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_wall_archive_05",
+      "texture": "a3_frame",
+      "bounds": [
+        407,
+        73,
+        40,
+        43
+      ],
+      "sourceId": "301:wall_archive_05",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_north_case_0",
+      "texture": "a3_case_exact",
+      "bounds": [
+        132,
+        122,
+        83,
+        52
+      ],
+      "sourceId": "301:north_case_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_north_case_0_0",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        137.0,
+        129,
+        35.5,
+        29
+      ],
+      "sourceId": "301:north_case_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_north_case_0_1",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        173.5,
+        129,
+        35.5,
+        29
+      ],
+      "sourceId": "301:north_case_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_north_case_1",
+      "texture": "a3_case_exact",
+      "bounds": [
+        237,
+        123,
+        95,
+        52
+      ],
+      "sourceId": "301:north_case_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_north_case_1_0",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        242.0,
+        130,
+        41.5,
+        29
+      ],
+      "sourceId": "301:north_case_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_north_case_1_1",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        284.5,
+        130,
+        41.5,
+        29
+      ],
+      "sourceId": "301:north_case_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_north_case_2",
+      "texture": "a3_case_exact",
+      "bounds": [
+        345,
+        122,
+        85,
+        53
+      ],
+      "sourceId": "301:north_case_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_north_case_2_0",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        350.0,
+        129,
+        36.5,
+        30
+      ],
+      "sourceId": "301:north_case_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_north_case_2_1",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        387.5,
+        129,
+        36.5,
+        30
+      ],
+      "sourceId": "301:north_case_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_west_case_upper",
+      "texture": "a3_exhibit_tall_case",
+      "bounds": [
+        59,
+        73,
+        48,
+        164
+      ],
+      "sourceId": "301:west_case_upper",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_west_case_lower",
+      "texture": "a3_exhibit_tall_case",
+      "bounds": [
+        59,
+        235,
+        48,
+        89
+      ],
+      "sourceId": "301:west_case_lower",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_south_case_0",
+      "texture": "a3_case_exact",
+      "bounds": [
+        132,
+        324,
+        70,
+        52
+      ],
+      "sourceId": "301:south_case_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_0_0",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        137.0,
+        331,
+        29.0,
+        29
+      ],
+      "sourceId": "301:south_case_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_0_1",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        167.0,
+        331,
+        29.0,
+        29
+      ],
+      "sourceId": "301:south_case_0",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_south_case_1",
+      "texture": "a3_case_exact",
+      "bounds": [
+        201,
+        324,
+        68,
+        52
+      ],
+      "sourceId": "301:south_case_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_1_0",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        206.0,
+        331,
+        28.0,
+        29
+      ],
+      "sourceId": "301:south_case_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_1_1",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        235.0,
+        331,
+        28.0,
+        29
+      ],
+      "sourceId": "301:south_case_1",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_south_case_2",
+      "texture": "a3_case_exact",
+      "bounds": [
+        295,
+        324,
+        68,
+        52
+      ],
+      "sourceId": "301:south_case_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_2_0",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        300.0,
+        331,
+        28.0,
+        29
+      ],
+      "sourceId": "301:south_case_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_2_1",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        329.0,
+        331,
+        28.0,
+        29
+      ],
+      "sourceId": "301:south_case_2",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_south_case_3",
+      "texture": "a3_case_exact",
+      "bounds": [
+        363,
+        324,
+        69,
+        52
+      ],
+      "sourceId": "301:south_case_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_3_0",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        368.0,
+        331,
+        28.5,
+        29
+      ],
+      "sourceId": "301:south_case_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_card_south_case_3_1",
+      "texture": "a3_archive_blue_card",
+      "bounds": [
+        397.5,
+        331,
+        28.5,
+        29
+      ],
+      "sourceId": "301:south_case_3",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_west_plant",
+      "texture": "a3_plant",
+      "bounds": [
+        60,
+        323,
+        48,
+        52
+      ],
+      "sourceId": "301:west_plant",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_east_plant",
+      "texture": "a3_plant",
+      "bounds": [
+        447,
+        323,
+        47,
+        53
+      ],
+      "sourceId": "301:east_plant",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_archive_case",
+      "texture": "a3_archive_case",
+      "bounds": [
+        162,
+        211,
+        237,
+        82.03391521197007
+      ],
+      "sourceId": "301:archive_case",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_00",
+      "texture": "a3_archive_document",
+      "bounds": [
+        175,
+        225,
+        25,
+        20
+      ],
+      "sourceId": "301:exhibit_document_00",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_01",
+      "texture": "a3_archive_document",
+      "bounds": [
+        175,
+        246,
+        21,
+        18
+      ],
+      "sourceId": "301:exhibit_document_01",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_02",
+      "texture": "a3_archive_document",
+      "bounds": [
+        204,
+        225,
+        28,
+        18
+      ],
+      "sourceId": "301:exhibit_document_02",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_03",
+      "texture": "a3_archive_document",
+      "bounds": [
+        204,
+        244,
+        28,
+        21
+      ],
+      "sourceId": "301:exhibit_document_03",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_04",
+      "texture": "a3_archive_document",
+      "bounds": [
+        240,
+        225,
+        54,
+        41
+      ],
+      "sourceId": "301:exhibit_document_04",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_05",
+      "texture": "a3_archive_document",
+      "bounds": [
+        301,
+        225,
+        21,
+        18
+      ],
+      "sourceId": "301:exhibit_document_05",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_06",
+      "texture": "a3_archive_document",
+      "bounds": [
+        301,
+        246,
+        22,
+        18
+      ],
+      "sourceId": "301:exhibit_document_06",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_exhibit_document_07",
+      "texture": "a3_archive_document",
+      "bounds": [
+        329,
+        228,
+        19,
+        34
+      ],
+      "sourceId": "301:exhibit_document_07",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "301_globe",
+      "texture": "a3_exhibit_globe",
+      "bounds": [
+        350,
+        199,
+        44,
+        63
+      ],
+      "sourceId": "301:globe",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "a3_hall_notice_backboard",
+      "texture": "a3_notice_backboard",
+      "bounds": [
+        590,
+        76,
+        97,
+        49
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "portrait_su_buqing",
+      "texture": "portrait_su_buqing",
+      "bounds": [
+        756.0801282051282,
+        577.959706959707,
+        26.83974358974359,
+        36.3525641025641
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:su_buqing",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "frame_su_buqing",
+      "texture": "a3_frame",
+      "bounds": [
+        748,
+        570,
+        43,
+        53
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:su_buqing",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "portrait_zhu_kezhen",
+      "texture": "portrait_zhu_kezhen",
+      "bounds": [
+        820.0801282051282,
+        577.959706959707,
+        26.83974358974359,
+        36.3525641025641
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:zhu_kezhen",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "frame_zhu_kezhen",
+      "texture": "a3_frame",
+      "bounds": [
+        812,
+        570,
+        43,
+        53
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:zhu_kezhen",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "portrait_lu_yongxiang",
+      "texture": "portrait_lu_yongxiang",
+      "bounds": [
+        885.0801282051282,
+        577.959706959707,
+        26.83974358974359,
+        36.3525641025641
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:lu_yongxiang",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "frame_lu_yongxiang",
+      "texture": "a3_frame",
+      "bounds": [
+        877,
+        570,
+        43,
+        53
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:lu_yongxiang",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "portrait_chen_jiangong",
+      "texture": "portrait_chen_jiangong",
+      "bounds": [
+        598.2122587968217,
+        86.35925085130535,
+        17.575482406356414,
+        23.804767309875142
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:chen_jiangong",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "frame_chen_jiangong",
+      "texture": "a3_frame",
+      "bounds": [
+        593,
+        81,
+        28,
+        35
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:chen_jiangong",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "portrait_tan_jiazhen",
+      "texture": "portrait_tan_jiazhen",
+      "bounds": [
+        629.2122587968217,
+        86.35925085130535,
+        17.575482406356414,
+        23.804767309875142
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:tan_jiazhen",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "frame_tan_jiazhen",
+      "texture": "a3_frame",
+      "bounds": [
+        624,
+        81,
+        28,
+        35
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:tan_jiazhen",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "portrait_cheng_kaijia",
+      "texture": "portrait_cheng_kaijia",
+      "bounds": [
+        660.2122587968217,
+        86.35925085130535,
+        17.575482406356414,
+        23.804767309875142
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:cheng_kaijia",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "frame_cheng_kaijia",
+      "texture": "a3_frame",
+      "bounds": [
+        655,
+        81,
+        28,
+        35
+      ],
+      "sourceId": "ChapterFourAlumniHonorWall:cheng_kaijia",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "wall_lamp_honor_west",
+      "texture": "a3_wall_lamp",
+      "bounds": [
+        696,
+        577,
+        20,
+        28
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "wall_lamp_honor_east",
+      "texture": "a3_wall_lamp",
+      "bounds": [
+        955,
+        577,
+        20,
+        28
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "wall_lamp_class_west",
+      "texture": "a3_wall_lamp",
+      "bounds": [
+        1266,
+        510,
+        20,
+        28
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "wall_lamp_class_east",
+      "texture": "a3_wall_lamp",
+      "bounds": [
+        1542,
+        510,
+        20,
+        28
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "wall_lamp_hall_west",
+      "texture": "a3_wall_lamp",
+      "bounds": [
+        568,
+        70,
+        20,
+        28
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "wall_lamp_hall_middle",
+      "texture": "a3_wall_lamp",
+      "bounds": [
+        688,
+        70,
+        20,
+        28
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "wall_lamp_hall_east",
+      "texture": "a3_wall_lamp",
+      "bounds": [
+        1078,
+        70,
+        20,
+        28
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "door_threshold_exhibit",
+      "texture": "a3_entrance_threshold",
+      "bounds": [
+        260,
+        375,
+        40,
+        25
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "door_threshold_report",
+      "texture": "a3_entrance_threshold",
+      "bounds": [
+        1366,
+        375,
+        40,
+        25
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "door_threshold_studio",
+      "texture": "a3_entrance_threshold",
+      "bounds": [
+        260,
+        477,
+        40,
+        25
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "door_threshold_classroom",
+      "texture": "a3_entrance_threshold",
+      "bounds": [
+        1366,
+        477,
+        40,
+        25
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "elevator_door",
+      "texture": "a3_elevator_door",
+      "bounds": [
+        758,
+        57,
+        59,
+        78
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "plant_honor_west",
+      "texture": "a3_plant",
+      "bounds": [
+        635,
+        738,
+        43,
+        58
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "plant_honor_east",
+      "texture": "a3_plant",
+      "bounds": [
+        987,
+        738,
+        43,
+        58
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "plant_studio_west",
+      "texture": "a3_plant",
+      "bounds": [
+        60,
+        782,
+        42,
+        44
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "plant_studio_east",
+      "texture": "a3_plant",
+      "bounds": [
+        449,
+        782,
+        42,
+        44
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_646_621_0",
+      "texture": "a3_trophy",
+      "bounds": [
+        646,
+        621,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_646_621_22",
+      "texture": "a3_trophy",
+      "bounds": [
+        668,
+        621,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_646_647_0",
+      "texture": "a3_trophy",
+      "bounds": [
+        646,
+        647,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_646_647_22",
+      "texture": "a3_trophy",
+      "bounds": [
+        668,
+        647,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_987_621_0",
+      "texture": "a3_trophy",
+      "bounds": [
+        987,
+        621,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_987_621_22",
+      "texture": "a3_trophy",
+      "bounds": [
+        1009,
+        621,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_987_647_0",
+      "texture": "a3_trophy",
+      "bounds": [
+        987,
+        647,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "cabinet_trophy_987_647_22",
+      "texture": "a3_trophy",
+      "bounds": [
+        1009,
+        647,
+        15,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_676_0",
+      "texture": "a3_trophy",
+      "bounds": [
+        676,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_676_25",
+      "texture": "a3_trophy",
+      "bounds": [
+        701,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_676_50",
+      "texture": "a3_trophy",
+      "bounds": [
+        726,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_808_0",
+      "texture": "a3_trophy",
+      "bounds": [
+        808,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_808_25",
+      "texture": "a3_trophy",
+      "bounds": [
+        833,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_808_50",
+      "texture": "a3_trophy",
+      "bounds": [
+        858,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_941_0",
+      "texture": "a3_trophy",
+      "bounds": [
+        941,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_941_25",
+      "texture": "a3_trophy",
+      "bounds": [
+        966,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "case_trophy_941_50",
+      "texture": "a3_trophy",
+      "bounds": [
+        991,
+        785,
+        14,
+        19
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_monitor_0",
+      "texture": "a3_studio_monitor",
+      "bounds": [
+        176,
+        733,
+        48,
+        32
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_monitor_1",
+      "texture": "a3_studio_monitor_v2",
+      "bounds": [
+        228,
+        733,
+        65,
+        34
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_monitor_2",
+      "texture": "a3_studio_monitor",
+      "bounds": [
+        298,
+        733,
+        49,
+        33
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_monitor_3",
+      "texture": "a3_studio_monitor",
+      "bounds": [
+        346,
+        746,
+        27,
+        25
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_mixer_0",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        174,
+        774,
+        51,
+        22
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_mixer_1",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        230,
+        774,
+        64,
+        22
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_mixer_2",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        299,
+        774,
+        47,
+        22
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_chair_0",
+      "texture": "a3_studio_chair",
+      "bounds": [
+        192,
+        796,
+        32,
+        30
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_chair_1",
+      "texture": "a3_studio_chair",
+      "bounds": [
+        307,
+        796,
+        32,
+        30
+      ],
+      "sourceId": null,
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_right_upper_rack",
+      "texture": "a3_av_rack_wide",
+      "bounds": [
+        416,
+        537,
+        61,
+        82
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_right_lower_rack",
+      "texture": "a3_av_rack_wide",
+      "bounds": [
+        421,
+        619,
+        59,
+        91
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_desk_sidecar",
+      "texture": "a3_av_rack_wide",
+      "bounds": [
+        380,
+        748,
+        53,
+        77
+      ],
+      "sourceId": "a3_media_control_desk",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_rack_top_monitor",
+      "texture": "a3_studio_monitor_v2",
+      "bounds": [
+        415,
+        502,
+        60,
+        36
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_rack_vertical_monitor",
+      "texture": "a3_studio_vertical_display",
+      "bounds": [
+        428,
+        621,
+        44,
+        66
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_left_rack_display",
+      "texture": "a3_studio_monitor",
+      "bounds": [
+        68,
+        508,
+        31,
+        24
+      ],
+      "sourceId": "a3_media_left_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_left_rack_unit_0",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        68,
+        539,
+        31,
+        15
+      ],
+      "sourceId": "a3_media_left_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_left_rack_unit_1",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        68,
+        564,
+        31,
+        15
+      ],
+      "sourceId": "a3_media_left_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_left_rack_unit_2",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        68,
+        589,
+        31,
+        15
+      ],
+      "sourceId": "a3_media_left_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_right_rack_unit_0",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        422,
+        554,
+        45,
+        17
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_right_rack_unit_1",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        422,
+        576,
+        45,
+        17
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_right_rack_unit_2",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        422,
+        598,
+        45,
+        17
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_lower_rack_unit",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        429,
+        690,
+        42,
+        14
+      ],
+      "sourceId": "a3_media_right_rack",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_sidecar_unit_0",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        386,
+        760,
+        41,
+        14
+      ],
+      "sourceId": "a3_media_control_desk",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_sidecar_unit_1",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        386,
+        785,
+        41,
+        14
+      ],
+      "sourceId": "a3_media_control_desk",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "id": "studio_sidecar_unit_2",
+      "texture": "a3_studio_mixer",
+      "bounds": [
+        386,
+        804,
+        41,
+        14
+      ],
+      "sourceId": "a3_media_control_desk",
+      "anchor": [
+        0.5,
+        1.0
+      ]
+    }
+  ]
+}

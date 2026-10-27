@@ -619,6 +619,10 @@
         305.294
       ],
       [
+        951.4,
+        315.1
+      ],
+      [
         950.9,
         316.5
       ],
@@ -1610,5 +1614,10 @@
       ]
     }
   ],
-  "exploration_limits": "Original-art clear north-entry street only, ending at (935,368). Hall crossing was excluded after closer source review exposed its planted divider. No court, roof, grass, fenced apron, waterway or interior opened. Original three-landmark guide unchanged."
+  "exploration_limits": "Original-art clear north-entry street only, ending at (935,368). Hall crossing was excluded after closer source review exposed its planted divider. No court, roof, grass, fenced apron, waterway or interior opened. Original three-landmark guide unchanged.",
+  "ground_registration_note_20261027": {
+    "source": "assets/approved-haidian.png",
+    "repair": "Close the subpixel triangular seam between existing paving polygons at approximately (951.62,315.15). Whole-circle coverage exposes this old centre-sample omission.",
+    "scope": "One inserted edge vertex inside the visible continuous road join; all original vertices, source artwork, waypoints, world transform and collision radii retained."
+  }
 }

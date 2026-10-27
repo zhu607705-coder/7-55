@@ -1,0 +1,84 @@
+{
+  "source": "godot_native/data/native/chapter4-native-source.json:alumni",
+  "scope": "read_only_review_no_story_progress",
+  "figures": [
+    {
+      "id": "su_buqing",
+      "name": "苏步青",
+      "years": "1902—2003",
+      "role": "数学家、教育家",
+      "biography": [
+        "1931年回国后任浙江大学数学系副教授、教授及系主任。",
+        "与陈建功共同形成有影响力的“陈苏学派”，培养了一批数学人才。",
+        "抗战时期随浙江大学西迁，在艰苦条件下继续教学与研究。"
+      ],
+      "sourceLabel": "浙江大学·求是大家",
+      "sourceUrl": "https://www.zju.edu.cn/2021/0611/c41533a2386590/pagem.htm"
+    },
+    {
+      "id": "zhu_kezhen",
+      "name": "竺可桢",
+      "years": "1890—1974",
+      "role": "气象学家、地理学家、教育家",
+      "biography": [
+        "1936—1949年任浙江大学校长，领导学校完成西迁并坚持办学。",
+        "任内学校由 3 个学院、16 个系发展为 7 个学院、27 个系。",
+        "他在新生入学时提出两个问题，要求学生思考求学目的与成人方向。"
+      ],
+      "sourceLabel": "浙江大学国际联合学院·竺老两问",
+      "sourceUrl": "https://www.intl.zju.edu.cn/zh-hans/news/17289"
+    },
+    {
+      "id": "lu_yongxiang",
+      "name": "路甬祥",
+      "years": "1942—",
+      "role": "流体传动与控制学家、教育家",
+      "biography": [
+        "1964年毕业于浙江大学机械系，后留校任教并长期从事流体传动与控制研究。",
+        "1988—1995年任浙江大学校长，推动学校教育、科研与管理改革。",
+        "1991年当选中国科学院学部委员，1994年当选中国工程院院士。"
+      ],
+      "sourceLabel": "浙江大学·历任校长",
+      "sourceUrl": "https://www.zju.edu.cn/2016/0728/c32708a1512243/pagem.htm"
+    },
+    {
+      "id": "chen_jiangong",
+      "name": "陈建功",
+      "years": "1893—1971",
+      "role": "数学家、教育家",
+      "biography": [
+        "1929年起在浙江大学任教，主持数学系建设与人才培养。",
+        "与苏步青共同培育了中国现代数学的重要学术群体。",
+        "西迁时期坚持教学和研究，奠定了浙大数学学科的早期基础。"
+      ],
+      "sourceLabel": "浙江大学档案馆·俊彩星驰长廊",
+      "sourceUrl": "https://acv.zju.edu.cn/site/wszt_jcxc.html"
+    },
+    {
+      "id": "tan_jiazhen",
+      "name": "谈家桢",
+      "years": "1909—2008",
+      "role": "遗传学家、教育家",
+      "biography": [
+        "曾任浙江大学生物系教授，在西迁途中继续组织遗传学教学与实验。",
+        "在缺少自来水、电灯和专业设备的条件下，带领学生用简易器材坚持研究。",
+        "后长期推动中国现代遗传学的学科建设与人才培养。"
+      ],
+      "sourceLabel": "浙江大学·求是精神薪火相传",
+      "sourceUrl": "https://www.zju.edu.cn/2021/0611/c59196a2386352/pagem.htm"
+    },
+    {
+      "id": "cheng_kaijia",
+      "name": "程开甲",
+      "years": "1918—2018",
+      "role": "核物理学家、人民科学家",
+      "biography": [
+        "1937级浙江大学物理系校友，1941年毕业。",
+        "是我国核武器研究的领导者之一，也是核试验事业的开拓者。",
+        "获两弹一星功勋奖章、国家最高科学技术奖、八一勋章与人民科学家国家荣誉称号。"
+      ],
+      "sourceLabel": "浙江大学·程开甲先生诞辰 105 周年纪念会",
+      "sourceUrl": "https://www.zju.edu.cn/2023/0804/c32862a2787683/pagem.htm"
+    }
+  ]
+}

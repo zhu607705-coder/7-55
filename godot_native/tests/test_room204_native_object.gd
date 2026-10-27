@@ -3,6 +3,7 @@ const Room=preload("res://scripts/games/chapter4_room204_model.gd")
 const Layers=preload("res://scripts/ui/chapter4_world_layers.gd")
 const Chapter=preload("res://scripts/chapters/chapter4.gd")
 const ElevatorButton=preload("res://scripts/objects/chapter4_elevator_button.gd")
+const ActorFootMetrics=preload("res://scripts/player_metrics.gd")
 var checks:=0
 var failures:=0
 var state: Node
@@ -56,9 +57,11 @@ func run() -> void:
 	check(adapter.footprint_bounds().position.is_equal_approx(initial_bounds.position+Vector2(116,0)),"Moving native root moves its collision")
 	check(adapter.table.interaction_polygon()[0].is_equal_approx(initial_pick+Vector2(116,0)),"Moving native root moves its pick shape")
 	check(not adapter.contains_source_point(Vector2(72,710)) and adapter.contains_source_point(Vector2(188,710)),"No invisible old interaction survives native root move")
-	check(adapter.front_of_player(Vector2(0,710)),"Occlusion order reads the same native root transform")
+	var actor:=Vector2(0,710-ActorFootMetrics.foot_rect(Vector2.ZERO).end.y)
+	check(adapter.front_of_player(actor),"Occlusion order compares actual feet with the same native root transform")
+	check(not adapter.front_of_player(Vector2(0,adapter.table.position.y+2-ActorFootMetrics.foot_rect(Vector2.ZERO).end.y)),"Feet crossing the native baseline move in front even while the torso remains behind")
 	adapter.table.position.y-=20
-	check(not adapter.front_of_player(Vector2(0,710)),"Moving root across actor depth also changes its occlusion pass")
+	check(not adapter.front_of_player(actor),"Moving root across actor foot depth also changes its occlusion pass")
 	adapter.sync(state.d,world.scene_id)
 	check(adapter.footprint_bounds().is_equal_approx(initial_bounds),"State-derived original transform restored without a second placement record")
 	check(JSON.stringify(state.d)==before,"Presentation and geometry queries never mutate campaign state")

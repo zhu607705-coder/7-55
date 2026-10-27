@@ -60,7 +60,8 @@ func run()->void:
 	world.player=Vector2(500,500);world.facing="side";world.player_flip=false
 	world.collisions=[{"x":510,"y":350,"width":50,"height":400}]
 	world.touch_axis=Vector2(1,-.4);world._process(.05)
-	check(world.player.x==500 and world.player.y<500,"actual wall rejects horizontal component and slides vertically")
+	var contact:Rect2=Metrics.foot_rect(world.player)
+	check(contact.end.x<=510.001 and contact.end.x>509.99 and world.player.y<500,"actual body closes the quarter-pixel gap to wall contact and slides vertically without penetration")
 	check(world.facing=="up","slide uses actual up displacement rather than stronger right intent")
 	world.touch_axis=Vector2.RIGHT;var blocked:Vector2=world.player;world._process(.05)
 	check(world.player==blocked and world.facing=="side" and not world.player_flip,"wall contact turns in place toward intent")

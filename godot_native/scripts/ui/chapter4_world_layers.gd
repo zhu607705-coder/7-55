@@ -1,4 +1,5 @@
 extends RefCounted
+const FloorSpace=preload("res://scripts/space/north_floor_space.gd")
 const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-pixel furniture, residuals and bakery machinery. No progression writes.
 const Room = preload("res://scripts/games/chapter4_room204_model.gd")
@@ -97,7 +98,7 @@ func draw_after_furniture(canvas: CanvasItem,context: Dictionary,state: Dictiona
 	# the original modal-lifetime motion, never an extra cabinet at the door.
 	var c: Dictionary=state.chapter4
 	if front:
-		if presentation.get("kind","")=="projection" and state.chapter4.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y<475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
+		if presentation.get("kind","")=="projection" and state.chapter4.floor=="A2" and FloorSpace.in_front(475,Vector2(context.get("player",Vector2.ZERO))): draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
 		if state.chapter4.floor=="A1":
 			_draw_bakery(canvas,context,state,true)
 			if state.chapter4.phase=="opening_handoff" and "opening_paper_at_noticeboard" in state.chapter4.factIds:
@@ -108,7 +109,7 @@ func draw_after_furniture(canvas: CanvasItem,context: Dictionary,state: Dictiona
 						draw_frame(canvas,context,"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
 	else:
 		if c.floor=="A1": _draw_bakery(canvas,context,state,false)
-		if presentation.get("kind","")=="projection" and c.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y>=475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
+		if presentation.get("kind","")=="projection" and c.floor=="A2" and not FloorSpace.in_front(475,Vector2(context.get("player",Vector2.ZERO))): draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
 func _draw_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool,segment: int=0) -> void:
 	var player: Vector2=context.get("player",Vector2.ZERO)
 	var after_native:=false
@@ -120,7 +121,7 @@ func _draw_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,fr
 		if moves.has(id):
 			var t: float=clampf((clock_ms-float(moves[id].start))/480.0,0,1); t=1-pow(1-t,3)
 			pos=Vector2(moves[id].from).lerp(pos,t); angle=lerpf(float(moves[id].angle),angle,t)
-		if (pos.y+1>player.y)!=front: continue
+		if FloorSpace.in_front(pos.y+1,player)!=front: continue
 		draw_frame(canvas,context,"chapter4_room204_furniture",e.frame,pos,angle,0.25)
 func draw_frame(canvas: CanvasItem,context: Dictionary,sheet_id: String,frame_id: String,pos: Vector2,angle: float,scale_value: float,tint: Color=Color.WHITE) -> void:
 	var sheet: Dictionary=Room.data().sheets[sheet_id]; var frame: Dictionary=sheet.frames[frame_id]; var art: Texture2D=texture(sheet.path)

@@ -1,4 +1,8 @@
 extends Node2D
+const PolygonGround=preload("res://scripts/space/polygon_ground.gd")
+var foot_ground:RefCounted=PolygonGround.new()
+const PavingNavigation=preload("res://scripts/space/paving_navigation.gd")
+var foot_navigation:RefCounted=PavingNavigation.new()
 const STUDENT_PIN_LAYOUT = preload("res://campuses/buct_shared/student/scripts/landmark_pin_layout.gd")
 const FIRST_TEACHING_PATCH = preload("res://campuses/buct_changping/scripts/first_teaching_patch.gd")
 var first_teaching_layer: Node2D
@@ -278,14 +282,17 @@ func _in_paving(p: Vector2) -> bool:
 	return false
 
 func is_walkable(p: Vector2) -> bool:
-	for offset in [Vector2.ZERO,Vector2(3,0),Vector2(-3,0),Vector2(0,3),Vector2(0,-3)]:
-		if not _in_paving(p+offset):return false
+	# Building/trunk blockers below already include the original foot radius.
+	if foot_ground.source_hash!=walk_polys.hash():_build_grid()
+	if not foot_ground.allows_circle(p):return false
 	if is_instance_valid(east_road_extension) and not east_road_extension.allows_feet(p):return false
 	for poly in blockers:
 		if Geometry2D.is_point_in_polygon(p,poly):return false
 	return true
 
 func _build_grid() -> void:
+	foot_ground.configure(walk_polys,3.0);foot_navigation.invalidate()
+	walk_cells.clear()
 	var bounds:=Rect2(walk_polys[0][0],Vector2.ZERO)
 	for poly in walk_polys:
 		for p in poly:bounds=bounds.expand(p)
@@ -313,15 +320,35 @@ func nearest_cell(p: Vector2) -> Vector2i:
 		if d<best_distance:best_distance=d;best=cell
 	return best
 
+func route_segment_clear(a:Vector2,b:Vector2)->bool:
+	if not foot_ground.allows_segment(a,b):return false
+	# Keep authored dynamic guards and current object transforms in the same query.
+	var steps:=maxi(1,ceili(a.distance_to(b)))
+	for index:int in range(steps+1):
+		if not is_walkable(a.lerp(b,float(index)/steps)):return false
+	for poly:PackedVector2Array in blockers:
+		if PavingNavigation.segment_hits_polygon(a,b,poly):return false
+	return true
+
+func navigation_path(a:Vector2,b:Vector2)->PackedVector2Array:
+	if foot_ground.source_hash!=walk_polys.hash():_build_grid()
+	if not foot_navigation.built:foot_navigation.build(grid,walk_cells,route_segment_clear)
+	return foot_navigation.path(nearest_cell(a),nearest_cell(b))
+
+func route_motion_target()->Vector2:
+	return current_path[path_index] if path_index<current_path.size() else visitor.global_position
+
 func path_to(p: Vector2) -> bool:
-	current_path=grid.get_point_path(nearest_cell(visitor.position),nearest_cell(p))
+	current_path=navigation_path(visitor.position,p)
 	path_index=0
 	if current_path.size()>1: path_index=1
 	return current_path.size()>0
 
 func route_direction(p: Vector2) -> Vector2:
 	if guide_pause>0:return Vector2.ZERO
-	while path_index<current_path.size() and p.distance_to(current_path[path_index])<2.5:path_index+=1
+	while path_index<current_path.size() and p.distance_to(current_path[path_index])<2.5:
+		if path_index+1<current_path.size() and not route_segment_clear(p,current_path[path_index+1]):break
+		path_index+=1
 	if path_index<current_path.size():return p.direction_to(current_path[path_index])
 	if guide_active:_guide_arrived()
 	return Vector2.ZERO

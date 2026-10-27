@@ -3,6 +3,7 @@ extends RefCounted
 ## Source-native cleanup samples the current time plate; no mother image is edited.
 ## No input or progression authority. Missing chapter art preserves the source plate.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const FloorSpace=preload("res://scripts/space/north_floor_space.gd")
 const DeveloperPolicy=preload("res://scripts/developer_tools_policy.gd")
 const PREVIEW_ENV:="NORTH_PROP_OBJECT_PREVIEW"
 var independent_preview:=true
@@ -88,7 +89,7 @@ func prop_rect(object:Dictionary)->Rect2:
 	return Rect2(Vector2(float(object.centerX)-extent.x/2,float(object.baselineY)-extent.y),extent)
 
 func prop_in_front(object:Dictionary,player:Vector2)->bool:
-	return active and Metrics.foot_rect(player).end.y<=float(object.get("depthBaselineY",object.baselineY))
+	return active and FloorSpace.in_front(float(object.get("depthBaselineY",object.baselineY)),player)
 
 func source_part_keeps_pixel(point:Vector2)->bool:
 	for excluded:Array in data.wall.get("sourceExclusions",[]):
@@ -129,7 +130,7 @@ func owns_cover(cover:Dictionary)->bool:
 func wall_in_front(player:Vector2)->bool:
 	# The source collider permits exact contact at its north edge. Keep that
 	# legal stand behind the wall until the feet actually cross the baseline.
-	return active and Metrics.foot_rect(player).end.y<=float(data.wall.baselineY)
+	return active and FloorSpace.in_front(float(data.wall.baselineY),player)
 
 func _project(area:Rect2,context:Dictionary)->Rect2:
 	return Rect2(Vector2(context.origin)+area.position*float(context.zoom),area.size*float(context.zoom))
@@ -221,10 +222,9 @@ func draw_objects(canvas:CanvasItem,context:Dictionary,front:bool)->void:
 	# Preserve main's combined-desk rendering outside the explicit preview.
 	if not active or independent_preview:return
 	var player:Vector2=context.player
-	var foot_bottom:float=Metrics.foot_rect(player).end.y
 	var tint:=Color.WHITE.lerp(Color(.03,.15,.26),float(context.get("mode_mix",0))*.3)
 	for object:Dictionary in data.desks:
-		if (foot_bottom<float(object.baselineY))!=front:continue
+		if FloorSpace.in_front(float(object.baselineY),player)!=front:continue
 		canvas.draw_texture_rect_region(desk_texture,_project(desk_rect(object),context),rect(data.desk.visibleRect),tint*desk_tints.get(object.id,Color.WHITE))
 	if front and wall_in_front(player):
 		tint.a=.78;_wall(canvas,context,tint)

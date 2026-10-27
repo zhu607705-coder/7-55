@@ -27,11 +27,14 @@ func run() -> void:
 	world.guard_navigation_key=""
 	world.guard_state.phase="running"
 	var min_y:=100.0
+	var max_y:=100.0
 	for i in 60:
 		world._update_guard(.02)
 		min_y=minf(min_y,world.guard_position.y)
+		max_y=maxf(max_y,world.guard_position.y)
 		check(world._guard_can_stand(world.guard_position,[Rect2(185,40,30,160)]),"actual guard body stays outside obstacle "+str(i))
-	check(min_y<34,"actual world guard follows source A-star detour")
+	check(max_y>207,"actual world guard detours around the obstacle on registered south-side ground")
+	check(min_y>=55 and not world._guard_can_stand(Vector2(100,30),[]),"guard cannot bypass the obstacle through the north exterior wall")
 	check(world.guard_position.x>185,"detour makes forward progress around obstruction")
 	# Source recreates after the separate, validated stairwell game with600px
 	# of guard lag on A1; it does not spawn a visible A2 guard immediately.

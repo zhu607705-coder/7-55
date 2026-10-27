@@ -37,15 +37,16 @@ func run() -> void:
 	check(is_instance_valid(campus.library_layer) and is_instance_valid(campus.first_teaching_layer),"Current real building layers retained")
 	check(campus.east_road_extension.find_children("*","CollisionObject2D",true,false).is_empty(),"Added source leaves create no physics")
 	check(not campus.is_walkable(Vector2(763.25,881)),"New junction counterexample rejected by radius3 union boundary")
-	check(campus.is_walkable(Vector2(751,868.5))==legacy_walkable(Vector2(751,868.5)),"Inherited old corner behavior intentionally retained")
+	check(legacy_walkable(Vector2(751,868.5)) and not campus.is_walkable(Vector2(751,868.5)),"Whole-circle rule also closes the inherited corner overhang")
 	var original_cell_count:=0;var new_cells:Array[Vector2i]=[]
 	for cell in campus.walk_cells:
 		var p:Vector2=campus.grid.get_point_position(cell)
 		if legacy_walkable(p):original_cell_count+=1
 		else:new_cells.append(cell)
 	var reachable:=0;var start:Vector2i=campus.nearest_cell(vec(campus.data.spawn))
+	campus.navigation_path(vec(campus.data.spawn),vec(campus.data.spawn))
 	for cell in new_cells:
-		if not campus.grid.get_id_path(start,cell).is_empty():reachable+=1
+		if not campus.foot_navigation.path(start,cell).is_empty():reachable+=1
 	check(reachable==new_cells.size(),"Every added navgrid node reachable from actual spawn")
 	var bad_samples:Array=[]
 	var edges:=0;var interior_samples:=0;var illegal:=0;var inherited:=0
@@ -55,6 +56,7 @@ func run() -> void:
 		for off in [Vector2i(1,0),Vector2i(0,1),Vector2i(1,1),Vector2i(-1,1)]:
 			var qcell:Vector2i=cell+off
 			if not campus.grid.is_in_boundsv(qcell) or campus.grid.is_point_solid(qcell):continue
+			if not campus.foot_navigation.graph.are_points_connected(campus.foot_navigation.point_id(cell),campus.foot_navigation.point_id(qcell)):continue
 			if off.x!=0 and off.y!=0:
 				if campus.grid.is_point_solid(cell+Vector2i(off.x,0)) or campus.grid.is_point_solid(cell+Vector2i(0,off.y)):continue
 			var q:Vector2=campus.grid.get_point_position(qcell);edges+=1
@@ -68,7 +70,7 @@ func run() -> void:
 					if not campus.is_walkable(sample) or not disk_clear(sample):
 						illegal+=1;bad_samples.append({"a":[p.x,p.y],"b":[q.x,q.y],"sample":[sample.x,sample.y],"a_old":legacy_walkable(p),"b_old":legacy_walkable(q)})
 				elif not disk_clear(sample):inherited+=1
-	check(illegal==0,"All newly introduced AStar edge interiors inside radius3 legal union for added permissions")
+	check(illegal==0,"Every actual AStar connection keeps its swept radius3 circle on the ground union")
 	report.geometry={"original_grid_cells":original_cell_count,"added_grid_cells":new_cells.size(),"added_reachable":reachable,"local_grid_edges":edges,"edge_samples":interior_samples,"new_illegal_samples":illegal,"bad_samples":bad_samples,"inherited_old_radius_crossing_samples_preserved":inherited}
 	if OS.get_environment("BUCT_EAST_ROAD_GEOMETRY_ONLY")=="1":
 		write_optional_evidence("geometry-detail.json",report.geometry);print(JSON.stringify(report.geometry));campus.queue_free();await process_frame;quit(0 if illegal==0 and failures.is_empty() else 1);return
