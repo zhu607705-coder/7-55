@@ -3,6 +3,7 @@ const StampMotion=preload("res://scripts/presentation/library_stamp_motion.gd")
 const Picker=preload("res://scripts/world_object_picker.gd")
 const ObjectRebuild=preload("res://scripts/ui/library_object_rebuild.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
+const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
 const PrinterObject=preload("res://scripts/ui/library_printer_object.gd")
 const SeatMotion=preload("res://scripts/presentation/library_seat_motion.gd")
 ## LibraryInteriorScene's source-pixel replacement layers and timed prop motion.
@@ -199,9 +200,10 @@ func owns_pick_target(id: String) -> bool:
 func _context(canvas: CanvasItem,context: Dictionary) -> void:
 	canvas.draw_set_transform(context.get("origin",Vector2.ZERO),0,Vector2.ONE*float(context.get("zoom",1)))
 func _in_pass(depth: float,context: Dictionary,front: bool) -> bool:
-	return (depth>Vector2(context.get("player",Vector2.ZERO)).y+float(source.playerDepthOffset))==front
+	var ground:float=context.get("player_ground_y",SpatialRules.foot_y(Vector2(context.get("player",Vector2.ZERO))))
+	return SpatialRules.depth_in_front(SpatialRules.legacy_baseline(depth,float(source.playerDepthOffset)),ground)==front
 func _floor_depth(baseline: float) -> float:
-	return baseline+float(source.playerDepthOffset)-PlayerMetrics.foot_rect(Vector2.ZERO).position.y
+	return baseline+float(source.playerDepthOffset)-SpatialRules.foot_y(Vector2.ZERO)
 func draw_back(canvas: CanvasItem,context: Dictionary,state: Dictionary) -> void:
 	if context.get("scene_id","")!="library_interior": return
 	seat.bind_view(canvas)
@@ -238,8 +240,8 @@ func _draw_depth_pass(canvas: CanvasItem,context: Dictionary,state: Dictionary,f
 					var geometry: Dictionary=rebuild.component_geometry(id,component)
 					Picker.record(canvas,component.targets,geometry)
 					canvas.draw_texture_rect_region(geometry.texture,geometry.rect,geometry.source)
-	# Original clocks and the shared player.y+120 depth contract are retained.
-	if _in_pass(float(source.shelfDepth),context,front): _draw_shelf(canvas,state)
+	# Keep source animation clocks; convert authored layer depths to physical feet.
+	if _in_pass(_floor_depth(float(collision_rect().bottom)),context,front):_draw_shelf(canvas,state)
 	if not rebuild.ready and _in_pass(float(source.mechanismDepth),context,front) and shelf_collected: _draw_mechanism(canvas)
 	if _in_pass(float(source.paperDepth),context,front): _draw_shelf_paper(canvas)
 	if _in_pass(548,context,front): _draw_seat_status(canvas)
@@ -286,7 +288,7 @@ func _draw_static_foreground(canvas: CanvasItem,context: Dictionary,front: bool)
 	# Their original collision rectangles remain the sole solid geometry.
 	if not front: return
 	for row: Dictionary in rebuild.layout.staticForeground:
-		if PlayerMetrics.foot_rect(Vector2(context.get("player",Vector2.ZERO))).position.y>=float(row.baselineY): continue
+		if not SpatialRules.in_front(float(row.baselineY),Vector2(context.get("player",Vector2.ZERO))):continue
 		var r: Array=row.rect
 		var area:=Rect2(float(r[0]),float(r[1]),float(r[2]),float(r[3]))
 		canvas.draw_texture_rect_region(rebuild.clean_plate,area,area)
@@ -398,10 +400,10 @@ func staff_pose() -> Dictionary:
 func _draw_front_desk(canvas: CanvasItem,context: Dictionary,front: bool) -> void:
 	_context(canvas,context)
 	var pose: Dictionary=staff_pose(); var scale_value: float=pose.scale
-	if _in_pass(float(source.frontDesk.staffDepth),context,front):
+	if _in_pass(_floor_depth(pose.position.y),context,front):
 		Picker.record(canvas,["front_desk"],{"rect":Rect2(Vector2(pose.position)-Vector2(48,128)*scale_value,Vector2(96,128)*scale_value),"texture":staff_art,"source":Rect2(int(pose.frame)*96,0,96,128)})
 		canvas.draw_texture_rect_region(staff_art,Rect2(Vector2(pose.position)-Vector2(48,128)*scale_value,Vector2(96,128)*scale_value),Rect2(int(pose.frame)*96,0,96,128))
-	if _in_pass(float(source.frontDesk.counterDepth),context,front):
+	if _in_pass(_floor_depth(float(source.frontDesk.counterBounds.top)+float(source.frontDesk.counterBounds.height)),context,front):
 		var b: Dictionary=source.frontDesk.counterBounds; var region:=Rect2(b.left,b.top,b.width,b.height)
 		Picker.record(canvas,["front_desk"],region)
 		canvas.draw_texture_rect_region(art,region,region)

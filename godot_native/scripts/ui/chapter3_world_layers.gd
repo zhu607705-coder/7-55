@@ -3,6 +3,7 @@ const Picker=preload("res://scripts/world_object_picker.gd")
 const Facing=preload("res://scripts/character_facing.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
 const QizhenLocker=preload("res://scripts/presentation/qizhen_locker_object.gd")
 var qizhen_locker:RefCounted=QizhenLocker.new()
 const REHEARSAL_RACK_ASSET="res://assets/native/theater_rebuild_20261020/fan_rack.png"
@@ -110,7 +111,7 @@ func _npc_frame(pair: int,fps: float,delay: float,s: Dictionary) -> int:
 	var t: float=fmod(clock_ms-fmod(delay,540),2000/fps+delay)
 	return pair*2+(1 if t>=1000/fps else 0)
 func _npc(id: String,key: String,p: Vector2,pair: int,depth: float,fps: float,delay: float,s: Dictionary) -> Dictionary:
-	return {"id":id,"kind":"sprite","asset":asset(key),"point":p,"scale":Metrics.DISPLAY_SCALE,"frameSize":Vector2(96,128),"frame":_npc_frame(pair,fps,delay,s),"anchor":Vector2(.5,1),"alpha":light_alpha,"depth":depth}
+	return {"id":id,"kind":"sprite","asset":asset(key),"point":p,"groundY":p.y,"scale":Metrics.DISPLAY_SCALE,"frameSize":Vector2(96,128),"frame":_npc_frame(pair,fps,delay,s),"anchor":Vector2(.5,1),"alpha":light_alpha,"depth":depth}
 func ticket_inspector_asset(s:Dictionary,point:Vector2,scan:bool) -> String:
 	# All four complete idle poses already exist in the original React assets.
 	# Preserve the authored scanning action, then look toward a nearby visitor.
@@ -140,7 +141,7 @@ func entries(s: Dictionary) -> Array:
 		# target-local foot offset46, scale.52 and target.y+48 depth. No new solid.
 		for target: Dictionary in worlds.qizhen_lake.interactionTargets:
 			if target.kind=="safety_officer":
-				result.append({"id":str(target.id),"kind":"sprite","asset":"res://assets/rpg/npcs/finale/guard_check_watch_2frame.png","point":Vector2(target.x,target.y+46),"scale":.52,"frameSize":Vector2(96,128),"frame":0 if reduced(s) else int(clock_ms/500)%2,"anchor":Vector2(.5,1),"alpha":1.0 if str(s.native.get("selected_item","")).is_empty() else .3,"depth":target.y+48})
+				result.append({"id":str(target.id),"kind":"sprite","asset":"res://assets/rpg/npcs/finale/guard_check_watch_2frame.png","point":Vector2(target.x,target.y+46),"groundY":target.y+46,"scale":.52,"frameSize":Vector2(96,128),"frame":0 if reduced(s) else int(clock_ms/500)%2,"anchor":Vector2(.5,1),"alpha":1.0 if str(s.native.get("selected_item","")).is_empty() else .3,"depth":target.y+48})
 	if scene_id=="canteen_interior":
 		result.append_array(mode_fibers.entries())
 		var c: Dictionary=source.constants
@@ -213,7 +214,7 @@ func entries(s: Dictionary) -> Array:
 		# The accepted narrative owns its scan/nod. Before and after it, keep
 		# the original four-direction idle response to the nearby visitor.
 		var inspector_asset: String=admission.asset if admission_live else ticket_inspector_asset(s,inspector_point,false)
-		result.append({"id":"ticket_inspector","kind":"sprite","asset":inspector_asset,"point":inspector_point+admission.offset,"angle":admission.angle,"scale":.75,"depth":832+offset})
+		result.append({"id":"ticket_inspector","kind":"sprite","asset":inspector_asset,"point":inspector_point+admission.offset,"groundY":inspector_point.y+admission.offset.y+48,"angle":admission.angle,"scale":.75,"depth":832+offset})
 		result.append({"id":"ticket_reader","kind":"reader","point":Vector2(907,690+offset),"admitted":admission.accepted,"check_progress":admission.check_progress,"pulse":admission.pulse,"depth":839+offset})
 		result.append({"id":"ticket_gate_wings","kind":"ticket_gate_wings","point":Vector2.ZERO,"gate":ticket_gate.pose(),"depth":794})
 		for target: Dictionary in worlds.theater_interior.interactionTargets:
@@ -337,11 +338,16 @@ func draw_front(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
 	doors.draw_front(canvas,context,s)
 func _draw_partition(canvas: CanvasItem,context: Dictionary,s: Dictionary,front: bool) -> void:
 	if scene_id not in ["canteen_interior","theater_interior","qizhen_lake"]: return
-	var depth: float=context.player.y+(159 if scene_id=="canteen_interior" else 120)
-	for entry: Dictionary in entries(s):
+	var depth:float=context.get("player_ground_y",SpatialRules.foot_y(context.player))
+	var ordered:Array=entries(s)
+	ordered.sort_custom(func(a:Dictionary,b:Dictionary):return entry_ground_y(a)<entry_ground_y(b))
+	for entry: Dictionary in ordered:
 		if entry.kind=="theater_clue":continue # Glass/paper surface pass is post-occlusion.
 		if entry.id=="qizhen_dock_safety_officer" and context.get("nearby_id","")==entry.id: entry.scale*=1.08
-		if (float(entry.depth)>depth)==front: _draw_entry(canvas,context,entry,s)
+		if SpatialRules.depth_in_front(entry_ground_y(entry),depth)==front:_draw_entry(canvas,context,entry,s)
+
+func entry_ground_y(entry:Dictionary)->float:
+	return float(entry.get("groundY",SpatialRules.legacy_baseline(float(entry.depth),159 if scene_id=="canteen_interior" else 120)))
 func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary,s: Dictionary) -> void:
 	if entry.kind=="theater_rebuild":theater_rebuild.draw_entry(canvas,context,entry,s);return
 	var z: float=context.zoom; var origin: Vector2=context.origin
@@ -367,6 +373,9 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary,s: Dic
 				# These surfaces use the exact current frame, pivot, scale and rotation.
 				Picker.record(canvas,ids,{"rect":Rect2(-size_value*entry.get("anchor",Vector2(.5,.5)),size_value),"texture":tex,"source":region,"transform":Transform2D(deg_to_rad(float(entry.get("angle",0))),Vector2.ONE*scale_value,0,point)})
 			canvas.draw_texture_rect_region(tex,Rect2(-size_value*entry.get("anchor",Vector2(.5,.5)),size_value),region,Color(1,1,1,clampf(float(entry.get("alpha",1)),0,1)))
+			if entry.has("groundY"):
+				canvas.draw_set_transform(Vector2.ZERO)
+				SpatialRules.draw_actor_covers(canvas,context,float(entry.groundY),Rect2(point-size_value*entry.get("anchor",Vector2(.5,.5))*scale_value,size_value*scale_value))
 	elif entry.kind=="circle":
 		var color: Color=entry.color; color.a*=clampf(float(entry.alpha),0,1)
 		canvas.draw_circle(Vector2.ZERO,float(entry.radius),color)

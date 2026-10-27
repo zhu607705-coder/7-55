@@ -1,6 +1,10 @@
 extends RefCounted
 const Picker=preload("res://scripts/world_object_picker.gd")
 const Facing=preload("res://scripts/character_facing.gd")
+const FloorSpace=preload("res://scripts/space/north_floor_space.gd")
+const NpcInteractionMotion=preload("res://scripts/presentation/npc_interaction_motion.gd")
+var npc_interaction_motion:RefCounted=NpcInteractionMotion.new()
+var reduced_npc_motion:=false
 ## Source ChapterFourTemporalMazeScene phase props and ChapterFourClockMotion.
 ## All clocks here are local presentation time; no story state is written.
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
@@ -35,11 +39,13 @@ func tick(delta: float,state: Dictionary) -> void:
 		# An ordinary load replaces the owner even in the same phase. Restored
 		# completed props are terminal, not a continuation of retired timing.
 		state_owner=state
+		npc_interaction_motion.reset()
 		phase_key=key; elapsed_ms=0; repair_ms=float(source.maintenanceRuntime.repairedPush.durationMs); oil_ms=9999; repaired=is_repaired; cover_open=is_open
 	if is_repaired and not repaired: repair_ms=0
 	if is_open and not cover_open: oil_ms=0
 	repaired=is_repaired; cover_open=is_open
 	var step: float=minf(delta,0.05)*1000
+	reduced_npc_motion=bool(state.get("native",{}).get("settings",{}).get("reduced_motion",false))
 	elapsed_ms+=step; repair_ms+=step; oil_ms+=step
 	var next_clock: String=clock_frame(state)+":"+str(c.get("worldTimeSeconds",0))+":"+str("hour_hand_installed" in facts)+":"+str(manual_minute(state))
 	if next_clock!=clock_key: clock_ms=0; clock_key=next_clock
@@ -96,7 +102,7 @@ func draw_back(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state: D
 	_draw_objects(owner,canvas,context,state,false)
 func draw_front(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state: Dictionary) -> void:
 	_draw_objects(owner,canvas,context,state,true)
-func _depth(context: Dictionary,y: float,front: bool) -> bool: return (y>Vector2(context.get("player",Vector2.ZERO)).y)==front
+func _depth(context: Dictionary,y: float,front: bool) -> bool: return FloorSpace.in_front(y,Vector2(context.get("player",Vector2.ZERO)))==front
 func _draw_objects(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	var c: Dictionary=state.chapter4
 	_draw_people(owner,canvas,context,state,front)
@@ -161,7 +167,7 @@ func _draw_wheel_cover(owner:RefCounted,canvas:CanvasItem,context:Dictionary,sta
 	canvas.draw_rect(pose.local_rect,Color("34352f"),false,.9)
 	canvas.draw_circle(Vector2.ZERO,1.3,Color("a0a398"))
 	canvas.draw_set_transform(Vector2.ZERO)
-func _npc(owner: RefCounted,canvas: CanvasItem,context: Dictionary,id: String,p: Vector2,scale_value: float,time_ms: float,flip: bool=false,alpha: float=1,crop: Rect2=Rect2()) -> void:
+func _npc(owner: RefCounted,canvas: CanvasItem,context: Dictionary,id: String,p: Vector2,scale_value: float,time_ms: float,flip: bool=false,alpha: float=1,crop: Rect2=Rect2(),angle_degrees:float=0.0) -> void:
 	if alpha<=0: return
 	var def: Dictionary=npcs[id]; var art: Texture2D=owner.texture(str(def.file).replace("src/assets/","res://assets/"))
 	if not art: return
@@ -170,8 +176,22 @@ func _npc(owner: RefCounted,canvas: CanvasItem,context: Dictionary,id: String,p:
 	var full: Vector2=Vector2(def.frameWidth,def.frameHeight); var columns: int=maxi(1,int(art.get_width()/full.x)); var region: Rect2=crop if crop.has_area() else Rect2(Vector2.ZERO,full)
 	var target: Rect2=Rect2(region.position-full*Vector2(0.5,1),region.size)
 	region.position+=Vector2((frame%columns)*full.x,int(frame/columns)*full.y)
-	canvas.draw_set_transform(Vector2(context.origin)+p*float(context.zoom),0,Vector2(-1 if flip else 1,1)*scale_value*float(context.zoom))
+	canvas.draw_set_transform(Vector2(context.origin)+p*float(context.zoom),deg_to_rad(angle_degrees),Vector2(-1 if flip else 1,1)*scale_value*float(context.zoom))
 	canvas.draw_texture_rect_region(art,target,region,Color(1,1,1,alpha)); canvas.draw_set_transform(Vector2.ZERO)
+	var transform:=Transform2D(deg_to_rad(angle_degrees),Vector2(-1 if flip else 1,1)*scale_value,0,p)
+	_occlude_npc(canvas,context,p,transform*target)
+
+func _occlude_npc(canvas:CanvasItem,context:Dictionary,ground:Vector2,actor_bounds:Rect2)->void:
+	var plate:Texture2D=context.get("background")
+	if plate==null:return
+	for cover:Dictionary in context.get("actor_occluders",[]):
+		var bounds:Rect2=Room.rect(cover.get("maskBounds",cover))
+		var alpha:=FloorSpace.npc_cover_alpha(cover,ground.y,Vector2(context.get("player",Vector2.ZERO)))
+		if not actor_bounds.intersects(bounds) or alpha<=0:continue
+		Picker.record(canvas,[],bounds)
+		var tint:=Color.WHITE.lerp(Color(.03,.15,.26),float(context.get("mode_mix",0))*.3)
+		tint.a=alpha
+		canvas.draw_texture_rect_region(plate,Rect2(Vector2(context.origin)+bounds.position*float(context.zoom),bounds.size*float(context.zoom)),bounds,tint)
 func _draw_origin_frame(owner: RefCounted,canvas: CanvasItem,context: Dictionary,sheet: String,id: String,p: Vector2,origin: Vector2,scale_value: float) -> void:
 	var data: Dictionary=Room.data().sheets[sheet]; var frame: Dictionary=data.frames[id]; var art: Texture2D=owner.texture(data.path)
 	if not art: return
@@ -231,18 +251,43 @@ func support_people(state: Dictionary) -> Array:
 	for entry in [source.frontDeskRuntime]+source.supportNpcRuntimes:
 		if c.get("floor","")==entry.storyFloor and c.get("phase","") in entry.activePhases: out.append(entry)
 	return out
+func support_interacted(state:Dictionary,target_id:String,action:String,result:Dictionary)->bool:
+	if not bool(result.get("handled",false)):return false
+	var actions:Dictionary={"a1_front_desk_attendant":"c4_front_desk","a2_elevator_attendant":"c4_deduction","a3_reference_teacher":"c4_reference_teacher"}
+	if not actions.has(target_id) or str(actions[target_id])!=action:return false
+	if not support_people(state).any(func(person):return str(person.interactionAnchorId)==target_id):return false
+	if str(result.get("message","")).is_empty() and not result.has("page"):return false
+	var duration:=clampf(1600.0+float(str(result.get("message","")).length())*90.0,1800.0,6200.0)
+	npc_interaction_motion.respond(target_id,elapsed_ms,duration)
+	return true
 func support_pose(person:Dictionary,context:Dictionary) -> Dictionary:
 	var animation:=str(person.animation)
 	var pose:Dictionary={"animation":animation,"flip":false,"time_ms":elapsed_ms}
+	var nearby:=str(context.get("nearby_id",""))==str(person.interactionAnchorId)
 	# This guard has real side/front/back art. Keep staff with only a service
 	# pose at their authored counter orientation; never mirror front into back.
-	if animation.begins_with("guard_") and str(context.get("nearby_id",""))==str(person.interactionAnchorId):
+	if animation.begins_with("guard_") and nearby:
 		var heading:Vector2=Vector2(context.get("player",Vector2.ZERO))+Vector2(0,31.6875)-Room.point(person.position)
 		var facing:=Facing.pose(Vector2.ZERO,heading,"down")
 		pose.animation="guard_walk" if facing.facing=="side" else "guard_walk_"+str(facing.facing)
 		pose.flip=facing.flip if facing.facing=="side" else false
 		pose.time_ms=0.0
+	var motion:Dictionary=npc_interaction_motion.sample(str(person.interactionAnchorId),elapsed_ms,nearby,reduced_npc_motion)
+	var definition:Dictionary=npcs[pose.animation]
+	var frame:int=0 if str(pose.animation).begins_with("guard_walk") else mini(int(motion.frame),int(definition.frameCount)-1)
+	pose.time_ms=float(frame)*1000.0/maxf(1.0,float(definition.fps))
+	pose.frame=frame
+	pose.angle_degrees=motion.angle_degrees
+	pose.phase=motion.phase
 	return pose
+
+func support_geometry(person:Dictionary,pose:Dictionary,texture:Texture2D)->Dictionary:
+	var definition:Dictionary=npcs[pose.animation]
+	var full:=Vector2(definition.frameWidth,definition.frameHeight)
+	var columns:=maxi(1,int(texture.get_width()/full.x))
+	var index:=int(pose.frame)
+	var transform:=Transform2D(deg_to_rad(float(pose.angle_degrees)),Vector2(-1 if pose.flip else 1,1)*float(person.uniformScale),0,Room.point(person.position))
+	return {"rect":Rect2(-full*Vector2(.5,1),full),"texture":texture,"transform":transform,"source":Rect2(Vector2((index%columns)*full.x,int(index/columns)*full.y),full)}
 
 func _portrait_image(texture:Texture2D)->Image:
 	if texture==null:return null
@@ -327,10 +372,8 @@ func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state
 		var p: Vector2=Room.point(person.position)
 		if _depth(context,p.y,front):
 			var pose:=support_pose(person,context)
-			var def: Dictionary=npcs[pose.animation]; var full:=Vector2(def.frameWidth,def.frameHeight); var dimensions:=full*float(person.uniformScale)
+			var def: Dictionary=npcs[pose.animation]
 			var tex: Texture2D=owner.texture(str(def.file).replace("src/assets/","res://assets/"))
 			if tex!=null:
-				var index: int=int(float(pose.time_ms)*float(def.fps)/1000)%int(def.frameCount)
-				var columns: int=maxi(1,int(tex.get_width()/full.x))
-				Picker.record(canvas,[str(person.interactionAnchorId)],{"rect":Rect2(p-dimensions*Vector2(.5,1),dimensions),"texture":tex,"flip_h":pose.flip,"source":Rect2(Vector2((index%columns)*full.x,int(index/columns)*full.y),full)})
-			_npc(owner,canvas,context,pose.animation,p,float(person.uniformScale),pose.time_ms,pose.flip)
+				Picker.record(canvas,[str(person.interactionAnchorId)],support_geometry(person,pose,tex))
+			_npc(owner,canvas,context,pose.animation,p,float(person.uniformScale),pose.time_ms,pose.flip,1.0,Rect2(),float(pose.angle_degrees))

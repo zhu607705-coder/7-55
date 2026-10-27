@@ -1,4 +1,5 @@
 extends Node2D
+const FloorSpace=preload("res://scripts/space/north_floor_space.gd")
 ## Two compatible native props inserted at their former draw positions. This adapter never
 ## handles input or saves progress; the original dispatcher remains the only owner.
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
@@ -58,7 +59,7 @@ func front_of_player(player: Vector2) -> bool:
 	# These two compatible source tables are adjacent in paint order at y710.
 	# Other-depth chairs are intentionally outside this bounded adapter.
 	for id: String in SCENES:
-		if owns_entity(id): return tables[id].position.y+1>player.y
+		if owns_entity(id): return FloorSpace.in_front(tables[id].position.y+1,player)
 	return false
 func footprint_bounds(id: String=KEY) -> Rect2:
 	return tables[id].footprint_bounds() if owns_entity(id) else Rect2()

@@ -2,6 +2,7 @@ extends RefCounted
 ## LibraryInteriorModel source geometry. Motion and obstruction are runtime-only;
 ## only the existing controller-owned entrance record grants access.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
 const CENTER=Vector2(750,724)
 const CLOSED_CENTERS=[697.0,803.0]
 const LEAF_SIZE=Vector2(106,86)
@@ -74,7 +75,7 @@ func foreground_regions(source:Rect2)->Array[Rect2]:
 	return [Rect2(505,672,139,72),Rect2(856,672,139,72),Rect2(644,672,212,9)]
 
 func draw(canvas:CanvasItem,context:Dictionary,front:bool)->void:
-	if not active or (float(context.player.y)+120<834)!=front:return
+	if not active or SpatialRules.in_front(CENTER.y+LEAF_SIZE.y/2,context.player)!=front:return
 	var z:float=context.zoom;var origin:Vector2=context.origin
 	canvas.draw_set_transform(origin,0,Vector2.ONE*z)
 	canvas.draw_rect(Rect2(637,673.5,226,9),Color("263c43"))

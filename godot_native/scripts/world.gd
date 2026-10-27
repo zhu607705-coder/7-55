@@ -7,6 +7,11 @@ const WorldOverlay = preload("res://scripts/ui/world_overlay_layout.gd")
 const MobileFloorRoute = preload("res://scripts/mobile_floor_route.gd")
 const CanteenFloorTap = preload("res://scripts/canteen_floor_tap.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
+const NorthFloorSpace = preload("res://scripts/space/north_floor_space.gd")
+const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
+const WorldSpace=preload("res://scripts/space/world_space.gd")
+var world_space:RefCounted=WorldSpace.new()
+var north_space:RefCounted=world_space.north
 const CharacterFacing = preload("res://scripts/character_facing.gd")
 const InventoryGesture = preload("res://scripts/ui/inventory_gesture.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
@@ -261,6 +266,7 @@ func refresh_world() -> void:
 	collisions = spec.get("collisions",[]).duplicate(true)
 	if chapter3_layers!=null: collisions=chapter3_layers.adjusted_collisions(collisions,State.d)
 	foreground = []
+	if scene_id!="duan_yongping_temporal_maze":north_space.clear()
 	kayak = null
 	for constant_name in spec.get("constants",{}):
 		if "OCCLUSION" in str(constant_name) or "FOREGROUND" in str(constant_name):
@@ -268,6 +274,7 @@ func refresh_world() -> void:
 			if occluders is Array: foreground.append_array(occluders)
 			elif occluders is Dictionary: foreground.append(occluders)
 	mask = PackedByteArray()
+	mask_meta={}
 	var image_path := str(spec.get("background",""))
 	var spawns: Dictionary = spec.get("spawns",{})
 	var checkpoint := str(State.d.get("rpgCheckpoint",""))
@@ -305,11 +312,13 @@ func refresh_world() -> void:
 		if not entry.is_empty(): spawn=entry; explicit_lake_entry=true
 		zoom = 0.8
 	elif scene_id == "duan_yongping_temporal_maze":
+		north_space.configure(floor_id)
 		var floor_spec: Dictionary = spec.layout.floors[0]
 		for candidate in spec.layout.floors:
 			if str(candidate.storyFloor) == floor_id: floor_spec = candidate
 		collisions = floor_spec.staticCollisions.duplicate(true)
 		foreground = floor_spec.foregroundOcclusions.duplicate(true)
+		foreground.append_array(north_space.solid_faces)
 		spawn = floor_spec.safeSpawn
 		image_path = "src/assets/rpg/interiors/finale/chapter4-755/base/"+floor_id.to_lower()+".png"
 		var plate_id := floor_id.to_lower()+"_"+time_id
@@ -326,6 +335,8 @@ func refresh_world() -> void:
 		if phase_id == "final_chase" and floor_id == "A1" and not preserve_position: spawn = spec.layout.finalChaseRuntime.playerStart
 		zoom = 0.85
 	else: zoom = 0.85
+	world_space.configure(scene_id,spec,State.d,background_rect,mask,mask_meta)
+	foreground.append_array(world_space.source_foregrounds)
 	# Wide source plates keep their exact authored coordinates, but never upload
 	# one oversized GPU texture. Only the explicit lossless adapter opts in;
 	# all ordinary interiors retain their original Texture2D path and depth.
@@ -371,10 +382,12 @@ func refresh_world() -> void:
 	if is_instance_valid(kayak_visual):kayak_visual.sync()
 	queue_redraw()
 
-func _rect(value: Dictionary) -> Rect2:
-	if value.has("left"):
-		return Rect2(float(value.left),float(value.top),float(value.right)-float(value.left),float(value.bottom)-float(value.top))
-	return Rect2(float(value.get("x",0)),float(value.get("y",0)),float(value.get("width",0)),float(value.get("height",0)))
+func _rect(value:Variant) -> Rect2:return SpatialRules.rect(value)
+
+func _ground_y(point:Vector2)->float:
+	if scene_id=="qizhen_lake" and str(State.d.qizhenLake.vehicle)=="kayak":
+		return kayak_collision_rect(point,float(kayak.heading) if kayak else -PI/2).end.y
+	return SpatialRules.foot_y(point)
 
 func display_scale_at(point: Vector2) -> float:
 	return PlayerMetrics.scale_at(scene_id,point.y,spec.get("manifest",{}).get("perspective",{}))
@@ -391,8 +404,11 @@ func can_stand(point: Vector2, kayak_heading: float=NAN) -> bool:
 	var visual: Rect2 = boat if boating else PlayerMetrics.visual_rect(point,display_scale_at(point))
 	if visual.position.x < 0 or visual.position.y < 0 or visual.end.x > world_size.x or visual.end.y > world_size.y: return false
 	var feet: Rect2 = boat if boating else PlayerMetrics.foot_rect(point)
+	if world_space.scene_id==scene_id:
+		if not world_space.visual_bounds.encloses(visual) or not world_space.allows_ground(feet):return false
+	if not mask.is_empty() and not SpatialRules.mask_allows_rect(feet,mask,mask_meta):return false
 	if is_instance_valid(native_canteen) and native_canteen.is_active():return not native_canteen.blocks_feet(feet)
-	if boating:
+	if boating and world_space.scene_id!=scene_id:
 		var contained := false
 		for area: Dictionary in spec.zones[str(State.d.qizhenLake.zone)].waterAreas:
 			if point.x>=float(area.left) and point.x<=float(area.right) and point.y>=float(area.top) and point.y<=float(area.bottom): contained=true; break
@@ -406,14 +422,6 @@ func can_stand(point: Vector2, kayak_heading: float=NAN) -> bool:
 	if scene_id == "duan_yongping_temporal_maze" and chapter4_layers != null:
 		for obstacle: Rect2 in chapter4_layers.collisions(State.d):
 			if feet.intersects(obstacle): return false
-	if not mask.is_empty():
-		var middle := feet.get_center()
-		for test in [middle,feet.position,feet.position+Vector2(feet.size.x,0),feet.position+Vector2(0,feet.size.y),feet.end]:
-			var x := int(floor(test.x/float(mask_meta.cellSize)))
-			var y := int(floor(test.y/float(mask_meta.cellSize)))
-			if x < 0 or y < 0 or x >= int(mask_meta.gridWidth) or y >= int(mask_meta.gridHeight): return false
-			var bit := y*int(mask_meta.gridWidth)+x
-			if bit/8 >= mask.size() or (mask[bit/8] & (1 << (bit%8))) == 0: return false
 	return true
 
 func _door_collision_rects()->Array[Rect2]:
@@ -542,6 +550,8 @@ func _try_interact(target: Dictionary = {}) -> void:
 		return
 	if action=="c3_target:theater_exit" and is_instance_valid(host_node) and host_node.has_method("_begin_theater_departure") and host_node._begin_theater_departure():return
 	var result: Dictionary=State.act(action,target.get("value"))
+	if scene_id=="duan_yongping_temporal_maze" and chapter4_layers!=null:
+		chapter4_layers.phases.support_interacted(State.d,str(target.get("id","")),action,result)
 	# A successful counter interaction turns the original actor toward the clerk
 	# once. Movement remains the ordinary facing authority afterwards.
 	if library_scan and result.has("game"):
@@ -680,7 +690,7 @@ func _process(delta: float) -> void:
 		axis = Vector2.ZERO
 		if State.d.actOne.get("exerciseStarted",false):
 			var pace_x := 245 + (520 + sin(Time.get_ticks_msec()/900.0)*130)*.5
-			var pace_position := Vector2(pace_x,player.y)
+			var pace_position := _axis_destination(player,Vector2(pace_x-player.x,0))
 			if can_stand(pace_position): player = pace_position; _sync_player()
 	# A zero-length route waypoint still needs its normal completion step.
 	if axis.length_squared() > 0 or not _floor_route.is_empty():
@@ -702,12 +712,8 @@ func _process(delta: float) -> void:
 					if _floor_route.is_empty(): _floor_status="arrived"; _floor_feedback_left=.45
 			else: _stop_floor_route()
 		else:
-			if scene_id=="duan_yongping_temporal_maze":
-				player=_c4_axis_destination(player,Vector2(displacement.x,0))
-				player=_c4_axis_destination(player,Vector2(0,displacement.y))
-			else:
-				if can_stand(player+Vector2(displacement.x,0)): player.x += displacement.x
-				if can_stand(player+Vector2(0,displacement.y)): player.y += displacement.y
+			player=_axis_destination(player,Vector2(displacement.x,0))
+			player=_axis_destination(player,Vector2(0,displacement.y))
 		floor_route_finished = following_floor_route and _floor_route.is_empty()
 		if old.distance_to(player) > 0:
 			_sync_player()
@@ -786,29 +792,10 @@ func guard_visual() -> Dictionary:
 	return {"texture":texture,"source":Rect2((index%columns)*96,int(index/columns)*128,96,128),"flip_h":guard_flip and guard_facing=="side","direction":guard_facing}
 
 func _c4_axis_destination(start:Vector2,motion:Vector2) -> Vector2:
-	if not start.is_finite() or not motion.is_finite() or motion.is_zero_approx():return start
-	if not is_zero_approx(motion.x) and not is_zero_approx(motion.y):return start
-	var end:Vector2=start+motion
-	# Preserve the existing way out when a moving source NPC overlaps the start.
-	# This does not relocate the actor unless its requested endpoint is legal.
-	if not can_stand(start):return end if can_stand(end) else start
-	var current:Vector2=start
-	# The original Arcade body separates to contact. Rejecting the whole final
-	# frame leaves an arbitrary gap, enough to block the source bakery aisle.
-	# Small substeps retain full-foot collision checks, including thin blockers.
-	var steps:int=maxi(1,int(ceil(motion.length()/4.0)))
-	for index:int in range(steps):
-		var next:Vector2=start+motion*(float(index+1)/steps)
-		if can_stand(next):
-			current=next
-			continue
-		var blocked:Vector2=next
-		for iteration:int in range(12):
-			var middle:Vector2=(current+blocked)*0.5
-			if can_stand(middle):current=middle
-			else:blocked=middle
-		return current
-	return current
+	return _axis_destination(start,motion)
+
+func _axis_destination(start:Vector2,motion:Vector2) -> Vector2:
+	return SpatialRules.sweep_axis(start,motion,can_stand,4.0)
 
 func _update_camera() -> void:
 	var object_focus: Variant=host_node.get("object_focus") if is_instance_valid(host_node) else null
@@ -855,6 +842,10 @@ func _ordered_targets() -> Array:
 	# Paint the existing mode-owned priority last, so visible order and input agree.
 	if scene_id=="qizhen_lake":
 		ordered.sort_custom(func(a: Dictionary,b: Dictionary) -> bool: return int(a.get("interaction_priority",0))<int(b.get("interaction_priority",0)) if int(a.get("interaction_priority",0))!=int(b.get("interaction_priority",0)) else targets.find(a)<targets.find(b))
+	else:
+		# Partitioning around the player cannot order two props on the same side.
+		# Their paint/pick order must follow ground depth independently of him.
+		ordered.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return _target_ground_y(a)<_target_ground_y(b) if not is_equal_approx(_target_ground_y(a),_target_ground_y(b)) else targets.find(a)<targets.find(b))
 	return ordered
 
 func _record_plate_targets() -> void:
@@ -891,7 +882,14 @@ func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 	return object_picker.pick(point,targets,inventory_drop)
 
 func _render_context() -> Dictionary:
-	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id","")),"background":background,"mode_mix":mode_mix}
+	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"player_ground_y":_ground_y(player),"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id","")),"background":background,"mode_mix":mode_mix,"actor_occluders":_actor_occluders()}
+
+func _actor_occluders()->Array:
+	# Native furniture owns its own shared actor planes; the retained source
+	# crops must never be painted over that replacement artwork.
+	if scene_id=="canteen_interior" and is_instance_valid(native_canteen) and native_canteen.is_active():return []
+	if scene_id=="duan_yongping_temporal_maze":return foreground
+	return foreground.filter(func(cover:Dictionary):return not (scene_id=="theater_interior" and chapter3_layers!=null and chapter3_layers.theater_rebuild.owns_legacy_cover(cover)))
 func _draw() -> void:
 	if mobile_exploration:mobile_control_metrics()
 	if is_instance_valid(elevator_button):elevator_button.sync(State.d,scene_id,background)
@@ -971,7 +969,7 @@ func draw_kayak_object_pass(canvas: CanvasItem,before: bool) -> void:
 		_record_plate_targets()
 		_draw_base_pass(canvas,context)
 		for target: Dictionary in _ordered_targets():
-			if _target_point(target).y<=player.y:_draw_target(target,context.origin,canvas)
+			if not _target_in_front(target):_draw_target(target,context.origin,canvas)
 	else:
 		_draw_actor_foreground(canvas,context)
 		_draw_tail_pass(canvas,context)
@@ -1020,7 +1018,7 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary,defer_foregro
 	var actor:Dictionary=player_visual()
 	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
-		if _target_point(target).y <= player.y: _draw_target(target,origin,canvas)
+		if not _target_in_front(target): _draw_target(target,origin,canvas)
 	if not presentation_actor_hidden and not kayak and actor.texture!=null:
 		var frame:Texture2D=actor.texture
 		var visual: Rect2 = PlayerMetrics.visual_rect(player,display_scale_at(player))
@@ -1044,7 +1042,7 @@ func _draw_actor_foreground_prefix(canvas: CanvasItem,layer_context: Dictionary)
 	var origin: Vector2=layer_context.origin
 	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
-		if _target_point(target).y > player.y: _draw_target(target,origin,canvas)
+		if _target_in_front(target): _draw_target(target,origin,canvas)
 	if chapter3_layers!=null: chapter3_layers.draw_front(canvas,layer_context,State.d)
 
 func _draw_actor_foreground_suffix(canvas: CanvasItem,layer_context: Dictionary) -> void:
@@ -1060,7 +1058,14 @@ func _draw_actor_foreground_suffix(canvas: CanvasItem,layer_context: Dictionary)
 				var occlusion: Dictionary=chapter3_layers.canteen_occlusion(cover,player,bool(State.d.native.settings.reduced_motion))
 				if not occlusion.visible: continue
 				alpha=occlusion.alpha
-			elif player.y >= baseline: continue
+			elif not SpatialRules.depth_in_front(baseline,_ground_y(player)):continue
+			if cover.has("polygon"):
+				var uv:=PackedVector2Array()
+				for point:Vector2 in cover.polygon:uv.append(point/background.get_size())
+				canvas.draw_set_transform(origin,0,Vector2.ONE*zoom)
+				canvas.draw_polygon(cover.polygon,PackedColorArray([Color(1,1,1,alpha)]),uv,background)
+				canvas.draw_set_transform(Vector2.ZERO)
+				continue
 			var region := _rect(cover.get("maskBounds",cover))
 			var regions:Array[Rect2]=[]
 			if scene_id=="library_interior":regions=library_door.foreground_regions(region)
@@ -1081,6 +1086,10 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		canvas.draw_set_transform(origin+guard_position*zoom,0,Vector2(-1 if actor.flip_h else 1,1))
 		canvas.draw_texture_rect_region(actor.texture,Rect2(-Vector2(guard_size.x/2,guard_size.y*.89),guard_size),actor.source)
 		canvas.draw_set_transform(Vector2.ZERO)
+		var guard_context:Dictionary=layer_context.duplicate()
+		guard_context["actor_after_foreground"]=true
+		var extent:=Vector2(10,8) if State.d.chapter4.guardMode=="patrol" else Vector2(10.2,7.65)
+		SpatialRules.draw_actor_covers(canvas,guard_context,guard_position.y+extent.y,Rect2(guard_position-Vector2(guard_size.x/2,guard_size.y*.89)/zoom,guard_size/zoom))
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty(): canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
 	if _exploration_overlay_blocked():
@@ -1226,6 +1235,12 @@ func hud_metrics(text: String) -> Dictionary:
 
 func hud_mode_rect() -> Rect2:
 	return hud_metrics("").mode_rect
+
+func _target_in_front(target:Dictionary)->bool:
+	return SpatialRules.depth_in_front(_target_ground_y(target),_ground_y(player))
+
+func _target_ground_y(target:Dictionary)->float:
+	return float(target.get("baselineY",target.get("sortY",_target_point(target).y)))
 
 func _draw_target(target: Dictionary, origin: Vector2, canvas: CanvasItem=null) -> void:
 	if canvas==null: canvas=self
@@ -1433,6 +1448,7 @@ func _update_guard(delta: float) -> void:
 	guard_clock_ms+=delta*1000
 	var walls: Array=[]
 	for box in collisions: walls.append(_rect(box))
+	if world_space.scene_id==scene_id:walls.append_array(world_space.voids)
 	var feet: Rect2=PlayerMetrics.foot_rect(player)
 	var foot: Vector2=feet.get_center()
 	var velocity:=Vector2.ZERO
@@ -1501,6 +1517,7 @@ func _update_guard(delta: float) -> void:
 func _guard_can_stand(point: Vector2,walls: Array) -> bool:
 	var extent:=Vector2(10,8) if State.d.chapter4.guardMode=="patrol" else Vector2(10.2,7.65)
 	var body:=Rect2(point-extent,extent*2)
+	if world_space.scene_id==scene_id and not world_space.allows_ground(body):return false
 	for wall in walls:
 		if body.intersects(wall): return false
 	return point.x>=extent.x and point.y>=extent.y and point.x<=world_size.x-extent.x and point.y<=world_size.y-extent.y
@@ -1745,10 +1762,10 @@ func _floor_anchor_bounds(visible: Rect2) -> Rect2:
 	return Rect2(visible.position-feet.position,visible.size-feet.size)
 
 func _floor_obstacles() -> Array:
-	if is_instance_valid(native_canteen) and native_canteen.is_active():return native_canteen.navigation_obstacles(PlayerMetrics.foot_rect(Vector2.ZERO))
-	var obstacles: Array=[]
 	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
-	for obstacle in collisions:
+	var native_furniture:bool=is_instance_valid(native_canteen) and native_canteen.is_active()
+	var obstacles:Array=native_canteen.navigation_obstacles(feet) if native_furniture else []
+	for obstacle in ([] if native_furniture else collisions):
 		if not obstacle is Dictionary: continue
 		var shape: Dictionary=library_layers.replace_collision(obstacle) if scene_id=="library_interior" and library_layers!=null else obstacle
 		var rect:=_rect(shape)
@@ -1756,6 +1773,8 @@ func _floor_obstacles() -> Array:
 	for doorway:Rect2 in _door_collision_rects():obstacles.append(Rect2(doorway.position-feet.end,doorway.size+feet.size))
 	if scene_id=="duan_yongping_temporal_maze" and chapter4_layers!=null:
 		for rect: Rect2 in chapter4_layers.collisions(State.d): obstacles.append(Rect2(rect.position-feet.end,rect.size+feet.size))
+	if world_space.scene_id==scene_id and world_space.active:
+		for rect:Rect2 in world_space.voids:obstacles.append(Rect2(rect.position-feet.end,rect.size+feet.size))
 	return obstacles
 
 func _floor_stand(point: Vector2) -> bool:
@@ -1768,8 +1787,8 @@ func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],vali
 	for obstacle: Rect2 in (planned_obstacles if validated_nodes else _floor_obstacles()):
 		if MobileFloorRoute.segment_hits(a,b,obstacle): return false
 	if mask.is_empty(): return true
-	# Test every interval where any of the authoritative five foot samples
-	# changes mask cell. No approximate stepping can tunnel a narrow mask gap.
+	# Full footprint occupancy only changes as a foot edge crosses a cell edge.
+	# Test every such interval, including narrow holes between the old samples.
 	var cuts: Array[float]=[0.0,1.0]
 	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
 	var change:=b-a
