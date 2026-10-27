@@ -5,8 +5,9 @@ Godot **4.7.1**, GL Compatibility. Open this directory's `project.godot` (not th
 The player moves two read-only historical windows with two hands. A return tote hides the lower spine in the morning; a hanging folio hides the upper spine later. The brass shelf corner and ribbon clip stay fixed. The player combines the two visible markings, then pulls that book from today's shelf. Today's order differs: copying an old position chooses a recoverable decoy.
 
 - Drag either historical window by its surface/frame. Each finger keeps its own window. A mouse can park them sequentially.
-- Pull a current book downward. Wrong books slide back; books are never destroyed. Both viewed fragments and an actual correct pull are required. Waiting, hidden clues, history taps and completion animation cannot solve the puzzle.
+- Pull a current book downward. Wrong books slide back; books are never destroyed. A correct, visible book and an actual pull are required. Historical windows are clues for the player, not permission gates: their movement, visibility and viewing time do not decide whether a valid pull succeeds. Waiting, history taps and completion animation cannot retrieve a book.
 - `···` / Escape opens a safety menu. Cancel, focus loss, app pause, leaving the surface or resizing releases every pointer. Continue is explicit. Reset is local.
+- Keyboard fallback: Tab / Shift+Tab focuses a visible object; Space / Enter grabs or releases it. Arrow keys move the grabbed window or pull / return the current book; Escape pauses. Focus feedback is shown only while using the keyboard, not as a permanent instruction panel. Touch remains the primary interaction.
 - Default play has no answer panel, password, always-on instructions or narrative proof.
 
 ## Boundaries

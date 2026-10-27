@@ -25,8 +25,8 @@ func run() -> void:
 			events.drag(1,b+Vector2(24,-118)*float(frame-45)/70)
 		if frame==116: events.touch(0,events.last[0],false); events.touch(1,events.last[1],false)
 		if frame==150:
-			print("OBSERVE ",view.model.observed," moved=",view.model.moved," dwell=",view.model.dwell," vis=",view.last_visibility," windows=",view.history_rects)
-			check(view.model.observed==[true,true],"both complementary fragments are actually visible at fixed shelf corner")
+			print("WINDOW_VISIBILITY ",view.last_visibility," windows=",view.history_rects)
+			check(view.last_visibility==[true,true],"both complementary fragments are actually visible at fixed shelf corner")
 			check(not view.model.completed,"comparison alone never takes a book")
 		if frame==185: book=view.book_point(3); events.touch(2,book,true)
 		if frame>185 and frame<=230: events.drag(2,book+Vector2(0,72)*float(frame-185)/45)
