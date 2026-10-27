@@ -44,7 +44,8 @@ report.namespaceRegressionOutput=(namespaceRegression.stdout||'')+(namespaceRegr
 const previewProjects=[
  {project:'godot_native/samples/phone_to_campus/preview',tests:['res://test_transition.gd'],prepare:['godot_native/samples/phone_to_campus/run.mjs','--prepare-only']},
  {project:'godot_native/samples/raking_light',tests:['res://tests/test_raking_model.gd','res://tests/test_raking_world.gd','res://tests/test_raking_input.gd'],prepare:[]},
- {project:'godot_native/samples/north_real_plan_preview',tests:['res://tests/test_preview.gd'],prepare:[]}
+ {project:'godot_native/samples/north_real_plan_preview',tests:['res://tests/test_preview.gd'],prepare:[]},
+ {project:'godot_native/samples/paper_rewind',tests:['res://tests/test_paper_rewind.gd','res://tests/test_paper_rewind_input.gd','res://tests/test_paper_rewind_two_hands.gd','res://tests/test_paper_world_3d.gd'],prepare:[]}
 ].filter(preview=>fs.existsSync(path.join(root,preview.project,'project.godot')));
 report.previewProjects=previewProjects.map(({project,tests})=>({project,tests}));
 for(const preview of previewProjects){

@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-26",
+  "baseCommit": "f18cee570f3684e7cd87b6c0f0844f805f3d88c4",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "headless": true,
+  "checks": {
+    "model": 68,
+    "ordinaryObjectInputAndBounds": 65,
+    "twoHandAndReviewEdges": 30,
+    "namespacePositiveNegative": 19,
+    "crossPRStaticOnLatestMain": 2447,
+    "retainedWebQuickValidators": 5,
+    "retainedWebCriticalValidators": 27
+  },
+  "freshImport": true,
+  "standaloneStartup": true,
+  "standaloneWebExport": true,
+  "formalSaveSentinelsUnchanged": true,
+  "manualVisualAcceptance": false,
+  "browserAcceptance": false,
+  "physicalMobileAcceptance": false,
+  "noviceTimingMeasured": false,
+  "sourceSha256": {
+    "scripts/paper_grip.gd": "7a49bf665fd155559e6672ec3f8428fab3d1333441be6aae445fbfa5fe4da97a",
+    "scripts/paper_history_window.gd": "5653aa993be1dac6debbbdf7ef41ebb5e617f376f3210a25052fc69dad88cccd",
+    "scripts/paper_rewind_model.gd": "bf228f42220c23de7e9cce1f63cdc3d55c1567970963992ab33098acd83b8c61",
+    "scripts/paper_rewind_stage.gd": "91c1ded3bde585a15a1411937f30bafedd97adc1323234f252d605cb10ea51fa",
+    "scripts/paper_rewind_view.gd": "2ec1a855322c653bb3a47a308c8be48d50e5b0fa5690f90dd887b17aa580b389",
+    "scenes/paper_rewind.tscn": "9de3d24f9dc6611c78633df4cbd8079a1138b4ecec7637842efd17c870616659",
+    "tests/test_paper_rewind.gd": "a94e929309144fe69c51b7c0c3dcb46467b78142c4980713544888570ca2fc6b",
+    "tests/test_paper_rewind_input.gd": "42e7f31440f891d01a1c49548495396671f9592b68d0915c67f0f0e5ee7f7ec5",
+    "tests/test_paper_rewind_two_hands.gd": "37b760da08a37df927ed07625136edd98b9dd247296aeef78f2ac48c2df2d4d5",
+    "project.godot": "8cede90a9e06be70983afcf7f9cd288f671fb82757d92d0d8dbafdc17fe1b6eb"
+  },
+  "limits": [
+    "Formal story/controller integration intentionally absent. c4_catch_paper is an opening grant, not a closing gate.",
+    "No blocked GPU/Chromium display route was retried.",
+    "Full formal native/runtime and release/browser suites are not claimed by these focused checks.",
+    "Main f18cee5 has an independently reported test_web_startup_ownership expectation mismatch outside this sample; not modified."
+  ]
+}
