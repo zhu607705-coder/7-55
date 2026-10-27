@@ -1,0 +1,18 @@
+config_version=5
+[application]
+config/name="7:55 · 斜光找压痕 · 独立教室原型"
+config/description="Isolated raking-light sample. No story state or save access."
+run/main_scene="res://scenes/raking_light.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+[display]
+window/size/viewport_width=390
+window/size/viewport_height=844
+window/size/window_width_override=390
+window/size/window_height_override=844
+window/stretch/mode="disabled"
+[input_devices]
+pointing/emulate_mouse_from_touch=false
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.07,0.09,0.09,1)
