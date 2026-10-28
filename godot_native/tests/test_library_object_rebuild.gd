@@ -76,8 +76,10 @@ func run() -> void:
 		var chair_geometry: Dictionary=assets.component_geometry("catalog_terminal",chair)
 		check(chair_geometry.rect.end.y==646 and Rect2(636,594,55,52).encloses(chair_geometry.rect),"the generated stool stays visibly inside its original independent chair footprint")
 		check(is_equal_approx(chair_geometry.rect.size.x/chair_geometry.source.size.x,chair_geometry.rect.size.y/chair_geometry.source.size.y),"the separate stool is never stretched")
-		check(PlayerMetrics.foot_rect(Vector2(663,621)).position.y<646 and layer._in_pass(layer._floor_depth(646),{"player":Vector2(663,621)},true),"chair stays in front while the actor foot box has not cleared its back edge")
-		check(PlayerMetrics.foot_rect(Vector2(663,623)).position.y>646 and not layer._in_pass(layer._floor_depth(646),{"player":Vector2(663,623)},true),"actor renders in front as soon as the real foot box clears the chair")
+		check(PlayerMetrics.foot_rect(Vector2(663,606)).end.y<646 and layer._in_pass(layer._floor_depth(646),{"player":Vector2(663,606)},true),"chair stays in front while the physical foot bottom is behind its baseline")
+		check(PlayerMetrics.foot_rect(Vector2(663,608)).end.y>646 and not layer._in_pass(layer._floor_depth(646),{"player":Vector2(663,608)},true),"actor renders in front as soon as the physical foot bottom crosses the chair baseline")
+		check(layer._in_pass(layer._floor_depth(646),{"player":Vector2(663,607)},true),"exact foot contact retains behind-baseline convention")
+		check(not Rect2(636,594,55,52).intersects(PlayerMetrics.foot_rect(Vector2(663,624))) and not layer._in_pass(layer._floor_depth(646),{"player":Vector2(663,624)},true),"legal feet south of the stool stay visible even while the body centre remains north of its baseline")
 		var body_parts: Array=assets.pieces("catalog_terminal",assets.bounds("catalog_terminal"))
 		check(body_parts.size()==3,"terminal body is split around its removed stool region")
 		for part: Dictionary in body_parts:

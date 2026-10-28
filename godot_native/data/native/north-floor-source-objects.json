@@ -1,0 +1,4489 @@
+{
+  "schema": "north-floor-source-objects-v1",
+  "sceneId": "duan_yongping_temporal_maze",
+  "worldSize": [
+    1672,
+    941
+  ],
+  "authority": "presentation_only; existing source collisions and controller targets",
+  "source": "res://data/source/chapter4-three-floor-maze.layout.json",
+  "excludedOwners": [
+    "A1: generated 53-object classroom family",
+    "A3: room301 33-object exhibit",
+    "A2: original movable room204 furniture and residuals"
+  ],
+  "floors": {
+    "A1": [
+      {
+        "id": "a1_north_coping",
+        "rect": [
+          0,
+          0,
+          1672,
+          24
+        ],
+        "kind": "wall",
+        "baselineY": 24,
+        "pixelPriority": 0,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_west_exterior",
+        "rect": [
+          0,
+          24,
+          50,
+          917
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 1,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_east_exterior",
+        "rect": [
+          1628,
+          24,
+          44,
+          917
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 2,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_south_windows",
+        "rect": [
+          50,
+          840,
+          1578,
+          101
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 3,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_hall_wall",
+        "rect": [
+          50,
+          24,
+          1578,
+          122
+        ],
+        "kind": "wall",
+        "baselineY": 146,
+        "pixelPriority": 4,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_elevator_door",
+        "rect": [
+          724,
+          44,
+          99,
+          111
+        ],
+        "kind": "wall",
+        "baselineY": 155,
+        "pixelPriority": 5,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_stair_flight",
+        "rect": [
+          925,
+          111,
+          125,
+          119
+        ],
+        "kind": "wall",
+        "baselineY": 230,
+        "pixelPriority": 6,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_bakery_west_wall",
+        "rect": [
+          43,
+          145,
+          36,
+          655
+        ],
+        "kind": "wall",
+        "baselineY": 800,
+        "pixelPriority": 7,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_bakery_east_wall",
+        "rect": [
+          494,
+          145,
+          38,
+          655
+        ],
+        "kind": "wall",
+        "baselineY": 800,
+        "pixelPriority": 8,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_bakery_south_wall",
+        "rect": [
+          50,
+          783,
+          484,
+          57
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 9,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class104_west_wall",
+        "rect": [
+          1177,
+          134,
+          49,
+          339
+        ],
+        "kind": "wall",
+        "baselineY": 473,
+        "pixelPriority": 10,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class104_north_wall",
+        "rect": [
+          1226,
+          134,
+          382,
+          114
+        ],
+        "kind": "wall",
+        "baselineY": 248,
+        "pixelPriority": 11,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_classrooms_east_wall",
+        "rect": [
+          1608,
+          134,
+          20,
+          666
+        ],
+        "kind": "wall",
+        "baselineY": 800,
+        "pixelPriority": 12,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class105_west_wall",
+        "rect": [
+          1185,
+          473,
+          41,
+          326
+        ],
+        "kind": "wall",
+        "baselineY": 799,
+        "pixelPriority": 13,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class105_south_wall",
+        "rect": [
+          1226,
+          795,
+          382,
+          45
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 14,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_entrance_west_jamb",
+        "rect": [
+          642,
+          733,
+          39,
+          156
+        ],
+        "kind": "wall",
+        "baselineY": 889,
+        "pixelPriority": 15,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_entrance_east_jamb",
+        "rect": [
+          977,
+          733,
+          46,
+          156
+        ],
+        "kind": "wall",
+        "baselineY": 889,
+        "pixelPriority": 16,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_01",
+        "rect": [
+          108,
+          171,
+          77,
+          90
+        ],
+        "kind": "prop",
+        "baselineY": 261,
+        "pixelPriority": 17,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_02",
+        "rect": [
+          201,
+          171,
+          72,
+          90
+        ],
+        "kind": "prop",
+        "baselineY": 261,
+        "pixelPriority": 18,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_03",
+        "rect": [
+          300,
+          171,
+          130,
+          90
+        ],
+        "kind": "prop",
+        "baselineY": 261,
+        "pixelPriority": 19,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_04",
+        "rect": [
+          83,
+          298,
+          394,
+          84
+        ],
+        "kind": "prop",
+        "baselineY": 382,
+        "pixelPriority": 20,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_05",
+        "rect": [
+          79,
+          297,
+          66,
+          93
+        ],
+        "kind": "prop",
+        "baselineY": 390,
+        "pixelPriority": 21,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_06",
+        "rect": [
+          626,
+          239,
+          138,
+          268
+        ],
+        "kind": "prop",
+        "baselineY": 507,
+        "pixelPriority": 22,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_07",
+        "rect": [
+          914,
+          240,
+          122,
+          273
+        ],
+        "kind": "prop",
+        "baselineY": 513,
+        "pixelPriority": 23,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_08",
+        "rect": [
+          752,
+          571,
+          189,
+          112
+        ],
+        "kind": "prop",
+        "baselineY": 683,
+        "pixelPriority": 24,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_09",
+        "rect": [
+          595,
+          797,
+          59,
+          91
+        ],
+        "kind": "prop",
+        "baselineY": 888,
+        "pixelPriority": 25,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_fixture_10",
+        "rect": [
+          1023,
+          797,
+          72,
+          91
+        ],
+        "kind": "prop",
+        "baselineY": 888,
+        "pixelPriority": 26,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_cafe_table_0_0",
+        "rect": [
+          122,
+          428,
+          87,
+          100
+        ],
+        "kind": "prop",
+        "baselineY": 528,
+        "pixelPriority": 27,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_cafe_table_0_1",
+        "rect": [
+          236,
+          428,
+          87,
+          100
+        ],
+        "kind": "prop",
+        "baselineY": 528,
+        "pixelPriority": 28,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_cafe_table_0_2",
+        "rect": [
+          348,
+          428,
+          87,
+          100
+        ],
+        "kind": "prop",
+        "baselineY": 528,
+        "pixelPriority": 29,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_cafe_table_1_0",
+        "rect": [
+          122,
+          556,
+          87,
+          100
+        ],
+        "kind": "prop",
+        "baselineY": 656,
+        "pixelPriority": 30,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_cafe_table_1_1",
+        "rect": [
+          236,
+          556,
+          87,
+          100
+        ],
+        "kind": "prop",
+        "baselineY": 656,
+        "pixelPriority": 31,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_cafe_table_1_2",
+        "rect": [
+          348,
+          556,
+          87,
+          100
+        ],
+        "kind": "prop",
+        "baselineY": 656,
+        "pixelPriority": 32,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_01",
+        "rect": [
+          99,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 33,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_02",
+        "rect": [
+          177,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 34,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_03",
+        "rect": [
+          259,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 35,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_04",
+        "rect": [
+          338,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 36,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_05",
+        "rect": [
+          421,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 37,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_06",
+        "rect": [
+          501,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 38,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_07",
+        "rect": [
+          589,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 39,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_08",
+        "rect": [
+          1161,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 40,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_09",
+        "rect": [
+          1241,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 41,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_10",
+        "rect": [
+          1321,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 42,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_11",
+        "rect": [
+          1403,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 43,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_12",
+        "rect": [
+          1484,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 44,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_north_portrait_13",
+        "rect": [
+          1564,
+          61,
+          45,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 121,
+        "pixelPriority": 45,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class104_blackboard",
+        "rect": [
+          1328,
+          166,
+          158,
+          60
+        ],
+        "kind": "mounted",
+        "baselineY": 226,
+        "pixelPriority": 46,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class104_notice",
+        "rect": [
+          1240,
+          184,
+          47,
+          26
+        ],
+        "kind": "mounted",
+        "baselineY": 210,
+        "pixelPriority": 47,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class104_lectern",
+        "rect": [
+          1381,
+          226,
+          55,
+          54
+        ],
+        "kind": "prop",
+        "baselineY": 280,
+        "pixelPriority": 48,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class104_bookcase",
+        "rect": [
+          1533,
+          186,
+          45,
+          77
+        ],
+        "kind": "prop",
+        "baselineY": 263,
+        "pixelPriority": 49,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a1_class104_plant",
+        "rect": [
+          1578,
+          220,
+          29,
+          57
+        ],
+        "kind": "prop",
+        "baselineY": 277,
+        "pixelPriority": 50,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      }
+    ],
+    "A2": [
+      {
+        "id": "a2_north_coping",
+        "rect": [
+          0,
+          0,
+          1672,
+          24
+        ],
+        "kind": "wall",
+        "baselineY": 24,
+        "pixelPriority": 0,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_west_exterior",
+        "rect": [
+          0,
+          24,
+          50,
+          917
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 1,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_east_exterior",
+        "rect": [
+          1628,
+          24,
+          44,
+          917
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 2,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_south_windows",
+        "rect": [
+          50,
+          840,
+          1578,
+          101
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 3,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_north_hall_wall",
+        "rect": [
+          50,
+          24,
+          1578,
+          122
+        ],
+        "kind": "wall",
+        "baselineY": 146,
+        "pixelPriority": 4,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_elevator_door",
+        "rect": [
+          741,
+          42,
+          99,
+          112
+        ],
+        "kind": "wall",
+        "baselineY": 154,
+        "pixelPriority": 5,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_stair_flight",
+        "rect": [
+          921,
+          16,
+          129,
+          172
+        ],
+        "kind": "wall",
+        "baselineY": 188,
+        "pixelPriority": 6,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_west",
+        "rect": [
+          44,
+          42,
+          23,
+          326
+        ],
+        "kind": "wall",
+        "baselineY": 368,
+        "pixelPriority": 7,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_east",
+        "rect": [
+          519,
+          42,
+          26,
+          326
+        ],
+        "kind": "wall",
+        "baselineY": 368,
+        "pixelPriority": 8,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_south_left",
+        "rect": [
+          44,
+          344,
+          225,
+          32
+        ],
+        "kind": "wall",
+        "baselineY": 376,
+        "pixelPriority": 9,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_south_right",
+        "rect": [
+          389,
+          344,
+          156,
+          32
+        ],
+        "kind": "wall",
+        "baselineY": 376,
+        "pixelPriority": 10,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room202_west",
+        "rect": [
+          1158,
+          42,
+          18,
+          327
+        ],
+        "kind": "wall",
+        "baselineY": 369,
+        "pixelPriority": 11,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room202_east",
+        "rect": [
+          1598,
+          42,
+          30,
+          327
+        ],
+        "kind": "wall",
+        "baselineY": 369,
+        "pixelPriority": 12,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room202_south_left",
+        "rect": [
+          1160,
+          340,
+          139,
+          35
+        ],
+        "kind": "wall",
+        "baselineY": 375,
+        "pixelPriority": 13,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room202_south_right",
+        "rect": [
+          1408,
+          340,
+          220,
+          35
+        ],
+        "kind": "wall",
+        "baselineY": 375,
+        "pixelPriority": 14,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_north_left",
+        "rect": [
+          44,
+          505,
+          223,
+          29
+        ],
+        "kind": "wall",
+        "baselineY": 534,
+        "pixelPriority": 15,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_north_right",
+        "rect": [
+          388,
+          505,
+          157,
+          29
+        ],
+        "kind": "wall",
+        "baselineY": 534,
+        "pixelPriority": 16,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_west",
+        "rect": [
+          44,
+          534,
+          30,
+          306
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 17,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_east",
+        "rect": [
+          518,
+          534,
+          27,
+          306
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 18,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room205_north_left",
+        "rect": [
+          1157,
+          503,
+          134,
+          28
+        ],
+        "kind": "wall",
+        "baselineY": 531,
+        "pixelPriority": 19,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room205_north_right",
+        "rect": [
+          1418,
+          503,
+          210,
+          28
+        ],
+        "kind": "wall",
+        "baselineY": 531,
+        "pixelPriority": 20,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room205_west",
+        "rect": [
+          1157,
+          531,
+          22,
+          309
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 21,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room205_east",
+        "rect": [
+          1614,
+          531,
+          14,
+          309
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 22,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workbench",
+        "rect": [
+          180,
+          177,
+          254,
+          91
+        ],
+        "kind": "prop",
+        "baselineY": 268,
+        "pixelPriority": 23,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_tool_wall",
+        "rect": [
+          181,
+          55,
+          228,
+          84
+        ],
+        "kind": "mounted",
+        "baselineY": 139,
+        "pixelPriority": 24,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_locker",
+        "rect": [
+          451,
+          63,
+          70,
+          94
+        ],
+        "kind": "prop",
+        "baselineY": 157,
+        "pixelPriority": 25,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_left_unit",
+        "rect": [
+          54,
+          66,
+          127,
+          98
+        ],
+        "kind": "prop",
+        "baselineY": 164,
+        "pixelPriority": 26,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_south_bench",
+        "rect": [
+          112,
+          310,
+          148,
+          38
+        ],
+        "kind": "prop",
+        "baselineY": 348,
+        "pixelPriority": 27,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_right_bench",
+        "rect": [
+          444,
+          310,
+          77,
+          38
+        ],
+        "kind": "prop",
+        "baselineY": 348,
+        "pixelPriority": 28,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_side_cabinet",
+        "rect": [
+          49,
+          186,
+          44,
+          115
+        ],
+        "kind": "prop",
+        "baselineY": 301,
+        "pixelPriority": 29,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_workshop_right_terminal",
+        "rect": [
+          488,
+          201,
+          34,
+          79
+        ],
+        "kind": "prop",
+        "baselineY": 280,
+        "pixelPriority": 30,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_west_planter",
+        "rect": [
+          635,
+          246,
+          112,
+          219
+        ],
+        "kind": "prop",
+        "baselineY": 465,
+        "pixelPriority": 31,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_east_planter",
+        "rect": [
+          921,
+          246,
+          112,
+          219
+        ],
+        "kind": "prop",
+        "baselineY": 465,
+        "pixelPriority": 32,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_hall_bookcase",
+        "rect": [
+          661,
+          549,
+          354,
+          60
+        ],
+        "kind": "prop",
+        "baselineY": 609,
+        "pixelPriority": 33,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_hall_left_flower",
+        "rect": [
+          632,
+          549,
+          34,
+          72
+        ],
+        "kind": "prop",
+        "baselineY": 621,
+        "pixelPriority": 34,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_hall_right_flower",
+        "rect": [
+          1017,
+          549,
+          34,
+          72
+        ],
+        "kind": "prop",
+        "baselineY": 621,
+        "pixelPriority": 35,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lounge_left_sofa",
+        "rect": [
+          652,
+          666,
+          151,
+          133
+        ],
+        "kind": "prop",
+        "baselineY": 799,
+        "pixelPriority": 36,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lounge_right_sofa",
+        "rect": [
+          886,
+          666,
+          151,
+          133
+        ],
+        "kind": "prop",
+        "baselineY": 799,
+        "pixelPriority": 37,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lounge_left_plant",
+        "rect": [
+          620,
+          679,
+          36,
+          120
+        ],
+        "kind": "prop",
+        "baselineY": 799,
+        "pixelPriority": 38,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lounge_right_plant",
+        "rect": [
+          1038,
+          679,
+          36,
+          120
+        ],
+        "kind": "prop",
+        "baselineY": 799,
+        "pixelPriority": 39,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_lectern",
+        "rect": [
+          1316,
+          141,
+          59,
+          51
+        ],
+        "kind": "prop",
+        "baselineY": 192,
+        "pixelPriority": 40,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_blackboard",
+        "rect": [
+          1211,
+          63,
+          347,
+          63
+        ],
+        "kind": "mounted",
+        "baselineY": 126,
+        "pixelPriority": 41,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_screen",
+        "rect": [
+          1369,
+          53,
+          148,
+          70
+        ],
+        "kind": "mounted",
+        "baselineY": 123,
+        "pixelPriority": 42,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_bookcase",
+        "rect": [
+          1165,
+          67,
+          29,
+          86
+        ],
+        "kind": "prop",
+        "baselineY": 153,
+        "pixelPriority": 43,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_plant",
+        "rect": [
+          1575,
+          91,
+          39,
+          67
+        ],
+        "kind": "prop",
+        "baselineY": 158,
+        "pixelPriority": 44,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_screen",
+        "rect": [
+          245,
+          526,
+          108,
+          45
+        ],
+        "kind": "mounted",
+        "baselineY": 571,
+        "pixelPriority": 45,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_teacher_desk",
+        "rect": [
+          184,
+          563,
+          38,
+          36
+        ],
+        "kind": "prop",
+        "baselineY": 599,
+        "pixelPriority": 46,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_left_shelf",
+        "rect": [
+          63,
+          525,
+          34,
+          68
+        ],
+        "kind": "prop",
+        "baselineY": 593,
+        "pixelPriority": 47,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_room204_right_shelf",
+        "rect": [
+          481,
+          525,
+          34,
+          68
+        ],
+        "kind": "prop",
+        "baselineY": 593,
+        "pixelPriority": 48,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_bench_0",
+        "rect": [
+          1230,
+          243,
+          315,
+          15
+        ],
+        "kind": "prop",
+        "baselineY": 258,
+        "pixelPriority": 49,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_0",
+        "rect": [
+          1234,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 50,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_1",
+        "rect": [
+          1268,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 51,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_2",
+        "rect": [
+          1302,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 52,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_3",
+        "rect": [
+          1336,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 53,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_4",
+        "rect": [
+          1370,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 54,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_5",
+        "rect": [
+          1404,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 55,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_6",
+        "rect": [
+          1438,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 56,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_7",
+        "rect": [
+          1472,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 57,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_0_8",
+        "rect": [
+          1506,
+          220,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 247,
+        "pixelPriority": 58,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_bench_1",
+        "rect": [
+          1230,
+          289,
+          315,
+          15
+        ],
+        "kind": "prop",
+        "baselineY": 304,
+        "pixelPriority": 59,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_0",
+        "rect": [
+          1234,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 60,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_1",
+        "rect": [
+          1268,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 61,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_2",
+        "rect": [
+          1302,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 62,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_3",
+        "rect": [
+          1336,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 63,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_4",
+        "rect": [
+          1370,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 64,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_5",
+        "rect": [
+          1404,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 65,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_6",
+        "rect": [
+          1438,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 66,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_7",
+        "rect": [
+          1472,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 67,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_1_8",
+        "rect": [
+          1506,
+          266,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 293,
+        "pixelPriority": 68,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_bench_2",
+        "rect": [
+          1230,
+          335,
+          315,
+          15
+        ],
+        "kind": "prop",
+        "baselineY": 350,
+        "pixelPriority": 69,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_0",
+        "rect": [
+          1234,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 70,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_1",
+        "rect": [
+          1268,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 71,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_2",
+        "rect": [
+          1302,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 72,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_3",
+        "rect": [
+          1336,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 73,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_4",
+        "rect": [
+          1370,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 74,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_5",
+        "rect": [
+          1404,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 75,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_6",
+        "rect": [
+          1438,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 76,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_7",
+        "rect": [
+          1472,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 77,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_lecture_seat_2_8",
+        "rect": [
+          1506,
+          312,
+          29,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 339,
+        "pixelPriority": 78,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_0_0",
+        "rect": [
+          1224,
+          592,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 79,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_0_0",
+        "rect": [
+          1240,
+          578,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 605,
+        "pixelPriority": 80,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_0_0",
+        "rect": [
+          1247,
+          631,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 662,
+        "pixelPriority": 81,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_0_1",
+        "rect": [
+          1294,
+          592,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 82,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_0_1",
+        "rect": [
+          1310,
+          578,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 605,
+        "pixelPriority": 83,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_0_1",
+        "rect": [
+          1317,
+          631,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 662,
+        "pixelPriority": 84,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_0_2",
+        "rect": [
+          1364,
+          592,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 85,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_0_2",
+        "rect": [
+          1380,
+          578,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 605,
+        "pixelPriority": 86,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_0_2",
+        "rect": [
+          1387,
+          631,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 662,
+        "pixelPriority": 87,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_0_3",
+        "rect": [
+          1434,
+          592,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 88,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_0_3",
+        "rect": [
+          1450,
+          578,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 605,
+        "pixelPriority": 89,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_0_3",
+        "rect": [
+          1457,
+          631,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 662,
+        "pixelPriority": 90,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_0_4",
+        "rect": [
+          1504,
+          592,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 91,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_0_4",
+        "rect": [
+          1520,
+          578,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 605,
+        "pixelPriority": 92,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_0_4",
+        "rect": [
+          1527,
+          631,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 662,
+        "pixelPriority": 93,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_1_0",
+        "rect": [
+          1224,
+          681,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 723,
+        "pixelPriority": 94,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_1_0",
+        "rect": [
+          1240,
+          667,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 694,
+        "pixelPriority": 95,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_1_0",
+        "rect": [
+          1247,
+          720,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 751,
+        "pixelPriority": 96,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_1_1",
+        "rect": [
+          1294,
+          681,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 723,
+        "pixelPriority": 97,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_1_1",
+        "rect": [
+          1310,
+          667,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 694,
+        "pixelPriority": 98,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_1_1",
+        "rect": [
+          1317,
+          720,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 751,
+        "pixelPriority": 99,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_1_2",
+        "rect": [
+          1364,
+          681,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 723,
+        "pixelPriority": 100,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_1_2",
+        "rect": [
+          1380,
+          667,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 694,
+        "pixelPriority": 101,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_1_2",
+        "rect": [
+          1387,
+          720,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 751,
+        "pixelPriority": 102,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_1_3",
+        "rect": [
+          1434,
+          681,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 723,
+        "pixelPriority": 103,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_1_3",
+        "rect": [
+          1450,
+          667,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 694,
+        "pixelPriority": 104,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_1_3",
+        "rect": [
+          1457,
+          720,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 751,
+        "pixelPriority": 105,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_1_4",
+        "rect": [
+          1504,
+          681,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 723,
+        "pixelPriority": 106,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_1_4",
+        "rect": [
+          1520,
+          667,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 694,
+        "pixelPriority": 107,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_1_4",
+        "rect": [
+          1527,
+          720,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 751,
+        "pixelPriority": 108,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_2_0",
+        "rect": [
+          1224,
+          769,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 811,
+        "pixelPriority": 109,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_2_0",
+        "rect": [
+          1240,
+          755,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 782,
+        "pixelPriority": 110,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_2_0",
+        "rect": [
+          1247,
+          808,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 839,
+        "pixelPriority": 111,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_2_1",
+        "rect": [
+          1294,
+          769,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 811,
+        "pixelPriority": 112,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_2_1",
+        "rect": [
+          1310,
+          755,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 782,
+        "pixelPriority": 113,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_2_1",
+        "rect": [
+          1317,
+          808,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 839,
+        "pixelPriority": 114,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_2_2",
+        "rect": [
+          1364,
+          769,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 811,
+        "pixelPriority": 115,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_2_2",
+        "rect": [
+          1380,
+          755,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 782,
+        "pixelPriority": 116,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_2_2",
+        "rect": [
+          1387,
+          808,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 839,
+        "pixelPriority": 117,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_2_3",
+        "rect": [
+          1434,
+          769,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 811,
+        "pixelPriority": 118,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_2_3",
+        "rect": [
+          1450,
+          755,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 782,
+        "pixelPriority": 119,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_2_3",
+        "rect": [
+          1457,
+          808,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 839,
+        "pixelPriority": 120,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_desk_2_4",
+        "rect": [
+          1504,
+          769,
+          66,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 811,
+        "pixelPriority": 121,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_monitor_2_4",
+        "rect": [
+          1520,
+          755,
+          31,
+          27
+        ],
+        "kind": "prop",
+        "baselineY": 782,
+        "pixelPriority": 122,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a2_computer_chair_2_4",
+        "rect": [
+          1527,
+          808,
+          28,
+          31
+        ],
+        "kind": "prop",
+        "baselineY": 839,
+        "pixelPriority": 123,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      }
+    ],
+    "A3": [
+      {
+        "id": "a3_north_coping",
+        "rect": [
+          0,
+          0,
+          1672,
+          24
+        ],
+        "kind": "wall",
+        "baselineY": 24,
+        "pixelPriority": 0,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_west_exterior",
+        "rect": [
+          0,
+          24,
+          50,
+          917
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 1,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_east_exterior",
+        "rect": [
+          1628,
+          24,
+          44,
+          917
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 2,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_south_windows",
+        "rect": [
+          50,
+          840,
+          1578,
+          101
+        ],
+        "kind": "wall",
+        "baselineY": 941,
+        "pixelPriority": 3,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_north_hall_wall",
+        "rect": [
+          508,
+          24,
+          646,
+          122
+        ],
+        "kind": "wall",
+        "baselineY": 146,
+        "pixelPriority": 4,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_elevator_door",
+        "rect": [
+          739,
+          43,
+          98,
+          103
+        ],
+        "kind": "wall",
+        "baselineY": 146,
+        "pixelPriority": 5,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_stair_flight",
+        "rect": [
+          892,
+          43,
+          130,
+          180
+        ],
+        "kind": "wall",
+        "baselineY": 223,
+        "pixelPriority": 6,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_north_left",
+        "rect": [
+          44,
+          472,
+          193,
+          30
+        ],
+        "kind": "wall",
+        "baselineY": 502,
+        "pixelPriority": 7,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_north_right",
+        "rect": [
+          335,
+          472,
+          192,
+          30
+        ],
+        "kind": "wall",
+        "baselineY": 502,
+        "pixelPriority": 8,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_west",
+        "rect": [
+          44,
+          502,
+          15,
+          338
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 9,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_east",
+        "rect": [
+          498,
+          502,
+          29,
+          338
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 10,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_north_left",
+        "rect": [
+          604,
+          550,
+          108,
+          25
+        ],
+        "kind": "wall",
+        "baselineY": 575,
+        "pixelPriority": 11,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_north_right",
+        "rect": [
+          961,
+          550,
+          106,
+          25
+        ],
+        "kind": "wall",
+        "baselineY": 575,
+        "pixelPriority": 12,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_west",
+        "rect": [
+          604,
+          575,
+          23,
+          241
+        ],
+        "kind": "wall",
+        "baselineY": 816,
+        "pixelPriority": 13,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_east",
+        "rect": [
+          1062,
+          575,
+          15,
+          241
+        ],
+        "kind": "wall",
+        "baselineY": 816,
+        "pixelPriority": 14,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_south",
+        "rect": [
+          619,
+          804,
+          451,
+          36
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 15,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_north",
+        "rect": [
+          1157,
+          42,
+          471,
+          16
+        ],
+        "kind": "wall",
+        "baselineY": 58,
+        "pixelPriority": 16,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_west",
+        "rect": [
+          1154,
+          58,
+          20,
+          332
+        ],
+        "kind": "wall",
+        "baselineY": 390,
+        "pixelPriority": 17,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_east",
+        "rect": [
+          1616,
+          58,
+          12,
+          332
+        ],
+        "kind": "wall",
+        "baselineY": 390,
+        "pixelPriority": 18,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_south_left",
+        "rect": [
+          1160,
+          372,
+          179,
+          28
+        ],
+        "kind": "wall",
+        "baselineY": 400,
+        "pixelPriority": 19,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_south_right",
+        "rect": [
+          1432,
+          372,
+          196,
+          28
+        ],
+        "kind": "wall",
+        "baselineY": 400,
+        "pixelPriority": 20,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_north_left",
+        "rect": [
+          1159,
+          473,
+          159,
+          29
+        ],
+        "kind": "wall",
+        "baselineY": 502,
+        "pixelPriority": 21,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_north_right",
+        "rect": [
+          1473,
+          473,
+          155,
+          29
+        ],
+        "kind": "wall",
+        "baselineY": 502,
+        "pixelPriority": 22,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_west",
+        "rect": [
+          1156,
+          502,
+          18,
+          338
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 23,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_east",
+        "rect": [
+          1616,
+          502,
+          12,
+          338
+        ],
+        "kind": "wall",
+        "baselineY": 840,
+        "pixelPriority": 24,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_west_planter",
+        "rect": [
+          624,
+          243,
+          81,
+          225
+        ],
+        "kind": "prop",
+        "baselineY": 468,
+        "pixelPriority": 25,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_east_planter",
+        "rect": [
+          899,
+          246,
+          79,
+          222
+        ],
+        "kind": "prop",
+        "baselineY": 468,
+        "pixelPriority": 26,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_stage",
+        "rect": [
+          1259,
+          147,
+          316,
+          57
+        ],
+        "kind": "prop",
+        "baselineY": 204,
+        "pixelPriority": 27,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_lectern",
+        "rect": [
+          1365,
+          141,
+          33,
+          42
+        ],
+        "kind": "prop",
+        "baselineY": 183,
+        "pixelPriority": 28,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_screen",
+        "rect": [
+          1286,
+          58,
+          195,
+          73
+        ],
+        "kind": "mounted",
+        "baselineY": 131,
+        "pixelPriority": 29,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_left_plant",
+        "rect": [
+          1178,
+          96,
+          53,
+          82
+        ],
+        "kind": "prop",
+        "baselineY": 178,
+        "pixelPriority": 30,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_right_plant",
+        "rect": [
+          1554,
+          96,
+          53,
+          82
+        ],
+        "kind": "prop",
+        "baselineY": 178,
+        "pixelPriority": 31,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_speaker",
+        "rect": [
+          1243,
+          82,
+          24,
+          42
+        ],
+        "kind": "mounted",
+        "baselineY": 124,
+        "pixelPriority": 32,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_left_case",
+        "rect": [
+          635,
+          602,
+          60,
+          94
+        ],
+        "kind": "prop",
+        "baselineY": 696,
+        "pixelPriority": 33,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_right_case",
+        "rect": [
+          976,
+          602,
+          47,
+          88
+        ],
+        "kind": "prop",
+        "baselineY": 690,
+        "pixelPriority": 34,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_south_left_case",
+        "rect": [
+          654,
+          773,
+          127,
+          58
+        ],
+        "kind": "prop",
+        "baselineY": 831,
+        "pixelPriority": 35,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_south_center_case",
+        "rect": [
+          787,
+          773,
+          127,
+          58
+        ],
+        "kind": "prop",
+        "baselineY": 831,
+        "pixelPriority": 36,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_honor_south_right_case",
+        "rect": [
+          920,
+          773,
+          127,
+          58
+        ],
+        "kind": "prop",
+        "baselineY": 831,
+        "pixelPriority": 37,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_green_screen",
+        "rect": [
+          174,
+          510,
+          188,
+          89
+        ],
+        "kind": "mounted",
+        "baselineY": 599,
+        "pixelPriority": 38,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_left_camera",
+        "rect": [
+          75,
+          604,
+          65,
+          151
+        ],
+        "kind": "prop",
+        "baselineY": 755,
+        "pixelPriority": 39,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_right_camera",
+        "rect": [
+          413,
+          604,
+          65,
+          151
+        ],
+        "kind": "prop",
+        "baselineY": 755,
+        "pixelPriority": 40,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_left_lamp",
+        "rect": [
+          117,
+          512,
+          50,
+          91
+        ],
+        "kind": "prop",
+        "baselineY": 603,
+        "pixelPriority": 41,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_right_lamp",
+        "rect": [
+          365,
+          512,
+          50,
+          91
+        ],
+        "kind": "prop",
+        "baselineY": 603,
+        "pixelPriority": 42,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_control_desk",
+        "rect": [
+          142,
+          747,
+          234,
+          77
+        ],
+        "kind": "prop",
+        "baselineY": 824,
+        "pixelPriority": 43,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_right_rack",
+        "rect": [
+          440,
+          533,
+          44,
+          215
+        ],
+        "kind": "prop",
+        "baselineY": 748,
+        "pixelPriority": 44,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_media_left_rack",
+        "rect": [
+          65,
+          504,
+          38,
+          113
+        ],
+        "kind": "prop",
+        "baselineY": 617,
+        "pixelPriority": 45,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_blackboard",
+        "rect": [
+          1284,
+          512,
+          214,
+          42
+        ],
+        "kind": "mounted",
+        "baselineY": 554,
+        "pixelPriority": 46,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_lectern",
+        "rect": [
+          1360,
+          557,
+          65,
+          45
+        ],
+        "kind": "prop",
+        "baselineY": 602,
+        "pixelPriority": 47,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_left_shelf",
+        "rect": [
+          1185,
+          519,
+          52,
+          78
+        ],
+        "kind": "prop",
+        "baselineY": 597,
+        "pixelPriority": 48,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_right_shelf",
+        "rect": [
+          1553,
+          519,
+          52,
+          78
+        ],
+        "kind": "prop",
+        "baselineY": 597,
+        "pixelPriority": 49,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_left_plant",
+        "rect": [
+          1237,
+          552,
+          34,
+          45
+        ],
+        "kind": "prop",
+        "baselineY": 597,
+        "pixelPriority": 50,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_right_plant",
+        "rect": [
+          1519,
+          552,
+          34,
+          45
+        ],
+        "kind": "prop",
+        "baselineY": 597,
+        "pixelPriority": 51,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_0_0",
+        "rect": [
+          1194,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 52,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_0_1",
+        "rect": [
+          1226,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 53,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_0_2",
+        "rect": [
+          1258,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 54,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_0_3",
+        "rect": [
+          1290,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 55,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_0_4",
+        "rect": [
+          1322,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 56,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_1_0",
+        "rect": [
+          1416,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 57,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_1_1",
+        "rect": [
+          1448,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 58,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_1_2",
+        "rect": [
+          1480,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 59,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_1_3",
+        "rect": [
+          1512,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 60,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_1_4",
+        "rect": [
+          1544,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 61,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_0_1_5",
+        "rect": [
+          1576,
+          217,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 251,
+        "pixelPriority": 62,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_0_0",
+        "rect": [
+          1194,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 63,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_0_1",
+        "rect": [
+          1226,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 64,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_0_2",
+        "rect": [
+          1258,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 65,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_0_3",
+        "rect": [
+          1290,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 66,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_0_4",
+        "rect": [
+          1322,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 67,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_1_0",
+        "rect": [
+          1416,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 68,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_1_1",
+        "rect": [
+          1448,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 69,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_1_2",
+        "rect": [
+          1480,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 70,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_1_3",
+        "rect": [
+          1512,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 71,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_1_4",
+        "rect": [
+          1544,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 72,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_1_1_5",
+        "rect": [
+          1576,
+          254,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 288,
+        "pixelPriority": 73,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_0_0",
+        "rect": [
+          1194,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 74,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_0_1",
+        "rect": [
+          1226,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 75,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_0_2",
+        "rect": [
+          1258,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 76,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_0_3",
+        "rect": [
+          1290,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 77,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_0_4",
+        "rect": [
+          1322,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 78,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_1_0",
+        "rect": [
+          1416,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 79,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_1_1",
+        "rect": [
+          1448,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 80,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_1_2",
+        "rect": [
+          1480,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 81,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_1_3",
+        "rect": [
+          1512,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 82,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_1_4",
+        "rect": [
+          1544,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 83,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_2_1_5",
+        "rect": [
+          1576,
+          291,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 325,
+        "pixelPriority": 84,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_0_0",
+        "rect": [
+          1194,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 85,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_0_1",
+        "rect": [
+          1226,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 86,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_0_2",
+        "rect": [
+          1258,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 87,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_0_3",
+        "rect": [
+          1290,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 88,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_0_4",
+        "rect": [
+          1322,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 89,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_1_0",
+        "rect": [
+          1416,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 90,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_1_1",
+        "rect": [
+          1448,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 91,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_1_2",
+        "rect": [
+          1480,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 92,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_1_3",
+        "rect": [
+          1512,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 93,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_1_4",
+        "rect": [
+          1544,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 94,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_report_seat_3_1_5",
+        "rect": [
+          1576,
+          328,
+          30,
+          34
+        ],
+        "kind": "prop",
+        "baselineY": 362,
+        "pixelPriority": 95,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_0_0",
+        "rect": [
+          1214,
+          606,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 96,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_0_0",
+        "rect": [
+          1221,
+          633,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 659,
+        "pixelPriority": 97,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_0_1",
+        "rect": [
+          1274,
+          606,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 98,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_0_1",
+        "rect": [
+          1281,
+          633,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 659,
+        "pixelPriority": 99,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_0_2",
+        "rect": [
+          1334,
+          606,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 100,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_0_2",
+        "rect": [
+          1341,
+          633,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 659,
+        "pixelPriority": 101,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_0_3",
+        "rect": [
+          1420,
+          606,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 102,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_0_3",
+        "rect": [
+          1427,
+          633,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 659,
+        "pixelPriority": 103,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_0_4",
+        "rect": [
+          1480,
+          606,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 104,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_0_4",
+        "rect": [
+          1487,
+          633,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 659,
+        "pixelPriority": 105,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_0_5",
+        "rect": [
+          1540,
+          606,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 634,
+        "pixelPriority": 106,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_0_5",
+        "rect": [
+          1547,
+          633,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 659,
+        "pixelPriority": 107,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_1_0",
+        "rect": [
+          1214,
+          656,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 684,
+        "pixelPriority": 108,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_1_0",
+        "rect": [
+          1221,
+          683,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 709,
+        "pixelPriority": 109,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_1_1",
+        "rect": [
+          1274,
+          656,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 684,
+        "pixelPriority": 110,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_1_1",
+        "rect": [
+          1281,
+          683,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 709,
+        "pixelPriority": 111,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_1_2",
+        "rect": [
+          1334,
+          656,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 684,
+        "pixelPriority": 112,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_1_2",
+        "rect": [
+          1341,
+          683,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 709,
+        "pixelPriority": 113,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_1_3",
+        "rect": [
+          1420,
+          656,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 684,
+        "pixelPriority": 114,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_1_3",
+        "rect": [
+          1427,
+          683,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 709,
+        "pixelPriority": 115,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_1_4",
+        "rect": [
+          1480,
+          656,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 684,
+        "pixelPriority": 116,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_1_4",
+        "rect": [
+          1487,
+          683,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 709,
+        "pixelPriority": 117,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_1_5",
+        "rect": [
+          1540,
+          656,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 684,
+        "pixelPriority": 118,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_1_5",
+        "rect": [
+          1547,
+          683,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 709,
+        "pixelPriority": 119,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_2_0",
+        "rect": [
+          1214,
+          706,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 734,
+        "pixelPriority": 120,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_2_0",
+        "rect": [
+          1221,
+          733,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 759,
+        "pixelPriority": 121,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_2_1",
+        "rect": [
+          1274,
+          706,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 734,
+        "pixelPriority": 122,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_2_1",
+        "rect": [
+          1281,
+          733,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 759,
+        "pixelPriority": 123,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_2_2",
+        "rect": [
+          1334,
+          706,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 734,
+        "pixelPriority": 124,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_2_2",
+        "rect": [
+          1341,
+          733,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 759,
+        "pixelPriority": 125,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_2_3",
+        "rect": [
+          1420,
+          706,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 734,
+        "pixelPriority": 126,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_2_3",
+        "rect": [
+          1427,
+          733,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 759,
+        "pixelPriority": 127,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_2_4",
+        "rect": [
+          1480,
+          706,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 734,
+        "pixelPriority": 128,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_2_4",
+        "rect": [
+          1487,
+          733,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 759,
+        "pixelPriority": 129,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_2_5",
+        "rect": [
+          1540,
+          706,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 734,
+        "pixelPriority": 130,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_2_5",
+        "rect": [
+          1547,
+          733,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 759,
+        "pixelPriority": 131,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_3_0",
+        "rect": [
+          1214,
+          756,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 784,
+        "pixelPriority": 132,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_3_0",
+        "rect": [
+          1221,
+          783,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 809,
+        "pixelPriority": 133,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_3_1",
+        "rect": [
+          1274,
+          756,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 784,
+        "pixelPriority": 134,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_3_1",
+        "rect": [
+          1281,
+          783,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 809,
+        "pixelPriority": 135,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_3_2",
+        "rect": [
+          1334,
+          756,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 784,
+        "pixelPriority": 136,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_3_2",
+        "rect": [
+          1341,
+          783,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 809,
+        "pixelPriority": 137,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_3_3",
+        "rect": [
+          1420,
+          756,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 784,
+        "pixelPriority": 138,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_3_3",
+        "rect": [
+          1427,
+          783,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 809,
+        "pixelPriority": 139,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_3_4",
+        "rect": [
+          1480,
+          756,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 784,
+        "pixelPriority": 140,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_3_4",
+        "rect": [
+          1487,
+          783,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 809,
+        "pixelPriority": 141,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_desk_3_5",
+        "rect": [
+          1540,
+          756,
+          39,
+          28
+        ],
+        "kind": "prop",
+        "baselineY": 784,
+        "pixelPriority": 142,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      },
+      {
+        "id": "a3_class303_chair_3_5",
+        "rect": [
+          1547,
+          783,
+          27,
+          26
+        ],
+        "kind": "prop",
+        "baselineY": 809,
+        "pixelPriority": 143,
+        "movable": false,
+        "depthPolicy": "original_source_occlusion"
+      }
+    ]
+  }
+}

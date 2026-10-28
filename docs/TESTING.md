@@ -33,6 +33,8 @@ checks do not establish Windows execution, physical phone acceptance or full
 visual/manual chapter parity. Keep historical evidence under its original engine
 and SHA; assertion totals alone are not acceptance evidence.
 
+Native staging and safe concurrency are documented in [NATIVE_VALIDATION_STAGES.md](../godot_native/docs/NATIVE_VALIDATION_STAGES.md). `native:plan` is nonexecuting; the native runner keeps full as the default and rejects stale/label-only resume evidence.
+
 ## Canonical Web entry points
 
 | Command | Use it when | Scope |

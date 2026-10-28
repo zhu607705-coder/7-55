@@ -3,6 +3,7 @@ extends RefCounted
 ## The existing key-to-cord transaction is committed before its doors move.
 const Picker=preload("res://scripts/world_object_picker.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
 const PLATE="res://assets/rpg/interiors/qizhen_lake_dock.png"
 const FACE=Rect2(277,744,72,61)
 const HALF_WIDTH=36
@@ -98,7 +99,8 @@ func snapshot()->Dictionary:
 func draw(canvas:CanvasItem,context:Dictionary,state:Dictionary,front:bool)->void:
 	sync(state)
 	if not active:return
-	var in_front:bool=Metrics.foot_rect(Vector2(context.get("player",Vector2.ZERO))).position.y<FACE.end.y
+	var ground:float=context.get("player_ground_y",SpatialRules.foot_y(Vector2(context.get("player",Vector2.ZERO))))
+	var in_front:bool=SpatialRules.depth_in_front(FACE.end.y,ground)
 	if in_front!=front:return
 	attach(canvas)
 	if plate==null and ResourceLoader.exists(PLATE):plate=load(PLATE)

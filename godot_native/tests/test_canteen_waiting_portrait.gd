@@ -18,8 +18,8 @@ func waiting_fixture(dimensions: Vector2i) -> void:
 	check(shell.c3_scene_host.current!=null and shell.c3_scene_host.current.status=="waiting","approach owns original waiting session")
 	check(shell.world.player==Vector2(1194,834),"approach starts at original entrance")
 	check(not shell._authored_world_contract() and not shell.c3_scene_host.blocks_world_input(),"waiting does not own cinematic camera or movement")
-	check(shell.world.mobile_exploration and shell.world_frame.scale==Vector2.ONE,"waiting uses physical-scale exploration")
-	check(shell.world.size.y>=600 if dimensions.y>dimensions.x else shell.world.size.y>=300,"waiting fills useful viewport height")
+	check(shell.world.mobile_exploration,"waiting retains direct touch exploration")
+	check(shell.world.size==Vector2(960,540),"waiting retains the landscape map in portrait and landscape windows")
 	check(Vector2(shell.world_viewport.size)==shell.world.size,"waiting viewport projection matches controls")
 	var controls:Dictionary=shell.world.mobile_control_metrics()
 	check(controls.scheme=="direct_world" and controls.mode.size.x>=44 and controls.mode.size.y>=44 and controls.gestureArea.size.x>=200 and controls.gestureArea.size.y>=100,"waiting exposes useful direct map area and a practical visible mode target")
@@ -64,10 +64,13 @@ func run() -> void:
 		# Real modal consumes projected touches, while the same session remains pending.
 		shell._show_settings();await frames()
 		var point:=floor_touch_point(Vector2.RIGHT)
-		touch(point,true);shell.world._process(.05);shell.c3_scene_host.tick(100,true);touch(point,false,true)
+		touch(point,true);shell.world._process(.05);shell.c3_scene_host.tick(100,true)
 		check(shell.world.player==before and shell.c3_scene_host.current==session and session.status=="waiting","modal interruption cannot move or trigger waiting paper")
 		check(JSON.stringify(state.d)==save_before,"opening and closing settings cannot create proof")
-		shell._close_modal();await frames()
+		# The underlying floor may project onto a live settings button. Retire
+		# that modal before the cancelled release so this movement-isolation
+		# probe cannot accidentally launch its native file picker.
+		shell._close_modal();touch(point,false,true);await frames()
 		point=floor_touch_point(Vector2.RIGHT)
 		touch(point,true);await frames(2)
 		check(shell.world.direct_gestures.has_active(),"waiting accepts a new direct floor press after modal dismissal")
@@ -80,7 +83,9 @@ func run() -> void:
 		root.size=rotated;shell.size=Vector2(rotated);shell._layout();await frames()
 		check(shell.c3_scene_host.current==session and session.status=="waiting" and shell.world.mobile_exploration,"rotation keeps waiting in exploration")
 		check(shell.world.player==before and JSON.stringify(state.d)==save_before,"waiting rotation preserves source state and position")
-		root.size=dimensions;shell.size=Vector2(dimensions);shell._layout();await frames()
+		# Explore the landscape map after the device rotation. Portrait windows
+		# above cover letterboxing and interruption, rather than a taller camera.
+		root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout();await frames()
 		# Traverse the source aisle using real floor taps and collision routes. No
 		# teleport, direct status mutation, proximity change, or completion injection.
 		await hold_direction(Vector2.RIGHT,5)
@@ -121,7 +126,7 @@ func run() -> void:
 		check(session.status=="consumed" and shell.c3_scene_host.current==null and receipts==receipt_before+1 and state.d.canteenHunt.entryPaperEscaped,"authentic completed route consumes exactly one receipt")
 		check(shell.world.mobile_exploration and not shell._authored_world_contract() and not shell.world.targets.is_empty(),"receipt releases exploration controls and original device targets")
 		root.size=dimensions;shell.size=Vector2(dimensions);shell._layout();await frames()
-		check(shell.world.size.y>=600 if dimensions.y>dimensions.x else shell.world.size.y>=300,"post-cinematic viewport returns useful height")
+		check(shell.world.size==Vector2(960,540),"post-cinematic exploration retains landscape viewport")
 		before=shell.world.player
 		await hold_direction(Vector2.DOWN,2,false)
 		check(shell.world.player.y>before.y and receipts==receipt_before+1,"restored projected touch moves without duplicate receipt")

@@ -108,6 +108,10 @@ func run() -> void:
 	check(phase.honor_figures(s).size()==13,"A1 source honor wall has all13 original portrait consumers")
 	s.chapter4.floor="A3"; s.chapter4.phase="room204_restore"
 	check(phase.honor_figures(s).size()==7,"A3 source honor wall has all7 original portrait consumers")
+	var yang:Dictionary=phase.honor_figures(s).filter(func(person):return person.id=="yang_wei")[0]
+	check(Room.rect(yang.frameBounds).position==Vector2(1034,72) and Room.rect(yang.frameBounds).end.y<=142,"Yang Wei is mounted on the clear north wall, outside the walking corridor")
+	check(phase.honor_floor_repairs(s).size()==1 and Room.rect(yang.floorRepair.bounds).encloses(Rect2(526,627,73,99)),"The old baked corridor frame and its edges receive a floor repair")
+	check(Room.rect(yang.floorRepair.bounds).size==Room.rect(yang.floorRepair.sourceBounds).size,"Floor restoration uses an undistorted same-size source crop")
 	check(phase.support_people(s).size()==1 and phase.support_people(s)[0].npcId=="a3_reference_teacher","A3 reference teacher renders in the authored phase")
 	check(phase.alumni.all(func(person): return ResourceLoader.exists(person.portraitUrl)),"All20 source-backed honor portraits are present")
 	var chapter: RefCounted=Chapter.new(); s=fresh(); s.chapter4.phase="room204_restore"; s.chapter4.timeState="1850_evening"

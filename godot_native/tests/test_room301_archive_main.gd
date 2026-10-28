@@ -1,6 +1,8 @@
 extends "res://tests/test_chapter4_device_main.gd"
 ## Real Main/root input with an explicitly source-seeded A3 checkpoint.
 const ArchiveMotion=preload("res://scripts/objects/room301_archive_motion.gd")
+const ExhibitLayout=preload("res://scripts/objects/room301_exhibit_layout.gd")
+const Feet=preload("res://scripts/player_metrics.gd")
 var archive_submits:=0
 var fixture_state:Dictionary
 func prepare_archive(dimensions:Vector2i)->void:
@@ -37,6 +39,40 @@ func settle(panel:Control)->void:
 	await frames(2)
 func open_archive()->Control:
 	state_node.act("c4_device_archive_index");await frames(4);return shell.modal
+func verify_exhibit()->void:
+	var world:Control=shell.world
+	check(world.room301_exhibit.active and world.room301_exhibit.props.size()==ExhibitLayout.data().objects.size(),"All room301 objects are actual source-space nodes")
+	for ground:Vector2 in [Vector2(280,310),Vector2(280,345),Vector2(280,382),Vector2(280,405),Vector2(280,430),Vector2(117,276),Vector2(440,276)]:
+		check(world.can_stand(ground-Feet.FOOT_CENTER_OFFSET),"Door/aisle admits the unchanged full player foot box at "+str(ground))
+	for ground:Vector2 in [Vector2(280,260),Vector2(82,365),Vector2(470,365),Vector2(79,302),Vector2(79,207)]:
+		check(not world.can_stand(ground-Feet.FOOT_CENTER_OFFSET),"Visible case/planter base blocks the real foot box at "+str(ground))
+	var target:Dictionary={}
+	for entry:Dictionary in world.targets:
+		if entry.id=="a3_301_archive_index":target=entry
+	check(not target.is_empty() and ExhibitLayout.rect(target.bounds).is_equal_approx(ExhibitLayout.archive_bounds()),"Controller target and rendered case share one source rectangle")
+	check(not ExhibitLayout.archive_bounds().intersects(ExhibitLayout.rect(ExhibitLayout.data().requiredPassage)),"Index target never covers the doorway")
+	# World picker is populated by a render pass. Keep this geometric ownership
+	# check valid in headless CI too, without claiming it exercises GPU painting.
+	var picker:=preload("res://scripts/world_object_picker.gd").new()
+	picker.add(["a3_301_archive_index"],world.room301_exhibit.props.archive_case.geometry())
+	check(picker.pick(Vector2(280,278),world.targets).get("id","")=="a3_301_archive_index","The visible central drawer accepts the original action")
+	check(picker.pick(Vector2(290,350),world.targets).is_empty(),"The former doorway pedestal has no invisible index hotspot")
+	# Measured A3 wall feet, including the two hallway base strips absent from
+	# the earlier plate. Use production stand/segment/planner methods together.
+	var old_bounds:Rect2=world._floor_bounds
+	world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
+	for feet_center:Vector2 in [Vector2(40,440),Vector2(1640,440),Vector2(570,912),Vector2(580,142),Vector2(1080,142)]:
+		check(not world.can_stand(feet_center-Feet.FOOT_CENTER_OFFSET),"Visible A3 wall/base rejects foot placement at "+str(feet_center))
+	for pair:Array in [[Vector2(90,440),Vector2(40,440)],[Vector2(1580,440),Vector2(1640,440)],[Vector2(580,220),Vector2(580,100)],[Vector2(1080,220),Vector2(1080,100)]]:
+		var start:Vector2=pair[0]-Feet.FOOT_CENTER_OFFSET;var goal:Vector2=pair[1]-Feet.FOOT_CENTER_OFFSET
+		check(world.can_stand(start),"A3 regression sweep begins on clear floor at "+str(pair[0]))
+		check(not world._floor_segment_clear(start,goal),"Live A3 route sweep cannot cross visible wall at "+str(pair[1]))
+		var obstacles:Array=world._floor_obstacles()
+		var route:Array=world._floor_planner.plan(start,goal,obstacles,world._floor_bounds,world._floor_stand,func(a:Vector2,b:Vector2):return world._floor_segment_clear(a,b,obstacles,true))
+		if pair[1].x<50 or pair[1].x>1628:check(route.is_empty(),"Floor planner rejects a target inside the exterior wall")
+	for feet_center:Vector2 in [Vector2(580,220),Vector2(1080,220),Vector2(834,556),Vector2(787.5,180),Vector2(960,180)]:
+		check(world.can_stand(feet_center-Feet.FOOT_CENTER_OFFSET),"A3 hallway, honor passage and transport landing remain open at "+str(feet_center))
+	world._floor_bounds=old_bounds
 func shell_state()->Dictionary:
 	return {"player":shell.world.player,"camera":shell.world.camera,"pan":shell.world.pan_offset,"viewport":shell.world_viewport.size,"world_visible":shell.world_frame.visible,"phone_visible":shell.phone.visible,"input":shell.world_viewport.gui_disable_input,"mobile":shell.mobile_world}
 func run()->void:
@@ -51,6 +87,7 @@ func run()->void:
 	state_node.action_completed.connect(func(action:String,_a:Dictionary,_b:Dictionary,_c:Dictionary):if action=="c4_solve_archive_index":archive_submits+=1)
 	for dimensions:Vector2i in [Vector2i(1280,720),Vector2i(390,844)]:
 		await prepare_archive(dimensions)
+		verify_exhibit()
 		check(state_node.d.chapter4.floor=="A3","Source checkpoint owns original A3 access")
 		shell._show_world_mobile();await frames();shell.world_tasks.grab_focus();await frames()
 		var before:=shell_state();var panel:Control=await open_archive()

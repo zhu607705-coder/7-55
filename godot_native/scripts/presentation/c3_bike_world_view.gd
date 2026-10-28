@@ -2,6 +2,7 @@ extends RefCounted
 ## Source bicycle (BootScene.ensureCanteenTextures), rendered at 92 × 62.
 ## Drawing and alpha picking share one texture. This view owns no story state.
 const Picker=preload("res://scripts/world_object_picker.gd")
+const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
 const SIZE:=Vector2(92,62)
 const DRAW: Array=[{"method":"strokeCircle","args":[20,42,17],"style":{"width":5,"color":1515817,"alpha":1}},{"method":"strokeCircle","args":[20,42,13],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[7,42,33,42],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[20,29,20,55],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"strokeCircle","args":[70,42,17],"style":{"width":5,"color":1515817,"alpha":1}},{"method":"strokeCircle","args":[70,42,13],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[57,42,83,42],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[70,29,70,55],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[20,42,39,20],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[39,20,52,42],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[52,42,20,42],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[39,20,70,42],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[38,19,34,10],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"fillRoundedRect","args":[29,7,18,6,2],"style":{"color":2503740,"alpha":1}},{"method":"fillRoundedRect","args":[55,20,14,13,2],"style":{"color":2503740,"alpha":1}},{"method":"fillRect","args":[59,23,6,6],"style":{"color":7591922,"alpha":1}}]
 
@@ -35,8 +36,7 @@ func geometry() -> Dictionary:
 func draw(canvas: CanvasItem,context: Dictionary,s: Dictionary,front: bool) -> void:
 	if not active(s): return
 	var p: Vector2=point();var z: float=context.zoom;var origin: Vector2=context.origin
-	# BootScene places the bicycle at y+6 and actor at y+30.
-	if (p.y+6>context.player.y+30)!=front:return
+	if SpatialRules.in_front(p.y+SIZE.y/2,context.player)!=front:return
 	var tex: Texture2D=body_texture()
 	if tex==null:return
 	var dark: bool=s.native.mode=="dark"

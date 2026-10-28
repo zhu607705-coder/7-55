@@ -1,0 +1,12 @@
+{
+  "sources": {
+    "a3_entrance_threshold": "exec-8d63457a-6814-49fb-b634-009a0f0e58f8.png",
+    "a3_elevator_door": "exec-2110c66a-343e-4198-9084-77e48cad792e.png",
+    "a3_honor_floor_border": "exec-26bae54a-de52-4785-8aec-229bf5348609.png",
+    "a3_corridor_plaque": "exec-064c1ad2-27d7-48ab-a571-28131eddf680.png"
+  },
+  "purpose": "A3 independent door threshold, elevator leaves, and floor trim; generated from reference crop, not a crop asset.",
+  "rejected": [
+    "exec-6a043794-b052-4fe6-a8e0-5d00eb9c56e4.png: history picture contains invented architecture"
+  ]
+}

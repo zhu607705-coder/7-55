@@ -71,9 +71,18 @@ func _run() -> void:
 	page_events.clear(); await click(node("ZjudingCheckin")); expect(page_events==["checkin"],"Learn native entrance opens the original check-in route")
 	await click(nav("back")); await show("zjuding")
 	expect(p.zjuding_page=="hub","Learn back returns to hub")
-	# Locked actions retain a static icon; all source utilities unlock with identity.
+	# Every campus service opens from the first chapter; detail pages own action conditions.
 	s.actOne.inventoryRecovered=false; s.items.campusCard=false; await show("zjuding")
-	expect(node("ZjudingLocked_smart_classroom")!=null and node("ZjudingApp_smart_classroom")==null,"Locked source service is not an active placeholder")
+	for app in p.ZJU_APPS:
+		expect(node("ZjudingApp_"+str(app[0])) is Button,"Campus service opens before identity: "+str(app[0]))
+	await click(node("ZjudingApp_campus_map"));await show("zjuding")
+	expect(node("ZjudingMapRefresh")!=null and s.actOne.phase=="prologue","Early map explains dorm status without opening world")
+	await click(node("ZjudingMapBack"));await show("zjuding")
+	await click(node("ZjudingApp_smart_classroom"));await show("zjuding")
+	expect(node("SmartClassroomScene")!=null and node("SmartClassroomCode")!=null,"Classroom has a scene and original code entrance")
+	await click(node("SmartClassroomScan"));await create_timer(2.25).timeout
+	expect(node("SmartClassroomRadarResult").text.contains("寝室") and not s.flags.checkinDone,"Radar reports physical mismatch and never grants attendance")
+	await click(nav("back"));await show("zjuding")
 	s=fresh(); await show("zjuding")
 	await click(node("ZjudingTab_contacts")); await show("zjuding")
 	expect(p.zjuding_panel=="contacts" and node("ZjudingOpenDirectory")!=null,"Contacts bottom tab opens authored panel")
@@ -83,8 +92,20 @@ func _run() -> void:
 	var search=node("ZjudingSearch"); search.text="词汇"; search.text_changed.emit("词汇")
 	expect(node("ZjudingSearch_language_cards").visible and not node("ZjudingSearch_library").visible,"Search matches source keywords")
 	await click(node("ZjudingSearch_language_cards")); await show("zjuding")
-	await click(node("ZjudingWord_reflection")); await show("zjuding")
-	expect(p.zjuding_detail=="reflection","Language card reveals source translation")
+	var language_story=JSON.stringify([s.actOne,s.chapter4,s.items,s.flags])
+	var words=node("LanguageSearch");words.text="REFLECTION";words.text_changed.emit(words.text);await process_frame
+	expect(node("LanguageCard_reflection").is_visible_in_tree() and not node("LanguageCard_archive").is_visible_in_tree(),"Word search is case insensitive and hides unrelated cards")
+	await click(node("ZjudingWord_reflection"))
+	expect(p.zjuding_detail=="reflection" and node("LanguageTranslation_reflection").visible,"Language card reveals its translation")
+	expect(node("LanguageCard_archive")!=null and not node("LanguageTranslation_wayfinding").visible,"Reading stays on the chosen card; archive example is available")
+	await click(node("ZjudingWord_reflection"))
+	expect(not node("LanguageTranslation_reflection").visible and JSON.stringify([s.actOne,s.chapter4,s.items,s.flags])==language_story,"Showing and hiding translations never grants story evidence or items")
+	words.text="档案";words.text_changed.emit(words.text);await process_frame
+	expect(node("LanguageCard_archive").is_visible_in_tree() and not node("LanguageCard_reflection").is_visible_in_tree(),"Chinese meaning search finds the matching entry")
+	words.text="not-a-word";words.text_changed.emit(words.text);await process_frame
+	expect(node("LanguageNoResults").visible,"Unmatched search gives a recoverable empty state")
+	words.text="";words.text_changed.emit(words.text);await process_frame
+	expect(not node("LanguageNoResults").visible and node("LanguageCard_archive").is_visible_in_tree() and JSON.stringify([s.actOne,s.chapter4,s.items,s.flags])==language_story,"Clearing search restores cards without changing progression")
 	for panel in ["smart_classroom","network_account","logistics","lost_found","visitor_preview","language_cards","feedback_draft","all_apps","contacts","messages","profile"]:
 		p.zjuding_panel=panel; p.zjuding_detail=""; await show("zjuding")
 		expect(node("ZjudingScroll")!=null and body.size.y>=814,"Dedicated source panel: "+panel)
@@ -136,7 +157,7 @@ func _run() -> void:
 		page_events.clear(); expect(p.back_navigation(body),"Tiyi loading has an actual back callback")
 		expect(page_events==["phone_home"] and s.actOne.exerciseStarted==started,"Tiyi exit does not depend on or change exercise state")
 		await create_timer(1.6).timeout; await show("tiyi")
-		expect(nav("exit").text.is_empty(),"source arrow is the sole main-page exit symbol")
+		expect(nav("exit").get_meta("phone_nav_kind")=="exit" and node("TiyiDashboard")!=null,"native dashboard header owns the visible exit control")
 		page_events.clear(); expect(p.back_navigation(body),"ready Tiyi has the same back callback")
 		expect(page_events==["phone_home"],"ready Tiyi returns to phone home")
 	s=fresh(); p.zjuding_page="hub"; p.zjuding_panel=""; p.zjuding_overlay=""; await show("zjuding")
@@ -146,9 +167,13 @@ func _run() -> void:
 	await show("zjuding"); p.zjuding_overlay="profile"; await show("zjuding"); page_events.clear()
 	expect(p.back_navigation(body) and p.zjuding_overlay.is_empty() and page_events.is_empty(),"back closes the foreground sheet before exiting the app")
 	await show("phone_home"); expect(not p.back_navigation(body),"phone home leaves world return to the host")
-	# WeChat source list restores the missing helper row and real row feedback.
-	s=fresh(); await show("wechat"); await click(node("WechatRow_0")); expect(node("SourceToast")!=null,"File transfer helper shows authored row feedback")
-	await click(node("WechatRow_2")); expect(node("SourceToast")!=null,"Roommate row is functional")
+	# WeChat rows now own readable conversations and a real in-app return path.
+	s=fresh(); await show("wechat"); await click(node("WechatRow_0")); await show("wechat")
+	expect(p.wechat_social.panel=="helper" and node("MessageText")!=null,"File transfer helper opens its conversation")
+	await click(node("WechatLocalBack"));await show("wechat")
+	await click(node("WechatRow_2"));await show("wechat")
+	expect(p.wechat_social.panel=="roommate" and node("MessageText")!=null,"Roommate row opens readable content")
+	await click(node("WechatLocalBack"));await show("wechat")
 	expect(node("WechatRow_3")!=null,"All four source WeChat rows exist")
 	# Broad query can reveal more than six results; only empty-query suggestions are capped.
 	p.zjuding_page="hub"; p.zjuding_panel=""; await show("zjuding"); await click(node("ZjudingSearchBar")); await show("zjuding")

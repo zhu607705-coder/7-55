@@ -1,21 +1,17 @@
 extends RefCounted
-## Anchor 50: source drawer motion, bounded to one original modal lifetime.
+## Drawer motion bounded to one original modal lifetime. The room301 case
+## consumes this pose at its physical drawer; no standalone doorway sprite.
 const FACT := "a3_archive_film_retrieved"
-const Art=preload("res://scripts/objects/room301_archive_art.gd")
-const ART := "res://assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_archive_film_v01.png"
-const CENTER := Vector2(290,350)
-const EXTENT := Vector2(96,82)
-const FILM := Rect2(53,30,18,17)
 var stage := "idle"
 var elapsed_ms := 1000.0
 var reduced := false
 var serial := 0
 var context_key := ""
 var state_owner: Dictionary = {}
+
 func _key(state: Dictionary) -> String:
 	var c: Dictionary=state.get("chapter4",{})
 	return str([state.get("native",{}).get("scene",""),c.get("floor",""),c.get("phase",""),c.get("mode",""),c.get("timeState","")])
-
 func valid_context(state: Dictionary) -> bool:
 	var c: Dictionary=state.get("chapter4",{})
 	return state.get("native",{}).get("scene","")=="duan_yongping_temporal_maze" and c.get("floor","")=="A3" and c.get("phase","")=="room204_restore"
@@ -57,12 +53,3 @@ func sample() -> Dictionary:
 			lift=Vector2(14*smoothstep(480,760,elapsed_ms),-10*smoothstep(0,480,elapsed_ms)-10*smoothstep(480,760,elapsed_ms))
 			alpha=1.0-smoothstep(480,760,elapsed_ms)
 	return {"pull":pull,"film_offset":lift,"film_alpha":alpha,"stage":stage}
-
-func draw(owner: RefCounted, canvas: CanvasItem, context: Dictionary, state: Dictionary, front: bool) -> void:
-	if not valid_context(state) or (CENTER.y+EXTENT.y/2>Vector2(context.get("player",Vector2.ZERO)).y)!=front: return
-	var pose:=sample()
-	var origin: Vector2=CENTER-EXTENT/2
-	owner._world(canvas,context)
-	var film_alpha:float=pose.film_alpha if stage=="handoff" else (0.0 if FACT in state.get("chapter4",{}).get("factIds",[]) else 1.0)
-	Art.render(canvas,Rect2(origin,EXTENT),pose.pull,film_alpha,pose.film_offset)
-	canvas.draw_set_transform(Vector2.ZERO)

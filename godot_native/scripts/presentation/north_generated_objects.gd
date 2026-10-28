@@ -1,11 +1,18 @@
 extends RefCounted
-## A1 pilot: generated wall/desk art, source-sized cleanup and calibrated bases.
+## A1's 53 independent objects are the ordinary production presentation.
+## Source-native cleanup samples the current time plate; no mother image is edited.
 ## No input or progression authority. Missing chapter art preserves the source plate.
 const Metrics=preload("res://scripts/player_metrics.gd")
-var data:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/north-generated-objects.json"))
+const FloorSpace=preload("res://scripts/space/north_floor_space.gd")
+const DeveloperPolicy=preload("res://scripts/developer_tools_policy.gd")
+const PREVIEW_ENV:="NORTH_PROP_OBJECT_PREVIEW"
+var independent_preview:=true
+var data:Dictionary
 var active:=false
 var desk_texture:Texture2D
 var wall_texture:Texture2D
+var prop_textures:Dictionary={}
+var prop_tints:Dictionary={}
 var plate:Texture2D
 var wall_composite:ImageTexture
 var composite_plate_id:=0
@@ -15,6 +22,13 @@ const WALL_COMPOSITE_BOUNDS:=Rect2(1226,473,381,145)
 const COMPOSITE_SCALE:=3
 var issues:Array[String]=[]
 
+func _init()->void:
+	var path:="res://data/native/north-generated-objects.json"
+	data=JSON.parse_string(FileAccess.get_file_as_string(path))
+
+static func preview_allowed(developer_available:bool,requested:String)->bool:
+	return developer_available and requested=="1"
+
 static func rect(row:Array)->Rect2:return Rect2(float(row[0]),float(row[1]),float(row[2]),float(row[3]))
 
 func configure(scene:String,floor_id:String,source_plate:Texture2D)->void:
@@ -23,7 +37,15 @@ func configure(scene:String,floor_id:String,source_plate:Texture2D)->void:
 	issues.clear()
 	if desk_texture==null:desk_texture=_texture(data.desk.texture,Vector2(242,281))
 	if wall_texture==null:wall_texture=_texture(data.wall.texture,Vector2(559,182))
-	active=desk_texture!=null and wall_texture!=null and plate.get_size()==Vector2(1672,941)
+	var props_ready:=true
+	for object:Dictionary in asset_registrations():
+		if not prop_textures.has(object.id):
+			var dimensions:Array=object.textureSize
+			var loaded:=_texture(object.texture,Vector2(float(dimensions[0]),float(dimensions[1])))
+			if loaded!=null:prop_textures[object.id]=loaded
+		if not prop_textures.has(object.id):props_ready=false
+	# One transaction: never erase a baked object until every replacement exists.
+	active=desk_texture!=null and wall_texture!=null and props_ready and plate.get_size()==Vector2(1672,941)
 	if active and (wall_composite==null or composite_plate_id!=plate.get_instance_id()):
 		var source:Image=plate.get_image()
 		if source.is_compressed():source.decompress()
@@ -33,6 +55,9 @@ func configure(scene:String,floor_id:String,source_plate:Texture2D)->void:
 		desk_tints.clear()
 		for object:Dictionary in data.desks:
 			desk_tints[object.id]=_material_tint(source,reference,Rect2i(int(object.centerX)-12,int(object.baselineY)-48,24,10))
+		prop_tints.clear()
+		for object:Dictionary in data.get("props",[]):
+			prop_tints[object.id]=_material_tint(source,reference,Rect2i(rect(object.tintSampleRect)))
 		_build_wall_composite(source)
 
 func _material_tint(source:Image,reference:Image,bounds:Rect2i)->Color:
@@ -59,6 +84,18 @@ func desk_rect(object:Dictionary)->Rect2:
 	var extent:=rect(data.desk.visibleRect).size*float(data.desk.scale)
 	return Rect2(Vector2(float(object.centerX)-extent.x/2,float(object.baselineY)-extent.y),extent)
 
+func prop_rect(object:Dictionary)->Rect2:
+	var extent:=rect(object.visibleRect).size*float(object.scale)
+	return Rect2(Vector2(float(object.centerX)-extent.x/2,float(object.baselineY)-extent.y),extent)
+
+func prop_in_front(object:Dictionary,player:Vector2)->bool:
+	return active and FloorSpace.in_front(float(object.get("depthBaselineY",object.baselineY)),player)
+
+func source_part_keeps_pixel(point:Vector2)->bool:
+	for excluded:Array in data.wall.get("sourceExclusions",[]):
+		if rect(excluded).has_point(point):return false
+	return true
+
 func desk_solids(object:Dictionary)->Array[Rect2]:
 	var result:Array[Rect2]=[];var destination:=desk_rect(object)
 	for row:Array in data.desk.footprints:
@@ -80,12 +117,20 @@ func adjusted_collisions(original:Array)->Array:
 	return result
 
 func owns_cover(cover:Dictionary)->bool:
-	return active and cover.get("id","")=="a1_classroom_partition_face"
+	if not active:return false
+	var id:=str(cover.get("id",""))
+	if id=="a1_classroom_partition_face":return true
+	# The old 105 lectern also has an independent source foreground crop.
+	# Retire it only with the complete generated family, or it redraws the old
+	# podium over both the new sprite and the player during the actor pass.
+	for object:Dictionary in data.get("props",[]):
+		if id in object.get("sourceForegroundIds",[]):return true
+	return false
 
 func wall_in_front(player:Vector2)->bool:
 	# The source collider permits exact contact at its north edge. Keep that
 	# legal stand behind the wall until the feet actually cross the baseline.
-	return active and Metrics.foot_rect(player).end.y<=float(data.wall.baselineY)
+	return active and FloorSpace.in_front(float(data.wall.baselineY),player)
 
 func _project(area:Rect2,context:Dictionary)->Rect2:
 	return Rect2(Vector2(context.origin)+area.position*float(context.zoom),area.size*float(context.zoom))
@@ -110,15 +155,17 @@ func wall_rect()->Rect2:
 func _build_wall_composite(source:Image)->void:
 	# Flatten one wall plus same-source evidence once, so the reveal-alpha pass
 	# never paints a translucent wall stripe over a previously drawn blackboard.
-	var material:Image=wall_texture.get_image()
-	if material.is_compressed():material.decompress()
 	var combined:=Image.create(1143,435,false,Image.FORMAT_RGBA8)
-	material=material.get_region(Rect2i(rect(data.wall.visibleRect)))
-	for y in material.get_height():
-		for x in material.get_width():material.set_pixel(x,y,material.get_pixel(x,y)*wall_tint)
 	var destination:=wall_rect()
-	material.resize(roundi(destination.size.x*COMPOSITE_SCALE),roundi(destination.size.y*COMPOSITE_SCALE),Image.INTERPOLATE_NEAREST)
-	combined.blit_rect(material,Rect2i(Vector2i.ZERO,material.get_size()),Vector2i((destination.position-WALL_COMPOSITE_BOUNDS.position)*COMPOSITE_SCALE))
+	# A continuous, source-lit plaster surface replaces the noisy generated
+	# patchwork. Original coping/skirting pixels meet the adjoining wall exactly.
+	# This material is rebuilt from the active time plate, never daytime-tinted
+	# over a night plate. Wall feet and the 22% reveal stay source-authored.
+	for y:int in range(473,596):
+		var color:Color=source.get_pixel(1300,y)
+		for x:int in range(1226,1607):
+			var pixel:Color=source.get_pixel(x,y) if y<498 or y>=581 else color
+			combined.fill_rect(Rect2i((x-1226)*COMPOSITE_SCALE,(y-473)*COMPOSITE_SCALE,COMPOSITE_SCALE,COMPOSITE_SCALE),pixel)
 	for part:Dictionary in data.wall.preservedSourceParts:
 		var polygon:=PackedVector2Array()
 		for row:Array in part.polygon:polygon.append(Vector2(float(row[0]),float(row[1])))
@@ -126,8 +173,17 @@ func _build_wall_composite(source:Image)->void:
 		for point:Vector2 in polygon:bounds=bounds.expand(point)
 		for y in range(int(bounds.position.y),int(bounds.end.y)):
 			for x in range(int(bounds.position.x),int(bounds.end.x)):
-				if Geometry2D.is_point_in_polygon(Vector2(x+.5,y+.5),polygon):
+				if source_part_keeps_pixel(Vector2(x+.5,y+.5)) and Geometry2D.is_point_in_polygon(Vector2(x+.5,y+.5),polygon):
 					combined.fill_rect(Rect2i(Vector2i((Vector2(x,y)-WALL_COMPOSITE_BOUNDS.position)*COMPOSITE_SCALE),Vector2i.ONE*COMPOSITE_SCALE),source.get_pixel(x,y))
+	# The source lectern hid a section of the chalk shelf. Restore only that
+	# measured strip from adjacent same-height/current-time shelf pixels, so a
+	# transparent edge in the new silhouette cannot expose a gap or an old prop.
+	for patch:Dictionary in data.wall.get("restoredSourceParts",[]):
+		var area:=Rect2i(rect(patch.rect));var donor:=Rect2i(rect(patch.donorRect))
+		for y in range(area.position.y,area.end.y):
+			for x in range(area.position.x,area.end.x):
+				var sample:=donor.position+Vector2i((x-area.position.x)%donor.size.x,(y-area.position.y)%donor.size.y)
+				combined.fill_rect(Rect2i(Vector2i((Vector2(x,y)-WALL_COMPOSITE_BOUNDS.position)*COMPOSITE_SCALE),Vector2i.ONE*COMPOSITE_SCALE),source.get_pixelv(sample))
 	wall_composite=ImageTexture.create_from_image(combined);composite_plate_id=plate.get_instance_id()
 
 func _wall(canvas:CanvasItem,context:Dictionary,tint:Color)->void:
@@ -137,18 +193,47 @@ func draw_background(canvas:CanvasItem,context:Dictionary)->void:
 	if not active:return
 	for object:Dictionary in data.desks:_clean(canvas,rect(object.cleanRect),rect(object.donorRect),context)
 	_clean(canvas,rect(data.wall.destinationRect),rect(data.wall.donorRect),context)
+	for object:Dictionary in data.get("props",[]):
+		for patch:Dictionary in object.cleanup:
+			_clean(canvas,rect(patch.rect),rect(patch.donorRect),context)
 	_wall(canvas,context,Color.WHITE)
 
+func asset_registrations()->Array:
+	return data.get("props",[])+data.get("deskParts",[])
+
+func object_registrations()->Array:
+	var result:Array=data.get("props",[]).duplicate(true)
+	for group:Dictionary in data.desks:
+		for part:Dictionary in data.get("deskParts",[]):
+			var registration:Dictionary=part.duplicate(true)
+			registration.assetId=part.id
+			registration.id=str(group.id)+"_"+str(part.id)
+			registration.nodeName=str(group.id)+"_"+str(part.nodeName)
+			registration.groupId=group.id
+			registration.centerX=group.centerX
+			registration.baselineY=float(group.baselineY)+float(part.baselineOffsetY)
+			result.append(registration)
+	return result
+
+func object_tint(registration:Dictionary)->Color:
+	return desk_tints.get(registration.get("groupId",""),Color.WHITE) if registration.get("renderMode","")=="desk_part" else prop_tints.get(registration.id,Color.WHITE)
+
 func draw_objects(canvas:CanvasItem,context:Dictionary,front:bool)->void:
-	if not active:return
+	# Preserve main's combined-desk rendering outside the explicit preview.
+	if not active or independent_preview:return
 	var player:Vector2=context.player
-	var foot_bottom:float=Metrics.foot_rect(player).end.y
 	var tint:=Color.WHITE.lerp(Color(.03,.15,.26),float(context.get("mode_mix",0))*.3)
 	for object:Dictionary in data.desks:
-		if (foot_bottom<float(object.baselineY))!=front:continue
+		if FloorSpace.in_front(float(object.baselineY),player)!=front:continue
 		canvas.draw_texture_rect_region(desk_texture,_project(desk_rect(object),context),rect(data.desk.visibleRect),tint*desk_tints.get(object.id,Color.WHITE))
 	if front and wall_in_front(player):
 		tint.a=.78;_wall(canvas,context,tint)
 
+func draw_wall_reveal(canvas:CanvasItem,context:Dictionary)->void:
+	# CanvasGroup composites the wall and independent wall-mounted appearances
+	# together at 0.78, not twice (which would leave only 4.84% of the actor).
+	if active and wall_in_front(context.player):
+		_wall(canvas,context,Color.WHITE.lerp(Color(.03,.15,.26),float(context.get("mode_mix",0))*.3))
+
 func snapshot()->Dictionary:
-	return {"active":active,"floor":"A1","generatedDesks":data.desks.size() if active else 0,"generatedWalls":1 if active else 0,"sourceSize":[1672,941],"issues":issues.duplicate()}
+	return {"active":active,"independentPreview":independent_preview,"floor":"A1","generatedDesks":data.desks.size() if active else 0,"generatedWalls":1 if active else 0,"generatedIndependentProps":data.get("props",[]).size() if active else 0,"generatedStudentTables":data.desks.size() if active and independent_preview else 0,"generatedStudentChairs":data.desks.size() if active and independent_preview else 0,"generatedObjectNodes":object_registrations().size() if active else 0,"sourceSize":[1672,941],"issues":issues.duplicate()}

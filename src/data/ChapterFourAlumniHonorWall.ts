@@ -79,8 +79,15 @@ export interface ChapterFourAlumniHonorWallFigure {
   frameBounds: Readonly<{ x: number; y: number; width: number; height: number }>;
   /** Source-pixel portrait matte within the existing baked gold frame. */
   imageBounds: Readonly<{ x: number; y: number; width: number; height: number }>;
-  /** Three small A3 portraits are runtime frames inside one baked display case. */
+  /** Runtime frames for portraits that do not use a frame baked into the plate. */
   drawRuntimeFrame?: boolean;
+  /** Wall-mounted portraits may use their actual wall baseline for occlusion. */
+  displayBaselineY?: number;
+  /** Replace a misplaced baked frame with a same-size floor crop from each active plate. */
+  floorRepair?: Readonly<{
+    bounds: Readonly<{ x: number; y: number; width: number; height: number }>;
+    sourceBounds: Readonly<{ x: number; y: number; width: number; height: number }>;
+  }>;
 }
 
 /**
@@ -469,8 +476,14 @@ export const CHAPTER_FOUR_ALUMNI_HONOR_WALL = Object.freeze([
     portraitTextureKey: "chapter4-alumni-yang-wei",
     portraitUrl: yangWeiPortraitUrl,
     floor: 3,
-    frameBounds: { x: 526, y: 627, width: 73, height: 99 },
-    imageBounds: { x: 536, y: 637, width: 53, height: 79 }
+    frameBounds: { x: 1034, y: 72, width: 44, height: 59.6712328767 },
+    imageBounds: { x: 1040.0273972603, y: 78.0273972603, width: 31.9452054795, height: 47.6164383562 },
+    drawRuntimeFrame: true,
+    displayBaselineY: 142,
+    floorRepair: {
+      bounds: { x: 523, y: 624, width: 80, height: 105 },
+      sourceBounds: { x: 523, y: 513, width: 80, height: 105 }
+    }
   }
 ] as const satisfies readonly ChapterFourAlumniHonorWallFigure[]);
 

@@ -1,0 +1,18 @@
+config_version=5
+[application]
+config/name="7:55 · 书脊的两个时刻 · 独立图书馆原型"
+config/description="Read-only historical observation. Isolated library sample, no story or save access."
+run/main_scene="res://scenes/library_time.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+[display]
+window/size/viewport_width=390
+window/size/viewport_height=844
+window/size/window_width_override=390
+window/size/window_height_override=844
+window/stretch/mode="disabled"
+[input_devices]
+pointing/emulate_mouse_from_touch=false
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.08,0.11,0.12,1)

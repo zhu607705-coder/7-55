@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import defaultPostData from "../../../data/cc98.posts.json";
+import postDefaultHistoryData from "../../../data/cc98.post-default-history.json";
 import boardSnapshotData from "../../../data/cc98.board-snapshots.json";
 import chapterFourCc98Content from "../../../data/chapter4-cc98.content.json";
 import theaterContent from "../../../data/chapter3-theater.content.json";
@@ -46,6 +47,7 @@ const CHAPTER_FOUR_STUDY_LEGACY_POST_ID = "p03";
 const NETWORK_REJECT_DELAY_MS = 1600;
 const NETWORK_CRASH_DELAY_MS = 620;
 const DEFAULT_POSTS = defaultPostData as Cc98Post[];
+const POST_DEFAULT_HISTORY = postDefaultHistoryData.posts as Record<string, Partial<Record<"title" | "body", string[]>>>;
 const BOARD_SNAPSHOTS = new Map(
   (boardSnapshotData.boards as Cc98BoardSnapshot[]).map((snapshot) => [snapshot.board, snapshot])
 );
@@ -261,9 +263,17 @@ function loadPosts() {
     const savedById = new Map(savedPosts.map((post) => [post.id, post]));
     const mergedDefaults = cloneDefaults().map((defaults) => {
       const savedPost = savedById.get(defaults.id);
+      const savedFields: Partial<Cc98Post> = { ...savedPost };
+      // Older editors persisted untouched defaults alongside the player's edits.
+      for (const field of ["title", "body"] as const) {
+        const value = savedFields[field];
+        if (typeof value === "string" && POST_DEFAULT_HISTORY[defaults.id]?.[field]?.includes(value)) {
+          delete savedFields[field];
+        }
+      }
       return savedPost ? {
         ...defaults,
-        ...savedPost,
+        ...savedFields,
         // Replies are authored game content, while the post body remains player-editable.
         threadReplies: defaults.threadReplies ?? savedPost.threadReplies
       } : defaults;

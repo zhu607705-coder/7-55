@@ -109,7 +109,6 @@ func home(b) -> Control:
 	if b.s.ui.libraryFinalsPuzzle.archivedRuleCollected: apps.append(["rule","旧版离座规则","规",true])
 	for i in range(apps.size()):
 		var app: Array=apps[i]; var point=Vector2(23+(i%4)*83,149+int(i/4)*79)
-		if not app[3]: b._label(inner,"xxx",Rect2(point,Vector2(75,71)),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER).name="LibraryLocked_"+app[0]; continue
 		var open_app=func():
 			match app[0]:
 				"catalog": b.page_requested.emit("library_catalog")
@@ -117,26 +116,29 @@ func home(b) -> Control:
 				"recovery": open_recovery(b)
 				"return": b.action_requested.emit("lib_enter",null)
 				"rule": b.action_requested.emit("lib_open_rule",null)
-		var target: Button=b._button(inner,"",Rect2(point,Vector2(75,71)),open_app,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
-		target.name="LibraryApp_"+app[0]
+		var target: Control
+		if app[3]:
+			target=b._button(inner,"",Rect2(point,Vector2(75,71)),open_app,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
+			target.name="LibraryApp_"+app[0]
+		else:
+			target=Control.new();target.position=point;target.size=Vector2(75,71)
+			target.mouse_filter=Control.MOUSE_FILTER_IGNORE;target.focus_mode=Control.FOCUS_NONE;inner.add_child(target)
 		b._panel(target,Rect2(15,0,46,46),Color("0f66b7"),Color("073f7c"),0,3)
 		b._label(target,str(app[2]),Rect2(15,0,46,46),14 if app[0]=="recovery" else 23,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-		b._label(target,str(app[1]),Rect2(0,50,75,21),10,INK,HORIZONTAL_ALIGNMENT_CENTER)
+		var name: Label=b._label(target,str(app[1]),Rect2(0,50,75,21),10,INK,HORIZONTAL_ALIGNMENT_CENTER)
+		if not app[3]:name.name="LibraryLocked_"+app[0]
 	var y=403
 	if b.s.ui.libraryFinalsPhase=="top_ten_reached":
 		var alert: Button=b._button(inner,"",Rect2(14,y,345,61),func(): open_recovery(b),Color("e9f3ff"),BLUE,0,BLUE); alert.name="LibraryRecoveryAlert"
 		b._label(alert,"022 座位恢复申请已开放",Rect2(12,6,303,24),15,BLUE)
 		b._label(alert,"帖子当前排名 01，可提交三项证明。",Rect2(12,30,303,23),12,MUTED)
 		y+=74
-	for i in range(3):
-		b._panel(inner,Rect2(14,y,345,112),Color.WHITE,Color("a7a49c"),0,3)
-		b._label(inner,"xxx",Rect2(26,y+9,268,26),19)
-		b._label(inner,"xxx",Rect2(307,y+9,39,26),12,Color("a4722f"))
-		for row in range(2):
-			b._panel(inner,Rect2(26,y+42+row*31,319,1),Color("d2cec4"))
-			b._label(inner,"xxx",Rect2(26,y+45+row*31,268,24),13)
-			b._label(inner,"xxx",Rect2(307,y+45+row*31,39,24),12,Color("a4722f"))
-		y+=124
+	var info=b.campus_services.copy.library
+	for entry in [[info.open_hours_label,info.open_hours_val],[info.borrow_status_label,info.borrow_status_val],[info.seat_reserve_label,"座位 "+str(b.s.ui.librarySelectedSeat) if b.s.ui.librarySeatReserved else info.seat_reserve_status]]:
+		b._panel(inner,Rect2(14,y,345,82),Color.WHITE,Color("d8dce2"),0,1)
+		b._label(inner,str(entry[0]),Rect2(27,y+10,317,25),17)
+		b._label(inner,str(entry[1]),Rect2(27,y+43,317,27),14,MUTED)
+		y+=93
 	inner.custom_minimum_size.y=y+12
 	bottom_nav(b,root)
 	return root

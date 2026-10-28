@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-26",
+  "baseCommit": "f18cee570f3684e7cd87b6c0f0844f805f3d88c4",
+  "recordedCommit": "703eeb4ec65960b7b1b0de1d5ad94a07d45556c0",
+  "recordedTree": "57a0e6ec2be4f011ccc3a38bf42c58d36b2990c8",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "checks": {
+    "model": 68,
+    "ordinaryObjectInputAndGeometry": 85,
+    "twoHandOwnershipAndLeftwardCover": 35,
+    "namespacePositiveNegative": 19,
+    "realRendererHistoryPixelsIncludingNegativeControl": 5,
+    "ordinaryTwoTouchRecordedFlow": 6
+  },
+  "freshImport": true,
+  "standaloneStartup": true,
+  "formalSaveSentinelsUnchanged": true,
+  "hostedRender": {
+    "run": 40279935023,
+    "artifact": 12631312509,
+    "artifactSha256": "664b83b98897d5b2c12730882da0a5e5fa9c4229093babc47ce37462184b9c49",
+    "display": "X11",
+    "adapter": "Mesa llvmpipe",
+    "dimensions": [
+      390,
+      844
+    ],
+    "fps": 30,
+    "frames": 723,
+    "seconds": 24.1
+  },
+  "humanFrameReview": {
+    "scope": "actual source/output frames and full-sequence contact sheet",
+    "before": "398540b",
+    "after": "703eeb4",
+    "status": "bounded visual direction accepted for this playable sample, not final game art"
+  },
+  "physicalMobileAcceptance": false,
+  "browserManualAcceptance": false,
+  "noviceTimingMeasured": false,
+  "formalStoryIntegration": false,
+  "sourceSha256": {
+    "scripts/paper_rewind_view.gd": "37780c9203a2718fbf239ecdc1877c11eafbf0479e860c40a91cbed172549c4e",
+    "scripts/paper_grip.gd": "3288caf2b0968e78f4629db525893f8d51f69a025f790ea18fc976fb8fd5610d",
+    "scripts/paper_rewind_model.gd": "bf228f42220c23de7e9cce1f63cdc3d55c1567970963992ab33098acd83b8c61",
+    "scripts/paper_rewind_stage.gd": "a4e7df20a6b9517bdd1bcef0a31a95c085cec12242683070f165797f3ffd0188",
+    "scripts/paper_history_window.gd": "9ebd56cd067ed960c29394635d935eafc9409fd70c1ca8a19115583c9465e08d",
+    "tests/test_paper_rewind_input.gd": "758ed334f50dc6f65b12f21ebca08208f5ce14e4b5f3b1c3c29217fc6f9d9163",
+    "tests/test_paper_rewind_two_hands.gd": "ead70c0ee5f627c14e913000d0d9ffeae7b7cea8ec04530d81a68c15c40b278a",
+    "tests/test_paper_rewind.gd": "a94e929309144fe69c51b7c0c3dcb46467b78142c4980713544888570ca2fc6b",
+    "tests/capture_paper_rewind.gd": "b3a958871405c9f35ddef1d40eee856d2adb3233db9e90db05c320dce9705612",
+    "tests/test_paper_history_render.gd": "9839d51e0313016681c383e0a55826e5df116a629434837754866898c00562c6",
+    "project.godot": "8cede90a9e06be70983afcf7f9cd288f671fb82757d92d0d8dbafdc17fe1b6eb",
+    "assets/provenance.json": "a740f04719f84c2af217704250cde774842bea6345661bb24ee518cb29e9ec04"
+  },
+  "limits": [
+    "Standalone opt-in sample only. No Main/controller/menu/save/item-proof changes.",
+    "Automated touch capture is not physical-device acceptance.",
+    "Tree foliage contrast and neutral touch marker visibility remain minor polish opportunities; no extra recording delayed this delivery.",
+    "Folder source PNGs retain generated dimensions and original bytes; atlas padding, fold UV and measured pocket foreground are recorded in provenance.",
+    "Full formal CI must be checked on the eventual PR head; previous head results are not substituted."
+  ]
+}

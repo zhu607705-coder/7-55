@@ -1,0 +1,142 @@
+{
+  "generator": "OpenAI image_gen",
+  "date": "2026-10-27",
+  "reference": "A3 source map; close crops used only as generation references",
+  "items": [
+    {
+      "id": "a3_report_stage",
+      "file": "exec-bad727ec-94a6-49af-a70f-9fcd66ce14fd.png",
+      "error": null
+    },
+    {
+      "id": "a3_report_lectern",
+      "file": "exec-d482f656-50fe-4bad-b9b8-7d35fdfbc77e.png",
+      "error": null
+    },
+    {
+      "id": "a3_projection_screen",
+      "file": "exec-918677ee-b1f0-432c-b1c8-3f4c63dbca97.png",
+      "error": null
+    },
+    {
+      "id": "a3_wall_speaker",
+      "file": "exec-a1031039-4ccf-421b-83f5-aaef334e2770.png",
+      "error": null
+    },
+    {
+      "id": "a3_class_desk",
+      "file": "exec-3d04ad11-c160-4a59-be86-4c52f35ab2e6.png",
+      "error": null
+    },
+    {
+      "id": "a3_class_chair",
+      "file": "exec-3f6fbac7-cb09-4ad5-a7c5-5b5183d5262e.png",
+      "error": null
+    },
+    {
+      "id": "a3_plant",
+      "file": "exec-79ace594-1c29-486e-b86e-63f150f444ac.png",
+      "error": null
+    },
+    {
+      "id": "a3_green_screen",
+      "file": "exec-2f29ddef-01ce-44b0-9c63-f5bc2ccd1042.png",
+      "error": null
+    },
+    {
+      "id": "a3_report_seat",
+      "file": "exec-3918157f-5e0d-4526-ba87-7b6df2ade9ac.png",
+      "error": null
+    },
+    {
+      "id": "a3_hall_planter",
+      "file": "exec-63a50cf4-78c8-47b3-90f2-385dc7783a1a.png",
+      "error": null
+    },
+    {
+      "id": "a3_studio_light",
+      "file": "exec-ae708508-235f-4326-9632-51b12f7e43c5.png",
+      "error": null
+    },
+    {
+      "id": "a3_equipment_rack",
+      "file": "exec-83df77aa-1e5f-4caf-afb8-756f223ad58b.png",
+      "error": null
+    },
+    {
+      "id": "a3_console_desk",
+      "file": "exec-bfedc1cb-6a4b-44b3-9ba4-43691af7956b.png",
+      "error": null
+    },
+    {
+      "id": "a3_trophy_cabinet",
+      "file": "exec-135bcbff-a5ed-4068-ba66-14859b0ade4c.png",
+      "error": null
+    },
+    {
+      "id": "a3_trophy",
+      "file": "exec-b2ad5401-6fa1-4d60-8dd8-0d53ae138a82.png",
+      "error": null
+    },
+    {
+      "id": "a3_exhibit_globe",
+      "file": "exec-c9528008-4ade-43ad-ae18-0463f5702e50.png",
+      "error": null
+    },
+    {
+      "id": "a3_frame",
+      "file": "exec-5f1d7e59-ebe5-4b9a-aab2-12d7886e5205.png",
+      "error": null
+    },
+    {
+      "id": "a3_paper",
+      "file": "exec-e573c7e4-619b-41bf-b4ed-a1ec540bf4d1.png",
+      "error": null
+    },
+    {
+      "id": "a3_exhibit_small_case",
+      "file": "exec-fd2740e6-edde-4ec6-9530-50500776417c.png",
+      "error": null
+    },
+    {
+      "id": "a3_exhibit_tall_case",
+      "file": "exec-bef7f340-ac8e-4033-8aa6-878f7a0d3ce8.png",
+      "error": null
+    },
+    {
+      "id": "a3_exhibit_wall_frame",
+      "file": "exec-1fef0713-5e31-4e3a-a515-f4d42e8beaa3.png",
+      "error": null
+    },
+    {
+      "id": "a3_exhibit_wide_frame",
+      "file": "exec-64da8770-8b39-4332-8dfa-5ee51ee216d4.png",
+      "error": null
+    },
+    {
+      "id": "a3_studio_mixer",
+      "file": "exec-a9f4b7da-297d-4a21-9427-62946b39efa9.png",
+      "error": null
+    },
+    {
+      "id": "a3_studio_monitor",
+      "file": "exec-e7fdab26-fd47-4efa-b3cc-ee8ea4bbcc8c.png",
+      "error": null
+    },
+    {
+      "id": "a3_studio_chair",
+      "file": "exec-97613700-76a8-40f4-a50d-fe422677d4cc.png",
+      "error": null
+    },
+    {
+      "id": "a3_wall_lamp",
+      "file": "exec-6307836d-ccfc-4c02-857f-88fc7139d308.png",
+      "error": null
+    },
+    {
+      "id": "a3_class_shelf",
+      "file": "exec-bf4ba7d9-cc82-4cc9-8ed0-2cc000e1aa9f.png",
+      "error": null
+    }
+  ]
+}

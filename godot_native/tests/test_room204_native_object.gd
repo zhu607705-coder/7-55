@@ -2,6 +2,8 @@ extends SceneTree
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
 const Layers=preload("res://scripts/ui/chapter4_world_layers.gd")
 const Chapter=preload("res://scripts/chapters/chapter4.gd")
+const ElevatorButton=preload("res://scripts/objects/chapter4_elevator_button.gd")
+const ActorFootMetrics=preload("res://scripts/player_metrics.gd")
 var checks:=0
 var failures:=0
 var state: Node
@@ -12,6 +14,9 @@ func check(value: bool,label: String) -> void:
 	if not value: failures+=1;push_error(label)
 func frames(n:=2) -> void:
 	for i in range(n): await process_frame
+func expected_collisions() -> Array:
+	# Furniture owns its original feet; the separate closed elevator owns its sill.
+	return Room.collisions(state.d)+ElevatorButton.collision_rects(state.d)
 func fixture() -> void:
 	state.d=state.initial()
 	state.d.native.chapter=4;state.d.native.scene="duan_yongping_temporal_maze";state.d.native.mode="light"
@@ -29,7 +34,7 @@ func run() -> void:
 	check(adapter.table.get_node("Solid/Foot") is CollisionShape2D,"Actual native foot shape is present")
 	check(not adapter.table.get_node("Interaction").input_pickable,"Central World dispatcher is sole pointer owner")
 	check(adapter.before_pass.get_index()<adapter.source_space.get_index() and adapter.source_space.get_index()<adapter.after_pass.get_index(),"Native sprite sits between original before/after draw passes")
-	var original: Array=Room.collisions(state.d)
+	var original: Array=expected_collisions()
 	var native: Array=world.chapter4_layers.collisions(state.d)
 	check(original.size()==native.size(),"No duplicate or missing dynamic collider")
 	for i in range(original.size()): check(original[i].is_equal_approx(native[i]),"Source foot bounds preserved at index "+str(i))
@@ -52,9 +57,11 @@ func run() -> void:
 	check(adapter.footprint_bounds().position.is_equal_approx(initial_bounds.position+Vector2(116,0)),"Moving native root moves its collision")
 	check(adapter.table.interaction_polygon()[0].is_equal_approx(initial_pick+Vector2(116,0)),"Moving native root moves its pick shape")
 	check(not adapter.contains_source_point(Vector2(72,710)) and adapter.contains_source_point(Vector2(188,710)),"No invisible old interaction survives native root move")
-	check(adapter.front_of_player(Vector2(0,710)),"Occlusion order reads the same native root transform")
+	var actor:=Vector2(0,710-ActorFootMetrics.foot_rect(Vector2.ZERO).end.y)
+	check(adapter.front_of_player(actor),"Occlusion order compares actual feet with the same native root transform")
+	check(not adapter.front_of_player(Vector2(0,adapter.table.position.y+2-ActorFootMetrics.foot_rect(Vector2.ZERO).end.y)),"Feet crossing the native baseline move in front even while the torso remains behind")
 	adapter.table.position.y-=20
-	check(not adapter.front_of_player(Vector2(0,710)),"Moving root across actor depth also changes its occlusion pass")
+	check(not adapter.front_of_player(actor),"Moving root across actor foot depth also changes its occlusion pass")
 	adapter.sync(state.d,world.scene_id)
 	check(adapter.footprint_bounds().is_equal_approx(initial_bounds),"State-derived original transform restored without a second placement record")
 	check(JSON.stringify(state.d)==before,"Presentation and geometry queries never mutate campaign state")
@@ -70,7 +77,7 @@ func run() -> void:
 	world.chapter4_layers.collisions(state.d)
 	check(state.d.chapter4.room204Placements.size()==3,"Original controller grants exactly three pieces")
 	check(not adapter.owns_entity("table:group_table_1") and adapter.source_space.get_child_count()==1 and adapter.owns_entity("table:group_table_2"),"Completed first group retires only its visual/collision/input, preserving second table")
-	check(world.chapter4_layers.collisions(state.d)==Room.collisions(state.d),"Restored desks keep original collision ownership")
+	check(world.chapter4_layers.collisions(state.d)==expected_collisions(),"Restored desks keep original collision ownership")
 	await frames();fixture();world.refresh_world();adapter.sync(state.d,world.scene_id)
 	check(adapter.source_space.get_child_count()==2,"Ordinary pre-placement state recreates exactly two scenes")
 	state.d.chapter4.floor="A1";world.refresh_world();adapter.sync(state.d,world.scene_id)

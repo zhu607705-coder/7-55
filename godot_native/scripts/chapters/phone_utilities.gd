@@ -32,6 +32,8 @@ static func _ok(message: String = "") -> Dictionary: return {"handled":true,"mes
 
 func dispatch(s: Dictionary, id: String, value: Variant) -> Dictionary:
 	if not id.begins_with("phone_"): return {}
+	var account_result=preload("res://scripts/chapters/campus_network_account.gd").dispatch(s,id,value)
+	if not account_result.is_empty():return account_result
 	match id:
 		"phone_refresh": return _ok()
 		"phone_open_journal_closeout":
@@ -54,7 +56,7 @@ func dispatch(s: Dictionary, id: String, value: Variant) -> Dictionary:
 				s.ui.musicPlaying = false
 			return _ok("低电量模式已开启：亮度上限 45%，音乐已暂停。打开应用不扣电。" if s.phoneBattery.lowPowerMode else "低电量模式已关闭：可手动调整亮度，打开应用不扣电。")
 		"phone_settings_brightness":
-			if str(value).is_valid_float(): s.ui.brightness = clampf(float(value),0,100)
+			if str(value).is_valid_float(): s.ui.brightness = clampf(float(value),0,45 if s.phoneBattery.lowPowerMode else 100)
 			return _ok()
 		"phone_app_move":
 			if s.actOne.phase == "prologue" or not value is Dictionary: return _ok()

@@ -15,6 +15,7 @@ var original_zoom := 1.0
 var focus_camera := Vector2.ZERO
 var focus_zoom := 1.0
 var original_size := Vector2.ZERO
+var original_presentation: Array = []
 var reduced := false
 var motion: Tween
 var focus_paused := false
@@ -23,6 +24,7 @@ func setup(world_ref: Control, panel_ref: Control, reader: Callable, bounds: Rec
 	world=world_ref;panel=panel_ref;read_state=reader;bound_state=reader.call()
 	scene_id=world.scene_id;original_camera=world.camera;original_zoom=world.zoom
 	original_pan=world.pan_offset;original_size=world.size
+	original_presentation=_presentation_context()
 	reduced=bool(bound_state.native.get("settings",{}).get("reduced_motion",false))
 	focus_zoom=original_zoom*1.65
 	var half: Vector2=world.size/(2.0*focus_zoom)
@@ -64,6 +66,10 @@ func _same_context() -> bool:
 	var s: Dictionary=read_state.call()
 	return is_same(s,bound_state) and world.scene_id==scene_id and str(s.native.scene)==scene_id
 
+func _presentation_context() -> Array:
+	var host: Variant=world.host_node
+	return [world.get_tree().root.size,host.world_view.get_global_rect() if is_instance_valid(host) and is_instance_valid(host.world_view) else world.get_global_rect()]
+
 func _process(_delta: float) -> void:
 	if phase=="idle":return
 	if not _same_context() or not is_instance_valid(panel):request_close(true);return
@@ -72,7 +78,7 @@ func _process(_delta: float) -> void:
 		if phase=="leaving":request_close(true);return
 		if motion!=null:motion.kill();motion=null
 		_set_amount(1);phase="inside"
-	if str(bound_state.get("runtimeMode",""))!="rpg" or str(bound_state.native.mode)!="light" or world.size!=original_size:
+	if str(bound_state.get("runtimeMode",""))!="rpg" or str(bound_state.native.mode)!="light" or world.size!=original_size or _presentation_context()!=original_presentation:
 		request_close(true);return
 	if not world.is_visible_in_tree() or (is_instance_valid(world.host_node) and not world.host_node.world_frame.is_visible_in_tree()):request_close(true);return
 	if DisplayServer.get_name()!="headless" and phase in ["entering","leaving"] and motion!=null and motion.is_valid():
@@ -83,7 +89,7 @@ func _restore() -> void:
 	if not _same_context():return
 	world.zoom=original_zoom;world.pan_offset=original_pan
 	world.camera=original_camera
-	if world.size!=original_size:world._update_camera()
+	if world.size!=original_size or _presentation_context()!=original_presentation:world._update_camera()
 	world.queue_redraw()
 
 func _finish() -> void:

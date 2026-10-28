@@ -1,0 +1,95 @@
+name: Raking light classroom demonstration
+on:
+  push:
+    branches: [dot/raking-light-classroom-20261026]
+    paths: ['godot_native/samples/raking_light/**', '.github/workflows/raking-light-demo.yml']
+  pull_request:
+    paths: ['godot_native/samples/raking_light/**', '.github/workflows/raking-light-demo.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: raking-light-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GODOT_SILENCE_ROOT_WARNING: '1'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      RAKING_RENDER_ARTIFACT_DIR: ${{ github.workspace }}/raking-light-demo
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Install pinned Godot and supported graphical recording tools
+        run: |
+          # A previous capture timed out fetching optional codec packages from
+          # azure.archive.ubuntu.com. Keep signed Ubuntu packages, bound downloads,
+          # and do not upgrade/reinstall tools already available on this runner.
+          missing=()
+          command -v xvfb-run >/dev/null || missing+=(xvfb)
+          command -v ffmpeg >/dev/null || missing+=(ffmpeg)
+          dpkg-query -W -f='${Status}' libgl1-mesa-dri 2>/dev/null | grep -q 'install ok installed' || missing+=(libgl1-mesa-dri)
+          if [ "${#missing[@]}" -gt 0 ]; then
+            if [ -f /etc/apt/apt-mirrors.txt ]; then
+              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+            fi
+            timeout 90 sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+            timeout 180 sudo apt-get -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 install "${missing[@]}"
+          fi
+          curl --fail --location --connect-timeout 15 --max-time 90 --retry 1 --retry-max-time 120 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+      - name: Isolated import, geometry, ownership and cancellation tests
+        run: |
+          node godot_native/samples/raking_light/tools/run.mjs
+          node godot_native/samples/raking_light/tests/test_isolation.mjs
+      - name: Record ordinary double-touch input with actual GL rendering
+        run: |
+          mkdir -p raking-light-demo
+          git rev-parse HEAD > raking-light-demo/source-sha.log
+          godot --headless --audio-driver Dummy --path godot_native/samples/raking_light --editor --import --quit 2>&1 | tee raking-light-demo/import.log
+          timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path godot_native/samples/raking_light --rendering-method gl_compatibility \
+            --audio-driver Dummy --resolution 390x844 --fixed-fps 30 \
+            --write-movie "$GITHUB_WORKSPACE/raking-light-demo/raking-light.avi" \
+            --script res://tests/capture_raking_light.gd -- --require-rendering 2>&1 | tee raking-light-demo/capture.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' raking-light-demo/import.log raking-light-demo/capture.log
+          grep -q 'RAKING_VIDEO.*failures=0' raking-light-demo/capture.log
+          grep -q 'RAKING_RENDERER X11' raking-light-demo/capture.log
+      - name: Encode inspectable portrait output
+        run: |
+          ffmpeg -hide_banner -loglevel error -y -i raking-light-demo/raking-light.avi -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart -an raking-light-demo/raking-light-two-touch.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=width,height,r_frame_rate -of json raking-light-demo/raking-light-two-touch.mp4 > raking-light-demo/video-metadata.json
+          ffmpeg -hide_banner -loglevel error -y -ss 0.7 -i raking-light-demo/raking-light-two-touch.mp4 -frames:v 1 raking-light-demo/entry.png
+          ffmpeg -hide_banner -loglevel error -y -ss 7.5 -i raking-light-demo/raking-light-two-touch.mp4 -frames:v 1 raking-light-demo/raking.png
+          ffmpeg -hide_banner -loglevel error -y -ss 12 -i raking-light-demo/raking-light-two-touch.mp4 -frames:v 1 raking-light-demo/complete.png
+          printf '%s\n' 'Actual Godot 4.7.1 GL mesh/normal/light output. Automated touch, not physical phone verification. Independent classroom prototype; no formal map/evidence/save changes.' > raking-light-demo/README.txt
+      - name: Verify ordinary screen-touch safety menu and occlusion on target graphical engine
+        run: |
+          timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 1200x1000x24' \
+            godot --path godot_native/samples/raking_light --rendering-method gl_compatibility \
+            --audio-driver Dummy --resolution 390x844 --script res://tests/test_raking_input.gd 2>&1 | tee raking-light-demo/graphical-input.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' raking-light-demo/graphical-input.log
+          grep -q 'RAKING_INPUT.*failures=0' raking-light-demo/graphical-input.log
+      - name: Check actual groove contrast and read-only history pixels
+        run: |
+          timeout 60 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path godot_native/samples/raking_light --rendering-method gl_compatibility \
+            --audio-driver Dummy --script res://tests/test_raking_render.gd 2>&1 | tee raking-light-demo/pixels.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' raking-light-demo/pixels.log
+          grep -q 'RAKING_RENDER.*failures=0' raking-light-demo/pixels.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: raking-light-two-touch-portrait
+          path: |
+            raking-light-demo/*.mp4
+            raking-light-demo/*.png
+            raking-light-demo/*.log
+            raking-light-demo/*.json
+            raking-light-demo/README.txt
+          retention-days: 7
+          if-no-files-found: error

@@ -1,0 +1,67 @@
+{
+  "ding_map": {
+    "title": "校园地图",
+    "current_location_label": "当前位置",
+    "current_location_val": "学生宿舍",
+    "status_title": "路线状态",
+    "status_desc": "尚未离开寝室。出门后可查看校园路线。",
+    "btn_refresh": "刷新位置"
+  },
+  "library": {
+    "title": "图书馆",
+    "open_hours_label": "开放时间",
+    "open_hours_val": "暂无今日开放时间",
+    "borrow_status_label": "当前在借",
+    "borrow_status_val": "暂无借阅数据",
+    "seat_reserve_label": "座位预约",
+    "seat_reserve_status": "暂无预约"
+  },
+  "classroom": {
+    "title": "智云课堂",
+    "course_name": "高等数学（微积分）",
+    "teacher": "快快老师",
+    "time_and_venue": "08:00 · 紫金港西1-201",
+    "tab_board": "课堂板书",
+    "tab_activities": "课堂活动",
+    "board_content_current": "一元函数及其导数 · 课堂片段",
+    "board_content_replay": "一元函数及其导数 · 课程回放",
+    "sign_in_title": "签到",
+    "status_not_signed": "尚未签到",
+    "status_signed": "已签到",
+    "status_finished": "课程已结束",
+    "method_code_btn": "数字签到",
+    "method_radar_btn": "雷达签到",
+    "radar_scanning": "正在检测位置…",
+    "radar_failed_reason": "当前位置在寝室，不在西1-201签到范围内。"
+  },
+  "network_billing": {
+    "title": "校园网服务",
+    "current_balance_label": "账户状态",
+    "current_balance_val": "欠费 ¥10.00",
+    "bill_detail_title": "待缴账单",
+    "bill_cycle_label": "服务周期",
+    "bill_cycle_val": "本月校园网服务",
+    "bill_amount_label": "金额",
+    "bill_amount_val": "¥10.00",
+    "bill_trans_id": "流水号：NET-008219",
+    "receipt_detail_title": "已缴费回执",
+    "receipt_cycle_label": "服务周期",
+    "receipt_cycle_val": "本月校园网服务",
+    "receipt_amount_label": "金额",
+    "receipt_amount_val": "¥10.00",
+    "receipt_trans_id": "流水号：REC-004102",
+    "appeal_entry_btn": "账务核对",
+    "appeal_reason_prompt": "选择核对原因",
+    "reason_options": [
+      {"id": "duplicate_billing", "label": "重复计费"},
+      {"id": "signal_issue", "label": "网络信号"},
+      {"id": "general_refund", "label": "退款"}
+    ],
+    "appeal_submit_btn": "提交核对",
+    "notice_unviewed": "请先查看账单和缴费回执。",
+    "notice_wrong_reason": "所选原因与账单、回执不符，账务状态未变。",
+    "notice_success": "核对完成，重复账单已撤销。",
+    "notice_already_processed": "这笔账务已核对，无需重复提交。"
+  },
+  "settings": {"search_no_results": "无搜索结果"}
+}

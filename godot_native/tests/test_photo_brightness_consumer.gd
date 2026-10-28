@@ -75,6 +75,17 @@ func run() -> void:
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
 	state.action_completed.connect(func(id,_before,_after,_result):actions.append(id))
+	root.size=Vector2i(430,860);shell.size=Vector2(430,860)
+	await fixture(true,75,"settings")
+	shell.phone_builder.settings_page="display";shell._refresh();await frames()
+	var setting:Control=named("SettingsBrightness")
+	var surface_alpha:float=shell.phone_chrome.brightness_veil.color.a
+	var point=setting.get_global_rect().position+setting.get_global_rect().size*Vector2(.25,.5)
+	var down=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true;down.position=point;down.global_position=point;root.push_input(down,true);await frames()
+	check(shell.phone_chrome.brightness_veil.color.a>surface_alpha+.15 and state.d.ui.brightness==75,"Held Settings drag visibly dims the screen before committing state")
+	check(named("SettingsBrightness")==setting,"Brightness preview keeps the held slider mounted")
+	var up=InputEventMouseButton.new();up.button_index=MOUSE_BUTTON_LEFT;up.position=point;up.global_position=point;root.push_input(up,true);await frames()
+	check(state.d.ui.brightness<40 and not state.d.ui.libraryFinalsPuzzle.photoDimmed,"Release commits brightness without granting a photo fact on Settings")
 	for dimensions in [Vector2i(390,844),Vector2i(430,860),Vector2i(1440,900)]:
 		root.size=dimensions;shell.size=Vector2(dimensions)
 		await fixture(false,75)

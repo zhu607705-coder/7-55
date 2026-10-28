@@ -1,0 +1,787 @@
+{
+  "backgrounds": {
+    "a3": {
+      "empty": "res://assets/backgrounds/a3_empty_v3.png",
+      "original": "res://assets/backgrounds/a3_original.png",
+      "emptySha256": "940cd957b9694cc7bc0ae5d80703577d493b4a0a85ef0fe91c333b52d10ae973",
+      "originalSha256": "3077b3f6a2f16d97ecee866c516f1fd80341889f7a38779cc892680d5ba0a02e",
+      "status": "candidate_not_runtime_approved"
+    }
+  },
+  "objects": {
+    "hall_bench": {
+      "texture": "res://assets/objects/hall_bench.png",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "sourceRect": [
+        359,
+        175,
+        311,
+        1145
+      ],
+      "sha256": "b24d3e841c2f23ac83f535a79b69b1f36f22b241c5bab73e91b9024ff65e0d86",
+      "provenance": "imagegen_20261027_current_task",
+      "status": "transparent_candidate"
+    },
+    "media_camera": {
+      "texture": "res://assets/objects/media_camera.png",
+      "sourceSize": [
+        1294,
+        1216
+      ],
+      "sourceRect": [
+        294,
+        99,
+        754,
+        1051
+      ],
+      "sha256": "9ecee4b3772d8cc95c1c7e7beedb713a15a833ef74d5d214d8dab7f4b261b635",
+      "provenance": "imagegen_20261027_prior_task",
+      "status": "transparent_candidate"
+    },
+    "class_lectern": {
+      "texture": "res://assets/objects/class_lectern.png",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        127,
+        172,
+        1000,
+        909
+      ],
+      "sha256": "4885bd57881a6061f606cbd5eff714c79e563df03e51a0e5471b1177c0ad4412",
+      "provenance": "existing_generated_asset_20261025",
+      "status": "transparent_candidate"
+    },
+    "a3_report_lectern": {
+      "texture": "res://assets/objects/a3_report_lectern.png",
+      "sourceSize": [
+        1423,
+        1105
+      ],
+      "sourceRect": [
+        459,
+        244,
+        504,
+        594
+      ],
+      "sha256": "9306f05506e128c362cb8c517f565da4bd11fc0aac2bfa14d48fe9d1d42c2943",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_projection_screen": {
+      "texture": "res://assets/objects/a3_projection_screen.png",
+      "sourceSize": [
+        2129,
+        739
+      ],
+      "sourceRect": [
+        91,
+        93,
+        1943,
+        558
+      ],
+      "sha256": "f48ce2e0c7627d8e609533bd238416477bf78fec85c82d506d1ba13d9eb1a2d6",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_wall_speaker": {
+      "texture": "res://assets/objects/a3_wall_speaker.png",
+      "sourceSize": [
+        1424,
+        1105
+      ],
+      "sourceRect": [
+        537,
+        194,
+        351,
+        717
+      ],
+      "sha256": "d1272e0b696ea3a65c7797083504c41486fd1c184b1b36744a4e64355690dd81",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_class_desk": {
+      "texture": "res://assets/objects/a3_class_desk.png",
+      "sourceSize": [
+        1431,
+        1099
+      ],
+      "sourceRect": [
+        318,
+        266,
+        798,
+        557
+      ],
+      "sha256": "c5c17901cf66e18fbdd6cb298a0621dd1503215e1209b551cf47a2058f4797b9",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_class_chair": {
+      "texture": "res://assets/objects/a3_class_chair.png",
+      "sourceSize": [
+        1414,
+        1113
+      ],
+      "sourceRect": [
+        500,
+        389,
+        412,
+        341
+      ],
+      "sha256": "6c7a4e7157df24fd38c52cad2d68818f5a76d6e840a906e7d1b66ac5779a5290",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_plant": {
+      "texture": "res://assets/objects/a3_plant.png",
+      "sourceSize": [
+        1268,
+        1240
+      ],
+      "sourceRect": [
+        357,
+        163,
+        556,
+        977
+      ],
+      "sha256": "a63d696f4fe1ff8455468cd880329fb8a343ab51b5783cfb6d43f7547dfa2c38",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_green_screen": {
+      "texture": "res://assets/objects/a3_green_screen.png",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "sourceRect": [
+        176,
+        97,
+        1422,
+        686
+      ],
+      "sha256": "47fc3cf87d7edfc06d84270c4c64a15141ac3b67c1406fe19d116cd1fbed5677",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_report_seat": {
+      "texture": "res://assets/objects/a3_report_seat.png",
+      "sourceSize": [
+        1312,
+        1199
+      ],
+      "sourceRect": [
+        290,
+        178,
+        733,
+        841
+      ],
+      "sha256": "2350cf753ceb4f079261314abda907b76e73498b394c0e1a8b2490f092c5dd82",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_hall_planter": {
+      "texture": "res://assets/objects/a3_hall_planter.png",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "sourceRect": [
+        356,
+        66,
+        312,
+        1341
+      ],
+      "sha256": "d2c2b3d1df5a787aae5ea62b39c68bc11f60028c1bc502edaa11344dd57914b8",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_studio_light": {
+      "texture": "res://assets/objects/a3_studio_light.png",
+      "sourceSize": [
+        1202,
+        1309
+      ],
+      "sourceRect": [
+        306,
+        110,
+        709,
+        1075
+      ],
+      "sha256": "29906a8da08c52ce3e6b2a4640ac2fa551c84ae6be5b360a2ba6cfe08382f03b",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_console_desk": {
+      "texture": "res://assets/objects/a3_console_desk.png",
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "sourceRect": [
+        66,
+        105,
+        2040,
+        507
+      ],
+      "sha256": "11361c86db5c304d68d6b3f4e8c706c67598ba3c39fc5614efc1722f72b22d0a",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_trophy_cabinet": {
+      "texture": "res://assets/objects/a3_trophy_cabinet.png",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "sourceRect": [
+        193,
+        84,
+        639,
+        1357
+      ],
+      "sha256": "dba5c13592618cb43de79a8102a4ededc13a91a61216dbac180ffb5981fccc11",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_trophy": {
+      "texture": "res://assets/objects/a3_trophy.png",
+      "sourceSize": [
+        1363,
+        1154
+      ],
+      "sourceRect": [
+        224,
+        165,
+        915,
+        816
+      ],
+      "sha256": "afea263b714e4ee4e7352ddcb5f636286a33c3e256fc18ce6c4a639f8a62b8e3",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_exhibit_globe": {
+      "texture": "res://assets/objects/a3_exhibit_globe.png",
+      "sourceSize": [
+        1262,
+        1246
+      ],
+      "sourceRect": [
+        260,
+        47,
+        764,
+        1135
+      ],
+      "sha256": "213b9a062d7809b63693c58e1c61e1265816001154a038254a65501d7c6203f0",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_frame": {
+      "texture": "res://assets/objects/a3_frame.png",
+      "sourceSize": [
+        1206,
+        1304
+      ],
+      "sourceRect": [
+        163,
+        98,
+        881,
+        1092
+      ],
+      "sha256": "4680646d7a49c278fb6b6878a89cab524d86c2405f87fa273b90a4dda9fcfd17",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate",
+      "contentRect": [
+        327,
+        262,
+        553,
+        749
+      ]
+    },
+    "a3_exhibit_tall_case": {
+      "texture": "res://assets/objects/a3_exhibit_tall_case.png",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "sourceRect": [
+        396,
+        90,
+        231,
+        1304
+      ],
+      "sha256": "33d7d43ca588c317c68ec124a2a3f5c7d92312c676f486b1a1d4577db0dfd2dd",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_exhibit_wide_frame": {
+      "texture": "res://assets/objects/a3_exhibit_wide_frame.png",
+      "sourceSize": [
+        1957,
+        804
+      ],
+      "sourceRect": [
+        84,
+        100,
+        1789,
+        602
+      ],
+      "sha256": "0b9461b56d70e3751466a8958c7f17115f1e6a9c4addbafe74db74ad5c9f7bca",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_studio_mixer": {
+      "texture": "res://assets/objects/a3_studio_mixer.png",
+      "sourceSize": [
+        1784,
+        882
+      ],
+      "sourceRect": [
+        299,
+        224,
+        1185,
+        432
+      ],
+      "sha256": "4e0499c45f6495a3bcf65b13edf813896b20de5cbe54ab53edb2cfd2dc32b682",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_studio_monitor": {
+      "texture": "res://assets/objects/a3_studio_monitor.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "sourceRect": [
+        457,
+        321,
+        622,
+        406
+      ],
+      "sha256": "cd05404c021d878c6dbdbea43c91839debde5f93dd6f33c26583f4511e9b42a8",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_studio_chair": {
+      "texture": "res://assets/objects/a3_studio_chair.png",
+      "sourceSize": [
+        1345,
+        1169
+      ],
+      "sourceRect": [
+        511,
+        451,
+        323,
+        310
+      ],
+      "sha256": "dd0148e9110bd1e08a0868bcb2a21078f3412117d9854fad0d79e9700d4c58f5",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_wall_lamp": {
+      "texture": "res://assets/objects/a3_wall_lamp.png",
+      "sourceSize": [
+        1333,
+        1180
+      ],
+      "sourceRect": [
+        524,
+        341,
+        283,
+        443
+      ],
+      "sha256": "c19927226fdcac11b84f585ad482859a3830d8ef4e59421024db95945b68193c",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_class_shelf": {
+      "texture": "res://assets/objects/a3_class_shelf.png",
+      "sourceSize": [
+        1338,
+        1176
+      ],
+      "sourceRect": [
+        335,
+        235,
+        668,
+        688
+      ],
+      "sha256": "f95fcf0980abbaddc2712ad24774415f31f139ab0b59cbab2d913c204dd44619",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_archive_case": {
+      "texture": "res://assets/objects/a3_archive_case.png",
+      "sourceSize": [
+        2098,
+        749
+      ],
+      "sourceRect": [
+        50,
+        68,
+        1999,
+        601
+      ],
+      "sha256": "261de4186db9c350dd51362a937579336e430098ddcdb118ea922828b1372de0",
+      "provenance": "existing_generated_asset_20261025",
+      "status": "transparent_candidate"
+    },
+    "portrait_su_buqing": {
+      "texture": "res://assets/objects/portrait_su_buqing.png",
+      "sourceSize": [
+        256,
+        384
+      ],
+      "sourceRect": [
+        1,
+        18,
+        255,
+        357
+      ],
+      "sha256": "5ac778564c7dd0db93fbd7a895cd4998703b071b8db5270ef32719a4719b7e8e",
+      "provenance": "existing_verified_story_portrait",
+      "status": "existing_story_portrait"
+    },
+    "portrait_zhu_kezhen": {
+      "texture": "res://assets/objects/portrait_zhu_kezhen.png",
+      "sourceSize": [
+        256,
+        384
+      ],
+      "sourceRect": [
+        2,
+        27,
+        254,
+        338
+      ],
+      "sha256": "ed5d76dc115640b4dffec88b3880d9e4948febdf1c1ee0d38cb13bb3d67e36b4",
+      "provenance": "existing_verified_story_portrait",
+      "status": "existing_story_portrait"
+    },
+    "portrait_lu_yongxiang": {
+      "texture": "res://assets/objects/portrait_lu_yongxiang.png",
+      "sourceSize": [
+        256,
+        384
+      ],
+      "sourceRect": [
+        1,
+        24,
+        255,
+        352
+      ],
+      "sha256": "bc5308c8910b2a15b76ba296c4311b8749242916a533d043dc79c499ffeeeb88",
+      "provenance": "existing_verified_story_portrait",
+      "status": "existing_story_portrait"
+    },
+    "portrait_chen_jiangong": {
+      "texture": "res://assets/objects/portrait_chen_jiangong.png",
+      "sourceSize": [
+        250,
+        384
+      ],
+      "sourceRect": [
+        2,
+        20,
+        246,
+        351
+      ],
+      "sha256": "eb397ef79ff705962014a9dd8ef8b9f3b3b15d21997281bc05936592309b2020",
+      "provenance": "existing_verified_story_portrait",
+      "status": "existing_story_portrait"
+    },
+    "portrait_tan_jiazhen": {
+      "texture": "res://assets/objects/portrait_tan_jiazhen.png",
+      "sourceSize": [
+        250,
+        384
+      ],
+      "sourceRect": [
+        0,
+        17,
+        249,
+        363
+      ],
+      "sha256": "cb18a8400335fa79694de6fad7274b1ac920fa2fed6b26be9a91f700cf021e86",
+      "provenance": "existing_verified_story_portrait",
+      "status": "existing_story_portrait"
+    },
+    "portrait_cheng_kaijia": {
+      "texture": "res://assets/objects/portrait_cheng_kaijia.png",
+      "sourceSize": [
+        250,
+        384
+      ],
+      "sourceRect": [
+        0,
+        31,
+        250,
+        339
+      ],
+      "sha256": "8a9cf5017ffd5dfd713353596fecc2bc07d38ee6c22c67eb0aab44d6f05d89d3",
+      "provenance": "existing_verified_story_portrait",
+      "status": "existing_story_portrait"
+    },
+    "a3_archive_document": {
+      "texture": "res://assets/objects/a3_archive_document.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "sourceRect": [
+        524,
+        336,
+        531,
+        389
+      ],
+      "sha256": "2cf4c33a5aa63512021482adf0cc3dd45a572ed1e0506ce1d7ebd6e41dad94fc",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_archive_blue_card": {
+      "texture": "res://assets/objects/a3_archive_blue_card.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "sourceRect": [
+        417,
+        295,
+        702,
+        419
+      ],
+      "sha256": "1e3d2de4baf86f37adff433d380c7283f998a2b5a680ccd6425936d1f030ebe4",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_notice_backboard": {
+      "texture": "res://assets/objects/a3_notice_backboard.png",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "sourceRect": [
+        135,
+        128,
+        1505,
+        627
+      ],
+      "sha256": "5379e169b873281483e8232ed68788750803ca95e02bf49ecd61e4e83e0d4a54",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_empty_rack": {
+      "texture": "res://assets/objects/a3_empty_rack.png",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "sourceRect": [
+        288,
+        120,
+        448,
+        1308
+      ],
+      "sha256": "fabef111ac3f7192c56d5940335a5fa4cfd59a159c03a82a35d6d6d54d0c5226",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_blackboard_wide": {
+      "texture": "res://assets/objects/a3_blackboard_wide.png",
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "sourceRect": [
+        84,
+        179,
+        2006,
+        365
+      ],
+      "sha256": "686886eec48f6ce9f1f86f67b534b61448083c12ec0753377fbe0d3586b2a38f",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_stage_wide": {
+      "texture": "res://assets/objects/a3_stage_wide.png",
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "sourceRect": [
+        111,
+        168,
+        1950,
+        399
+      ],
+      "sha256": "27d21d342cb46ae95bbef62727188936135914a46181c9363f64e8a2f0e33722",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_case_exact": {
+      "texture": "res://assets/objects/a3_case_exact.png",
+      "sourceSize": [
+        1584,
+        993
+      ],
+      "sourceRect": [
+        41,
+        105,
+        1503,
+        773
+      ],
+      "sha256": "bb5b57d82d2073d44d429521f0da836783c6c83e411917b9c893bdfc1dc6b928",
+      "provenance": "imagegen_20261027_a3_source_reference",
+      "status": "transparent_candidate"
+    },
+    "a3_entrance_threshold": {
+      "texture": "res://assets/objects/a3_entrance_threshold.png",
+      "sourceSize": [
+        1619,
+        971
+      ],
+      "sourceRect": [
+        451,
+        324,
+        717,
+        317
+      ],
+      "sha256": "b9abe692a0080f1b9f7451cbfe812dc1eca381f693fd7b2e26491a3ac5fc7061",
+      "provenance": "imagegen_20261027_current_task",
+      "status": "transparent_candidate"
+    },
+    "a3_elevator_door": {
+      "texture": "res://assets/objects/a3_elevator_door.png",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceRect": [
+        282,
+        186,
+        690,
+        881
+      ],
+      "sha256": "646d00725b0c3cd71cc58ba01860cc746c5de6785549d8b341b4a8d02dbcd74c",
+      "provenance": "imagegen_20261027_current_task",
+      "status": "transparent_candidate"
+    },
+    "a3_honor_floor_border": {
+      "texture": "res://assets/objects/a3_honor_floor_border.png",
+      "sourceSize": [
+        1795,
+        876
+      ],
+      "sourceRect": [
+        84,
+        93,
+        1628,
+        690
+      ],
+      "sha256": "b7a1702e06b19b9e83a55b3a64339d104f5f75af711a027b66f3521601bf9d0d",
+      "provenance": "imagegen_20261027_current_task",
+      "status": "transparent_candidate"
+    },
+    "a3_corridor_plaque": {
+      "texture": "res://assets/objects/a3_corridor_plaque.png",
+      "sourceSize": [
+        1190,
+        1322
+      ],
+      "sourceRect": [
+        222,
+        145,
+        747,
+        1031
+      ],
+      "sha256": "947ec4f290d00fcc85cd5016fdffce47e34d063b435d60fc1cd8e0309cb7bda6",
+      "provenance": "imagegen_20261027_current_task",
+      "status": "transparent_candidate"
+    },
+    "a3_studio_monitor_v2": {
+      "texture": "res://assets/objects/a3_studio_monitor_v2.png",
+      "sourceSize": [
+        1705,
+        922
+      ],
+      "sourceRect": [
+        52,
+        139,
+        1602,
+        685
+      ],
+      "sha256": "e291239ba59ec0f727934a2d1f43d533e8e063bc338f2e002b18c352fc4b7431",
+      "provenance": "imagegen_20261027_source_reference_studio_scale_fix",
+      "status": "transparent_candidate"
+    },
+    "a3_av_rack_wide": {
+      "texture": "res://assets/objects/a3_av_rack_wide.png",
+      "sourceSize": [
+        1016,
+        1548
+      ],
+      "sourceRect": [
+        149,
+        180,
+        738,
+        1229
+      ],
+      "sha256": "d6e5b1ec92a9b3acdface8c7a68ef1b33d23ec085e5a18edcc2d64e09357e383",
+      "provenance": "imagegen_20261027_source_reference_studio_scale_fix",
+      "status": "transparent_candidate"
+    },
+    "a3_studio_vertical_display": {
+      "texture": "res://assets/objects/a3_studio_vertical_display.png",
+      "sourceSize": [
+        1051,
+        1496
+      ],
+      "sourceRect": [
+        201,
+        195,
+        650,
+        1167
+      ],
+      "sha256": "cd4f57645b8af82c15af835905a2302fc17353f45388cc0f43e4e806bc028b0a",
+      "provenance": "imagegen_20261027_source_reference_studio_scale_fix",
+      "status": "transparent_candidate"
+    },
+    "a3_studio_right_camera": {
+      "texture": "res://assets/objects/a3_studio_right_camera.png",
+      "sourceSize": [
+        1187,
+        1325
+      ],
+      "sourceRect": [
+        351,
+        151,
+        512,
+        987
+      ],
+      "sha256": "d6db2488512ff92733ab37ea985a7650652d2a45282360226dbc20456f0b08f7",
+      "provenance": "imagegen_20261027_source_reference_studio_scale_fix",
+      "status": "transparent_candidate"
+    },
+    "a3_console_desk_v3": {
+      "texture": "res://assets/objects/a3_console_desk_v3.png",
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "sourceRect": [
+        44,
+        46,
+        2085,
+        629
+      ],
+      "sha256": "1afadf92d0beb066e592cabfe6bdaec5d157632b80064e71a580c919d51f5ba0",
+      "provenance": "imagegen_20261027_source_reference_studio_scale_fix",
+      "status": "transparent_candidate"
+    }
+  }
+}

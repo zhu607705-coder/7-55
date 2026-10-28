@@ -1,5 +1,7 @@
 # 7:55
 
+20261026北教整合：[A1–A3对象接入、墙面修复及草稿合流](godot_native/docs/NORTH_PRODUCTION_OBJECTS_20261026.md)。
+
 [![Web CI](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml)
 
 《7:55》Godot 原生游戏与保留的网页版本。
@@ -130,3 +132,7 @@ Web CI 与 Pages 继续验证和交付浏览器版本；原生 CI 验证 Godot �
 ## 20260906 源码整合
 
 当前主线与第四章细节任务的合并范围、来源和验证状态见 [整合记录](docs/releases/20260906-integration.md)。本次为源码上传，既有 Release 下载链接仍对应其原始日期，未生成 20260906 单文件游戏包。
+
+## 20261026 手机与北教整合记录
+
+本轮源码范围、原生/保留 Web 检查与发布状态见 [20261026 交付记录](godot_native/docs/INTEGRATION_RELEASE_20261026.md)。论坛文案按 Gemini 场景生成与 Humanizer-zh 审阅回填；原始证据、元数据和隐藏标记保留。既有 20261025 素材目录保留生成日期；本轮沿用 Pages 发布链，不新建 Release 压缩包。

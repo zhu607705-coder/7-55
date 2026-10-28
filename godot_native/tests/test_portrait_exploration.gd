@@ -46,7 +46,7 @@ func floor_touch_point(direction:=Vector2.RIGHT,distance:=64.0,allow_turn:=true)
 			var anchor:Vector2=world.player+direction.normalized().rotated(angle)*distance*factor
 			var foot:Vector2=world.PlayerMetrics.foot_rect(anchor).get_center()
 			var local:Vector2=(foot-world.camera)*world.zoom+world.size/2
-			if world.can_stand(anchor) and world.exploration_safe_rect(true).has_point(local) and world._floor_empty_destination(foot) and world._floor_segment_clear(world.player,anchor,world._floor_obstacles(),true):return world_screen(local)
+			if world.can_stand(anchor) and world._floor_anchor_bounds(world._floor_visible_rect()).has_point(anchor) and world.exploration_safe_rect(true).has_point(local) and world._floor_empty_destination(foot) and world._floor_segment_clear(world.player,anchor,world._floor_obstacles(),true):return world_screen(local)
 	return Vector2.INF
 func tap_floor(point: Vector2) -> void:
 	check(point.is_finite(),"fixture locates visible collision-valid empty floor")
@@ -113,16 +113,18 @@ func fixture(dimensions: Vector2i) -> void:
 	check(shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"inline items stay inside the actual game image")
 	check(shell.inventory_dock.visible and not slot("gamepad").disabled,"world owns a visible enabled item source")
 	check(is_equal_approx(shell.world_frame.scale.x,shell.world_frame.scale.y),"uniform world display scale retained")
+	var painted:Rect2=shell.world_view.get_global_rect()
+	check(shell.world.size==Vector2(960,540) and is_equal_approx(painted.size.x/painted.size.y,16.0/9.0),"world retains its landscape source viewport at every window size")
 	if dimensions.x<1100:
-		check(shell.world.mobile_exploration and shell.world_frame.scale==Vector2.ONE,"compact exploration renders at physical UI scale")
+		check(shell.world.mobile_exploration,"compact exploration retains direct touch input")
 		check(Vector2(shell.world_viewport.size)==shell.world.size,"viewport and world share exact dimensions")
-		check(shell.world.size.y>=600 if dimensions.y>dimensions.x else shell.world.size.y>=300,"exploration uses useful screen height with bag open")
 		var hud:Dictionary=shell.world.hud_metrics("找到入口，继续向前。")
-		check(hud.title_font>=18 and hud.body_font>=14 and hud.mode_rect.size.y>=44,"physical HUD fonts and mode touch target meet mobile floor")
+		var display:float=shell.world.hud_display_scale()
+		check(hud.title_font*display>=18 and hud.body_font*display>=14 and hud.mode_rect.size.y*display>=43.99,"physical HUD fonts and mode touch target meet mobile floor")
 		var controls:Dictionary=shell.world.mobile_control_metrics()
 		check(controls.scheme=="direct_world" and controls.gestureArea.size.x>=200 and controls.gestureArea.size.y>=100 and controls.mode.size.y>=44,"direct world gestures retain useful physical floor area and mode target")
 		var actor:Rect2=shell.world.PlayerMetrics.visual_rect(shell.world.player,shell.world.display_scale_at(shell.world.player))
-		check(actor.size.y*shell.world.zoom>=70,"dorm actor renders at least70 physical pixels high")
+		check(actor.size.y*shell.world.zoom>=70,"dorm actor retains authored source size")
 		print("MEASURE ",dimensions," world=",shell.world.size," actor=",actor.size*shell.world.zoom," HUD=",hud.title_font,"/",hud.body_font," mode=",hud.mode_rect.size," gestures=",controls.gestureArea)
 	else: check(shell.world_viewport.size==Vector2i(960,540),"desktop retains canonical authored viewport")
 	check(shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"inventory overlays the actual map without resizing it")

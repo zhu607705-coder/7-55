@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-26",
+  "recordedHead": "27e8b4fc97ab8cef69f5853c135db9df20eb321b",
+  "recordedTree": "47cbf2330ee387ee131e7e73d46678ccec33a8b8",
+  "baseMain": "0713f50999ac1516d732b69a1b40ce946bd5c723",
+  "run": 40326253437,
+  "artifact": 12651527165,
+  "artifactSHA256": "6644c4790fcd41aa7116b4c4201acaf67195137c9a149ceca42dbebd54da7bea",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "renderer": "GL Compatibility / X11 / Mesa llvmpipe LLVM20.1.2",
+  "raster3D": true,
+  "rayTracing": false,
+  "currentAndHistoryIndependentWorlds": true,
+  "checks": {
+    "original": 221,
+    "actualCameraAndWorld": 28,
+    "namespaces": 19,
+    "historyPixels": 5,
+    "lightShadowPixels": 2,
+    "ordinaryTouchCapture": 6
+  },
+  "movie": {
+    "width": 390,
+    "height": 844,
+    "fps": 30,
+    "frames": 723,
+    "seconds": 24.1,
+    "simulatedTouch": true,
+    "physicalMobile": false
+  },
+  "prior2DProjectionNotRealLighting": "5fe726e",
+  "supersededFirst3D": "0d14ed9",
+  "limits": [
+    "Physical-phone performance not measured; two full-size viewports.",
+    "Small rasterized lighting study, not final art or simulated flexible paper.",
+    "Distant canopy is unlit image background.",
+    "No formal story/save integration or browser manual acceptance."
+  ],
+  "sourceSHA256": {
+    "scripts/paper_world_3d.gd": "a6605007ad92e88b5f4523d92b14b19d9d8798dcfb816cfd88452f87f4cda7da",
+    "scripts/paper_rewind_stage.gd": "80c00951388e235874d1076f02b653911bb7a37bdee25e237a861dde3bd7cc45",
+    "scripts/paper_rewind_model.gd": "bf228f42220c23de7e9cce1f63cdc3d55c1567970963992ab33098acd83b8c61",
+    "scripts/paper_rewind_view.gd": "b541c450d43c87e0c61eb8d195dbaf6023ce44f4ff54a368c19617defa8cfb91",
+    "tests/test_paper_world_3d.gd": "eb0a95221fda74a941856eb9588f25ff33a70eb06f9890a8457810fc90c9f321",
+    "tests/test_paper_history_render.gd": "92f85d28f5b5ac577bc4e3132726821aabec346249038a8f67c118abcb5e2001"
+  }
+}

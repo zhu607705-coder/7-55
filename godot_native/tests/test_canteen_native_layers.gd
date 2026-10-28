@@ -32,7 +32,7 @@ func run()->void:
 	var bounded:=true
 	for prop:Node2D in scene.objects.values():
 		for part:Dictionary in prop.parts:bounded=bounded and part.sprite.z_index>=0 and part.sprite.z_index<=50
-	check(bounded and scene.get_node("CanteenInterface").z_index==60,"world parts and HUD stay below existing modal100 and toast110")
+	check(bounded and scene.get_node("CanteenInterface").z_index==60,"world parts and HUD retain their original bounded scene layers")
 	# Exact source-depth ties inside one coarse z bucket stay in native sibling order.
 	for at:Vector2 in [Vector2(755,208),Vector2(755,213),Vector2(230,357),Vector2(230,366)]:
 		pose(at)
@@ -48,7 +48,7 @@ func run()->void:
 	for i in range(80):shell.c3_narrative_host.tick(100,true)
 	state.d.canteenHunt.phase="menu_order";state.d.canteenHunt.promoDrinkPlaced=true;state.d.canteenHunt.queueGapOpened=true
 	shell.world.refresh_world();pose(Vector2(755,250));state.act("c3_target:ordering_kiosk");await frames(3)
-	check(is_instance_valid(shell.modal) and shell.modal.z_index==100 and shell.modal.z_index>subtitle.z_index,"original ordering modal remains above the scene and narrative views")
+	check(is_instance_valid(shell.modal) and shell.modal.z_index>scene.z_index and shell.modal.z_index>scene.get_node("CanteenInterface").z_index and shell.modal.z_index>maxi(subtitle.z_index,maxi(effects.z_index,paper.z_index)) and shell.modal.z_index>shell.phone_chrome.brightness_veil.z_index,"original ordering modal remains above the scene, narrative views and phone glass")
 	await shot("canteen-menu-over-world")
 	shell._close_modal();state.d.native.scene="campus_bootstrap";shell.world.world_key="";shell.world.refresh_world()
 	check(subtitle.z_index==0 and effects.z_index==0 and paper.z_index==0 and scene.story_layer_leases.is_empty(),"leaving canteen restores all captured original z values")

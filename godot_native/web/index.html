@@ -15,7 +15,10 @@
     :root { color-scheme: dark; font-family: "755 Morning Note", monospace; font-synthesis: none; background: #202B35; color: #F4EAD5; }
     * { box-sizing: border-box; }
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
-    #canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: none; }
+    /* Godot writes inline pixel sizes during resize. Keep that previous backing
+       size out of mobile layout, so landscape width cannot widen the viewport
+       again before the next portrait resize. Godot still owns the pixel buffer. */
+    #canvas { position: fixed; inset: 0; display: block; width: 100% !important; height: 100% !important; outline: none; touch-action: none; }
     #loading { --boot-viewport-height: 100vh; position: fixed; inset: 0; z-index: 10; isolation: isolate; overflow: hidden; background: #D8C7A0; color: #344452; color-scheme: light; }
     #loading[hidden] { display: none; }
     #loading .boot-sheet { position: absolute; inset: 0; overflow: hidden; background: #F4EAD5; }

@@ -72,7 +72,7 @@ static func camera_for_safe_rect(player:Vector2,pan:Vector2,extent:Vector2,world
 		if world_size[axis]<=full_half*2:
 			var half:float=safe.size[axis]/(2*z)
 			var offset:float=(extent[axis]/2-safe.get_center()[axis])/z
-			camera[axis]=(world_size[axis]/2 if world_size[axis]<=half*2 else clampf(target[axis]-offset,half,world_size[axis]-half))+offset
+			camera[axis]=(world_size[axis]/2 if world_size[axis]<=half*2 else clampf(target[axis],half,world_size[axis]-half))+offset
 			continue
 		var far:float=world_size[axis]-full_half
 		# Keep original follow in the interior. Ease in the HUD offset before

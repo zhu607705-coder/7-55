@@ -18,6 +18,7 @@ var world_frame: PanelContainer
 var world: Control
 var world_viewport: SubViewport
 var world_view: SubViewportContainer
+var world_surface_context: Array=[]
 var status_label: Label
 var title_label: Label
 var quest_label: Label
@@ -106,6 +107,7 @@ var c3_narrative_host: Control
 const CanteenObjective = preload("res://scripts/presentation/canteen_objective.gd")
 const NativeJournalView = preload("res://scripts/ui/native_journal_view.gd")
 const ObservationComparisonSession = preload("res://scripts/presentation/observation_comparison_session.gd")
+var chapter4_time_feedback: Control
 const ObservationComparisonView = preload("res://scripts/ui/observation_comparison_view.gd")
 var observation_comparison_session = ObservationComparisonSession.new()
 const PhotoBrightnessSession = preload("res://scripts/ui/photo_brightness_session.gd")
@@ -664,11 +666,16 @@ func _layout() -> void:
 	border.content_margin_left=margin; border.content_margin_right=margin
 	border.content_margin_top=margin; border.content_margin_bottom=margin
 	if compact:
-		world_frame.scale=Vector2.ONE
 		var insets:=_world_safe_insets()
-		world_frame.position=Vector2(insets.x+2,insets.y+2)
-		world_extent=available-Vector2(insets.x+insets.z+8,insets.y+insets.w+8)
-		world_frame.size=world_extent+Vector2.ONE*4
+		var safe_extent:=available-Vector2(insets.x+insets.z+4,insets.y+insets.w+4)
+		var frame_extent:=world_extent+Vector2.ONE*4
+		var world_scale:=maxf(.01,minf(safe_extent.x/frame_extent.x,safe_extent.y/frame_extent.y))
+		# Compact input and readable root-space controls do not change the map's
+		# authored landscape viewport. A portrait window letterboxes it until
+		# the device rotates; desktop narrow windows use the same projection.
+		world_frame.scale=Vector2.ONE*world_scale
+		world_frame.position=Vector2(insets.x+2,insets.y+2)+(safe_extent-frame_extent*world_scale)/2
+		world_frame.size=frame_extent
 	else:
 		world_frame.size=Vector2(980,560)
 		var world_scale:=minf((available.x-4)/980.0,(available.y-4)/560.0)
@@ -757,7 +764,11 @@ func _authored_world_contract() -> bool:
 func _configure_world_surface(extent: Vector2,compact: bool) -> void:
 	if not is_instance_valid(world): return
 	var dimensions:=Vector2i(maxi(1,int(extent.x)),maxi(1,int(extent.y)))
-	var changed: bool=world_viewport.size!=dimensions or world.mobile_exploration!=compact
+	# A fixed logical viewport can still move/scale on rotation. Retire pointers
+	# against that old rendered transform before accepting another root event.
+	var context: Array=[dimensions,compact,world_frame.get_global_transform_with_canvas()]
+	var changed: bool=world_viewport.size!=dimensions or world.mobile_exploration!=compact or context!=world_surface_context
+	world_surface_context=context
 	world_view.custom_minimum_size=Vector2(dimensions)
 	world_view.size=Vector2(dimensions)
 	world.custom_minimum_size=Vector2(dimensions)
@@ -1009,6 +1020,7 @@ func _refresh() -> void:
 	if phone_builder == null and ResourceLoader.exists("res://scripts/ui/phone_pages.gd"):
 		phone_builder = load("res://scripts/ui/phone_pages.gd").new()
 		phone_builder.connect("action_requested",_on_phone_action)
+		phone_builder.brightness_preview_requested.connect(_preview_phone_brightness)
 		phone_builder.connect("page_requested",_on_phone_page)
 		if phone_builder.has_signal("presentation_requested"): phone_builder.connect("presentation_requested",_play_presentation_cue)
 		if phone_builder.has_signal("document_requested"): phone_builder.connect("document_requested",_open_phone_document)
@@ -1344,7 +1356,9 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	modal.focus_mode = Control.FOCUS_ALL
 	modal.mouse_filter = Control.MOUSE_FILTER_STOP
 	modal.theme = NativeUi.make_theme(Typography.body_font(),16,16)
-	modal.z_index = 100
+	# Global dialogs sit outside the simulated phone glass. Phone apps,
+	# documents and the in-phone Control Center keep their brightness veil.
+	modal.z_index = 300
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
 	modal.color = Color.TRANSPARENT if surface.begins_with("selected_") else Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76)
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1507,7 +1521,7 @@ func _open_c3_device(kind: String, fresh_chest_scan := false) -> void:
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	modal.mouse_filter=Control.MOUSE_FILTER_STOP
 	modal.focus_mode=Control.FOCUS_ALL
-	modal.z_index=100
+	modal.z_index=300
 	add_child(modal)
 	var canteen_device: bool=kind.begins_with("drink:") or kind in ["menu","bike"]
 	var panel_script: String="res://scripts/ui/theater_chest_closeup.gd" if kind=="chest" else "res://scripts/ui/c3_canteen_device_panel.gd" if canteen_device else "res://scripts/ui/c3_mixer_panel.gd" if kind=="mixer" else "res://scripts/ui/c3_theater_device_panel.gd"
@@ -2462,6 +2476,12 @@ func _sync_story_hosts() -> void:
 	# chapter >= 3 would strand the real Library -> Canteen handoff.
 	if State.d.is_empty() or not is_instance_valid(world): return
 	var scene: String=str(State.d.native.get("scene",""))
+	if chapter4_time_feedback == null and scene=="duan_yongping_temporal_maze":
+		chapter4_time_feedback=load("res://scripts/presentation/chapter4_time_feedback.gd").new()
+		add_child(chapter4_time_feedback)
+		chapter4_time_feedback.setup(world,world_view,phone,func() -> Dictionary: return State.d,func() -> Dictionary: return {"game":active_game,"modal":modal,"document":phone_document,"control":State.d.ui.controlCenterOpen})
+		State.action_completed.connect(chapter4_time_feedback.observe)
+		State.story_reset.connect(chapter4_time_feedback.reset)
 	var needs_library: bool=int(State.d.native.chapter)==2 and str(State.d.ui.libraryFinalsPhase)!="idle"
 	var needs_scene: bool=scene=="canteen_interior" or State.get_scene_session()!=null
 	var needs_narrative: bool=scene in ["canteen_interior","theater_interior","campus_qizhen_loop"] or State.get_c3_narrative_session()!=null
@@ -2689,6 +2709,7 @@ func _on_phone_action(id: String,value: Variant) -> void:
 	match id:
 		"native_control_center_close":
 			State.d.ui.controlCenterOpen=false
+			_preview_phone_brightness(-1)
 			_refresh_control_center()
 			return
 		"native_save_tools": _show_settings(); return
@@ -2706,6 +2727,11 @@ func _on_phone_action(id: String,value: Variant) -> void:
 			if str(action.id)==id: _invoke_action(action); return
 	State.act(id,value)
 
+func _preview_phone_brightness(value: float) -> void:
+	# Drag feedback is presentation-only; release still commits through the controller.
+	if is_instance_valid(phone_chrome):
+		phone_chrome.set_display_brightness(float(State.d.ui.brightness) if value<0 else value)
+
 func _refresh_control_center() -> void:
 	if is_instance_valid(control_center):
 		phone.remove_child(control_center)
@@ -2715,6 +2741,7 @@ func _refresh_control_center() -> void:
 	if control_builder==null:
 		control_builder=load("res://scripts/ui/phone_pages.gd").new()
 		control_builder.action_requested.connect(_on_phone_action)
+		control_builder.brightness_preview_requested.connect(_preview_phone_brightness)
 		control_builder.page_requested.connect(_on_phone_page)
 		control_builder.presentation_requested.connect(_play_presentation_cue)
 	control_center=control_builder.build("control_center",State.get_view("control_center"),State.d)
@@ -2746,6 +2773,7 @@ func shutdown() -> void:
 	# Native audio retires on the mixer thread. Await the real owners before
 	# immediate test/standalone exit instead of leaking a still-playing stream.
 	set_process(false)
+	if is_instance_valid(chapter4_time_feedback): chapter4_time_feedback.cancel()
 	if is_instance_valid(object_focus):object_focus.request_close(true)
 	if is_instance_valid(world): world.set_process(false)
 	if is_instance_valid(c3_scene_host): c3_scene_host.reset(); c3_scene_host.set_process(false)
