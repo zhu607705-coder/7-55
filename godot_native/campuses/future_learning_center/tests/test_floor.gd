@@ -85,6 +85,26 @@ func check_floor(floor_number:int)->void:
 		check(FileAccess.file_exists(item.path),"independent object saved: "+str(item.id))
 		if item.mounted:continue
 		check(not space.can_stand(Space.rect(item.footprint).get_center()-Body.FOOT_CENTER_OFFSET),"feet blocked by prop: "+str(item.id))
+	if floor_number==3:
+		for room:Dictionary in data.rooms:
+			if not str(room.id).begins_with("studio_"):continue
+			var upper:Array=data.objects.filter(func(o:Dictionary)->bool:return o.get("cluster","")==str(room.id)+"_bank_0" and not o.mounted)
+			var lower:Array=data.objects.filter(func(o:Dictionary)->bool:return o.get("cluster","")==str(room.id)+"_bank_1" and not o.mounted)
+			var upper_bounds:Rect2=Space.rect(upper[0].footprint)
+			var lower_bounds:Rect2=Space.rect(lower[0].footprint)
+			for o:Dictionary in upper:upper_bounds=upper_bounds.merge(Space.rect(o.footprint))
+			for o:Dictionary in lower:lower_bounds=lower_bounds.merge(Space.rect(o.footprint))
+			var aisle:=Vector2(upper_bounds.position.x-35,(upper_bounds.end.y+lower_bounds.position.y)/2)-Body.FOOT_CENTER_OFFSET
+			var door:Dictionary=data.doors.filter(func(d:Dictionary)->bool:return d.room==room.id)[0]
+			check(space.segment_clear(foot(door.inside),aisle),str(room.id)+" complete feet can cross between facing desk banks")
+			check(not space.route(aisle,foot(door.outside)).is_empty(),str(room.id)+" middle aisle returns through room door")
+		var island:Dictionary=data.objects.filter(func(o:Dictionary)->bool:return o.asset=="pantry_island")[0]
+		var island_box:Rect2=Space.rect(island.footprint)
+		var pantry_door:Dictionary=data.doors.filter(func(d:Dictionary)->bool:return d.room=="pantry")[0]
+		for point:Vector2 in [Vector2(island_box.position.x-45,island_box.get_center().y),Vector2(island_box.end.x+45,island_box.get_center().y),Vector2(island_box.get_center().x,island_box.position.y-65),Vector2(island_box.get_center().x,island_box.end.y+90)]:
+			var anchor:=point-Body.FOOT_CENTER_OFFSET
+			check(space.can_stand(anchor),"complete feet fit beside pantry island")
+			check(not space.route(foot(pantry_door.inside),anchor).is_empty(),"pantry island side remains reachable from entrance")
 	check(data.objects.size()>60,"furnished room assembly")
 
 func run()->void:

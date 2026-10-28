@@ -6,7 +6,7 @@ import {buildOtherFloors,core,point} from './build_other_floors.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=n=>JSON.parse(fs.readFileSync(path.join(root,'data',n),'utf8'));
 const write=(n,v)=>fs.writeFileSync(path.join(root,'data',n),JSON.stringify(v,null,2)+'\n');
-const assets=read('room_assets.json'),props=read('object_assets.json');
+const assets=read('room_assets.json'),props=read('object_assets.json'),atriumArt=read('atrium_asset.json');
 const rect=([x,y,w,h])=>[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
 const bounds=poly=>{const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);return [Math.min(...xs),Math.min(...ys),Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)];};
 const inside=(q,vertices)=>{let yes=false;for(let i=0,j=vertices.length-1;i<vertices.length;j=i++){const a=vertices[i],b=vertices[j];if((a[1]>q[1])!==(b[1]>q[1])&&q[0]<(b[0]-a[0])*(q[1]-a[1])/(b[1]-a[1])+a[0])yes=!yes;}return yes;};
@@ -36,13 +36,19 @@ function upgradeThree(p){
  for(const r of p.modules)if(r.asset)r.sourceSize=assets[r.asset].size;
 }
 
-const names={desk:'工作桌',chair_back:'网布工作椅',chair_front:'网布工作椅',monitor:'27 英寸显示器',monitor_front:'支架显示器',desk_divider:'桌面低隔板',workbench:'机电实验台',cabinet:'个人储物柜',discussion_table:'拼接研讨桌',whiteboard:'移动白板',printer_3d:'封闭式 3D 打印机',camera_tripod:'录制相机',sofa:'双人沙发',pantry_counter:'茶水台',tool_cart:'移动工具车',parts_rack:'元件收纳架',coffee_machine:'咖啡机',potted_plant:'室内绿植',soldering_station:'焊接工作站'};
+const names={desk:'工作桌',chair_back:'网布工作椅',chair_front:'网布工作椅',monitor:'27 英寸显示器',monitor_front:'支架显示器',monitor_back:'支架显示器',desk_divider:'桌面低隔板',workbench:'机电实验台',cabinet:'个人储物柜',discussion_table:'拼接研讨桌',whiteboard:'移动白板',printer_3d:'封闭式 3D 打印机',camera_tripod:'录制相机',sofa:'双人沙发',pantry_counter:'茶水台',tool_cart:'移动工具车',parts_rack:'元件收纳架',coffee_machine:'咖啡机',potted_plant:'室内绿植',soldering_station:'焊接工作站'};
+Object.assign(names,{pantry_island:'深灰色共享长桌',pantry_tree:'木盆绿植',pantry_chair_front:'木扶手座椅',pantry_chair_back:'木扶手座椅',pantry_microwave:'微波炉',pantry_wall_unit:'茶水柜与水槽'});
 function furnish(p){
  p.objects=[];p.windows=[];p.lighting={orientation:'north-up',sunArc:'east-south-west',clock:'presentation-only',hours:[8,12,16,21],floorMaterial:'continuous gray microcement',source:'window apertures on generated room masters'};
+ if(p.floor===3){
+  // This isolated review starts beside the desk bank, away from the added seats.
+  const [x,y,w,h]=bounds(p.ground.find(g=>g.id==='studio_1_floor_0').polygon);
+  p.spawn=[x+w*.66,y+h*.5];
+ }
  const reserved=[p.spawn,...p.doors.flatMap(d=>[d.inside,d.outside])];
  function put(room,asset,at,width,options={}){
   const a=props[asset],b=a.opaqueBounds,crop=[b[0],b[1],b[2]-b[0],b[3]-b[1]];
-  const maxHeight=({cabinet:102,whiteboard:96,parts_rack:110,tool_cart:65,potted_plant:78})[asset];
+  const maxHeight=({cabinet:102,whiteboard:96,parts_rack:110,tool_cart:65,potted_plant:78,pantry_tree:150,pantry_wall_unit:190})[asset];
   if(maxHeight)width=Math.min(width,maxHeight*crop[2]/crop[3]);
   const scale=width/crop[2],h=crop[3]*scale;
   const footprint=[at[0]-width*.44,at[1]-(options.depth??width*.35),width*.88,options.depth??width*.35];
@@ -68,12 +74,24 @@ function furnish(p){
   }
  }
  function studio(r){
-  // The supplied team-room reference has continuous desk banks and storage at
-  // the edge. Keep player/prop scale fixed; arrange eight seats around a clear
-  // central aisle instead of scattering individual desks across the room.
+  // Each existing four-seat bank gets its facing counterpart. Reuse upright
+  // desk art; opposite chairs and monitor backs express the other orientation.
+  // Two desk footprints meet at the shared divider, with chairs outside them.
+  // Leave a continuous middle aisle and both ends open at the fixed prop scale.
   const [x,y,w,h]=bounds(p.ground.find(g=>g.id===r.id+'_floor_0').polygon);
-  for(const [row,cy] of [y+125,y+h-79].entries())
-   for(let col=0;col<4;col++)station(r,x+150+col*118,cy,true,r.id+'_bank_'+row);
+  for(const [row,cy] of [y+140,y+h-60].entries()){
+   const cluster=r.id+'_bank_'+row;
+   for(let col=0;col<4;col++){
+    const cx=x+150+col*118;
+    const rear=put(r,'desk',[cx,cy-42],118,{depth:42,cluster});
+    const front=put(r,'desk',[cx,cy],118,{depth:42,cluster});
+    const chairs=[put(r,'chair_front',[cx,cy-100],42,{depth:28,cluster}),put(r,'chair_back',[cx,cy+44],42,{depth:28,cluster})];
+    if(!rear||!front||chairs.some(c=>!c))throw new Error(`Facing workstation does not fit ${r.id} bank ${row} seat ${col}: rear=${!!rear} front=${!!front} chairs=${chairs.map(Boolean)}`);
+    put(r,'monitor_back',[cx,cy-91],40,{mounted:true,parent:rear.id,baseline:rear.baseline+.1,height:28});
+    put(r,'desk_divider',[cx,cy-74],106,{mounted:true,parent:front.id,baseline:cy+.05,height:28});
+    put(r,'monitor_front',[cx,cy-37],40,{mounted:true,parent:front.id,baseline:cy+.1,height:28});
+   }
+  }
   put(r,'cabinet',[x+w*.83,y+105],150,{depth:48,height:120});
   put(r,'whiteboard',[x+w*.83,y+h-55],150,{depth:35,height:125});
  }
@@ -111,6 +129,27 @@ function furnish(p){
   const d=put(r,'desk',[x+w*.48,y+h*.46],118,{depth:42});
   if(d)put(r,'printer_3d',[d.bounds[0]+59,d.baseline-43],44,{mounted:true,parent:d.id,baseline:d.baseline+.1});
  }
+ function pantry(r){
+  // User's on-site photo: fitted oak sink wall, a dark communal island with
+  // a planter, mixed loose chairs, and a separate side worktop. No sofa pair.
+  const [x,floorY,w,h]=bounds(p.ground.find(g=>g.id===r.id+'_floor_0').polygon);
+  const y=floorY-60; // Put the fitted cabinet's rear edge against the north wall.
+  const counter=put(r,'pantry_wall_unit',[x+w*.67,y+145],560,{depth:68,height:150});
+  if(counter)for(const u of [.22,.78])
+   put(r,'pantry_microwave',[counter.bounds[0]+counter.bounds[2]*u,counter.baseline-counter.bounds[3]*.31],44,{mounted:true,parent:counter.id,baseline:counter.baseline+.1});
+  const cx=x+w*.57,cy=y+h*.70;
+  const table=put(r,'pantry_island',[cx,cy],500,{depth:150,cluster:r.id+'_island'});
+  if(!table)throw new Error('Photo-referenced pantry island does not fit');
+  for(const dx of [-168,-56,56,168]){
+   put(r,'pantry_chair_front',[cx+dx,cy-160],40,{depth:28,cluster:r.id+'_island'});
+   put(r,dx<0?'chair_back':'pantry_chair_back',[cx+dx,cy+45],40,{depth:28,cluster:r.id+'_island'});
+  }
+  put(r,'pantry_tree',[cx-60,cy-table.bounds[3]*.67],112,{mounted:true,parent:table.id,baseline:table.baseline+.1,height:130});
+  for(const dx of [105,223]){
+   const desk=put(r,'desk',[x+dx,y+h*.48],118,{depth:42,cluster:r.id+'_side_table'});
+   if(desk)put(r,'chair_back',[x+dx,y+h*.48+60],40,{depth:28,cluster:r.id+'_side_table'});
+  }
+ }
  for(const r of p.modules.filter(r=>r.asset&&!r.core)){
   if(!p.ground.some(g=>g.id===r.id+'_floor_0'))continue;
   if(r.id==='platform'){platform(r);continue;}
@@ -126,11 +165,7 @@ function furnish(p){
   else if(r.id==='recording'){
    const [x,y,w,h]=bounds(p.ground.find(g=>g.id===r.id+'_floor_0').polygon);
    put(r,'sofa',[x+w*.38,y+h*.30],260,{depth:85});put(r,'camera_tripod',[x+w*.34,y+h*.75],72,{depth:50,height:125});station(r,x+w*.75,y+h*.60);
-  }else if(r.id==='pantry'){
-   const [x,y,w,h]=bounds(p.ground.find(g=>g.id===r.id+'_floor_0').polygon);
-   put(r,'pantry_counter',[x+w*.62,y+h*.25],560,{depth:76});
-   put(r,'sofa',[x+w*.30,y+h*.73],245,{depth:85});put(r,'sofa',[x+w*.69,y+h*.73],245,{depth:85});
-  }else if(r.id==='storage'){
+  }else if(r.id==='pantry'){pantry(r);}else if(r.id==='storage'){
    const [x,y,w,h]=bounds(p.ground.find(g=>g.id===r.id+'_floor_0').polygon);
    for(const t of [.24,.60])for(const v of [.35,.70])put(r,'cabinet',[x+w*t,y+h*v],170,{depth:55});
   }
@@ -145,11 +180,6 @@ function furnish(p){
    const count=r.id==='flex_c'?2:4;
    for(let i=0;i<count;i++)put(r,'cabinet',[fx+fw*.84,fy+fh*(.16+.67*i/(count-1))],100,{depth:36});
    put(r,'whiteboard',[fx+fw*.69,fy+fh*.52],110,{depth:30});
-  }
-  if(r.id==='pantry'){
-   const counter=p.objects.find(o=>o.room===r.id&&o.asset==='pantry_counter');
-   if(counter)put(r,'coffee_machine',[counter.bounds[0]+counter.bounds[2]*.70,counter.baseline-60],42,{mounted:true,parent:counter.id,baseline:counter.baseline+.1});
-   for(const u of [.10,.88])put(r,'potted_plant',[fx+fw*u,fy+fh*.80],60,{depth:28});
   }
   // Aperture strips are measured in normalized source pixels, never inferred
   // from a room's generic screen position. No beam can spill outside its floor.
@@ -184,10 +214,13 @@ function furnish(p){
   throw new Error('No clear sample beside '+q);
  });
  p.status='three-floor furnished architecture and lighting review; not story integration';
- p.objectScope='Independent furniture, desk partitions, front-facing screens, tool carts, parts racks, soldering stations, coffee machine and plants. 3F studio grouping follows supplied design reference; lab/pantry object types follow supplied equipment requirements. 2F platform activity islands are game staging proposals. Exact site placement, unique team vehicles and specialist machines remain under review.';
+ p.objectScope='Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review.';
 }
 for(const f of [2,3,4]){
  const p=read(`floor_${f}.json`);if(f===3)upgradeThree(p);
+ for(const atrium of [...(p.atriums??[]),...(p.atrium?[p.atrium]:[])]){
+  atrium.source=atriumArt.path;atrium.crops=atriumArt.crops;
+ }
  furnish(p);write(`floor_${f}.json`,p);
  console.log(`${f}F: ${p.objects.length} separate objects, ${p.windows.length} window panes, ${p.transits.length} paired landings`);
 }

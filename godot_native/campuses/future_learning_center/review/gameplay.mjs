@@ -65,7 +65,9 @@ if(typeof document!=='undefined'){
  }
  update();requestAnimationFrame(draw);
  document.querySelectorAll('[data-density]').forEach(button=>button.onclick=()=>{
-  const id=button.dataset.density;document.querySelector('#density-image').src=id==='before'?'density_before.png':id==='lab'?'f2_electrical.png':id==='pantry'?'f3_pantry.png':id==='focus'?'f4_focus_a.png':'density_after.png';
+  const id=button.dataset.density;
+  const images={before:'density_before.png',after:'density_after.png',lab:'f2_electrical.png',pantry:'f3_pantry.png','pantry-before':'pantry_before.png',focus:'f4_focus_a.png',atrium:'f3_atrium_corridor.png'};
+  const preview=document.querySelector('#density-image');preview.src=images[id];preview.alt=button.textContent+' · Godot 实际场景';
   document.querySelectorAll('[data-density]').forEach(b=>b.setAttribute('aria-pressed',b===button));
  });
 }

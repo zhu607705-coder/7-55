@@ -32,11 +32,15 @@ func capture_review()->void:
 		world.set_hour(12)
 		for room:Dictionary in world.data.rooms:
 			var area:Rect2=world.Space.rect(room.bounds);var point:=area.get_center()
+			if room.id=="pantry":point=Vector2(area.position.x+area.size.x*.45,area.position.y+area.size.y*.435-60)
 			var found:bool=world.set_foot(point)
 			if not found:
 				for offset:Vector2 in [Vector2(0,100),Vector2(-120,0),Vector2(120,0),Vector2(0,200),Vector2(-200,100)]:
 					if world.set_foot(point+offset):found=true;break
 			if found:await capture("f%d_%s"%[f,room.id])
+		if f==3:
+			var atrium:Rect2=world.Space.rect(world.data.atrium.bounds)
+			if world.set_foot(Vector2(atrium.position.x-170,atrium.position.y+460)):await capture("f3_atrium_corridor")
 		var light_room:String={2:"electrical",3:"studio_1",4:"focus_a"}[f]
 		var module:Dictionary=world.data.modules.filter(func(r:Dictionary)->bool:return r.id==light_room)[0]
 		var light_position:Vector2=world.Space.rect(module.bounds).get_center()

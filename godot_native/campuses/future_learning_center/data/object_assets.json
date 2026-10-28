@@ -283,5 +283,110 @@
     ],
     "sha256": "e3dca6ef84ce71e8c5c330592b1912556ef4c8ca2630c68da82870c6663c1d90",
     "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "monitor_back": {
+    "path": "res://campuses/future_learning_center/assets/objects/monitor_back.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "opaqueBounds": [
+      316,
+      193,
+      1220,
+      813
+    ],
+    "sha256": "d8a5dd7a7c0963805b156a978c441bb5daf247119882ccdd07de71ccac92bfec",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "pantry_island": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_island.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "opaqueBounds": [
+      51,
+      324,
+      1487,
+      788
+    ],
+    "sha256": "2482562937e0161e46436cd1edd813b6f512f8ceb6a7e6c1540ae172949c6b7f",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "pantry_tree": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_tree.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "opaqueBounds": [
+      116,
+      84,
+      951,
+      1446
+    ],
+    "sha256": "8b85388a3e99164d1e464b6e3b23d2f9a3b17a884f6c8554ed8c28c8abe69832",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "pantry_chair_front": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_front.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "opaqueBounds": [
+      270,
+      197,
+      982,
+      1059
+    ],
+    "sha256": "d829b3dd55073a2b92e24d279ff077420a96e9a4c89666396c520c2ef0e9d3ba",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "pantry_chair_back": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_back.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "opaqueBounds": [
+      252,
+      274,
+      1002,
+      1013
+    ],
+    "sha256": "e7de3cddea97e63a4d1cee09b643d7580427cbca37ae9ae936128a0b611276f0",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "pantry_microwave": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_microwave.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "opaqueBounds": [
+      84,
+      321,
+      1253,
+      1060
+    ],
+    "sha256": "c78697193ab3393d7828c30726943d04fe0c103a88e384eb4a2d75bea104657a",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "pantry_wall_unit": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_wall_unit.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "opaqueBounds": [
+      64,
+      142,
+      1472,
+      858
+    ],
+    "sha256": "b2422c850a24aaaaa3b3f21862fc6a2b778f20436444ce8cd18d9ffb1747bf85",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
   }
 }

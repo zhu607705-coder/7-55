@@ -258,12 +258,13 @@ func _draw_atrium()->void:
 func _atrium(atrium:Dictionary)->void:
 	var b:Rect2=Space.rect(atrium.bounds)
 	var plate:Texture2D=textures[atrium.source]
+	var crops:Dictionary=atrium.get("crops",{})
 	# Same-source strips repeat at a uniform scale; void never becomes ground.
-	_tile(plate,Rect2(420,385,195,350),b.grow(-65),3.0)
-	_tile(plate,Rect2(389,405,29,160),Rect2(b.position,Vector2(87,b.size.y)),3.0)
-	_tile(plate,Rect2(625,405,29,160),Rect2(b.end.x-87,b.position.y,87,b.size.y),3.0)
-	_tile(plate,Rect2(420,322,195,40),Rect2(b.position.x,b.position.y,b.size.x,120),3.0)
-	_tile(plate,Rect2(420,950,195,42),Rect2(b.position.x,b.end.y-126,b.size.x,126),3.0)
+	_tile(plate,Space.rect(crops.get("interior",[420,385,195,350])),b.grow(-65),3.0)
+	_tile(plate,Space.rect(crops.get("west",[389,405,29,160])),Rect2(b.position,Vector2(87,b.size.y)),3.0)
+	_tile(plate,Space.rect(crops.get("east",[625,405,29,160])),Rect2(b.end.x-87,b.position.y,87,b.size.y),3.0)
+	_tile(plate,Space.rect(crops.get("north",[420,322,195,40])),Rect2(b.position.x,b.position.y,b.size.x,120),3.0)
+	_tile(plate,Space.rect(crops.get("south",[420,950,195,42])),Rect2(b.position.x,b.end.y-126,b.size.x,126),3.0)
 
 func _draw_actor()->void:
 	var frame:=Body.frame_at(elapsed*1000.0) if walking else 0

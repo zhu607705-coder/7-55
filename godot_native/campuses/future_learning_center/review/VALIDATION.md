@@ -1,5 +1,34 @@
 # Three-floor object review · 2026-10-28
 
+## Current facing desks and site-photo pass
+
+Based on local commit `da775e8782b73bea851794582107c882da5cfa6c`, using Godot
+4.7.1.stable.official.a13da4feb. Evidence directories: `flc_photos_final_desktop`
+and `flc_photos_final_mobile` in the local review workspace.
+
+- Four studios now each have two facing eight-seat desk banks. A rear monitor
+  master and existing opposite chair views keep objects upright. Middle aisles
+  are checked with the complete player foot box and return routes to the doors.
+- Six new pantry masters replace the provisional sofa pair with photo-derived
+  furnishings. Routes to all four sides of the island remain reachable.
+- A white/glass atrium texture variant changes presentation only. Existing
+  plan geometry, voids, doors, landing pairs and room adjacency remain intact.
+- Floors 2/3/4 contain **136/356/175** independent render instances.
+- Focused native suite: **1535 checks, 0 failures**. Prepared inputs, isolated
+  saves, editor import/parse, startup, all-script parse and the focused suite
+  passed. This remains partial native validation, not release acceptance.
+- Desktop 1280 × 720 and scaled 390 × 844 each passed **5 input checks**, with
+  no invalid-foot frames. Mobile input is simulated, not physical-device QA.
+- The unchanged gameplay mechanism's **13 behavioral checks** passed.
+- Eight generated originals retain alpha, dimensions, hashes and complete
+  prompts. The three user photographs are evidence only and remain outside Git.
+
+Exact site placement, all-floor proportions and the lower hall's floor identity
+remain unresolved. No blue frame or round stools have been assigned to the 2F
+platform. No production NPC, story or save integration is claimed.
+
+## Previous furniture pass
+
 Current working tree is based on `533ed6b7e874efa87b97613987434b1861868671` (merged PR #187). Engine: Godot 4.7.1.stable.official.a13da4feb. Latest local evidence directories are `flc_objects_final_desktop` and `flc_objects_final_mobile`; the review builder consumes those captures. This is source-tree validation, not a production release verdict.
 
 | Floor | Rounded game-pixel dimensions | Independent render objects | Room apertures | Paired landings |

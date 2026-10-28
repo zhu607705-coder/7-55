@@ -14802,7 +14802,39 @@
         1437,
         1210
       ],
-      "source": "res://campuses/future_learning_center/assets/floors/floor_3_overview_v1.png"
+      "source": "res://campuses/future_learning_center/assets/floors/floor_3_atrium_photo_v2.png",
+      "crops": {
+        "interior": [
+          432,
+          385,
+          193,
+          351
+        ],
+        "west": [
+          395,
+          406,
+          33,
+          160
+        ],
+        "east": [
+          639,
+          406,
+          31,
+          160
+        ],
+        "north": [
+          420,
+          330,
+          211,
+          52
+        ],
+        "south": [
+          420,
+          972,
+          211,
+          54
+        ]
+      }
     },
     {
       "bounds": [
@@ -14811,7 +14843,39 @@
         1437,
         4787.205657650217
       ],
-      "source": "res://campuses/future_learning_center/assets/floors/floor_3_overview_v1.png"
+      "source": "res://campuses/future_learning_center/assets/floors/floor_3_atrium_photo_v2.png",
+      "crops": {
+        "interior": [
+          432,
+          385,
+          193,
+          351
+        ],
+        "west": [
+          395,
+          406,
+          33,
+          160
+        ],
+        "east": [
+          639,
+          406,
+          31,
+          160
+        ],
+        "north": [
+          420,
+          330,
+          211,
+          52
+        ],
+        "south": [
+          420,
+          972,
+          211,
+          54
+        ]
+      }
     },
     {
       "bounds": [
@@ -14820,7 +14884,39 @@
         1437,
         1191.0262273032954
       ],
-      "source": "res://campuses/future_learning_center/assets/floors/floor_3_overview_v1.png"
+      "source": "res://campuses/future_learning_center/assets/floors/floor_3_atrium_photo_v2.png",
+      "crops": {
+        "interior": [
+          432,
+          385,
+          193,
+          351
+        ],
+        "west": [
+          395,
+          406,
+          33,
+          160
+        ],
+        "east": [
+          639,
+          406,
+          31,
+          160
+        ],
+        "north": [
+          420,
+          330,
+          211,
+          52
+        ],
+        "south": [
+          420,
+          972,
+          211,
+          54
+        ]
+      }
     }
   ],
   "sourcePlan": "image 7.png; three west rooms, three east partitions, north/main/south voids, NW storage, NE stair above elevator, SW stair below services",
@@ -14961,5 +15057,5 @@
     "desk_divider": 37,
     "monitor_front": 37
   },
-  "objectScope": "Independent furniture, desk partitions, front-facing screens, tool carts, parts racks, soldering stations, coffee machine and plants. 3F studio grouping follows supplied design reference; lab/pantry object types follow supplied equipment requirements. 2F platform activity islands are game staging proposals. Exact site placement, unique team vehicles and specialist machines remain under review."
+  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review."
 }
