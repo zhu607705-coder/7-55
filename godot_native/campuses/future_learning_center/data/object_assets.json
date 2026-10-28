@@ -493,5 +493,50 @@
     ],
     "sha256": "6a431444da4d378b2c005d6ddf8ce50ee10e3a7afd28a60dace68426cb902325",
     "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "parts_rack_photo_v2": {
+    "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+    "size": [
+      1207,
+      1303
+    ],
+    "opaqueBounds": [
+      182,
+      110,
+      1030,
+      1197
+    ],
+    "sha256": "9d215a43aba5f22a09e1fd25a637f94c4669609612abedc7757cfe3ef8d2db3b",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "worktable_white_photo": {
+    "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      57,
+      100,
+      1683,
+      828
+    ],
+    "sha256": "7c7740fc444c77958625ae20ce900e08961670d4d12669890692f51c29eb2151",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "locker_photo_v2": {
+    "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+    "size": [
+      1197,
+      1315
+    ],
+    "opaqueBounds": [
+      165,
+      168,
+      1032,
+      1171
+    ],
+    "sha256": "4a6bbfe8ff8fd5a77e67993a873b017308265355c9f6b95b91118cbe141fee78",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
   }
 }

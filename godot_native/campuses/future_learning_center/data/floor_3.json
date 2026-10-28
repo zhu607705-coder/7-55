@@ -10571,19 +10571,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        2089.1445944373327,
+        2110.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -10612,26 +10612,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_1",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        2131.1445944373327,
+        2152.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -10660,7 +10661,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_2",
@@ -10773,13 +10775,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        2086.5279101429546,
+        2098.5458683225365,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        2099.9615384615386,
+        2111.9794966411205,
         35.2,
         14
       ],
@@ -10821,13 +10823,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        2093.8883061383062,
+        2120.339966654911,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        2093.8615384615387,
+        2120.3131989781436,
         93.28,
         37.099999999999994
       ],
@@ -10869,13 +10871,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        2138.1004273504273,
+        2140.759959945753,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        2153.9615384615386,
+        2156.6210710568644,
         35.2,
         14
       ],
@@ -10907,19 +10909,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        2089.1445944373327,
+        2110.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -10948,26 +10950,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_8",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        2131.1445944373327,
+        2152.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -10996,7 +10999,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_9",
@@ -11109,13 +11113,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        2086.5279101429546,
+        2098.5458683225365,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        2099.9615384615386,
+        2111.9794966411205,
         35.2,
         14
       ],
@@ -11157,13 +11161,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        2093.8883061383062,
+        2120.339966654911,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        2093.8615384615387,
+        2120.3131989781436,
         93.28,
         37.099999999999994
       ],
@@ -11205,13 +11209,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        2138.1004273504273,
+        2140.759959945753,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        2153.9615384615386,
+        2156.6210710568644,
         35.2,
         14
       ],
@@ -11243,19 +11247,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        2089.1445944373327,
+        2110.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -11284,26 +11288,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_15",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        2131.1445944373327,
+        2152.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -11332,7 +11337,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_16",
@@ -11445,13 +11451,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        2086.5279101429546,
+        2098.5458683225365,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        2099.9615384615386,
+        2111.9794966411205,
         35.2,
         14
       ],
@@ -11493,13 +11499,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        2093.8883061383062,
+        2120.339966654911,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        2093.8615384615387,
+        2120.3131989781436,
         93.28,
         37.099999999999994
       ],
@@ -11541,13 +11547,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        2138.1004273504273,
+        2140.759959945753,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        2153.9615384615386,
+        2156.6210710568644,
         35.2,
         14
       ],
@@ -11579,19 +11585,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        2089.1445944373327,
+        2110.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -11620,26 +11626,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_22",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        2131.1445944373327,
+        2152.1300501466553,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -11668,7 +11675,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_0"
+      "cluster": "studio_1_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_23",
@@ -11781,13 +11789,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        2086.5279101429546,
+        2098.5458683225365,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        2099.9615384615386,
+        2111.9794966411205,
         35.2,
         14
       ],
@@ -11829,13 +11837,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        2093.8883061383062,
+        2120.339966654911,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        2093.8615384615387,
+        2120.3131989781436,
         93.28,
         37.099999999999994
       ],
@@ -11877,13 +11885,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        2138.1004273504273,
+        2140.759959945753,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        2153.9615384615386,
+        2156.6210710568644,
         35.2,
         14
       ],
@@ -11915,19 +11923,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        2303.4907482834865,
+        2324.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -11956,26 +11964,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_29",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        2345.4907482834865,
+        2366.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -12004,7 +12013,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_30",
@@ -12117,13 +12127,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        2300.8740639891084,
+        2312.8920221686903,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        2314.3076923076924,
+        2326.3256504872743,
         35.2,
         14
       ],
@@ -12165,13 +12175,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        2308.23445998446,
+        2334.686120501065,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        2308.2076923076925,
+        2334.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -12213,13 +12223,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        2352.446581196581,
+        2355.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        2368.3076923076924,
+        2370.967224903018,
         35.2,
         14
       ],
@@ -12251,19 +12261,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        2303.4907482834865,
+        2324.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -12292,26 +12302,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_36",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        2345.4907482834865,
+        2366.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -12340,7 +12351,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_37",
@@ -12453,13 +12465,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        2300.8740639891084,
+        2312.8920221686903,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        2314.3076923076924,
+        2326.3256504872743,
         35.2,
         14
       ],
@@ -12501,13 +12513,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        2308.23445998446,
+        2334.686120501065,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        2308.2076923076925,
+        2334.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -12549,13 +12561,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        2352.446581196581,
+        2355.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        2368.3076923076924,
+        2370.967224903018,
         35.2,
         14
       ],
@@ -12587,19 +12599,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        2303.4907482834865,
+        2324.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -12628,26 +12640,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_43",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        2345.4907482834865,
+        2366.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -12676,7 +12689,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_44",
@@ -12789,13 +12803,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        2300.8740639891084,
+        2312.8920221686903,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        2314.3076923076924,
+        2326.3256504872743,
         35.2,
         14
       ],
@@ -12837,13 +12851,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        2308.23445998446,
+        2334.686120501065,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        2308.2076923076925,
+        2334.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -12885,13 +12899,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        2352.446581196581,
+        2355.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        2368.3076923076924,
+        2370.967224903018,
         35.2,
         14
       ],
@@ -12923,19 +12937,19 @@
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        2303.4907482834865,
+        2324.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -12964,26 +12978,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_desk_50",
       "room": "studio_1",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        2345.4907482834865,
+        2366.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -13012,7 +13027,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_1_bank_1"
+      "cluster": "studio_1_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_1_chair_front_51",
@@ -13125,13 +13141,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        2300.8740639891084,
+        2312.8920221686903,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        2314.3076923076924,
+        2326.3256504872743,
         35.2,
         14
       ],
@@ -13173,13 +13189,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        2308.23445998446,
+        2334.686120501065,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        2308.2076923076925,
+        2334.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -13221,13 +13237,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        2352.446581196581,
+        2355.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        2368.3076923076924,
+        2370.967224903018,
         35.2,
         14
       ],
@@ -13259,18 +13275,18 @@
       "room": "studio_1",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        1155.397069973148,
+        1156.9191003911344,
         2067.9615384615386,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -13299,7 +13315,8 @@
           2479.3076923076924
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "studio_1_whiteboard_57",
@@ -13353,19 +13370,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        2818.2599790527174,
+        2839.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -13394,26 +13411,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_59",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        2860.2599790527174,
+        2881.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -13442,7 +13460,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_60",
@@ -13555,13 +13574,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        2815.6432947583394,
+        2827.6612529379213,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        2829.0769230769233,
+        2841.0948812565052,
         35.2,
         14
       ],
@@ -13603,13 +13622,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        2823.003690753691,
+        2849.455351270296,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        2822.9769230769234,
+        2849.4285835935284,
         93.28,
         37.099999999999994
       ],
@@ -13651,13 +13670,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        2867.215811965812,
+        2869.875344561138,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        2883.0769230769233,
+        2885.736455672249,
         35.2,
         14
       ],
@@ -13689,19 +13708,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        2818.2599790527174,
+        2839.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -13730,26 +13749,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_66",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        2860.2599790527174,
+        2881.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -13778,7 +13798,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_67",
@@ -13891,13 +13912,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        2815.6432947583394,
+        2827.6612529379213,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        2829.0769230769233,
+        2841.0948812565052,
         35.2,
         14
       ],
@@ -13939,13 +13960,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        2823.003690753691,
+        2849.455351270296,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        2822.9769230769234,
+        2849.4285835935284,
         93.28,
         37.099999999999994
       ],
@@ -13987,13 +14008,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        2867.215811965812,
+        2869.875344561138,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        2883.0769230769233,
+        2885.736455672249,
         35.2,
         14
       ],
@@ -14025,19 +14046,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        2818.2599790527174,
+        2839.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -14066,26 +14087,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_73",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        2860.2599790527174,
+        2881.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -14114,7 +14136,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_74",
@@ -14227,13 +14250,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        2815.6432947583394,
+        2827.6612529379213,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        2829.0769230769233,
+        2841.0948812565052,
         35.2,
         14
       ],
@@ -14275,13 +14298,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        2823.003690753691,
+        2849.455351270296,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        2822.9769230769234,
+        2849.4285835935284,
         93.28,
         37.099999999999994
       ],
@@ -14323,13 +14346,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        2867.215811965812,
+        2869.875344561138,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        2883.0769230769233,
+        2885.736455672249,
         35.2,
         14
       ],
@@ -14361,19 +14384,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        2818.2599790527174,
+        2839.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -14402,26 +14425,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_80",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        2860.2599790527174,
+        2881.24543476204,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -14450,7 +14474,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_0"
+      "cluster": "studio_2_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_81",
@@ -14563,13 +14588,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        2815.6432947583394,
+        2827.6612529379213,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        2829.0769230769233,
+        2841.0948812565052,
         35.2,
         14
       ],
@@ -14611,13 +14636,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        2823.003690753691,
+        2849.455351270296,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        2822.9769230769234,
+        2849.4285835935284,
         93.28,
         37.099999999999994
       ],
@@ -14659,13 +14684,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        2867.215811965812,
+        2869.875344561138,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        2883.0769230769233,
+        2885.736455672249,
         35.2,
         14
       ],
@@ -14697,19 +14722,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        3032.6061328988712,
+        3053.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -14738,26 +14763,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_87",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        3074.6061328988712,
+        3095.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -14786,7 +14812,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_88",
@@ -14899,13 +14926,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        3029.989448604493,
+        3042.007406784075,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        3043.423076923077,
+        3055.441035102659,
         35.2,
         14
       ],
@@ -14947,13 +14974,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        3037.349844599845,
+        3063.80150511645,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        3037.323076923077,
+        3063.774737439682,
         93.28,
         37.099999999999994
       ],
@@ -14995,13 +15022,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        3081.561965811966,
+        3084.2214984072916,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        3097.423076923077,
+        3100.082609518403,
         35.2,
         14
       ],
@@ -15033,19 +15060,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        3032.6061328988712,
+        3053.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -15074,26 +15101,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_94",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        3074.6061328988712,
+        3095.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -15122,7 +15150,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_95",
@@ -15235,13 +15264,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        3029.989448604493,
+        3042.007406784075,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        3043.423076923077,
+        3055.441035102659,
         35.2,
         14
       ],
@@ -15283,13 +15312,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        3037.349844599845,
+        3063.80150511645,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        3037.323076923077,
+        3063.774737439682,
         93.28,
         37.099999999999994
       ],
@@ -15331,13 +15360,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        3081.561965811966,
+        3084.2214984072916,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        3097.423076923077,
+        3100.082609518403,
         35.2,
         14
       ],
@@ -15369,19 +15398,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        3032.6061328988712,
+        3053.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -15410,26 +15439,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_101",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        3074.6061328988712,
+        3095.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -15458,7 +15488,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_102",
@@ -15571,13 +15602,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        3029.989448604493,
+        3042.007406784075,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        3043.423076923077,
+        3055.441035102659,
         35.2,
         14
       ],
@@ -15619,13 +15650,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        3037.349844599845,
+        3063.80150511645,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        3037.323076923077,
+        3063.774737439682,
         93.28,
         37.099999999999994
       ],
@@ -15667,13 +15698,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        3081.561965811966,
+        3084.2214984072916,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        3097.423076923077,
+        3100.082609518403,
         35.2,
         14
       ],
@@ -15705,19 +15736,19 @@
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        3032.6061328988712,
+        3053.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -15746,26 +15777,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_desk_108",
       "room": "studio_2",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        3074.6061328988712,
+        3095.591588608194,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -15794,7 +15826,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_2_bank_1"
+      "cluster": "studio_2_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_2_chair_front_109",
@@ -15907,13 +15940,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        3029.989448604493,
+        3042.007406784075,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        3043.423076923077,
+        3055.441035102659,
         35.2,
         14
       ],
@@ -15955,13 +15988,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        3037.349844599845,
+        3063.80150511645,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        3037.323076923077,
+        3063.774737439682,
         93.28,
         37.099999999999994
       ],
@@ -16003,13 +16036,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        3081.561965811966,
+        3084.2214984072916,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        3097.423076923077,
+        3100.082609518403,
         35.2,
         14
       ],
@@ -16041,18 +16074,18 @@
       "room": "studio_2",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        1155.397069973148,
+        1156.9191003911344,
         2797.0769230769233,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -16081,7 +16114,8 @@
           3208.423076923077
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "studio_2_whiteboard_115",
@@ -16135,19 +16169,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        3547.375363668102,
+        3568.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -16176,26 +16210,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_117",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        3589.375363668102,
+        3610.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -16224,7 +16259,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_118",
@@ -16337,13 +16373,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        3544.758679373724,
+        3556.776637553306,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        3558.192307692308,
+        3570.21026587189,
         35.2,
         14
       ],
@@ -16385,13 +16421,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        3552.1190753690757,
+        3578.5707358856807,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        3552.092307692308,
+        3578.543968208913,
         93.28,
         37.099999999999994
       ],
@@ -16433,13 +16469,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        3596.3311965811968,
+        3598.9907291765226,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        3612.192307692308,
+        3614.851840287634,
         35.2,
         14
       ],
@@ -16471,19 +16507,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        3547.375363668102,
+        3568.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -16512,26 +16548,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_124",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        3589.375363668102,
+        3610.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -16560,7 +16597,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_125",
@@ -16673,13 +16711,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        3544.758679373724,
+        3556.776637553306,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        3558.192307692308,
+        3570.21026587189,
         35.2,
         14
       ],
@@ -16721,13 +16759,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        3552.1190753690757,
+        3578.5707358856807,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        3552.092307692308,
+        3578.543968208913,
         93.28,
         37.099999999999994
       ],
@@ -16769,13 +16807,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        3596.3311965811968,
+        3598.9907291765226,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        3612.192307692308,
+        3614.851840287634,
         35.2,
         14
       ],
@@ -16807,19 +16845,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        3547.375363668102,
+        3568.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -16848,26 +16886,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_131",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        3589.375363668102,
+        3610.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -16896,7 +16935,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_132",
@@ -17009,13 +17049,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        3544.758679373724,
+        3556.776637553306,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        3558.192307692308,
+        3570.21026587189,
         35.2,
         14
       ],
@@ -17057,13 +17097,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        3552.1190753690757,
+        3578.5707358856807,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        3552.092307692308,
+        3578.543968208913,
         93.28,
         37.099999999999994
       ],
@@ -17105,13 +17145,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        3596.3311965811968,
+        3598.9907291765226,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        3612.192307692308,
+        3614.851840287634,
         35.2,
         14
       ],
@@ -17143,19 +17183,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        3547.375363668102,
+        3568.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -17184,26 +17224,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_138",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        3589.375363668102,
+        3610.360819377425,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -17232,7 +17273,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_0"
+      "cluster": "studio_3_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_139",
@@ -17345,13 +17387,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        3544.758679373724,
+        3556.776637553306,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        3558.192307692308,
+        3570.21026587189,
         35.2,
         14
       ],
@@ -17393,13 +17435,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        3552.1190753690757,
+        3578.5707358856807,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        3552.092307692308,
+        3578.543968208913,
         93.28,
         37.099999999999994
       ],
@@ -17441,13 +17483,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        3596.3311965811968,
+        3598.9907291765226,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        3612.192307692308,
+        3614.851840287634,
         35.2,
         14
       ],
@@ -17479,19 +17521,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        3761.721517514256,
+        3782.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -17520,26 +17562,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_145",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        3803.721517514256,
+        3824.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -17568,7 +17611,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_146",
@@ -17681,13 +17725,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        3759.104833219878,
+        3771.12279139946,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        3772.538461538462,
+        3784.556419718044,
         35.2,
         14
       ],
@@ -17729,13 +17773,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        3766.4652292152296,
+        3792.9168897318345,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        3766.438461538462,
+        3792.890122055067,
         93.28,
         37.099999999999994
       ],
@@ -17777,13 +17821,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        3810.6773504273506,
+        3813.3368830226764,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        3826.538461538462,
+        3829.1979941337877,
         35.2,
         14
       ],
@@ -17815,19 +17859,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        3761.721517514256,
+        3782.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -17856,26 +17900,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_152",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        3803.721517514256,
+        3824.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -17904,7 +17949,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_153",
@@ -18017,13 +18063,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        3759.104833219878,
+        3771.12279139946,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        3772.538461538462,
+        3784.556419718044,
         35.2,
         14
       ],
@@ -18065,13 +18111,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        3766.4652292152296,
+        3792.9168897318345,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        3766.438461538462,
+        3792.890122055067,
         93.28,
         37.099999999999994
       ],
@@ -18113,13 +18159,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        3810.6773504273506,
+        3813.3368830226764,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        3826.538461538462,
+        3829.1979941337877,
         35.2,
         14
       ],
@@ -18151,19 +18197,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        3761.721517514256,
+        3782.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -18192,26 +18238,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_159",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        3803.721517514256,
+        3824.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -18240,7 +18287,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_160",
@@ -18353,13 +18401,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        3759.104833219878,
+        3771.12279139946,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        3772.538461538462,
+        3784.556419718044,
         35.2,
         14
       ],
@@ -18401,13 +18449,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        3766.4652292152296,
+        3792.9168897318345,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        3766.438461538462,
+        3792.890122055067,
         93.28,
         37.099999999999994
       ],
@@ -18449,13 +18497,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        3810.6773504273506,
+        3813.3368830226764,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        3826.538461538462,
+        3829.1979941337877,
         35.2,
         14
       ],
@@ -18487,19 +18535,19 @@
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        3761.721517514256,
+        3782.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -18528,26 +18576,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_desk_166",
       "room": "studio_3",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        3803.721517514256,
+        3824.7069732235786,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -18576,7 +18625,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_3_bank_1"
+      "cluster": "studio_3_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_3_chair_front_167",
@@ -18689,13 +18739,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        3759.104833219878,
+        3771.12279139946,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        3772.538461538462,
+        3784.556419718044,
         35.2,
         14
       ],
@@ -18737,13 +18787,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        3766.4652292152296,
+        3792.9168897318345,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        3766.438461538462,
+        3792.890122055067,
         93.28,
         37.099999999999994
       ],
@@ -18785,13 +18835,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        3810.6773504273506,
+        3813.3368830226764,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        3826.538461538462,
+        3829.1979941337877,
         35.2,
         14
       ],
@@ -18823,18 +18873,18 @@
       "room": "studio_3",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        1155.397069973148,
+        1156.9191003911344,
         3526.192307692308,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -18863,7 +18913,8 @@
           3937.538461538462
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "studio_3_whiteboard_173",
@@ -18917,19 +18968,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        4276.490748283487,
+        4297.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -18958,26 +19009,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_175",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        4318.490748283487,
+        4339.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -19006,7 +19058,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_176",
@@ -19119,13 +19172,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        4273.874063989108,
+        4285.89202216869,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        4287.307692307692,
+        4299.325650487274,
         35.2,
         14
       ],
@@ -19167,13 +19220,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        4281.23445998446,
+        4307.6861205010655,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        4281.207692307692,
+        4307.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -19215,13 +19268,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        4325.446581196581,
+        4328.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        4341.307692307692,
+        4343.967224903018,
         35.2,
         14
       ],
@@ -19253,19 +19306,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        4276.490748283487,
+        4297.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -19294,26 +19347,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_182",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        4318.490748283487,
+        4339.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -19342,7 +19396,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_183",
@@ -19455,13 +19510,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        4273.874063989108,
+        4285.89202216869,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        4287.307692307692,
+        4299.325650487274,
         35.2,
         14
       ],
@@ -19503,13 +19558,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        4281.23445998446,
+        4307.6861205010655,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        4281.207692307692,
+        4307.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -19551,13 +19606,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        4325.446581196581,
+        4328.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        4341.307692307692,
+        4343.967224903018,
         35.2,
         14
       ],
@@ -19589,19 +19644,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        4276.490748283487,
+        4297.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -19630,26 +19685,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_189",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        4318.490748283487,
+        4339.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -19678,7 +19734,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_190",
@@ -19791,13 +19848,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        4273.874063989108,
+        4285.89202216869,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        4287.307692307692,
+        4299.325650487274,
         35.2,
         14
       ],
@@ -19839,13 +19896,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        4281.23445998446,
+        4307.6861205010655,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        4281.207692307692,
+        4307.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -19887,13 +19944,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        4325.446581196581,
+        4328.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        4341.307692307692,
+        4343.967224903018,
         35.2,
         14
       ],
@@ -19925,19 +19982,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        4276.490748283487,
+        4297.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -19966,26 +20023,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_196",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        4318.490748283487,
+        4339.476203992809,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -20014,7 +20072,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_0"
+      "cluster": "studio_4_bank_0",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_197",
@@ -20127,13 +20186,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        4273.874063989108,
+        4285.89202216869,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        4287.307692307692,
+        4299.325650487274,
         35.2,
         14
       ],
@@ -20175,13 +20234,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        4281.23445998446,
+        4307.6861205010655,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        4281.207692307692,
+        4307.6593528242975,
         93.28,
         37.099999999999994
       ],
@@ -20223,13 +20282,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        4325.446581196581,
+        4328.106113791907,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        4341.307692307692,
+        4343.967224903018,
         35.2,
         14
       ],
@@ -20261,19 +20320,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        4490.836902129641,
+        4511.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -20302,26 +20361,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_203",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         440.61538461538464,
-        4532.836902129641,
+        4553.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         447.6953846153846,
@@ -20350,7 +20410,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_204",
@@ -20463,13 +20524,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         479.61538461538464,
-        4488.220217835263,
+        4500.238176014845,
         40,
         27.43362831858407
       ],
       "footprint": [
         482.0153846153846,
-        4501.653846153847,
+        4513.671804333429,
         35.2,
         14
       ],
@@ -20511,13 +20572,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         446.61538461538464,
-        4495.580613830614,
+        4522.03227434722,
         106,
         37.073232323232325
       ],
       "footprint": [
         452.97538461538466,
-        4495.553846153846,
+        4522.005506670452,
         93.28,
         37.099999999999994
       ],
@@ -20559,13 +20620,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         479.61538461538464,
-        4539.792735042735,
+        4542.452267638061,
         40,
         29.86111111111111
       ],
       "footprint": [
         482.0153846153846,
-        4555.653846153847,
+        4558.313378749172,
         35.2,
         14
       ],
@@ -20597,19 +20658,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        4490.836902129641,
+        4511.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -20638,26 +20699,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_210",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         558.6153846153846,
-        4532.836902129641,
+        4553.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         565.6953846153847,
@@ -20686,7 +20748,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_211",
@@ -20799,13 +20862,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         597.6153846153846,
-        4488.220217835263,
+        4500.238176014845,
         40,
         27.43362831858407
       ],
       "footprint": [
         600.0153846153846,
-        4501.653846153847,
+        4513.671804333429,
         35.2,
         14
       ],
@@ -20847,13 +20910,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         564.6153846153846,
-        4495.580613830614,
+        4522.03227434722,
         106,
         37.073232323232325
       ],
       "footprint": [
         570.9753846153847,
-        4495.553846153846,
+        4522.005506670452,
         93.28,
         37.099999999999994
       ],
@@ -20895,13 +20958,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         597.6153846153846,
-        4539.792735042735,
+        4542.452267638061,
         40,
         29.86111111111111
       ],
       "footprint": [
         600.0153846153846,
-        4555.653846153847,
+        4558.313378749172,
         35.2,
         14
       ],
@@ -20933,19 +20996,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        4490.836902129641,
+        4511.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -20974,26 +21037,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_217",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         676.6153846153846,
-        4532.836902129641,
+        4553.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         683.6953846153847,
@@ -21022,7 +21086,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_218",
@@ -21135,13 +21200,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         715.6153846153846,
-        4488.220217835263,
+        4500.238176014845,
         40,
         27.43362831858407
       ],
       "footprint": [
         718.0153846153846,
-        4501.653846153847,
+        4513.671804333429,
         35.2,
         14
       ],
@@ -21183,13 +21248,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         682.6153846153846,
-        4495.580613830614,
+        4522.03227434722,
         106,
         37.073232323232325
       ],
       "footprint": [
         688.9753846153847,
-        4495.553846153846,
+        4522.005506670452,
         93.28,
         37.099999999999994
       ],
@@ -21231,13 +21296,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         715.6153846153846,
-        4539.792735042735,
+        4542.452267638061,
         40,
         29.86111111111111
       ],
       "footprint": [
         718.0153846153846,
-        4555.653846153847,
+        4558.313378749172,
         35.2,
         14
       ],
@@ -21269,19 +21334,19 @@
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        4490.836902129641,
+        4511.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -21310,26 +21375,27 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_desk_224",
       "room": "studio_4",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         794.6153846153846,
-        4532.836902129641,
+        4553.822357838963,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         801.6953846153847,
@@ -21358,7 +21424,8 @@
         ]
       ],
       "mounted": false,
-      "cluster": "studio_4_bank_1"
+      "cluster": "studio_4_bank_1",
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "studio_4_chair_front_225",
@@ -21471,13 +21538,13 @@
       "scale": 0.04424778761061947,
       "bounds": [
         833.6153846153846,
-        4488.220217835263,
+        4500.238176014845,
         40,
         27.43362831858407
       ],
       "footprint": [
         836.0153846153846,
-        4501.653846153847,
+        4513.671804333429,
         35.2,
         14
       ],
@@ -21519,13 +21586,13 @@
       "scale": 0.06691919191919192,
       "bounds": [
         800.6153846153846,
-        4495.580613830614,
+        4522.03227434722,
         106,
         37.073232323232325
       ],
       "footprint": [
         806.9753846153847,
-        4495.553846153846,
+        4522.005506670452,
         93.28,
         37.099999999999994
       ],
@@ -21567,13 +21634,13 @@
       "scale": 0.046296296296296294,
       "bounds": [
         833.6153846153846,
-        4539.792735042735,
+        4542.452267638061,
         40,
         29.86111111111111
       ],
       "footprint": [
         836.0153846153846,
-        4555.653846153847,
+        4558.313378749172,
         35.2,
         14
       ],
@@ -21605,18 +21672,18 @@
       "room": "studio_4",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        1155.397069973148,
+        1156.9191003911344,
         4255.307692307692,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -21645,7 +21712,8 @@
           4666.653846153847
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "studio_4_whiteboard_231",
@@ -28272,5 +28340,15 @@
     "pantry_chair_back": 3,
     "pantry_tree": 1
   },
-  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review."
+  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review.",
+  "photoDetailReference": {
+    "date": "2026-10-28",
+    "source": "User-supplied site photographs",
+    "variants": [
+      "parts_rack_photo_v2",
+      "worktable_white_photo",
+      "locker_photo_v2"
+    ],
+    "scope": "Photo-derived furniture types and materials. Existing architectural layout and colliders retained; exact furniture counts and room assignment are review proposals, not surveyed facts."
+  }
 }

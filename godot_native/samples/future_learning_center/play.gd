@@ -14,12 +14,56 @@ func run()->void:
 	if not OS.get_environment("FLC_CAPTURE_DIR").is_empty():
 		if OS.get_environment("FLC_INPUT_CHECK")=="1":await check_input()
 		if OS.get_environment("FLC_WORKSHOP_CHECK")=="1":await check_workshop()
+		if OS.get_environment("FLC_STAIRS_CHECK")=="1":await check_stairs()
 		await capture_review()
 		if OS.get_environment("FLC_CAPTURE_MOTION")=="1":await capture_motion()
 		quit()
 func fit()->void:
 	var ratio:float=minf(root.size.x/960.0,root.size.y/540.0)
 	host.scale=Vector2.ONE*ratio;host.position=(Vector2(root.size)-Vector2(960,540)*ratio)/2
+
+func check_stairs()->void:
+	var results:Array[Dictionary]=[]
+	world.load_floor(2);world.user_control=true
+	results.append({"name":"stairs require source landing","passed":not world.travel_to(3)})
+	var landing:Dictionary=world.data.transits.filter(func(t:Dictionary)->bool:return t.id=="northeast_stair")[0]
+	world.set_foot(Vector2(landing.arrival[0],landing.arrival[1]));await process_frame
+	await key(KEY_E,true);await key(KEY_E,false);await tap(Vector2(470,385))
+	results.append({"name":"real transit button starts ascent without early floor change","passed":world.stairs.visible and world.data.floor==2})
+	if not world.stairs.visible:push_error("STAIR_INPUT could not open actual transit button");return
+	results.append({"name":"duplicate floor input rejected","passed":not world.travel_to(3)})
+	await create_timer(1.8).timeout;await capture("stairs_up")
+	world.stairs._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	var paused:float=world.stairs.model.distance;await create_timer(.25).timeout
+	results.append({"name":"focus loss pauses feet on tread","passed":world.stairs.model.paused and absf(world.stairs.model.distance-paused)<.001})
+	await tap(Vector2(480,500))
+	results.append({"name":"scaled tap resumes traversal","passed":not world.stairs.model.paused})
+	var limit:=0
+	while world.stairs.visible and world.stairs.model.progress()<.45 and limit<1000:await process_frame;limit+=1
+	await capture("stairs_landing")
+	world.stairs.model.pause();world.stairs.fixed_camera=true;await capture("stairs_section");world.stairs.fixed_camera=false;world.stairs.model.resume()
+	limit=0
+	while world.stairs.visible and limit<1500:await process_frame;limit+=1
+	results.append({"name":"ascent reaches paired legal landing","passed":world.data.floor==3 and world.space.can_stand(world.player) and world.transit.nearby(world.data,world.player).get("id")=="northeast_stair"})
+	world.open_transit();await process_frame;await tap(Vector2(380,385));await create_timer(1.8).timeout;await capture("stairs_down")
+	results.append({"name":"descent retains source until landing","passed":world.stairs.visible and world.data.floor==3 and world.stairs.model.direction==-1})
+	await key(KEY_ESCAPE,true);await key(KEY_ESCAPE,false)
+	results.append({"name":"cancel restores unchanged source floor","passed":not world.stairs.visible and world.data.floor==3 and world.stair_destination.is_empty()})
+	world.open_transit();await process_frame;await tap(Vector2(380,385))
+	limit=0
+	while world.stairs.visible and limit<1500:await process_frame;limit+=1
+	results.append({"name":"descent reaches paired legal landing","passed":world.data.floor==2 and world.space.can_stand(world.player)})
+	# Check the second staircase and the other adjacency with the same live view.
+	world.load_floor(3);landing=world.data.transits.filter(func(t:Dictionary)->bool:return t.id=="southwest_stair")[0]
+	world.set_foot(Vector2(landing.arrival[0],landing.arrival[1]));world.travel_to(4)
+	results.append({"name":"3F to 4F uses southwest paired section","passed":world.stairs.visible and world.stairs.model.via=="southwest_stair"})
+	world.stairs.model.step(30);world._finish_stairs(world.stairs.model.take_arrival())
+	results.append({"name":"4F arrival is grounded","passed":world.data.floor==4 and world.space.can_stand(world.player)})
+	var failures:Array=results.filter(func(row:Dictionary)->bool:return not row.passed)
+	for failure:Dictionary in failures:push_error("STAIR_INPUT: "+str(failure.name))
+	var output:=OS.get_environment("FLC_CAPTURE_DIR");var file:=FileAccess.open(output.path_join("stairs_input.json"),FileAccess.WRITE)
+	file.store_string(JSON.stringify({"checks":results,"failures":failures.size(),"viewport":[root.size.x,root.size.y],"scale":host.scale.x},"  "));file.close()
+	print("FLC_STAIR_INPUT: %d checks, %d failures"%[results.size(),failures.size()]);world.load_floor(3)
 func capture(label:String)->void:
 	var folder:=OS.get_environment("FLC_CAPTURE_DIR");DirAccess.make_dir_recursive_absolute(folder)
 	await process_frame;await RenderingServer.frame_post_draw
@@ -118,7 +162,7 @@ func check_input()->void:
 	before=world.player
 	await key(KEY_S,true);await create_timer(.3).timeout;await key(KEY_S,false)
 	checks+=1
-	if world.player.distance_to(before)<30:failures+=1;push_error("FLC_INPUT cannot retreat from wall")
+	if world.player.distance_to(before)<30:failures+=1;push_error("FLC_INPUT cannot retreat from wall: %s -> %s"%[str(before),str(world.player)])
 	world.set_foot(spawn)
 	var target:Vector2=spawn+Vector2(160,30)
 	var screen:Vector2=host.position+world.world_to_screen(target)*host.scale
@@ -193,12 +237,14 @@ func pointer_event(at:Vector2,pressed:bool)->void:
 func tap(at:Vector2)->void:await pointer_event(at,true);await pointer_event(at,false)
 func check_workshop()->void:
 	var results:Array[Dictionary]=[]
+	root.grab_focus();await process_frame
 	world.load_floor(2);world.user_control=true
 	var spec:Dictionary=world.data.workshopReference;var approach:=Vector2(spec.approach[0],spec.approach[1])
 	world.set_foot(Vector2(spec.capture[0],spec.capture[1]));await capture("workshop_room")
 	world.set_foot(approach+Vector2(300,150))
+	await process_frame
 	results.append({"name":"remote activation rejected","passed":not world.open_workbench()})
-	var bench:Dictionary=world.workshop_bench();var center:Vector2=world.Space.rect(bench.bounds).get_center()
+	var bench:Dictionary=world.workshop_bench();var center:=Vector2(world.Space.rect(bench.bounds).get_center().x,float(bench.baseline)-16)
 	await tap(world.world_to_screen(center));await create_timer(3.5).timeout
 	results.append({"name":"tap bench walks to it and opens","passed":world.workbench.visible and world.space.can_stand(world.player)})
 	await capture("workshop_setup")
@@ -209,7 +255,9 @@ func check_workshop()->void:
 	results.append({"name":"drag medium gear onto axle","passed":world.workbench.model.gear==1})
 	await tap(Vector2(760,386));await tap(Vector2(760,386));await tap(Vector2(610,386));await tap(Vector2(480,386));await create_timer(.8).timeout
 	results.append({"name":"tap controls start a visible drive","passed":world.workbench.model.running and world.workbench.model.travel>.12})
-	await capture("workshop_running");await create_timer(2.5).timeout
+	await capture("workshop_running")
+	var trial_deadline:=Time.get_ticks_msec()+8000
+	while world.workbench.model.running and Time.get_ticks_msec()<trial_deadline:await process_frame
 	results.append({"name":"workpiece reaches marker","passed":world.workbench.model.outcome=="passed"})
 	await capture("workshop_success")
 	var feet:Vector2=world.player

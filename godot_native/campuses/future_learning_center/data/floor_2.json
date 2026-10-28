@@ -10708,18 +10708,18 @@
       "room": "electrical",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        4571.9564238193025,
+        4573.478454237289,
         4040.9258543352607,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -10748,25 +10748,26 @@
           4237.734566473989
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "electrical_cabinet_59",
       "room": "electrical",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        4866.225223819302,
+        4867.747254237289,
         4040.9258543352607,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -10795,26 +10796,27 @@
           4237.734566473989
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "electrical_desk_60",
       "room": "electrical",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         4731.0656,
-        3432.5361288081644,
+        3453.521584517487,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         4738.1456,
@@ -10842,7 +10844,8 @@
           4237.734566473989
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "electrical_printer_3d_61",
@@ -10859,13 +10862,13 @@
       "scale": 0.042105263157894736,
       "bounds": [
         4768.0656,
-        3419.5214938850017,
+        3428.7093413634766,
         44,
         43.83157894736842
       ],
       "footprint": [
         4770.7056,
-        3447.9530728323703,
+        3457.140920310845,
         38.72,
         15.399999999999999
       ],
@@ -11133,18 +11136,18 @@
       "room": "electrical",
       "asset": "parts_rack",
       "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
       "crop": [
-        190,
+        182,
         110,
-        851,
-        1082
+        848,
+        1087
       ],
-      "scale": 0.10166358595194085,
+      "scale": 0.10119595216191353,
       "bounds": [
-        4537.10214417745,
+        4537.45291628335,
         3405.794090173411,
-        86.51571164510166,
+        85.81416743330267,
         110
       ],
       "footprint": [
@@ -11173,25 +11176,26 @@
           4237.734566473989
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "electrical_parts_rack_68",
       "room": "electrical",
       "asset": "parts_rack",
       "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
       "crop": [
-        190,
+        182,
         110,
-        851,
-        1082
+        848,
+        1087
       ],
-      "scale": 0.10166358595194085,
+      "scale": 0.10119595216191353,
       "bounds": [
-        5122.25414417745,
+        5122.60491628335,
         3017.1182242774566,
-        86.51571164510166,
+        85.81416743330267,
         110
       ],
       "footprint": [
@@ -11220,25 +11224,26 @@
           4237.734566473989
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "electrical_parts_rack_69",
       "room": "electrical",
       "asset": "parts_rack",
       "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
       "crop": [
-        190,
+        182,
         110,
-        851,
-        1082
+        848,
+        1087
       ],
-      "scale": 0.10166358595194085,
+      "scale": 0.10119595216191353,
       "bounds": [
-        5122.25414417745,
+        5122.60491628335,
         3409.897174566474,
-        86.51571164510166,
+        85.81416743330267,
         110
       ],
       "footprint": [
@@ -11267,25 +11272,26 @@
           4237.734566473989
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "electrical_parts_rack_70",
       "room": "electrical",
       "asset": "parts_rack",
       "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
       "crop": [
-        190,
+        182,
         110,
-        851,
-        1082
+        848,
+        1087
       ],
-      "scale": 0.10166358595194085,
+      "scale": 0.10119595216191353,
       "bounds": [
-        5122.25414417745,
+        5122.60491628335,
         3856.8525317919075,
-        86.51571164510166,
+        85.81416743330267,
         110
       ],
       "footprint": [
@@ -11314,7 +11320,8 @@
           4237.734566473989
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "electrical_tool_cart_71",
@@ -11795,18 +11802,18 @@
       "room": "machinery",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        4569.646480962159,
+        4571.168511380146,
         5994.0363968385045,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -11835,25 +11842,26 @@
           6191.611253981361
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "machinery_cabinet_82",
       "room": "machinery",
       "asset": "cabinet",
       "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
       "crop": [
-        162,
-        171,
-        871,
-        974
+        165,
+        168,
+        867,
+        1003
       ],
-      "scale": 0.10472279260780289,
+      "scale": 0.10169491525423731,
       "bounds": [
-        4866.489060553996,
+        4868.011090971982,
         5994.0363968385045,
-        91.21355236139631,
+        88.16949152542375,
         102.00000000000001
       ],
       "footprint": [
@@ -11882,26 +11890,27 @@
           6191.611253981361
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "machinery_desk_83",
       "room": "machinery",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/objects/worktable_white_photo.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        57,
+        100,
+        1626,
+        728
       ],
-      "scale": 0.08925869894099848,
+      "scale": 0.07257072570725707,
       "bounds": [
         4730.2644244897965,
-        5380.502554855115,
+        5401.488010564437,
         118,
-        73.81694402420575
+        52.83148831488315
       ],
       "footprint": [
         4737.344424489796,
@@ -11929,7 +11938,8 @@
           6191.611253981361
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "worktable_white_photo"
     },
     {
       "id": "machinery_printer_3d_84",
@@ -11946,13 +11956,13 @@
       "scale": 0.042105263157894736,
       "bounds": [
         4767.2644244897965,
-        5367.487919931952,
+        5376.6757674104265,
         44,
         43.83157894736842
       ],
       "footprint": [
         4769.904424489797,
-        5395.919498879321,
+        5405.107346357795,
         38.72,
         15.399999999999999
       ],
@@ -11984,18 +11994,18 @@
       "room": "machinery",
       "asset": "parts_rack",
       "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
       "crop": [
-        190,
+        182,
         110,
-        851,
-        1082
+        848,
+        1087
       ],
-      "scale": 0.10166358595194085,
+      "scale": 0.10119595216191353,
       "bounds": [
-        5124.736756422348,
+        5125.087528528247,
         4962.020070307892,
-        86.51571164510166,
+        85.81416743330267,
         110
       ],
       "footprint": [
@@ -12024,25 +12034,26 @@
           6191.611253981361
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "machinery_parts_rack_86",
       "room": "machinery",
       "asset": "parts_rack",
       "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
       "crop": [
-        190,
+        182,
         110,
-        851,
-        1082
+        848,
+        1087
       ],
-      "scale": 0.10166358595194085,
+      "scale": 0.10119595216191353,
       "bounds": [
-        5124.736756422348,
+        5125.087528528247,
         5357.973049899729,
-        86.51571164510166,
+        85.81416743330267,
         110
       ],
       "footprint": [
@@ -12071,25 +12082,26 @@
           6191.611253981361
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "machinery_parts_rack_87",
       "room": "machinery",
       "asset": "parts_rack",
       "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
       "crop": [
-        190,
+        182,
         110,
-        851,
-        1082
+        848,
+        1087
       ],
-      "scale": 0.10166358595194085,
+      "scale": 0.10119595216191353,
       "bounds": [
-        5124.736756422348,
+        5125.087528528247,
         5808.540233573198,
-        86.51571164510166,
+        85.81416743330267,
         110
       ],
       "footprint": [
@@ -12118,7 +12130,8 @@
           6191.611253981361
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "machinery_tool_cart_88",
@@ -15904,5 +15917,15 @@
     "hall_stool_mint": 4,
     "hall_stool_blue": 2
   },
-  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review."
+  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review.",
+  "photoDetailReference": {
+    "date": "2026-10-28",
+    "source": "User-supplied site photographs",
+    "variants": [
+      "parts_rack_photo_v2",
+      "worktable_white_photo",
+      "locker_photo_v2"
+    ],
+    "scope": "Photo-derived furniture types and materials. Existing architectural layout and colliders retained; exact furniture counts and room assignment are review proposals, not surveyed facts."
+  }
 }

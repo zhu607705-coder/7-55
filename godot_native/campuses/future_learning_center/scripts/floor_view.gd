@@ -6,6 +6,9 @@ const RoomCamera=preload("res://campuses/future_learning_center/scripts/room_cam
 const Lighting=preload("res://campuses/future_learning_center/scripts/floor_lighting.gd")
 const Transit=preload("res://campuses/future_learning_center/scripts/building_transit.gd")
 const Workbench=preload("res://campuses/future_learning_center/scripts/workbench_view.gd")
+const Stairs=preload("res://campuses/future_learning_center/scripts/stair_view.gd")
+var stairs:Control
+var stair_destination:Dictionary={}
 var workbench:Control
 var workbench_pending:=false
 var lighting=Lighting.new()
@@ -50,6 +53,9 @@ func _ready()->void:
 	var bench_layer:=CanvasLayer.new();bench_layer.layer=5;add_child(bench_layer)
 	workbench=Workbench.new();workbench.size=Vector2(960,540);bench_layer.add_child(workbench)
 	workbench.closed.connect(func()->void:ui.show();route.clear();workbench_pending=false)
+	stairs=Stairs.new();stairs.size=Vector2(960,540);bench_layer.add_child(stairs)
+	stairs.cancelled.connect(func()->void:stair_destination.clear();ui.show();route.clear())
+	stairs.finished.connect(_finish_stairs)
 	load_floor(3);set_hour(12)
 	queue_redraw()
 
@@ -60,6 +66,7 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	var foot:=Vector2(next.spawn[0],next.spawn[1]) if not arrival.is_finite() else arrival
 	if not next_space.can_stand(foot-Body.FOOT_CENTER_OFFSET):return false
 	if is_instance_valid(workbench) and workbench.visible:workbench.close()
+	if is_instance_valid(stairs):stairs.model.cancel();stairs.hide();stair_destination.clear();ui.show()
 	workbench_pending=false
 	data=next;space=next_space;route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
 	for item:Dictionary in data.modules:_texture(item.path)
@@ -78,9 +85,25 @@ func set_hour(hour:float)->void:
 	queue_redraw()
 
 func travel_to(floor_number:int)->bool:
+	if is_instance_valid(stairs) and stairs.visible:return false
 	var target:Dictionary=transit.destination(data,player,floor_number)
 	if target.is_empty():return false
+	var landing:Dictionary=transit.nearby(data,player)
+	if landing.kind=="stairs":
+		if not stairs.open(int(data.floor),floor_number,str(landing.id)):return false
+		stair_destination=target.duplicate(true);stair_destination["source"]=int(data.floor)
+		route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();transit_panel.hide();ui.hide();return true
 	return load_floor(int(target.floor),Vector2(target.point[0],target.point[1]))
+
+func _finish_stairs(receipt:Dictionary)->void:
+	ui.show()
+	if receipt.is_empty() or stair_destination.is_empty():return
+	var expected:Dictionary=stair_destination.duplicate(true);stair_destination.clear()
+	if int(data.floor)!=int(expected.source) or receipt.source!=expected.source or receipt.floor!=expected.floor or receipt.via!=expected.via:return
+	# Revalidate the actual source landing and paired destination at arrival.
+	var target:Dictionary=transit.destination(data,player,int(receipt.floor))
+	if target.is_empty() or target.via!=receipt.via:return
+	load_floor(int(target.floor),Vector2(target.point[0],target.point[1]))
 
 func _texture(path:String)->Texture2D:
 	if not textures.has(path):
@@ -96,6 +119,7 @@ func _process(dt:float)->void:
 	elapsed+=dt
 	if capture_only:return
 	if is_instance_valid(workbench) and workbench.visible:return
+	if is_instance_valid(stairs) and stairs.visible:return
 	var direction:=Vector2.ZERO
 	if user_control and not overview:
 		direction=Vector2(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),int(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-int(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))+touch_vector
@@ -138,6 +162,7 @@ func set_foot(point:Vector2,snap:=true)->bool:
 
 func _unhandled_input(event:InputEvent)->void:
 	if not user_control:return
+	if is_instance_valid(stairs) and stairs.visible:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_TAB:toggle_overview();get_viewport().set_input_as_handled()
 		elif event.keycode==KEY_F2:geometry_visible=not geometry_visible
@@ -222,7 +247,9 @@ func open_transit()->void:
 	var landing:Dictionary=transit.nearby(data,player)
 	if landing.is_empty() or overview:return
 	route.clear()
-	for button:Button in transit_panel.get_child(0).get_children():button.disabled=transit.destination(data,player,int(str(button.name))).is_empty()
+	for button:Button in transit_panel.get_child(0).get_children():
+		var target:=int(str(button.name));button.disabled=transit.destination(data,player,target).is_empty()
+		button.text=("上楼 %dF" if target>int(data.floor) else "下楼 %dF")%target if landing.kind=="stairs" and target!=int(data.floor) else "%dF"%target
 	transit_panel.visible=not transit_panel.visible
 
 func inspect_nearby()->void:
