@@ -15,13 +15,17 @@ jobs:
     env:
       GODOT_SILENCE_ROOT_WARNING: '1'
       LIBGL_ALWAYS_SOFTWARE: '1'
-      XDG_DATA_HOME: ${{ runner.temp }}/phone-campus-xdg/data
-      XDG_CONFIG_HOME: ${{ runner.temp }}/phone-campus-xdg/config
-      XDG_CACHE_HOME: ${{ runner.temp }}/phone-campus-xdg/cache
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Isolate preview user data on the runner
+        run: |
+          for kind in DATA CONFIG CACHE; do
+            path="$RUNNER_TEMP/phone-campus-xdg/${kind,,}"
+            mkdir -p "$path"
+            echo "XDG_${kind}_HOME=$path" >> "$GITHUB_ENV"
+          done
       - name: Install verified engine and supported GL tools
         run: |
           missing=()
