@@ -1,5 +1,9 @@
 name: Button direction study (preview only)
 on:
+  pull_request:
+    paths:
+      - 'godot_native/design_studies/button_directions/**'
+      - '.github/workflows/button-direction-study.yml'
   push:
     branches: [design/native-button-directions-20261028]
     paths:
