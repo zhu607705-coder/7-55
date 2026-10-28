@@ -243,12 +243,30 @@ func _draw()->void:
 	items.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.baseline)<float(b.baseline))
 	for item:Dictionary in items:
 		if item.get("actor",false):_draw_actor()
-		else:_region(textures[item.path],Space.rect(item.crop),Vector2(item.bounds[0],item.bounds[1]),float(item.scale))
+		else:_draw_prop(item)
 	if not capture_only:_draw_covers()
 	if geometry_visible:
 		for region:Dictionary in data.ground:draw_colored_polygon(Space.polygon(region.polygon),Color(.25,.85,.7,.15))
 		for edge:PackedVector2Array in space.ground.edges:draw_line(edge[0],edge[1],Color(.9,.35,.3,.8),2)
 		draw_rect(Body.foot_rect(player),Color(.3,1,.8),false,2)
+
+func _draw_prop(item:Dictionary)->void:
+	var box:Rect2=Space.rect(item.bounds)
+	var source:Rect2=Space.rect(item.crop)
+	var scale_value:=float(item.scale)
+	var hit:Rect2=box.intersection(Body.visual_rect(player))
+	if capture_only or not item.has("actorOcclusionAlpha") or player.y+Body.FOOT_CENTER_OFFSET.y>=float(item.baseline) or not hit.has_area():
+		_region(textures[item.path],source,box.position,scale_value);return
+	# Only the overlap with the actor fades. The remaining canopy and its alpha
+	# holes keep their original pixels, and the ground collision stays separate.
+	var strips:Array[Rect2]=[
+		Rect2(box.position,Vector2(box.size.x,hit.position.y-box.position.y)),
+		Rect2(Vector2(box.position.x,hit.end.y),Vector2(box.size.x,box.end.y-hit.end.y)),
+		Rect2(Vector2(box.position.x,hit.position.y),Vector2(hit.position.x-box.position.x,hit.size.y)),
+		Rect2(Vector2(hit.end.x,hit.position.y),Vector2(box.end.x-hit.end.x,hit.size.y))]
+	for strip:Rect2 in strips:
+		if strip.has_area():draw_texture_rect_region(textures[item.path],strip,Rect2(source.position+(strip.position-box.position)/scale_value,strip.size/scale_value))
+	draw_texture_rect_region(textures[item.path],hit,Rect2(source.position+(hit.position-box.position)/scale_value,hit.size/scale_value),Color(1,1,1,float(item.actorOcclusionAlpha)))
 
 func _draw_atrium()->void:
 	var all:Array=data.get("atriums",[]).duplicate()

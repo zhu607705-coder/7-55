@@ -1,6 +1,39 @@
 # Three-floor object review · 2026-10-28
 
-## Current facing desks and site-photo pass
+## Current user-confirmed 4F hall pass
+
+Based on local commit `2f4d9a884b8ddefaa8a93498ed4f8fd01b10a0a7`, using Godot
+4.7.1.stable.official.a13da4feb. The user explicitly confirmed the blue-frame
+hall is on **4F**. Floor attribution is resolved; its exact compass position
+and furniture coordinates are still under review.
+
+- The existing northeast landing receives one blue overhead frame and 14
+  independent colored stools. Existing ground polygons, three atrium voids,
+  room modules, apertures, transit links and the original 175 props compare
+  exactly equal to the base commit. No hall objects appear on 2F or 3F.
+- Seven disjoint source rectangles partition one unchanged frame PNG. Only
+  the four post foot plates collide; the middle passage remains clear. The
+  canopy overlap with the actor is rendered at 78% opacity, leaving the actor
+  faintly readable while preserving all non-overlapped pixels.
+- Focused suite: **1614 checks, 0 failures**, including walking under the frame,
+  approaching and retreating from each foot plate, returning to the elevator,
+  and non-overlapping render regions. Targeted native validation passed all
+  six mandatory/selected stages; 532 unrelated stages were not run.
+- Desktop 1280 × 720 and scaled 390 × 844 each passed **8 input checks** with
+  zero illegal-foot frames. These include real engine keyboard input under the
+  frame and against a post. Touch is simulated; no physical-device claim.
+- The browser mechanism's **13 behavioral checks** passed. Three new gallery
+  buttons selected the expected native captures; browser warnings/errors: zero.
+- Final native images: `flc_hall_final_desktop` and `flc_hall_final_mobile`.
+  Hall framing and canopy occlusion were visually inspected. The original
+  review URL now defaults to the hall and retains the earlier comparisons.
+
+An accidentally selected full validation run was interrupted; its partial
+results are not release acceptance. The subsequent targeted run above finished
+successfully. This remains an isolated visual/spatial review, not production
+story/save integration or a released Web build.
+
+## Previous facing desks and site-photo pass
 
 Based on local commit `da775e8782b73bea851794582107c882da5cfa6c`, using Godot
 4.7.1.stable.official.a13da4feb. Evidence directories: `flc_photos_final_desktop`
@@ -23,9 +56,9 @@ and `flc_photos_final_mobile` in the local review workspace.
 - Eight generated originals retain alpha, dimensions, hashes and complete
   prompts. The three user photographs are evidence only and remain outside Git.
 
-Exact site placement, all-floor proportions and the lower hall's floor identity
-remain unresolved. No blue frame or round stools have been assigned to the 2F
-platform. No production NPC, story or save integration is claimed.
+At this earlier checkpoint, exact site placement, all-floor proportions and
+the hall's floor identity remained unresolved. The user subsequently confirmed
+4F as recorded above. No production NPC, story or save integration was claimed.
 
 ## Previous furniture pass
 

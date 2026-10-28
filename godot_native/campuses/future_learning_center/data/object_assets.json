@@ -388,5 +388,80 @@
     ],
     "sha256": "b2422c850a24aaaaa3b3f21862fc6a2b778f20436444ce8cd18d9ffb1747bf85",
     "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "hall_blue_frame": {
+    "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+    "size": [
+      1448,
+      1086
+    ],
+    "opaqueBounds": [
+      152,
+      98,
+      1296,
+      968
+    ],
+    "sha256": "f5050e476fdeea59201db258e9c8e84182c323a2e12ae581d350b2993fd4c61b",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "hall_stool_orange": {
+    "path": "res://campuses/future_learning_center/assets/objects/hall_stool_orange.png",
+    "size": [
+      1312,
+      1199
+    ],
+    "opaqueBounds": [
+      363,
+      295,
+      949,
+      1048
+    ],
+    "sha256": "b58db07625bbd7ccb34677cda7af701835db9b5f821a602658719a99ec57b5ea",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "hall_stool_mint": {
+    "path": "res://campuses/future_learning_center/assets/objects/hall_stool_mint.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "opaqueBounds": [
+      342,
+      336,
+      906,
+      1088
+    ],
+    "sha256": "cc5f5f8be39bc132cab2a7fcce01d5026096ad8346f3af21a76dc80ada3465b5",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "hall_stool_slate": {
+    "path": "res://campuses/future_learning_center/assets/objects/hall_stool_slate.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "opaqueBounds": [
+      341,
+      335,
+      909,
+      1088
+    ],
+    "sha256": "8b5d01c59066c4361b156925553d88c519a31378e7bff849d9f74326790abcfe",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "hall_stool_blue": {
+    "path": "res://campuses/future_learning_center/assets/objects/hall_stool_blue.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "opaqueBounds": [
+      342,
+      336,
+      908,
+      1089
+    ],
+    "sha256": "3c39fd292bf9b75753af4ea4073fbad24a660ccb2cf44c8fc4e55af9fab74075",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
   }
 }

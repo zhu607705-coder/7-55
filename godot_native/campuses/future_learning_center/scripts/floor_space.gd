@@ -153,7 +153,8 @@ func room_at(foot:Vector2)->Dictionary:
 				if region.id=="xlab_box" and Geometry2D.is_point_in_polygon(foot,Space.polygon(region.polygon)):return room
 			continue
 		for region:Dictionary in data.ground:
-			if str(region.id).begins_with(str(room.id)+"_floor_") and Geometry2D.is_point_in_polygon(foot,Space.polygon(region.polygon)):return room
+			var belongs:bool=str(region.id).begins_with(str(room.id)+"_floor_") or str(region.id)==str(room.get("groundId",""))
+			if belongs and Geometry2D.is_point_in_polygon(foot,Space.polygon(region.polygon)):return room
 	return {}
 
 func focus_bounds(room:Dictionary)->Rect2:

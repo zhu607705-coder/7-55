@@ -38,6 +38,7 @@ function upgradeThree(p){
 
 const names={desk:'工作桌',chair_back:'网布工作椅',chair_front:'网布工作椅',monitor:'27 英寸显示器',monitor_front:'支架显示器',monitor_back:'支架显示器',desk_divider:'桌面低隔板',workbench:'机电实验台',cabinet:'个人储物柜',discussion_table:'拼接研讨桌',whiteboard:'移动白板',printer_3d:'封闭式 3D 打印机',camera_tripod:'录制相机',sofa:'双人沙发',pantry_counter:'茶水台',tool_cart:'移动工具车',parts_rack:'元件收纳架',coffee_machine:'咖啡机',potted_plant:'室内绿植',soldering_station:'焊接工作站'};
 Object.assign(names,{pantry_island:'深灰色共享长桌',pantry_tree:'木盆绿植',pantry_chair_front:'木扶手座椅',pantry_chair_back:'木扶手座椅',pantry_microwave:'微波炉',pantry_wall_unit:'茶水柜与水槽'});
+for(const color of ['orange','mint','slate','blue'])names['hall_stool_'+color]='彩色圆凳';
 function furnish(p){
  p.objects=[];p.windows=[];p.lighting={orientation:'north-up',sunArc:'east-south-west',clock:'presentation-only',hours:[8,12,16,21],floorMaterial:'continuous gray microcement',source:'window apertures on generated room masters'};
  if(p.floor===3){
@@ -52,7 +53,7 @@ function furnish(p){
   if(maxHeight)width=Math.min(width,maxHeight*crop[2]/crop[3]);
   const scale=width/crop[2],h=crop[3]*scale;
   const footprint=[at[0]-width*.44,at[1]-(options.depth??width*.35),width*.88,options.depth??width*.35];
-  const floor=p.ground.find(g=>g.id===room.id+'_floor_0')?.polygon;
+  const floor=p.ground.find(g=>g.id===(room.groundId??room.id+'_floor_0'))?.polygon;
   if(!floor)return null;
   if(!options.mounted){
    if(!rect(footprint).every(q=>inside(q,floor)))return null;
@@ -150,6 +151,44 @@ function furnish(p){
    if(desk)put(r,'chair_back',[x+dx,y+h*.48+60],40,{depth:28,cluster:r.id+'_side_table'});
   }
  }
+ function hall(){
+  // The user confirmed 4F. This reversible placement uses an existing solid
+  // landing; it does not turn any of the source plan's three voids into floor.
+  const floor=p.ground.find(g=>g.id==='northeast_landing').polygon;
+  const [x,y,w,h]=bounds(floor);
+  const r={id:'hall',name:'四楼大厅',bounds:[x,y,w,h],groundId:'northeast_landing'};
+  p.rooms.push(r);
+  const a=props.hall_blue_frame,b=a.opaqueBounds,scale=420/(b[2]-b[0]);
+  const front=[x+w*.50,y+h*.53],at=[front[0]-420/2,front[1]-(b[3]-b[1])*scale];
+  const map=q=>[at[0]+(q[0]-b[0])*scale,at[1]+(q[1]-b[1])*scale];
+  const worldRect=q=>[...map(q),q[2]*scale,q[3]*scale];
+  const frontY=map([0,968])[1];
+  // These seven non-overlapping regions partition the original alpha. The
+  // four visible foot plates are the only colliders; the canopy is overhead.
+  const parts=[
+   ['rear_left',[334,528,390,187],[333,657,96,48],705],
+   ['rear_right',[724,528,394,187],[1018,655,98,52],707],
+   ['front_left',[152,528,182,187],[211,904,123,64],968],
+   ['front_right',[1118,528,178,187],[1114,904,123,64],968],
+   ['front_left_base',[152,715,572,253],null,968.01,'hall_frame_front_left'],
+   ['front_right_base',[724,715,572,253],null,968.01,'hall_frame_front_right'],
+   ['canopy',[152,98,1144,430],null,968.02],
+  ];
+  for(const [id,crop,foot,baseline,parent] of parts){
+   const footprint=foot?worldRect(foot):[front[0]-1,frontY-1,2,2];
+   if(foot&&!rect(footprint).every(q=>inside(q,floor)))throw new Error('Hall post outside existing floor: '+id);
+   p.objects.push({id:'hall_frame_'+id,room:r.id,asset:'hall_blue_frame',name:foot?'蓝色构架立柱':'蓝色构架',path:a.path,crop,scale,bounds:worldRect(crop),footprint,baseline:map([0,baseline])[1],height:150,floor,mounted:!foot,...(parent?{parent}:{}),...(id==='canopy'?{actorOcclusionAlpha:.78}:{}),cluster:'hall_blue_frame'});
+  }
+  const colors=['orange','orange','slate','orange','mint','slate','blue','mint','slate','orange','mint','blue'];
+  for(const [i,color] of colors.entries()){
+   const at=[front[0]-105+(i%4)*37+(Math.floor(i/4)%2)*8,frontY+160+Math.floor(i/4)*31];
+   if(!put(r,'hall_stool_'+color,at,32,{depth:19,height:36,cluster:'hall_stools'}))throw new Error('Hall stool does not fit: '+i);
+  }
+  for(const [color,dx,dy] of [['mint',150,190],['slate',-40,95]])
+   if(!put(r,'hall_stool_'+color,[front[0]+dx,frontY+dy],32,{depth:19,height:36}))throw new Error('Loose hall stool does not fit');
+  p.hallReference={floor:4,floorEvidence:'User explicitly confirmed 四楼 on 2026-10-28',photo:'593fd97a8125724eecc3966485abf05f.jpg',placement:'review placement within the existing northeast landing; exact site anchor remains unverified',frameCenter:[front[0],frontY-48],walkThrough:[[front[0],frontY-160],[front[0],frontY+55]],capture:[front[0]+240,frontY-8]};
+  p.scopeNotes.push('用户确认蓝色构架和彩色圆凳大厅位于四楼。当前在既有东北大厅地面试摆，精确方位仍需实景对齐；三处挑空、门洞及交通核不变。');
+ }
  for(const r of p.modules.filter(r=>r.asset&&!r.core)){
   if(!p.ground.some(g=>g.id===r.id+'_floor_0'))continue;
   if(r.id==='platform'){platform(r);continue;}
@@ -201,6 +240,7 @@ function furnish(p){
    }
   }
  }
+ if(p.floor===4)hall();
  p.objectCounts=Object.fromEntries([...new Set(p.objects.map(o=>o.asset))].map(k=>[k,p.objects.filter(o=>o.asset===k).length]));
  // Keep reachability samples in the same room when a newly placed table occupies
  // the former empty-room centre. These are QA anchors, never story checkpoints.

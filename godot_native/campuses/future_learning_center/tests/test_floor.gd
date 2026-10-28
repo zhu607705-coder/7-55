@@ -85,6 +85,24 @@ func check_floor(floor_number:int)->void:
 		check(FileAccess.file_exists(item.path),"independent object saved: "+str(item.id))
 		if item.mounted:continue
 		check(not space.can_stand(Space.rect(item.footprint).get_center()-Body.FOOT_CENTER_OFFSET),"feet blocked by prop: "+str(item.id))
+	if floor_number==4:
+		var passage:Array=data.hallReference.walkThrough
+		check(space.segment_clear(foot(passage[0]),foot(passage[1])),"4F complete feet pass under the blue overhead frame")
+		check(not space.route(spawn,foot(passage[0])).is_empty(),"4F hall reached from existing room network")
+		check(not space.route(foot(passage[1]),foot(data.transits[2].arrival)).is_empty(),"4F hall returns to elevator landing")
+		var frame:Array=data.objects.filter(func(o:Dictionary)->bool:return o.get("cluster","")=="hall_blue_frame")
+		for i:int in frame.size():
+			for j:int in range(i+1,frame.size()):check(not Space.rect(frame[i].crop).intersects(Space.rect(frame[j].crop)),"frame source pixels belong to exactly one render region")
+			if frame[i].mounted:continue
+			var post:Rect2=Space.rect(frame[i].footprint)
+			var start:=post.get_center()-Vector2(0,70)-Body.FOOT_CENTER_OFFSET
+			var stopped:Vector2=space.move(start,Vector2(0,140))
+			check(space.can_stand(start) and space.can_stand(stopped),"complete feet stop safely at frame foot plate")
+			check((stopped+Body.FOOT_CENTER_OFFSET).y<post.position.y,"frame foot plate stops forward walking")
+			check(space.move(stopped,Vector2(0,-40)).distance_to(stopped)>35,"player can back away from frame post")
+		for other:int in [2,3]:
+			var definition:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/future_learning_center/data/floor_%d.json"%other))
+			check(not definition.objects.any(func(o:Dictionary)->bool:return str(o.asset).begins_with("hall_")),"confirmed 4F hall objects stay off other floors")
 	if floor_number==3:
 		for room:Dictionary in data.rooms:
 			if not str(room.id).begins_with("studio_"):continue

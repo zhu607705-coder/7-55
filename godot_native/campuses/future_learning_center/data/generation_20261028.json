@@ -304,5 +304,35 @@
     "sourceFile": "exec-381410c1-4374-4142-bc20-a7e3ce332c2d.png",
     "prompt": "Use case: precise-object-edit. Image 1 is the EDIT TARGET, an existing 1086x1448 fine-pixel JRPG architectural map; Image 2 is material/architectural reference only. Edit ONLY the central long open atrium at source x389..654, y322..995 in Image 1. Keep the complete canvas EXACTLY 1086x1448, same camera, same rectangle, same rails positions and pixel coordinates; do not move any footprint or door. Make the inner atrium much more like Image 2: white/light warm-gray smooth floor-slab faces, slim brushed gray steel posts and transparent lightly gray-tinted glass balustrades, open airy stacked galleries visible in the depth, pale-gray indirect lighting instead of heavy dark stone beams and a black dungeon shaft. Preserve a clear visual drop in the center, NO walkable bridge across the void. Keep the top and bottom atrium rail rectangles and both side rails aligned exactly to their original positions so the existing source crops still align. Do not add any furniture, tree, people, blue pavilion, text or floor labels. Everything OUTSIDE that central atrium remains unchanged including original room/stair/elevator shapes, existing room flooring and all canvas transparency. Crisp fine-pixel art, restrained texture clusters, no speckle noise, neutral ambient light.",
     "sha256": "e8d92f079143907863fac34b59a425c11a02eead549604ec91b5a3beb7973db1"
+  },
+  {
+    "id": "hall_blue_frame",
+    "sourceFile": "exec-5ce97711-c8cf-4dce-b665-c3943e3d10e0.png",
+    "prompt": "Use case: stylized-concept. Create one independent transparent pixel game sprite of the blue freestanding overhead installation in reference image 1. Reference 1 is the actual object evidence; reference 2 is the established game's sprite style only. Orthographic elevated JRPG view looking north: front beam horizontal across screen, no diamond isometric rotation. Medium blue thick rounded-rectangle rim at overhead height, fine grey open grid and rails inside it, concentric white ring emblem nested inside the grid. FOUR dark charcoal vertical support posts with small square foot plates, clearly separated and visible; place rear posts slightly inward so all four silhouettes are distinct. Completely empty walk-through space under the overhead frame. No machines, no seats, no people, no room, no ground, no floor rectangle, no cast ground shadow, no text, no logos added. The object resembles the photo's open-frame pavilion, NOT a table or bed. Keep the canopy at top of the sprite and four post bases below so native runtime can slice canopy and each post into non-overlapping render regions. Fine controlled pixel edges, broad coherent colour clusters, restrained grey and medium-blue palette, no scattered speckle. Same soft upper-left lighting and fine pixel density as style reference. Full uncropped object centered with transparent margin. Genuine transparent background.",
+    "sha256": "f5050e476fdeea59201db258e9c8e84182c323a2e12ae581d350b2993fd4c61b"
+  },
+  {
+    "id": "hall_stool_orange",
+    "sourceFile": "exec-15e800d9-2618-4a3f-9e3d-f60e31707ef7.png",
+    "prompt": "Use case: stylized-concept. One isolated freestanding round stool from the clustered seats at the bottom of reference image 1. Reference 1 is the actual object shape, reference 2 is only the game's established pixel sprite style. A soft circular upholstered seat in muted vivid orange, supported by a single charcoal hourglass/conical pedestal which narrows under the seat and flares at floor level. No backrest, no arms, no wheels. Orthographic elevated JRPG camera looking north, circular top appears elliptical; object centered and fully visible. Fine clean pixel art, broad coherent clusters, no speckle or photo noise. Soft upper-left lighting consistent with the style reference. One stool only, genuine transparent background, no floor patch, no cast shadow, no other furniture, no text, no labels. Keep compact ordinary chair-seat proportions, seat diameter about 45 cm and seat height 45 cm.",
+    "sha256": "b58db07625bbd7ccb34677cda7af701835db9b5f821a602658719a99ec57b5ea"
+  },
+  {
+    "id": "hall_stool_mint",
+    "sourceFile": "exec-b111aa7a-eb9b-45d4-ba18-59e4d4222a27.png",
+    "prompt": "Use case: stylized-concept. One isolated freestanding round stool from the clustered seats at the bottom of reference image 1. Reference 1 is the actual object shape, reference 2 is only the game's established pixel sprite style. A soft circular upholstered seat in pale mint green, supported by a single charcoal hourglass/conical pedestal which narrows under the seat and flares at floor level. No backrest, no arms, no wheels. Orthographic elevated JRPG camera looking north, circular top appears elliptical; object centered and fully visible. Fine clean pixel art, broad coherent clusters, no speckle or photo noise. Soft upper-left lighting consistent with the style reference. One stool only, genuine transparent background, no floor patch, no cast shadow, no other furniture, no text, no labels. Keep compact ordinary chair-seat proportions, seat diameter about 45 cm and seat height 45 cm.",
+    "sha256": "cc5f5f8be39bc132cab2a7fcce01d5026096ad8346f3af21a76dc80ada3465b5"
+  },
+  {
+    "id": "hall_stool_slate",
+    "sourceFile": "exec-29bdf876-dbeb-46b8-a5ff-3f89f30b8803.png",
+    "prompt": "Use case: precise-object-edit. Edit this isolated pixel-art stool: change ONLY the upholstered top cushion colour to warm grey lilac. Preserve the entire silhouette, dimensions, placement, charcoal pedestal, lighting, pixel edge scale and all transparency exactly. No additional objects, no floor, no cast shadow. Genuine transparent background.",
+    "sha256": "8b5d01c59066c4361b156925553d88c519a31378e7bff849d9f74326790abcfe"
+  },
+  {
+    "id": "hall_stool_blue",
+    "sourceFile": "exec-79c1fb65-cf45-482c-a10a-7b3452a049b5.png",
+    "prompt": "Use case: precise-object-edit. Edit this isolated pixel-art stool: change ONLY the upholstered top cushion colour to muted sky blue. Preserve the entire silhouette, dimensions, placement, charcoal pedestal, lighting, pixel edge scale and all transparency exactly. No additional objects, no floor, no cast shadow. Genuine transparent background.",
+    "sha256": "3c39fd292bf9b75753af4ea4073fbad24a660ccb2cf44c8fc4e55af9fab74075"
   }
 ]
