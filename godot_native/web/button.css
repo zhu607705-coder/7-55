@@ -93,11 +93,11 @@
 .tactile-button__icon > svg { width: 100%; height: 100% !important; }
 .tactile-button__arrow { transition: transform 120ms ease !important; }
 .tactile-button[data-variant="text"]:not(:disabled):hover .tactile-button__arrow { transform: translateX(calc(2 * var(--button-u))) !important; }
-.tactile-button:focus-visible { outline: calc(3 * var(--button-u)) solid var(--button-focus); outline-offset: calc(3 * var(--button-u)); }
+.tactile-button:focus-visible { outline: calc(3 * var(--button-u)) solid var(--button-focus) !important; outline-offset: calc(3 * var(--button-u)) !important; }
 .tactile-button:disabled { opacity: .65; cursor: not-allowed; }
 .tactile-button[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .tactile-button, .tactile-button__arrow { transition: none !important; } }
-@media (forced-colors: active) { .tactile-button { border-color: ButtonText; } .tactile-button:focus-visible { outline-color: Highlight; } }
+@media (forced-colors: active) { .tactile-button { border-color: ButtonText; } .tactile-button:focus-visible { outline-color: Highlight !important; } }
 
 /* Existing list/navigation APIs keep their content geometry, not a forced 40px crop. */
 .tactile-button[data-layout="content"] { border: var(--button-u) solid var(--button-edge) !important; border-radius: calc(10 * var(--button-u)) !important; }

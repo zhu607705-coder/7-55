@@ -55,6 +55,7 @@ import { execFileSync, spawn } from "node:child_process";
   await page.screenshot({ path: dir + "/board-mobile.png", fullPage: true });
   if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw Error("mobile overflow");
   fs.writeFileSync(dir + "/results.json", JSON.stringify(results, null, 2));
+  await verifyPhoneFocus(browser, dir);
   await verifySurfaces(browser, dir);
   await browser.close();
   console.log("PASS 10 variant/size combinations, rest/hover/pressed, keyboard focus/Enter, native disabled, mobile overflow");
@@ -122,4 +123,24 @@ async function verifySurfaces(browser, dir) {
   } finally {
     server.kill();
   }
+}
+
+// Exercise actual shared phone components with their authored high-specificity CSS.
+async function verifyPhoneFocus(browser, dir) {
+  await build({stdin:{contents:`import React from 'react';import{createRoot}from'react-dom/client';import{PhoneAppBottomNav,PhoneActionSheet}from'./src/components/PhoneAppUi';import{Button}from'./src/components/Button';import'./src/styles/phone-app-ui.css';function Probe(){const[open,setOpen]=React.useState(false);return <main><PhoneAppBottomNav items={[{id:'home',label:'首页',icon:'H'},{id:'records',label:'记录',icon:'R'}]} activeId="home" onSelect={()=>{}}/><Button id="open-sheet" onClick={()=>setOpen(true)}>打开操作</Button>{open&&<PhoneActionSheet title="操作" onClose={()=>setOpen(false)}><p>焦点测试</p></PhoneActionSheet>}</main>}createRoot(document.getElementById('root')).render(<Probe/>);`,resolveDir:process.cwd(),loader:'tsx'},bundle:true,outfile:dir+'/phone-focus.js',jsx:'automatic'});
+  const page=await browser.newPage({viewport:{width:390,height:844}});
+  await page.setContent(`<style>body{background:#eeeae0} :root{--phone-app-line:#333;--phone-app-action:#333;--phone-app-accent:#ddd}</style><style>${fs.readFileSync(dir+'/phone-focus.css','utf8')}</style><div id="root"></div><script>${fs.readFileSync(dir+'/phone-focus.js','utf8')}<\/script>`);
+  await page.locator('.phone-app-bottom-nav button').first().waitFor();
+  async function assertRing(selector) {
+    if(!await page.locator(selector).evaluate(e=>{const s=getComputedStyle(e);return e.matches(':focus-visible')&&s.outlineStyle!=='none'&&parseFloat(s.outlineWidth)>=3;}))throw Error('Phone keyboard focus ring lost: '+selector);
+  }
+  await page.keyboard.press('Tab'); await assertRing('.phone-app-bottom-nav button:first-child');
+  await page.keyboard.press('Tab'); await assertRing('.phone-app-bottom-nav button:nth-child(2)');
+  await page.keyboard.press('Tab'); await page.keyboard.press('Enter');
+  await page.locator('.phone-app-sheet').waitFor(); await assertRing('.phone-app-sheet__header button');
+  await page.screenshot({path:dir+'/retained-phone-sheet-keyboard-focus.png'});
+  await page.keyboard.press('Escape'); await page.locator('.phone-app-sheet').waitFor({state:'hidden'});
+  await assertRing('#open-sheet');
+  await page.emulateMedia({forcedColors:'active'}); await assertRing('#open-sheet');
+  await page.close();
 }
