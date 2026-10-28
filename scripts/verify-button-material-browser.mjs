@@ -102,6 +102,9 @@ async function verifySurfaces(browser, dir) {
     if (await open.count()) {
       await open.click();
       await page.locator(".cc-close").waitFor();
+      await page.locator(".cc-panel").evaluate(async (panel) => {
+        await Promise.all(panel.getAnimations().map((animation) => animation.finished));
+      });
       await page.screenshot({ path: path.join(dir, "retained-control-center-mobile.png"), fullPage: true });
       const toggle = page.locator(".cc-toggle[aria-pressed]").first();
       const before = await toggle.getAttribute("aria-pressed");
