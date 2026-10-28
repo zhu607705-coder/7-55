@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-27",
+  "generator": "OpenAI image_gen built-in",
+  "purpose": "Correct A3 studio source-object coverage and computer scale after user visual review",
+  "items": [
+    {
+      "id": "a3_console_desk_v2",
+      "ref": "/tmp/a3-studio-scale-reference-20261027/desk.png",
+      "prompt": "Use case: background-extraction. Create ONE transparent game sprite of only the long brown wooden video-control desk from the reference, faithfully matching its shape, depth and proportions. It must be an EMPTY desk: no monitors, keyboards, equipment units, stools, cabinets beside it, floor or wall. The visible silhouette should be approximately 3.1 times wider than tall, with a substantial oblique top surface and front cabinet/leg space, matching this orthographic top-down oblique game view. Fine pixel art, muted medium-brown wood, restrained original highlights, broad structured pixel clusters and sparse noise. Upper left light. Whole object visible, actual transparent alpha outside, no background glow or invented details.",
+      "file": "exec-703ed311-26fc-4084-a19d-3ae987e35481.png"
+    },
+    {
+      "id": "a3_studio_monitor_v2",
+      "ref": "/tmp/a3-studio-scale-reference-20261027/monitor.png",
+      "prompt": "Use case: background-extraction. Recreate exactly ONE desktop video-editing monitor from this original game screenshot as an independent transparent sprite. Preserve its wide nearly black display, slim gray bezel and tiny centered desk stand, front view as seen in the top-down oblique room. Overall visible width approximately 1.85 times visible height including the little stand. Fine pixel art matching the reference, muted gray-metal highlights, upper left light. No visible content, logo, text, desk, keyboard, tower, wall, floor, broad cast shadow, background or surrounding glow. Full silhouette with true transparent alpha around it.",
+      "file": "exec-5237aa7c-1d7e-420c-ad0c-c4e38c9650a2.png"
+    },
+    {
+      "id": "a3_av_rack_wide",
+      "ref": "/tmp/a3-studio-scale-reference-20261027/rack.png",
+      "prompt": "Use case: background-extraction. Recreate only the dark gray equipment cabinet/enclosure from this game reference as ONE independent transparent game sprite. Remove the electronics inside: leave three EMPTY horizontal rack bays, with a solid metal enclosure back visible within each bay. Compact medium-width cabinet with visible oblique top plane, outer visible WIDTH approximately 0.65 times HEIGHT, consistent with the original top-down orthographic oblique room. Not an extremely tall narrow bookcase. Fine pixel art, original dark gray metal, subtle upper-left highlights, clustered detail with little noise. No monitor on top, no devices, no lettering, no wall, floor, opaque background or surrounding glow; true transparent alpha around the cabinet.",
+      "file": "exec-5a219720-4afc-411b-b436-7ab9697aa027.png"
+    },
+    {
+      "id": "a3_studio_vertical_display",
+      "ref": "/tmp/a3-studio-scale-reference-20261027/vertical_display.png",
+      "prompt": "Use case: background-extraction. Faithfully recreate only the tall portrait-oriented equipment display shown in the reference as ONE transparent game sprite. Black unlit screen, slim gray metal bezel, short support/bracket at bottom. Portrait display body, visible width approximately 0.65 of visible height, not a wide desktop monitor. Front view in this original orthographic top-down oblique pixel-art room, muted original gray, restrained upper-left highlights and sparse clustered pixels. No attached rack or other equipment, wall, floor, text, ambient glow or background; full silhouette surrounded by true transparent alpha.",
+      "file": "exec-d5f93661-001b-429d-8f71-005285a5ff9c.png"
+    },
+    {
+      "id": "a3_studio_right_camera",
+      "ref": "/tmp/a3-studio-scale-reference-20261027/right_camera.png",
+      "prompt": "Use case: background-extraction. Recreate the ONE compact studio video camera on its short tripod from the reference as a separate transparent game sprite. Match the original silhouette, short three-legged stand, compact dark camera body and lens pointing toward the LEFT of the picture; it will stand to the right of the room. Orthographic top-down oblique view exactly like the reference, dark gray and subdued metallic highlights, fine pixel art with restrained clusters and little noise. No other camera, lamp, wall, floor, lettering or surrounding glow. Entire camera and tripod visible, true transparent alpha outside.",
+      "file": "exec-2a8f67e9-ae2c-41b8-baed-1c0ae9745274.png"
+    },
+    {
+      "id": "a3_console_desk_v3",
+      "ref": "/Users/zhu/.codex/generated_images/01a17b09-ba73-70c3-8098-7c93af6df733/exec-703ed311-26fc-4084-a19d-3ae987e35481.png",
+      "prompt": "Use case: precise-object-edit. Edit this empty brown wooden game desk so that its front cabinets and leg structure are visibly taller and its tabletop is deeper from front to back. Keep the same width, wood, highlights, orthographic top-down oblique view, and no objects on the desk. The ACTUAL OBJECT silhouette must be ONLY THREE times wider than its height, rather than the current extremely wide shallow silhouette. Redraw the taller front cabinetry and deeper top; do not simply add empty canvas padding. Front cabinet/leg height should be about as tall as the visible depth of the tabletop. Fine pixel art with broad structured detail. Full isolated object, true transparent alpha; no screens, stools, devices, floor, wall, or surrounding glow.",
+      "file": "exec-48fb472c-a381-4067-932d-178510464a83.png"
+    }
+  ],
+  "rejected": [
+    "a3_console_desk_v2: visible desk silhouette still too shallow; refined as v3"
+  ]
+}

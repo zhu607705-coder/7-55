@@ -253,8 +253,11 @@ func _find_pixel(sprite: Sprite2D, minimum: float, maximum: float, excluded: Arr
 func _check_walkability(app: Node2D) -> void:
 	for point in [Vector2(87, 124), Vector2(165, 122)]:
 		check(not app.is_walkable(point), "actual trunk base is blocked: " + str(point))
-	for point in [Vector2(85, 116), Vector2(166, 115), Vector2(96, 127), Vector2(173, 127)]:
+	for point in [Vector2(85, 118), Vector2(166, 117), Vector2(96, 127), Vector2(173, 127)]:
 		check(app.is_walkable(point), "feet can walk behind or in front of the real crowns: " + str(point))
+	for point in [Vector2(85,116),Vector2(166,115)]:
+		check(not app.is_walkable(point),"complete feet reject the historical centre-only edge pose: "+str(point))
+		check(app.is_walkable(app._safe_route_goal(point)),"guided route approaches the same crown from nearby complete paving")
 	for point in [Vector2(70, 137), Vector2(125, 75), Vector2(-1, 120), Vector2(257, 120)]:
 		check(not app.is_walkable(point), "flowerbed, lawn or outside world remains excluded: " + str(point))
 
@@ -279,6 +282,9 @@ func _check_arrow_key_events(app: Node2D) -> void:
 		for key in directions:
 			for mode in ["logical","physical","both"]:
 				app.reset_demo()
+				# Exercise all four directions in the centre of the actual paving.
+				# The original spawn is only two pixels from its south edge.
+				app.visitor.position=Vector2(70,122)
 				if focused:app.ui_controls.reset.grab_focus()
 				else:app.get_viewport().gui_release_focus()
 				var initial:Vector2=app.visitor.position

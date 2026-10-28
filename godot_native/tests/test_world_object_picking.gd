@@ -60,8 +60,8 @@ func run() -> void:
 	viewport=SubViewport.new();viewport.size=Vector2i(960,540);viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS;bridge.add_child(viewport)
 	world=load("res://tests/world_object_probe.gd").new();world.size=Vector2(960,540);viewport.add_child(world);bridge.world_surface=world;world.set_process(false);await frames(5)
 	await reset_scene("campus_bootstrap")
-	# Two opaque rendered objects overlap. Their y values deliberately put them
-	# on opposite sides of the actor, opposing source-list order.
+	# Two opaque props overlap behind the actor's physical feet. Source-list
+	# order opposes their depth: player-pass partitioning alone cannot sort them.
 	var pixels:=Image.create(64,64,false,Image.FORMAT_RGBA8);pixels.fill(Color.WHITE)
 	world.target_textures["res://tests/pick_fixture.png"]=ImageTexture.create_from_image(pixels)
 	world.player=Vector2(836,460);world.camera=Vector2(836,470);world.zoom=1

@@ -1,4 +1,6 @@
 extends Node2D
+const PolygonGround=preload("res://scripts/space/polygon_ground.gd")
+var foot_ground:RefCounted=PolygonGround.new()
 ## Bounded artwork pilot. No story state or persistence authority.
 const TREE_SCRIPT = preload("res://campuses/buct_pilots/scripts/layered_tree.gd")
 const VISITOR_SCRIPT = preload("res://campuses/buct_pilots/scripts/campus_visitor.gd")
@@ -13,6 +15,7 @@ var trees: Array[Node2D] = []
 var guide_active := false
 var tour_speed := 8.0
 var route := PackedVector2Array()
+var route_goals:=PackedVector2Array()
 var route_index := 0
 var paused := false
 var leaving := false
@@ -158,30 +161,47 @@ func _input(event: InputEvent) -> void:
 func movement_paused() -> bool:return paused or leaving
 
 func is_walkable(point: Vector2) -> bool:
-	var on_paving:=false
-	for rect in config.paving_rects:
-		if Rect2(rect[0],rect[1],rect[2],rect[3]).has_point(point):on_paving=true;break
-	if not on_paving:return false
+	if foot_ground.polygons.is_empty():
+		var polygons:Array[PackedVector2Array]=[]
+		for row:Array in config.paving_rects:
+			var area:=Rect2(row[0],row[1],row[2],row[3])
+			polygons.append(PackedVector2Array([area.position,Vector2(area.end.x,area.position.y),area.end,Vector2(area.position.x,area.end.y)]))
+		foot_ground.configure(polygons,1.65)
+	if not foot_ground.allows_circle(point):return false
 	for tree in trees:
-		if tree.visible and point.distance_to(tree.position)<4.1:return false
+		if is_instance_valid(tree) and tree.visible and point.distance_to(tree.position)<4.1:return false
 	return true
 
 func notify_boundary() -> void:pass
 
 func cancel_route_for_manual_input() -> void:
-	guide_active=false;route.clear()
+	guide_active=false;route.clear();route_goals.clear()
 
 func route_direction(point: Vector2) -> Vector2:
 	if not guide_active or route_index>=route.size():return Vector2.ZERO
-	if point.distance_to(route[route_index])<=1.0:
+	if point.distance_to(route_goals[route_index])<=1.0:
 		route_index+=1
 		if route_index>=route.size():guide_active=false;return Vector2.ZERO
-	return point.direction_to(route[route_index])
+	return point.direction_to(route_goals[route_index])
+
+func route_motion_target()->Vector2:
+	return route_goals[route_index] if guide_active and route_index<route_goals.size() else visitor.global_position
+
+func _safe_route_goal(point:Vector2)->Vector2:
+	if is_walkable(point):return point
+	# Some historical centre-only waypoints touched the paving edge. Retain
+	# those authored route records; move the actual foot goal onto nearby paving.
+	for step:int in range(1,65):
+		for direction:int in 32:
+			var candidate:=point+Vector2.from_angle(direction*TAU/32.0)*float(step)*.25
+			if is_walkable(candidate):return candidate
+	return visitor.position
 
 func start_guide() -> void:
 	if leaving:return
-	_release_movement();visitor.stop_motion(true);visitor.position=spawn;route.clear()
-	for point in config.route:route.append(Vector2(point[0],point[1]))
+	_release_movement();visitor.stop_motion(true);visitor.position=spawn;route.clear();route_goals.clear()
+	for point in config.route:
+		var authored:=Vector2(point[0],point[1]);route.append(authored);route_goals.append(_safe_route_goal(authored))
 	route_index=0;guide_active=true
 
 func reset_demo() -> void:

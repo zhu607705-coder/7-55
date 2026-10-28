@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "contract": "Complete physical body on registered ground; source interior solids and progression gates remain authoritative; all depth comparisons use ground contact.",
+  "scenes": {
+    "dorm_hub": {
+      "projection": "authored dorm source transform x*0.5+245, y*0.5",
+      "groundRegions": [
+        [
+          278,
+          201.5,
+          406,
+          540.5
+        ],
+        [
+          444.5,
+          742,
+          71.5,
+          94
+        ]
+      ],
+      "visualBounds": "background"
+    },
+    "library_interior": {
+      "projection": "source plate",
+      "groundRegions": [
+        [
+          76,
+          105,
+          1337,
+          723
+        ],
+        [
+          529,
+          803,
+          457,
+          87
+        ],
+        [
+          34,
+          401,
+          42,
+          99
+        ]
+      ]
+    },
+    "canteen_interior": {
+      "projection": "source plate with native registered furniture",
+      "groundRegions": [
+        [
+          35,
+          51,
+          1609,
+          890
+        ]
+      ]
+    },
+    "theater_interior": {
+      "projection": "source plate with native registered stage and seating",
+      "groundRegions": [
+        [
+          145,
+          258,
+          1367,
+          598
+        ],
+        [
+          244,
+          55,
+          1268,
+          203
+        ],
+        [
+          714,
+          856,
+          244,
+          78
+        ]
+      ],
+      "registrationNote": "Stage/backstage floor reaches the authored wall bases (north y=55, west x=244, east x=1512). Curtains and equipment faces are foreground/owned props, not earlier perimeter walls. Preserve the approved chest stand at (265,130)."
+    },
+    "campus_bootstrap": {
+      "projection": "north up source plate",
+      "groundSource": "complete source walkability mask",
+      "foregroundSource": "enabled source landmark polygons"
+    },
+    "campus_qizhen_loop": {
+      "projection": "authored side view with shared perspective",
+      "groundSource": "complete independent promenade mask",
+      "foregroundSource": "authored foreground obstacles; facades remain background"
+    },
+    "qizhen_lake": {
+      "projection": "north up source zones",
+      "vehicleGroundSource": "complete hull covered by source zone water areas",
+      "zones": {
+        "dock": {
+          "onFootRegions": [
+            [
+              28,
+              555,
+              492,
+              358
+            ],
+            [
+              520,
+              678,
+              270,
+              235
+            ],
+            [
+              645,
+              455,
+              109,
+              223
+            ]
+          ]
+        },
+        "open_water": {
+          "onFootRegions": []
+        },
+        "channel": {
+          "onFootRegions": []
+        },
+        "swan_cove": {
+          "onFootRegions": []
+        }
+      }
+    },
+    "duan_yongping_temporal_maze": {
+      "projection": "source floor plates",
+      "groundSource": "north-floor-space.json"
+    }
+  }
+}

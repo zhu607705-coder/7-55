@@ -1,4 +1,5 @@
 extends CharacterBody2D
+const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
 ## Small overhead visitor. Position is the feet, not the head/sprite center.
 var map: Node2D
 var walking := false
@@ -57,16 +58,18 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("buct_walk_fast") and not map.guide_active: current_speed *= 1.45
 	var wanted := direction * current_speed
 	var motion := wanted * delta
-	# Union-of-paved-polygons restriction; real building and trunk collisions remain native.
-	if motion.length_squared() > 0:
-		if not map.is_walkable(global_position + motion):
-			if map.is_walkable(global_position+Vector2(motion.x,0)): wanted.y=0
-			elif map.is_walkable(global_position+Vector2(0,motion.y)): wanted.x=0
-			else: wanted=Vector2.ZERO
-			map.notify_boundary()
-	velocity = wanted
+	if manual_input.length_squared()<.01:
+		motion=motion.limit_length(global_position.distance_to(map.route_motion_target()))
+	# Sweep the original foot circle to contact on both axes. Native bodies
+	# still separate real buildings and trunks after this ground constraint.
+	var goal:=SpatialRules.sweep_axis(global_position,Vector2(motion.x,0),map.is_walkable,1.0)
+	goal=SpatialRules.sweep_axis(goal,Vector2(0,motion.y),map.is_walkable,1.0)
+	if goal.distance_squared_to(global_position+motion)>.00001:map.notify_boundary()
+	velocity=(goal-global_position)/delta if delta>0 else Vector2.ZERO
 	var previous := global_position
 	move_and_slide()
+	if not map.is_walkable(global_position) and map.is_walkable(previous):
+		global_position=previous;velocity=Vector2.ZERO
 	last_motion = global_position-previous
 	walking = last_motion.length_squared()>0.0001
 	if walking:
