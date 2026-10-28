@@ -1,11 +1,39 @@
 # Three-floor object review · 2026-10-28
 
-## Current user-confirmed 4F hall pass
+## Current correction: hall belongs to 2F
+
+Based on local commit `7560e375`, using Godot 4.7.1.stable.official.a13da4feb.
+The latest user clarification supersedes the earlier floor answer: the blue
+frame and colored stools belong to the **2F hall**.
+
+- All 21 hall render instances moved from 4F to the existing 2F open platform:
+  seven frame regions and 14 independent stools. The original assets, scale,
+  four post colliders and canopy occlusion remain unchanged.
+- The platform's existing room/camera zone is reused; no wall, door, ground
+  region or travel edge was added. The central east-west passage stays clear.
+- Architecture and transit data compare equal to the previous commit on all
+  three floors. The complete 4F definition equals its pre-hall state at
+  `2f4d9a88`. Current 2F/3F/4F render counts: **157/356/175**.
+- Focused geometry/navigation suite: **1612 checks, 0 failures**. Desktop
+  1280 × 720 and scaled 390 × 844 each passed **8 input checks**, including
+  passage under the frame, post collision and backing away. Zero illegal-foot
+  frames. Mobile input is simulated, not physical-device acceptance.
+- Native source/media preparation and the six targeted native validation
+  stages passed; 532 unrelated stages were not run.
+- Actual captures: `flc_hall_2f_desktop` and `flc_hall_2f_mobile`. The review
+  gallery now points to `f2_hall*.png` and labels the hall as 2F. Its local
+  image paths were verified. Browser interaction was not repeated because
+  local browser control was disabled in Work settings.
+
+The furniture coordinates remain a review placement within the existing
+platform. This is local visual/spatial validation, not production release.
+
+## Historical 4F hall placement (superseded by the 2F correction)
 
 Based on local commit `2f4d9a884b8ddefaa8a93498ed4f8fd01b10a0a7`, using Godot
-4.7.1.stable.official.a13da4feb. The user explicitly confirmed the blue-frame
-hall is on **4F**. Floor attribution is resolved; its exact compass position
-and furniture coordinates are still under review.
+4.7.1.stable.official.a13da4feb. This historical run placed the hall on **4F**
+following the earlier reply. The latest user correction assigns it to **2F**;
+this section retains only the previous validation record.
 
 - The existing northeast landing receives one blue overhead frame and 14
   independent colored stools. Existing ground polygons, three atrium voids,
@@ -57,8 +85,9 @@ and `flc_photos_final_mobile` in the local review workspace.
   prompts. The three user photographs are evidence only and remain outside Git.
 
 At this earlier checkpoint, exact site placement, all-floor proportions and
-the hall's floor identity remained unresolved. The user subsequently confirmed
-4F as recorded above. No production NPC, story or save integration was claimed.
+the hall's floor identity remained unresolved. The subsequent 4F placement
+was superseded by the latest 2F correction. No production NPC, story or save
+integration was claimed.
 
 ## Previous furniture pass
 

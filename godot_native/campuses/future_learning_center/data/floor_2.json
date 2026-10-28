@@ -14402,12 +14402,1022 @@
       ],
       "mounted": true,
       "parent": "koala_desk_132"
+    },
+    {
+      "id": "hall_frame_rear_left",
+      "room": "platform",
+      "asset": "hall_blue_frame",
+      "name": "蓝色构架立柱",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+      "crop": [
+        334,
+        528,
+        390,
+        187
+      ],
+      "scale": 0.36713286713286714,
+      "bounds": [
+        2686.318181818182,
+        2913.4615384615386,
+        143.1818181818182,
+        68.65384615384616
+      ],
+      "footprint": [
+        2685.951048951049,
+        2960.821678321678,
+        35.24475524475525,
+        17.622377622377623
+      ],
+      "baseline": 2978.444055944056,
+      "height": 150,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_blue_frame"
+    },
+    {
+      "id": "hall_frame_rear_right",
+      "room": "platform",
+      "asset": "hall_blue_frame",
+      "name": "蓝色构架立柱",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+      "crop": [
+        724,
+        528,
+        394,
+        187
+      ],
+      "scale": 0.36713286713286714,
+      "bounds": [
+        2829.5,
+        2913.4615384615386,
+        144.65034965034965,
+        68.65384615384616
+      ],
+      "footprint": [
+        2937.437062937063,
+        2960.0874125874125,
+        35.97902097902098,
+        19.09090909090909
+      ],
+      "baseline": 2979.1783216783215,
+      "height": 150,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_blue_frame"
+    },
+    {
+      "id": "hall_frame_front_left",
+      "room": "platform",
+      "asset": "hall_blue_frame",
+      "name": "蓝色构架立柱",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+      "crop": [
+        152,
+        528,
+        182,
+        187
+      ],
+      "scale": 0.36713286713286714,
+      "bounds": [
+        2619.5,
+        2913.4615384615386,
+        66.81818181818181,
+        68.65384615384616
+      ],
+      "footprint": [
+        2641.1608391608393,
+        3051.5034965034965,
+        45.15734265734266,
+        23.496503496503497
+      ],
+      "baseline": 3075,
+      "height": 150,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_blue_frame"
+    },
+    {
+      "id": "hall_frame_front_right",
+      "room": "platform",
+      "asset": "hall_blue_frame",
+      "name": "蓝色构架立柱",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+      "crop": [
+        1118,
+        528,
+        178,
+        187
+      ],
+      "scale": 0.36713286713286714,
+      "bounds": [
+        2974.1503496503497,
+        2913.4615384615386,
+        65.34965034965035,
+        68.65384615384616
+      ],
+      "footprint": [
+        2972.681818181818,
+        3051.5034965034965,
+        45.15734265734266,
+        23.496503496503497
+      ],
+      "baseline": 3075,
+      "height": 150,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_blue_frame"
+    },
+    {
+      "id": "hall_frame_front_left_base",
+      "room": "platform",
+      "asset": "hall_blue_frame",
+      "name": "蓝色构架",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+      "crop": [
+        152,
+        715,
+        572,
+        253
+      ],
+      "scale": 0.36713286713286714,
+      "bounds": [
+        2619.5,
+        2982.1153846153848,
+        210,
+        92.88461538461539
+      ],
+      "footprint": [
+        2828.5,
+        3074,
+        2,
+        2
+      ],
+      "baseline": 3075.0036713286713,
+      "height": 150,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": true,
+      "parent": "hall_frame_front_left",
+      "cluster": "hall_blue_frame"
+    },
+    {
+      "id": "hall_frame_front_right_base",
+      "room": "platform",
+      "asset": "hall_blue_frame",
+      "name": "蓝色构架",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+      "crop": [
+        724,
+        715,
+        572,
+        253
+      ],
+      "scale": 0.36713286713286714,
+      "bounds": [
+        2829.5,
+        2982.1153846153848,
+        210,
+        92.88461538461539
+      ],
+      "footprint": [
+        2828.5,
+        3074,
+        2,
+        2
+      ],
+      "baseline": 3075.0036713286713,
+      "height": 150,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": true,
+      "parent": "hall_frame_front_right",
+      "cluster": "hall_blue_frame"
+    },
+    {
+      "id": "hall_frame_canopy",
+      "room": "platform",
+      "asset": "hall_blue_frame",
+      "name": "蓝色构架",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_blue_frame.png",
+      "crop": [
+        152,
+        98,
+        1144,
+        430
+      ],
+      "scale": 0.36713286713286714,
+      "bounds": [
+        2619.5,
+        2755.5944055944055,
+        420,
+        157.86713286713288
+      ],
+      "footprint": [
+        2828.5,
+        3074,
+        2,
+        2
+      ],
+      "baseline": 3075.0073426573426,
+      "height": 150,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": true,
+      "actorOcclusionAlpha": 0.78,
+      "cluster": "hall_blue_frame"
+    },
+    {
+      "id": "platform_hall_stool_orange_143",
+      "room": "platform",
+      "asset": "hall_stool_orange",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_orange.png",
+      "crop": [
+        363,
+        295,
+        586,
+        753
+      ],
+      "scale": 0.05460750853242321,
+      "bounds": [
+        2708.5,
+        3193.8805460750855,
+        32,
+        41.11945392491467
+      ],
+      "footprint": [
+        2710.42,
+        3216,
+        28.16,
+        19
+      ],
+      "baseline": 3235,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_orange_144",
+      "room": "platform",
+      "asset": "hall_stool_orange",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_orange.png",
+      "crop": [
+        363,
+        295,
+        586,
+        753
+      ],
+      "scale": 0.05460750853242321,
+      "bounds": [
+        2745.5,
+        3193.8805460750855,
+        32,
+        41.11945392491467
+      ],
+      "footprint": [
+        2747.42,
+        3216,
+        28.16,
+        19
+      ],
+      "baseline": 3235,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_slate_145",
+      "room": "platform",
+      "asset": "hall_stool_slate",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_slate.png",
+      "crop": [
+        341,
+        335,
+        568,
+        753
+      ],
+      "scale": 0.056338028169014086,
+      "bounds": [
+        2782.5,
+        3192.5774647887324,
+        32,
+        42.42253521126761
+      ],
+      "footprint": [
+        2784.42,
+        3216,
+        28.16,
+        19
+      ],
+      "baseline": 3235,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_orange_146",
+      "room": "platform",
+      "asset": "hall_stool_orange",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_orange.png",
+      "crop": [
+        363,
+        295,
+        586,
+        753
+      ],
+      "scale": 0.05460750853242321,
+      "bounds": [
+        2819.5,
+        3193.8805460750855,
+        32,
+        41.11945392491467
+      ],
+      "footprint": [
+        2821.42,
+        3216,
+        28.16,
+        19
+      ],
+      "baseline": 3235,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_mint_147",
+      "room": "platform",
+      "asset": "hall_stool_mint",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_mint.png",
+      "crop": [
+        342,
+        336,
+        564,
+        752
+      ],
+      "scale": 0.05673758865248227,
+      "bounds": [
+        2716.5,
+        3223.3333333333335,
+        32,
+        42.666666666666664
+      ],
+      "footprint": [
+        2718.42,
+        3247,
+        28.16,
+        19
+      ],
+      "baseline": 3266,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_slate_148",
+      "room": "platform",
+      "asset": "hall_stool_slate",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_slate.png",
+      "crop": [
+        341,
+        335,
+        568,
+        753
+      ],
+      "scale": 0.056338028169014086,
+      "bounds": [
+        2753.5,
+        3223.5774647887324,
+        32,
+        42.42253521126761
+      ],
+      "footprint": [
+        2755.42,
+        3247,
+        28.16,
+        19
+      ],
+      "baseline": 3266,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_blue_149",
+      "room": "platform",
+      "asset": "hall_stool_blue",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_blue.png",
+      "crop": [
+        342,
+        336,
+        566,
+        753
+      ],
+      "scale": 0.05653710247349823,
+      "bounds": [
+        2790.5,
+        3223.427561837456,
+        32,
+        42.57243816254417
+      ],
+      "footprint": [
+        2792.42,
+        3247,
+        28.16,
+        19
+      ],
+      "baseline": 3266,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_mint_150",
+      "room": "platform",
+      "asset": "hall_stool_mint",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_mint.png",
+      "crop": [
+        342,
+        336,
+        564,
+        752
+      ],
+      "scale": 0.05673758865248227,
+      "bounds": [
+        2827.5,
+        3223.3333333333335,
+        32,
+        42.666666666666664
+      ],
+      "footprint": [
+        2829.42,
+        3247,
+        28.16,
+        19
+      ],
+      "baseline": 3266,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_slate_151",
+      "room": "platform",
+      "asset": "hall_stool_slate",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_slate.png",
+      "crop": [
+        341,
+        335,
+        568,
+        753
+      ],
+      "scale": 0.056338028169014086,
+      "bounds": [
+        2708.5,
+        3254.5774647887324,
+        32,
+        42.42253521126761
+      ],
+      "footprint": [
+        2710.42,
+        3278,
+        28.16,
+        19
+      ],
+      "baseline": 3297,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_orange_152",
+      "room": "platform",
+      "asset": "hall_stool_orange",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_orange.png",
+      "crop": [
+        363,
+        295,
+        586,
+        753
+      ],
+      "scale": 0.05460750853242321,
+      "bounds": [
+        2745.5,
+        3255.8805460750855,
+        32,
+        41.11945392491467
+      ],
+      "footprint": [
+        2747.42,
+        3278,
+        28.16,
+        19
+      ],
+      "baseline": 3297,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_mint_153",
+      "room": "platform",
+      "asset": "hall_stool_mint",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_mint.png",
+      "crop": [
+        342,
+        336,
+        564,
+        752
+      ],
+      "scale": 0.05673758865248227,
+      "bounds": [
+        2782.5,
+        3254.3333333333335,
+        32,
+        42.666666666666664
+      ],
+      "footprint": [
+        2784.42,
+        3278,
+        28.16,
+        19
+      ],
+      "baseline": 3297,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_blue_154",
+      "room": "platform",
+      "asset": "hall_stool_blue",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_blue.png",
+      "crop": [
+        342,
+        336,
+        566,
+        753
+      ],
+      "scale": 0.05653710247349823,
+      "bounds": [
+        2819.5,
+        3254.427561837456,
+        32,
+        42.57243816254417
+      ],
+      "footprint": [
+        2821.42,
+        3278,
+        28.16,
+        19
+      ],
+      "baseline": 3297,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false,
+      "cluster": "hall_stools"
+    },
+    {
+      "id": "platform_hall_stool_mint_155",
+      "room": "platform",
+      "asset": "hall_stool_mint",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_mint.png",
+      "crop": [
+        342,
+        336,
+        564,
+        752
+      ],
+      "scale": 0.05673758865248227,
+      "bounds": [
+        2963.5,
+        3222.3333333333335,
+        32,
+        42.666666666666664
+      ],
+      "footprint": [
+        2965.42,
+        3246,
+        28.16,
+        19
+      ],
+      "baseline": 3265,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false
+    },
+    {
+      "id": "platform_hall_stool_slate_156",
+      "room": "platform",
+      "asset": "hall_stool_slate",
+      "name": "彩色圆凳",
+      "path": "res://campuses/future_learning_center/assets/objects/hall_stool_slate.png",
+      "crop": [
+        341,
+        335,
+        568,
+        753
+      ],
+      "scale": 0.056338028169014086,
+      "bounds": [
+        2773.5,
+        3127.5774647887324,
+        32,
+        42.42253521126761
+      ],
+      "footprint": [
+        2775.42,
+        3151,
+        28.16,
+        19
+      ],
+      "baseline": 3170,
+      "height": 36,
+      "floor": [
+        [
+          1939,
+          1875
+        ],
+        [
+          3720,
+          1875
+        ],
+        [
+          3720,
+          6029.7173802788775
+        ],
+        [
+          1939,
+          6029.7173802788775
+        ]
+      ],
+      "mounted": false
     }
   ],
   "atriums": [],
   "sourcePlan": "d7e9b5e4023c60de0e5fb570d3a20b09.png; north seminar, three west studios, open central platform (user correction), east laboratory, south Koala",
   "scopeNotes": [
-    "用户于 2026-10-28 明确：二楼中央是开放大平台，无围合房间和门。平台与环廊连续连通；实景设施待核实。"
+    "用户于 2026-10-28 明确：二楼中央是开放大平台，无围合房间和门。平台与环廊连续连通；实景设施待核实。",
+    "按用户最新更正：蓝色构架和彩色圆凳属于二楼大厅，已从四楼移除。复用二楼开放大平台，保留中央横向通道，不增加房间围墙或门；精确现场摆位仍需对齐。"
   ],
   "corridors": [
     {
@@ -14533,6 +15543,30 @@
     "floorMaterial": "continuous gray microcement",
     "source": "window apertures on generated room masters"
   },
+  "hallReference": {
+    "floor": 2,
+    "floorEvidence": "User corrected the hall attribution to 二楼 on 2026-10-28; supersedes the earlier 4F answer",
+    "photo": "593fd97a8125724eecc3966485abf05f.jpg",
+    "placement": "review placement in the existing open 2F platform; exact site coordinates remain unverified",
+    "frameCenter": [
+      2829.5,
+      3027
+    ],
+    "walkThrough": [
+      [
+        2829.5,
+        2915
+      ],
+      [
+        2829.5,
+        3130
+      ]
+    ],
+    "capture": [
+      3069.5,
+      3067
+    ]
+  },
   "objectCounts": {
     "workbench": 16,
     "cabinet": 9,
@@ -14546,7 +15580,12 @@
     "camera_tripod": 1,
     "parts_rack": 6,
     "tool_cart": 4,
-    "soldering_station": 8
+    "soldering_station": 8,
+    "hall_blue_frame": 7,
+    "hall_stool_orange": 4,
+    "hall_stool_slate": 4,
+    "hall_stool_mint": 4,
+    "hall_stool_blue": 2
   },
   "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review."
 }

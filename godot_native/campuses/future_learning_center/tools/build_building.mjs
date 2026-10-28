@@ -152,14 +152,13 @@ function furnish(p){
   }
  }
  function hall(){
-  // The user confirmed 4F. This reversible placement uses an existing solid
-  // landing; it does not turn any of the source plan's three voids into floor.
-  const floor=p.ground.find(g=>g.id==='northeast_landing').polygon;
-  const [x,y,w,h]=bounds(floor);
-  const r={id:'hall',name:'四楼大厅',bounds:[x,y,w,h],groundId:'northeast_landing'};
-  p.rooms.push(r);
+  // The latest user correction places this hall on 2F. Reuse the existing
+  // open platform, including its camera zone, without adding a room or door.
+  const floor=p.ground.find(g=>g.id==='platform_floor_0').polygon;
+  const [x,y,w]=bounds(floor);
+  const r=p.rooms.find(room=>room.id==='platform');
   const a=props.hall_blue_frame,b=a.opaqueBounds,scale=420/(b[2]-b[0]);
-  const front=[x+w*.50,y+h*.53],at=[front[0]-420/2,front[1]-(b[3]-b[1])*scale];
+  const front=[x+w*.50,y+1200],at=[front[0]-420/2,front[1]-(b[3]-b[1])*scale];
   const map=q=>[at[0]+(q[0]-b[0])*scale,at[1]+(q[1]-b[1])*scale];
   const worldRect=q=>[...map(q),q[2]*scale,q[3]*scale];
   const frontY=map([0,968])[1];
@@ -186,8 +185,8 @@ function furnish(p){
   }
   for(const [color,dx,dy] of [['mint',150,190],['slate',-40,95]])
    if(!put(r,'hall_stool_'+color,[front[0]+dx,frontY+dy],32,{depth:19,height:36}))throw new Error('Loose hall stool does not fit');
-  p.hallReference={floor:4,floorEvidence:'User explicitly confirmed 四楼 on 2026-10-28',photo:'593fd97a8125724eecc3966485abf05f.jpg',placement:'review placement within the existing northeast landing; exact site anchor remains unverified',frameCenter:[front[0],frontY-48],walkThrough:[[front[0],frontY-160],[front[0],frontY+55]],capture:[front[0]+240,frontY-8]};
-  p.scopeNotes.push('用户确认蓝色构架和彩色圆凳大厅位于四楼。当前在既有东北大厅地面试摆，精确方位仍需实景对齐；三处挑空、门洞及交通核不变。');
+  p.hallReference={floor:2,floorEvidence:'User corrected the hall attribution to 二楼 on 2026-10-28; supersedes the earlier 4F answer',photo:'593fd97a8125724eecc3966485abf05f.jpg',placement:'review placement in the existing open 2F platform; exact site coordinates remain unverified',frameCenter:[front[0],frontY-48],walkThrough:[[front[0],frontY-160],[front[0],frontY+55]],capture:[front[0]+240,frontY-8]};
+  p.scopeNotes.push('按用户最新更正：蓝色构架和彩色圆凳属于二楼大厅，已从四楼移除。复用二楼开放大平台，保留中央横向通道，不增加房间围墙或门；精确现场摆位仍需对齐。');
  }
  for(const r of p.modules.filter(r=>r.asset&&!r.core)){
   if(!p.ground.some(g=>g.id===r.id+'_floor_0'))continue;
@@ -240,7 +239,7 @@ function furnish(p){
    }
   }
  }
- if(p.floor===4)hall();
+ if(p.floor===2)hall();
  p.objectCounts=Object.fromEntries([...new Set(p.objects.map(o=>o.asset))].map(k=>[k,p.objects.filter(o=>o.asset===k).length]));
  // Keep reachability samples in the same room when a newly placed table occupies
  // the former empty-room centre. These are QA anchors, never story checkpoints.

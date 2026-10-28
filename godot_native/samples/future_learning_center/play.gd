@@ -33,15 +33,15 @@ func capture_review()->void:
 		for room:Dictionary in world.data.rooms:
 			var area:Rect2=world.Space.rect(room.bounds);var point:=area.get_center()
 			if room.id=="pantry":point=Vector2(area.position.x+area.size.x*.45,area.position.y+area.size.y*.435-60)
-			if room.id=="hall":point=Vector2(world.data.hallReference.capture[0],world.data.hallReference.capture[1])
 			var found:bool=world.set_foot(point)
 			if not found:
 				for offset:Vector2 in [Vector2(0,100),Vector2(-120,0),Vector2(120,0),Vector2(0,200),Vector2(-200,100)]:
 					if world.set_foot(point+offset):found=true;break
 			if found:await capture("f%d_%s"%[f,room.id])
-		if f==4:
+		if world.data.has("hallReference"):
+			if world.set_foot(Vector2(world.data.hallReference.capture[0],world.data.hallReference.capture[1])):await capture("f%d_hall"%f)
 			for view:Array in [["under",world.data.hallReference.frameCenter],["behind",world.data.hallReference.walkThrough[0]],["front",world.data.hallReference.walkThrough[1]]]:
-				if world.set_foot(Vector2(view[1][0],view[1][1])):await capture("f4_hall_"+str(view[0]))
+				if world.set_foot(Vector2(view[1][0],view[1][1])):await capture("f%d_hall_%s"%[f,str(view[0])])
 		if f==3:
 			var atrium:Rect2=world.Space.rect(world.data.atrium.bounds)
 			if world.set_foot(Vector2(atrium.position.x-170,atrium.position.y+460)):await capture("f3_atrium_corridor")
@@ -128,7 +128,7 @@ func check_input()->void:
 	checks+=1
 	if (world.player+world.Body.FOOT_CENTER_OFFSET).distance_to(target)>8:failures+=1;push_error("FLC_INPUT scaled touch did not reach target")
 	var touch_final:Vector2=world.player+world.Body.FOOT_CENTER_OFFSET
-	world.load_floor(4)
+	world.load_floor(2)
 	var passage:Array=world.data.hallReference.walkThrough
 	world.set_foot(Vector2(passage[0][0],passage[0][1]))
 	await key(KEY_S,true);await create_timer(1.0).timeout;await key(KEY_S,false)
@@ -148,6 +148,6 @@ func check_input()->void:
 	if world.invalid_frames!=0:failures+=1;push_error("FLC_INPUT illegal frame")
 	var output:=OS.get_environment("FLC_CAPTURE_DIR");DirAccess.make_dir_recursive_absolute(output)
 	var file:=FileAccess.open(output.path_join("input.json"),FileAccess.WRITE)
-	file.store_string(JSON.stringify({"checks":checks,"failures":failures,"invalidFrames":world.invalid_frames,"viewport":[root.size.x,root.size.y],"scale":host.scale.x,"touchTarget":[target.x,target.y],"touchFinal":[touch_final.x,touch_final.y],"hallFloor":4},"  "));file.close()
+	file.store_string(JSON.stringify({"checks":checks,"failures":failures,"invalidFrames":world.invalid_frames,"viewport":[root.size.x,root.size.y],"scale":host.scale.x,"touchTarget":[target.x,target.y],"touchFinal":[touch_final.x,touch_final.y],"hallFloor":world.data.floor},"  "));file.close()
 	print("FLC_INPUT: %d checks, %d failures at %s"%[checks,failures,str(root.size)])
 	world.load_floor(3);world.set_foot(spawn)
