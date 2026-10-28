@@ -80,6 +80,7 @@ jobs:
           git rev-parse 'HEAD^{tree}' > "$UI_CAPTURE_DIR/tree.txt"
           timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_tactile_buttons.gd 2>&1 | tee "$UI_CAPTURE_DIR/material.log"
           timeout 240 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_ui_redesign.gd 2>&1 | tee "$UI_CAPTURE_DIR/game-ui.log"
+          timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_tactile_boundaries.gd 2>&1 | tee "$UI_CAPTURE_DIR/boundaries.log"
           test -f "$UI_CAPTURE_DIR/native-tactile-md.png"
           test -f "$UI_CAPTURE_DIR/native-tactile-lg.png"
           test -f "$UI_CAPTURE_DIR/captures.json"

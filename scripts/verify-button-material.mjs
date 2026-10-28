@@ -16,7 +16,7 @@ try {
  inlineButtonMaterial(project,temp);
  const output=fs.readFileSync(path.join(temp,'index.html'),'utf8');
  assert.equal(verifyButtonMaterial(project,output).source,'web/button.css');
- assert.throws(()=>verifyButtonMaterial(project,output.replace('#404859','#404858')));
+ assert.throws(()=>verifyButtonMaterial(project,output.replace('#454441','#454440')));
  assert.throws(()=>verifyButtonMaterial(project,output+output));
  assert.throws(()=>inlineButtonMaterial(project,temp));
 } finally {fs.rmSync(temp,{recursive:true,force:true});}

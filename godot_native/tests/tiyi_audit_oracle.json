@@ -6,7 +6,7 @@
     "src/modules/TiyiAccessModel.ts": "3b0694dadff27f2ad49c3fd2dde09c2b0015498107ec85d91b94f4d09c0fa537",
     "src/modules/ActOneBootstrapController.ts": "600f5799bb401b63fdf8683b69715d70567c7c7406bd45854d9e5ca3e5aef8ec",
     "src/core/GameState.ts": "98c765abae81f87978ad8d7ceac076b3072e6147cb8029d3c59fdc30365f2904",
-    "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx": "b0410c6358ef033546b47f850cd8ba3070646512e82d9fa9dad64964cb9b9d46",
+    "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx": "f156ed45ea0041772ca6485b40f01c7593b7e1f0c736d78f9b354ee255cd72a9",
     "src/data/library-finals.audio.json": "2768972edd5b280072fc0b401da9a0438bbd2dabf091e7e774fe97e3a02dd6c0"
   },
   "drafts": [

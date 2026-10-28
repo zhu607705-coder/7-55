@@ -39,7 +39,7 @@ func run() -> void:
 		check(button.has_theme_stylebox_override(state),"complete state: " + state)
 		check(style.corner_radius_top_left == 10 and style.anti_aliasing and style.border_width_left == 1,"tactile rounded material and proportional edge: " + state)
 		check(style.content_margin_left == 18 and style.content_margin_top == 1,"state layout does not jump: " + state)
-		check(style.bg_color == Color("273042"),"primary neutral slate replaces app hue: " + state)
+		check(style.bg_color == Color("302f2c"),"primary neutral charcoal replaces app hue: " + state)
 		if state != "disabled": check(contrast(Color.WHITE,style.bg_color) >= 4.5,"normal/hover/pressed text readable: " + state)
 	check(button.get_theme_color("font_hover_color") == Color.WHITE,"dark accent retains white hovered text")
 	check(button.get_theme_color("font_focus_color") == Color.WHITE,"dark accent retains white focused text")

@@ -51,6 +51,9 @@ func control_boundaries()->void:
 		check(view.model.status=="failure" and view.retry_button.is_visible_in_tree(),"Boundary check uses the actual failed-QTE Retry at "+str(viewport))
 		var retry:Rect2=view.retry_button.get_global_rect();var back:Rect2=view.return_button.get_global_rect()
 		check(not retry.intersects(back),"Retry and Return never share a hit area at "+str(viewport))
+		for action:Button in [view.retry_button,view.return_button]:
+			check(action.get_theme_font_size("font_size")*view.stage_frame.scale.x>=18,"Scaled QTE actions retain at least 18 screen-pixel type at "+str(viewport))
+			check(action.get_theme_stylebox("normal").get_script()==load("res://scripts/ui/tactile_button_material.gd"),"Bounded QTE actions still use the new tactile material")
 		var bounds:=Rect2(Vector2.ZERO,Vector2(viewport))
 		check(bounds.encloses(retry) and bounds.encloses(back),"Both failed-QTE actions remain inside the viewport at "+str(viewport))
 		check(view.caption.get_theme_font_size("font_size")*view.stage_frame.scale.x>=18,"The enlarged subtitle remains at least 18 screen pixels")

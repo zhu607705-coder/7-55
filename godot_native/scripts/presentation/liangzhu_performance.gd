@@ -118,6 +118,11 @@ func _label(id:String,pixels:int)->Label:
 
 func _button(id:String,text:String,action:Callable)->Button:
 	var node:Button=StageChrome.button(id,text,action)
+	# Layout compensates stage scale to keep text at 18 screen pixels. Restyling
+	# must use that same size before measuring Retry and Return, including resizes.
+	node.set_meta("tactile_keep_layout",true)
+	node.set_meta("tactile_compensated_type",true)
+	if id=="PerformanceProgramme":node.set_meta("tactile_exempt",true)
 	TheaterUi.text(node);add_child(node);return node
 
 func _build()->void:
@@ -159,7 +164,9 @@ func _build_help()->void:
 	help_panel=Panel.new();help_panel.name="PerformancePaperMenu";help_panel.add_theme_stylebox_override("panel",Ui.box(PAPER,Color("70503B"),1,0,Vector2(14,12)));stage_frame.add_child(help_panel)
 	help_body=Label.new();help_body.name="PerformanceHelpBody";TheaterUi.text(help_body);help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_color_override("font_color",INK);help_body.mouse_filter=Control.MOUSE_FILTER_IGNORE;help_panel.add_child(help_body)
 	for spec:Array in [["PerformanceHelpNext","翻下一页",_more_help],["PerformancePassive","从头观看",_start_passive],["PerformanceHelpClose","合上册页",_close_help]]:
-		var button:=Button.new();button.name=spec[0];button.text=spec[1];button.focus_mode=Control.FOCUS_ALL;TheaterUi.button(button,spec[0]=="PerformanceHelpClose");button.pressed.connect(spec[2]);help_panel.add_child(button)
+		var button:=Button.new();button.name=spec[0];button.text=spec[1];button.focus_mode=Control.FOCUS_ALL
+		button.set_meta("tactile_keep_layout",true);button.set_meta("tactile_compensated_type",true)
+		TheaterUi.button(button,spec[0]=="PerformanceHelpClose");button.pressed.connect(spec[2]);help_panel.add_child(button)
 		if spec[0]=="PerformanceHelpNext":help_next=button
 		elif spec[0]=="PerformancePassive":passive_button=button
 		else:help_close=button

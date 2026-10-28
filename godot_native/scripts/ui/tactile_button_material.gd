@@ -3,11 +3,18 @@ extends StyleBox
 ## One StyleBox owns face/edge/insets/contact/lift. No overlay masks corners.
 const VARIANTS := ["primary", "secondary", "tertiary", "ghost", "text"]
 const PALETTES := {
- "primary": [Color("404859"),Color("273042"),Color("12161f"),Color.WHITE,.18,.22,.18,.28,.40],
- "secondary": [Color.WHITE,Color("f4f5f7"),Color(15.0/255,23.0/255,42.0/255,.14),Color("343a43"),.95,.06,.06,.09,.14],
- "tertiary": [Color("f3f4f6"),Color("e7e9ec"),Color(15.0/255,23.0/255,42.0/255,.10),Color("343a43"),.85,.06,.06,.09,.12],
- "ghost": [Color("f3f4f6"),Color("e7e9ec"),Color.TRANSPARENT,Color("4b5563"),0.0,0.0,0.0,0.0,.14],
- "text": [Color.TRANSPARENT,Color.TRANSPARENT,Color.TRANSPARENT,Color("59616d"),0.0,0.0,0.0,0.0,0.0],
+ "primary": [Color("454441"),Color("302f2c"),Color("191917"),Color.WHITE,.18,.22,.18,.28,.40],
+ "secondary": [Color("fffefa"),Color("f3f1eb"),Color(30.0/255,30.0/255,27.0/255,.14),Color("393a37"),.95,.06,.06,.09,.14],
+ "tertiary": [Color("eeede8"),Color("e2e0d9"),Color(30.0/255,30.0/255,27.0/255,.10),Color("393a37"),.85,.06,.06,.09,.12],
+ "ghost": [Color("eeede8"),Color("e2e0d9"),Color.TRANSPARENT,Color("62645f"),0.0,0.0,0.0,0.0,.14],
+ "text": [Color.TRANSPARENT,Color.TRANSPARENT,Color.TRANSPARENT,Color("62645f"),0.0,0.0,0.0,0.0,0.0],
+}
+const HOVER_PALETTES := {
+ "primary": [Color("504f4b"),Color("3b3a36")],
+ "secondary": [Color("fffffc"),Color("faf9f5")],
+ "tertiary": [Color("f5f4ef"),Color("eae8e1")],
+ "ghost": [Color("eeede8"),Color("e2e0d9")],
+ "text": [Color.TRANSPARENT,Color.TRANSPARENT],
 }
 var variant := "secondary"
 var unit := 1.0
@@ -126,7 +133,7 @@ func _draw(canvas: RID,rect: Rect2) -> void:
  _fill(canvas,face,r,edge,edge)
  var inner:=face.grow(-unit)
  var top: Color=p[0];var bottom: Color=p[1]
- top=top.lightened(.04*hover_amount);bottom=bottom.lightened(.04*hover_amount)
+ top=top.lerp(HOVER_PALETTES[variant][0],hover_amount);bottom=bottom.lerp(HOVER_PALETTES[variant][1],hover_amount)
  var first: Color=top.lerp(bottom,color_press)
  var last: Color=bottom.lerp(top,color_press)
  first.a*=visible_face*opacity;last.a*=visible_face*opacity

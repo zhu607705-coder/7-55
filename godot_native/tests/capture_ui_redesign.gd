@@ -76,6 +76,15 @@ func run() -> void:
 			await frames()
 			shell._layout()
 			await capture("%dx%d-%s" % [dimensions.x,dimensions.y,sample[1]])
+		# Explicit DEV fixture of the already-landed physical nine, not an earned reward.
+		state.d=state.initial();state.d.flags.gearFallen=true;state.d.flags.gearNineTaken=false
+		state.d.native.page="phone_home";state.d.native.scene=""
+		shell.mobile_world=false;shell._refresh();await frames();shell._process(2.0);shell._layout();await frames()
+		var nine: Button=shell.find_child("HomeGearNine",true,false)
+		require_fixture(is_instance_valid(nine) and nine.get_node_or_null("TactileMaterialState")==null and nine.get_theme_font_size("font_size")==56,"fallen nine stays a 56px physical pickup")
+		fixture_note="DEV landed-nine fixture; no earned collection or completion"
+		await capture("%dx%d-home-fallen-nine"%[dimensions.x,dimensions.y])
+		fixture_note="DEV fixture; not earned campaign completion"
 		state.begin_checkpoint("c2-dorm-exit")
 		shell._refresh()
 		shell.mobile_world = true

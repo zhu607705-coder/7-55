@@ -47,7 +47,7 @@ func _adopt(instance_id: int) -> void:
   # retains contrast; dark gray ghost labels would disappear on that art.
   kind="secondary"
  # Dedicated chrome/list rows keep original geometry and embedded content.
- if node is CheckBox or node is CheckButton or node.text.is_empty() or (node.name.begins_with("PhoneNav_") or node.name.begins_with("Cc98Tab_") or node.name.begins_with("WechatTab_") or node.name.begins_with("ZjudingTab_")) or node.name in ["PhoneAppBack","C35IntroBack","InventoryHandle","TaskTrigger","ControlCenterTrigger"]:
+ if node is CheckBox or node is CheckButton or node.text.is_empty() or (node.name.begins_with("TiyiMinus_") or node.name.begins_with("TiyiPlus_") or node.name.begins_with("PhoneNav_") or node.name.begins_with("Cc98Tab_") or node.name.begins_with("WechatTab_") or node.name.begins_with("ZjudingTab_")) or node.name in ["PhoneAppBack","C35IntroBack","InventoryHandle","TaskTrigger","ControlCenterTrigger"]:
   compact=true
   if not explicit:kind="ghost"
  if node.get_window() is FileDialog:

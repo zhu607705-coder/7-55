@@ -14,7 +14,7 @@ Rich list rows, app launchers, navigation and status controls use `data-layout="
 
 - `md`: label 14px, u = 1px. `lg`: label 16px, u = 16/14px.
 - All material geometry derives from u: height 40u, padding 18u, radius 10u, border 1u, icon 16u and press offset 1u.
-- Primary: #404859 → #273042; secondary: #FFFFFF → #F4F5F7; tertiary: #F3F4F6 → #E7E9EC. Ghost has no face at rest. Text has an underline and moving arrow.
+- Primary: #454441 → #302F2C; secondary: #FFFEFA → #F3F1EB; tertiary: #EEEDE8 → #E2E0D9. These warm-neutral values replace the original cool slate/white palette following the user’s 2026-10-28 visual feedback; material layers and size scaling are unchanged. Ghost has no face at rest. Text has an underline and moving arrow.
 - Exactly two inset shadow slots precede two outer slots in each rest/hover/pressed state. The second inset becomes transparent when pressed. Insets belong to the actual element, never an overlay.
 - Transform 120ms; shadow 140ms; face/label/edge color 160ms. Reduced-motion disables transitions. Focus-visible and native disabled remain available; forced-colors retains a visible border and focus outline.
 - Scoped material declarations deliberately use `!important` to replace legacy scene skins without changing positioning or content-layout rules. Existing selection classes/ARIA values retain a neutral visible edge.

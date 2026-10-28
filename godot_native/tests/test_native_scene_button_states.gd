@@ -20,7 +20,7 @@ func assert_palette(button: Button,_fill: Color,_ink: Color,_border: Color,_widt
 		check(button.get_theme_stylebox(mode)==normal,label+" "+mode+" same animated layer stack")
 	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
 		check(button.get_theme_color(role).is_equal_approx(ink),label+" "+role+" neutral variant ink")
-	check(button.get_theme_color("font_disabled_color").is_equal_approx((Color("bcc2ca") if normal.variant=="primary" else Color("626a75"))),label+" disabled ink")
+	check(button.get_theme_color("font_disabled_color").is_equal_approx((Color("c3c2be") if normal.variant=="primary" else Color("62645f"))),label+" disabled ink")
 	if normal.variant not in ["ghost","text"]:
 		check(contrast(ink,palette[0])>=4.5 and contrast(ink,palette[1])>=4.5,label+" gradient text contrast")
 	var focus: StyleBox=button.get_theme_stylebox("focus")

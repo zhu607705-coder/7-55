@@ -74,6 +74,8 @@ func _label(text:String,font_size:int=18,color:Color=Color("f7f1dd"))->Label:
 	return label
 func _button(text:String,callback:Callable)->Button:
 	var button:=Button.new();button.text=text;button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;button.custom_minimum_size.y=48
+	# The finale owns its readable 18px choices and 48px targets at every size.
+	button.set_meta("tactile_keep_layout",true);button.set_meta("tactile_compensated_type",true)
 	Ui.apply_button(button,Color("102330"),Color("f7edcc"),Color("7f8a85"),2,1,18,Vector2(14,10),Color("ffda88"))
 	button.pressed.connect(callback);buttons.append(button);return button
 func _rebuild()->void:

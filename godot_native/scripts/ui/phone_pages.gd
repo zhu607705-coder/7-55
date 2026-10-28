@@ -626,6 +626,7 @@ func _home_move_visible(layout: Dictionary,id: String,offset: int) -> void:
 func _home_gear_pickup(root: Control) -> void:
 	var pickup=_act(root,"9",HOME_GEAR_PICKUP_RECT,"c1_collect_gear",null,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 	pickup.name="HomeGearNine"; pickup.z_index=3
+	pickup.set_meta("tactile_exempt",true)
 	pickup.tooltip_text="拾起数字 9"
 	pickup.autowrap_mode=TextServer.AUTOWRAP_OFF
 	pickup.add_theme_font_size_override("font_size",56)

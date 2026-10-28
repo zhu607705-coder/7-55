@@ -18,15 +18,16 @@ var _shadow_press := 0.0
 var _color_press := 0.0
 var _last_label := ""
 var _label_line: TextLine
+var _custom_label := false
 
 func setup(target: Button,kind: String,size_name: String,keep_layout: bool=false) -> void:
- button=target;variant=kind if kind in TactileMaterial.VARIANTS else "secondary";compact=keep_layout
+ button=target;_custom_label=button.get_node_or_null("NativeSymbolIcon")!=null;variant=kind if kind in TactileMaterial.VARIANTS else "secondary";compact=keep_layout
  var px: int=16 if size_name=="lg" else 14
  unit=float(button.get_theme_font_size("font_size") if button.get_meta("tactile_compensated_type",false) else px)/14.0
  material=Ui.tactile_material(variant,unit)
  var original: StyleBox=button.get_theme_stylebox("normal")
  _padding=Vector4(original.get_margin(SIDE_LEFT),original.get_margin(SIDE_TOP),original.get_margin(SIDE_RIGHT),original.get_margin(SIDE_BOTTOM)) if compact else Vector4(18,1,18,1)*unit
- _padding.y=maxf(_padding.y,unit);_padding.w=maxf(_padding.w,unit)
+ _padding.y=maxf(_padding.y,0.0 if compact else unit);_padding.w=maxf(_padding.w,0.0 if compact else unit)
  material.content_margin_left=_padding.x;material.content_margin_right=_padding.z+(24*unit if variant=="text" else 0.0)
  material.content_margin_top=_padding.y;material.content_margin_bottom=_padding.w
  button.set_meta("tactile_variant",variant);button.set_meta("tactile_size",size_name)
@@ -34,7 +35,7 @@ func setup(target: Button,kind: String,size_name: String,keep_layout: bool=false
  if not compact:
   var inherited_font: Font=button.get_theme_font("font")
   if inherited_font==Typography.body_font() or inherited_font.resource_path.ends_with("MorningNote-Regular.ttf"):
-   button.add_theme_font_override("font",Typography.display_font())
+   button.add_theme_font_override("font",Typography.display_font());button.set_meta("typography_role","display")
   button.custom_minimum_size.y=maxf(button.custom_minimum_size.y,40.0*unit)
   button.add_theme_font_size_override("font_size",px)
  if not compact:
@@ -59,7 +60,7 @@ func _apply() -> void:
  if compact and button.get_meta("tactile_compensated_type",false):
   unit=float(button.get_theme_font_size("font_size"))/14.0;material.unit=unit
   button.set_meta("tactile_unit",unit)
-  _padding.y=maxf(_padding.y,unit);_padding.w=maxf(_padding.w,unit)
+  _padding.y=maxf(_padding.y,0.0 if compact else unit);_padding.w=maxf(_padding.w,0.0 if compact else unit)
   material.content_margin_top=_padding.y;material.content_margin_bottom=_padding.w
   _label_line=null
  if not compact:
@@ -67,13 +68,13 @@ func _apply() -> void:
   if button.get_theme_font_size("font_size")!=px:
    button.add_theme_font_size_override("font_size",px);_label_line=null
   if button.get_theme_font("font")==Typography.body_font():
-   button.add_theme_font_override("font",Typography.display_font());_label_line=null
+   button.add_theme_font_override("font",Typography.display_font());button.set_meta("typography_role","display");_label_line=null
  for key: String in ["normal","hover","pressed","hover_pressed","disabled"]:
   if button.get_theme_stylebox(key)!=material:button.add_theme_stylebox_override(key,material)
- var ink: Color=TactileMaterial.PALETTES[variant][3]
+ var ink: Color=Color.TRANSPARENT if _custom_label else TactileMaterial.PALETTES[variant][3]
  for key: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
   if not button.get_theme_color(key).is_equal_approx(ink):button.add_theme_color_override(key,ink)
- var disabled_ink:=Color("bcc2ca") if variant=="primary" else Color("626a75")
+ var disabled_ink: Color=Color.TRANSPARENT if _custom_label else (Color("c3c2be") if variant=="primary" else Color("62645f"))
  if not button.get_theme_color("font_disabled_color").is_equal_approx(disabled_ink):button.add_theme_color_override("font_disabled_color",disabled_ink)
  for key: String in ["icon_normal_color","icon_hover_color","icon_pressed_color","icon_hover_pressed_color","icon_focus_color"]:
   if not button.get_theme_color(key).is_equal_approx(ink):button.add_theme_color_override(key,ink)
@@ -85,7 +86,7 @@ func _process(delta: float) -> void:
  if not button.is_visible_in_tree():return
  if _label_line==null or _last_label!=button.text:
   _last_label=button.text;_label_line=TextLine.new()
-  _label_line.add_string(button.text if not "\n" in button.text else "",button.get_theme_font("font"),button.get_theme_font_size("font_size"))
+  _label_line.add_string(button.text if not _custom_label and not "\n" in button.text else "",button.get_theme_font("font"),button.get_theme_font_size("font_size"))
   material.label_line=_label_line;material.label_alignment=button.alignment
   material.label_inset=24*unit if button.icon!=null else 0.0
   button.queue_redraw()
@@ -106,7 +107,8 @@ func _process(delta: float) -> void:
  material.hover_amount=_hover;material.press_amount=_press;material.lift_amount=_lift;material.disabled_amount=_disabled
  # Offset the drawn face and its content together; keep hit region/layout stable.
  _updating=true
- material.content_margin_top=_padding.y+_press*unit
- material.content_margin_bottom=_padding.w-_press*unit
+ var content_shift: float=_press*minf(unit,_padding.w)
+ material.content_margin_top=_padding.y+content_shift
+ material.content_margin_bottom=_padding.w-content_shift
  _updating=false
  button.queue_redraw()

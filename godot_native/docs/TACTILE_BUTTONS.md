@@ -85,8 +85,8 @@ uses float units, not rounded StyleBoxFlat metadata.
   layout and do not get a guessed single-line shadow.
 - Disabled text stays opaque and readable. In this game, some disabled buttons
   display persistent selected ordinals; reducing their opacity would hide state.
-  Input blocking remains entirely native. Gray disabled ink is #626a75 on light
-  keys and #bcc2ca on slate.
+  Input blocking remains entirely native. Gray disabled ink is #62645f on light
+  keys and #c3c2be on slate.
 
 ## Reproduction and evidence
 
@@ -107,3 +107,20 @@ states. States on this board are forced and labeled, not claimed as input proof.
 and mobile viewport sizes. Headless tests cover synthetic native pointer,
 keyboard and touch paths, not physical phone verification. Images must be
 inspected after hosted rendering; a passing parse/test log is not visual proof.
+
+## Palette refinement after actual game review (2026-10-28)
+
+The user found the initial cool slate/white keys discordant with the retained
+paper surfaces. Shared web/native tokens now use charcoal #454441→#302f2c,
+warm-neutral white #fffefa→#f3f1eb, and gray #eeede8→#e2e0d9.
+Explicit hover pairs are #504f4b→#3b3a36, #fffffc→#faf9f5,
+#f5f4ef→#eae8e1. Geometry, timing, layer alpha, typography and backgrounds
+are unchanged. The main pause menu keeps Save primary, import/export tertiary,
+and auxiliary actions ghost; light paper modal close is compact ghost.
+
+Compact controls keep even zero original content insets; their caption press
+shift is bounded by the original bottom inset to avoid negative engine margins.
+Native symbol controls retain transparent source text under their drawn icons.
+The fallen home-screen nine is a physical pickup and explicitly exempt.
+Rain-rescue skip retains the same existing canvas-scale font compensation as
+the weather game, not a forced16px authored size inside a scaled viewport.
