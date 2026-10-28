@@ -242,6 +242,11 @@ func audit_buttons(node: Node) -> Dictionary:
 			if exempt:audit.objects_or_surfaces.append(identity)
 			elif child.get_node_or_null("TactileMaterialState")!=null:
 				audit.styled.append({"path":identity,"variant":child.get_meta("tactile_variant"),"size":child.get_meta("tactile_size"),"disabled":child.disabled})
+				if child.name=="NativeModalClose":
+					var face: StyleBox=child.get_theme_stylebox("normal")
+					var text_width: float=child.get_theme_font("font").get_string_size(child.text,HORIZONTAL_ALIGNMENT_LEFT,-1,child.get_theme_font_size("font_size")).x
+					if text_width+face.get_margin(SIDE_LEFT)+face.get_margin(SIDE_RIGHT)>child.size.x+.01:
+						capture_failed=true;push_error("Modal close label wraps: "+identity)
 			else:audit.missing.append(identity)
 		var nested: Dictionary=audit_buttons(child)
 		for key: String in audit:audit[key].append_array(nested[key])

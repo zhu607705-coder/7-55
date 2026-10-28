@@ -86,5 +86,18 @@ func run() -> void:
  mouse=InputEventMouseButton.new();mouse.button_index=MOUSE_BUTTON_LEFT;mouse.position=Vector2(40,40);root.push_input(mouse);await frames()
  check(presses==2,"disabled refuses pointer activation")
  host.queue_free();await frames()
+ var game_state: Node=root.get_node("State");game_state.developer_mode=true;game_state.d=game_state.initial()
+ var shell: Control=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
+ for dimensions: Vector2i in [Vector2i(390,844),Vector2i(568,320),Vector2i(1440,900)]:
+  root.size=dimensions;shell.size=Vector2(dimensions)
+  shell._modal_base("调查记录");await frames()
+  var close: Button=shell.modal.find_child("NativeModalClose",true,false)
+  var face: StyleBox=close.get_theme_stylebox("normal")
+  var text_width: float=close.get_theme_font("font").get_string_size(close.text,HORIZONTAL_ALIGNMENT_LEFT,-1,close.get_theme_font_size("font_size")).x
+  check(close.get_node("TactileMaterialState").compact,"modal close retains compact chrome geometry")
+  check(text_width+face.get_margin(SIDE_LEFT)+face.get_margin(SIDE_RIGHT)<=close.size.x+.01,"actual modal close label fits one line: "+str(dimensions))
+  check(close.size.x>=70 and close.size.y>=44,"modal close retains touch target")
+  shell._close_modal();await frames()
+ await shell.shutdown();shell.queue_free();await frames()
  print("TACTILE_BUTTONS: ",checks," checks; ",failures," failures")
  quit(1 if failures else 0)

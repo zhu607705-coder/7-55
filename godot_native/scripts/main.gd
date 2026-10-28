@@ -1400,6 +1400,9 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 		var title_space:=Control.new();title_space.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title_space)
 	else: header.add_child(label)
 	var close_button := _button("关闭",_close_modal,Vector2(70,44))
+	close_button.name="NativeModalClose"
+	# Header chrome keeps its compact 70px hit target and original inset.
+	close_button.set_meta("tactile_keep_layout",true)
 	close_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
 	if surface.begins_with("selected_"):
