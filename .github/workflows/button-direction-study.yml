@@ -1,0 +1,54 @@
+name: Button direction study (preview only)
+on:
+  push:
+    branches: [design/native-button-directions-20261028]
+    paths:
+      - 'godot_native/design_studies/button_directions/**'
+      - '.github/workflows/button-direction-study.yml'
+permissions:
+  contents: read
+concurrency:
+  group: button-direction-study-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+      - name: Install pinned renderer
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo "c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip" | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      - name: Prepare actual unchanged game assets
+        run: |
+          node godot_native/tools/sync_source.mjs
+          godot --headless --path godot_native --editor --import
+      - name: Validate input and render the two isolated directions
+        shell: bash
+        run: |
+          set -o pipefail
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/artifacts/button-directions"
+          mkdir -p "$UI_CAPTURE_DIR" /tmp/button-study/{data,config,cache}
+          export XDG_DATA_HOME=/tmp/button-study/data XDG_CONFIG_HOME=/tmp/button-study/config XDG_CACHE_HOME=/tmp/button-study/cache
+          git rev-parse HEAD > "$UI_CAPTURE_DIR/commit.txt"
+          git rev-parse 'HEAD^{tree}' > "$UI_CAPTURE_DIR/tree.txt"
+          UI_CAPTURE_VALIDATE=1 godot --headless --path godot_native --script res://design_studies/button_directions/capture_study.gd 2>&1 | tee "$UI_CAPTURE_DIR/layout.log"
+          timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 1280x1024x24' godot --audio-driver Dummy --path godot_native --script res://design_studies/button_directions/capture_study.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
+          test -f "$UI_CAPTURE_DIR/A-entry.png"
+          test -f "$UI_CAPTURE_DIR/A-pause.png"
+          test -f "$UI_CAPTURE_DIR/B-entry.png"
+          test -f "$UI_CAPTURE_DIR/B-pause.png"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|BUTTON_STUDY: .* failures$' "$UI_CAPTURE_DIR/"*.log | grep -v '0 failures'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: button-direction-study-${{ github.sha }}
+          path: artifacts/button-directions
+          if-no-files-found: error
