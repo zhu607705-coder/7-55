@@ -87,6 +87,10 @@ func check_floor(floor_number:int)->void:
 		check(not space.can_stand(Space.rect(item.footprint).get_center()-Body.FOOT_CENTER_OFFSET),"feet blocked by prop: "+str(item.id))
 	if floor_number==2:
 		var passage:Array=data.hallReference.walkThrough
+		var workshop:Dictionary=data.workshopReference
+		check(not space.route(spawn,foot(workshop.approach)).is_empty(),"electrical operating position reached from entrance network")
+		check(not space.route(foot(workshop.approach),foot(data.transits[2].arrival)).is_empty(),"electrical operating position returns to elevator")
+		for i:int in workshop.walkLoop.size():check(space.segment_clear(foot(workshop.walkLoop[i]),foot(workshop.walkLoop[(i+1)%workshop.walkLoop.size()])),"complete feet circle assembly work island")
 		check(space.segment_clear(foot(passage[0]),foot(passage[1])),"2F complete feet pass under the blue overhead frame")
 		check(not space.route(spawn,foot(passage[0])).is_empty(),"2F hall reached from existing room network")
 		check(not space.route(foot(passage[1]),foot(data.transits[2].arrival)).is_empty(),"2F hall returns to elevator landing")

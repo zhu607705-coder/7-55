@@ -478,5 +478,20 @@
     ],
     "sha256": "eaaf5f78f8a24909b042b1746190f2a6a6fda2b674b4d2753b9bff0ef553d00b",
     "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "lab_assembly_bench": {
+    "path": "res://campuses/future_learning_center/assets/objects/lab_assembly_bench.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "opaqueBounds": [
+      27,
+      205,
+      1510,
+      819
+    ],
+    "sha256": "6a431444da4d378b2c005d6ddf8ce50ee10e3a7afd28a60dace68426cb902325",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
   }
 }

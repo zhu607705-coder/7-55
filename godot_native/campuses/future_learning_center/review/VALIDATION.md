@@ -1,6 +1,22 @@
 # Three-floor object review · 2026-10-28
 
-## Current correction: 3F pantry sofa area and central table
+## Current addition: interactive 2F mechatronics workbench
+
+The new assembly island and playable gear/belt experiment are documented in
+[WORKSHOP.md](WORKSHOP.md). The owned spatial snapshot passed **1652 checks**;
+the model passed **88 checks**. Desktop and scaled portrait passed **13 floor
+input + 11 workbench input checks each**; landscape touch passed **11 workbench
+checks**. Seven selected native stages passed, with 532 unrelated stages not run.
+All architecture remains unchanged by this addition. Parallel wall-storage edits
+were validated in the shared tree but are separate from this change.
+
+The standalone Godot Web export passed import, native startup and export with
+matching 4.7.1 tools. The gallery now defaults to the actual laboratory capture
+and links to `lab/index.html`. HTTP assets were checked; browser interaction is
+unverified because local browser control is disabled. This remains a gameplay
+review without production chapter, reward or save integration.
+
+## Previous correction: 3F pantry sofa area and central table
 
 Based on local commit `fe9113856da2f25e609e734e4678bab96398fad5`, using Godot
 4.7.1.stable.official.a13da4feb. The user explicitly identified **三楼茶水休息区**.

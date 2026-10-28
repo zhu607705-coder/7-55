@@ -5,6 +5,9 @@ const FloorSpace=preload("res://campuses/future_learning_center/scripts/floor_sp
 const RoomCamera=preload("res://campuses/future_learning_center/scripts/room_camera.gd")
 const Lighting=preload("res://campuses/future_learning_center/scripts/floor_lighting.gd")
 const Transit=preload("res://campuses/future_learning_center/scripts/building_transit.gd")
+const Workbench=preload("res://campuses/future_learning_center/scripts/workbench_view.gd")
+var workbench:Control
+var workbench_pending:=false
 var lighting=Lighting.new()
 var transit=Transit.new()
 var transit_panel:PanelContainer
@@ -43,7 +46,11 @@ func _ready()->void:
 	for direction:String in ["down","up","side"]:
 		for i:int in 8:_texture("res://assets/rpg/player/player_%s_%d.png"%[direction,i])
 	add_child(camera);camera.enabled=true;camera.position_smoothing_enabled=false
-	_build_ui();load_floor(3);set_hour(12)
+	_build_ui()
+	var bench_layer:=CanvasLayer.new();bench_layer.layer=5;add_child(bench_layer)
+	workbench=Workbench.new();workbench.size=Vector2(960,540);bench_layer.add_child(workbench)
+	workbench.closed.connect(func()->void:ui.show();route.clear();workbench_pending=false)
+	load_floor(3);set_hour(12)
 	queue_redraw()
 
 func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
@@ -52,6 +59,8 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	var next_space=FloorSpace.new();next_space.configure(next)
 	var foot:=Vector2(next.spawn[0],next.spawn[1]) if not arrival.is_finite() else arrival
 	if not next_space.can_stand(foot-Body.FOOT_CENTER_OFFSET):return false
+	if is_instance_valid(workbench) and workbench.visible:workbench.close()
+	workbench_pending=false
 	data=next;space=next_space;route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
 	for item:Dictionary in data.modules:_texture(item.path)
 	for item:Dictionary in data.get("objects",[]):_texture(item.path)
@@ -75,6 +84,8 @@ func travel_to(floor_number:int)->bool:
 
 func _texture(path:String)->Texture2D:
 	if not textures.has(path):
+		if OS.has_feature("web"):
+			textures[path]=load(path);return textures[path]
 		# Review can consume a fresh raw generated asset before an editor import.
 		var source:=Image.load_from_file(ProjectSettings.globalize_path(path))
 		if source==null or source.is_empty():push_error("FLC image missing: "+path);return null
@@ -84,6 +95,7 @@ func _texture(path:String)->Texture2D:
 func _process(dt:float)->void:
 	elapsed+=dt
 	if capture_only:return
+	if is_instance_valid(workbench) and workbench.visible:return
 	var direction:=Vector2.ZERO
 	if user_control and not overview:
 		direction=Vector2(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),int(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-int(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))+touch_vector
@@ -104,6 +116,8 @@ func _process(dt:float)->void:
 	elif motion.length()>0:route.clear()
 	if not space.can_stand(player):invalid_frames+=1
 	framing.update(dt,player,space,false,overview);_apply_camera()
+	if workbench_pending and route.is_empty():
+		workbench_pending=false;open_workbench()
 	if is_instance_valid(place_label):
 		var room:Dictionary=space.room_at(player+Body.FOOT_CENTER_OFFSET)
 		var landing:Dictionary=transit.nearby(data,player)
@@ -111,6 +125,7 @@ func _process(dt:float)->void:
 		if not landing.is_empty():transit_button.text=str(landing.name)+" · E"
 		elif is_instance_valid(transit_panel):transit_panel.hide()
 		place_label.text=("%dF 全层总览"%int(data.floor)) if overview else str(room.get("name","环廊"))+object_hint
+		if can_open_workbench() and not overview:place_label.text+="  ·  操作台 Space"
 	queue_redraw()
 
 func _apply_camera()->void:
@@ -128,11 +143,12 @@ func _unhandled_input(event:InputEvent)->void:
 		elif event.keycode==KEY_F2:geometry_visible=not geometry_visible
 		elif event.keycode==KEY_L:_cycle_time()
 		elif event.keycode==KEY_E:open_transit()
-		elif event.keycode==KEY_SPACE:inspect_nearby()
+		elif event.keycode==KEY_SPACE:
+			if not open_workbench():inspect_nearby()
 	elif event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
-		request_walk(screen_to_world(event.position));get_viewport().set_input_as_handled()
+		point_action(screen_to_world(event.position));get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and event.pressed:
-		request_walk(screen_to_world(event.position));get_viewport().set_input_as_handled()
+		point_action(screen_to_world(event.position));get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.keycode==KEY_ESCAPE and event.pressed:
 		route.clear()
 
@@ -140,7 +156,29 @@ func screen_to_world(screen:Vector2)->Vector2:return framing.center+(screen-Room
 func world_to_screen(point:Vector2)->Vector2:return (point-framing.center)*framing.zoom+RoomCamera.VIEW/2
 func request_walk(foot:Vector2)->void:
 	if overview:return
+	workbench_pending=false
 	route=space.route(player,foot-Body.FOOT_CENTER_OFFSET)
+func workshop_bench()->Dictionary:
+	if not data.has("workshopReference"):return {}
+	for o:Dictionary in data.objects:
+		if o.id==data.workshopReference.bench:return o
+	return {}
+func can_open_workbench()->bool:
+	var item:=workshop_bench()
+	if item.is_empty() or overview:return false
+	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
+	return foot.distance_to(foot.clamp(box.position,box.end))<=105
+func open_workbench()->bool:
+	if not can_open_workbench():return false
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
+	workbench.open();ui.hide();return true
+func point_action(at:Vector2)->void:
+	var item:=workshop_bench()
+	if not item.is_empty() and Space.rect(item.bounds).has_point(at):
+		if open_workbench():return
+		var target:Array=data.workshopReference.approach
+		request_walk(Vector2(target[0],target[1]));workbench_pending=not route.is_empty()
+	else:request_walk(at)
 func toggle_overview()->void:
 	overview=not overview;route.clear();touch_vector=Vector2.ZERO
 
@@ -163,7 +201,9 @@ func _build_ui()->void:
 	var footer:=ColorRect.new();footer.color=Color(.035,.055,.085,.86);footer.position=Vector2(0,509);footer.size=Vector2(960,31);footer.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(footer)
 	place_label=Label.new();place_label.position=Vector2(18,513);place_label.add_theme_font_override("font",font);place_label.add_theme_font_size_override("font_size",14);panel.add_child(place_label)
 	var hint:=Label.new();hint.text="WASD / 方向键行走  ·  点击地面前往";hint.position=Vector2(602,513);hint.add_theme_font_override("font",font);hint.add_theme_font_size_override("font_size",13);panel.add_child(hint)
-	if OS.has_feature("mobile") or OS.get_environment("FLC_TOUCH")=="1":
+	var touch_enabled:=OS.has_feature("mobile") or OS.get_environment("FLC_TOUCH")=="1"
+	if OS.has_feature("web"):touch_enabled=bool(JavaScriptBridge.eval("window.matchMedia('(pointer: coarse)').matches"))
+	if touch_enabled:
 		hint.text="轻触地面前往  ·  左下方向键移动"
 		for entry:Array in [["↑",Vector2(76,374),Vector2.UP],["↓",Vector2(76,450),Vector2.DOWN],["←",Vector2(38,412),Vector2.LEFT],["→",Vector2(114,412),Vector2.RIGHT]]:
 			var control:=Button.new();control.text=entry[0];control.position=entry[1];control.size=Vector2(38,38);control.add_theme_font_size_override("font_size",22);panel.add_child(control)
@@ -245,7 +285,11 @@ func _draw()->void:
 	items.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.baseline)<float(b.baseline))
 	for item:Dictionary in items:
 		if item.get("actor",false):_draw_actor()
-		else:_draw_prop(item)
+		else:
+			_draw_prop(item)
+			if item.id==data.get("workshopReference",{}).get("bench",""):
+				var b:Rect2=Space.rect(item.bounds)
+				Workbench.mini(self,b.position+Vector2(40,6),1.1,workbench.model)
 	if not capture_only:_draw_covers()
 	if geometry_visible:
 		for region:Dictionary in data.ground:draw_colored_polygon(Space.polygon(region.polygon),Color(.25,.85,.7,.15))

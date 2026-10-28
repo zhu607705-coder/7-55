@@ -39,6 +39,7 @@ function upgradeThree(p){
 const names={desk:'工作桌',chair_back:'网布工作椅',chair_front:'网布工作椅',monitor:'27 英寸显示器',monitor_front:'支架显示器',monitor_back:'支架显示器',desk_divider:'桌面低隔板',workbench:'机电实验台',cabinet:'个人储物柜',discussion_table:'拼接研讨桌',whiteboard:'移动白板',printer_3d:'封闭式 3D 打印机',camera_tripod:'录制相机',sofa:'双人沙发',pantry_counter:'茶水台',tool_cart:'移动工具车',parts_rack:'元件收纳架',coffee_machine:'咖啡机',potted_plant:'室内绿植',soldering_station:'焊接工作站'};
 Object.assign(names,{pantry_island:'深灰色共享长桌',pantry_tree:'木盆绿植',pantry_chair_front:'木扶手座椅',pantry_chair_back:'木扶手座椅',pantry_microwave:'微波炉',pantry_wall_unit:'茶水柜与水槽'});
 names.lounge_coffee_table='休息区矮茶几';
+names.lab_assembly_bench='传动装配操作台';
 for(const color of ['orange','mint','slate','blue'])names['hall_stool_'+color]='彩色圆凳';
 function furnish(p){
  p.objects=[];p.windows=[];p.lighting={orientation:'north-up',sunArc:'east-south-west',clock:'presentation-only',hours:[8,12,16,21],floorMaterial:'continuous gray microcement',source:'window apertures on generated room masters'};
@@ -130,6 +131,17 @@ function furnish(p){
   for(const t of [.31,.60])put(r,'cabinet',[x+w*t,y+h*.93],114,{depth:42});
   const d=put(r,'desk',[x+w*.48,y+h*.46],118,{depth:42});
   if(d)put(r,'printer_3d',[d.bounds[0]+59,d.baseline-43],44,{mounted:true,parent:d.id,baseline:d.baseline+.1});
+  if(r.id==='electrical'){
+   const cx=x+w*.50,cy=y+h*.56+24;
+   const bench=put(r,'lab_assembly_bench',[cx,cy],320,{depth:100,height:80,cluster:'electrical_assembly'});
+   if(!bench)throw new Error('Assembly workbench does not fit electrical room');
+   bench.id='electrical_assembly_bench';
+   for(const dx of [-220,220])if(!put(r,'tool_cart',[cx+dx,cy+10],62,{depth:32,height:65}))throw new Error('Assembly tool cart does not fit');
+   for(const dx of [-115,115])if(!put(r,'chair_back',[cx+dx,cy+60],42,{depth:28}))throw new Error('Assembly seat does not fit');
+   if(!put(r,'parts_rack',[cx-230,cy-150],110,{depth:40,height:110}))throw new Error('Assembly parts rack does not fit');
+   p.workshopReference={floor:2,room:r.id,bench:bench.id,approach:[cx,cy+90],capture:[cx,cy+120],placement:'User-requested interactive work area; transmission experiment and furniture arrangement are game design, not measured equipment inventory',walkLoop:[[cx-185,cy-130],[cx+185,cy-130],[cx+185,cy+105],[cx-185,cy+105]]};
+   (p.scopeNotes??=[]).push('机电实验区新增独立传动装配台、工具车、零件架和座椅，形成可交互工作岛。齿轮、皮带与送料实验是游戏设计提案，设备摆位并非现场测绘。');
+  }
  }
  function pantry(r){
   // User's on-site photo: fitted oak sink wall, a dark communal island with

@@ -6885,7 +6885,7 @@
     ],
     [
       4810.36,
-      3560.529479768786
+      3680.529479768786
     ],
     [
       4809.736326530612,
@@ -10893,7 +10893,290 @@
       "parent": "electrical_desk_60"
     },
     {
-      "id": "electrical_parts_rack_62",
+      "id": "electrical_assembly_bench",
+      "room": "electrical",
+      "asset": "lab_assembly_bench",
+      "name": "传动装配操作台",
+      "path": "res://campuses/future_learning_center/assets/objects/lab_assembly_bench.png",
+      "crop": [
+        27,
+        205,
+        1483,
+        614
+      ],
+      "scale": 0.2157788267026298,
+      "bounds": [
+        4650.360000000001,
+        3533.3058905779963,
+        320,
+        132.4881995954147
+      ],
+      "footprint": [
+        4669.56,
+        3565.794090173411,
+        281.6,
+        100
+      ],
+      "baseline": 3665.794090173411,
+      "height": 80,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_assembly"
+    },
+    {
+      "id": "electrical_tool_cart_63",
+      "room": "electrical",
+      "asset": "tool_cart",
+      "name": "移动工具车",
+      "path": "res://campuses/future_learning_center/assets/objects/tool_cart.png",
+      "crop": [
+        194,
+        145,
+        826,
+        1025
+      ],
+      "scale": 0.06341463414634146,
+      "bounds": [
+        4564.169756097562,
+        3610.794090173411,
+        52.38048780487805,
+        65
+      ],
+      "footprint": [
+        4567.312585365854,
+        3643.794090173411,
+        46.094829268292685,
+        32
+      ],
+      "baseline": 3675.794090173411,
+      "height": 65,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false
+    },
+    {
+      "id": "electrical_tool_cart_64",
+      "room": "electrical",
+      "asset": "tool_cart",
+      "name": "移动工具车",
+      "path": "res://campuses/future_learning_center/assets/objects/tool_cart.png",
+      "crop": [
+        194,
+        145,
+        826,
+        1025
+      ],
+      "scale": 0.06341463414634146,
+      "bounds": [
+        5004.169756097562,
+        3610.794090173411,
+        52.38048780487805,
+        65
+      ],
+      "footprint": [
+        5007.312585365854,
+        3643.794090173411,
+        46.094829268292685,
+        32
+      ],
+      "baseline": 3675.794090173411,
+      "height": 65,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false
+    },
+    {
+      "id": "electrical_chair_back_65",
+      "room": "electrical",
+      "asset": "chair_back",
+      "name": "网布工作椅",
+      "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+      "crop": [
+        171,
+        278,
+        765,
+        1028
+      ],
+      "scale": 0.054901960784313725,
+      "bounds": [
+        4674.360000000001,
+        3669.3548744871364,
+        42,
+        56.43921568627451
+      ],
+      "footprint": [
+        4676.880000000001,
+        3697.794090173411,
+        36.96,
+        28
+      ],
+      "baseline": 3725.794090173411,
+      "height": 65,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false
+    },
+    {
+      "id": "electrical_chair_back_66",
+      "room": "electrical",
+      "asset": "chair_back",
+      "name": "网布工作椅",
+      "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+      "crop": [
+        171,
+        278,
+        765,
+        1028
+      ],
+      "scale": 0.054901960784313725,
+      "bounds": [
+        4904.360000000001,
+        3669.3548744871364,
+        42,
+        56.43921568627451
+      ],
+      "footprint": [
+        4906.880000000001,
+        3697.794090173411,
+        36.96,
+        28
+      ],
+      "baseline": 3725.794090173411,
+      "height": 65,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false
+    },
+    {
+      "id": "electrical_parts_rack_67",
+      "room": "electrical",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+      "crop": [
+        190,
+        110,
+        851,
+        1082
+      ],
+      "scale": 0.10166358595194085,
+      "bounds": [
+        4537.10214417745,
+        3405.794090173411,
+        86.51571164510166,
+        110
+      ],
+      "footprint": [
+        4542.293086876156,
+        3475.794090173411,
+        76.13382624768946,
+        40
+      ],
+      "baseline": 3515.794090173411,
+      "height": 110,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false
+    },
+    {
+      "id": "electrical_parts_rack_68",
       "room": "electrical",
       "asset": "parts_rack",
       "name": "元件收纳架",
@@ -10940,7 +11223,7 @@
       "mounted": false
     },
     {
-      "id": "electrical_parts_rack_63",
+      "id": "electrical_parts_rack_69",
       "room": "electrical",
       "asset": "parts_rack",
       "name": "元件收纳架",
@@ -10987,7 +11270,7 @@
       "mounted": false
     },
     {
-      "id": "electrical_parts_rack_64",
+      "id": "electrical_parts_rack_70",
       "room": "electrical",
       "asset": "parts_rack",
       "name": "元件收纳架",
@@ -11034,7 +11317,7 @@
       "mounted": false
     },
     {
-      "id": "electrical_tool_cart_65",
+      "id": "electrical_tool_cart_71",
       "room": "electrical",
       "asset": "tool_cart",
       "name": "移动工具车",
@@ -11081,7 +11364,7 @@
       "mounted": false
     },
     {
-      "id": "electrical_tool_cart_66",
+      "id": "electrical_tool_cart_72",
       "room": "electrical",
       "asset": "tool_cart",
       "name": "移动工具车",
@@ -11128,7 +11411,7 @@
       "mounted": false
     },
     {
-      "id": "electrical_soldering_station_67",
+      "id": "electrical_soldering_station_73",
       "room": "electrical",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -11176,7 +11459,7 @@
       "parent": "electrical_workbench_54"
     },
     {
-      "id": "electrical_soldering_station_68",
+      "id": "electrical_soldering_station_74",
       "room": "electrical",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -11224,7 +11507,7 @@
       "parent": "electrical_workbench_55"
     },
     {
-      "id": "electrical_soldering_station_69",
+      "id": "electrical_soldering_station_75",
       "room": "electrical",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -11272,7 +11555,7 @@
       "parent": "electrical_workbench_56"
     },
     {
-      "id": "electrical_soldering_station_70",
+      "id": "electrical_soldering_station_76",
       "room": "electrical",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -11320,7 +11603,7 @@
       "parent": "electrical_workbench_57"
     },
     {
-      "id": "machinery_workbench_71",
+      "id": "machinery_workbench_77",
       "room": "machinery",
       "asset": "workbench",
       "name": "机电实验台",
@@ -11367,7 +11650,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_workbench_72",
+      "id": "machinery_workbench_78",
       "room": "machinery",
       "asset": "workbench",
       "name": "机电实验台",
@@ -11414,7 +11697,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_workbench_73",
+      "id": "machinery_workbench_79",
       "room": "machinery",
       "asset": "workbench",
       "name": "机电实验台",
@@ -11461,7 +11744,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_workbench_74",
+      "id": "machinery_workbench_80",
       "room": "machinery",
       "asset": "workbench",
       "name": "机电实验台",
@@ -11508,7 +11791,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_cabinet_75",
+      "id": "machinery_cabinet_81",
       "room": "machinery",
       "asset": "cabinet",
       "name": "个人储物柜",
@@ -11555,7 +11838,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_cabinet_76",
+      "id": "machinery_cabinet_82",
       "room": "machinery",
       "asset": "cabinet",
       "name": "个人储物柜",
@@ -11602,7 +11885,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_desk_77",
+      "id": "machinery_desk_83",
       "room": "machinery",
       "asset": "desk",
       "name": "工作桌",
@@ -11649,7 +11932,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_printer_3d_78",
+      "id": "machinery_printer_3d_84",
       "room": "machinery",
       "asset": "printer_3d",
       "name": "封闭式 3D 打印机",
@@ -11694,10 +11977,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "machinery_desk_77"
+      "parent": "machinery_desk_83"
     },
     {
-      "id": "machinery_parts_rack_79",
+      "id": "machinery_parts_rack_85",
       "room": "machinery",
       "asset": "parts_rack",
       "name": "元件收纳架",
@@ -11744,7 +12027,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_parts_rack_80",
+      "id": "machinery_parts_rack_86",
       "room": "machinery",
       "asset": "parts_rack",
       "name": "元件收纳架",
@@ -11791,7 +12074,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_parts_rack_81",
+      "id": "machinery_parts_rack_87",
       "room": "machinery",
       "asset": "parts_rack",
       "name": "元件收纳架",
@@ -11838,7 +12121,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_tool_cart_82",
+      "id": "machinery_tool_cart_88",
       "room": "machinery",
       "asset": "tool_cart",
       "name": "移动工具车",
@@ -11885,7 +12168,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_tool_cart_83",
+      "id": "machinery_tool_cart_89",
       "room": "machinery",
       "asset": "tool_cart",
       "name": "移动工具车",
@@ -11932,7 +12215,7 @@
       "mounted": false
     },
     {
-      "id": "machinery_soldering_station_84",
+      "id": "machinery_soldering_station_90",
       "room": "machinery",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -11977,10 +12260,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "machinery_workbench_71"
+      "parent": "machinery_workbench_77"
     },
     {
-      "id": "machinery_soldering_station_85",
+      "id": "machinery_soldering_station_91",
       "room": "machinery",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -12025,10 +12308,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "machinery_workbench_72"
+      "parent": "machinery_workbench_78"
     },
     {
-      "id": "machinery_soldering_station_86",
+      "id": "machinery_soldering_station_92",
       "room": "machinery",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -12073,10 +12356,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "machinery_workbench_73"
+      "parent": "machinery_workbench_79"
     },
     {
-      "id": "machinery_soldering_station_87",
+      "id": "machinery_soldering_station_93",
       "room": "machinery",
       "asset": "soldering_station",
       "name": "焊接工作站",
@@ -12121,10 +12404,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "machinery_workbench_74"
+      "parent": "machinery_workbench_80"
     },
     {
-      "id": "koala_desk_88",
+      "id": "koala_desk_94",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -12171,7 +12454,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_89",
+      "id": "koala_chair_back_95",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -12218,7 +12501,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_90",
+      "id": "koala_desk_divider_96",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -12263,10 +12546,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_88"
+      "parent": "koala_desk_94"
     },
     {
-      "id": "koala_monitor_front_91",
+      "id": "koala_monitor_front_97",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -12311,10 +12594,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_88"
+      "parent": "koala_desk_94"
     },
     {
-      "id": "koala_desk_92",
+      "id": "koala_desk_98",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -12361,7 +12644,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_93",
+      "id": "koala_chair_back_99",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -12408,7 +12691,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_94",
+      "id": "koala_desk_divider_100",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -12453,10 +12736,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_92"
+      "parent": "koala_desk_98"
     },
     {
-      "id": "koala_monitor_front_95",
+      "id": "koala_monitor_front_101",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -12501,10 +12784,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_92"
+      "parent": "koala_desk_98"
     },
     {
-      "id": "koala_desk_96",
+      "id": "koala_desk_102",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -12551,7 +12834,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_97",
+      "id": "koala_chair_back_103",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -12598,7 +12881,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_98",
+      "id": "koala_desk_divider_104",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -12643,10 +12926,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_96"
+      "parent": "koala_desk_102"
     },
     {
-      "id": "koala_monitor_front_99",
+      "id": "koala_monitor_front_105",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -12691,10 +12974,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_96"
+      "parent": "koala_desk_102"
     },
     {
-      "id": "koala_desk_100",
+      "id": "koala_desk_106",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -12741,7 +13024,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_101",
+      "id": "koala_chair_back_107",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -12788,7 +13071,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_102",
+      "id": "koala_desk_divider_108",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -12833,10 +13116,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_100"
+      "parent": "koala_desk_106"
     },
     {
-      "id": "koala_monitor_front_103",
+      "id": "koala_monitor_front_109",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -12881,10 +13164,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_100"
+      "parent": "koala_desk_106"
     },
     {
-      "id": "koala_desk_104",
+      "id": "koala_desk_110",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -12931,7 +13214,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_105",
+      "id": "koala_chair_back_111",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -12978,7 +13261,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_106",
+      "id": "koala_desk_divider_112",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -13023,10 +13306,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_104"
+      "parent": "koala_desk_110"
     },
     {
-      "id": "koala_monitor_front_107",
+      "id": "koala_monitor_front_113",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -13071,10 +13354,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_104"
+      "parent": "koala_desk_110"
     },
     {
-      "id": "koala_desk_108",
+      "id": "koala_desk_114",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -13121,7 +13404,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_109",
+      "id": "koala_chair_back_115",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -13168,7 +13451,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_110",
+      "id": "koala_desk_divider_116",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -13213,10 +13496,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_108"
+      "parent": "koala_desk_114"
     },
     {
-      "id": "koala_monitor_front_111",
+      "id": "koala_monitor_front_117",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -13261,10 +13544,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_108"
+      "parent": "koala_desk_114"
     },
     {
-      "id": "koala_desk_112",
+      "id": "koala_desk_118",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -13311,7 +13594,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_113",
+      "id": "koala_chair_back_119",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -13358,7 +13641,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_114",
+      "id": "koala_desk_divider_120",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -13403,10 +13686,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_112"
+      "parent": "koala_desk_118"
     },
     {
-      "id": "koala_monitor_front_115",
+      "id": "koala_monitor_front_121",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -13451,10 +13734,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_112"
+      "parent": "koala_desk_118"
     },
     {
-      "id": "koala_desk_116",
+      "id": "koala_desk_122",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -13501,7 +13784,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_117",
+      "id": "koala_chair_back_123",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -13548,7 +13831,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_118",
+      "id": "koala_desk_divider_124",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -13593,10 +13876,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_116"
+      "parent": "koala_desk_122"
     },
     {
-      "id": "koala_monitor_front_119",
+      "id": "koala_monitor_front_125",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -13641,10 +13924,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_116"
+      "parent": "koala_desk_122"
     },
     {
-      "id": "koala_desk_120",
+      "id": "koala_desk_126",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -13691,7 +13974,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_121",
+      "id": "koala_chair_back_127",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -13738,7 +14021,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_122",
+      "id": "koala_desk_divider_128",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -13783,10 +14066,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_120"
+      "parent": "koala_desk_126"
     },
     {
-      "id": "koala_monitor_front_123",
+      "id": "koala_monitor_front_129",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -13831,10 +14114,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_120"
+      "parent": "koala_desk_126"
     },
     {
-      "id": "koala_desk_124",
+      "id": "koala_desk_130",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -13881,7 +14164,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_125",
+      "id": "koala_chair_back_131",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -13928,7 +14211,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_126",
+      "id": "koala_desk_divider_132",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -13973,10 +14256,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_124"
+      "parent": "koala_desk_130"
     },
     {
-      "id": "koala_monitor_front_127",
+      "id": "koala_monitor_front_133",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -14021,10 +14304,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_124"
+      "parent": "koala_desk_130"
     },
     {
-      "id": "koala_desk_128",
+      "id": "koala_desk_134",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -14071,7 +14354,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_129",
+      "id": "koala_chair_back_135",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -14118,7 +14401,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_130",
+      "id": "koala_desk_divider_136",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -14163,10 +14446,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_128"
+      "parent": "koala_desk_134"
     },
     {
-      "id": "koala_monitor_front_131",
+      "id": "koala_monitor_front_137",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -14211,10 +14494,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_128"
+      "parent": "koala_desk_134"
     },
     {
-      "id": "koala_desk_132",
+      "id": "koala_desk_138",
       "room": "koala",
       "asset": "desk",
       "name": "工作桌",
@@ -14261,7 +14544,7 @@
       "mounted": false
     },
     {
-      "id": "koala_chair_back_133",
+      "id": "koala_chair_back_139",
       "room": "koala",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -14308,7 +14591,7 @@
       "mounted": false
     },
     {
-      "id": "koala_desk_divider_134",
+      "id": "koala_desk_divider_140",
       "room": "koala",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -14353,10 +14636,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_132"
+      "parent": "koala_desk_138"
     },
     {
-      "id": "koala_monitor_front_135",
+      "id": "koala_monitor_front_141",
       "room": "koala",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -14401,7 +14684,7 @@
         ]
       ],
       "mounted": true,
-      "parent": "koala_desk_132"
+      "parent": "koala_desk_138"
     },
     {
       "id": "hall_frame_rear_left",
@@ -14743,7 +15026,7 @@
       "cluster": "hall_blue_frame"
     },
     {
-      "id": "platform_hall_stool_orange_143",
+      "id": "platform_hall_stool_orange_149",
       "room": "platform",
       "asset": "hall_stool_orange",
       "name": "彩色圆凳",
@@ -14791,7 +15074,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_orange_144",
+      "id": "platform_hall_stool_orange_150",
       "room": "platform",
       "asset": "hall_stool_orange",
       "name": "彩色圆凳",
@@ -14839,7 +15122,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_slate_145",
+      "id": "platform_hall_stool_slate_151",
       "room": "platform",
       "asset": "hall_stool_slate",
       "name": "彩色圆凳",
@@ -14887,7 +15170,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_orange_146",
+      "id": "platform_hall_stool_orange_152",
       "room": "platform",
       "asset": "hall_stool_orange",
       "name": "彩色圆凳",
@@ -14935,7 +15218,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_mint_147",
+      "id": "platform_hall_stool_mint_153",
       "room": "platform",
       "asset": "hall_stool_mint",
       "name": "彩色圆凳",
@@ -14983,7 +15266,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_slate_148",
+      "id": "platform_hall_stool_slate_154",
       "room": "platform",
       "asset": "hall_stool_slate",
       "name": "彩色圆凳",
@@ -15031,7 +15314,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_blue_149",
+      "id": "platform_hall_stool_blue_155",
       "room": "platform",
       "asset": "hall_stool_blue",
       "name": "彩色圆凳",
@@ -15079,7 +15362,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_mint_150",
+      "id": "platform_hall_stool_mint_156",
       "room": "platform",
       "asset": "hall_stool_mint",
       "name": "彩色圆凳",
@@ -15127,7 +15410,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_slate_151",
+      "id": "platform_hall_stool_slate_157",
       "room": "platform",
       "asset": "hall_stool_slate",
       "name": "彩色圆凳",
@@ -15175,7 +15458,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_orange_152",
+      "id": "platform_hall_stool_orange_158",
       "room": "platform",
       "asset": "hall_stool_orange",
       "name": "彩色圆凳",
@@ -15223,7 +15506,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_mint_153",
+      "id": "platform_hall_stool_mint_159",
       "room": "platform",
       "asset": "hall_stool_mint",
       "name": "彩色圆凳",
@@ -15271,7 +15554,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_blue_154",
+      "id": "platform_hall_stool_blue_160",
       "room": "platform",
       "asset": "hall_stool_blue",
       "name": "彩色圆凳",
@@ -15319,7 +15602,7 @@
       "cluster": "hall_stools"
     },
     {
-      "id": "platform_hall_stool_mint_155",
+      "id": "platform_hall_stool_mint_161",
       "room": "platform",
       "asset": "hall_stool_mint",
       "name": "彩色圆凳",
@@ -15366,7 +15649,7 @@
       "mounted": false
     },
     {
-      "id": "platform_hall_stool_slate_156",
+      "id": "platform_hall_stool_slate_162",
       "room": "platform",
       "asset": "hall_stool_slate",
       "name": "彩色圆凳",
@@ -15417,6 +15700,7 @@
   "sourcePlan": "d7e9b5e4023c60de0e5fb570d3a20b09.png; north seminar, three west studios, open central platform (user correction), east laboratory, south Koala",
   "scopeNotes": [
     "用户于 2026-10-28 明确：二楼中央是开放大平台，无围合房间和门。平台与环廊连续连通；实景设施待核实。",
+    "机电实验区新增独立传动装配台、工具车、零件架和座椅，形成可交互工作岛。齿轮、皮带与送料实验是游戏设计提案，设备摆位并非现场测绘。",
     "按用户最新更正：蓝色构架和彩色圆凳属于二楼大厅，已从四楼移除。复用二楼开放大平台，保留中央横向通道，不增加房间围墙或门；精确现场摆位仍需对齐。"
   ],
   "corridors": [
@@ -15543,6 +15827,38 @@
     "floorMaterial": "continuous gray microcement",
     "source": "window apertures on generated room masters"
   },
+  "workshopReference": {
+    "floor": 2,
+    "room": "electrical",
+    "bench": "electrical_assembly_bench",
+    "approach": [
+      4810.360000000001,
+      3755.794090173411
+    ],
+    "capture": [
+      4810.360000000001,
+      3785.794090173411
+    ],
+    "placement": "User-requested interactive work area; transmission experiment and furniture arrangement are game design, not measured equipment inventory",
+    "walkLoop": [
+      [
+        4625.360000000001,
+        3535.794090173411
+      ],
+      [
+        4995.360000000001,
+        3535.794090173411
+      ],
+      [
+        4995.360000000001,
+        3770.794090173411
+      ],
+      [
+        4625.360000000001,
+        3770.794090173411
+      ]
+    ]
+  },
   "hallReference": {
     "floor": 2,
     "floorEvidence": "User corrected the hall attribution to 二楼 on 2026-10-28; supersedes the earlier 4F answer",
@@ -15571,15 +15887,16 @@
     "workbench": 16,
     "cabinet": 9,
     "desk": 22,
-    "chair_back": 24,
+    "chair_back": 26,
     "desk_divider": 18,
     "monitor_front": 18,
     "printer_3d": 4,
     "discussion_table": 3,
     "whiteboard": 3,
     "camera_tripod": 1,
-    "parts_rack": 6,
-    "tool_cart": 4,
+    "lab_assembly_bench": 1,
+    "tool_cart": 6,
+    "parts_rack": 7,
     "soldering_station": 8,
     "hall_blue_frame": 7,
     "hall_stool_orange": 4,
