@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { PutPhoneOnDesk } from "../P01_Desktop/EarlyDeskCharging";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import zjudingUrl from "../../../assets/ui/zjuding.png";
@@ -556,7 +557,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         {...pointerHandlers}
       >
         {definition.available ? (
-          <button
+          <Button variant="ghost" data-layout="content"
             type="button"
             className={`app ${definition.className ?? ""}`.trim()}
             aria-label={`${definition.ariaLabel ?? definition.label}${access.chapter === "chapter_one" ? "" : "，按 F2 编辑桌面"}`}
@@ -589,7 +590,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           >
             {definition.icon}
             <span className="label">{definition.label}</span>
-          </button>
+          </Button>
         ) : (
           <div className={`app app-locked ${definition.className ?? ""}`.trim()} data-locked-app={definition.label}>
             {definition.icon}
@@ -597,7 +598,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           </div>
         )}
         {homeEditing && removable ? (
-          <button
+          <Button variant="ghost"
             type="button"
             className="home-app-remove"
             aria-label={`从桌面移除${definition.label}`}
@@ -608,7 +609,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
             }}
           >
             −
-          </button>
+          </Button>
         ) : null}
       </div>
     );
@@ -705,7 +706,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       {homeEditing ? (
         <div className="phone-home-edit-bar" role="status">
           <span>拖动图标调整位置</span>
-          <button type="button" onClick={finishHomeEditing}>完成</button>
+          <Button variant="primary" type="button" onClick={finishHomeEditing}>完成</Button>
         </div>
       ) : null}
       <section className={`apps ${homeEditing ? "is-editing" : ""}`.trim()} aria-label="应用">
@@ -724,14 +725,14 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       <section className="notifications" aria-label="通知列表">
         {interludeActive ? (
           <>
-            <button type="button" className="note interlude-recovery-note" onClick={openTimelineRecovery}>
+            <Button variant="ghost" data-layout="content" type="button" className="note interlude-recovery-note" onClick={openTimelineRecovery}>
               <div className="mini interlude-recovery-mini" aria-hidden="true"><i /><i /><i /></div>
               <div>
                 <div className="note-title">记录恢复</div>
                 <div className="note-msg">{interludeViewModel.notificationMessage}</div>
               </div>
               <time className="note-time">{interludeViewModel.notificationTimeLabel}</time>
-            </button>
+            </Button>
             <article className="note">
               <div className="mini b-green" aria-hidden="true"><span className="interlude-signal-dot" /></div>
               <div><div className="note-title">校园网络</div><div className="note-msg">发现一条未归档的夜间接入记录。</div></div>
@@ -741,7 +742,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         ) : access.chapter === "chapter_three" ? (
           <>
             {state.theaterHunt.cc98TicketCommissionPhase !== "locked" ? (
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className="note theater-ticket-note"
                 onClick={openTheaterTicketCommission}
@@ -771,7 +772,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
                       ? "08:30"
                       : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed" ? "08:31" : "08:32"}
                 </time>
-              </button>
+              </Button>
             ) : null}
             <article className="note" aria-label="图书馆：您有一本书已逾期 755 天">
               <div className="mini b-blue" aria-hidden="true"><i className="schedule-mini" /></div>
@@ -792,7 +793,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         ) : access.chapter === "chapter_four" ? (
           <>
             {cc98ObjectivePending ? (
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className="note chapter-four-study-note"
                 onClick={openChapterFourStudyIndex}
@@ -801,13 +802,13 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
                 <div className="mini b-blue" aria-hidden="true"><b className="cc98-text">98</b></div>
                 <div><div className="note-title">CC98 · 学习天地</div><div className="note-msg">课程年份入口与旧自习讨论待导入</div></div>
                 <time className="note-time">22:38</time>
-              </button>
+              </Button>
             ) : chapterFourWechatObjective ? (
-              <button type="button" className="note chapter-four-wechat-note" onClick={() => enterWechat(false)}>
+              <Button variant="ghost" data-layout="content" type="button" className="note chapter-four-wechat-note" onClick={() => enterWechat(false)}>
                 <div className="mini b-green" aria-hidden="true"><span className="interlude-signal-dot" /></div>
                 <div><div className="note-title">微信</div><div className="note-msg">{chapterFourWechatObjective.label}</div></div>
                 <time className="note-time">22:47</time>
-              </button>
+              </Button>
             ) : null}
             <article className="note">
               <div className="mini b-light" aria-hidden="true"><i className="photo-flower" /></div>
@@ -845,7 +846,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
               </article>
             )}
             {access.weather ? (
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className="note weather-notification"
                 aria-label={`天气：${weatherNotification}`}
@@ -854,7 +855,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
                 <div className="mini mini-rain"><div className="rain-icon mini-rain-icon"><div className="cloud-pixel" />{campusWeather.condition === "light_rain" ? <><i className="drop d1" /><i className="drop d2" /><i className="drop d3" /></> : null}</div></div>
                 <div><div className="note-title">天气</div><div className="note-msg">{weatherNotification}</div></div>
                 <time className="note-time">07:35</time>
-              </button>
+              </Button>
             ) : (
               <article className="note" aria-label={`天气：${weatherNotification}`}>
                 <div className="mini mini-rain"><div className="rain-icon mini-rain-icon"><div className="cloud-pixel" />{campusWeather.condition === "light_rain" ? <><i className="drop d1" /><i className="drop d2" /><i className="drop d3" /></> : null}</div></div>
@@ -867,19 +868,19 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       </section>
 
       <nav className="page-dots" aria-label="页面切换">
-        <button type="button" className="dot active" aria-label="第 1 页" />
-        <button type="button" className="dot" aria-label="第 2 页" />
-        <button type="button" className="dot" aria-label="第 3 页" />
+        <Button variant="ghost" data-layout="content" type="button" className="dot active" aria-label="第 1 页" />
+        <Button variant="ghost" data-layout="content" type="button" className="dot" aria-label="第 2 页" />
+        <Button variant="ghost" data-layout="content" type="button" className="dot" aria-label="第 3 页" />
       </nav>
 
       {interludeActive ? (
-        <button type="button" className="phone-top-notice interlude-top-notice" onClick={openTimelineRecovery} aria-label="记录恢复：检测到未同步记录">
+        <Button variant="ghost" data-layout="content" type="button" className="phone-top-notice interlude-top-notice" onClick={openTimelineRecovery} aria-label="记录恢复：检测到未同步记录">
           <span className="notice-app-icon interlude-recovery-mini" aria-hidden="true"><i /><i /><i /></span>
           <span className="notice-copy"><strong>记录恢复</strong><span>检测到 7 分 55 秒未同步记录</span></span>
           <time>现在</time>
-        </button>
+        </Button>
       ) : friendFollowupPending && noticeStep >= 3 ? (
-        <button type="button" className="phone-top-notice is-followup" onClick={() => enterWechat(true)} aria-label="朋友：成功了吗">
+        <Button variant="ghost" data-layout="content" type="button" className="phone-top-notice is-followup" onClick={() => enterWechat(true)} aria-label="朋友：成功了吗">
           <span className="notice-app-icon">
             <span className="wechat-icon mini-wechat">
               <i className="bubble one" />
@@ -892,9 +893,9 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           </span>
           <span className="notice-copy"><strong>朋友</strong><span>成功了吗</span></span>
           <time>现在</time>
-        </button>
+        </Button>
       ) : !flags.codeScattered && noticeStep > 0 ? (
-        <button type="button" className="phone-top-notice" onClick={() => enterWechat(true)} aria-label="朋友发来的微信消息">
+        <Button variant="ghost" data-layout="content" type="button" className="phone-top-notice" onClick={() => enterWechat(true)} aria-label="朋友发来的微信消息">
           <span className="notice-app-icon">
             <span className="wechat-icon mini-wechat">
               <i className="bubble one" />
@@ -911,7 +912,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
             {noticeStep >= 2 ? <span className="notice-second">这是签到码：XX……</span> : null}
           </span>
           <time>现在</time>
-        </button>
+        </Button>
       ) : null}
     </main>
   );

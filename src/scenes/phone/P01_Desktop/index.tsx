@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { playSfx } from "../../../modules/Sfx";
@@ -41,9 +42,9 @@ export function WakeScene({ state, router, events }: SceneComponentProps) {
         {!warned ? (
           <div className="sleep-choice">
             <p className="wake-me px-chip">（我）</p>
-            <button type="button" className="px-btn paper big" onClick={sleepMore}>
+            <Button variant="secondary" type="button" className="px-btn paper big" onClick={sleepMore}>
               ……再睡5分钟……
-            </button>
+            </Button>
           </div>
         ) : (
           <>
@@ -51,9 +52,9 @@ export function WakeScene({ state, router, events }: SceneComponentProps) {
               起床蠢货
               <span className="wake-flash-marks">！！！</span>
             </h1>
-            <button type="button" className="px-btn primary big" onClick={enterHome}>
+            <Button variant="primary" type="button" className="px-btn primary big" onClick={enterHome}>
               进入手机主界面
-            </button>
+            </Button>
           </>
         )}
       </div> : null}

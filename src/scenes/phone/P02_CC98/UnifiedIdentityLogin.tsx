@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import type { GameState } from "../../../core/types";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
@@ -133,14 +134,14 @@ export function UnifiedIdentityLogin({ state, onExit }: UnifiedIdentityLoginProp
                 placeholder="按提示组合密码"
                 aria-label="统一身份认证密码"
               />
-              <button
+              <Button variant="ghost"
                 type="button"
                 className="cc98-password-visibility"
                 aria-pressed={passwordVisible}
                 onClick={() => setPasswordVisible((current) => !current)}
               >
                 {passwordVisible ? "隐藏" : "显示"}
-              </button>
+              </Button>
             </label>
 
             <div className="cc98-login-attempts" aria-live="polite">
@@ -150,13 +151,13 @@ export function UnifiedIdentityLogin({ state, onExit }: UnifiedIdentityLoginProp
                 : <strong>{immediateAttemptsLeft > 0 ? `立即机会 ${immediateAttemptsLeft}/3` : `下次失败等待 ${nextPenaltySeconds}s`}</strong>}
             </div>
 
-            <button
+            <Button variant="primary"
               className="cc98-login-submit"
               type="submit"
               disabled={locked || !studentId || !password}
             >
               {locked ? `等待 ${formatWaitSeconds(remainingMs)}` : "登 录"}
-            </button>
+            </Button>
           </form>
 
           <p className="cc98-login-feedback" role="status" aria-live="polite">{feedback}</p>
@@ -193,20 +194,20 @@ export function UnifiedIdentityLogin({ state, onExit }: UnifiedIdentityLoginProp
             })}
           </ol>
 
-          <button
+          <Button variant="text"
             type="button"
             className="cc98-reveal-hint"
             onClick={revealNextHint}
             disabled={login.revealedHintCount >= CC98_LOGIN_HINTS.length}
           >
             {login.revealedHintCount >= CC98_LOGIN_HINTS.length ? "提示已全部展开" : `展开提示 ${login.revealedHintCount + 1}`}
-          </button>
+          </Button>
         </section>
 
         <p className="cc98-login-local-note">浙江大学统一身份认证</p>
       </main>
 
-      <button type="button" className="cc98-login-exit" onClick={onExit}>退出认证</button>
+      <Button variant="text" type="button" className="cc98-login-exit" onClick={onExit}>退出认证</Button>
     </section>
   );
 }

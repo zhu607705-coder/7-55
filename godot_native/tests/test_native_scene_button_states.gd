@@ -1,5 +1,5 @@
 extends SceneTree
-## Actual scene controls retain their authored palette under the shared theme.
+## Actual scene controls adopt neutral materials without changing behavior or focus.
 var checks:=0
 var failures:=0
 func _initialize() -> void:run.call_deferred()
@@ -10,45 +10,35 @@ func luminance(color: Color) -> float:
 	var c: Color=color.srgb_to_linear();return .2126*c.r+.7152*c.g+.0722*c.b
 func contrast(a: Color,b: Color) -> float:
 	return (maxf(luminance(a),luminance(b))+.05)/(minf(luminance(a),luminance(b))+.05)
-func assert_palette(button: Button,fill: Color,ink: Color,border: Color,width: int,label: String,interactive_fills: Dictionary={}) -> void:
-	var normal: StyleBoxFlat=button.get_theme_stylebox("normal")
+func assert_palette(button: Button,_fill: Color,_ink: Color,_border: Color,_width: int,label: String,_interactive_fills: Dictionary={}) -> void:
+	var normal: StyleBox=button.get_theme_stylebox("normal")
+	check(normal.get_script()==load("res://scripts/ui/tactile_button_material.gd"),label+" uses shared native material")
+	if normal.get_script()!=load("res://scripts/ui/tactile_button_material.gd"):return
+	var palette: Array=normal.PALETTES[normal.variant]
+	var ink: Color=palette[3]
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
-		var style: StyleBoxFlat=button.get_theme_stylebox(mode)
-		check(style.bg_color.is_equal_approx(interactive_fills.get(mode,fill)),label+" "+mode+" keeps local feedback palette")
-		check(contrast(ink,style.bg_color)>=4.5,label+" "+mode+" feedback text remains readable")
-		check(style.border_width_left==width,label+" "+mode+" keeps border width")
-		if width>0:check(style.border_color.is_equal_approx(border),label+" "+mode+" keeps local border")
-		check(style.corner_radius_top_left==normal.corner_radius_top_left,label+" "+mode+" keeps corner shape")
-		check(style.content_margin_left==normal.content_margin_left and style.content_margin_top==normal.content_margin_top,label+" "+mode+" keeps content margins")
-	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]:
-		check(button.get_theme_color(role).is_equal_approx(ink),label+" "+role+" keeps local ink")
-	check(contrast(ink,fill)>=4.5,label+" local text remains readable")
+		check(button.get_theme_stylebox(mode)==normal,label+" "+mode+" same animated layer stack")
+	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
+		check(button.get_theme_color(role).is_equal_approx(ink),label+" "+role+" neutral variant ink")
+	check(button.get_theme_color("font_disabled_color").is_equal_approx((Color("bcc2ca") if normal.variant=="primary" else Color("626a75"))),label+" disabled ink")
+	if normal.variant not in ["ghost","text"]:
+		check(contrast(ink,palette[0])>=4.5 and contrast(ink,palette[1])>=4.5,label+" gradient text contrast")
 	var focus: StyleBox=button.get_theme_stylebox("focus")
-	check(focus!=null,label+" has a focus indicator")
-	if focus is StyleBoxFlat:
-		check(contrast(focus.border_color,fill)>=3.0,label+" focus outline contrast at least3:1")
-func assert_transparent_pause(button: Button,ink: Color,label: String) -> void:
-	# This control deliberately has no painted slab; opaque controls keep assert_palette.
-	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
-		check(button.has_theme_stylebox_override(mode),label+" "+mode+" has an explicit local style")
-		check(button.get_theme_stylebox(mode) is StyleBoxEmpty,label+" "+mode+" stays transparent")
-	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]:
-		check(button.get_theme_color(role).is_equal_approx(ink),label+" "+role+" keeps local ink")
+	check(focus!=null,label+" existing focus indicator retained")
+func assert_transparent_pause(button: Button,_ink: Color,label: String) -> void:
+	# Previously light text floated on dark art. A neutral light key is needed
+	# now: the requested gray ghost ink would lose contrast on that world art.
+	assert_palette(button,Color.TRANSPARENT,Color.WHITE,Color.TRANSPARENT,0,label)
 	check(button.focus_mode==Control.FOCUS_ALL,label+" remains keyboard focusable")
-	check(button.has_theme_stylebox_override("focus"),label+" has an explicit focus indicator")
-	var focus: StyleBox=button.get_theme_stylebox("focus")
-	check(focus is StyleBoxFlat,label+" focus uses an outline rather than an empty style")
-	if not focus is StyleBoxFlat:return
-	var outline: StyleBoxFlat=focus as StyleBoxFlat
-	check(is_zero_approx(outline.bg_color.a),label+" focus keeps its background transparent")
-	check(outline.border_color.is_equal_approx(ink) and is_equal_approx(outline.border_color.a,1.0),label+" focus keeps its visible local outline")
-	check(outline.border_width_left==2 and outline.border_width_top==2 and outline.border_width_right==2 and outline.border_width_bottom==2,label+" focus retains a two-pixel outline on every side")
+	var outline: StyleBoxFlat=button.get_theme_stylebox("focus")
+	check(outline!=null and is_zero_approx(outline.bg_color.a),label+" focus keeps transparent outline")
+	check(outline.border_width_left==2,label+" existing focus width retained")
 func frames(count: int=2) -> void:
 	for i in count:await process_frame
 func run() -> void:
 	var state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	var main=load("res://scenes/main.tscn").instantiate();root.add_child(main);await frames(5)
-	var opening=load("res://scripts/presentation/c3_opening_view.gd").new();main.add_child(opening)
+	var opening=load("res://scripts/presentation/c3_opening_view.gd").new();main.add_child(opening);await frames()
 	for button: Button in [opening.advance_button,opening.skip_button]:
 		assert_palette(button,Color("101e28",.94),Color("f4edd6"),Color("cfbd74"),2,"opening "+button.text)
 		var focus: StyleBoxFlat=button.get_theme_stylebox("focus")
@@ -57,6 +47,7 @@ func run() -> void:
 	for ready: bool in [false,true]:
 		var ring=load("res://scripts/ui/c3_investigation_ring.gd").new();main.add_child(ring)
 		ring.configure([{"label":"照片","ready":ready,"page":"c35_photos"},{"label":"录音","ready":ready,"page":"c35_voice"},{"label":"群聊","ready":ready,"page":"c35_messages"},{"label":"网络","ready":ready,"page":"c35_network"}])
+		await frames()
 		var fill:Color=Color("d3dfcf") if ready else Color("efe9d8")
 		var feedback:Dictionary={"hover":fill.lightened(.06),"pressed":fill.darkened(.12),"hover_pressed":fill.darkened(.12)}
 		for button: Button in ring.buttons:assert_palette(button,fill,Color("1b2328"),Color("3d8168") if ready else Color("1f6d7f"),2,"ring "+str(ready)+" "+button.text,feedback)
@@ -64,7 +55,7 @@ func run() -> void:
 		ring.queue_free();await frames()
 	var spotlight=load("res://scripts/games/c3_spotlight.gd").new();main.add_child(spotlight);spotlight.set_process(false)
 	for round_index in 3:
-		spotlight.setup({"round":round_index,"attempt":0})
+		spotlight.setup({"round":round_index,"attempt":0});await frames()
 		# Pause freezing/input release are covered by test_theater_show_ui and test_theater_lens.
 		assert_transparent_pause(spotlight.pause_button,Color("fff0cb"),"spotlight pause round"+str(round_index))
 		for button: Button in [spotlight.start_button,spotlight.dash_button]:

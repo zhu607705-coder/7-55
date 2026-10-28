@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import {
   useCallback,
   useEffect,
@@ -232,7 +233,7 @@ export function QizhenWeatherCalibration({ onComplete }: QizhenWeatherCalibratio
                 const key = direction === -1 ? control.backwardKey : control.forwardKey;
                 const active = activeDirections[bandIndex] === direction;
                 return (
-                  <button
+                  <Button variant="tertiary"
                     type="button"
                     className={active ? "is-active" : ""}
                     aria-label={`${control.label}${direction === -1 ? "后退" : "前进"}，键盘 ${key}`}
@@ -246,7 +247,7 @@ export function QizhenWeatherCalibration({ onComplete }: QizhenWeatherCalibratio
                         pulseKeyboardButton(bandIndex, direction, `button:${bandIndex}:${direction}`);
                       }
                     }}
-                  ><kbd>{key}</kbd><small>{direction === -1 ? "退" : "进"}</small></button>
+                  ><kbd>{key}</kbd><small>{direction === -1 ? "退" : "进"}</small></Button>
                 );
               })}
             </article>

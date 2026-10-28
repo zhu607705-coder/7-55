@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 export type PhoneNavKind = "back" | "exit" | "close";
@@ -23,7 +24,7 @@ export const PhoneNavButton = forwardRef<HTMLButtonElement, PhoneNavButtonProps>
   ref
 ) {
   return (
-    <button
+    <Button variant="ghost" data-layout="content"
       {...props}
       ref={ref}
       type="button"
@@ -32,6 +33,6 @@ export const PhoneNavButton = forwardRef<HTMLButtonElement, PhoneNavButtonProps>
       aria-label={label}
     >
       <span className="phone-nav-glyph" aria-hidden="true">{glyph ?? DEFAULT_GLYPHS[kind]}</span>
-    </button>
+    </Button>
   );
 });

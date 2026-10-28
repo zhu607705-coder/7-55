@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useEffect, useRef, useState } from "react";
 import type { EventBus } from "../../core/EventBus";
 
@@ -61,7 +62,7 @@ export function ChapterFourStairPuzzleOverlay({
         </div>
       ) : null}
       {feedback ? <p className="rpg-stair3d-feedback" role="status">{feedback}</p> : null}
-      <button className="rpg-stair3d-exit" type="button" onClick={onExit}>返回三楼</button>
+      <Button variant="secondary" className="rpg-stair3d-exit" type="button" onClick={onExit}>返回三楼</Button>
     </section>
   );
 }

@@ -1,3 +1,4 @@
+import { Button } from "../../components/Button";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
 import { getAudioContextConstructor } from "../../core/ClientCompatibility";
@@ -151,11 +152,11 @@ export function CanteenChaseOverlay({ events, onAttempt }: CanteenChaseOverlayPr
      {view.charge > 0 ? <div className="stunt-charge"><span>松手起跳</span><i style={{ width: `${view.charge * 100}%` }}/></div> : null}
      {view.boost > 0 ? <div className="stunt-boost">顺风加速！</div> : null}
    </> : null}
-   {assetState !== "ready" ? <div className="canteen-bike-asset-status" role="status"><p>{assetState === "error" ? "骑行人物未能加载" : "正在准备自行车与校园…"}</p>{assetState === "error" ? <button onClick={() => window.location.reload()}>重新载入</button> : null}</div> : null}
-   {!view.started && assetState === "ready" ? <div className="stunt-modal"><small>755m · 校园特技追纸</small><h2>这次，骑出点花样。</h2><p>A / D 连续转向<br />按住 Space 蓄力，松手飞跃<br />J 响铃开路 · E 使用捡到的道具</p><p className="stunt-tip">彩色跳台通往飞跃捷径，每段补给恢复一次机会。<br />实心路障要跳，车铃只能震开部分围堵。</p><button onClick={start}>上车追纸</button></div> : null}
-   {view.runState === "lost" ? <div className="stunt-modal"><h2>车还在，人也还在。</h2><p>飞跃 {view.stunts} 次 · 本次 {Math.floor(view.distance)} 米</p><p>提前蓄力跳过横栏，路人和纸障可以响铃开路。</p><button onClick={restart}>再骑一次</button></div> : null}
+   {assetState !== "ready" ? <div className="canteen-bike-asset-status" role="status"><p>{assetState === "error" ? "骑行人物未能加载" : "正在准备自行车与校园…"}</p>{assetState === "error" ? <Button variant="secondary" onClick={() => window.location.reload()}>重新载入</Button> : null}</div> : null}
+   {!view.started && assetState === "ready" ? <div className="stunt-modal"><small>755m · 校园特技追纸</small><h2>这次，骑出点花样。</h2><p>A / D 连续转向<br />按住 Space 蓄力，松手飞跃<br />J 响铃开路 · E 使用捡到的道具</p><p className="stunt-tip">彩色跳台通往飞跃捷径，每段补给恢复一次机会。<br />实心路障要跳，车铃只能震开部分围堵。</p><Button variant="primary" onClick={start}>上车追纸</Button></div> : null}
+   {view.runState === "lost" ? <div className="stunt-modal"><h2>车还在，人也还在。</h2><p>飞跃 {view.stunts} 次 · 本次 {Math.floor(view.distance)} 米</p><p>提前蓄力跳过横栏，路人和纸障可以响铃开路。</p><Button variant="secondary" onClick={restart}>再骑一次</Button></div> : null}
    {view.runState === "won" ? <div className="stunt-modal"><h2>追到了！</h2><p>755 米 · 特技 {view.stunts} 次 · 得分 {view.score}</p></div> : null}
-   {view.paused && view.started && view.runState === "running" ? <div className="stunt-modal"><h2>停下来喘口气</h2><button onClick={() => { model.setPaused(false); lastFrame.current = performance.now(); publish(); }}>继续追纸</button></div> : null}
-   {view.started && view.runState === "running" && !view.paused ? (coarse ? <nav className="stunt-touch" aria-label="特技骑行触屏操作">{(["left", "jump", "bell", "item", "right"] as const).map(a => <button key={a} aria-label={inputNames[a]} onPointerDown={e => pressTouch(a, e)} onPointerUp={e => releaseTouch(e)} onPointerCancel={e => releaseTouch(e, true)} onLostPointerCapture={e => releaseTouch(e, true)}>{a === "left" ? "◀" : a === "right" ? "▶" : a === "jump" ? "按住跳" : a === "bell" ? "响铃" : "道具"}</button>)}</nav> : <footer className="stunt-keyboard">A / D 转向　 Space 蓄力跳　 J 响铃　 E 道具</footer>) : null}
+   {view.paused && view.started && view.runState === "running" ? <div className="stunt-modal"><h2>停下来喘口气</h2><Button variant="secondary" onClick={() => { model.setPaused(false); lastFrame.current = performance.now(); publish(); }}>继续追纸</Button></div> : null}
+   {view.started && view.runState === "running" && !view.paused ? (coarse ? <nav className="stunt-touch" aria-label="特技骑行触屏操作">{(["left", "jump", "bell", "item", "right"] as const).map(a => <Button variant="secondary" key={a} aria-label={inputNames[a]} onPointerDown={e => pressTouch(a, e)} onPointerUp={e => releaseTouch(e)} onPointerCancel={e => releaseTouch(e, true)} onLostPointerCapture={e => releaseTouch(e, true)}>{a === "left" ? "◀" : a === "right" ? "▶" : a === "jump" ? "按住跳" : a === "bell" ? "响铃" : "道具"}</Button>)}</nav> : <footer className="stunt-keyboard">A / D 转向　 Space 蓄力跳　 J 响铃　 E 道具</footer>) : null}
  </section>;
 }

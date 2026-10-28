@@ -27,7 +27,7 @@ func run()->void:
 		var objective:Label=journal.find_child("JournalObjective",true,false)
 		check(objective.get_theme_font_size("font_size")==18,"locked heading size remains 18")
 		check(resume.get_theme_font_size("font_size")==14,"locked button size remains 14")
-		check(resume.get_theme_stylebox("normal") is StyleBoxEmpty,"selected actions do not reintroduce filled strips")
+		check(resume.get_meta("tactile_variant","")=="secondary","journal actions use neutral readable keys")
 		check(JSON.stringify(state.d)==before,"composition changes no earned state or save")
 		check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(shell.modal_panel.get_global_rect()),"single-page layout remains inside viewport")
 		shell._close_modal();await frames()

@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import { QizhenRecipeFrame } from "../../../components/QizhenRecipeFrame";
@@ -278,22 +279,22 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
         </article>
 
         <div className="cc98-reply-filter cc98-journal-filter">
-          <button
+          <Button variant="tertiary"
             aria-pressed={ownerOnly}
             className={ownerOnly ? "is-active" : ""}
             onClick={() => setOwnerOnly(true)}
             type="button"
           >
             {copy.ownerOnly}
-          </button>
-          <button
+          </Button>
+          <Button variant="tertiary"
             aria-pressed={!ownerOnly}
             className={ownerOnly ? "" : "is-active"}
             onClick={() => setOwnerOnly(false)}
             type="button"
           >
             {copy.showAll}
-          </button>
+          </Button>
         </div>
 
         {visibleReplies.map((reply) => {
@@ -313,14 +314,14 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
                 </header>
                 {reply.text ? <p>{reply.text}</p> : null}
                 {reply.photo ? (
-                  <button
+                  <Button variant="ghost" data-layout="content"
                     aria-label={copy.replyPhotoAlt}
                     className="cc98-journal-photo-thumb"
                     onClick={() => setDetailPhoto(reply.photo)}
                     type="button"
                   >
                     <QizhenRecipeFrame recipe={reply.photo.recipe} variant="thumb" />
-                  </button>
+                  </Button>
                 ) : null}
               </article>
             );
@@ -348,14 +349,14 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
 
         {!archived && isMainDraft && canPublishMain ? (
           <section className="cc98-journal-actions">
-            <button
+            <Button variant="primary"
               className="cc98-journal-primary"
               disabled={publishing}
               onClick={handlePublishMain}
               type="button"
             >
               {publishing ? copy.publishing : copy.publishMain}
-            </button>
+            </Button>
           </section>
         ) : null}
 
@@ -386,13 +387,13 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
                       />
                     </div>
                   ) : null}
-                  <button
+                  <Button variant="primary"
                     className="cc98-journal-primary"
                     onClick={() => onPublishReply(spotId)}
                     type="button"
                   >
                     {copy.publishReply}
-                  </button>
+                  </Button>
                 </article>
               );
             })}
@@ -401,25 +402,25 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
 
         {!archived && isOpen ? (
           <section className="cc98-journal-actions">
-            <button
+            <Button variant="text"
               className="cc98-journal-secondary"
               onClick={onReturnToLake}
               type="button"
             >
               {copy.continueSupplement}
-            </button>
+            </Button>
           </section>
         ) : null}
       </main>
 
       <footer className="cc98-journal-footer-bar">
-        <button
+        <Button variant="text"
           className="cc98-journal-secondary"
           onClick={onReturnToLake}
           type="button"
         >
           {copy.returnToLake}
-        </button>
+        </Button>
       </footer>
 
       {detailPhoto ? (
@@ -440,7 +441,7 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
               recipe={detailPhoto.recipe}
               variant="full"
             />
-            <button
+            <Button variant="ghost"
               aria-label="×"
               className="cc98-journal-lightbox-close"
               onClick={() => setDetailPhoto(null)}
@@ -448,7 +449,7 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
               type="button"
             >
               ×
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}
@@ -464,28 +465,28 @@ export function QizhenJournalThread(props: QizhenJournalThreadProps) {
             <h3>{copy.networkError.title}</h3>
             <p>{copy.networkError.body}</p>
             <div className="cc98-journal-network-actions">
-              <button
+              <Button variant="primary"
                 className="cc98-journal-primary"
                 onClick={onOpenControlCenter}
                 type="button"
               >
                 {copy.networkError.openControlCenter}
-              </button>
-              <button
+              </Button>
+              <Button variant="text"
                 className="cc98-journal-secondary"
                 onClick={onReturnToLake}
                 type="button"
               >
                 {copy.networkError.returnToLake}
-              </button>
-              <button
+              </Button>
+              <Button variant="secondary"
                 className="cc98-journal-secondary"
                 onClick={onKeepEditing}
                 ref={keepEditingRef}
                 type="button"
               >
                 {copy.networkError.keepEditing}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

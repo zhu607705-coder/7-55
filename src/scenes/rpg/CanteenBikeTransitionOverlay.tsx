@@ -1,3 +1,4 @@
+import { Button } from "../../components/Button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
 import { CanteenBikeTransitionRenderer } from "./canteen-chase/CanteenBikeTransitionRenderer";
@@ -101,7 +102,7 @@ export function CanteenBikeTransitionOverlay({
       {assetState !== "ready" && (
         <div className="canteen-bike-asset-status" role="status">
           <p>{assetState === "error" ? "人物资源加载失败，转场已暂停。" : "正在准备人物…"}</p>
-          {assetState === "error" && <button type="button" onClick={() => window.location.reload()}>重新载入</button>}
+          {assetState === "error" && <Button variant="secondary" type="button" onClick={() => window.location.reload()}>重新载入</Button>}
         </div>
       )}
     </section>

@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { GameSubtitleFrame, type GameSubtitleTone } from "../../../components/GameSubtitleFrame";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
@@ -176,17 +177,17 @@ export function ClockScene({ state, router }: SceneComponentProps) {
           {clockContent.stages.map((stage, index) => <div key={stage.id} className={`${!aligned && index === stepIndex ? "is-active" : ""} ${aligned || index < stepIndex ? "is-complete" : ""}`.trim()}><b>{String(index + 1).padStart(2, "0")}</b><span>{stage.label}</span></div>)}
         </nav>
 
-        {!playable ? <section className="clock-play-panel clock-locked-panel"><p className="clock-panel-code">ACCESS DENIED</p><div className="clock-lock-glyph">×</div><h2>{clockContent.locked.title}</h2><p>{clockContent.locked.body}</p><button type="button" onClick={() => router.goTo("phone_home")}>返回当前任务</button></section> : null}
+        {!playable ? <section className="clock-play-panel clock-locked-panel"><p className="clock-panel-code">ACCESS DENIED</p><div className="clock-lock-glyph">×</div><h2>{clockContent.locked.title}</h2><p>{clockContent.locked.body}</p><Button variant="text" type="button" onClick={() => router.goTo("phone_home")}>返回当前任务</Button></section> : null}
 
         {playable && clock.step === "target_selection" ? <section className="clock-play-panel clock-archive-panel">
           <header className="clock-panel-heading"><div><p className="clock-panel-code">01 / ARCHIVE REBUILD</p><h2>{clockContent.targetSelection.title}</h2></div><span>{clock.archiveClueIds.length}/3 证据</span></header>
           <p className="clock-panel-copy">{clockContent.targetSelection.body}</p>
           <div className="clock-clue-board">{archiveClues.map((clue) => {
             const selected = clock.archiveClueIds.includes(clue.id as ClockArchiveClueId);
-            return <button key={clue.id} type="button" className={selected ? "is-selected" : ""} aria-pressed={selected} onClick={() => toggleClue(clue.id)}><time>{clue.stamp}</time><strong>{clue.title}</strong><span>{clue.body}</span></button>;
+            return <Button variant="ghost" data-layout="content" key={clue.id} type="button" className={selected ? "is-selected" : ""} aria-pressed={selected} onClick={() => toggleClue(clue.id)}><time>{clue.stamp}</time><strong>{clue.title}</strong><span>{clue.body}</span></Button>;
           })}</div>
-          <div className="clock-anchor-strip">{candidates.map((option) => <button key={option.seconds} type="button" className={candidate === option.seconds ? "is-selected" : ""} onClick={() => { setCandidate(option.seconds); setFeedback(null); }}><small>{option.period}</small><strong>{option.time}</strong><span>{option.title}</span></button>)}</div>
-          <button className="clock-main-action" type="button" disabled={!archiveReady} onClick={selectTarget}>提交档案与时刻</button>
+          <div className="clock-anchor-strip">{candidates.map((option) => <Button variant="ghost" data-layout="content" key={option.seconds} type="button" className={candidate === option.seconds ? "is-selected" : ""} onClick={() => { setCandidate(option.seconds); setFeedback(null); }}><small>{option.period}</small><strong>{option.time}</strong><span>{option.title}</span></Button>)}</div>
+          <Button variant="primary" className="clock-main-action" type="button" disabled={!archiveReady} onClick={selectTarget}>提交档案与时刻</Button>
         </section> : null}
 
         {playable && clock.step === "coarse_time" ? <section className="clock-play-panel clock-coarse-panel">
@@ -202,7 +203,7 @@ export function ClockScene({ state, router }: SceneComponentProps) {
             strings={clockContent.coarseTime.movement3d}
           />
           <div className="clock-lock-ledger"><span className={clock.coarseLockIds.includes("hour") ? "is-done" : ""}>08 时机芯</span><span className={clock.coarseLockIds.includes("minute") ? "is-done" : ""}>00 分机芯</span><span>23 秒暂存</span></div>
-          <button className="clock-main-action" type="button" disabled={!coarseReady} onClick={confirmCoarse}>进入漂移核对</button>
+          <Button variant="primary" className="clock-main-action" type="button" disabled={!coarseReady} onClick={confirmCoarse}>进入漂移核对</Button>
         </section> : null}
 
         {playable && clock.step === "seconds_trim" ? <section className="clock-play-panel clock-drift-panel">
@@ -210,9 +211,9 @@ export function ClockScene({ state, router }: SceneComponentProps) {
           <p className="clock-panel-copy">{clockContent.secondsTrim.body}</p>
           <div className="clock-drift-matrix">{driftChannels.map((channel) => {
             const corrected = clock.driftCorrectedChannelIds.includes(channel.id);
-            return <article key={channel.id} className={corrected ? "is-corrected" : ""}><header><span>{channel.label}</span><strong>{corrected ? "00" : channel.display}</strong></header><div>{clockContent.secondsTrim.corrections.map((value) => <button key={value} type="button" disabled={corrected} className={corrections[channel.id] === value ? "is-selected" : ""} onClick={() => setCorrections((current) => ({ ...current, [channel.id]: value }))}>{value > 0 ? `+${value}` : value}</button>)}</div><button className="clock-channel-apply" type="button" disabled={corrected || corrections[channel.id] === undefined} onClick={() => correctChannel(channel)}>{corrected ? "已归零" : "应用反向修正"}</button></article>;
+            return <article key={channel.id} className={corrected ? "is-corrected" : ""}><header><span>{channel.label}</span><strong>{corrected ? "00" : channel.display}</strong></header><div>{clockContent.secondsTrim.corrections.map((value) => <Button variant="tertiary" key={value} type="button" disabled={corrected} className={corrections[channel.id] === value ? "is-selected" : ""} onClick={() => setCorrections((current) => ({ ...current, [channel.id]: value }))}>{value > 0 ? `+${value}` : value}</Button>)}</div><Button variant="primary" className="clock-channel-apply" type="button" disabled={corrected || corrections[channel.id] === undefined} onClick={() => correctChannel(channel)}>{corrected ? "已归零" : "应用反向修正"}</Button></article>;
           })}</div>
-          <button className="clock-main-action" type="button" disabled={!driftReady} onClick={confirmPrecision}>生成 08:00:00</button>
+          <Button variant="primary" className="clock-main-action" type="button" disabled={!driftReady} onClick={confirmPrecision}>生成 08:00:00</Button>
         </section> : null}
 
         {playable && clock.step === "phase_lock" ? <section className="clock-play-panel clock-phase-panel">
@@ -221,10 +222,10 @@ export function ClockScene({ state, router }: SceneComponentProps) {
           <div className="clock-protocol-tabs">{phaseRounds.map((round, index) => <div key={round.label} className={`${index === clock.phaseLockHits ? "is-active" : ""} ${index < clock.phaseLockHits ? "is-done" : ""}`.trim()}><b>0{index + 1}</b><span>{round.label}</span><small>{round.protocol}</small></div>)}</div>
           <div className="clock-phase-lane" style={{ ...targetStyle, "--clock-lock-position": `${lockPosition * 100}%` } as CSSProperties}><span className="clock-phase-target" /><i className="clock-phase-sweep" /><b>{currentRound.reverse ? "REVERSE" : "FORWARD"}</b></div>
           <div className="clock-pulse-readout"><small>{currentRound.label}</small><strong>{String(Math.round(lockPosition * 999)).padStart(3, "0")}</strong><em>{currentRound.protocol}</em></div>
-          <button className="clock-main-action is-release" type="button" onClick={submitLock}>执行本轮放行 <kbd>SPACE</kbd></button>
+          <Button variant="primary" className="clock-main-action is-release" type="button" onClick={submitLock}>执行本轮放行 <kbd>SPACE</kbd></Button>
         </section> : null}
 
-        {playable && aligned ? <section className="clock-play-panel clock-complete-panel"><p className="clock-panel-code">TIME AXIS / RELEASED</p><div className="clock-complete-mark">08:00</div><h2>{clockContent.complete.title}</h2><p>{clockContent.complete.body}</p><div className="clock-complete-ledger"><span>四关校时</span><strong>COMPLETE</strong><span>放行尝试</span><strong>{clock.phaseLockAttempts}</strong><span>漂移尝试</span><strong>{clock.driftAttempts}</strong></div>{dialogueLine ? <GameSubtitleFrame key={dialogueStep} text={dialogueLine.text} tone={dialogueLine.tone} speaker={dialogueLine.speaker} /> : null}<button className="clock-main-action" type="button" onClick={() => router.goTo("phone_home")}>返回手机主页</button></section> : null}
+        {playable && aligned ? <section className="clock-play-panel clock-complete-panel"><p className="clock-panel-code">TIME AXIS / RELEASED</p><div className="clock-complete-mark">08:00</div><h2>{clockContent.complete.title}</h2><p>{clockContent.complete.body}</p><div className="clock-complete-ledger"><span>四关校时</span><strong>COMPLETE</strong><span>放行尝试</span><strong>{clock.phaseLockAttempts}</strong><span>漂移尝试</span><strong>{clock.driftAttempts}</strong></div>{dialogueLine ? <GameSubtitleFrame key={dialogueStep} text={dialogueLine.text} tone={dialogueLine.tone} speaker={dialogueLine.speaker} /> : null}<Button variant="secondary" className="clock-main-action" type="button" onClick={() => router.goTo("phone_home")}>返回手机主页</Button></section> : null}
         {feedback && !aligned ? <p className={`clock-feedback is-${feedback.tone}`} role="status">{feedback.text}</p> : null}
       </main>
     </section>

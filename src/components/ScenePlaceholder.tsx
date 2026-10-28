@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import type { EventBus } from "../core/EventBus";
 import type { SceneRouter } from "../core/SceneRouter";
 import type { GameState, SceneId } from "../core/types";
@@ -20,9 +21,9 @@ export function ScenePlaceholder({ sceneId, label, contract, router }: ScenePlac
       <p className="scene-kicker">{sceneId}</p>
       <h1>{label}</h1>
       <p>{contract}</p>
-      <button type="button" onClick={() => router.goTo("desktop")}>
+      <Button variant="text" type="button" onClick={() => router.goTo("desktop")}>
         Back to desktop
-      </button>
+      </Button>
     </article>
   );
 }

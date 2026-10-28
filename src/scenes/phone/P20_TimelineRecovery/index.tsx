@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useState } from "react";
 import { InvestigationRing } from "../../../components/InvestigationRing";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
@@ -126,7 +127,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
               <p><b>林星宇</b>我离开湖边以后，去了哪里？</p>
               <p><b>系统</b>照片、录音、消息都存了，就是没记清你去了哪。先看还能读出的。</p>
             </div>
-            <button type="button" onClick={openRecovery}>打开恢复工具</button>
+            <Button variant="primary" type="button" onClick={openRecovery}>打开恢复工具</Button>
           </section>
         ) : null}
 
@@ -148,7 +149,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
               <section className="interlude-next-action">
                 <h2>先查离湖时间</h2>
                 <p>划船帖的最后一条回复保留了带来源的离湖时间。</p>
-                <button type="button" onClick={() => router.goTo("cc98")}>查看划船帖</button>
+                <Button variant="secondary" type="button" onClick={() => router.goTo("cc98")}>查看划船帖</Button>
               </section>
             ) : (
               <InvestigationRing
@@ -181,11 +182,11 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                       {rejected ? <p>{DECOY_RESULT_COPY[decoy.id]}</p> : (
                         <div className="interlude-decoy-reasons">
                           {DECOY_REASONS.map((reason) => (
-                            <button
+                            <Button variant="secondary"
                               key={reason.id}
                               type="button"
                               onClick={() => rejectDecoy(decoy.id, reason.id)}
-                            >{reason.label}</button>
+                            >{reason.label}</Button>
                           ))}
                         </div>
                       )}
@@ -225,9 +226,9 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                 <h2>选择最终地点</h2>
                 <p>哪个地方能对上时间、沿途声音、入口变化和网络记录？</p>
                 {viewModel.destinationCandidates.map((candidate) => (
-                  <button key={candidate.id} type="button" onClick={() => verifyDestination(candidate.id)}>
+                  <Button variant="secondary" key={candidate.id} type="button" onClick={() => verifyDestination(candidate.id)}>
                     {candidate.label}
-                  </button>
+                  </Button>
                 ))}
               </section>
             ) : null}
@@ -237,7 +238,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                 <span>RECOVERED</span>
                 <h2>路径记录已恢复</h2>
                 <p>回放会从启真湖最后一帧开始，并在已确认地点结束。</p>
-                <button type="button" onClick={startReplay}>播放恢复回放</button>
+                <Button variant="primary" type="button" onClick={startReplay}>播放恢复回放</Button>
               </section>
             ) : null}
           </>

@@ -37,7 +37,7 @@ func _ready() -> void:
 		_label(["姓名","学号","人格"][i],Rect2(42,355+i*49,108,34),18,MUTED)
 		result_labels.append(_label("核验中…",Rect2(218,355+i*49,155,34),20,MUTED))
 	scan_hint=_label("正在扫描报告……",Rect2(42,516,348,28),16,MUTED)
-	stamp=Button.new();stamp.name="StampNonPerson";stamp.position=Vector2(42,563);stamp.size=Vector2(346,64)
+	stamp=Button.new();stamp.set_meta("tactile_exempt",true);stamp.name="StampNonPerson";stamp.position=Vector2(42,563);stamp.size=Vector2(346,64)
 	stamp.text="盖章：非本人";stamp.disabled=true
 	stamp.add_theme_font_override("font",font);stamp.add_theme_font_size_override("font_size",22)
 	stamp.add_theme_color_override("font_color",Color("fffaf0"));stamp.add_theme_color_override("font_hover_color",Color("fffaf0"));stamp.add_theme_color_override("font_pressed_color",Color("fffaf0"));stamp.add_theme_color_override("font_disabled_color",MUTED);stamp.add_theme_color_override("font_hover_pressed_color",Color("fffaf0"));stamp.add_theme_color_override("font_focus_color",Color("fffaf0"))

@@ -1,3 +1,4 @@
+import { Button } from "../../components/Button";
 import {
   RPG_REALITY_MODE_CONTRACT,
   type RpgRealityMode
@@ -18,7 +19,7 @@ export function RpgRealityModeToggle({
   const nextMode: RpgRealityMode = mode === "dark" ? "light" : "dark";
   const next = RPG_REALITY_MODE_CONTRACT[nextMode];
   return (
-    <button
+    <Button variant="ghost" data-layout="content"
       type="button"
       className={`rpg-canteen-mode-toggle rpg-reality-mode-toggle is-${mode} ${className}`.trim()}
       aria-pressed={mode === "dark"}
@@ -34,6 +35,6 @@ export function RpgRealityModeToggle({
       <span>当前模式</span>
       <strong>{current.label}</strong>
       <small>切换：{next.label}</small>
-    </button>
+    </Button>
   );
 }

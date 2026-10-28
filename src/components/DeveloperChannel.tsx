@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { GameStore } from "../core/types";
@@ -177,11 +178,11 @@ export function DeveloperChannel({
       onClick={dismissBackdrop}
     />
     <aside ref={channelRef} data-developer-channel-root data-recording-mode={recordingMode ? "true" : undefined} className="developer-channel" aria-label={recordingMode ? "录制检查点面板" : "开发者通道"} onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={stopPointerPropagation}>
-    <header><div><small>{recordingMode ? "7:55 录制准备" : "7:55 DEV"} · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>{recordingMode ? "录制检查点切换" : "章节与关卡直达"}</strong></div><button type="button" aria-label={closeButtonLabel} onClick={closeAndResume}>×</button></header>
+    <header><div><small>{recordingMode ? "7:55 录制准备" : "7:55 DEV"} · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>{recordingMode ? "录制检查点切换" : "章节与关卡直达"}</strong></div><Button variant="ghost" type="button" aria-label={closeButtonLabel} onClick={closeAndResume}>×</Button></header>
     <nav className="developer-channel-chapters" aria-label="选择章节">
       {DEVELOPER_CHAPTERS.map((chapter) => {
         const count = VISIBLE_DEVELOPER_CHECKPOINTS.filter((checkpoint) => checkpoint.chapter === chapter).length;
-        return <button
+        return <Button variant="ghost" data-layout="content"
           key={chapter}
           type="button"
           data-dev-chapter={chapter}
@@ -192,33 +193,33 @@ export function DeveloperChannel({
             setSelectedChapter(chapter);
             setSelectedLevelId(levels[0]?.id ?? "全部");
           }}
-        ><strong>{chapter}</strong><span>{count}</span></button>;
+        ><strong>{chapter}</strong><span>{count}</span></Button>;
       })}
     </nav>
     <div className="developer-channel-levels" aria-label="选择关卡">
       <span>关卡</span>
       <div>
-        {chapterLevels.map((level) => <button
+        {chapterLevels.map((level) => <Button variant="ghost" data-layout="content"
           key={level.id}
           type="button"
           data-dev-level={level.id}
           className={selectedLevelId === level.id ? "is-active" : ""}
           aria-pressed={selectedLevelId === level.id}
           onClick={() => setSelectedLevelId(level.id)}
-        ><b>{level.id}</b><span>{level.label}</span><i>{level.checkpointIds.length}</i></button>)}
-        {chapterLevels.length > 1 && <button
+        ><b>{level.id}</b><span>{level.label}</span><i>{level.checkpointIds.length}</i></Button>)}
+        {chapterLevels.length > 1 && <Button variant="ghost" data-layout="content"
           type="button"
           data-dev-level="全部"
           className={selectedLevelId === "全部" ? "is-active" : ""}
           aria-pressed={selectedLevelId === "全部"}
           onClick={() => setSelectedLevelId("全部")}
-        ><b>ALL</b><span>全部关卡</span><i>{chapterCheckpoints.length}</i></button>}
+        ><b>ALL</b><span>全部关卡</span><i>{chapterCheckpoints.length}</i></Button>}
       </div>
     </div>
     <div className="developer-channel-scroll">
       <section>
         <h2><span>{selectedChapter} · {selectedLevel ? `${selectedLevel.id} ${selectedLevel.label}` : "全部关卡"}</span><small>{visibleCheckpoints.length} 个节点</small></h2>
-        {visibleCheckpoints.map((item) => <button
+        {visibleCheckpoints.map((item) => <Button variant="ghost" data-layout="content"
           key={item.id}
           type="button"
           data-dev-checkpoint={item.id}
@@ -235,10 +236,10 @@ export function DeveloperChannel({
             setActive(item.id);
             onCheckpointApplied?.();
           }}
-        ><strong>{item.label}</strong><span>{item.detail}</span></button>)}
+        ><strong>{item.label}</strong><span>{item.detail}</span></Button>)}
       </section>
     </div>
-    <footer><button type="button" onClick={() => {
+    <footer><Button variant="secondary" type="button" onClick={() => {
       closeAndResume();
       if (restoreDeveloperBackup(store)) {
         setActive(null);
@@ -246,7 +247,7 @@ export function DeveloperChannel({
       } else {
         setChannelOpen(true);
       }
-    }}>恢复进入前存档</button><span>{recordingMode ? "选择节点后自动清屏 · Esc 关闭" : "Ctrl/Cmd Shift D"}</span></footer>
+    }}>恢复进入前存档</Button><span>{recordingMode ? "选择节点后自动清屏 · Esc 关闭" : "Ctrl/Cmd Shift D"}</span></footer>
     </aside>
   </Fragment>, document.body);
 }

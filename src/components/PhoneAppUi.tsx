@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import {
   useEffect,
   useRef,
@@ -127,7 +128,7 @@ export function PhoneAppBottomNav({
         }
         const active = item.id === activeId;
         return (
-          <button
+          <Button variant="ghost" data-layout="content"
             key={item.id}
             type="button"
             className={active ? "is-active" : ""}
@@ -135,7 +136,7 @@ export function PhoneAppBottomNav({
             onClick={() => onSelect(item.id)}
           >
             {content}
-          </button>
+          </Button>
         );
       })}
     </nav>
@@ -232,7 +233,7 @@ export function PhoneActionSheet({
             <small>QUICK PANEL</small>
             <h2 id="phone-app-sheet-title">{title}</h2>
           </span>
-          <button type="button" aria-label={`关闭${title}`} onClick={onClose}>×</button>
+          <Button variant="ghost" type="button" aria-label={`关闭${title}`} onClick={onClose}>×</Button>
         </header>
         {description ? <p id="phone-app-sheet-description" className="phone-app-sheet__description">{description}</p> : null}
         <div className="phone-app-sheet__body">{children}</div>
@@ -322,9 +323,9 @@ export function PhoneListRow({
   }
 
   return (
-    <button {...buttonProps} type="button" className={`phone-list-row ${className}`.trim()}>
+    <Button variant="ghost" data-layout="content" {...buttonProps} type="button" className={`phone-list-row ${className}`.trim()}>
       {content}
-    </button>
+    </Button>
   );
 }
 
@@ -348,7 +349,7 @@ export function PhoneSegmentedControl<T extends string>({
       {options.map((option) => {
         const selected = option.value === value;
         return (
-          <button
+          <Button variant="tertiary"
             key={option.value}
             type="button"
             className={selected ? "is-selected" : ""}
@@ -356,7 +357,7 @@ export function PhoneSegmentedControl<T extends string>({
             onClick={() => onChange(option.value)}
           >
             {option.label}
-          </button>
+          </Button>
         );
       })}
     </div>

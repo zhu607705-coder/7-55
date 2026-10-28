@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { ChapterFourActionResult } from "../../modules/ChapterFourTemporalMazeController";
@@ -124,7 +125,7 @@ export function WayfindingBoardGame({ onConfirm, onCancel }: WayfindingBoardGame
           <span>ARCHIVED SIGNAGE / A3</span>
           <h2 id="wayfinding-board-title">残缺导视板</h2>
         </div>
-        <button type="button" className="chapter4-wayfinding-board__close" onClick={onCancel} aria-label="取消并关闭导视板">×</button>
+        <Button variant="ghost" type="button" className="chapter4-wayfinding-board__close" onClick={onCancel} aria-label="取消并关闭导视板">×</Button>
       </header>
 
       <p id="wayfinding-board-objective" className="chapter4-wayfinding-board__objective">
@@ -194,9 +195,9 @@ export function WayfindingBoardGame({ onConfirm, onCancel }: WayfindingBoardGame
       </p>
 
       <footer>
-        <button type="button" onClick={onCancel}>取消</button>
+        <Button variant="secondary" type="button" onClick={onCancel}>取消</Button>
         <span>方向键切换槽位，Enter 或空格选择</span>
-        <button type="button" className="is-primary" onClick={submit}>确认当前排列</button>
+        <Button variant="primary" type="button" className="is-primary" onClick={submit}>确认当前排列</Button>
       </footer>
     </section>
   );

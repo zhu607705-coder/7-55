@@ -111,14 +111,14 @@ func _build_ui()->void:
 	var font:Font=load("res://scripts/ui/native_typography.gd").body_font()
 	var shade:=ColorRect.new();shade.color=Color(.035,.055,.085,.9);shade.position=Vector2(0,0);shade.size=Vector2(960,40);shade.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(shade)
 	title_label=Label.new();title_label.text="未来学习中心  /  3F";title_label.position=Vector2(18,8);title_label.add_theme_font_override("font",font);title_label.add_theme_font_size_override("font_size",17);panel.add_child(title_label)
-	var button:=Button.new();button.text="楼层总图 · Tab";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
+	var button:=Button.new();button.set_meta("tactile_keep_layout",true);button.set_meta("tactile_variant","secondary");button.text="楼层总图 · Tab";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
 	var footer:=ColorRect.new();footer.color=Color(.035,.055,.085,.86);footer.position=Vector2(0,509);footer.size=Vector2(960,31);footer.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(footer)
 	place_label=Label.new();place_label.position=Vector2(18,513);place_label.add_theme_font_override("font",font);place_label.add_theme_font_size_override("font_size",14);panel.add_child(place_label)
 	var hint:=Label.new();hint.text="WASD / 方向键行走  ·  点击地面前往";hint.position=Vector2(602,513);hint.add_theme_font_override("font",font);hint.add_theme_font_size_override("font_size",13);panel.add_child(hint)
 	if OS.has_feature("mobile") or OS.get_environment("FLC_TOUCH")=="1":
 		hint.text="轻触地面前往  ·  左下方向键移动"
 		for entry:Array in [["↑",Vector2(76,374),Vector2.UP],["↓",Vector2(76,450),Vector2.DOWN],["←",Vector2(38,412),Vector2.LEFT],["→",Vector2(114,412),Vector2.RIGHT]]:
-			var control:=Button.new();control.text=entry[0];control.position=entry[1];control.size=Vector2(38,38);control.add_theme_font_size_override("font_size",22);panel.add_child(control)
+			var control:=Button.new();control.set_meta("tactile_keep_layout",true);control.set_meta("tactile_variant","secondary");control.text=entry[0];control.position=entry[1];control.size=Vector2(38,38);control.add_theme_font_size_override("font_size",22);panel.add_child(control)
 			control.button_down.connect(func()->void:touched_buttons[entry[0]]=entry[2];_touch_changed())
 			control.button_up.connect(func()->void:touched_buttons.erase(entry[0]);_touch_changed())
 

@@ -1,3 +1,4 @@
+import { Button } from "../../components/Button";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { InventoryAcquisitionFlight, useRecentInventoryItem } from "../../components/InventoryAcquisitionFeedback";
@@ -362,9 +363,9 @@ export function RpgInventoryDock({
       {qizhenFinalRigReady ? (
         <div className="rpg-inventory-assembly" role="group" aria-label="四件材料组合">
           <p>{qizhenLegacyAssembly ? "绳和网框已用于旧抄网，装上磁铁与钓竿即可完成组装。" : "四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿"}</p>
-          <button type="button" aria-label="组合四件材料" onClick={combineQizhenFinalRig}>
+          <Button variant="primary" type="button" aria-label="组合四件材料" onClick={combineQizhenFinalRig}>
             组合四件材料
-          </button>
+          </Button>
         </div>
       ) : null}
       {drag && shellRef.current ? createPortal(

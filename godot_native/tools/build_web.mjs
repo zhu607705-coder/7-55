@@ -1,3 +1,4 @@
+import { buttonMaterialSource, inlineButtonMaterial, verifyButtonMaterial } from './web_button_material.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -30,10 +31,10 @@ const monolithic = args.includes('--monolithic');
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const relative = file => path.relative(project, file).split(path.sep).join('/');
 const limits = { siteBytes: 950_000_000, packBytes: 800_000_000, wasmBytes: 70_000_000, deferredPackBytes: CONTENT_PACK_LIMIT };
-const deliveryTools = ['tools/build_web.mjs', 'tools/managed_validation_process.mjs', 'tools/build_panorama_tiles.mjs', 'tools/convert_media.sh', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs', 'tools/web_content_chunks.mjs', 'tools/web_story_content_policy.mjs', 'tools/web_boot_chunks.mjs', 'tools/web_audio_compat.mjs', 'tools/web_boot_typography.mjs', 'tools/web_precompress.mjs', 'tools/serve_web.mjs'];
+const deliveryTools = ['tools/web_button_material.mjs', 'tools/build_web.mjs', 'tools/managed_validation_process.mjs', 'tools/build_panorama_tiles.mjs', 'tools/convert_media.sh', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs', 'tools/web_content_chunks.mjs', 'tools/web_story_content_policy.mjs', 'tools/web_boot_chunks.mjs', 'tools/web_audio_compat.mjs', 'tools/web_boot_typography.mjs', 'tools/web_precompress.mjs', 'tools/serve_web.mjs'];
 const bootArtSource = 'web/boot_art/morning_room.webp';
 const bootArtPlaceholder = '__755_BOOT_ART_MORNING_ROOM__';
-const browserSources = ['web/index.html', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
+const browserSources = [buttonMaterialSource, 'web/index.html', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
 // Exports are hosting artifacts, not editor resources. Git ignores do not stop
 // Godot's resource scanner from creating sidecars inside immutable site output.
 // Establish the parent boundary before the editor/import/export process runs.
@@ -235,6 +236,7 @@ if (!verifyOnly) {
   bindScript('content-loader.js');
   bindScript('scene-orientation.js');
   inlineBootPresentation();
+  inlineButtonMaterial(project, output);
   copyBootPresentationAssets();
   installBootTypography(project, output);
   bindScript('index.js');
@@ -259,6 +261,7 @@ if (bootIntroScripts.length !== 1 || bootIntroScripts[0][1] !== bootIntroSha256 
 if (/<script\b[^>]*\bsrc=["'][^"']*boot-intro\.js(?:[?#][^"']*)?["']/i.test(html) || fs.existsSync(path.join(output, 'boot-intro.js'))) throw new Error('Inline boot presentation must not add an external script dependency');
 const bootIntroPresentation = { mode: 'inline', source: 'web/boot_intro.js', sha256: bootIntroSha256, assets: verifyBootPresentationAssets(html) };
 const bootTypography = verifyBootTypography(project, output, html);
+const buttonMaterial = verifyButtonMaterial(project, html);
 const contentLoaderUrl = `content-loader.js?v=${contentLoaderSha256}`;
 const loaderReferences = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(match => match[1]).filter(value => /(?:^|\/)content-loader\.js(?:[?#]|$)/.test(value));
 if (loaderReferences.length !== 1 || loaderReferences[0] !== contentLoaderUrl) throw new Error('Exported HTML content-loader URL is not bound to its actual SHA-256');
@@ -327,6 +330,7 @@ if (verifyOnly) {
   if (previous.contentLoader?.sha256 !== contentLoaderSha256 || previous.contentLoader?.url !== contentLoaderUrl) throw new Error('Content-loader version differs from its build provenance');
   if (previous.orientationPresentation?.sha256 !== orientationSha256 || previous.orientationPresentation?.url !== orientationUrl) throw new Error('Orientation presentation differs from its build provenance');
   if (JSON.stringify(previous.bootIntroPresentation) !== JSON.stringify(bootIntroPresentation)) throw new Error('Boot presentation differs from its build provenance');
+  if (JSON.stringify(previous.buttonMaterial) !== JSON.stringify(buttonMaterial)) throw new Error('Button material differs from its build provenance');
   if (JSON.stringify(previous.bootTypography) !== JSON.stringify(bootTypography)) throw new Error('Boot typography differs from its build provenance');
   if (previous.engineLoader?.file !== 'index.js' || previous.engineLoader?.sha256 !== engineLoaderSha256 || previous.engineLoader?.url !== engineLoaderUrl) throw new Error('Engine-loader version differs from its build provenance');
   if (content && (JSON.stringify(previous.fullPack) !== JSON.stringify(content.inventory.full) || previous.content?.inventorySha256 !== fileSha256(path.join(output, 'content-inventory.json')) || previous.content?.entryCount !== content.fullEntries.length)) throw new Error('Complete-export provenance differs from the verified content inventory');
@@ -348,6 +352,7 @@ const manifest = {
   orientationPresentation: { file: 'scene-orientation.js', sha256: orientationSha256, url: orientationUrl },
   bootIntroPresentation,
   bootTypography,
+  buttonMaterial,
   engineLoader: { file: 'index.js', sha256: engineLoaderSha256, url: engineLoaderUrl },
   engineAudioCompatibility: audioCompatibility,
   ...(boot ? { bootChunks } : {}),

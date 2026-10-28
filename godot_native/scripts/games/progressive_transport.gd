@@ -132,7 +132,9 @@ func _build() -> void:
 	_button("TransportContinue","下一拍",_continue)
 	for spec: Array in [["TransportUp","↑","up"],["TransportDown","↓","down"],["TransportLeft","←","left"],["TransportRight","→","right"]]:
 		var action: String = spec[2]
-		_button(spec[0],spec[1],func(): _apply(action))
+		var direction_button:=_button(spec[0],spec[1],func(): _apply(action))
+		direction_button.set_meta("tactile_keep_layout",true)
+		direction_button.set_meta("tactile_variant","ghost")
 	reading_panel = PanelContainer.new()
 	reading_panel.name = "TransportReadingPanel"
 	reading_panel.add_theme_stylebox_override("panel",Ui.box(Color("fff9e9"),INK,2,6,Vector2(18,16)))

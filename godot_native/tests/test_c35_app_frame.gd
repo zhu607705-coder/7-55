@@ -18,7 +18,7 @@ func rect(control: Control) -> Rect2:
 func occupied_rail() -> Rect2:
 	var chrome: Control=main.phone_chrome
 	var handle := rect(chrome.inventory_handle)
-	var style: StyleBoxFlat=chrome.inventory_handle.get_theme_stylebox("normal")
+	var style: StyleBox=chrome.inventory_handle.get_theme_stylebox("normal")
 	var scale: float=absf(chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
 	var shadow := handle.grow(style.shadow_size*scale)
 	shadow.position+=style.shadow_offset*scale

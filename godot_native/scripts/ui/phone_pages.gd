@@ -337,21 +337,12 @@ func _opening_button(root: Control,text: String,rect: Rect2,id: String,kind: Str
 	var button:=_act(root,text,rect,id,null,fill,ink,0,border)
 	# Source .px-btn.big is18 logical pixels: nearest integer16 in378px art space.
 	NativeUi.apply_button(button,fill,ink,border,0,2,int(round(NativeUi.FONT_TITLE/PHONE_SCALE)),Vector2.ZERO)
-	for state: String in ["normal","hover","pressed","hover_pressed","disabled"]:
-		var style: StyleBoxFlat=button.get_theme_stylebox(state)
-		style.shadow_color=Color("775c31",.25)
-		style.shadow_offset=Vector2(0,1 if state in ["pressed","hover_pressed"] else 4)/PHONE_SCALE
-		if state=="pressed": style.bg_color=fill; style.border_color=border
-		if state in ["hover","hover_pressed"]:
-			style.bg_color=Color(minf(fill.r*1.12,1),minf(fill.g*1.12,1),minf(fill.b*1.12,1))
-			style.border_color=Color(minf(border.r*1.12,1),minf(border.g*1.12,1),minf(border.b*1.12,1))
-	button.add_theme_color_override("font_hover_color",Color(minf(ink.r*1.12,1),minf(ink.g*1.12,1),minf(ink.b*1.12,1)))
-	button.add_theme_color_override("font_hover_pressed_color",button.get_theme_color("font_hover_color"))
 	button.name="OpeningAction_"+id
 	button.set_meta("source_css_class","px-btn "+kind+" big")
-	# CSS :active moves the complete rendered control, including its hit area.
-	button.button_down.connect(func(): button.position=rect.position+Vector2(0,3)/PHONE_SCALE)
-	button.button_up.connect(func(): button.position=rect.position)
+	button.set_meta("tactile_variant","secondary" if kind=="paper" else "primary")
+	button.set_meta("tactile_size","lg")
+	# The shared material moves the face/content by 1u. Do not move the hit area
+	# or add the old opening-specific 3px active translation on top of it.
 	return button
 
 func _alarm() -> Control:
@@ -713,7 +704,7 @@ func _wechat(_view: Dictionary) -> Control:
 			var target=_button(slot,"",Rect2(0,0,48,48),func():
 				if _friend_stage()!="prologue" or not s.flags.codeScattered or s.flags.slashTaken:
 					_open_wechat_friend()
-				else: action_requested.emit("c1_avatar",null),Color.TRANSPARENT,INK,0,Color.TRANSPARENT); target.name="WechatFriendAvatar"
+				else: action_requested.emit("c1_avatar",null),Color.TRANSPARENT,INK,0,Color.TRANSPARENT); target.set_meta("tactile_exempt",true);target.name="WechatFriendAvatar"
 			for mode in ["normal","pressed","hover"]: target.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 		elif i==2: _panel(avatar,Rect2(11,11,23,23),Color.TRANSPARENT,Color("264b2d"),0,4)
 		elif not s.actOne.mentorLineReleased:
@@ -831,6 +822,7 @@ func _friend_chat() -> Control:
 			var laugh=wechat_social.copy(attack_copy,"签到码给你拆碎咯，慢慢找去吧哈哈哈！",wechat_social.font_size(self,15),Color("ffb1b1"))
 			laugh.name="FriendAttackLaugh";laugh.visible=false;burst.visible=false
 			var skip=_button(root,"",Rect2(0,60,378,APP_HEIGHT-60),func():entry_session.skip_friend(),Color.TRANSPARENT,Color.TRANSPARENT,0,Color.TRANSPARENT)
+			skip.set_meta("tactile_exempt",true)
 			skip.name="FriendAttackSkip";skip.mouse_filter=Control.MOUSE_FILTER_IGNORE;skip.focus_mode=Control.FOCUS_NONE
 			for mode in ["normal","hover","pressed","focus"]:skip.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 			EntryVisual.bind_friend(root,entry_session,message,burst,laugh,digits,skip,PHONE_SCALE)
@@ -862,6 +854,7 @@ func _conversation(_view: Dictionary) -> Control:
 	for i in range(cues.size()):
 		if texts[i].is_empty() and not str(cues[i]).is_empty(): texts[i]=source.audioNarration[cues[i]].subtitleZh
 	var layer=_button(root,"",Rect2(0,0,378,APP_HEIGHT),func(): pass,Color(0,0,0,.48),Color.WHITE,0,Color.TRANSPARENT)
+	layer.set_meta("tactile_exempt",true)
 	layer.name="SystemDialogueAdvance"; layer.z_index=20; layer.tooltip_text="系统对话，点击任意位置继续"
 	for mode in ["normal","hover","pressed","focus"]: layer.add_theme_stylebox_override(mode,_style(Color(0,0,0,.48)))
 	var box=_panel(layer,Rect2(16,APP_HEIGHT-185,346,118),Color("0d1116"),Color("ff6575"),0,4)
@@ -899,6 +892,7 @@ func _controls() -> Control:
 		control_reset_confirm=false
 		action_requested.emit("native_control_center_close",null)
 	var backdrop=_button(root,"",Rect2(0,0,378,height),close,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
+	backdrop.set_meta("tactile_exempt",true)
 	backdrop.name="ControlCenterBackdrop"
 	for mode in ["normal","hover","pressed","focus"]: backdrop.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	var panel_height=580.0+(53 if control_reset_confirm else 0)+(21 if int(s.phoneBattery.percent)==1 else 0)
@@ -1692,6 +1686,7 @@ func _zju_draft_form(body: Control) -> void:
 func _zju_sheet(root: Control) -> void:
 	var overlay=Control.new(); overlay.name="ZjudingActionSheet"; overlay.size=Vector2(378,APP_HEIGHT); overlay.z_index=10; root.add_child(overlay)
 	var shade=_button(overlay,"",Rect2(0,0,378,APP_HEIGHT),func(): zjuding_overlay=""; action_requested.emit("phone_refresh",{}),Color(0,0,0,.4),INK,0,Color.TRANSPARENT)
+	shade.set_meta("tactile_exempt",true)
 	for mode in ["normal","hover","pressed","focus"]: shade.add_theme_stylebox_override(mode,_style(Color(0,0,0,.4)))
 	var top=APP_HEIGHT-400 if zjuding_overlay=="search" else APP_HEIGHT-270
 	var box=_panel(overlay,Rect2(10,top,358,APP_HEIGHT-top-10),Color("f8faff"),Color("315d9e"),2,2)

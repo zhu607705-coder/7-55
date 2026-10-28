@@ -1,3 +1,4 @@
+import { Button } from "../../components/Button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
 import rescueVideoUrl from "../../assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.mp4?url";
@@ -81,11 +82,11 @@ export function QizhenRainRescueCinematic({ onComplete }: QizhenRainRescueCinema
         <strong>启真湖 · 雨天救援</strong>
         <span>{playbackState === "loading" ? "正在载入救援回放" : "正在将落水者拉回码头"}</span>
       </header>
-      <button
+      <Button variant="text"
         type="button"
         data-qizhen-rain-rescue-skip="true"
         onClick={() => completeOnce("skipped")}
-      >跳过回放</button>
+      >跳过回放</Button>
     </section>
   );
 }

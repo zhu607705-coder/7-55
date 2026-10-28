@@ -737,7 +737,7 @@ func _layout_phone_reading_gutters() -> void:
 	var inset:=12 if margin!=null else 18
 	if not phone_chrome.inventory_open and phone_chrome.inventory_handle.is_visible_in_tree() and phone_chrome._reading_inventory_anchor():
 		var handle: Rect2=phone_chrome.inventory_handle.get_global_rect()
-		var paint: StyleBoxFlat=phone_chrome.inventory_handle.get_theme_stylebox("normal")
+		var paint: StyleBox=phone_chrome.inventory_handle.get_theme_stylebox("normal")
 		var paint_scale:float=absf(phone_chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
 		var shadow:=handle.grow(paint.shadow_size*paint_scale)
 		shadow.position+=paint.shadow_offset*paint_scale

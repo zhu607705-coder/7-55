@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useEffect, useMemo, useRef } from "react";
 import powerPanelSheetUrl from "../../assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_power_panel_states_v01.png";
 import type { ChapterFourLightZoneId } from "../../core/types";
@@ -248,24 +249,24 @@ export function ChapterFourPowerPanelGame({
           方向键移动焦点 · Enter / Space 切换 · Esc 关闭
         </p>
         {canRetryLock ? (
-          <button
+          <Button variant="primary"
             type="button"
             className="chapter4-power-panel__retry"
             aria-label="重试锁定配电结果"
             onClick={onLock}
           >
             重试锁定
-          </button>
+          </Button>
         ) : null}
         {!locked ? (
-          <button
+          <Button variant="secondary"
             type="button"
             className="chapter4-power-panel__close"
             onClick={onClose}
             disabled={pending}
           >
             关闭箱门
-          </button>
+          </Button>
         ) : null}
       </section>
     </div>

@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
@@ -169,19 +170,19 @@ export function CheckinScene({ state, router, events }: SceneComponentProps) {
 
       <div className="checkin-pad" role="group" aria-label="数字键盘">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((d) => (
-          <button key={d} type="button" className="pad-key" onClick={() => pressDigit(d)}>
+          <Button variant="tertiary" key={d} type="button" className="pad-key" onClick={() => pressDigit(d)}>
             {d}
-          </button>
+          </Button>
         ))}
-        <button type="button" className="pad-key pad-del" onClick={backspace} aria-label="删除">
+        <Button variant="tertiary" type="button" className="pad-key pad-del" onClick={backspace} aria-label="删除">
           ⌫
-        </button>
-        <button type="button" className="pad-key" onClick={() => pressDigit("0")}>
+        </Button>
+        <Button variant="tertiary" type="button" className="pad-key" onClick={() => pressDigit("0")}>
           0
-        </button>
-        <button type="button" className="pad-key pad-ok" onClick={submit} disabled={code.length < 4}>
+        </Button>
+        <Button variant="primary" type="button" className="pad-key pad-ok" onClick={submit} disabled={code.length < 4}>
           签到
-        </button>
+        </Button>
       </div>
 
       {finale !== "none" ? (
