@@ -1,0 +1,13 @@
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createNativeTestSandbox} from '../../tools/native_test_sandbox.mjs';
+const fixture=createNativeTestSandbox(path.resolve(import.meta.dirname,'../..'));
+const args=process.argv.slice(2);
+const test=args.includes('--test');
+const script=test?'res://campuses/future_learning_center/tests/test_floor.gd':'res://samples/future_learning_center/play.gd';
+console.log(`Future Learning Center room assembly; isolated profile: ${fixture.userData}`);
+const child=spawn(process.env.GODOT_BIN||'godot',['--path',fixture.project,'--script',script,...args.filter(x=>x!=='--test')],{env:fixture.env,stdio:['inherit','pipe','pipe']});
+let diagnostics='';
+for(const [stream,dest] of [[child.stdout,process.stdout],[child.stderr,process.stderr]])stream.on('data',chunk=>{diagnostics+=chunk;dest.write(chunk);});
+child.on('error',error=>{console.error(error);process.exitCode=2;});
+child.on('close',code=>{process.exitCode=code||(/SCRIPT ERROR:|Parse Error:|ERROR:/.test(diagnostics)?1:0);});
