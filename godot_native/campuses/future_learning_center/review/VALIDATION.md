@@ -1,4 +1,27 @@
-# 3F room assembly review · 2026-10-28
+# Three-floor object review · 2026-10-28
+
+Current working tree is based on `533ed6b7e874efa87b97613987434b1861868671` (merged PR #187). Engine: Godot 4.7.1.stable.official.a13da4feb. Latest local evidence directories are `flc_objects_final_desktop` and `flc_objects_final_mobile`; the review builder consumes those captures. This is source-tree validation, not a production release verdict.
+
+| Floor | Rounded game-pixel dimensions | Independent render objects | Room apertures | Paired landings |
+|---|---:|---:|---:|---:|
+| 2F | 5659 × 8260 | 136 | 9 | 3 |
+| 3F | 5325 × 8093 | 249 | 10 | 3 |
+| 4F | 5325 × 8398 | 175 | 7 | 3 |
+
+- Focused native geometry, objects, transit, camera and lighting suite: **1341 checks, 0 failures**.
+- Native desktop 1280 × 720: **5 input checks, 0 failures**, zero illegal-foot frames.
+- Native scaled 390 × 844: **5 input checks, 0 failures**, zero illegal-foot frames. Simulated touch, not a physical mobile device.
+- Browser mechanic model: **13 behavioral checks passed**, covering both light solutions, repeated scoring, camera obstruction, furniture blocking, fast-drag collision and recovery around the camera.
+- Seven added original PNGs were checked for real alpha, nonempty silhouettes and hashes before import: `monitor_front`, `desk_divider`, `tool_cart`, `parts_rack`, `coffee_machine`, `potted_plant`, `soldering_station`.
+- Actual native studio, laboratory and pantry captures were visually inspected. The local review shows these captures, keeps a studio comparison, and labels the platform staging as a proposal.
+- Native source/media sync and targeted validation passed prepared inputs, isolated saves, asset import/editor parse, startup, all-script parse and `test_future_learning_center_rooms.gd`. The tool reports partial validation because this is a focused profile, not a full release suite.
+- The updated browser prototype was exercised through its real controls: east-side success, blocked cross-camera movement, a clear detour and west-side success. Gallery switching worked and the browser reported no warnings or errors.
+
+The studio layout and object silhouettes are improved, but overall room/actor proportions and exact equipment placement remain under review. Existing panoramic atrium/closed mechanical-core crops remain in use. Window strips are provisional source-space placements. No final whole-building art acceptance, production NPC route, production save integration or full Web release is claimed. The browser prototype only implements the first 2F mechanic; later floor tasks remain a proposal.
+
+## Historical empty 3F checkpoint
+
+The material below records the earlier empty-room pass and is not the current furnishing verdict.
 
 ![Assembled floor](floor_3_assembled_preview.png)
 

@@ -1,0 +1,287 @@
+{
+  "desk": {
+    "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+    "size": [
+      1422,
+      1106
+    ],
+    "opaqueBounds": [
+      50,
+      165,
+      1372,
+      992
+    ],
+    "sha256": "53ebc8772a1a10312618f8fca24bc8d24f30d63491008e85dcf3314cf4f0531f",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "chair_back": {
+    "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+    "size": [
+      1106,
+      1422
+    ],
+    "opaqueBounds": [
+      171,
+      278,
+      936,
+      1306
+    ],
+    "sha256": "219dc96b26e3cd0a6068383cdb45ebfbcee815acfd388f8a9b31e005ce39c82f",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "chair_front": {
+    "path": "res://campuses/future_learning_center/assets/objects/chair_front.png",
+    "size": [
+      1106,
+      1422
+    ],
+    "opaqueBounds": [
+      230,
+      176,
+      876,
+      1273
+    ],
+    "sha256": "29c91909499d53d8a461ca6223e9168a314957abacff7fb421c55e173657265e",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "monitor": {
+    "path": "res://campuses/future_learning_center/assets/objects/monitor.png",
+    "size": [
+      1402,
+      1122
+    ],
+    "opaqueBounds": [
+      220,
+      176,
+      1182,
+      866
+    ],
+    "sha256": "7fd117cbe920d60fe21f7786a808f0f6a4e5f6da4f0a41421d58c0548a988eac",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "workbench": {
+    "path": "res://campuses/future_learning_center/assets/objects/workbench.png",
+    "size": [
+      1374,
+      1145
+    ],
+    "opaqueBounds": [
+      276,
+      42,
+      1098,
+      1116
+    ],
+    "sha256": "a51cfe11b1bd73fc9d9c22c0df4b9285b8ee0c72955ee3520a07954be49be3cb",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "cabinet": {
+    "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+    "size": [
+      1196,
+      1315
+    ],
+    "opaqueBounds": [
+      162,
+      171,
+      1033,
+      1145
+    ],
+    "sha256": "77b15b5eb13cba7e99a0577d5b0fcbddcea7eb9754cae0bc493a7ac71c8b836f",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "discussion_table": {
+    "path": "res://campuses/future_learning_center/assets/objects/discussion_table.png",
+    "size": [
+      1484,
+      1060
+    ],
+    "opaqueBounds": [
+      153,
+      73,
+      1334,
+      994
+    ],
+    "sha256": "754c19a6947f189c6da7dabd8d114f5af039393e3e98c92748e37f4d97c4f7e1",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "whiteboard": {
+    "path": "res://campuses/future_learning_center/assets/objects/whiteboard.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "opaqueBounds": [
+      229,
+      284,
+      1026,
+      1018
+    ],
+    "sha256": "653e8adf2114015d0755a314a285e3a6da3530862f8aec2c6637f67368092139",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "printer_3d": {
+    "path": "res://campuses/future_learning_center/assets/objects/printer_3d.png",
+    "size": [
+      1190,
+      1322
+    ],
+    "opaqueBounds": [
+      114,
+      130,
+      1159,
+      1171
+    ],
+    "sha256": "d4f77aa157526f20f55423ad6339c9359dc5d05ef8dda4ff93f51dd1ca6cbb0c",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "camera_tripod": {
+    "path": "res://campuses/future_learning_center/assets/objects/camera_tripod.png",
+    "size": [
+      1000,
+      1573
+    ],
+    "opaqueBounds": [
+      144,
+      136,
+      856,
+      1441
+    ],
+    "sha256": "c487a7033c7146f453248e26b9604de5181adf3427bd141836882350f9dc826e",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "sofa": {
+    "path": "res://campuses/future_learning_center/assets/objects/sofa.png",
+    "size": [
+      1564,
+      1006
+    ],
+    "opaqueBounds": [
+      357,
+      268,
+      1207,
+      741
+    ],
+    "sha256": "4bba29015c3de859bb05d158673f6cc104a8cf507988195a21dc3f9c80987e62",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "pantry_counter": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_counter.png",
+    "size": [
+      2011,
+      782
+    ],
+    "opaqueBounds": [
+      74,
+      104,
+      1937,
+      681
+    ],
+    "sha256": "ae7721d30096818647509ef2d10a6a432a0fae92c7f64b839bc22a87152733ef",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved"
+  },
+  "monitor_front": {
+    "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "opaqueBounds": [
+      336,
+      193,
+      1200,
+      838
+    ],
+    "sha256": "95f9fdc626aa31adc160e60a2ff354526ba91a2ad1861d5afed836401efdbc68",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "desk_divider": {
+    "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+    "size": [
+      1774,
+      887
+    ],
+    "opaqueBounds": [
+      95,
+      195,
+      1679,
+      749
+    ],
+    "sha256": "3320b35288e8caf7fabf756b0f762c8de80e6d22207be9a05c389f296294b506",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "tool_cart": {
+    "path": "res://campuses/future_learning_center/assets/objects/tool_cart.png",
+    "size": [
+      1214,
+      1295
+    ],
+    "opaqueBounds": [
+      194,
+      145,
+      1020,
+      1170
+    ],
+    "sha256": "fd980a6b3d941b80beaffcff73229f6b604e71cbbae9489a1929086440c79b15",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "parts_rack": {
+    "path": "res://campuses/future_learning_center/assets/objects/parts_rack.png",
+    "size": [
+      1207,
+      1303
+    ],
+    "opaqueBounds": [
+      190,
+      110,
+      1041,
+      1192
+    ],
+    "sha256": "04bb7626f7b8effbcdd888c38d57a84082b7c1c664911519de2a1513dc2bd190",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "coffee_machine": {
+    "path": "res://campuses/future_learning_center/assets/objects/coffee_machine.png",
+    "size": [
+      1295,
+      1214
+    ],
+    "opaqueBounds": [
+      309,
+      130,
+      1008,
+      1072
+    ],
+    "sha256": "61fa833239f6cf4dd95ddfbca63a0789197680751d2c33b9f723ccd39c95b88a",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "potted_plant": {
+    "path": "res://campuses/future_learning_center/assets/objects/potted_plant.png",
+    "size": [
+      1122,
+      1402
+    ],
+    "opaqueBounds": [
+      120,
+      105,
+      1007,
+      1271
+    ],
+    "sha256": "12d6f81c00b32b1f3672ce8f8f539a88481b4504de76ed2ba07588a58e498b0f",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "soldering_station": {
+    "path": "res://campuses/future_learning_center/assets/objects/soldering_station.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "opaqueBounds": [
+      317,
+      46,
+      1279,
+      949
+    ],
+    "sha256": "e3dca6ef84ce71e8c5c330592b1912556ef4c8ca2630c68da82870c6663c1d90",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  }
+}

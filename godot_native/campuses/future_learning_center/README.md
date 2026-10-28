@@ -1,20 +1,25 @@
-# Future Learning Center · individual room assembly
+# Future Learning Center · three-floor object and gameplay review
 
-The current 3F review is a 5325 × 8096 game-pixel map assembled from separately generated room masters. Its four west studios, recording room, north seminar area, south pantry, central void and east X-Lab retain the supplied plan's counts and adjacency. The user's requested enlargement is a game-space choice, not a claim of surveyed dimensions.
+The review now assembles separate 2F, 3F and 4F room masters, with continuous gray floors and independent furniture. The user-corrected 2F center is an open platform without an invented wall or door. The northeast and southwest stairs and the elevator have paired, flat arrival zones. Restroom interiors remain closed. Dimensions are enlarged game space, not surveyed measurements.
 
-[See the assembled floor, actual room view and camera walkthrough](review/VALIDATION.md).
+[Validation and remaining visual limits](review/VALIDATION.md). The local gameplay review is generated from `review/gameplay.html`; its object gallery shows actual Godot room captures, including before/after studio furnishings.
 
 The actual Godot review scene uses the original shared player metrics. One ground union owns the complete foot box, door apertures and path graph. Swept movement prevents tunnelling. PNG outer-wall silhouettes are measured separately from their rectangular bounds, so door thresholds have painted floor and do not leave transparent gaps. Camera bounds, deadzone and zoom blend as the player enters or exits a room; elongated X-Lab rooms retain both side walls while following along their length. `Tab` is an overview of the active floor, never a travel shortcut.
 
-This is an architectural review scene, not a new story entry or a shipped replacement. No controller, save or production route changes. The prior merged whole-world rules remain authoritative. 2F and 4F still need their own individual-room pass and paired stair/elevator thresholds. The 2F overview is reference material. The failed 4F generation is excluded. Transit cores and restrooms in this 3F pass still use uniformly scaled crops from the accepted overview; they are closed in the review and are not represented as newly detailed rooms. The shared studio module is instantiated four times with separate IDs and placements, so each can later receive distinct furnishings.
+This remains a review scene. No production controller, save or chapter route changed, and the production Web preset excludes `campuses/*`. The 2F/3F/4F review contains 136/249/175 independent object instances respectively, including mounted screens, dividers and equipment. Counts are not unique equipment counts or proof of site accuracy. Whole-building proportions, exact window locations and room-specific equipment positions remain subject to reference review.
+
+The latest object pass groups 3F studio desks into banks, adds low dividers and front-facing monitors, places laboratory tool carts/racks/soldering stations, and adds a coffee machine and plants in the pantry. These types are supported by the supplied design/equipment requirements. The 2F platform activity islands are gameplay proposals. Contact shadows remain visible under diffuse light; directional window light and cast shadows change with the review clock. No floor texture was added to disguise empty space.
+
+The disposable browser prototype tests one proposed mechanic: move a whiteboard to shade a demonstration marker while keeping the camera clear, then repeat under opposite lighting. Added equipment blocks the complete board footprint and fast drags cannot tunnel through it. NPC idle frames and state-dependent dialogue are review behavior; native NPC walking, the proposed 3F/4F tasks, and production persistence are not implemented by this prototype.
 
 ## Reproduce
 
 Use the project-pinned Godot 4.7.1 executable in `GODOT_BIN`.
 
 ```sh
-node godot_native/campuses/future_learning_center/tools/build_floor.mjs
+node godot_native/campuses/future_learning_center/tools/build_building.mjs
 node godot_native/samples/future_learning_center/run.mjs --test --headless
+node godot_native/campuses/future_learning_center/tests/test_gameplay_prototype.mjs
 node godot_native/samples/future_learning_center/run.mjs --resolution 1280x720
 ```
 
@@ -22,14 +27,16 @@ The runner creates an isolated native test profile. It does not read or write th
 
 Encode the motion PNGs at 30 fps into `room_camera_walkthrough.mp4`, then run `tools/build_review.mjs <FLC_CAPTURE_DIR>` for the local pan/zoom art review. That HTML is an art viewer, not an alternate game runtime.
 
+Build the gameplay and object review using `node godot_native/campuses/future_learning_center/tools/build_gameplay_review.mjs <output-directory> <current-capture-directory> <previous-capture-directory>`, then serve the output directory over localhost. Both capture directories are required for the before/after gallery. The previous capture should be from before the furniture grouping pass.
+
 ## Sources and assets
 
 - [Floor requirements and supplied 2F/3F/4F drawings](https://zju-xlab.feishu.cn/wiki/NKVGwp4KxikWgSktPoucZzsvnUf)
 - [X-Lab arrangement](https://zju-xlab.feishu.cn/wiki/SpJ3wj5Ghi3gKRkcXcTcDBY5nHp)
 - [Accessible mechatronics laboratory arrangement](https://zju-xlab.feishu.cn/wiki/EhARw3BJdinWhmkqtjGcAL5On5f)
 
-Private reference exports are not copied into this repository. New raster assets were generated with the built-in imagegen tool. Original generated bytes are preserved in `assets/`; `data/room_assets.json` records native dimensions, SHA-256, opacity bounds and conservative exterior strips. `data/floor_3.json` binds rendering, camera and collision to those masters. `PROMPTS.md` records the reproduction specification and the retained/rejected scope.
+Private reference exports are not copied into this repository. Raster assets use the built-in imagegen tool. Original generated bytes are preserved in `assets/`; `data/room_assets.json` and `data/object_assets.json` record dimensions, alpha bounds and SHA-256. `data/floor_2.json`, `floor_3.json` and `floor_4.json` bind the masters to rendering, camera and collision. `data/generation_20261028.json` preserves the complete prompt set. The unused `f2_classroom` and old narrow `monitor` masters are retained as superseded drafts, not active scene assets.
 
 ## Validation
 
-The focused tests check source room counts, uniform image transforms, clear-floor samples, blocked wall/void/shaft samples, all 10 door apertures and return paths, whole-foot boundary rejection, swept movement and retreat, room camera limits and 30/60/144 Hz convergence. Runtime checks exercise actual keyboard and touch input at desktop and scaled mobile viewport sizes; those do not claim a physical mobile device or a production Web release. The local evidence report records exact tested viewport and engine.
+The focused suite checks all three floors: room counts, uniform image transforms, clear/blocked samples, door return paths, the open 2F platform, paired transit, complete-footprint boundaries, furniture collisions, camera limits, and directional lighting. Runtime input checks cover desktop and scaled mobile windows. They do not establish physical-device acceptance, final visual fidelity, the three-floor story, or a production Web release.

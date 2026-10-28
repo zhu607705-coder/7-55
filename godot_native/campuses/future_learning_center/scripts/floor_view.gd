@@ -3,6 +3,16 @@ const Body=preload("res://scripts/player_metrics.gd")
 const Space=preload("res://scripts/space/spatial_rules.gd")
 const FloorSpace=preload("res://campuses/future_learning_center/scripts/floor_space.gd")
 const RoomCamera=preload("res://campuses/future_learning_center/scripts/room_camera.gd")
+const Lighting=preload("res://campuses/future_learning_center/scripts/floor_lighting.gd")
+const Transit=preload("res://campuses/future_learning_center/scripts/building_transit.gd")
+var lighting=Lighting.new()
+var transit=Transit.new()
+var transit_panel:PanelContainer
+var transit_button:Button
+var time_button:Button
+var preview_hours:=[8.0,12.0,16.0,21.0]
+var time_index:=1
+var object_hint:=""
 var data:Dictionary
 var space=FloorSpace.new()
 var framing=RoomCamera.new()
@@ -28,17 +38,40 @@ var floor_tile:Texture2D
 
 func _ready()->void:
 	texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
-	data=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/future_learning_center/data/floor_3.json"))
-	space.configure(data)
-	for item:Dictionary in data.modules:_texture(item.path)
-	floor_tile=ImageTexture.create_from_image(textures["res://campuses/future_learning_center/assets/rooms/pantry.png"].get_image().get_region(Rect2i(1020,450,120,120)))
+	floor_tile=ImageTexture.create_from_image(_texture("res://campuses/future_learning_center/assets/rooms/pantry_ambient.png").get_image().get_region(Rect2i(1020,450,120,120)))
 	texture_repeat=CanvasItem.TEXTURE_REPEAT_ENABLED
 	for direction:String in ["down","up","side"]:
 		for i:int in 8:_texture("res://assets/rpg/player/player_%s_%d.png"%[direction,i])
-	player=Vector2(data.spawn[0],data.spawn[1])-Body.FOOT_CENTER_OFFSET
 	add_child(camera);camera.enabled=true;camera.position_smoothing_enabled=false
-	framing.update(0,player,space,true);_apply_camera();_build_ui()
+	_build_ui();load_floor(3);set_hour(12)
 	queue_redraw()
+
+func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
+	if not floor_number in Transit.FLOORS:return false
+	var next:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/future_learning_center/data/floor_%d.json"%floor_number))
+	var next_space=FloorSpace.new();next_space.configure(next)
+	var foot:=Vector2(next.spawn[0],next.spawn[1]) if not arrival.is_finite() else arrival
+	if not next_space.can_stand(foot-Body.FOOT_CENTER_OFFSET):return false
+	data=next;space=next_space;route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	for item:Dictionary in data.modules:_texture(item.path)
+	for item:Dictionary in data.get("objects",[]):_texture(item.path)
+	for item:Dictionary in data.get("atriums",[]):_texture(item.source)
+	if data.has("atrium"):_texture(data.atrium.source)
+	player=foot-Body.FOOT_CENTER_OFFSET;framing=RoomCamera.new();overview=false
+	framing.update(0,player,space,true);_apply_camera()
+	if is_instance_valid(title_label):title_label.text="未来学习中心  /  %dF"%floor_number
+	if is_instance_valid(transit_panel):transit_panel.hide()
+	queue_redraw();return true
+
+func set_hour(hour:float)->void:
+	lighting.set_hour(hour);self_modulate=lighting.ambient
+	if is_instance_valid(time_button):time_button.text="光照 %02d:00"%int(hour)
+	queue_redraw()
+
+func travel_to(floor_number:int)->bool:
+	var target:Dictionary=transit.destination(data,player,floor_number)
+	if target.is_empty():return false
+	return load_floor(int(target.floor),Vector2(target.point[0],target.point[1]))
 
 func _texture(path:String)->Texture2D:
 	if not textures.has(path):
@@ -71,7 +104,11 @@ func _process(dt:float)->void:
 	framing.update(dt,player,space,false,overview);_apply_camera()
 	if is_instance_valid(place_label):
 		var room:Dictionary=space.room_at(player+Body.FOOT_CENTER_OFFSET)
-		place_label.text="3F 全层总览" if overview else str(room.get("name","环廊"))
+		var landing:Dictionary=transit.nearby(data,player)
+		transit_button.visible=not landing.is_empty() and not overview
+		if not landing.is_empty():transit_button.text=str(landing.name)+" · E"
+		elif is_instance_valid(transit_panel):transit_panel.hide()
+		place_label.text=("%dF 全层总览"%int(data.floor)) if overview else str(room.get("name","环廊"))+object_hint
 	queue_redraw()
 
 func _apply_camera()->void:
@@ -87,6 +124,9 @@ func _unhandled_input(event:InputEvent)->void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_TAB:toggle_overview();get_viewport().set_input_as_handled()
 		elif event.keycode==KEY_F2:geometry_visible=not geometry_visible
+		elif event.keycode==KEY_L:_cycle_time()
+		elif event.keycode==KEY_E:open_transit()
+		elif event.keycode==KEY_SPACE:inspect_nearby()
 	elif event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
 		request_walk(screen_to_world(event.position));get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and event.pressed:
@@ -110,7 +150,13 @@ func _build_ui()->void:
 	var panel:=Control.new();panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);panel.mouse_filter=Control.MOUSE_FILTER_IGNORE;ui.add_child(panel)
 	var font:Font=load("res://scripts/ui/native_typography.gd").body_font()
 	var shade:=ColorRect.new();shade.color=Color(.035,.055,.085,.9);shade.position=Vector2(0,0);shade.size=Vector2(960,40);shade.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(shade)
-	title_label=Label.new();title_label.text="未来学习中心  /  3F";title_label.position=Vector2(18,8);title_label.add_theme_font_override("font",font);title_label.add_theme_font_size_override("font_size",17);panel.add_child(title_label)
+	title_label=Label.new();title_label.position=Vector2(18,8);title_label.add_theme_font_override("font",font);title_label.add_theme_font_size_override("font_size",17);panel.add_child(title_label)
+	time_button=Button.new();time_button.position=Vector2(644,5);time_button.size=Vector2(130,30);time_button.add_theme_font_override("font",font);time_button.pressed.connect(_cycle_time);panel.add_child(time_button)
+	transit_button=Button.new();transit_button.position=Vector2(390,462);transit_button.size=Vector2(180,38);transit_button.add_theme_font_override("font",font);transit_button.pressed.connect(open_transit);panel.add_child(transit_button);transit_button.hide()
+	transit_panel=PanelContainer.new();transit_panel.position=Vector2(330,350);transit_panel.size=Vector2(300,85);panel.add_child(transit_panel);transit_panel.hide()
+	var choices:=HBoxContainer.new();transit_panel.add_child(choices)
+	for f:int in Transit.FLOORS:
+		var choice:=Button.new();choice.name=str(f);choice.text="%dF"%f;choice.custom_minimum_size=Vector2(90,70);choice.add_theme_font_override("font",font);choices.add_child(choice);choice.pressed.connect(func()->void:travel_to(f))
 	var button:=Button.new();button.text="楼层总图 · Tab";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
 	var footer:=ColorRect.new();footer.color=Color(.035,.055,.085,.86);footer.position=Vector2(0,509);footer.size=Vector2(960,31);footer.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(footer)
 	place_label=Label.new();place_label.position=Vector2(18,513);place_label.add_theme_font_override("font",font);place_label.add_theme_font_size_override("font_size",14);panel.add_child(place_label)
@@ -126,6 +172,26 @@ func _touch_changed()->void:
 	touch_vector=Vector2.ZERO
 	for vector:Vector2 in touched_buttons.values():touch_vector+=vector
 	touch_vector=touch_vector.limit_length()
+
+func _cycle_time()->void:
+	time_index=(time_index+1)%preview_hours.size();set_hour(preview_hours[time_index])
+
+func open_transit()->void:
+	var landing:Dictionary=transit.nearby(data,player)
+	if landing.is_empty() or overview:return
+	route.clear()
+	for button:Button in transit_panel.get_child(0).get_children():button.disabled=transit.destination(data,player,int(str(button.name))).is_empty()
+	transit_panel.visible=not transit_panel.visible
+
+func inspect_nearby()->void:
+	object_hint=""
+	var foot:=player+Body.FOOT_CENTER_OFFSET;var distance:=100.0
+	for item:Dictionary in data.get("objects",[]):
+		if item.get("mounted",false):continue
+		var box:Rect2=Space.rect(item.footprint)
+		var closest:=foot.clamp(box.position,box.end)
+		if foot.distance_to(closest)<distance:
+			distance=foot.distance_to(closest);object_hint="  ·  "+str(item.name)
 
 func _region(texture:Texture2D,source:Rect2,at:Vector2,scale_value:float)->void:
 	draw_texture_rect_region(texture,Rect2(at,source.size*scale_value),source)
@@ -154,44 +220,58 @@ func _draw()->void:
 			for point:Vector2 in polygon:bounds=bounds.expand(point)
 			bounds.position.x-=32;bounds.size.x+=64
 			polygon=PackedVector2Array([bounds.position,Vector2(bounds.end.x,bounds.position.y),bounds.end,Vector2(bounds.position.x,bounds.end.y)])
-		var uv:=PackedVector2Array()
-		for point:Vector2 in polygon:uv.append(point/floor_tile.get_size())
-		draw_polygon(polygon,PackedColorArray([Color.WHITE]),uv,floor_tile)
-	var join:Rect2=Space.rect(data.xlabJoin.bounds)
+		draw_colored_polygon(polygon,Color("afb2b3"))
+	var join:Rect2=Space.rect(data.get("xlabJoin",{}).get("bounds",[0,0,0,0]))
 	if join.has_area():
-		var wood:Texture2D=textures["res://campuses/future_learning_center/assets/rooms/xlab_north.png"]
+		var wood:Texture2D=textures["res://campuses/future_learning_center/assets/rooms/xlab_north_ambient.png"]
 		_tile(wood,Rect2(325,1750,140,140),join)
 		_tile(wood,Rect2(12,1450,70,250),Rect2(join.position.x,join.position.y,116,join.size.y),1.66)
 		_tile(wood,Rect2(725,1450,80,250),Rect2(join.end.x-133,join.position.y,133,join.size.y),1.66)
-	var landing:Rect2=Space.rect(data.northeastLanding.bounds)
-	_tile(textures["res://campuses/future_learning_center/assets/rooms/xlab_north.png"],Rect2(725,950,80,250),Rect2(landing.end.x-133,landing.position.y,133,landing.size.y),1.66)
 	_draw_atrium()
 	for item:Dictionary in data.modules:
 		if not capture_only and not Space.rect(item.bounds).intersects(framing.visible_rect().grow(120)):continue
 		visible_modules+=1
+		if item.has("asset") and not item.get("core",false):draw_rect(Space.rect(item.bounds),Color("afb2b3"))
 		_region(textures[item.path],Space.rect(item.crop),Vector2(item.at[0],item.at[1]),float(item.scale))
-	if not capture_only:
-		var frame:=Body.frame_at(elapsed*1000.0) if walking else 0
-		var actor:Texture2D=textures["res://assets/rpg/player/player_%s_%d.png"%["side" if facing=="left" else facing,frame]]
-		draw_circle(player+Body.FOOT_CENTER_OFFSET,11,Color(0,0,0,.18))
-		if facing=="left":
-			draw_set_transform(player,0,Vector2(-1,1));draw_texture_rect(actor,Body.visual_rect(Vector2.ZERO),false);draw_set_transform(Vector2.ZERO)
-		else:draw_texture_rect(actor,Body.visual_rect(player),false)
-		_draw_covers()
+	var view:Rect2=space.world_bounds if capture_only else framing.visible_rect().grow(200)
+	lighting.draw_room(self,data,view)
+	var items:Array=[]
+	for object:Dictionary in data.get("objects",[]):
+		if not Space.rect(object.bounds).grow(200).intersects(view):continue
+		lighting.draw_contact(self,object);lighting.draw_shadow(self,object);items.append(object)
+	if not capture_only:items.append({"actor":true,"baseline":player.y+Body.FOOT_CENTER_OFFSET.y})
+	items.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.baseline)<float(b.baseline))
+	for item:Dictionary in items:
+		if item.get("actor",false):_draw_actor()
+		else:_region(textures[item.path],Space.rect(item.crop),Vector2(item.bounds[0],item.bounds[1]),float(item.scale))
+	if not capture_only:_draw_covers()
 	if geometry_visible:
 		for region:Dictionary in data.ground:draw_colored_polygon(Space.polygon(region.polygon),Color(.25,.85,.7,.15))
 		for edge:PackedVector2Array in space.ground.edges:draw_line(edge[0],edge[1],Color(.9,.35,.3,.8),2)
 		draw_rect(Body.foot_rect(player),Color(.3,1,.8),false,2)
 
 func _draw_atrium()->void:
-	var b:Rect2=Space.rect(data.atrium.bounds)
-	var plate:Texture2D=textures[data.atrium.source]
+	var all:Array=data.get("atriums",[]).duplicate()
+	if data.has("atrium"):all.append(data.atrium)
+	for atrium:Dictionary in all:_atrium(atrium)
+
+func _atrium(atrium:Dictionary)->void:
+	var b:Rect2=Space.rect(atrium.bounds)
+	var plate:Texture2D=textures[atrium.source]
 	# Same-source strips repeat at a uniform scale; void never becomes ground.
 	_tile(plate,Rect2(420,385,195,350),b.grow(-65),3.0)
 	_tile(plate,Rect2(389,405,29,160),Rect2(b.position,Vector2(87,b.size.y)),3.0)
 	_tile(plate,Rect2(625,405,29,160),Rect2(b.end.x-87,b.position.y,87,b.size.y),3.0)
 	_tile(plate,Rect2(420,322,195,40),Rect2(b.position.x,b.position.y,b.size.x,120),3.0)
 	_tile(plate,Rect2(420,950,195,42),Rect2(b.position.x,b.end.y-126,b.size.x,126),3.0)
+
+func _draw_actor()->void:
+	var frame:=Body.frame_at(elapsed*1000.0) if walking else 0
+	var actor:Texture2D=textures["res://assets/rpg/player/player_%s_%d.png"%["side" if facing=="left" else facing,frame]]
+	draw_circle(player+Body.FOOT_CENTER_OFFSET,11,Color(0,0,0,.18))
+	if facing=="left":
+		draw_set_transform(player,0,Vector2(-1,1));draw_texture_rect(actor,Body.visual_rect(Vector2.ZERO),false);draw_set_transform(Vector2.ZERO)
+	else:draw_texture_rect(actor,Body.visual_rect(player),false)
 
 func _draw_covers()->void:
 	var body:Rect2=Body.visual_rect(player)

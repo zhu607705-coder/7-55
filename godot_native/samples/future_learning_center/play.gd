@@ -14,7 +14,6 @@ func run()->void:
 	if not OS.get_environment("FLC_CAPTURE_DIR").is_empty():
 		if OS.get_environment("FLC_INPUT_CHECK")=="1":await check_input()
 		await capture_review()
-		if OS.get_environment("FLC_EXPORT_MAP")=="1":await export_map()
 		if OS.get_environment("FLC_CAPTURE_MOTION")=="1":await capture_motion()
 		quit()
 func fit()->void:
@@ -25,6 +24,35 @@ func capture(label:String)->void:
 	await process_frame;await RenderingServer.frame_post_draw
 	root.get_texture().get_image().save_png(folder.path_join(label+".png"))
 func capture_review()->void:
+	await process_frame;await process_frame
+	world.user_control=false
+	var report:={"floors":[],"viewport":[root.size.x,root.size.y],"illegalFrames":0}
+	for f:int in [2,3,4]:
+		if not world.load_floor(f):push_error("Could not load floor %d"%f);continue
+		world.set_hour(12)
+		for room:Dictionary in world.data.rooms:
+			var area:Rect2=world.Space.rect(room.bounds);var point:=area.get_center()
+			var found:bool=world.set_foot(point)
+			if not found:
+				for offset:Vector2 in [Vector2(0,100),Vector2(-120,0),Vector2(120,0),Vector2(0,200),Vector2(-200,100)]:
+					if world.set_foot(point+offset):found=true;break
+			if found:await capture("f%d_%s"%[f,room.id])
+		var light_room:String={2:"electrical",3:"studio_1",4:"focus_a"}[f]
+		var module:Dictionary=world.data.modules.filter(func(r:Dictionary)->bool:return r.id==light_room)[0]
+		var light_position:Vector2=world.Space.rect(module.bounds).get_center()
+		if not world.set_foot(light_position):world.set_foot(light_position+Vector2(120,0))
+		for hour:int in [8,12,16,21]:
+			world.set_hour(hour);await capture("f%d_light_%02d"%[f,hour])
+		world.set_hour(12)
+		world.overview=true;world.framing.update(0,world.player,world.space,true,true);world._apply_camera();world.queue_redraw()
+		await capture("floor_%d_overview"%f)
+		if OS.get_environment("FLC_EXPORT_MAP")=="1":await export_map()
+		report.floors.append({"floor":f,"world":world.data.world,"objects":world.data.objects.size(),"doors":world.data.doors.size(),"transits":world.data.transits.size(),"rejectedLinks":world.space.invalid_links})
+	report.illegalFrames=world.invalid_frames
+	var file:=FileAccess.open(OS.get_environment("FLC_CAPTURE_DIR").path_join("capture.json"),FileAccess.WRITE);file.store_string(JSON.stringify(report,"  "));file.close()
+	world.load_floor(3)
+
+func capture_legacy()->void:
 	await process_frame;await process_frame
 	world.user_control=false
 	await capture("studio_room")
@@ -45,8 +73,8 @@ func export_map()->void:
 	await process_frame;await RenderingServer.frame_post_draw
 	var plate:Image=viewport.get_texture().get_image()
 	var output:=OS.get_environment("FLC_CAPTURE_DIR")
-	plate.save_png(output.path_join("floor_3_assembled.png"))
-	plate.resize(1316,2000,Image.INTERPOLATE_LANCZOS);plate.save_png(output.path_join("floor_3_assembled_preview.png"))
+	plate.save_png(output.path_join("floor_%d_assembled.png"%int(world.data.floor)))
+	plate.resize(roundi(2000.0*plate.get_width()/plate.get_height()),2000,Image.INTERPOLATE_LANCZOS);plate.save_png(output.path_join("floor_%d_assembled_preview.png"%int(world.data.floor)))
 	viewport.size=Vector2i(960,540);viewport.transparent_bg=false;world.capture_only=false;world.ui.show()
 	world.framing.update(0,world.player,world.space,true,world.overview);world._apply_camera()
 func capture_motion()->void:

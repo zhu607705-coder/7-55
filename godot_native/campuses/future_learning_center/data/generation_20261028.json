@@ -1,0 +1,260 @@
+[
+  {
+    "id": "f2_formula",
+    "sourceFile": "exec-cd362226-a959-4ea1-bb3e-f1d769cae7cc.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1210x1300 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "1e6b1a11e8d4445f3cb80167fe94fd0fd6af1becadee3f216b5441b3b5ba3dc4"
+  },
+  {
+    "id": "f2_team",
+    "sourceFile": "exec-d1361f67-7640-40f5-b848-36a5d2511d47.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1211x1299 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "43a1423ef0b385c74c20f54c4fd778bfe96a3e61d8172f17d3c21e637651ec9c"
+  },
+  {
+    "id": "f2_robotics",
+    "sourceFile": "exec-00090ace-86a9-49f0-b5b5-02dcb66a0d6d.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1212x1298 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "2c6b12a3404ec544aff3fa5d65b484b2d3edec02e9eddbd9d34a8248cbffe95b"
+  },
+  {
+    "id": "f2_koala",
+    "sourceFile": "exec-1807c2f2-6005-4b57-9e19-3f07d04a2218.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1983x793 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "97624187ad5e165e92ff0daa1c446c1dc6e2bed28d18c060a4515c8fec3fc341"
+  },
+  {
+    "id": "f2_lab",
+    "sourceFile": "exec-e0005e89-e500-46a6-92b2-171fee60fa28.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1037x1517 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3"
+  },
+  {
+    "id": "f4_seminar_a",
+    "sourceFile": "exec-030e2cb3-1781-4845-9832-73778cab4c96.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1168x1347 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "2ecc62a4cc13233dbbbfb178cbd35a147109bffd4b4272fb74ab111f35f25cbb"
+  },
+  {
+    "id": "f4_seminar_b",
+    "sourceFile": "exec-d8381ce8-3530-4af5-bcc2-21e7c0a3bf9b.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1167x1347 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "174f68e7d2ec04c7347bced64e8e9b871f55afc7731f5520bf63b5f96bc2693b"
+  },
+  {
+    "id": "f4_seminar_c",
+    "sourceFile": "exec-e3f8095c-1b5c-4095-83f1-6863efbb323f.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1254x1254 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "4aa76dc617fcd5b0aa3e48d2a9c59fb96dce72fd9b1fed9ec1d3e644a3c85989"
+  },
+  {
+    "id": "f4_focus_a",
+    "sourceFile": "exec-164c2dce-220a-47b3-962a-1df2922692d7.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 939x1675 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11"
+  },
+  {
+    "id": "f4_collab_b",
+    "sourceFile": "exec-a8980683-eaa9-455c-92ff-a14c817869cd.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1016x1547 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24"
+  },
+  {
+    "id": "f2_classroom",
+    "sourceFile": "exec-d2884cd6-38ab-4313-b6a6-8db184b9924e.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 820x1918 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "044083bb44cd6abc75c937f67e4508b3863765631fc19ff4de13ab304c409433"
+  },
+  {
+    "id": "f2_machinery",
+    "sourceFile": "exec-1cc587f3-31e9-4bcc-9755-33833bbcbe1f.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1038x1515 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2"
+  },
+  {
+    "id": "f4_storage",
+    "sourceFile": "exec-5a58a5bd-332e-451b-8d59-2f0fff0ddfa7.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1486x1059 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "f9159f38409c7ac4f321bd84d7d7ad3a42352233bec7609257777c7a17d4122f"
+  },
+  {
+    "id": "team_studio",
+    "sourceFile": "exec-5bddb097-e282-48aa-9123-98a6eb5091c3.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1681x936 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "517019cc3fab63dc2e5a682c12acbf2bef86fb514cee6c5b0ce89dee3552843c"
+  },
+  {
+    "id": "north_seminar",
+    "sourceFile": "exec-5630f437-b6b0-44c8-a2e9-26d08e061103.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1437x1095 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "3e5289b5e8ce112f1984c5505329e457595651451bbe4753af648365415387db"
+  },
+  {
+    "id": "recording_studio",
+    "sourceFile": "exec-22262c7f-c100-47da-bc9e-e38a4581cd87.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1312x1199 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "a3ea5b9b52bc7475390ce39d36950d29e4274c9a0e7b85c4bc2f1560fb49ad70"
+  },
+  {
+    "id": "pantry",
+    "sourceFile": "exec-76f4edfa-1df7-40c1-bdf7-09adeb2601ed.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 1330x1182 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "cb9ca97ad4b24c2314583af8d2e12a16aaf90b422c77d47aa535102f0a175f86"
+  },
+  {
+    "id": "xlab_north",
+    "sourceFile": "exec-8a5abeeb-3407-4ee8-a92e-e99e96c06d8c.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 809x1942 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "2f30e27a9f69f3b54565c0b84f483c658483140fb9f83e39aa4acdb45aa7a6f4"
+  },
+  {
+    "id": "xlab_south",
+    "sourceFile": "exec-eee3a757-1307-4d04-b0ac-6f5b65b7690e.png",
+    "prompt": "Use case lighting-weather and precise-object-edit. Convert this room to a NEUTRAL AMBIENT-LIT GAME BASE. Remove EVERY baked directional sunlight shape, window projection, bright diagonal patch, glare and long cast shadow from FLOOR and WALLS. No direct sun at all. The entire horizontal FLOOR must be continuous smooth neutral light grey poured resin / very fine microcement (#b9baba average), NO wood grain, NO planks, NO floor tile seams, NO patterns, NO reflections. Keep soft minimal contact ambient occlusion only. Preserve all existing architectural edges, doors, windows, wall colors and cutout footprint. Exact same 893x1761 canvas. This is an EDIT, preserve positions precisely. No added objects. Fine-pixel JRPG art, transparent exterior. Lighting direction and sunlight will be drawn at runtime. Wall wood paneling can remain; floor must be grey.",
+    "sha256": "6d4866a3ad2476cec2543df29994ac2eb9fe6f728a87b691e255f83ccfffadca"
+  },
+  {
+    "id": "service_closed",
+    "sourceFile": "exec-e6ebaf5b-f72b-4f7a-bc05-405644fdbc6c.png",
+    "prompt": "ONE closed rectangular services block 1400x900, orthographic fine-pixel JRPG overhead from due south, reference style. Entire room interior hidden beneath a plain flat neutral medium grey ceiling cap. Ivory enclosing walls, slate trim, two simple CLOSED doors in EAST/right wall. No interior details, no toilets, basins, stalls, furniture, stairs, symbols, labels or text. Transparent exterior and neutral ambient light, no sunlight.",
+    "sha256": "0e967997e01141f38019ab00f54a80df3f302312118db6a92a012699c3e5024b"
+  },
+  {
+    "id": "desk",
+    "sourceFile": "exec-5811f855-7729-4c0b-9231-328eaaf92983.png",
+    "prompt": "ONE isolated empty rectangular office desk. Light oak top with slim white metal adjustable legs, width120cm depth60cm. Front edge horizontal, depth recedes straight up; 2.5D JRPG orthographic overhead due-south, fine-pixel style like room reference. No chair, computer, cables, floor or surrounding room. Transparent alpha, neutral ambient light, minimal contact shadow only. Crisp quiet finepixel clusters. Asset fills 900x700.",
+    "sha256": "53ebc8772a1a10312618f8fca24bc8d24f30d63491008e85dcf3314cf4f0531f"
+  },
+  {
+    "id": "chair_back",
+    "sourceFile": "exec-c70eda30-dbd9-436d-8be3-8ada3624ff33.png",
+    "prompt": "ONE grey mesh ergonomic swivel office chair viewed from ABOVE and BEHIND, chair faces NORTH/up, dark grey five caster legs and curved armrests, black seat. 2.5D JRPG orthographic overhead from due south matching room reference. No desk, floor, people or other objects. Transparent alpha, neutral ambient light, no long cast shadow. Crisp fine-pixel art, 700x900.",
+    "sha256": "219dc96b26e3cd0a6068383cdb45ebfbcee815acfd388f8a9b31e005ce39c82f"
+  },
+  {
+    "id": "chair_front",
+    "sourceFile": "exec-b7093447-84a2-41ef-b688-3ebd309d3d17.png",
+    "prompt": "ONE grey mesh ergonomic swivel office chair viewed from ABOVE and FRONT, chair faces SOUTH/down, dark grey five caster legs and curved armrests, black seat. 2.5D JRPG orthographic overhead from due south matching room reference. No desk, floor, people or other objects. Transparent alpha, neutral ambient light, no long cast shadow. Crisp fine-pixel art, 700x900.",
+    "sha256": "29c91909499d53d8a461ca6223e9168a314957abacff7fb421c55e173657265e"
+  },
+  {
+    "id": "monitor",
+    "sourceFile": "exec-1ded1da2-9741-40ad-b38e-67e8b5c2725f.png",
+    "prompt": "ONE isolated slim 27 inch desktop monitor on an articulated support arm with a small clamp base; screen faces SOUTH/down and visible dark blue inactive screen. 2.5D JRPG orthographic overhead from due south, front width horizontal, fine-pixel style matching reference. No desk chair keyboard floor surroundings or text. Transparent alpha, neutral ambient light, no cast shadow. 1000x800.",
+    "sha256": "7fd117cbe920d60fe21f7786a808f0f6a4e5f6da4f0a41421d58c0548a988eac"
+  },
+  {
+    "id": "workbench",
+    "sourceFile": "exec-89675157-77fd-4a0b-ac92-2adc13f13fb1.png",
+    "prompt": "ONE isolated empty electronics workbench based on image2: grey metal bench with two drawers, upper pegboard, slim overhead strip lamp, shallow upper equipment shelf and outlet rail. No instruments, floor or room. Image1 fine-pixel JRPG style and orthographic overhead camera due south; front width horizontal. Transparent alpha, neutral ambient light, no directional cast shadow. 1200x1000.",
+    "sha256": "a51cfe11b1bd73fc9d9c22c0df4b9285b8ee0c72955ee3520a07954be49be3cb"
+  },
+  {
+    "id": "cabinet",
+    "sourceFile": "exec-8e6bac7d-e8b4-40c9-a11f-2990f965dd22.png",
+    "prompt": "ONE isolated tall bank of eight personal storage lockers, cream doors with small grey handles in 4 columns x2 rows, slate sides, pale oak top. 2.5D JRPG orthographic overhead due south, front width horizontal, fine-pixel art matching reference. No floor/room/people/text. Transparent alpha, soft neutral ambient, no long shadows. 1000x1100.",
+    "sha256": "77b15b5eb13cba7e99a0577d5b0fcbddcea7eb9754cae0bc493a7ac71c8b836f"
+  },
+  {
+    "id": "discussion_table",
+    "sourceFile": "exec-9bb69483-742e-46eb-beb4-9d97bed92cfa.png",
+    "prompt": "ONE isolated modular octagonal ring conference table with open central hole, made of eight pale oak trapezoid table sections with slim white legs. Image2 object shape/reference, image1 fine-pixel JRPG overhead due-south style. NO CHAIRS, NO floor, people or accessories. Transparent alpha, neutral ambient light, no sunlight. 1400x1000.",
+    "sha256": "754c19a6947f189c6da7dabd8d114f5af039393e3e98c92748e37f4d97c4f7e1"
+  },
+  {
+    "id": "whiteboard",
+    "sourceFile": "exec-5de6577d-d228-4184-9819-7bd95ebee7c2.png",
+    "prompt": "ONE isolated mobile whiteboard on slim dark metal stand and four casters. Blank white writing surface with grey trim and small tray. Orthographic JRPG overhead due-south view, front width horizontal. Fine-pixel room reference style. No handwriting, floor, people or other objects. Transparent alpha, neutral ambient no long shadows. 1000x1000.",
+    "sha256": "653e8adf2114015d0755a314a285e3a6da3530862f8aec2c6637f67368092139"
+  },
+  {
+    "id": "printer_3d",
+    "sourceFile": "exec-275b949b-f837-4deb-8acd-1a9e68cbed37.png",
+    "prompt": "ONE isolated enclosed desktop FDM 3D printer, charcoal cubic frame, clear grey front door, build plate and small filament spool on side. Orthographic JRPG overhead due-south, front face horizontal, fine-pixel reference style. No tabletop floor room or text. Transparent alpha, neutral ambient no long shadows. 900x1000.",
+    "sha256": "d4f77aa157526f20f55423ad6339c9359dc5d05ef8dda4ff93f51dd1ca6cbb0c"
+  },
+  {
+    "id": "camera_tripod",
+    "sourceFile": "exec-59d71cf2-ab37-41f4-8390-56e053dbb658.png",
+    "prompt": "ONE isolated black recording camera on a slim tripod, lens faces SOUTH, from orthographic JRPG overhead due south. Three feet and small camera body readable, fine-pixel reference style, no people floor room backdrop or text. Transparent alpha, soft ambient illumination, no cast shadow. 700x1100.",
+    "sha256": "c487a7033c7146f453248e26b9604de5181adf3427bd141836882350f9dc826e"
+  },
+  {
+    "id": "sofa",
+    "sourceFile": "exec-efdd1431-682b-4d60-a919-bef3caaee247.png",
+    "prompt": "ONE isolated small modern two-seat pale sage fabric sofa, faces SOUTH, low arms, four wood feet. Orthographic JRPG overhead due south, front width horizontal, fine-pixel room reference style, no floor room objects or text. Transparent alpha, neutral ambient illumination. 1400x900.",
+    "sha256": "4bba29015c3de859bb05d158673f6cc104a8cf507988195a21dc3f9c80987e62"
+  },
+  {
+    "id": "pantry_counter",
+    "sourceFile": "exec-192217a7-9add-4199-9a46-8035041b47bf.png",
+    "prompt": "ONE isolated straight pantry cabinet counter, 3m wide, pale oak lower cupboards, neutral white top and one built-in stainless sink at left. No upper cupboards, no appliances, no wall, floor, room or text. Orthographic JRPG overhead due south, front width horizontal, fine-pixel reference style. Transparent alpha, neutral ambient no directional shadow. 1800x700.",
+    "sha256": "ae7721d30096818647509ef2d10a6a432a0fae92c7f64b839bc22a87152733ef"
+  },
+  {
+    "id": "stairs_horizontal",
+    "sourceFile": "exec-3a16a3b4-3704-4f93-bfcc-db6074c0a982.png",
+    "prompt": "Open both lateral corridor entrances on this exact stair core: remove the middle 40 percent of the LEFT WEST exterior wall and middle 40 percent of the RIGHT EAST exterior wall, leaving a broad 180px clear ground-level passage into the flat end-platform on EACH side. No door slab. KEEP all stairs exactly as drawn with EAST-WEST horizontal flights, treads as vertical lines, central horizontal divider, all four corner pillars and top/bottom walls intact. Do not rotate stairs. Do not change the canvas aspect or stair positions. The platforms and all visible floors are seamless light-gray concrete. No sunlight or shadow beams. Transparent outside silhouette. Fine detailed JRPG overhead pixel art viewed due south, north at top. This is an edit, preserve everything else.",
+    "sha256": "56e6d5a865852524f01b6e7c3139f07ffea18d9719dbe34dd6cbab3b0f3bdd2e"
+  },
+  {
+    "id": "elevator_west",
+    "sourceFile": "exec-a15b6b53-b401-4a7f-ac3e-5a3ed2ff3fcc.png",
+    "prompt": "Edit this elevator shaft: the huge wooden interior is WRONG. Replace every wooden floor pixel and exposed interior rear wall with an OPAQUE closed continuous graphite-gray ceiling/roof cap filling the entire central enclosed rectangle. This is a solid inaccessible shaft viewed from above, NOT an empty room. NO visible cabin, NO wood, NO stairs. Keep the existing stainless elevator door on the LEFT WEST exterior wall and the tiny exterior landing to its left at the same location. Change the landing to continuous light-gray concrete without tile lines. Preserve four corner pillars and outer silhouette, exact canvas aspect, transparent exterior and neutral ambient light. Roof should read unmistakably as a solid inaccessible capped service shaft. Same fine pixel overhead JRPG style.",
+    "sha256": "02bf8bd458ab681614df6cbb6dcf73918c8f208fdfcbbc93a54bc44e99ef4bde"
+  },
+  {
+    "id": "f4_flex_c",
+    "sourceFile": "exec-a44bee07-ee53-487a-883b-c37b7cae11a4.png",
+    "prompt": "Correct ONE door location in this exact empty room. CLOSE AND REMOVE the doorway and wooden door from the LEFT WEST wall, rebuilding a continuous cream wall there. Open ONE clear doorway in the TOP NORTH wall, near the LEFT end: doorway centered at x=19 percent of full canvas width, clear width 10 percent of canvas width, penetrating the full north wall depth to reach the gray floor. Door leaf swung aside, broad unobstructed passage. Keep all east/right and south/bottom windows unchanged. Keep the light gray seamless continuous floor, zero baked sunlight, no furniture. Keep original rectangle proportions, same camera, same canvas and transparent exterior. Fine pixel JRPG overhead architecture.",
+    "sha256": "1d77eed379ddb1e27280efd8d2917f4a257bb895bd988b1dbd2e9026f9690d1b"
+  },
+  {
+    "id": "f2_platform",
+    "sourceFile": "exec-427636b6-6391-454e-b1e2-82bd3726481e.png",
+    "prompt": "CORRECT ARCHITECTURAL MISINTERPRETATION. This is NOT a room: it is the large OPEN central platform on 2F. On the EXACT same tall canvas and footprint, REMOVE ALL FOUR enclosing walls, all corner posts, all doorways, both doors, all wood trim, all windows and all roof trim. Replace the WHOLE rectangular footprint with one continuous light-gray resin / microcement indoor floor slab, unobstructed, flush and open along all four sides. Absolutely NO door, NO wall, NO railing, NO steps, NO furniture. Retain very subtle fine-pixel floor material, neutral ambient light only, no baked sunlight. Orthographic JRPG topdown floor, north at top, viewed due south. Slightly darker thin slab edge is okay, no raised boundary. Transparent outside the rectangular platform. Preserve the original outer rectangle aspect ratio and canvas size. This asset will connect seamlessly to four adjoining corridors.",
+    "sha256": "0f44123655493642564e31030b841571e423c3a4656fc6f77cd8a4008ecc1ec0"
+  },
+  {
+    "id": "monitor_front",
+    "sourceFile": "exec-7ddd067d-19ca-4005-a6ee-a00543616f94.png",
+    "prompt": "Use case: stylized-concept. Asset type: single independent transparent prop for the 7:55 modern university JRPG. Fine native pixel-art with small crisp pixels, restrained broad clusters, clean slate outline, pale oak / warm ivory / charcoal / desaturated sage palette. Orthographic oblique overhead view looking north from south, about 55 degrees downward. Floor axes screen-horizontal and screen-vertical, upright vertical edges, no isometric diamond rotation, no lens perspective. Soft neutral ambient illumination; do not bake any cast shadow or floor. One isolated object centered with padding, entire silhouette, true transparent RGBA exterior. No people, lettering, labels, logos, UI, vignette, checkerboard or scenery. Match the established campus room sprites. A single 27-inch desktop computer monitor on an adjustable short desk arm. Show the FULL dark slate 16:9 rectangular SCREEN FACE toward the viewer, readable from overhead, on a small silver mounting base. Thin bezel, muted blue inactive screen, modest jointed support BEHIND the screen. No keyboard or table. It must read as a rectangular monitor, not a thin horizontal bar or microphone.",
+    "sha256": "95f9fdc626aa31adc160e60a2ff354526ba91a2ad1861d5afed836401efdbc68"
+  },
+  {
+    "id": "desk_divider",
+    "sourceFile": "exec-84170ae2-b420-4406-ad8d-6c3a0c51db4e.png",
+    "prompt": "Use case: stylized-concept. Asset type: single independent transparent prop for the 7:55 modern university JRPG. Fine native pixel-art with small crisp pixels, restrained broad clusters, clean slate outline, pale oak / warm ivory / charcoal / desaturated sage palette. Orthographic oblique overhead view looking north from south, about 55 degrees downward. Floor axes screen-horizontal and screen-vertical, upright vertical edges, no isometric diamond rotation, no lens perspective. Soft neutral ambient illumination; do not bake any cast shadow or floor. One isolated object centered with padding, entire silhouette, true transparent RGBA exterior. No people, lettering, labels, logos, UI, vignette, checkerboard or scenery. Match the established campus room sprites. One pale gray felt desktop privacy divider, a wide horizontal panel with a softly rounded top edge and two small ivory clamp feet. Broad face directed toward viewer, top edge and thickness visible from above. No desk, no chair.",
+    "sha256": "3320b35288e8caf7fabf756b0f762c8de80e6d22207be9a05c389f296294b506"
+  },
+  {
+    "id": "tool_cart",
+    "sourceFile": "exec-fdd3d551-4563-4052-b0db-c8cc5e43dd40.png",
+    "prompt": "Use case: stylized-concept. Asset type: single independent transparent prop for the 7:55 modern university JRPG. Fine native pixel-art with small crisp pixels, restrained broad clusters, clean slate outline, pale oak / warm ivory / charcoal / desaturated sage palette. Orthographic oblique overhead view looking north from south, about 55 degrees downward. Floor axes screen-horizontal and screen-vertical, upright vertical edges, no isometric diamond rotation, no lens perspective. Soft neutral ambient illumination; do not bake any cast shadow or floor. One isolated object centered with padding, entire silhouette, true transparent RGBA exterior. No people, lettering, labels, logos, UI, vignette, checkerboard or scenery. Match the established campus room sprites. One compact three-tier rolling engineering tool cart with a rear upright pegboard, muted blue-gray steel frame, small casters, two shallow trays with tidy tool cases, and a few recognizable hand tools hung on its pegboard. No brand. View straight from south and above; width aligned horizontally.",
+    "sha256": "fd980a6b3d941b80beaffcff73229f6b604e71cbbae9489a1929086440c79b15"
+  },
+  {
+    "id": "parts_rack",
+    "sourceFile": "exec-839c9c79-baf7-4e7c-a80a-65bacc59c404.png",
+    "prompt": "Use case: stylized-concept. Asset type: single independent transparent prop for the 7:55 modern university JRPG. Fine native pixel-art with small crisp pixels, restrained broad clusters, clean slate outline, pale oak / warm ivory / charcoal / desaturated sage palette. Orthographic oblique overhead view looking north from south, about 55 degrees downward. Floor axes screen-horizontal and screen-vertical, upright vertical edges, no isometric diamond rotation, no lens perspective. Soft neutral ambient illumination; do not bake any cast shadow or floor. One isolated object centered with padding, entire silhouette, true transparent RGBA exterior. No people, lettering, labels, logos, UI, vignette, checkerboard or scenery. Match the established campus room sprites. One freestanding four-shelf dark slate steel components storage rack, shelves holding neatly arranged blue-gray small bins and ivory boxes. Each shelf distinct; visible top planes from above; full base and feet visible. No text or serial numbers. Not a huge industrial warehouse rack.",
+    "sha256": "04bb7626f7b8effbcdd888c38d57a84082b7c1c664911519de2a1513dc2bd190"
+  },
+  {
+    "id": "coffee_machine",
+    "sourceFile": "exec-bf582b3c-44f4-454f-9195-db319f71b080.png",
+    "prompt": "Use case: stylized-concept. Asset type: single independent transparent prop for the 7:55 modern university JRPG. Fine native pixel-art with small crisp pixels, restrained broad clusters, clean slate outline, pale oak / warm ivory / charcoal / desaturated sage palette. Orthographic oblique overhead view looking north from south, about 55 degrees downward. Floor axes screen-horizontal and screen-vertical, upright vertical edges, no isometric diamond rotation, no lens perspective. Soft neutral ambient illumination; do not bake any cast shadow or floor. One isolated object centered with padding, entire silhouette, true transparent RGBA exterior. No people, lettering, labels, logos, UI, vignette, checkerboard or scenery. Match the established campus room sprites. One compact modern countertop espresso/coffee dispenser in charcoal and brushed silver, a tiny dark display, dispenser spout, one ivory cup on drip tray, water reservoir. No table or cabinet. Whole machine in top-down JRPG prop perspective.",
+    "sha256": "61fa833239f6cf4dd95ddfbca63a0789197680751d2c33b9f723ccd39c95b88a"
+  },
+  {
+    "id": "potted_plant",
+    "sourceFile": "exec-eec0b5b2-8a75-4aab-903c-dcf9008a3587.png",
+    "prompt": "Use case: stylized-concept. Asset type: single independent transparent prop for the 7:55 modern university JRPG. Fine native pixel-art with small crisp pixels, restrained broad clusters, clean slate outline, pale oak / warm ivory / charcoal / desaturated sage palette. Orthographic oblique overhead view looking north from south, about 55 degrees downward. Floor axes screen-horizontal and screen-vertical, upright vertical edges, no isometric diamond rotation, no lens perspective. Soft neutral ambient illumination; do not bake any cast shadow or floor. One isolated object centered with padding, entire silhouette, true transparent RGBA exterior. No people, lettering, labels, logos, UI, vignette, checkerboard or scenery. Match the established campus room sprites. One waist-height indoor leafy green plant in a simple warm-ivory cylindrical pot. Calm large leaf clusters with clear branches, subdued sage and olive greens, broad clean pixels, no isolated stipple noise. Top-down campus JRPG perspective, visible pot rim and base.",
+    "sha256": "12d6f81c00b32b1f3672ce8f8f539a88481b4504de76ed2ba07588a58e498b0f"
+  },
+  {
+    "id": "soldering_station",
+    "sourceFile": "exec-19894f32-a18d-4341-b5c5-5a4910f629a1.png",
+    "prompt": "Use case: stylized-concept. Asset type: single independent transparent prop for the 7:55 modern university JRPG. Fine native pixel-art with small crisp pixels, restrained broad clusters, clean slate outline, pale oak / warm ivory / charcoal / desaturated sage palette. Orthographic oblique overhead view looking north from south, about 55 degrees downward. Floor axes screen-horizontal and screen-vertical, upright vertical edges, no isometric diamond rotation, no lens perspective. Soft neutral ambient illumination; do not bake any cast shadow or floor. One isolated object centered with padding, entire silhouette, true transparent RGBA exterior. No people, lettering, labels, logos, UI, vignette, checkerboard or scenery. Match the established campus room sprites. One compact electronics soldering workstation prop: charcoal control base with tiny blue indicator, pencil soldering iron resting in a simple metal holder, attached cable curled neatly within its silhouette and a small sponge tray. Unified portable object, no desk, no readable text.",
+    "sha256": "e3dca6ef84ce71e8c5c330592b1912556ef4c8ca2630c68da82870c6663c1d90"
+  }
+]
