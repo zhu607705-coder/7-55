@@ -32,7 +32,7 @@ func capture_review()->void:
 		world.set_hour(12)
 		for room:Dictionary in world.data.rooms:
 			var area:Rect2=world.Space.rect(room.bounds);var point:=area.get_center()
-			if room.id=="pantry":point=Vector2(area.position.x+area.size.x*.45,area.position.y+area.size.y*.435-60)
+			if room.id=="pantry":point=Vector2(world.data.loungeReference.capture[0],world.data.loungeReference.capture[1])
 			var found:bool=world.set_foot(point)
 			if not found:
 				for offset:Vector2 in [Vector2(0,100),Vector2(-120,0),Vector2(120,0),Vector2(0,200),Vector2(-200,100)]:
@@ -144,10 +144,40 @@ func check_input()->void:
 	await key(KEY_W,true);await create_timer(.25).timeout;await key(KEY_W,false)
 	checks+=1
 	if world.player.distance_to(before)<35:failures+=1;push_error("FLC_INPUT cannot retreat from hall post")
+	world.load_floor(3)
+	var table:Dictionary=world.data.objects.filter(func(o:Dictionary)->bool:return o.id==world.data.loungeReference.table)[0]
+	var table_box:Rect2=world.Space.rect(table.footprint)
+	world.set_foot(Vector2(table_box.end.x+90,table_box.get_center().y))
+	await key(KEY_A,true);await create_timer(.7).timeout;await key(KEY_A,false)
+	checks+=1
+	if world.player.x+world.Body.FOOT_CENTER_OFFSET.x<=table_box.end.x or not world.space.can_stand(world.player):failures+=1;push_error("FLC_INPUT crossed pantry table")
+	before=world.player
+	await key(KEY_D,true);await create_timer(.25).timeout;await key(KEY_D,false)
+	checks+=1
+	if world.player.distance_to(before)<35:failures+=1;push_error("FLC_INPUT cannot retreat from pantry table")
+	var lounge_target:=Vector2(table_box.position.x-70,table_box.get_center().y)
+	var lounge_screen:Vector2=host.position+world.world_to_screen(lounge_target)*host.scale
+	touch=InputEventScreenTouch.new();touch.index=0;touch.position=lounge_screen;touch.pressed=true
+	root.push_input(touch,true);await process_frame
+	touch=touch.duplicate();touch.pressed=false;root.push_input(touch,true)
+	await create_timer(5.5).timeout
+	checks+=1
+	if (world.player+world.Body.FOOT_CENTER_OFFSET).distance_to(lounge_target)>8:failures+=1;push_error("FLC_INPUT touch route cannot circle pantry table and chairs")
+	var lounge_final:Vector2=world.player+world.Body.FOOT_CENTER_OFFSET
+	var sofa:Dictionary=world.data.objects.filter(func(o:Dictionary)->bool:return o.get("cluster","")=="pantry_lounge" and o.asset=="sofa")[0]
+	var sofa_box:Rect2=world.Space.rect(sofa.footprint)
+	world.set_foot(Vector2(sofa_box.get_center().x,sofa_box.end.y+60))
+	await key(KEY_W,true);await create_timer(.6).timeout;await key(KEY_W,false)
+	checks+=1
+	if world.player.y+world.Body.FOOT_CENTER_OFFSET.y<=sofa_box.end.y or not world.space.can_stand(world.player):failures+=1;push_error("FLC_INPUT crossed pantry sofa")
+	before=world.player
+	await key(KEY_S,true);await create_timer(.18).timeout;await key(KEY_S,false)
+	checks+=1
+	if world.player.distance_to(before)<30:failures+=1;push_error("FLC_INPUT cannot retreat from pantry sofa")
 	checks+=1
 	if world.invalid_frames!=0:failures+=1;push_error("FLC_INPUT illegal frame")
 	var output:=OS.get_environment("FLC_CAPTURE_DIR");DirAccess.make_dir_recursive_absolute(output)
 	var file:=FileAccess.open(output.path_join("input.json"),FileAccess.WRITE)
-	file.store_string(JSON.stringify({"checks":checks,"failures":failures,"invalidFrames":world.invalid_frames,"viewport":[root.size.x,root.size.y],"scale":host.scale.x,"touchTarget":[target.x,target.y],"touchFinal":[touch_final.x,touch_final.y],"hallFloor":world.data.floor},"  "));file.close()
+	file.store_string(JSON.stringify({"checks":checks,"failures":failures,"invalidFrames":world.invalid_frames,"viewport":[root.size.x,root.size.y],"scale":host.scale.x,"touchTarget":[target.x,target.y],"touchFinal":[touch_final.x,touch_final.y],"loungeTouchTarget":[lounge_target.x,lounge_target.y],"loungeTouchFinal":[lounge_final.x,lounge_final.y],"hallFloor":2,"loungeFloor":world.data.floor},"  "));file.close()
 	print("FLC_INPUT: %d checks, %d failures at %s"%[checks,failures,str(root.size)])
 	world.load_floor(3);world.set_foot(spawn)

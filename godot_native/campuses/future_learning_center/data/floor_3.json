@@ -22357,7 +22357,199 @@
       "parent": "pantry_pantry_wall_unit_243"
     },
     {
-      "id": "pantry_pantry_island_246",
+      "id": "pantry_sofa_246",
+      "room": "pantry",
+      "asset": "sofa",
+      "name": "双人沙发",
+      "path": "res://campuses/future_learning_center/assets/objects/sofa.png",
+      "crop": [
+        357,
+        268,
+        850,
+        473
+      ],
+      "scale": 0.23058823529411765,
+      "bounds": [
+        2117.123947972456,
+        6964.257071174518,
+        196,
+        109.06823529411764
+      ],
+      "footprint": [
+        2128.883947972456,
+        7001.325306468636,
+        172.48,
+        72
+      ],
+      "baseline": 7073.325306468636,
+      "height": 58,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_lounge"
+    },
+    {
+      "id": "pantry_lounge_coffee_table_247",
+      "room": "pantry",
+      "asset": "lounge_coffee_table",
+      "name": "休息区矮茶几",
+      "path": "res://campuses/future_learning_center/assets/objects/lounge_coffee_table.png",
+      "crop": [
+        154,
+        268,
+        1228,
+        497
+      ],
+      "scale": 0.09609120521172639,
+      "bounds": [
+        2156.123947972456,
+        7137.567977478408,
+        118,
+        47.75732899022801
+      ],
+      "footprint": [
+        2163.203947972456,
+        7145.325306468636,
+        103.84,
+        40
+      ],
+      "baseline": 7185.325306468636,
+      "height": 38,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_lounge"
+    },
+    {
+      "id": "pantry_sofa_248",
+      "room": "pantry",
+      "asset": "sofa",
+      "name": "双人沙发",
+      "path": "res://campuses/future_learning_center/assets/objects/sofa.png",
+      "crop": [
+        357,
+        268,
+        850,
+        473
+      ],
+      "scale": 0.23058823529411765,
+      "bounds": [
+        2432.123947972456,
+        6964.257071174518,
+        196,
+        109.06823529411764
+      ],
+      "footprint": [
+        2443.883947972456,
+        7001.325306468636,
+        172.48,
+        72
+      ],
+      "baseline": 7073.325306468636,
+      "height": 58,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_lounge"
+    },
+    {
+      "id": "pantry_lounge_coffee_table_249",
+      "room": "pantry",
+      "asset": "lounge_coffee_table",
+      "name": "休息区矮茶几",
+      "path": "res://campuses/future_learning_center/assets/objects/lounge_coffee_table.png",
+      "crop": [
+        154,
+        268,
+        1228,
+        497
+      ],
+      "scale": 0.09609120521172639,
+      "bounds": [
+        2471.123947972456,
+        7137.567977478408,
+        118,
+        47.75732899022801
+      ],
+      "footprint": [
+        2478.203947972456,
+        7145.325306468636,
+        103.84,
+        40
+      ],
+      "baseline": 7185.325306468636,
+      "height": 38,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_lounge"
+    },
+    {
+      "id": "pantry_pantry_island_250",
       "room": "pantry",
       "asset": "pantry_island",
       "name": "深灰色共享长桌",
@@ -22368,212 +22560,20 @@
         1436,
         464
       ],
-      "scale": 0.34818941504178275,
+      "scale": 0.403899721448468,
       "bounds": [
-        2495.6195103289974,
-        7216.654859358262,
-        500,
-        161.5598885793872
+        2455.6195103289974,
+        7235.915835716547,
+        580,
+        187.40947075208913
       ],
       "footprint": [
-        2525.6195103289974,
-        7228.214747937649,
-        440,
-        150
+        2490.4195103289976,
+        7249.325306468636,
+        510.4,
+        174
       ],
-      "baseline": 7378.214747937649,
-      "height": 65,
-      "floor": [
-        [
-          2122.113236419281,
-          6903.325306468636
-        ],
-        [
-          3205.0856924254017,
-          6903.325306468636
-        ],
-        [
-          3232.572302983933,
-          7667.453079995797
-        ],
-        [
-          2100.123947972456,
-          7667.453079995797
-        ]
-      ],
-      "mounted": false,
-      "cluster": "pantry_island"
-    },
-    {
-      "id": "pantry_pantry_chair_front_247",
-      "room": "pantry",
-      "asset": "pantry_chair_front",
-      "name": "木扶手座椅",
-      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_front.png",
-      "crop": [
-        270,
-        197,
-        712,
-        862
-      ],
-      "scale": 0.056179775280898875,
-      "bounds": [
-        2557.6195103289974,
-        7169.787781645514,
-        40,
-        48.42696629213483
-      ],
-      "footprint": [
-        2560.0195103289975,
-        7190.214747937649,
-        35.2,
-        28
-      ],
-      "baseline": 7218.214747937649,
-      "height": 65,
-      "floor": [
-        [
-          2122.113236419281,
-          6903.325306468636
-        ],
-        [
-          3205.0856924254017,
-          6903.325306468636
-        ],
-        [
-          3232.572302983933,
-          7667.453079995797
-        ],
-        [
-          2100.123947972456,
-          7667.453079995797
-        ]
-      ],
-      "mounted": false,
-      "cluster": "pantry_island"
-    },
-    {
-      "id": "pantry_chair_back_248",
-      "room": "pantry",
-      "asset": "chair_back",
-      "name": "网布工作椅",
-      "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
-      "crop": [
-        171,
-        278,
-        765,
-        1028
-      ],
-      "scale": 0.05228758169934641,
-      "bounds": [
-        2557.6195103289974,
-        7369.463113950721,
-        40,
-        53.751633986928105
-      ],
-      "footprint": [
-        2560.0195103289975,
-        7395.214747937649,
-        35.2,
-        28
-      ],
-      "baseline": 7423.214747937649,
-      "height": 65,
-      "floor": [
-        [
-          2122.113236419281,
-          6903.325306468636
-        ],
-        [
-          3205.0856924254017,
-          6903.325306468636
-        ],
-        [
-          3232.572302983933,
-          7667.453079995797
-        ],
-        [
-          2100.123947972456,
-          7667.453079995797
-        ]
-      ],
-      "mounted": false,
-      "cluster": "pantry_island"
-    },
-    {
-      "id": "pantry_pantry_chair_front_249",
-      "room": "pantry",
-      "asset": "pantry_chair_front",
-      "name": "木扶手座椅",
-      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_front.png",
-      "crop": [
-        270,
-        197,
-        712,
-        862
-      ],
-      "scale": 0.056179775280898875,
-      "bounds": [
-        2669.6195103289974,
-        7169.787781645514,
-        40,
-        48.42696629213483
-      ],
-      "footprint": [
-        2672.0195103289975,
-        7190.214747937649,
-        35.2,
-        28
-      ],
-      "baseline": 7218.214747937649,
-      "height": 65,
-      "floor": [
-        [
-          2122.113236419281,
-          6903.325306468636
-        ],
-        [
-          3205.0856924254017,
-          6903.325306468636
-        ],
-        [
-          3232.572302983933,
-          7667.453079995797
-        ],
-        [
-          2100.123947972456,
-          7667.453079995797
-        ]
-      ],
-      "mounted": false,
-      "cluster": "pantry_island"
-    },
-    {
-      "id": "pantry_chair_back_250",
-      "room": "pantry",
-      "asset": "chair_back",
-      "name": "网布工作椅",
-      "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
-      "crop": [
-        171,
-        278,
-        765,
-        1028
-      ],
-      "scale": 0.05228758169934641,
-      "bounds": [
-        2669.6195103289974,
-        7369.463113950721,
-        40,
-        53.751633986928105
-      ],
-      "footprint": [
-        2672.0195103289975,
-        7395.214747937649,
-        35.2,
-        28
-      ],
-      "baseline": 7423.214747937649,
+      "baseline": 7423.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22610,18 +22610,18 @@
       ],
       "scale": 0.056179775280898875,
       "bounds": [
-        2781.6195103289974,
-        7169.787781645514,
+        2501.6195103289974,
+        7186.898340176501,
         40,
         48.42696629213483
       ],
       "footprint": [
-        2784.0195103289975,
-        7190.214747937649,
+        2504.0195103289975,
+        7207.325306468636,
         35.2,
         28
       ],
-      "baseline": 7218.214747937649,
+      "baseline": 7235.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22645,31 +22645,31 @@
       "cluster": "pantry_island"
     },
     {
-      "id": "pantry_pantry_chair_back_252",
+      "id": "pantry_chair_back_252",
       "room": "pantry",
-      "asset": "pantry_chair_back",
-      "name": "木扶手座椅",
-      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_back.png",
+      "asset": "chair_back",
+      "name": "网布工作椅",
+      "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
       "crop": [
-        252,
-        274,
-        750,
-        739
+        171,
+        278,
+        765,
+        1028
       ],
-      "scale": 0.05333333333333334,
+      "scale": 0.05228758169934641,
       "bounds": [
-        2781.6195103289974,
-        7383.801414604316,
+        2501.6195103289974,
+        7414.573672481708,
         40,
-        39.413333333333334
+        53.751633986928105
       ],
       "footprint": [
-        2784.0195103289975,
-        7395.214747937649,
+        2504.0195103289975,
+        7440.325306468636,
         35.2,
         28
       ],
-      "baseline": 7423.214747937649,
+      "baseline": 7468.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22706,18 +22706,18 @@
       ],
       "scale": 0.056179775280898875,
       "bounds": [
-        2893.6195103289974,
-        7169.787781645514,
+        2613.6195103289974,
+        7186.898340176501,
         40,
         48.42696629213483
       ],
       "footprint": [
-        2896.0195103289975,
-        7190.214747937649,
+        2616.0195103289975,
+        7207.325306468636,
         35.2,
         28
       ],
-      "baseline": 7218.214747937649,
+      "baseline": 7235.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22741,7 +22741,103 @@
       "cluster": "pantry_island"
     },
     {
-      "id": "pantry_pantry_chair_back_254",
+      "id": "pantry_chair_back_254",
+      "room": "pantry",
+      "asset": "chair_back",
+      "name": "网布工作椅",
+      "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+      "crop": [
+        171,
+        278,
+        765,
+        1028
+      ],
+      "scale": 0.05228758169934641,
+      "bounds": [
+        2613.6195103289974,
+        7414.573672481708,
+        40,
+        53.751633986928105
+      ],
+      "footprint": [
+        2616.0195103289975,
+        7440.325306468636,
+        35.2,
+        28
+      ],
+      "baseline": 7468.325306468636,
+      "height": 65,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_island"
+    },
+    {
+      "id": "pantry_pantry_chair_front_255",
+      "room": "pantry",
+      "asset": "pantry_chair_front",
+      "name": "木扶手座椅",
+      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_front.png",
+      "crop": [
+        270,
+        197,
+        712,
+        862
+      ],
+      "scale": 0.056179775280898875,
+      "bounds": [
+        2725.6195103289974,
+        7186.898340176501,
+        40,
+        48.42696629213483
+      ],
+      "footprint": [
+        2728.0195103289975,
+        7207.325306468636,
+        35.2,
+        28
+      ],
+      "baseline": 7235.325306468636,
+      "height": 65,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_island"
+    },
+    {
+      "id": "pantry_pantry_chair_back_256",
       "room": "pantry",
       "asset": "pantry_chair_back",
       "name": "木扶手座椅",
@@ -22754,18 +22850,18 @@
       ],
       "scale": 0.05333333333333334,
       "bounds": [
-        2893.6195103289974,
-        7383.801414604316,
+        2725.6195103289974,
+        7428.911973135303,
         40,
         39.413333333333334
       ],
       "footprint": [
-        2896.0195103289975,
-        7395.214747937649,
+        2728.0195103289975,
+        7440.325306468636,
         35.2,
         28
       ],
-      "baseline": 7423.214747937649,
+      "baseline": 7468.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22789,7 +22885,199 @@
       "cluster": "pantry_island"
     },
     {
-      "id": "pantry_pantry_tree_255",
+      "id": "pantry_pantry_chair_front_257",
+      "room": "pantry",
+      "asset": "pantry_chair_front",
+      "name": "木扶手座椅",
+      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_front.png",
+      "crop": [
+        270,
+        197,
+        712,
+        862
+      ],
+      "scale": 0.056179775280898875,
+      "bounds": [
+        2837.6195103289974,
+        7186.898340176501,
+        40,
+        48.42696629213483
+      ],
+      "footprint": [
+        2840.0195103289975,
+        7207.325306468636,
+        35.2,
+        28
+      ],
+      "baseline": 7235.325306468636,
+      "height": 65,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_island"
+    },
+    {
+      "id": "pantry_pantry_chair_back_258",
+      "room": "pantry",
+      "asset": "pantry_chair_back",
+      "name": "木扶手座椅",
+      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_back.png",
+      "crop": [
+        252,
+        274,
+        750,
+        739
+      ],
+      "scale": 0.05333333333333334,
+      "bounds": [
+        2837.6195103289974,
+        7428.911973135303,
+        40,
+        39.413333333333334
+      ],
+      "footprint": [
+        2840.0195103289975,
+        7440.325306468636,
+        35.2,
+        28
+      ],
+      "baseline": 7468.325306468636,
+      "height": 65,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_island"
+    },
+    {
+      "id": "pantry_pantry_chair_front_259",
+      "room": "pantry",
+      "asset": "pantry_chair_front",
+      "name": "木扶手座椅",
+      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_front.png",
+      "crop": [
+        270,
+        197,
+        712,
+        862
+      ],
+      "scale": 0.056179775280898875,
+      "bounds": [
+        2949.6195103289974,
+        7186.898340176501,
+        40,
+        48.42696629213483
+      ],
+      "footprint": [
+        2952.0195103289975,
+        7207.325306468636,
+        35.2,
+        28
+      ],
+      "baseline": 7235.325306468636,
+      "height": 65,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_island"
+    },
+    {
+      "id": "pantry_pantry_chair_back_260",
+      "room": "pantry",
+      "asset": "pantry_chair_back",
+      "name": "木扶手座椅",
+      "path": "res://campuses/future_learning_center/assets/objects/pantry_chair_back.png",
+      "crop": [
+        252,
+        274,
+        750,
+        739
+      ],
+      "scale": 0.05333333333333334,
+      "bounds": [
+        2949.6195103289974,
+        7428.911973135303,
+        40,
+        39.413333333333334
+      ],
+      "footprint": [
+        2952.0195103289975,
+        7440.325306468636,
+        35.2,
+        28
+      ],
+      "baseline": 7468.325306468636,
+      "height": 65,
+      "floor": [
+        [
+          2122.113236419281,
+          6903.325306468636
+        ],
+        [
+          3205.0856924254017,
+          6903.325306468636
+        ],
+        [
+          3232.572302983933,
+          7667.453079995797
+        ],
+        [
+          2100.123947972456,
+          7667.453079995797
+        ]
+      ],
+      "mounted": false,
+      "cluster": "pantry_island"
+    },
+    {
+      "id": "pantry_pantry_tree_261",
       "room": "pantry",
       "asset": "pantry_tree",
       "name": "木盆绿植",
@@ -22802,18 +23090,18 @@
       ],
       "scale": 0.11013215859030837,
       "bounds": [
-        2639.6393341175435,
-        7119.9696225894595,
+        2569.6393341175435,
+        7147.760961064736,
         91.96035242290749,
         150
       ],
       "footprint": [
-        2645.156955262918,
-        7237.783499241442,
+        2575.156955262918,
+        7265.574837716718,
         80.9251101321586,
         32.18612334801762
       ],
-      "baseline": 7378.314747937649,
+      "baseline": 7423.425306468636,
       "height": 130,
       "floor": [
         [
@@ -22834,10 +23122,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "pantry_pantry_island_246"
+      "parent": "pantry_pantry_island_250"
     },
     {
-      "id": "pantry_desk_256",
+      "id": "pantry_desk_262",
       "room": "pantry",
       "asset": "desk",
       "name": "工作桌",
@@ -22851,17 +23139,17 @@
       "scale": 0.08925869894099848,
       "bounds": [
         2146.123947972456,
-        7136.289693737468,
+        7324.5083624444305,
         118,
         73.81694402420575
       ],
       "footprint": [
         2153.203947972456,
-        7168.1066377616735,
+        7356.325306468636,
         103.84,
         42
       ],
-      "baseline": 7210.1066377616735,
+      "baseline": 7398.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22885,7 +23173,7 @@
       "cluster": "pantry_side_table"
     },
     {
-      "id": "pantry_chair_back_257",
+      "id": "pantry_chair_back_263",
       "room": "pantry",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -22899,17 +23187,17 @@
       "scale": 0.05228758169934641,
       "bounds": [
         2185.123947972456,
-        7216.3550037747455,
+        7404.573672481708,
         40,
         53.751633986928105
       ],
       "footprint": [
         2187.523947972456,
-        7242.1066377616735,
+        7430.325306468636,
         35.2,
         28
       ],
-      "baseline": 7270.1066377616735,
+      "baseline": 7458.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22933,7 +23221,7 @@
       "cluster": "pantry_side_table"
     },
     {
-      "id": "pantry_desk_258",
+      "id": "pantry_desk_264",
       "room": "pantry",
       "asset": "desk",
       "name": "工作桌",
@@ -22947,17 +23235,17 @@
       "scale": 0.08925869894099848,
       "bounds": [
         2264.123947972456,
-        7136.289693737468,
+        7324.5083624444305,
         118,
         73.81694402420575
       ],
       "footprint": [
         2271.203947972456,
-        7168.1066377616735,
+        7356.325306468636,
         103.84,
         42
       ],
-      "baseline": 7210.1066377616735,
+      "baseline": 7398.325306468636,
       "height": 65,
       "floor": [
         [
@@ -22981,7 +23269,7 @@
       "cluster": "pantry_side_table"
     },
     {
-      "id": "pantry_chair_back_259",
+      "id": "pantry_chair_back_265",
       "room": "pantry",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -22995,17 +23283,17 @@
       "scale": 0.05228758169934641,
       "bounds": [
         2303.123947972456,
-        7216.3550037747455,
+        7404.573672481708,
         40,
         53.751633986928105
       ],
       "footprint": [
         2305.523947972456,
-        7242.1066377616735,
+        7430.325306468636,
         35.2,
         28
       ],
-      "baseline": 7270.1066377616735,
+      "baseline": 7458.325306468636,
       "height": 65,
       "floor": [
         [
@@ -23029,7 +23317,7 @@
       "cluster": "pantry_side_table"
     },
     {
-      "id": "xlab_north_desk_260",
+      "id": "xlab_north_desk_266",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -23076,7 +23364,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_261",
+      "id": "xlab_north_chair_back_267",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -23123,7 +23411,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_262",
+      "id": "xlab_north_desk_divider_268",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -23168,10 +23456,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_260"
+      "parent": "xlab_north_desk_266"
     },
     {
-      "id": "xlab_north_monitor_front_263",
+      "id": "xlab_north_monitor_front_269",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -23216,10 +23504,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_260"
+      "parent": "xlab_north_desk_266"
     },
     {
-      "id": "xlab_north_desk_264",
+      "id": "xlab_north_desk_270",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -23266,7 +23554,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_265",
+      "id": "xlab_north_chair_back_271",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -23313,7 +23601,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_266",
+      "id": "xlab_north_desk_divider_272",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -23358,10 +23646,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_264"
+      "parent": "xlab_north_desk_270"
     },
     {
-      "id": "xlab_north_monitor_front_267",
+      "id": "xlab_north_monitor_front_273",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -23406,10 +23694,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_264"
+      "parent": "xlab_north_desk_270"
     },
     {
-      "id": "xlab_north_desk_268",
+      "id": "xlab_north_desk_274",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -23456,7 +23744,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_269",
+      "id": "xlab_north_chair_back_275",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -23503,7 +23791,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_270",
+      "id": "xlab_north_desk_divider_276",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -23548,10 +23836,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_268"
+      "parent": "xlab_north_desk_274"
     },
     {
-      "id": "xlab_north_monitor_front_271",
+      "id": "xlab_north_monitor_front_277",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -23596,10 +23884,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_268"
+      "parent": "xlab_north_desk_274"
     },
     {
-      "id": "xlab_north_desk_272",
+      "id": "xlab_north_desk_278",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -23646,7 +23934,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_273",
+      "id": "xlab_north_chair_back_279",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -23693,7 +23981,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_274",
+      "id": "xlab_north_desk_divider_280",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -23738,10 +24026,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_272"
+      "parent": "xlab_north_desk_278"
     },
     {
-      "id": "xlab_north_monitor_front_275",
+      "id": "xlab_north_monitor_front_281",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -23786,10 +24074,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_272"
+      "parent": "xlab_north_desk_278"
     },
     {
-      "id": "xlab_north_desk_276",
+      "id": "xlab_north_desk_282",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -23836,7 +24124,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_277",
+      "id": "xlab_north_chair_back_283",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -23883,7 +24171,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_278",
+      "id": "xlab_north_desk_divider_284",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -23928,10 +24216,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_276"
+      "parent": "xlab_north_desk_282"
     },
     {
-      "id": "xlab_north_monitor_front_279",
+      "id": "xlab_north_monitor_front_285",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -23976,10 +24264,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_276"
+      "parent": "xlab_north_desk_282"
     },
     {
-      "id": "xlab_north_desk_280",
+      "id": "xlab_north_desk_286",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -24026,7 +24314,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_281",
+      "id": "xlab_north_chair_back_287",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -24073,7 +24361,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_282",
+      "id": "xlab_north_desk_divider_288",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -24118,10 +24406,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_280"
+      "parent": "xlab_north_desk_286"
     },
     {
-      "id": "xlab_north_monitor_front_283",
+      "id": "xlab_north_monitor_front_289",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -24166,10 +24454,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_280"
+      "parent": "xlab_north_desk_286"
     },
     {
-      "id": "xlab_north_desk_284",
+      "id": "xlab_north_desk_290",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -24216,7 +24504,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_285",
+      "id": "xlab_north_chair_back_291",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -24263,7 +24551,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_286",
+      "id": "xlab_north_desk_divider_292",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -24308,10 +24596,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_284"
+      "parent": "xlab_north_desk_290"
     },
     {
-      "id": "xlab_north_monitor_front_287",
+      "id": "xlab_north_monitor_front_293",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -24356,10 +24644,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_284"
+      "parent": "xlab_north_desk_290"
     },
     {
-      "id": "xlab_north_desk_288",
+      "id": "xlab_north_desk_294",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -24406,7 +24694,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_289",
+      "id": "xlab_north_chair_back_295",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -24453,7 +24741,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_290",
+      "id": "xlab_north_desk_divider_296",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -24498,10 +24786,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_288"
+      "parent": "xlab_north_desk_294"
     },
     {
-      "id": "xlab_north_monitor_front_291",
+      "id": "xlab_north_monitor_front_297",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -24546,10 +24834,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_288"
+      "parent": "xlab_north_desk_294"
     },
     {
-      "id": "xlab_north_desk_292",
+      "id": "xlab_north_desk_298",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -24596,7 +24884,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_293",
+      "id": "xlab_north_chair_back_299",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -24643,7 +24931,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_294",
+      "id": "xlab_north_desk_divider_300",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -24688,10 +24976,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_292"
+      "parent": "xlab_north_desk_298"
     },
     {
-      "id": "xlab_north_monitor_front_295",
+      "id": "xlab_north_monitor_front_301",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -24736,10 +25024,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_292"
+      "parent": "xlab_north_desk_298"
     },
     {
-      "id": "xlab_north_desk_296",
+      "id": "xlab_north_desk_302",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -24786,7 +25074,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_297",
+      "id": "xlab_north_chair_back_303",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -24833,7 +25121,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_298",
+      "id": "xlab_north_desk_divider_304",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -24878,10 +25166,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_296"
+      "parent": "xlab_north_desk_302"
     },
     {
-      "id": "xlab_north_monitor_front_299",
+      "id": "xlab_north_monitor_front_305",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -24926,10 +25214,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_296"
+      "parent": "xlab_north_desk_302"
     },
     {
-      "id": "xlab_north_desk_300",
+      "id": "xlab_north_desk_306",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -24976,7 +25264,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_301",
+      "id": "xlab_north_chair_back_307",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -25023,7 +25311,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_302",
+      "id": "xlab_north_desk_divider_308",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -25068,10 +25356,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_300"
+      "parent": "xlab_north_desk_306"
     },
     {
-      "id": "xlab_north_monitor_front_303",
+      "id": "xlab_north_monitor_front_309",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -25116,10 +25404,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_300"
+      "parent": "xlab_north_desk_306"
     },
     {
-      "id": "xlab_north_desk_304",
+      "id": "xlab_north_desk_310",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -25166,7 +25454,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_305",
+      "id": "xlab_north_chair_back_311",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -25213,7 +25501,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_306",
+      "id": "xlab_north_desk_divider_312",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -25258,10 +25546,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_304"
+      "parent": "xlab_north_desk_310"
     },
     {
-      "id": "xlab_north_monitor_front_307",
+      "id": "xlab_north_monitor_front_313",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -25306,10 +25594,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_304"
+      "parent": "xlab_north_desk_310"
     },
     {
-      "id": "xlab_north_desk_308",
+      "id": "xlab_north_desk_314",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -25356,7 +25644,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_309",
+      "id": "xlab_north_chair_back_315",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -25403,7 +25691,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_310",
+      "id": "xlab_north_desk_divider_316",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -25448,10 +25736,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_308"
+      "parent": "xlab_north_desk_314"
     },
     {
-      "id": "xlab_north_monitor_front_311",
+      "id": "xlab_north_monitor_front_317",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -25496,10 +25784,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_308"
+      "parent": "xlab_north_desk_314"
     },
     {
-      "id": "xlab_north_desk_312",
+      "id": "xlab_north_desk_318",
       "room": "xlab_north",
       "asset": "desk",
       "name": "工作桌",
@@ -25546,7 +25834,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_chair_back_313",
+      "id": "xlab_north_chair_back_319",
       "room": "xlab_north",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -25593,7 +25881,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_north_desk_divider_314",
+      "id": "xlab_north_desk_divider_320",
       "room": "xlab_north",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -25638,10 +25926,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_312"
+      "parent": "xlab_north_desk_318"
     },
     {
-      "id": "xlab_north_monitor_front_315",
+      "id": "xlab_north_monitor_front_321",
       "room": "xlab_north",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -25686,10 +25974,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_north_desk_312"
+      "parent": "xlab_north_desk_318"
     },
     {
-      "id": "xlab_south_desk_316",
+      "id": "xlab_south_desk_322",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -25744,7 +26032,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_317",
+      "id": "xlab_south_chair_back_323",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -25799,7 +26087,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_318",
+      "id": "xlab_south_desk_divider_324",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -25852,10 +26140,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_316"
+      "parent": "xlab_south_desk_322"
     },
     {
-      "id": "xlab_south_monitor_front_319",
+      "id": "xlab_south_monitor_front_325",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -25908,10 +26196,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_316"
+      "parent": "xlab_south_desk_322"
     },
     {
-      "id": "xlab_south_desk_320",
+      "id": "xlab_south_desk_326",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -25966,7 +26254,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_321",
+      "id": "xlab_south_chair_back_327",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -26021,7 +26309,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_322",
+      "id": "xlab_south_desk_divider_328",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -26074,10 +26362,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_320"
+      "parent": "xlab_south_desk_326"
     },
     {
-      "id": "xlab_south_monitor_front_323",
+      "id": "xlab_south_monitor_front_329",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -26130,10 +26418,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_320"
+      "parent": "xlab_south_desk_326"
     },
     {
-      "id": "xlab_south_desk_324",
+      "id": "xlab_south_desk_330",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -26188,7 +26476,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_325",
+      "id": "xlab_south_chair_back_331",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -26243,7 +26531,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_326",
+      "id": "xlab_south_desk_divider_332",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -26296,10 +26584,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_324"
+      "parent": "xlab_south_desk_330"
     },
     {
-      "id": "xlab_south_monitor_front_327",
+      "id": "xlab_south_monitor_front_333",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -26352,10 +26640,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_324"
+      "parent": "xlab_south_desk_330"
     },
     {
-      "id": "xlab_south_desk_328",
+      "id": "xlab_south_desk_334",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -26410,7 +26698,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_329",
+      "id": "xlab_south_chair_back_335",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -26465,7 +26753,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_330",
+      "id": "xlab_south_desk_divider_336",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -26518,10 +26806,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_328"
+      "parent": "xlab_south_desk_334"
     },
     {
-      "id": "xlab_south_monitor_front_331",
+      "id": "xlab_south_monitor_front_337",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -26574,10 +26862,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_328"
+      "parent": "xlab_south_desk_334"
     },
     {
-      "id": "xlab_south_desk_332",
+      "id": "xlab_south_desk_338",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -26632,7 +26920,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_333",
+      "id": "xlab_south_chair_back_339",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -26687,7 +26975,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_334",
+      "id": "xlab_south_desk_divider_340",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -26740,10 +27028,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_332"
+      "parent": "xlab_south_desk_338"
     },
     {
-      "id": "xlab_south_monitor_front_335",
+      "id": "xlab_south_monitor_front_341",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -26796,10 +27084,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_332"
+      "parent": "xlab_south_desk_338"
     },
     {
-      "id": "xlab_south_desk_336",
+      "id": "xlab_south_desk_342",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -26854,7 +27142,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_337",
+      "id": "xlab_south_chair_back_343",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -26909,7 +27197,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_338",
+      "id": "xlab_south_desk_divider_344",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -26962,10 +27250,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_336"
+      "parent": "xlab_south_desk_342"
     },
     {
-      "id": "xlab_south_monitor_front_339",
+      "id": "xlab_south_monitor_front_345",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -27018,10 +27306,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_336"
+      "parent": "xlab_south_desk_342"
     },
     {
-      "id": "xlab_south_desk_340",
+      "id": "xlab_south_desk_346",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -27076,7 +27364,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_341",
+      "id": "xlab_south_chair_back_347",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -27131,7 +27419,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_342",
+      "id": "xlab_south_desk_divider_348",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -27184,10 +27472,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_340"
+      "parent": "xlab_south_desk_346"
     },
     {
-      "id": "xlab_south_monitor_front_343",
+      "id": "xlab_south_monitor_front_349",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -27240,10 +27528,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_340"
+      "parent": "xlab_south_desk_346"
     },
     {
-      "id": "xlab_south_desk_344",
+      "id": "xlab_south_desk_350",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -27298,7 +27586,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_345",
+      "id": "xlab_south_chair_back_351",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -27353,7 +27641,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_346",
+      "id": "xlab_south_desk_divider_352",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -27406,10 +27694,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_344"
+      "parent": "xlab_south_desk_350"
     },
     {
-      "id": "xlab_south_monitor_front_347",
+      "id": "xlab_south_monitor_front_353",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -27462,10 +27750,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_344"
+      "parent": "xlab_south_desk_350"
     },
     {
-      "id": "xlab_south_desk_348",
+      "id": "xlab_south_desk_354",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -27520,7 +27808,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_349",
+      "id": "xlab_south_chair_back_355",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -27575,7 +27863,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_350",
+      "id": "xlab_south_desk_divider_356",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -27628,10 +27916,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_348"
+      "parent": "xlab_south_desk_354"
     },
     {
-      "id": "xlab_south_monitor_front_351",
+      "id": "xlab_south_monitor_front_357",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -27684,10 +27972,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_348"
+      "parent": "xlab_south_desk_354"
     },
     {
-      "id": "xlab_south_desk_352",
+      "id": "xlab_south_desk_358",
       "room": "xlab_south",
       "asset": "desk",
       "name": "工作桌",
@@ -27742,7 +28030,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_chair_back_353",
+      "id": "xlab_south_chair_back_359",
       "room": "xlab_south",
       "asset": "chair_back",
       "name": "网布工作椅",
@@ -27797,7 +28085,7 @@
       "mounted": false
     },
     {
-      "id": "xlab_south_desk_divider_354",
+      "id": "xlab_south_desk_divider_360",
       "room": "xlab_south",
       "asset": "desk_divider",
       "name": "桌面低隔板",
@@ -27850,10 +28138,10 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_352"
+      "parent": "xlab_south_desk_358"
     },
     {
-      "id": "xlab_south_monitor_front_355",
+      "id": "xlab_south_monitor_front_361",
       "room": "xlab_south",
       "asset": "monitor_front",
       "name": "支架显示器",
@@ -27906,7 +28194,7 @@
         ]
       ],
       "mounted": true,
-      "parent": "xlab_south_desk_352"
+      "parent": "xlab_south_desk_358"
     }
   ],
   "lighting": {
@@ -27922,6 +28210,48 @@
     "floorMaterial": "continuous gray microcement",
     "source": "window apertures on generated room masters"
   },
+  "loungeReference": {
+    "floor": 3,
+    "room": "pantry",
+    "source": "User clarified 三楼茶水休息区 on 2026-10-28; supplied requirements also retain a sofa lounge beside the pantry",
+    "placement": "review arrangement; exact sofa positions, capacity and tea-table finish remain unmeasured",
+    "table": "pantry_pantry_island_250",
+    "capture": [
+      2590.65,
+      7165.711006545147
+    ],
+    "walkLoop": [
+      [
+        2405.6195103289974,
+        7110.325306468636
+      ],
+      [
+        3085.6195103289974,
+        7110.325306468636
+      ],
+      [
+        3085.6195103289974,
+        7538.325306468636
+      ],
+      [
+        2405.6195103289974,
+        7538.325306468636
+      ]
+    ],
+    "sofaAisle": [
+      [
+        2180.123947972456,
+        7107.325306468636
+      ],
+      [
+        2660.123947972456,
+        7107.325306468636
+      ]
+    ]
+  },
+  "scopeNotes": [
+    "按用户明确的三楼茶水休息区补齐沙发与中央大桌：恢复两张双人沙发，配独立矮茶几；深灰共享长桌加宽，两侧各五把对坐椅，保留茶水柜、树池与侧边工作台。尺寸、数量和精确摆位仍为评审方案。"
+  ],
   "objectCounts": {
     "desk": 91,
     "chair_front": 32,
@@ -27931,14 +28261,15 @@
     "monitor_front": 57,
     "cabinet": 5,
     "whiteboard": 5,
-    "sofa": 1,
+    "sofa": 3,
     "camera_tripod": 1,
     "discussion_table": 1,
     "pantry_wall_unit": 1,
     "pantry_microwave": 2,
+    "lounge_coffee_table": 2,
     "pantry_island": 1,
-    "pantry_chair_front": 4,
-    "pantry_chair_back": 2,
+    "pantry_chair_front": 5,
+    "pantry_chair_back": 3,
     "pantry_tree": 1
   },
   "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review."

@@ -89,7 +89,9 @@ func _process(dt:float)->void:
 		direction=Vector2(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),int(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-int(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))+touch_vector
 		if direction.length_squared()>0:route.clear();direction=direction.normalized()
 		elif not route.is_empty():
-			while not route.is_empty() and player.distance_to(route[0])<4:route.remove_at(0)
+			# Follow the validated corner all the way before taking the next leg.
+			# Skipping it four pixels early can cut into a chair's foot collider.
+			while not route.is_empty() and player.distance_to(route[0])<.1:route.remove_at(0)
 			if not route.is_empty():direction=(route[0]-player).normalized()
 	var motion:=direction*250.0*minf(dt,.1)
 	if not route.is_empty() and motion.length()>player.distance_to(route[0]):motion=route[0]-player

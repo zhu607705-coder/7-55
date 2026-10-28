@@ -9,12 +9,12 @@ for(const [id,a] of Object.entries({...Object.fromEntries(used.map(id=>[id,props
 }
 const npc=path.resolve(root,'../../assets/rpg/npcs/canteen/canteen_queue_student_01_front.png');fs.copyFileSync(npc,path.join(out,'sprites/student.png'));manifest.student={file:'sprites/student.png',crop:[0,0,96,128]};
 fs.writeFileSync(path.join(out,'sprites.json'),JSON.stringify(manifest));console.log(out);
-const captures=process.argv[3],before=process.argv[4];
+const captures=process.argv[3],before=process.argv[4],pantryBefore=process.argv[5]||before;
 if(captures){
  for(const name of ['floor_2_assembled_preview.png','floor_3_assembled_preview.png','floor_4_assembled_preview.png','f4_light_08.png','f3_light_16.png','f4_light_21.png','f2_electrical.png','f3_pantry.png','f4_focus_a.png','f3_atrium_corridor.png','f2_hall.png','f2_hall_under.png','f2_hall_behind.png'])fs.copyFileSync(path.join(captures,name),path.join(out,name));
  fs.copyFileSync(path.join(captures,'f3_studio_1.png'),path.join(out,'density_after.png'));
 }
 if(before){
  fs.copyFileSync(path.join(before,'f3_studio_1.png'),path.join(out,'density_before.png'));
- fs.copyFileSync(path.join(before,'f3_pantry.png'),path.join(out,'pantry_before.png'));
 }
+if(pantryBefore)fs.copyFileSync(path.join(pantryBefore,'f3_pantry.png'),path.join(out,'pantry_before.png'));

@@ -38,6 +38,7 @@ function upgradeThree(p){
 
 const names={desk:'工作桌',chair_back:'网布工作椅',chair_front:'网布工作椅',monitor:'27 英寸显示器',monitor_front:'支架显示器',monitor_back:'支架显示器',desk_divider:'桌面低隔板',workbench:'机电实验台',cabinet:'个人储物柜',discussion_table:'拼接研讨桌',whiteboard:'移动白板',printer_3d:'封闭式 3D 打印机',camera_tripod:'录制相机',sofa:'双人沙发',pantry_counter:'茶水台',tool_cart:'移动工具车',parts_rack:'元件收纳架',coffee_machine:'咖啡机',potted_plant:'室内绿植',soldering_station:'焊接工作站'};
 Object.assign(names,{pantry_island:'深灰色共享长桌',pantry_tree:'木盆绿植',pantry_chair_front:'木扶手座椅',pantry_chair_back:'木扶手座椅',pantry_microwave:'微波炉',pantry_wall_unit:'茶水柜与水槽'});
+names.lounge_coffee_table='休息区矮茶几';
 for(const color of ['orange','mint','slate','blue'])names['hall_stool_'+color]='彩色圆凳';
 function furnish(p){
  p.objects=[];p.windows=[];p.lighting={orientation:'north-up',sunArc:'east-south-west',clock:'presentation-only',hours:[8,12,16,21],floorMaterial:'continuous gray microcement',source:'window apertures on generated room masters'};
@@ -132,24 +133,37 @@ function furnish(p){
  }
  function pantry(r){
   // User's on-site photo: fitted oak sink wall, a dark communal island with
-  // a planter, mixed loose chairs, and a separate side worktop. No sofa pair.
+  // a planter, mixed loose chairs, and a separate side worktop. The latest
+  // user clarification also retains a separate sofa area in this 3F room.
   const [x,floorY,w,h]=bounds(p.ground.find(g=>g.id===r.id+'_floor_0').polygon);
   const y=floorY-60; // Put the fitted cabinet's rear edge against the north wall.
   const counter=put(r,'pantry_wall_unit',[x+w*.67,y+145],560,{depth:68,height:150});
   if(counter)for(const u of [.22,.78])
    put(r,'pantry_microwave',[counter.bounds[0]+counter.bounds[2]*u,counter.baseline-counter.bounds[3]*.31],44,{mounted:true,parent:counter.id,baseline:counter.baseline+.1});
-  const cx=x+w*.57,cy=y+h*.70;
-  const table=put(r,'pantry_island',[cx,cy],500,{depth:150,cluster:r.id+'_island'});
+  const required=(asset,at,width,options)=>{
+   const object=put(r,asset,at,width,options);
+   if(!object)throw new Error('Pantry furniture does not fit: '+asset+' '+at);
+   return object;
+  };
+  const loungeY=floorY+170;
+  for(const cx of [x+115,x+430]){
+   required('sofa',[cx,loungeY],196,{depth:72,height:58,cluster:r.id+'_lounge'});
+   required('lounge_coffee_table',[cx,loungeY+112],118,{depth:40,height:38,cluster:r.id+'_lounge'});
+  }
+  const cx=x+w*.57,cy=floorY+520;
+  const table=put(r,'pantry_island',[cx,cy],580,{depth:174,cluster:r.id+'_island'});
   if(!table)throw new Error('Photo-referenced pantry island does not fit');
-  for(const dx of [-168,-56,56,168]){
-   put(r,'pantry_chair_front',[cx+dx,cy-160],40,{depth:28,cluster:r.id+'_island'});
-   put(r,dx<0?'chair_back':'pantry_chair_back',[cx+dx,cy+45],40,{depth:28,cluster:r.id+'_island'});
+  for(const dx of [-224,-112,0,112,224]){
+   required('pantry_chair_front',[cx+dx,cy-188],40,{depth:28,cluster:r.id+'_island'});
+   required(dx<0?'chair_back':'pantry_chair_back',[cx+dx,cy+45],40,{depth:28,cluster:r.id+'_island'});
   }
-  put(r,'pantry_tree',[cx-60,cy-table.bounds[3]*.67],112,{mounted:true,parent:table.id,baseline:table.baseline+.1,height:130});
+  put(r,'pantry_tree',[cx-130,cy-table.bounds[3]*.67],112,{mounted:true,parent:table.id,baseline:table.baseline+.1,height:130});
   for(const dx of [105,223]){
-   const desk=put(r,'desk',[x+dx,y+h*.48],118,{depth:42,cluster:r.id+'_side_table'});
-   if(desk)put(r,'chair_back',[x+dx,y+h*.48+60],40,{depth:28,cluster:r.id+'_side_table'});
+   const desk=required('desk',[x+dx,floorY+495],118,{depth:42,cluster:r.id+'_side_table'});
+   required('chair_back',[x+dx,desk.baseline+60],40,{depth:28,cluster:r.id+'_side_table'});
   }
+  p.loungeReference={floor:3,room:r.id,source:'User clarified 三楼茶水休息区 on 2026-10-28; supplied requirements also retain a sofa lounge beside the pantry',placement:'review arrangement; exact sofa positions, capacity and tea-table finish remain unmeasured',table:table.id,capture:[r.bounds[0]+r.bounds[2]*.45,r.bounds[1]+r.bounds[3]*.435-40],walkLoop:[[cx-340,cy-313],[cx+340,cy-313],[cx+340,cy+115],[cx-340,cy+115]],sofaAisle:[[x+80,loungeY+34],[x+560,loungeY+34]]};
+  (p.scopeNotes??=[]).push('按用户明确的三楼茶水休息区补齐沙发与中央大桌：恢复两张双人沙发，配独立矮茶几；深灰共享长桌加宽，两侧各五把对坐椅，保留茶水柜、树池与侧边工作台。尺寸、数量和精确摆位仍为评审方案。');
  }
  function hall(){
   // The latest user correction places this hall on 2F. Reuse the existing

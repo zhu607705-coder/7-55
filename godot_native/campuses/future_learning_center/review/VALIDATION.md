@@ -1,6 +1,43 @@
 # Three-floor object review · 2026-10-28
 
-## Current correction: hall belongs to 2F
+## Current correction: 3F pantry sofa area and central table
+
+Based on local commit `fe9113856da2f25e609e734e4678bab96398fad5`, using Godot
+4.7.1.stable.official.a13da4feb. The user explicitly identified **三楼茶水休息区**.
+
+- Restored two independent two-seat sofas and added two low tea tables. The
+  existing photo-derived dark curved table scales uniformly from 500 to 580
+  world pixels; its two rows now contain five opposing chairs each. The side
+  worktop moves within the same room. Player and chair scales are unchanged.
+- All architectural geometry, doors, camera zones and paired transit data
+  compare equal to the base. Full 2F and 4F definitions are byte-equivalent;
+  3F furnishings outside the pantry retain their placement and properties.
+  Render counts are **157/362/175** for 2F/3F/4F.
+- Focused geometry/navigation suite: **1634 checks, 0 failures**, including
+  the complete-footprint loop around the enlarged table, the sofa/tea-table
+  aisle, entrance reachability and return to the elevator.
+- The first engine input run caught route-following cutting a chair corner:
+  a waypoint was discarded four pixels before arrival. The follower now
+  reaches the validated corner before advancing; the touch route regression
+  passes with the furniture colliders unchanged.
+- Final desktop 1280 × 720 and scaled 390 × 844 each passed **13 input
+  checks**, including table/sofa collision, retreat and a touch route around
+  both table rows. Zero illegal-foot frames. Touch is simulated, not physical
+  mobile-device acceptance.
+- Source/media preparation, isolated saves, editor import/parse, startup,
+  all-script parsing and the focused suite passed: **6 targeted native stages**,
+  **532 unrelated stages not run**. This is not full release acceptance.
+- Actual scene captures: `flc_pantry_lounge_desktop` and
+  `flc_pantry_lounge_mobile`. The gallery defaults to `f3_pantry.png`; its
+  before image is the previous `flc_hall_2f_desktop/f3_pantry.png`. Local HTTP
+  bytes and image paths match the captures. Browser interaction was not
+  repeated because local browser control was disabled in Work settings.
+
+The new tea-table master preserves its original transparent alpha and full
+prompt. Exact site furniture positions, capacity and tea-table finish remain
+review choices. This is an isolated native review, not a production Web release.
+
+## Previous correction: hall belongs to 2F
 
 Based on local commit `7560e375`, using Godot 4.7.1.stable.official.a13da4feb.
 The latest user clarification supersedes the earlier floor answer: the blue

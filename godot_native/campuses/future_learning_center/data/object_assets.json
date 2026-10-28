@@ -463,5 +463,20 @@
     ],
     "sha256": "3c39fd292bf9b75753af4ea4073fbad24a660ccb2cf44c8fc4e55af9fab74075",
     "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "lounge_coffee_table": {
+    "path": "res://campuses/future_learning_center/assets/objects/lounge_coffee_table.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "opaqueBounds": [
+      154,
+      268,
+      1382,
+      765
+    ],
+    "sha256": "eaaf5f78f8a24909b042b1746190f2a6a6fda2b674b4d2753b9bff0ef553d00b",
+    "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
   }
 }

@@ -104,6 +104,13 @@ func check_floor(floor_number:int)->void:
 			var definition:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/future_learning_center/data/floor_%d.json"%other))
 			check(not definition.objects.any(func(o:Dictionary)->bool:return str(o.asset).begins_with("hall_")),"corrected 2F hall objects stay off upper floors")
 	if floor_number==3:
+		var loop:Array=data.loungeReference.walkLoop
+		for i:int in loop.size():
+			check(space.segment_clear(foot(loop[i]),foot(loop[(i+1)%loop.size()])),"3F complete feet can circle pantry table and chair rows")
+			check(not space.route(spawn,foot(loop[i])).is_empty(),"3F pantry table side reached from room network")
+		var sofa_aisle:Array=data.loungeReference.sofaAisle
+		check(space.segment_clear(foot(sofa_aisle[0]),foot(sofa_aisle[1])),"3F sofa and tea table aisle fits complete feet")
+		check(not space.route(foot(sofa_aisle[0]),foot(data.transits[2].arrival)).is_empty(),"3F lounge returns to elevator")
 		for room:Dictionary in data.rooms:
 			if not str(room.id).begins_with("studio_"):continue
 			var upper:Array=data.objects.filter(func(o:Dictionary)->bool:return o.get("cluster","")==str(room.id)+"_bank_0" and not o.mounted)

@@ -334,5 +334,11 @@
     "sourceFile": "exec-79c1fb65-cf45-482c-a10a-7b3452a049b5.png",
     "prompt": "Use case: precise-object-edit. Edit this isolated pixel-art stool: change ONLY the upholstered top cushion colour to muted sky blue. Preserve the entire silhouette, dimensions, placement, charcoal pedestal, lighting, pixel edge scale and all transparency exactly. No additional objects, no floor, no cast shadow. Genuine transparent background.",
     "sha256": "3c39fd292bf9b75753af4ea4073fbad24a660ccb2cf44c8fc4e55af9fab74075"
+  },
+  {
+    "id": "lounge_coffee_table",
+    "sourceFile": "exec-e90d53a9-b71e-4c8a-8efc-8a3d708ee2bb.png",
+    "prompt": "Create ONE isolated low coffee table furniture sprite for a contemporary university sofa lounge. A small oval pale oak top with a charcoal slim rounded central pedestal and a thin flat oval base, visually low at 40 cm height. The long horizontal dimension is twice the depth. Orthographic JRPG oblique top-down view from due south at 50 degree elevation, front edge horizontal, symmetric left and right, no diagonal isometric rotation and no vanishing perspective. Fine detailed pixel-art game object with crisp fine pixel edges, restrained broad wood tone shading and tightly grouped pixels; no scattered speckle noise. Neutral ambient illumination, no cast shadow outside object. Empty top, no props, no lettering, no chairs, no sofa. One complete object centered with transparent margin on all sides. 1536x1024 landscape canvas with true transparent alpha background. No floor, no room, no ground, no checkerboard, no contact shadow outside silhouette. A low tea table intended to sit in front of a sage-green two-seat sofa, but do not draw the sofa.",
+    "sha256": "eaaf5f78f8a24909b042b1746190f2a6a6fda2b674b4d2753b9bff0ef553d00b"
   }
 ]
