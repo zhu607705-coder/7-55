@@ -1,0 +1,69 @@
+{
+  "schema": "phone-campus-main-compatibility-v1",
+  "main": "80ad46aa4b52bc1076f7d7c675f9e710a1207036",
+  "previous_pr_head": "05e464e7b9cfdd3a783782fc82443612bedebbb2",
+  "local_merge_commit": "cedde7d0a3567612a07455ff37b42633a9baad57",
+  "merge_kind": "normal two-parent merge; no rebase or force update",
+  "formal_world_space": "byte-identical to current main; WORLD_SPACE183/0",
+  "local_checks": {
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "timeline_behavior": {
+      "checks": 1329,
+      "failures": 0
+    },
+    "ordinary_input_and_framing": {
+      "checks": 36,
+      "failures": 0,
+      "renderer": "headless_dummy; not visual evidence"
+    },
+    "namespace_project_identity": {
+      "checks": 19,
+      "failures": 0
+    },
+    "cross_pr_runtime": {
+      "checks": 2646,
+      "runtime_stages": 50,
+      "failures": 0
+    },
+    "ci_contracts": {
+      "tests": 159,
+      "failures": 0
+    },
+    "web_quick": "5/5",
+    "web_release": {
+      "passed": 35,
+      "total": 38,
+      "failures": [
+        {
+          "stage": "build:single:unchecked",
+          "exit": 137,
+          "observation": "Killed; cause not established"
+        },
+        {
+          "stage": "verify:single",
+          "exit": 1,
+          "observation": "demo absent after killed build"
+        },
+        {
+          "stage": "verify:browser-smoke",
+          "exit": 1,
+          "observation": "demo absent; browser did not run"
+        }
+      ]
+    }
+  },
+  "regressions_reproduced": {
+    "cancelled_touch": "original control implementation failed in all three dimensions",
+    "actor_occlusion": "original fixed HUD overlapped projected actor; natural panel layout and44deg lens retain same world placements/path"
+  },
+  "graphics": "Dedicated PR workflow records actual GL frames and ordinary touch-started continuous playback. See exact-head PR results; this local receipt does not claim a pending recording passed.",
+  "physical_mobile": false,
+  "scope": "isolated unintegrated toy/campus placeholders; no final-art or real-campus acceptance",
+  "file_sha256": {
+    "preview/transition.gd": "07e9c6e50d189cbaa01ff348830c38ff2b3295fb0e84d6e44f1cb0fc09cb7545",
+    "preview/test_input.gd": "19e92fb970a95adfda891a43620dd38b98ff535bdfc6d16a7ee904e3a6da13a4",
+    "preview/capture.gd": "1d3ef0193a094df66261d1d01ced60a75f89fda33e24fb372aac5986529b401b",
+    "preview/record.gd": "8cf271b813d81130b2db71ba0cba33a07c02ef9b76c7db24cc1dcf57c00ce80f",
+    "run.mjs": "0cc981f13af83eb78b6d7c5816d21b297f79ebe0a1d7bf9158ece63767531a4f"
+  }
+}

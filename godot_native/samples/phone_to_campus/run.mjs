@@ -42,6 +42,7 @@ run(['--headless', '--path', project, '--editor', '--import']);
 const args = process.argv.slice(2);
 if (args.includes('--test')) {
   run(['--headless', '--path', project, '--script', 'res://test_transition.gd']);
+  run(['--headless', '--path', project, '--script', 'res://test_input.gd']);
 } else if (args.includes('--capture')) {
   // Capture requires a real graphical renderer. The capture script rejects headless/dummy.
   const directory = path.resolve(args[args.indexOf('--capture') + 1] || path.join(sample, 'evidence'));

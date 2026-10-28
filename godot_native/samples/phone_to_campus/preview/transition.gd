@@ -3,6 +3,20 @@ extends Node3D
 
 signal ended(reason: String)
 
+# Godot 4.7.1 BaseButton otherwise activates on an OS-cancelled touch release.
+# Keep this local to preview controls; no global input or campaign changes.
+class SafeButton extends Button:
+	func _gui_input(event: InputEvent) -> void:
+		if (event is InputEventScreenTouch or event is InputEventMouseButton) and event.canceled and not event.pressed:
+			if not disabled: disabled = true; disabled = false
+			accept_event()
+
+class SafeCheckButton extends CheckButton:
+	func _gui_input(event: InputEvent) -> void:
+		if (event is InputEventScreenTouch or event is InputEventMouseButton) and event.canceled and not event.pressed:
+			if not disabled: disabled = true; disabled = false
+			accept_event()
+
 const Timeline = preload("res://timeline.gd")
 @export var autoplay := true
 var playhead := 0.0
@@ -213,7 +227,9 @@ func _build_world() -> void:
 	add_child(fill)
 	_camera = Camera3D.new()
 	_camera.name = "ContinuousCamera"
-	_camera.fov = 42.0
+	# Small framing margin keeps the jump apex clear of the portrait heading.
+	# The continuous authored camera path and all world placements stay unchanged.
+	_camera.fov = 44.0
 	_camera.near = 0.05
 	_camera.far = 60.0
 	add_child(_camera)
@@ -338,26 +354,32 @@ func _build_overlay() -> void:
 	var layer := CanvasLayer.new()
 	layer.name = "ReadableControlsOutside3D"
 	add_child(layer)
-	var root := Control.new()
+	var root := MarginContainer.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for edge in ["left", "top", "right", "bottom"]:
+		root.add_theme_constant_override("margin_" + edge, 12)
 	layer.add_child(root)
 	var theme := Theme.new()
 	theme.default_font = _font
 	theme.default_font_size = 20
 	root.theme = theme
+	var layout := VBoxContainer.new()
+	layout.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(layout)
 	var top := PanelContainer.new()
-	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	top.offset_left = 20
-	top.offset_right = -20
-	top.offset_top = 20
-	root.add_child(top)
+	top.name = "PreviewHeading"
+	top.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	var heading_width := func(): top.custom_minimum_size.x = minf(350, get_viewport().get_visible_rect().size.x - 24)
+	get_viewport().size_changed.connect(heading_width)
+	heading_width.call()
+	layout.add_child(top)
 	var top_style := StyleBoxFlat.new()
 	top_style.bg_color = Color(0.12, 0.20, 0.22, 0.94)
 	top_style.content_margin_left = 16
 	top_style.content_margin_right = 16
-	top_style.content_margin_top = 12
-	top_style.content_margin_bottom = 12
+	top_style.content_margin_top = 8
+	top_style.content_margin_bottom = 8
 	top_style.set_corner_radius_all(12)
 	top.add_theme_stylebox_override("panel", top_style)
 	var column := VBoxContainer.new()
@@ -370,15 +392,14 @@ func _build_overlay() -> void:
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.add_theme_font_size_override("font_size", 16)
 	column.add_child(note)
+	var breathing_room := Control.new()
+	breathing_room.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	breathing_room.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layout.add_child(breathing_room)
 	var bottom := PanelContainer.new()
-	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	bottom.offset_left = 20
-	bottom.offset_right = -20
-	bottom.offset_top = -164
-	bottom.offset_bottom = -20
-	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	bottom.name = "PreviewControls"
 	bottom.add_theme_stylebox_override("panel", top_style)
-	root.add_child(bottom)
+	layout.add_child(bottom)
 	var controls := VBoxContainer.new()
 	bottom.add_child(controls)
 	_phase = Label.new()
@@ -394,14 +415,14 @@ func _build_overlay() -> void:
 	_button(buttons, "重播 / R", play)
 	_pause_button = _button(buttons, "暂停 / Space", func(): set_paused(not paused))
 	_button(buttons, "跳过 / Esc", skip)
-	var reduced := CheckButton.new()
+	var reduced := SafeCheckButton.new()
 	reduced.text = "减弱动态"
 	reduced.custom_minimum_size = Vector2(146, 44)
 	reduced.toggled.connect(set_reduced_motion)
 	buttons.add_child(reduced)
 
 func _button(parent: Node, text: String, action: Callable) -> Button:
-	var button := Button.new()
+	var button := SafeButton.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(140, 44)
 	button.pressed.connect(action)

@@ -29,8 +29,8 @@ func capture() -> void:
 			await process_frame
 			await RenderingServer.frame_post_draw
 			var frame := root.get_texture().get_image()
-			if frame == null or frame.is_empty():
-				push_error("Renderer returned no pixels.")
+			if frame == null or frame.is_empty() or frame.get_size() != dimensions:
+				push_error("Renderer returned no pixels or the wrong actual viewport dimensions.")
 				quit(1)
 				return
 			var filename := "%dx%d_%05.2f.png" % [dimensions.x, dimensions.y, second]

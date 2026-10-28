@@ -1,6 +1,19 @@
 # 7:55 · 手机走进微缩校园 — 隔离概念试镜
 
-**Godot 4.7.1 / GL Compatibility。未接入正式游戏，尚未完成真实渲染视觉验收。**
+**Godot 4.7.1 / GL Compatibility。未接入正式游戏，仍为占位美术原型。**
+
+### 2026-10-28 兼容修复与真实渲染检查
+
+正常 merge 当前 `main`（`80ad46aa`，含 PR186 空间规则）进入原工作分支，不重写历史。
+共享扫描器保留 main 的项目 ID 注册；正式地图、空间规则、入口与剧情代码相对 main 均未修改。
+新的 `test_input.gd` 通过普通触屏/鼠标事件操作可见控件。它补测取消触摸不会误重播、暂停恢复、重复跳过和减弱动态；不会用 `pressed.emit()` 代替输入。
+检查发现的原型局部问题已修正：取消抬手不再激活按钮；HUD 使用内容所需高度，标题不再横跨桌面画面；视角由42°微调至44°，保留同一运镜路径和世界坐标。
+
+`.github/workflows/phone-campus-preview.yml` 在 GitHub 托管 Xvfb/GL 上运行同一检查，并保存三种窗口的实际图像和390×844连续播放视频。
+视频由正常触屏点击重播开始，不按时间点拼图；静帧另用于检查六个节拍。工作流输出源 SHA、renderer、输入日志及视频元数据。
+**添加录制检查不等于录制已通过。** 当前结果和已检查的画面见 [PR176](https://github.com/zhu607705-coder/7-55/pull/176) 对应精确 head 的 CI/附件。
+软件 GL、模拟触控和手机尺寸不等于物理手机验收，也不表示占位模型成为最终美术。
+`ACCEPTANCE_20261026.json` 保留的是旧 head 的历史记录，不作为本次画面的证明。
 
 这是用户要求的「2D 软件界面 + 玩具尺度 3D 小人」技术原型，不是校园地图替换，也不是新的剧情入口。
 没有使用 Three.js，没有修改正式入口、控制器、存档、碰撞、校园地图或生产导出配置。
@@ -71,6 +84,10 @@ GODOT_BIN=/path/to/Godot-4.7.1 node godot_native/samples/phone_to_campus/run.mjs
 
 # 必须在有真实图形 renderer 的授权执行环境运行；不得加 --headless 冒充画面验收
 GODOT_BIN=/path/to/Godot-4.7.1 node godot_native/samples/phone_to_campus/run.mjs --capture /tmp/phone-campus-captures
+
+# 已准备并导入后，在受支持图形会话中检查真实鼠标/触屏和输出尺寸
+/path/to/Godot-4.7.1 --path godot_native/samples/phone_to_campus/preview \
+  --script res://test_input.gd -- --require-rendering --output=/tmp/phone-campus-input
 ```
 
 测试覆盖时间轴边界、平面→立体、跳跃/回弹、帧率无关采样、暂停/恢复/失焦、聚焦按钮下的 Space、连点重播、重复跳过、取消、减弱动态切换和销毁清理。
