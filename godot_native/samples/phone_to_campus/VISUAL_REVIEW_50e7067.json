@@ -1,0 +1,42 @@
+{
+  "head": "50e706707b0d00638fa3f31421b280bb660bf11a",
+  "tree": "aaa98e348cb1121b3fad57a901cab82e4798e889",
+  "run_id": 40613832313,
+  "reviewed_utc": "2026-10-28T01:19Z",
+  "renderer": "Godot 4.7.1 GL Compatibility / X11 / Mesa llvmpipe",
+  "dimensions": [
+    [
+      390,
+      844
+    ],
+    [
+      844,
+      390
+    ],
+    [
+      1280,
+      720
+    ]
+  ],
+  "viewed": {
+    "stage_pngs": 18,
+    "ordinary_input_pngs": 6,
+    "video_frames_sampled": 47,
+    "sample_rate_fps": 4,
+    "video_duration_seconds": 11.666667,
+    "video_has_audio": false
+  },
+  "observations": [
+    "Same 3D figure becomes upright, jumps, lands, walks toward miniature gate.",
+    "Figure stays visible outside heading and controls at inspected poses.",
+    "Pause and settled input screenshots match the intended control states.",
+    "Primitive models, hard-edged shadows and bright simple materials remain prototype art.",
+    "Short landscape shows small phone text; preview controls remain reachable."
+  ],
+  "limits": [
+    "Software GL is not a physical mobile device.",
+    "No Godot Web export of this isolated sample.",
+    "Not integrated into shipped gameplay.",
+    "Image inspection does not establish device performance or final-art approval."
+  ]
+}
