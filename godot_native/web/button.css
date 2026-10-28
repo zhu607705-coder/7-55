@@ -101,3 +101,9 @@
 .tactile-button[data-layout="content"] { border: var(--button-u) solid var(--button-edge) !important; border-radius: calc(10 * var(--button-u)) !important; }
 .tactile-button:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"], .is-selected, .is-active, .is-on) { --button-edge: #64748b; }
 .tactile-button[data-layout="content"]:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"], .is-selected, .is-active, .is-on) { background: #e7e9ec !important; }
+
+/* Neutral ghost/text ink adapts to authored dark surfaces without raised cards. */
+[data-button-surface="dark"] .tactile-button:is([data-variant="ghost"], [data-variant="text"]) { --button-ink: #e5e7eb; }
+[data-button-surface="dark"] .tactile-button[data-variant="ghost"]:not(:disabled):is(:hover, :active),
+[data-button-surface="dark"] .tactile-button[data-layout="content"]:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"], .is-selected, .is-active, .is-on) { --button-ink: #374151; }
+[data-button-surface="dark"] .tactile-button[data-variant="text"]:not(:disabled):hover { color: #fff !important; }

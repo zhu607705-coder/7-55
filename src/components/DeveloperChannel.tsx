@@ -177,7 +177,7 @@ export function DeveloperChannel({
       onPointerUp={stopPointerPropagation}
       onClick={dismissBackdrop}
     />
-    <aside ref={channelRef} data-developer-channel-root data-recording-mode={recordingMode ? "true" : undefined} className="developer-channel" aria-label={recordingMode ? "录制检查点面板" : "开发者通道"} onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={stopPointerPropagation}>
+    <aside ref={channelRef} data-button-surface="dark" data-developer-channel-root data-recording-mode={recordingMode ? "true" : undefined} className="developer-channel" aria-label={recordingMode ? "录制检查点面板" : "开发者通道"} onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={stopPointerPropagation}>
     <header><div><small>{recordingMode ? "7:55 录制准备" : "7:55 DEV"} · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>{recordingMode ? "录制检查点切换" : "章节与关卡直达"}</strong></div><Button variant="ghost" type="button" aria-label={closeButtonLabel} onClick={closeAndResume}>×</Button></header>
     <nav className="developer-channel-chapters" aria-label="选择章节">
       {DEVELOPER_CHAPTERS.map((chapter) => {
