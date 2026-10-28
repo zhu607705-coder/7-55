@@ -48,7 +48,9 @@ func _label(text: String, id: String, role: String="body") -> Label:
 func _button(text: String, id: String, action: Callable) -> Button:
 	var button:=Button.new();button.name=id;button.text=text
 	Selected.apply_button(button,"journal")
-	button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	# Short action captions use the material's natural minimum width. The
+	# previous hand-measured width assumed 8px insets and wrapped after restyling.
+	button.autowrap_mode=TextServer.AUTOWRAP_OFF
 	button.custom_minimum_size=Vector2(maxf(44,ceilf(Selected.font("journal","button").get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,Selected.size("journal","button")).x)+16),44)
 	button.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
 	button.alignment=HORIZONTAL_ALIGNMENT_LEFT

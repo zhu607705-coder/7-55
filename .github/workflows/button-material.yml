@@ -65,6 +65,7 @@ jobs:
         run: |
           godot --headless --path godot_native --script res://tests/test_tactile_buttons.gd
           godot --headless --path godot_native --script res://tests/test_tactile_future_learning_center.gd
+          godot --headless --path godot_native --script res://tests/test_journal_composition.gd
       - name: Render material board and actual game interfaces
         shell: bash
         run: |
