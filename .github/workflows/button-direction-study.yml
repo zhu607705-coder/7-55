@@ -45,8 +45,8 @@ jobs:
           git rev-parse 'HEAD^{tree}' > "$UI_CAPTURE_DIR/tree.txt"
           UI_CAPTURE_VALIDATE=1 godot --headless --path godot_native --script res://design_studies/button_directions/capture_study.gd 2>&1 | tee "$UI_CAPTURE_DIR/layout.log"
           timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 1280x1024x24' godot --audio-driver Dummy --path godot_native --script res://design_studies/button_directions/capture_study.gd 2>&1 | tee "$UI_CAPTURE_DIR/render.log"
-          test -f "$UI_CAPTURE_DIR/A-entry.png"
-          test -f "$UI_CAPTURE_DIR/A-pause.png"
+          test -f "$UI_CAPTURE_DIR/B2-entry.png"
+          test -f "$UI_CAPTURE_DIR/B2-pause.png"
           test -f "$UI_CAPTURE_DIR/B-entry.png"
           test -f "$UI_CAPTURE_DIR/B-pause.png"
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|BUTTON_STUDY: .* failures$' "$UI_CAPTURE_DIR/"*.log | grep -v '0 failures'

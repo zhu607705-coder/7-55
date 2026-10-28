@@ -120,10 +120,10 @@ func _draw(canvas: RID,rect: Rect2) -> void:
  var opacity: float=1.0 # Disabled values remain readable; native input owns gating.
  var face:=rect;face.position.y+=press_amount*unit
  var r: float=radius_units*unit
- if direction=="B" and variant=="secondary":
+ if direction in ["B","B2"] and variant=="secondary":
   var wash:=Color("ddd8ca");wash.a=maxf(hover_amount*.45,press_amount*.7)
   _fill(canvas,face,0,wash,wash)
-  RenderingServer.canvas_item_add_line(canvas,Vector2(face.position.x,face.end.y-unit),Vector2(face.end.x,face.end.y-unit),Color(0.25,0.24,0.21,.22),unit,true)
+  if direction=="B":RenderingServer.canvas_item_add_line(canvas,Vector2(face.position.x,face.end.y-unit),Vector2(face.end.x,face.end.y-unit),Color(0.25,0.24,0.21,.22),unit,true)
   return
  if variant=="text":
   _label_detail(canvas,face,opacity)
@@ -192,4 +192,7 @@ func study_direction(value: String) -> void:
   if key in ["secondary","tertiary"]:
    p[0]=Color("f2efe6");p[1]=Color("ece8dc");p[2]=Color(.30,.28,.23,.22)
    HOVER_PALETTES[key]=[Color("f6f3eb"),Color("f0ecdf")]
-  if value=="B":p[1]=p[0];p[4]=0.0;p[5]=0.0
+  if value in ["B","B2"]:p[1]=p[0];p[4]=0.0;p[5]=0.0
+  if value=="B2" and key=="primary":
+   p[0]=Color("55564f");p[1]=p[0];p[2]=Color("55564f")
+   HOVER_PALETTES[key]=[Color("62635b"),Color("62635b")]

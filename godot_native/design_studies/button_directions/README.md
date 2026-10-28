@@ -23,3 +23,12 @@ campus choices, import/export, and window/screenshot actions; it does not modify
 those actions. Each target is at least44px high. Headless tests check containment,
 callbacks, Tab movement and a real pointer-operated close. Screenshots are DEV
 fixtures, not gameplay completion or physical-phone performance evidence.
+
+## B2 refinement (user selected B as the starting point)
+
+The current capture compares unchanged B with B2. B2 removes per-row rules, uses
+shared left insets and tighter same-group spacing, separates display actions with
+whitespace, and reduces the primary ink block to a content-sized 48px-high action.
+It preserves every caption, callback and 44px secondary target. Three extra frames
+show real pointer hover, held press (released outside to avoid navigation), and
+keyboard focus. These are preview-instance changes only, not accepted production.

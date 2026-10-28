@@ -21,6 +21,8 @@ func skin(button:Button,direction:String,kind:String="secondary",left:bool=false
  var old:StyleBox=adapter.material
  var fresh=StudyMaterial.new();fresh.study_direction(direction);fresh.configure(kind,adapter.unit)
  for side:int in [SIDE_LEFT,SIDE_TOP,SIDE_RIGHT,SIDE_BOTTOM]:fresh.set_content_margin(side,old.get_content_margin(side))
+ if direction=="B2" and left:
+  fresh.content_margin_left=8;fresh.content_margin_right=8
  adapter.variant=kind;adapter.material=fresh;adapter._apply()
  button.set_meta("study_direction",direction)
  button.custom_minimum_size.y=44
@@ -63,6 +65,11 @@ func entry_study(direction:String)->void:
   button.reparent(group);skin(button,direction,"secondary",true)
  skin(entry.story_button,direction,"primary")
  skin(entry.preview_button,direction,"ghost",true)
+ if direction=="B2":
+  group.add_theme_constant_override("separation",0)
+  entry.story_button.custom_minimum_size=Vector2(242,48)
+  entry.story_button.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+  entry.content.add_theme_constant_override("separation",12)
  var panel:StyleBox=entry.card.get_theme_stylebox("panel")
  panel.content_margin_top=22;panel.content_margin_bottom=22
  await frames()
@@ -74,7 +81,9 @@ func entry_study(direction:String)->void:
  await frames()
  check(root.gui_get_focus_owner()!=entry.story_button,"Tab reaches next existing entry action")
  entry.story_button.grab_focus()
+ if direction=="B2":entry.story_button.release_focus()
  await save_frame(direction+"-entry",entry)
+ if direction=="B2":await state_evidence(entry.campus_button,entry)
  entry.queue_free();await frames()
 func pause_study(direction:String)->void:
  var state:=root.get_node("State");state.developer_mode=true;state.begin_checkpoint("c2-dorm-exit")
@@ -96,6 +105,11 @@ func pause_study(direction:String)->void:
   skin(button,direction,"primary" if button==shell.save_progress_button else "ghost",button!=shell.save_progress_button)
  skin(shell.modal.find_child("NativeModalClose",true,false),direction,"ghost")
  content.add_theme_constant_override("separation",10)
+ if direction=="B2":
+  content.add_theme_constant_override("separation",6)
+  shell.save_progress_button.custom_minimum_size=Vector2(220,48)
+  shell.save_progress_button.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+  var spacer:=Control.new();spacer.custom_minimum_size.y=12;content.add_child(spacer);content.move_child(spacer,display.get_index())
  shell.modal_panel.set_meta("fixed_action_layout",false)
  await frames();shell._layout_modal();await frames()
  await save_frame(direction+"-pause",shell.modal)
@@ -105,6 +119,23 @@ func pause_study(direction:String)->void:
   var click:=InputEventMouseButton.new();click.button_index=MOUSE_BUTTON_LEFT;click.position=point;click.pressed=down;root.push_input(click)
  await frames();check(not is_instance_valid(shell.modal),"real original close callback works")
  await shell.shutdown();shell.queue_free();await frames()
+func state_evidence(button:Button,node:Node)->void:
+ var point:=button.get_global_rect().get_center()
+ var motion:=InputEventMouseMotion.new();motion.position=point;root.push_input(motion)
+ await create_timer(.2).timeout
+ check(button.is_hovered(),"B2 pointer hover is real")
+ await save_frame("B2-hover",node)
+ var down:=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.position=point;down.pressed=true;root.push_input(down)
+ await create_timer(.2).timeout
+ check(button.is_pressed(),"B2 pointer press is real")
+ await save_frame("B2-pressed",node)
+ # Release outside, preserving actual callback without launching the campus.
+ motion=InputEventMouseMotion.new();motion.position=Vector2(2,2);root.push_input(motion)
+ var up:=InputEventMouseButton.new();up.button_index=MOUSE_BUTTON_LEFT;up.position=Vector2(2,2);up.pressed=false;root.push_input(up)
+ await create_timer(.2).timeout
+ button.grab_focus();await frames()
+ check(button.has_focus(),"B2 keyboard focus is real")
+ await save_frame("B2-focus",node)
 func run()->void:
  if DisplayServer.get_name()=="headless" and not validate_only:push_error("Real GL required");quit(2);return
  if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
@@ -114,7 +145,7 @@ func run()->void:
  if not validate_only:DisplayServer.window_set_size(root.size)
  create_timer(120).timeout.connect(func():quit(2))
  root.get_node("State").developer_mode=true
- for direction:String in ["A","B"]:
+ for direction:String in ["B","B2"]:
   await entry_study(direction);await pause_study(direction)
  var file:=FileAccess.open(output.path_join("study.json"),FileAccess.WRITE)
  file.store_string(JSON.stringify({"checks":checks,"failures":failures,"frames":records,"proposal_not_production":true},"\t"));file.close()
