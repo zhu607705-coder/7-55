@@ -1,4 +1,5 @@
 extends RefCounted
+const GeometryNotebook=preload("res://scripts/objects/library_geometry_notebook.gd")
 const StampMotion=preload("res://scripts/presentation/library_stamp_motion.gd")
 const Picker=preload("res://scripts/world_object_picker.gd")
 const ObjectRebuild=preload("res://scripts/ui/library_object_rebuild.gd")
@@ -195,7 +196,7 @@ func debug_snapshot() -> Dictionary:
 	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":collision_rect(),"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":seat.receipt_ms,"note":seat.note_pose(),"receipt":seat.receipt_pose(),"staff":staff_pose(),"stampMs":stamp_ms,"stamp":stamp_pose(),"objectRebuild":rebuild.snapshot(),"printer":printer.snapshot()}
 
 func owns_pick_target(id: String) -> bool:
-	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note"] or (rebuild.ready and id in ["catalog_terminal","printer","backpack","bag_photo","backpack_pass"])
+	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note",GeometryNotebook.ID] or (rebuild.ready and id in ["catalog_terminal","printer","backpack","bag_photo","backpack_pass"])
 
 func _context(canvas: CanvasItem,context: Dictionary) -> void:
 	canvas.draw_set_transform(context.get("origin",Vector2.ZERO),0,Vector2.ONE*float(context.get("zoom",1)))
@@ -244,6 +245,7 @@ func _draw_depth_pass(canvas: CanvasItem,context: Dictionary,state: Dictionary,f
 	if _in_pass(_floor_depth(float(collision_rect().bottom)),context,front):_draw_shelf(canvas,state)
 	if not rebuild.ready and _in_pass(float(source.mechanismDepth),context,front) and shelf_collected: _draw_mechanism(canvas)
 	if _in_pass(float(source.paperDepth),context,front): _draw_shelf_paper(canvas)
+	if _in_pass(_floor_depth(270),context,front):GeometryNotebook.draw(canvas)
 	if _in_pass(548,context,front): _draw_seat_status(canvas)
 	canvas.draw_set_transform(Vector2.ZERO)
 	var bag: Dictionary=backpack_pose()

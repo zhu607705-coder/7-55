@@ -37,6 +37,13 @@
 - Verify the actual project engine/dependency version before applying examples. Active `godot_native/` work uses the Godot skill family; retained Web work keeps its own pinned Phaser/Three.js baseline. The catalog's example version is not authorization to migrate the project.
 - Pair engine guidance with the relevant asset, animation, camera, level-design, input/UI, physics or performance discipline. Validate the result in the real scene at desktop and mobile sizes; the project's existing art bible, controller/save authority and explicit user choices remain authoritative. Reference/version notes live in `godot_native/docs/GAMEDEV_SKILLS_REFERENCE.md`.
 
+## UI design workflow — Impeccable (2026-10-28)
+
+- Apply [pbakaus/impeccable](https://github.com/pbakaus/impeccable) to every future UI task in this project. Read its installed `SKILL.md` (`~/.codex/skills/impeccable/SKILL.md` here), then the relevant playbook and `reference/craft-floor.md` before UI edits. Pair it with the actual engine skill; Godot stays native.
+- Preserve explicit user briefs, the art bible, authored motion, typography choices and controller authority. Impeccable is a design/verification workflow, not a replacement visual theme. Resolve UI quality at the narrowest affected shared component or token; do not restyle unrelated scenes.
+- Check real entry/action/return, text contrast and containment, optical alignment, keyboard focus, scrolling and touch cancellation at desktop and narrow sizes. Use a small relevant regression set; a clean detector or screenshot alone is not acceptance. Report native canvas checks honestly: DOM detectors cannot inspect drawn Godot controls.
+- Reference version, project-specific application and intentional exceptions are recorded in `godot_native/docs/UI_DESIGN_WORKFLOW.md`. User-wide skill installation makes it available to other UI work too; do not install automatic hooks or change engine/runtime as a side effect.
+
 ## Naming
 
 - Player-facing inventory names and introductions come from `src/data/items.config.json`. `PixelIcon` exposes that metadata to both inventory docks and the inspect dialog; do not keep a second copy of item prose in components. Inspect metadata owns source/category and concise use notes, while `itemCatalog.ts` owns document evidence and item-use contracts. Copy changes must preserve evidence values and item ids.

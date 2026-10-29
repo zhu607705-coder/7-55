@@ -5728,3 +5728,14 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 校园美术地图同步使用原脚圈半径检查铺装并集边缘，内部接缝不生成空气墙；寻路连线也检查整条脚圈路径。修复斜边编译被包含边缘的点测试吞掉、旧试验路径点压在路沿、原生分离后边缘姿态未复核的问题。既有建筑/树干脚圈膨胀保留一次；原始行走速度、脚圈和人物比例不变。
 - 新增 `WORLD_SPACE.md`、全地图独立审阅入口与全变体专项；真实桌面与 390 × 844 缩放窗口十三图普通输入审阅各 57 项、0 失败、0 非法姿态帧。覆盖数和完整验收结论以最终报告为准，不将开发检查点审阅当作剧情赚取、Web 发布或实机验收。仍为本地未提交变更。
 - 完整回归首轮完成 532 项通过、4 项失败后，核实并修正了四处差异：沿墙滑动的旧整步停位断言、图书馆椅子的旧脚框上沿断言、剧场后台被过早截断的原有通道，以及同一玩家深度侧内独立物件缺少相互排序导致的拾取顺序。保留后台作者允许的胸箱侧站位，墙脚与身体接触仍按真实边界检查；湖区兼容区域字段也与可见底图使用同一来源。最终完整验收以审阅目录中的 `world_space_native_validation.json` 及其 metadata 为准。
+
+
+## 2026-10-29 · Library geometry and Impeccable UI delivery
+
+- Integrated the three-card geometry study through an independent notebook on the library reading table, using the real native controller and activity host. Return preserves position, inventory and story state; the study awards no progression.
+- Retained the approved single-file design, bundled Inter/OFL and native geometry. Added desktop/narrow responsive layout, touch/keyboard input, interrupted/reduced-motion handling, session entrance, visible focus and scroll-to-focus. Secondary text contrast is 5.76:1; captions share a wrapped-height allocation.
+- Installed Impeccable user-wide and recorded the required future UI workflow in AGENTS.md and UI_DESIGN_WORKFLOW.md; pinned upstream reference and no automatic hooks.
+- Prior working-tree focused native checks, graphical 1280×720 / 390×844 entry/input/return and 37 assertions passed. Current delivery is separately validated against the selected main-based source; earlier browser entry/return evidence precedes the final polish and does not establish current Web acceptance.
+- This submission excludes local PR184 commits, paper/lamp activity integration and all North/phone/charging/prologue/text changes. Cloud CI, merge and Pages outcome are recorded separately from local validation.
+
+- Selected main-based source: native preflight, geometry entry, existing library layer and shared spatial regressions pass. Actual native graphical entry/return/focus run: 37 checks, zero failures; production Godot Web export passes. The agreed 17 files are the complete submission scope.
