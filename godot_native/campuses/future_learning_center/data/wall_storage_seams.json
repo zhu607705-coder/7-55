@@ -1,0 +1,195 @@
+{
+  "schema": 1,
+  "basis": "Visible north wall-to-floor contact seam measured on existing room masters. These are source-image pixels, not the inset navigation polygon; architecture and navigation remain unchanged.",
+  "assets": {
+    "f2_formula": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f2_formula_ambient.png",
+      "sha256": "1e6b1a11e8d4445f3cb80167fe94fd0fd6af1becadee3f216b5441b3b5ba3dc4",
+      "sourceY": 296,
+      "sourceSpans": [
+        [
+          216,
+          1000
+        ]
+      ]
+    },
+    "f2_robotics": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f2_robotics_ambient.png",
+      "sha256": "2c6b12a3404ec544aff3fa5d65b484b2d3edec02e9eddbd9d34a8248cbffe95b",
+      "sourceY": 245,
+      "sourceSpans": [
+        [
+          180,
+          1030
+        ]
+      ]
+    },
+    "north_seminar": {
+      "path": "res://campuses/future_learning_center/assets/rooms/north_seminar_ambient.png",
+      "sha256": "3e5289b5e8ce112f1984c5505329e457595651451bbe4753af648365415387db",
+      "sourceY": 278,
+      "sourceSpans": [
+        [
+          388,
+          496
+        ],
+        [
+          668,
+          777
+        ],
+        [
+          946,
+          1057
+        ]
+      ],
+      "sourceWindows": [
+        [
+          230,
+          130,
+          152,
+          83
+        ],
+        [
+          505,
+          130,
+          152,
+          83
+        ],
+        [
+          785,
+          130,
+          152,
+          83
+        ],
+        [
+          1065,
+          130,
+          152,
+          83
+        ]
+      ],
+      "note": "Storage backs onto projecting wall piers between the four painted window bays. Source Y is the pier-to-floor seam, not the inset navigation edge or approximate lighting apertures."
+    },
+    "team_studio": {
+      "path": "res://campuses/future_learning_center/assets/rooms/team_studio_ambient.png",
+      "sha256": "517019cc3fab63dc2e5a682c12acbf2bef86fb514cee6c5b0ce89dee3552843c",
+      "sourceY": 232,
+      "sourceSpans": [
+        [
+          268,
+          1420
+        ]
+      ]
+    },
+    "pantry": {
+      "path": "res://campuses/future_learning_center/assets/rooms/pantry_ambient.png",
+      "sha256": "cb9ca97ad4b24c2314583af8d2e12a16aaf90b422c77d47aa535102f0a175f86",
+      "sourceY": 226,
+      "sourceSpans": [
+        [
+          490,
+          1147
+        ]
+      ]
+    },
+    "f4_storage": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f4_storage_ambient.png",
+      "sha256": "f9159f38409c7ac4f321bd84d7d7ad3a42352233bec7609257777c7a17d4122f",
+      "sourceY": 239,
+      "sourceSpans": [
+        [
+          500,
+          980
+        ]
+      ]
+    },
+    "f2_lab": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+      "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+      "sourceY": 221,
+      "sourceSpans": [
+        [
+          214,
+          828
+        ]
+      ]
+    },
+    "f2_machinery": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+      "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+      "sourceY": 225,
+      "sourceSpans": [
+        [
+          194,
+          845
+        ]
+      ]
+    },
+    "f4_focus_a": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f4_focus_a_ambient.png",
+      "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11",
+      "sourceY": 252,
+      "sourceSpans": [
+        [
+          225,
+          713
+        ]
+      ]
+    },
+    "f4_collab_b": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f4_collab_b_ambient.png",
+      "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24",
+      "sourceY": 250,
+      "sourceSpans": [
+        [
+          210,
+          804
+        ]
+      ]
+    },
+    "f4_seminar_a": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_a_ambient.png",
+      "sha256": "2ecc62a4cc13233dbbbfb178cbd35a147109bffd4b4272fb74ab111f35f25cbb",
+      "sourceY": 268,
+      "sourceSpans": [
+        [
+          208,
+          968
+        ]
+      ]
+    },
+    "f4_seminar_b": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_b_ambient.png",
+      "sha256": "174f68e7d2ec04c7347bced64e8e9b871f55afc7731f5520bf63b5f96bc2693b",
+      "sourceY": 282,
+      "sourceSpans": [
+        [
+          198,
+          977
+        ]
+      ]
+    },
+    "f4_seminar_c": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_c_ambient.png",
+      "sha256": "4aa76dc617fcd5b0aa3e48d2a9c59fb96dce72fd9b1fed9ec1d3e644a3c85989",
+      "sourceY": 266,
+      "sourceSpans": [
+        [
+          180,
+          1081
+        ]
+      ]
+    },
+    "f4_flex_c": {
+      "path": "res://campuses/future_learning_center/assets/rooms/f4_flex_c_ambient.png",
+      "sha256": "1d77eed379ddb1e27280efd8d2917f4a257bb895bd988b1dbd2e9026f9690d1b",
+      "sourceY": 232,
+      "sourceSpans": [
+        [
+          440,
+          1288
+        ]
+      ]
+    }
+  }
+}

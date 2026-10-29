@@ -1,4 +1,171 @@
-# 3F room assembly review · 2026-10-28
+# Three-floor object review · 2026-10-28
+
+## Current addition: interactive 2F mechatronics workbench
+
+The new assembly island and playable gear/belt experiment are documented in
+[WORKSHOP.md](WORKSHOP.md). The owned spatial snapshot passed **1652 checks**;
+the model passed **88 checks**. Desktop and scaled portrait passed **13 floor
+input + 11 workbench input checks each**; landscape touch passed **11 workbench
+checks**. Seven selected native stages passed, with 532 unrelated stages not run.
+All architecture remains unchanged by this addition. Parallel wall-storage edits
+were validated in the shared tree but are separate from this change.
+
+The standalone Godot Web export passed import, native startup and export with
+matching 4.7.1 tools. The gallery now defaults to the actual laboratory capture
+and links to `lab/index.html`. HTTP assets were checked; browser interaction is
+unverified because local browser control is disabled. This remains a gameplay
+review without production chapter, reward or save integration.
+
+## Previous correction: 3F pantry sofa area and central table
+
+Based on local commit `fe9113856da2f25e609e734e4678bab96398fad5`, using Godot
+4.7.1.stable.official.a13da4feb. The user explicitly identified **三楼茶水休息区**.
+
+- Restored two independent two-seat sofas and added two low tea tables. The
+  existing photo-derived dark curved table scales uniformly from 500 to 580
+  world pixels; its two rows now contain five opposing chairs each. The side
+  worktop moves within the same room. Player and chair scales are unchanged.
+- All architectural geometry, doors, camera zones and paired transit data
+  compare equal to the base. Full 2F and 4F definitions are byte-equivalent;
+  3F furnishings outside the pantry retain their placement and properties.
+  Render counts are **157/362/175** for 2F/3F/4F.
+- Focused geometry/navigation suite: **1634 checks, 0 failures**, including
+  the complete-footprint loop around the enlarged table, the sofa/tea-table
+  aisle, entrance reachability and return to the elevator.
+- The first engine input run caught route-following cutting a chair corner:
+  a waypoint was discarded four pixels before arrival. The follower now
+  reaches the validated corner before advancing; the touch route regression
+  passes with the furniture colliders unchanged.
+- Final desktop 1280 × 720 and scaled 390 × 844 each passed **13 input
+  checks**, including table/sofa collision, retreat and a touch route around
+  both table rows. Zero illegal-foot frames. Touch is simulated, not physical
+  mobile-device acceptance.
+- Source/media preparation, isolated saves, editor import/parse, startup,
+  all-script parsing and the focused suite passed: **6 targeted native stages**,
+  **532 unrelated stages not run**. This is not full release acceptance.
+- Actual scene captures: `flc_pantry_lounge_desktop` and
+  `flc_pantry_lounge_mobile`. The gallery defaults to `f3_pantry.png`; its
+  before image is the previous `flc_hall_2f_desktop/f3_pantry.png`. Local HTTP
+  bytes and image paths match the captures. Browser interaction was not
+  repeated because local browser control was disabled in Work settings.
+
+The new tea-table master preserves its original transparent alpha and full
+prompt. Exact site furniture positions, capacity and tea-table finish remain
+review choices. This is an isolated native review, not a production Web release.
+
+## Previous correction: hall belongs to 2F
+
+Based on local commit `7560e375`, using Godot 4.7.1.stable.official.a13da4feb.
+The latest user clarification supersedes the earlier floor answer: the blue
+frame and colored stools belong to the **2F hall**.
+
+- All 21 hall render instances moved from 4F to the existing 2F open platform:
+  seven frame regions and 14 independent stools. The original assets, scale,
+  four post colliders and canopy occlusion remain unchanged.
+- The platform's existing room/camera zone is reused; no wall, door, ground
+  region or travel edge was added. The central east-west passage stays clear.
+- Architecture and transit data compare equal to the previous commit on all
+  three floors. The complete 4F definition equals its pre-hall state at
+  `2f4d9a88`. Current 2F/3F/4F render counts: **157/356/175**.
+- Focused geometry/navigation suite: **1612 checks, 0 failures**. Desktop
+  1280 × 720 and scaled 390 × 844 each passed **8 input checks**, including
+  passage under the frame, post collision and backing away. Zero illegal-foot
+  frames. Mobile input is simulated, not physical-device acceptance.
+- Native source/media preparation and the six targeted native validation
+  stages passed; 532 unrelated stages were not run.
+- Actual captures: `flc_hall_2f_desktop` and `flc_hall_2f_mobile`. The review
+  gallery now points to `f2_hall*.png` and labels the hall as 2F. Its local
+  image paths were verified. Browser interaction was not repeated because
+  local browser control was disabled in Work settings.
+
+The furniture coordinates remain a review placement within the existing
+platform. This is local visual/spatial validation, not production release.
+
+## Historical 4F hall placement (superseded by the 2F correction)
+
+Based on local commit `2f4d9a884b8ddefaa8a93498ed4f8fd01b10a0a7`, using Godot
+4.7.1.stable.official.a13da4feb. This historical run placed the hall on **4F**
+following the earlier reply. The latest user correction assigns it to **2F**;
+this section retains only the previous validation record.
+
+- The existing northeast landing receives one blue overhead frame and 14
+  independent colored stools. Existing ground polygons, three atrium voids,
+  room modules, apertures, transit links and the original 175 props compare
+  exactly equal to the base commit. No hall objects appear on 2F or 3F.
+- Seven disjoint source rectangles partition one unchanged frame PNG. Only
+  the four post foot plates collide; the middle passage remains clear. The
+  canopy overlap with the actor is rendered at 78% opacity, leaving the actor
+  faintly readable while preserving all non-overlapped pixels.
+- Focused suite: **1614 checks, 0 failures**, including walking under the frame,
+  approaching and retreating from each foot plate, returning to the elevator,
+  and non-overlapping render regions. Targeted native validation passed all
+  six mandatory/selected stages; 532 unrelated stages were not run.
+- Desktop 1280 × 720 and scaled 390 × 844 each passed **8 input checks** with
+  zero illegal-foot frames. These include real engine keyboard input under the
+  frame and against a post. Touch is simulated; no physical-device claim.
+- The browser mechanism's **13 behavioral checks** passed. Three new gallery
+  buttons selected the expected native captures; browser warnings/errors: zero.
+- Final native images: `flc_hall_final_desktop` and `flc_hall_final_mobile`.
+  Hall framing and canopy occlusion were visually inspected. The original
+  review URL now defaults to the hall and retains the earlier comparisons.
+
+An accidentally selected full validation run was interrupted; its partial
+results are not release acceptance. The subsequent targeted run above finished
+successfully. This remains an isolated visual/spatial review, not production
+story/save integration or a released Web build.
+
+## Previous facing desks and site-photo pass
+
+Based on local commit `da775e8782b73bea851794582107c882da5cfa6c`, using Godot
+4.7.1.stable.official.a13da4feb. Evidence directories: `flc_photos_final_desktop`
+and `flc_photos_final_mobile` in the local review workspace.
+
+- Four studios now each have two facing eight-seat desk banks. A rear monitor
+  master and existing opposite chair views keep objects upright. Middle aisles
+  are checked with the complete player foot box and return routes to the doors.
+- Six new pantry masters replace the provisional sofa pair with photo-derived
+  furnishings. Routes to all four sides of the island remain reachable.
+- A white/glass atrium texture variant changes presentation only. Existing
+  plan geometry, voids, doors, landing pairs and room adjacency remain intact.
+- Floors 2/3/4 contain **136/356/175** independent render instances.
+- Focused native suite: **1535 checks, 0 failures**. Prepared inputs, isolated
+  saves, editor import/parse, startup, all-script parse and the focused suite
+  passed. This remains partial native validation, not release acceptance.
+- Desktop 1280 × 720 and scaled 390 × 844 each passed **5 input checks**, with
+  no invalid-foot frames. Mobile input is simulated, not physical-device QA.
+- The unchanged gameplay mechanism's **13 behavioral checks** passed.
+- Eight generated originals retain alpha, dimensions, hashes and complete
+  prompts. The three user photographs are evidence only and remain outside Git.
+
+At this earlier checkpoint, exact site placement, all-floor proportions and
+the hall's floor identity remained unresolved. The subsequent 4F placement
+was superseded by the latest 2F correction. No production NPC, story or save
+integration was claimed.
+
+## Previous furniture pass
+
+Current working tree is based on `533ed6b7e874efa87b97613987434b1861868671` (merged PR #187). Engine: Godot 4.7.1.stable.official.a13da4feb. Latest local evidence directories are `flc_objects_final_desktop` and `flc_objects_final_mobile`; the review builder consumes those captures. This is source-tree validation, not a production release verdict.
+
+| Floor | Rounded game-pixel dimensions | Independent render objects | Room apertures | Paired landings |
+|---|---:|---:|---:|---:|
+| 2F | 5659 × 8260 | 136 | 9 | 3 |
+| 3F | 5325 × 8093 | 249 | 10 | 3 |
+| 4F | 5325 × 8398 | 175 | 7 | 3 |
+
+- Focused native geometry, objects, transit, camera and lighting suite: **1341 checks, 0 failures**.
+- Native desktop 1280 × 720: **5 input checks, 0 failures**, zero illegal-foot frames.
+- Native scaled 390 × 844: **5 input checks, 0 failures**, zero illegal-foot frames. Simulated touch, not a physical mobile device.
+- Browser mechanic model: **13 behavioral checks passed**, covering both light solutions, repeated scoring, camera obstruction, furniture blocking, fast-drag collision and recovery around the camera.
+- Seven added original PNGs were checked for real alpha, nonempty silhouettes and hashes before import: `monitor_front`, `desk_divider`, `tool_cart`, `parts_rack`, `coffee_machine`, `potted_plant`, `soldering_station`.
+- Actual native studio, laboratory and pantry captures were visually inspected. The local review shows these captures, keeps a studio comparison, and labels the platform staging as a proposal.
+- Native source/media sync and targeted validation passed prepared inputs, isolated saves, asset import/editor parse, startup, all-script parse and `test_future_learning_center_rooms.gd`. The tool reports partial validation because this is a focused profile, not a full release suite.
+- The updated browser prototype was exercised through its real controls: east-side success, blocked cross-camera movement, a clear detour and west-side success. Gallery switching worked and the browser reported no warnings or errors.
+
+The studio layout and object silhouettes are improved, but overall room/actor proportions and exact equipment placement remain under review. Existing panoramic atrium/closed mechanical-core crops remain in use. Window strips are provisional source-space placements. No final whole-building art acceptance, production NPC route, production save integration or full Web release is claimed. The browser prototype only implements the first 2F mechanic; later floor tasks remain a proposal.
+
+## Historical empty 3F checkpoint
+
+The material below records the earlier empty-room pass and is not the current furnishing verdict.
 
 ![Assembled floor](floor_3_assembled_preview.png)
 

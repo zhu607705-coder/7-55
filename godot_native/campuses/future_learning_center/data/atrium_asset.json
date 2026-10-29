@@ -1,0 +1,41 @@
+{
+  "path": "res://campuses/future_learning_center/assets/floors/floor_3_atrium_photo_v2.png",
+  "size": [
+    1086,
+    1448
+  ],
+  "sha256": "e8d92f079143907863fac34b59a425c11a02eead549604ec91b5a3beb7973db1",
+  "production": "builtin imagegen; only measured central atrium crops consumed; other pixels unused; original preserved",
+  "crops": {
+    "interior": [
+      432,
+      385,
+      193,
+      351
+    ],
+    "west": [
+      395,
+      406,
+      33,
+      160
+    ],
+    "east": [
+      639,
+      406,
+      31,
+      160
+    ],
+    "north": [
+      420,
+      330,
+      211,
+      52
+    ],
+    "south": [
+      420,
+      972,
+      211,
+      54
+    ]
+  }
+}

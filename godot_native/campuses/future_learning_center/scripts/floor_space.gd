@@ -12,9 +12,15 @@ var invalid_links:Array[String]=[]
 const BIN:=256.0
 var polygon_bins:Dictionary={}
 var edge_bins:Dictionary={}
+var obstacles:Array[Rect2]=[]
+var obstacle_bins:Dictionary={}
+var navigation:=AStarGrid2D.new()
+const CELL:=24.0
+var grid_ready:=false
 
 func configure(definition:Dictionary)->void:
 	data=definition
+	obstacles.clear();obstacle_bins.clear();grid_ready=false
 	world_bounds=Rect2(Vector2.ZERO,Vector2(data.world[0],data.world[1]))
 	var polygons:Array[PackedVector2Array]=[]
 	for region:Dictionary in data.ground:polygons.append(Space.polygon(region.polygon))
@@ -36,6 +42,11 @@ func configure(definition:Dictionary)->void:
 		var a:int=point_ids[edge[0]];var b:int=point_ids[edge[1]]
 		if segment_clear(graph.get_point_position(a),graph.get_point_position(b)):graph.connect_points(a,b)
 		else:invalid_links.append(str(edge))
+	# Architectural graph validation above remains separate from removable props.
+	for object:Dictionary in data.get("objects",[]):
+		if object.get("mounted",false):continue
+		var box:Rect2=Space.rect(object.footprint)
+		_bin(obstacle_bins,box.grow(24),obstacles.size());obstacles.append(box)
 
 func _bin(target:Dictionary,bounds:Rect2,index:int)->void:
 	for y:int in range(floori(bounds.position.y/BIN),floori(bounds.end.y/BIN)+1):
@@ -52,6 +63,8 @@ func _contains(point:Vector2)->bool:
 func can_stand(anchor:Vector2)->bool:
 	if not anchor.is_finite() or not world_bounds.encloses(Body.visual_rect(anchor)):return false
 	var body:Rect2=Body.foot_rect(anchor)
+	for index:int in obstacle_bins.get(Vector2i(floori(body.get_center().x/BIN),floori(body.get_center().y/BIN)),[]):
+		if body.intersects(obstacles[index]):return false
 	var corners:=PackedVector2Array([body.position,Vector2(body.end.x,body.position.y),body.end,Vector2(body.position.x,body.end.y)])
 	for corner:Vector2 in corners:
 		if not _contains(corner):return false
@@ -77,6 +90,7 @@ func segment_clear(a:Vector2,b:Vector2)->bool:
 func route(start:Vector2,destination:Vector2)->PackedVector2Array:
 	if not can_stand(start) or not can_stand(destination):return PackedVector2Array()
 	if segment_clear(start,destination):return PackedVector2Array([destination])
+	if not obstacles.is_empty():return _furnished_route(start,destination)
 	var from_id:=graph.get_available_point_id();graph.add_point(from_id,start)
 	var to_id:=graph.get_available_point_id();graph.add_point(to_id,destination)
 	for id:int in graph.get_point_ids():
@@ -89,6 +103,46 @@ func route(start:Vector2,destination:Vector2)->PackedVector2Array:
 	if result.size()>0:result.remove_at(0)
 	return result
 
+func _prepare_grid()->void:
+	if grid_ready:return
+	navigation.region=Rect2i(0,0,ceili(world_bounds.size.x/CELL),ceili(world_bounds.size.y/CELL))
+	navigation.cell_size=Vector2.ONE*CELL;navigation.offset=Vector2.ONE*CELL/2-Body.FOOT_CENTER_OFFSET
+	navigation.diagonal_mode=AStarGrid2D.DIAGONAL_MODE_NEVER
+	navigation.update()
+	for y:int in navigation.region.size.y:
+		for x:int in navigation.region.size.x:
+			var id:=Vector2i(x,y)
+			navigation.set_point_solid(id,not can_stand(navigation.get_point_position(id)))
+	grid_ready=true
+
+func _grid_anchor(at:Vector2)->Vector2i:
+	var base:=Vector2i(floori((at.x+Body.FOOT_CENTER_OFFSET.x)/CELL),floori((at.y+Body.FOOT_CENTER_OFFSET.y)/CELL))
+	var best:=Vector2i(-1,-1);var distance:=INF
+	for y:int in range(-2,3):
+		for x:int in range(-2,3):
+			var id:=base+Vector2i(x,y)
+			if not navigation.is_in_boundsv(id) or navigation.is_point_solid(id):continue
+			var p:=navigation.get_point_position(id)
+			if at.distance_squared_to(p)<distance and segment_clear(at,p):best=id;distance=at.distance_squared_to(p)
+	return best
+
+func _furnished_route(start:Vector2,destination:Vector2)->PackedVector2Array:
+	_prepare_grid()
+	var a:=_grid_anchor(start);var b:=_grid_anchor(destination)
+	if a.x<0 or b.x<0:return PackedVector2Array()
+	var raw:=navigation.get_point_path(a,b)
+	if raw.is_empty():return raw
+	raw.append(destination)
+	var result:=PackedVector2Array();var previous:=start;var i:=0
+	while i<raw.size():
+		var next:=i
+		while next+1<raw.size() and next<i+16 and segment_clear(previous,raw[next+1]):next+=1
+		# Grid adjacency is not permission to cross a thin wall or prop. Validate
+		# every selected segment with the same complete-foot predicate as movement.
+		if not segment_clear(previous,raw[next]):return PackedVector2Array()
+		result.append(raw[next]);previous=raw[next];i=next+1
+	return result
+
 func room_at(foot:Vector2)->Dictionary:
 	# Internal acoustic room takes priority over the enclosing lab wing.
 	for i:int in range(data.rooms.size()-1,-1,-1):
@@ -99,7 +153,8 @@ func room_at(foot:Vector2)->Dictionary:
 				if region.id=="xlab_box" and Geometry2D.is_point_in_polygon(foot,Space.polygon(region.polygon)):return room
 			continue
 		for region:Dictionary in data.ground:
-			if str(region.id).begins_with(str(room.id)+"_floor_") and Geometry2D.is_point_in_polygon(foot,Space.polygon(region.polygon)):return room
+			var belongs:bool=str(region.id).begins_with(str(room.id)+"_floor_") or str(region.id)==str(room.get("groundId",""))
+			if belongs and Geometry2D.is_point_in_polygon(foot,Space.polygon(region.polygon)):return room
 	return {}
 
 func focus_bounds(room:Dictionary)->Rect2:
