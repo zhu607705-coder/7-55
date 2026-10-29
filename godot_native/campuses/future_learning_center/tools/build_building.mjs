@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {buildOtherFloors,core,point} from './build_other_floors.mjs';
 import {applyPhotoDetails} from './apply_photo_details.mjs';
+import {placeWallStorage} from './place_wall_storage.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=n=>JSON.parse(fs.readFileSync(path.join(root,'data',n),'utf8'));
 const write=(n,v)=>fs.writeFileSync(path.join(root,'data',n),JSON.stringify(v,null,2)+'\n');
@@ -267,6 +268,7 @@ function furnish(p){
   }
  }
  if(p.floor===2)hall();
+ placeWallStorage(p,props);
  applyPhotoDetails(p,props);
  p.objectCounts=Object.fromEntries([...new Set(p.objects.map(o=>o.asset))].map(k=>[k,p.objects.filter(o=>o.asset===k).length]));
  // Keep reachability samples in the same room when a newly placed table occupies

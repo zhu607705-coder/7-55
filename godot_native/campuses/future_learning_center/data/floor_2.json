@@ -8152,100 +8152,6 @@
       "mounted": false
     },
     {
-      "id": "formula_cabinet_4",
-      "room": "formula",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        626.8611438193019,
-        2900.6376,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        632.3339569609857,
-        2960.6376,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 3002.6376,
-      "height": 120,
-      "floor": [
-        [
-          403.66400000000004,
-          2196.96
-        ],
-        [
-          1311.6480000000001,
-          2196.96
-        ],
-        [
-          1406.5120000000002,
-          3063.28
-        ],
-        [
-          342.68,
-          3063.28
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "formula_cabinet_5",
-      "room": "formula",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        935.3724238193018,
-        2900.6376,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        940.8452369609856,
-        2960.6376,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 3002.6376,
-      "height": 120,
-      "floor": [
-        [
-          403.66400000000004,
-          2196.96
-        ],
-        [
-          1311.6480000000001,
-          2196.96
-        ],
-        [
-          1406.5120000000002,
-          3063.28
-        ],
-        [
-          342.68,
-          3063.28
-        ]
-      ],
-      "mounted": false
-    },
-    {
       "id": "team_desk_6",
       "room": "team",
       "asset": "desk",
@@ -9574,100 +9480,6 @@
       "mounted": false
     },
     {
-      "id": "robotics_cabinet_34",
-      "room": "robotics",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        626.6445721636727,
-        5650.097740543779,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        632.1173853053565,
-        5710.097740543779,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 5752.097740543779,
-      "height": 120,
-      "floor": [
-        [
-          404.7862251655629,
-          4952.98704915305
-        ],
-        [
-          1308.2479470198673,
-          4952.98704915305
-        ],
-        [
-          1402.6394701986756,
-          5812.24585710007
-        ],
-        [
-          344.10596026490066,
-          5812.24585710007
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "robotics_cabinet_35",
-      "room": "robotics",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        933.6192900444674,
-        5650.097740543779,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        939.0921031861512,
-        5710.097740543779,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 5752.097740543779,
-      "height": 120,
-      "floor": [
-        [
-          404.7862251655629,
-          4952.98704915305
-        ],
-        [
-          1308.2479470198673,
-          4952.98704915305
-        ],
-        [
-          1402.6394701986756,
-          5812.24585710007
-        ],
-        [
-          344.10596026490066,
-          5812.24585710007
-        ]
-      ],
-      "mounted": false
-    },
-    {
       "id": "robotics_desk_36",
       "room": "robotics",
       "asset": "desk",
@@ -10469,53 +10281,6 @@
       "mounted": false
     },
     {
-      "id": "seminar_cabinet_53",
-      "room": "seminar",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        3191.519646514337,
-        915.4058929078014,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        3196.992459656021,
-        967.4058929078014,
-        80.26792607802875,
-        50
-      ],
-      "baseline": 1017.4058929078014,
-      "height": 120,
-      "floor": [
-        [
-          2180.183574468085,
-          400.9735460992908
-        ],
-        [
-          3505.871276595745,
-          400.9735460992908
-        ],
-        [
-          3568.9992624113474,
-          1143.663120567376
-        ],
-        [
-          2126.0738723404256,
-          1143.663120567376
-        ]
-      ],
-      "mounted": false
-    },
-    {
       "id": "electrical_workbench_54",
       "room": "electrical",
       "asset": "workbench",
@@ -10702,102 +10467,6 @@
         ]
       ],
       "mounted": false
-    },
-    {
-      "id": "electrical_cabinet_58",
-      "room": "electrical",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4573.478454237289,
-        4040.9258543352607,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4577.429236960986,
-        4100.925854335261,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 4142.925854335261,
-      "height": 120,
-      "floor": [
-        [
-          4383.64,
-          2883.324393063584
-        ],
-        [
-          5237.08,
-          2883.324393063584
-        ],
-        [
-          5317.72,
-          4237.734566473989
-        ],
-        [
-          4303,
-          4237.734566473989
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "electrical_cabinet_59",
-      "room": "electrical",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4867.747254237289,
-        4040.9258543352607,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4871.6980369609855,
-        4100.925854335261,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 4142.925854335261,
-      "height": 120,
-      "floor": [
-        [
-          4383.64,
-          2883.324393063584
-        ],
-        [
-          5237.08,
-          2883.324393063584
-        ],
-        [
-          5317.72,
-          4237.734566473989
-        ],
-        [
-          4303,
-          4237.734566473989
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
     },
     {
       "id": "electrical_desk_60",
@@ -11130,198 +10799,6 @@
         ]
       ],
       "mounted": false
-    },
-    {
-      "id": "electrical_parts_rack_67",
-      "room": "electrical",
-      "asset": "parts_rack",
-      "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
-      "crop": [
-        182,
-        110,
-        848,
-        1087
-      ],
-      "scale": 0.10119595216191353,
-      "bounds": [
-        4537.45291628335,
-        3405.794090173411,
-        85.81416743330267,
-        110
-      ],
-      "footprint": [
-        4542.293086876156,
-        3475.794090173411,
-        76.13382624768946,
-        40
-      ],
-      "baseline": 3515.794090173411,
-      "height": 110,
-      "floor": [
-        [
-          4383.64,
-          2883.324393063584
-        ],
-        [
-          5237.08,
-          2883.324393063584
-        ],
-        [
-          5317.72,
-          4237.734566473989
-        ],
-        [
-          4303,
-          4237.734566473989
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "parts_rack_photo_v2"
-    },
-    {
-      "id": "electrical_parts_rack_68",
-      "room": "electrical",
-      "asset": "parts_rack",
-      "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
-      "crop": [
-        182,
-        110,
-        848,
-        1087
-      ],
-      "scale": 0.10119595216191353,
-      "bounds": [
-        5122.60491628335,
-        3017.1182242774566,
-        85.81416743330267,
-        110
-      ],
-      "footprint": [
-        5127.445086876156,
-        3082.1182242774566,
-        76.13382624768946,
-        45
-      ],
-      "baseline": 3127.1182242774566,
-      "height": 65,
-      "floor": [
-        [
-          4383.64,
-          2883.324393063584
-        ],
-        [
-          5237.08,
-          2883.324393063584
-        ],
-        [
-          5317.72,
-          4237.734566473989
-        ],
-        [
-          4303,
-          4237.734566473989
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "parts_rack_photo_v2"
-    },
-    {
-      "id": "electrical_parts_rack_69",
-      "room": "electrical",
-      "asset": "parts_rack",
-      "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
-      "crop": [
-        182,
-        110,
-        848,
-        1087
-      ],
-      "scale": 0.10119595216191353,
-      "bounds": [
-        5122.60491628335,
-        3409.897174566474,
-        85.81416743330267,
-        110
-      ],
-      "footprint": [
-        5127.445086876156,
-        3474.897174566474,
-        76.13382624768946,
-        45
-      ],
-      "baseline": 3519.897174566474,
-      "height": 65,
-      "floor": [
-        [
-          4383.64,
-          2883.324393063584
-        ],
-        [
-          5237.08,
-          2883.324393063584
-        ],
-        [
-          5317.72,
-          4237.734566473989
-        ],
-        [
-          4303,
-          4237.734566473989
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "parts_rack_photo_v2"
-    },
-    {
-      "id": "electrical_parts_rack_70",
-      "room": "electrical",
-      "asset": "parts_rack",
-      "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
-      "crop": [
-        182,
-        110,
-        848,
-        1087
-      ],
-      "scale": 0.10119595216191353,
-      "bounds": [
-        5122.60491628335,
-        3856.8525317919075,
-        85.81416743330267,
-        110
-      ],
-      "footprint": [
-        5127.445086876156,
-        3921.8525317919075,
-        76.13382624768946,
-        45
-      ],
-      "baseline": 3966.8525317919075,
-      "height": 65,
-      "floor": [
-        [
-          4383.64,
-          2883.324393063584
-        ],
-        [
-          5237.08,
-          2883.324393063584
-        ],
-        [
-          5317.72,
-          4237.734566473989
-        ],
-        [
-          4303,
-          4237.734566473989
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "electrical_tool_cart_71",
@@ -11798,102 +11275,6 @@
       "mounted": false
     },
     {
-      "id": "machinery_cabinet_81",
-      "room": "machinery",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4571.168511380146,
-        5994.0363968385045,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4575.119294103843,
-        6054.0363968385045,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 6096.0363968385045,
-      "height": 120,
-      "floor": [
-        [
-          4379.284081632653,
-          4826.256151940544
-        ],
-        [
-          5240.188571428571,
-          4826.256151940544
-        ],
-        [
-          5321.533877551021,
-          6191.611253981361
-        ],
-        [
-          4297.938775510204,
-          6191.611253981361
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "machinery_cabinet_82",
-      "room": "machinery",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4868.011090971982,
-        5994.0363968385045,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4871.961873695679,
-        6054.0363968385045,
-        80.26792607802875,
-        42
-      ],
-      "baseline": 6096.0363968385045,
-      "height": 120,
-      "floor": [
-        [
-          4379.284081632653,
-          4826.256151940544
-        ],
-        [
-          5240.188571428571,
-          4826.256151940544
-        ],
-        [
-          5321.533877551021,
-          6191.611253981361
-        ],
-        [
-          4297.938775510204,
-          6191.611253981361
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
       "id": "machinery_desk_83",
       "room": "machinery",
       "asset": "desk",
@@ -11988,150 +11369,6 @@
       ],
       "mounted": true,
       "parent": "machinery_desk_83"
-    },
-    {
-      "id": "machinery_parts_rack_85",
-      "room": "machinery",
-      "asset": "parts_rack",
-      "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
-      "crop": [
-        182,
-        110,
-        848,
-        1087
-      ],
-      "scale": 0.10119595216191353,
-      "bounds": [
-        5125.087528528247,
-        4962.020070307892,
-        85.81416743330267,
-        110
-      ],
-      "footprint": [
-        5129.927699121054,
-        5027.020070307892,
-        76.13382624768946,
-        45
-      ],
-      "baseline": 5072.020070307892,
-      "height": 65,
-      "floor": [
-        [
-          4379.284081632653,
-          4826.256151940544
-        ],
-        [
-          5240.188571428571,
-          4826.256151940544
-        ],
-        [
-          5321.533877551021,
-          6191.611253981361
-        ],
-        [
-          4297.938775510204,
-          6191.611253981361
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "parts_rack_photo_v2"
-    },
-    {
-      "id": "machinery_parts_rack_86",
-      "room": "machinery",
-      "asset": "parts_rack",
-      "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
-      "crop": [
-        182,
-        110,
-        848,
-        1087
-      ],
-      "scale": 0.10119595216191353,
-      "bounds": [
-        5125.087528528247,
-        5357.973049899729,
-        85.81416743330267,
-        110
-      ],
-      "footprint": [
-        5129.927699121054,
-        5422.973049899729,
-        76.13382624768946,
-        45
-      ],
-      "baseline": 5467.973049899729,
-      "height": 65,
-      "floor": [
-        [
-          4379.284081632653,
-          4826.256151940544
-        ],
-        [
-          5240.188571428571,
-          4826.256151940544
-        ],
-        [
-          5321.533877551021,
-          6191.611253981361
-        ],
-        [
-          4297.938775510204,
-          6191.611253981361
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "parts_rack_photo_v2"
-    },
-    {
-      "id": "machinery_parts_rack_87",
-      "room": "machinery",
-      "asset": "parts_rack",
-      "name": "元件收纳架",
-      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
-      "crop": [
-        182,
-        110,
-        848,
-        1087
-      ],
-      "scale": 0.10119595216191353,
-      "bounds": [
-        5125.087528528247,
-        5808.540233573198,
-        85.81416743330267,
-        110
-      ],
-      "footprint": [
-        5129.927699121054,
-        5873.540233573198,
-        76.13382624768946,
-        45
-      ],
-      "baseline": 5918.540233573198,
-      "height": 65,
-      "floor": [
-        [
-          4379.284081632653,
-          4826.256151940544
-        ],
-        [
-          5240.188571428571,
-          4826.256151940544
-        ],
-        [
-          5321.533877551021,
-          6191.611253981361
-        ],
-        [
-          4297.938775510204,
-          6191.611253981361
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "parts_rack_photo_v2"
     },
     {
       "id": "machinery_tool_cart_88",
@@ -15707,6 +14944,2016 @@
         ]
       ],
       "mounted": false
+    },
+    {
+      "id": "formula_cabinet_4",
+      "room": "formula",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1194.0664476386041,
+        2104.6667351129363,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1195.8907186858319,
+        2194.1,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2206.6667351129363,
+      "height": 120,
+      "floor": [
+        [
+          403.66400000000004,
+          2196.96
+        ],
+        [
+          1311.6480000000001,
+          2196.96
+        ],
+        [
+          1406.5120000000002,
+          3063.28
+        ],
+        [
+          342.68,
+          3063.28
+        ]
+      ],
+      "mounted": false,
+      "cluster": "formula_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2193.6,
+        "rearY": 2194.1,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1195.8907186858319,
+          2206.6667351129363,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_formula_ambient.png",
+          "sha256": "1e6b1a11e8d4445f3cb80167fe94fd0fd6af1becadee3f216b5441b3b5ba3dc4",
+          "sourceY": 296,
+          "sourceSpans": [
+            [
+              216,
+              1000
+            ]
+          ]
+        },
+        "navigationY": 2196.96,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "formula_cabinet_5",
+      "room": "formula",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1100.852895277208,
+        2104.6667351129363,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1102.6771663244358,
+        2194.1,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2206.6667351129363,
+      "height": 120,
+      "floor": [
+        [
+          403.66400000000004,
+          2196.96
+        ],
+        [
+          1311.6480000000001,
+          2196.96
+        ],
+        [
+          1406.5120000000002,
+          3063.28
+        ],
+        [
+          342.68,
+          3063.28
+        ]
+      ],
+      "mounted": false,
+      "cluster": "formula_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2193.6,
+        "rearY": 2194.1,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1102.6771663244358,
+          2206.6667351129363,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_formula_ambient.png",
+          "sha256": "1e6b1a11e8d4445f3cb80167fe94fd0fd6af1becadee3f216b5441b3b5ba3dc4",
+          "sourceY": 296,
+          "sourceSpans": [
+            [
+              216,
+              1000
+            ]
+          ]
+        },
+        "navigationY": 2196.96,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "formula_wall_cabinet_3",
+      "room": "formula",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1007.6393429158119,
+        2104.6667351129363,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1009.4636139630398,
+        2194.1,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2206.6667351129363,
+      "height": 120,
+      "floor": [
+        [
+          403.66400000000004,
+          2196.96
+        ],
+        [
+          1311.6480000000001,
+          2196.96
+        ],
+        [
+          1406.5120000000002,
+          3063.28
+        ],
+        [
+          342.68,
+          3063.28
+        ]
+      ],
+      "mounted": false,
+      "cluster": "formula_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2193.6,
+        "rearY": 2194.1,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1009.4636139630398,
+          2206.6667351129363,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_formula_ambient.png",
+          "sha256": "1e6b1a11e8d4445f3cb80167fe94fd0fd6af1becadee3f216b5441b3b5ba3dc4",
+          "sourceY": 296,
+          "sourceSpans": [
+            [
+              216,
+              1000
+            ]
+          ]
+        },
+        "navigationY": 2196.96,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "formula_wall_cabinet_4",
+      "room": "formula",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        914.4257905544156,
+        2104.6667351129363,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        916.2500616016436,
+        2194.1,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2206.6667351129363,
+      "height": 120,
+      "floor": [
+        [
+          403.66400000000004,
+          2196.96
+        ],
+        [
+          1311.6480000000001,
+          2196.96
+        ],
+        [
+          1406.5120000000002,
+          3063.28
+        ],
+        [
+          342.68,
+          3063.28
+        ]
+      ],
+      "mounted": false,
+      "cluster": "formula_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2193.6,
+        "rearY": 2194.1,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          916.2500616016436,
+          2206.6667351129363,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_formula_ambient.png",
+          "sha256": "1e6b1a11e8d4445f3cb80167fe94fd0fd6af1becadee3f216b5441b3b5ba3dc4",
+          "sourceY": 296,
+          "sourceSpans": [
+            [
+              216,
+              1000
+            ]
+          ]
+        },
+        "navigationY": 2196.96,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "robotics_cabinet_34",
+      "room": "robotics",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1218.2963814134382,
+        4804.4861021467805,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1220.120652460666,
+        4893.9193670338445,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4906.4861021467805,
+      "height": 120,
+      "floor": [
+        [
+          404.7862251655629,
+          4952.98704915305
+        ],
+        [
+          1308.2479470198673,
+          4952.98704915305
+        ],
+        [
+          1402.6394701986756,
+          5812.24585710007
+        ],
+        [
+          344.10596026490066,
+          5812.24585710007
+        ]
+      ],
+      "mounted": false,
+      "cluster": "robotics_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4893.4193670338445,
+        "rearY": 4893.9193670338445,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1220.120652460666,
+          4953.98704915305,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_robotics_ambient.png",
+          "sha256": "2c6b12a3404ec544aff3fa5d65b484b2d3edec02e9eddbd9d34a8248cbffe95b",
+          "sourceY": 245,
+          "sourceSpans": [
+            [
+              180,
+              1030
+            ]
+          ]
+        },
+        "navigationY": 4952.98704915305,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "robotics_cabinet_35",
+      "room": "robotics",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1125.0828290520421,
+        4804.4861021467805,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1126.9071000992699,
+        4893.9193670338445,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4906.4861021467805,
+      "height": 120,
+      "floor": [
+        [
+          404.7862251655629,
+          4952.98704915305
+        ],
+        [
+          1308.2479470198673,
+          4952.98704915305
+        ],
+        [
+          1402.6394701986756,
+          5812.24585710007
+        ],
+        [
+          344.10596026490066,
+          5812.24585710007
+        ]
+      ],
+      "mounted": false,
+      "cluster": "robotics_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4893.4193670338445,
+        "rearY": 4893.9193670338445,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1126.9071000992699,
+          4953.98704915305,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_robotics_ambient.png",
+          "sha256": "2c6b12a3404ec544aff3fa5d65b484b2d3edec02e9eddbd9d34a8248cbffe95b",
+          "sourceY": 245,
+          "sourceSpans": [
+            [
+              180,
+              1030
+            ]
+          ]
+        },
+        "navigationY": 4952.98704915305,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "robotics_wall_cabinet_3",
+      "room": "robotics",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1031.869276690646,
+        4804.4861021467805,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1033.6935477378738,
+        4893.9193670338445,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4906.4861021467805,
+      "height": 120,
+      "floor": [
+        [
+          404.7862251655629,
+          4952.98704915305
+        ],
+        [
+          1308.2479470198673,
+          4952.98704915305
+        ],
+        [
+          1402.6394701986756,
+          5812.24585710007
+        ],
+        [
+          344.10596026490066,
+          5812.24585710007
+        ]
+      ],
+      "mounted": false,
+      "cluster": "robotics_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4893.4193670338445,
+        "rearY": 4893.9193670338445,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1033.6935477378738,
+          4953.98704915305,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_robotics_ambient.png",
+          "sha256": "2c6b12a3404ec544aff3fa5d65b484b2d3edec02e9eddbd9d34a8248cbffe95b",
+          "sourceY": 245,
+          "sourceSpans": [
+            [
+              180,
+              1030
+            ]
+          ]
+        },
+        "navigationY": 4952.98704915305,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "robotics_wall_cabinet_4",
+      "room": "robotics",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        938.6557243292498,
+        4804.4861021467805,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        940.4799953764777,
+        4893.9193670338445,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4906.4861021467805,
+      "height": 120,
+      "floor": [
+        [
+          404.7862251655629,
+          4952.98704915305
+        ],
+        [
+          1308.2479470198673,
+          4952.98704915305
+        ],
+        [
+          1402.6394701986756,
+          5812.24585710007
+        ],
+        [
+          344.10596026490066,
+          5812.24585710007
+        ]
+      ],
+      "mounted": false,
+      "cluster": "robotics_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4893.4193670338445,
+        "rearY": 4893.9193670338445,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          940.4799953764777,
+          4953.98704915305,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_robotics_ambient.png",
+          "sha256": "2c6b12a3404ec544aff3fa5d65b484b2d3edec02e9eddbd9d34a8248cbffe95b",
+          "sourceY": 245,
+          "sourceSpans": [
+            [
+              180,
+              1030
+            ]
+          ]
+        },
+        "navigationY": 4952.98704915305,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_cabinet_53",
+      "room": "seminar",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        2451.4481497662637,
+        303.62489114130517,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        2453.2724208134914,
+        393.05815602836884,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 405.62489114130517,
+      "height": 120,
+      "floor": [
+        [
+          2180.183574468085,
+          400.9735460992908
+        ],
+        [
+          3505.871276595745,
+          400.9735460992908
+        ],
+        [
+          3568.9992624113474,
+          1143.663120567376
+        ],
+        [
+          2126.0738723404256,
+          1143.663120567376
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 392.55815602836884,
+        "rearY": 393.05815602836884,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          2453.2724208134914,
+          405.62489114130517,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/north_seminar_ambient.png",
+          "sha256": "3e5289b5e8ce112f1984c5505329e457595651451bbe4753af648365415387db",
+          "sourceY": 278,
+          "sourceSpans": [
+            [
+              388,
+              496
+            ],
+            [
+              668,
+              777
+            ],
+            [
+              946,
+              1057
+            ]
+          ],
+          "sourceWindows": [
+            [
+              230,
+              130,
+              152,
+              83
+            ],
+            [
+              505,
+              130,
+              152,
+              83
+            ],
+            [
+              785,
+              130,
+              152,
+              83
+            ],
+            [
+              1065,
+              130,
+              152,
+              83
+            ]
+          ],
+          "note": "Storage backs onto projecting wall piers between the four painted window bays. Source Y is the pier-to-floor seam, not the inset navigation edge or approximate lighting apertures."
+        },
+        "navigationY": 400.9735460992908,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_wall_cabinet_2",
+      "room": "seminar",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        2804.392121397469,
+        303.62489114130517,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        2806.216392444697,
+        393.05815602836884,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 405.62489114130517,
+      "height": 120,
+      "floor": [
+        [
+          2180.183574468085,
+          400.9735460992908
+        ],
+        [
+          3505.871276595745,
+          400.9735460992908
+        ],
+        [
+          3568.9992624113474,
+          1143.663120567376
+        ],
+        [
+          2126.0738723404256,
+          1143.663120567376
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 392.55815602836884,
+        "rearY": 393.05815602836884,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          2806.216392444697,
+          405.62489114130517,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/north_seminar_ambient.png",
+          "sha256": "3e5289b5e8ce112f1984c5505329e457595651451bbe4753af648365415387db",
+          "sourceY": 278,
+          "sourceSpans": [
+            [
+              388,
+              496
+            ],
+            [
+              668,
+              777
+            ],
+            [
+              946,
+              1057
+            ]
+          ],
+          "sourceWindows": [
+            [
+              230,
+              130,
+              152,
+              83
+            ],
+            [
+              505,
+              130,
+              152,
+              83
+            ],
+            [
+              785,
+              130,
+              152,
+              83
+            ],
+            [
+              1065,
+              130,
+              152,
+              83
+            ]
+          ],
+          "note": "Storage backs onto projecting wall piers between the four painted window bays. Source Y is the pier-to-floor seam, not the inset navigation edge or approximate lighting apertures."
+        },
+        "navigationY": 400.9735460992908,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "electrical_cabinet_58",
+      "room": "electrical",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        5109.4009636057235,
+        2727.2170241302774,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        5109.703204234965,
+        2816.650289017341,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2829.2170241302774,
+      "height": 120,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          5109.703204234965,
+          2884.324393063584,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "electrical_cabinet_59",
+      "room": "electrical",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        5016.187411244327,
+        2727.2170241302774,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        5016.489651873569,
+        2816.650289017341,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2829.2170241302774,
+      "height": 120,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          5016.489651873569,
+          2884.324393063584,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "electrical_wall_cabinet_3",
+      "room": "electrical",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4922.973858882931,
+        2727.2170241302774,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4923.276099512173,
+        2816.650289017341,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2829.2170241302774,
+      "height": 120,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4923.276099512173,
+          2884.324393063584,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "electrical_wall_cabinet_4",
+      "room": "electrical",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4829.760306521535,
+        2727.2170241302774,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4830.0625471507765,
+        2816.650289017341,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2829.2170241302774,
+      "height": 120,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4830.0625471507765,
+          2884.324393063584,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "electrical_parts_rack_67",
+      "room": "electrical",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4740.073336564347,
+        2721.899826910132,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4741.45287869135,
+        2816.650289017341,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 2831.899826910132,
+      "height": 110,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4741.45287869135,
+          2884.324393063584,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
+    },
+    {
+      "id": "electrical_parts_rack_68",
+      "room": "electrical",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4651.557624919246,
+        2721.899826910132,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4652.937167046249,
+        2816.650289017341,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 2831.899826910132,
+      "height": 65,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4652.937167046249,
+          2884.324393063584,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
+    },
+    {
+      "id": "electrical_parts_rack_69",
+      "room": "electrical",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4563.041913274145,
+        2721.899826910132,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4564.421455401148,
+        2816.650289017341,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 2831.899826910132,
+      "height": 65,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4564.421455401148,
+          2884.324393063584,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
+    },
+    {
+      "id": "electrical_parts_rack_70",
+      "room": "electrical",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4474.526201629044,
+        2721.899826910132,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4475.905743756047,
+        2816.650289017341,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 2831.899826910132,
+      "height": 65,
+      "floor": [
+        [
+          4383.64,
+          2883.324393063584
+        ],
+        [
+          5237.08,
+          2883.324393063584
+        ],
+        [
+          5317.72,
+          4237.734566473989
+        ],
+        [
+          4303,
+          4237.734566473989
+        ]
+      ],
+      "mounted": false,
+      "cluster": "electrical_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2816.150289017341,
+        "rearY": 2816.650289017341,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4475.905743756047,
+          2884.324393063584,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_lab_ambient.png",
+          "sha256": "ccb816e739e9a7cf72205a37cd2cca95380a499b27b020e5b4f263d4dbcbdaa3",
+          "sourceY": 221,
+          "sourceSpans": [
+            [
+              214,
+              828
+            ]
+          ]
+        },
+        "navigationY": 2883.324393063584,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
+    },
+    {
+      "id": "machinery_cabinet_81",
+      "room": "machinery",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        5134.451335199447,
+        4675.020846237154,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        5134.753575828689,
+        4764.454111124218,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4777.020846237154,
+      "height": 120,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          5134.753575828689,
+          4827.256151940544,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "machinery_cabinet_82",
+      "room": "machinery",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        5041.237782838051,
+        4675.020846237154,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        5041.5400234672925,
+        4764.454111124218,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4777.020846237154,
+      "height": 120,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          5041.5400234672925,
+          4827.256151940544,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "machinery_wall_cabinet_3",
+      "room": "machinery",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4948.024230476655,
+        4675.020846237154,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4948.326471105896,
+        4764.454111124218,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4777.020846237154,
+      "height": 120,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4948.326471105896,
+          4827.256151940544,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "machinery_wall_cabinet_4",
+      "room": "machinery",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4854.810678115259,
+        4675.020846237154,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4855.1129187445,
+        4764.454111124218,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 4777.020846237154,
+      "height": 120,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4855.1129187445,
+          4827.256151940544,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "machinery_parts_rack_85",
+      "room": "machinery",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4765.123708158071,
+        4669.703649017009,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4766.503250285074,
+        4764.454111124218,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 4779.703649017009,
+      "height": 65,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4766.503250285074,
+          4827.256151940544,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
+    },
+    {
+      "id": "machinery_parts_rack_86",
+      "room": "machinery",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4676.60799651297,
+        4669.703649017009,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4677.987538639973,
+        4764.454111124218,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 4779.703649017009,
+      "height": 65,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4677.987538639973,
+          4827.256151940544,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
+    },
+    {
+      "id": "machinery_parts_rack_87",
+      "room": "machinery",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4588.092284867869,
+        4669.703649017009,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4589.471826994872,
+        4764.454111124218,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 4779.703649017009,
+      "height": 65,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4589.471826994872,
+          4827.256151940544,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
+    },
+    {
+      "id": "machinery_wall_parts_rack_8",
+      "room": "machinery",
+      "asset": "parts_rack",
+      "name": "元件收纳架",
+      "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
+      "crop": [
+        182,
+        110,
+        848,
+        1087
+      ],
+      "scale": 0.10119595216191353,
+      "bounds": [
+        4499.576573222768,
+        4669.703649017009,
+        85.81416743330267,
+        110
+      ],
+      "footprint": [
+        4500.956115349771,
+        4764.454111124218,
+        83.0550831792976,
+        15.249537892791128
+      ],
+      "baseline": 4779.703649017009,
+      "height": 125,
+      "floor": [
+        [
+          4379.284081632653,
+          4826.256151940544
+        ],
+        [
+          5240.188571428571,
+          4826.256151940544
+        ],
+        [
+          5321.533877551021,
+          6191.611253981361
+        ],
+        [
+          4297.938775510204,
+          6191.611253981361
+        ]
+      ],
+      "mounted": false,
+      "cluster": "machinery_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 4763.954111124218,
+        "rearY": 4764.454111124218,
+        "gap": 0.5,
+        "projectedDepth": 15.249537892791128,
+        "access": [
+          4500.956115349771,
+          4827.256151940544,
+          83.0550831792976,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f2_machinery_ambient.png",
+          "sha256": "d18e1eb63606d15b2575d6b33343255c8ba3f657063f5ad8fa37868061a66eb2",
+          "sourceY": 225,
+          "sourceSpans": [
+            [
+              194,
+              845
+            ]
+          ]
+        },
+        "navigationY": 4826.256151940544,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "parts_rack_photo_v2"
     }
   ],
   "atriums": [],
@@ -15714,7 +16961,8 @@
   "scopeNotes": [
     "用户于 2026-10-28 明确：二楼中央是开放大平台，无围合房间和门。平台与环廊连续连通；实景设施待核实。",
     "机电实验区新增独立传动装配台、工具车、零件架和座椅，形成可交互工作岛。齿轮、皮带与送料实验是游戏设计提案，设备摆位并非现场测绘。",
-    "按用户最新更正：蓝色构架和彩色圆凳属于二楼大厅，已从四楼移除。复用二楼开放大平台，保留中央横向通道，不增加房间围墙或门；精确现场摆位仍需对齐。"
+    "按用户最新更正：蓝色构架和彩色圆凳属于二楼大厅，已从四楼移除。复用二楼开放大平台，保留中央横向通道，不增加房间围墙或门；精确现场摆位仍需对齐。",
+    "所有储物柜、零件架及茶水柜统一按柜背落地点贴墙，避开窗洞、门口与其他家具，保留柜前通行。新增数量为评审布局，非现场清点结果。"
   ],
   "corridors": [
     {
@@ -15896,9 +17144,123 @@
       3067
     ]
   },
+  "wallStorage": {
+    "version": 2,
+    "before": 16,
+    "after": 26,
+    "rooms": [
+      {
+        "room": "formula",
+        "before": 2,
+        "after": 4,
+        "cabinets": 4,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 2193.6,
+        "navigationY": 2196.96,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "formula_cabinet_4",
+          "formula_cabinet_5",
+          "formula_wall_cabinet_3",
+          "formula_wall_cabinet_4"
+        ]
+      },
+      {
+        "room": "robotics",
+        "before": 2,
+        "after": 4,
+        "cabinets": 4,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 4893.4193670338445,
+        "navigationY": 4952.98704915305,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "robotics_cabinet_34",
+          "robotics_cabinet_35",
+          "robotics_wall_cabinet_3",
+          "robotics_wall_cabinet_4"
+        ]
+      },
+      {
+        "room": "seminar",
+        "before": 1,
+        "after": 2,
+        "cabinets": 2,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 392.55815602836884,
+        "navigationY": 400.9735460992908,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "seminar_cabinet_53",
+          "seminar_wall_cabinet_2"
+        ]
+      },
+      {
+        "room": "electrical",
+        "before": 6,
+        "after": 8,
+        "cabinets": 4,
+        "racks": 4,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 2816.150289017341,
+        "navigationY": 2883.324393063584,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "electrical_cabinet_58",
+          "electrical_cabinet_59",
+          "electrical_wall_cabinet_3",
+          "electrical_wall_cabinet_4",
+          "electrical_parts_rack_67",
+          "electrical_parts_rack_68",
+          "electrical_parts_rack_69",
+          "electrical_parts_rack_70"
+        ]
+      },
+      {
+        "room": "machinery",
+        "before": 5,
+        "after": 8,
+        "cabinets": 4,
+        "racks": 4,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 4763.954111124218,
+        "navigationY": 4826.256151940544,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "machinery_cabinet_81",
+          "machinery_cabinet_82",
+          "machinery_wall_cabinet_3",
+          "machinery_wall_cabinet_4",
+          "machinery_parts_rack_85",
+          "machinery_parts_rack_86",
+          "machinery_parts_rack_87",
+          "machinery_wall_parts_rack_8"
+        ]
+      }
+    ],
+    "placement": "All storage is aligned to verified floor-wall seams; facing and source art scale retained.",
+    "capacityBasis": "User requested more cabinets throughout. Counts are review choices constrained by walls, windows, doors, furniture and access."
+  },
+  "photoDetailReference": {
+    "date": "2026-10-28",
+    "source": "User-supplied site photographs",
+    "variants": [
+      "parts_rack_photo_v2",
+      "worktable_white_photo",
+      "locker_photo_v2"
+    ],
+    "scope": "Photo-derived furniture types and materials. Existing architectural layout and colliders retained; exact furniture counts and room assignment are review proposals, not surveyed facts."
+  },
   "objectCounts": {
     "workbench": 16,
-    "cabinet": 9,
     "desk": 22,
     "chair_back": 26,
     "desk_divider": 18,
@@ -15909,23 +17271,14 @@
     "camera_tripod": 1,
     "lab_assembly_bench": 1,
     "tool_cart": 6,
-    "parts_rack": 7,
     "soldering_station": 8,
     "hall_blue_frame": 7,
     "hall_stool_orange": 4,
     "hall_stool_slate": 4,
     "hall_stool_mint": 4,
-    "hall_stool_blue": 2
+    "hall_stool_blue": 2,
+    "cabinet": 18,
+    "parts_rack": 8
   },
-  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review.",
-  "photoDetailReference": {
-    "date": "2026-10-28",
-    "source": "User-supplied site photographs",
-    "variants": [
-      "parts_rack_photo_v2",
-      "worktable_white_photo",
-      "locker_photo_v2"
-    ],
-    "scope": "Photo-derived furniture types and materials. Existing architectural layout and colliders retained; exact furniture counts and room assignment are review proposals, not surveyed facts."
-  }
+  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review."
 }

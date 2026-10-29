@@ -44,3 +44,17 @@ The new `assets/objects/lounge_coffee_table.png` was generated with the built-in
 imagegen tool and retains its original transparent alpha. The complete prompt
 and SHA-256 are recorded in `data/generation_20261028.json`. The sofa, dark table
 and chair sprites reuse the existing masters.
+
+## 3F pantry refrigerator
+
+The user confirmed that a refrigerator stands at the far right of the pantry.
+The independent `pantry_fridge_northeast` object now occupies the rightmost free
+north-wall span, to the right of both storage cabinets and the fitted pantry unit.
+Its back follows the measured wall seam; its footprint and approach point are
+checked against the existing floor navigation. Room geometry is unchanged.
+
+The slim silver two-compartment finish and dimensions are review approximations;
+the user's correction establishes presence and relative position, not a brand or
+surveyed size. `assets/objects/pantry_fridge.png` preserves the built-in imagegen
+output bytes and transparency. Its reference, complete prompt and SHA-256 are
+recorded in `data/generation_20261028.json` and `data/object_assets.json`.

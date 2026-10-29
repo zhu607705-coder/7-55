@@ -494,6 +494,21 @@
     "sha256": "6a431444da4d378b2c005d6ddf8ce50ee10e3a7afd28a60dace68426cb902325",
     "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
   },
+  "pantry_fridge": {
+    "path": "res://campuses/future_learning_center/assets/objects/pantry_fridge.png",
+    "size": [
+      942,
+      1670
+    ],
+    "opaqueBounds": [
+      239,
+      197,
+      706,
+      1478
+    ],
+    "sha256": "5ed4734e1f2b3b39429754372954c57ac59958efa77a289ce2d43fe140b4a682",
+    "production": "builtin imagegen; independent transparent master; neutral ambient; original bytes preserved; user-confirmed far-right pantry location; appliance appearance is a review approximation"
+  },
   "parts_rack_photo_v2": {
     "path": "res://campuses/future_learning_center/assets/objects/parts_rack_photo_v2.png",
     "size": [

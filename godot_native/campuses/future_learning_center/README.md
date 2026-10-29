@@ -1,5 +1,7 @@
 # Future Learning Center · three-floor object and gameplay review
 
+All storage now follows measured wall roots in the existing room masters. Across 18 spaces, cabinet groups increase from 29 to 71, accompanied by eight parts racks, the fitted pantry unit, and a separate refrigerator at the far right of the 3F pantry. Original walkable ground, doors and floor links remain unchanged. [Wall placement, quantities, verification and reproducible comparison captures](review/WALL_STORAGE_20261028.md).
+
 The review now assembles separate 2F, 3F and 4F room masters, with continuous gray floors and independent furniture. The user-corrected 2F center is an open platform without an invented wall or door. The northeast and southwest stairs and the elevator have paired, flat arrival zones. Restroom interiors remain closed. Dimensions are enlarged game space, not surveyed measurements.
 
 [Validation and remaining visual limits](review/VALIDATION.md). The local gameplay review is generated from `review/gameplay.html`; its object gallery shows actual Godot room captures, including before/after studio furnishings.

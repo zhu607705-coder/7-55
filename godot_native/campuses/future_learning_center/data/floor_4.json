@@ -6514,53 +6514,6 @@
       "mounted": false
     },
     {
-      "id": "seminar_1_cabinet_1",
-      "room": "seminar_1",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        1114.7740238193016,
-        2857.6900876712334,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        1120.2468369609855,
-        2909.6900876712334,
-        80.26792607802875,
-        50
-      ],
-      "baseline": 2959.6900876712334,
-      "height": 120,
-      "floor": [
-        [
-          408.48,
-          2194.804383561644
-        ],
-        [
-          1308.96,
-          2194.804383561644
-        ],
-        [
-          1403.04,
-          3116.3534246575346
-        ],
-        [
-          348,
-          3116.3534246575346
-        ]
-      ],
-      "mounted": false
-    },
-    {
       "id": "seminar_2_discussion_table_2",
       "room": "seminar_2",
       "asset": "discussion_table",
@@ -6728,53 +6681,6 @@
       ],
       "baseline": 4106.364728456605,
       "height": 125,
-      "floor": [
-        [
-          399.57468177855276,
-          3655.5878315080436
-        ],
-        [
-          1315.7561639058413,
-          3655.5878315080436
-        ],
-        [
-          1411.4766172624236,
-          4594.706366817547
-        ],
-        [
-          338.04010462074973,
-          4594.706366817547
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "seminar_2_cabinet_6",
-      "room": "seminar_2",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        1118.9794431741402,
-        4333.056215814931,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        1124.4522563158241,
-        4385.056215814931,
-        80.26792607802875,
-        50
-      ],
-      "baseline": 4435.056215814931,
-      "height": 120,
       "floor": [
         [
           399.57468177855276,
@@ -6979,241 +6885,6 @@
         [
           332.95114006514655,
           5872.037755030389
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "seminar_3_cabinet_11",
-      "room": "seminar_3",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        1116.9254088355885,
-        5631.213827994558,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        1122.3982219772724,
-        5683.213827994558,
-        80.26792607802875,
-        50
-      ],
-      "baseline": 5733.213827994558,
-      "height": 120,
-      "floor": [
-        [
-          394.71166123778505,
-          5055.426419525503
-        ],
-        [
-          1314.2571986970684,
-          5055.426419525503
-        ],
-        [
-          1410.3291205211729,
-          5872.037755030389
-        ],
-        [
-          332.95114006514655,
-          5872.037755030389
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "storage_cabinet_12",
-      "room": "storage",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        1225.460299394329,
-        503.0375684556408,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        1230.933112536013,
-        550.0375684556408,
-        80.26792607802875,
-        55
-      ],
-      "baseline": 605.0375684556408,
-      "height": 120,
-      "floor": [
-        [
-          1146.9581599123767,
-          401.2409638554217
-        ],
-        [
-          1734.8424972617745,
-          401.2409638554217
-        ],
-        [
-          1767.5027382256299,
-          983.5169769989047
-        ],
-        [
-          1114.2979189485213,
-          983.5169769989047
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "storage_cabinet_13",
-      "room": "storage",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        1225.460299394329,
-        706.8341730558598,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        1230.933112536013,
-        753.8341730558598,
-        80.26792607802875,
-        55
-      ],
-      "baseline": 808.8341730558598,
-      "height": 120,
-      "floor": [
-        [
-          1146.9581599123767,
-          401.2409638554217
-        ],
-        [
-          1734.8424972617745,
-          401.2409638554217
-        ],
-        [
-          1767.5027382256299,
-          983.5169769989047
-        ],
-        [
-          1114.2979189485213,
-          983.5169769989047
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "storage_cabinet_14",
-      "room": "storage",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        1460.6140343340883,
-        503.0375684556408,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        1466.0868474757722,
-        550.0375684556408,
-        80.26792607802875,
-        55
-      ],
-      "baseline": 605.0375684556408,
-      "height": 120,
-      "floor": [
-        [
-          1146.9581599123767,
-          401.2409638554217
-        ],
-        [
-          1734.8424972617745,
-          401.2409638554217
-        ],
-        [
-          1767.5027382256299,
-          983.5169769989047
-        ],
-        [
-          1114.2979189485213,
-          983.5169769989047
-        ]
-      ],
-      "mounted": false
-    },
-    {
-      "id": "storage_cabinet_15",
-      "room": "storage",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
-      "crop": [
-        162,
-        171,
-        871,
-        974
-      ],
-      "scale": 0.10472279260780289,
-      "bounds": [
-        1460.6140343340883,
-        706.8341730558598,
-        91.21355236139631,
-        102.00000000000001
-      ],
-      "footprint": [
-        1466.0868474757722,
-        753.8341730558598,
-        80.26792607802875,
-        55
-      ],
-      "baseline": 808.8341730558598,
-      "height": 120,
-      "floor": [
-        [
-          1146.9581599123767,
-          401.2409638554217
-        ],
-        [
-          1734.8424972617745,
-          401.2409638554217
-        ],
-        [
-          1767.5027382256299,
-          983.5169769989047
-        ],
-        [
-          1114.2979189485213,
-          983.5169769989047
         ]
       ],
       "mounted": false
@@ -10291,198 +9962,6 @@
       "parent": "focus_a_desk_76"
     },
     {
-      "id": "focus_a_cabinet_80",
-      "room": "focus_a",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.340412857979,
-        3203.925406896552,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.291195581675,
-        3269.925406896552,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 3305.925406896552,
-      "height": 120,
-      "floor": [
-        [
-          4039.5527586206895,
-          3037.9503448275864
-        ],
-        [
-          4903.108965517242,
-          3037.9503448275864
-        ],
-        [
-          4984.704827586207,
-          4712.794482758621
-        ],
-        [
-          3957.956896551724,
-          4712.794482758621
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "focus_a_cabinet_81",
-      "room": "focus_a",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.340412857979,
-        3577.973931034483,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.291195581675,
-        3643.973931034483,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 3679.973931034483,
-      "height": 120,
-      "floor": [
-        [
-          4039.5527586206895,
-          3037.9503448275864
-        ],
-        [
-          4903.108965517242,
-          3037.9503448275864
-        ],
-        [
-          4984.704827586207,
-          4712.794482758621
-        ],
-        [
-          3957.956896551724,
-          4712.794482758621
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "focus_a_cabinet_82",
-      "room": "focus_a",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.340412857979,
-        3952.022455172414,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.291195581675,
-        4018.022455172414,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 4054.022455172414,
-      "height": 120,
-      "floor": [
-        [
-          4039.5527586206895,
-          3037.9503448275864
-        ],
-        [
-          4903.108965517242,
-          3037.9503448275864
-        ],
-        [
-          4984.704827586207,
-          4712.794482758621
-        ],
-        [
-          3957.956896551724,
-          4712.794482758621
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "focus_a_cabinet_83",
-      "room": "focus_a",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.340412857979,
-        4326.070979310345,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.291195581675,
-        4392.070979310345,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 4428.070979310345,
-      "height": 120,
-      "floor": [
-        [
-          4039.5527586206895,
-          3037.9503448275864
-        ],
-        [
-          4903.108965517242,
-          3037.9503448275864
-        ],
-        [
-          4984.704827586207,
-          4712.794482758621
-        ],
-        [
-          3957.956896551724,
-          4712.794482758621
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
       "id": "focus_a_whiteboard_84",
       "room": "focus_a",
       "asset": "whiteboard",
@@ -12834,198 +12313,6 @@
       "parent": "collab_b_desk_129"
     },
     {
-      "id": "collab_b_cabinet_133",
-      "room": "collab_b",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.7821572313005,
-        5470.210036093331,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.732939954997,
-        5536.210036093331,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 5572.210036093331,
-      "height": 120,
-      "floor": [
-        [
-          4038.359520958084,
-          5343.128052859798
-        ],
-        [
-          4903.7238323353295,
-          5343.128052859798
-        ],
-        [
-          4985.490538922156,
-          6774.890448069379
-        ],
-        [
-          3956.5928143712576,
-          6774.890448069379
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "collab_b_cabinet_134",
-      "room": "collab_b",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.7821572313005,
-        5789.970304356804,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.732939954997,
-        5855.970304356804,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 5891.970304356804,
-      "height": 120,
-      "floor": [
-        [
-          4038.359520958084,
-          5343.128052859798
-        ],
-        [
-          4903.7238323353295,
-          5343.128052859798
-        ],
-        [
-          4985.490538922156,
-          6774.890448069379
-        ],
-        [
-          3956.5928143712576,
-          6774.890448069379
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "collab_b_cabinet_135",
-      "room": "collab_b",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.7821572313005,
-        6109.730572620278,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.732939954997,
-        6175.730572620278,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 6211.730572620278,
-      "height": 120,
-      "floor": [
-        [
-          4038.359520958084,
-          5343.128052859798
-        ],
-        [
-          4903.7238323353295,
-          5343.128052859798
-        ],
-        [
-          4985.490538922156,
-          6774.890448069379
-        ],
-        [
-          3956.5928143712576,
-          6774.890448069379
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
-      "id": "collab_b_cabinet_136",
-      "room": "collab_b",
-      "asset": "cabinet",
-      "name": "个人储物柜",
-      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
-      "crop": [
-        165,
-        168,
-        867,
-        1003
-      ],
-      "scale": 0.10169491525423731,
-      "bounds": [
-        4776.7821572313005,
-        6429.490840883751,
-        88.16949152542375,
-        102.00000000000001
-      ],
-      "footprint": [
-        4780.732939954997,
-        6495.490840883751,
-        80.26792607802875,
-        36
-      ],
-      "baseline": 6531.490840883751,
-      "height": 120,
-      "floor": [
-        [
-          4038.359520958084,
-          5343.128052859798
-        ],
-        [
-          4903.7238323353295,
-          5343.128052859798
-        ],
-        [
-          4985.490538922156,
-          6774.890448069379
-        ],
-        [
-          3956.5928143712576,
-          6774.890448069379
-        ]
-      ],
-      "mounted": false,
-      "photoAsset": "locker_photo_v2"
-    },
-    {
       "id": "collab_b_whiteboard_137",
       "room": "collab_b",
       "asset": "whiteboard",
@@ -14837,6 +14124,2464 @@
         ]
       ],
       "mounted": false
+    },
+    {
+      "id": "seminar_1_cabinet_1",
+      "room": "seminar_1",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1194.6494613372338,
+        2058.0256392225256,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1196.4737323844615,
+        2147.458904109589,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2160.0256392225256,
+      "height": 120,
+      "floor": [
+        [
+          408.48,
+          2194.804383561644
+        ],
+        [
+          1308.96,
+          2194.804383561644
+        ],
+        [
+          1403.04,
+          3116.3534246575346
+        ],
+        [
+          348,
+          3116.3534246575346
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_1_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2146.958904109589,
+        "rearY": 2147.458904109589,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1196.4737323844615,
+          2195.804383561644,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_a_ambient.png",
+          "sha256": "2ecc62a4cc13233dbbbfb178cbd35a147109bffd4b4272fb74ab111f35f25cbb",
+          "sourceY": 268,
+          "sourceSpans": [
+            [
+              208,
+              968
+            ]
+          ]
+        },
+        "navigationY": 2194.804383561644,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_1_wall_cabinet_2",
+      "room": "seminar_1",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1101.4359089758377,
+        2058.0256392225256,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1103.2601800230655,
+        2147.458904109589,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2160.0256392225256,
+      "height": 120,
+      "floor": [
+        [
+          408.48,
+          2194.804383561644
+        ],
+        [
+          1308.96,
+          2194.804383561644
+        ],
+        [
+          1403.04,
+          3116.3534246575346
+        ],
+        [
+          348,
+          3116.3534246575346
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_1_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2146.958904109589,
+        "rearY": 2147.458904109589,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1103.2601800230655,
+          2195.804383561644,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_a_ambient.png",
+          "sha256": "2ecc62a4cc13233dbbbfb178cbd35a147109bffd4b4272fb74ab111f35f25cbb",
+          "sourceY": 268,
+          "sourceSpans": [
+            [
+              208,
+              968
+            ]
+          ]
+        },
+        "navigationY": 2194.804383561644,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_1_wall_cabinet_3",
+      "room": "seminar_1",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1008.2223566144415,
+        2058.0256392225256,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1010.0466276616695,
+        2147.458904109589,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2160.0256392225256,
+      "height": 120,
+      "floor": [
+        [
+          408.48,
+          2194.804383561644
+        ],
+        [
+          1308.96,
+          2194.804383561644
+        ],
+        [
+          1403.04,
+          3116.3534246575346
+        ],
+        [
+          348,
+          3116.3534246575346
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_1_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2146.958904109589,
+        "rearY": 2147.458904109589,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1010.0466276616695,
+          2195.804383561644,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_a_ambient.png",
+          "sha256": "2ecc62a4cc13233dbbbfb178cbd35a147109bffd4b4272fb74ab111f35f25cbb",
+          "sourceY": 268,
+          "sourceSpans": [
+            [
+              208,
+              968
+            ]
+          ]
+        },
+        "navigationY": 2194.804383561644,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_1_wall_cabinet_4",
+      "room": "seminar_1",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        915.0088042530452,
+        2058.0256392225256,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        916.8330753002732,
+        2147.458904109589,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2160.0256392225256,
+      "height": 120,
+      "floor": [
+        [
+          408.48,
+          2194.804383561644
+        ],
+        [
+          1308.96,
+          2194.804383561644
+        ],
+        [
+          1403.04,
+          3116.3534246575346
+        ],
+        [
+          348,
+          3116.3534246575346
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_1_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2146.958904109589,
+        "rearY": 2147.458904109589,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          916.8330753002732,
+          2195.804383561644,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_a_ambient.png",
+          "sha256": "2ecc62a4cc13233dbbbfb178cbd35a147109bffd4b4272fb74ab111f35f25cbb",
+          "sourceY": 268,
+          "sourceSpans": [
+            [
+              208,
+              968
+            ]
+          ]
+        },
+        "navigationY": 2194.804383561644,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_2_cabinet_6",
+      "room": "seminar_2",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1212.699263680452,
+        3534.0681324448683,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1214.5235347276798,
+        3623.501397331932,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 3636.0681324448683,
+      "height": 120,
+      "floor": [
+        [
+          399.57468177855276,
+          3655.5878315080436
+        ],
+        [
+          1315.7561639058413,
+          3655.5878315080436
+        ],
+        [
+          1411.4766172624236,
+          4594.706366817547
+        ],
+        [
+          338.04010462074973,
+          4594.706366817547
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_2_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 3623.001397331932,
+        "rearY": 3623.501397331932,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1214.5235347276798,
+          3656.5878315080436,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_b_ambient.png",
+          "sha256": "174f68e7d2ec04c7347bced64e8e9b871f55afc7731f5520bf63b5f96bc2693b",
+          "sourceY": 282,
+          "sourceSpans": [
+            [
+              198,
+              977
+            ]
+          ]
+        },
+        "navigationY": 3655.5878315080436,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_2_wall_cabinet_2",
+      "room": "seminar_2",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1119.485711319056,
+        3534.0681324448683,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1121.3099823662837,
+        3623.501397331932,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 3636.0681324448683,
+      "height": 120,
+      "floor": [
+        [
+          399.57468177855276,
+          3655.5878315080436
+        ],
+        [
+          1315.7561639058413,
+          3655.5878315080436
+        ],
+        [
+          1411.4766172624236,
+          4594.706366817547
+        ],
+        [
+          338.04010462074973,
+          4594.706366817547
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_2_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 3623.001397331932,
+        "rearY": 3623.501397331932,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1121.3099823662837,
+          3656.5878315080436,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_b_ambient.png",
+          "sha256": "174f68e7d2ec04c7347bced64e8e9b871f55afc7731f5520bf63b5f96bc2693b",
+          "sourceY": 282,
+          "sourceSpans": [
+            [
+              198,
+              977
+            ]
+          ]
+        },
+        "navigationY": 3655.5878315080436,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_2_wall_cabinet_3",
+      "room": "seminar_2",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1026.27215895766,
+        3534.0681324448683,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1028.0964300048877,
+        3623.501397331932,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 3636.0681324448683,
+      "height": 120,
+      "floor": [
+        [
+          399.57468177855276,
+          3655.5878315080436
+        ],
+        [
+          1315.7561639058413,
+          3655.5878315080436
+        ],
+        [
+          1411.4766172624236,
+          4594.706366817547
+        ],
+        [
+          338.04010462074973,
+          4594.706366817547
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_2_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 3623.001397331932,
+        "rearY": 3623.501397331932,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1028.0964300048877,
+          3656.5878315080436,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_b_ambient.png",
+          "sha256": "174f68e7d2ec04c7347bced64e8e9b871f55afc7731f5520bf63b5f96bc2693b",
+          "sourceY": 282,
+          "sourceSpans": [
+            [
+              198,
+              977
+            ]
+          ]
+        },
+        "navigationY": 3655.5878315080436,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_2_wall_cabinet_4",
+      "room": "seminar_2",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        933.0586065962636,
+        3534.0681324448683,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        934.8828776434916,
+        3623.501397331932,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 3636.0681324448683,
+      "height": 120,
+      "floor": [
+        [
+          399.57468177855276,
+          3655.5878315080436
+        ],
+        [
+          1315.7561639058413,
+          3655.5878315080436
+        ],
+        [
+          1411.4766172624236,
+          4594.706366817547
+        ],
+        [
+          338.04010462074973,
+          4594.706366817547
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_2_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 3623.001397331932,
+        "rearY": 3623.501397331932,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          934.8828776434916,
+          3656.5878315080436,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_b_ambient.png",
+          "sha256": "174f68e7d2ec04c7347bced64e8e9b871f55afc7731f5520bf63b5f96bc2693b",
+          "sourceY": 282,
+          "sourceSpans": [
+            [
+              198,
+              977
+            ]
+          ]
+        },
+        "navigationY": 3655.5878315080436,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_3_cabinet_11",
+      "room": "seminar_3",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1223.2945909610794,
+        4941.955304475572,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1225.1188620083071,
+        5031.388569362636,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5043.955304475572,
+      "height": 120,
+      "floor": [
+        [
+          394.71166123778505,
+          5055.426419525503
+        ],
+        [
+          1314.2571986970684,
+          5055.426419525503
+        ],
+        [
+          1410.3291205211729,
+          5872.037755030389
+        ],
+        [
+          332.95114006514655,
+          5872.037755030389
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_3_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5030.888569362636,
+        "rearY": 5031.388569362636,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1225.1188620083071,
+          5056.426419525503,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_c_ambient.png",
+          "sha256": "4aa76dc617fcd5b0aa3e48d2a9c59fb96dce72fd9b1fed9ec1d3e644a3c85989",
+          "sourceY": 266,
+          "sourceSpans": [
+            [
+              180,
+              1081
+            ]
+          ]
+        },
+        "navigationY": 5055.426419525503,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_3_wall_cabinet_2",
+      "room": "seminar_3",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1130.0810385996833,
+        4941.955304475572,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1131.905309646911,
+        5031.388569362636,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5043.955304475572,
+      "height": 120,
+      "floor": [
+        [
+          394.71166123778505,
+          5055.426419525503
+        ],
+        [
+          1314.2571986970684,
+          5055.426419525503
+        ],
+        [
+          1410.3291205211729,
+          5872.037755030389
+        ],
+        [
+          332.95114006514655,
+          5872.037755030389
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_3_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5030.888569362636,
+        "rearY": 5031.388569362636,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1131.905309646911,
+          5056.426419525503,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_c_ambient.png",
+          "sha256": "4aa76dc617fcd5b0aa3e48d2a9c59fb96dce72fd9b1fed9ec1d3e644a3c85989",
+          "sourceY": 266,
+          "sourceSpans": [
+            [
+              180,
+              1081
+            ]
+          ]
+        },
+        "navigationY": 5055.426419525503,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_3_wall_cabinet_3",
+      "room": "seminar_3",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1036.8674862382873,
+        4941.955304475572,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1038.691757285515,
+        5031.388569362636,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5043.955304475572,
+      "height": 120,
+      "floor": [
+        [
+          394.71166123778505,
+          5055.426419525503
+        ],
+        [
+          1314.2571986970684,
+          5055.426419525503
+        ],
+        [
+          1410.3291205211729,
+          5872.037755030389
+        ],
+        [
+          332.95114006514655,
+          5872.037755030389
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_3_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5030.888569362636,
+        "rearY": 5031.388569362636,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1038.691757285515,
+          5056.426419525503,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_c_ambient.png",
+          "sha256": "4aa76dc617fcd5b0aa3e48d2a9c59fb96dce72fd9b1fed9ec1d3e644a3c85989",
+          "sourceY": 266,
+          "sourceSpans": [
+            [
+              180,
+              1081
+            ]
+          ]
+        },
+        "navigationY": 5055.426419525503,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "seminar_3_wall_cabinet_4",
+      "room": "seminar_3",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        943.653933876891,
+        4941.955304475572,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        945.4782049241189,
+        5031.388569362636,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5043.955304475572,
+      "height": 120,
+      "floor": [
+        [
+          394.71166123778505,
+          5055.426419525503
+        ],
+        [
+          1314.2571986970684,
+          5055.426419525503
+        ],
+        [
+          1410.3291205211729,
+          5872.037755030389
+        ],
+        [
+          332.95114006514655,
+          5872.037755030389
+        ]
+      ],
+      "mounted": false,
+      "cluster": "seminar_3_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5030.888569362636,
+        "rearY": 5031.388569362636,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          945.4782049241189,
+          5056.426419525503,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_seminar_c_ambient.png",
+          "sha256": "4aa76dc617fcd5b0aa3e48d2a9c59fb96dce72fd9b1fed9ec1d3e644a3c85989",
+          "sourceY": 266,
+          "sourceSpans": [
+            [
+              180,
+              1081
+            ]
+          ]
+        },
+        "navigationY": 5055.426419525503,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "storage_cabinet_12",
+      "room": "storage",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1602.8587367952305,
+        283.9911600855541,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1604.6830078424582,
+        373.42442497261777,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 385.9911600855541,
+      "height": 120,
+      "floor": [
+        [
+          1146.9581599123767,
+          401.2409638554217
+        ],
+        [
+          1734.8424972617745,
+          401.2409638554217
+        ],
+        [
+          1767.5027382256299,
+          983.5169769989047
+        ],
+        [
+          1114.2979189485213,
+          983.5169769989047
+        ]
+      ],
+      "mounted": false,
+      "cluster": "storage_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 372.92442497261777,
+        "rearY": 373.42442497261777,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1604.6830078424582,
+          402.2409638554217,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_storage_ambient.png",
+          "sha256": "f9159f38409c7ac4f321bd84d7d7ad3a42352233bec7609257777c7a17d4122f",
+          "sourceY": 239,
+          "sourceSpans": [
+            [
+              500,
+              980
+            ]
+          ]
+        },
+        "navigationY": 401.2409638554217,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "storage_cabinet_13",
+      "room": "storage",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1509.6451844338344,
+        283.9911600855541,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1511.4694554810621,
+        373.42442497261777,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 385.9911600855541,
+      "height": 120,
+      "floor": [
+        [
+          1146.9581599123767,
+          401.2409638554217
+        ],
+        [
+          1734.8424972617745,
+          401.2409638554217
+        ],
+        [
+          1767.5027382256299,
+          983.5169769989047
+        ],
+        [
+          1114.2979189485213,
+          983.5169769989047
+        ]
+      ],
+      "mounted": false,
+      "cluster": "storage_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 372.92442497261777,
+        "rearY": 373.42442497261777,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1511.4694554810621,
+          402.2409638554217,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_storage_ambient.png",
+          "sha256": "f9159f38409c7ac4f321bd84d7d7ad3a42352233bec7609257777c7a17d4122f",
+          "sourceY": 239,
+          "sourceSpans": [
+            [
+              500,
+              980
+            ]
+          ]
+        },
+        "navigationY": 401.2409638554217,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "storage_cabinet_14",
+      "room": "storage",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1416.4316320724383,
+        283.9911600855541,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1418.255903119666,
+        373.42442497261777,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 385.9911600855541,
+      "height": 120,
+      "floor": [
+        [
+          1146.9581599123767,
+          401.2409638554217
+        ],
+        [
+          1734.8424972617745,
+          401.2409638554217
+        ],
+        [
+          1767.5027382256299,
+          983.5169769989047
+        ],
+        [
+          1114.2979189485213,
+          983.5169769989047
+        ]
+      ],
+      "mounted": false,
+      "cluster": "storage_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 372.92442497261777,
+        "rearY": 373.42442497261777,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1418.255903119666,
+          402.2409638554217,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_storage_ambient.png",
+          "sha256": "f9159f38409c7ac4f321bd84d7d7ad3a42352233bec7609257777c7a17d4122f",
+          "sourceY": 239,
+          "sourceSpans": [
+            [
+              500,
+              980
+            ]
+          ]
+        },
+        "navigationY": 401.2409638554217,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "storage_cabinet_15",
+      "room": "storage",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1323.2180797110423,
+        283.9911600855541,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1325.04235075827,
+        373.42442497261777,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 385.9911600855541,
+      "height": 120,
+      "floor": [
+        [
+          1146.9581599123767,
+          401.2409638554217
+        ],
+        [
+          1734.8424972617745,
+          401.2409638554217
+        ],
+        [
+          1767.5027382256299,
+          983.5169769989047
+        ],
+        [
+          1114.2979189485213,
+          983.5169769989047
+        ]
+      ],
+      "mounted": false,
+      "cluster": "storage_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 372.92442497261777,
+        "rearY": 373.42442497261777,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1325.04235075827,
+          402.2409638554217,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_storage_ambient.png",
+          "sha256": "f9159f38409c7ac4f321bd84d7d7ad3a42352233bec7609257777c7a17d4122f",
+          "sourceY": 239,
+          "sourceSpans": [
+            [
+              500,
+              980
+            ]
+          ]
+        },
+        "navigationY": 401.2409638554217,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "storage_wall_cabinet_5",
+      "room": "storage",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/cabinet.png",
+      "crop": [
+        162,
+        171,
+        871,
+        974
+      ],
+      "scale": 0.10472279260780287,
+      "bounds": [
+        1230.0045273496462,
+        283.9911600855541,
+        91.2135523613963,
+        102
+      ],
+      "footprint": [
+        1231.828798396874,
+        373.42442497261777,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 385.9911600855541,
+      "height": 120,
+      "floor": [
+        [
+          1146.9581599123767,
+          401.2409638554217
+        ],
+        [
+          1734.8424972617745,
+          401.2409638554217
+        ],
+        [
+          1767.5027382256299,
+          983.5169769989047
+        ],
+        [
+          1114.2979189485213,
+          983.5169769989047
+        ]
+      ],
+      "mounted": false,
+      "cluster": "storage_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 372.92442497261777,
+        "rearY": 373.42442497261777,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          1231.828798396874,
+          402.2409638554217,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_storage_ambient.png",
+          "sha256": "f9159f38409c7ac4f321bd84d7d7ad3a42352233bec7609257777c7a17d4122f",
+          "sourceY": 239,
+          "sourceSpans": [
+            [
+              500,
+              980
+            ]
+          ]
+        },
+        "navigationY": 401.2409638554217,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      }
+    },
+    {
+      "id": "focus_a_cabinet_80",
+      "room": "focus_a",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4722.894684953142,
+        2877.0667351129364,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4723.196925582383,
+        2966.5,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2979.0667351129364,
+      "height": 120,
+      "floor": [
+        [
+          4039.5527586206895,
+          3037.9503448275864
+        ],
+        [
+          4903.108965517242,
+          3037.9503448275864
+        ],
+        [
+          4984.704827586207,
+          4712.794482758621
+        ],
+        [
+          3957.956896551724,
+          4712.794482758621
+        ]
+      ],
+      "mounted": false,
+      "cluster": "focus_a_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2966,
+        "rearY": 2966.5,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4723.196925582383,
+          3038.9503448275864,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_focus_a_ambient.png",
+          "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11",
+          "sourceY": 252,
+          "sourceSpans": [
+            [
+              225,
+              713
+            ]
+          ]
+        },
+        "navigationY": 3037.9503448275864,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "focus_a_cabinet_81",
+      "room": "focus_a",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4629.681132591746,
+        2877.0667351129364,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4629.983373220987,
+        2966.5,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2979.0667351129364,
+      "height": 120,
+      "floor": [
+        [
+          4039.5527586206895,
+          3037.9503448275864
+        ],
+        [
+          4903.108965517242,
+          3037.9503448275864
+        ],
+        [
+          4984.704827586207,
+          4712.794482758621
+        ],
+        [
+          3957.956896551724,
+          4712.794482758621
+        ]
+      ],
+      "mounted": false,
+      "cluster": "focus_a_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2966,
+        "rearY": 2966.5,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4629.983373220987,
+          3038.9503448275864,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_focus_a_ambient.png",
+          "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11",
+          "sourceY": 252,
+          "sourceSpans": [
+            [
+              225,
+              713
+            ]
+          ]
+        },
+        "navigationY": 3037.9503448275864,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "focus_a_cabinet_82",
+      "room": "focus_a",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4536.46758023035,
+        2877.0667351129364,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4536.769820859591,
+        2966.5,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2979.0667351129364,
+      "height": 120,
+      "floor": [
+        [
+          4039.5527586206895,
+          3037.9503448275864
+        ],
+        [
+          4903.108965517242,
+          3037.9503448275864
+        ],
+        [
+          4984.704827586207,
+          4712.794482758621
+        ],
+        [
+          3957.956896551724,
+          4712.794482758621
+        ]
+      ],
+      "mounted": false,
+      "cluster": "focus_a_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2966,
+        "rearY": 2966.5,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4536.769820859591,
+          3038.9503448275864,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_focus_a_ambient.png",
+          "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11",
+          "sourceY": 252,
+          "sourceSpans": [
+            [
+              225,
+              713
+            ]
+          ]
+        },
+        "navigationY": 3037.9503448275864,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "focus_a_cabinet_83",
+      "room": "focus_a",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4443.254027868954,
+        2877.0667351129364,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4443.556268498195,
+        2966.5,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2979.0667351129364,
+      "height": 120,
+      "floor": [
+        [
+          4039.5527586206895,
+          3037.9503448275864
+        ],
+        [
+          4903.108965517242,
+          3037.9503448275864
+        ],
+        [
+          4984.704827586207,
+          4712.794482758621
+        ],
+        [
+          3957.956896551724,
+          4712.794482758621
+        ]
+      ],
+      "mounted": false,
+      "cluster": "focus_a_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2966,
+        "rearY": 2966.5,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4443.556268498195,
+          3038.9503448275864,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_focus_a_ambient.png",
+          "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11",
+          "sourceY": 252,
+          "sourceSpans": [
+            [
+              225,
+              713
+            ]
+          ]
+        },
+        "navigationY": 3037.9503448275864,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "focus_a_wall_cabinet_5",
+      "room": "focus_a",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4350.040475507558,
+        2877.0667351129364,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4350.342716136799,
+        2966.5,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2979.0667351129364,
+      "height": 120,
+      "floor": [
+        [
+          4039.5527586206895,
+          3037.9503448275864
+        ],
+        [
+          4903.108965517242,
+          3037.9503448275864
+        ],
+        [
+          4984.704827586207,
+          4712.794482758621
+        ],
+        [
+          3957.956896551724,
+          4712.794482758621
+        ]
+      ],
+      "mounted": false,
+      "cluster": "focus_a_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2966,
+        "rearY": 2966.5,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4350.342716136799,
+          3038.9503448275864,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_focus_a_ambient.png",
+          "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11",
+          "sourceY": 252,
+          "sourceSpans": [
+            [
+              225,
+              713
+            ]
+          ]
+        },
+        "navigationY": 3037.9503448275864,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "focus_a_wall_cabinet_6",
+      "room": "focus_a",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4256.826923146162,
+        2877.0667351129364,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4257.129163775403,
+        2966.5,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 2979.0667351129364,
+      "height": 120,
+      "floor": [
+        [
+          4039.5527586206895,
+          3037.9503448275864
+        ],
+        [
+          4903.108965517242,
+          3037.9503448275864
+        ],
+        [
+          4984.704827586207,
+          4712.794482758621
+        ],
+        [
+          3957.956896551724,
+          4712.794482758621
+        ]
+      ],
+      "mounted": false,
+      "cluster": "focus_a_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 2966,
+        "rearY": 2966.5,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4257.129163775403,
+          3038.9503448275864,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_focus_a_ambient.png",
+          "sha256": "dacd05cb6e8cd4e9347e4df009a94c8f660b45b42b038d13e8faccebfb716e11",
+          "sourceY": 252,
+          "sourceSpans": [
+            [
+              225,
+              713
+            ]
+          ]
+        },
+        "navigationY": 3037.9503448275864,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "collab_b_cabinet_133",
+      "room": "collab_b",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4766.973148715273,
+        5216.020895757165,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4767.275389344514,
+        5305.454160644229,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5318.020895757165,
+      "height": 120,
+      "floor": [
+        [
+          4038.359520958084,
+          5343.128052859798
+        ],
+        [
+          4903.7238323353295,
+          5343.128052859798
+        ],
+        [
+          4985.490538922156,
+          6774.890448069379
+        ],
+        [
+          3956.5928143712576,
+          6774.890448069379
+        ]
+      ],
+      "mounted": false,
+      "cluster": "collab_b_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5304.954160644229,
+        "rearY": 5305.454160644229,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4767.275389344514,
+          5344.128052859798,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_collab_b_ambient.png",
+          "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24",
+          "sourceY": 250,
+          "sourceSpans": [
+            [
+              210,
+              804
+            ]
+          ]
+        },
+        "navigationY": 5343.128052859798,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "collab_b_cabinet_134",
+      "room": "collab_b",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4673.759596353877,
+        5216.020895757165,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4674.061836983118,
+        5305.454160644229,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5318.020895757165,
+      "height": 120,
+      "floor": [
+        [
+          4038.359520958084,
+          5343.128052859798
+        ],
+        [
+          4903.7238323353295,
+          5343.128052859798
+        ],
+        [
+          4985.490538922156,
+          6774.890448069379
+        ],
+        [
+          3956.5928143712576,
+          6774.890448069379
+        ]
+      ],
+      "mounted": false,
+      "cluster": "collab_b_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5304.954160644229,
+        "rearY": 5305.454160644229,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4674.061836983118,
+          5344.128052859798,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_collab_b_ambient.png",
+          "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24",
+          "sourceY": 250,
+          "sourceSpans": [
+            [
+              210,
+              804
+            ]
+          ]
+        },
+        "navigationY": 5343.128052859798,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "collab_b_cabinet_135",
+      "room": "collab_b",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4580.546043992481,
+        5216.020895757165,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4580.848284621722,
+        5305.454160644229,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5318.020895757165,
+      "height": 120,
+      "floor": [
+        [
+          4038.359520958084,
+          5343.128052859798
+        ],
+        [
+          4903.7238323353295,
+          5343.128052859798
+        ],
+        [
+          4985.490538922156,
+          6774.890448069379
+        ],
+        [
+          3956.5928143712576,
+          6774.890448069379
+        ]
+      ],
+      "mounted": false,
+      "cluster": "collab_b_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5304.954160644229,
+        "rearY": 5305.454160644229,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4580.848284621722,
+          5344.128052859798,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_collab_b_ambient.png",
+          "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24",
+          "sourceY": 250,
+          "sourceSpans": [
+            [
+              210,
+              804
+            ]
+          ]
+        },
+        "navigationY": 5343.128052859798,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "collab_b_cabinet_136",
+      "room": "collab_b",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4487.332491631085,
+        5216.020895757165,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4487.634732260326,
+        5305.454160644229,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5318.020895757165,
+      "height": 120,
+      "floor": [
+        [
+          4038.359520958084,
+          5343.128052859798
+        ],
+        [
+          4903.7238323353295,
+          5343.128052859798
+        ],
+        [
+          4985.490538922156,
+          6774.890448069379
+        ],
+        [
+          3956.5928143712576,
+          6774.890448069379
+        ]
+      ],
+      "mounted": false,
+      "cluster": "collab_b_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5304.954160644229,
+        "rearY": 5305.454160644229,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4487.634732260326,
+          5344.128052859798,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_collab_b_ambient.png",
+          "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24",
+          "sourceY": 250,
+          "sourceSpans": [
+            [
+              210,
+              804
+            ]
+          ]
+        },
+        "navigationY": 5343.128052859798,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "collab_b_wall_cabinet_5",
+      "room": "collab_b",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4394.118939269689,
+        5216.020895757165,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4394.42117989893,
+        5305.454160644229,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5318.020895757165,
+      "height": 120,
+      "floor": [
+        [
+          4038.359520958084,
+          5343.128052859798
+        ],
+        [
+          4903.7238323353295,
+          5343.128052859798
+        ],
+        [
+          4985.490538922156,
+          6774.890448069379
+        ],
+        [
+          3956.5928143712576,
+          6774.890448069379
+        ]
+      ],
+      "mounted": false,
+      "cluster": "collab_b_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5304.954160644229,
+        "rearY": 5305.454160644229,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4394.42117989893,
+          5344.128052859798,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_collab_b_ambient.png",
+          "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24",
+          "sourceY": 250,
+          "sourceSpans": [
+            [
+              210,
+              804
+            ]
+          ]
+        },
+        "navigationY": 5343.128052859798,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "collab_b_wall_cabinet_6",
+      "room": "collab_b",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4300.905386908293,
+        5216.020895757165,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4301.207627537534,
+        5305.454160644229,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 5318.020895757165,
+      "height": 120,
+      "floor": [
+        [
+          4038.359520958084,
+          5343.128052859798
+        ],
+        [
+          4903.7238323353295,
+          5343.128052859798
+        ],
+        [
+          4985.490538922156,
+          6774.890448069379
+        ],
+        [
+          3956.5928143712576,
+          6774.890448069379
+        ]
+      ],
+      "mounted": false,
+      "cluster": "collab_b_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 5304.954160644229,
+        "rearY": 5305.454160644229,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4301.207627537534,
+          5344.128052859798,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_collab_b_ambient.png",
+          "sha256": "d841557959e726387bc4a9f471420ae4d25526ae099ab0dd30c4fb040bd90d24",
+          "sourceY": 250,
+          "sourceSpans": [
+            [
+              210,
+              804
+            ]
+          ]
+        },
+        "navigationY": 5343.128052859798,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "flex_c_wall_cabinet_1",
+      "room": "flex_c",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4800.562008655111,
+        7190.950267679092,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4800.864249284352,
+        7280.383532566156,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 7292.950267679092,
+      "height": 120,
+      "floor": [
+        [
+          3601.8025016812376,
+          7315.175395377184
+        ],
+        [
+          4919.452373907196,
+          7315.175395377184
+        ],
+        [
+          4990.676691324816,
+          7985.87500533011
+        ],
+        [
+          3521.6751445864156,
+          7985.87500533011
+        ]
+      ],
+      "mounted": false,
+      "cluster": "flex_c_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 7279.883532566156,
+        "rearY": 7280.383532566156,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4800.864249284352,
+          7316.175395377184,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_flex_c_ambient.png",
+          "sha256": "1d77eed379ddb1e27280efd8d2917f4a257bb895bd988b1dbd2e9026f9690d1b",
+          "sourceY": 232,
+          "sourceSpans": [
+            [
+              440,
+              1288
+            ]
+          ]
+        },
+        "navigationY": 7315.175395377184,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "flex_c_wall_cabinet_2",
+      "room": "flex_c",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4707.348456293715,
+        7190.950267679092,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4707.650696922956,
+        7280.383532566156,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 7292.950267679092,
+      "height": 120,
+      "floor": [
+        [
+          3601.8025016812376,
+          7315.175395377184
+        ],
+        [
+          4919.452373907196,
+          7315.175395377184
+        ],
+        [
+          4990.676691324816,
+          7985.87500533011
+        ],
+        [
+          3521.6751445864156,
+          7985.87500533011
+        ]
+      ],
+      "mounted": false,
+      "cluster": "flex_c_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 7279.883532566156,
+        "rearY": 7280.383532566156,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4707.650696922956,
+          7316.175395377184,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_flex_c_ambient.png",
+          "sha256": "1d77eed379ddb1e27280efd8d2917f4a257bb895bd988b1dbd2e9026f9690d1b",
+          "sourceY": 232,
+          "sourceSpans": [
+            [
+              440,
+              1288
+            ]
+          ]
+        },
+        "navigationY": 7315.175395377184,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "flex_c_wall_cabinet_3",
+      "room": "flex_c",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4614.134903932319,
+        7190.950267679092,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4614.43714456156,
+        7280.383532566156,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 7292.950267679092,
+      "height": 120,
+      "floor": [
+        [
+          3601.8025016812376,
+          7315.175395377184
+        ],
+        [
+          4919.452373907196,
+          7315.175395377184
+        ],
+        [
+          4990.676691324816,
+          7985.87500533011
+        ],
+        [
+          3521.6751445864156,
+          7985.87500533011
+        ]
+      ],
+      "mounted": false,
+      "cluster": "flex_c_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 7279.883532566156,
+        "rearY": 7280.383532566156,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4614.43714456156,
+          7316.175395377184,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_flex_c_ambient.png",
+          "sha256": "1d77eed379ddb1e27280efd8d2917f4a257bb895bd988b1dbd2e9026f9690d1b",
+          "sourceY": 232,
+          "sourceSpans": [
+            [
+              440,
+              1288
+            ]
+          ]
+        },
+        "navigationY": 7315.175395377184,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
+    },
+    {
+      "id": "flex_c_wall_cabinet_4",
+      "room": "flex_c",
+      "asset": "cabinet",
+      "name": "个人储物柜",
+      "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+      "crop": [
+        165,
+        168,
+        867,
+        1003
+      ],
+      "scale": 0.1016949152542373,
+      "bounds": [
+        4520.9213515709225,
+        7190.950267679092,
+        88.16949152542374,
+        102
+      ],
+      "footprint": [
+        4521.223592200164,
+        7280.383532566156,
+        87.56501026694045,
+        12.566735112936344
+      ],
+      "baseline": 7292.950267679092,
+      "height": 120,
+      "floor": [
+        [
+          3601.8025016812376,
+          7315.175395377184
+        ],
+        [
+          4919.452373907196,
+          7315.175395377184
+        ],
+        [
+          4990.676691324816,
+          7985.87500533011
+        ],
+        [
+          3521.6751445864156,
+          7985.87500533011
+        ]
+      ],
+      "mounted": false,
+      "cluster": "flex_c_wall_storage",
+      "wallStorage": {
+        "side": "north",
+        "wallY": 7279.883532566156,
+        "rearY": 7280.383532566156,
+        "gap": 0.5,
+        "projectedDepth": 12.566735112936344,
+        "access": [
+          4521.223592200164,
+          7316.175395377184,
+          87.56501026694045,
+          48
+        ],
+        "sourceWall": {
+          "path": "res://campuses/future_learning_center/assets/rooms/f4_flex_c_ambient.png",
+          "sha256": "1d77eed379ddb1e27280efd8d2917f4a257bb895bd988b1dbd2e9026f9690d1b",
+          "sourceY": 232,
+          "sourceSpans": [
+            [
+              440,
+              1288
+            ]
+          ]
+        },
+        "navigationY": 7315.175395377184,
+        "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
+      },
+      "photoAsset": "locker_photo_v2"
     }
   ],
   "atriums": [
@@ -14967,7 +16712,8 @@
   "sourcePlan": "image 7.png; three west rooms, three east partitions, north/main/south voids, NW storage, NE stair above elevator, SW stair below services",
   "scopeNotes": [
     "原图注明空间对应不正确：保留三间西侧房间及三块东侧空间；大型会议室位置待核实，不凭文字增加隔墙。",
-    "东侧 C 为方案可选区；本版保留现状轮廓，摆设可独立撤下。"
+    "东侧 C 为方案可选区；本版保留现状轮廓，摆设可独立撤下。",
+    "所有储物柜、零件架及茶水柜统一按柜背落地点贴墙，避开窗洞、门口与其他家具，保留柜前通行。新增数量为评审布局，非现场清点结果。"
   ],
   "corridors": [
     {
@@ -15093,16 +16839,146 @@
     "floorMaterial": "continuous gray microcement",
     "source": "window apertures on generated room masters"
   },
-  "objectCounts": {
-    "whiteboard": 6,
-    "cabinet": 15,
-    "discussion_table": 2,
-    "chair_back": 41,
-    "desk": 37,
-    "desk_divider": 37,
-    "monitor_front": 37
+  "wallStorage": {
+    "version": 2,
+    "before": 15,
+    "after": 33,
+    "rooms": [
+      {
+        "room": "seminar_1",
+        "before": 1,
+        "after": 4,
+        "cabinets": 4,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 2146.958904109589,
+        "navigationY": 2194.804383561644,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "seminar_1_cabinet_1",
+          "seminar_1_wall_cabinet_2",
+          "seminar_1_wall_cabinet_3",
+          "seminar_1_wall_cabinet_4"
+        ]
+      },
+      {
+        "room": "seminar_2",
+        "before": 1,
+        "after": 4,
+        "cabinets": 4,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 3623.001397331932,
+        "navigationY": 3655.5878315080436,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "seminar_2_cabinet_6",
+          "seminar_2_wall_cabinet_2",
+          "seminar_2_wall_cabinet_3",
+          "seminar_2_wall_cabinet_4"
+        ]
+      },
+      {
+        "room": "seminar_3",
+        "before": 1,
+        "after": 4,
+        "cabinets": 4,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 5030.888569362636,
+        "navigationY": 5055.426419525503,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "seminar_3_cabinet_11",
+          "seminar_3_wall_cabinet_2",
+          "seminar_3_wall_cabinet_3",
+          "seminar_3_wall_cabinet_4"
+        ]
+      },
+      {
+        "room": "storage",
+        "before": 4,
+        "after": 5,
+        "cabinets": 5,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 372.92442497261777,
+        "navigationY": 401.2409638554217,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "storage_cabinet_12",
+          "storage_cabinet_13",
+          "storage_cabinet_14",
+          "storage_cabinet_15",
+          "storage_wall_cabinet_5"
+        ]
+      },
+      {
+        "room": "focus_a",
+        "before": 4,
+        "after": 6,
+        "cabinets": 6,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 2966,
+        "navigationY": 3037.9503448275864,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "focus_a_cabinet_80",
+          "focus_a_cabinet_81",
+          "focus_a_cabinet_82",
+          "focus_a_cabinet_83",
+          "focus_a_wall_cabinet_5",
+          "focus_a_wall_cabinet_6"
+        ]
+      },
+      {
+        "room": "collab_b",
+        "before": 4,
+        "after": 6,
+        "cabinets": 6,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 5304.954160644229,
+        "navigationY": 5343.128052859798,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "collab_b_cabinet_133",
+          "collab_b_cabinet_134",
+          "collab_b_cabinet_135",
+          "collab_b_cabinet_136",
+          "collab_b_wall_cabinet_5",
+          "collab_b_wall_cabinet_6"
+        ]
+      },
+      {
+        "room": "flex_c",
+        "before": 0,
+        "after": 4,
+        "cabinets": 4,
+        "racks": 0,
+        "fitted": 0,
+        "refrigerators": 0,
+        "wallY": 7279.883532566156,
+        "navigationY": 7315.175395377184,
+        "maxRearGap": 0.5,
+        "unitIds": [
+          "flex_c_wall_cabinet_1",
+          "flex_c_wall_cabinet_2",
+          "flex_c_wall_cabinet_3",
+          "flex_c_wall_cabinet_4"
+        ]
+      }
+    ],
+    "placement": "All storage is aligned to verified floor-wall seams; facing and source art scale retained.",
+    "capacityBasis": "User requested more cabinets throughout. Counts are review choices constrained by walls, windows, doors, furniture and access."
   },
-  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review.",
   "photoDetailReference": {
     "date": "2026-10-28",
     "source": "User-supplied site photographs",
@@ -15112,5 +16988,15 @@
       "locker_photo_v2"
     ],
     "scope": "Photo-derived furniture types and materials. Existing architectural layout and colliders retained; exact furniture counts and room assignment are review proposals, not surveyed facts."
-  }
+  },
+  "objectCounts": {
+    "whiteboard": 6,
+    "discussion_table": 2,
+    "chair_back": 41,
+    "desk": 37,
+    "desk_divider": 37,
+    "monitor_front": 37,
+    "cabinet": 33
+  },
+  "objectScope": "Independent furniture and mounted equipment. Four 3F studios use the user-requested facing-row duplication; the pantry uses six masters derived from user-supplied site photography. Laboratory objects follow the supplied equipment requirements. 2F platform activity islands are gameplay staging proposals. Exact site placement, room capacity, unique team vehicles and specialist machines remain under review."
 }
