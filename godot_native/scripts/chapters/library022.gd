@@ -1,4 +1,5 @@
 extends RefCounted
+const GeometryNotebook=preload("res://scripts/objects/library_geometry_notebook.gd")
 const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
 ## Current LibraryFinalsController + puzzle JSON, excluding retired archaeology route.
 const EVIDENCE = {"archived_leave_rule":"archivedLeaveRule", "bag_non_person_proof":"bagNonPersonProof", "seat_022_receipt":"seat022Receipt", "library_presence_proof":"libraryPresenceProof"}
@@ -241,6 +242,9 @@ func actions(page: String, s: Dictionary) -> Array:
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
 	if not action.begins_with("lib_"): return {}
+	if action=="lib_geometry_study":
+		if s.native.scene!="library_interior" or s.get("runtimeMode","")!="rpg" or SceneSession.pending_opening(s) or (_active(s) and story_session(s)!=null):return _ok("")
+		return _ok("",{"game":{"script":"res://scripts/games/library_geometry/view.gd","viewport":[960,540],"reduced_motion":bool(s.native.settings.get("reduced_motion",false))}})
 	if not _active(s): return _ok("图书馆调查尚未开放。")
 	if action=="lib_story_complete": return _finish_story(s,value)
 	if story_session(s)!=null: return _ok("请先完成当前对话。")
@@ -576,7 +580,8 @@ func objective(s: Dictionary) -> String:
 	return ""
 
 func targets(scene: String, s: Dictionary) -> Array:
-	if not _active(s): return []
+	if not _active(s):
+		return [GeometryNotebook.target()] if scene=="library_interior" and s.get("runtimeMode","")=="rpg" and not SceneSession.pending_opening(s) else []
 	if story_session(s)!=null: return []
 	if scene == "campus_bootstrap":
 		var path = "res://data/source/maps/zijingang-campus-runtime.json"
@@ -590,6 +595,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 	out.append(_target("entrance_record","查看入馆记录",[750,727],[673,693,154,68],64,"lib_open_record"))
 	out.append(_target("front_desk","前台工作人员",[334,594],[174,519,320,150],64,"lib_front_desk"))
 	out.append(_target("catalog_terminal","馆藏检索终端",[653,555],[597,507,112,96],70,"lib_catalog_terminal"))
+	out.append(GeometryNotebook.target())
 	out.append(_target("printer","查看自助打印机",[820,555],[788,510,77,104],70,"lib_printer"))
 	if p.itemReportGenerated and not p.nonPersonProofStamped: out.append(_target("identity_machine","物品身份盖章机",[334,594],[174,519,320,150],64,"lib_scan","itemRecognitionReport"))
 	if p.callNumberCollected and not p.archivedRuleCollected: out.append(_target("library_shelf_755","文学书架夹层",[548,230],[486,125,124,210],64,"lib_shelf","callNumber755"))

@@ -11,6 +11,10 @@ const PATTERNS := {
 	"⌫": ["...######","..#.....#",".#.#..#.#","#...##..#",".#.#..#.#","..#.....#","...######"],
 	"⬢": ["..#####..",".#######.","#########","#########","#########",".#######.","..#####.."]
 }
+# Optical corrections belong to the painted mark, never its target rectangle.
+# These are reviewed at native size: a filled play triangle carries more ink
+# on its left, and a chevron's open side changes the apparent side bearing.
+const DIRECTIONAL := ["▶","‹","›"]
 class WifiMark extends Control:
 	## Role-specific port of shell.css .cc-wifi-icon: two arcs and one dot.
 	## The source's vibration glyph is also ≋, so never alias that text to Wi-Fi.
@@ -44,6 +48,7 @@ static func add_wifi(control: Control, rect: Rect2) -> Control:
 
 class SymbolMark extends Control:
 	var rows: Array=[]
+	var symbol := ""
 	var ink := Color.WHITE
 	var extent := 20.0
 	func _init() -> void:
@@ -51,11 +56,24 @@ class SymbolMark extends Control:
 		focus_mode=Control.FOCUS_NONE
 		texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 	func _draw() -> void:
+		var color := ink
+		if get_parent() is BaseButton and get_parent().disabled: color.a *= .5
+		if symbol in DIRECTIONAL:
+			var factor := minf(minf(size.x,size.y),extent)/20.0
+			var center := size/2
+			if symbol=="▶":
+				center.x+=1.35*factor
+				draw_set_transform(center,0,Vector2.ONE*factor)
+				draw_colored_polygon(PackedVector2Array([Vector2(-6,-8),Vector2(8,0),Vector2(-6,8)]),color)
+			else:
+				var direction := -1.0 if symbol=="‹" else 1.0
+				center.x+=direction*.8*factor
+				draw_set_transform(center,0,Vector2.ONE*factor)
+				draw_polyline(PackedVector2Array([Vector2(-3*direction,-7),Vector2(4*direction,0),Vector2(-3*direction,7)]),color,2,true)
+			return
 		if rows.is_empty(): return
 		var factor := minf(minf(size.x,size.y),extent)/maxf(str(rows[0]).length(),rows.size())
 		var origin := (size-Vector2(str(rows[0]).length(),rows.size())*factor)/2
-		var color := ink
-		if get_parent() is BaseButton and get_parent().disabled: color.a *= .5
 		for y in rows.size():
 			for x in str(rows[y]).length():
 				if str(rows[y])[x]!="#": continue
@@ -66,16 +84,17 @@ static func apply(control: Control, text: String, color: Color, extent: float) -
 	var parts := text.split("\n",false,1)
 	if parts.size()==2 and PATTERNS.has(parts[0]):
 		return _apply_stacked(control,parts[0],parts[1],color)
-	if not PATTERNS.has(text): return false
+	if not PATTERNS.has(text) and not text in DIRECTIONAL: return false
 	# Text is retained verbatim, including button accessible text and callbacks.
-	for role in ["font_color","font_hover_color","font_pressed_color","font_focus_color","font_disabled_color"]:
+	for role in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]:
 		control.add_theme_color_override(role,Color.TRANSPARENT)
-	var mark := SymbolMark.new()
-	mark.name="NativeSymbolIcon"
-	mark.rows=PATTERNS[text]; mark.ink=color; mark.extent=extent
-	control.add_child(mark)
-	mark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	control.resized.connect(mark.queue_redraw)
+	var mark: Control=control.get_node_or_null("NativeSymbolIcon")
+	if mark==null:
+		mark=SymbolMark.new();mark.name="NativeSymbolIcon"
+		control.add_child(mark)
+		mark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		control.resized.connect(mark.queue_redraw)
+	mark.rows=PATTERNS.get(text,[]); mark.symbol=text; mark.ink=color; mark.extent=extent;mark.queue_redraw()
 	return true
 
 static func _apply_stacked(control: Control, symbol: String, caption: String, color: Color) -> bool:
