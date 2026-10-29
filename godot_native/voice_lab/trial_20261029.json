@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-29",
+  "stage": "audition_only",
+  "model": {
+    "repo": "mlx-community/fish-audio-drama-3-4bit",
+    "revision": "1ac1b2108b63c2ef5bade463a121569363e293ce",
+    "mlxAudioVersion": "0.6.0",
+    "temperature": 1.0,
+    "topP": 0.9,
+    "topK": null,
+    "maxTokens": 600,
+    "seed": 755202610
+  },
+  "sourceHashes": {
+    "godot_native/data/native/audio-director-source.json": "638155654e8da354bf236ecbd73ce30ffc743c8ca16dcc8e81f1e6648661831e",
+    "src/data/chapter3-interlude-voice-memos.audio.content.json": "62a3ca6d83f5626281c5b071655e459f0070ff383a30c236e6400a78f20d5a51",
+    "src/data/chapter3-interlude-voice-memos.audio.generated.json": "ddbf58c2e3b03631edda675bfd6c00d6bd4db2c8e630a86403c25ed9a837a47a",
+    "src/data/chapter4-prologue-voice.audio.content.json": "efdae96a42cbc4292d7400ba0b643318b9061e46d5168e01a97a967f0b912d77"
+  },
+  "counts": {
+    "catalog": 152,
+    "eligibleCatalog": 57,
+    "directMemoSpeech": 4,
+    "silent": 95,
+    "auditions": 10
+  },
+  "unitTestsPassed": 16,
+  "totalAudioSeconds": 38.219,
+  "generationSeconds": 21.176,
+  "peakMetalMemoryGb": 29.887,
+  "exactAsrWordMatches": 9,
+  "asrReviewNotes": [
+    "Broadcast East Canteen is transcribed as EastCantine in both original and candidate. No target script was passed to ASR."
+  ],
+  "manualListeningPerformed": false,
+  "runtimeIntegrated": false,
+  "productionEligible": false,
+  "rejectedTakes": [
+    {
+      "batch": "v1",
+      "id": "02_narrator_startled",
+      "reason": "generation reached token cap; ASR found repeated Hey, excluded"
+    },
+    {
+      "batch": "v2",
+      "id": "10_campus_broadcast",
+      "reason": "ASR suggested extra Thanks, conservatively excluded"
+    }
+  ],
+  "takes": [
+    {
+      "id": "01_narrator_dry",
+      "audioSha256": "11fbb28ca261ab71424627f66bc3158059b9723de7eb00ce2d6c20737b2f516c",
+      "durationMs": 5433,
+      "warnings": [
+        "pace_outside_scene_target",
+        "pitch_differs_from_reference_listen"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "topP": 0.9,
+        "topK": null
+      },
+      "seed": 755202610
+    },
+    {
+      "id": "02_narrator_startled",
+      "audioSha256": "29885d891ec8c9106df66c86cb8e0b8fb298024b124ce5755338298d64d88449",
+      "durationMs": 4272,
+      "warnings": [
+        "pitch_differs_from_reference_listen"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "topP": 0.9,
+        "topK": null
+      },
+      "seed": 755202611
+    },
+    {
+      "id": "03_system_observe",
+      "audioSha256": "a201dfa42bf613b8cb852adb57a1bbdc637c2c30bf8cfdfbe41819f4d15e683f",
+      "durationMs": 5991,
+      "warnings": [],
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      },
+      "seed": 755202612
+    },
+    {
+      "id": "04_system_urgent",
+      "audioSha256": "b4bdd2fa6c8a0f27c48e05ff50137ed7103dd95486f25ceca9ce7726958d0a52",
+      "durationMs": 3297,
+      "warnings": [
+        "pace_outside_scene_target",
+        "pitch_differs_from_reference_listen"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "topP": 0.9,
+        "topK": null
+      },
+      "seed": 755202613
+    },
+    {
+      "id": "05_player_recoil",
+      "audioSha256": "48249b88f0e08c425e076fc52ec06ea8135b0d00ec1bdbee34a51e39807c1889",
+      "durationMs": 929,
+      "warnings": [
+        "existing_runtime_cue_would_cut_off_audio"
+      ],
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      },
+      "seed": 755202614
+    },
+    {
+      "id": "06_narrator_night",
+      "audioSha256": "a183239bd9cff750e3f0755c4746787f8b52692b6b863b7881bd7cdb2f39e732",
+      "durationMs": 6734,
+      "warnings": [
+        "over_authored_duration_budget",
+        "existing_runtime_cue_would_cut_off_audio",
+        "pitch_differs_from_reference_listen"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "topP": 0.9,
+        "topK": null
+      },
+      "seed": 755202615
+    },
+    {
+      "id": "07_cleaner_warning",
+      "audioSha256": "ef050a7fad114f9b2d3d69411f7982da8038ef0ea080742ea5d36c4e03bb821f",
+      "durationMs": 2926,
+      "warnings": [
+        "existing_runtime_cue_would_cut_off_audio"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "topP": 0.9,
+        "topK": null
+      },
+      "seed": 755202616
+    },
+    {
+      "id": "08_guard_closing",
+      "audioSha256": "b9ae4dcc123f54361e7af5c75c28b3d4378f57fac99b325c2b5cbd1bfbd358fb",
+      "durationMs": 2554,
+      "warnings": [
+        "existing_runtime_cue_would_cut_off_audio",
+        "pace_outside_scene_target"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "topP": 0.9,
+        "topK": null
+      },
+      "seed": 755202617
+    },
+    {
+      "id": "09_player_memo",
+      "audioSha256": "13d01b6ea6996a7fa1e1f3566c7767904058a542bbf045ba79dee40ba0d98da2",
+      "durationMs": 2136,
+      "warnings": [
+        "pace_outside_scene_target"
+      ],
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      },
+      "seed": 755202618
+    },
+    {
+      "id": "10_campus_broadcast",
+      "audioSha256": "6c5b52dab3d313b2defc40a76d76c2eef85e55cc805ed25efbf7ed1a171c7345",
+      "durationMs": 3947,
+      "warnings": [
+        "pace_outside_scene_target"
+      ],
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      },
+      "seed": 755202619
+    }
+  ]
+}

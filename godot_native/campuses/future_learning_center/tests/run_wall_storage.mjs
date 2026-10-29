@@ -1,0 +1,13 @@
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createNativeTestSandbox} from '../../../tools/native_test_sandbox.mjs';
+const project=path.resolve(import.meta.dirname,'../../..');
+const fixture=createNativeTestSandbox(project);
+const args=process.argv.slice(2),capture=args.includes('--capture');
+const script='res://campuses/future_learning_center/tests/'+(capture?'capture_wall_storage.gd':'test_wall_storage.gd');
+console.log('Isolated wall-storage review:',fixture.project);
+const child=spawn(process.env.GODOT_BIN||'godot',['--path',fixture.project,'--script',script,...args.filter(a=>a!=='--capture')],{env:fixture.env,stdio:['inherit','pipe','pipe']});
+let diagnostics='';
+for(const [stream,out] of [[child.stdout,process.stdout],[child.stderr,process.stderr]])stream.on('data',s=>{diagnostics+=s;out.write(s)});
+child.on('error',e=>{console.error(e);process.exitCode=2});
+child.on('close',code=>{process.exitCode=code||(/SCRIPT ERROR:|Parse Error:|ERROR:/.test(diagnostics)?1:0)});

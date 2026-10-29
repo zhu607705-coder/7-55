@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {makeState,assess,shoot,moveBoard} from '../review/gameplay.mjs';
+const s=makeState();assert.equal(assess(s).success,false,'initial photograph is not already solved');
+s.board={x:700,y:430};assert.equal(shoot(s).success,true,'east-side shadow covers target without blocking camera');
+shoot(s);assert.equal(s.records.size,1,'repeated same-light success is one record');
+s.hour=16;assert.equal(assess(s).success,false,'opposite light requires reconsidering placement');
+s.board={x:260,y:430};assert.equal(shoot(s).success,true,'west-side alternate placement works');assert.equal(s.records.size,2);
+s.board={x:480,y:380};assert.equal(assess(s).blocked,true,'board in the camera line is rejected');
+const physical=makeState();
+assert.equal(moveBoard(physical,700,210)&&moveBoard(physical,700,430),true,'east solution has a clear approach along the aisle');
+assert.equal(moveBoard(physical,260,430),false,'a fast drag cannot tunnel through the camera');
+assert.deepEqual(physical.board,{x:700,y:430},'blocked movement preserves the safe position');
+assert.equal(moveBoard(physical,700,370)&&moveBoard(physical,260,370)&&moveBoard(physical,260,430),true,'the board can go around the camera to the west solution');
+assert.equal(shoot(physical).success,false,'moving the board alone does not change the lighting');
+physical.hour=16;assert.equal(shoot(physical).success,true,'added objects preserve the second solution');
+console.log('FLC gameplay prototype: 13 behavioral checks passed');

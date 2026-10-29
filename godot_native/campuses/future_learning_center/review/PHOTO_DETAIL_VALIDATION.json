@@ -1,0 +1,493 @@
+{
+  "schema": 1,
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "baseCommit": "57446de8b8cb987f50c0cca22c025d97fc3d6490",
+  "branch": "codex/future-learning-center-rebuild-20261027",
+  "scope": "Owned commit excludes parallel wall-storage and refrigerator edits. Runtime captures used the combined working tree; owned source-data tests below separately validate the commit snapshot.",
+  "ownedSnapshotTests": [
+    {
+      "test": "rooms",
+      "passed": true,
+      "output": "Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org\n\nFLC_TESTS: 1652 checks, 0 failures"
+    },
+    {
+      "test": "stairs",
+      "passed": true,
+      "output": "Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org\n\nFLC_STAIRS: 3721 checks, 0 failures"
+    },
+    {
+      "test": "workbench",
+      "passed": true,
+      "output": "Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org\n\nFLC_WORKBENCH_TESTS: 88 checks, 0 failures"
+    }
+  ],
+  "nativeValidation": {
+    "passed": [
+      "Prepared source and media inputs",
+      "Native save isolation",
+      "Godot asset import and editor parse",
+      "Native startup",
+      "test_all_scripts_parse.gd",
+      "test_future_learning_center_rooms.gd",
+      "test_future_learning_center_stairs.gd",
+      "test_future_learning_center_workbench.gd"
+    ],
+    "notRun": 532
+  },
+  "wallStorageCompatibility": {
+    "checks": 831,
+    "engine": {
+      "build": "official",
+      "hash": "a13da4feb8d8aefc283c3763d33a2f170a18d541",
+      "hex": 263937,
+      "major": 4,
+      "minor": 7,
+      "patch": 1,
+      "status": "stable",
+      "string": "4.7.1-stable (official)",
+      "timestamp": 0
+    },
+    "failures": [],
+    "floors": [
+      {
+        "floor": 2,
+        "storageUnits": 26
+      },
+      {
+        "floor": 3,
+        "storageUnits": 22
+      },
+      {
+        "floor": 4,
+        "storageUnits": 33
+      }
+    ]
+  },
+  "captures": {
+    "desktop": {
+      "input.json": {
+        "checks": 13,
+        "failures": 0,
+        "hallFloor": 2,
+        "invalidFrames": 0,
+        "loungeFloor": 3,
+        "loungeTouchFinal": [
+          2420.41943359375,
+          7336.3251953125
+        ],
+        "loungeTouchTarget": [
+          2420.41943359375,
+          7336.3251953125
+        ],
+        "scale": 1.33333337306976,
+        "touchFinal": [
+          1186.623046875,
+          2302.13452148438
+        ],
+        "touchTarget": [
+          1186.623046875,
+          2302.13452148438
+        ],
+        "viewport": [
+          1280,
+          720
+        ]
+      },
+      "workshop_input.json": {
+        "checks": 11,
+        "failures": 0,
+        "results": [
+          {
+            "name": "remote activation rejected",
+            "passed": true
+          },
+          {
+            "name": "tap bench walks to it and opens",
+            "passed": true
+          },
+          {
+            "name": "wrong small gear shows visible failure",
+            "passed": true
+          },
+          {
+            "name": "drag medium gear onto axle",
+            "passed": true
+          },
+          {
+            "name": "tap controls start a visible drive",
+            "passed": true
+          },
+          {
+            "name": "workpiece reaches marker",
+            "passed": true
+          },
+          {
+            "name": "exit restores same floor and feet",
+            "passed": true
+          },
+          {
+            "name": "reopen keeps installed parts",
+            "passed": true
+          },
+          {
+            "name": "focus loss stops trial",
+            "passed": true
+          },
+          {
+            "name": "reset restores reusable parts",
+            "passed": true
+          },
+          {
+            "name": "no workshop activation on another floor",
+            "passed": true
+          }
+        ],
+        "touch": false,
+        "viewport": [
+          1280,
+          720
+        ]
+      },
+      "stairs_input.json": {
+        "checks": [
+          {
+            "name": "stairs require source landing",
+            "passed": true
+          },
+          {
+            "name": "real transit button starts ascent without early floor change",
+            "passed": true
+          },
+          {
+            "name": "duplicate floor input rejected",
+            "passed": true
+          },
+          {
+            "name": "focus loss pauses feet on tread",
+            "passed": true
+          },
+          {
+            "name": "scaled tap resumes traversal",
+            "passed": true
+          },
+          {
+            "name": "ascent reaches paired legal landing",
+            "passed": true
+          },
+          {
+            "name": "descent retains source until landing",
+            "passed": true
+          },
+          {
+            "name": "cancel restores unchanged source floor",
+            "passed": true
+          },
+          {
+            "name": "descent reaches paired legal landing",
+            "passed": true
+          },
+          {
+            "name": "3F to 4F uses southwest paired section",
+            "passed": true
+          },
+          {
+            "name": "4F arrival is grounded",
+            "passed": true
+          }
+        ],
+        "failures": 0,
+        "scale": 1.33333337306976,
+        "viewport": [
+          1280,
+          720
+        ]
+      }
+    },
+    "mobile": {
+      "input.json": {
+        "checks": 13,
+        "failures": 0,
+        "hallFloor": 2,
+        "invalidFrames": 0,
+        "loungeFloor": 3,
+        "loungeTouchFinal": [
+          2420.41943359375,
+          7336.3251953125
+        ],
+        "loungeTouchTarget": [
+          2420.41943359375,
+          7336.3251953125
+        ],
+        "scale": 0.40625,
+        "touchFinal": [
+          1186.623046875,
+          2302.13452148438
+        ],
+        "touchTarget": [
+          1186.623046875,
+          2302.13452148438
+        ],
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      "workshop_input.json": {
+        "checks": 11,
+        "failures": 0,
+        "results": [
+          {
+            "name": "remote activation rejected",
+            "passed": true
+          },
+          {
+            "name": "tap bench walks to it and opens",
+            "passed": true
+          },
+          {
+            "name": "wrong small gear shows visible failure",
+            "passed": true
+          },
+          {
+            "name": "drag medium gear onto axle",
+            "passed": true
+          },
+          {
+            "name": "tap controls start a visible drive",
+            "passed": true
+          },
+          {
+            "name": "workpiece reaches marker",
+            "passed": true
+          },
+          {
+            "name": "exit restores same floor and feet",
+            "passed": true
+          },
+          {
+            "name": "reopen keeps installed parts",
+            "passed": true
+          },
+          {
+            "name": "focus loss stops trial",
+            "passed": true
+          },
+          {
+            "name": "reset restores reusable parts",
+            "passed": true
+          },
+          {
+            "name": "no workshop activation on another floor",
+            "passed": true
+          }
+        ],
+        "touch": true,
+        "viewport": [
+          390,
+          844
+        ]
+      },
+      "stairs_input.json": {
+        "checks": [
+          {
+            "name": "stairs require source landing",
+            "passed": true
+          },
+          {
+            "name": "real transit button starts ascent without early floor change",
+            "passed": true
+          },
+          {
+            "name": "duplicate floor input rejected",
+            "passed": true
+          },
+          {
+            "name": "focus loss pauses feet on tread",
+            "passed": true
+          },
+          {
+            "name": "scaled tap resumes traversal",
+            "passed": true
+          },
+          {
+            "name": "ascent reaches paired legal landing",
+            "passed": true
+          },
+          {
+            "name": "descent retains source until landing",
+            "passed": true
+          },
+          {
+            "name": "cancel restores unchanged source floor",
+            "passed": true
+          },
+          {
+            "name": "descent reaches paired legal landing",
+            "passed": true
+          },
+          {
+            "name": "3F to 4F uses southwest paired section",
+            "passed": true
+          },
+          {
+            "name": "4F arrival is grounded",
+            "passed": true
+          }
+        ],
+        "failures": 0,
+        "scale": 0.40625,
+        "viewport": [
+          390,
+          844
+        ]
+      }
+    },
+    "landscape": {
+      "workshop_input.json": {
+        "checks": 11,
+        "failures": 0,
+        "results": [
+          {
+            "name": "remote activation rejected",
+            "passed": true
+          },
+          {
+            "name": "tap bench walks to it and opens",
+            "passed": true
+          },
+          {
+            "name": "wrong small gear shows visible failure",
+            "passed": true
+          },
+          {
+            "name": "drag medium gear onto axle",
+            "passed": true
+          },
+          {
+            "name": "tap controls start a visible drive",
+            "passed": true
+          },
+          {
+            "name": "workpiece reaches marker",
+            "passed": true
+          },
+          {
+            "name": "exit restores same floor and feet",
+            "passed": true
+          },
+          {
+            "name": "reopen keeps installed parts",
+            "passed": true
+          },
+          {
+            "name": "focus loss stops trial",
+            "passed": true
+          },
+          {
+            "name": "reset restores reusable parts",
+            "passed": true
+          },
+          {
+            "name": "no workshop activation on another floor",
+            "passed": true
+          }
+        ],
+        "touch": true,
+        "viewport": [
+          844,
+          390
+        ]
+      },
+      "stairs_input.json": {
+        "checks": [
+          {
+            "name": "stairs require source landing",
+            "passed": true
+          },
+          {
+            "name": "real transit button starts ascent without early floor change",
+            "passed": true
+          },
+          {
+            "name": "duplicate floor input rejected",
+            "passed": true
+          },
+          {
+            "name": "focus loss pauses feet on tread",
+            "passed": true
+          },
+          {
+            "name": "scaled tap resumes traversal",
+            "passed": true
+          },
+          {
+            "name": "ascent reaches paired legal landing",
+            "passed": true
+          },
+          {
+            "name": "descent retains source until landing",
+            "passed": true
+          },
+          {
+            "name": "cancel restores unchanged source floor",
+            "passed": true
+          },
+          {
+            "name": "descent reaches paired legal landing",
+            "passed": true
+          },
+          {
+            "name": "3F to 4F uses southwest paired section",
+            "passed": true
+          },
+          {
+            "name": "4F arrival is grounded",
+            "passed": true
+          }
+        ],
+        "failures": 0,
+        "scale": 0.722222208976746,
+        "viewport": [
+          844,
+          390
+        ]
+      }
+    }
+  },
+  "web": {
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "projectConfigSha256": "7a4110ce913a5e60a3ed3275469a40249ca9a635c3017acdac8cf0e6b86f0242",
+    "autoloads": [],
+    "productionSaveAccess": false,
+    "browserAcceptance": false,
+    "stages": [
+      {
+        "label": "import",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "startup",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "web_export",
+        "passed": true,
+        "status": 0
+      }
+    ]
+  },
+  "http": {
+    "allNineAssetsMatchedDisk": true,
+    "browserInteractionVerified": false
+  },
+  "remote": "Fetch failed: local proxy unavailable; direct GitHub attempts failed. No push or merge.",
+  "sourceData": {
+    "godot_native/campuses/future_learning_center/data/object_assets.json": "e378ed13752b66e7dfdc6e26c03baa5ae13561cc2060fa118690af7f14225faf",
+    "godot_native/campuses/future_learning_center/data/generation_20261028.json": "d0c2b978c2587b98774ea32a7e96d58c7e89265e7ae8a405b58981b9090bcb70",
+    "godot_native/campuses/future_learning_center/data/floor_2.json": "58f11619cb3f978bea34b41fce2e1c95ad176760cdd6075b9df90790b1e15575",
+    "godot_native/campuses/future_learning_center/data/floor_3.json": "c5d87065c8c3e0f3e7ac46a38449d13f1d88700ce56e21eb698f3dc7202fb806",
+    "godot_native/campuses/future_learning_center/data/floor_4.json": "51666efd3ece3d335380049f33b9c1a3cab64007f2300eaf16b601bd3a8c4803"
+  }
+}

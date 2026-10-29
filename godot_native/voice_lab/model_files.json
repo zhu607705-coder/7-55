@@ -1,0 +1,101 @@
+{
+  "revision": "1ac1b2108b63c2ef5bade463a121569363e293ce",
+  "files": [
+    {
+      "name": ".gitattributes",
+      "size": 1570,
+      "sha256": null,
+      "blobId": "52373fe24473b1aa44333d318f578ae6bf04b49b"
+    },
+    {
+      "name": "LICENSE",
+      "size": 19685,
+      "sha256": null,
+      "blobId": "3109ed8be76ee63f8b79e8752deef2bce2886675"
+    },
+    {
+      "name": "NOTICE",
+      "size": 910,
+      "sha256": null,
+      "blobId": "dfb01fa61402c21e5a0f3ebe4db57d982b16c2b1"
+    },
+    {
+      "name": "README.md",
+      "size": 3154,
+      "sha256": null,
+      "blobId": "7d08f822905b08d4b00390469820766db8b8f0bb"
+    },
+    {
+      "name": "chat_template.jinja",
+      "size": 7756,
+      "sha256": null,
+      "blobId": "a585dec894e63da457d9440ec6aa7caa16d20860"
+    },
+    {
+      "name": "codec.safetensors",
+      "size": 1572080341,
+      "sha256": "6ff9d6f07920b2155e3a48ada21956004b96df9114d255ed9f0788484ba73040",
+      "blobId": "02e6433720fbbcfef0e5eda2062e5573f405eed6"
+    },
+    {
+      "name": "config.json",
+      "size": 53444,
+      "sha256": null,
+      "blobId": "fa8042126101484c6eb000a70a72e4be89eb839d"
+    },
+    {
+      "name": "model-00001.safetensors",
+      "size": 4354661374,
+      "sha256": "de6eeebdd8c09316acd4f5fdd05482221e8596a19a6e8384d7fd129d70e894bf",
+      "blobId": "aaf8563c797f257b2ba735298246f3cf8c7aabdd"
+    },
+    {
+      "name": "model-00002.safetensors",
+      "size": 4360386773,
+      "sha256": "cdd874495884ba7a1f9ae5b2baf7fc8fed85f73799556e87a6406184b4f8cf9f",
+      "blobId": "b7a33b16cd5de6a6236dea7197bf16d5dc919d7b"
+    },
+    {
+      "name": "model-00003.safetensors",
+      "size": 4304379853,
+      "sha256": "eefa12cee1d032b511869de2a71666b4f07c82ca2fd8c94c3c5bcd1da431ef11",
+      "blobId": "1561d46662179ac9c0bcb0c0f3e9b73a81939ae1"
+    },
+    {
+      "name": "model-00004.safetensors",
+      "size": 4407528323,
+      "sha256": "cd4960872fc5ceff7c719bd5be9d9f770f3357068eca83af065db6ba68927a8a",
+      "blobId": "a4289174e2dd2bb3d4305bac2ccb38273f0bb37d"
+    },
+    {
+      "name": "model-00005.safetensors",
+      "size": 4425623733,
+      "sha256": "e0dbbeb7f66a2168fd744df15987b145780213d65cb6b3579a2531a78e92774e",
+      "blobId": "42598de9e9ebfb3c822e3136f48a5755dadf847e"
+    },
+    {
+      "name": "model-00006.safetensors",
+      "size": 335374378,
+      "sha256": "0b3e0b1b620080e4f4db53cc3b9c697c4179964be0e2172b339b605459470a7e",
+      "blobId": "48df8d25d4d454d74a5f189bc0ba1da740e670a0"
+    },
+    {
+      "name": "special_tokens_map.json",
+      "size": 102779,
+      "sha256": null,
+      "blobId": "aaac48f459bc88b562c2079a64d5b13aa23d2685"
+    },
+    {
+      "name": "tokenizer.json",
+      "size": 20791070,
+      "sha256": "0e9b9db76b2f0389b04b6ef057a2ac3b89100b7e96f2dd7034d19580a09654d6",
+      "blobId": "df4406c5fcbc94acf2acbce26334d53cb2345df9"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "size": 103580,
+      "sha256": null,
+      "blobId": "f6d3655491f93602f82a61a6ad6fa0658d737f63"
+    }
+  ]
+}

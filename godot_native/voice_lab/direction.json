@@ -1,0 +1,524 @@
+{
+  "version": 1,
+  "model": {
+    "repo": "mlx-community/fish-audio-drama-3-4bit",
+    "revision": "1ac1b2108b63c2ef5bade463a121569363e293ce",
+    "mlxAudioVersion": "0.6.0",
+    "temperature": 1.0,
+    "topP": 0.9,
+    "topK": null,
+    "maxTokens": 600,
+    "seed": 755202610
+  },
+  "contract": {
+    "speechLanguage": "en",
+    "subtitleLanguage": "zh",
+    "stage": "audition_only",
+    "runtimeManifestWrites": false,
+    "dryMasterSampleRate": 44100,
+    "channels": 1,
+    "targetLufs": -18,
+    "truePeakDb": -2,
+    "postPitchSemitones": 0,
+    "postTempo": 1,
+    "noInventedDialogue": true,
+    "modelSpeedControl": false,
+    "modelPitchControl": false,
+    "modelInstructControl": false,
+    "allowedInlineTags": [
+      "[whispers]",
+      "[sighs]",
+      "[laughs]"
+    ],
+    "noteZh": "角色与场景指令属于选角、参考音频和人工听审标准；模型实际收到的是原文、参考音频及其逐字稿、已验证格式的行内标签和采样参数。音高数字不伪装成模型参数。"
+  },
+  "roles": {
+    "male_narrator": {
+      "labelZh": "旁白",
+      "identity": "English_expressive_narrator",
+      "sourceBasePitch": -4,
+      "timbreZh": "沿用原旁白的低沉男声和英式发音；近场、干净，冷幽默留在停顿和重音里。",
+      "pitchZh": "以原录音为基准，基础音高固定；既有 -4 已在参考音频内，不再叠加变调。",
+      "emotionCeiling": 3,
+      "allowedEmotions": [
+        "dry_amusement",
+        "startled",
+        "restrained",
+        "observant",
+        "urgent"
+      ],
+      "forbiddenZh": [
+        "恐怖片气声",
+        "每句大笑",
+        "换成熟悉的真人声线",
+        "为赶时间吞词"
+      ],
+      "reference": {
+        "kind": "catalog",
+        "key": "wake_narration"
+      }
+    },
+    "female_system": {
+      "labelZh": "系统／小影",
+      "identity": "English_Graceful_Lady",
+      "sourceBasePitch": 0,
+      "timbreZh": "沿用清晰女声；干脆、有距离，嘴上不耐烦但仍在帮助玩家。",
+      "pitchZh": "保持同一女声的自然音区，急迫通过句间间隔和重音表达，不改成尖叫。",
+      "emotionCeiling": 3,
+      "allowedEmotions": [
+        "restrained_irritation",
+        "dry_amusement",
+        "focused",
+        "urgent"
+      ],
+      "forbiddenZh": [
+        "甜美客服腔",
+        "卖萌尾音",
+        "持续高声训斥",
+        "提前强调正确谜底"
+      ],
+      "reference": {
+        "kind": "catalog",
+        "key": "c3_canteen_queue_system"
+      }
+    },
+    "male_player": {
+      "labelZh": "主角（已有独白／录音）",
+      "identity": "English_Diligent_Man",
+      "sourceBasePitch": 0,
+      "timbreZh": "沿用自然男声，短促近场自语；保留轻微疲惫，不表演成英雄宣言。",
+      "pitchZh": "自然中低音，句尾收住，不刻意压低喉音。",
+      "emotionCeiling": 2,
+      "allowedEmotions": [
+        "tired",
+        "restrained",
+        "focused"
+      ],
+      "forbiddenZh": [
+        "额外旁白",
+        "哭腔",
+        "夸张喘息",
+        "为原本静默的玩家选项添加声音"
+      ],
+      "reference": {
+        "kind": "memo",
+        "key": "lake_player"
+      }
+    },
+    "female_cleaner": {
+      "labelZh": "保洁员",
+      "identity": "Chinese (Mandarin)_Kind-hearted_Antie",
+      "sourceBasePitch": 0,
+      "timbreZh": "以项目已有英文保洁员录音为声线基准；亲切、生活化，像经过时顺口提醒。",
+      "pitchZh": "中音区自然起落，提醒地滑时略有重音，后半句回落。",
+      "emotionCeiling": 2,
+      "allowedEmotions": [
+        "gentle",
+        "matter_of_fact"
+      ],
+      "forbiddenZh": [
+        "播音腔",
+        "夸张口音",
+        "神秘提示谜底的语气",
+        "新增场景事实"
+      ],
+      "reference": {
+        "kind": "catalog",
+        "key": "ch4_prologue_cleaner_01"
+      }
+    },
+    "male_guard": {
+      "labelZh": "保安",
+      "identity": "English_Trustworthy_Man",
+      "sourceBasePitch": 0,
+      "timbreZh": "沿用稳重男声；正式但平常的清楼提醒，字头清楚。",
+      "pitchZh": "稳定中低音，重音落在 closing 和 pack up，句尾自然落下。",
+      "emotionCeiling": 2,
+      "allowedEmotions": [
+        "official",
+        "matter_of_fact"
+      ],
+      "forbiddenZh": [
+        "威胁语气",
+        "追赶呼喊",
+        "广播失真烘焙进人声",
+        "擅加台词"
+      ],
+      "reference": {
+        "kind": "catalog",
+        "key": "ch4_prologue_guard_01"
+      }
+    },
+    "campus_broadcast": {
+      "labelZh": "校园广播",
+      "identity": "English_Graceful_Lady",
+      "sourceBasePitch": 0,
+      "timbreZh": "沿用原广播录音；中性、均匀、礼貌，与系统的讽刺表演区分。",
+      "pitchZh": "窄幅起伏，清晰断句；扩声器距离、带宽和混响属于播放混音。",
+      "emotionCeiling": 1,
+      "allowedEmotions": [
+        "official",
+        "neutral"
+      ],
+      "forbiddenZh": [
+        "讽刺",
+        "笑声",
+        "悬疑腔",
+        "把录音编号念出来"
+      ],
+      "reference": {
+        "kind": "memo",
+        "key": "library_announcement"
+      }
+    }
+  },
+  "scenes": {
+    "wake_comedy": {
+      "labelZh": "宿舍起床／开场",
+      "emotion": "dry_amusement",
+      "intensity": 2,
+      "paceWpm": [
+        125,
+        180
+      ],
+      "directionZh": "先平静报出坏消息，停一下再落讽刺；不要整句幸灾乐祸。",
+      "space": "dry_close"
+    },
+    "system_confrontation": {
+      "labelZh": "系统阻拦／弹窗反抗",
+      "emotion": "restrained_irritation",
+      "intensity": 3,
+      "paceWpm": [
+        140,
+        200
+      ],
+      "directionZh": "开头短促打断，后半句说清楚诉求；不让连续喊叫吞掉字音。",
+      "space": "dry_close"
+    },
+    "narrator_caught": {
+      "labelZh": "旁白被拽住",
+      "emotion": "startled",
+      "intensity": 3,
+      "paceWpm": [
+        145,
+        210
+      ],
+      "directionZh": "短暂失态后恢复原旁白身份；惊讶不等于恐惧尖叫。",
+      "space": "dry_close"
+    },
+    "inventory_help": {
+      "labelZh": "物品／任务对话",
+      "emotion": "restrained_irritation",
+      "intensity": 2,
+      "paceWpm": [
+        125,
+        180
+      ],
+      "directionZh": "不情愿但说清楚，信息词只做正常重音，任务状态提示本身保持静默。",
+      "space": "dry_close"
+    },
+    "canteen_observation": {
+      "labelZh": "食堂观察",
+      "emotion": "dry_amusement",
+      "intensity": 2,
+      "paceWpm": [
+        125,
+        180
+      ],
+      "directionZh": "日常吐槽，停顿留给玩家看物体，不把线索念成答案。",
+      "space": "dry_close"
+    },
+    "bike_chase": {
+      "labelZh": "骑行追逐",
+      "emotion": "urgent",
+      "intensity": 3,
+      "paceWpm": [
+        155,
+        210
+      ],
+      "directionZh": "短句、利落，紧张来自节奏；不增加尖叫或连续喘息。",
+      "space": "dry_close"
+    },
+    "theater_reasoning": {
+      "labelZh": "剧场观察／推理",
+      "emotion": "focused",
+      "intensity": 1,
+      "paceWpm": [
+        115,
+        170
+      ],
+      "directionZh": "压低表演强度，正常说话而非耳语，给观察留空隙。",
+      "space": "dry_close"
+    },
+    "theater_failure": {
+      "labelZh": "剧场失误回应",
+      "emotion": "dry_amusement",
+      "intensity": 1,
+      "paceWpm": [
+        110,
+        165
+      ],
+      "directionZh": "一句干冷评价后立即收住，不加嘲笑声或拖长停顿。",
+      "space": "dry_close"
+    },
+    "lake_reasoning": {
+      "labelZh": "湖边调查",
+      "emotion": "focused",
+      "intensity": 1,
+      "paceWpm": [
+        120,
+        175
+      ],
+      "directionZh": "观察与思考的口气；未发现的信息不靠异常重音提示。",
+      "space": "dry_close"
+    },
+    "lake_action": {
+      "labelZh": "湖面捕捉时机",
+      "emotion": "urgent",
+      "intensity": 3,
+      "paceWpm": [
+        155,
+        215
+      ],
+      "directionZh": "Now 重音清楚，后半句缩短间隔；保持可辨识词尾。",
+      "space": "dry_close"
+    },
+    "night_handoff": {
+      "labelZh": "湖面到北教的过场",
+      "emotion": "restrained",
+      "intensity": 1,
+      "paceWpm": [
+        135,
+        195
+      ],
+      "directionZh": "客观说明纸条去向，保持原声线；不增添恐怖气氛和新线索。",
+      "space": "dry_close"
+    },
+    "cleaner_warning": {
+      "labelZh": "大厅地滑提醒",
+      "emotion": "gentle",
+      "intensity": 1,
+      "paceWpm": [
+        145,
+        205
+      ],
+      "directionZh": "先提醒地滑，后半句随口说纸条去向；过场时长优先检查。",
+      "space": "near_room"
+    },
+    "guard_closing": {
+      "labelZh": "北教清楼提醒",
+      "emotion": "official",
+      "intensity": 1,
+      "paceWpm": [
+        140,
+        190
+      ],
+      "directionZh": "平常的正式提醒，距离感在混音层实现，不提高情绪强度。",
+      "space": "distant_corridor"
+    },
+    "phone_memo": {
+      "labelZh": "主角手机录音",
+      "emotion": "tired",
+      "intensity": 1,
+      "paceWpm": [
+        145,
+        210
+      ],
+      "directionZh": "近场自然自语，轻微气息；水声、风声保持原混音层。",
+      "space": "phone_recording"
+    },
+    "broadcast": {
+      "labelZh": "食堂／图书馆／剧场广播",
+      "emotion": "official",
+      "intensity": 1,
+      "paceWpm": [
+        125,
+        175
+      ],
+      "directionZh": "均匀、清楚、不带角色讽刺；扩声器效果独立于干声。",
+      "space": "public_address"
+    }
+  },
+  "sceneRules": [
+    {
+      "keys": [
+        "wake_narration"
+      ],
+      "scene": "wake_comedy"
+    },
+    {
+      "keys": [
+        "wake_flash",
+        "xy_attack",
+        "xy_laugh"
+      ],
+      "scene": "system_confrontation"
+    },
+    {
+      "keys": [
+        "prologue_narrator_caught",
+        "prologue_narrator_bargain"
+      ],
+      "scene": "narrator_caught"
+    },
+    {
+      "keys": [
+        "prologue_narrator_intro"
+      ],
+      "scene": "wake_comedy"
+    },
+    {
+      "prefix": "act2_",
+      "scene": "inventory_help"
+    },
+    {
+      "prefix": "c3_canteen_",
+      "scene": "canteen_observation"
+    },
+    {
+      "prefix": "c3_bike_",
+      "scene": "bike_chase"
+    },
+    {
+      "keys": [
+        "c3_theater_failure_narrator"
+      ],
+      "scene": "theater_failure"
+    },
+    {
+      "prefix": "c3_theater_",
+      "scene": "theater_reasoning"
+    },
+    {
+      "keys": [
+        "c3_qizhen_now_system",
+        "c3_qizhen_grab_system",
+        "c3_qizhen_release_narrator"
+      ],
+      "scene": "lake_action"
+    },
+    {
+      "prefix": "c3_qizhen_",
+      "scene": "lake_reasoning"
+    },
+    {
+      "keys": [
+        "ch4_prologue_cleaner_01"
+      ],
+      "scene": "cleaner_warning"
+    },
+    {
+      "keys": [
+        "ch4_prologue_guard_01"
+      ],
+      "scene": "guard_closing"
+    },
+    {
+      "prefix": "ch4_prologue_",
+      "scene": "night_handoff"
+    }
+  ],
+  "auditions": [
+    {
+      "id": "01_narrator_dry",
+      "kind": "catalog",
+      "key": "wake_narration",
+      "maxDurationMs": 6500
+    },
+    {
+      "id": "02_narrator_startled",
+      "kind": "catalog",
+      "key": "prologue_narrator_caught",
+      "maxDurationMs": 5000
+    },
+    {
+      "id": "03_system_observe",
+      "kind": "catalog",
+      "key": "c3_theater_logic_system",
+      "maxDurationMs": 6500,
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      }
+    },
+    {
+      "id": "04_system_urgent",
+      "kind": "catalog",
+      "key": "c3_qizhen_now_system",
+      "maxDurationMs": 3500
+    },
+    {
+      "id": "05_player_recoil",
+      "kind": "catalog",
+      "key": "ch4_prologue_player_01",
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      }
+    },
+    {
+      "id": "06_narrator_night",
+      "kind": "catalog",
+      "key": "ch4_prologue_narrator_01"
+    },
+    {
+      "id": "07_cleaner_warning",
+      "kind": "catalog",
+      "key": "ch4_prologue_cleaner_01"
+    },
+    {
+      "id": "08_guard_closing",
+      "kind": "catalog",
+      "key": "ch4_prologue_guard_01"
+    },
+    {
+      "id": "09_player_memo",
+      "kind": "memo",
+      "key": "lake_player",
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      }
+    },
+    {
+      "id": "10_campus_broadcast",
+      "kind": "memo",
+      "key": "canteen_announcement",
+      "sampling": {
+        "temperature": 0.7,
+        "topP": 0.7,
+        "topK": 30
+      }
+    }
+  ],
+  "unvoicedSceneDirections": [
+    {
+      "scene": "future_learning_center_hall_2f",
+      "labelZh": "未来学习中心二楼大厅",
+      "directionZh": "公共空间交流清楚自然，蓝色构架和彩色圆凳属于二楼。",
+      "status": "no_authored_speech",
+      "noteZh": "当前场景没有已确认的 NPC 英文台词，不凭照片新增人物和介绍词。"
+    },
+    {
+      "scene": "future_learning_center_pantry_3f",
+      "labelZh": "三楼茶水休息区",
+      "directionZh": "近场、松弛、短句，与大厅扩声区分；不凭空补交谈内容。",
+      "status": "no_authored_speech"
+    },
+    {
+      "scene": "future_learning_center_workbench",
+      "labelZh": "机电实验操作台",
+      "directionZh": "操作反馈由实际状态触发；若后续有已设定的指导 NPC，语气清楚克制，不念出机械谜题答案。",
+      "status": "feedback_is_text_only"
+    },
+    {
+      "scene": "stairs_and_elevator",
+      "labelZh": "上下楼／电梯",
+      "directionZh": "脚步、楼层环境声与已有提示配合，移动过程不触发无来源旁白。",
+      "status": "no_authored_speech"
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-28",
+  "source": "20 user-supplied site photographs; original photos remain outside repository",
+  "floorMeaning": "Only explicit user confirmation or visible floor text; null means not assigned",
+  "images": [
+    {
+      "photo": 1,
+      "file": "4641eb6078af72c5e91d42015d8a7d81.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": 3
+    },
+    {
+      "photo": 2,
+      "file": "593fd97a8125724eecc3966485abf05f.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": 2
+    },
+    {
+      "photo": 3,
+      "file": "e7e20f7ff132e528d40213935a936fc0.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 4,
+      "file": "f6eb58381380862fcc04b1e3eeeb178e.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 5,
+      "file": "e384280868b3b649d7a748c713915f83.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 6,
+      "file": "7b38516b8041ab24a14012dbd970b732.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 7,
+      "file": "06f8ef6014931d1c03355e3bdfdf61f5.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 8,
+      "file": "0c00fca32a72f7b5dd5cfa0027cde51f.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": 2
+    },
+    {
+      "photo": 9,
+      "file": "e871c3cb99d9bd847065db6576686f4b.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 10,
+      "file": "5898547f4224848bab2d1bd5d77c2c26.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": 2
+    },
+    {
+      "photo": 11,
+      "file": "838208bedb0c9ad63bae43fd09f8ee73.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 12,
+      "file": "2bb7d7a51079964dab16fa76e7ceaf19.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 13,
+      "file": "e65f3c12978079fecc11fcb675475ab4.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 14,
+      "file": "a2e2b03b9e56d36fd59717280bfa227a.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 15,
+      "file": "15a8054d4bf8310506c3d06a8346e913.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 16,
+      "file": "82bf38ef177d212b6b26c30ba6173cab.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 17,
+      "file": "a7212580f39560d39baab44496df6702.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 18,
+      "file": "84608157f6c60f9cd4da717966f0af66.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 19,
+      "file": "acc55881d88c1311a5f1a19822fcbb45.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    },
+    {
+      "photo": 20,
+      "file": "91d5754a95920b1fbbd12e7db8442063.jpg",
+      "sha256": null,
+      "sourceAvailability": "conversation attachment; original temporary path currently unavailable",
+      "floor": null
+    }
+  ]
+}
