@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/projection_model.gd")
-const PAPER:=Color("e8e4d5")
-const INK:=Color("29383c")
+const PAPER=ApparatusStyle.PAPER
+const INK=ApparatusStyle.INK
 const COLORS:=[Color("6f9292"),Color("bb936b")]
 var model=Model.new()
 var font:Font
@@ -22,8 +23,9 @@ var paper_open:=false
 var hint_level:=0
 const HINTS:=["正面轮廓相同，侧面也相同吗？","保持高度不变，只沿前后滑槽移动一片。","对照两个目标的高度边界与前后跨度。"]
 func _ready()->void:
+	ApparatusStyle.configure_exit(self,close)
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
-	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();model.resume();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();model.pause();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:model.cancel_drag();drag=-1;selected=-1;mask_drag=false;touch_id=-1;queue_redraw()
@@ -71,7 +73,6 @@ func _gui_input(event:InputEvent)->void:
 		queue_redraw();accept_event()
 func press_at(at:Vector2)->void:
 	pointer=at;origin=at
-	if Rect2(880,16,58,48).has_point(at):close();return
 	if at.distance_to(Vector2(95,330))<35:model.rotate_fixture();return
 	if Rect2(665,350,150,82).has_point(at):_expose();return
 	if Rect2(56,461,150,52).has_point(at):_paper();return
@@ -141,7 +142,7 @@ func _grid(at:Vector2,cells:Dictionary,side:int,mask:bool)->void:
 func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("29353b"));_text("X-Lab 小间 · 两个方向，同一组折片",Vector2(32,37),22,PAPER)
-	_text("让两面轮廓同时吻合目标片",Vector2(33,65),16,Color("bcc5bd"));_text("×",Vector2(898,47),28,PAPER)
+	_text("让两面轮廓同时吻合目标片",Vector2(33,65),16,Color("bcc5bd"))
 	draw_rect(Rect2(35,96,890,424),Color("a48f70"))
 	for y:int in range(112,515,28):draw_line(Vector2(43,y),Vector2(918,y),Color("988263"),1)
 	_turntable()
@@ -186,14 +187,12 @@ func _draw()->void:
 	_mask(pointer if mask_drag else mask_position())
 	if paper_open:_text(HINTS[hint_level-1],Vector2(300,494),15,PAPER)
 	elif model.current_passed():_text("两面均已验证",Vector2(380,494),16,PAPER)
-
 func _turntable()->void:
 	# Fixed tabletop, rotating support geometry; the room camera does not turn.
 	var ring:=PackedVector2Array()
 	for i:int in 49:
 		var a:=TAU*i/48;ring.append(Vector2(340+cos(a)*180,322+sin(a)*66))
 	draw_colored_polygon(ring,Color("797d70"));draw_polyline(ring,PAPER,2)
-
 func mask_position()->Vector2:
 	if not model.extension:return Vector2(827,482)
 	return Vector2(687,171) if model.view_side==0 else Vector2(680,285)

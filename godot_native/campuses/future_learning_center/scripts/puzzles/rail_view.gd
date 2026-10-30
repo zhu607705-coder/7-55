@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/rail_model.gd")
-const INK:=Color("303b3d")
-const PAPER:=Color("e8e5d7")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const COLORS:=[Color("688986"),Color("a78b65")]
 var model=Model.new()
 var font:Font
@@ -22,8 +23,9 @@ var hint_level:=0
 var focus_index:=0
 const HINTS:=["两辆车相遇时，哪段轨道同时被占住了？","停进侧线后，车尾是否还占着主轨？","对照车辆长度、支线刻度和接触边，留出通路。"]
 func _ready()->void:
+	ApparatusStyle.configure_exit(self,close)
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
-	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:model.cancel_drag();trailer_drag=false;trailer_selected=false;selected=-1;drag=-1;touch_id=-1;queue_redraw()
@@ -73,7 +75,6 @@ func _gui_input(event:InputEvent)->void:
 		queue_redraw();accept_event()
 func press_at(at:Vector2)->void:
 	pointer=at;origin=at
-	if Rect2(880,16,58,48).has_point(at):close();return
 	if Rect2(52,442,164,65).has_point(at):_paper();return
 	if Rect2(235,448,64,54).has_point(at):model.undo();return
 	if at.distance_to(trailer_position())<36:
@@ -152,7 +153,6 @@ func _draw()->void:
 	for y:int in range(100,506,18):draw_line(Vector2(39,y),Vector2(920,y+4),Color("b0a58d"),1)
 	_text("研讨间 2 · 双向运输",Vector2(44,49),23)
 	_text("让两辆车带着原零件交换终点",Vector2(44,73),15)
-	_text("×",Vector2(899,48),28)
 	_track(cell_position(0)-Vector2(38,0),cell_position(8)+Vector2(38,0));_track(cell_position(4),cell_position(9))
 	for i:int in 9:
 		_text(str(i),cell_position(i)+Vector2(-4,51),12)

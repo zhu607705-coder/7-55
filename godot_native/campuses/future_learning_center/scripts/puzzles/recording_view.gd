@@ -10,12 +10,12 @@ func _cancel_pointer()->void:
  if baffle_drag:model.move_baffle(baffle_origin)
  baffle_drag=false;super._cancel_pointer()
 func _input(event:InputEvent)->void:
+ if ApparatusStyle.navigation_event(self,event):return
  super._input(event)
  if baffle_drag and (event is InputEventMouseMotion and touch_id<0 and event.device!=InputEvent.DEVICE_ID_EMULATION or event is InputEventScreenDrag and event.index==touch_id):
   model.move_baffle(clampf(pointer.y-baffle_offset,150,300));queue_redraw()
 func _press(at:Vector2)->void:
  pressed_at=at;pointer=at;action=""
- if Rect2(850,12,90,48).has_point(at):action="close";return
  if Rect2(35,425,155,80).has_point(at):action="hint";return
  if Rect2(765,285,170,215).has_point(at):action="records";return
  if model.baffle(model.baffle_y).grow(15).has_point(at):baffle_drag=true;baffle_origin=model.baffle_y;baffle_offset=at.y-model.baffle_y;model.pause();return
@@ -39,7 +39,7 @@ func _release(at:Vector2)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("26323a"))
- text("先送到，再遮住",Vector2(35,38),22);text("返回房间",Vector2(855,38),16)
+ text("先送到，再遮住",Vector2(35,38),22)
  box(Rect2(30,90,720,310),Color("95846a"),15)
  for y:float in [278,322]:draw_line(Vector2(195,y),Vector2(695,y),Color("46565b"),7);draw_line(Vector2(195,y-2),Vector2(695,y-2),Color("b5b8ad"),2)
  box(Rect2(690,270,12,65),Color("667574"),5);text("止挡",Vector2(681,360),14)

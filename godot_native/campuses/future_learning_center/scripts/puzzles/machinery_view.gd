@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/machinery_model.gd")
-const INK:=Color("2c3e43")
-const PAPER:=Color("e8e0cd")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const CLAMP_TRAY:=Vector2(170,400)
 const BLANKS:=[Vector2(710,450),Vector2(840,450)]
 const HINTS:=["碰停发生在刀路上，还是抽出通道里？","保持夹具不动，比较切断连接桥前后试件是否还保持定位。","将本次偏槽与轮廓片叠看，再看看夹具压住了哪一侧。"]
@@ -17,7 +18,8 @@ var part_origin:=0.0
 var notebook:=false
 var hint_level:=0
 func _ready()->void:
-	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);mouse_filter=Control.MOUSE_FILTER_STOP;hide()
+	ApparatusStyle.configure_exit(self,close)
+	font=ApparatusStyle.font();size=Vector2(960,540);mouse_filter=Control.MOUSE_FILTER_STOP;hide()
 func open()->void:show();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:model.end_gesture();touch_id=-1;action="";selected=-1;queue_redraw()
@@ -27,6 +29,7 @@ func _process(dt:float)->void:
 	if visible:model.step(minf(dt,.1));queue_redraw()
 func _local(at:Vector2)->Vector2:return get_global_transform_with_canvas().affine_inverse()*at
 func _input(event:InputEvent)->void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible:return
 	if event is InputEventScreenTouch:
 		if event.canceled and event.index==touch_id:cancel_pointer()
@@ -50,7 +53,6 @@ func path_distance(at:Vector2,line:PackedVector2Array)->float:
 	return result
 func press(at:Vector2)->void:
 	origin=at;pointer=at;action=""
-	if Rect2(865,10,80,45).has_point(at):action="close";return
 	if notebook:action="page" if Rect2(640,418,220,40).has_point(at) else "paper";return
 	if Rect2(40,438,145,70).has_point(at):action="paper";return
 	if at.distance_to(Vector2(262,464))<28:action="undo";return
@@ -113,7 +115,7 @@ func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("c1c7bb"))
 	for y:int in range(85,540,34):draw_line(Vector2(0,y),Vector2(960,y+8),Color("b3bdad"),1)
-	text("机加工区 · 泡沫加工演示盒",Vector2(32,36),23);text("沿轮廓试切，再从通道里抽出同一件样品。",Vector2(33,65),16);text("返回",Vector2(878,40),17)
+	text("机加工区 · 泡沫加工演示盒",Vector2(32,36),23);text("沿轮廓试切，再从通道里抽出同一件样品。",Vector2(33,65),16)
 	slab(Rect2(74,134,812,270),Color("776e5e"),20)
 	slab(Model.TRAY,Color("b7b69b"),4)
 	# Outer frame supports the datum; a genuine opening exists only on the selected exit side.

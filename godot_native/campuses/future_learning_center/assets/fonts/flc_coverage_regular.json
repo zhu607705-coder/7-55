@@ -1,0 +1,13 @@
+{
+  "tool": "fonttools 4.61.1",
+  "source": "NotoSansCJK-Regular.ttc",
+  "source_sha256": "b76b0433203017ca80401b2ee0dd69350349871c4b19d504c34dbdd80541690a",
+  "source_face": 2,
+  "weight": 400,
+  "historical_coverage_sha256": "b6ad88f4e3cefd19983153f1215f770fc3751028e4a98fb47107dde11741784a",
+  "authored_cjk_sha256": "ef94de4ba5b34e8a6ee8e31946b558d6b8b18660354fcf0b9a60ccefb820900d",
+  "added_characters": "乙佳冰凳刀唇坯孵岔斑炉爪矮笺荷铭铰阀颈",
+  "codepoints": 2438,
+  "sha256": "be5949cd86889e5d870ccea48014ac34e529e314fc77edc13ec1517dda55a320",
+  "license": "res://ui_assets/fonts/SELECTED_NOTO_LICENSE.txt"
+}

@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/koala_model.gd")
-const INK:=Color("29373b")
-const PAPER:=Color("e7e1cf")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const INPUT_CLAMP:=Rect2(60,105,260,100)
 const NOTEBOOK:=Rect2(535,120,120,76)
 const NOTE_PAGE:=Rect2(785,388,88,48)
@@ -25,7 +26,8 @@ var hint_level:=0
 var frame_cursor:=0
 const HINTS:=["形状回来了，填纹也回来了吗？","交换两个模块的前后，比较纸带上的中间结果。","最后改变的是哪两个位置？"]
 func _ready()->void:
- mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);model.insert_card(0);hide()
+ ApparatusStyle.configure_exit(self,close)
+ mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;font=ApparatusStyle.font();size=Vector2(960,540);model.insert_card(0);hide()
 func open()->void:show();model.resume();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:held=-1;held_card=-1;touch_id=-1;queue_redraw()
@@ -58,7 +60,6 @@ func _gui_input(e:InputEvent)->void:
  elif e is InputEventKey and e.pressed and e.keycode==KEY_ESCAPE:close();accept_event()
 func press_at(at:Vector2)->void:
  pointer=at;origin=at
- if Rect2(880,15,60,50).has_point(at):close();return
  if paper_open:
   if NOTE_PAGE.has_point(at):frame_cursor+=4;hint_level=(hint_level+1)%3
   else:paper_open=false
@@ -128,7 +129,6 @@ func _draw()->void:
  draw_rect(Rect2(0,0,960,540),INK)
  _text("考拉工作室 · 把变化倒过来",Vector2(32,37),22,PAPER)
  _text("接好模块，让输出与原图一致。",Vector2(33,66),16,Color("bdc8c2"))
- _text("×",Vector2(898,47),28,PAPER)
  draw_rect(Rect2(35,87,890,430),Color("a48d6c"))
  for y:int in range(105,515,30):draw_line(Vector2(43,y),Vector2(917,y),Color("987e5d"),1)
  # The encoded card is the only input image; its paper is physically clamped.

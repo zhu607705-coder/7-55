@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/fold_model.gd")
-const INK:=Color("293c43")
-const PAPER:=Color("e8e1cf")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const LEAF_COLORS:=[Color("9aada8"),Color("b9ab8f")]
 const PLUG:=Vector2(535,318)
 const PARKED_PLUG:=Vector2(610,422)
@@ -22,7 +23,8 @@ var feedback:=""
 var glow:=0.0
 var contact_flash:=0.0
 func _ready()->void:
-	font=load("res://scripts/ui/native_typography.gd").body_font()
+	ApparatusStyle.configure_exit(self,close)
+	font=ApparatusStyle.font()
 	mouse_filter=Control.MOUSE_FILTER_STOP;size=Vector2(960,540);hide()
 func open()->void:show();queue_redraw()
 func close()->void:model.stop();cancel_pointer();hide();closed.emit()
@@ -38,6 +40,7 @@ func _process(dt:float)->void:
 	contact_flash=maxf(0,contact_flash-dt);queue_redraw()
 func _local(at:Vector2)->Vector2:return get_global_transform_with_canvas().affine_inverse()*at
 func _input(event:InputEvent)->void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible:return
 	if event is InputEventScreenTouch:
 		if event.canceled and event.index==touch_id:cancel_pointer()
@@ -61,7 +64,6 @@ func distance_to_path(at:Vector2,path:PackedVector2Array)->float:
 	return distance
 func press(at:Vector2)->void:
 	pointer=at;origin=at;action="";feedback=""
-	if Rect2(860,10,88,48).has_point(at):action="close";return
 	if notebook:
 		action="page" if Rect2(645,418,230,40).has_point(at) else "paper";return
 	if Rect2(45,420,145,85).has_point(at):action="paper";return
@@ -142,7 +144,6 @@ func _draw()->void:
 	for y:int in range(80,540,36):draw_line(Vector2(0,y),Vector2(960,y+8),Color("b8bbae"),1)
 	text("X-Lab 南区 · 折叠样机",Vector2(32,36),23)
 	text("展开使用，再把同一台样机收入模板。",Vector2(33,65),16)
-	text("返回",Vector2(878,40),17)
 	slab(Rect2(100,362,760,40),Color("8e795d"),24)
 	# The transport gauge is fixed; the live covers are never exchanged for a closed sprite.
 	draw_rect(Model.TEMPLATE,Color(.89,.87,.77,.18))

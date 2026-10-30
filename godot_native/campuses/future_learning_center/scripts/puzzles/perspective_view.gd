@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/perspective_model.gd")
-const INK:=Color("29373b")
-const PAPER:=Color("e9e4d5")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const CELLS:=[Vector2(422,230),Vector2(548,230),Vector2(422,337),Vector2(548,337)]
 const FEET:=[Vector2(485,126),Vector2(485,431),Vector2(643,282)]
 const PHOTOS:=[Vector2(176,185),Vector2(176,361),Vector2(790,185)]
@@ -20,8 +21,9 @@ var focus_index:=0
 var camera_position:=Vector2(485,126)
 const HINTS:=["两份记录是从同一侧拍的吗？","保持一个模型不动，换到对面看看缺口。","用固定缺口对齐两张纸，行与列都要一起换。"]
 func _ready()->void:
+	ApparatusStyle.configure_exit(self,close)
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
-	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();model.resume();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:drag=-1;photo_drag=-1;selected=-1;touch_id=-1;queue_redraw()
@@ -61,7 +63,6 @@ func _gui_input(event:InputEvent)->void:
 		queue_redraw();accept_event()
 func press_at(at:Vector2)->void:
 	pointer=at;origin=at
-	if Rect2(880,16,58,48).has_point(at):close();return
 	if Rect2(55,463,150,48).has_point(at):_paper();return
 	if Rect2(225,461,65,50).has_point(at):model.undo();return
 	if Rect2(722,365,140,70).has_point(at):_expose();return
@@ -122,7 +123,7 @@ func _photo(id:int)->void:
 func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("29373b"));_text("团队工作室 · 对面说的左边",Vector2(32,37),22,PAPER)
-	_text("让同一摆位符合两侧的局部记录",Vector2(33,65),16,Color("bdc5bd"));_text("×",Vector2(898,47),28,PAPER)
+	_text("让同一摆位符合两侧的局部记录",Vector2(33,65),16,Color("bdc5bd"))
 	draw_rect(Rect2(35,94,890,425),Color("a58e6e"))
 	for y:int in range(111,516,29):draw_line(Vector2(43,y),Vector2(916,y),Color("978060"),1)
 	draw_rect(Rect2(350,170,270,223),INK);draw_rect(Rect2(350,160,270,223),Color("c6b795"))

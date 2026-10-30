@@ -7,6 +7,7 @@ func _init()->void:
  hints=["桌面变暗以后，相机还看见完整标记吗？","只挪白板，比较阴影与相机纸片。","两张废片中，亮斑与白板分别挡住了什么？"]
 func _cancel_pointer()->void:board_drag=false;super._cancel_pointer()
 func _input(event:InputEvent)->void:
+ if ApparatusStyle.navigation_event(self,event):return
  if event is InputEventScreenTouch and event.canceled:
   if event.index==touch_id:_cancel_pointer();queue_redraw()
   return
@@ -16,7 +17,6 @@ func _process(dt:float)->void:
  super._process(dt)
 func _press(at:Vector2)->void:
  pressed_at=at;pointer=at;action=""
- if Rect2(850,12,100,48).has_point(at):action="close";return
  if Rect2(32,444,160,65).has_point(at):action="hint";return
  if Rect2(25,80,200,85).has_point(at):action="records";return
  if at.distance_to(Vector2(480,414))<35:action="photo";return
@@ -37,7 +37,7 @@ func _release(at:Vector2)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("c0c5bc"))
- text("开放平台 · 挡光，不挡镜头",Vector2(30,35),22,Color("293d42"));text("返回",Vector2(885,35),16,Color("293d42"))
+ text("开放平台 · 挡光，不挡镜头",Vector2(30,35),22,Color("293d42"))
  for y:int in range(90,530,35):draw_line(Vector2(25,y),Vector2(935,y),Color("b0b6af"),1)
  draw_colored_polygon(model.shadow(),Color("7c8f91",.58))
  for r:Rect2 in Platform.SCENERY:

@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/schedule_model.gd")
-const INK=Color("293638")
-const PAPER=Color("dedbc9")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const NAMES=["拍 A","装 B","拍 B","比较"]
 const XS=[370.0,545.0,720.0]
 var model=Model.new()
@@ -14,7 +15,8 @@ var pointer:=Vector2.ZERO
 var touch_id:=-1
 var paper_open:=false
 func _ready()->void:
- font=preload("res://scripts/ui/native_typography.gd").body_font()
+ ApparatusStyle.configure_exit(self,close)
+ font=ApparatusStyle.font()
  mouse_filter=Control.MOUSE_FILTER_STOP;hide()
 func open()->void:show();queue_redraw()
 func close()->void:
@@ -26,6 +28,7 @@ func _process(dt:float)->void:
 func card_point(task:int)->Vector2:return Vector2(XS[model.slots[task]],142+task*70)
 func _cancel_drag()->void:held_task=-1;held_tool=-2;selected_task=-1;touch_id=-1;queue_redraw()
 func _input(event:InputEvent)->void:
+ if ApparatusStyle.navigation_event(self,event):return
  if not is_visible_in_tree():return
  if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device==InputEvent.DEVICE_ID_EMULATION:return
  if event is InputEventScreenTouch:
@@ -44,7 +47,6 @@ func _input(event:InputEvent)->void:
  elif event is InputEventKey and event.pressed and event.keycode==KEY_ESCAPE:close();get_viewport().set_input_as_handled()
 func press_at(at:Vector2)->void:
  pointer=at
- if Rect2(850,12,100,55).has_point(at):close();return
  if Rect2(42,427,150,74).has_point(at):paper_open=not paper_open;queue_redraw();return
  if at.distance_to(Vector2(238,471))<30:model.undo();return
  if at.distance_to(Vector2(870,340))<39:
@@ -105,7 +107,7 @@ func _card(task:int,at:Vector2)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("253236"))
- _text("开放研讨 · 同一拍能做什么",Vector2(32,39),23,PAPER);_text("返回房间",Vector2(853,39),16,PAPER)
+ _text("开放研讨 · 同一拍能做什么",Vector2(32,39),23,PAPER)
  draw_rect(Rect2(25,85,910,420),Color("4d5652"));draw_rect(Rect2(25,77,910,420),Color("a89b80"))
  draw_rect(Rect2(283,95,525,303),Color("cbc6b3"))
  for slot:int in 3:

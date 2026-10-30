@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/robotics_model.gd")
-const INK:=Color("29373b")
-const PAPER:=Color("e9e4d5")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const TURN:=Vector2(350,235)
 const SWITCH:=Vector2(620,310)
 const POWER:=Vector2(130,427)
@@ -22,8 +23,9 @@ var hint_level:=0
 var focus_index:=0
 const HINTS:=["同一个岔口，从两边进入会碰到哪一面？","送达以后，空托盘走到了哪一处？","保持轨道不变，比较去程实线与返程点线。"]
 func _ready()->void:
+ ApparatusStyle.configure_exit(self,close)
  mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
- font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+ font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:
@@ -74,7 +76,6 @@ func _power()->void:
  else:model.start()
 func press_at(at:Vector2)->void:
  origin=at;pointer=at
- if Rect2(880,15,60,50).has_point(at):close();return
  if at.distance_to(POWER)<30:_power();return
  if at.distance_to(Vector2(225,427))<26:model.single_step();queue_redraw();return
  if Rect2(42,474,140,38).has_point(at):_paper();return
@@ -113,7 +114,7 @@ func _arrow(at:Vector2,heading:float,color:Color)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),INK);_text("机器人团队 · 送到了，还要回来",Vector2(32,38),22,PAPER)
- _text("完成装载、卸载与空载返回",Vector2(33,66),16,Color("bdc5bd"));_text("×",Vector2(898,47),28,PAPER)
+ _text("完成装载、卸载与空载返回",Vector2(33,66),16,Color("bdc5bd"))
  draw_rect(Rect2(35,88,890,375),Color("a58e6e"))
  for y:int in range(95,460,26):draw_line(Vector2(40,y),Vector2(920,y),Color("978060"),1)
  for edge:Array in Model.EDGES:

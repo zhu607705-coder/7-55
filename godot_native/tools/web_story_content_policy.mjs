@@ -7,6 +7,7 @@ import crypto from 'node:crypto';
 // Only authored runtime inputs of the approved optional activity are shipped.
 // Unknown/new campus roots still fail closed in the actual PCK audit.
 export const FLC_FONT_DEPENDENCIES = Object.freeze([
+  "campuses/future_learning_center/assets/fonts/flc_coverage_regular.otf",
   "ui_assets/fonts/SelectedSans-Regular.otf",
   "ui_assets/fonts/SelectedCoverage-Regular.otf",
 ]);

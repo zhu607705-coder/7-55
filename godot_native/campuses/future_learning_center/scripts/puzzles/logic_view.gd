@@ -1,4 +1,5 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/logic_model.gd")
 const TRAYS:=[Vector2(300,455),Vector2(440,455),Vector2(580,455)]
@@ -14,7 +15,8 @@ var hints:=-1
 var records:=false
 const HELP:=["夹爪合拢时，试件哪里真正接触了实验座？","保持走线不动，比较空台、单处和双处接触。","对照接触痕迹与抓空记录，看看缺少哪一处。"]
 func _ready()->void:
- font=load("res://scripts/ui/native_typography.gd").body_font();mouse_filter=MOUSE_FILTER_STOP;hide()
+ ApparatusStyle.configure_exit(self,close)
+ font=ApparatusStyle.font();mouse_filter=MOUSE_FILTER_STOP;hide()
 func open()->void:show();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:drag="";selected="";touch_id=-1
@@ -23,6 +25,7 @@ func _notification(what:int)->void:
 func _process(dt:float)->void:
  if visible:model.step(dt);queue_redraw()
 func _input(e:InputEvent)->void:
+ if ApparatusStyle.navigation_event(self,e):return
  if not visible:return
  if e is InputEventKey and e.pressed and e.keycode==KEY_ESCAPE:close();get_viewport().set_input_as_handled()
  elif e is InputEventMouseButton and e.button_index==MOUSE_BUTTON_LEFT:
@@ -42,7 +45,6 @@ func _input(e:InputEvent)->void:
 func block_at(i:int)->Vector2:return model.position if model.block==i else TRAYS[i]
 func press(at:Vector2)->void:
  down=at;pointer=at;drag=""
- if Rect2(870,10,80,50).has_point(at):drag="close";return
  if Rect2(35,423,150,80).has_point(at):drag="help";return
  if Rect2(755,305,170,190).has_point(at):drag="records";return
  if model.paused:drag="resume";return
@@ -93,7 +95,7 @@ func circuit(at:Vector2,which:int,scale_value:float)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("26323a"))
- txt("它为什么抓了个空",Vector2(34,38),22);txt("试件靠近并被托住时，才允许夹持。",Vector2(34,64),15);txt("返回",Vector2(885,38))
+ txt("它为什么抓了个空",Vector2(34,38),22);txt("试件靠近并被托住时，才允许夹持。",Vector2(34,64),15)
  slab(Rect2(25,90,910,320),Color("93836b"))
  for i:int in 3:
   slab(Rect2(35,120+i*95,120,78),Color("667773"));circuit(Vector2(40,125+i*95),i,1.0)

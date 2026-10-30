@@ -1,4 +1,5 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 ## Direct manipulation of a physical apparatus; all acceptance lives in Model.
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/collab_model.gd")
@@ -19,10 +20,10 @@ var show_records:=false
 var action:=""
 var feedback:=""
 var pulse:=0.0
-
 func _ready()->void:
+	ApparatusStyle.configure_exit(self,close)
 	mouse_filter=Control.MOUSE_FILTER_STOP
-	font=load("res://scripts/ui/native_typography.gd").body_font()
+	font=ApparatusStyle.font()
 	hide()
 func open()->void:show();queue_redraw()
 func close()->void:
@@ -40,6 +41,7 @@ func lamp_at(side:int)->Vector2:return projected(model.rotate_point(Vector2(-210
 func camera_at()->Vector2:return projected(model.rotate_point(Vector2(0,-210)))
 func lever_at()->Vector2:return Vector2(715,422)
 func _input(event:InputEvent)->void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible:return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:close();get_viewport().set_input_as_handled()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
@@ -58,7 +60,6 @@ func _input(event:InputEvent)->void:
 	elif event is InputEventScreenDrag and event.index==touch_id:pointer=event.position;queue_redraw();get_viewport().set_input_as_handled()
 func _press(at:Vector2)->void:
 	pressed_at=at;pointer=at;action=""
-	if Rect2(850,12,90,48).has_point(at):action="close";return
 	if Rect2(38,407,142,88).has_point(at):action="hint";return
 	if Rect2(792,110,145,270).has_point(at):action="records";return
 	if model.paused:action="resume";return
@@ -120,7 +121,6 @@ func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("192329"))
 	text(apparatus_title,Vector2(32,42),22)
-	text("返回房间",Vector2(855,42),16)
 	box(Rect2(185,111,590,302),Color("716750"),22)
 	for x:int in range(200,770,24):draw_line(Vector2(x,115),Vector2(x,407),Color(0,0,0,.025),1)
 	# The fixture is a square in its own plane, shown in the same oblique projection.
@@ -186,5 +186,4 @@ func _draw()->void:
 	if model.paused:status="试验暂停 · 轻触装置继续"
 	if not status.is_empty():text(status,Vector2(32,524),16)
 	if drag>=0:_baffle(drag,pointer,-1)
-
 func _draw_apparatus_extra()->void:pass

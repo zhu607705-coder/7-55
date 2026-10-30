@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/rules_model.gd")
-const INK:=Color("29343c")
-const PAPER:=Color("e9e5d6")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const TILE:=Color("b4b9aa")
 const SLOTS:=[Vector2(370,225),Vector2(470,225),Vector2(660,225),Vector2(760,225)]
 const HANDLES:=[Vector2(425,338),Vector2(715,338)]
@@ -18,8 +19,9 @@ var paper_open:=false
 var hint_level:=0
 var focus_index:=0
 func _ready()->void:
+	ApparatusStyle.configure_exit(self,close)
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
-	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:selected=-1;drag=-1;touch_id=-1;queue_redraw()
@@ -58,7 +60,6 @@ func _gui_input(event:InputEvent)->void:
 		queue_redraw();accept_event()
 func press_at(at:Vector2)->void:
 	pointer=at;origin=at
-	if Rect2(880,16,58,48).has_point(at):close();return
 	if Rect2(55,447,160,59).has_point(at):_paper();return
 	if Rect2(224,450,60,47).has_point(at):model.undo();return
 	for i:int in 2:
@@ -106,7 +107,6 @@ func _draw()->void:
 	draw_rect(Rect2(0,0,960,540),Color("28323a"))
 	_text("研讨间 1 · 找一个能区分猜想的例子",Vector2(32,36),22,PAPER)
 	_text("先做一次有区分力的试验，再用一组新磁片验证",Vector2(33,64),16,Color("bcc5c1"))
-	draw_line(Vector2(898,30),Vector2(919,51),PAPER,3);draw_line(Vector2(919,30),Vector2(898,51),PAPER,3)
 	draw_rect(Rect2(36,106,890,410),INK);draw_rect(Rect2(36,98,890,410),Color("a18c6d"))
 	for y:int in range(119,500,30):draw_line(Vector2(46,y),Vector2(915,y),Color("927c61"),1)
 	draw_rect(Rect2(59,116,212,312),Color("726956"));_text("磁片托盘",Vector2(108,137),15,PAPER)

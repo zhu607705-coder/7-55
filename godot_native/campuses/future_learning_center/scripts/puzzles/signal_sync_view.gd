@@ -18,6 +18,7 @@ func port_at(port:String)->Vector2:
  return Vector2.ZERO
 func _cancel_pointer()->void:cable_input="";screen_drag=-1;super._cancel_pointer()
 func _input(event:InputEvent)->void:
+ if ApparatusStyle.navigation_event(self,event):return
  if event is InputEventScreenTouch and event.canceled:
   if event.index==touch_id:_cancel_pointer();queue_redraw()
   return
@@ -27,7 +28,6 @@ func _process(dt:float)->void:
  super._process(dt)
 func _press(at:Vector2)->void:
  pressed_at=at;pointer=at;action=""
- if Rect2(850,12,100,48).has_point(at):action="close";return
  if Rect2(35,445,155,65).has_point(at):action="hint";return
  if Rect2(300,440,225,75).has_point(at):action="records";return
  for input:String in SignalSync.INPUTS:
@@ -59,7 +59,7 @@ func pattern(at:Vector2,value:int)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("28373b"))
- text("团队工作室 · 两个版本",Vector2(35,36),23);text("返回",Vector2(885,35),16)
+ text("团队工作室 · 两个版本",Vector2(35,36),23)
  box(Rect2(30,100,895,320),Color("9d8d71"),12)
  # Socket identity, not left/right screen position, determines the signal.
  for input:String in model.cables:

@@ -1,4 +1,5 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 ## Scene props own manipulation; the only screen-space control is exit navigation.
 signal closed
 const Plane45=preload("res://campuses/future_learning_center/scripts/bench_projection.gd")
@@ -29,11 +30,7 @@ var cues: Array[Dictionary]=[]
 var returns: Dictionary={}
 
 func _ready() -> void:
-	var face:FontFile=load("res://ui_assets/fonts/SelectedSans-Regular.otf").duplicate()
-	face.antialiasing=TextServer.FONT_ANTIALIASING_GRAY;face.allow_system_fallback=false
-	var typeface:=FontVariation.new();typeface.base_font=face
-	typeface.fallbacks=[load("res://ui_assets/fonts/SelectedCoverage-Regular.otf")]
-	font=typeface
+	font=ApparatusStyle.font()
 	miniature=Miniatures.new();add_child(miniature)
 	visibility_changed.connect(func()->void:miniature.set_active(visible))
 	reduced_motion=OS.get_environment("FLC_REDUCED_MOTION")=="1"
@@ -41,14 +38,7 @@ func _ready() -> void:
 		reduced_motion=reduced_motion or bool(JavaScriptBridge.eval("window.matchMedia('(prefers-reduced-motion: reduce)').matches"))
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var exit := Button.new()
-	exit.text = "离开操作台"; exit.position = Vector2(808,7); exit.size = Vector2(144,40)
-	exit.add_theme_font_override("font",font); exit.add_theme_font_size_override("font_size",20)
-	var style := StyleBoxFlat.new(); style.bg_color = Color("344452")
-	style.border_color = Color("7993a1"); style.set_border_width_all(1)
-	exit.add_theme_stylebox_override("normal",style)
-	exit.add_theme_color_override("font_color",Color("e8e0c8"))
-	exit.pressed.connect(close); add_child(exit)
+	ApparatusStyle.configure_exit(self,close)
 	hide()
 
 func _load_texture(path: String) -> Texture2D:
@@ -116,6 +106,7 @@ func lever_grip() -> Vector2:
 	return LEVER_BASE + Vector2(0,-42+lever_offset if gesture=="lever" else lever_rest)
 
 func _input(event: InputEvent) -> void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible: return
 	var handled := false
 	if event is InputEventKey and event.pressed and not event.echo:

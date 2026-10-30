@@ -7,7 +7,6 @@ func _init()->void:
 func _cancel_pointer()->void:tape_drag=-1;super._cancel_pointer()
 func _press(at:Vector2)->void:
  pointer=at;pressed_at=at;action=""
- if Rect2(850,12,90,48).has_point(at):action="close";return
  if Rect2(35,440,150,70).has_point(at):action="hint";return
  if at.distance_to(Vector2(850,440))<44:action="roll";return
  if model.paused:action="resume";return
@@ -15,6 +14,7 @@ func _press(at:Vector2)->void:
   if Rect2(85,118+i*108,790,83).has_point(at):tape_drag=i;start_offset=model.offsets[i];return
  if at.distance_to(Vector2(740,383))<38:action="run";return
 func _input(event:InputEvent)->void:
+ if ApparatusStyle.navigation_event(self,event):return
  super._input(event)
  if visible and tape_drag>=0 and (event is InputEventMouseMotion or event is InputEventScreenDrag):
   if event is InputEventMouseMotion and (touch_id>=0 or event.device==InputEvent.DEVICE_ID_EMULATION):return
@@ -39,7 +39,7 @@ func _event_icon(at:Vector2,kind:String,color:Color)->void:
   draw_rect(Rect2(at-Vector2(16,10),Vector2(22,20)),color);draw_line(at+Vector2(8,-19),at+Vector2(8,19),color,5)
 func _draw()->void:
  if font==null:return
- draw_rect(Rect2(0,0,960,540),Color("26323a"));text("两份记录差了一个节拍",Vector2(35,38),22);text("返回房间",Vector2(855,38),16)
+ draw_rect(Rect2(0,0,960,540),Color("26323a"));text("两份记录差了一个节拍",Vector2(35,38),22)
  box(Rect2(30,90,900,337),Color("95866d"),14)
  for i:int in 2:
   var y:=118+i*108

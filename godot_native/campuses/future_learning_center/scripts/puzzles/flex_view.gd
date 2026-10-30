@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model = preload("res://campuses/future_learning_center/scripts/puzzles/flex_model.gd")
-const INK := Color("344452")
-const PAPER := Color("ede9df")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const COPPER := Color("b88a58")
 const PORT_Y := [232.0, 302.0, 372.0]
 const ROLE_LABEL := ["源", "分", "收"]
@@ -21,9 +22,9 @@ var notebook := false
 var feedback := ""
 var fade := 0.0
 const HINTS := ["底座换位后，哪些标记跟着它一起转了？", "固定一个输入，在两个工位分别追踪它到达的端点。", "对照功能草图和端点测试，检查端口角色与线长。"]
-
 func _ready() -> void:
-	font = load("res://scripts/ui/native_typography.gd").body_font()
+	ApparatusStyle.configure_exit(self,close)
+	font = ApparatusStyle.font()
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	hide()
 func open() -> void:
@@ -40,6 +41,7 @@ func _process(dt: float) -> void:
 	fade = minf(1, fade + dt * 5)
 	model.step(minf(dt, .1)); queue_redraw()
 func _input(event: InputEvent) -> void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible: return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE: close()
@@ -59,10 +61,8 @@ func _input(event: InputEvent) -> void:
 		if event.index == touch_id: pointer = (get_global_transform_with_canvas().affine_inverse()*event.position)
 	else: return
 	get_viewport().set_input_as_handled(); queue_redraw()
-
 func press(at: Vector2) -> void:
 	pointer = at
-	if Rect2(865,15,70,45).has_point(at): close(); return
 	if notebook:
 		if Rect2(635,400,220,54).has_point(at): hint_level = mini(3,hint_level+1)
 		else: notebook = false
@@ -88,7 +88,6 @@ func press(at: Vector2) -> void:
 	for station: int in 2:
 		if Rect2(730,115+station*66,128,48).has_point(at):
 			if held_board: model.move_to(station)
-
 func _connect(channel: int, port: int) -> void:
 	feedback = "" if model.edit(channel,port) else "这个插孔已有插头，先拔下。"
 func route_grip(channel:int)->Vector2:
@@ -153,7 +152,6 @@ func _draw() -> void:
 	_block(Rect2(190,151,494,259),Color("d0d1c5"),12)
 	_txt("流动工位",Vector2(36,38),24)
 	_txt("同一件底座，在两个工位都传到正确端点。",Vector2(36,64),17)
-	_txt("返回",Vector2(877,43),18)
 	_block(Rect2(385,94,190,56),Color("d1c6aa"),6)
 	draw_arc(Vector2(480,120),28,PI,TAU,20,INK,5)
 	_txt("便携底座 · 01",Vector2(402,143),16)

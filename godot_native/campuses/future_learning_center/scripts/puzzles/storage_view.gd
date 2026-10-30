@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/storage_model.gd")
-const INK:=Color("344452")
-const PAPER:=Color("ede9df")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const BOX_COLORS:=[Color("b89361"),Color("93a59d"),Color("a19b88")]
 var model=Model.new()
 var font:Font
@@ -15,9 +16,9 @@ var hint_level:=0
 var contact_time:=0.0
 var pointer:=Vector2.ZERO
 const HINTS:=["抽拉时最先接触的是短箱、柜门，还是门前物件？","保持长箱不动，只移动一只短箱到合法支撑位，再比较接触点。","对照归位轮廓和失败痕迹，查看柜门需要的活动范围。"]
-
 func _ready()->void:
-	font=load("res://scripts/ui/native_typography.gd").body_font()
+	ApparatusStyle.configure_exit(self,close)
+	font=ApparatusStyle.font()
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	hide()
 func open()->void:show();queue_redraw()
@@ -29,6 +30,7 @@ func _notification(what:int)->void:
 func _process(dt:float)->void:
 	if visible:contact_time=maxf(0,contact_time-dt);queue_redraw()
 func _input(event:InputEvent)->void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_ESCAPE:close()
@@ -50,7 +52,6 @@ func _input(event:InputEvent)->void:
 	get_viewport().set_input_as_handled();queue_redraw()
 func press(at:Vector2)->void:
 	pointer=at
-	if Rect2(865,12,75,48).has_point(at):close();return
 	if notebook:
 		if Rect2(640,405,230,45).has_point(at):hint_level=mini(3,hint_level+1)
 		elif Rect2(135,405,120,45).has_point(at):model.reset();notebook=false
@@ -83,7 +84,6 @@ func _draw()->void:
 	for y:int in range(90,540,45):draw_line(Vector2(0,y),Vector2(960,y),Color("b6b9b6"),1)
 	_txt("设备储藏室",Vector2(35,38),24)
 	_txt("取出长箱，给其他箱子留下支撑和归路。",Vector2(35,65),17)
-	_txt("返回",Vector2(877,42),18)
 	# Cabinet shell and supported surfaces are the same geometry as the model.
 	_block(Rect2(204,132,432,234),Color("70503b"),20)
 	for rect:Rect2 in Model.SUPPORT:

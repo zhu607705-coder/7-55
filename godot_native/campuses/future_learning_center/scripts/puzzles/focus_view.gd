@@ -1,12 +1,13 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 ## A physical patch-board: visible plugs, branch meters and one mode lever.
 signal closed
 const Model = preload("res://campuses/future_learning_center/scripts/puzzles/focus_model.gd")
 const DEVICE_POS := [Vector2(160,160), Vector2(340,160), Vector2(540,160), Vector2(720,160), Vector2(827,350)]
 const BRANCH_POS := [Vector2(280,350), Vector2(570,350)]
 const LEVER := Vector2(720,385)
-const INK := Color("26323b")
-const PAPER := Color("e7e2d3")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const METAL := Color("8d9b9c")
 const BLUE := Color("688c99")
 const COPPER := Color("b68559")
@@ -24,11 +25,11 @@ var hint_level := 0
 var paper_open := false
 var feedback := ""
 var focus_index := 0
-
 func _ready() -> void:
+	ApparatusStyle.configure_exit(self,close)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	focus_mode = Control.FOCUS_ALL
-	font = load("res://scripts/ui/native_typography.gd").body_font()
+	font = ApparatusStyle.font()
 	size = Vector2(960,540)
 	hide()
 func open() -> void:
@@ -91,7 +92,6 @@ func _gui_input(event: InputEvent) -> void:
 		queue_redraw(); accept_event()
 func press_at(at: Vector2) -> void:
 	pointer = at; origin = at
-	if Rect2(880,16,58,48).has_point(at): close(); return
 	if Rect2(52,414,150,86).has_point(at): _paper(); return
 	if Rect2(216,443,70,46).has_point(at): model.undo(); feedback = ""; return
 	if at.distance_to(LEVER) < 46: _operate_lever(); return
@@ -180,7 +180,6 @@ func _draw() -> void:
 	for y: int in range(105,490,35): draw_line(Vector2(48,y),Vector2(910,y),Color("947b60"),1)
 	_text("专注孵化区 · 同一接法，两种状态",Vector2(32,36),22,PAPER)
 	_text("让模型设备在待机和工作时都能运行",Vector2(33,64),16,Color("b8c2c1"))
-	draw_line(Vector2(898,30),Vector2(919,51),PAPER,3);draw_line(Vector2(919,30),Vector2(898,51),PAPER,3)
 	for i: int in model.device_count():
 		var start: Vector2 = DEVICE_POS[i]+Vector2(25,59)
 		var end: Vector2 = pointer if drag == i else plug_position(i)

@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/solid_projection_model.gd")
-const INK:=Color("29373b")
-const PAPER:=Color("e7e1cf")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const RACK:=[Vector2(125,180),Vector2(125,290),Vector2(125,400)]
 var model=Model.new()
 var font:Font
@@ -18,7 +19,8 @@ var last_motion:=Vector2.ZERO
 var pointer_valid:=true
 const HINTS:=["哪张图能区分前后相叠的块？","底座缺口不变，只换一块的前后位置。","把三张图对照；上层也需要下方的实体支撑。"]
 func _ready()->void:
- mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+ ApparatusStyle.configure_exit(self,close)
+ mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:show();model.resume();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:model.cancel_drag();held=-1;held_sheet=false;touch_id=-1;queue_redraw()
@@ -76,7 +78,6 @@ func _gui_input(e:InputEvent)->void:
  elif e is InputEventKey and e.pressed and e.keycode==KEY_ESCAPE:close();accept_event()
 func press_at(at:Vector2)->void:
  pointer=at
- if Rect2(880,15,60,50).has_point(at):close();return
  if Rect2(45,470,145,42).has_point(at):paper_open=not paper_open;hint_level=(hint_level+1)%3;return
  if at.distance_to(Vector2(240,490))<27:model.undo();return
  if at.distance_to(Vector2(540,412))<28:model.rotate_holder();return
@@ -137,7 +138,7 @@ func _grid(at:Vector2,cells:Dictionary,view:int,mask:bool)->void:
    if mask and not model.visible_cell(view,cell):draw_rect(r,Color("b1a083"));draw_line(r.position,r.end,PAPER,2)
 func _draw()->void:
  if font==null:return
- draw_rect(Rect2(0,0,960,540),INK);_text("跨学科研讨 · 三个视图，同一件东西",Vector2(32,38),22,PAPER);_text("×",Vector2(898,47),28,PAPER)
+ draw_rect(Rect2(0,0,960,540),INK);_text("跨学科研讨 · 三个视图，同一件东西",Vector2(32,38),22,PAPER)
  draw_rect(Rect2(35,87,890,430),Color("a38e70"))
  for y:int in range(105,515,30):draw_line(Vector2(43,y),Vector2(917,y),Color("987e5f"),1)
  draw_rect(Rect2(54,111,150,330),Color("756b56"))

@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/access_model.gd")
-const INK:=Color("293d44")
-const PAPER:=Color("e8e1cf")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const COVER_TRAY:=Vector2(770,223)
 const SUPPORT_TRAYS:=[Vector2(230,446),Vector2(335,446)]
 const HINTS:=["盖片能被拿起，与盖片绕轴开合，哪里不同？","保持其他零件不动，比较盖在场与移开时的侧安装口。","对照爆炸图，检查轴的末端是否真正穿过两只轴孔。"]
@@ -18,7 +19,8 @@ var notebook:=false
 var hint_level:=0
 var feedback:=""
 func _ready()->void:
-	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540)
+	ApparatusStyle.configure_exit(self,close)
+	font=ApparatusStyle.font();size=Vector2(960,540)
 	mouse_filter=Control.MOUSE_FILTER_STOP;hide()
 func open()->void:show();queue_redraw()
 func close()->void:cancel_pointer();hide();closed.emit()
@@ -35,6 +37,7 @@ func shaft_handle()->Vector2:return point(model.shaft_rect().position.x-20)
 func support_at(i:int)->Vector2:return point(Model.HOLES[i]) if model.supports[i] else SUPPORT_TRAYS[i]
 func _local(at:Vector2)->Vector2:return get_global_transform_with_canvas().affine_inverse()*at
 func _input(event:InputEvent)->void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible:return
 	if event is InputEventScreenTouch:
 		if event.canceled and event.index==touch_id:cancel_pointer()
@@ -54,7 +57,6 @@ func _input(event:InputEvent)->void:
 	get_viewport().set_input_as_handled();queue_redraw()
 func press(at:Vector2)->void:
 	pointer=at;origin=at;action="";feedback=""
-	if Rect2(860,10,88,48).has_point(at):action="close";return
 	if notebook:action="page" if Rect2(645,418,220,40).has_point(at) else "paper";return
 	if Rect2(44,420,135,85).has_point(at):action="paper";return
 	if at.distance_to(Vector2(430,460))<27:action="undo";return
@@ -122,7 +124,6 @@ func _draw()->void:
 	for y:int in range(85,540,35):draw_line(Vector2(0,y),Vector2(960,y+9),Color("b7bcaf"),1)
 	text("团队工作室 4 · 透明铰链盒",Vector2(32,37),23)
 	text("零件装好之后，让盒盖真正打开，再合上。",Vector2(33,65),16)
-	text("返回",Vector2(878,40),17)
 	slab(Rect2(100,368,755,38),Color("8f7a5e"),24)
 	# Transparent shell: axis and both bores remain visible in the same live view.
 	draw_colored_polygon(PackedVector2Array([Vector2(350,285),Vector2(530,285),Vector2(530,365),Vector2(350,365)]),Color(.62,.75,.75,.3))

@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/coupled_model.gd")
-const INK:=Color("29373b")
-const PAPER:=Color("e9e4d5")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const PIN_TRAY:=Vector2(100,310)
 var model=Model.new()
 var font:Font
@@ -17,8 +18,9 @@ var focus_index:=0
 var selected:=-1
 const HINTS:=["单块与连体，分别在哪里停住或不导通？","观察边角扫过的范围，以及托盘能托住的位置。","终台两端与滑块之间的插孔，都接触了吗？"]
 func _ready()->void:
+ ApparatusStyle.configure_exit(self,close)
  mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
- font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+ font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:model.resume();show();grab_focus();queue_redraw()
 func close()->void:cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:
@@ -59,7 +61,6 @@ func _gui_input(event:InputEvent)->void:
 func handle()->Vector2:return model.midpoint()+Vector2(0,-57).rotated(model.angle)
 func press_at(at:Vector2)->void:
  pointer=at
- if Rect2(880,15,60,50).has_point(at):close();return
  if Rect2(42,472,140,42).has_point(at):_paper();return
  if at.distance_to(Vector2(855,490))<28:model.undo();queue_redraw();return
  before=model.snapshot()
@@ -99,7 +100,7 @@ func _pin(at:Vector2)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),INK);_text("团队工作室 · 连起来以后",Vector2(32,38),22,PAPER)
- _text("把两块送入终台区域并连成一个导通整体",Vector2(33,66),16,Color("bdc5bd"));_text("×",Vector2(898,47),28,PAPER)
+ _text("把两块送入终台区域并连成一个导通整体",Vector2(33,66),16,Color("bdc5bd"))
  draw_rect(Rect2(35,86,890,380),Color("a58e6e"))
  for y:int in range(95,470,26):draw_line(Vector2(40,y),Vector2(920,y),Color("978060"),1)
  # All three support surfaces use the exact model boundaries.

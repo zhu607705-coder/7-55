@@ -1,8 +1,9 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/balance_model.gd")
-const INK:=Color("29373b")
-const PAPER:=Color("e9e3d3")
+const INK=ApparatusStyle.INK
+const PAPER=ApparatusStyle.PAPER
 const SOURCE:=Vector2(315,310)
 const DESTINATION:=Vector2(750,308)
 const TARGET:=Rect2(610,245,290,125)
@@ -22,8 +23,9 @@ var hint_level:=0
 var focus_index:=0
 const HINTS:=["两边各两杯，托盘还是往哪边偏？","交换一只满杯与半杯，再抓住提手试提。","比较杯垫离支点的距离，不只数左右杯数。"]
 func _ready()->void:
+	ApparatusStyle.configure_exit(self,close)
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
-	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
+	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();model.resume();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:model.cancel_drag();drag=-1;selected=-1;tray_drag=false;touch_id=-1;queue_redraw()
@@ -66,7 +68,6 @@ func _gui_input(event:InputEvent)->void:
 		queue_redraw();accept_event()
 func press_at(at:Vector2)->void:
 	pointer=at;origin=at
-	if Rect2(880,16,58,48).has_point(at):close();return
 	if Rect2(55,453,150,57).has_point(at):_paper();return
 	if Rect2(227,453,64,57).has_point(at):model.undo();return
 	if at.distance_to(Vector2(315+model.pivot*70,402))<25:model.set_extension(model.pivot==0);return
@@ -80,7 +81,6 @@ func press_at(at:Vector2)->void:
 	for slot:int in 4:
 		if at.distance_to(cup_position(slot))<31:drag=model.slots[slot];selected=drag;return
 	if model.held and Rect2(tray_center()-Vector2(200,20),Vector2(400,65)).has_point(at):_begin_tray_drag();return
-
 func _begin_tray_drag()->void:
 	tray_start=tray_center();tray_grab_local=(pointer-tray_start)/tray_scale();tray_last_pointer=pointer;tray_drag=model.begin_drag()
 func move_at(at:Vector2)->void:
@@ -154,7 +154,7 @@ func _tray()->void:
 func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("29373b"));_text("茶水区 · 把四杯稳稳端过去",Vector2(32,37),22,PAPER)
-	_text("移动杯子，抓住提手，再把托盘送到沙发茶几",Vector2(33,65),16,Color("bdc5bd"));_text("×",Vector2(898,47),28,PAPER)
+	_text("移动杯子，抓住提手，再把托盘送到沙发茶几",Vector2(33,65),16,Color("bdc5bd"))
 	draw_rect(Rect2(35,97,890,422),Color("a99373"))
 	for y:int in range(112,516,30):draw_line(Vector2(43,y),Vector2(916,y),Color("9c8565"),1)
 	# Sofa, plant and tea table establish a real destination rather than a delivery button.
