@@ -191,7 +191,7 @@ check('frame metadata does not expand observation identity and exhaust the origi
 // Execute the current dispatch with inert scenario bodies. Adding a focused
 // scenario may extend the initializer/else chain without removing an original
 // acceptance path. Protect those paths by their actual calls and profile sets.
-const dispatchStart = draft.indexOf('    result = await freshCase(');
+const dispatchStart = draft.indexOf("    result = scenarios === 'flc-activity' ?");
 const dispatchEnd = draft.indexOf("    if (scenarios === 'mobile-world') check(active.mobileWorld", dispatchStart);
 assert(dispatchStart >= 0 && dispatchEnd > dispatchStart);
 const dispatch = draft.slice(dispatchStart, dispatchEnd);
@@ -205,7 +205,7 @@ const bootTimeout = vm.runInNewContext(bootTimeoutExpression, { option: name => 
 assert.equal(bootTimeout, 420000);
 const baselineProfiles = ['desktop-1280', 'desktop-1440', 'touch-390', 'retina-1440', 'retina-touch-390', 'desktop-1920'];
 const focusedProfiles = ['desktop-1280', 'touch-390', 'retina-touch-390'];
-for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'phone-recovery', 'corners', 'checkin', 'words', 'durability', 'durability-switch', 'resource-loading']) {
+for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'phone-recovery', 'corners', 'checkin', 'words', 'durability', 'durability-switch', 'resource-loading', 'flc-activity']) {
   const selected = vm.runInNewContext(selectedExpression, { only: 'all', scenarios });
   const expectedProfiles = scenarios === 'streaming' ? ['desktop-1280'] : ['mobile-world', 'phone-recovery'].includes(scenarios) ? focusedProfiles : baselineProfiles;
   check(`${scenarios}: original acceptance profile coverage remains exact`, () => assert.deepEqual(Array.from(selected, row => row[0]), expectedProfiles));
@@ -213,11 +213,12 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
     const calls = [], initialized = [], recoveryInputs = [];
     const context = { scenarios, id, touch, bootTimeout, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
     for (const name of ['snapshot', 'clickControl', 'clickPoint', 'renderPoint', 'poll', 'check', 'interval', 'screenshot', 'importSave', 'assertLayout', 'settings', 'saveProgressAndWait', 'startStory', 'press']) context[name] = () => {};
-    for (const name of ['mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async options => { calls.push(name); if (name === 'phoneRecoveryCase') recoveryInputs.push(options); return {}; };
+    for (const name of ['flcActivityCase', 'mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async options => { calls.push(name); if (name === 'phoneRecoveryCase') recoveryInputs.push(options); return {}; };
     context.freshCase = async focused => { initialized.push(focused); return {}; };
     await vm.runInNewContext(`(async () => { let result; ${dispatch} })()`, context);
     const expected = [];
-    if (scenarios === 'mobile-world') expected.push('mobileWorldCase');
+    if (scenarios === 'flc-activity') expected.push('flcActivityCase');
+    else if (scenarios === 'mobile-world') expected.push('mobileWorldCase');
     else if (scenarios === 'phone-recovery') expected.push('phoneRecoveryCase');
     else expected.push('portableSaveCase');
     if (scenarios === 'corners') expected.push('cornerNavigationCase');
@@ -233,7 +234,7 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
       if (scenarios === 'streaming') expected.push('streamingCase');
     } else if (touch && scenarios === 'all') expected.push('c1Case');
     check(`${scenarios}/${id}: original scenario bodies still execute exactly once`, () => {
-      assert.deepEqual(initialized, [['mobile-world', 'phone-recovery'].includes(scenarios)]);
+      assert.deepEqual(initialized, scenarios === 'flc-activity' ? [] : [['mobile-world', 'phone-recovery'].includes(scenarios)]);
       assert.deepEqual(calls, expected);
     });
     if (scenarios === 'phone-recovery') check(`${scenarios}/${id}: configured boot deadline reaches recovery`, () => { assert.equal(recoveryInputs.length, 1); assert.equal(recoveryInputs[0].bootTimeout, bootTimeout); });
