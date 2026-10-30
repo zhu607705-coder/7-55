@@ -8,6 +8,13 @@ const Transit=preload("res://campuses/future_learning_center/scripts/building_tr
 const Workbench=preload("res://campuses/future_learning_center/scripts/workbench_view.gd")
 const Stairs=preload("res://campuses/future_learning_center/scripts/stair_view.gd")
 const PuzzleAnchors = {
+ "koala": ["koala", "koala_desk_94", 2],
+ "machinery": ["machinery", "machinery_workbench_77", 2],
+ "seminar_2f": ["solid_projection", "seminar_discussion_table_49", 2],
+ "platform": ["platform", "platform_discussion_table_38", 2],
+ "robotics": ["robotics", "robotics_workbench_30", 2],
+ "team": ["signal_sync", "team_desk_6", 2],
+ "formula": ["formula", "formula_workbench_0", 2],
  "studio_2": ["coupled", "studio_2_desk_58", 3],
  "studio_4": ["access", "studio_4_desk_174", 3],
  "studio_3": ["sync", "studio_3_desk_116", 3],
@@ -229,9 +236,10 @@ func can_open_workbench()->bool:
 func open_workbench()->bool:
 	if not can_open_workbench():return false
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
+	if is_instance_valid(joystick):joystick.release()
 	workbench.open();ui.hide();return true
 func point_action(at:Vector2)->void:
-	if int(data.floor) in [3,4]:
+	if int(data.floor) in [2,3,4]:
 		for key:String in PuzzleAnchors:
 			var anchor:=puzzle_anchor(key)
 			if not anchor.is_empty() and Space.rect(anchor.bounds).has_point(at):
@@ -464,7 +472,7 @@ func open_puzzle(key:String)->bool:
 	active_puzzle=puzzle_views[key];active_puzzle.open();ui.hide();return true
 
 func _draw_puzzle_prop(item:Dictionary)->void:
-	if not int(data.floor) in [3,4]:return
+	if not int(data.floor) in [2,3,4]:return
 	var key:=""
 	for candidate:String in PuzzleAnchors:
 		if int(data.floor)==int(PuzzleAnchors[candidate][2]) and item.id==PuzzleAnchors[candidate][1]:key=candidate;break
@@ -475,7 +483,26 @@ func _draw_puzzle_prop(item:Dictionary)->void:
 	var width:=minf(74,box.size.x*.7)
 	draw_rect(Rect2(at-Vector2(width/2,4),Vector2(width,24)),Color("545957"))
 	draw_rect(Rect2(at-Vector2(width/2,8),Vector2(width,24)),Color("d7d3c4"))
-	if key=="xlab_box":
+	if key in ["formula","robotics"]:
+		draw_line(at+Vector2(-30,10),at+Vector2(30,10),Color("586360"),2)
+		draw_rect(Rect2(at+Vector2(-15,-4),Vector2(26,12)),Color("889b97"))
+		for x:int in [-10,6]:draw_circle(at+Vector2(x,9),4,Color("414947"))
+	elif key=="team":
+		for x:int in [-25,5]:
+			draw_rect(Rect2(at+Vector2(x,-14),Vector2(22,20)),Color("414b4e"))
+			draw_rect(Rect2(at+Vector2(x+3,-11),Vector2(16,13)),Color("a4b4ad"))
+	elif key=="platform":
+		draw_rect(Rect2(at+Vector2(-23,-15),Vector2(40,27)),Color("dedccf"))
+		draw_line(at+Vector2(-20,12),at+Vector2(-25,20),Color("5e6762"),2)
+		draw_line(at+Vector2(14,12),at+Vector2(20,20),Color("5e6762"),2)
+	elif key=="seminar_2f":
+		for i:int in 3:draw_rect(Rect2(at+Vector2(-22+i*14,-6-i%2*8),Vector2(13,17)),Color("9eaa96"))
+	elif key=="machinery":
+		draw_rect(Rect2(at+Vector2(-25,-5),Vector2(42,18)),Color("a79978"))
+		for x:int in [-27,17]:draw_rect(Rect2(at+Vector2(x,-8),Vector2(7,24)),Color("4f625d"))
+	elif key=="koala":
+		for i:int in 4:draw_rect(Rect2(at+Vector2(-27+i*15,-4),Vector2(12,18)),Color("c4c6b4"))
+	elif key=="xlab_box":
 		for x:int in [-18,10]:
 			draw_rect(Rect2(at+Vector2(x,-15),Vector2(8,25)),Color("77877d"))
 			draw_rect(Rect2(at+Vector2(x,-15),Vector2(19,5)),Color("adb4a2"))

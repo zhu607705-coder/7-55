@@ -33,12 +33,12 @@ export function registerStage(spec) {
 // Each FLC reader uses one existing scheduler slot; no nested CI worker pool.
 const flc='godot_native/campuses/future_learning_center';
 export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
- ...['flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor'].map(name=>({
+ ...['koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor'].map(name=>({
   id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
-  inputs:[`${flc}/tests/test_${name}.gd`,...(['floor','puzzles_integration','projection_placement'].includes(name)
+  inputs:[`${flc}/tests/test_${name}.gd`,...(['floor','puzzles_integration','projection_placement','2f_placement'].includes(name)
    ? [`${flc}/scripts/floor_view.gd`,`${flc}/scripts/floor_space.gd`,`${flc}/data/floor_2.json`,`${flc}/data/floor_3.json`,`${flc}/data/floor_4.json`]
    : [`${flc}/scripts/puzzles/${name}_model.gd`,`${flc}/scripts/puzzles/${name}_view.gd`])],
-  outputs:[],dependencies:[],durationHintMs:['floor','puzzles_integration','projection_placement'].includes(name)?15000:1000,
+  outputs:[],dependencies:[],durationHintMs:['floor','puzzles_integration','projection_placement','2f_placement'].includes(name)?15000:1000,
  })),
  {id:"flc_projection_table_builder",execution:"node",entry:`${flc}/tests/test_projection_table_builder.mjs`,
   inputs:[`${flc}/tests/test_projection_table_builder.mjs`,`${flc}/tools/place_projection_table.mjs`,`${flc}/data/floor_3.json`,`${flc}/data/object_assets.json`],outputs:[],dependencies:[],durationHintMs:1000}

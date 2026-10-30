@@ -32,7 +32,8 @@ func _input(e:InputEvent)->void:
   get_viewport().set_input_as_handled()
  elif e is InputEventMouseMotion and touch_id<0:pointer=e.position
  elif e is InputEventScreenTouch:
-  if e.pressed and touch_id<0:touch_id=e.index;press(e.position)
+  if e.index==touch_id and e.canceled:cancel_pointer()
+  elif e.pressed and not e.canceled and touch_id<0:touch_id=e.index;press(e.position)
   elif not e.pressed and touch_id==e.index:
    if e.canceled:cancel_pointer()
    else:release(e.position);touch_id=-1

@@ -31,5 +31,19 @@ func _initialize()->void:
 	view.press_at(at);view.cancel_pointer();view.release_at(view.SLOTS[0]);check(view.model.slots[0]==-1,"cancelled drag ignores later release")
 	view.press_at(at);view.release_at(view.SLOTS[0]);check(view.model.slots[0]==0,"drag places actual tile")
 	view.model.start(0);view.close();view.model.step(10);check(view.model.evidence.is_empty(),"close cancels hidden experiment")
+	owner_cancel(view,"_gui_input")
 	view.free()
 	print("FLC_RULES: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
+
+func owner_cancel(view:Control,method:String)->void:
+	if not view.is_inside_tree():root.add_child(view)
+	view.show()
+	var contact:=InputEventScreenTouch.new();contact.index=8;contact.position=Vector2(700,75);contact.pressed=true
+	view.call(method,contact);contact.canceled=true;view.call(method,contact)
+	check(view.touch_id==-1,"pressed cancellation releases owner")
+	view.call(method,contact);check(view.touch_id==-1,"orphan canceled press cannot reacquire")
+	contact.canceled=false;contact.index=9;view.call(method,contact)
+	check(view.touch_id==9,"next finger can acquire after cancellation")
+	var foreign:=InputEventScreenTouch.new();foreign.index=10;foreign.pressed=true;foreign.canceled=true;view.call(method,foreign)
+	check(view.touch_id==9,"non-owner cancellation cannot steal capture")
+	contact.pressed=false;contact.canceled=true;view.call(method,contact)

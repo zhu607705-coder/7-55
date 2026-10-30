@@ -55,4 +55,18 @@ func _initialize()->void:
 	v.model.start();v.touch_id=7
 	var canceled:=InputEventScreenTouch.new();canceled.index=7;canceled.pressed=false;canceled.canceled=true;v._gui_input(canceled)
 	advance(v.model);check(not v.model.running and v.model.receipts.is_empty(),"canceled touch aborts exposure without evidence")
+	owner_cancel(v,"_gui_input")
 	v.free();print("perspective: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
+
+func owner_cancel(view:Control,method:String)->void:
+	if not view.is_inside_tree():root.add_child(view)
+	view.show()
+	var contact:=InputEventScreenTouch.new();contact.index=8;contact.position=Vector2(700,75);contact.pressed=true
+	view.call(method,contact);contact.canceled=true;view.call(method,contact)
+	check(view.touch_id==-1,"pressed cancellation releases owner")
+	view.call(method,contact);check(view.touch_id==-1,"orphan canceled press cannot reacquire")
+	contact.canceled=false;contact.index=9;view.call(method,contact)
+	check(view.touch_id==9,"next finger can acquire after cancellation")
+	var foreign:=InputEventScreenTouch.new();foreign.index=10;foreign.pressed=true;foreign.canceled=true;view.call(method,foreign)
+	check(view.touch_id==9,"non-owner cancellation cannot steal capture")
+	contact.pressed=false;contact.canceled=true;view.call(method,contact)

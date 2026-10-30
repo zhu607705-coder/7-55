@@ -16,12 +16,15 @@ function copy(relative){
  if(copied.has(relative))return;copied.add(relative);
  let source=path.join(native,relative);
  if(!fs.existsSync(source)&&relative.startsWith('assets/rpg/'))source=path.join(native,'../src',relative);
+ // Dynamic load prefixes are directories, not resources; puzzle files are copied below.
+ if(fs.existsSync(source)&&!fs.statSync(source).isFile())return;
  const target=path.join(project,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);
  if(relative.endsWith('.gd'))for(const [,dep] of fs.readFileSync(source,'utf8').matchAll(/["']res:\/\/([^"'\n]+)["']/g))if(!dep.includes('%')&&(fs.existsSync(path.join(native,dep))||dep.startsWith('assets/rpg/')))copy(dep);
 }
 const campus='campuses/future_learning_center';
-const suites=['flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor'];
-for(const suite of suites)copy(`${campus}/tests/test_${suite}.gd`);
+const suites=['electrical','koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor'];
+const entry=suite=>suite==='electrical'?'tests/test_future_learning_center_workbench.gd':`${campus}/tests/test_${suite}.gd`;
+for(const suite of suites)copy(entry(suite));
 for(const name of fs.readdirSync(path.join(native,campus,'scripts/puzzles')))if(name.endsWith('.gd'))copy(`${campus}/scripts/puzzles/${name}`);
 for(const floor of [2,3,4]){
  const relative=`${campus}/data/floor_${floor}.json`;copy(relative);
@@ -40,6 +43,6 @@ try{
  await run(['--editor','--import','--quit']);
  // Three workers avoid launching every renderer/import cache simultaneously.
  const pending=[...suites];
- await Promise.all(Array.from({length:3},async()=>{while(pending.length){const suite=pending.shift();const log=await run(['--script',`res://${campus}/tests/test_${suite}.gd`,'--','--with-view']);console.log(log.trim());}}));
+ await Promise.all(Array.from({length:3},async()=>{while(pending.length){const suite=pending.shift();const log=await run(['--script',`res://${entry(suite)}`,'--','--with-view']);console.log(log.trim());}}));
  console.log('PASS FLC isolated suites; production autoloads absent.');
 }finally{fs.rmSync(root,{recursive:true,force:true});}

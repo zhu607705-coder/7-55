@@ -50,5 +50,22 @@ func run()->void:
 	view._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT);check(view.model.paused and view.drag==-1,"view focus loss pauses and releases drag")
 	view._press(Vector2(480,280));view._release(Vector2(480,280));check(not view.model.paused,"explicit touch resumes experiment")
 	view.close();check(not view.model.running and view.model.slots==[0,2],"close preserves assembly and cancels only current trial")
+	owner_cancel(view,"_input")
+	for child:String in ["assembly","recording","sync"]:
+		var inherited=load("res://campuses/future_learning_center/scripts/puzzles/"+child+"_view.gd").new()
+		owner_cancel(inherited,"_input");inherited.free()
 	view.free()
 	print("FLC_COLLAB: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
+
+func owner_cancel(view:Control,method:String)->void:
+	if not view.is_inside_tree():root.add_child(view)
+	view.show()
+	var contact:=InputEventScreenTouch.new();contact.index=8;contact.position=Vector2(700,75);contact.pressed=true
+	view.call(method,contact);contact.canceled=true;view.call(method,contact)
+	check(view.touch_id==-1,"pressed cancellation releases owner")
+	view.call(method,contact);check(view.touch_id==-1,"orphan canceled press cannot reacquire")
+	contact.canceled=false;contact.index=9;view.call(method,contact)
+	check(view.touch_id==9,"next finger can acquire after cancellation")
+	var foreign:=InputEventScreenTouch.new();foreign.index=10;foreign.pressed=true;foreign.canceled=true;view.call(method,foreign)
+	check(view.touch_id==9,"non-owner cancellation cannot steal capture")
+	contact.pressed=false;contact.canceled=true;view.call(method,contact)

@@ -54,5 +54,19 @@ func run()->void:
  var e=InputEventScreenTouch.new();e.index=0;e.pressed=true;e.position=Vector2(500,300);view._input(e)
  e=InputEventScreenTouch.new();e.index=0;e.pressed=false;e.canceled=true;e.position=Vector2(500,300);view._input(e)
  check(view.drag.is_empty() and view.touch_id==-1,"touch cancellation clears capture")
+ owner_cancel(view,"_input")
  view.queue_free()
  print("FLC_LOGIC: ",checks," checks, ",failures," failures");quit(1 if failures else 0)
+
+func owner_cancel(view:Control,method:String)->void:
+ if not view.is_inside_tree():root.add_child(view)
+ view.show()
+ var contact:=InputEventScreenTouch.new();contact.index=8;contact.position=Vector2(700,75);contact.pressed=true
+ view.call(method,contact);contact.canceled=true;view.call(method,contact)
+ check(view.touch_id==-1,"pressed cancellation releases owner")
+ view.call(method,contact);check(view.touch_id==-1,"orphan canceled press cannot reacquire")
+ contact.canceled=false;contact.index=9;view.call(method,contact)
+ check(view.touch_id==9,"next finger can acquire after cancellation")
+ var foreign:=InputEventScreenTouch.new();foreign.index=10;foreign.pressed=true;foreign.canceled=true;view.call(method,foreign)
+ check(view.touch_id==9,"non-owner cancellation cannot steal capture")
+ contact.pressed=false;contact.canceled=true;view.call(method,contact)

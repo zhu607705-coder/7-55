@@ -38,7 +38,8 @@ func handle_position()->Vector2:return local_point(Vector2(model.pivot*70,-83))
 func _gui_input(event:InputEvent)->void:
 	if not visible:return
 	if event is InputEventScreenTouch:
-		if event.pressed and touch_id<0:touch_id=event.index;press_at(event.position)
+		if event.index==touch_id and event.canceled:model.cancel();cancel_pointer()
+		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;press_at(event.position)
 		elif not event.pressed and event.index==touch_id:
 			if event.canceled:model.cancel();cancel_pointer()
 			else:release_at(event.position)

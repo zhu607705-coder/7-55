@@ -49,4 +49,18 @@ func _initialize()->void:
 	v.model.start_lift();v._notification(View.NOTIFICATION_APPLICATION_FOCUS_OUT);v.model.step(20);check(v.model.paused and not v.model.held,"focus loss freezes pending lift")
 	v.close();advance(v.model);check(not v.model.held and not v.model.running,"close cancels work without automatic completion")
 	v.show();var event:=InputEventMouseButton.new();event.device=InputEvent.DEVICE_ID_EMULATION;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=true;event.position=v.handle_position();v._gui_input(event);check(not v.model.running,"emulated mouse filtered")
+	owner_cancel(v,"_gui_input")
 	v.free();print("balance: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
+
+func owner_cancel(view:Control,method:String)->void:
+	if not view.is_inside_tree():root.add_child(view)
+	view.show()
+	var contact:=InputEventScreenTouch.new();contact.index=8;contact.position=Vector2(700,75);contact.pressed=true
+	view.call(method,contact);contact.canceled=true;view.call(method,contact)
+	check(view.touch_id==-1,"pressed cancellation releases owner")
+	view.call(method,contact);check(view.touch_id==-1,"orphan canceled press cannot reacquire")
+	contact.canceled=false;contact.index=9;view.call(method,contact)
+	check(view.touch_id==9,"next finger can acquire after cancellation")
+	var foreign:=InputEventScreenTouch.new();foreign.index=10;foreign.pressed=true;foreign.canceled=true;view.call(method,foreign)
+	check(view.touch_id==9,"non-owner cancellation cannot steal capture")
+	contact.pressed=false;contact.canceled=true;view.call(method,contact)

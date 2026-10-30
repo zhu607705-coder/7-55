@@ -10,6 +10,7 @@ func _initialize()->void:call_deferred("run")
 func run()->void:
  var world=Floor.new();root.add_child(world);world.user_control=false
  check(world.load_floor(4),"4F loads")
+ check(Floor.PuzzleAnchors.size()==24,"24 registry stations plus original electrical workbench cover 25 rooms")
  check(world.puzzle_views.is_empty(),"Stations are lazy, not all running")
  check(not world.open_puzzle("flex_c"),"Remote click cannot teleport into station")
  for key:String in Floor.PuzzleAnchors:
@@ -21,7 +22,8 @@ func run()->void:
   if not point.is_finite():continue
   check(world.set_foot(point),"Legal approach: "+key)
   var previous:Vector2=world.player
-  check(world.open_puzzle(key),"Open native station: "+key)
+  world.point_action(world.Space.rect(world.puzzle_anchor(key).bounds).get_center())
+  check(world.active_puzzle!=null,"Object click opens native station: "+key)
   if world.active_puzzle==null:continue
   var station:Control=world.active_puzzle
   var model=station.model
@@ -29,10 +31,22 @@ func run()->void:
   station.close()
   check(world.player==previous and world.ui.visible,"Close returns same place")
   check(world.open_puzzle(key) and world.active_puzzle.model==model,"Reopen preserves model")
-  world.load_floor(2)
+  world.load_floor(4 if station_floor==2 else 2)
   check(world.active_puzzle==null and not station.visible,"Transit closes station")
   check(not world.open_puzzle(key),"No station from another floor")
   world.load_floor(4)
+ world.load_floor(2)
+ var bench_point:Array=world.data.workshopReference.approach
+ check(world.set_foot(Vector2(bench_point[0],bench_point[1])),"Original electrical approach remains legal")
+ var bench_player:Vector2=world.player
+ world.point_action(world.Space.rect(world.workshop_bench().bounds).get_center())
+ check(world.workbench.visible and not world.ui.visible,"Original electrical object still opens")
+ var bench_model=world.workbench.model
+ world.workbench.close()
+ check(world.ui.visible and world.player==bench_player,"Electrical returns to same floor position")
+ check(world.open_workbench() and world.workbench.model==bench_model,"Electrical preserves model on reopening")
+ world.load_floor(3)
+ check(not world.workbench.visible,"Floor transit closes electrical")
  var stick=Stick.new();root.add_child(stick);stick.position=Vector2(100,100);stick.scale=Vector2(1.5,1.5)
  var event:=InputEventScreenTouch.new();event.index=3;event.pressed=true;event.position=Vector2(244,205);stick._input(event)
  check(stick.pointer_id==3 and absf(stick.value.x-.5)<.01,"Scaled analog stick preserves half speed")

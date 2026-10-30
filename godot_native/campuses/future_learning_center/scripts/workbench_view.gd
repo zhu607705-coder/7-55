@@ -26,7 +26,7 @@ func _ready()->void:
 	crop=Rect2(b[0],b[1],b[2]-b[0],b[3]-b[1])
 	bench=load(a.path) if OS.has_feature("web") else ImageTexture.create_from_image(Image.load_from_file(ProjectSettings.globalize_path(a.path)))
 	hide()
-func open()->void:feedback="";show();queue_redraw()
+func open()->void:feedback="";drag=-1;touch_id=-1;show();queue_redraw()
 func close()->void:
 	model.cancel();drag=-1;touch_id=-1;hide();closed.emit()
 func _notification(what:int)->void:
@@ -36,8 +36,10 @@ func _notification(what:int)->void:
 func _process(dt:float)->void:
 	if not visible:return
 	model.step(minf(dt,.1));queue_redraw()
+func _local(at:Vector2)->Vector2:return get_global_transform_with_canvas().affine_inverse()*at
 func _input(event:InputEvent)->void:
 	if not visible:return
+	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_ESCAPE:close()
@@ -46,27 +48,30 @@ func _input(event:InputEvent)->void:
 			KEY_T:_edit("tension",(model.tension+1)%3)
 			KEY_SPACE:feedback="";model.start()
 			KEY_R:model.reset();feedback=""
+			KEY_Z:model.undo();feedback=""
 		get_viewport().set_input_as_handled()
-	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
-		if event.pressed:_press(event.position)
-		else:_release(event.position)
+	elif event is InputEventMouseButton and touch_id<0 and event.button_index==MOUSE_BUTTON_LEFT:
+		if event.pressed:_press(_local(event.position))
+		else:_release(_local(event.position))
 		get_viewport().set_input_as_handled()
-	elif event is InputEventMouseMotion:
-		pointer=event.position
+	elif event is InputEventMouseMotion and touch_id<0:
+		pointer=_local(event.position)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch:
-		if event.pressed and touch_id<0:touch_id=event.index;_press(event.position)
-		elif not event.pressed and touch_id==event.index:_release(event.position);touch_id=-1
+		if event.index==touch_id and event.canceled:drag=-1;touch_id=-1
+		elif event.pressed and touch_id<0:touch_id=event.index;_press(_local(event.position))
+		elif not event.pressed and touch_id==event.index:_release(_local(event.position));touch_id=-1
 		get_viewport().set_input_as_handled()
 	elif event is InputEventScreenDrag:
-		if event.index==touch_id:pointer=event.position
+		if event.index==touch_id:pointer=_local(event.position)
 		get_viewport().set_input_as_handled()
 func _edit(part:String,value:int)->void:
 	model.edit(part,value);feedback="";queue_redraw()
 func _press(at:Vector2)->void:
 	pointer=at;drag_origin=at
 	if Rect2(818,0,132,70).has_point(at):close();return
-	if Rect2(822,450,126,50).has_point(at):model.reset();feedback="";return
+	if Rect2(822,450,126,50).has_point(at):model.undo();feedback="";return
+	if Rect2(610,294,205,38).has_point(at):model.set_reverse(not model.reverse_target);return
 	for i:int in 3:
 		if Rect2(98+i*96,344,88,94).has_point(at):drag=i;return
 	if at.distance_to(POWER)<48:feedback="";model.start()
@@ -106,8 +111,8 @@ func _draw()->void:
 	draw_rect(Rect2(0,0,960,540),Color("18242d"))
 	draw_rect(Rect2(0,0,960,78),Color("202b35"))
 	text_at("机电实验区 / 传动装配台",Vector2(24,31),21)
-	text_at("让试件沿箭头向右移动，送到白色刻线。",Vector2(24,62),17,Color("b7c8cc"))
-	draw_style_box(_box(Color("344452")),Rect2(818,8,132,36));text_at("返回实验区 Esc",Vector2(830,32),14)
+	text_at("把试件送到当前刻线，再翻转目标标牌。",Vector2(24,62),17,Color("b7c8cc"))
+	draw_style_box(_box(Color("344452")),Rect2(818,8,132,36));text_at("返回实验区",Vector2(830,32),14)
 	draw_texture_rect_region(bench,Rect2(42,116,876,876*crop.size.y/crop.size.x),crop)
 	# Separate machinery lives on the generated empty table surface.
 	draw_rect(Rect2(202,174,54,57),Color("344452"));text_at("电机",Vector2(208,163),14)
@@ -128,23 +133,27 @@ func _draw()->void:
 	gear_at(self,OUTPUT,36,model.output_phase,Color("7993a1"));text_at("送料轴",Vector2(625,153),14)
 	draw_line(OUTPUT+Vector2(0,24),Vector2(650,263),Color("202b35"),8)
 	draw_rect(Rect2(606,253,216,30),Color("344452"));draw_line(Vector2(612,268),Vector2(816,268),Color("7993a1"),3)
-	draw_line(Vector2(796,248),Vector2(796,289),Color("e8e0c8"),3)
+	var mark:=647.0 if model.reverse_target else 799.0
+	draw_line(Vector2(mark,248),Vector2(mark,289),Color("e8e0c8"),3)
 	var block:=Vector2(614+model.travel*190,254)
 	draw_rect(Rect2(block,Vector2(20,24)),Color("c79b62"));draw_rect(Rect2(block+Vector2(3,3),Vector2(14,5)),Color("e8e0c8"))
-	draw_line(Vector2(710,240),Vector2(777,240),Color("e8e0c8"),2);draw_line(Vector2(777,240),Vector2(769,235),Color("e8e0c8"),2)
+	var tip:=Vector2(710 if model.reverse_target else 777,240)
+	var tail:=Vector2(777 if model.reverse_target else 710,240)
+	draw_line(tail,tip,Color("e8e0c8"),2);draw_line(tip,tip+Vector2(8 if model.reverse_target else -8,-5),Color("e8e0c8"),2)
+	draw_rect(Rect2(610,294,205,38),Color("344452"));text_at("← 左刻线" if model.reverse_target else "右刻线 →",Vector2(664,318),17)
 	draw_style_box(_box(Color("263742")),Rect2(90,330,314,112));text_at("零件盘 · 点按或拖到轴位",Vector2(102,350),14)
 	for i:int in 3:
 		var center:=Vector2(142+i*96,387)
 		if model.gear==i:draw_rect(Rect2(center-Vector2(38,27),Vector2(76,65)),Color("42616c"))
 		gear_at(self,center,Model.RADII[i]*.6,0,Color("83a7b6"))
-		text_at(["小轮 1","中轮 2","大轮 3"][i],center+Vector2(-24,40),14)
-	draw_circle(POWER,29,Color("202b35"));draw_circle(POWER,23,Color("c79b62") if model.running else Color("83a7b6"));text_at("试转",POWER+Vector2(-17,6),16,Color("202b35"));text_at("开关 Space",POWER+Vector2(-39,49),14)
+		text_at(["小轮","中轮","大轮"][i],center+Vector2(-24,40),14)
+	draw_circle(POWER,29,Color("202b35"));draw_circle(POWER,23,Color("c79b62") if model.running else Color("83a7b6"));text_at("试转",POWER+Vector2(-17,6),16,Color("202b35"));text_at("电源开关",POWER+Vector2(-39,49),14)
 	draw_circle(TENSION,29,Color("202b35"));draw_circle(TENSION,22,Color("7993a1"));var angle:float=[-2.4,-1.57,-.7][model.tension]
-	draw_line(TENSION,TENSION+Vector2(cos(angle),sin(angle))*21,Color("e8e0c8"),4);text_at(["松","适中","紧"][model.tension],TENSION+Vector2(-9,5),14);text_at("皮带松紧 T",TENSION+Vector2(-40,49),14)
-	draw_style_box(_box(Color("344452")),BELT);text_at("皮带 · 点按翻带 B",BELT.position+Vector2(10,22),14);text_at(["从工具盘装入","平行绕带","交叉绕带"][model.belt],BELT.position+Vector2(29,61),16)
-	text_at("重新装配 R",Vector2(833,488),14)
+	draw_line(TENSION,TENSION+Vector2(cos(angle),sin(angle))*21,Color("e8e0c8"),4);text_at(["松","适中","紧"][model.tension],TENSION+Vector2(-9,5),14);text_at("张紧轮",TENSION+Vector2(-40,49),14)
+	draw_style_box(_box(Color("344452")),BELT);text_at("皮带 · 翻转绕法",BELT.position+Vector2(10,22),14);text_at(["从工具盘装入","平行绕带","交叉绕带"][model.belt],BELT.position+Vector2(29,61),16)
+	text_at("撤回一步",Vector2(833,488),14)
 	draw_rect(Rect2(0,500,960,40),Color("202b35"));text_at(model.message() if feedback.is_empty() else feedback,Vector2(24,526),16)
-	if model.outcome=="passed":text_at("送料完成",Vector2(711,316),17,Color("bfd0b7"))
+	if model.outcome=="passed":draw_circle(Vector2(798,312),5,Color("bfd0b7"))
 	if drag>=0:gear_at(self,pointer,Model.RADII[drag],0,Color("c5c1a9"))
 func _box(color:Color)->StyleBoxFlat:
 	var result:=StyleBoxFlat.new();result.bg_color=color;result.border_color=Color("526b7a");result.set_border_width_all(1);return result
