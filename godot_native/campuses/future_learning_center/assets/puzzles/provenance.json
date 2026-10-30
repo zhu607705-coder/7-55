@@ -1,0 +1,37 @@
+{
+  "generator": "image_gen.imagegen",
+  "date": "2026-10-29",
+  "projection": "orthographic oblique overhead; fixed camera; choose directional frames, no bitmap rotation",
+  "filter": "nearest",
+  "productionAcceptance": false,
+  "assets": [
+    {
+      "id": "solar_chassis",
+      "source": "/Users/zhu/.codex/generated_images/01a17b09-ba73-70c3-8098-7c93af6df733/exec-c2449469-5da5-4fc2-aa35-c42456cc6ac3.png",
+      "prompt": "Create one production sprite atlas for a university JRPG puzzle game: the SAME small experimental solar racing car CHASSIS in FOUR fixed-camera directions, 2x2 layout with large transparent gutters, exact equally sized quadrants. Top left facing screen RIGHT, top right facing screen DOWN, bottom left facing screen LEFT, bottom right facing screen UP. Each is the same compact open brushed-metal rectangular chassis with FOUR small black rubber wheels, warm copper motor detail, an EMPTY flat mounting deck on top for a separately animated solar panel. No solar panel on this chassis, no driver, no battery. Orthographic oblique overhead camera elevation 55 degrees, screen-horizontal world X, world Y recedes vertically; show top plane and front-facing vertical depth, never isometric diamond axes. Same camera and illumination from upper left for all four views; only vehicle yaw changes. Fine crisp pixel-art cluster shading, small native detail, restrained contiguous clusters, no isolated noise, no gradient, no photorealistic antialiasing. Palette: metal #202B35 #344452 #526B7A #7993A1; warm #A1744E #C79B62; light #C5C1A9 #E8E0C8. Visible objects centered within separate quadrants with consistent scale and no clipping. Transparent RGBA background, no backdrop, no floor, no cast shadow, no labels or text, no borders. Atlas square 1024 by 1024 or larger, readable at 100x70 game display per chassis.",
+      "sha256": "8d114908c94fad76d998d23e05c95f3f8798f5fca08666ac995999cd465c9c4e",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "delivery_robot",
+      "source": "/Users/zhu/.codex/generated_images/01a17b09-ba73-70c3-8098-7c93af6df733/exec-d18365da-14d0-4f73-a78e-34899b5ddfb8.png",
+      "prompt": "Create ONE four-direction sprite atlas for a small tabletop delivery robot in an original campus pixel-art game. Same robot identity, proportions and fixed orthographic camera in each view. 2x2 separated quadrants: upper left robot faces screen RIGHT, upper right DOWN, lower left LEFT, lower right UP. Compact low rectangular blue-gray metal mobile base, four small black rubber wheels, warm ivory top with an EMPTY open cargo recess, two short OPEN gripper fingers at its nose, small sensor bar. Cargo will be animated separately so NO cargo. Modest practical student engineering prototype, no humanoid head, no face, no logos. Fixed orthographic oblique overhead camera elevation 55 degrees, world X projects screen horizontally and world Y vertically; no diamond isometric axes, no perspective vanishing points. The 4 directions change robot yaw only, camera and upper-left lighting stay fixed. Fine crisp pixel clusters with hard silhouette, coherent large shaded metal planes, very few tiny pixels, no gritty noise, no gradient, no photo. Palette restricted to #202B35 #344452 #526B7A #7993A1 #243F5A #385B79 #547F9D #83A7B6 #A1744E #C79B62 #C5C1A9 #E8E0C8. Consistent uniform scale, generous transparent gutters between sprites, complete wheels uncut. Transparent RGBA background, absolutely no floor/backdrop/shadows/labels/frame/text. Square atlas 1024x1024 or greater. Intended on-screen robot about 90x70, so strong silhouette and recognisable open empty cargo tray.",
+      "sha256": "d4c110d988f13844a163955ef00dfab6b0caf97e5726507dffbd13597132f377",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaRange": [
+        0,
+        255
+      ]
+    }
+  ]
+}

@@ -1,0 +1,436 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-30T04:26:58Z",
+  "title": "Design System: Future Learning Center — Physical Miniatures",
+  "extensions": {
+    "colorMeta": {
+      "equipment-teal": {
+        "role": "primary",
+        "displayName": "Equipment Teal",
+        "tonalRamp": [
+          "oklch(15% 0.0115 200.77)",
+          "oklch(25% 0.0331 200.77)",
+          "oklch(35% 0.0508 200.77)",
+          "oklch(45% 0.0623 200.77)",
+          "oklch(60% 0.0652 200.77)",
+          "oklch(72% 0.0549 200.77)",
+          "oklch(84% 0.0351 200.77)",
+          "oklch(95% 0.0115 200.77)"
+        ]
+      },
+      "grip-orange": {
+        "role": "primary",
+        "displayName": "Grip Orange",
+        "tonalRamp": [
+          "oklch(15% 0.0229 51.94)",
+          "oklch(25% 0.0660 51.94)",
+          "oklch(35% 0.1011 51.94)",
+          "oklch(45% 0.1240 51.94)",
+          "oklch(60% 0.1299 51.94)",
+          "oklch(72% 0.1094 51.94)",
+          "oklch(84% 0.0699 51.94)",
+          "oklch(95% 0.0229 51.94)"
+        ]
+      },
+      "recess-graphite": {
+        "role": "neutral",
+        "displayName": "Recess Graphite",
+        "tonalRamp": [
+          "oklch(15% 0.0059 220.14)",
+          "oklch(25% 0.0169 220.14)",
+          "oklch(35% 0.0259 220.14)",
+          "oklch(45% 0.0317 220.14)",
+          "oklch(60% 0.0333 220.14)",
+          "oklch(72% 0.0280 220.14)",
+          "oklch(84% 0.0179 220.14)",
+          "oklch(95% 0.0059 220.14)"
+        ]
+      },
+      "rubber": {
+        "role": "neutral",
+        "displayName": "Rubber",
+        "tonalRamp": [
+          "oklch(15% 0.0034 223.51)",
+          "oklch(25% 0.0099 223.51)",
+          "oklch(35% 0.0152 223.51)",
+          "oklch(45% 0.0187 223.51)",
+          "oklch(60% 0.0196 223.51)",
+          "oklch(72% 0.0165 223.51)",
+          "oklch(84% 0.0105 223.51)",
+          "oklch(95% 0.0034 223.51)"
+        ]
+      },
+      "bench-ivory": {
+        "role": "neutral",
+        "displayName": "Bench Ivory",
+        "tonalRamp": [
+          "oklch(15% 0.0030 106.74)",
+          "oklch(25% 0.0087 106.74)",
+          "oklch(35% 0.0133 106.74)",
+          "oklch(45% 0.0163 106.74)",
+          "oklch(60% 0.0171 106.74)",
+          "oklch(72% 0.0144 106.74)",
+          "oklch(84% 0.0092 106.74)",
+          "oklch(95% 0.0030 106.74)"
+        ]
+      },
+      "brushed-metal": {
+        "role": "neutral",
+        "displayName": "Brushed Metal",
+        "tonalRamp": [
+          "oklch(15% 0.0030 182.55)",
+          "oklch(25% 0.0086 182.55)",
+          "oklch(35% 0.0132 182.55)",
+          "oklch(45% 0.0162 182.55)",
+          "oklch(60% 0.0170 182.55)",
+          "oklch(72% 0.0143 182.55)",
+          "oklch(84% 0.0091 182.55)",
+          "oklch(95% 0.0030 182.55)"
+        ]
+      },
+      "surround-sage": {
+        "role": "neutral",
+        "displayName": "Surround Sage",
+        "tonalRamp": [
+          "oklch(15% 0.0013 151.87)",
+          "oklch(25% 0.0039 151.87)",
+          "oklch(35% 0.0059 151.87)",
+          "oklch(45% 0.0073 151.87)",
+          "oklch(60% 0.0076 151.87)",
+          "oklch(72% 0.0064 151.87)",
+          "oklch(84% 0.0041 151.87)",
+          "oklch(95% 0.0013 151.87)"
+        ]
+      },
+      "annotation-ink": {
+        "role": "neutral",
+        "displayName": "Annotation Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0059 220.18)",
+          "oklch(25% 0.0169 220.18)",
+          "oklch(35% 0.0259 220.18)",
+          "oklch(45% 0.0318 220.18)",
+          "oklch(60% 0.0333 220.18)",
+          "oklch(72% 0.0280 220.18)",
+          "oklch(84% 0.0179 220.18)",
+          "oklch(95% 0.0059 220.18)"
+        ]
+      },
+      "notebook-paper": {
+        "role": "neutral",
+        "displayName": "Notebook Paper",
+        "tonalRamp": [
+          "oklch(15% 0.0053 88.37)",
+          "oklch(25% 0.0153 88.37)",
+          "oklch(35% 0.0234 88.37)",
+          "oklch(45% 0.0288 88.37)",
+          "oklch(60% 0.0301 88.37)",
+          "oklch(72% 0.0254 88.37)",
+          "oklch(84% 0.0162 88.37)",
+          "oklch(95% 0.0053 88.37)"
+        ]
+      },
+      "notebook-ink": {
+        "role": "neutral",
+        "displayName": "Notebook Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0042 246.20)",
+          "oklch(25% 0.0120 246.20)",
+          "oklch(35% 0.0183 246.20)",
+          "oklch(45% 0.0225 246.20)",
+          "oklch(60% 0.0236 246.20)",
+          "oklch(72% 0.0198 246.20)",
+          "oklch(84% 0.0127 246.20)",
+          "oklch(95% 0.0042 246.20)"
+        ]
+      },
+      "readout-paper": {
+        "role": "neutral",
+        "displayName": "Readout Paper",
+        "tonalRamp": [
+          "oklch(15% 0.0043 89.21)",
+          "oklch(25% 0.0125 89.21)",
+          "oklch(35% 0.0191 89.21)",
+          "oklch(45% 0.0235 89.21)",
+          "oklch(60% 0.0246 89.21)",
+          "oklch(72% 0.0207 89.21)",
+          "oklch(84% 0.0132 89.21)",
+          "oklch(95% 0.0043 89.21)"
+        ]
+      },
+      "navigation-slate": {
+        "role": "neutral",
+        "displayName": "Navigation Slate",
+        "tonalRamp": [
+          "oklch(15% 0.0055 245.18)",
+          "oklch(25% 0.0158 245.18)",
+          "oklch(35% 0.0242 245.18)",
+          "oklch(45% 0.0297 245.18)",
+          "oklch(60% 0.0312 245.18)",
+          "oklch(72% 0.0262 245.18)",
+          "oklch(84% 0.0168 245.18)",
+          "oklch(95% 0.0055 245.18)"
+        ]
+      },
+      "navigation-paper": {
+        "role": "neutral",
+        "displayName": "Navigation Paper",
+        "tonalRamp": [
+          "oklch(15% 0.0057 91.68)",
+          "oklch(25% 0.0165 91.68)",
+          "oklch(35% 0.0253 91.68)",
+          "oklch(45% 0.0311 91.68)",
+          "oklch(60% 0.0326 91.68)",
+          "oklch(72% 0.0274 91.68)",
+          "oklch(84% 0.0175 91.68)",
+          "oklch(95% 0.0057 91.68)"
+        ]
+      },
+      "feedback-paper": {
+        "role": "neutral",
+        "displayName": "Feedback Paper",
+        "tonalRamp": [
+          "oklch(15% 0.0031 92.68)",
+          "oklch(25% 0.0089 92.68)",
+          "oklch(35% 0.0136 92.68)",
+          "oklch(45% 0.0167 92.68)",
+          "oklch(60% 0.0175 92.68)",
+          "oklch(72% 0.0147 92.68)",
+          "oklch(84% 0.0094 92.68)",
+          "oklch(95% 0.0031 92.68)"
+        ]
+      },
+      "contact-ochre": {
+        "role": "secondary",
+        "displayName": "Contact Ochre",
+        "tonalRamp": [
+          "oklch(15% 0.0158 72.72)",
+          "oklch(25% 0.0455 72.72)",
+          "oklch(35% 0.0697 72.72)",
+          "oklch(45% 0.0854 72.72)",
+          "oklch(60% 0.0895 72.72)",
+          "oklch(72% 0.0754 72.72)",
+          "oklch(84% 0.0482 72.72)",
+          "oklch(95% 0.0158 72.72)"
+        ]
+      },
+      "solar-ground": {
+        "role": "neutral",
+        "displayName": "Solar Ground",
+        "tonalRamp": [
+          "oklch(15% 0.0031 145.40)",
+          "oklch(25% 0.0090 145.40)",
+          "oklch(35% 0.0137 145.40)",
+          "oklch(45% 0.0168 145.40)",
+          "oklch(60% 0.0176 145.40)",
+          "oklch(72% 0.0149 145.40)",
+          "oklch(84% 0.0095 145.40)",
+          "oklch(95% 0.0031 145.40)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Distance Readout",
+        "purpose": "The two main values within the single solar instrument."
+      },
+      "title": {
+        "displayName": "Apparatus Title",
+        "purpose": "The shared top-left scene title."
+      },
+      "notebook": {
+        "displayName": "Notebook Reading",
+        "purpose": "Opened record title and reading text, with a separate explicit 27 logical px baseline step."
+      },
+      "feedback": {
+        "displayName": "Temporary Feedback",
+        "purpose": "One concise result or recovery sentence in the lower strip."
+      },
+      "body": {
+        "displayName": "Body and Exit",
+        "purpose": "The native drawing default, notebook record caption, and exit control."
+      },
+      "label": {
+        "displayName": "Object Label",
+        "purpose": "Object identities and lever positions."
+      },
+      "caption": {
+        "displayName": "Instrument Caption",
+        "purpose": "Rewind label and instrument heading/time."
+      },
+      "small": {
+        "displayName": "Small Annotation",
+        "purpose": "Notebook cover and secondary meter labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "native-shared-key",
+        "value": "DirectionalLight3D: rotation_degrees=(-48,-28,0); shadow_enabled=true; directional_shadow_max_distance=35; shadow_bias=0.12; shadow_normal_bias=1.3",
+        "purpose": "Actual shared cast shadows establish mesh depth. This native rendering configuration is not a CSS box-shadow token."
+      }
+    ],
+    "motion": [
+      {
+        "name": "lever-settle",
+        "value": "0.14s; cubic-out",
+        "purpose": "Settle the physical lever into its model-driven running or neutral pose."
+      },
+      {
+        "name": "part-return",
+        "value": "0.22s; 1 - (1 - t)^3",
+        "purpose": "Return an invalid or canceled part drop with a small arcing lift; disabled for reduced motion."
+      },
+      {
+        "name": "contact-cue",
+        "value": "0.28s",
+        "purpose": "Short local grip, seat, and release arcs."
+      },
+      {
+        "name": "brake-cue",
+        "value": "0.40s",
+        "purpose": "Short local brake marks at the blocked mechanism."
+      },
+      {
+        "name": "panel-settle",
+        "value": "1 - exp(-20 * dt)",
+        "purpose": "Settle panel angle toward the current preview or committed tilt; immediate under reduced motion."
+      },
+      {
+        "name": "feedback-expiry",
+        "value": "5s",
+        "purpose": "Clear temporary lower-strip guidance without obscuring the apparatus indefinitely."
+      }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Exit Navigation",
+      "kind": "button",
+      "refersTo": "exit-navigation",
+      "description": "The only screen-space action: leave the apparatus. Documentation-only schematic of the native component; gallery hover/focus outlines and browser font fallback do not define runtime behavior.",
+      "html": "<button class=\"ds-exit\" type=\"button\">离开操作台</button>",
+      "css": ".ds-exit{font-family:'Noto Sans CJK SC','Selected UI Coverage',sans-serif;font-weight:400;width:144px;height:40px;padding:0;border:1px solid #7993a1;border-radius:0;background:#344452;color:#e8e0c8;font-size:20px}.ds-exit:hover{cursor:pointer;border-color:#7993a1}.ds-exit:focus-visible{outline:2px solid #7993a1;outline-offset:2px}.ds-exit:active{outline:1px solid #e8e0c8;outline-offset:-3px}"
+    },
+    {
+      "name": "Run Lever",
+      "kind": "custom",
+      "refersTo": "run-grip",
+      "description": "Orange grip, metal shaft, teal base, and three physical positions; drag direction is interpreted by the apparatus model. Documentation-only schematic of the native component; gallery hover/focus outlines and browser font fallback do not define runtime behavior.",
+      "html": "<button class=\"ds-lever\" type=\"button\" aria-label=\"操纵杆：运行、停、归位\"><svg viewBox=\"0 0 190 180\" width=\"190\" height=\"180\" aria-hidden=\"true\"><path d=\"M22 92H98L104 141H16Z\" fill=\"#36777b\"/><path d=\"M16 141H104V154H16Z\" fill=\"#263f47\"/><path d=\"M52 48H66V115H52Z\" fill=\"#202d32\"/><path d=\"M59 113V64\" stroke=\"#a5b4b1\" stroke-width=\"8\"/><path d=\"M30 59H88V76H30Z\" fill=\"#db8248\"/><text x=\"125\" y=\"48\" fill=\"#253e46\" font-size=\"18\">运行</text><text x=\"125\" y=\"80\" fill=\"#253e46\" font-size=\"18\">停</text><text x=\"125\" y=\"112\" fill=\"#253e46\" font-size=\"18\">归位</text></svg></button>",
+      "css": ".ds-lever{font-family:'Noto Sans CJK SC','Selected UI Coverage',sans-serif;font-weight:400;display:inline-block;border:0;border-radius:0;padding:0;background:#e2e2d5}.ds-lever svg{display:block}.ds-lever:hover{cursor:grab}.ds-lever:focus-visible{outline:2px solid #36777b;outline-offset:3px}.ds-lever:active{cursor:grabbing}"
+    },
+    {
+      "name": "Rewind Handwheel",
+      "kind": "custom",
+      "refersTo": "rewind-grip",
+      "description": "Turn the physical ring to undo an assembly edit. Documentation-only schematic of the native component; gallery hover/focus outlines and browser font fallback do not define runtime behavior.",
+      "html": "<button class=\"ds-rewind\" type=\"button\" aria-label=\"转动手轮撤回装配\"><svg viewBox=\"0 0 130 105\" width=\"130\" height=\"105\" aria-hidden=\"true\"><ellipse cx=\"65\" cy=\"44\" rx=\"32\" ry=\"22.63\" fill=\"none\" stroke=\"#a5b4b1\" stroke-width=\"7\"/><path d=\"M65 44L43 29\" stroke=\"#36777b\" stroke-width=\"6\"/><path d=\"M43 29V13\" stroke=\"#db8248\" stroke-width=\"12\" stroke-linecap=\"round\"/><text x=\"29\" y=\"92\" fill=\"#253e46\" font-size=\"17\">撤回装配</text></svg></button>",
+      "css": ".ds-rewind{font-family:'Noto Sans CJK SC','Selected UI Coverage',sans-serif;font-weight:400;border:0;border-radius:0;padding:0;background:#e2e2d5}.ds-rewind svg{display:block}.ds-rewind:hover{cursor:grab}.ds-rewind:focus-visible{outline:2px solid #36777b;outline-offset:3px}.ds-rewind:active{cursor:grabbing}"
+    },
+    {
+      "name": "Optional Notebook",
+      "kind": "custom",
+      "refersTo": "notebook-open",
+      "description": "Warm paper, a center fold, and voluntary reading. The actual notebook also moves and exposes three requested clue pages. Documentation-only schematic of the native component; gallery hover/focus outlines and browser font fallback do not define runtime behavior.",
+      "html": "<details class=\"ds-notebook\"><summary class=\"ds-notebook-cover\">试验记录</summary><div class=\"ds-notebook-paper\"><div class=\"ds-notebook-left\">试车记录<span class=\"ds-notebook-caption\">记录</span></div><div class=\"ds-notebook-right\">完整跑一轮，<br>再来比较轨迹。<svg class=\"ds-notebook-fold\" viewBox=\"0 0 34 27\" width=\"34\" height=\"27\" aria-hidden=\"true\"><path d=\"M0 27H34V0Z\" fill=\"#c79b62\"/></svg></div></div></details>",
+      "css": ".ds-notebook{font-family:'Noto Sans CJK SC','Selected UI Coverage',sans-serif;font-weight:400;display:inline-block;color:#202b35}.ds-notebook-cover{display:block;width:94px;padding:12px 0;border:5px solid #36777b;border-radius:0;background:#f6edd7;text-align:center;font-size:16px;list-style:none}.ds-notebook-cover::-webkit-details-marker{display:none}.ds-notebook-cover:hover{cursor:pointer}.ds-notebook-cover:focus-visible{outline:2px solid #36777b;outline-offset:3px}.ds-notebook-cover:active{outline:1px solid #c79b62;outline-offset:-3px}.ds-notebook-paper{display:grid;grid-template-columns:238px 238px;width:476px;height:266px;margin-top:8px;border:5px solid #36777b;background:#f6edd7;font-size:23px}.ds-notebook-left{padding:52px 0 0 66px;border-right:2px solid #bcb8a9}.ds-notebook-caption{display:block;margin-top:35px;color:#344452;font-size:20px}.ds-notebook-right{position:relative;padding:52px 0 0 15px;line-height:27px}.ds-notebook-fold{position:absolute;right:57px;bottom:18px}"
+    },
+    {
+      "name": "Parts Tray",
+      "kind": "custom",
+      "refersTo": "parts-tray",
+      "description": "Thick loose parts rest in dark molded recesses; valid targets and models own installation. Documentation-only schematic of the native component; gallery hover/focus outlines and browser font fallback do not define runtime behavior.",
+      "html": "<button class=\"ds-parts\" type=\"button\" aria-label=\"齿轮零件盘\"><svg viewBox=\"0 0 318 110\" width=\"318\" height=\"110\" aria-hidden=\"true\"><path d=\"M3 7H315L318 91H0Z\" fill=\"#36777b\"/><path d=\"M0 91H318V97H0Z\" fill=\"#263f47\"/><ellipse cx=\"56\" cy=\"57\" rx=\"40\" ry=\"28.28\" fill=\"#263f47\"/><polygon points=\"74.00,55.00 73.94,56.00 70.93,56.67 70.70,57.50 73.12,58.93 72.63,59.87 69.47,59.85 68.89,60.59 70.56,62.48 69.69,63.27 66.69,62.56 65.82,63.13 66.58,65.30 65.40,65.85 62.86,64.53 61.79,64.88 61.56,67.10 60.20,67.38 58.37,65.56 57.19,65.66 56.00,67.73 54.59,67.69 53.63,65.56 52.47,65.40 50.44,67.10 49.11,66.76 49.14,64.53 48.10,64.12 45.42,65.30 44.31,64.68 45.31,62.56 44.50,61.94 41.44,62.48 40.65,61.65 42.53,59.85 42.03,59.09 38.88,58.93 38.50,57.97 41.07,56.67 40.93,55.84 38.00,55.00 38.06,54.00 41.07,53.33 41.30,52.50 38.88,51.07 39.37,50.13 42.53,50.15 43.11,49.41 41.44,47.52 42.31,46.73 45.31,47.44 46.18,46.87 45.42,44.70 46.60,44.15 49.14,45.47 50.21,45.12 50.44,42.90 51.80,42.62 53.63,44.44 54.81,44.34 56.00,42.27 57.41,42.31 58.37,44.44 59.53,44.60 61.56,42.90 62.89,43.24 62.86,45.47 63.90,45.88 66.58,44.70 67.69,45.32 66.69,47.44 67.50,48.06 70.56,47.52 71.35,48.35 69.47,50.15 69.97,50.91 73.12,51.07 73.50,52.03 70.93,53.33 71.07,54.16\" fill=\"#a5b4b1\"/><circle cx=\"56\" cy=\"55\" r=\"4\" fill=\"#202d32\"/><ellipse cx=\"152\" cy=\"57\" rx=\"40\" ry=\"28.28\" fill=\"#263f47\"/><polygon points=\"178.00,55.00 177.92,56.44 173.57,57.42 173.24,58.61 176.73,60.68 176.02,62.04 171.46,62.01 170.62,63.07 173.03,65.81 171.77,66.94 167.44,65.92 166.18,66.74 167.28,69.87 165.58,70.68 161.92,68.76 160.36,69.27 160.03,72.48 158.07,72.88 155.42,70.25 153.71,70.40 152.00,73.38 149.96,73.33 148.58,70.25 146.90,70.02 143.97,72.48 142.05,71.99 142.08,68.76 140.59,68.17 136.72,69.87 135.11,68.98 136.56,65.92 135.39,65.03 130.97,65.81 129.83,64.61 132.54,62.01 131.82,60.91 127.27,60.68 126.72,59.29 130.43,57.42 130.23,56.21 126.00,55.00 126.08,53.56 130.43,52.58 130.76,51.39 127.27,49.32 127.98,47.96 132.54,47.99 133.38,46.93 130.97,44.19 132.23,43.06 136.56,44.08 137.82,43.26 136.72,40.13 138.42,39.32 142.08,41.24 143.64,40.73 143.97,37.52 145.93,37.12 148.58,39.75 150.29,39.60 152.00,36.62 154.04,36.67 155.42,39.75 157.10,39.98 160.03,37.52 161.95,38.01 161.92,41.24 163.41,41.83 167.28,40.13 168.89,41.02 167.44,44.08 168.61,44.97 173.03,44.19 174.17,45.39 171.46,47.99 172.18,49.09 176.73,49.32 177.28,50.71 173.57,52.58 173.77,53.79\" fill=\"#a5b4b1\"/><circle cx=\"152\" cy=\"55\" r=\"4\" fill=\"#202d32\"/><ellipse cx=\"248\" cy=\"57\" rx=\"40\" ry=\"28.28\" fill=\"#263f47\"/><polygon points=\"282.00,55.00 281.90,56.89 276.21,58.16 275.77,59.71 280.34,62.43 279.41,64.20 273.45,64.17 272.35,65.55 275.51,69.13 273.85,70.61 268.19,69.28 266.55,70.36 267.98,74.45 265.76,75.50 260.97,72.99 258.93,73.66 258.51,77.86 255.94,78.38 252.47,74.95 250.24,75.13 248.00,79.04 245.33,78.97 243.53,74.95 241.33,74.64 237.49,77.86 234.99,77.21 235.03,72.99 233.08,72.22 228.02,74.45 225.92,73.28 227.81,69.28 226.28,68.12 220.49,69.13 219.01,67.56 222.55,64.17 221.61,62.73 215.66,62.43 214.94,60.61 219.79,58.16 219.53,56.58 214.00,55.00 214.10,53.11 219.79,51.84 220.23,50.29 215.66,47.57 216.59,45.80 222.55,45.83 223.65,44.45 220.49,40.87 222.15,39.39 227.81,40.72 229.45,39.64 228.02,35.55 230.24,34.50 235.03,37.01 237.07,36.34 237.49,32.14 240.06,31.62 243.53,35.05 245.76,34.87 248.00,30.96 250.67,31.03 252.47,35.05 254.67,35.36 258.51,32.14 261.01,32.79 260.97,37.01 262.92,37.78 267.98,35.55 270.08,36.72 268.19,40.72 269.72,41.88 275.51,40.87 276.99,42.44 273.45,45.83 274.39,47.27 280.34,47.57 281.06,49.39 276.21,51.84 276.47,53.42\" fill=\"#a5b4b1\"/><circle cx=\"248\" cy=\"55\" r=\"4\" fill=\"#202d32\"/></svg></button>",
+      "css": ".ds-parts{border:0;border-radius:0;padding:0;background:transparent}.ds-parts svg{display:block}.ds-parts:hover{cursor:grab}.ds-parts:focus-visible{outline:2px solid #36777b;outline-offset:3px}.ds-parts:active{cursor:grabbing}"
+    },
+    {
+      "name": "Single Distance Instrument",
+      "kind": "custom",
+      "refersTo": "distance-instrument",
+      "description": "One side meter contains both distances and elapsed time; belt seams carry the visible travel. Documentation-only schematic of the native component; gallery hover/focus outlines and browser font fallback do not define runtime behavior.",
+      "html": "<section class=\"ds-meter\" aria-label=\"行驶距离仪表\"><div class=\"ds-meter-title\">行驶距离 / 格</div><div class=\"ds-meter-row\"><span class=\"ds-meter-label\">改装</span><span class=\"ds-meter-number\">31.1</span></div><div class=\"ds-meter-row\"><span class=\"ds-meter-label\">基准</span><span class=\"ds-meter-number\">27.7</span></div><div class=\"ds-meter-time\">11.0 / 30 秒</div></section>",
+      "css": ".ds-meter{font-family:'Noto Sans CJK SC','Selected UI Coverage',sans-serif;font-weight:400;width:146px;height:140px;padding:12px 18px;background:#263f47;color:#f4eddb;border:0;border-radius:0}.ds-meter-title,.ds-meter-time{font-size:17px}.ds-meter-row{display:flex;align-items:baseline;gap:12px;margin-top:11px}.ds-meter-label{font-size:16px}.ds-meter-number{font-size:30px}.ds-meter-time{margin-top:10px}"
+    },
+    {
+      "name": "Temporary Feedback",
+      "kind": "card",
+      "refersTo": "transient-feedback",
+      "description": "A concise lower-strip sentence expires after five seconds in the runtime. Documentation-only schematic of the native component; gallery hover/focus outlines and browser font fallback do not define runtime behavior.",
+      "html": "<div class=\"ds-feedback\" role=\"status\">装置归位，零件和上一轮记录都保留。</div>",
+      "css": ".ds-feedback{font-family:'Noto Sans CJK SC','Selected UI Coverage',sans-serif;font-weight:400;display:block;padding:12px 12px 9px;background:#253e46;color:#f5f1e4;border:0;border-radius:0;font-size:21px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Working Miniature",
+    "overview": "These four closeups turn a tabletop apparatus into the playing surface. Solid parts, warm working surfaces, teal equipment, dark recesses, orange grips, and shared directional light make the next manipulation visible. Players compare physical results, change one part, and run the apparatus again. The named metaphor describes the implemented direction in the [local brief](../../../../../.impeccable/flc-miniatures-brief.md); it is not a new identity for 7:55.\n\nThis document applies only to the solar endurance race, reversible robot delivery route, two-screen synchronization apparatus, and mechanical gear/belt bench. The user approved non-pixel, fixed pseudo-3D closeups here. Existing pixel floors, room-scale art, the whole-product art bible, and other UI systems retain their own authority. There is no supplied PRODUCT.md or approved composition to reproduce. New closeup raster count is zero: the apparatus is native geometry; the retained vehicle atlas and monitor artwork serve room-scale or legacy rendering paths.",
+    "keyCharacteristics": [
+      "One fixed orthographic apparatus plane, with visible thickness and shared light.",
+      "Physical parts and handles carry the main actions.",
+      "Restrained native text names objects and reads instruments.",
+      "Reversible assembly, owned gestures, and model-driven outcomes.",
+      "Optional movable notes and brief feedback keep the apparatus visible."
+    ],
+    "rules": [
+      {
+        "name": "The Shared Light Rule",
+        "body": "Solar illumination must change the visible shared field, both belt surfaces, and both cars together. A percentage caption cannot be the sole evidence of full light, partial shadow, or a closed shutter.",
+        "section": "colors"
+      },
+      {
+        "name": "The Material Meaning Rule",
+        "body": "Use teal for equipment, graphite for recesses, rubber for flexible or rolling parts, and orange for grips or active material. Keep color attached to an identifiable object or physical state.",
+        "section": "colors"
+      },
+      {
+        "name": "The Attached Identity Rule",
+        "body": "Labels follow the objects they identify. During receiver overlap, suppress a stationary name that would be painted across the dragged screen; keep the dragged receiver's own identity readable. Place the solar operating cue outside the handle and shutter path.",
+        "section": "typography"
+      },
+      {
+        "name": "The Same Plane Rule",
+        "body": "Rendered parts, their visible handles, their hit regions, and their motion must agree under the same fixed projection. Derive manipulation from the same geometry; do not tune an independent perspective or screen-position guess for one object.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Instrument Rule",
+        "body": "Solar distance and elapsed time belong to one side instrument. Unnumbered belt seams show movement; they do not become a second ruler or a second distance display.",
+        "section": "layout"
+      },
+      {
+        "name": "The Visible Surface Rule",
+        "body": "Moving marks must render above the surface they explain. Solar belt seams sit above both decks, move from each car's model distance, and remain legible at touch scale.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Model Motion Rule",
+        "body": "Presentation follows the current model state. A hinge settle, gear spin, packet, contact arc, shadow, or completion animation cannot award progress or supply missing puzzle evidence.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Reversible Hand Rule",
+        "body": "A preview is not a committed edit. Preserve the assembly on canceled or invalid drops, respect the active pointer owner, and keep undo, return, and exit available through their existing physical or navigation controls.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** keep these rules scoped to the four miniature closeups and preserve the surrounding pixel floors and existing UI systems.",
+      "**Do** use the Same Plane Rule for geometry, visible grips, manipulation anchors, and robot braking metrics.",
+      "**Do** make light, belt movement, signal propagation, and mechanical transmission readable in the apparatus itself.",
+      "**Do** retain the one side instrument and both visible solar cars.",
+      "**Do** keep labels clear during drag and shutter movement, following the Attached Identity Rule.",
+      "**Do** preserve pointer ownership, cancellation, focus recovery, optional notes, and model-controlled outcomes.",
+      "**Do** check the authored landscape playfield at desktop, touch scale, and the supplied browser extent; distinguish simulated touch from physical-device evidence."
+    ],
+    "donts": [
+      "**Don't** replace object manipulation with an action-button row, numbered-port buttons, or a permanent hotkey/control panel.",
+      "**Don't** introduce a second camera projection, unequal image scaling, or hit areas detached from the visible mechanism.",
+      "**Don't** hide moving belt seams below the deck or use distance text as the only movement evidence.",
+      "**Don't** use a numeric light caption as the only distinction between full light, shadow, and the closed shutter.",
+      "**Don't** paint a stationary receiver name over a dragged receiver or place the solar cue in the handle path.",
+      "**Don't** turn animation, rendering, or a clue-page action into an independent progression authority.",
+      "**Don't** treat the local non-pixel exception, these token previews, or the F1–F3 verdict as a whole-product art migration, campaign integration, all-room completion, or release approval."
+    ]
+  }
+}

@@ -7,6 +7,17 @@ const Lighting=preload("res://campuses/future_learning_center/scripts/floor_ligh
 const Transit=preload("res://campuses/future_learning_center/scripts/building_transit.gd")
 const Workbench=preload("res://campuses/future_learning_center/scripts/workbench_view.gd")
 const Stairs=preload("res://campuses/future_learning_center/scripts/stair_view.gd")
+const SignalSync=preload("res://campuses/future_learning_center/scripts/signal_sync_view.gd")
+const MotionLab=preload("res://campuses/future_learning_center/scripts/motion_lab_view.gd")
+const PantryTray=preload("res://campuses/future_learning_center/scripts/pantry_tray_view.gd")
+var pantry_tray:Control
+var pantry_pending:=false
+const TouchStick=preload("res://campuses/future_learning_center/scripts/touch_stick.gd")
+const MOTION_ANCHORS:={"solar":"formula_workbench_0","robotics":"robotics_workbench_30"}
+var motion_lab:Control
+var motion_pending:=""
+var signal_sync:Control
+var signal_sync_pending:=false
 var stairs:Control
 var stair_destination:Dictionary={}
 var workbench:Control
@@ -34,6 +45,7 @@ var geometry_visible:=false
 var capture_only:=false
 var user_control:=true
 var touch_vector:=Vector2.ZERO
+var joystick:Control
 var touched_buttons:Dictionary={}
 var title_label:Label
 var place_label:Label
@@ -53,6 +65,12 @@ func _ready()->void:
 	var bench_layer:=CanvasLayer.new();bench_layer.layer=5;add_child(bench_layer)
 	workbench=Workbench.new();workbench.size=Vector2(960,540);bench_layer.add_child(workbench)
 	workbench.closed.connect(func()->void:ui.show();route.clear();workbench_pending=false)
+	signal_sync=SignalSync.new();signal_sync.size=Vector2(960,540);bench_layer.add_child(signal_sync)
+	signal_sync.closed.connect(func()->void:ui.show();route.clear();signal_sync_pending=false)
+	motion_lab=MotionLab.new();motion_lab.size=Vector2(960,540);bench_layer.add_child(motion_lab)
+	motion_lab.closed.connect(func()->void:ui.show();route.clear();motion_pending="")
+	pantry_tray=PantryTray.new();pantry_tray.size=Vector2(960,540);bench_layer.add_child(pantry_tray)
+	pantry_tray.closed.connect(func()->void:ui.show();route.clear();pantry_pending=false)
 	stairs=Stairs.new();stairs.size=Vector2(960,540);bench_layer.add_child(stairs)
 	stairs.cancelled.connect(func()->void:stair_destination.clear();ui.show();route.clear())
 	stairs.finished.connect(_finish_stairs)
@@ -61,13 +79,20 @@ func _ready()->void:
 
 func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	if not floor_number in Transit.FLOORS:return false
+	if is_instance_valid(joystick):joystick.cancel()
 	var next:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/future_learning_center/data/floor_%d.json"%floor_number))
 	var next_space=FloorSpace.new();next_space.configure(next)
 	var foot:=Vector2(next.spawn[0],next.spawn[1]) if not arrival.is_finite() else arrival
 	if not next_space.can_stand(foot-Body.FOOT_CENTER_OFFSET):return false
 	if is_instance_valid(workbench) and workbench.visible:workbench.close()
+	if is_instance_valid(signal_sync) and signal_sync.visible:signal_sync.close()
+	if is_instance_valid(motion_lab) and motion_lab.visible:motion_lab.close()
+	if is_instance_valid(pantry_tray) and pantry_tray.visible:pantry_tray.close()
 	if is_instance_valid(stairs):stairs.model.cancel();stairs.hide();stair_destination.clear();ui.show()
 	workbench_pending=false
+	signal_sync_pending=false
+	motion_pending=""
+	pantry_pending=false
 	data=next;space=next_space;route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
 	for item:Dictionary in data.modules:_texture(item.path)
 	for item:Dictionary in data.get("objects",[]):_texture(item.path)
@@ -119,11 +144,14 @@ func _process(dt:float)->void:
 	elapsed+=dt
 	if capture_only:return
 	if is_instance_valid(workbench) and workbench.visible:return
+	if is_instance_valid(signal_sync) and signal_sync.visible:return
+	if is_instance_valid(motion_lab) and motion_lab.visible:return
+	if is_instance_valid(pantry_tray) and pantry_tray.visible:return
 	if is_instance_valid(stairs) and stairs.visible:return
 	var direction:=Vector2.ZERO
 	if user_control and not overview:
 		direction=Vector2(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),int(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-int(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))+touch_vector
-		if direction.length_squared()>0:route.clear();direction=direction.normalized()
+		if direction.length_squared()>0:route.clear();direction=direction.limit_length()
 		elif not route.is_empty():
 			# Follow the validated corner all the way before taking the next leg.
 			# Skipping it four pixels early can cut into a chair's foot collider.
@@ -142,14 +170,19 @@ func _process(dt:float)->void:
 	framing.update(dt,player,space,false,overview);_apply_camera()
 	if workbench_pending and route.is_empty():
 		workbench_pending=false;open_workbench()
+	if signal_sync_pending and route.is_empty():
+		signal_sync_pending=false;open_signal_sync()
+	if not motion_pending.is_empty() and route.is_empty():
+		var pending:=motion_pending;motion_pending="";open_motion_lab(pending)
+	if pantry_pending and route.is_empty():
+		pantry_pending=false;open_pantry()
 	if is_instance_valid(place_label):
 		var room:Dictionary=space.room_at(player+Body.FOOT_CENTER_OFFSET)
 		var landing:Dictionary=transit.nearby(data,player)
 		transit_button.visible=not landing.is_empty() and not overview
-		if not landing.is_empty():transit_button.text=str(landing.name)+" · E"
+		if not landing.is_empty():transit_button.text=str(landing.name)
 		elif is_instance_valid(transit_panel):transit_panel.hide()
 		place_label.text=("%dF 全层总览"%int(data.floor)) if overview else str(room.get("name","环廊"))+object_hint
-		if can_open_workbench() and not overview:place_label.text+="  ·  操作台 Space"
 	queue_redraw()
 
 func _apply_camera()->void:
@@ -163,13 +196,17 @@ func set_foot(point:Vector2,snap:=true)->bool:
 func _unhandled_input(event:InputEvent)->void:
 	if not user_control:return
 	if is_instance_valid(stairs) and stairs.visible:return
+	if is_instance_valid(workbench) and workbench.visible:return
+	if is_instance_valid(signal_sync) and signal_sync.visible:return
+	if is_instance_valid(motion_lab) and motion_lab.visible:return
+	if is_instance_valid(pantry_tray) and pantry_tray.visible:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_TAB:toggle_overview();get_viewport().set_input_as_handled()
 		elif event.keycode==KEY_F2:geometry_visible=not geometry_visible
 		elif event.keycode==KEY_L:_cycle_time()
 		elif event.keycode==KEY_E:open_transit()
 		elif event.keycode==KEY_SPACE:
-			if not open_workbench():inspect_nearby()
+			if not open_pantry() and not open_workbench() and not open_signal_sync() and not open_motion_lab("solar") and not open_motion_lab("robotics"):inspect_nearby()
 	elif event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
 		point_action(screen_to_world(event.position));get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and event.pressed:
@@ -182,7 +219,78 @@ func world_to_screen(point:Vector2)->Vector2:return (point-framing.center)*frami
 func request_walk(foot:Vector2)->void:
 	if overview:return
 	workbench_pending=false
+	signal_sync_pending=false
+	motion_pending=""
+	pantry_pending=false
 	route=space.route(player,foot-Body.FOOT_CENTER_OFFSET)
+func pantry_desk()->Dictionary:
+	if int(data.floor)!=3:return {}
+	for item:Dictionary in data.objects:
+		if item.id=="pantry_pantry_island_250":return item
+	return {}
+func pantry_approach()->Vector2:
+	var item:=pantry_desk()
+	if item.is_empty():return Vector2.INF
+	var box:Rect2=Space.rect(item.footprint)
+	for point:Vector2 in [Vector2(box.end.x+55,box.get_center().y),Vector2(box.position.x-55,box.get_center().y),Vector2(box.get_center().x,box.end.y+80)]:
+		if space.can_stand(point-Body.FOOT_CENTER_OFFSET):return point
+	return Vector2.INF
+func can_open_pantry()->bool:
+	var item:=pantry_desk()
+	if item.is_empty() or overview:return false
+	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
+	return foot.distance_to(foot.clamp(box.position,box.end))<=105
+func open_pantry()->bool:
+	if not can_open_pantry():return false
+	if is_instance_valid(joystick):joystick.cancel()
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	pantry_pending=false;motion_pending="";signal_sync_pending=false;workbench_pending=false
+	pantry_tray.open();ui.hide();return true
+func motion_desk(mode:String)->Dictionary:
+	if int(data.floor)!=2 or not MOTION_ANCHORS.has(mode):return {}
+	for item:Dictionary in data.objects:
+		if item.id==MOTION_ANCHORS[mode]:return item
+	return {}
+func motion_approach(mode:String)->Vector2:
+	var item:=motion_desk(mode)
+	if item.is_empty():return Vector2.INF
+	var box:Rect2=Space.rect(item.footprint)
+	for point:Vector2 in [Vector2(box.position.x-55,box.get_center().y),Vector2(box.end.x+55,box.get_center().y),Vector2(box.get_center().x,box.end.y+80)]:
+		if space.can_stand(point-Body.FOOT_CENTER_OFFSET):return point
+	return Vector2.INF
+func can_open_motion_lab(mode:String)->bool:
+	var item:=motion_desk(mode)
+	if item.is_empty() or overview:return false
+	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
+	return foot.distance_to(foot.clamp(box.position,box.end))<=105
+func open_motion_lab(mode:String)->bool:
+	if not can_open_motion_lab(mode):return false
+	if is_instance_valid(joystick):joystick.cancel()
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();motion_pending="";signal_sync_pending=false;workbench_pending=false
+	motion_lab.open(mode);ui.hide();return true
+func signal_sync_desk()->Dictionary:
+	if int(data.floor)!=2:return {}
+	for item:Dictionary in data.objects:
+		if item.id=="team_desk_6":return item
+	return {}
+func signal_sync_approach()->Vector2:
+	var item:=signal_sync_desk()
+	if item.is_empty():return Vector2.INF
+	var box:Rect2=Space.rect(item.footprint)
+	# Choose a clear side of the actual desk footprint, without changing map geometry.
+	for point:Vector2 in [Vector2(box.position.x-55,box.get_center().y),Vector2(box.end.x+55,box.get_center().y),Vector2(box.get_center().x,box.end.y+80)]:
+		if space.can_stand(point-Body.FOOT_CENTER_OFFSET):return point
+	return Vector2.INF
+func can_open_signal_sync()->bool:
+	var item:=signal_sync_desk()
+	if item.is_empty() or overview:return false
+	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
+	return foot.distance_to(foot.clamp(box.position,box.end))<=105
+func open_signal_sync()->bool:
+	if not can_open_signal_sync():return false
+	if is_instance_valid(joystick):joystick.cancel()
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();signal_sync_pending=false;workbench_pending=false
+	signal_sync.open();ui.hide();return true
 func workshop_bench()->Dictionary:
 	if not data.has("workshopReference"):return {}
 	for o:Dictionary in data.objects:
@@ -195,9 +303,29 @@ func can_open_workbench()->bool:
 	return foot.distance_to(foot.clamp(box.position,box.end))<=105
 func open_workbench()->bool:
 	if not can_open_workbench():return false
+	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
 	workbench.open();ui.hide();return true
 func point_action(at:Vector2)->void:
+	var pantry:=pantry_desk()
+	if not pantry.is_empty() and Space.rect(pantry.bounds).has_point(at):
+		if open_pantry():return
+		var approach:=pantry_approach()
+		if approach.is_finite():request_walk(approach);pantry_pending=not route.is_empty()
+		return
+	for mode:String in MOTION_ANCHORS:
+		var bench:=motion_desk(mode)
+		if not bench.is_empty() and Space.rect(bench.bounds).has_point(at):
+			if open_motion_lab(mode):return
+			var approach:=motion_approach(mode)
+			if approach.is_finite():request_walk(approach);motion_pending=mode if not route.is_empty() else ""
+			return
+	var desk:=signal_sync_desk()
+	if not desk.is_empty() and Space.rect(desk.bounds).has_point(at):
+		if open_signal_sync():return
+		var approach:=signal_sync_approach()
+		if approach.is_finite():request_walk(approach);signal_sync_pending=not route.is_empty()
+		return
 	var item:=workshop_bench()
 	if not item.is_empty() and Space.rect(item.bounds).has_point(at):
 		if open_workbench():return
@@ -205,6 +333,7 @@ func point_action(at:Vector2)->void:
 		request_walk(Vector2(target[0],target[1]));workbench_pending=not route.is_empty()
 	else:request_walk(at)
 func toggle_overview()->void:
+	if is_instance_valid(joystick):joystick.cancel()
 	overview=not overview;route.clear();touch_vector=Vector2.ZERO
 
 func _notification(what:int)->void:
@@ -222,18 +351,14 @@ func _build_ui()->void:
 	var choices:=HBoxContainer.new();transit_panel.add_child(choices)
 	for f:int in Transit.FLOORS:
 		var choice:=Button.new();choice.name=str(f);choice.text="%dF"%f;choice.custom_minimum_size=Vector2(90,70);choice.add_theme_font_override("font",font);choices.add_child(choice);choice.pressed.connect(func()->void:travel_to(f))
-	var button:=Button.new();button.text="楼层总图 · Tab";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
+	var button:=Button.new();button.text="楼层总图";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
 	var footer:=ColorRect.new();footer.color=Color(.035,.055,.085,.86);footer.position=Vector2(0,509);footer.size=Vector2(960,31);footer.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(footer)
 	place_label=Label.new();place_label.position=Vector2(18,513);place_label.add_theme_font_override("font",font);place_label.add_theme_font_size_override("font_size",14);panel.add_child(place_label)
-	var hint:=Label.new();hint.text="WASD / 方向键行走  ·  点击地面前往";hint.position=Vector2(602,513);hint.add_theme_font_override("font",font);hint.add_theme_font_size_override("font_size",13);panel.add_child(hint)
 	var touch_enabled:=OS.has_feature("mobile") or OS.get_environment("FLC_TOUCH")=="1"
 	if OS.has_feature("web"):touch_enabled=bool(JavaScriptBridge.eval("window.matchMedia('(pointer: coarse)').matches"))
 	if touch_enabled:
-		hint.text="轻触地面前往  ·  左下方向键移动"
-		for entry:Array in [["↑",Vector2(76,374),Vector2.UP],["↓",Vector2(76,450),Vector2.DOWN],["←",Vector2(38,412),Vector2.LEFT],["→",Vector2(114,412),Vector2.RIGHT]]:
-			var control:=Button.new();control.text=entry[0];control.position=entry[1];control.size=Vector2(38,38);control.add_theme_font_size_override("font_size",22);panel.add_child(control)
-			control.button_down.connect(func()->void:touched_buttons[entry[0]]=entry[2];_touch_changed())
-			control.button_up.connect(func()->void:touched_buttons.erase(entry[0]);_touch_changed())
+		joystick=TouchStick.new();joystick.position=Vector2(18,343);joystick.size=Vector2(156,156);panel.add_child(joystick)
+		joystick.moved.connect(func(value:Vector2)->void:touch_vector=value)
 
 func _touch_changed()->void:
 	touch_vector=Vector2.ZERO
@@ -314,6 +439,14 @@ func _draw()->void:
 		if item.get("actor",false):_draw_actor()
 		else:
 			_draw_prop(item)
+			if int(data.floor)==3:
+				if item.id=="pantry_pantry_island_250" and not pantry_tray.model.earned:pantry_tray.draw_room_prop(self,Space.rect(item.bounds))
+				elif item.id=="pantry_lounge_coffee_table_249" and pantry_tray.model.earned:pantry_tray.draw_room_prop(self,Space.rect(item.bounds),true)
+			if int(data.floor)==2:
+				for mode:String in MOTION_ANCHORS:
+					if item.id==MOTION_ANCHORS[mode]:motion_lab.draw_room_prop(self,mode,Space.rect(item.bounds))
+			if int(data.floor)==2 and item.id in ["team_monitor_front_9","team_monitor_front_13"]:
+				SignalSync.mini(self,Space.rect(item.bounds),int(signal_sync.model.displayed.left if item.id=="team_monitor_front_9" else signal_sync.model.displayed.right))
 			if item.id==data.get("workshopReference",{}).get("bench",""):
 				var b:Rect2=Space.rect(item.bounds)
 				Workbench.mini(self,b.position+Vector2(40,6),1.1,workbench.model)

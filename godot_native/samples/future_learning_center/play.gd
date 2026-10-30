@@ -12,6 +12,16 @@ func run()->void:
 	world=load("res://campuses/future_learning_center/scripts/floor_view.gd").new();viewport.add_child(world)
 	root.size_changed.connect(fit);fit()
 	if not OS.get_environment("FLC_CAPTURE_DIR").is_empty():
+		if OS.get_environment("FLC_OBJECT_PREVIEW")=="1":
+			for mode:String in ["solar","robotics"]:
+				world.load_floor(2);world.set_foot(world.motion_approach(mode));world.open_motion_lab(mode)
+				await capture("object_"+mode);world.motion_lab.close()
+			quit();return
+		if OS.get_environment("FLC_MOTION_VIDEO")=="1":await capture_motion_puzzle_video();quit();return
+		if OS.get_environment("FLC_MOTION_CHECK")=="1":
+			var failed:int=await check_motion_labs();quit(1 if failed else 0);return
+		if OS.get_environment("FLC_SIGNAL_CHECK")=="1":
+			var failed:int=await check_signal_sync();quit(1 if failed else 0);return
 		if OS.get_environment("FLC_INPUT_CHECK")=="1":await check_input()
 		if OS.get_environment("FLC_WORKSHOP_CHECK")=="1":await check_workshop()
 		if OS.get_environment("FLC_STAIRS_CHECK")=="1":await check_stairs()
@@ -235,6 +245,156 @@ func pointer_event(at:Vector2,pressed:bool)->void:
 		var click:=InputEventMouseButton.new();click.button_index=MOUSE_BUTTON_LEFT;click.position=screen;click.pressed=pressed;root.push_input(click,true)
 	await process_frame
 func tap(at:Vector2)->void:await pointer_event(at,true);await pointer_event(at,false)
+func capture_motion_puzzle_video()->void:
+	world.load_floor(2);world.set_foot(world.motion_approach("robotics"));world.open_motion_lab("robotics")
+	var lab:Control=world.motion_lab;lab.set_process(false)
+	var output:=OS.get_environment("FLC_CAPTURE_DIR").path_join("robot_video")
+	DirAccess.make_dir_recursive_absolute(output)
+	await tap(Vector2(120,460))
+	for index:int in 720:
+		if index==300:
+			await tap(Vector2(102,168));await key(KEY_R,true);await key(KEY_R,false)
+			await tap(Vector2(606,168));await key(KEY_R,true);await key(KEY_R,false);await key(KEY_R,true);await key(KEY_R,false)
+			await tap(Vector2(580,400));await tap(Vector2(120,460))
+		lab.robot.step(1.0/30.0);lab._refresh();lab.queue_redraw()
+		await process_frame;await RenderingServer.frame_post_draw
+		viewport.get_texture().get_image().save_png(output.path_join("frame_%04d.png"%index))
+	print("FLC_ROBOT_VIDEO: 720 native frames at 30 Hz, final phase="+lab.robot.phase)
+func check_motion_labs()->int:
+	var results:Array[Dictionary]=[]
+	root.grab_focus();await process_frame;world.load_floor(2);world.user_control=true
+	results.append({"name":"both remote entries rejected","passed":not world.open_motion_lab("solar") and not world.open_motion_lab("robotics")})
+	for mode:String in ["solar","robotics"]:
+		var approach:Vector2=world.motion_approach(mode)
+		results.append({"name":mode+" legal measured approach","passed":approach.is_finite() and world.set_foot(approach)})
+		await capture(mode+"_room")
+		var desk:Dictionary=world.motion_desk(mode)
+		if not world.set_foot(approach+Vector2(0,180)):world.set_foot(approach)
+		await process_frame;await tap(world.world_to_screen(world.Space.rect(desk.bounds).get_center()))
+		await create_timer(2.0).timeout
+		results.append({"name":mode+" tap approach opens physical station","passed":world.motion_lab.visible and world.motion_lab.kind==mode and world.space.can_stand(world.player)})
+		if not world.motion_lab.visible:push_error("MOTION input could not enter "+mode);return 1
+		var lab:Control=world.motion_lab;var feet:Vector2=world.player
+		await capture(mode+"_initial")
+		if mode=="solar":
+			await key(KEY_1,true);await key(KEY_1,false)
+			results.append({"name":"keyboard hinge changes actual panel","passed":lab.solar.setup.tilt==1})
+			await tap(Vector2(120,460));await create_timer(1.5).timeout;await capture("solar_launch")
+			results.append({"name":"same clock moves both vehicles","passed":lab.solar.running and lab.solar.cars[0].distance>0 and lab.solar.cars[1].distance>0})
+			var deadline:=Time.get_ticks_msec()+45000
+			while lab.solar.running and lab.solar.elapsed()<11 and Time.get_ticks_msec()<deadline:await process_frame
+			await capture("solar_shadow")
+			results.append({"name":"shared shadow occurs at authored time","passed":lab.solar.light_phase()=="阴影"})
+			while lab.solar.running and Time.get_ticks_msec()<deadline:await process_frame
+			results.append({"name":"ordinary 30 second run records valid winner","passed":lab.solar.complete and lab.solar.ticks==600})
+			await capture("solar_complete")
+			await tap(Vector2(351,400))
+			results.append({"name":"touch part change invalidates result","passed":lab.solar.setup.panel==1 and not lab.solar.complete})
+			await tap(Vector2(280,460));results.append({"name":"undo restores previous build","passed":lab.solar.setup.panel==0})
+		else:
+			await tap(Vector2(120,460));await create_timer(2.2).timeout;await capture("robotics_loaded")
+			results.append({"name":"cargo visibly travels after loading","passed":lab.robot.running and lab.robot.cargo=="robot" and lab.robot.position.x>0})
+			var deadline:=Time.get_ticks_msec()+15000
+			while lab.robot.running and Time.get_ticks_msec()<deadline:await process_frame
+			results.append({"name":"delivered robot stops at return entry","passed":lab.robot.phase=="blocked" and lab.robot.delivered and not lab.robot.complete and lab.robot.position.x>2.5})
+			await capture("robotics_return_blocked")
+			await tap(Vector2(574,460));await capture("robotics_trace")
+			results.append({"name":"records show actual failure trace","passed":lab.notes_open and lab.robot.last_trace.size()>4})
+			await tap(Vector2(354,240));await key(KEY_C,true);await key(KEY_C,false)
+			results.append({"name":"tap selection and keyboard replace physical module","passed":lab.selected==Vector2i(2,1) and lab.robot.tiles[Vector2i(2,1)].kind=="straight" and not lab.robot.complete})
+			await tap(Vector2(120,460));deadline=Time.get_ticks_msec()+15000
+			while lab.robot.phase!="unloading" and lab.robot.running and Time.get_ticks_msec()<deadline:await process_frame
+			await create_timer(.45).timeout;await capture("robotics_unloading")
+			results.append({"name":"unloading alone is incomplete","passed":lab.robot.phase=="unloading" and not lab.robot.complete})
+			while lab.robot.running and Time.get_ticks_msec()<deadline:await process_frame
+			results.append({"name":"actual empty return completes","passed":lab.robot.complete and lab.robot.cargo=="destination" and lab.robot.position==Vector2(0,1)})
+			await capture("robotics_complete")
+		await tap(Vector2(712,460));await capture(mode+"_hint")
+		results.append({"name":mode+" hint starts only on request","passed":lab.hint_open and lab.hint_levels[mode]==0})
+		await key(KEY_H,true);await key(KEY_H,false);await key(KEY_H,true);await key(KEY_H,false)
+		await capture(mode+"_hint_final")
+		results.append({"name":mode+" explicit final hint","passed":lab.hint_levels[mode]==2})
+		await tap(Vector2(860,88));results.append({"name":mode+" clues dismiss without leaving station","passed":not lab.hint_open and lab.visible})
+		await tap(Vector2(120,460));await create_timer(.2).timeout
+		lab.notification(NOTIFICATION_APPLICATION_FOCUS_OUT)
+		results.append({"name":mode+" focus loss stops simulation","passed":not lab.solar.running if mode=="solar" else not lab.robot.running})
+		await tap(Vector2(420,460))
+		if mode=="robotics":results.append({"name":"cancel restores safe cargo origin","passed":lab.robot.cargo=="base" and lab.robot.position==Vector2(0,1)})
+		for id:String in lab.buttons:
+			var b:Button=lab.buttons[id]
+			if b.visible and not id.begins_with("tile"):
+				results.append({"name":mode+" control within logical viewport "+id,"passed":Rect2(0,0,960,540).encloses(b.get_rect()) and b.size.y>=44})
+		await tap(Vector2(878,36));results.append({"name":mode+" exit retains legal room feet","passed":not lab.visible and world.ui.visible and world.player==feet})
+		await key(KEY_SPACE,true);await key(KEY_SPACE,false)
+		results.append({"name":mode+" keyboard reopens same station","passed":lab.visible and lab.kind==mode})
+		lab.close()
+	world.load_floor(3)
+	results.append({"name":"no experiment entry on wrong floor","passed":not world.open_motion_lab("solar") and not world.open_motion_lab("robotics")})
+	var failed:=0
+	for result:Dictionary in results:
+		if not result.passed:failed+=1;push_error("FLC_MOTION_INPUT: "+str(result.name))
+	var file:=FileAccess.open(OS.get_environment("FLC_CAPTURE_DIR").path_join("motion_input.json"),FileAccess.WRITE)
+	file.store_string(JSON.stringify({"checks":results.size(),"failures":failed,"viewport":[root.size.x,root.size.y],"touch":OS.get_environment("FLC_TOUCH")=="1","timing":"real-time ordinary start input","results":results},"  "));file.close()
+	print("FLC_MOTION_INPUT: %d checks, %d failures"%[results.size(),failed]);return failed
+func check_signal_sync()->int:
+	var results:Array[Dictionary]=[]
+	root.grab_focus();await process_frame
+	world.load_floor(2);world.user_control=true
+	results.append({"name":"remote activation rejected","passed":not world.open_signal_sync()})
+	var approach:Vector2=world.signal_sync_approach()
+	results.append({"name":"measured approach is clear","passed":approach.is_finite() and world.set_foot(approach)})
+	await capture("signal_room")
+	var desk:Dictionary=world.signal_sync_desk();var target:Vector2=world.Space.rect(desk.bounds).get_center()
+	# Start beyond interaction range, then exercise ordinary tap-to-approach.
+	world.set_foot(approach-Vector2(0,200));await process_frame
+	await tap(world.world_to_screen(target));await create_timer(2).timeout
+	results.append({"name":"tap desk approaches and opens","passed":world.signal_sync.visible and world.space.can_stand(world.player)})
+	if not world.signal_sync.visible:push_error("Signal room did not open through input");return 1
+	await capture("signal_initial")
+	await key(KEY_SPACE,true);await key(KEY_SPACE,false);await create_timer(1.2).timeout
+	results.append({"name":"original wiring visibly fails","passed":world.signal_sync.model.outcome=="mismatch" and not world.signal_sync.model.complete})
+	await tap(Vector2(700,470));await capture("signal_hint")
+	results.append({"name":"hint has no completion effect","passed":world.signal_sync.hint_level==0 and not world.signal_sync.model.complete})
+	await key(KEY_H,true);await key(KEY_H,false);await key(KEY_H,true);await key(KEY_H,false)
+	await capture("signal_hint_last")
+	results.append({"name":"hint tiers only advance on request","passed":world.signal_sync.hint_level==2 and not world.signal_sync.model.earned})
+	await tap(Vector2(560,470));await capture("signal_notes")
+	results.append({"name":"records explain evidence without completing","passed":world.signal_sync.notes_open and not world.signal_sync.model.earned})
+	await tap(Vector2(532,339));await tap(Vector2(650,395))
+	results.append({"name":"two native port taps connect cable","passed":world.signal_sync.model.wires.right=="split_b"})
+	await tap(Vector2(125,470));await create_timer(.55).timeout;await capture("signal_transmitting");await create_timer(.8).timeout
+	results.append({"name":"one change still needs verification","passed":world.signal_sync.model.outcome=="one_change" and not world.signal_sync.model.complete})
+	await tap(Vector2(825,470));await process_frame
+	results.append({"name":"screen swap preserves port identity","passed":world.signal_sync.port_buttons.left.position.y>world.signal_sync.port_buttons.right.position.y})
+	await tap(Vector2(125,470));await create_timer(1.3).timeout
+	results.append({"name":"second distinct live update succeeds after swap","passed":world.signal_sync.model.complete})
+	await capture("signal_success")
+	await key(KEY_7,true);await key(KEY_7,false);await key(KEY_X,true);await key(KEY_X,false)
+	results.append({"name":"keyboard disconnect targets identity after swap","passed":not world.signal_sync.model.wires.has("right") and not world.signal_sync.model.complete})
+	await key(KEY_Z,true);await key(KEY_Z,false)
+	results.append({"name":"undo restores cable but requires new verification","passed":world.signal_sync.model.wires.right=="split_b" and not world.signal_sync.model.complete})
+	await key(KEY_5,true);await key(KEY_5,false);await key(KEY_6,true);await key(KEY_6,false)
+	results.append({"name":"keyboard port connection shares physical cable rule","passed":world.signal_sync.model.wires.left=="split_b" and not world.signal_sync.model.wires.has("right")})
+	await key(KEY_Z,true);await key(KEY_Z,false)
+	if OS.get_environment("FLC_TOUCH")!="1":
+		await pointer_event(Vector2(532,339),true);await pointer_event(Vector2(650,395),false)
+		results.append({"name":"mouse drag follows swapped visible socket","passed":world.signal_sync.model.wires.left=="split_b"})
+		await key(KEY_Z,true);await key(KEY_Z,false)
+	var feet:Vector2=world.player
+	await tap(Vector2(880,32));results.append({"name":"exit restores same legal feet","passed":not world.signal_sync.visible and world.ui.visible and world.player==feet})
+	await key(KEY_SPACE,true);await key(KEY_SPACE,false)
+	results.append({"name":"keyboard reopen retains connections","passed":world.signal_sync.visible and world.signal_sync.model.wires.right=="split_b"})
+	await key(KEY_SPACE,true);await key(KEY_SPACE,false);await create_timer(.1).timeout
+	world.signal_sync.notification(NOTIFICATION_APPLICATION_FOCUS_OUT);await create_timer(1.3).timeout
+	results.append({"name":"focus loss cancels unfinished verification","passed":not world.signal_sync.model.running and not world.signal_sync.model.complete})
+	world.signal_sync.close();world.load_floor(3)
+	results.append({"name":"room interaction unavailable on other floors","passed":not world.open_signal_sync()})
+	var failed:=0
+	for result:Dictionary in results:
+		if not result.passed:failed+=1;push_error("FLC_SIGNAL_INPUT: "+str(result.name))
+	var file:=FileAccess.open(OS.get_environment("FLC_CAPTURE_DIR").path_join("signal_input.json"),FileAccess.WRITE)
+	file.store_string(JSON.stringify({"checks":results.size(),"failures":failed,"viewport":[root.size.x,root.size.y],"touch":OS.get_environment("FLC_TOUCH")=="1","results":results},"  "));file.close()
+	print("FLC_SIGNAL_INPUT: %d checks, %d failures"%[results.size(),failed]);return failed
 func check_workshop()->void:
 	var results:Array[Dictionary]=[]
 	root.grab_focus();await process_frame

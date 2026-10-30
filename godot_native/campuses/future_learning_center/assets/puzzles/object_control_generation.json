@@ -1,0 +1,39 @@
+{
+  "tool": "built-in image_gen",
+  "recordedAt": "2026-10-29",
+  "table": {
+    "source": "/Users/zhu/.codex/generated_images/01a17b09-ba73-70c3-8098-7c93af6df733/exec-8b824212-2dc8-4620-ad16-aa2eb452d3f7.png",
+    "prompt": "Fine pixel-art game asset for 7:55 Future Learning Center. Orthographic oblique overhead JRPG 2.5D view, screen x horizontal and world depth receding straight upward, no isometric diagonal diamond, no perspective vanishing point. Consistent soft upper-left light, dark slate outlines, restrained clusters, cool gray metal, blue-gray rubber, warm cream highlights, muted brass. Small fine pixels, not coarse block enlargement, not photorealistic, no noisy dither. Transparent native RGBA background, no floor, no opaque shadow rectangle, no text, no letters, no numbers, no UI. Single large empty engineering workbench only. A very broad, deep rectangular gray-blue rubber tabletop with its long edges perfectly horizontal and short edges slightly oblique consistent with orthographic overhead; top surface occupies about 82 percent of object's height, a thin metal front lip and only short visible legs below it. It must provide a nearly empty rectangular work area spanning most of a 16:9 image for independently moving tabletop instruments. Overall silhouette fits completely inside image, transparent margins. Do not draw any tools, screens, buttons, controls, rails, markings, machinery or ornaments. Warm gray slab and steel frame, very restrained surface finish. Landscape.",
+    "file": "object_worktable.png",
+    "originalFile": "sources/object_worktable.png",
+    "originalSha256": "f8c966a015244d27985781aa9be376d51f2bc6c4429319c3fe7e437414cf0fbf",
+    "sha256": "a6970ad1fe8f32ba5f1c03ed34e2c637806d446b57756eb6dbc2085e57a86714",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "derivation": "PNG text metadata only; original bytes preserved; pixel data unchanged"
+  },
+  "props": {
+    "source": "/Users/zhu/.codex/generated_images/01a17b09-ba73-70c3-8098-7c93af6df733/exec-e41b4e06-0db1-44b0-92b5-2af2dfdff273.png",
+    "prompt": "Fine pixel-art game asset for 7:55 Future Learning Center. Orthographic oblique overhead JRPG 2.5D view, screen x horizontal and world depth receding straight upward, no isometric diagonal diamond, no perspective vanishing point. Consistent soft upper-left light, dark slate outlines, restrained clusters, cool gray metal, blue-gray rubber, warm cream highlights, muted brass. Small fine pixels, not coarse block enlargement, not photorealistic, no noisy dither. Transparent native RGBA background, no floor, no opaque shadow rectangle, no text, no letters, no numbers, no UI. A 2 by 3 separated sprite atlas, square overall, generous transparent gutter around all six objects. Each object fits its own cell, no overlap or shared drop shadows. Top left: a compact heavy metal lever pedestal with an empty vertical fore-aft slotted gate, clearly mechanical mounting bolts; NO handle or stem on this pedestal. Top right: the separate upright silver lever stem and large warm brass handgrip as one detachable component, NO pedestal. Middle left: a small open cream paper laboratory notebook with stitched navy cover and several completely blank pages, no writing or drawn symbols. Middle right: a small gray gooseneck desk experiment lamp, arm raised toward upper right with a simple blue-gray shade, no light beam and no glow. Bottom left: small detached blue solar panel in a thin gray rectangular frame, oblique overhead. Bottom right: large detached blue solar panel, 1.4 times the small panel width, same view and pixel density. These are six distinct physical props, not icons or flat interface buttons. Keep each prop silhouette readable at around100px in game.",
+    "file": "physical_controls_atlas.png",
+    "originalFile": "sources/physical_controls_atlas.png",
+    "originalSha256": "e6976194febcd4715472d6db8380727228de9d618f4d16dc73a31a44dc19d216",
+    "sha256": "a8ef123b137e0167edfa4971301a7d00b98b3fe3dc00faf704e2e6a39edf07c6",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "derivation": "PNG text metadata only; original bytes preserved; pixel data unchanged"
+  },
+  "productionAcceptance": false
+}

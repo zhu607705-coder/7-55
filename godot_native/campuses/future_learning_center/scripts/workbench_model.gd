@@ -11,18 +11,29 @@ var motor_phase:=0.0
 var gear_phase:=0.0
 var output_phase:=0.0
 var travel:=.12
+var history:Array[Dictionary]=[]
 
 func reset()->void:
 	gear=-1;belt=0;tension=0;running=false;outcome="";elapsed=0
 	motor_phase=0;gear_phase=0;output_phase=0;travel=.12
 func cancel()->void:running=false
 func edit(part:String,value:int)->bool:
+	if part not in ["gear","belt","tension"] or value<0 or value>2:return false
+	history.append({"gear":gear,"belt":belt,"tension":tension})
+	if history.size()>32:history.pop_front()
 	if part=="gear" and value in [0,1,2]:gear=value
 	elif part=="belt" and value in [0,1,2]:belt=value
 	elif part=="tension" and value in [0,1,2]:tension=value
 	else:return false
 	running=false;outcome="";elapsed=0;travel=.12
 	return true
+func undo()->bool:
+	if history.is_empty():return false
+	var previous:Dictionary=history.pop_back()
+	gear=previous.gear;belt=previous.belt;tension=previous.tension
+	return_to_start();return true
+func return_to_start()->void:
+	running=false;outcome="";elapsed=0;travel=.12;motor_phase=0;gear_phase=0;output_phase=0
 func diagnosis()->String:
 	if gear<0:return "missing_gear"
 	if gear==0:return "gear_small"

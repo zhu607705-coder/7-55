@@ -1,0 +1,2303 @@
+{
+  "schema": "755.flc.room-puzzle-design.v2",
+  "date": "2026-10-29",
+  "status": "design_only",
+  "baselineCommit": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "scope": {
+    "floors": [
+      2,
+      3,
+      4
+    ],
+    "onePrimaryPuzzlePerRoom": true,
+    "includeOpenFunctionalAreas": true,
+    "includeRestroomInteriors": false,
+    "changeArchitecture": false,
+    "changeProductionChapter": false
+  },
+  "floorThemes": {
+    "2": "让物件可靠地运动、装配和显示",
+    "3": "让自己的操作能被观察、协作与复现",
+    "4": "让局部成功经得起组合、换位和条件变化"
+  },
+  "mainLearningRoute": [
+    "2:electrical",
+    "2:robotics",
+    "2:platform",
+    "3:studio_3",
+    "3:recording",
+    "3:xlab_south",
+    "4:collab_b",
+    "4:seminar_3"
+  ],
+  "allRoomsRequiredForEnding": false,
+  "links": [
+    {
+      "from": "2:electrical",
+      "to": "2:formula",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从动力连接到太阳能小车的受光、传动和全程表现"
+    },
+    {
+      "from": "2:electrical",
+      "to": "2:robotics",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从单段送料到往返运输"
+    },
+    {
+      "from": "2:platform",
+      "to": "3:recording",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从静态遮挡到过程顺序"
+    },
+    {
+      "from": "3:recording",
+      "to": "4:collab_b",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从临时调整到稳定配置"
+    },
+    {
+      "from": "4:collab_b",
+      "to": "4:seminar_3",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从分体成功到整机复验"
+    },
+    {
+      "from": "2:seminar",
+      "to": "3:studio_1",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "建立共同视向参照"
+    },
+    {
+      "from": "3:studio_1",
+      "to": "3:xlab_box",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从参照转换到双视向实体"
+    },
+    {
+      "from": "2:machinery",
+      "to": "3:studio_4",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "保持后续操作可达"
+    },
+    {
+      "from": "3:studio_4",
+      "to": "3:xlab_south",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从装配顺序到可折叠结构"
+    },
+    {
+      "from": "3:xlab_south",
+      "to": "4:storage",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "把收纳与取用都作为可执行过程"
+    },
+    {
+      "from": "2:koala",
+      "to": "3:xlab_north",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从变化试验到输入关系"
+    },
+    {
+      "from": "3:xlab_north",
+      "to": "4:seminar_1",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "构造能区分规则的反例"
+    },
+    {
+      "from": "2:team",
+      "to": "3:studio_3",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从版本差异到时间参照"
+    },
+    {
+      "from": "3:studio_3",
+      "to": "4:seminar_3",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "验证当前过程而非旧记录"
+    },
+    {
+      "from": "3:studio_2",
+      "to": "4:seminar_2",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "用临时让位化解通路冲突"
+    },
+    {
+      "from": "3:seminar",
+      "to": "4:focus_a",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "比较局部有效与共享约束"
+    },
+    {
+      "from": "4:focus_a",
+      "to": "4:flex_c",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "在变化工位中保持整体关系"
+    },
+    {
+      "from": "3:pantry",
+      "to": "4:storage",
+      "kind": "suggested_knowledge_transfer",
+      "reason": "从物件摆放延伸到搬运可行性"
+    }
+  ],
+  "defaults": {
+    "countUnit": "one complete room puzzle; trial steps and transfer variants are not extra puzzle counts",
+    "floorAccess": "Existing transit only. Puzzles do not lock room or floor access.",
+    "completion": "Controller validates actual current physical result; inspection, dialogue and hints alone do not complete a room.",
+    "hints": "Three optional tiers; no automatic answer on repeated failure.",
+    "input": "Mouse, keyboard and touch operate the same objects; tap-select/place substitutes for precision dragging.",
+    "recovery": "Undo one manipulation or reset the local experiment. No story item loss or permanent punishment.",
+    "presentation": "Shared orthographic oblique pixel view; independent props; source-traceable foot collision and occlusion.",
+    "characters": "Maker and tester are fictional evidence-author roles, not a requirement to add two NPCs to every room.",
+    "state": "Fields are design placeholders, not registered production save schema.",
+    "placement": "Existing IDs are verified anchors, not proof that a new prop physically fits or is reachable."
+  },
+  "rooms": [
+    {
+      "floor": 2,
+      "room": "formula",
+      "title": "同一束阳光，谁跑得更远",
+      "role": "side",
+      "family": "motion",
+      "anchors": [
+        "formula_workbench_0"
+      ],
+      "props": [
+        "可拆装太阳能小车",
+        "可调俯仰的太阳能板与三套传动轮",
+        "有里程标记的双车试跑台",
+        "复现同一日照片段的比赛灯与遮云片"
+      ],
+      "minutes": [
+        5,
+        8
+      ],
+      "problem": "两辆相同的小车先得到同样里程；改装后，起步、阴影和复光三段的领先可能不同。",
+      "objective": "用同一套零件预算造一辆太阳能小车，在相同日照片段中跑出更远距离。",
+      "hypotheses": [
+        "起步最快的车最后一定跑得最远",
+        "全程距离取决于受光、传动和整车负担的配合"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "太阳能板受光方向、车轮转动、经过阴影时的滑行和实际里程"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "车队同学留下的两种板和传动轮的试车轨迹，记录起步段与终点但不排列优劣"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试跑同学标出同一日照片段中变暗区间的比赛条"
+        }
+      ],
+      "actions": "在工作台上装太阳能板、转动板的支架、替换传动轮；把车放上试跑台，与同伴的基准车同场发车。赛后可保留上次车的轨迹再挑战。",
+      "experiment": "先固定车身与传动，只改变板的朝向；再固定受光方向，换传动轮，对比起步、阴影段与最终里程。",
+      "counterexample": "起步领先不保证最后领先；大板获得更多输入也带来重量；在一种来光方向领先的摆法，换方向后未必仍领先。用完整实跑结果比较，不靠装备的稀有度决定胜负。",
+      "solution": "没有唯一装配答案。寻找受光稳定且能带动整车的组合，比较它在完整日照片段中的累计距离。作者参考模型枚举板尺寸、板角度和传动比，接受所有超过同条件基准车的方案；具体参数是玩法抽象，之后用试玩调平衡。",
+      "completion": "同预算、同起点、同一日照回放、同一计时窗口下完成实际试跑，累计有效前进距离超过基准车。首胜即记录本房间完成；随后继续刷新个人纪录，不以试跑次数或读完记录为门槛。",
+      "transfer": "可选侧光与阴影挑战沿用相同比赛规则，每次让自己的车和基准车接受完全相同的光照；调试成果以场次分别记录。",
+      "feedback": "两辆车、轮子、板角和日照状态同步变化；共用同一计时窗口。记录页显示本轮实际轨迹的入影、复光、终点距离差，重试时可保留上轮停点。",
+      "hints": [
+        "先看两辆车在哪一段开始拉开距离。",
+        "保留其他零件，只改变板的朝向，再比较同一段赛道。",
+        "对照试车轨迹和日照比赛条，看看领先发生在起步、阴影还是复光之后。"
+      ],
+      "recovery": "随时中止并回工作台；零件不消耗，离开或失焦中止未完成场次。重赛重放同一光照序列，个人纪录保留，不在后台计程。",
+      "payoff": "车队房间留下玩家组装的小车、真实实跑纪录和可再次挑战的同伴车辆。",
+      "sources": [
+        "S02",
+        "S03",
+        "S10"
+      ],
+      "model": {
+        "kind": "solar_endurance",
+        "duration": 30,
+        "dt": 0.05,
+        "baseMass": 0.8,
+        "panels": [
+          {
+            "id": "compact",
+            "area": 1,
+            "mass": 0.4
+          },
+          {
+            "id": "wide",
+            "area": 1.65,
+            "mass": 1.1
+          }
+        ],
+        "tilts": [
+          0,
+          30,
+          60
+        ],
+        "ratios": [
+          1,
+          1.6,
+          2.4
+        ],
+        "scenarios": [
+          {
+            "id": "sunny",
+            "angle": 30,
+            "phases": [
+              [
+                0,
+                10,
+                1
+              ],
+              [
+                10,
+                16,
+                0.2
+              ],
+              [
+                16,
+                30,
+                1
+              ]
+            ]
+          },
+          {
+            "id": "side_light",
+            "angle": 60,
+            "phases": [
+              [
+                0,
+                10,
+                0.8
+              ],
+              [
+                10,
+                18,
+                0.15
+              ],
+              [
+                18,
+                30,
+                0.8
+              ]
+            ]
+          }
+        ],
+        "baseline": {
+          "panel": "compact",
+          "tilt": 0,
+          "ratio": 2.4
+        },
+        "units": "dimensionless teaching simulation; distance is not a real vehicle prediction"
+      },
+      "id": "2:formula",
+      "roomName": "方程式车队",
+      "status": "isolated_native_prototype",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先建议只调板角，与基准车比较；板尺寸、传动和侧光始终可操作，不以失败次数或读记录作为解锁条件。",
+        "readability": "用赛道上拉开差距的位置引导观察，先不弹能量或传动公式。",
+        "assessedBy": "local_design_draft_not_playtested"
+      },
+      "implementation": {
+        "entry": "2F formula_workbench_0: proximity Space or tap-to-approach",
+        "model": "scripts/solar_race_model.gd",
+        "view": "scripts/motion_lab_view.gd",
+        "review": "MOTION_PUZZLES_20261029.md",
+        "productionProgression": false,
+        "persistentSave": false,
+        "physicalMobileAcceptance": false,
+        "prototypeLimits": [
+          "Distance is a dimensionless teaching model.",
+          "Best records last for this review session only."
+        ]
+      },
+      "placementNote": "本轮已在现有操作台侧边验证接近、点按进入与退出；不改变房间轮廓、门洞、人物脚底规则和楼层路线。近景的轨道与机械道具为新增游戏模型。"
+    },
+    {
+      "floor": 2,
+      "room": "team",
+      "title": "两台屏幕，两个版本",
+      "role": "side",
+      "family": "evidence",
+      "anchors": [
+        "team_desk_6",
+        "team_monitor_front_9"
+      ],
+      "props": [
+        "桌面信号分配盒",
+        "两个版本的图案卡",
+        "可插拔模型信号线"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "problem": "同伴两侧的屏幕都亮着，显示的却不是同一张修改稿。",
+      "objective": "让两个接收端同步显示当前源端的变化。",
+      "hypotheses": [
+        "屏幕坏了一角",
+        "其中一路仍接着旧图案缓存"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "实际线缆连接与两屏差异"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作同学的修改前后图案"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用同学注明接收时间的截图"
+        }
+      ],
+      "actions": "在桌面模型中插拔信号线，切换源端测试图案，观察两个接收端。",
+      "experiment": "源端只改一个角标；比较哪些端点随之改变。",
+      "counterexample": "手动让两屏暂时显示同一张旧图，切换新图案后又分叉。",
+      "solution": "当前源端接入分配盒，再分别接两个接收端；缓存支路可保留查看，但不能充当实时源。",
+      "completion": "当前连接下，两次不同的源端变化都传播到两个接收端；不以两张静态截图相同作为通过。",
+      "transfer": "交换两个接收端的位置，连接按功能保持正确，不按桌子左/右位置匹配。",
+      "feedback": "变化沿实际连接传播，停在缓存处时只显示旧角标，不直接指示该拔哪根线。",
+      "hints": [
+        "比较两个角标的变化。",
+        "只改源端一次，追踪变化到哪里停止。",
+        "对照修改稿和接收截图的先后。"
+      ],
+      "recovery": "插线可撤回；测试不访问真实网络和文件。",
+      "payoff": "工作室的共同演示画面恢复同步。",
+      "sources": [
+        "S03",
+        "S06",
+        "S10"
+      ],
+      "id": "2:team",
+      "roomName": "团队工作室",
+      "status": "isolated_native_prototype",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "approval": "User approved mechanism on 2026-10-29; start native prototype.",
+      "visualBeats": [
+        "初见两台显示器都亮着，角标和局部图案不同；源端是一张当前编辑稿。",
+        "玩家在真实插口之间拉线或点选两端，线的端点始终落在插口。",
+        "源端改动后，同一个小图案脉冲沿已接通的线传播，接收屏在脉冲到达后才更新。",
+        "缓存支路显示旧角标和停住的画面；第二次源端改动暴露偶然相同的旧图。",
+        "复验成功后两屏继续跟随编辑，不覆盖全屏成功卡；可交换屏幕位置再试。"
+      ],
+      "difficulty": {
+        "entry": 1,
+        "extension": 2,
+        "teaching": "先改一个清楚的图案角标，再修连接；复验时换新图案和接收端位置。",
+        "readability": "线端、图案和传播过程始终可见，旧稿差异集中在两处，不藏坏像素。",
+        "assessedBy": "local_design_draft_not_playtested"
+      },
+      "implementation": {
+        "entry": "2F team_desk_6: proximity Space or tap-to-approach",
+        "model": "scripts/signal_sync_model.gd",
+        "view": "scripts/signal_sync_view.gd",
+        "productionProgression": false,
+        "persistentSave": false,
+        "physicalMobileAcceptance": false
+      }
+    },
+    {
+      "floor": 2,
+      "room": "robotics",
+      "title": "送到了，还要回来",
+      "role": "main",
+      "family": "motion",
+      "anchors": [
+        "robotics_workbench_30",
+        "robotics_printer_3d_37"
+      ],
+      "props": [
+        "低速桌面机器人",
+        "带方向标的模块轨道",
+        "装卸基座"
+      ],
+      "minutes": [
+        5,
+        7
+      ],
+      "problem": "机器人把试件送到了，却在返程卡进同一个岔口。",
+      "objective": "完成起点装载、目标卸载和空载返回。",
+      "hypotheses": [
+        "返程也能完全照走去程",
+        "轨道接通与方向允许是两件事"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "岔口上的方向凹纹"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作同学的送达记录"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用同学标出返程停点的照片"
+        }
+      ],
+      "actions": "点选台面轨道模块，旋转或换成直轨、转弯、单向模块；调整卸货台返程出口，分步或连续试跑。",
+      "experiment": "先走一个方向，再在相同配置下试返程，比较进入岔口的一侧。",
+      "counterexample": "一条视觉连续的最短路可以送达，但单向出口不能倒着进入。",
+      "solution": "用支路形成回环，或把可双向的连接安排在往返共用段；接受能真实往返的不同布局。",
+      "completion": "机器人携带同一试件实际到达卸载基座，随后从可达轨道回到起点；不按“访问过两个点”判定。",
+      "transfer": "把卸载点换到另一条支路，保留方向与回程约束。",
+      "feedback": "车头在受阻入口停住并留下本次轨迹；没有隐形跳转或失败惩罚。",
+      "hints": [
+        "去程停靠与返程入口有什么不同？",
+        "从返程方向观察同一条凹纹。",
+        "把送达记录和返程停点叠起来。"
+      ],
+      "recovery": "随时停机、退一步或重摆轨道，试件回到本次安全基座。",
+      "payoff": "后续演示可观察到完整运输循环。",
+      "sources": [
+        "S02",
+        "S03",
+        "S07",
+        "S09"
+      ],
+      "id": "2:robotics",
+      "roomName": "ASABE 机器人团队",
+      "status": "isolated_native_prototype",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "approval": "User approved round-trip mechanism; visual readability is the priority.",
+      "visualBeats": [
+        "机器人停在装载台，夹爪合拢，试件从基座移到车载托盘；不突然出现在车上。",
+        "沿轨道实际前进；轮子速度匹配位移，车头转向和单向凹纹能同时看见。",
+        "到岔口先减速再按当前岔片转弯；受阻时车头停在实体入口，显示接触位置，不跳回起点。",
+        "抵达卸载台后夹爪张开、试件落在目标托架，空托盘让返程状态可辨。",
+        "返程沿当前配置真实走完；去程实线与返程点线仅在用户回看时叠加，不预画正确路线。",
+        "回到装载台才形成完整循环记录；保持原镜头方位，同一画面看见失败岔口与相邻模块。"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先用一小段轨道完成装卸，再遇到往返方向冲突；进阶才改变卸货支路。",
+        "readability": "去程可见、返程失败点可回看，岔口凹纹在普通镜头就看得清。",
+        "assessedBy": "local_design_draft_not_playtested"
+      },
+      "implementation": {
+        "entry": "2F robotics_workbench_30: proximity Space or tap-to-approach",
+        "model": "scripts/robot_delivery_model.gd",
+        "view": "scripts/motion_lab_view.gd",
+        "review": "MOTION_PUZZLES_20261029.md",
+        "productionProgression": false,
+        "persistentSave": false,
+        "physicalMobileAcceptance": false,
+        "prototypeLimits": [
+          "Fixed left loading station and right unloading station; moving the station is still a proposed extension.",
+          "Track module selection, rotation and replacement support keyboard and pointer/touch, not drag gestures."
+        ]
+      },
+      "placementNote": "本轮已在现有操作台侧边验证接近、点按进入与退出；不改变房间轮廓、门洞、人物脚底规则和楼层路线。近景的轨道与机械道具为新增游戏模型。"
+    },
+    {
+      "floor": 2,
+      "room": "platform",
+      "title": "挡光，但别挡住镜头",
+      "role": "main",
+      "family": "optics",
+      "anchors": [
+        "platform_whiteboard_41",
+        "platform_discussion_table_38",
+        "platform_camera_tripod_48"
+      ],
+      "props": [
+        "标记试件",
+        "局部校准试验灯"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "legacy": "L2",
+      "problem": "试拍中的标记过亮；把白板推到相机前虽然变暗，却什么也看不到。",
+      "objective": "拍清整块标记，并在来光换侧后再次做到。",
+      "hypotheses": [
+        "只要画面变暗就可以",
+        "需要挡住来光，同时保留取景通路"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "白板阴影覆盖"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作同学留下的轮位痕迹"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "记录同学的两张试拍"
+        }
+      ],
+      "actions": "移动白板、切换明确的试验灯条件、试拍并比较回放。",
+      "experiment": "保持镜头不动，只移动白板，分别看阴影和回放。",
+      "counterexample": "前方板遮住镜头；只成功一次的摆位也可能在换侧后失效。",
+      "solution": "把板摆在来光与标记之间，保留相机至标记的视线；换侧后重新安排。",
+      "completion": "每次实际试拍同时满足标记四角可见和亮斑被挡；本关允许两次不同摆位，不能冒充四楼的同配置证明。",
+      "transfer": "另一侧来光是本关的第二情境。",
+      "feedback": "回放展示过曝、遮板或完整标记，阴影与实际板位同步。",
+      "hints": [
+        "暗下来不等于拍到了。",
+        "比较桌上的标记和相机里的标记。",
+        "看两张回放里多出来的那一片白色。"
+      ],
+      "recovery": "白板移动可撤回，扫掠碰撞阻止穿过桌椅。",
+      "payoff": "大厅获得清楚的试拍，蓝色构架和圆凳仍可通行与观察。",
+      "sources": [
+        "S04",
+        "S05",
+        "S10"
+      ],
+      "id": "2:platform",
+      "roomName": "二楼开放大平台",
+      "status": "existing_partial_review_with_proposed_extension",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先让阴影和标记相交，再比较相机看见的内容；换侧光作应用。",
+        "readability": "同屏给出真实阴影与拍摄结果，只标当前受阻物，不标正确摆位。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 2,
+      "room": "seminar",
+      "title": "三个视图，同一件东西",
+      "role": "side",
+      "family": "space",
+      "anchors": [
+        "seminar_discussion_table_49",
+        "seminar_whiteboard_52"
+      ],
+      "props": [
+        "三块可堆叠模型块",
+        "俯视与侧视透明片",
+        "小型旋转模型底座"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "problem": "按正面照片搭得很像，从侧面看却多出一层。",
+      "objective": "让一件实体同时符合三个视图。",
+      "hypotheses": [
+        "照片的朝向弄反了",
+        "前后遮挡让不同实体具有相同正面轮廓"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "模型底座的朝向缺口"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作同学的俯视片"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用同学的正面/侧面照片"
+        }
+      ],
+      "actions": "在桌面放置和堆叠模型块，旋转模型底座，叠看三张视图片。",
+      "experiment": "保持正面轮廓不变，换一块的前后位置，再看侧面。",
+      "counterexample": "正面匹配的两个摆法，俯视占位或侧面高度不同。",
+      "solution": "样例底面占位为 (0,0)、(1,0)、(1,1)，对应高度为 1、2、1；按全部投影接受等价实体，不按摆放顺序。",
+      "completion": "当前实体的俯视占位、正面轮廓、侧面轮廓同时匹配，且实体不悬空。",
+      "transfer": "换一张被部分遮住的侧视片，通过另两张约束缺失部分。",
+      "feedback": "只展示当前实体真实投影，不把正确块逐个锁定或标绿。",
+      "hints": [
+        "哪个视图能区分前后？",
+        "试着保持正面不变，只移动后面的块。",
+        "用底座缺口对齐三张图的朝向。"
+      ],
+      "recovery": "拿起、堆放、旋转都可撤回，复位回到零件托盘。",
+      "payoff": "桌上留下可以从三个方向核对的作品。",
+      "sources": [
+        "S01",
+        "S02",
+        "S09"
+      ],
+      "id": "2:seminar",
+      "roomName": "跨学科研讨室",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先用两视图排除一个解释，再加入第三视图；进阶含一个被遮住的支撑。",
+        "readability": "图卡与实体摆在同一操作面，允许旋转实体查看，不考脑内记忆。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 2,
+      "room": "electrical",
+      "title": "动力停在哪",
+      "role": "main",
+      "family": "assembly",
+      "anchors": [
+        "electrical_assembly_bench",
+        "electrical_parts_rack_67"
+      ],
+      "props": [
+        "拟议的返程刻线"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "legacy": "L1",
+      "problem": "电机转动，送料块不动，或在连接后朝错误方向移动。",
+      "objective": "把试件送到当前刻线，再处理反方向目标。",
+      "hypotheses": [
+        "电机没有动力",
+        "连接处断开、打滑或输出方向不对"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "齿间空隙与实际转动"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作同学的旧试车条"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "记录同学的试件位置照片"
+        }
+      ],
+      "actions": "装配齿轮、调整皮带路由和张力，试转并撤回。",
+      "experiment": "只改一件零件，观察动力停止的位置是否改变。",
+      "counterexample": "接上了不等于送对方向；轮子转也可能伴随皮带打滑。",
+      "solution": "现有向右模型为中尺寸齿轮、交叉皮带、正常张力；返程提案用相反皮带路由。",
+      "completion": "本次试件在合法传动中到达目标；当前代码仅实现向右，返程仍待实现。",
+      "transfer": "反向刻线让玩家迁移转向关系，而非重复初始配置。",
+      "feedback": "空转、咬死、打滑、反转有不同可见结果。",
+      "hints": [
+        "比较哪两处在动。",
+        "保持其他零件不动再试一次。",
+        "对照试车条和试件的前后位置。"
+      ],
+      "recovery": "不消耗零件，离开/隐藏取消未完成运行。",
+      "payoff": "传动台可被实际启动和反复演示。",
+      "sources": [
+        "S01",
+        "S02",
+        "S07",
+        "S10"
+      ],
+      "id": "2:electrical",
+      "roomName": "机电开放实验室 · 电工区",
+      "status": "existing_partial_review_with_proposed_extension",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 1,
+        "extension": 2,
+        "teaching": "先定位动力中断，再处理方向；返程目标沿用同一传动关系。",
+        "readability": "电机、从动轮和试件分段可见，先反馈停在何处，再由玩家试装。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 2,
+      "room": "machinery",
+      "title": "切完了，却取不出来",
+      "role": "side",
+      "family": "assembly",
+      "anchors": [
+        "machinery_workbench_77",
+        "machinery_tool_cart_88"
+      ],
+      "props": [
+        "封闭的模拟加工盒",
+        "可恢复泡沫试件",
+        "可移动夹具与轮廓片"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "轮廓看起来正确，试件却失去定位，后一道槽切偏了。",
+      "objective": "保持定位完成轮廓，再完整取出试件。",
+      "hypotheses": [
+        "轮廓片本身错误",
+        "过早切掉连接桥后，后续加工失去基准"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "试件定位孔与未切断的连接桥"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作同学的加工草片"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用同学留下的偏槽失败件"
+        }
+      ],
+      "actions": "在模拟盒内调整夹具、旋转试件、选择可见轮廓段逐段试切。",
+      "experiment": "先切桥与后切桥各试一次，比较同一条槽的位置。",
+      "counterexample": "每一段单独看都对，但失去定位后的累计轮廓无法装配。",
+      "solution": "保留能维持基准的连接和夹持，完成主要轮廓后再释放试件；合法替代夹持与顺序同样接受。",
+      "completion": "每次模拟切削都有支撑，最终轮廓与孔位匹配，试件能沿取出通路离开夹具。",
+      "transfer": "第二块试件把连接桥换一侧，不能机械重复左右切割顺序。",
+      "feedback": "失去基准时整块偏移可见，错误切口留在本次模拟件上。",
+      "hints": [
+        "哪一步之后基准位置改变了？",
+        "先保留一处连接再比较。",
+        "把失败件的孔与草片基准叠齐。"
+      ],
+      "recovery": "撤回恢复模拟试件；不操作真实机床，不消耗故事材料。",
+      "payoff": "获得一件可检视的合格样件和失败对照。",
+      "sources": [
+        "S02",
+        "S03",
+        "S10"
+      ],
+      "id": "2:machinery",
+      "roomName": "机电开放实验室 · 机加工区",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 3,
+        "extension": 4,
+        "teaching": "先处理一个定位桥，后处理取出顺序；进阶改变夹持面。",
+        "readability": "切口与夹具接触点可见，预览本次动作扫过的区域，不代选切割顺序。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 2,
+      "room": "koala",
+      "title": "把变化倒过来",
+      "role": "side",
+      "family": "rules",
+      "anchors": [
+        "koala_desk_94",
+        "koala_monitor_front_97"
+      ],
+      "props": [
+        "屏幕内的符号实验原型",
+        "输入/输出纸卡"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "同一排图形连续经过几个变换，最后已认不出原来的排列。",
+      "objective": "用已观察到的操作还原一张新图案。",
+      "hypotheses": [
+        "按原顺序再做一遍就能还原",
+        "必须倒过来处理操作次序与每个操作的逆变换"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "可输入任意图案的实验台"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的单步输入/输出卡"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者的一张完整变化记录"
+        }
+      ],
+      "actions": "摆入带形状和填纹的图块，尝试变换，拖排操作顺序。",
+      "experiment": "一次只用一个操作；再比较先翻转后移位与先移位后翻转。",
+      "counterexample": "部分对称图案被错误顺序也能还原，换成不对称图案就失败。",
+      "solution": "对“左移一格→反序→切换填纹”逆序处理：先切换填纹、再反序、最后右移一格；可用多次左移构成等价右移。",
+      "completion": "同一逆操作序列还原新的不对称输入，不用背固定符号答案。",
+      "transfer": "改变序列长度与起始图案，规则不变。",
+      "feedback": "每步留下实际中间排列；不直接把未知操作命名成答案。",
+      "hints": [
+        "先找哪种操作做两遍会抵消。",
+        "用不对称图案比较两种先后顺序。",
+        "对照单步卡，尝试从最后一张往回看。"
+      ],
+      "recovery": "逐步撤回，测试图案随时更换，无真实文件修改。",
+      "payoff": "工作室屏幕上的损坏示范得到还原。",
+      "sources": [
+        "S06",
+        "S08",
+        "S10"
+      ],
+      "id": "2:koala",
+      "roomName": "考拉工作室",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先独立体验一种变换，再组合两种；新非对称图案用于检验还原。",
+        "readability": "保留同一次试验的前后图，不要求记住多张一闪而过的结果。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "studio_1",
+      "title": "对面说的左边",
+      "role": "side",
+      "family": "space",
+      "anchors": [
+        "studio_1_desk_0",
+        "studio_1_whiteboard_57"
+      ],
+      "props": [
+        "桌面四象限摆位板",
+        "四枚不同形状的模型",
+        "两侧视角照片"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "problem": "两位同学都说“左边”，照着摆却互相矛盾。",
+      "objective": "让同一摆位符合面对面两人的观察。",
+      "hypotheses": [
+        "其中一份记录错了",
+        "记录分别使用了观察者自己的左右"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "摆位板固定的缺口"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "北侧同学的局部照片"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "南侧同学的手绘观察"
+        }
+      ],
+      "actions": "从两侧查看桌面，移动图块，转动观察用的纸片。",
+      "experiment": "保持一个图块不动，比较它在两侧记录中的位置。",
+      "counterexample": "只对上一侧的照片，另一侧会左右颠倒。",
+      "solution": "先用缺口建立共同参照，再将面对面记录转到同一坐标系；不改变桌椅真实朝向。",
+      "completion": "当前模型同时满足两侧可见关系，不比较玩家面朝方向，也不接受只翻转屏幕截图。",
+      "transfer": "加入从短边拍摄的第三张照片，应用同一参照方法。",
+      "feedback": "两侧回放忠实显示当前摆位与遮挡。",
+      "hints": [
+        "照片里的缺口在哪边？",
+        "同一个不动的图块，在对面叫什么位置？",
+        "把两份记录的参照方向对齐。"
+      ],
+      "recovery": "图块移动可撤回，所有原家具位置保留。",
+      "payoff": "两组工位能按照同一张布置图沟通。",
+      "sources": [
+        "S02",
+        "S04",
+        "S09"
+      ],
+      "id": "3:studio_1",
+      "roomName": "团队工作室 1",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 1,
+        "extension": 2,
+        "teaching": "同一物体从面对面两侧各看一次，再移动一次核对两人的描述。",
+        "readability": "桌面有共同参照物，左右称呼必须附观察者位置。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "studio_2",
+      "title": "连起来以后过不去了",
+      "role": "side",
+      "family": "motion",
+      "anchors": [
+        "studio_2_desk_58",
+        "studio_2_whiteboard_115"
+      ],
+      "props": [
+        "带窄颈的桌面托盘",
+        "两块可连接滑块",
+        "双触点终台"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "连体滑块能同时触达终台，但在中途窄口卡住；单块能通过却接不通终台。",
+      "objective": "把两块送入终台区域并连成一个导通整体。",
+      "hypotheses": [
+        "应该一开始就组好",
+        "可以通过窄口以后再连接"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "窄口与连接后宽度的实物关系"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的连接触点图"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者的过口失败记录"
+        }
+      ],
+      "actions": "连接、分离、推动两个滑块，观察连体的占地与触点。",
+      "experiment": "分别测试单块和连体通过同一窄口。",
+      "counterexample": "两块分别停在终台触点上也不导通，中间还缺连接。",
+      "solution": "先分离通过，再在宽区连接并整体移到触点。草模单块宽 1、连体宽 2、窄口宽 1.4；实际尺寸待原生摆位校准。",
+      "completion": "两块实际通过合法路径，到终区后保持连接，并同时压到两处触点。",
+      "transfer": "连接方向换成纵向，重新判断在哪个区域组装更合适。",
+      "feedback": "卡住的边缘与缺失的中间连接可见。",
+      "hints": [
+        "连接改变了哪一个尺寸？",
+        "分别试单块和连体。",
+        "比较过口记录与终台触点图。"
+      ],
+      "recovery": "可拉回、拆开、撤回；不能丢弃或销毁滑块。",
+      "payoff": "托盘内的双触点装置导通。",
+      "sources": [
+        "S03",
+        "S07",
+        "S08"
+      ],
+      "id": "3:studio_2",
+      "roomName": "团队工作室 2",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先发现整体过不了窄口，再用可拆连接保持两端功能。",
+        "readability": "窄口宽度、部件宽度和终台接点可同时比较。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "studio_3",
+      "title": "两份记录差了一个节拍",
+      "role": "main",
+      "family": "evidence",
+      "anchors": [
+        "studio_3_desk_116",
+        "studio_3_monitor_front_122"
+      ],
+      "props": [
+        "相机事件纸带",
+        "传感器事件纸带",
+        "可滑动对齐槽"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "problem": "摄像记录说试件先到，传感记录却像是先关挡片。",
+      "objective": "找出同一事件在两份记录中的对应关系。",
+      "hypotheses": [
+        "两套设备描述了不同试验",
+        "两份记录的起始时刻不同"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "试验中的公共闪光标记"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "拍摄同学的连续图帧"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "操作同学的碰停和送料纸带"
+        }
+      ],
+      "actions": "滑动纸带，叠看公共事件，重跑一个短试验核对对应。",
+      "experiment": "先只对一个重复闪光，再用远处另一个独特事件复核。",
+      "counterexample": "对齐某次闪光看似正确，远处的碰停事件仍错位。",
+      "solution": "用两个相隔的公共事件固定相对偏移，再解释中间的送料/挡片顺序。",
+      "completion": "两个公共事件与新一轮实际试验都对应；单次点击时间戳或读完纸带不授予完成。",
+      "transfer": "换一组不同起始偏移的记录，保留事件关系。",
+      "feedback": "重叠处显示实际图帧与传感痕迹，错位保留而不是自动吸到答案。",
+      "hints": [
+        "一个重复标记能唯一定位吗？",
+        "用远处另一个事件复核。",
+        "看两位同学记录里共同出现的异常动作。"
+      ],
+      "recovery": "纸带偏移可撤回，原始记录保持只读。",
+      "payoff": "得到可解释送料过程的同步回放；回看不替代真实送料。",
+      "sources": [
+        "S03",
+        "S05",
+        "S10"
+      ],
+      "id": "3:studio_3",
+      "roomName": "团队工作室 3",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先对齐一个共同事件，再用第二个检验是否偶然，最后换一段记录。",
+        "readability": "可拖动记录条并来回播放，重复事件的差异靠实物顺序可解释。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "studio_4",
+      "title": "盖上以后够不着",
+      "role": "side",
+      "family": "assembly",
+      "anchors": [
+        "studio_4_desk_174",
+        "studio_4_whiteboard_231"
+      ],
+      "props": [
+        "透明演示盒",
+        "可拆铰链轴",
+        "盖板与支撑件"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "盖板装上了，但铰链轴还没有穿到位，之后也伸不进安装口。",
+      "objective": "做成能真正开合的盒体。",
+      "hypotheses": [
+        "盖板尺寸不对",
+        "局部能安装不代表后续操作仍可达"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "透明壳上的安装口"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的局部爆炸图"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者的开盖失败记录"
+        }
+      ],
+      "actions": "装卸支撑、铰链轴与盖板；从侧面看安装通道并试开合。",
+      "experiment": "盖板保持拆下状态先装轴，与先盖板的路径作比较。",
+      "counterexample": "零件全部在画面里，也可能只是搭在一起，轴没有穿过两个轴孔。",
+      "solution": "先建立可达的支撑与轴连接，再合上遮住安装口的盖板；能保持操作通路的其他顺序也成立。",
+      "completion": "铰链轴实际连接两侧、盖板运动无碰撞，并完成一次打开与关闭。",
+      "transfer": "交换铰链侧，重新安排安装次序。",
+      "feedback": "受阻安装口、未贯穿轴孔和试开时脱离分别可见。",
+      "hints": [
+        "哪一步遮住了安装通道？",
+        "先试一下轴能从哪里穿入。",
+        "对照爆炸图中两个轴孔的位置。"
+      ],
+      "recovery": "可拆回，不需要找新轴或消耗工具。",
+      "payoff": "展示盒可反复开合。",
+      "sources": [
+        "S02",
+        "S03",
+        "S05"
+      ],
+      "id": "3:studio_4",
+      "roomName": "团队工作室 4",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先装成可开启的简单盒，再加入会遮住安装面的盖板。",
+        "readability": "每次安装都能看到下一步可达性，错误装配可立即拆回。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "recording",
+      "title": "先送到，再遮住",
+      "role": "main",
+      "family": "optics",
+      "anchors": [
+        "recording_desk_234",
+        "recording_camera_tripod_233"
+      ],
+      "props": [
+        "低速送料演示盒",
+        "可平移挡片"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "legacy": "L3",
+      "problem": "静态照片清楚，试件却停在挡片前，送不到拍摄位置。",
+      "objective": "让试件沿轨道到位，再拍清标记。",
+      "hypotheses": [
+        "传动又失效了",
+        "静态正确摆位挡住了到达终态的通路"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "挡片与轨道交叉处"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "操作同学的碰停条"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "记录同学的清楚静态照片"
+        }
+      ],
+      "actions": "移开挡片、分段送料、复位挡片、试拍；无需抢短暂时间窗。",
+      "experiment": "保持传动不变，只移开挡片，看试件能否越过交叉点。",
+      "counterexample": "永久移开挡片能送料却过曝；一直保留遮光又不能送达。",
+      "solution": "先让通路开放，送料到实体止挡，之后恢复遮光再试拍。",
+      "completion": "本轮试件真实沿轨道送达，随后本轮取景与遮光同时成立。",
+      "transfer": "反向退回试件再复现；不能用旧回放替代新过程。",
+      "feedback": "发生在哪里的碰停、过曝和清楚画面各自呈现。",
+      "hints": [
+        "比较试件停点和挡片的位置。",
+        "保持传动不变，暂时移开挡片。",
+        "送料条与静态照片描述的是同一时刻吗？"
+      ],
+      "recovery": "停机、反向、撤回与重摆均可用；失焦取消运行。",
+      "payoff": "录播同学能完成有真实送料过程的试拍。",
+      "sources": [
+        "S02",
+        "S03",
+        "S05"
+      ],
+      "id": "3:recording",
+      "roomName": "录播室",
+      "status": "existing_partial_review_with_proposed_extension",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 3,
+        "extension": 4,
+        "teaching": "前关静态解先在这里失败，再让玩家找出送料与遮挡的先后。",
+        "readability": "停机不会清空状态，夹持止挡可靠，完全取消抢时机要求。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "seminar",
+      "title": "三拍里的共享工具",
+      "role": "side",
+      "family": "coordination",
+      "anchors": [
+        "seminar_discussion_table_238",
+        "seminar_whiteboard_241"
+      ],
+      "props": [
+        "三拍桌面排练盘",
+        "相机/操作台磁片",
+        "四张任务模块"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "每项任务单独都能做，排在一起却有两项同时占用唯一的相机。",
+      "objective": "在可逐拍暂停的三拍排练盘上完成四项任务。",
+      "hypotheses": [
+        "每队各排自己的任务就够了",
+        "必须同时处理工具占用和前置结果"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "只有一枚相机资源的实物排练盘"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "拍摄同学的 A/B 拍摄需求卡"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "制作同学的 B 装配与对照要求卡"
+        }
+      ],
+      "actions": "把任务模块放进三列拍位，绑定所用工具，逐拍演示模型人的行动。",
+      "experiment": "先交换两个拍摄任务的先后，再检查装配是否已完成。",
+      "counterexample": "不抢工具的顺序也可能让 B 在未装配前拍摄；每队局部正确不代表整体可执行。",
+      "solution": "第一拍并行拍 A 与装 B，第二拍拍 B，第三拍比较两份照片。三个拍位是可见桌面机构，不是现实倒计时。",
+      "completion": "每拍工具占用不冲突，拍 B 依赖装 B，对照依赖两张实际产出的照片；排完还须真实跑完三拍。",
+      "transfer": "将相机改为两枚后，辨认哪些等待可消除，哪些因果依赖仍存在。",
+      "feedback": "冲突时两条行动同时指向同一工具；缺前置时任务模块显示空托盘。",
+      "hints": [
+        "哪一件工具被同时需要？",
+        "把资源等待与结果依赖分开看。",
+        "对照两位同学的需求卡，找能同时开始的任务。"
+      ],
+      "recovery": "按拍撤回，所有任务产物只属于模拟盘。",
+      "payoff": "白板旁能运行一遍完整协作排练。",
+      "sources": [
+        "S02",
+        "S05",
+        "S10"
+      ],
+      "model": {
+        "kind": "three_beat_schedule",
+        "tasks": [
+          {
+            "id": "capture_A",
+            "resource": "camera",
+            "after": []
+          },
+          {
+            "id": "assemble_B",
+            "resource": "bench",
+            "after": []
+          },
+          {
+            "id": "capture_B",
+            "resource": "camera",
+            "after": [
+              "assemble_B"
+            ]
+          },
+          {
+            "id": "compare",
+            "resource": "review",
+            "after": [
+              "capture_A",
+              "capture_B"
+            ]
+          }
+        ],
+        "beats": 3
+      },
+      "id": "3:seminar",
+      "roomName": "开放研讨区",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "两项任务先共享一个工具，再加入前后依赖；每拍由玩家确认。",
+        "readability": "工具占用与任务前提在排练盘上呈现，三拍不等于三秒倒计时。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "pantry",
+      "title": "慢慢备水，再稳稳送达",
+      "role": "side",
+      "family": "balance",
+      "anchors": [
+        "pantry_pantry_island_250",
+        "pantry_sofa_246",
+        "pantry_sofa_248"
+      ],
+      "props": [
+        "带中心提手的模型托盘",
+        "四只带不同铜色水位区间的空杯",
+        "慢流出水装置与橙色阀柄",
+        "倒水槽与可见杯垫"
+      ],
+      "minutes": [
+        4,
+        7
+      ],
+      "problem": "四杯都要备水；只让托盘平，或者只把水位接到中间，都不够。",
+      "objective": "四杯水位都在各自铜线之间，并将托盘稳定送到沙发茶几。",
+      "hypotheses": [
+        "左右杯数相同就平衡",
+        "水量和离提手的距离共同影响倾斜"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "杯中水位与托盘倾斜"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "备茶同学留下的杯垫痕迹"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "接茶同学的上一轮摆位图"
+        }
+      ],
+      "actions": "移杯到出水口，拨阀接水和停水；握杯移到水槽倒回多余的水，再摆杯试提。",
+      "experiment": "保持杯位不变只补少量水，再把同一杯从内侧换到外侧比较。",
+      "counterexample": "空杯也能平，但不能送达；四杯都接到区间中心，换位仍不能平衡。",
+      "solution": "范围中心为60、90、120、150 ml，各允许±8 ml；样例实际水量65、85、115、155 ml，杯序A、D、C、B时力矩为0。也接受其他合格水量与摆法。",
+      "completion": "四杯全部回到托盘，水量分别在要求范围内，力矩绝对值≤8；同一配置完成提起和送达。",
+      "transfer": "提手换到另一条可见支撑线后重摆；可选进阶，不影响主线。",
+      "feedback": "出水细流、水面缓慢上升、杯身铜线与托盘倾斜同步反映模型。",
+      "hints": [
+        "先对照四只杯各自的两道铜线。",
+        "水量合格也可能倾斜，比较同一杯在内侧和外侧时的变化。",
+        "铜线之间留有余量，试着少量补水或倒回。"
+      ],
+      "recovery": "关阀、移杯、失焦立即停水；握杯在水槽上倒回，重新接水；不消耗剧情物品。",
+      "payoff": "当前隔离小样：茶盘从大桌移到沙发茶几，保留本次送达结果。后续提案：两侧同学坐下来喝茶；NPC 行为与正式存档尚未接入。",
+      "sources": [
+        "S04",
+        "S07",
+        "S10"
+      ],
+      "model": {
+        "kind": "tray_water_balance",
+        "targets": [
+          60,
+          90,
+          120,
+          150
+        ],
+        "band": 8,
+        "capacity": 180,
+        "flowMlPerSecond": 4,
+        "glassTare": 40,
+        "trayTare": 120,
+        "arms": [
+          -2,
+          -1,
+          1,
+          2
+        ],
+        "tolerance": 8,
+        "witness": {
+          "water": [
+            65,
+            85,
+            115,
+            155
+          ],
+          "cups": [
+            0,
+            3,
+            2,
+            1
+          ]
+        }
+      },
+      "id": "3:pantry",
+      "roomName": "茶水休息区",
+      "status": "isolated_native_prototype",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先接水和停水，再发现单纯等水量或换位不够；允许水位区间内微调，进阶再改变支撑线。",
+        "readability": "铜线、水面、细流与倾斜同时可见；慢流为用户明确要求，搬运不考精细操作。",
+        "assessedBy": "local_design_draft_not_playtested"
+      },
+      "implementation": {
+        "runtime": "godot_native_isolated_sample",
+        "review": "PANTRY_WATER_20261030.md",
+        "entry": "3F pantry_pantry_island_250",
+        "model": "scripts/pantry_tray_model.gd",
+        "view": "scripts/pantry_tray_view.gd",
+        "resultPersistence": "session_only",
+        "productionChapterIntegrated": false,
+        "waterPreparation": "actual_elapsed_time_4_ml_per_second"
+      },
+      "placementNote": "隔离小样已在既有大桌上加入独立茶盘，送达后显示在 pantry_lounge_coffee_table_249；房间尺寸、桌椅位置、碰撞和原画不变。"
+    },
+    {
+      "floor": 3,
+      "room": "xlab_north",
+      "title": "它为什么抓了个空",
+      "role": "side",
+      "family": "rules",
+      "anchors": [
+        "xlab_north_desk_266",
+        "xlab_north_monitor_front_269"
+      ],
+      "props": [
+        "双传感器实验座",
+        "形状不同的测试块",
+        "可更换逻辑连接片"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "试件还没托稳，模型夹爪就动作；另一种连接又始终不动。",
+      "objective": "只在试件已经靠近并被托住时允许夹持。",
+      "hypotheses": [
+        "有任何一个输入就足够",
+        "两个输入需要在同一状态成立"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "可分别触发的两个传感区"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的单传感测试记录"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者留下的抓空/未抓照片"
+        }
+      ],
+      "actions": "单独或同时触发传感器，更换连接片，实际放入试件。",
+      "experiment": "比较只有靠近、只有托住和两者同时存在时的输出。",
+      "counterexample": "“任一输入”看似容易启动，却会抓空；只按两次按钮不能代替当前两个物理状态。",
+      "solution": "选择使两输入共同成立才输出的连接关系，并按实物接通夹爪支路。",
+      "completion": "当前连接通过双输入有效、两种单输入无效的试件测试；不是靠记住连接片名称。",
+      "transfer": "交换两个输入端位置，保持功能关系。",
+      "feedback": "夹爪启动/等待与当前输入痕迹一起出现，声音不承担唯一信息。",
+      "hints": [
+        "比较抓空时哪一路已经有响应。",
+        "每次只触发一个输入，再同时试一次。",
+        "对照单传感记录与失败照片。"
+      ],
+      "recovery": "夹爪停机即松开，试件可取回，连接可撤回。",
+      "payoff": "桌面原型能可靠接取试件。",
+      "sources": [
+        "S03",
+        "S08",
+        "S10"
+      ],
+      "id": "3:xlab_north",
+      "roomName": "X-Lab 北区",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "一次只触发一个传感器，再比较同时触发；最后换试件验证。",
+        "readability": "传感器接触和夹爪动作可分步看，声光颜色仅辅助表达。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "xlab_south",
+      "title": "展开能用，收起卡住",
+      "role": "main",
+      "family": "assembly",
+      "anchors": [
+        "xlab_south_desk_322",
+        "xlab_south_monitor_front_325"
+      ],
+      "props": [
+        "可折叠展示盒样机",
+        "独立柔性连接带",
+        "两块宽窄盖片"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "展开时能工作，折叠到一半却夹住连接带或顶住另一块盖片。",
+      "objective": "让同一台样机能完整展开、使用并收纳。",
+      "hypotheses": [
+        "外壳需要缩小",
+        "连接带路径和盖片动作顺序占用了铰链空间"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "实际折痕与铰链活动范围"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的展开结构草图"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者的半折叠碰停照片"
+        }
+      ],
+      "actions": "改走连接带的可见槽，折叠两块盖片，测试展开后的导通。",
+      "experiment": "只改连接带路径，比较碰停是否还出现；再比较宽窄盖片的先后。",
+      "counterexample": "强行拔掉连接带可以合上，展开后却不能工作。",
+      "solution": "把连接带沿铰链预留槽布置，先收进内侧窄片，再合外侧宽片；接受无碰撞且保持连接的替代顺序。",
+      "completion": "同一实例完整展开/工作/折叠，连接不中断、壳体不相交，收纳尺寸符合模板。",
+      "transfer": "加上最终挡片附件后复测，不沿用空壳成功记录。",
+      "feedback": "夹线位置与盖片相碰的位置可见，试折在碰撞前停止。",
+      "hints": [
+        "卡住的是线还是盖片？",
+        "先保持盖片不动，只换线的路径。",
+        "把展开草图和半折叠照片放在一起看。"
+      ],
+      "recovery": "逐段展开或撤回，部件不破坏；运输中保持同一对象身份。",
+      "payoff": "演示盒可以实际携带上楼与返回大厅。",
+      "sources": [
+        "S02",
+        "S03",
+        "S05"
+      ],
+      "id": "3:xlab_south",
+      "roomName": "X-Lab 南区",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 3,
+        "extension": 4,
+        "teaching": "展开能工作后尝试收起，在碰到的铰链处重新安排线路。",
+        "readability": "让展开、折叠和卡住使用同一几何，不能用两张状态图片替换。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 3,
+      "room": "xlab_box",
+      "title": "只看一面就被骗了",
+      "role": "side",
+      "family": "space",
+      "anchors": [],
+      "props": [
+        "新增便携透光展示台",
+        "两块独立镂空片",
+        "可旋转模型托架"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "problem": "从正面看是完整轮廓，转到侧面却出现缺口。",
+      "objective": "用同一组镂空片同时形成两个方向的目标轮廓。",
+      "hypotheses": [
+        "把正面拼满就完成了",
+        "前后距离与高度会改变另一个方向的重叠"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "镂空片的真实轮廓"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的正面目标片"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者的侧面目标片"
+        }
+      ],
+      "actions": "在小展示台上平移、升降有支撑的镂空片，并旋转观察托架。",
+      "experiment": "保持正面轮廓不变，改变一片前后距离，看侧面变化。",
+      "counterexample": "把两片完全贴合可满足一面，但另一面投影宽度不对。",
+      "solution": "利用两张片的互补缺口，分别满足两个视向的重叠关系；作者图案与精确槽距须在后续白模中确定，当前不虚构世界坐标。",
+      "completion": "同一实体摆位在两个机位都匹配完整轮廓，且每片仍在实体支撑内；不得用镜头切换换一套物件。",
+      "transfer": "其中一张目标片改为局部遮挡，利用另一方向补足信息。",
+      "feedback": "两面实时呈现同一几何，暴露遮挡差异。",
+      "hints": [
+        "哪一个方向还存在缺口？",
+        "让正面不变，试着只改前后距离。",
+        "比较两张目标片共有的边。"
+      ],
+      "recovery": "所有槽位可退出与撤回；装置不能堵住小间门口。",
+      "payoff": "小间成为有独立玩法的双视向展台。",
+      "sources": [
+        "S01",
+        "S02",
+        "S09"
+      ],
+      "placementNote": "当前 floor_3.json 中本房间没有独立对象；展示台与全部道具均为新增提案，必须先量测可达地面和门口净空。",
+      "id": "3:xlab_box",
+      "roomName": "X-Lab 多功能小间",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 3,
+        "extension": 4,
+        "teaching": "先以一个视向找候选，再用第二视向排除；进阶只改一个轮廓。",
+        "readability": "旋转的是展示托架，镜头与建筑不转，保留前后基准刻线。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 4,
+      "room": "seminar_1",
+      "title": "找一个能推翻猜想的例子",
+      "role": "side",
+      "family": "rules",
+      "anchors": [
+        "seminar_1_whiteboard_0"
+      ],
+      "props": [
+        "可装在白板上的分类实验板",
+        "形状/填纹各不相同的磁片"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "已给的样例同时支持“形状相同”和“填纹相同”两种解释，下一组却分歧了。",
+      "objective": "构造一个能区分两种解释的试验，再应用到新一组。",
+      "hypotheses": [
+        "分类只比较形状",
+        "分类只比较填纹"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "实验板实际接受/拒绝的反馈"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的相关样例"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者对新样例的两种预测"
+        }
+      ],
+      "actions": "自由组成两枚图块的配对，送入实验窗口，保存真实结果。",
+      "experiment": "选择形状相同但填纹不同，或相反的配对。",
+      "counterexample": "继续测试形状与填纹都相同的样例，只会重复旧信息。",
+      "solution": "先用一个两假设预测不同的配对区分规则，再按实际规则构造一个全新有效配对；不要求读提示或答文字选择题。",
+      "completion": "实际构造的区分案例与迁移案例符合当前实验规则；规则本局固定，不在试错中偷偷改变。",
+      "transfer": "换一组图块，仍须用已发现关系判断，图块颜色不是唯一编码。",
+      "feedback": "接受/拒绝与测试样例留在板上，不自动把未知规则写成答案。",
+      "hints": [
+        "这个样例能让两种解释产生不同预测吗？",
+        "把形状和填纹拆开变化。",
+        "对照两份预测，挑它们意见不同的样例。"
+      ],
+      "recovery": "磁片可取回重组；记录只读，不改变规则。",
+      "payoff": "研讨板留下可复核的反例与新例。",
+      "sources": [
+        "S06",
+        "S10",
+        "S11"
+      ],
+      "id": "4:seminar_1",
+      "roomName": "研讨间 1",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先提供两个都符合旧例的解释，再让玩家主动构造区分例。",
+        "readability": "展示结果一致的旧例，但不在选项标签里直接说出新例答案。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 4,
+      "room": "seminar_2",
+      "title": "两辆车在窄轨上相遇",
+      "role": "side",
+      "family": "motion",
+      "anchors": [
+        "seminar_2_discussion_table_2",
+        "seminar_2_whiteboard_5"
+      ],
+      "props": [
+        "单线模型轨道",
+        "一格会让支线",
+        "两辆装载不同零件的小车"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "两辆车都要到对面，直接互相推进只会顶在中间。",
+      "objective": "让两辆车带着各自零件交换终点。",
+      "hypotheses": [
+        "只要轮流前进就能交会",
+        "需要临时让出共用通路"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "轨宽与一格侧线"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的两个终点装配需求"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者的相遇停点记录"
+        }
+      ],
+      "actions": "切换岔片，分步前进或后退，把一辆车停进侧线。",
+      "experiment": "保持两车在主线上试一次，再让一辆退入侧线比较。",
+      "counterexample": "车头越过对方但把零件留在原地，不算完成运输。",
+      "solution": "一辆完整进入会让支线，另一辆通过并到位，第一辆再出支线到另一端。",
+      "completion": "两辆实体沿合法轨道各携原零件到达对应终点，不能互穿或交换身份。",
+      "transfer": "支线只能容纳短车，新增长载荷后重新选择谁让行。",
+      "feedback": "碰停、岔片方向与装载归属可见，逐步推进不计反应速度。",
+      "hints": [
+        "现在哪一段只能容纳一辆车？",
+        "找一个可以暂时离开主线的位置。",
+        "对照载荷长度与侧线的实际长度。"
+      ],
+      "recovery": "可倒车、撤回或归位，不丢零件。",
+      "payoff": "研讨桌上的双向运输模型跑通。",
+      "sources": [
+        "S03",
+        "S07",
+        "S08"
+      ],
+      "id": "4:seminar_2",
+      "roomName": "研讨间 2",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 3,
+        "extension": 4,
+        "teaching": "先看到两车不能相穿，再尝试用侧位让车；进阶改两车长度。",
+        "readability": "车长、会车位和前后退路同屏可见，随时暂停并撤回。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 4,
+      "room": "seminar_3",
+      "title": "分开都能用，合起来卡住",
+      "role": "main",
+      "family": "evidence",
+      "anchors": [
+        "seminar_3_discussion_table_7",
+        "seminar_3_whiteboard_10"
+      ],
+      "props": [
+        "整机装配底座",
+        "可移动附件支架",
+        "各分系统的试验记录"
+      ],
+      "minutes": [
+        5,
+        8
+      ],
+      "problem": "传动和遮光各自的试验都成功，装进同一个盒里却碰到送料件。",
+      "objective": "找出组合后新增的冲突，并完成当前整机复验。",
+      "hypotheses": [
+        "某个分系统的原理错了",
+        "两个正确分系统共享了同一段活动空间"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "当前整机的碰停位置"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "机械制作者的分体送料记录"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "记录同学的分体遮光回放"
+        }
+      ],
+      "actions": "查看附件的活动包络，移动外侧支架，试运行整机并比较旧记录。",
+      "experiment": "先卸下一个附件观察送料，再装回不同支架位置，比较光路是否仍成立。",
+      "counterexample": "拆掉挡片可以送料，却失去遮光；旧版本两个“通过”不能证明当前整机通过。",
+      "solution": "把附件支撑移到送料活动范围之外，同时保持侧挡片有效遮光；对当前整机重新跑送料与两侧试拍。",
+      "completion": "同一装配和夹具版本下，机械扫掠、完整送料、镜头、两侧光照同时成立；旧记录仅作证据。",
+      "transfer": "改装一处附件后，重新验证受影响条件，不能保留已失效的待完成结果。",
+      "feedback": "以碰停和光路变化显示冲突，不按部件逐个永久勾绿。",
+      "hints": [
+        "组合之后才多占了哪一块空间？",
+        "只卸一个附件试一次，不要同时改所有东西。",
+        "核对旧记录的摆位与当前整机是否相同。"
+      ],
+      "recovery": "保留装配、取消本次试验；可拆回和撤回；已正式完成的剧情不倒退。",
+      "payoff": "得到可拿回大厅演示的当前整机；作者拟议的终局验证发生在这里，回大厅负责实际试演收束。",
+      "sources": [
+        "S01",
+        "S03",
+        "S05",
+        "S10"
+      ],
+      "id": "4:seminar_3",
+      "roomName": "研讨间 3",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 4,
+        "extension": 5,
+        "teaching": "两个组件分别成功再整机试验，新增冲突必须来自实际组合。",
+        "readability": "失败时标接触位置和当前版本，只保留本次可复验结果。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 4,
+      "room": "storage",
+      "title": "柜门打开了，箱子出不来",
+      "role": "side",
+      "family": "space",
+      "anchors": [
+        "storage_cabinet_12"
+      ],
+      "props": [
+        "可打开的模型柜内层",
+        "一长两短器材箱",
+        "临时落物托盘"
+      ],
+      "minutes": [
+        3,
+        5
+      ],
+      "problem": "所需长箱看得见，抽出时却被邻箱和门的活动范围夹住。",
+      "objective": "取出长箱，并保留可恢复的归还路径。",
+      "hypotheses": [
+        "只要把柜门再开大一点",
+        "取出动作需要连续净空和临时停放位"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "长箱把手与抽拉方向"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "保管同学的归位轮廓"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "借用同学的失败抽拉痕迹"
+        }
+      ],
+      "actions": "移动短箱到合法托盘，开合模型柜门，分段抽拉长箱。",
+      "experiment": "先不动长箱，只移走挡住转角的短箱，再试抽拉。",
+      "counterexample": "把所有短箱都堆到柜门前，看似腾空柜内，实际封住出口。",
+      "solution": "利用临时落物位腾出一个转移空位，依次移走干涉箱，再沿完整通路抽出长箱；不同可行搬运顺序都可通过。",
+      "completion": "长箱真正越过柜门开口，其他箱有实体支撑，退路与门扇活动范围保持开放。",
+      "transfer": "归还时按当前空位规划，不直接播放倒放动画。",
+      "feedback": "先接触的箱角或门边产生可见停顿，不允许图像穿越。",
+      "hints": [
+        "最先接触的是哪一条边？",
+        "先试短箱的临时停放位置。",
+        "对照归位轮廓，保留一个转移空位。"
+      ],
+      "recovery": "每次抽拉可逆，重摆只恢复柜内实验，不动建筑柜体。",
+      "payoff": "器材箱可被真实取用和归还。",
+      "sources": [
+        "S02",
+        "S03",
+        "S07"
+      ],
+      "id": "4:storage",
+      "roomName": "设备储藏室",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 2,
+        "extension": 3,
+        "teaching": "先让玩家尝试抽出长箱，再发现临时停放位，进阶处理归还。",
+        "readability": "柜门活动范围和先碰到的箱角可见，柜外临时位不藏在别室。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 4,
+      "room": "focus_a",
+      "title": "空闲没事，开工就停",
+      "role": "side",
+      "family": "coordination",
+      "anchors": [
+        "focus_a_desk_16",
+        "focus_a_monitor_front_19"
+      ],
+      "props": [
+        "低压供电教学模型",
+        "四个有不同负载表现的设备模型",
+        "双支路插接板"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "所有模型设备待机正常，同时开始任务时一条支路停机。",
+      "objective": "让同一接法在待机和工作状态都能运行。",
+      "hypotheses": [
+        "停止的那台设备故障",
+        "共享支路的总负载超过模型容量"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "支路表针与设备工作变化"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的单设备测试条"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "试用者的同时启动记录"
+        }
+      ],
+      "actions": "在低压模型板上重新分组设备，逐台与同时试运行。",
+      "experiment": "先单独启动两台高峰设备，再让它们共用一条支路启动。",
+      "counterexample": "只把灯点亮或只测试待机，不能证明高峰状态成立。",
+      "solution": "样例两支路容量均为 5；设备工作负载为 3、3、2、2，分别把一个 3 与一个 2 分到两路；接受两种等价分组。",
+      "completion": "同一连接下所有设备在规定待机/工作情境都运行，且两路均不超载；没有真实市电接线。",
+      "transfer": "加入一个已标出的辅助负载，重新比较仍能成立的分组，而不是记忆插孔位置。",
+      "feedback": "表针与停止设备共同显示总负载变化，不靠颜色单独区分。",
+      "hints": [
+        "单台能用，合用时哪里先变化？",
+        "只改变分组，再同时启动。",
+        "对照单设备测试条与支路表针。"
+      ],
+      "recovery": "模型自动停机保护，移线可撤回，无器材损坏。",
+      "payoff": "专注区的模型工作站能同时开工。",
+      "sources": [
+        "S03",
+        "S05",
+        "S10"
+      ],
+      "model": {
+        "kind": "power_partition",
+        "capacity": 5,
+        "idle": [
+          1,
+          1,
+          2,
+          2
+        ],
+        "active": [
+          3,
+          3,
+          2,
+          2
+        ]
+      },
+      "id": "4:focus_a",
+      "roomName": "A · 专注孵化区",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 3,
+        "extension": 4,
+        "teaching": "待机通过后切换工作状态，比较总负载与单个设备本身。",
+        "readability": "同一接法下看见设备起动过程，额定范围写在教学设备上。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 4,
+      "room": "collab_b",
+      "title": "换一侧，也要成立",
+      "role": "main",
+      "family": "optics",
+      "anchors": [
+        "collab_b_desk_85",
+        "collab_b_whiteboard_137"
+      ],
+      "props": [
+        "两片独立侧挡片",
+        "便携演示盒边槽",
+        "左右试验灯"
+      ],
+      "minutes": [
+        6,
+        9
+      ],
+      "legacy": "L4",
+      "problem": "每换一次来光，就要重新挪一块大白板，别人无法照着摆法复现。",
+      "objective": "让同一套挡片布置在两侧来光下都能拍清。",
+      "hypotheses": [
+        "把目标围得越严越可靠",
+        "只遮不需要的光路，保留镜头和送料通路"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "两侧灯和可见边槽"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作同学的同配置交接卡"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "记录同学的左右试拍"
+        }
+      ],
+      "actions": "独立装卸挡片，保持装配不动切换试验条件，实际送料与拍摄。",
+      "experiment": "只装一侧分别测试两侧，再加第二片比较。",
+      "counterexample": "分别改成两个成功摆法不能算稳定；前后围住会挡镜头或送料。",
+      "solution": "侧面各一片、前后开放；由真实光路和活动空间裁决，不按固定部件 ID 或点击顺序。",
+      "completion": "同一装配与夹具版本下，两侧试拍、送料和取景都成立。",
+      "transfer": "把试验夹具转 90° 后重新应用关系，装置局部方位与建筑方位分开。",
+      "feedback": "显示当前具体被挡住的路径与照片，修改配置使旧待验证结果失效但照片仍可读。",
+      "hints": [
+        "是哪条路径仍然不通？",
+        "保持装置不动，先后试两侧。",
+        "对照交接卡与送料、取景的开口。"
+      ],
+      "recovery": "部件都可拆回，单次失败不清空其他历史观察。",
+      "payoff": "形成可用于整机组合验证的稳定遮光组件。",
+      "sources": [
+        "S03",
+        "S05",
+        "S06",
+        "S10"
+      ],
+      "id": "4:collab_b",
+      "roomName": "B · 协作共创区",
+      "status": "existing_partial_review_with_proposed_extension",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 4,
+        "extension": 5,
+        "teaching": "先让单侧解在换光后失败，再保持一个配置复验所有条件。",
+        "readability": "两侧试拍与送料记录均带装配版本，改装旧记录保留但不拼成通过。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    },
+    {
+      "floor": 4,
+      "room": "flex_c",
+      "title": "换一个工位，关系还在吗",
+      "role": "side",
+      "family": "coordination",
+      "anchors": [
+        "flex_c_desk_138",
+        "flex_c_desk_142"
+      ],
+      "props": [
+        "便携接线底座",
+        "两套朝向不同的模型工作位",
+        "可改走线槽"
+      ],
+      "minutes": [
+        4,
+        6
+      ],
+      "problem": "装置在左侧桌子运行正常，移到另一张桌子后，照搬原来的左右插位就接错。",
+      "objective": "用同一功能关系适配第二个工作位。",
+      "hypotheses": [
+        "屏幕左侧的孔总对应原来的左侧功能",
+        "插孔角色和相对连接关系才是参照"
+      ],
+      "evidence": [
+        {
+          "owner": "现场实物",
+          "text": "两套底座的形状定位口"
+        },
+        {
+          "owner": "制作者记录",
+          "text": "制作者的功能连接草图"
+        },
+        {
+          "owner": "试用者记录",
+          "text": "另一工位同学的端点测试结果"
+        }
+      ],
+      "actions": "搬动便携模型、检查端点、转动模型适配件并调整短线的走线槽。",
+      "experiment": "保持一个输入信号不变，在两个工作位分别追踪它出现在哪里。",
+      "counterexample": "复制世界坐标或屏幕左右看似整齐，却把接收端接到了输入端。",
+      "solution": "用定位口建立局部参照，按源端—分配—接收功能重接；保持线长和可达槽约束，接受不同合法走线。",
+      "completion": "同一便携实例在两个工作位都完成信号变化与接收测试，线缆不穿实体且能正常取下。",
+      "transfer": "第二工位提供方向变化，之后可选换一根更短的线再适配。",
+      "feedback": "信号沿真实模型接线传播，线长不足与角色错误分别表现。",
+      "hints": [
+        "哪个标记跟着底座一起转了？",
+        "追踪同一个输入，不要先看左右。",
+        "把功能草图与端点测试对应起来。"
+      ],
+      "recovery": "所有模型线可拔回，搬运不复制实例、不改真实桌椅。",
+      "payoff": "流动工位可以复用同一件作品。",
+      "sources": [
+        "S03",
+        "S05",
+        "S08",
+        "S10"
+      ],
+      "id": "4:flex_c",
+      "roomName": "C · 流动工位区",
+      "status": "proposed_not_implemented",
+      "stateProposal": [
+        "current_configuration",
+        "configuration_revision",
+        "current_trial",
+        "verified_room_result"
+      ],
+      "difficulty": {
+        "entry": 3,
+        "extension": 4,
+        "teaching": "先在熟悉工位接通，再改变位置但保留功能关系。",
+        "readability": "接口作用用形状和连接标识呈现，不靠背左、右坐标。",
+        "assessedBy": "local_design_draft_not_playtested"
+      }
+    }
+  ],
+  "reviewRequest": {
+    "requestedReviewer": "Argon",
+    "status": "awaiting_user_identification",
+    "scope": "all 25 room designs, visual feedback, clue distribution, optional hints and difficulty curve",
+    "constraints": [
+      "Keep every mapped room represented",
+      "Preserve approved team and robotics core mechanics",
+      "Replace formula braking puzzle with solar-car distance competition",
+      "No fabricated external review result"
+    ]
+  },
+  "guidance": {
+    "basicControls": "Always available: approach, select, place, rotate where supported, run, undo, return. Controls never hide as a puzzle.",
+    "objective": "One short current problem at a time; no exact answer, parts recipe, hidden route or unexplored floor sequence.",
+    "spontaneousFeedback": "Show the observed mismatch at the affected object. Do not convert number of failures into answer disclosure.",
+    "optionalHints": [
+      "H1: name the mismatch category",
+      "H2: suggest one informative comparison",
+      "H3: point back to a specific clue carrier"
+    ],
+    "requestPolicy": "Each tier is deliberately requested. Reopening preserves the last requested tier; successful edits do not automatically open hints.",
+    "reminderPolicy": "Offer help only after the player enables assistance; after prolonged inactivity offer a nonmodal help entry once per room. No automatic hint text, focus shift or cursor on the correct object.",
+    "accessibility": "Same result available through shape, motion and text; no required hearing, color perception, precision dragging or speed.",
+    "evidencePolicy": "Clues stay present and revisitable. Reading and hints never count as the solution. Allow an informed first-try solution.",
+    "difficultyPolicy": "Raise coupled reasoning constraints, not search area, unreadable differences or input precision. Ratings are hypotheses for playtest, not measured difficulty."
+  },
+  "interactionPrinciple": {
+    "authority": "explicit_user_design_principle_20261029",
+    "primary": "visible_in_scene_objects",
+    "gestures": [
+      "drag",
+      "rotate",
+      "reconnect",
+      "physical_lever",
+      "physical_dial"
+    ],
+    "touchLocomotion": "analog_joystick_and_tap_to_approach",
+    "defaultActionButtonRows": false,
+    "defaultHotkeyPrompts": false,
+    "keyboardRole": "secondary_accessibility_equivalence",
+    "help": "voluntary_physical_notebook_or_scene_evidence",
+    "commit": "valid_owned_gesture_release_only",
+    "screenControls": "necessary_navigation_and_secondary_settings"
+  }
+}

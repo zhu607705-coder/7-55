@@ -1,0 +1,500 @@
+{
+  "schema": "755.flc.puzzle-design.v1",
+  "status": "design_only",
+  "title": "让演示真正跑起来",
+  "date": "2026-10-29",
+  "baselineCommit": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "coordinateSpace": "normalized apparatus plane, not source pixels or building cardinal directions",
+  "goals": [
+    "observable causal feedback",
+    "rule transfer",
+    "whole-configuration validation",
+    "reversible experimentation"
+  ],
+  "roomSequenceIsMandatory": false,
+  "observationIsCompletionGate": false,
+  "levels": [
+    {
+      "id": "L1",
+      "title": "动力停在哪",
+      "floor": 2,
+      "room": "electrical",
+      "anchors": [
+        "electrical_assembly_bench"
+      ],
+      "implementation": "native one-direction review exists; return-direction exercise proposed",
+      "sources": [
+        "S01",
+        "S02",
+        "S07",
+        "S10"
+      ],
+      "evidenceCarriers": [
+        "visible axle gaps and motion",
+        "operator trial slip",
+        "recorder before/after positions"
+      ],
+      "verbs": [
+        "fit",
+        "route_belt",
+        "tension",
+        "trial",
+        "undo"
+      ],
+      "newLearning": "trace power, then distinguish movement from correct movement",
+      "transfer": "return target uses the same drive with reversed output",
+      "model": {
+        "kind": "existing_workbench_static_summary",
+        "sourceFile": "scripts/workbench_model.gd",
+        "gears": [
+          -1,
+          0,
+          1,
+          2
+        ],
+        "belts": [
+          0,
+          1,
+          2
+        ],
+        "tensions": [
+          0,
+          1,
+          2
+        ],
+        "sourceSha256": "7eea3b912db6a5af0a1687141557ed5179a31f0545e02284e7cef4945013a04c"
+      }
+    },
+    {
+      "id": "L2",
+      "title": "挡光，但别挡住镜头",
+      "floor": 2,
+      "room": "platform",
+      "anchors": [
+        "platform_whiteboard_41",
+        "platform_discussion_table_38",
+        "platform_camera_tripod_48"
+      ],
+      "implementation": "disposable browser prototype exists; native integration proposed",
+      "sources": [
+        "S04",
+        "S05",
+        "S10"
+      ],
+      "evidenceCarriers": [
+        "recorder overexposed frame",
+        "operator wheel-position traces",
+        "live shadow on the target"
+      ],
+      "verbs": [
+        "move_board",
+        "trial",
+        "compare",
+        "undo"
+      ],
+      "newLearning": "light occlusion differs from camera occlusion",
+      "transfer": "move the light to the opposite side; repositioning remains allowed here",
+      "model": {
+        "kind": "single_occluder",
+        "target": [
+          0,
+          0
+        ],
+        "targetHalfSize": 0.15,
+        "camera": [
+          0,
+          4
+        ],
+        "lights": {
+          "A": [
+            4,
+            0
+          ],
+          "B": [
+            -4,
+            0
+          ]
+        },
+        "poses": {
+          "N": [
+            [
+              -1.2,
+              -1
+            ],
+            [
+              1.2,
+              -1
+            ]
+          ],
+          "E": [
+            [
+              1,
+              -1.2
+            ],
+            [
+              1,
+              1.2
+            ]
+          ],
+          "S": [
+            [
+              -1.2,
+              1
+            ],
+            [
+              1.2,
+              1
+            ]
+          ],
+          "W": [
+            [
+              -1,
+              -1.2
+            ],
+            [
+              -1,
+              1.2
+            ]
+          ],
+          "park": [
+            [
+              2.5,
+              2.8
+            ],
+            [
+              4.5,
+              2.8
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "L3",
+      "title": "先送到，再遮住",
+      "floor": 3,
+      "room": "recording",
+      "anchors": [
+        "recording_desk_234",
+        "recording_camera_tripod_233"
+      ],
+      "implementation": "proposed",
+      "sources": [
+        "S02",
+        "S03",
+        "S05",
+        "S08",
+        "S09"
+      ],
+      "evidenceCarriers": [
+        "operator collision trace",
+        "recorder clear static frame",
+        "visible rail crossing the panel slot"
+      ],
+      "verbs": [
+        "park_panel",
+        "advance",
+        "reverse",
+        "shade",
+        "trial",
+        "undo"
+      ],
+      "newLearning": "a valid final configuration may block the route needed to reach it",
+      "transfer": "reset the carriage and reproduce the staging without speed pressure",
+      "model": {
+        "kind": "ordered_delivery",
+        "target": [
+          0,
+          0
+        ],
+        "targetHalfSize": 0.15,
+        "camera": [
+          4,
+          0
+        ],
+        "light": [
+          0,
+          4
+        ],
+        "rail": [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "carriageRadius": 0.18,
+        "poses": {
+          "shade": [
+            [
+              -1.2,
+              1
+            ],
+            [
+              1.2,
+              1
+            ]
+          ],
+          "park": [
+            [
+              2.5,
+              2.8
+            ],
+            [
+              4.5,
+              2.8
+            ]
+          ]
+        },
+        "initial": {
+          "pose": "shade",
+          "railIndex": 0
+        },
+        "resetAllowed": true
+      }
+    },
+    {
+      "id": "REST",
+      "title": "托盘平衡与回看",
+      "floor": 3,
+      "room": "pantry",
+      "anchors": [
+        "pantry_pantry_island_250",
+        "pantry_sofa_246",
+        "pantry_sofa_248"
+      ],
+      "implementation": "furniture exists; tray balancing puzzle, delivery and optional journal proposed",
+      "sources": [
+        "S04",
+        "S10",
+        "S11"
+      ],
+      "optional": true,
+      "grantsCompletion": true,
+      "completionScope": "local_room_puzzle_only_not_a_floor_or_ending_gate",
+      "roomPuzzleId": "3:pantry"
+    },
+    {
+      "id": "L4",
+      "title": "换一侧，也要成立",
+      "floor": 4,
+      "room": "collab_b",
+      "anchors": [
+        "collab_b_desk_85",
+        "collab_b_whiteboard_137"
+      ],
+      "implementation": "proposed",
+      "sources": [
+        "S03",
+        "S05",
+        "S06",
+        "S10"
+      ],
+      "evidenceCarriers": [
+        "recorder paired side-light frames",
+        "operator unchanged-setup handoff card",
+        "visible camera and feed openings"
+      ],
+      "verbs": [
+        "fit_panel",
+        "trial_A",
+        "trial_B",
+        "feed",
+        "undo"
+      ],
+      "newLearning": "separate unwanted light paths from required view and transport paths",
+      "transfer": "optional rotated fixture uses the same constraints",
+      "model": {
+        "kind": "stable_two_panel_configuration",
+        "panelCount": 2,
+        "target": [
+          0,
+          0
+        ],
+        "targetHalfSize": 0.15,
+        "camera": [
+          0,
+          4
+        ],
+        "lights": {
+          "A": [
+            4,
+            0
+          ],
+          "B": [
+            -4,
+            0
+          ]
+        },
+        "feed": [
+          [
+            0,
+            -3
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "carriageRadius": 0.18,
+        "slots": {
+          "N": [
+            [
+              -1.2,
+              -1
+            ],
+            [
+              1.2,
+              -1
+            ]
+          ],
+          "E": [
+            [
+              1,
+              -1.2
+            ],
+            [
+              1,
+              1.2
+            ]
+          ],
+          "S": [
+            [
+              -1.2,
+              1
+            ],
+            [
+              1.2,
+              1
+            ]
+          ],
+          "W": [
+            [
+              -1,
+              -1.2
+            ],
+            [
+              -1,
+              1.2
+            ]
+          ]
+        },
+        "requiredConditions": [
+          "A",
+          "B"
+        ],
+        "sameConfigurationRequired": true,
+        "sameFixtureRequired": true
+      }
+    },
+    {
+      "id": "FINALE",
+      "title": "整机试演",
+      "floor": 2,
+      "room": "platform",
+      "anchors": [
+        "platform_discussion_table_38",
+        "platform_camera_tripod_48"
+      ],
+      "implementation": "proposed",
+      "sources": [
+        "S01",
+        "S03",
+        "S05"
+      ],
+      "requirements": [
+        "current physical drive",
+        "current delivered carriage",
+        "clear camera",
+        "both light cases at matching revisions"
+      ],
+      "requiresLessonFlags": false,
+      "requiresNpcDialogue": false,
+      "grants": "isolated demonstration completion only; production chapter intent not yet authored"
+    }
+  ],
+  "proposedObjects": [
+    {
+      "id": "demo_portable_kit",
+      "kind": "single portable instance",
+      "hosts": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "FINALE"
+      ],
+      "measuredPlacement": false
+    },
+    {
+      "id": "demo_slide_panel",
+      "kind": "independent movable panel",
+      "hosts": [
+        "L3"
+      ],
+      "measuredPlacement": false
+    },
+    {
+      "id": "demo_side_panel_a",
+      "kind": "independent removable panel",
+      "hosts": [
+        "L4",
+        "FINALE"
+      ],
+      "measuredPlacement": false
+    },
+    {
+      "id": "demo_side_panel_b",
+      "kind": "independent removable panel",
+      "hosts": [
+        "L4",
+        "FINALE"
+      ],
+      "measuredPlacement": false
+    },
+    {
+      "id": "demo_calibration_lights",
+      "kind": "deterministic apparatus lighting",
+      "hosts": [
+        "L2",
+        "L3",
+        "L4",
+        "FINALE"
+      ],
+      "measuredPlacement": false
+    },
+    {
+      "id": "demo_trial_journal",
+      "kind": "optional player-generated trial records",
+      "hosts": [
+        "REST"
+      ],
+      "measuredPlacement": false
+    }
+  ],
+  "completionPolicy": {
+    "configurationEditsInvalidatePendingTrials": true,
+    "fixtureEditsInvalidatePendingTrials": true,
+    "observationGrantsNoCompletion": true,
+    "cancelGrantsNoCompletion": true,
+    "historicalPhotosRemainReadable": true,
+    "acceptedFinalCompletionIsMonotonic": true,
+    "productionSaveFieldsImplemented": false
+  },
+  "limits": [
+    "Normalized ray segments and finite configurations do not establish native optics or continuous collision.",
+    "Existing source object IDs do not establish reachable new prop placement.",
+    "L1 return-target transfer remains a proposal and is not covered by the existing one-way model summary.",
+    "NPC paths, full scene inputs, save migration, final controller integration and human difficulty require runtime validation."
+  ],
+  "scope": "four_mechanic_sample_not_complete_room_coverage",
+  "coverageDocument": "ROOM_PUZZLES_20261029.md",
+  "roomCatalog": "room_puzzles.v2.json"
+}

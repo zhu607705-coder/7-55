@@ -1,0 +1,785 @@
+{
+  "schema": "755.flc.motion-puzzles-review.v1",
+  "recordedAt": "2026-10-29T11:17:48.112476+00:00",
+  "baselineCommit": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "branch": "codex/flc-transcript-level-design-20261029",
+  "testedWorkingTreeNotCommitted": true,
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "sourceSha256": {
+    "godot_native/campuses/future_learning_center/scripts/floor_view.gd": "6708c227a188106ae13dafc295943f289b235857976e1fc6d866e0afd787ece9",
+    "godot_native/campuses/future_learning_center/scripts/solar_race_model.gd": "c3ec54e88ea575d0a4319da2333c11fd1959903f9a1dbc8a463946ceb63946da",
+    "godot_native/campuses/future_learning_center/scripts/robot_delivery_model.gd": "eef700bb794fc48525ee57f87c6e098c9aa99abea06a456873d7c492007250bd",
+    "godot_native/campuses/future_learning_center/scripts/motion_prop_metrics.gd": "26a1748bbb589e29e1d2b8777deaa410f68bee74dc28d9e730720d3f5526b81c",
+    "godot_native/campuses/future_learning_center/scripts/motion_lab_view.gd": "0817e933c1330824e26375b6420c34acb45a43290dbf7f5666e533dbdcae5a4f",
+    "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd": "f4d41e52a82630aad337cd615af009a9ca79e4518c2c4a71798271a1be102ecd",
+    "godot_native/campuses/future_learning_center/scripts/signal_sync_view.gd": "bf183f4cf0558310f5bf76001205575090cc037c24c197d6d6bd03d338bbb931",
+    "godot_native/campuses/future_learning_center/tests/test_motion_puzzles.gd": "2e66a86d55cb3b50ed2e241333ae5c45d5ed5e0d9d4d108146aec4bd33623599",
+    "godot_native/campuses/future_learning_center/tests/test_signal_sync.gd": "c3ba78b027696e60a989a4ceb25ee36a764a70f7e06ca17aed8626af55d7e30c",
+    "godot_native/samples/future_learning_center/play.gd": "e459a47e4e1c1777a817639fdc39a09874506ed29483e6ed8b950d8caa03f657",
+    "godot_native/samples/future_learning_center/standalone.gd": "c78990c02cd97770e79d8be43f3ef13b7fa8c5ef845f6c25f4368f19bef19f8f",
+    "godot_native/samples/future_learning_center/run.mjs": "237a78ab6bdca0e0b072e1f1a75e1dbe81417420a9661728078a4bdcaaa8bd35",
+    "godot_native/samples/future_learning_center/build_web.mjs": "d6b5cd5f18b39c11ad8eba046b4f76d3c304a74191dbaf0272b3efb04778e800",
+    "godot_native/campuses/future_learning_center/data/floor_2.json": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+    "godot_native/campuses/future_learning_center/data/floor_3.json": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+    "godot_native/campuses/future_learning_center/data/floor_4.json": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46",
+    "godot_native/campuses/future_learning_center/assets/puzzles/solar_chassis_atlas.png": "8d114908c94fad76d998d23e05c95f3f8798f5fca08666ac995999cd465c9c4e",
+    "godot_native/campuses/future_learning_center/assets/puzzles/delivery_robot_atlas.png": "d4c110d988f13844a163955ef00dfab6b0caf97e5726507dffbd13597132f377",
+    "godot_native/campuses/future_learning_center/assets/puzzles/frames.json": "fb3185a5e321b820ba012e60b2b411250cc9dd737126ba4bb485f7c4630fb576",
+    "godot_native/campuses/future_learning_center/assets/puzzles/provenance.json": "1d4924a9ddfbb45ce47f182aad34f97be5a9d8bfe967a570a56f8058b493fc85",
+    "godot_native/campuses/future_learning_center/design/room_puzzles.v2.json": "773bf099a2ca91bb50eaaa696fa6dc921512b373f258a88ccb08abd822255f2b",
+    "godot_native/campuses/future_learning_center/tools/build_room_puzzle_review.mjs": "75a015f8ecda6f2f83b496622c5cc28d39d3bf1e36808ee3f4c5e7f428254ad2"
+  },
+  "model": {
+    "checks": 53,
+    "failures": 0,
+    "initialSkyWinningBuilds": 10,
+    "enumeratedBuilds": 18,
+    "command": "GODOT_BIN=<4.7.1> node godot_native/samples/future_learning_center/run.mjs --motion-test --headless",
+    "includes": [
+      "frame-independent solar clock",
+      "zero-light negative control",
+      "stale trial invalidation",
+      "multiple robot solutions",
+      "cargo and return completion",
+      "all four visible-front stop boundaries",
+      "atlas-to-metrics frame agreement"
+    ]
+  },
+  "desktop": {
+    "checks": 52,
+    "failures": 0,
+    "results": [
+      {
+        "name": "both remote entries rejected",
+        "passed": true
+      },
+      {
+        "name": "solar legal measured approach",
+        "passed": true
+      },
+      {
+        "name": "solar tap approach opens physical station",
+        "passed": true
+      },
+      {
+        "name": "keyboard hinge changes actual panel",
+        "passed": true
+      },
+      {
+        "name": "same clock moves both vehicles",
+        "passed": true
+      },
+      {
+        "name": "shared shadow occurs at authored time",
+        "passed": true
+      },
+      {
+        "name": "ordinary 30 second run records valid winner",
+        "passed": true
+      },
+      {
+        "name": "touch part change invalidates result",
+        "passed": true
+      },
+      {
+        "name": "undo restores previous build",
+        "passed": true
+      },
+      {
+        "name": "solar hint starts only on request",
+        "passed": true
+      },
+      {
+        "name": "solar explicit final hint",
+        "passed": true
+      },
+      {
+        "name": "solar clues dismiss without leaving station",
+        "passed": true
+      },
+      {
+        "name": "solar focus loss stops simulation",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport close",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport run",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport undo",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport cancel",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport notes",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport hint",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting0",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting1",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting2",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting3",
+        "passed": true
+      },
+      {
+        "name": "solar exit retains legal room feet",
+        "passed": true
+      },
+      {
+        "name": "solar keyboard reopens same station",
+        "passed": true
+      },
+      {
+        "name": "robotics legal measured approach",
+        "passed": true
+      },
+      {
+        "name": "robotics tap approach opens physical station",
+        "passed": true
+      },
+      {
+        "name": "cargo visibly travels after loading",
+        "passed": true
+      },
+      {
+        "name": "delivered robot stops at return entry",
+        "passed": true
+      },
+      {
+        "name": "records show actual failure trace",
+        "passed": true
+      },
+      {
+        "name": "tap selection and keyboard replace physical module",
+        "passed": true
+      },
+      {
+        "name": "unloading alone is incomplete",
+        "passed": true
+      },
+      {
+        "name": "actual empty return completes",
+        "passed": true
+      },
+      {
+        "name": "robotics hint starts only on request",
+        "passed": true
+      },
+      {
+        "name": "robotics explicit final hint",
+        "passed": true
+      },
+      {
+        "name": "robotics clues dismiss without leaving station",
+        "passed": true
+      },
+      {
+        "name": "robotics focus loss stops simulation",
+        "passed": true
+      },
+      {
+        "name": "cancel restores safe cargo origin",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport close",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport run",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport undo",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport cancel",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport notes",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport hint",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport pause",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting0",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting1",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting2",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting3",
+        "passed": true
+      },
+      {
+        "name": "robotics exit retains legal room feet",
+        "passed": true
+      },
+      {
+        "name": "robotics keyboard reopens same station",
+        "passed": true
+      },
+      {
+        "name": "no experiment entry on wrong floor",
+        "passed": true
+      }
+    ],
+    "timing": "real-time ordinary start input",
+    "touch": false,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  "simulatedTouch": {
+    "checks": 52,
+    "failures": 0,
+    "results": [
+      {
+        "name": "both remote entries rejected",
+        "passed": true
+      },
+      {
+        "name": "solar legal measured approach",
+        "passed": true
+      },
+      {
+        "name": "solar tap approach opens physical station",
+        "passed": true
+      },
+      {
+        "name": "keyboard hinge changes actual panel",
+        "passed": true
+      },
+      {
+        "name": "same clock moves both vehicles",
+        "passed": true
+      },
+      {
+        "name": "shared shadow occurs at authored time",
+        "passed": true
+      },
+      {
+        "name": "ordinary 30 second run records valid winner",
+        "passed": true
+      },
+      {
+        "name": "touch part change invalidates result",
+        "passed": true
+      },
+      {
+        "name": "undo restores previous build",
+        "passed": true
+      },
+      {
+        "name": "solar hint starts only on request",
+        "passed": true
+      },
+      {
+        "name": "solar explicit final hint",
+        "passed": true
+      },
+      {
+        "name": "solar clues dismiss without leaving station",
+        "passed": true
+      },
+      {
+        "name": "solar focus loss stops simulation",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport close",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport run",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport undo",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport cancel",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport notes",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport hint",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting0",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting1",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting2",
+        "passed": true
+      },
+      {
+        "name": "solar control within logical viewport setting3",
+        "passed": true
+      },
+      {
+        "name": "solar exit retains legal room feet",
+        "passed": true
+      },
+      {
+        "name": "solar keyboard reopens same station",
+        "passed": true
+      },
+      {
+        "name": "robotics legal measured approach",
+        "passed": true
+      },
+      {
+        "name": "robotics tap approach opens physical station",
+        "passed": true
+      },
+      {
+        "name": "cargo visibly travels after loading",
+        "passed": true
+      },
+      {
+        "name": "delivered robot stops at return entry",
+        "passed": true
+      },
+      {
+        "name": "records show actual failure trace",
+        "passed": true
+      },
+      {
+        "name": "tap selection and keyboard replace physical module",
+        "passed": true
+      },
+      {
+        "name": "unloading alone is incomplete",
+        "passed": true
+      },
+      {
+        "name": "actual empty return completes",
+        "passed": true
+      },
+      {
+        "name": "robotics hint starts only on request",
+        "passed": true
+      },
+      {
+        "name": "robotics explicit final hint",
+        "passed": true
+      },
+      {
+        "name": "robotics clues dismiss without leaving station",
+        "passed": true
+      },
+      {
+        "name": "robotics focus loss stops simulation",
+        "passed": true
+      },
+      {
+        "name": "cancel restores safe cargo origin",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport close",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport run",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport undo",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport cancel",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport notes",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport hint",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport pause",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting0",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting1",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting2",
+        "passed": true
+      },
+      {
+        "name": "robotics control within logical viewport setting3",
+        "passed": true
+      },
+      {
+        "name": "robotics exit retains legal room feet",
+        "passed": true
+      },
+      {
+        "name": "robotics keyboard reopens same station",
+        "passed": true
+      },
+      {
+        "name": "no experiment entry on wrong floor",
+        "passed": true
+      }
+    ],
+    "timing": "real-time ordinary start input",
+    "touch": true,
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  "existingSignalInputRegression": {
+    "checks": 19,
+    "failures": 0,
+    "results": [
+      {
+        "name": "remote activation rejected",
+        "passed": true
+      },
+      {
+        "name": "measured approach is clear",
+        "passed": true
+      },
+      {
+        "name": "tap desk approaches and opens",
+        "passed": true
+      },
+      {
+        "name": "original wiring visibly fails",
+        "passed": true
+      },
+      {
+        "name": "hint has no completion effect",
+        "passed": true
+      },
+      {
+        "name": "hint tiers only advance on request",
+        "passed": true
+      },
+      {
+        "name": "records explain evidence without completing",
+        "passed": true
+      },
+      {
+        "name": "two native port taps connect cable",
+        "passed": true
+      },
+      {
+        "name": "one change still needs verification",
+        "passed": true
+      },
+      {
+        "name": "screen swap preserves port identity",
+        "passed": true
+      },
+      {
+        "name": "second distinct live update succeeds after swap",
+        "passed": true
+      },
+      {
+        "name": "keyboard disconnect targets identity after swap",
+        "passed": true
+      },
+      {
+        "name": "undo restores cable but requires new verification",
+        "passed": true
+      },
+      {
+        "name": "keyboard port connection shares physical cable rule",
+        "passed": true
+      },
+      {
+        "name": "mouse drag follows swapped visible socket",
+        "passed": true
+      },
+      {
+        "name": "exit restores same legal feet",
+        "passed": true
+      },
+      {
+        "name": "keyboard reopen retains connections",
+        "passed": true
+      },
+      {
+        "name": "focus loss cancels unfinished verification",
+        "passed": true
+      },
+      {
+        "name": "room interaction unavailable on other floors",
+        "passed": true
+      }
+    ],
+    "touch": false,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  "floorSpatialRegression": {
+    "checks": 1740,
+    "failures": 0,
+    "command": "GODOT_BIN=<4.7.1> node godot_native/samples/future_learning_center/run.mjs --test --headless",
+    "scope": "floor envelope, anchors, object reachability and existing floor fixtures; map geometry unchanged in this turn"
+  },
+  "nativePreflight": {
+    "selected": [
+      {
+        "id": "Prepared source and media inputs",
+        "result": "pass",
+        "startedAt": "2026-10-29T10:30:51.941Z",
+        "finishedAt": "2026-10-29T10:30:52.555Z"
+      },
+      {
+        "id": "Native save isolation",
+        "result": "pass",
+        "startedAt": "2026-10-29T10:30:52.560Z",
+        "finishedAt": "2026-10-29T10:30:53.601Z"
+      },
+      {
+        "id": "Godot asset import and editor parse",
+        "result": "pass",
+        "startedAt": "2026-10-29T10:30:53.605Z",
+        "finishedAt": "2026-10-29T10:30:58.177Z"
+      },
+      {
+        "id": "Native startup",
+        "result": "pass",
+        "startedAt": "2026-10-29T10:30:58.183Z",
+        "finishedAt": "2026-10-29T10:30:59.606Z"
+      },
+      {
+        "id": "test_all_scripts_parse.gd",
+        "result": "pass",
+        "startedAt": "2026-10-29T10:30:59.611Z",
+        "finishedAt": "2026-10-29T10:31:05.640Z"
+      }
+    ],
+    "passed": 5,
+    "notRun": 536,
+    "fullSuitePassed": false,
+    "note": "Preflight preceded the final visible-front and contrast fix. Final sources were subsequently parsed and run in the standalone native input checks and final standalone Web import/startup/export."
+  },
+  "webExport": {
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "projectConfigSha256": "1ab9736c20760752e3e3c585a1933c494b1d5596bd0f787623396a80b992edcf",
+    "autoloads": [],
+    "productionSaveAccess": false,
+    "browserAcceptance": false,
+    "stages": [
+      {
+        "label": "import",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "startup",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "web_export",
+        "passed": true,
+        "status": 0
+      }
+    ]
+  },
+  "exportSha256": {
+    "index.html": "406da99cab7fc18d8d6af003d712e05456d2c6e8fbcc369dd16b89e011dfedbd",
+    "index.js": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c",
+    "index.pck": "6bf8e83a8f22187a4844f4fead071d5ab6210e1fba51e9d0305b9cc6ba91862d",
+    "index.wasm": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277"
+  },
+  "browserSmoke": {
+    "tool": "cua_repl",
+    "viewport": [
+      1280,
+      720
+    ],
+    "solar": {
+      "url": "http://127.0.0.1:8139/motion_puzzles_20261029/?area=solar",
+      "actions": [
+        "Space at existing physical bench",
+        "1 changes panel angle to30 degrees",
+        "Space starts both cars",
+        "waited for actual30second run"
+      ],
+      "observed": {
+        "elapsedSeconds": 30,
+        "playerDistanceRounded": 116.3,
+        "referenceDistanceRounded": 106.5,
+        "result": "exceeded reference"
+      },
+      "warningAndErrorLogEntries": 0,
+      "screenshot": ".impeccable/review/flc_motion_20261029/browser_solar_complete.jpg"
+    },
+    "robotics": {
+      "url": "http://127.0.0.1:8139/motion_puzzles_20261029/?area=robotics",
+      "actions": [
+        "Space at existing bench",
+        "ordinary start and observed return failure",
+        "rotate upper-left corner once and upper-right twice",
+        "change return outlet upward",
+        "start and observe actual upper loop"
+      ],
+      "observed": [
+        "cargo delivered but initial return blocked with visible nose outside seam",
+        "empty robot returns via upper loop and completion appears"
+      ],
+      "warningAndErrorLogEntries": 0,
+      "screenshots": [
+        ".impeccable/review/flc_motion_20261029/browser_robot_blocked.jpg",
+        ".impeccable/review/flc_motion_20261029/browser_robot_loop.jpg"
+      ]
+    },
+    "fullBrowserAcceptance": false,
+    "scope": "in-app browser smoke; not three-engine compatibility, deployment or physical mobile acceptance"
+  },
+  "video": {
+    "file": ".impeccable/review/flc_motion_20261029/robot_delivery_actual.mp4",
+    "frames": 720,
+    "fps": 30,
+    "durationSeconds": 24,
+    "dimensions": [
+      960,
+      540
+    ],
+    "method": "actual native renderer captured at fixed model1/30s steps; normal input gameplay checked separately in real time",
+    "observedFrames": [
+      135,
+      239,
+      530,
+      719
+    ],
+    "finalPhase": "complete",
+    "decodeValidation": "ffmpeg successfully decoded all720frames",
+    "performanceBenchmark": false
+  },
+  "designCoverage": {
+    "rooms": 25,
+    "checks": 829,
+    "failures": 0,
+    "command": "node godot_native/campuses/future_learning_center/tools/build_room_puzzle_review.mjs --write",
+    "allRoomsPlayable": false
+  },
+  "finishReview": {
+    "agent": "/root/impeccable_finish_reviewer_motion",
+    "disposition": "ship",
+    "scope": "verdict pass on the two original findings only",
+    "findings": {
+      "R1_visible_front_clearance": "resolved",
+      "R2_critical_contrast": "resolved"
+    },
+    "documenter": "/root/impeccable_documenter_motion",
+    "documentation": ".impeccable/review/flc_motion_20261029/documentation.md"
+  },
+  "argon": {
+    "status": "awaiting_user_identification",
+    "sent": false,
+    "reviewReceived": false
+  },
+  "artifacts": {
+    ".impeccable/review/flc_motion_20261029/browser_robot_blocked.jpg": "071c231e55bab16b9f21a376f95b6a682cfbec1081ad2eba3460fb46d119979f",
+    ".impeccable/review/flc_motion_20261029/browser_robot_loop.jpg": "fe880377498c68a101fb8fc480d3213aa61ba602dfeca0b88e1b024eeffd20c2",
+    ".impeccable/review/flc_motion_20261029/browser_solar_complete.jpg": "a4ea607769e32e3347139a3efd89fa95f3fc989a46866878fe015810f5a87fa6",
+    ".impeccable/review/flc_motion_20261029/desktop/motion_input.json": "5b7d4bb3a73907b608170c7b83e8b3a75ecb4c7c6324ca084b8d91f8ba021cde",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_complete.png": "b8cd29d9d388e21e3a77590472280ef5c531457cfc3707e0b2903fa8a0de12a6",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_hint.png": "e6c0595c86d7a0835d653eeeb05e763a8a3f9050d92af822003a8344d98d0780",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_hint_final.png": "f20692c23eafd1def15872d45c69ec187d612069e42adf98ea2521eb604ce5ee",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_initial.png": "047d748c653d44fc70a68677693f75172211e62744d59d649791e08c8fc0ee3d",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_loaded.png": "8abea061a3877c5322a120f6caf32a302b8dd00cc50cca213f8c1513fb394934",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_return_blocked.png": "ba298ae2f63912a521efcf02cd86cad07036146637e3f164ba5b01ca7ef5715b",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_room.png": "296d8a46d99f5c8712a92376507fcd1b683e3c67e295425c25996adeee930814",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_trace.png": "814e32bfa998e2f26ac0a9dafcd783e919f11fbd16b8d3b3380864ec2a489041",
+    ".impeccable/review/flc_motion_20261029/desktop/robotics_unloading.png": "39e5943a7ec2270961683220ae2880d7db9951cc3f95bd522edb078a7f8bcad6",
+    ".impeccable/review/flc_motion_20261029/desktop/solar_complete.png": "9d89a2a7436226b7ecc9d2aacfd3c5b500c3b240ebd75c40b57439910fdbc4ac",
+    ".impeccable/review/flc_motion_20261029/desktop/solar_hint.png": "f9295353f60539c800e8d2c6b34c186e8b5da087d43527f84280828a2aae39c8",
+    ".impeccable/review/flc_motion_20261029/desktop/solar_hint_final.png": "04e987b24c1cfa022c3863facd8e561e7303277965745cd3501c7a619504e453",
+    ".impeccable/review/flc_motion_20261029/desktop/solar_initial.png": "02ac3c8519d339ba4e4d0fe2ea92ddc523c6ba888f91b483a4fb24064b56faf2",
+    ".impeccable/review/flc_motion_20261029/desktop/solar_launch.png": "19a6d16386d856877e4d273d36f997411715040b92d0a11a43bc296d5676c980",
+    ".impeccable/review/flc_motion_20261029/desktop/solar_room.png": "e790d916533f2171fad5550db294c82aeac612bea9ee0a19ec0ddb72b2de4e40",
+    ".impeccable/review/flc_motion_20261029/desktop/solar_shadow.png": "2a0f679cccd6533400e84e241c07e858f627d05ad15516af12f274efb6020f68",
+    ".impeccable/review/flc_motion_20261029/documentation.md": "9dfb483be2b54586de23cc6e59c44453d578ef7d96cbc563871ee31b01147dab",
+    ".impeccable/review/flc_motion_20261029/finish_verdict.md": "eace03bf7bafa116140da97b3c1d9866ca51f5047c4f7e50aefc61f6ac47a9b7",
+    ".impeccable/review/flc_motion_20261029/mobile/motion_input.json": "0f129c51549915cd2dc9d0fa44fc6a7ceb62913315d5b4a4b5fde2da511db3ad",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_complete.png": "cc1c241fa2af802a5053144add7d5e0ad7cedbf915b038f2ef2b4074fe3c57cb",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_hint.png": "2310033652a775adf21743d139c534a1e7d1b039e0f842a817b7aa08037efd9e",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_hint_final.png": "ea5593c44672993c59c35c93e84bc76293739e9a105b6aa495669640a3adbfe6",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_initial.png": "079caaafb2a0a3a63e0e87a7247cdf5c2aba1731646caf2ea2e37aef2f512925",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_loaded.png": "85e91af7e5de8c1cdc2e308ed2826bc115deff335e6277fd8f43a129b3ada83f",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_return_blocked.png": "35068badcf6239aee2e24ccfa4c5bb8a01a0f726c981b6d1476f5bf3de5d7ad1",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_room.png": "b4565567ad2615f4f4fe30561f6a50f4b9238dc483b43d0fb6b3da5a62581ffb",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_trace.png": "f516fec63933c88f6699e17d546cf1e54f469124532933b6b88016e193942cec",
+    ".impeccable/review/flc_motion_20261029/mobile/robotics_unloading.png": "0868ed73d154a79c6f7cf5aca452133a036885126df2c8a89ece950da74d8dc0",
+    ".impeccable/review/flc_motion_20261029/mobile/solar_complete.png": "37047c05f8c0a0c58c38c835b30ed03fcade4ed1ae743c73b555a21ec62c21ae",
+    ".impeccable/review/flc_motion_20261029/mobile/solar_hint.png": "2045f6466dbfa8ad5686a0e7bf9b1afcea167e78e7f41ff5bfa4a2980a376927",
+    ".impeccable/review/flc_motion_20261029/mobile/solar_hint_final.png": "b1de87742118698fea11bed169fd5941a620a0acd7fc474b8825b43bd8634ae1",
+    ".impeccable/review/flc_motion_20261029/mobile/solar_initial.png": "c65268d8c76149a9a348f2f9ef1254dad1d0fdfe7d6fe3f5bd86944b20438d1d",
+    ".impeccable/review/flc_motion_20261029/mobile/solar_launch.png": "540138fa95ac58f81a95036e80289646162a4f5aad5e2d6a2a9b1ef9f904d29b",
+    ".impeccable/review/flc_motion_20261029/mobile/solar_room.png": "d5602c2e43118e5160c164f0a719408307b999055402c9815dcb0c19829d6642",
+    ".impeccable/review/flc_motion_20261029/mobile/solar_shadow.png": "bb6b3cf74238e938528d59893328db8fcb604ab60a215616a7d21d88fff191a9",
+    ".impeccable/review/flc_motion_20261029/robot_delivery_actual.mp4": "b8c824c8431dda0b4896417f123e82b402eca16ad3afaf87291df91d9d063f7a",
+    ".impeccable/review/flc_motion_20261029/signal_regression/signal_input.json": "2bffc902708957fc1540fd57c4b4794eb66b0773ec4827b9ae14040245a6213f"
+  },
+  "productionProgression": false,
+  "persistentSaveWrites": false,
+  "physicalDeviceAcceptance": false,
+  "pushed": false,
+  "deployed": false
+}

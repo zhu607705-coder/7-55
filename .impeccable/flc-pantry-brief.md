@@ -1,0 +1,15 @@
+# 3F pantry room extension
+
+User confirmed: continue rooms beyond the four existing miniatures, first the third-floor pantry/lounge. Reference the real charcoal communal table and sofa corner; use the existing object-first, fixed orthographic miniature system. No new visual identity. Native geometry, zero new raster assets.
+
+First viewport: four equal-size clear cups, visibly different water levels, four coasters, a central physical bail handle. The charcoal table and rear sofa/coffee table make the start and destination visible simultaneously. A failed lift tilts toward the heavy side; swapping cups changes the next real trial. A stable lift enables forgiving handle transport to the coffee table. A voluntary support-location challenge unlocks after delivery. No action strip or keyboard-required action. A loose record provides three voluntary clues. Color is reinforced by liquid height, tilt and object geometry.
+
+Implementation authority: isolated pantry model, not the renderer. Cup conservation, revision-bound lift evidence, interruption recovery, stable delivery before completion, and the unchanged map footpoint are required. Room floor geometry and existing furniture footprints remain unchanged. The prototype stores results only for this local runtime session, with no production chapter/save integration claim.
+
+Verification: desktop 1280x720, simulated touch 844x390, actual browser 903x862; ordinary mouse/finger input, initial/tilted/held/delivery/served/hint/advanced/exit states. Preserve the four incumbent entries. Use incumbent DESIGN.md and sidecar; native detector does not apply. Fresh finish review and extension documentation comparison finish this pass.
+
+## Slow-water extension — 2026-10-30
+
+User finds the first puzzle too simple and explicitly requests adding water with especially slow flow. Four glasses now begin empty. A real dispenser dock and orange valve add 4 ml/s; a full 180 ml glass takes 45 seconds. Each glass carries a distinct requested band, centred at 60/90/120/150 ml with ±8 ml room for adjustment. Both all four requested portions and whole-tray balance must hold before delivery. The exact band centres cannot solve by permutation alone; changes within the visible bands and placement are coupled, with multiple valid configurations. Difficulty does not come from a timer, mandatory reading or hidden targets.
+
+Keep the incumbent camera, room geometry, materials and direct manipulation. Drag cup under spout, move valve upward/downward to run/stop, hold cup over the lower basin to pour excess back, then return the cup. Stop flow immediately on cup pickup, cancellation, focus loss, closure or capacity. Preserve real water; no background catch-up, auto-fill, or progress from presentation. The shifted-support variation remains optional and feasible. Verify genuine elapsed-time flow, pourback, multi-pointer ownership, all-empty rejection and complete filled delivery on desktop and simulated touch, then replay the actual Web export. Document and review only this extension; no system-token redesign.
