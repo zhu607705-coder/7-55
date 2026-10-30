@@ -1,41 +1,42 @@
 extends SceneTree
-const Model = preload("res://campuses/future_learning_center/scripts/signal_sync_model.gd")
-var checks := 0
-var failures := 0
-func check(value: bool, label: String) -> void:
-	checks += 1
-	if not value: failures += 1; push_error(label)
-func trial(model: RefCounted, dt := .05) -> void:
-	model.change_pattern()
-	for i: int in ceili(1.3/dt): model.step(dt)
-func _initialize() -> void:
-	if not preload("res://tests/native_test_isolation.gd").is_isolated_save(): quit(2); return
-	var m := Model.new()
-	trial(m)
-	check(not m.complete and m.displayed.left != m.displayed.right, "Original cached branch must visibly fail")
-	trial(m) # Current A now looks like the cached A, but no live signal reached it.
-	check(m.displayed.left == m.displayed.right and not m.complete, "A coincidentally identical still image cannot complete the puzzle")
-	m.connect_ports("split_b", "right"); trial(m)
-	check(not m.complete and m.verified_patterns.size() == 1, "One update is not repeatable verification")
-	trial(m)
-	check(m.complete and m.earned, "Two different actual live updates must complete")
-	m.connect_ports("cached", "right")
-	check(not m.complete and m.earned and m.verified_patterns.is_empty(), "Editing invalidates current evidence but retains earned local result")
-	m.undo(); trial(m); m.change_pattern(); m.step(.3); m.cancel(); m.step(1.4)
-	check(not m.complete and not m.running and m.verified_patterns.size() == 1, "Cancellation cannot finish an in-flight trial")
-	m.change_pattern(); m.step(.3); m.disconnect_port("split"); m.step(1.4)
-	check(not m.complete and not m.running and m.verified_patterns.is_empty(), "Unplugging during propagation invalidates pending evidence")
-	var version: int = m.revision
-	check(not m.connect_ports("split_a", "split") and not m.connect_ports("unknown", "left") and m.revision == version, "Illegal ports and self loops cannot change the model")
-	m.connect_ports("live", "left"); m.connect_ports("live", "right")
-	check(not m.wires.has("left") and m.wires.right == "live", "One socket cannot secretly fan out two cables")
-	m.reset(); m.connect_ports("split_a", "right"); m.connect_ports("split_b", "left"); trial(m); trial(m)
-	check(m.complete, "Both splitter output permutations are legal")
-	m.reset(); m.connect_ports("cached", "split"); m.connect_ports("split_b", "right"); trial(m); trial(m); trial(m)
-	check(not m.complete, "Two cached receivers cannot fake live synchronization")
-	for step: float in [.016, .1, .7]:
-		m.reset(); m.connect_ports("split_b", "right"); trial(m,step); trial(m,step)
-		check(m.complete, "Frame intervals must not decide a valid connection")
-	m.reset(); m.change_pattern(); m.step(NAN); m.step(-1)
-	check(m.elapsed == 0 and not m.complete, "Invalid time cannot advance evidence")
-	print("FLC_SIGNAL_MODEL: %d checks, %d failures" % [checks, failures]); quit(1 if failures else 0)
+const M=preload("res://campuses/future_learning_center/scripts/puzzles/signal_sync_model.gd")
+var checks:=0
+var failures:=0
+func check(ok:bool,label:String)->void:
+ checks+=1
+ if not ok:failures+=1;push_error(label)
+func trial(m)->void:
+ m.change_source()
+ for i:int in 14:m.step(.1)
+func _initialize()->void:call_deferred("run")
+func run()->void:
+ var m=M.new();check(m.screens[0]!=m.screens[1] and not m.completed,"visible initial version mismatch")
+ m.change_source();m.step(.1);check(m.screens==[0,2],"propagation takes time")
+ for i:int in 14:m.step(.1)
+ check(m.screens==[1,2] and m.receipts.is_empty(),"cache stays old")
+ trial(m);check(m.screens==[2,2] and m.receipts.is_empty(),"static equality with cache still not proof")
+ check(m.connect_ports("screen_b","live_b"),"rewire live socket")
+ trial(m);check(m.receipts.size()==1 and not m.completed,"one change insufficient")
+ var rev:int=m.revision;m.move_screen(0,Vector2(790,350));m.move_screen(1,Vector2(620,180))
+ check(m.revision==rev and m.receipts.size()==1,"moving hardware preserves cable identity")
+ trial(m);check(m.completed and m.receipts.size()==2,"two distinct real changes")
+ m.unplug("bus_in");check(m.receipts.is_empty() and m.completed,"editing invalidates receipts not history/success")
+ trial(m);check(not m.history.back().passed,"unplugged input fails")
+ check(not m.connect_ports("bus_in","cache"),"cache cannot fit keyed source input")
+ check(not m.connect_ports("bus_in","live_a"),"self loop rejected by port geometry")
+ check(not m.connect_ports("screen_a","source"),"source connector cannot fit screen")
+ check(not m.connect_ports("screen_a","live_b"),"one physical cable per output")
+ m.connect_ports("bus_in","source");m.change_source();m.pause();m.step(1);check(not m.running and m.receipts.is_empty(),"interruption needs explicit new trial")
+ check(not m.connect_ports("fake","source") and not m.connect_ports("screen_a","fake"),"unknown ports rejected")
+ check(not m.move_screen(0,Vector2(INF,0)),"invalid screen position")
+ var v=load("res://campuses/future_learning_center/scripts/puzzles/signal_sync_view.gd").new();root.add_child(v);v.open()
+ var down=InputEventScreenTouch.new();down.index=1;down.pressed=true;down.position=v.port_at("screen_b");v._input(down)
+ check(v.cable_input=="screen_b","touch selects socket")
+ var other=InputEventScreenTouch.new();other.index=2;other.pressed=true;other.position=Vector2(150,225);v._input(other)
+ check(not v.model.running and v.touch_id==1,"second touch cannot change source")
+ down.pressed=true;down.canceled=true;v._input(down);check(v.cable_input.is_empty() and v.touch_id==-1,"canceled drag does not unplug")
+ check(v.model.cables.screen_b=="cache","cancel preserves connection")
+ v._press(v.port_at("screen_b"));v._release(v.port_at("live_b"));check(v.model.cables.screen_b=="live_b","actual socket drag")
+ v.close();v.open();check(v.model.cables.screen_b=="live_b","close reopen preserves wiring")
+ v.queue_free();await process_frame
+ print("signal_sync: ",checks," checks, ",failures," failures");quit(1 if failures else 0)

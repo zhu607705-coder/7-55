@@ -1,0 +1,30 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+   at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+CAPTURE electrical 0
+CAPTURE koala 0
+CAPTURE machinery 0
+CAPTURE solid_projection 0
+CAPTURE platform 0
+CAPTURE robotics 0
+CAPTURE signal_sync 0
+CAPTURE formula 0
+CAPTURE projection 0
+CAPTURE fold 0
+CAPTURE logic 0
+CAPTURE balance 0
+CAPTURE schedule 0
+CAPTURE recording 0
+CAPTURE access 0
+CAPTURE sync 0
+CAPTURE coupled 0
+CAPTURE perspective 0
+CAPTURE flex 0
+CAPTURE collab 0
+CAPTURE focus 0
+CAPTURE storage 0
+CAPTURE assembly 0
+CAPTURE rail 0
+CAPTURE rules 0

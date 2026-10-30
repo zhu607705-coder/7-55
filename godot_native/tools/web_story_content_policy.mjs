@@ -4,6 +4,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
+// Only authored runtime inputs of the approved optional activity are shipped.
+// Unknown/new campus roots still fail closed in the actual PCK audit.
+export function isFlcRuntimePath(name) {
+  name = name.replace(/^res:\/\//, '').replace(/\.(?:import|remap)$/, '');
+  return /^campuses\/future_learning_center\/(?:scripts\/.+\.(?:gd|gdc)|scenes\/.+\.(?:tscn|scn|tres|res)|data\/.+\.json|assets\/.+\.(?:png|webp|jpg|jpeg|svg|json|ogg|wav|mp3|ttf|tres|res))$/.test(name)
+    && !name.split('/').some(part => part === '..' || part === '.');
+}
+
 export function campusPayloadIdentity(project) {
   const hashes = new Map();
   const imported = new Map();
@@ -40,6 +48,6 @@ export function campusPayloadIdentity(project) {
 export function assertStoryOnlyPackEntries(entries, identity) {
   for (const entry of entries) {
     const owner = identity.owner(entry.path);
-    if (owner) throw new Error(`Research campus resource leaked into story-only PCK: ${entry.path} ← ${owner}`);
+    if (owner && !isFlcRuntimePath(owner)) throw new Error(`Research campus resource leaked into story-only PCK: ${entry.path} ← ${owner}`);
   }
 }

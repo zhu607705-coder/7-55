@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { readPack } from './partition_web_pack.mjs';
 import { createContentDelivery, verifyContentDelivery, fileSha256, CONTENT_PACK_LIMIT } from './web_content_delivery.mjs';
-import { campusPayloadIdentity, assertStoryOnlyPackEntries } from './web_story_content_policy.mjs';
+import { campusPayloadIdentity, assertStoryOnlyPackEntries, isFlcRuntimePath } from './web_story_content_policy.mjs';
 import { createBootChunks, verifyBootChunks } from './web_boot_chunks.mjs';
 import { applyWebAudioCompatibility, verifyWebAudioCompatibility } from './web_audio_compat.mjs';
 import { prepareWebCompression, verifyWebCompression } from './web_precompress.mjs';
@@ -47,14 +47,14 @@ if (!verifyOnly) {
 // The full plate stays a source/pixel oracle. Production uses lossless tiles
 // without uploading a 13668-wide texture or shipping the same pixels twice.
 const oversizedPanorama = 'assets/rpg/campus/zijingang_campus_loop_panorama.png';
-const excludedPrefixes = ['addons/RodinBridge/', 'docs/', 'tests/', 'tools/', 'verification/', 'exports/', 'web/', '.screenshots/', 'examples/', 'samples/', 'campuses/', 'assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/'];
+const excludedPrefixes = ['addons/RodinBridge/', 'docs/', 'tests/', 'tools/', 'verification/', 'exports/', 'web/', '.screenshots/', 'examples/', 'samples/', 'assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/'];
 const excludedSuffixes = ['.mp4', '.md', '.log', '.blend', '.blend1', '.py', '.ts', '.mjs'];
 // Historical UI-laboratory faces remain editable source references. Active
 // phone, world and theater text now use the same project pixel family.
 const retiredUiFonts = ['CampusUISans-Regular.otf', 'SelectedSans-Regular.otf', 'SelectedSans-Bold.otf', 'SelectedCoverage-Regular.otf', 'SelectedCoverage-Bold.otf', 'SelectedBoutique-Regular.ttf'];
 function excluded(name) {
   name = name.replace(/^res:\/\//, '');
-  return excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn' || retiredUiFonts.some(file => name === `ui_assets/fonts/${file}` || name === `ui_assets/fonts/${file}.import` || name.startsWith(`.godot/imported/${file}-`));
+  return (name.startsWith('campuses/') && !isFlcRuntimePath(name)) || excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn' || retiredUiFonts.some(file => name === `ui_assets/fonts/${file}` || name === `ui_assets/fonts/${file}.import` || name.startsWith(`.godot/imported/${file}-`));
 }
 function run(command, commandArgs, capture = false, environment = process.env) {
   const result = spawnSync(command, commandArgs, { cwd: root, env: environment, encoding: 'utf8', stdio: capture ? 'pipe' : 'inherit', maxBuffer: 16 * 1024 * 1024 });
@@ -154,7 +154,8 @@ function validatePreset() {
   for (const expected of ['name="Web production"', 'custom_features="755_production,755_web,755_story_only"', 'variant/thread_support=false', 'variant/extensions_support=false', 'html/custom_html_shell="res://web/index.html"', 'progressive_web_app/enabled=false']) {
     if (!web?.includes(expected)) throw new Error(`Web preset contract missing: ${expected}`);
   }
-  if (!web.match(/^exclude_filter="[^"]*\bcampuses\/\*/m)) throw new Error('Story-only Web preset must exclude campuses/*');
+  if (!web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes('campuses/buct*')) throw new Error('Story-only Web preset must exclude research BUCT campuses');
+  if (web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes('campuses/*,')) throw new Error('Approved FLC activity must not be stripped by the old blanket campus filter');
   if (!web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes(oversizedPanorama)) throw new Error('Web preset must exclude the oversized source panorama in favor of its lossless tiles');
   const projectSettings = fs.readFileSync(path.join(project, 'project.godot'), 'utf8');
   if (!projectSettings.includes('renderer/rendering_method="gl_compatibility"')) throw new Error('Web requires the Compatibility renderer');
@@ -280,7 +281,19 @@ const transportCompression = verifyWebCompression(output, verifyOnly ? previous.
 const verifiedCompressedFiles = transportCompression?.files.map(file => file.file) ?? [];
 const content = streaming ? verifyContentDelivery(output, { verifiedCompressedFiles }) : null;
 if (content && (content.manifest.packs.some(pack => pack.family.startsWith('campus_')) || content.manifest.backgroundOrder.some(family => family.startsWith('campus_')))) throw new Error('Story-only manifest includes research campus families');
-if (content) validatePackEntries(content.fullEntries, true);
+if (content) {
+  validatePackEntries(content.fullEntries, true);
+  if (!content.manifest.packs.some(pack => pack.family === 'flc_activity')) throw new Error('Approved FLC activity family is missing');
+  if (content.manifest.backgroundOrder.includes('flc_activity')) throw new Error('Optional FLC activity must not enter story background prefetch');
+  const identity = campusPayloadIdentity(project);
+  for (let index = 0; index < content.packs.length; index++) {
+    const family = index === 0 ? 'core' : content.manifest.packs[index - 1].family;
+    for (const entry of content.packs[index].entries) {
+      const owner = identity.owner(entry.path);
+      if (owner && isFlcRuntimePath(owner) && family !== 'flc_activity') throw new Error(`FLC runtime escaped its lazy family: ${entry.path}`);
+    }
+  }
+}
 const pack = readPck(path.join(output, 'index.pck'), !streaming);
 audioCompatibility = verifyWebAudioCompatibility(output, verifyOnly ? previous.engineAudioCompatibility : audioCompatibility, version);
 if (verifyOnly) bootChunks = previous.bootChunks;

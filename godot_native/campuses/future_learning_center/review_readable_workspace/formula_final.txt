@@ -1,0 +1,8 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+   at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+ACTUAL formula_initial_960 completed=false panel=0 gear=2 tilt=0 on_track=false outcome= cars=[{ "v": 0.0, "distance": 0.0, "electrical_energy": 0.0, "mechanical_energy": 0.0, "peak_power_fraction": 0.0, "energy_error": 0.0 }, { "v": 0.0, "distance": 0.0, "electrical_energy": 0.0, "mechanical_energy": 0.0, "peak_power_fraction": 0.0, "energy_error": 0.0 }]
+ACTUAL formula_completed_960 completed=true panel=1 gear=1 tilt=1 on_track=true outcome=本场距离领先 cars=[{ "v": 2.64194936944955, "distance": 62.5170716254774, "electrical_energy": 498.960000000004, "mechanical_energy": 303.806172605592, "peak_power_fraction": 0.999994655867, "energy_error": 0.00000005089703 }, { "v": 2.17119955506985, "distance": 52.3500651743813, "electrical_energy": 261.886082104417, "mechanical_energy": 148.887947335913, "peak_power_fraction": 0.99975837802132, "energy_error": 0.00000002547538 }]
+ACTUAL formula_new_trial_zero completed=true panel=1 gear=1 tilt=1 on_track=true outcome= cars=[{ "v": 0.0, "distance": 0.0, "electrical_energy": 0.0, "mechanical_energy": 0.0, "peak_power_fraction": 0.0, "energy_error": 0.0 }, { "v": 0.0, "distance": 0.0, "electrical_energy": 0.0, "mechanical_energy": 0.0, "peak_power_fraction": 0.0, "energy_error": 0.0 }]

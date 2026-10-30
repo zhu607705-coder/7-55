@@ -339,6 +339,15 @@ for (const kind of ['truncated', 'overflow']) {
   f.host.dispose(); check('Disposal removes its visibility listener', f.visibilityListeners.size === 0);
 }
 
+// Optional FLC is explicitly recognized but is not added to story prefetch.
+{
+ const optional=structuredClone(manifest);
+ optional.packs[0].family='flc_activity';
+ const f=fixture({manifest:optional});
+ check('Approved FLC family passes transport manifest validation', Boolean(f.host));
+ check('Optional activity is absent from ordinary story background order', !optional.backgroundOrder.includes('flc_activity'));
+}
+
 console.log(JSON.stringify({
   success: true, checks: checks.length, loaderSha256: digest(source),
   scope: 'Node VM with real SHA-256 and tiny in-memory browser/cache/fetch/engine fixtures; no real video, network download, story mutation or native mounting',

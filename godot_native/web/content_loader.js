@@ -333,7 +333,7 @@
     globalThis.fetch=scoped;
     try{return await engine.init(executable);}finally{if(globalThis.fetch===scoped)globalThis.fetch=original;}
   }
-  const families = new Set(['chapter2', 'chapter3', 'chapter35', 'chapter4', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping']);
+  const families = new Set(['chapter2', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping']);
   function validate(manifest) {
     if (!manifest || manifest.schema !== '755-web-content-v1' || !Array.isArray(manifest.packs) || manifest.packs.length > 100) throw new Error('Invalid content manifest');
     const ids = new Set();

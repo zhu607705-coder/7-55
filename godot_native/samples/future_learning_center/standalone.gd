@@ -20,6 +20,13 @@ func _ready()->void:
 	if area in ["solar","robotics"]:
 		if not world.set_foot(world.motion_approach(area)):push_error("Motion lab review spawn is blocked")
 		return
+	var puzzle_area:=area.trim_prefix("puzzle:")
+	if puzzle_area in world.PuzzleAnchors:
+		world.load_floor(int(world.PuzzleAnchors[puzzle_area][2]))
+		var approach:Vector2=world.puzzle_approach(puzzle_area)
+		if approach.is_finite():world.set_foot(approach)
+		else:push_error("Puzzle review approach is blocked: "+puzzle_area)
+		return
 	if area=="stairs":
 		world.load_floor(3)
 		var landing:Dictionary=world.data.transits.filter(func(t:Dictionary)->bool:return t.id=="northeast_stair")[0]

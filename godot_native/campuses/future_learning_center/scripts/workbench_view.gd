@@ -5,6 +5,7 @@ const MOTOR:=Vector2(262,205)
 const AXLE:=Vector2(350,205)
 const OUTPUT:=Vector2(650,205)
 const TENSION:=Vector2(610,386)
+const TARGET_FLAG:=Vector2(735,293)
 var model=Model.new()
 var drag:=-1
 var preview_tension:=0
@@ -12,12 +13,22 @@ var previous_outcome:=""
 var last_gear:=-1
 var last_belt:=0
 func _ready()->void:super._ready()
+func _input(event:InputEvent)->void:
+ # Keep the external physical bench, with the proven real-touch ownership guards.
+ if event is InputEventMouse and (event.device==InputEvent.DEVICE_ID_EMULATION or pointer_owner>=0):return
+ var local_event:InputEvent=event
+ if event is InputEventMouse or event is InputEventScreenTouch or event is InputEventScreenDrag:
+  local_event=event.duplicate();local_event.position=get_global_transform_with_canvas().affine_inverse()*event.position
+ if local_event is InputEventScreenTouch and local_event.canceled:
+  if local_event.index==pointer_owner:_release(local_event.position,true);get_viewport().set_input_as_handled()
+  return
+ super._input(local_event)
 func open()->void:
- bench_mode="mechanical";book_open=false;book_page=0;cancel_gesture();clear_motion();show();notice("让试件沿箭头向右，送到白色刻线。")
+ bench_mode="mechanical";book_open=false;book_page=0;cancel_gesture();clear_motion();show();notice("把试件送到白色刻线；翻转目标标牌可试反方向。")
 func close()->void:model.cancel();drag=-1;super.close()
 func _lost_focus()->void:model.cancel();drag=-1
 func _lever_live()->bool:return model.running
-func _assembly_stamp()->String:return str([model.gear,model.belt,model.tension])
+func _assembly_stamp()->String:return str([model.gear,model.belt,model.tension,model.reverse_target])
 func _seat_anchor(at:Vector2)->Vector2:
  return AXLE if gesture=="gear" else (Vector2(505,205) if gesture in ["belt","twist"] else at)
 func _lever_action(offset:float)->void:
@@ -46,6 +57,7 @@ func _keyboard(event:InputEventKey)->bool:
  return true
 func _object_press(at:Vector2)->void:
  if model.running:notice("先把操纵杆拉回中位，再装配。");return
+ if at.distance_to(TARGET_FLAG)<25:gesture="target";return
  for i:int in 3:
   var id:="gear%d"%i
   if at.distance_to(part_at(id,Vector2(142+96*i,387)))<maxf(30,Model.RADII[i]*.6):gesture="gear";drag=i;returns.erase(id);return
@@ -64,7 +76,9 @@ func _object_release(at:Vector2,cancelled:bool)->void:
   if gesture=="gear":return_part("gear%d"%drag,pointer-Vector2(0,20),Vector2(142+96*drag,387))
   elif gesture=="belt":return_part("belt%d"%drag,pointer-Vector2(0,20),Vector2(705+55*(drag-1),331))
   drag=-1;return
- if gesture=="gear":
+ if gesture=="target" and at.distance_to(TARGET_FLAG)<25 and at.distance_to(press_at)<12:
+  model.set_reverse(not model.reverse_target);notice("目标已移到左刻线。" if model.reverse_target else "目标已移到右刻线。")
+ elif gesture=="gear":
   if at.distance_to(AXLE)<68:model.edit("gear",drag)
   else:notice("把齿轮放到中间的空轴位。");return_part("gear%d"%drag,pointer-Vector2(0,20),Vector2(142+96*drag,387))
  elif gesture=="tension" and at.distance_to(press_at)>8 and at.distance_to(TENSION)<95:model.edit("tension",preview_tension)
@@ -102,6 +116,19 @@ static func mini(canvas:CanvasItem,at:Vector2,scale_value:float,model_state:RefC
   canvas.draw_line(Vector2(76,31),Vector2(171,13 if model_state.belt==2 else 31),Color("c5c1a9"),3)
  gear_at(canvas,Vector2(171,22),22,model_state.output_phase,Color("7993a1"))
  canvas.draw_set_transform(Vector2.ZERO)
+func draw_table(title:String)->void:
+ # Reuse the external 3D tray/materials; only reposition its actual goal stripe.
+ miniature.present(self,bench_mode)
+ var marker:=647.0 if model.reverse_target else 796.0
+ miniature.line("target",Vector2(marker,248),Vector2(marker,289),1.6,miniature.IVORY,10)
+ miniature.pad("direction_flag",TARGET_FLAG,Vector2(76,25),miniature.TEAL,5)
+ var direction:float=-1.0 if model.reverse_target else 1.0
+ var tip:=TARGET_FLAG+Vector2(23*direction,0)
+ miniature.line("flag_arrow",TARGET_FLAG-Vector2(23*direction,0),tip,1.6,miniature.IVORY,11)
+ miniature.line("flag_tip_a",tip,tip+Vector2(-8*direction,-5),1.6,miniature.IVORY,11)
+ miniature.line("flag_tip_b",tip,tip+Vector2(-8*direction,5),1.6,miniature.IVORY,11)
+ draw_texture_rect(miniature.texture(),Rect2(0,0,960,540),false)
+ ink(title,Vector2(32,39),24)
 func _draw()->void:
  if font==null:return
  draw_table("动力停在哪")

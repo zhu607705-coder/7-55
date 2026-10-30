@@ -13,6 +13,9 @@ const CHANGPING_SCENE := "res://campuses/buct_changping/scenes/playable.tscn"
 const FOLDED_SCENE := "res://scenes/chapter4_folded_chase_preview.tscn"
 const ENDLESS_SCENE := "res://scenes/chapter4_endless_stair_preview.tscn"
 const TREE_PILOT_SCENE := "res://campuses/buct_pilots/chaoyang/scenes/promenade.tscn"
+var _entry_bridge:JavaScriptObject
+var _entry_snapshot_left:=0.0
+var flc_button: Button
 var opening := false
 var previews_open := false
 var closing_preview := false
@@ -38,6 +41,9 @@ var campus_heading: Label
 var title_rule: ColorRect
 
 func _ready() -> void:
+	# Activity owners already finish their save handshake before returning here.
+	# No Main close-request listener survives this independent chooser.
+	get_tree().auto_accept_quit=true
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	# Preserve established direct-entry launch arguments for QA and story recovery.
 	if not get_tree().root.has_meta("entry_arguments_consumed"):
@@ -78,6 +84,7 @@ func _ready() -> void:
 	detail=Label.new();detail.text="" if ReleaseContent.story_only() else "不影响主线进度"
 	detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("665e52"));content.add_child(detail)
 	detail.visible=not ReleaseContent.story_only()
+	flc_button=_button("未来学习中心 · 自由探索",open_flc);flc_button.name="OpenFutureLearningCenter";content.add_child(flc_button)
 	if ReleaseContent.campuses_available():
 		campus_heading=_section_title("独立校园漫游");content.add_child(campus_heading)
 		content.move_child(campus_heading,detail.get_index())
@@ -92,6 +99,28 @@ func _ready() -> void:
 	Typography.apply_display(title)
 	resized.connect(_layout);card.minimum_size_changed.connect(_layout.call_deferred)
 	_layout.call_deferred();story_button.grab_focus()
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("""(()=>{let data={entry:true};Object.defineProperty(window,'__GODOT_755__',{configurable:true,value:Object.freeze({snapshot:()=>JSON.parse(JSON.stringify(data))})});window.__FLC_ENTRY_READONLY__={publish:raw=>{data=JSON.parse(raw)}};})()""",true)
+		_entry_bridge=JavaScriptBridge.get_interface("__FLC_ENTRY_READONLY__")
+		JavaScriptBridge.eval("delete window.__FLC_ENTRY_READONLY__",true)
+
+func entry_snapshot()->Dictionary:
+	var controls:Array=[]
+	for button:Button in [story_button,flc_button,campus_button,haidian_button,changping_button,preview_button]:
+		if not is_instance_valid(button) or not button.is_visible_in_tree():continue
+		var rect:=button.get_global_rect()
+		controls.append({"name":str(button.name),"text":button.text,"type":"Button","disabled":button.disabled or opening,"rect":{"x":rect.position.x,"y":rect.position.y,"width":rect.size.x,"height":rect.size.y}})
+	var bounds:=get_viewport_rect()
+	return {"entry":true,"savePersistence":get_tree().root.get_meta("flc_exit_receipt",{}),"saveDigest":FileAccess.get_sha256(State.SAVE_PATH) if FileAccess.file_exists(State.SAVE_PATH) else "","engine":"Godot","sampleFrame":Engine.get_process_frames(),"visibleControls":controls,"viewport":{"x":bounds.position.x,"y":bounds.position.y,"width":bounds.size.x,"height":bounds.size.y},"content":WebContent.read_snapshot()}
+func _process(dt:float)->void:
+	if _entry_bridge==null:return
+	_entry_snapshot_left-=dt
+	if _entry_snapshot_left<=0:
+		_entry_snapshot_left=.1;_entry_bridge.publish(JSON.stringify(entry_snapshot()))
+func _exit_tree()->void:
+	if _entry_bridge!=null:
+		JavaScriptBridge.eval("if(window.__GODOT_755__?.snapshot?.().entry)delete window.__GODOT_755__",true)
+		_entry_bridge=null
 
 func _button(text: String, action: Callable) -> Button:
 	var result:=Button.new();result.text=text;result.custom_minimum_size.y=58
@@ -119,7 +148,7 @@ func _layout() -> void:
 	detail.add_theme_font_size_override("font_size",13 if short_window else 15 if compact else 17)
 	subtitle.visible=available.y>=420
 	title_rule.visible=not short_window
-	for button: Button in [story_button,campus_button,haidian_button,changping_button,preview_button]:
+	for button: Button in [story_button,flc_button,campus_button,haidian_button,changping_button,preview_button]:
 		if is_instance_valid(button):
 			button.custom_minimum_size.y=44 if compact else 58
 			button.add_theme_font_size_override("font_size",16 if compact else 20 if button==story_button else 18)
@@ -226,6 +255,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func open_story() -> void:
 	_open(STORY_SCENE)
+
+func open_flc() -> void:
+	if opening:return
+	opening=true
+	if OS.has_feature("web") and not await WebContent.ensure_families(["chapter2","flc_activity"],true):
+		opening=false
+		detail.visible=true;detail.text="已返回入口，可稍后再试。"
+		return
+	get_tree().root.set_meta("flc_entry_requested",true)
+	var error:=get_tree().change_scene_to_file(STORY_SCENE)
+	if error!=OK:
+		get_tree().root.remove_meta("flc_entry_requested")
+		opening=false;detail.visible=true;detail.text="暂时无法打开，请重试（%s）"%error
 
 func open_campus() -> void:
 	if not ReleaseContent.campuses_available():return

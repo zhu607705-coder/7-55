@@ -25,7 +25,7 @@ const scenarios = option('scenarios', 'all');
 const phoneGroup = option('phone-group', 'all');
 phoneGroups(phoneGroup);
 if (phoneGroup !== 'all' && scenarios !== 'phone-recovery') throw Error('--phone-group requires phone-recovery');
-if (!['all', 'bike', 'media', 'durability', 'durability-switch', 'streaming', 'mobile-world', 'phone-recovery', 'phone-navigation', 'corners', 'checkin', 'words', 'library', 'boot-font-failure', 'resource-loading'].includes(scenarios)) throw new Error(`Unknown scenario: ${scenarios}`);
+if (!['all', 'bike', 'media', 'durability', 'durability-switch', 'streaming', 'mobile-world', 'phone-recovery', 'phone-navigation', 'corners', 'checkin', 'words', 'library', 'boot-font-failure', 'resource-loading', 'flc-activity'].includes(scenarios)) throw new Error(`Unknown scenario: ${scenarios}`);
 const importSettleMs = Number(option('import-settle-ms', 1600));
 const bootTimeout = Number(option('boot-timeout', 360000));
 const chromeArgs = args.flatMap((arg, i) => arg.startsWith('--chrome-arg=') ? [arg.slice('--chrome-arg='.length)] : arg === '--chrome-arg' && args[i + 1] ? [args[i + 1]] : []);
@@ -561,7 +561,9 @@ async function assertLayout(label) {
   check(Math.abs(geometry.dpr - active.dpr) < .01, `${label}: actual browser pixel ratio matches the test`, geometry);
   check(Math.abs(s.viewport.width - geometry.canvas.width) <= 2 && Math.abs(s.viewport.height - geometry.canvas.height) <= 2, `${label}: logical Godot layout uses CSS dimensions on high-density screens`, { viewport: s.viewport, geometry });
   check(Math.abs(geometry.canvas.pixelWidth - geometry.canvas.width * geometry.dpr) <= 2 && Math.abs(geometry.canvas.pixelHeight - geometry.canvas.height * geometry.dpr) <= 2, `${label}: high-density rendering keeps the full backing resolution`, geometry);
-  if (phone) {
+  if (s.activity?.kind === 'flc') {
+    check(!phone || Object.keys(phone).length === 0, `${label}: optional FLC has no hidden story phone`, phone);
+  } else if (phone) {
     check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
     check(phone.x >= 0 && phone.y >= 0 && phone.x + phone.width <= s.viewport.width + 1 && phone.y + phone.height <= s.viewport.height + 1, `${label}: phone and its hit areas stay inside the logical viewport`, phone);
     check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
@@ -592,6 +594,71 @@ async function importSave(filename) {
   if (completed.world?.visible) await acceptPortraitFallback();
   return completed;
 }
+// Focused CI scenario: ordinary entry and object input, no fixture/state writes.
+async function flcActivityCase() {
+  active.fresh = {scope:'flc-ordinary-entry',inputs:[],recording:true};
+  active.flcActivity = {inputs:[],completed:false};
+  async function boot(reload=false) {
+    if(reload) await Promise.all(active.bootBodyJobs);
+    const start=Date.now();
+    await active.cdp.send(reload?'Page.reload':'Page.navigate',reload?{ignoreCache:true}:{url:active.url||url});
+    await poll(()=>evaluate("document.documentElement.dataset.bootState === 'ready'"),'FLC actual engine boot',bootTimeout);
+    if(!reload) await verifyColdBoot(start);
+    const startPoint=await evaluate("(()=>{const r=document.getElementById('start-game').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()");
+    await clickPoint(startPoint);
+    await poll(()=>evaluate("document.documentElement.dataset.bootState === 'running'"),'FLC actual engine running',60000);
+    const entry=await poll(async()=>{const s=await snapshot();return s?.entry===true?s:null;},'ordinary entry snapshot',60000);
+    check(!controls(entry).some(c=>/朝阳|海淀|昌平|动画与原型/.test(c.text)),'production entry excludes research campuses');
+    if(!reload) {
+      const files=new Set(delivery.content.packs.filter(p=>p.family==='flc_activity').flatMap(p=>p.transportChunks?.map(c=>new URL(c.file,url).href)||[new URL(p.file,url).href]));
+      check(!active.requests.some(r=>files.has(r.url)),'optional FLC not fetched before explicit entry');
+      active.screenshots.push(await screenshot(`${active.id}-flc-entry`));
+    }
+    await clickControl('OpenFutureLearningCenter','name');
+    const loaded=await poll(async()=>{const s=await snapshot();return s?.activity?.kind==='flc'&&!s.content?.blocking?s:null;},'admitted FLC family and actual floor',120000);
+    check(loaded.content.readyFamilies.includes('flc_activity'),'FLC lazy family mounted before real floor');
+    check(loaded.web===true&&loaded.version==='4.7.1-stable (official)','FLC runs pinned production Web engine');
+    return loaded;
+  }
+  async function openFormula(value) {
+    check(value.activity.apparatusPoint,'actual formula apparatus has observed root coordinates');
+    await clickPoint(await renderPoint(value.activity.apparatusPoint,value));
+    return poll(async()=>{const s=await snapshot();return s?.activity?.activePuzzle==='formula'?s:null;},'walk to actual formula apparatus and open',30000);
+  }
+  let value=await openFormula(await boot());
+  const rect=value.activity.puzzleRect;
+  check(rect?.width>0&&rect.height>0,'actual fitted puzzle rectangle observed');
+  const point=async(x,y)=>renderPoint({x:rect.x+x/960*rect.width,y:rect.y+y/540*rect.height},value);
+  const from=await point(593,386),to=await point(593,362);
+  const pointer=async(phase,p)=>{
+    active.flcActivity.inputs.push({phase,point:p,at:Date.now(),touch:active.touch});
+    if(active.touch) await active.cdp.send('Input.dispatchTouchEvent',{type:phase==='start'?'touchStart':phase==='move'?'touchMove':'touchEnd',touchPoints:phase==='end'?[]:[{...p,id:1}]});
+    else await active.cdp.send('Input.dispatchMouseEvent',{type:phase==='start'?'mousePressed':phase==='move'?'mouseMoved':'mouseReleased',button:'left',buttons:phase==='end'?0:1,clickCount:1,...p});
+  };
+  await pointer('start',from);
+  for(let i=1;i<=12;i++){await pointer('move',{x:from.x+(to.x-from.x)*i/12,y:from.y+(to.y-from.y)*i/12});await interval(20);}
+  await pointer('end',to);
+  value=await poll(async()=>{const s=await snapshot();return s?.activity?.formulaTilt===30?s:null;},'physical knob commits thirty degrees');
+  active.screenshots.push(await screenshot(`${active.id}-flc-object-30`));
+  await clickControl('ReturnFLC','name');
+  const exited=await poll(async()=>{const s=await snapshot();return s?.entry===true?s:null;},'FLC exit waits for persistence acknowledgment before entry',75000);
+  const receipt=exited.savePersistence;
+  check(receipt&&!receipt.pending&&!receipt.error&&receipt.digest===exited.saveDigest&&receipt.acknowledgedDigest===receipt.digest,'exit exposes exact durable byte acknowledgment',receipt);
+  const disk=await readPersistentSaveEntries(),primary=disk.entries.find(e=>e.key.endsWith('/save.json'));
+  check(primary?.sha256===exited.saveDigest,'readonly disk bytes match exit acknowledgment');
+  check(primary?.flcRooms?.rooms?.['2:formula']?.fields?.tilt===1,'independent readonly IndexedDB contains committed formula thirty degrees',disk);
+  active.flcActivity.persisted=disk;
+  const beforeOrigin=await evaluate('performance.timeOrigin');
+  value=await openFormula(await boot(true));
+  check(await evaluate('performance.timeOrigin')!==beforeOrigin,'real document reload, not simulated scene restart');
+  check(value.activity.formulaTilt===30,'real reload restores committed object configuration');
+  check(!value.activity.formulaCompleted,'configuration edit does not manufacture puzzle completion');
+  active.screenshots.push(await screenshot(`${active.id}-flc-reloaded`));
+  active.flcActivity.completed=true;
+  active.fresh.recording=false;
+  return {geometry:await assertLayout('FLC ordinary reload'),flcActivity:active.flcActivity};
+}
+
 async function freshCase(entryOnly = false) {
   // Focused input scenarios still cold-boot and enter through ordinary controls.
   // The separate default gate retains the complete generic persistence baseline.
@@ -1070,7 +1137,7 @@ async function readPersistentSaveEntries() {
           const bytes=raw instanceof Uint8Array?raw:new Uint8Array(raw),text=new TextDecoder().decode(bytes);
           let envelope;try{envelope=JSON.parse(text)}catch{continue}
           const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');
-          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,timestampMs:row.value.timestamp instanceof Date?row.value.timestamp.getTime():null,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,mode:envelope.state?.native?.mode,flags:envelope.state?.flags,canteenPhase:envelope.state?.canteenHunt?.phase});
+          entries.push({database:meta.name,key:String(row.key),bytes:bytes.length,sha256:digest,timestampMs:row.value.timestamp instanceof Date?row.value.timestamp.getTime():null,chapter:envelope.state?.native?.chapter,page:envelope.state?.native?.page,scene:envelope.state?.native?.scene,mode:envelope.state?.native?.mode,flags:envelope.state?.flags,canteenPhase:envelope.state?.canteenHunt?.phase,flcRooms:envelope.state?.native?.flc_rooms});
         }
       }finally{db.close()}
     }
@@ -1817,7 +1884,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
       for (const fontUrl of urls) active.controlledBlockedUrls.add(fontUrl);
       await active.cdp.send('Network.setBlockedURLs', { urls });
     }
-    result = await freshCase(['mobile-world', 'phone-recovery', 'phone-navigation', 'library', 'boot-font-failure'].includes(scenarios));
+    result = scenarios === 'flc-activity' ? await flcActivityCase() : await freshCase(['mobile-world', 'phone-recovery', 'phone-navigation', 'library', 'boot-font-failure'].includes(scenarios));
     if (scenarios === 'mobile-world') await mobileWorldCase();
     else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, bootTimeout, group: active.phoneGroup,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
@@ -1836,7 +1903,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
           await active.cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
         } else await active.cdp.send('Input.dispatchMouseEvent',{type:'mouseWheel',x:a.x,y:a.y,deltaX:0,deltaY:down?260:-260});
       }, record: value => { active.phoneNavigation=value; }, capture: value => active.screenshots.push(value) });
-    else if (!['library', 'boot-font-failure'].includes(scenarios)) await portableSaveCase();
+    else if (!['library', 'boot-font-failure', 'flc-activity'].includes(scenarios)) await portableSaveCase();
     if (scenarios === 'corners') await cornerNavigationCase();
     if (scenarios === 'checkin') await checkinPresentationCase();
     if (scenarios === 'library') await libraryCase();
