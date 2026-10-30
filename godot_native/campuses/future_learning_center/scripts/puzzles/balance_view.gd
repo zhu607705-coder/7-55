@@ -14,6 +14,9 @@ var touch_id:=-1
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
 var tray_drag:=false
+var tray_start:=Vector2.ZERO
+var tray_last_pointer:=Vector2.ZERO
+var tray_grab_local:=Vector2.ZERO
 var paper_open:=false
 var hint_level:=0
 var focus_index:=0
@@ -23,14 +26,12 @@ func _ready()->void:
 	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();model.resume();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:drag=-1;selected=-1;tray_drag=false;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:model.cancel_drag();drag=-1;selected=-1;tray_drag=false;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
 	if visible:model.step(dt);queue_redraw()
-func tray_center()->Vector2:
-	if tray_drag:return SOURCE+(pointer-origin)
-	return SOURCE.lerp(DESTINATION,model.travel)-Vector2(0,model.elevation)
+func tray_center()->Vector2:return model.display_center()
 func tray_scale()->float:return lerpf(1,.65,model.travel)
 func local_point(p:Vector2)->Vector2:return tray_center()+p.rotated(model.tilt)*tray_scale()
 func cup_position(slot:int)->Vector2:return local_point(Vector2(Model.ARMS[slot]*70,-18))
@@ -38,20 +39,20 @@ func handle_position()->Vector2:return local_point(Vector2(model.pivot*70,-83))
 func _gui_input(event:InputEvent)->void:
 	if not visible:return
 	if event is InputEventScreenTouch:
-		if event.index==touch_id and event.canceled:model.cancel();cancel_pointer()
+		if event.index==touch_id and event.canceled:_cancel_touch()
 		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;press_at(event.position)
 		elif not event.pressed and event.index==touch_id:
-			if event.canceled:model.cancel();cancel_pointer()
+			if event.canceled:_cancel_touch()
 			else:release_at(event.position)
 			touch_id=-1
 		accept_event()
-	elif event is InputEventScreenDrag and event.index==touch_id:pointer=event.position;queue_redraw();accept_event()
+	elif event is InputEventScreenDrag and event.index==touch_id:move_at(event.position);accept_event()
 	elif event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
 	elif event is InputEventMouseButton and touch_id<0 and event.button_index==MOUSE_BUTTON_LEFT:
 		if event.pressed:press_at(event.position)
 		else:release_at(event.position)
 		accept_event()
-	elif event is InputEventMouseMotion and touch_id<0:pointer=event.position;queue_redraw()
+	elif event is InputEventMouseMotion and touch_id<0:move_at(event.position)
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_ESCAPE:close()
 		elif event.keycode==KEY_TAB:focus_index=posmod(focus_index+(-1 if event.shift_pressed else 1),8)
@@ -70,7 +71,7 @@ func press_at(at:Vector2)->void:
 	if Rect2(227,453,64,57).has_point(at):model.undo();return
 	if at.distance_to(Vector2(315+model.pivot*70,402))<25:model.set_extension(model.pivot==0);return
 	if at.distance_to(handle_position())<34:
-		if model.held:tray_drag=true
+		if model.held:_begin_tray_drag()
 		else:_lift()
 		return
 	if selected>=0:
@@ -78,8 +79,22 @@ func press_at(at:Vector2)->void:
 			if at.distance_to(cup_position(slot))<31:model.place(selected,slot);selected=-1;return
 	for slot:int in 4:
 		if at.distance_to(cup_position(slot))<31:drag=model.slots[slot];selected=drag;return
-	if model.held and Rect2(tray_center()-Vector2(200,20),Vector2(400,65)).has_point(at):tray_drag=true;return
-	if model.held and TARGET.has_point(at):model.start_delivery()
+	if model.held and Rect2(tray_center()-Vector2(200,20),Vector2(400,65)).has_point(at):_begin_tray_drag();return
+
+func _begin_tray_drag()->void:
+	tray_start=tray_center();tray_grab_local=(pointer-tray_start)/tray_scale();tray_last_pointer=pointer;tray_drag=model.begin_drag()
+func move_at(at:Vector2)->void:
+	pointer=at
+	if tray_drag:
+		var center:=tray_start+at-origin
+		for i:int in 5:
+			var fraction:=clampf((center.x-SOURCE.x)/(DESTINATION.x-SOURCE.x),0,1)
+			center=at-tray_grab_local*lerpf(1,.65,fraction)
+		if model.move_drag(center):tray_last_pointer=at
+	queue_redraw()
+func _cancel_touch()->void:
+	if not tray_drag:model.cancel()
+	cancel_pointer()
 func _lift()->void:
 	if model.paused:model.resume()
 	elif model.running:model.pause()
@@ -87,7 +102,7 @@ func _lift()->void:
 func release_at(at:Vector2)->void:
 	if tray_drag:
 		tray_drag=false
-		if TARGET.has_point(at):model.start_delivery()
+		if at.distance_to(tray_last_pointer)>12 or not model.settle_drag():model.cancel_drag()
 		queue_redraw();return
 	if drag<0:return
 	var cup:=drag;drag=-1

@@ -44,29 +44,57 @@ func valid_pose(points:Array[Vector2],rotation:float)->bool:
  return true
 func move_piece(index:int,target:Vector2)->bool:
  if paused or index<0 or index>1 or not target.is_finite():return false
- var delta:=target-positions[index]
+ var start:Array[Vector2]=positions.duplicate()
+ var delta:=target-start[index]
  if delta.length()<.001:return false
  var n:=maxi(1,ceili(delta.length()/2.0))
+ var fraction:=0.0;var blocked:=false
  for step:int in range(1,n+1):
-  var candidate:Array[Vector2]=positions.duplicate()
-  if connected:
-   candidate[0]+=delta*float(step)/n;candidate[1]+=delta*float(step)/n
-  else:candidate[index]+=delta*float(step)/n
-  if not valid_pose(candidate,angle):outcome="边缘碰到托盘窄颈。";return false
- if connected:positions[0]+=delta;positions[1]+=delta
- else:positions[index]=target
- revision+=1;blocked_at=Vector2.ZERO;outcome="";return true
+  var next:=float(step)/n
+  var candidate:=_translated(start,index,delta,next)
+  if not valid_pose(candidate,angle):
+   var low:=fraction;var high:=next
+   for _refine:int in 16:
+    var mid:float=(low+high)*.5
+    if valid_pose(_translated(start,index,delta,mid),angle):low=mid
+    else:high=mid
+   fraction=low;blocked=true;break
+  fraction=next
+ positions=_translated(start,index,delta,fraction)
+ if fraction>0:revision+=1
+ if blocked:outcome="边缘碰到托盘窄颈。"
+ else:blocked_at=Vector2.ZERO;outcome=""
+ return not blocked
+func _translated(start:Array[Vector2],index:int,delta:Vector2,fraction:float)->Array[Vector2]:
+ var result:Array[Vector2]=start.duplicate()
+ if connected:result[0]+=delta*fraction;result[1]+=delta*fraction
+ else:result[index]+=delta*fraction
+ return result
 func rotate_to(value:float)->bool:
  if paused or not connected or not is_finite(value):return false
+ var initial:=angle;var start:Array[Vector2]=positions.duplicate()
  var delta:=wrapf(value-angle,-PI,PI)
  if absf(delta)<.001:return false
  var center:=midpoint();var n:=maxi(1,ceili(absf(delta)/.015))
+ var fraction:=0.0;var blocked:=false
  for step:int in range(1,n+1):
-  var turn:=delta*float(step)/n
-  var candidate:Array[Vector2]=[center+(positions[0]-center).rotated(turn),center+(positions[1]-center).rotated(turn)]
-  if not valid_pose(candidate,angle+turn):outcome="转动时边角碰到托盘。";return false
- positions=[center+(positions[0]-center).rotated(delta),center+(positions[1]-center).rotated(delta)]
- angle=wrapf(value,-PI,PI);revision+=1;blocked_at=Vector2.ZERO;return true
+  var next:=float(step)/n
+  if not valid_pose(_rotated(start,center,delta*next),initial+delta*next):
+   var low:=fraction;var high:=next
+   for _refine:int in 16:
+    var mid:float=(low+high)*.5
+    if valid_pose(_rotated(start,center,delta*mid),initial+delta*mid):low=mid
+    else:high=mid
+   fraction=low;blocked=true;break
+  fraction=next
+ positions=_rotated(start,center,delta*fraction)
+ angle=wrapf(initial+delta*fraction,-PI,PI)
+ if fraction>0:revision+=1
+ if blocked:outcome="转动时边角碰到托盘。"
+ else:blocked_at=Vector2.ZERO;outcome=""
+ return not blocked
+func _rotated(start:Array[Vector2],center:Vector2,turn:float)->Array[Vector2]:
+ return [center+(start[0]-center).rotated(turn),center+(start[1]-center).rotated(turn)]
 func insert_pin()->bool:
  if paused or connected:return false
  var d:Vector2=(positions[1]-positions[0]).rotated(-angle)

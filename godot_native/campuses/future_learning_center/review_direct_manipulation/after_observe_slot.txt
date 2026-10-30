@@ -1,0 +1,16 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+   at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+OBSERVED res://frames/401_projection.png t=487 { "pointer": (0.0, 0.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": -1, "displayed_pose": (0.0, 0.0) }
+OBSERVED res://frames/402_projection.png t=12958 { "pointer": (840.0, 77.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": -1, "displayed_pose": (0.0, 0.0) }
+OBSERVED res://frames/403_projection.png t=13000 { "pointer": (554.0, 236.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": -1, "displayed_pose": (0.0, 0.0) }
+OBSERVED res://frames/404_projection.png t=13033 { "pointer": (338.0, 355.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": -1, "displayed_pose": (0.0, 0.0) }
+OBSERVED res://frames/405_projection.png t=13066 { "pointer": (217.0, 434.0), "mouse_down": true, "drag": 1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": 1, "displayed_pose": (0.338462, 0.0) }
+OBSERVED res://frames/406_projection.png t=13097 { "pointer": (260.0, 434.0), "mouse_down": true, "drag": 1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": 1, "displayed_pose": (1.0, 0.0) }
+OBSERVED res://frames/407_projection.png t=13126 { "pointer": (297.0, 434.0), "mouse_down": true, "drag": 1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": 1, "displayed_pose": (1.569231, 0.0) }
+OBSERVED res://frames/408_projection.png t=13160 { "pointer": (325.0, 434.0), "mouse_down": true, "drag": 1, "depths": [0, 0], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": 1, "displayed_pose": (2.0, 0.0) }
+OBSERVED res://frames/409_projection.png t=13191 { "pointer": (325.0, 434.0), "mouse_down": false, "drag": -1, "depths": [0, 2], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": -1, "displayed_pose": (2.0, 0.0) }
+OBSERVED res://frames/410_projection.png t=21840 { "pointer": (442.0, 355.0), "mouse_down": false, "drag": -1, "depths": [0, 2], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": -1, "displayed_pose": (2.0, 0.0) }
+OBSERVED res://frames/411_projection.png t=21876 { "pointer": (677.0, 196.0), "mouse_down": false, "drag": -1, "depths": [0, 2], "heights": [0, 0], "completed": false, "angle": 0.0, "running": false, "drag_piece": -1, "displayed_pose": (2.0, 0.0) }

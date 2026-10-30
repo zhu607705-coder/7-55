@@ -17,6 +17,9 @@ var action:=""
 var part:=-1
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
+var grip_offset:=Vector2.ZERO
+var original_tilt:=0
+var preview_tilt:=0.0
 var notebook:=false
 var hint_level:=0
 func _ready()->void:
@@ -24,6 +27,8 @@ func _ready()->void:
 func open()->void:show();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:touch_id=-1;action="";part=-1;queue_redraw()
+func held_position()->Vector2:return pointer-grip_offset
+func panel_tilt()->float:return preview_tilt if action=="tilt" else Model.TILTS[model.tilt]
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.cancel();cancel_pointer()
 func _process(dt:float)->void:
@@ -33,7 +38,7 @@ func _input(event:InputEvent)->void:
 	if not visible:return
 	if event is InputEventScreenTouch:
 		if event.canceled and event.index==touch_id:cancel_pointer()
-		elif event.pressed and touch_id<0:touch_id=event.index;press(_local(event.position))
+		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;press(_local(event.position))
 		elif not event.pressed and event.index==touch_id:release(_local(event.position));touch_id=-1
 	elif event is InputEventScreenDrag:
 		if event.index==touch_id:motion(_local(event.position))
@@ -51,31 +56,36 @@ func race_point(distance:float,lane:int)->Vector2:
 	var a:=distance/20*TAU-PI/2
 	return Vector2(480,184)+Vector2(cos(a)*(345-lane*22),sin(a)*(65-lane*18))
 func press(at:Vector2)->void:
-	pointer=at;origin=at;action=""
+	pointer=at;origin=at;action="";grip_offset=Vector2.ZERO
 	if Rect2(865,9,80,48).has_point(at):action="close";return
 	if notebook:action="page" if Rect2(640,416,220,40).has_point(at) else "paper";return
 	if Rect2(45,446,145,64).has_point(at):action="paper";return
 	if at.distance_to(LAMP)<31:action="lamp";return
 	if at.distance_to(GATE)<36:action="gate";return
 	var car:Vector2=race_point(model.cars[0].distance,0) if model.on_track else BENCH_CAR
-	if at.distance_to(car)<45:action="car";model.cancel();return
-	if model.running:return
-	if at.distance_to(TILT_KNOB)<30:action="tilt";return
+	if at.distance_to(car)<45:action="car";grip_offset=at-car;model.cancel();return
+	if model.running or model.on_track:return
+	if at.distance_to(TILT_KNOB)<30:action="tilt";original_tilt=model.tilt;preview_tilt=Model.TILTS[original_tilt];return
 	for i:int in 2:
-		if at.distance_to(PANEL_TRAYS[i])<50 and i!=model.panel:action="panel";part=i;return
+		if at.distance_to(PANEL_TRAYS[i])<50 and i!=model.panel:action="panel";part=i;grip_offset=at-PANEL_TRAYS[i];return
 	for i:int in 3:
-		if at.distance_to(GEAR_TRAYS[i])<29 and i!=model.gear:action="gear";part=i;return
+		if at.distance_to(GEAR_TRAYS[i])<29 and i!=model.gear:action="gear";part=i;grip_offset=at-GEAR_TRAYS[i];return
 func motion(at:Vector2)->void:
 	pointer=at
-	if action=="tilt":model.edit("tilt",clampi(roundi((TILT_KNOB.y-at.y)/24)+1,0,2))
+	if action=="tilt":preview_tilt=clampf(Model.TILTS[original_tilt]+(origin.y-at.y)*30.0/24.0,0,60)
 	queue_redraw()
 func release(at:Vector2)->void:
-	if action in ["panel","gear"] and Rect2(410,308,145,105).has_point(at):model.edit(action,part)
+	if action in ["panel","gear","car"] and at.distance_to(pointer)>12:
+		cancel_pointer();return
+	if action=="tilt":
+		var detent:=clampi(roundi(preview_tilt/30),0,2)
+		if at.distance_to(pointer)<=12 and absf(preview_tilt-Model.TILTS[detent])<=8:model.edit("tilt",detent)
+	elif action in ["panel","gear"] and Rect2(410,308,145,105).has_point(held_position()):model.edit(action,part)
 	elif action=="car":
-		if Rect2(108,103,737,165).has_point(at):model.place_on_track(true)
-		elif Rect2(390,300,240,123).has_point(at):model.place_on_track(false)
-	elif action=="lamp":model.set_scenario(1-model.scenario)
-	elif action=="gate":
+		if held_position().distance_to(race_point(0,0))<=32:model.place_on_track(true)
+		elif held_position().distance_to(BENCH_CAR)<=45:model.place_on_track(false)
+	elif action=="lamp" and origin.distance_to(at)<18:model.set_scenario(1-model.scenario)
+	elif action=="gate" and origin.distance_to(at)<18:
 		if model.running:model.cancel()
 		else:model.start()
 	elif origin.distance_to(at)<18:
@@ -94,13 +104,13 @@ func panel_at(at:Vector2,id:int,angle:float,scale_value:=1.0)->void:
 	var height:=maxf(9,32*cos(deg_to_rad(angle)))*scale_value
 	slab(Rect2(at-Vector2(width/2,height/2),Vector2(width,height)),Color("547d84"),4*scale_value)
 	for i:int in 4:draw_line(at+Vector2(-width/2+width*(i+1)/5,-height/2+2),at+Vector2(-width/2+width*(i+1)/5,height/2-2),Color("a5bcb3"),scale_value)
-func car_at(at:Vector2,config:Array,scale_value:=1.0,distance:=0.0)->void:
+func car_at(at:Vector2,config:Array,scale_value:=1.0,distance:=0.0,angle_override:float=-1)->void:
 	for x:float in [-32,32]:
 		for y:float in [-15,15]:
 			var hub:=at+Vector2(x,y)*scale_value
 			draw_circle(hub,9*scale_value,INK);draw_line(hub,hub+Vector2(cos(distance*10),sin(distance*10))*6*scale_value,PAPER,2*scale_value)
 	slab(Rect2(at-Vector2(36,20)*scale_value,Vector2(72,40)*scale_value),Color("bba276"),5*scale_value)
-	panel_at(at-Vector2(0,7)*scale_value,config[0],Model.TILTS[config[1]],scale_value)
+	panel_at(at-Vector2(0,7)*scale_value,config[0],Model.TILTS[config[1]] if angle_override<0 else angle_override,scale_value)
 	if config[2]>=0:
 		var gear_at:=at+Vector2(31,9)*scale_value
 		draw_circle(gear_at,(8+config[2]*2)*scale_value,INK)
@@ -117,7 +127,7 @@ func _draw()->void:
 		draw_polyline(loop,Color("536760"),17);draw_polyline(loop,Color("b8c3ad"),2)
 		for n:int in 20:
 			var at:=race_point(n,lane);draw_line(at-Vector2(0,4),at+Vector2(0,4),PAPER,1)
-	if model.on_track:car_at(pointer if action=="car" else race_point(model.cars[0].distance,0),model.configuration(),.4,model.cars[0].distance)
+	if model.on_track:car_at(held_position() if action=="car" else race_point(model.cars[0].distance,0),model.configuration(),.4,model.cars[0].distance,panel_tilt())
 	car_at(race_point(model.cars[1].distance,1),model.baseline(),.35,model.cars[1].distance)
 	# Faint marks are measured positions from the previous completed run, never a canned opponent path.
 	for previous:Dictionary in model.records.slice(maxi(0,model.records.size()-1)):
@@ -140,18 +150,18 @@ func _draw()->void:
 	slab(Rect2(55,316,760,111),Color("937e5e"),15)
 	for i:int in 2:
 		draw_rect(Rect2(PANEL_TRAYS[i]-Vector2(53,28),Vector2(106,56)),Color("c1b99f"),false,2)
-		if model.panel!=i:panel_at(pointer if action=="panel" and part==i else PANEL_TRAYS[i],i,0)
+		if model.panel!=i:panel_at(held_position() if action=="panel" and part==i else PANEL_TRAYS[i],i,0)
 		text("小板 · 0.4" if i==0 else "大板 · 1.1",PANEL_TRAYS[i]+Vector2(-40,49),14)
-	if not model.on_track:car_at(pointer if action=="car" else BENCH_CAR,model.configuration())
+	if not model.on_track:car_at(held_position() if action=="car" else BENCH_CAR,model.configuration(),1,0,panel_tilt())
 	else:draw_rect(Rect2(BENCH_CAR-Vector2(42,28),Vector2(84,56)),Color("c6baa0"),false,2)
 	for i:int in 3:
-		var at:Vector2=pointer if action=="gear" and part==i else GEAR_TRAYS[i]
+		var at:Vector2=held_position() if action=="gear" and part==i else GEAR_TRAYS[i]
 		draw_arc(GEAR_TRAYS[i],25,0,TAU,20,Color("818a78"),1)
 		if model.gear!=i:
 			draw_circle(at,15+i*4,INK);draw_circle(at,11+i*4,Color("aaa98c"));draw_circle(at,4,INK)
 		text(str(Model.RATIOS[i]),GEAR_TRAYS[i]+Vector2(-10,39),14)
-	draw_circle(TILT_KNOB,22,INK);draw_circle(TILT_KNOB,17,Color("b5b593"));draw_line(TILT_KNOB,TILT_KNOB+Vector2(0,-15).rotated(deg_to_rad(Model.TILTS[model.tilt]-30)),PAPER,3)
-	text("%d°"%Model.TILTS[model.tilt],TILT_KNOB+Vector2(-12,41),15)
+	draw_circle(TILT_KNOB,22,INK);draw_circle(TILT_KNOB,17,Color("b5b593"));draw_line(TILT_KNOB,TILT_KNOB+Vector2(0,-15).rotated(deg_to_rad(panel_tilt()-30)),PAPER,3)
+	text("%.0f°"%panel_tilt(),TILT_KNOB+Vector2(-12,41),15)
 	draw_circle(GATE+Vector2(0,13),24,INK);draw_line(GATE+Vector2(0,13),GATE+Vector2(0,-22 if model.running else -7),Color("d2c4a6"),8);draw_circle(GATE+Vector2(0,-22 if model.running else -7),11,Color("9c7850"))
 	text("发车闸",GATE+Vector2(-24,53),15)
 	slab(Rect2(45,450,145,60),PAPER,5);text("试车记录",Vector2(77,477),18);text("按需翻阅",Vector2(78,500),14)

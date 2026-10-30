@@ -16,6 +16,7 @@ var drag:=-1
 var touch_id:=-1
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
+var grab_offset:=Vector2.ZERO
 var paper_open:=false
 var hint_level:=0
 var focus_index:=0
@@ -25,17 +26,18 @@ func _ready()->void:
 	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:trailer_drag=false;trailer_selected=false;selected=-1;drag=-1;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:model.cancel_drag();trailer_drag=false;trailer_selected=false;selected=-1;drag=-1;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
 	if visible:model.step(minf(dt,.1));queue_redraw()
-func cell_position(cell:int)->Vector2:return Vector2(480,174) if cell==9 else Vector2(160+cell*80,310)
+func cell_position(cell:int)->Vector2:return Model.point(cell)
 func cart_position(id:int)->Vector2:
-	var at:Vector2=cell_position(model.positions[id])
+	var at:Vector2=model.pose(id)
 	if model.running and model.cart==id:
 		var next:int=model.next_cell(model.positions[id],model.destination)
-		if model.can_move(id,next):at=at.lerp(cell_position(next),clampf(model.elapsed/.3,0,1))
+		if model.auto_return:at=cell_position(model.edge_to[id]).lerp(cell_position(model.positions[id]),clampf(model.elapsed/.3,0,1))
+		elif model.can_move(id,next):at=cell_position(model.positions[id]).lerp(cell_position(next),clampf(model.elapsed/.3,0,1))
 	return at
 func _gui_input(event:InputEvent)->void:
 	if not visible:return
@@ -48,12 +50,12 @@ func _gui_input(event:InputEvent)->void:
 			else:release_at(event.position)
 			touch_id=-1
 		accept_event()
-	elif event is InputEventScreenDrag and event.index==touch_id:pointer=event.position;queue_redraw();accept_event()
+	elif event is InputEventScreenDrag and event.index==touch_id:motion_at(event.position);accept_event()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and touch_id<0:
 		if event.pressed:press_at(event.position)
 		else:release_at(event.position)
 		accept_event()
-	elif event is InputEventMouseMotion and touch_id<0:pointer=event.position;queue_redraw()
+	elif event is InputEventMouseMotion and touch_id<0:motion_at(event.position)
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_ESCAPE:close()
 		elif event.keycode==KEY_TAB:focus_index=posmod(focus_index+(-1 if event.shift_pressed else 1),6)
@@ -86,10 +88,15 @@ func press_at(at:Vector2)->void:
 		if at.distance_to(cart_position(i))<36:
 			if model.paused and model.cart==i:model.resume();return
 			if model.running:model.pause();return
-			drag=i;selected=i;return
+			if model.begin_drag(i):drag=i;selected=i;grab_offset=at-cart_position(i)
+			return
 	if selected>=0:_dispatch_at(selected,at)
 func trailer_position()->Vector2:
-	return cell_position(model.occupied(0)[1]) if model.extension else TRAILER_TRAY
+	return model.tail_pose(0) if model.extension else TRAILER_TRAY
+func motion_at(at:Vector2)->void:
+	pointer=at
+	if drag>=0:model.drag_to(at-grab_offset)
+	queue_redraw()
 func release_at(at:Vector2)->void:
 	if trailer_drag:
 		trailer_drag=false
@@ -99,8 +106,7 @@ func release_at(at:Vector2)->void:
 		trailer_selected=false;queue_redraw();return
 	if drag<0:return
 	var id:=drag;drag=-1
-	if origin.distance_to(at)<9:selected=id;return
-	_dispatch_at(id,at)
+	model.end_drag();selected=id if origin.distance_to(pointer)<9 else -1;queue_redraw()
 func _dispatch_at(id:int,at:Vector2)->void:
 	for i:int in 10:
 		if at.distance_to(cell_position(i))<38:
@@ -121,10 +127,11 @@ func _track(a:Vector2,b:Vector2)->void:
 		draw_line(a+normal*side*15-Vector2(0,1),b+normal*side*15-Vector2(0,1),Color("bdc2bb"),2)
 func _cart(id:int,at:Vector2)->void:
 	if model.lengths[id]==2:
-		var tail:Vector2=cell_position(model.occupied(id)[1])
+		var tail:Vector2=model.tail_pose(id)
 		if model.running and model.cart==id:
 			var next:int=model.next_cell(model.positions[id],model.destination)
-			if model.can_move(id,next):tail=tail.lerp(cell_position(model.occupied(id,next)[1]),clampf(model.elapsed/.3,0,1))
+			if model.auto_return:tail=cell_position(model.occupied(id,model.edge_to[id])[1]).lerp(cell_position(model.occupied(id)[1]),clampf(model.elapsed/.3,0,1))
+			elif model.can_move(id,next):tail=cell_position(model.occupied(id)[1]).lerp(cell_position(model.occupied(id,next)[1]),clampf(model.elapsed/.3,0,1))
 		draw_line(tail,at,INK,8);_body(id,tail,true)
 	_body(id,at,false)
 func _body(id:int,at:Vector2,tail:bool)->void:
@@ -164,7 +171,6 @@ func _draw()->void:
 		if selected==i or (model.paused and model.cart==i):draw_arc(cart_position(i),42,0,TAU,32,PAPER,2)
 	if model.blocked>=0:
 		var p:=cell_position(model.blocked);draw_line(p-Vector2(13,13),p+Vector2(13,13),Color("944f44"),4);draw_line(p+Vector2(-13,13),p+Vector2(13,-13),Color("944f44"),4)
-	if drag>=0 and pointer.distance_to(origin)>9:draw_line(cart_position(drag),pointer,PAPER,2);draw_circle(pointer,7,PAPER)
 	draw_rect(Rect2(55,446,155,54),PAPER);_text("试用者笔记",Vector2(70,479),16)
 	draw_line(Vector2(249,478),Vector2(278,458),INK,8);draw_arc(Vector2(280,456),12,.4,5,16,INK,5)
 	# The spare wagon occupies a shallow loading cradle, not an action button.

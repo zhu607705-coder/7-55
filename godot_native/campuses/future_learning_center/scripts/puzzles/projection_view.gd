@@ -14,6 +14,9 @@ var origin:=Vector2.ZERO
 var original_depth:=0
 var original_height:=0
 var mask_drag:=false
+var drag_kind:=""
+var projected_motion:=Vector2.ZERO
+var last_motion:=Vector2.ZERO
 var focus_index:=0
 var paper_open:=false
 var hint_level:=0
@@ -23,7 +26,7 @@ func _ready()->void:
 	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();model.resume();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();model.pause();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:drag=-1;selected=-1;mask_drag=false;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:model.cancel_drag();drag=-1;selected=-1;mask_drag=false;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
@@ -33,8 +36,8 @@ func project_point(p:Vector3)->Vector2:
 	var right:=x*cos(model.angle)+y*sin(model.angle)
 	var depth:=-x*sin(model.angle)+y*cos(model.angle)
 	return Vector2(340+right*50,310+depth*18-p.z*47)
-func slot_point(piece:int,depth:int)->Vector2:return Vector2(195+depth*65,387+piece*47)
-func height_point(piece:int)->Vector2:return Vector2(490+piece*63,430-model.heights[piece]*48)
+func slot_point(piece:int,depth:float)->Vector2:return Vector2(195+depth*65,387+piece*47)
+func height_point(piece:int)->Vector2:return Vector2(490+piece*63,430-model.displayed_pose(piece).y*48)
 func _gui_input(event:InputEvent)->void:
 	if not visible:return
 	if event is InputEventScreenTouch:
@@ -45,13 +48,13 @@ func _gui_input(event:InputEvent)->void:
 			else:release_at(event.position)
 			touch_id=-1
 		accept_event()
-	elif event is InputEventScreenDrag and event.index==touch_id:pointer=event.position;queue_redraw();accept_event()
+	elif event is InputEventScreenDrag and event.index==touch_id:move_at(event.position);accept_event()
 	elif event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
 	elif event is InputEventMouseButton and touch_id<0 and event.button_index==MOUSE_BUTTON_LEFT:
 		if event.pressed:press_at(event.position)
 		else:release_at(event.position)
 		accept_event()
-	elif event is InputEventMouseMotion and touch_id<0:pointer=event.position;queue_redraw()
+	elif event is InputEventMouseMotion and touch_id<0:move_at(event.position)
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_ESCAPE:close()
 		elif event.keycode==KEY_TAB:focus_index=posmod(focus_index+(-1 if event.shift_pressed else 1),6)
@@ -75,9 +78,9 @@ func press_at(at:Vector2)->void:
 	if Rect2(224,461,65,52).has_point(at):model.undo();return
 	if Rect2(mask_position()-Vector2(49,22),Vector2(98,44)).has_point(at):mask_drag=true;return
 	for i:int in 2:
-		if at.distance_to(height_point(i))<24:model.place(i,model.depths[i],1-model.heights[i]);return
+		if at.distance_to(height_point(i))<24:_select_drag(i,"height");return
 	for i:int in 2:
-		if at.distance_to(slot_point(i,model.depths[i]))<24:_select_drag(i);return
+		if at.distance_to(slot_point(i,model.depths[i]))<24:_select_drag(i,"slider");return
 	if selected>=0:
 		for d:int in 4:
 			if at.distance_to(slot_point(selected,d))<24:model.place(selected,d,model.heights[selected]);selected=-1;return
@@ -85,8 +88,21 @@ func press_at(at:Vector2)->void:
 	for i:int in range(1,-1,-1):
 		for cell:Vector3i in model.voxels(i):
 			if at.distance_to(project_point(Vector3(cell)+Vector3(.5,.1,.5)))<24:_select_drag(i);return
-func _select_drag(piece:int)->void:
-	drag=piece;selected=piece;original_depth=model.depths[piece];original_height=model.heights[piece]
+func _select_drag(piece:int,kind:="body")->void:
+	if not model.begin_drag(piece):return
+	drag=piece;selected=piece;drag_kind=kind;original_depth=model.depths[piece];original_height=model.heights[piece]
+	last_motion=origin;projected_motion=Vector2.ZERO
+func move_at(at:Vector2)->void:
+	pointer=at
+	if drag>=0:
+		var delta:=at-origin
+		var axis:=Vector2(65,0) if drag_kind=="slider" else (Vector2(0,-48) if drag_kind=="height" else project_point(Vector3(0,1,0))-project_point(Vector3.ZERO))
+		var amount:=delta.dot(axis)/axis.length_squared()
+		model.update_drag(original_depth+(0 if drag_kind=="height" else amount),original_height+(amount if drag_kind=="height" else 0))
+		var pose:=model.displayed_pose(drag)
+		projected_motion=axis*((pose.y-original_height) if drag_kind=="height" else (pose.x-original_depth))
+		last_motion=at
+	queue_redraw()
 func release_at(at:Vector2)->void:
 	if mask_drag:
 		mask_drag=false
@@ -94,15 +110,13 @@ func release_at(at:Vector2)->void:
 		elif Rect2(765,450,125,62).has_point(at):model.set_extension(false)
 		queue_redraw();return
 	if drag<0:return
-	var piece:=drag;drag=-1
-	if at.distance_to(origin)<9:return
-	for d:int in 4:
-		if at.distance_to(slot_point(piece,d))<26:model.place(piece,d,original_height);selected=-1;return
-	# Motion in the apparatus area manipulates the supported carriage; outside is canceled.
-	if Rect2(130,120,460,325).has_point(at):
-		var delta:=at-origin
-		model.place(piece,clampi(original_depth+roundi(delta.x/65),0,3),clampi(original_height-roundi(delta.y/48),0,1))
-	selected=-1;queue_redraw()
+	var pose:=model.displayed_pose(drag)
+	var axis:=Vector2(65,0) if drag_kind=="slider" else (Vector2(0,-48) if drag_kind=="height" else project_point(Vector3(0,1,0))-project_point(Vector3.ZERO))
+	var snap:=absf((roundf(pose.y)-pose.y) if drag_kind=="height" else (roundf(pose.x)-pose.x))*axis.length()
+	# Release cannot move the item; it can only close a small detent gap.
+	if at.distance_to(last_motion)<=12 and at.distance_to(origin+projected_motion)<=18 and snap<=12:model.commit_drag()
+	else:model.cancel_drag()
+	drag=-1;selected=-1;queue_redraw()
 func _expose()->void:
 	if model.paused:model.resume()
 	else:model.start()
@@ -111,7 +125,7 @@ func _paper()->void:
 	elif hint_level<3:hint_level+=1
 	else:paper_open=false
 func _text(value:String,at:Vector2,pixels:=16,color:=INK)->void:draw_string(font,at,value,HORIZONTAL_ALIGNMENT_LEFT,-1,pixels,color)
-func _cell(cell:Vector3i,piece:int)->void:
+func _cell(cell:Vector3,piece:int)->void:
 	var c:=Vector3(cell);var color:Color=COLORS[piece]
 	var face:=PackedVector2Array([project_point(c),project_point(c+Vector3(1,0,0)),project_point(c+Vector3(1,0,1)),project_point(c+Vector3(0,0,1))])
 	var side:=PackedVector2Array([project_point(c),project_point(c+Vector3(0,1,0)),project_point(c+Vector3(0,1,1)),project_point(c+Vector3(0,0,1))])
@@ -134,15 +148,16 @@ func _draw()->void:
 	var cells:Array[Dictionary]=[]
 	for i:int in 2:
 		# Transparent support post remains under the same translated piece.
-		var p:=Vector3(0 if i==0 else 2,model.depths[i],0)
-		draw_line(project_point(p),project_point(p+Vector3(0,0,model.heights[i]+.1)),Color("d0d6c9"),7)
-		for cell:Vector3i in model.voxels(i):cells.append({"cell":cell,"piece":i,"depth":-cell.x*sin(model.angle)+cell.y*cos(model.angle)})
+		var pose:=model.displayed_pose(i)
+		var p:=Vector3(0 if i==0 else 2,pose.x,0)
+		draw_line(project_point(p),project_point(p+Vector3(0,0,pose.y+.1)),Color("d0d6c9"),7)
+		for cell:Vector3 in model.displayed_voxels(i):cells.append({"cell":cell,"piece":i,"depth":-cell.x*sin(model.angle)+cell.y*cos(model.angle)})
 	cells.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return a.depth<b.depth)
 	for entry:Dictionary in cells:_cell(entry.cell,entry.piece)
 	for i:int in 2:
 		draw_line(slot_point(i,0),slot_point(i,3),INK,9)
 		for d:int in 4:draw_circle(slot_point(i,d),6,PAPER);_text(str(d),slot_point(i,d)+Vector2(-4,24),12)
-		var h:=slot_point(i,model.depths[i]);draw_circle(h+Vector2(0,3),17,INK);draw_circle(h,15,COLORS[i])
+		var h:=slot_point(i,model.displayed_pose(i).x);draw_circle(h+Vector2(0,3),17,INK);draw_circle(h,15,COLORS[i])
 		_text("A" if i==0 else "B",Vector2(165,h.y+5),16)
 		draw_line(Vector2(490+i*63,382),Vector2(490+i*63,430),INK,7);draw_circle(height_point(i),15,COLORS[i])
 	_text("升降支架",Vector2(482,462),13)
@@ -151,8 +166,8 @@ func _draw()->void:
 	draw_rect(Rect2(626,120,254,220),PAPER)
 	_text("目标片",Vector2(646,146),16);_text("透光像",Vector2(762,146),16)
 	_grid(Vector2(645,162),model.target(model.view_side),model.view_side,true)
-	if model.settled():_grid(Vector2(762,162),model.projection(model.view_side),model.view_side,false)
-	else:_text("转动中",Vector2(769,205),15)
+	if model.settled() and drag<0:_grid(Vector2(762,162),model.projection(model.view_side),model.view_side,false)
+	else:_text("移动中",Vector2(769,205),15)
 	_text("正面" if model.view_side==0 else "侧面",Vector2(646,272),16)
 	for side:int in 2:
 		var r:Dictionary=model.receipts.get(side,{})
@@ -171,7 +186,7 @@ func _draw()->void:
 	_mask(pointer if mask_drag else mask_position())
 	if paper_open:_text(HINTS[hint_level-1],Vector2(300,494),15,PAPER)
 	elif model.current_passed():_text("两面均已验证",Vector2(380,494),16,PAPER)
-	if drag>=0:draw_line(origin,pointer,PAPER,2)
+
 func _turntable()->void:
 	# Fixed tabletop, rotating support geometry; the room camera does not turn.
 	var ring:=PackedVector2Array()

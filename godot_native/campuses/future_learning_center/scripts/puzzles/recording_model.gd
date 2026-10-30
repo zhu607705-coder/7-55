@@ -30,13 +30,23 @@ func light_blocked()->bool:
  return false
 func move_baffle(value:float)->bool:
  if not is_finite(value) or value<150 or value>300:return false
- var steps:=maxi(1,ceili(absf(value-baffle_y)/2))
  var start:=baffle_y
+ var steps:=maxi(1,ceili(absf(value-start)/2))
+ var blocked:=false
+ contact=Vector2.INF
  for i:int in range(1,steps+1):
   var next:=lerpf(start,value,float(i)/steps)
   if baffle(next).intersects(carriage(x)):
-   contact=Vector2(441,300);outcome="挡片碰到送料件，不能穿过去。";return false
- baffle_y=value;revision+=1;photographing=false;exposure=0;contact=Vector2.INF;outcome="";return true
+   var low:=baffle_y;var high:=next
+   for _refine:int in 16:
+    var mid:float=(low+high)*.5
+    if baffle(mid).intersects(carriage(x)):high=mid
+    else:low=mid
+   baffle_y=low;contact=Vector2(441,high+(60 if value>start else -60));blocked=true;break
+  baffle_y=next
+ if not is_equal_approx(baffle_y,start):revision+=1;photographing=false;exposure=0
+ outcome="挡片碰到送料件，不能穿过去。" if blocked else ""
+ return not blocked
 func drive(value:int)->void:
  if value not in [-1,0,1]:return
  photographing=false;exposure=0;direction=value;running=value!=0;paused=false;contact=Vector2.INF

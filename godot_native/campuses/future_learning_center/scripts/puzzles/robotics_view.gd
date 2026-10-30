@@ -12,6 +12,11 @@ var drag:=-1
 var touch_id:=-1
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
+var grip_offset:=Vector2.ZERO
+var turn_offset:=0.0
+var preview_turn:=-PI/2
+var preview_switch:=-16.0
+var resume_after_drag:=false
 var paper_open:=false
 var hint_level:=0
 var focus_index:=0
@@ -21,26 +26,37 @@ func _ready()->void:
  font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:drag=-1;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:
+ drag=-1;touch_id=-1
+ if resume_after_drag and model.running:model.resume()
+ resume_after_drag=false;queue_redraw()
+func turn_pose()->float:return preview_turn if drag==0 else (PI/2 if model.return_direction==1 else -PI/2)
+func switch_pose()->float:return preview_switch if drag==1 else (16.0 if model.selector==1 else -16.0)
+func move_at(at:Vector2)->void:
+ pointer=at
+ if drag==0 and at.distance_to(TURN)>=8:preview_turn=(at-TURN).angle()+turn_offset
+ elif drag==1:preview_switch=clampf(at.x-grip_offset.x-SWITCH.x,-16,16)
+ queue_redraw()
 func _notification(what:int)->void:
- if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
+ if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:resume_after_drag=false;model.pause();cancel_pointer()
 func _process(dt:float)->void:
  if visible:model.step(dt);queue_redraw()
 func _gui_input(e:InputEvent)->void:
  if not visible:return
  if e is InputEventScreenTouch:
   if e.index==touch_id and e.canceled:cancel_pointer()
-  elif e.pressed and touch_id<0:touch_id=e.index;press_at(e.position)
+  elif e.pressed and not e.canceled and touch_id<0:touch_id=e.index;press_at(e.position)
   elif not e.pressed and e.index==touch_id:release_at(e.position);touch_id=-1
   accept_event()
- elif e is InputEventScreenDrag and e.index==touch_id:pointer=e.position;queue_redraw();accept_event()
+ elif e is InputEventScreenDrag and e.index==touch_id:move_at(e.position);accept_event()
  elif e is InputEventMouse and e.device==InputEvent.DEVICE_ID_EMULATION:return
  elif e is InputEventMouseButton and touch_id<0 and e.button_index==MOUSE_BUTTON_LEFT:
   if e.pressed:press_at(e.position)
   else:release_at(e.position)
   accept_event()
- elif e is InputEventMouseMotion and touch_id<0:pointer=e.position;queue_redraw()
+ elif e is InputEventMouseMotion and touch_id<0:move_at(e.position)
  elif e is InputEventKey and e.pressed and not e.echo:
+  if drag>=0 and e.keycode!=KEY_ESCAPE:return
   if e.keycode==KEY_ESCAPE:close()
   elif e.keycode==KEY_TAB:focus_index=posmod(focus_index+1,5)
   elif e.keycode in [KEY_ENTER,KEY_SPACE]:
@@ -51,6 +67,7 @@ func _gui_input(e:InputEvent)->void:
    else:_paper()
   queue_redraw();accept_event()
 func _power()->void:
+ if drag>=0:return
  if model.running:
   if model.paused:model.resume()
   else:model.pause()
@@ -62,17 +79,28 @@ func press_at(at:Vector2)->void:
  if at.distance_to(Vector2(225,427))<26:model.single_step();queue_redraw();return
  if Rect2(42,474,140,38).has_point(at):_paper();return
  if at.distance_to(Vector2(855,490))<25:model.undo();return
- if at.distance_to(TURN)<32:drag=0
- elif at.distance_to(SWITCH+Vector2(0,34))<26:drag=1
- elif at.distance_to(Model.NODES[model.target]+Vector2(80,0))<30:drag=2
+ if at.distance_to(TURN)<32:
+  preview_turn=turn_pose();turn_offset=preview_turn-(at-TURN).angle() if at.distance_to(TURN)>=8 else 0.0;drag=0
+ elif at.distance_to(SWITCH+Vector2(switch_pose(),34))<26:
+  preview_switch=switch_pose();grip_offset=at-(SWITCH+Vector2(preview_switch,34));drag=1
+ elif at.distance_to(Model.NODES[model.target]+Vector2(80,0))<30:
+  grip_offset=at-(Model.NODES[model.target]+Vector2(80,0));drag=2
+ if drag>=0:
+  resume_after_drag=model.running and not model.paused
+  if model.running:model.pause()
  queue_redraw()
 func release_at(at:Vector2)->void:
- if drag==0 and at.distance_to(TURN)<85:model.edit("return_direction",1-model.return_direction)
- elif drag==1 and at.distance_to(SWITCH)<95:model.edit("selector",1-model.selector)
- elif drag==2:
+ # Release commits the last visible pose, not a hidden toggle or a remote endpoint.
+ if drag==0 and origin.distance_to(pointer)>=6 and at.distance_to(pointer)<=12:
+  var candidate:=1 if sin(preview_turn)>0 else 0
+  var detent:=PI/2 if candidate==1 else -PI/2
+  if absf(angle_difference(preview_turn,detent))<=PI/6:model.edit("return_direction",candidate)
+ elif drag==1 and origin.distance_to(pointer)>=6 and at.distance_to(pointer)<=12:
+  if absf(preview_switch)>=12:model.edit("selector",1 if preview_switch>0 else 0)
+ elif drag==2 and at.distance_to(pointer)<=12:
   for target:int in [2,5]:
-   if at.distance_to(Model.NODES[target]+Vector2(80,0))<45:model.edit("target",target)
- drag=-1;queue_redraw()
+   if (pointer-grip_offset).distance_to(Model.NODES[target]+Vector2(80,0))<22:model.edit("target",target)
+ cancel_pointer()
 func _paper()->void:
  if not paper_open:paper_open=true;hint_level=0
  elif hint_level<2:hint_level+=1
@@ -96,22 +124,22 @@ func _draw()->void:
  # The central rail has an actual reverse-facing stop, drawn at the same edge used by the graph.
  draw_line(Vector2(585,295),Vector2(585,325),INK,7)
  draw_line(Vector2(574,295),Vector2(585,310),Color("d4b77d"),4)
- var turn_angle:float=PI/2 if model.return_direction==1 else -PI/2
- if drag==0:turn_angle=(pointer-TURN).angle()
+ var turn_angle:=turn_pose()
  draw_circle(TURN,28,Color("b9ae93"));draw_arc(TURN,24,0,TAU,32,INK,3);_arrow(TURN,turn_angle,INK)
  draw_circle(TURN+Vector2.RIGHT.rotated(turn_angle)*26,5,PAPER)
- var stop_y:=275 if model.return_direction==1 else 195
- draw_line(Vector2(335,stop_y),Vector2(365,stop_y),INK,6)
- var ramp_y:=stop_y+10 if model.return_direction==1 else stop_y-10
- draw_line(Vector2(335,ramp_y),Vector2(350,stop_y),Color("d4b77d"),4)
- draw_line(SWITCH,SWITCH+Vector2(-35,0) if model.selector==0 else SWITCH+Vector2(0,-35),Color("c8b480"),7)
- draw_line(SWITCH+Vector2(0,10),SWITCH+Vector2(-16 if model.selector==0 else 16,34),INK,5)
- draw_circle(SWITCH+Vector2(-16 if model.selector==0 else 16,34),10,Color("c8b480"))
+ var stop:=TURN+Vector2.RIGHT.rotated(turn_angle)*40
+ var tangent:=Vector2.RIGHT.rotated(turn_angle).orthogonal()*15
+ draw_line(stop-tangent,stop+tangent,INK,6)
+ draw_line(stop-tangent+Vector2.RIGHT.rotated(turn_angle)*10,stop,Color("d4b77d"),4)
+ var blend:=(switch_pose()+16)/32
+ draw_line(SWITCH,SWITCH+Vector2(-35,0).lerp(Vector2(0,-35),blend),Color("c8b480"),7)
+ draw_line(SWITCH+Vector2(0,10),SWITCH+Vector2(switch_pose(),34),INK,5)
+ draw_circle(SWITCH+Vector2(switch_pose(),34),10,Color("c8b480"))
  for n:int in [0,2,5]:
   var at:Vector2=Model.NODES[n]
   draw_rect(Rect2(at+Vector2(-52 if n==0 else 26,-25),Vector2(32,50)),Color("696f60"))
   for off:int in [-18,18]:draw_line(at+Vector2(-48 if n==0 else 30,off),at+Vector2(-24 if n==0 else 54,off),PAPER,3)
- var flag:Vector2=pointer if drag==2 else Model.NODES[model.target]+Vector2(80,0)
+ var flag:Vector2=pointer-grip_offset if drag==2 else Model.NODES[model.target]+Vector2(80,0)
  draw_line(flag+Vector2(0,23),flag-Vector2(0,23),INK,3);draw_rect(Rect2(flag-Vector2(0,23),Vector2(30,20)),Color("c8b480"))
  if paper_open:
   if model.outward.size()>1:draw_polyline(PackedVector2Array(model.outward),Color("e4d6a3"),2)

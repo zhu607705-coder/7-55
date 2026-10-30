@@ -45,7 +45,7 @@ func legal()->bool:
 	return true
 func _invalidate()->void:geometry_revision+=1;receipts.clear();cancel();outcome=""
 func place(piece:int,depth:int,height:int)->bool:
-	if piece not in [0,1] or depth<0 or depth>3 or height<0 or height>1:return false
+	if drag_piece>=0 or piece not in [0,1] or depth<0 or depth>3 or height<0 or height>1:return false
 	if depths[piece]==depth and heights[piece]==height:return true
 	history.append({"depths":depths.duplicate(),"heights":heights.duplicate()})
 	depths[piece]=depth;heights[piece]=height;_invalidate();return true
@@ -56,10 +56,11 @@ func set_extension(value:bool)->void:
 	if value==extension:return
 	extension=value;_invalidate()
 func rotate_fixture()->void:
+	if drag_piece>=0:return
 	cancel();view_side=1-view_side;paused=false
 func settled()->bool:return absf(angle-view_side*PI/2)<.001
 func start()->bool:
-	if running or not settled() or not legal():return false
+	if running or drag_piece>=0 or not settled() or not legal():return false
 	running=true;paused=false;elapsed=0;trial_revision=geometry_revision;trial_side=view_side;outcome="";return true
 func pause()->void:paused=true
 func resume()->void:paused=false
@@ -83,3 +84,25 @@ func current_passed()->bool:
 		var r:Dictionary=receipts.get(side,{})
 		if r.is_empty() or r.revision!=geometry_revision or not r.passed:return false
 	return legal()
+
+# Manipulation is a transient supported pose, committed once on release.
+var drag_piece:=-1
+var preview_depth:=0.0
+var preview_height:=0.0
+func begin_drag(piece:int)->bool:
+	if piece not in [0,1] or drag_piece>=0 or not settled():return false
+	cancel();drag_piece=piece;preview_depth=depths[piece];preview_height=heights[piece];return true
+func update_drag(depth:float,height:float)->bool:
+	if drag_piece<0 or not is_finite(depth) or not is_finite(height):return false
+	preview_depth=clampf(depth,0,3);preview_height=clampf(height,0,1);return true
+func cancel_drag()->void:drag_piece=-1
+func displayed_pose(piece:int)->Vector2:
+	return Vector2(preview_depth,preview_height) if piece==drag_piece else Vector2(depths[piece],heights[piece])
+func displayed_voxels(piece:int)->Array[Vector3]:
+	var result:Array[Vector3]=[];var pose:=displayed_pose(piece)
+	for p:Vector2i in PIECES[piece]:result.append(Vector3(p.x,pose.x,p.y+pose.y))
+	return result
+func commit_drag()->bool:
+	if drag_piece<0:return false
+	var id:=drag_piece;var d:=roundi(preview_depth);var h:=roundi(preview_height)
+	cancel_drag();return place(id,d,h)

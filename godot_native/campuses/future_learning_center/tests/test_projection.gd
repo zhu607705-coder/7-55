@@ -41,8 +41,8 @@ func _initialize()->void:
 	m.place(0,0,1);m.place(1,2,0);shoot(m);m.rotate_fixture();advance(m);shoot(m);check(m.extension_completed,"masked target completed with actual geometry")
 	var v=View.new();v.press_at(v.slot_point(0,0));v.release_at(Vector2(940,530));check(v.model.depths[0]==0,"invalid drop preserves support")
 	v.press_at(v.slot_point(0,0));v.cancel_pointer();v.release_at(v.slot_point(0,2));check(v.model.depths[0]==0,"cancel rejects late release")
-	v.press_at(v.slot_point(0,0));v.release_at(v.slot_point(0,2));check(v.model.depths[0]==2,"drag slides same piece")
-	v.press_at(v.height_point(0));check(v.model.heights[0]==1,"physical lift changes height")
+	v.press_at(v.slot_point(0,0));v.move_at(v.slot_point(0,2));v.release_at(v.slot_point(0,2));check(v.model.depths[0]==2,"drag slides same piece")
+	var height_start:=v.height_point(0);v.press_at(height_start);v.move_at(height_start-Vector2(0,48));v.release_at(height_start-Vector2(0,48));check(v.model.heights[0]==1,"physical lift changes height")
 	v.model.rotate_fixture();v._notification(View.NOTIFICATION_APPLICATION_FOCUS_OUT);angle=v.model.angle;v.model.step(5);check(v.model.angle==angle,"focus loss stops moving fixture")
 	v.close();v.model.step(5);check(v.model.angle==angle,"closed fixture stays frozen")
 	v.show();var event:=InputEventMouseButton.new();event.device=InputEvent.DEVICE_ID_EMULATION;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=true;event.position=v.height_point(0);v._gui_input(event);check(v.model.heights[0]==1,"emulated mouse does not duplicate touch")
@@ -56,6 +56,16 @@ func _initialize()->void:
 	var canceled:=InputEventScreenTouch.new();canceled.index=7;canceled.pressed=false;canceled.canceled=true;v._gui_input(canceled)
 	advance(v.model);check(not v.model.running and v.model.receipts.is_empty(),"canceled touch aborts exposure without evidence")
 	owner_cancel(v,"_gui_input")
+	var transaction=View.new();var start:=transaction.slot_point(0,0);transaction.press_at(start);transaction.move_at(start+Vector2(32.5,0))
+	check(is_equal_approx(transaction.model.preview_depth,.5) and transaction.model.depths[0]==0 and transaction.model.history.is_empty(),"intermediate continuous supported preview without commit or undo")
+	check(transaction.model.displayed_voxels(0)[0].y==.5,"rendered voxels follow transaction")
+	transaction.cancel_pointer();check(transaction.model.displayed_pose(0)==Vector2.ZERO,"cancel restores original visible pose")
+	transaction.press_at(start);transaction.move_at(start+Vector2(65,0));transaction.release_at(start+Vector2(130,0));check(transaction.model.depths[0]==0,"far release cannot teleport")
+	transaction.press_at(start);transaction.move_at(start+Vector2(65,0));transaction.release_at(start+Vector2(65,0));check(transaction.model.depths[0]==1 and transaction.model.history.size()==1,"release commits once")
+	transaction.model.angle=0;transaction.model.view_side=0
+	var body:=transaction.project_point(Vector3(0.5,1.1,1.5));transaction.press_at(body);transaction.move_at(body+Vector2(0,9));check(is_equal_approx(transaction.model.preview_depth,1.5),"body drag uses vertical depth axis at front")
+	transaction._notification(View.NOTIFICATION_APPLICATION_FOCUS_OUT);check(transaction.model.displayed_pose(0)==Vector2(1,0),"focus loss rolls back physical pose")
+	transaction.free()
 	v.free();print("projection: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
 
 func owner_cancel(view:Control,method:String)->void:

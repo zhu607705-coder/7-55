@@ -1,22 +1,30 @@
 extends "res://campuses/future_learning_center/scripts/puzzles/collab_view.gd"
 const Recording=preload("res://campuses/future_learning_center/scripts/puzzles/recording_model.gd")
 var baffle_drag:=false
+var baffle_origin:=300.0
+var baffle_offset:=0.0
 func _init()->void:
  model=Recording.new()
  hints=["送料件停住的位置，和挡片在哪里相交？","只移动挡片，分别看看送料与试拍发生什么。","碰停条与清楚照片，各记录了过程中的哪一刻？"]
-func _cancel_pointer()->void:baffle_drag=false;super._cancel_pointer()
+func _cancel_pointer()->void:
+ if baffle_drag:model.move_baffle(baffle_origin)
+ baffle_drag=false;super._cancel_pointer()
+func _input(event:InputEvent)->void:
+ super._input(event)
+ if baffle_drag and (event is InputEventMouseMotion and touch_id<0 and event.device!=InputEvent.DEVICE_ID_EMULATION or event is InputEventScreenDrag and event.index==touch_id):
+  model.move_baffle(clampf(pointer.y-baffle_offset,150,300));queue_redraw()
 func _press(at:Vector2)->void:
  pressed_at=at;pointer=at;action=""
  if Rect2(850,12,90,48).has_point(at):action="close";return
  if Rect2(35,425,155,80).has_point(at):action="hint";return
  if Rect2(765,285,170,215).has_point(at):action="records";return
- if model.baffle(model.baffle_y).grow(15).has_point(at):baffle_drag=true;model.pause();return
+ if model.baffle(model.baffle_y).grow(15).has_point(at):baffle_drag=true;baffle_origin=model.baffle_y;baffle_offset=at.y-model.baffle_y;model.pause();return
  if at.distance_to(Vector2(670,185))<38:action="photo";return
  if Rect2(710,135,45,150).has_point(at):action="drive";return
  if at.distance_to(Vector2(665,445))<45:action="crank";return
 func _release(at:Vector2)->void:
  if baffle_drag:
-  baffle_drag=false;model.move_baffle(clampf(at.y,150,300));queue_redraw();return
+  baffle_drag=false;model.move_baffle(clampf(at.y-baffle_offset,150,300));queue_redraw();return
  if action=="drive" and Rect2(710,135,45,150).has_point(at):
   model.drive(-1 if at.y<185 else (1 if at.y>235 else 0));action="";return
  if action=="crank" and at.distance_to(Vector2(665,445))<50:
@@ -42,7 +50,7 @@ func _draw()->void:
  box(Rect2(300,235,38,30),Color("54666a"),8);draw_circle(Vector2(320,252),9,Color("d6c08e"))
  draw_line(Vector2(441,125),Vector2(441,360),Color("45565a"),8)
  draw_line(Vector2(437,125),Vector2(437,360),Color("c3c5b7"),2)
- var by:float=clampf(pointer.y,150,300) if baffle_drag else model.baffle_y
+ var by:float=model.baffle_y
  box(model.baffle(by),Color("737f7d"),12);draw_circle(Vector2(441,by),8,Color("c5b597"))
  text("停车位",Vector2(465,147),14);text("遮光位",Vector2(465,252),14)
  box(model.carriage(model.x),Color("af9c7b"),10)

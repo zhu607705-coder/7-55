@@ -13,27 +13,47 @@ var pointer:=Vector2.ZERO
 var paper_open:=false
 var hint_level:=0
 var angle:=0.0
+var grab_offset:=Vector2.ZERO
+var last_motion:=Vector2.ZERO
+var pointer_valid:=true
 const HINTS:=["哪张图能区分前后相叠的块？","底座缺口不变，只换一块的前后位置。","把三张图对照；上层也需要下方的实体支撑。"]
 func _ready()->void:
  mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
 func open()->void:show();model.resume();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:held=-1;held_sheet=false;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:model.cancel_drag();held=-1;held_sheet=false;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
  if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
  if visible:
-  if not model.paused:angle=move_toward(angle,model.observation*PI/2,minf(dt,.1)*PI)
-  model.step(dt);queue_redraw()
+  if not model.paused and model.drag_piece<0:angle=move_toward(angle,model.observation*PI/2,minf(dt,.1)*PI)
+  model.step(dt)
+  if held>=0 and model.drag_stage in ["lift","carry"]:move_at(pointer)
+  queue_redraw()
 func project_point(p:Vector3)->Vector2:
  var x:=p.x-1;var y:=p.y-1;var a:=angle+PI/4
  return Vector2(445+(x*cos(a)-y*sin(a))*72,323+(x*sin(a)+y*cos(a))*32-p.z*57)
 func slot_point(x:int,y:int)->Vector2:return project_point(Vector3(x+.5,y+.5,0))
 func piece_position(piece:int)->Vector2:
+ if piece==model.drag_piece:return project_point(model.preview_origin+piece_center_offset(piece))
  if model.poses[piece]==Model.TRAY:return RACK[piece]
  var p:=Vector3(model.poses[piece])+Vector3(.5,.5,.5)
  if piece==0:p+=Vector3(.5,0,0) if model.bar_turn==0 else Vector3(0,.5,0)
  return project_point(p)
+func piece_center_offset(piece:int)->Vector3:
+ return Vector3(.5,.5,.5)+(Vector3(.5,0,0) if model.bar_turn==0 else Vector3(0,.5,0)) if piece==0 else Vector3(.5,.5,.5)
+func inverse_point(at:Vector2,z:float)->Vector3:
+ var a:=angle+PI/4;var right:float=(at.x-445)/72;var depth:float=(at.y-323+z*57)/32
+ return Vector3(1+right*cos(a)+depth*sin(a),1-right*sin(a)+depth*cos(a),z)
+func move_at(at:Vector2)->void:
+ pointer=at
+ if held>=0:
+  pointer_valid=Rect2(50,95,850,355).has_point(at)
+  if pointer_valid and model.drag_stage in ["lift","carry"]:
+   var offset:=piece_center_offset(held)
+   var center:=inverse_point(at-grab_offset,model.preview_origin.z+offset.z)
+   if model.move_drag(center-offset):last_motion=at
+ queue_redraw()
 func rotation_handle()->Vector2:return piece_position(0)+Vector2(0,-44)
 func sheet_position()->Vector2:return Vector2(766,374) if model.extension else Vector2(620,475)
 func _gui_input(e:InputEvent)->void:
@@ -46,13 +66,13 @@ func _gui_input(e:InputEvent)->void:
    else:release_at(e.position)
    touch_id=-1
   accept_event()
- elif e is InputEventScreenDrag and e.index==touch_id:pointer=e.position;queue_redraw();accept_event()
+ elif e is InputEventScreenDrag and e.index==touch_id:move_at(e.position);accept_event()
  elif e is InputEventMouse and e.device==InputEvent.DEVICE_ID_EMULATION:return
  elif e is InputEventMouseButton and touch_id<0 and e.button_index==MOUSE_BUTTON_LEFT:
   if e.pressed:press_at(e.position)
   else:release_at(e.position)
   accept_event()
- elif e is InputEventMouseMotion and touch_id<0:pointer=e.position;queue_redraw()
+ elif e is InputEventMouseMotion and touch_id<0:move_at(e.position)
  elif e is InputEventKey and e.pressed and e.keycode==KEY_ESCAPE:close();accept_event()
 func press_at(at:Vector2)->void:
  pointer=at
@@ -67,7 +87,11 @@ func press_at(at:Vector2)->void:
  if Rect2(sheet_position()-Vector2(42,17),Vector2(84,34)).has_point(at):held_sheet=true;return
  if at.distance_to(rotation_handle())<19:model.rotate_bar();return
  for i:int in range(2,-1,-1):
-  if at.distance_to(piece_position(i))<(55 if i==0 else 35):held=i;return
+  if at.distance_to(piece_position(i))<(55 if i==0 else 35):
+   var center:=piece_position(i);var rack:=inverse_point(center,.5)-piece_center_offset(i)
+   var lift:=inverse_point(center,2+piece_center_offset(i).z)-piece_center_offset(i)
+   if model.begin_drag(i,rack,lift):held=i;grab_offset=at-center;last_motion=at;pointer_valid=true
+   return
 func release_at(at:Vector2)->void:
  if held_sheet:
   held_sheet=false
@@ -76,16 +100,23 @@ func release_at(at:Vector2)->void:
   return
  if held<0:return
  var piece:=held;held=-1
- if Rect2(45,110,170,330).has_point(at):model.place(piece,Model.TRAY);return
- var best:=Vector2i(-1,-1);var distance:=INF
+ if not pointer_valid or at.distance_to(last_motion)>12 or model.drag_stage!="carry":model.cancel_drag();return
+ if Rect2(45,110,170,330).has_point(at):
+  if piece_position(piece).distance_to(RACK[piece])<=14:model.return_to_rack()
+  else:model.cancel_drag()
+  return
+ var candidate:=Model.TRAY;var distance:=INF
  for x:int in 2:
   for y:int in 2:
-   var d:float=at.distance_to(slot_point(x,y))
-   if d<distance:distance=d;best=Vector2i(x,y)
- if distance<58:model.drop(piece,best.x,best.y)
+   for z:int in 2:
+    var pose:=Vector3i(x,y,z);var test:Array[Vector3i]=model.poses.duplicate();test[piece]=pose
+    if not model.valid(test,model.bar_turn):continue
+    var d:float=piece_position(piece).distance_to(project_point(Vector3(pose)+piece_center_offset(piece)))
+    if d<distance:distance=d;candidate=pose
+ if distance>14 or not model.request_drop(candidate):model.cancel_drag()
  queue_redraw()
 func _text(s:String,p:Vector2,sz:=16,c:=INK)->void:draw_string(font,p,s,HORIZONTAL_ALIGNMENT_LEFT,-1,sz,c)
-func _cube(cell:Vector3i,color:Color)->void:
+func _cube(cell:Vector3,color:Color)->void:
  var p:=Vector3(cell)
  var faces:=[ [Vector3(0,0,0),Vector3(1,0,0),Vector3(1,0,1),Vector3(0,0,1)], [Vector3(1,0,0),Vector3(1,1,0),Vector3(1,1,1),Vector3(1,0,1)], [Vector3(1,1,0),Vector3(0,1,0),Vector3(0,1,1),Vector3(1,1,1)], [Vector3(0,1,0),Vector3(0,0,0),Vector3(0,0,1),Vector3(0,1,1)], [Vector3(0,0,1),Vector3(1,0,1),Vector3(1,1,1),Vector3(0,1,1)] ]
  var order:Array=[]
@@ -111,10 +142,9 @@ func _draw()->void:
  for y:int in range(105,515,30):draw_line(Vector2(43,y),Vector2(917,y),Color("987e5f"),1)
  draw_rect(Rect2(54,111,150,330),Color("756b56"))
  for i:int in 3:
-  if model.poses[i]==Model.TRAY and held!=i:
-   var at:Vector2=RACK[i];var width:=92 if i==0 and model.bar_turn==0 else 49
-   var height:=92 if i==0 and model.bar_turn==1 else 48
-   draw_rect(Rect2(at-Vector2(width/2.0,height/2.0)+Vector2(0,6),Vector2(width,height)),INK);draw_rect(Rect2(at-Vector2(width/2.0,height/2.0),Vector2(width,height)),Color("71918e") if i==0 else Color("b8956d"))
+  if model.poses[i]==Model.TRAY and model.drag_piece!=i:
+   var rack_origin:=inverse_point(RACK[i],piece_center_offset(i).z)-piece_center_offset(i)
+   for local:Vector3i in model.cells(i,Vector3i.ZERO,model.bar_turn):_cube(rack_origin+Vector3(local),Color("71918e") if i==0 else Color("b8956d"))
  var base:=PackedVector2Array([project_point(Vector3.ZERO),project_point(Vector3(2,0,0)),project_point(Vector3(2,2,0)),project_point(Vector3(0,2,0))])
  draw_colored_polygon(base,Color("cbc0a5"));base.append(base[0]);draw_polyline(base,INK,4)
  for x:int in 2:
@@ -122,18 +152,21 @@ func _draw()->void:
  draw_circle(project_point(Vector3.ZERO),8,INK)
  var cells:Array[Dictionary]=[]
  for piece:int in 3:
+  if piece==model.drag_piece:continue
   for cell:Vector3i in model.cells(piece,model.poses[piece],model.bar_turn):cells.append({"cell":cell,"piece":piece,"depth":project_point(Vector3(cell)+Vector3(.5,.5,0)).y})
  cells.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return a.depth<b.depth if a.depth!=b.depth else a.cell.z<b.cell.z)
- for row:Dictionary in cells:_cube(row.cell,Color("71918e") if row.piece==0 else Color("b8956d"))
+ for row:Dictionary in cells:_cube(Vector3(row.cell),Color("71918e") if row.piece==0 else Color("b8956d"))
  var h:=rotation_handle();draw_arc(h,12,.3,5.7,20,PAPER,3);draw_circle(h+Vector2(10,-8),4,INK)
  draw_circle(Vector2(540,412),24,INK);draw_line(Vector2(540,412),Vector2(558,396),PAPER,6);draw_circle(Vector2(558,396),7,Color("ba9c75"))
  for view:int in 3:
   var y:=112+view*111
   draw_rect(Rect2(695,y,192,96),PAPER);_text(["俯视","正面","侧面"][view],Vector2(707,y+20),14)
-  _grid(Vector2(712,y+31),model.target(view),view,true);_grid(Vector2(806,y+31),Model.project(model.voxels(),view),view,false)
+  _grid(Vector2(712,y+31),model.target(view),view,true)
+  if model.drag_piece<0:_grid(Vector2(806,y+31),Model.project(model.voxels(),view),view,false)
+  else:_text("抓持中",Vector2(805,y+63),13)
   draw_circle(Vector2(700,y+90),4,INK)
- if held>=0:
-  draw_rect(Rect2(pointer-Vector2(44 if held==0 else 23,22),Vector2(88 if held==0 else 46,44)),Color("bdc4ad"))
+ if model.drag_piece>=0:
+  for local:Vector3i in model.cells(model.drag_piece,Vector3i.ZERO,model.bar_turn):_cube(model.preview_origin+Vector3(local),Color("71918e") if model.drag_piece==0 else Color("b8956d"))
  draw_rect(Rect2(575,453,105,51),Color("77664f"))
  var sheet:=pointer if held_sheet else sheet_position()
  draw_rect(Rect2(sheet-Vector2(38,12),Vector2(76,24)),Color("b1a083"));draw_line(sheet+Vector2(27,-17),sheet+Vector2(27,7),INK,5)

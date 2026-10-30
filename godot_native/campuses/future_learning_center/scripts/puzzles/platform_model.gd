@@ -20,12 +20,27 @@ func move_board(to:Vector2)->bool:
  if not to.is_finite():return false
  to=to.clamp(Vector2(140,170),Vector2(820,470))
  if to.is_equal_approx(board):return true
- var steps:=maxi(1,ceili(board.distance_to(to)/4.0))
+ var start:=board
+ var steps:=maxi(1,ceili(start.distance_to(to)/4.0))
+ var blocked:=false
+ contact=Vector2.INF
  for i:int in range(1,steps+1):
-  var at:=board.lerp(to,float(i)/steps)
-  for obstacle:Rect2 in SCENERY:
-   if Rect2(at-Vector2(72,14),Vector2(144,28)).intersects(obstacle):contact=at;outcome="轮架碰到物件，从旁边绕过去。";return false
- board=to;revision+=1;cancel();shot={};contact=Vector2.INF;outcome="";return true
+  var at:=start.lerp(to,float(i)/steps)
+  if not _board_clear(at):
+   var low:=board;var high:=at
+   for _refine:int in 16:
+    var mid:Vector2=(low+high)*.5
+    if _board_clear(mid):low=mid
+    else:high=mid
+   board=low;contact=high;blocked=true;break
+  board=at
+ if not board.is_equal_approx(start):revision+=1;cancel();shot={}
+ outcome="轮架碰到物件，从旁边绕过去。" if blocked else ""
+ return not blocked
+func _board_clear(at:Vector2)->bool:
+ for obstacle:Rect2 in SCENERY:
+  if Rect2(at-Vector2(72,14),Vector2(144,28)).intersects(obstacle):return false
+ return true
 func set_condition(value:int)->void:
  if value not in [0,1] or value==condition:return
  condition=value;cancel();shot={};outcome=""
