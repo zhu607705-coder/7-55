@@ -10,6 +10,12 @@ func _ready()->void:
 	world.load_floor(2)
 	var area:=OS.get_environment("FLC_REVIEW_AREA")
 	if OS.has_feature("web"):area=str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('area') || ''"))
+	if area in world.PuzzleAnchors:
+		world.load_floor(4)
+		var approach:Vector2=world.puzzle_approach(area)
+		if approach.is_finite():world.set_foot(approach)
+		else:push_error("Puzzle review approach is blocked: "+area)
+		return
 	if area=="stairs":
 		world.load_floor(3)
 		var landing:Dictionary=world.data.transits.filter(func(t:Dictionary)->bool:return t.id=="northeast_stair")[0]

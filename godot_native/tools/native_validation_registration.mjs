@@ -30,8 +30,17 @@ export function registerStage(spec) {
   dependencies:Object.freeze([...dependencies]),exclusive,resources:Object.freeze({slots:1}),...(spec.durationHintMs === undefined ? {} : {durationHintMs:spec.durationHintMs})});
 }
 
-// Add reviewed reader registrations here. No example stage is enabled by default.
-export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([]);
+// Each FLC reader uses one existing scheduler slot; no nested CI worker pool.
+const flc='godot_native/campuses/future_learning_center';
+export const NATIVE_STAGE_REGISTRATIONS = Object.freeze(
+ ['flex','collab','focus','storage','assembly','rail','rules','puzzles_integration','floor'].map(name=>({
+  id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
+  inputs:[`${flc}/tests/test_${name}.gd`,...(name==='floor'||name==='puzzles_integration'
+   ? [`${flc}/scripts/floor_view.gd`,`${flc}/scripts/floor_space.gd`,`${flc}/data/floor_2.json`,`${flc}/data/floor_3.json`,`${flc}/data/floor_4.json`]
+   : [`${flc}/scripts/puzzles/${name}_model.gd`,`${flc}/scripts/puzzles/${name}_view.gd`])],
+  outputs:[],dependencies:[],durationHintMs:name==='floor'||name==='puzzles_integration'?15000:1000,
+ }))
+);
 
 export function appendRegisteredStages(legacy, {project, executable, registrations = NATIVE_STAGE_REGISTRATIONS}) {
  requireValue(Array.isArray(registrations), 'Native stage registrations must be an array');

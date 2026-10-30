@@ -7,6 +7,20 @@ const Lighting=preload("res://campuses/future_learning_center/scripts/floor_ligh
 const Transit=preload("res://campuses/future_learning_center/scripts/building_transit.gd")
 const Workbench=preload("res://campuses/future_learning_center/scripts/workbench_view.gd")
 const Stairs=preload("res://campuses/future_learning_center/scripts/stair_view.gd")
+const PuzzleAnchors = {
+ "flex_c": ["flex", "flex_c_desk_138"],
+ "collab_b": ["collab", "collab_b_desk_85"],
+ "focus_a": ["focus", "focus_a_desk_16"],
+ "storage": ["storage", "storage_cabinet_12"],
+ "seminar_3": ["assembly", "seminar_3_discussion_table_7"],
+ "seminar_2": ["rail", "seminar_2_discussion_table_2"],
+ "seminar_1": ["rules", "seminar_1_whiteboard_0"],
+}
+var puzzle_views:Dictionary={}
+var puzzle_layer:CanvasLayer
+var active_puzzle:Control
+var puzzle_pending:=""
+var joystick:Control
 var stairs:Control
 var stair_destination:Dictionary={}
 var workbench:Control
@@ -51,6 +65,7 @@ func _ready()->void:
 	add_child(camera);camera.enabled=true;camera.position_smoothing_enabled=false
 	_build_ui()
 	var bench_layer:=CanvasLayer.new();bench_layer.layer=5;add_child(bench_layer)
+	puzzle_layer=bench_layer
 	workbench=Workbench.new();workbench.size=Vector2(960,540);bench_layer.add_child(workbench)
 	workbench.closed.connect(func()->void:ui.show();route.clear();workbench_pending=false)
 	stairs=Stairs.new();stairs.size=Vector2(960,540);bench_layer.add_child(stairs)
@@ -65,6 +80,9 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	var next_space=FloorSpace.new();next_space.configure(next)
 	var foot:=Vector2(next.spawn[0],next.spawn[1]) if not arrival.is_finite() else arrival
 	if not next_space.can_stand(foot-Body.FOOT_CENTER_OFFSET):return false
+	if is_instance_valid(active_puzzle):active_puzzle.close()
+	puzzle_pending=""
+	if is_instance_valid(joystick):joystick.release()
 	if is_instance_valid(workbench) and workbench.visible:workbench.close()
 	if is_instance_valid(stairs):stairs.model.cancel();stairs.hide();stair_destination.clear();ui.show()
 	workbench_pending=false
@@ -118,12 +136,13 @@ func _texture(path:String)->Texture2D:
 func _process(dt:float)->void:
 	elapsed+=dt
 	if capture_only:return
+	if is_instance_valid(active_puzzle) and active_puzzle.visible:return
 	if is_instance_valid(workbench) and workbench.visible:return
 	if is_instance_valid(stairs) and stairs.visible:return
 	var direction:=Vector2.ZERO
 	if user_control and not overview:
 		direction=Vector2(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),int(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-int(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))+touch_vector
-		if direction.length_squared()>0:route.clear();direction=direction.normalized()
+		if direction.length_squared()>0:route.clear();puzzle_pending="";direction=direction.limit_length()
 		elif not route.is_empty():
 			# Follow the validated corner all the way before taking the next leg.
 			# Skipping it four pixels early can cut into a chair's foot collider.
@@ -140,16 +159,18 @@ func _process(dt:float)->void:
 	elif motion.length()>0:route.clear()
 	if not space.can_stand(player):invalid_frames+=1
 	framing.update(dt,player,space,false,overview);_apply_camera()
+	if not puzzle_pending.is_empty() and route.is_empty():
+		var pending:=puzzle_pending;puzzle_pending="";open_puzzle(pending)
 	if workbench_pending and route.is_empty():
 		workbench_pending=false;open_workbench()
 	if is_instance_valid(place_label):
 		var room:Dictionary=space.room_at(player+Body.FOOT_CENTER_OFFSET)
 		var landing:Dictionary=transit.nearby(data,player)
 		transit_button.visible=not landing.is_empty() and not overview
-		if not landing.is_empty():transit_button.text=str(landing.name)+" · E"
+		if not landing.is_empty():transit_button.text=str(landing.name)
 		elif is_instance_valid(transit_panel):transit_panel.hide()
 		place_label.text=("%dF 全层总览"%int(data.floor)) if overview else str(room.get("name","环廊"))+object_hint
-		if can_open_workbench() and not overview:place_label.text+="  ·  操作台 Space"
+		if can_open_workbench() and not overview:place_label.text+="  ·  操作台"
 	queue_redraw()
 
 func _apply_camera()->void:
@@ -162,6 +183,7 @@ func set_foot(point:Vector2,snap:=true)->bool:
 
 func _unhandled_input(event:InputEvent)->void:
 	if not user_control:return
+	if is_instance_valid(active_puzzle) and active_puzzle.visible:return
 	if is_instance_valid(stairs) and stairs.visible:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_TAB:toggle_overview();get_viewport().set_input_as_handled()
@@ -181,6 +203,7 @@ func screen_to_world(screen:Vector2)->Vector2:return framing.center+(screen-Room
 func world_to_screen(point:Vector2)->Vector2:return (point-framing.center)*framing.zoom+RoomCamera.VIEW/2
 func request_walk(foot:Vector2)->void:
 	if overview:return
+	puzzle_pending=""
 	workbench_pending=false
 	route=space.route(player,foot-Body.FOOT_CENTER_OFFSET)
 func workshop_bench()->Dictionary:
@@ -198,6 +221,15 @@ func open_workbench()->bool:
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
 	workbench.open();ui.hide();return true
 func point_action(at:Vector2)->void:
+	if int(data.floor)==4:
+		for key:String in PuzzleAnchors:
+			var anchor:=puzzle_anchor(key)
+			if not anchor.is_empty() and Space.rect(anchor.bounds).has_point(at):
+				if open_puzzle(key):return
+				var approach:=puzzle_approach(key)
+				if approach.is_finite():
+					request_walk(approach);puzzle_pending=key
+				return
 	var item:=workshop_bench()
 	if not item.is_empty() and Space.rect(item.bounds).has_point(at):
 		if open_workbench():return
@@ -222,18 +254,15 @@ func _build_ui()->void:
 	var choices:=HBoxContainer.new();transit_panel.add_child(choices)
 	for f:int in Transit.FLOORS:
 		var choice:=Button.new();choice.name=str(f);choice.text="%dF"%f;choice.custom_minimum_size=Vector2(90,70);choice.add_theme_font_override("font",font);choices.add_child(choice);choice.pressed.connect(func()->void:travel_to(f))
-	var button:=Button.new();button.text="楼层总图 · Tab";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
+	var button:=Button.new();button.text="楼层总图";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
 	var footer:=ColorRect.new();footer.color=Color(.035,.055,.085,.86);footer.position=Vector2(0,509);footer.size=Vector2(960,31);footer.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(footer)
 	place_label=Label.new();place_label.position=Vector2(18,513);place_label.add_theme_font_override("font",font);place_label.add_theme_font_size_override("font_size",14);panel.add_child(place_label)
-	var hint:=Label.new();hint.text="WASD / 方向键行走  ·  点击地面前往";hint.position=Vector2(602,513);hint.add_theme_font_override("font",font);hint.add_theme_font_size_override("font_size",13);panel.add_child(hint)
 	var touch_enabled:=OS.has_feature("mobile") or OS.get_environment("FLC_TOUCH")=="1"
 	if OS.has_feature("web"):touch_enabled=bool(JavaScriptBridge.eval("window.matchMedia('(pointer: coarse)').matches"))
 	if touch_enabled:
-		hint.text="轻触地面前往  ·  左下方向键移动"
-		for entry:Array in [["↑",Vector2(76,374),Vector2.UP],["↓",Vector2(76,450),Vector2.DOWN],["←",Vector2(38,412),Vector2.LEFT],["→",Vector2(114,412),Vector2.RIGHT]]:
-			var control:=Button.new();control.text=entry[0];control.position=entry[1];control.size=Vector2(38,38);control.add_theme_font_size_override("font_size",22);panel.add_child(control)
-			control.button_down.connect(func()->void:touched_buttons[entry[0]]=entry[2];_touch_changed())
-			control.button_up.connect(func()->void:touched_buttons.erase(entry[0]);_touch_changed())
+		joystick=load("res://campuses/future_learning_center/scripts/puzzles/walk_joystick.gd").new()
+		joystick.position=Vector2(20,350);joystick.size=Vector2(140,140);panel.add_child(joystick)
+		joystick.changed.connect(func(value:Vector2)->void:touch_vector=value)
 
 func _touch_changed()->void:
 	touch_vector=Vector2.ZERO
@@ -314,6 +343,7 @@ func _draw()->void:
 		if item.get("actor",false):_draw_actor()
 		else:
 			_draw_prop(item)
+			_draw_puzzle_prop(item)
 			if item.id==data.get("workshopReference",{}).get("bench",""):
 				var b:Rect2=Space.rect(item.bounds)
 				Workbench.mini(self,b.position+Vector2(40,6),1.1,workbench.model)
@@ -381,3 +411,72 @@ func _draw_covers()->void:
 		if not hit.has_area():continue
 		var slice:=Rect2((hit.position-origin)/float(item.scale),hit.size/float(item.scale))
 		draw_texture_rect_region(textures[item.path],hit,slice,Color(1,1,1,.78))
+
+# Native object stations are review-only: they do not modify story/save authority.
+func puzzle_anchor(key:String)->Dictionary:
+	if int(data.get("floor",0))!=4 or not PuzzleAnchors.has(key):return {}
+	for item:Dictionary in data.get("objects",[]):
+		if str(item.id)==str(PuzzleAnchors[key][1]):return item
+	return {}
+
+func puzzle_approach(key:String)->Vector2:
+	var item:=puzzle_anchor(key)
+	if item.is_empty():return Vector2.INF
+	var box:Rect2=Space.rect(item.footprint)
+	var best:=Vector2.INF
+	var distance:=INF
+	for offset:Vector2 in [Vector2(0,65),Vector2(-65,0),Vector2(65,0),Vector2(0,-65)]:
+		var point:=box.get_center()+offset+Vector2(signf(offset.x)*box.size.x/2,signf(offset.y)*box.size.y/2)
+		var target:=point-Body.FOOT_CENTER_OFFSET
+		if not space.can_stand(target):continue
+		var path:PackedVector2Array=space.route(player,target)
+		if path.is_empty() and player.distance_to(target)>1:continue
+		var length:=0.0;var previous:=player
+		for waypoint:Vector2 in path:length+=previous.distance_to(waypoint);previous=waypoint
+		if length<distance:distance=length;best=point
+	return best
+
+func open_puzzle(key:String)->bool:
+	var item:=puzzle_anchor(key)
+	if item.is_empty() or overview:return false
+	var box:Rect2=Space.rect(item.footprint)
+	var foot:=player+Body.FOOT_CENTER_OFFSET
+	if foot.distance_to(foot.clamp(box.position,box.end))>105:return false
+	if not puzzle_views.has(key):
+		var script=load("res://campuses/future_learning_center/scripts/puzzles/%s_view.gd"%PuzzleAnchors[key][0])
+		if script==null:return false
+		var view:Control=script.new();view.size=Vector2(960,540);puzzle_layer.add_child(view)
+		view.closed.connect(func()->void:active_puzzle=null;ui.show();route.clear();puzzle_pending="")
+		puzzle_views[key]=view
+	if is_instance_valid(active_puzzle):active_puzzle.close()
+	route.clear();puzzle_pending="";touch_vector=Vector2.ZERO
+	if is_instance_valid(joystick):joystick.release()
+	active_puzzle=puzzle_views[key];active_puzzle.open();ui.hide();return true
+
+func _draw_puzzle_prop(item:Dictionary)->void:
+	if int(data.floor)!=4:return
+	var key:=""
+	for candidate:String in PuzzleAnchors:
+		if item.id==PuzzleAnchors[candidate][1]:key=candidate;break
+	if key.is_empty():return
+	var box:Rect2=Space.rect(item.bounds)
+	var at:=Vector2(box.get_center().x,box.position.y+box.size.y*.24)
+	# Physical tabletop apparatus, not a floating menu icon.
+	var width:=minf(74,box.size.x*.7)
+	draw_rect(Rect2(at-Vector2(width/2,4),Vector2(width,24)),Color("545957"))
+	draw_rect(Rect2(at-Vector2(width/2,8),Vector2(width,24)),Color("d7d3c4"))
+	if key=="flex_c":
+		for i:int in 3:
+			var x:=at.x-25+i*24
+			draw_line(Vector2(x,at.y-4),Vector2(x+5,at.y+10),Color("444f51"),3)
+	elif key in ["collab_b","seminar_3"]:
+		draw_line(at+Vector2(-25,4),at+Vector2(25,4),Color("ded7a5"),2)
+		draw_rect(Rect2(at+Vector2(-8,-14),Vector2(5,26)),Color("4b5557"))
+	elif key=="seminar_2":
+		draw_line(at+Vector2(-30,8),at+Vector2(30,8),Color("4b5557"),3)
+		for x:int in [-18,18]:draw_rect(Rect2(at+Vector2(x,-2),Vector2(10,8)),Color("77745e"))
+	elif key=="storage":
+		draw_rect(Rect2(at+Vector2(-24,-8),Vector2(22,18)),Color("a49172"))
+		draw_rect(Rect2(at+Vector2(4,-5),Vector2(23,15)),Color("bcad90"))
+	else:
+		for i:int in 3:draw_circle(at+Vector2(-22+i*22,3),5,Color("687670"))

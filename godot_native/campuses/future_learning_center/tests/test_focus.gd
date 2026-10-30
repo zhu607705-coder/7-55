@@ -1,0 +1,72 @@
+extends SceneTree
+const View = preload("res://campuses/future_learning_center/scripts/puzzles/focus_view.gd")
+const Model = preload("res://campuses/future_learning_center/scripts/puzzles/focus_model.gd")
+var checks := 0
+var failures := 0
+func check(value: bool, label: String) -> void:
+	checks += 1
+	if not value: failures += 1; printerr("FOCUS_FAIL: " + label)
+func _initialize() -> void:
+	var base_solutions := 0
+	for bits: int in 16:
+		var m = Model.new()
+		for i: int in 4: m.connect_device(i, (bits >> i) & 1)
+		if m.valid_mode(0) and m.valid_mode(1): base_solutions += 1
+	check(base_solutions == 4, "four equivalent base groupings")
+	var extension_solutions := 0
+	for bits: int in 32:
+		var m = Model.new(); m.set_extension(true)
+		for i: int in 5: m.connect_device(i, (bits >> i) & 1)
+		if m.valid_mode(0) and m.valid_mode(1): extension_solutions += 1
+	check(extension_solutions == 2, "two equivalent extension groupings")
+	var m = Model.new()
+	check(not m.valid_mode(1) and m.valid_mode(0), "initial idle masks work overload")
+	check(not m.connect_device(-1, 0) and not m.connect_device(4, 0) and not m.connect_device(0, 2), "invalid socket/device rejected")
+	check(m.revision == 0, "invalid edits cannot invalidate evidence")
+	m.start(0); m.step(2)
+	check(m.receipts.has(0) and not m.completed, "idle alone cannot complete")
+	m.connect_device(1, 1); m.connect_device(2, 0)
+	check(m.receipts.is_empty() and m.history.size() == 1, "edits archive old evidence")
+	m.start(1); m.step(.4); m.pause(); m.step(10)
+	check(is_equal_approx(m.elapsed, .4) and m.receipts.is_empty(), "paused trial never advances")
+	m.resume(); m.step(1)
+	check(m.receipts.has(1) and not m.completed, "working alone cannot mix old idle")
+	m.start(0); m.step(1.2)
+	check(m.completed, "same configuration both modes complete")
+	m.connect_device(0, -1)
+	check(m.completed and not m.valid_mode(0), "completion monotonic but current wiring evaluated")
+	m.start(0); m.cancel(); m.step(10)
+	check(m.receipts.is_empty(), "close/cancel never finishes hidden trial")
+	check(m.undo() and m.all_connected(), "undo restores plug without restoring stale receipts")
+	check(m.receipts.is_empty(), "undo requires fresh validation")
+	var before: Array = m.assignments.duplicate()
+	m.start(0); m.step(NAN); m.step(-1); m.step(INF)
+	check(m.elapsed == 0 and m.assignments == before, "invalid dt harmless")
+	m.connect_device(1, 0); m.step(10)
+	check(not m.running and m.receipts.is_empty(), "mid-trial edit cancels receipt")
+	m.set_extension(true)
+	for i: int in 5: m.connect_device(i, [1, 0, 0, 1, 0][i])
+	m.start(0); m.step(2); m.start(1); m.step(2)
+	check(m.extension_completed, "dual-state auxiliary extension executable")
+	var solo = Model.new()
+	solo.start(1,0); solo.step(2)
+	check(solo.outcome == "single_passed" and solo.receipts.is_empty() and not solo.completed, "single device trial cannot certify full branch")
+	check(solo.displayed_loads() == [3,0] and not solo.device_powered(1), "single device trace powers only actual selected device")
+	var view = View.new()
+	var rev: int = view.model.revision
+	var start: Vector2 = view.plug_position(0)
+	view.press_at(start); view.release_at(Vector2(20,200))
+	check(view.model.revision == rev and view.model.assignments[0] == 0, "bad drop preserves wiring")
+	view.press_at(start); view.cancel_pointer(); view.release_at(view.socket_position(1,0))
+	check(view.model.revision == rev, "cancelled pointer cannot plug on later release")
+	view.press_at(start); view.release_at(view.socket_position(1,0))
+	check(view.model.assignments[0] == 1, "actual drag commits target socket")
+	view.press_at(view.plug_position(0)); view.release_at(view.plug_position(0)); view.press_at(view.socket_position(0,0))
+	check(view.model.assignments[0] == 0 and view.selected == -1, "tap-select tap-socket equals drag")
+	view.model.start(0); view.model.step(.5); view._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	check(view.model.paused and view.touch_id == -1, "view focus loss pauses and releases pointer")
+	view.close(); view.model.step(10)
+	check(not view.model.running and view.model.receipts.is_empty(), "view close cannot complete background trial")
+	view.free()
+	print("FLC_FOCUS: %d checks, %d failures" % [checks, failures])
+	quit(1 if failures else 0)

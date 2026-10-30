@@ -25,6 +25,8 @@ function copy(relative){
 }
 copy('samples/future_learning_center/standalone.gd');
 const campus='campuses/future_learning_center';
+// Station scripts are loaded by registry at runtime, not static preload.
+for(const name of fs.readdirSync(path.join(native,campus,'scripts/puzzles')))if(name.endsWith('.gd'))copy(campus+'/scripts/puzzles/'+name);
 for(const name of ['floor_2.json','floor_3.json','floor_4.json','object_assets.json'])copy(campus+'/data/'+name);
 for(const dir of ['assets/rooms','assets/objects'])for(const name of fs.readdirSync(path.join(native,campus,dir)))if(name.endsWith('.png'))copy(campus+'/'+dir+'/'+name);
 // Atrium resources can live outside the room directory; copy exact source refs.
