@@ -55,7 +55,8 @@ func check_chooser(viewport: Vector2i) -> void:
 	var bounds:=Rect2(Vector2.ZERO,Vector2(viewport))
 	check(current_scene.has_method("open_campus") and current_scene.has_method("open_haidian") and current_scene.has_method("open_changping"),"The same chooser provides all three independent campuses")
 	check(bounds.encloses(current_scene.card.get_global_rect()),"Four-entry chooser fits "+str(viewport))
-	for button: Button in [current_scene.story_button,current_scene.campus_button,current_scene.haidian_button,current_scene.changping_button]:
+	for button: Button in [current_scene.story_button,current_scene.flc_button,current_scene.campus_button,current_scene.haidian_button,current_scene.changping_button,current_scene.preview_button]:
+		if not is_instance_valid(button) or not button.is_visible_in_tree():continue
 		check(bounds.encloses(button.get_global_rect()),"Chooser button fits: "+str(button.name))
 		check(button.size.y>=44,"Chooser button retains 44px minimum target: "+str(button.name))
 	check(current_scene.campus_button.name=="OpenBuctCampus" and current_scene.haidian_button.name=="OpenBuctHaidian","Original and new campus entry identities remain distinct")

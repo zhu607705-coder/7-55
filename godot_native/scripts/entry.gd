@@ -143,6 +143,10 @@ func _layout() -> void:
 	var short_window:=available.y<420
 	content.add_theme_constant_override("separation",3 if short_window else 6 if compact else 14)
 	title.add_theme_font_size_override("font_size",24 if short_window else 40 if compact else 64)
+	# Short landscape windows keep every 44px entry, not redundant group copy.
+	story_heading.visible=not short_window
+	if is_instance_valid(campus_heading):campus_heading.visible=not short_window
+	if detail.text in ["", "不影响主线进度"]:detail.visible=not short_window and not ReleaseContent.story_only()
 	story_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
 	if is_instance_valid(campus_heading):campus_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
 	detail.add_theme_font_size_override("font_size",13 if short_window else 15 if compact else 17)
