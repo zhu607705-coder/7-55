@@ -58,7 +58,7 @@ func set_scenario(value:int)->bool:
 	scenario=value;_changed();return true
 func place_on_track(value:bool)->void:
 	cancel();on_track=value
-	if value:_reset_cars();ticks=0;segments.clear()
+	if value:_reset_cars();ticks=0;segments.clear();outcome=""
 func start()->bool:
 	if running or not on_track or panel<0 or gear<0:return false
 	_reset_cars();segments.clear();ticks=0;accumulator=0;trial_revision=revision;running=true;outcome="";return true

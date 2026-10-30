@@ -5,7 +5,7 @@ const INK:=Color("283c43")
 const PAPER:=Color("e8e1cf")
 const BENCH_CAR:=Vector2(480,365)
 const TILT_KNOB:=Vector2(593,386)
-const GATE:=Vector2(850,342)
+const GATE:=Vector2(595,273)
 const LAMP:=Vector2(835,93)
 const PANEL_TRAYS:=[Vector2(112,382),Vector2(245,382)]
 const GEAR_TRAYS:=[Vector2(390,460),Vector2(462,460),Vector2(534,460)]
@@ -53,7 +53,7 @@ func _input(event:InputEvent)->void:
 	else:return
 	get_viewport().set_input_as_handled();queue_redraw()
 func race_point(distance:float,lane:int)->Vector2:
-	var a:=distance/20*TAU-PI/2
+	var a:=distance/20*TAU+PI/2
 	return Vector2(480,184)+Vector2(cos(a)*(345-lane*22),sin(a)*(65-lane*18))
 func press(at:Vector2)->void:
 	pointer=at;origin=at;action="";grip_offset=Vector2.ZERO
@@ -104,7 +104,7 @@ func panel_at(at:Vector2,id:int,angle:float,scale_value:=1.0)->void:
 	var height:=maxf(9,32*cos(deg_to_rad(angle)))*scale_value
 	slab(Rect2(at-Vector2(width/2,height/2),Vector2(width,height)),Color("547d84"),4*scale_value)
 	for i:int in 4:draw_line(at+Vector2(-width/2+width*(i+1)/5,-height/2+2),at+Vector2(-width/2+width*(i+1)/5,height/2-2),Color("a5bcb3"),scale_value)
-func car_at(at:Vector2,config:Array,scale_value:=1.0,distance:=0.0,angle_override:float=-1)->void:
+func car_at(at:Vector2,config:Array,scale_value:=1.0,distance:=0.0,angle_override:float=-1,identity:int=0)->void:
 	for x:float in [-32,32]:
 		for y:float in [-15,15]:
 			var hub:=at+Vector2(x,y)*scale_value
@@ -116,11 +116,26 @@ func car_at(at:Vector2,config:Array,scale_value:=1.0,distance:=0.0,angle_overrid
 		draw_circle(gear_at,(8+config[2]*2)*scale_value,INK)
 		draw_circle(gear_at,(5+config[2]*2)*scale_value,Color("b8ba9d"))
 		draw_line(gear_at,gear_at+Vector2(cos(distance*12),sin(distance*12))*6*scale_value,INK,2*scale_value)
+	# Number and nose shape persist on the bench, track and comparison slip.
+	var badge:=at+Vector2(-46,-5)*scale_value
+	identity_mark(badge,identity,maxf(.65,scale_value))
+func identity_mark(at:Vector2,id:int,scale_value:=1.0)->void:
+	if id==0:draw_circle(at,12*scale_value,INK)
+	else:draw_rect(Rect2(at-Vector2(12,12)*scale_value,Vector2(24,24)*scale_value),INK)
+	text("1" if id==0 else "2",at+Vector2(-4,5)*scale_value,maxi(12,roundi(14*scale_value)),PAPER)
+func config_caption(config:Array)->String:
+	return "%s · %d° · %s"%["未装板" if config[0]<0 else ("小板" if config[0]==0 else "大板"),Model.TILTS[config[1]],"未装齿" if config[2]<0 else "%.1f"%Model.RATIOS[config[2]]]
+func comparison_distance(id:int)->float:return model.cars[id].distance
+func current_outcome()->String:return model.outcome if model.time()>=30 else ""
+func history_caption()->String:
+	if model.records.is_empty():return "还没有完成的试跑。"
+	var record:Dictionary=model.records[-1]
+	return "上次来光 %d° · 阴影 10–%d 秒"%[30 if record.scenario==0 else 60,16 if record.scenario==0 else 18]
 func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("c3c9bc"))
 	for y:int in range(80,540,34):draw_line(Vector2(0,y),Vector2(960,y+8),Color("b4bdad"),1)
-	text("方程式车队 · 同一束阳光",Vector2(32,36),23);text("装好小车，放上跑道，与基准车跑同一个光照片段。",Vector2(33,65),16);text("返回",Vector2(878,40),17)
+	text("让 1 号车在同一段阳光下，比 2 号基准车跑得远。",Vector2(32,36),21);text("返回",Vector2(878,40),17)
 	for lane:int in 2:
 		var loop:=PackedVector2Array()
 		for n:int in 97:loop.append(race_point(float(n)/96*20,lane))
@@ -128,17 +143,21 @@ func _draw()->void:
 		for n:int in 20:
 			var at:=race_point(n,lane);draw_line(at-Vector2(0,4),at+Vector2(0,4),PAPER,1)
 	if model.on_track:car_at(held_position() if action=="car" else race_point(model.cars[0].distance,0),model.configuration(),.4,model.cars[0].distance,panel_tilt())
-	car_at(race_point(model.cars[1].distance,1),model.baseline(),.35,model.cars[1].distance)
-	# Faint marks are measured positions from the previous completed run, never a canned opponent path.
-	for previous:Dictionary in model.records.slice(maxi(0,model.records.size()-1)):
-		if previous.scenario==model.scenario:
-			for row:Dictionary in previous.segments:
-				var mark:=race_point(row.player,0)
-				draw_arc(mark,8,0,TAU,16,Color(.77,.63,.37,.65),2)
-			text("上次分段刻痕",Vector2(655,282),13)
-	text("你的车  %.2f"%model.cars[0].distance,Vector2(392,165),18)
-	text("基准车  %.2f"%model.cars[1].distance,Vector2(392,193),18)
-	text("%.1f / 30 模拟秒"%model.time(),Vector2(402,220),14)
+	car_at(race_point(model.cars[1].distance,1),model.baseline(),.4,model.cars[1].distance,-1,1)
+	# Results align with persistent physical number plates, not anonymous lane colors.
+	for id:int in 2:
+		var y:=163+id*34
+		identity_mark(Vector2(335,y-5),id,.8)
+		text("你的车 · 外道" if id==0 else "基准车 · 内道",Vector2(355,y),15)
+		text("%.2f"%comparison_distance(id),Vector2(514,y),18)
+		draw_line(Vector2(590,y-5),Vector2(710,y-5),Color("a4af9e"),5)
+		draw_line(Vector2(590,y-5),Vector2(590+minf(comparison_distance(id)/80,1)*120,y-5),INK,5)
+	text("%.1f / 30 秒 · 累计距离"%model.time(),Vector2(365,86),14)
+	var start:=race_point(0,0)
+	draw_line(start-Vector2(19,13),start+Vector2(19,13),PAPER,3)
+	draw_line(start-Vector2(19,-13),start+Vector2(19,-13),PAPER,3)
+	draw_dashed_line(BENCH_CAR-Vector2(0,43),start+Vector2(0,17),Color("657367"),2,5)
+	if not model.on_track:text("将 1 号车放在起跑线",Vector2(330,291),14)
 	var light:float=model.irradiance(model.time())
 	draw_line(LAMP+Vector2(0,18),Vector2(480,110),Color(.94,.87,.59,light*.5),8)
 	draw_line(LAMP, LAMP+Vector2(-25 if model.scenario==0 else -44,25),INK,8)
@@ -146,14 +165,24 @@ func _draw()->void:
 	if light<.3:
 		draw_rect(Rect2(103,104,748,167),Color(.22,.29,.27,.16))
 		slab(Rect2(LAMP+Vector2(-40,20),Vector2(55,16)),Color("727a70"),3)
-	text("30°" if model.scenario==0 else "60°",LAMP+Vector2(26,7),14)
+	text("来光 %s"%("30°" if model.scenario==0 else "60°"),LAMP+Vector2(-27,-28),14)
 	slab(Rect2(55,316,760,111),Color("937e5e"),15)
+	text("选板",Vector2(76,340),14)
+	text("1 号装配位" if not model.on_track else "1 号本轮配置",Vector2(423,340),15)
+	text("2 号固定参照",Vector2(677,340),15)
 	for i:int in 2:
 		draw_rect(Rect2(PANEL_TRAYS[i]-Vector2(53,28),Vector2(106,56)),Color("c1b99f"),false,2)
 		if model.panel!=i:panel_at(held_position() if action=="panel" and part==i else PANEL_TRAYS[i],i,0)
-		text("小板 · 0.4" if i==0 else "大板 · 1.1",PANEL_TRAYS[i]+Vector2(-40,49),14)
+		text("小板 · 0.4" if i==0 else "大板 · 1.1",PANEL_TRAYS[i]+Vector2(-40,27),14)
 	if not model.on_track:car_at(held_position() if action=="car" else BENCH_CAR,model.configuration(),1,0,panel_tilt())
-	else:draw_rect(Rect2(BENCH_CAR-Vector2(42,28),Vector2(84,56)),Color("c6baa0"),false,2)
+	else:
+		slab(Rect2(407,346,145,49),PAPER,2)
+		draw_line(Vector2(414,350),Vector2(426,350),INK,3)
+		car_at(BENCH_CAR,model.configuration(),.72)
+	car_at(Vector2(735,370),model.baseline(),.65,0,-1,1)
+	text(config_caption(model.configuration()),Vector2(401,416),13)
+	text(config_caption(model.baseline()),Vector2(663,416),13)
+	if model.on_track:text("取回实车再调整",Vector2(635,499),14)
 	for i:int in 3:
 		var at:Vector2=held_position() if action=="gear" and part==i else GEAR_TRAYS[i]
 		draw_arc(GEAR_TRAYS[i],25,0,TAU,20,Color("818a78"),1)
@@ -161,21 +190,22 @@ func _draw()->void:
 			draw_circle(at,15+i*4,INK);draw_circle(at,11+i*4,Color("aaa98c"));draw_circle(at,4,INK)
 		text(str(Model.RATIOS[i]),GEAR_TRAYS[i]+Vector2(-10,39),14)
 	draw_circle(TILT_KNOB,22,INK);draw_circle(TILT_KNOB,17,Color("b5b593"));draw_line(TILT_KNOB,TILT_KNOB+Vector2(0,-15).rotated(deg_to_rad(panel_tilt()-30)),PAPER,3)
-	text("%.0f°"%panel_tilt(),TILT_KNOB+Vector2(-12,41),15)
+	text("板倾角 %.0f°"%panel_tilt(),TILT_KNOB+Vector2(-36,41),14)
 	draw_circle(GATE+Vector2(0,13),24,INK);draw_line(GATE+Vector2(0,13),GATE+Vector2(0,-22 if model.running else -7),Color("d2c4a6"),8);draw_circle(GATE+Vector2(0,-22 if model.running else -7),11,Color("9c7850"))
-	text("发车闸",GATE+Vector2(-24,53),15)
+	text("发车闸",GATE+Vector2(30,8),15)
 	slab(Rect2(45,450,145,60),PAPER,5);text("试车记录",Vector2(77,477),18);text("按需翻阅",Vector2(78,500),14)
 	text("教学模型 · 距离为模型单位",Vector2(655,522),13)
-	if not model.outcome.is_empty():text(model.outcome,Vector2(635,477),18)
+	if not current_outcome().is_empty():text(current_outcome(),Vector2(635,477),18)
 	if notebook:
 		slab(Rect2(105,95,750,361),PAPER,8)
-		text("本场与历史轨迹",Vector2(132,134),23)
-		text("阴影区间：10–%d 秒；两车共用同一灯光。"%int(model.shadow_end()),Vector2(132,172),17)
+		text("本场与历史轨迹 · 1 号 / 2 号",Vector2(132,134),23)
+		text(history_caption(),Vector2(132,172),17)
 		if not model.records.is_empty():
 			var record:Dictionary=model.records[-1]
+			text("1 号配置："+config_caption(record.configuration),Vector2(132,201),16)
 			for i:int in record.segments.size():
 				var row:Dictionary=record.segments[i]
-				text("%.0fs  %.1f / %.1f"%[row.time,row.player,row.baseline],Vector2(132+i*165,213),15)
-		text("个人纪录 %.2f · %.2f"%[model.personal_best[0],model.personal_best[1]],Vector2(132,246),16)
+				text("%.0fs  %.1f / %.1f"%[row.time,row.player,row.baseline],Vector2(132+i*165,234),15)
+		text("个人纪录 %.2f · %.2f"%[model.personal_best[0],model.personal_best[1]],Vector2(132,269),16)
 		for i:int in hint_level:text(HINTS[i],Vector2(132,291+i*36),17)
 		text("翻下一页提示",Vector2(670,443),17)

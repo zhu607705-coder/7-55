@@ -44,7 +44,7 @@ func edit_token(slot:int,fill_only:bool=false)->bool:
  if card>=0:custom.assign(VECTORS[card])
  card=-1
  custom[slot]=custom[slot]^1 if fill_only else ((custom[slot]/2+1)%4)*2+custom[slot]%2
- cancel();work=forward(custom);return true
+ cancel();work=forward(custom);frames.clear();outcome="";return true
 func start()->bool:
  if running:return false
  running=true;paused=false;elapsed=0;step_index=0;trial_revision=revision;trial_card=card;work=forward(original());frames=[work.duplicate()];outcome="";return true
