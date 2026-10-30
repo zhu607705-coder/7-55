@@ -11,7 +11,7 @@ func _ready()->void:
 	var area:=OS.get_environment("FLC_REVIEW_AREA")
 	if OS.has_feature("web"):area=str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('area') || ''"))
 	if area in world.PuzzleAnchors:
-		world.load_floor(4)
+		world.load_floor(int(world.PuzzleAnchors[area][2]))
 		var approach:Vector2=world.puzzle_approach(area)
 		if approach.is_finite():world.set_foot(approach)
 		else:push_error("Puzzle review approach is blocked: "+area)

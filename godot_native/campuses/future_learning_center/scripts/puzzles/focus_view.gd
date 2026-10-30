@@ -58,7 +58,9 @@ func socket_position(branch: int, device: int) -> Vector2:
 	return BRANCH_POS[branch] + Vector2(-62 + device * 30, 28)
 func _gui_input(event: InputEvent) -> void:
 	if not visible: return
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION: return
 	if event is InputEventScreenTouch:
+		if event.canceled and event.index == touch_id: cancel_pointer(); accept_event(); return
 		if event.pressed and touch_id < 0:
 			touch_id = event.index; press_at(event.position)
 		elif not event.pressed and touch_id == event.index:
@@ -192,9 +194,13 @@ func _draw() -> void:
 		_text("预热模块",Vector2(794,338),16);_text("2 / 0",Vector2(821,366),18)
 		draw_circle(DEVICE_POS[4]+Vector2(25,59),8,INK)
 	else:
-		_plinth(Rect2(782,311,132,102),Color("8a7761"))
-		_text("辅助模块",Vector2(798,345),16,PAPER)
-		draw_rect(Rect2(809,365,77,23),INK);_text("＋",Vector2(838,384),20,PAPER)
+		# A spare heater cartridge in its storage cradle, not an add button.
+		draw_rect(Rect2(782,311,132,102),Color("665b4c"))
+		_plinth(Rect2(795,322,106,72),Color("9caa9e"),5)
+		for y:int in range(337,376,9):draw_line(Vector2(811,y),Vector2(879,y),INK,3)
+		draw_line(Vector2(812,319),Vector2(812,308),INK,4);draw_line(Vector2(885,319),Vector2(885,308),INK,4)
+		draw_line(Vector2(812,308),Vector2(885,308),INK,4)
+		_text("2 / 0",Vector2(825,410),15,PAPER)
 	for i: int in model.device_count():
 		var at: Vector2 = pointer if drag == i else plug_position(i)
 		draw_circle(at,11,INK);draw_circle(at,7,BLUE if i%2==0 else COPPER)

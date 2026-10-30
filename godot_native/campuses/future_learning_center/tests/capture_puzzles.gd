@@ -1,12 +1,14 @@
 extends SceneTree
 var output:=""
 var view:Control
-const NAMES=["flex","collab","focus","storage","assembly","rail","rules"]
+const NAMES=["projection","fold","logic","balance","schedule","recording","access","sync","coupled","perspective","flex","collab","focus","storage","assembly","rail","rules"]
 func _initialize()->void:call_deferred("run")
 func run()->void:
+ if DisplayServer.get_name()=="headless":
+  push_error("Capture requires a real graphical renderer, not the dummy headless renderer");quit(2);return
  root.size=Vector2i(960,540)
  output=OS.get_environment("FLC_CAPTURE_DIR")
- if output.is_empty():output=OS.get_user_data_dir().path_join("flc-4f-captures")
+ if output.is_empty():output=OS.get_user_data_dir().path_join("flc-station-captures")
  DirAccess.make_dir_recursive_absolute(output)
  for name:String in NAMES:
   var script=load("res://campuses/future_learning_center/scripts/puzzles/%s_view.gd"%name)

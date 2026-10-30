@@ -20,7 +20,7 @@ function copy(relative){
  if(relative.endsWith('.gd'))for(const [,dep] of fs.readFileSync(source,'utf8').matchAll(/["']res:\/\/([^"'\n]+)["']/g))if(!dep.includes('%')&&(fs.existsSync(path.join(native,dep))||dep.startsWith('assets/rpg/')))copy(dep);
 }
 const campus='campuses/future_learning_center';
-const suites=['flex','collab','focus','storage','assembly','rail','rules','puzzles_integration','floor'];
+const suites=['flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor'];
 for(const suite of suites)copy(`${campus}/tests/test_${suite}.gd`);
 for(const name of fs.readdirSync(path.join(native,campus,'scripts/puzzles')))if(name.endsWith('.gd'))copy(`${campus}/scripts/puzzles/${name}`);
 for(const floor of [2,3,4]){
@@ -41,5 +41,5 @@ try{
  // Three workers avoid launching every renderer/import cache simultaneously.
  const pending=[...suites];
  await Promise.all(Array.from({length:3},async()=>{while(pending.length){const suite=pending.shift();const log=await run(['--script',`res://${campus}/tests/test_${suite}.gd`,'--','--with-view']);console.log(log.trim());}}));
- console.log('PASS FLC 4F isolated suites; production autoloads absent.');
+ console.log('PASS FLC isolated suites; production autoloads absent.');
 }finally{fs.rmSync(root,{recursive:true,force:true});}

@@ -29692,6 +29692,54 @@
         "basis": "Existing front-facing master; rear ground edge follows measured source-image wall seam. Quantity is a review layout, not a surveyed inventory."
       },
       "evidence": "User confirmed refrigerator at far right of 3F pantry; dimensions and silver finish are review choices."
+    },
+    {
+      "id": "xlab_box_projection_table",
+      "room": "xlab_box",
+      "asset": "desk",
+      "name": "便携透光展示台",
+      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "crop": [
+        50,
+        165,
+        1322,
+        827
+      ],
+      "scale": 0.1203410810067391,
+      "bounds": [
+        4610.454545454545,
+        5750.4779260074265,
+        159.0909090909091,
+        99.52207399257324
+      ],
+      "footprint": [
+        4620,
+        5780,
+        140,
+        70
+      ],
+      "baseline": 5850,
+      "height": 65,
+      "floor": [
+        [
+          4404.738148984199,
+          5661.5094926790225
+        ],
+        [
+          4958.417607223477,
+          5661.5094926790225
+        ],
+        [
+          4973.58690744921,
+          5980.064797419429
+        ],
+        [
+          4404.738148984199,
+          5980.064797419429
+        ]
+      ],
+      "mounted": false,
+      "gameplayStaging": true
     }
   ],
   "lighting": {
@@ -29875,8 +29923,40 @@
     ],
     "scope": "Photo-derived furniture types and materials. Existing architectural layout and colliders retained; exact furniture counts and room assignment are review proposals, not surveyed facts."
   },
+  "projectionReference": {
+    "table": "xlab_box_projection_table",
+    "approaches": [
+      [
+        4550,
+        5815
+      ],
+      [
+        4830,
+        5815
+      ],
+      [
+        4690,
+        5710
+      ],
+      [
+        4690,
+        5920
+      ]
+    ],
+    "doorSweep": [
+      [
+        4276,
+        5938
+      ],
+      [
+        4460,
+        5938
+      ]
+    ],
+    "scope": "White-model gameplay staging; native complete-foot paths verified, not surveyed placement"
+  },
   "objectCounts": {
-    "desk": 91,
+    "desk": 92,
     "chair_front": 32,
     "chair_back": 63,
     "monitor_back": 32,

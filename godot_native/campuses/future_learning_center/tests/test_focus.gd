@@ -6,7 +6,8 @@ var failures := 0
 func check(value: bool, label: String) -> void:
 	checks += 1
 	if not value: failures += 1; printerr("FOCUS_FAIL: " + label)
-func _initialize() -> void:
+func _initialize() -> void: _run.call_deferred()
+func _run() -> void:
 	var base_solutions := 0
 	for bits: int in 16:
 		var m = Model.new()
@@ -52,7 +53,7 @@ func _initialize() -> void:
 	solo.start(1,0); solo.step(2)
 	check(solo.outcome == "single_passed" and solo.receipts.is_empty() and not solo.completed, "single device trial cannot certify full branch")
 	check(solo.displayed_loads() == [3,0] and not solo.device_powered(1), "single device trace powers only actual selected device")
-	var view = View.new()
+	var view = View.new(); root.add_child(view); view.open()
 	var rev: int = view.model.revision
 	var start: Vector2 = view.plug_position(0)
 	view.press_at(start); view.release_at(Vector2(20,200))
@@ -67,6 +68,14 @@ func _initialize() -> void:
 	check(view.model.paused and view.touch_id == -1, "view focus loss pauses and releases pointer")
 	view.close(); view.model.step(10)
 	check(not view.model.running and view.model.receipts.is_empty(), "view close cannot complete background trial")
-	view.free()
+	view.open()
+	var mouse:=InputEventMouseButton.new();mouse.device=InputEvent.DEVICE_ID_EMULATION;mouse.button_index=MOUSE_BUTTON_LEFT;mouse.pressed=true;mouse.position=View.LEVER
+	var mode_before:int=view.model.mode;view._gui_input(mouse)
+	check(view.model.mode==mode_before and not view.model.running,"emulated mouse cannot operate physical lever twice")
+	var touch:=InputEventScreenTouch.new();touch.index=2;touch.pressed=true;touch.position=view.plug_position(0);view._gui_input(touch)
+	touch.canceled=true;touch.position=view.socket_position(1,0);view._gui_input(touch)
+	check(view.touch_id==-1 and view.drag==-1,"pressed cancellation also releases captured plug")
+	view.queue_free()
+	await process_frame
 	print("FLC_FOCUS: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)

@@ -6,6 +6,11 @@ const PAPER:=Color("e8e5d7")
 const COLORS:=[Color("688986"),Color("a78b65")]
 var model=Model.new()
 var font:Font
+const TRAILER_TRAY:=Vector2(790,470)
+var trailer_drag:=false
+var trailer_selected:=false
+var trailer_origin:=Vector2.ZERO
+var coupling_blocked:=false
 var selected:=-1
 var drag:=-1
 var touch_id:=-1
@@ -20,7 +25,7 @@ func _ready()->void:
 	font=load("res://scripts/ui/native_typography.gd").body_font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:selected=-1;drag=-1;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:trailer_drag=false;trailer_selected=false;selected=-1;drag=-1;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
@@ -34,7 +39,9 @@ func cart_position(id:int)->Vector2:
 	return at
 func _gui_input(event:InputEvent)->void:
 	if not visible:return
+	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
 	if event is InputEventScreenTouch:
+		if event.canceled and event.index==touch_id:cancel_pointer();accept_event();return
 		if event.pressed and touch_id<0:touch_id=event.index;press_at(event.position)
 		elif not event.pressed and touch_id==event.index:
 			if event.canceled:cancel_pointer()
@@ -55,7 +62,7 @@ func _gui_input(event:InputEvent)->void:
 			elif focus_index==2:model.toggle_switch()
 			elif focus_index==3:model.undo()
 			elif focus_index==4:_paper()
-			else:model.set_extension(not model.extension)
+			else:coupling_blocked=not model.couple_trailer(not model.extension)
 		elif selected>=0:
 			if event.keycode==KEY_LEFT:model.dispatch(selected,maxi(0,model.positions[selected]-1))
 			elif event.keycode==KEY_RIGHT:model.dispatch(selected,mini(8,model.positions[selected]+1))
@@ -67,7 +74,13 @@ func press_at(at:Vector2)->void:
 	if Rect2(880,16,58,48).has_point(at):close();return
 	if Rect2(52,442,164,65).has_point(at):_paper();return
 	if Rect2(235,448,64,54).has_point(at):model.undo();return
-	if Rect2(710,437,156,66).has_point(at):model.set_extension(not model.extension);cancel_pointer();return
+	if at.distance_to(trailer_position())<36:
+		if not model.running:trailer_drag=true;trailer_selected=true;trailer_origin=at
+		return
+	if trailer_selected and not model.extension and at.distance_to(cart_position(0))<42:
+		coupling_blocked=not model.couple_trailer(true);trailer_selected=false;return
+	if trailer_selected and model.extension and at.distance_to(TRAILER_TRAY)<45:
+		model.couple_trailer(false);trailer_selected=false;return
 	if at.distance_to(Vector2(580,210))<38:model.toggle_switch();return
 	for i:int in 2:
 		if at.distance_to(cart_position(i))<36:
@@ -75,7 +88,15 @@ func press_at(at:Vector2)->void:
 			if model.running:model.pause();return
 			drag=i;selected=i;return
 	if selected>=0:_dispatch_at(selected,at)
+func trailer_position()->Vector2:
+	return cell_position(model.occupied(0)[1]) if model.extension else TRAILER_TRAY
 func release_at(at:Vector2)->void:
+	if trailer_drag:
+		trailer_drag=false
+		if trailer_origin.distance_to(at)<9:return
+		var target:=TRAILER_TRAY if model.extension else cart_position(0)
+		if at.distance_to(target)<46:coupling_blocked=not model.couple_trailer(not model.extension)
+		trailer_selected=false;queue_redraw();return
 	if drag<0:return
 	var id:=drag;drag=-1
 	if origin.distance_to(at)<9:selected=id;return
@@ -146,7 +167,16 @@ func _draw()->void:
 	if drag>=0 and pointer.distance_to(origin)>9:draw_line(cart_position(drag),pointer,PAPER,2);draw_circle(pointer,7,PAPER)
 	draw_rect(Rect2(55,446,155,54),PAPER);_text("试用者笔记",Vector2(70,479),16)
 	draw_line(Vector2(249,478),Vector2(278,458),INK,8);draw_arc(Vector2(280,456),12,.4,5,16,INK,5)
-	draw_rect(Rect2(718,448,140,48),Color("c6b99a"));_text("卸下挂车" if model.extension else "加挂长载荷",Vector2(728,478),16)
+	# The spare wagon occupies a shallow loading cradle, not an action button.
+	for x:int in [-45,45]:draw_line(TRAILER_TRAY+Vector2(x,-27),TRAILER_TRAY+Vector2(x,29),INK,4)
+	draw_line(TRAILER_TRAY+Vector2(-45,29),TRAILER_TRAY+Vector2(45,29),INK,4)
+	if not model.extension and not trailer_drag:_body(0,TRAILER_TRAY,true)
+	if trailer_drag:_body(0,pointer,true)
+	if trailer_selected and not trailer_drag:draw_arc(trailer_position(),39,0,TAU,32,PAPER,2)
+	if coupling_blocked:
+		var tail:=cart_position(0)-Vector2(80,0)
+		draw_line(tail-Vector2(12,12),tail+Vector2(12,12),Color("944f44"),3)
+		draw_line(tail+Vector2(-12,12),tail+Vector2(12,-12),Color("944f44"),3)
 	if model.completed:_text("已完成运输" + (" · 长载荷" if model.extension_completed else ""),Vector2(350,482),17)
 	if paper_open:
 		draw_rect(Rect2(58,100,340,120),PAPER)

@@ -13,6 +13,8 @@ func run()->void:
  check(world.puzzle_views.is_empty(),"Stations are lazy, not all running")
  check(not world.open_puzzle("flex_c"),"Remote click cannot teleport into station")
  for key:String in Floor.PuzzleAnchors:
+  var station_floor:int=Floor.PuzzleAnchors[key][2]
+  world.load_floor(station_floor)
   check(not world.puzzle_anchor(key).is_empty(),"Existing furniture anchor: "+key)
   var point:Vector2=world.puzzle_approach(key)
   check(point.is_finite(),"Legal path to station: "+key)
@@ -27,9 +29,9 @@ func run()->void:
   station.close()
   check(world.player==previous and world.ui.visible,"Close returns same place")
   check(world.open_puzzle(key) and world.active_puzzle.model==model,"Reopen preserves model")
-  world.load_floor(3)
+  world.load_floor(2)
   check(world.active_puzzle==null and not station.visible,"Transit closes station")
-  check(not world.open_puzzle(key),"No 4F station from another floor")
+  check(not world.open_puzzle(key),"No station from another floor")
   world.load_floor(4)
  var stick=Stick.new();root.add_child(stick);stick.position=Vector2(100,100);stick.scale=Vector2(1.5,1.5)
  var event:=InputEventScreenTouch.new();event.index=3;event.pressed=true;event.position=Vector2(244,205);stick._input(event)

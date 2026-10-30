@@ -8,13 +8,23 @@ const Transit=preload("res://campuses/future_learning_center/scripts/building_tr
 const Workbench=preload("res://campuses/future_learning_center/scripts/workbench_view.gd")
 const Stairs=preload("res://campuses/future_learning_center/scripts/stair_view.gd")
 const PuzzleAnchors = {
- "flex_c": ["flex", "flex_c_desk_138"],
- "collab_b": ["collab", "collab_b_desk_85"],
- "focus_a": ["focus", "focus_a_desk_16"],
- "storage": ["storage", "storage_cabinet_12"],
- "seminar_3": ["assembly", "seminar_3_discussion_table_7"],
- "seminar_2": ["rail", "seminar_2_discussion_table_2"],
- "seminar_1": ["rules", "seminar_1_whiteboard_0"],
+ "studio_2": ["coupled", "studio_2_desk_58", 3],
+ "studio_4": ["access", "studio_4_desk_174", 3],
+ "studio_3": ["sync", "studio_3_desk_116", 3],
+ "studio_1": ["perspective", "studio_1_desk_0", 3],
+ "recording": ["recording", "recording_desk_234", 3],
+ "pantry": ["balance", "pantry_pantry_island_250", 3],
+ "seminar": ["schedule", "seminar_discussion_table_238", 3],
+ "xlab_box": ["projection", "xlab_box_projection_table", 3],
+ "xlab_south": ["fold", "xlab_south_desk_322", 3],
+ "xlab_north": ["logic", "xlab_north_desk_266", 3],
+ "flex_c": ["flex", "flex_c_desk_138", 4],
+ "collab_b": ["collab", "collab_b_desk_85", 4],
+ "focus_a": ["focus", "focus_a_desk_16", 4],
+ "storage": ["storage", "storage_cabinet_12", 4],
+ "seminar_3": ["assembly", "seminar_3_discussion_table_7", 4],
+ "seminar_2": ["rail", "seminar_2_discussion_table_2", 4],
+ "seminar_1": ["rules", "seminar_1_whiteboard_0", 4],
 }
 var puzzle_views:Dictionary={}
 var puzzle_layer:CanvasLayer
@@ -221,7 +231,7 @@ func open_workbench()->bool:
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
 	workbench.open();ui.hide();return true
 func point_action(at:Vector2)->void:
-	if int(data.floor)==4:
+	if int(data.floor) in [3,4]:
 		for key:String in PuzzleAnchors:
 			var anchor:=puzzle_anchor(key)
 			if not anchor.is_empty() and Space.rect(anchor.bounds).has_point(at):
@@ -414,7 +424,7 @@ func _draw_covers()->void:
 
 # Native object stations are review-only: they do not modify story/save authority.
 func puzzle_anchor(key:String)->Dictionary:
-	if int(data.get("floor",0))!=4 or not PuzzleAnchors.has(key):return {}
+	if not PuzzleAnchors.has(key) or int(data.get("floor",0))!=int(PuzzleAnchors[key][2]):return {}
 	for item:Dictionary in data.get("objects",[]):
 		if str(item.id)==str(PuzzleAnchors[key][1]):return item
 	return {}
@@ -454,10 +464,10 @@ func open_puzzle(key:String)->bool:
 	active_puzzle=puzzle_views[key];active_puzzle.open();ui.hide();return true
 
 func _draw_puzzle_prop(item:Dictionary)->void:
-	if int(data.floor)!=4:return
+	if not int(data.floor) in [3,4]:return
 	var key:=""
 	for candidate:String in PuzzleAnchors:
-		if item.id==PuzzleAnchors[candidate][1]:key=candidate;break
+		if int(data.floor)==int(PuzzleAnchors[candidate][2]) and item.id==PuzzleAnchors[candidate][1]:key=candidate;break
 	if key.is_empty():return
 	var box:Rect2=Space.rect(item.bounds)
 	var at:=Vector2(box.get_center().x,box.position.y+box.size.y*.24)
@@ -465,7 +475,19 @@ func _draw_puzzle_prop(item:Dictionary)->void:
 	var width:=minf(74,box.size.x*.7)
 	draw_rect(Rect2(at-Vector2(width/2,4),Vector2(width,24)),Color("545957"))
 	draw_rect(Rect2(at-Vector2(width/2,8),Vector2(width,24)),Color("d7d3c4"))
-	if key=="flex_c":
+	if key=="xlab_box":
+		for x:int in [-18,10]:
+			draw_rect(Rect2(at+Vector2(x,-15),Vector2(8,25)),Color("77877d"))
+			draw_rect(Rect2(at+Vector2(x,-15),Vector2(19,5)),Color("adb4a2"))
+	elif key=="pantry":
+		draw_rect(Rect2(at+Vector2(-30,-3),Vector2(60,18)),Color("777662"))
+		for i:int in 4:draw_circle(at+Vector2(-22+i*15,4),4,Color("e0dccb"))
+	elif key=="seminar":
+		for i:int in 4:draw_rect(Rect2(at+Vector2(-25+i*14,-3),Vector2(10,15)),Color("849186"))
+	elif key=="recording":
+		draw_line(at+Vector2(-28,5),at+Vector2(28,5),Color("d5cfb1"),2)
+		draw_rect(Rect2(at+Vector2(-3,-15),Vector2(6,28)),Color("657574"))
+	elif key=="flex_c":
 		for i:int in 3:
 			var x:=at.x-25+i*24
 			draw_line(Vector2(x,at.y-4),Vector2(x+5,at.y+10),Color("444f51"),3)

@@ -8,6 +8,9 @@ const PORT_Y := [232.0, 302.0, 372.0]
 const ROLE_LABEL := ["源", "分", "收"]
 var model = Model.new()
 var font: Font
+var route_drag := -1
+var route_origin := Vector2.ZERO
+var route_selected := -1
 var dragging := -1
 var pointer := Vector2.ZERO
 var touch_id := -1
@@ -28,7 +31,7 @@ func open() -> void:
 func close() -> void:
 	model.cancel(); _clear_drag(); hide(); closed.emit()
 func _clear_drag() -> void:
-	dragging = -1; held_board = false; touch_id = -1; selected = -1
+	route_drag = -1; route_selected = -1; dragging = -1; held_board = false; touch_id = -1; selected = -1
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_APPLICATION_PAUSED]:
 		model.pause(); _clear_drag(); queue_redraw()
@@ -43,17 +46,17 @@ func _input(event: InputEvent) -> void:
 		else: return
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if touch_id >= 0 or event.device == InputEvent.DEVICE_ID_EMULATION: return
-		if event.pressed: press(event.position)
-		else: release(event.position)
+		if event.pressed: press((get_global_transform_with_canvas().affine_inverse()*event.position))
+		else: release((get_global_transform_with_canvas().affine_inverse()*event.position))
 	elif event is InputEventMouseMotion:
 		if touch_id >= 0 or event.device == InputEvent.DEVICE_ID_EMULATION: return
-		pointer = event.position
+		pointer = (get_global_transform_with_canvas().affine_inverse()*event.position)
 	elif event is InputEventScreenTouch:
 		if event.canceled and event.index == touch_id: _clear_drag()
-		elif event.pressed and touch_id < 0: touch_id = event.index; press(event.position)
-		elif not event.pressed and event.index == touch_id: release(event.position); touch_id = -1
+		elif event.pressed and touch_id < 0: touch_id = event.index; press((get_global_transform_with_canvas().affine_inverse()*event.position))
+		elif not event.pressed and event.index == touch_id: release((get_global_transform_with_canvas().affine_inverse()*event.position)); touch_id = -1
 	elif event is InputEventScreenDrag:
-		if event.index == touch_id: pointer = event.position
+		if event.index == touch_id: pointer = (get_global_transform_with_canvas().affine_inverse()*event.position)
 	else: return
 	get_viewport().set_input_as_handled(); queue_redraw()
 
@@ -69,6 +72,8 @@ func press(at: Vector2) -> void:
 	if model.paused: model.resume(); return
 	if model.running: return
 	if Rect2(385,94,190,56).has_point(at): held_board = true; return
+	if route_selected >= 0:
+		if _seat_route(route_selected,at):route_selected=-1;return
 	for i: int in 3:
 		if at.distance_to(Vector2(350,PORT_Y[i])) < 29: dragging = i; selected = i; return
 		if at.distance_to(Vector2(610,PORT_Y[i])) < 29:
@@ -77,7 +82,7 @@ func press(at: Vector2) -> void:
 				var cable: int = model.connections.find(i)
 				if cable >= 0: dragging = cable; model.edit(cable,-1); selected = cable
 			return
-		if at.distance_to(Vector2(450,PORT_Y[i])) < 23: model.route_cable(i,not model.outer[i]); return
+		if at.distance_to(route_grip(i)) < 19: route_drag=i;route_selected=i;route_origin=at;return
 	if at.distance_to(Vector2(275,164)) < 34: model.rotate_adapter(); return
 	if at.distance_to(Vector2(730,300)) < 40: model.start(); feedback = ""; return
 	for station: int in 2:
@@ -86,7 +91,27 @@ func press(at: Vector2) -> void:
 
 func _connect(channel: int, port: int) -> void:
 	feedback = "" if model.edit(channel,port) else "这个插孔已有插头，先拔下。"
+func route_grip(channel:int)->Vector2:
+	return model.point_at_distance(model.cable_path(channel),75)
+func route_seat(channel:int,outside:bool)->Vector2:
+	if not outside:return Vector2(450,PORT_Y[channel])
+	var port:int=model.connections[channel]
+	if port<0:return Vector2(430,PORT_Y[channel])
+	var direct:=PackedVector2Array([Vector2(350,PORT_Y[channel]),Vector2(450,PORT_Y[channel]),Vector2(530,PORT_Y[port]),Vector2(610,PORT_Y[port])])
+	var y:float=PORT_Y[channel]
+	if channel!=port or model.obstruction_distance(direct)>=0:y=Model.PILLAR.position.y-20 if channel==port else 180.0-channel*12.0
+	return Vector2(430,y)
+func _seat_route(channel:int,at:Vector2)->bool:
+	var outer_distance:=at.distance_to(route_seat(channel,true))
+	var inner_distance:=at.distance_to(route_seat(channel,false))
+	if minf(outer_distance,inner_distance)>=30:return false
+	model.route_cable(channel,outer_distance<inner_distance)
+	return true
 func release(at: Vector2) -> void:
+	if route_drag>=0:
+		var channel:=route_drag;route_drag=-1
+		if at.distance_to(route_origin)>8:_seat_route(channel,at);route_selected=-1
+		queue_redraw();return
 	if held_board:
 		for station: int in 2:
 			if Rect2(710,104+station*66,160,60).has_point(at): model.move_to(station)
@@ -135,8 +160,14 @@ func _draw() -> void:
 	if held_board:
 		draw_rect(Rect2(pointer-Vector2(40,20),Vector2(80,40)),Color(.85,.80,.68,.7)); _txt("01",pointer,18)
 	for s: int in 2:
-		_block(Rect2(730,115+s*66,128,48),Color("e0d6bd") if s==model.station else Color("bfbab0"),5)
-		_txt("工位 "+("甲" if s==0 else "乙"),Vector2(743,145+s*66),19)
+		var dock:=Rect2(730,115+s*66,128,48)
+		draw_rect(dock,Color("655f52"))
+		draw_rect(dock.grow(-5),Color("a49d8c"))
+		for x:float in [dock.position.x,dock.end.x-9]:
+			draw_rect(Rect2(x,dock.position.y-3,9,54),Color("d8d4c4"))
+		for port:int in 3:_symbol(Vector2(767+port*29,139+s*66),Model.ROLES[s][port],INK)
+		_txt("甲" if s==0 else "乙",Vector2(706,144+s*66),16)
+		if s==model.station:draw_line(dock.position+Vector2(14,42),dock.position+Vector2(114,42),COPPER,4)
 		if model.station_proofs[s]: draw_circle(Vector2(841,130+s*66),5,INK)
 	_txt("搬起把手换工位",Vector2(719,257),14)
 	# Fixed fixture occupies the crossover conduit. Outer loops go around it.
@@ -151,8 +182,13 @@ func _draw() -> void:
 			var collision: Vector2 = model.point_at_distance(line,model.failure_distance(i))
 			draw_line(collision-Vector2(9,9),collision+Vector2(9,9),Color("915443"),3)
 			draw_line(collision+Vector2(-9,9),collision+Vector2(9,-9),Color("915443"),3)
-		_block(Rect2(423,PORT_Y[i]-15,54,30),Color("c5b693"),3)
-		_txt("外" if model.outer[i] else "内",Vector2(442,PORT_Y[i]+6),15)
+		var grip:Vector2=pointer if route_drag==i else route_grip(i)
+		draw_circle(grip+Vector2(0,2),10,INK);draw_circle(grip,7,Color("b5b8ae"))
+		draw_line(grip-Vector2(3,4),grip+Vector2(3,4),INK,2)
+		if route_selected==i:
+			for outside:bool in [true,false]:
+				var seat:=route_seat(i,outside)
+				draw_circle(seat,9,INK);draw_circle(seat,5,PAPER)
 		for side: int in 2:
 			var at := Vector2(350 if side==0 else 610,PORT_Y[i])
 			draw_circle(at,22,INK); draw_circle(at,16,PAPER)
@@ -170,8 +206,11 @@ func _draw() -> void:
 	_txt("源信号",Vector2(700,355),17)
 	_txt("接收",Vector2(813,304),16)
 	_block(Rect2(48,438,130,65),PAPER,4); _txt("试验手册",Vector2(64,470),18); _txt("按需翻阅",Vector2(72,491),14)
-	_block(Rect2(190,438,110,62),Color("c2b699"),4)
-	draw_arc(Vector2(214,469),13,0,TAU,24,INK,3); _txt("短线" if model.short_cable else "长线",Vector2(237,476),18)
+	# Cable reel flanges and turns are the clickable object, not a boxed command.
+	for x:int in [205,239]:draw_arc(Vector2(x,470),24,0,TAU,32,INK,5)
+	for y:int in range(451,490,6):draw_line(Vector2(207,y),Vector2(238,y),COPPER,3)
+	draw_circle(Vector2(222,470),5,INK)
+	_txt("430" if model.short_cable else "800",Vector2(280,476),16)
 	if model.completed: _txt("两工位接收已核对",Vector2(637,474),20)
 	elif model.paused: _txt("已暂停 · 触碰装置继续",Vector2(530,474),18)
 	elif not feedback.is_empty(): _txt(feedback,Vector2(323,474),17)
