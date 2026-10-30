@@ -1,0 +1,391 @@
+{
+  "schema": "755.flc.puzzle-design-verification.v1",
+  "status": "finite_design_model_passed_not_runtime_acceptance",
+  "generatedAt": "2026-10-29T05:58:43.447Z",
+  "baselineCommit": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "designSha256": "c3ba5404f26246dd3bf9d94f1cb9068785f5d9778fd2a33b8d32d731745458ae",
+  "sourceLedgerSha256": "614f5bb8a6a3e4aaf1e51681206be711691cfd50626328b506dc9612000d3b26",
+  "sourceHashes": {
+    "data/floor_2.json": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+    "data/floor_3.json": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+    "data/floor_4.json": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46",
+    "scripts/workbench_model.gd": "7eea3b912db6a5af0a1687141557ed5179a31f0545e02284e7cef4945013a04c"
+  },
+  "assertions": 110,
+  "anchorReferences": 13,
+  "selectedTranscriptFilesChecked": 12,
+  "L1": {
+    "method": "static summary pinned to inspected source hash; no Godot execution",
+    "configurations": 36,
+    "solutions": [
+      {
+        "gear": 1,
+        "belt": 2,
+        "tension": 1
+      }
+    ],
+    "returnTargetNotImplementedOrVerified": true
+  },
+  "L2": {
+    "configurationsPerLight": 5,
+    "cases": {
+      "A": [
+        "E"
+      ],
+      "B": [
+        "W"
+      ]
+    },
+    "results": [
+      {
+        "condition": "A",
+        "pose": "N",
+        "shaded": false,
+        "viewClear": true
+      },
+      {
+        "condition": "A",
+        "pose": "E",
+        "shaded": true,
+        "viewClear": true
+      },
+      {
+        "condition": "A",
+        "pose": "S",
+        "shaded": false,
+        "viewClear": false
+      },
+      {
+        "condition": "A",
+        "pose": "W",
+        "shaded": false,
+        "viewClear": true
+      },
+      {
+        "condition": "A",
+        "pose": "park",
+        "shaded": false,
+        "viewClear": true
+      },
+      {
+        "condition": "B",
+        "pose": "N",
+        "shaded": false,
+        "viewClear": true
+      },
+      {
+        "condition": "B",
+        "pose": "E",
+        "shaded": false,
+        "viewClear": true
+      },
+      {
+        "condition": "B",
+        "pose": "S",
+        "shaded": false,
+        "viewClear": false
+      },
+      {
+        "condition": "B",
+        "pose": "W",
+        "shaded": true,
+        "viewClear": true
+      },
+      {
+        "condition": "B",
+        "pose": "park",
+        "shaded": false,
+        "viewClear": true
+      }
+    ]
+  },
+  "L3": {
+    "reachableStates": 6,
+    "statesWithPathToGoalWithoutReset": 6,
+    "shortestWitnessIncludingTrial": [
+      "park",
+      "advance",
+      "advance",
+      "shade",
+      "trial"
+    ],
+    "permanentlyClosedFails": true,
+    "permanentlyParkedFails": true
+  },
+  "L4": {
+    "configurations": 11,
+    "solutions": [
+      [
+        "E",
+        "W"
+      ]
+    ],
+    "rotatedFixtureSolutions": [
+      [
+        "N",
+        "S"
+      ]
+    ],
+    "results": [
+      {
+        "slots": [],
+        "cases": {
+          "A": {
+            "shaded": false,
+            "viewClear": true
+          },
+          "B": {
+            "shaded": false,
+            "viewClear": true
+          }
+        },
+        "feedClear": true,
+        "pass": false
+      },
+      {
+        "slots": [
+          "N"
+        ],
+        "cases": {
+          "A": {
+            "shaded": false,
+            "viewClear": true
+          },
+          "B": {
+            "shaded": false,
+            "viewClear": true
+          }
+        },
+        "feedClear": false,
+        "pass": false
+      },
+      {
+        "slots": [
+          "E"
+        ],
+        "cases": {
+          "A": {
+            "shaded": true,
+            "viewClear": true
+          },
+          "B": {
+            "shaded": false,
+            "viewClear": true
+          }
+        },
+        "feedClear": true,
+        "pass": false
+      },
+      {
+        "slots": [
+          "N",
+          "E"
+        ],
+        "cases": {
+          "A": {
+            "shaded": true,
+            "viewClear": true
+          },
+          "B": {
+            "shaded": false,
+            "viewClear": true
+          }
+        },
+        "feedClear": false,
+        "pass": false
+      },
+      {
+        "slots": [
+          "S"
+        ],
+        "cases": {
+          "A": {
+            "shaded": false,
+            "viewClear": false
+          },
+          "B": {
+            "shaded": false,
+            "viewClear": false
+          }
+        },
+        "feedClear": true,
+        "pass": false
+      },
+      {
+        "slots": [
+          "N",
+          "S"
+        ],
+        "cases": {
+          "A": {
+            "shaded": false,
+            "viewClear": false
+          },
+          "B": {
+            "shaded": false,
+            "viewClear": false
+          }
+        },
+        "feedClear": false,
+        "pass": false
+      },
+      {
+        "slots": [
+          "E",
+          "S"
+        ],
+        "cases": {
+          "A": {
+            "shaded": true,
+            "viewClear": false
+          },
+          "B": {
+            "shaded": false,
+            "viewClear": false
+          }
+        },
+        "feedClear": true,
+        "pass": false
+      },
+      {
+        "slots": [
+          "W"
+        ],
+        "cases": {
+          "A": {
+            "shaded": false,
+            "viewClear": true
+          },
+          "B": {
+            "shaded": true,
+            "viewClear": true
+          }
+        },
+        "feedClear": true,
+        "pass": false
+      },
+      {
+        "slots": [
+          "N",
+          "W"
+        ],
+        "cases": {
+          "A": {
+            "shaded": false,
+            "viewClear": true
+          },
+          "B": {
+            "shaded": true,
+            "viewClear": true
+          }
+        },
+        "feedClear": false,
+        "pass": false
+      },
+      {
+        "slots": [
+          "E",
+          "W"
+        ],
+        "cases": {
+          "A": {
+            "shaded": true,
+            "viewClear": true
+          },
+          "B": {
+            "shaded": true,
+            "viewClear": true
+          }
+        },
+        "feedClear": true,
+        "pass": true
+      },
+      {
+        "slots": [
+          "S",
+          "W"
+        ],
+        "cases": {
+          "A": {
+            "shaded": false,
+            "viewClear": false
+          },
+          "B": {
+            "shaded": true,
+            "viewClear": false
+          }
+        },
+        "feedClear": true,
+        "pass": false
+      }
+    ]
+  },
+  "receiptScenarios": [
+    {
+      "name": "same setup, both cases",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "two different configurations",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "old camera/light fixture",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "different portable kit",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "same case repeated",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "failed case",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "observation only",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "cancelled before second result",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "feeding blocked",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "name": "camera blocked",
+      "expected": false,
+      "actual": false
+    }
+  ],
+  "limits": [
+    "Normalized ray segments and finite configurations do not establish native optics or continuous collision.",
+    "Existing source object IDs do not establish reachable new prop placement.",
+    "L1 return-target transfer remains a proposal and is not covered by the existing one-way model summary.",
+    "NPC paths, full scene inputs, save migration, final controller integration and human difficulty require runtime validation."
+  ],
+  "unverified": [
+    "actual room placement",
+    "Godot input and collision",
+    "continuous or height-dependent optics",
+    "NPC navigation",
+    "undo and persisted state implementation",
+    "chapter integration",
+    "human clarity and playtime",
+    "voice delivery"
+  ]
+}

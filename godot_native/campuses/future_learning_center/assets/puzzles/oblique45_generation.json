@@ -1,0 +1,44 @@
+{
+  "generatedBy": "built-in image_gen",
+  "cameraBrief": "orthographic elevation45 yaw0, parallel floor axes",
+  "rawPixelsRetained": true,
+  "sourcesPreservedIn": "sources/",
+  "productionAcceptance": false,
+  "assets": [
+    {
+      "file": "vehicles_oblique45_20261030.png",
+      "source": "/Users/zhu/.codex/generated_images/01a17b09-ba73-70c3-8098-7c93af6df733/exec-f971bb9d-38b9-4e21-afba-bc7e69a6baa6.png",
+      "sha256": "63e74eefa777077ce5a2044ed871d996ab58538f396c378e20c8ed239a74d4d7",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "pixelEdits": false,
+      "rawSha256": "ccd3464c988a98b5c4b335e3b69f3d46d7a841b4b7f8df67380147d41553baa2",
+      "metadataOnlyEdit": true
+    },
+    {
+      "file": "controls_oblique45_20261030.png",
+      "source": "/Users/zhu/.codex/generated_images/01a17b09-ba73-70c3-8098-7c93af6df733/exec-809544d8-86b4-49cd-a6f3-446dbc47b77d.png",
+      "sha256": "965c9f1784cc1df7b50cda9dc287e01c70e04db286c5d31b6874776b8917972d",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "pixelEdits": false,
+      "rawSha256": "a55d039edbcfd14cb326822b840d067a59c720b9ac250e4594c4d14acdd8786e",
+      "metadataOnlyEdit": true
+    }
+  ],
+  "prompts": "oblique45_prompts.json"
+}

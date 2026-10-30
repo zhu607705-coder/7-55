@@ -1,0 +1,372 @@
+{
+  "schema": 1,
+  "recordedAt": "2026-10-29T16:25:04.391013+00:00",
+  "branch": "codex/flc-transcript-level-design-20261029",
+  "baseHead": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "testedWorkingTree": true,
+  "commitPushMergeDeploymentPerformed": false,
+  "authority": "User object-first gameplay principle, persisted in AGENTS.md and memory note",
+  "standingRule": {
+    "path": "AGENTS.md",
+    "sha256": "0b03a4daa210f238a37b3caae4436d5bfb518c38f84356239a59eec78e43da55",
+    "bytes": 73742
+  },
+  "engine": {
+    "version": "4.7.1.stable.official.a13da4feb",
+    "path": "/Users/zhu/.cache/755-engines/4.7.1/Godot.app/Contents/MacOS/Godot",
+    "template": "/Users/zhu/Library/Application Support/Godot/export_templates/4.7.1.stable/web_nothreads_release.zip"
+  },
+  "sourceFiles": [
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/building_transit.gd",
+      "sha256": "3a781756d006e4cc2c3c81a1311ae9af3186d42f6cd7b00f4a9b2ef9d4679eae",
+      "bytes": 1084
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_lighting.gd",
+      "sha256": "b22ebaf9def6e1089efd7922a941d163e394bafbbf2236e05625f7e207bb80f3",
+      "bytes": 4737
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_space.gd",
+      "sha256": "335f0104c804958982cf1c092c12fb91bae07b711ddd2af3932afb83fcc2881c",
+      "bytes": 8053
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_view.gd",
+      "sha256": "ab56695ba4061cf00b91ce2eb05086f9ab97931b658078bab48402e555b56d6e",
+      "bytes": 27397
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/motion_lab_view.gd",
+      "sha256": "f6137da46b27efe1561fa5a9387378b860ce763ce0124908c8c98c1bab753317",
+      "bytes": 17471
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/motion_prop_metrics.gd",
+      "sha256": "26a1748bbb589e29e1d2b8777deaa410f68bee74dc28d9e730720d3f5526b81c",
+      "bytes": 698
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/physical_bench.gd",
+      "sha256": "e72be25a0403cfd66c14fc8a33ac11970ca552547d702adfe184be722a0e1b0b",
+      "bytes": 8712
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/robot_delivery_model.gd",
+      "sha256": "81107fb6a74e5b10d6655d5cd173159a780d423b7fb62560cf796a52e83e3b7e",
+      "bytes": 7293
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/room_camera.gd",
+      "sha256": "2ad27189b56fad75c2a89f5b062264f923f7c63bc47e13b1da7a8734bad4afa8",
+      "bytes": 2312
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd",
+      "sha256": "066278456bbc0050da53ddbdb1a240f917cbd00774c6173284142aac1f8fdcdf",
+      "bytes": 4246
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_view.gd",
+      "sha256": "761880399d2f8980410a421e8287af63e9308a165767b3a78390405265ee6709",
+      "bytes": 8863
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/solar_race_model.gd",
+      "sha256": "0d199fcf171bd5538d4604359b199375127ba5ef03d5f318850186e6fb75482a",
+      "bytes": 4490
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/stair_traversal.gd",
+      "sha256": "e8dd86110a78bcc668e75716440624ccb0084bb67f7d9a116c88bae5b742a46b",
+      "bytes": 3253
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/stair_view.gd",
+      "sha256": "d634fc94171874e34666a313b2ea9a30c52a10f4f44a25bb891e075f6dc258e7",
+      "bytes": 5262
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/touch_stick.gd",
+      "sha256": "d9c63cb88e8a13b013669c06a6f370720394f0bb18cf2d5a52fe926d93abdd94",
+      "bytes": 2134
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/workbench_model.gd",
+      "sha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+      "bytes": 2983
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/workbench_view.gd",
+      "sha256": "0135c9e933d55fdc0d688a2e87c6811b8a4a6368be0612205f7d87971c977fa4",
+      "bytes": 8176
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/capture_wall_storage.gd",
+      "sha256": "a69869e316930e16e8eec9f31f4c378799f45ba76ad9e9beb972e78042fe8d7d",
+      "bytes": 2295
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_floor.gd",
+      "sha256": "347b8b89de11d58e375f7c6396655c2f80b5c9a771bd9594bb5c155eb725bd75",
+      "bytes": 12441
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_motion_puzzles.gd",
+      "sha256": "f7490ac906b1e3b6c37398ea7b394fe854bc42caf80d8e7decc86d5ffe663fb3",
+      "bytes": 7808
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_object_input.gd",
+      "sha256": "f6cfa5e526404587fe70ffd0a8c43df52695aa01359c3d6bafa0d890297471ca",
+      "bytes": 15593
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_signal_sync.gd",
+      "sha256": "c3ba78b027696e60a989a4ceb25ee36a764a70f7e06ca17aed8626af55d7e30c",
+      "bytes": 2857
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_wall_storage.gd",
+      "sha256": "1f3b289046cd93ae66d9d74ec4385df2a9a9a96b0206b5def25f90b3e21a7ebf",
+      "bytes": 3869
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/play.gd",
+      "sha256": "6606b4f2e1bda0273c016bfa12ae07c853510bb45aff7d0e112b3557d5f915d1",
+      "bytes": 34119
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/standalone.gd",
+      "sha256": "c78990c02cd97770e79d8be43f3ef13b7fa8c5ef845f6c25f4368f19bef19f8f",
+      "bytes": 1617
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/build_web.mjs",
+      "sha256": "d6b5cd5f18b39c11ad8eba046b4f76d3c304a74191dbaf0272b3efb04778e800",
+      "bytes": 5633
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/run.mjs",
+      "sha256": "5376c30d87fe6f6a950a969da1d76e2b32846bf4e5da344dc540ae3ed2cf6ded",
+      "bytes": 1622
+    }
+  ],
+  "input": {
+    "desktop": {
+      "checks": 47,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "viewport": [
+        1280,
+        720
+      ],
+      "report": {
+        "path": ".impeccable/review/flc_object_interaction_20261029/desktop/object_input.json",
+        "sha256": "be8149426cc4f5e5326cf7bea2fc3e9bcc3858faa784bd3d1a0061f7cf2a9fed",
+        "bytes": 5012
+      }
+    },
+    "simulatedTouch": {
+      "checks": 53,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "viewport": [
+        844,
+        390
+      ],
+      "report": {
+        "path": ".impeccable/review/flc_object_interaction_20261029/mobile/object_input.json",
+        "sha256": "8a82bcb322fa3b91758529d9096a192bed112847e3a5f190c6b588b621e201c9",
+        "bytes": 5520
+      }
+    },
+    "timing": "Normal realtime, complete 30-second solar race; pointer and finger gestures only"
+  },
+  "modelAndSpace": {
+    "motion": {
+      "checks": 63,
+      "failures": 0,
+      "winningSolarBuilds": 10,
+      "log": {
+        "path": ".impeccable/review/flc_object_interaction_20261029/motion_models.log",
+        "sha256": "d5e8c494aab2e829600d945660f7a02f6a8a7267230de3a4d491689816d302d0",
+        "bytes": 284
+      }
+    },
+    "signal": {
+      "checks": 15,
+      "failures": 0,
+      "log": {
+        "path": ".impeccable/review/flc_object_interaction_20261029/signal_models.log",
+        "sha256": "d92fb50558c4655bf676a1c47f6bb9e6408843d20698d4ed80869ff82c798c85",
+        "bytes": 258
+      }
+    },
+    "floor": {
+      "checks": 1740,
+      "failures": 0,
+      "log": {
+        "path": ".impeccable/review/flc_object_interaction_20261029/floor_spatial.log",
+        "sha256": "f3569c12203c125732657f716a0a0a0044ef055165190b90b31d53aefc7ab74c",
+        "bytes": 253
+      }
+    }
+  },
+  "designCoverage": {
+    "checks": 831,
+    "designedRooms": 25,
+    "anchorReferences": 47,
+    "scope": "Design coverage and four toy models, not 25 playable native puzzles",
+    "log": {
+      "path": ".impeccable/review/flc_object_interaction_20261029/design_coverage.log",
+      "sha256": "65f9128c57c89ca2c66a250e1c0beee8c5214dccc92e593f526742657c6d6312",
+      "bytes": 1170
+    }
+  },
+  "nativePreflight": {
+    "report": {
+      "path": ".impeccable/review/flc_object_interaction_20261029/native_preflight_final.json",
+      "sha256": "32dce740f5e1485ea9492b5731c9c0ac47b5778700df72df82d9ecf3a18e1fc7",
+      "bytes": 133224
+    },
+    "metadata": {
+      "path": ".impeccable/review/flc_object_interaction_20261029/native_preflight_final.json.meta.json",
+      "sha256": "a5ffbd537f5e2acc6ccfd645a5fe448fe68e397877a14b4d4279d8ec5b44b346",
+      "bytes": 2152
+    },
+    "completed": true,
+    "passed": 5,
+    "notRun": 536,
+    "failed": 0,
+    "fullSuitePassed": false
+  },
+  "webExport": {
+    "directory": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029",
+    "receipt": {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/build_receipt.json",
+      "sha256": "751f683b6ee34e5cc6214cf4dd8173133cee6aede34de2e26048c39d40872203",
+      "bytes": 482
+    },
+    "files": [
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.audio.position.worklet.js",
+        "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
+        "bytes": 2973
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.audio.worklet.js",
+        "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
+        "bytes": 7298
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.html",
+        "sha256": "4b558750117bf39511cc1e6ed356e3aa030a6d59afbc41555555dd693c5bcfb1",
+        "bytes": 5313
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.js",
+        "sha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c",
+        "bytes": 279815
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.pck",
+        "sha256": "cf89c7525b5908f5d6c50355ff5c16d54072f1e4de5f94883b058a459f4d8a53",
+        "bytes": 71536044
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.wasm",
+        "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277",
+        "bytes": 39513091
+      }
+    ]
+  },
+  "browserSmoke": {
+    "browser": "Codex in-app browser",
+    "viewport": [
+      1280,
+      720
+    ],
+    "input": "Native pointer click and drag through CUA; zero keyboard events",
+    "url": "http://127.0.0.1:8139/object_interaction_20261029/?area=solar",
+    "observations": [
+      {
+        "area": "robotics",
+        "actions": [
+          "Click visible workbench",
+          "Drag straight spare onto one-way slot",
+          "Push physical run lever"
+        ],
+        "visibleOutcome": "Cargo at right destination, empty robot returned to home",
+        "capture": {
+          "path": ".impeccable/review/flc_object_interaction_20261029/browser_robot_complete.png",
+          "sha256": "08e8cfd4908e107aa05107578f38ae5dc70c9463aca0c8c1ae3b47d2e47d2d5f",
+          "bytes": 103727
+        }
+      },
+      {
+        "area": "solar",
+        "actions": [
+          "Click visible workbench",
+          "Drag real panel hinge",
+          "Push physical run lever",
+          "Allow full normal 30-second race"
+        ],
+        "visibleOutcome": {
+          "seconds": 30,
+          "modifiedDistance": 116.3,
+          "baselineDistance": 106.5
+        },
+        "capture": {
+          "path": ".impeccable/review/flc_object_interaction_20261029/browser_solar_complete.png",
+          "sha256": "5e53ab4576f9b23f571e05c387274f359baea39a1ee2d0a0c3882de76a5b0eb3",
+          "bytes": 112424
+        }
+      }
+    ],
+    "consoleWarningsAndErrors": [],
+    "consoleScope": "Logs read after each of the two smoke flows; no broader cross-browser claim",
+    "aliases": [
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/lab/index.html",
+        "backup": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/lab/index.before_object_interaction.html",
+        "backupSha256": "dbb53b9f51d324ef4497e6ec71675dda32bea80d113f64f97de6390ddd83b1ca",
+        "preservesQueryAndHash": true
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/motion_puzzles_20261029/index.html",
+        "backup": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/motion_puzzles_20261029/index.before_object_interaction.html",
+        "backupSha256": "406da99cab7fc18d8d6af003d712e05456d2c6e8fbcc369dd16b89e011dfedbd",
+        "preservesQueryAndHash": true
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/signal_sync_20261029/index.html",
+        "backup": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/signal_sync_20261029/index.before_object_interaction.html",
+        "backupSha256": "b139ad60cdb1afd850d1e353e4a42fbfa19cf7d7be7ac9e3bcdf54b30a203c40",
+        "preservesQueryAndHash": true
+      }
+    ]
+  },
+  "visualReview": {
+    "firstPass": "Three scored fixes: pending lamp drag, attached receiver/socket/cable drag, mobile typography and contrast",
+    "disposition": "ship",
+    "scope": "All three scored fixes resolved, based on final source, 12 desktop/mobile captures and current input reports; not whole-product acceptance",
+    "verdict": {
+      "path": ".impeccable/review/flc_object_interaction_20261029/finish_verdict.md",
+      "sha256": "6df07baf37a956247f40e8f133f2e62b0264a346e6b82370f0338ac828f90e48",
+      "bytes": 2592
+    },
+    "documentation": ".impeccable/review/flc_object_interaction_20261029/documentation.md"
+  },
+  "artProvenance": {
+    "path": "godot_native/campuses/future_learning_center/assets/puzzles/object_control_generation.json",
+    "sha256": "28124d4b73a361ae2c04fed7d145fdd1f270f20ce1ae0c7472bd06d860025a78",
+    "bytes": 4291
+  },
+  "limits": [
+    "Four isolated workbench prototypes; production story controllers and saves not integrated",
+    "No physical-phone, novice difficulty, complete 25-room runtime or full 541-test release acceptance",
+    "Argon external destination remains unidentified; no Argon review claimed"
+  ]
+}

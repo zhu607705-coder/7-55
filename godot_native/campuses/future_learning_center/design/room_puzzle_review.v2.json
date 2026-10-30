@@ -1,0 +1,188 @@
+{
+  "schema": "755.flc.room-puzzle-review.v2",
+  "status": "coverage_and_four_toy_models_checked_not_runtime_acceptance",
+  "generatedAt": "2026-10-30T08:31:12.477Z",
+  "baselineCommit": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "designSha256": "b680d3a530b5cd37edb2abb8d87e3854244199b5e403fbb78dbe3ea78b581979",
+  "transcriptLedgerSha256": "614f5bb8a6a3e4aaf1e51681206be711691cfd50626328b506dc9612000d3b26",
+  "sourceHashes": {
+    "data/floor_2.json": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+    "data/floor_3.json": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+    "data/floor_4.json": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46"
+  },
+  "checks": 833,
+  "totalMapRooms": 25,
+  "totalDesignedRooms": 25,
+  "missingRooms": [],
+  "coverage": [
+    {
+      "floor": 2,
+      "mapRooms": 8,
+      "designedRooms": 8,
+      "main": 3,
+      "side": 5,
+      "estimatedPuzzleMinutes": [
+        31,
+        48
+      ]
+    },
+    {
+      "floor": 3,
+      "mapRooms": 10,
+      "designedRooms": 10,
+      "main": 3,
+      "side": 7,
+      "estimatedPuzzleMinutes": [
+        36,
+        57
+      ]
+    },
+    {
+      "floor": 4,
+      "mapRooms": 7,
+      "designedRooms": 7,
+      "main": 2,
+      "side": 5,
+      "estimatedPuzzleMinutes": [
+        30,
+        46
+      ]
+    }
+  ],
+  "anchorReferences": 47,
+  "roomsWithOnlyProposedProps": [
+    "3:xlab_box"
+  ],
+  "knowledgeLinks": 18,
+  "toyResults": [
+    {
+      "room": "2:formula",
+      "kind": "solar_endurance",
+      "scenarios": [
+        {
+          "scenario": "sunny",
+          "enumeratedBuilds": 18,
+          "baselineDistance": 106.52134345052785,
+          "winningBuilds": 10,
+          "example": {
+            "panel": "wide",
+            "tilt": 30,
+            "ratio": 2.4,
+            "distance": 128.8832032601751
+          }
+        },
+        {
+          "scenario": "side_light",
+          "enumeratedBuilds": 18,
+          "baselineDistance": 53.0307412312365,
+          "winningBuilds": 17,
+          "example": {
+            "panel": "wide",
+            "tilt": 60,
+            "ratio": 1.6,
+            "distance": 113.67394878104419
+          }
+        }
+      ],
+      "scope": "dimensionless teaching simulation; distance is not a real vehicle prediction",
+      "doesNotValidateNativeRaceOrBalance": true
+    },
+    {
+      "room": "3:seminar",
+      "kind": "three_beat_schedule",
+      "enumeratedSchedules": 81,
+      "solutions": [
+        {
+          "capture_A": 1,
+          "assemble_B": 1,
+          "capture_B": 2,
+          "compare": 3
+        }
+      ],
+      "doesNotValidateNpcExecution": true
+    },
+    {
+      "room": "3:pantry",
+      "kind": "tray_water_balance",
+      "status": "water_and_balance_witness_checked_not_runtime_acceptance"
+    },
+    {
+      "room": "4:focus_a",
+      "kind": "power_partition",
+      "enumeratedAssignments": 16,
+      "solutions": [
+        {
+          "assignment": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "idleLoads": [
+            3,
+            3
+          ],
+          "activeLoads": [
+            5,
+            5
+          ]
+        },
+        {
+          "assignment": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "idleLoads": [
+            3,
+            3
+          ],
+          "activeLoads": [
+            5,
+            5
+          ]
+        },
+        {
+          "assignment": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "idleLoads": [
+            3,
+            3
+          ],
+          "activeLoads": [
+            5,
+            5
+          ]
+        },
+        {
+          "assignment": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "idleLoads": [
+            3,
+            3
+          ],
+          "activeLoads": [
+            5,
+            5
+          ]
+        }
+      ],
+      "scope": "teaching model, not real electrical engineering"
+    }
+  ],
+  "limits": [
+    "Room and source coverage is checked; presence of a solution paragraph is not proof that the puzzle is solvable.",
+    "Only four additional numerical toy models are checked here; the earlier four-room slice has its own separate verifier.",
+    "The other room geometries, puzzle rules and authored targets still need executable blockouts.",
+    "No native runtime, object placement, NPC navigation, chapter gate, save migration, voice or human playtime is validated."
+  ]
+}

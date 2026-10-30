@@ -10,6 +10,16 @@ func _ready()->void:
 	world.load_floor(2)
 	var area:=OS.get_environment("FLC_REVIEW_AREA")
 	if OS.has_feature("web"):area=str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('area') || ''"))
+	if area=="pantry":
+		world.load_floor(3)
+		if not world.set_foot(world.pantry_approach()):push_error("Pantry review spawn is blocked")
+		return
+	if area=="team":
+		if not world.set_foot(world.signal_sync_approach()):push_error("Team review spawn is blocked")
+		return
+	if area in ["solar","robotics"]:
+		if not world.set_foot(world.motion_approach(area)):push_error("Motion lab review spawn is blocked")
+		return
 	if area=="stairs":
 		world.load_floor(3)
 		var landing:Dictionary=world.data.transits.filter(func(t:Dictionary)->bool:return t.id=="northeast_stair")[0]

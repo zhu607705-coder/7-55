@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "kind": "incumbent-extension-documentation-comparison",
+  "reviewedOn": "2026-10-30",
+  "outcome": "preserve-incumbent",
+  "normativeTokensWritten": false,
+  "scope": {
+    "surface": "3F pantry slow-water extension",
+    "workspace": "/Users/zhu/.codex/worktrees/north-clean-object-layers-20261027/755",
+    "branch": "codex/flc-transcript-level-design-20261029",
+    "baseHead": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+    "headContainsExtension": false,
+    "implementationScope": "Independent playable Godot sample; session-only results; no formal story/save changes; zero new rasters",
+    "method": "Read-only source extraction and inspection of saved final captures and receipts",
+    "productMdSupplied": false,
+    "newIdentityWorkshopRequired": false,
+    "browserOperatedByDocumenter": false,
+    "viewportChangedByDocumenter": false,
+    "suitesRerunByDocumenter": false,
+    "implementationEditedByDocumenter": false,
+    "preExistingWorkRetained": true,
+    "writtenFiles": [
+      ".impeccable/review/flc_pantry_water_20261030/documentation_review.md",
+      ".impeccable/review/flc_pantry_water_20261030/documentation_review.json"
+    ]
+  },
+  "incumbent": {
+    "brief": ".impeccable/flc-pantry-brief.md",
+    "design": {
+      "path": "godot_native/campuses/future_learning_center/design/miniatures/DESIGN.md",
+      "expectedSha256": "83a1e14d876c3f7e7bc3826f28305430f8752151e080d47b37cf821749360335",
+      "actualSha256": "83a1e14d876c3f7e7bc3826f28305430f8752151e080d47b37cf821749360335",
+      "preserved": true
+    },
+    "sidecar": {
+      "path": "godot_native/campuses/future_learning_center/design/miniatures/.impeccable/design.json",
+      "expectedSha256": "c057b79fe0452670b81a5274fed6db71844a5a3795e3e24042555d282084a175",
+      "actualSha256": "c057b79fe0452670b81a5274fed6db71844a5a3795e3e24042555d282084a175",
+      "preserved": true
+    },
+    "scopeNote": "The incumbent document explicitly covers four miniatures. This fifth-room comparison does not silently broaden that normative scope."
+  },
+  "sourceSnapshot": [
+    {"path": "godot_native/campuses/future_learning_center/scripts/pantry_tray_model.gd", "sha256": "11532643d0f81be161bdf274f91952dcf1ef967843a6fc6549cd9f014951fbb7"},
+    {"path": "godot_native/campuses/future_learning_center/scripts/pantry_tray_view.gd", "sha256": "d690e5fe8f4f4b07aefc039d337607613fb33f9a6279ff41010d6ac734c461cb"},
+    {"path": "godot_native/campuses/future_learning_center/scripts/pantry_miniature.gd", "sha256": "ff921a0bc788e1a771f12bbde8fc89415ecab580e105fa13c14e1841048238aa"},
+    {"path": "godot_native/campuses/future_learning_center/tests/test_pantry_tray.gd", "sha256": "c134428882c0d208cc1364c9deadc547cb33f989fb33d5245f2df9a8657ab82b"},
+    {"path": "godot_native/campuses/future_learning_center/tests/test_pantry_input.gd", "sha256": "0db3eb47f0f06bac14c8ba7b8439436c1ac1cd8583f7412d4e18498c14635613"}
+  ],
+  "evidence": {
+    "root": ".impeccable/review/flc_pantry_water_20261030",
+    "nativeAvailablePngsPerViewport": 17,
+    "allNativePngsPostdateFinalImplementation": true,
+    "captureFilesOpened": 29,
+    "openedNativeStatesAtBothViewports": ["initial", "slow_flow", "drain", "lowered", "balanced", "served", "support_left", "support_center", "advanced", "hint"],
+    "nativeCapturePathPattern": "{desktop|mobile}/pantry_{state}.png",
+    "nativeViewports": {"desktop": [1280, 720], "mobileSimulatedTouch": [844, 390]},
+    "openedBrowserFiles": ["browser_initial.jpg", "browser_slow_flow.jpg", "browser_drain.jpg", "browser_lowered.jpg", "browser_balanced.jpg", "browser_served.jpg", "browser_advanced.jpg", "browser_handoff.jpg", "browser_record_served.jpg"],
+    "browserViewport": [903, 862],
+    "handoffCapture": {"file": "browser_handoff.jpg", "state": "empty-cup start", "byteIdenticalTo": "browser_initial.jpg", "deliveryEvidence": false},
+    "excludedHistoricalCapture": {"file": "browser_capacity_stop.jpg", "reason": "Predates F1-F3 corrections; excluded from final comparison and fix proof"},
+    "desktopInput": {"log": "desktop.log", "report": "desktop/pantry_input.json", "checks": 39, "failures": 0, "keyboardEvents": 0, "waterTiming": "Actual elapsed time; no model writes or fast-forward"},
+    "mobileInput": {"log": "mobile.log", "report": "mobile/pantry_input.json", "checks": 39, "failures": 0, "keyboardEvents": 0, "touch": "simulated", "waterTiming": "Actual elapsed time; no model writes or fast-forward"},
+    "model": {"file": "model.log", "assertions": 52, "failures": 0},
+    "floor": {"file": "floor.log", "checks": 1740, "failures": 0},
+    "designCoverage": {"file": "design.log", "checks": 833, "status": "coverage_and_four_toy_models_checked_not_runtime_acceptance"},
+    "preflight": {"file": "preflight-final.json", "metadata": "preflight-final.json.meta.json", "selectedPass": 5, "notRun": 536, "failed": 0, "inputChangedDuringRun": false, "fullSuitePassed": false},
+    "export": {"file": "export.log", "import": "pass", "startup": "pass", "webExport": "pass", "engine": "4.7.1.stable.official.a13da4feb"},
+    "browser": {"file": "browser_verification.json", "ordinaryPointerInput": true, "keyboardEvents": 0, "modelStateWrites": 0, "realElapsedWaterFlow": true, "warningOrErrorLogs": [], "documentOverflow": false, "displayedVolumesMlByIdentity": {"A": 65, "B": 85, "C": 115, "D": 155}, "completedOrder": ["A", "D", "C", "B"]},
+    "closedReview": {"initial": "finish_review.md", "limitedVerdict": "fix_verdict.md", "resolved": ["F1", "F2", "F3"], "reportedDisposition": "ship", "scopeExpandedByDocumenter": false},
+    "precedence": "Final input reports and browser verification supersede pre-correction figures in the initial finish review."
+  },
+  "incumbentMatches": {
+    "camera": {"logicalViewport": [960, 540], "subViewport": [1440, 810], "projection": "orthographic", "size": 5.4, "position": [0, 12, 12], "elevationDegrees": 45, "yawDegrees": 0, "nativeUnitsPerLogicalUnit": 0.01, "depthAndHeightFactor": 0.7071067811865476, "presentation": "Uniform scaling and letterboxing; no alternate portrait reflow", "source": "miniature_bench.gd:26-70; physical_bench.gd:212-215"},
+    "lighting": {"keyRotationDegrees": [-48, -28, 0], "keyColor": "#fff1db", "keyEnergy": 0.8, "ambientColor": "#e3e9e5", "ambientEnergy": 0.48, "roughness": 0.52, "shadows": true, "pantryAuxiliaryLampEnergy": 0, "source": "miniature_bench.gd:35-44,71-77,153-157"},
+    "paletteRoles": ["equipment-teal", "grip-orange", "recess-graphite", "rubber", "bench-ivory", "brushed-metal", "surround-sage", "annotation-ink", "feedback-paper", "notebook-paper", "notebook-ink", "navigation-slate", "navigation-paper"],
+    "typography": {"primaryFile": "SelectedSans-Regular.otf", "fallbackFile": "SelectedCoverage-Regular.otf", "primaryFamilyFromIncumbent": "Noto Sans CJK SC Regular", "fallbackFamilyFromIncumbent": "Selected UI Coverage", "systemFallback": false, "primaryAntialiasing": "grayscale", "titlePx": 24, "notebookPx": 23, "notebookBaselineStepPx": 27, "exitPx": 20, "objectNamePx": 18, "captionPx": 17, "smallPx": 16, "source": "physical_bench.gd:31-50,212-241; pantry_tray_view.gd:168-189"},
+    "shell": {"exitRect": [808, 7, 144, 40], "titleBaseline": [32, 39], "feedbackRect": [16, 486, 928, 46], "feedbackExpirySeconds": 5, "notebook": "Optional movable paper with three voluntary clue tiers", "newRasterCount": 0},
+    "sharedMotion": {"partReturnSeconds": 0.22, "partReturnEasing": "1 - (1 - t)^3", "contactCueSeconds": 0.28, "source": "physical_bench.gd:72-95"}
+  },
+  "observedExtensionTokens": {
+    "normative": false,
+    "interpretation": "Observed pantry-local source parameters; not every value was introduced by the slow-water change. No frontmatter, sidecar primitives, new token names, or preview components are created.",
+    "colorsAndMaterials": {
+      "glassWall": {"sourceColor": "#d5e8e3", "alpha": 0.2, "doubleSided": true, "castShadow": false},
+      "liquidSide": "#5b9aaf",
+      "liquidSurfaceAndStreams": "#9bcdd8",
+      "sofaCushion": "#769692",
+      "roomFloorSourceExpression": "Color(\"c7ccc8\") * .68",
+      "coffeeTableAndShelfSourceExpression": "METAL * .7",
+      "source": "pantry_miniature.gd:4-24,48,86,91-123"
+    },
+    "layoutAndGeometry": {
+      "home": [430, 377], "destination": [430, 213], "dock": [870, 352], "drain": [870, 443],
+      "armSpacing": 90, "trayDimensions": [522, 10, 142], "glassRadius": 26, "glassHeight": 72, "glassWallSegments": 32, "liquidRadius": 23, "basinDimensions": [115, 46],
+      "liquidHeightExpression": "3 + snappedf(volume / 180.0 * 62, .5)",
+      "targetBandArcHeightExpression": "3 + (target +/- 8) / 180 * 62",
+      "liquidSurface": "Pose-derived horizontal exposed surface; quantity remains model-owned",
+      "source": "pantry_tray_view.gd:3-7,36-55; pantry_miniature.gd:27-48,80-82,91-145"
+    },
+    "directManipulation": {
+      "valveGripTravelPx": 30, "valveGestureThresholdPx": 8,
+      "hitRadiiPx": {"valve": 29, "handle": 34, "support": 28, "cup": 37, "coaster": 31},
+      "dockDropRadiusPx": 47, "activeDrainRadiusPx": 42, "pourbackGlassAngleRadians": -0.65,
+      "pourbackLandingExpression": "DRAIN + Vector2(-30 + clamp(hand.x, -14, 14), clamp(hand.y, -10, 10))",
+      "pourbackOrigin": "Same cup transform at local lip (-26,72,0); not a detached fixed basin origin",
+      "streamRadii": {"inflow": 1.4, "pourback": 1.8},
+      "source": "pantry_tray_view.gd:46-128; pantry_miniature.gd:37-48,83-89"
+    },
+    "waterAndModelTiming": {
+      "initialVolumesMl": [0, 0, 0, 0], "inflowMlPerSecond": 4, "capacityMl": 180, "fullEmptyGlassSeconds": 45, "pourbackMlPerSecond": 48,
+      "targetCentresMl": [60, 90, 120, 150], "bandHalfWidthMl": 8, "arms": [-2, -1, 1, 2], "glassTare": 40, "trayTare": 120, "momentTolerance": 8,
+      "maxFrameContributionSeconds": 0.1, "liftSeconds": 0.65, "deliverySeconds": 1.4, "supportStops": [-0.25, 0, 0.25],
+      "completionRequires": ["all four portions ready", "balanced tray", "no docked cup", "current trial revision", "completed delivery phase"],
+      "source": "pantry_tray_model.gd:3-14,32-45,85-126"
+    },
+    "presentationMotionAndLabels": {
+      "trayLiftHeight": 48, "trayTiltRadiansExpression": "clamp(moment * .0012, -.18, .18)", "traySettle": "1 - exp(-15 * dt)",
+      "deliveryPosition": "HOME.lerp(DESTINATION, smoothstep(0,1,t))", "deliveryHeight": "48 * sin(PI * t) + 15", "heldCarryPreviewFraction": 0.24,
+      "rippleExpression": "sin(clock * 8) * 2", "fallingDropletExpression": "fposmod(motion_time * 1.6, .5)",
+      "supportCaptionOffset": [-36, 52], "supportCaptionPx": 17, "quantityTagSize": [86, 23], "quantityTagPx": 17, "feedbackTextPx": 20,
+      "reducedMotion": "Immediate tray poses and no optional ripples/droplet or part-return travel; necessary model water/lift/delivery timing remains",
+      "source": "pantry_tray_view.gd:130-189; pantry_miniature.gd:50,83-89,124-126"
+    }
+  },
+  "recordedDifferences": [
+    {"kind": "local typography drift", "property": "transient feedback text size", "incumbent": "21 logical px", "pantry": "20 logical px", "deltaPx": -1, "source": "pantry_tray_view.gd:188 versus physical_bench.gd:226 and DESIGN.md typography.feedback", "action": "Recorded only; no source or normative token change; no reopening of the closed fix review"},
+    {"kind": "component-specific motion specialization", "property": "exponential settle coefficient", "incumbent": "20 for panel tilt", "pantry": "15 for tray pose", "action": "Keep the two component meanings separate; this is not a replacement system motion token"},
+    {"kind": "scope extension", "incumbent": "Four named miniature closeups", "pantry": "Fifth room extension", "action": "Preserve incumbent scope text; document the extension here"}
+  ],
+  "limitations": [
+    "This is a documentation comparison, not a new whole-surface, fix, or release verdict.",
+    "The documenter inspected saved receipts and representative still images; it did not rerun tests or operate the live browser.",
+    "Actual elapsed-time claims come from input and browser receipts; still images alone cannot establish flow speed or continuous-motion quality.",
+    "844x390 touch evidence is simulated, not physical-phone acceptance.",
+    "903x862 browser evidence is one supplied extent, not a browser-engine matrix.",
+    "The preflight has five selected passes and 536 not run; fullSuitePassed remains false.",
+    "Design coverage checks do not establish 25 playable rooms.",
+    "The 4-7 minute novice duration is an estimate, not a measured novice study; about 105 seconds is the derived flow duration for 420 ml before adjustments.",
+    "No formal campaign/save integration or production release acceptance is asserted."
+  ]
+}

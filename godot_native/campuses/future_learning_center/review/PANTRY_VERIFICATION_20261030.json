@@ -1,0 +1,1499 @@
+{
+  "schema": "flc-pantry-acceptance-v1",
+  "recordedAt": "2026-10-30T08:00:08.256Z",
+  "branch": "codex/flc-transcript-level-design-20261029",
+  "baseHead": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "testedUncommittedWorkingTree": true,
+  "runtime": "Isolated native Future Learning Center sample; fifth playable room prototype",
+  "productionSaveAccess": false,
+  "engine": {
+    "version": "4.7.1.stable.official.a13da4feb",
+    "executable": "/Users/zhu/.cache/755-engines/4.7.1/Godot.app/Contents/MacOS/Godot",
+    "webTemplate": "/Users/zhu/Library/Application Support/Godot/export_templates/4.7.1.stable/web_nothreads_release.zip"
+  },
+  "sourceFiles": [
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/pantry_tray_model.gd",
+      "sha256": "87a0f88f41b7400e278f49465812f4e3e7558ed2604e63874bc1c85f5faac206",
+      "bytes": 2174
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/pantry_tray_view.gd",
+      "sha256": "8b5148bc1dc864fd42d3bc87958413f2a25a7b0df6c7715137f9a81a30537f84",
+      "bytes": 7617
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/pantry_miniature.gd",
+      "sha256": "35d49d924e728e6f51b79148415a248da64d5a561068715eb55e5f3b0274a710",
+      "bytes": 6451
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/miniature_bench.gd",
+      "sha256": "89b0687c49b97d8d140305a358bc0bf7982db008a40d33c63aaace9797caa70f",
+      "bytes": 24799
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/physical_bench.gd",
+      "sha256": "212498456a3d0b8deeb94b63772f21364804eb524f593fea32fae5c1a62df8db",
+      "bytes": 10741
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/bench_projection.gd",
+      "sha256": "9a635d4b23958b4506b437fd8911034c8e01074e793acbfb22d8b1b8cab9aa6a",
+      "bytes": 2603
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_view.gd",
+      "sha256": "a066efbe4e162938ec2670f8cd5ba80ed7e64ac04603d9d3af013fded2ad7012",
+      "bytes": 29738
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_space.gd",
+      "sha256": "335f0104c804958982cf1c092c12fb91bae07b711ddd2af3932afb83fcc2881c",
+      "bytes": 8053
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/room_camera.gd",
+      "sha256": "2ad27189b56fad75c2a89f5b062264f923f7c63bc47e13b1da7a8734bad4afa8",
+      "bytes": 2312
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/touch_stick.gd",
+      "sha256": "d9c63cb88e8a13b013669c06a6f370720394f0bb18cf2d5a52fe926d93abdd94",
+      "bytes": 2134
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_pantry_tray.gd",
+      "sha256": "3affb81b982164fbfa75480e152ef3caf7a516ba6a1870f28ae474ff14f8f3a9",
+      "bytes": 2904
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_pantry_input.gd",
+      "sha256": "5c2602c36a6a250a262a51164ccc97f9cd71cd3167d34d5a4af2810f4d6a5352",
+      "bytes": 7429
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_object_input.gd",
+      "sha256": "ebb2df515817e10dd5ed6e3e6a511e91c24cec385f7c7fb900a33c6b2bd86495",
+      "bytes": 17181
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/run.mjs",
+      "sha256": "43d7f8c34e94b082ce5adf90e9ec0b5fec20e0eb0e6d9d236d463c97c8b8b1c0",
+      "bytes": 2760
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/standalone.gd",
+      "sha256": "e21eaff6168089c5a4b3e21c8cb801d5afa0f9678c37eff5e18bc75d6ff04eb9",
+      "bytes": 1762
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/build_web.mjs",
+      "sha256": "d6b5cd5f18b39c11ad8eba046b4f76d3c304a74191dbaf0272b3efb04778e800",
+      "bytes": 5633
+    }
+  ],
+  "protectedUnchangedSources": [
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_2.json",
+      "sha256": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+      "bytes": 348982
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_3.json",
+      "sha256": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+      "bytes": 621120
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_4.json",
+      "sha256": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46",
+      "bytes": 356551
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/solar_race_model.gd",
+      "sha256": "0d199fcf171bd5538d4604359b199375127ba5ef03d5f318850186e6fb75482a",
+      "bytes": 4490
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/robot_delivery_model.gd",
+      "sha256": "81107fb6a74e5b10d6655d5cd173159a780d423b7fb62560cf796a52e83e3b7e",
+      "bytes": 7293
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd",
+      "sha256": "066278456bbc0050da53ddbdb1a240f917cbd00774c6173284142aac1f8fdcdf",
+      "bytes": 4246
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/workbench_model.gd",
+      "sha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+      "bytes": 2983
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_space.gd",
+      "sha256": "335f0104c804958982cf1c092c12fb91bae07b711ddd2af3932afb83fcc2881c",
+      "bytes": 8053
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/room_camera.gd",
+      "sha256": "2ad27189b56fad75c2a89f5b062264f923f7c63bc47e13b1da7a8734bad4afa8",
+      "bytes": 2312
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/touch_stick.gd",
+      "sha256": "d9c63cb88e8a13b013669c06a6f370720394f0bb18cf2d5a52fe926d93abdd94",
+      "bytes": 2134
+    }
+  ],
+  "checks": {
+    "pantryModel": {
+      "pass": 39,
+      "failed": 0,
+      "evidence": "Headless model tool output this turn; model unchanged through visual correction"
+    },
+    "desktop": {
+      "checks": 29,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "results": [
+        {
+          "name": "Pantry cannot open from another floor",
+          "passed": true
+        },
+        {
+          "name": "Pantry cannot open remotely from spawn",
+          "passed": true
+        },
+        {
+          "name": "Pantry approach uses existing legal floor",
+          "passed": true
+        },
+        {
+          "name": "Actual big table opens pantry with exit navigation only",
+          "passed": true
+        },
+        {
+          "name": "Fresh notebook does not invent a prior trial",
+          "passed": true
+        },
+        {
+          "name": "Actual handle lifts and tilts toward heavy cups",
+          "passed": true
+        },
+        {
+          "name": "Failed trial notebook matches actual tilt",
+          "passed": true
+        },
+        {
+          "name": "Off-tray cup drop restores same cup without losing tea",
+          "passed": true
+        },
+        {
+          "name": "Touch cancellation cannot swap cups",
+          "passed": true
+        },
+        {
+          "name": "Second finger cannot release held cup",
+          "passed": true
+        },
+        {
+          "name": "Visible cup-to-cup drag swaps full and light cups",
+          "passed": true
+        },
+        {
+          "name": "Changed configuration does not invent another completed trial",
+          "passed": true
+        },
+        {
+          "name": "Balanced tray visibly holds level",
+          "passed": true
+        },
+        {
+          "name": "Held notebook reports level tray without granting delivery",
+          "passed": true
+        },
+        {
+          "name": "Dragging handle toward sofa starts actual transport",
+          "passed": true
+        },
+        {
+          "name": "Focus interruption safely cancels transport",
+          "passed": true
+        },
+        {
+          "name": "Full pointer-only delivery reaches coffee table once",
+          "passed": true
+        },
+        {
+          "name": "Served notebook no longer claims a tilted tray",
+          "passed": true
+        },
+        {
+          "name": "Dragging served tray home retains earned room result",
+          "passed": true
+        },
+        {
+          "name": "Unlocked orange support tab changes physical balance",
+          "passed": true
+        },
+        {
+          "name": "Loose notebook opens without automatic hints",
+          "passed": true
+        },
+        {
+          "name": "Voluntary hint pages never complete puzzle",
+          "passed": true
+        },
+        {
+          "name": "Advanced shifted-support trial works with reduced motion",
+          "passed": true
+        },
+        {
+          "name": "Exit returns to unchanged legal feet and room controls",
+          "passed": true
+        },
+        {
+          "name": "No illegal floor frames",
+          "passed": true
+        },
+        {
+          "name": "Existing solar entry remains intact",
+          "passed": true
+        },
+        {
+          "name": "Existing robotics entry remains intact",
+          "passed": true
+        },
+        {
+          "name": "Existing two-screen entry remains intact",
+          "passed": true
+        },
+        {
+          "name": "Existing mechanical entry remains intact",
+          "passed": true
+        }
+      ],
+      "touch": false,
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "mobile": {
+      "checks": 29,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "results": [
+        {
+          "name": "Pantry cannot open from another floor",
+          "passed": true
+        },
+        {
+          "name": "Pantry cannot open remotely from spawn",
+          "passed": true
+        },
+        {
+          "name": "Pantry approach uses existing legal floor",
+          "passed": true
+        },
+        {
+          "name": "Actual big table opens pantry with exit navigation only",
+          "passed": true
+        },
+        {
+          "name": "Fresh notebook does not invent a prior trial",
+          "passed": true
+        },
+        {
+          "name": "Actual handle lifts and tilts toward heavy cups",
+          "passed": true
+        },
+        {
+          "name": "Failed trial notebook matches actual tilt",
+          "passed": true
+        },
+        {
+          "name": "Off-tray cup drop restores same cup without losing tea",
+          "passed": true
+        },
+        {
+          "name": "Touch cancellation cannot swap cups",
+          "passed": true
+        },
+        {
+          "name": "Second finger cannot release held cup",
+          "passed": true
+        },
+        {
+          "name": "Visible cup-to-cup drag swaps full and light cups",
+          "passed": true
+        },
+        {
+          "name": "Changed configuration does not invent another completed trial",
+          "passed": true
+        },
+        {
+          "name": "Balanced tray visibly holds level",
+          "passed": true
+        },
+        {
+          "name": "Held notebook reports level tray without granting delivery",
+          "passed": true
+        },
+        {
+          "name": "Dragging handle toward sofa starts actual transport",
+          "passed": true
+        },
+        {
+          "name": "Focus interruption safely cancels transport",
+          "passed": true
+        },
+        {
+          "name": "Full pointer-only delivery reaches coffee table once",
+          "passed": true
+        },
+        {
+          "name": "Served notebook no longer claims a tilted tray",
+          "passed": true
+        },
+        {
+          "name": "Dragging served tray home retains earned room result",
+          "passed": true
+        },
+        {
+          "name": "Unlocked orange support tab changes physical balance",
+          "passed": true
+        },
+        {
+          "name": "Loose notebook opens without automatic hints",
+          "passed": true
+        },
+        {
+          "name": "Voluntary hint pages never complete puzzle",
+          "passed": true
+        },
+        {
+          "name": "Advanced shifted-support trial works with reduced motion",
+          "passed": true
+        },
+        {
+          "name": "Exit returns to unchanged legal feet and room controls",
+          "passed": true
+        },
+        {
+          "name": "No illegal floor frames",
+          "passed": true
+        },
+        {
+          "name": "Existing solar entry remains intact",
+          "passed": true
+        },
+        {
+          "name": "Existing robotics entry remains intact",
+          "passed": true
+        },
+        {
+          "name": "Existing two-screen entry remains intact",
+          "passed": true
+        },
+        {
+          "name": "Existing mechanical entry remains intact",
+          "passed": true
+        }
+      ],
+      "touch": true,
+      "viewport": [
+        844,
+        390
+      ]
+    },
+    "floor": {
+      "pass": 1740,
+      "failed": 0,
+      "evidence": {
+        "path": ".impeccable/review/flc_pantry_20261030/floor.log",
+        "sha256": "fad55eff1c802e4cce2a2e923b5af56899180db8a9117ac3e6fd233e355c7954",
+        "bytes": 253
+      }
+    },
+    "design": {
+      "pass": 831,
+      "failed": 0,
+      "evidence": {
+        "path": ".impeccable/review/flc_pantry_20261030/design.log",
+        "sha256": "2851e4658a5faff580443a1fba950c99651e18a4d053ba3eafcdee5997ce3362",
+        "bytes": 1169
+      }
+    },
+    "nativePreflight": {
+      "pass": 5,
+      "notRun": 536,
+      "fullSuitePassed": false,
+      "inputChangedDuringRun": false,
+      "metadata": {
+        "path": ".impeccable/review/flc_pantry_20261030/preflight-final.json.meta.json",
+        "sha256": "db43181e33e80ebf02f470f7d722eaef9c94b63083b5b6a800f518bc715022bf",
+        "bytes": 2152
+      }
+    }
+  },
+  "webExport": {
+    "receipt": {
+      "engine": "4.7.1.stable.official.a13da4feb",
+      "projectConfigSha256": "1ab9736c20760752e3e3c585a1933c494b1d5596bd0f787623396a80b992edcf",
+      "autoloads": [],
+      "productionSaveAccess": false,
+      "browserAcceptance": false,
+      "stages": [
+        {
+          "label": "import",
+          "passed": true,
+          "status": 0
+        },
+        {
+          "label": "startup",
+          "passed": true,
+          "status": 0
+        },
+        {
+          "label": "web_export",
+          "passed": true,
+          "status": 0
+        }
+      ]
+    },
+    "files": [
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/pantry_20261030/index.html",
+        "sha256": "2f4a4af774fa82da466f7225e5a2d413640ec1a5da41b84fc92d4bcd6e150ae2",
+        "bytes": 5313
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/pantry_20261030/index.js",
+        "sha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c",
+        "bytes": 279815
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/pantry_20261030/index.wasm",
+        "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277",
+        "bytes": 39513091
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/pantry_20261030/index.pck",
+        "sha256": "6572b06064dc67f957602f1f81d4c7fc672f3c9568c1dece5140f239fa3abe4f",
+        "bytes": 70338752
+      }
+    ]
+  },
+  "browserSmoke": {
+    "url": "http://127.0.0.1:8139/pantry_20261030/?area=pantry",
+    "viewport": [
+      903,
+      862
+    ],
+    "ordinaryPointerInput": true,
+    "keyboardEvents": 0,
+    "steps": [
+      "room-table entry",
+      "unbalanced lift",
+      "cup swap",
+      "balanced lift",
+      "actual delivery",
+      "truthful initial and served notebook",
+      "room return and visible served tray"
+    ],
+    "warningOrErrorLogs": [],
+    "viewportOverrideUsed": false,
+    "scope": "Current pantry export in the app browser, not full compatibility or release acceptance"
+  },
+  "visualReview": {
+    "fullReview": {
+      "path": ".impeccable/review/flc_pantry_20261030/finish_review.md",
+      "sha256": "c13da14b67ed80698864bce15326eaf97595e19ecdf5fc088869141aa21f518c",
+      "bytes": 8313
+    },
+    "limitedFixVerdict": {
+      "path": ".impeccable/review/flc_pantry_20261030/fix_verdict.md",
+      "sha256": "ff95715bb0a3ae0838831751a384c5e6e03e4a6663e796bacdcd671af83ba1d4",
+      "bytes": 3482
+    },
+    "disposition": "ship",
+    "scope": "F1 and F2 only; corrected table geometry/labels and truthful notebook; not a new whole-surface approval"
+  },
+  "documentation": {
+    "schema": "flc-pantry-extension-documentation-v1",
+    "recordedAt": "2026-10-30T07:58:32.496457+00:00",
+    "projectRoot": "/Users/zhu/.codex/worktrees/north-clean-object-layers-20261027/755",
+    "scope": "Fifth isolated native Godot miniature: 3F pantry tray balance and delivery; ordinary extension of the four incumbent miniatures.",
+    "artifact": "godot_native/campuses/future_learning_center/scripts/pantry_tray_view.gd",
+    "directionBrief": ".impeccable/flc-pantry-brief.md",
+    "productDocumentSupplied": false,
+    "workflow": "Impeccable new-work section 7 ordinary-extension comparison; document.md scan guidance; no new visual-world workshop required for the precise confirmed packet.",
+    "baseHead": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+    "testedUncommittedWorkingTree": true,
+    "incumbentFiles": [
+      {
+        "path": "godot_native/campuses/future_learning_center/design/miniatures/DESIGN.md",
+        "sha256": "83a1e14d876c3f7e7bc3826f28305430f8752151e080d47b37cf821749360335",
+        "bytes": 20318,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/design/miniatures/.impeccable/design.json",
+        "sha256": "c057b79fe0452670b81a5274fed6db71844a5a3795e3e24042555d282084a175",
+        "bytes": 27285,
+        "unchangedFromPriorMiniatureReceipt": true
+      }
+    ],
+    "incumbentSidecarSchemaVersion": 2,
+    "incumbentFilesPreserved": true,
+    "authorizedSystemChangeExists": false,
+    "newDesignSystemWritten": false,
+    "globalArtBibleModified": false,
+    "sourceAndTokenReviewComplete": true,
+    "authorizationAssessment": "The confirmed request authorizes a local fifth apparatus using the existing system. It does not authorize refreshing or broadening DESIGN.md, its sidecar, or the whole-product art bible.",
+    "comparison": [
+      {
+        "contract": "Shared fixed orthographic projection",
+        "observed": {
+          "logicalViewport": [
+            960,
+            540
+          ],
+          "renderViewport": [
+            1440,
+            810
+          ],
+          "cameraProjection": "ORTHOGONAL",
+          "cameraSize": 5.4,
+          "cameraPosition": [
+            0,
+            12,
+            12
+          ],
+          "cameraTarget": [
+            0,
+            0,
+            0
+          ],
+          "logicalScale": 0.01,
+          "depthHeightFactor": 0.7071067811865476,
+          "textureFilter": "LINEAR"
+        },
+        "evidence": [
+          "miniature_bench.gd:26-34",
+          "miniature_bench.gd:65-70",
+          "physical_bench.gd:42",
+          "physical_bench.gd:212-215",
+          "standalone.gd:29-31"
+        ],
+        "result": "inherited"
+      },
+      {
+        "contract": "Material palette and shared lighting",
+        "observed": {
+          "equipmentTeal": "#36777b",
+          "gripOrange": "#db8248",
+          "recessGraphite": "#263f47",
+          "rubber": "#202d32",
+          "benchIvory": "#e2e2d5",
+          "brushedMetal": "#a5b4b1",
+          "surroundSage": "#c7ccc8",
+          "keyRotationDegrees": [
+            -48,
+            -28,
+            0
+          ],
+          "keyEnergy": 0.8,
+          "ambientEnergy": 0.48,
+          "materialRoughness": 0.52,
+          "shadowsEnabled": true
+        },
+        "evidence": [
+          "miniature_bench.gd:6-11",
+          "miniature_bench.gd:35-42",
+          "miniature_bench.gd:71-76",
+          "pantry_miniature.gd:3-49"
+        ],
+        "result": "inherited"
+      },
+      {
+        "contract": "Native typography and stable navigation",
+        "observed": {
+          "fontFamily": "Noto Sans CJK SC Regular",
+          "fallback": "Selected UI Coverage Regular",
+          "systemFallback": false,
+          "titleSize": 24,
+          "titleBaseline": [
+            32,
+            39
+          ],
+          "exitSize": [
+            144,
+            40
+          ],
+          "exitPosition": [
+            808,
+            7
+          ],
+          "exitFontSize": 20,
+          "exitBackground": "#344452",
+          "exitText": "#e8e0c8",
+          "exitCornerRadius": 0
+        },
+        "evidence": [
+          "font name tables",
+          "physical_bench.gd:31-51",
+          "physical_bench.gd:212-215"
+        ],
+        "result": "inherited"
+      },
+      {
+        "contract": "Optional movable notebook",
+        "observed": {
+          "closedCenter": [
+            884,
+            105
+          ],
+          "openPaperSize": [
+            476,
+            266
+          ],
+          "paper": "#f6edd7",
+          "ink": "#202b35",
+          "fontSize": 23,
+          "baselineStep": 27,
+          "captionSize": 20,
+          "pageFold": "#c79b62",
+          "voluntaryClueTiers": 3
+        },
+        "evidence": [
+          "physical_bench.gd:157-185",
+          "physical_bench.gd:228-241",
+          "pantry_miniature.gd:20-24",
+          "pantry_tray_view.gd:6",
+          "pantry_tray_view.gd:125-135"
+        ],
+        "result": "inherited; current-trial content supplied by pantry model state"
+      },
+      {
+        "contract": "Physical manipulation and recovery",
+        "observed": {
+          "soleScreenSpaceAction": "exit",
+          "cupSwap": "visible cup-to-cup drag",
+          "liftAndDelivery": "physical bail handle",
+          "advancedSupport": "physical orange tab after earned delivery",
+          "inputOwner": "one pointer or touch",
+          "invalidDrops": "preserve cup arrangement",
+          "cancelAndFocusLoss": "clear gesture and cancel unfinished trial",
+          "completionAuthority": "pantry_tray_model.gd"
+        },
+        "evidence": [
+          "physical_bench.gd:97-144",
+          "physical_bench.gd:165-185",
+          "pantry_tray_view.gd:22-47",
+          "pantry_tray_view.gd:49-97",
+          "pantry_tray_model.gd:29-69"
+        ],
+        "result": "inherited principle with pantry-specific objects"
+      },
+      {
+        "contract": "Transient feedback and local motion",
+        "observed": {
+          "feedbackRect": [
+            16,
+            486,
+            928,
+            46
+          ],
+          "feedbackBackground": "#253e46",
+          "feedbackText": "#f5f1e4",
+          "feedbackSeconds": 5,
+          "partReturnSeconds": 0.22,
+          "contactCueSeconds": 0.28,
+          "reducedMotion": "immediate tray pose and no optional ripple/return easing"
+        },
+        "evidence": [
+          "physical_bench.gd:72-95",
+          "pantry_tray_view.gd:114-117",
+          "pantry_tray_view.gd:143-147",
+          "pantry_miniature.gd:38"
+        ],
+        "result": "inherited shell with local values listed below"
+      }
+    ],
+    "localVariants": [
+      {
+        "id": "pantry-feedback-size",
+        "kind": "local_existing_scale_choice",
+        "observed": "Pantry draws feedback at 20 logical px (the incumbent body size); common draw_tools uses 21 px.",
+        "evidence": [
+          "pantry_tray_view.gd:146",
+          "physical_bench.gd:226",
+          "DESIGN.md typography.body and typography.feedback"
+        ],
+        "action": "document only; no shared token or implementation edit"
+      },
+      {
+        "id": "pantry-materials",
+        "kind": "object_specific_materials",
+        "observed": {
+          "sofaCushions": "#769692",
+          "clearGlass": "#d5e8e3",
+          "clearGlassAlpha": 0.2,
+          "teaSides": "#b7793c",
+          "teaSurface": "#b99562",
+          "floorShade": "surround-sage multiplied by 0.68",
+          "coffeeTableAndShelf": "brushed-metal multiplied by 0.7"
+        },
+        "evidence": [
+          "pantry_miniature.gd:4",
+          "pantry_miniature.gd:10-21",
+          "pantry_miniature.gd:52-80"
+        ],
+        "action": "local material values only; not promoted to global palette tokens"
+      },
+      {
+        "id": "pantry-mechanism",
+        "kind": "surface_specific_geometry_and_timing",
+        "observed": {
+          "home": [
+            430,
+            377
+          ],
+          "destination": [
+            430,
+            213
+          ],
+          "communalTableCenter": [
+            430,
+            383
+          ],
+          "communalTableDepth": 264,
+          "coffeeTableDepth": 178,
+          "projectedTabletopGap": 13.729401,
+          "trayFootprint": [
+            522,
+            142
+          ],
+          "liftSeconds": 0.65,
+          "deliverySeconds": 1.4,
+          "traySettle": "1 - exp(-15 * dt)",
+          "handleHitRadius": 34,
+          "supportHitRadius": 28,
+          "cupHitRadius": 37
+        },
+        "evidence": [
+          "pantry_tray_view.gd:3-5",
+          "pantry_tray_view.gd:49-62",
+          "pantry_tray_view.gd:99-117",
+          "pantry_tray_model.gd:7-8",
+          "pantry_miniature.gd:13-29"
+        ],
+        "action": "local apparatus behavior, not a new shared camera/control/motion system"
+      }
+    ],
+    "drift": {
+      "preExistingSharedSystemDriftDetected": false,
+      "preExistingFindings": [],
+      "coverageBoundary": "Incumbent DESIGN.md and sidecar intentionally name the original four apparatuses. The pantry brief and this report record fifth-apparatus inheritance; the historical four-apparatus scope is preserved, not silently rewritten.",
+      "localVarianceIsNotSystemChange": true,
+      "scopeOfConclusion": "Verified shared values and representative captures only; not an exhaustive audit of every existing apparatus."
+    },
+    "protectedComparedWithPriorReceipt": [
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/physical_bench.gd",
+        "sha256": "212498456a3d0b8deeb94b63772f21364804eb524f593fea32fae5c1a62df8db",
+        "bytes": 10741,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/bench_projection.gd",
+        "sha256": "9a635d4b23958b4506b437fd8911034c8e01074e793acbfb22d8b1b8cab9aa6a",
+        "bytes": 2603,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/motion_lab_view.gd",
+        "sha256": "74830272dce7245129195848b272a203a30d0b8253373cd907bd3edf14e7f88b",
+        "bytes": 13189,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_view.gd",
+        "sha256": "a6435442f2139647c9634e90bcba897fef4de6fdc580feaf9fd5ab72328107f8",
+        "bytes": 6976,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/solar_race_model.gd",
+        "sha256": "0d199fcf171bd5538d4604359b199375127ba5ef03d5f318850186e6fb75482a",
+        "bytes": 4490,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/robot_delivery_model.gd",
+        "sha256": "81107fb6a74e5b10d6655d5cd173159a780d423b7fb62560cf796a52e83e3b7e",
+        "bytes": 7293,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd",
+        "sha256": "066278456bbc0050da53ddbdb1a240f917cbd00774c6173284142aac1f8fdcdf",
+        "bytes": 4246,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/scripts/workbench_model.gd",
+        "sha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+        "bytes": 2983,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/data/floor_2.json",
+        "sha256": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+        "bytes": 348982,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/data/floor_3.json",
+        "sha256": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+        "bytes": 621120,
+        "unchangedFromPriorMiniatureReceipt": true
+      },
+      {
+        "path": "godot_native/campuses/future_learning_center/data/floor_4.json",
+        "sha256": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46",
+        "bytes": 356551,
+        "unchangedFromPriorMiniatureReceipt": true
+      }
+    ],
+    "evidenceChecked": {
+      "sourceFiles": [
+        {
+          "path": "godot_native/campuses/future_learning_center/scripts/pantry_miniature.gd",
+          "sha256": "35d49d924e728e6f51b79148415a248da64d5a561068715eb55e5f3b0274a710",
+          "bytes": 6451
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/scripts/pantry_tray_view.gd",
+          "sha256": "8b5148bc1dc864fd42d3bc87958413f2a25a7b0df6c7715137f9a81a30537f84",
+          "bytes": 7617
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/scripts/pantry_tray_model.gd",
+          "sha256": "87a0f88f41b7400e278f49465812f4e3e7558ed2604e63874bc1c85f5faac206",
+          "bytes": 2174
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/scripts/miniature_bench.gd",
+          "sha256": "89b0687c49b97d8d140305a358bc0bf7982db008a40d33c63aaace9797caa70f",
+          "bytes": 24799
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/scripts/physical_bench.gd",
+          "sha256": "212498456a3d0b8deeb94b63772f21364804eb524f593fea32fae5c1a62df8db",
+          "bytes": 10741
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/scripts/bench_projection.gd",
+          "sha256": "9a635d4b23958b4506b437fd8911034c8e01074e793acbfb22d8b1b8cab9aa6a",
+          "bytes": 2603
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/scripts/floor_view.gd",
+          "sha256": "a066efbe4e162938ec2670f8cd5ba80ed7e64ac04603d9d3af013fded2ad7012",
+          "bytes": 29738
+        }
+      ],
+      "fontNameTables": [
+        {
+          "path": "godot_native/ui_assets/fonts/SelectedSans-Regular.otf",
+          "family": "Noto Sans CJK SC",
+          "style": "Regular",
+          "sha256": "b792130d8639a31f65b4525b0bfe6ba2bb18cb2b7b8ea7c4605b50cb5f38f6c4",
+          "bytes": 234616
+        },
+        {
+          "path": "godot_native/ui_assets/fonts/SelectedCoverage-Regular.otf",
+          "family": "Selected UI Coverage",
+          "style": "Regular",
+          "sha256": "b6ad88f4e3cefd19983153f1215f770fc3751028e4a98fb47107dde11741784a",
+          "bytes": 904636
+        }
+      ],
+      "textAndReports": [
+        {
+          "path": ".impeccable/flc-pantry-brief.md",
+          "sha256": "c6c9f35ff483aa3fb1115b37e905e49fb7c6981c00a95efead77972953a09e7b",
+          "bytes": 1692
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/design/room_puzzles.v2.json",
+          "sha256": "3eb5dac03902fdadec603a186ff583165a9e31a227ac9a013554a8d287f19bc6",
+          "bytes": 87582
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/review/PANTRY_20261030.md",
+          "sha256": "d9df32606d5c4a42d25cdf086067188e7573467bd2fe0529891ae0a618e262f5",
+          "bytes": 5244
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/review/MINIATURES_VERIFICATION_20261030.json",
+          "sha256": "6ba908bd63ad82f37baf7a1137b706557e29b451400963254905f811ec061c43",
+          "bytes": 19452
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/finish_review.md",
+          "sha256": "c13da14b67ed80698864bce15326eaf97595e19ecdf5fc088869141aa21f518c",
+          "bytes": 8313
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/fix_verdict.md",
+          "sha256": "ff95715bb0a3ae0838831751a384c5e6e03e4a6663e796bacdcd671af83ba1d4",
+          "bytes": 3482
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_input.json",
+          "sha256": "55e80e5041142eb60133f3545ac86a86607c8799a1cb61dd809b63b2a255bfc6",
+          "bytes": 2940
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_input.json",
+          "sha256": "e51fc96a31ec1b60ad6b7fa17f88b0fdcc773395e96480e8d29adf515f2985a1",
+          "bytes": 2938
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/preflight-final.json",
+          "sha256": "3fd5a97deab62a11943ec40c3d2281b750e34720268dc870e4b249ad22621c84",
+          "bytes": 133056
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/preflight-final.json.meta.json",
+          "sha256": "db43181e33e80ebf02f470f7d722eaef9c94b63083b5b6a800f518bc715022bf",
+          "bytes": 2152
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/floor.log",
+          "sha256": "fad55eff1c802e4cce2a2e923b5af56899180db8a9117ac3e6fd233e355c7954",
+          "bytes": 253
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/design.log",
+          "sha256": "2851e4658a5faff580443a1fba950c99651e18a4d053ba3eafcdee5997ce3362",
+          "bytes": 1169
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/tests/test_pantry_input.gd",
+          "sha256": "5c2602c36a6a250a262a51164ccc97f9cd71cd3167d34d5a4af2810f4d6a5352",
+          "bytes": 7429
+        },
+        {
+          "path": "godot_native/campuses/future_learning_center/tests/test_pantry_tray.gd",
+          "sha256": "3affb81b982164fbfa75480e152ef3caf7a516ba6a1870f28ae474ff14f8f3a9",
+          "bytes": 2904
+        },
+        {
+          "path": "godot_native/samples/future_learning_center/standalone.gd",
+          "sha256": "e21eaff6168089c5a4b3e21c8cb801d5afa0f9678c37eff5e18bc75d6ff04eb9",
+          "bytes": 1762
+        }
+      ],
+      "viewedImages": [
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_initial.png",
+          "sha256": "a4d015d52b969faedfe73abf26363521c0b99abc42cc0028d1df7ba02479dc04",
+          "bytes": 130045,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_served.png",
+          "sha256": "f2fb83e62429906ab6b515c65dad0e6a304ffb3e89fcdd78fe936eed3bed6a24",
+          "bytes": 125475,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_initial.png",
+          "sha256": "ff7fa684b37f9bd1038938b87a18dfdf69e5026e1d50f4a3a0e5bc3af577c610",
+          "bytes": 127617,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_tilted.png",
+          "sha256": "f738b1c0cdac8450598b9af8b965a1416f263543d22901a4a06cd8aadefa874e",
+          "bytes": 137192,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_balanced.png",
+          "sha256": "8d30300163ca7e15aeabcc6125e5ae2ddccfa9863b75541e8f8d3762d93a0b91",
+          "bytes": 110279,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_served.png",
+          "sha256": "a56cb7f3603f258462c13585db41cea7a8b0f5d1cd6d954ae6536eb92a9a3a8a",
+          "bytes": 105954,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_room.png",
+          "sha256": "ce3b72e24542c0a1dd1dfa3f50001f8ad55cfff54a3dd83b8bc2e078d02894b0",
+          "bytes": 766992,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_room_served.png",
+          "sha256": "6118c043e4fd38b2e9c4f5f55a693aa01ee77573e6f92f06bbcbc7e928a009cc",
+          "bytes": 767103,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_carrying.png",
+          "sha256": "957f8607df7937e068cf7dc26e640185f8ff13e0ed8862f0bfcd356d4b4caec9",
+          "bytes": 121288,
+          "actualFormat": "PNG",
+          "width": 1280,
+          "height": 720,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_initial.png",
+          "sha256": "0b7979d9a6f0336860d5ead94e8c27d6e8fe8966cecc032ffff4fa0c208930f7",
+          "bytes": 67420,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_served.png",
+          "sha256": "cc6a0484e03b950197744e2e85895641655089bddfc5c3f86608ae10f9f461d8",
+          "bytes": 65658,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_record_served.png",
+          "sha256": "62bd8a7206555cdfb8f7840bc1b4f505da1f856b65bcf05e93e4a4f96b57e724",
+          "bytes": 56969,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_advanced.png",
+          "sha256": "35abda7a8bacb2f588db6aaff3043f8f368e1b78fe1bc9e387269093e79f1b63",
+          "bytes": 66861,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_hint.png",
+          "sha256": "b4d522e88246d2378e4d131500fa0bc82c068afec817e77b78209ce10d2a4f46",
+          "bytes": 64695,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/browser_initial.png",
+          "sha256": "934703927db4af3e9288678b9f8e7b1cd2baddca0cb9b184517735d64d7d3f33",
+          "bytes": 46789,
+          "actualFormat": "JPEG",
+          "width": 903,
+          "height": 862,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/browser_served.png",
+          "sha256": "dd1a5eb10a9a187b324b23ab8fb17d1db5d9d8b69cc43a5dde8c5834f809246b",
+          "bytes": 38926,
+          "actualFormat": "JPEG",
+          "width": 903,
+          "height": 862,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/browser_record_initial.png",
+          "sha256": "ea08e0c45ea712b878315ebe037ab1b3d359450c0d159b14400056b4ecfea268",
+          "bytes": 46127,
+          "actualFormat": "JPEG",
+          "width": 903,
+          "height": 862,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_pantry_20261030/browser_record_served.png",
+          "sha256": "25799ab408190fe5974b703a234c3fd0648d2651f9d52ff9efc2a43c2ef6f518",
+          "bytes": 39786,
+          "actualFormat": "JPEG",
+          "width": 903,
+          "height": 862,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_miniatures_20261030/mobile/solar_initial.png",
+          "sha256": "de25bf0702f73cc603c1431eb3ff6713061c63be76ebaafcfbf5f80f48a5fbb6",
+          "bytes": 94492,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_miniatures_20261030/mobile/solar_notebook.png",
+          "sha256": "8ecd5df334f0a55acc881e84739517e0896628ea96bb61c4df18ec14a3de7a12",
+          "bytes": 82031,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        },
+        {
+          "path": ".impeccable/review/flc_miniatures_20261030/mobile/signal_initial.png",
+          "sha256": "16e671702b565af8eb7c4bc10d5ee215479f9aad953fab1be58e734fbe9921d6",
+          "bytes": 76394,
+          "actualFormat": "PNG",
+          "width": 844,
+          "height": 390,
+          "independentlyViewed": true
+        }
+      ],
+      "viewedPantryImageCount": 18,
+      "viewedIncumbentImageCount": 3,
+      "nativeCaptureInventory": {
+        "desktop": {
+          "count": 13,
+          "dimensions": [
+            1280,
+            720
+          ]
+        },
+        "mobile": {
+          "count": 13,
+          "dimensions": [
+            844,
+            390
+          ],
+          "simulatedTouch": true
+        }
+      },
+      "captureFreshness": "All five reviewed implementation files predate the selected pantry captures.",
+      "imageNote": "Browser capture filenames end in .png but their actual encoded format is JPEG; decoded dimensions are 903 by 862. This does not change the UI comparison."
+    },
+    "verificationEvidence": {
+      "engineVersion": "4.7.1.stable.official.a13da4feb",
+      "inputReports": [
+        {
+          "label": "desktop",
+          "checks": 29,
+          "failures": 0,
+          "keyboardEvents": 0,
+          "viewport": [
+            1280,
+            720
+          ],
+          "simulatedTouch": false,
+          "documenterReran": false
+        },
+        {
+          "label": "mobile",
+          "checks": 29,
+          "failures": 0,
+          "keyboardEvents": 0,
+          "viewport": [
+            844,
+            390
+          ],
+          "simulatedTouch": true,
+          "documenterReran": false
+        }
+      ],
+      "model": {
+        "reportedPass": 39,
+        "documenterInspectedTestSource": true,
+        "documenterReran": false,
+        "evidence": "PANTRY_20261030.md and supplied build packet; test_pantry_tray.gd inspected"
+      },
+      "floor": {
+        "checks": 1740,
+        "failures": 0,
+        "evidence": ".impeccable/review/flc_pantry_20261030/floor.log",
+        "documenterReran": false
+      },
+      "designCoverage": {
+        "checks": 831,
+        "status": "coverage_and_four_toy_models_checked_not_runtime_acceptance",
+        "evidence": ".impeccable/review/flc_pantry_20261030/design.log",
+        "documenterReran": false
+      },
+      "nativePreflight": {
+        "pass": 5,
+        "notRun": 536,
+        "inputChangedDuringRun": false,
+        "fullSuitePassed": false,
+        "documenterReran": false
+      },
+      "browser": {
+        "viewport": [
+          903,
+          862
+        ],
+        "buildPacketReportsOrdinaryCompletion": true,
+        "buildPacketReportsNoWarningsOrErrors": true,
+        "documenterOperatedBrowser": false,
+        "documenterCheckedStaticCaptures": true
+      }
+    },
+    "reviewDisposition": {
+      "word": "ship",
+      "scope": "Existing reviewer verdict scores only F1 table separation/labels and F2 truthful notebook as resolved. Documentation comparison does not expand it into fresh whole-surface or release approval.",
+      "findings": [
+        {
+          "id": "F1",
+          "score": "resolved"
+        },
+        {
+          "id": "F2",
+          "score": "resolved"
+        }
+      ],
+      "evidence": ".impeccable/review/flc_pantry_20261030/fix_verdict.md"
+    },
+    "limits": [
+      "Session-only sample: no formal chapter or production-save integration.",
+      "No novice difficulty or measured completion-time claim.",
+      "Simulated touch does not establish physical-device acceptance.",
+      "Static captures do not prove continuous animation timing.",
+      "No all-browser compatibility, full native suite, or release acceptance.",
+      "The 25-room design coverage does not mean 25 implemented games.",
+      "No new raster assets, shared token changes, global art-bible edits, or implementation edits by the documenter."
+    ],
+    "outcome": "ordinary_extension_documentation_complete",
+    "writeBoundary": [
+      ".impeccable/review/flc_pantry_20261030/documentation_review.md",
+      ".impeccable/review/flc_pantry_20261030/documentation_review.json"
+    ]
+  },
+  "assets": {
+    "newRasterAssets": 0,
+    "geometry": "Native authored meshes with incumbent orthographic miniature camera",
+    "floorArtwork": "Unchanged existing pixel art"
+  },
+  "captures": [
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_balanced.png",
+      "sha256": "0fb0861776f6bae753a2a780c41ba7991e801de662ef435cdf370ebd164edd1d",
+      "bytes": 39376
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_delivery_start.png",
+      "sha256": "d83e34787fd04a454a63d618fccbb1f1de021148b9b7bb993244a54a03609eef",
+      "bytes": 39097
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_final.png",
+      "sha256": "934703927db4af3e9288678b9f8e7b1cd2baddca0cb9b184517735d64d7d3f33",
+      "bytes": 46789
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_initial.png",
+      "sha256": "934703927db4af3e9288678b9f8e7b1cd2baddca0cb9b184517735d64d7d3f33",
+      "bytes": 46789
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_record_initial.png",
+      "sha256": "ea08e0c45ea712b878315ebe037ab1b3d359450c0d159b14400056b4ecfea268",
+      "bytes": 46127
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_record_served.png",
+      "sha256": "25799ab408190fe5974b703a234c3fd0648d2651f9d52ff9efc2a43c2ef6f518",
+      "bytes": 39786
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_room_served.png",
+      "sha256": "221fa3d8cb200563cecabbc1b4e6a51b51cc23bd516010ef09ee666fe0d6c41d",
+      "bytes": 55689
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_served.png",
+      "sha256": "dd1a5eb10a9a187b324b23ab8fb17d1db5d9d8b69cc43a5dde8c5834f809246b",
+      "bytes": 38926
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/browser_tilted.png",
+      "sha256": "076adfc8906a06d4c3cf85194772ce9a450287ae55aff90d0f279c1892f95e5f",
+      "bytes": 42143
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_advanced.png",
+      "sha256": "2361d7aec70d0bfc9981d63a71ecc33f630ac05311eda6dd314cb5dbd785eb9a",
+      "bytes": 129239
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_balanced.png",
+      "sha256": "d41eea1776730d935053f5ab579ed1a083e225ae126aa50239d24391c80d2b6c",
+      "bytes": 122515
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_carrying.png",
+      "sha256": "957f8607df7937e068cf7dc26e640185f8ff13e0ed8862f0bfcd356d4b4caec9",
+      "bytes": 121288
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_hint.png",
+      "sha256": "650859908db956558386d3da7896b855c1a2ad518b89b9b24a0dbf9a60c68395",
+      "bytes": 122162
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_initial.png",
+      "sha256": "a4d015d52b969faedfe73abf26363521c0b99abc42cc0028d1df7ba02479dc04",
+      "bytes": 130045
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_balanced.png",
+      "sha256": "8d30300163ca7e15aeabcc6125e5ae2ddccfa9863b75541e8f8d3762d93a0b91",
+      "bytes": 110279
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_initial.png",
+      "sha256": "ff7fa684b37f9bd1038938b87a18dfdf69e5026e1d50f4a3a0e5bc3af577c610",
+      "bytes": 127617
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_served.png",
+      "sha256": "a56cb7f3603f258462c13585db41cea7a8b0f5d1cd6d954ae6536eb92a9a3a8a",
+      "bytes": 105954
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_record_tilted.png",
+      "sha256": "f738b1c0cdac8450598b9af8b965a1416f263543d22901a4a06cd8aadefa874e",
+      "bytes": 137192
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_room.png",
+      "sha256": "ce3b72e24542c0a1dd1dfa3f50001f8ad55cfff54a3dd83b8bc2e078d02894b0",
+      "bytes": 766992
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_room_served.png",
+      "sha256": "6118c043e4fd38b2e9c4f5f55a693aa01ee77573e6f92f06bbcbc7e928a009cc",
+      "bytes": 767103
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_served.png",
+      "sha256": "f2fb83e62429906ab6b515c65dad0e6a304ffb3e89fcdd78fe936eed3bed6a24",
+      "bytes": 125475
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/desktop/pantry_tilted.png",
+      "sha256": "5651f1722f6762e25de1a10af4288fab9481ca20cd2e5b2f7b9abdff13909109",
+      "bytes": 152581
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_advanced.png",
+      "sha256": "35abda7a8bacb2f588db6aaff3043f8f368e1b78fe1bc9e387269093e79f1b63",
+      "bytes": 66861
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_balanced.png",
+      "sha256": "11b5f5e3463bb5a9e0ff12b14a8288c7ff6cc5604a5b82bb82129cecebc809be",
+      "bytes": 63073
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_carrying.png",
+      "sha256": "7b8024b6b69c1b499e2e2f12bc7b9ec5077ce67e0cdfab96dab8e64abe1ed4e4",
+      "bytes": 63482
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_hint.png",
+      "sha256": "b4d522e88246d2378e4d131500fa0bc82c068afec817e77b78209ce10d2a4f46",
+      "bytes": 64695
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_initial.png",
+      "sha256": "0b7979d9a6f0336860d5ead94e8c27d6e8fe8966cecc032ffff4fa0c208930f7",
+      "bytes": 67420
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_record_balanced.png",
+      "sha256": "f2deba1748ae7d7804c5827c3b05f310ab0ec9180e49a4dc062d1ca1e6b9eb2b",
+      "bytes": 58462
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_record_initial.png",
+      "sha256": "635a34432b27e7e4d218de93effacaafb93c02b20f3ca671bce2a192e34a6250",
+      "bytes": 67892
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_record_served.png",
+      "sha256": "62bd8a7206555cdfb8f7840bc1b4f505da1f856b65bcf05e93e4a4f96b57e724",
+      "bytes": 56969
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_record_tilted.png",
+      "sha256": "dda3ecd51142a1998ad199ae8e69d434df45b8d08982cffb29150108fd6ab405",
+      "bytes": 72539
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_room.png",
+      "sha256": "6b2ef7e4d9532085eabe83f77da248dc462e15b895e778f38816e38d0dcbdd1a",
+      "bytes": 361514
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_room_served.png",
+      "sha256": "7069e0d934104f04291716bd87766e499255de9657b41da6ad66652ae80123eb",
+      "bytes": 361533
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_served.png",
+      "sha256": "cc6a0484e03b950197744e2e85895641655089bddfc5c3f86608ae10f9f461d8",
+      "bytes": 65658
+    },
+    {
+      "path": ".impeccable/review/flc_pantry_20261030/mobile/pantry_tilted.png",
+      "sha256": "013cc82ea2c2c719625172b1d60b7df8f17ea1a4f74cd704e10948261cf47c66",
+      "bytes": 79071
+    }
+  ],
+  "limits": [
+    "Session-only prototype, not formal chapter/save integration",
+    "Other rooms remain design proposals except the prior four prototypes",
+    "Simulated touch, not physical-phone acceptance",
+    "No Argon external review",
+    "No full native suite or all-browser release acceptance",
+    "No commit, push or merge in this turn"
+  ]
+}

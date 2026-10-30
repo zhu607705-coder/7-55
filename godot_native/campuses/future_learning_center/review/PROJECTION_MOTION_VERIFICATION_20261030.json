@@ -1,0 +1,552 @@
+{
+  "schema": 1,
+  "recordedAt": "2026-10-29T18:01:02.049690+00:00",
+  "branch": "codex/flc-transcript-level-design-20261029",
+  "baseHead": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "testedUncommittedWorkingTree": true,
+  "runtime": "isolated Godot4.7.1 native and standalone Web prototypes",
+  "productionSaveAccess": false,
+  "engine": {
+    "version": "4.7.1.stable.official.a13da4feb",
+    "executable": "/Users/zhu/.cache/755-engines/4.7.1/Godot.app/Contents/MacOS/Godot",
+    "webTemplate": "/Users/zhu/Library/Application Support/Godot/export_templates/4.7.1.stable/web_nothreads_release.zip"
+  },
+  "sourceFiles": [
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/bench_projection.gd",
+      "sha256": "9a635d4b23958b4506b437fd8911034c8e01074e793acbfb22d8b1b8cab9aa6a",
+      "bytes": 2603
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/building_transit.gd",
+      "sha256": "3a781756d006e4cc2c3c81a1311ae9af3186d42f6cd7b00f4a9b2ef9d4679eae",
+      "bytes": 1084
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_lighting.gd",
+      "sha256": "b22ebaf9def6e1089efd7922a941d163e394bafbbf2236e05625f7e207bb80f3",
+      "bytes": 4737
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_space.gd",
+      "sha256": "335f0104c804958982cf1c092c12fb91bae07b711ddd2af3932afb83fcc2881c",
+      "bytes": 8053
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_view.gd",
+      "sha256": "ab56695ba4061cf00b91ce2eb05086f9ab97931b658078bab48402e555b56d6e",
+      "bytes": 27397
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/motion_lab_view.gd",
+      "sha256": "6c0791bab3511e740299f3bec194c969617f29de0db4eb643c731033d7e43136",
+      "bytes": 22033
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/motion_prop_metrics.gd",
+      "sha256": "f381627dd6e10d63b225940760abe38a23bef1cc5cb687d523b600bda18f453d",
+      "bytes": 795
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/physical_bench.gd",
+      "sha256": "3912ca64df95e25521e7e4ce680098d7628161446fdf7691c5b1f45756e7878e",
+      "bytes": 13322
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/robot_delivery_model.gd",
+      "sha256": "81107fb6a74e5b10d6655d5cd173159a780d423b7fb62560cf796a52e83e3b7e",
+      "bytes": 7293
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/room_camera.gd",
+      "sha256": "2ad27189b56fad75c2a89f5b062264f923f7c63bc47e13b1da7a8734bad4afa8",
+      "bytes": 2312
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd",
+      "sha256": "066278456bbc0050da53ddbdb1a240f917cbd00774c6173284142aac1f8fdcdf",
+      "bytes": 4246
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_view.gd",
+      "sha256": "16c42be6519e5ec82e98beb88cb280be79f9536e8382eefa51959cc33640af07",
+      "bytes": 11071
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/solar_race_model.gd",
+      "sha256": "0d199fcf171bd5538d4604359b199375127ba5ef03d5f318850186e6fb75482a",
+      "bytes": 4490
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/stair_traversal.gd",
+      "sha256": "e8dd86110a78bcc668e75716440624ccb0084bb67f7d9a116c88bae5b742a46b",
+      "bytes": 3253
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/stair_view.gd",
+      "sha256": "d634fc94171874e34666a313b2ea9a30c52a10f4f44a25bb891e075f6dc258e7",
+      "bytes": 5262
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/touch_stick.gd",
+      "sha256": "d9c63cb88e8a13b013669c06a6f370720394f0bb18cf2d5a52fe926d93abdd94",
+      "bytes": 2134
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/workbench_model.gd",
+      "sha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+      "bytes": 2983
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/workbench_view.gd",
+      "sha256": "21c9c409163f825843607801be364b97d2f04d6459d79ecbda742eec8a3771f6",
+      "bytes": 9760
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/capture_wall_storage.gd",
+      "sha256": "a69869e316930e16e8eec9f31f4c378799f45ba76ad9e9beb972e78042fe8d7d",
+      "bytes": 2295
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_bench_presentation.gd",
+      "sha256": "8cc1c8e259fd290861339ace6cff138f9b8ef79362f7073ccaafa8ec094d8b99",
+      "bytes": 9796
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_floor.gd",
+      "sha256": "347b8b89de11d58e375f7c6396655c2f80b5c9a771bd9594bb5c155eb725bd75",
+      "bytes": 12441
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_motion_puzzles.gd",
+      "sha256": "70d8b0d8aa422012401c95e6399e0f89536e97d96bfff7e7b5d8e09874af2ed7",
+      "bytes": 7821
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_object_input.gd",
+      "sha256": "6dfeb9e6e6759a336d24f2ea8e945008ebeecee5be831efb8b5e860f8e4666b4",
+      "bytes": 15649
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_signal_sync.gd",
+      "sha256": "c3ba78b027696e60a989a4ceb25ee36a764a70f7e06ca17aed8626af55d7e30c",
+      "bytes": 2857
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_wall_storage.gd",
+      "sha256": "1f3b289046cd93ae66d9d74ec4385df2a9a9a96b0206b5def25f90b3e21a7ebf",
+      "bytes": 3869
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/play.gd",
+      "sha256": "6606b4f2e1bda0273c016bfa12ae07c853510bb45aff7d0e112b3557d5f915d1",
+      "bytes": 34119
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/standalone.gd",
+      "sha256": "c78990c02cd97770e79d8be43f3ef13b7fa8c5ef845f6c25f4368f19bef19f8f",
+      "bytes": 1617
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/build_web.mjs",
+      "sha256": "d6b5cd5f18b39c11ad8eba046b4f76d3c304a74191dbaf0272b3efb04778e800",
+      "bytes": 5633
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/run.mjs",
+      "sha256": "f28676c42598cd1001e39c309ce82434b584d45c8d917851ee20efb564e003cb",
+      "bytes": 2521
+    }
+  ],
+  "protectedUnchangedSources": [
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_view.gd",
+      "sha256": "ab56695ba4061cf00b91ce2eb05086f9ab97931b658078bab48402e555b56d6e",
+      "bytes": 27397,
+      "unchangedSinceObjectFirstPass": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/workbench_model.gd",
+      "sha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+      "bytes": 2983,
+      "unchangedSinceObjectFirstPass": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/solar_race_model.gd",
+      "sha256": "0d199fcf171bd5538d4604359b199375127ba5ef03d5f318850186e6fb75482a",
+      "bytes": 4490,
+      "unchangedSinceObjectFirstPass": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/robot_delivery_model.gd",
+      "sha256": "81107fb6a74e5b10d6655d5cd173159a780d423b7fb62560cf796a52e83e3b7e",
+      "bytes": 7293,
+      "unchangedSinceObjectFirstPass": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd",
+      "sha256": "066278456bbc0050da53ddbdb1a240f917cbd00774c6173284142aac1f8fdcdf",
+      "bytes": 4246,
+      "unchangedSinceObjectFirstPass": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/touch_stick.gd",
+      "sha256": "d9c63cb88e8a13b013669c06a6f370720394f0bb18cf2d5a52fe926d93abdd94",
+      "bytes": 2134,
+      "unchangedSinceObjectFirstPass": true
+    }
+  ],
+  "floorSources": [
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_2.json",
+      "sha256": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+      "bytes": 348982
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_3.json",
+      "sha256": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+      "bytes": 621120
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_4.json",
+      "sha256": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46",
+      "bytes": 356551
+    }
+  ],
+  "projection": {
+    "type": "orthographic 2.5D projection",
+    "elevationDegrees": 45,
+    "yawDegrees": 0,
+    "floorDepthRatio": 0.7071067811865476,
+    "screenHeightRatio": 0.7071067811865476,
+    "scope": "Apparatus plane only; original floor maps, player feet, room camera and progression models unchanged",
+    "rasterLimit": "Generation camera brief is not mathematical certification of every raster pixel or strict32-color acceptance"
+  },
+  "inputAndPresentation": {
+    "desktop": {
+      "report": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/desktop/object_input.json",
+        "sha256": "be8149426cc4f5e5326cf7bea2fc3e9bcc3858faa784bd3d1a0061f7cf2a9fed",
+        "bytes": 5012
+      },
+      "checks": 47,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "viewport": [
+        1280,
+        720
+      ],
+      "fixedStep": false
+    },
+    "simulatedTouch": {
+      "report": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/mobile/object_input.json",
+        "sha256": "8a82bcb322fa3b91758529d9096a192bed112847e3a5f190c6b588b621e201c9",
+        "bytes": 5520
+      },
+      "checks": 53,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "viewport": [
+        844,
+        390
+      ],
+      "fixedStep": false
+    },
+    "presentationDesktop": {
+      "report": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/motion_desktop/presentation.json",
+        "sha256": "bb444d717ffcabbe3fac24cdc100ee0114de51eb8f9e417f0f6887a731c053b1",
+        "bytes": 3690
+      },
+      "checks": 32,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "viewport": [
+        1280,
+        720
+      ],
+      "fixedStep": false
+    },
+    "presentationTouch": {
+      "report": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/motion_mobile/presentation.json",
+        "sha256": "4f4252cdbde1c994aeca921f47c5dec7a9532e0070674e197e9faeb9940d522a",
+        "bytes": 3688
+      },
+      "checks": 32,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "viewport": [
+        844,
+        390
+      ],
+      "fixedStep": false
+    },
+    "presentationMovie": {
+      "report": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/motion_movie/presentation.json",
+        "sha256": "486a86bfa2ef7a3d6f211a24dfc783a741b92486b2cb44ba94da503b386c3cc2",
+        "bytes": 3688
+      },
+      "checks": 32,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "viewport": [
+        960,
+        540
+      ],
+      "fixedStep": true
+    }
+  },
+  "motionAndSpace": {
+    "motion": {
+      "checks": 63,
+      "failures": 0,
+      "log": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/motion_models.log",
+        "sha256": "3444f2db2add697789ea182f21f2ee2ae73cca94fbf9fbbc69ba4f46eb4acaa8",
+        "bytes": 284
+      }
+    },
+    "signal": {
+      "checks": 15,
+      "failures": 0,
+      "log": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/signal_models.log",
+        "sha256": "3d31f0c249a29b9ea4188540a46fc2c075e57a9da7d2c6baaa54a470d1fc16aa",
+        "bytes": 258
+      }
+    },
+    "floor": {
+      "checks": 1740,
+      "failures": 0,
+      "log": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/floor_spatial.log",
+        "sha256": "33f402934389c46fbfa51ca19846c6d0f35d3112a908ae1410b50242448d41f1",
+        "bytes": 253
+      }
+    }
+  },
+  "nativePreflight": {
+    "report": {
+      "path": ".impeccable/review/flc_projection_motion_20261030/native_preflight_after_fixes_final.json",
+      "sha256": "7d96a28a8c5073a4e0ddd7eecd58d967307213f918f5e3e7904c9e0c6c360c5b",
+      "bytes": 132592
+    },
+    "metadata": {
+      "path": ".impeccable/review/flc_projection_motion_20261030/native_preflight_after_fixes_final.json.meta.json",
+      "sha256": "9cf66e86bce80b30ca4bec07e2285405161242e685a30e838e6590355b3f35a0",
+      "bytes": 2152
+    },
+    "pass": 5,
+    "notRun": 536,
+    "failures": 0,
+    "inputChangedDuringRun": false,
+    "fullSuitePassed": false
+  },
+  "webExport": {
+    "directory": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030",
+    "buildReceipt": {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/build_receipt.json",
+      "sha256": "751f683b6ee34e5cc6214cf4dd8173133cee6aede34de2e26048c39d40872203",
+      "bytes": 482
+    },
+    "stages": [
+      {
+        "label": "import",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "startup",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "web_export",
+        "passed": true,
+        "status": 0
+      }
+    ],
+    "files": [
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/index.audio.position.worklet.js",
+        "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
+        "bytes": 2973
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/index.audio.worklet.js",
+        "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
+        "bytes": 7298
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/index.html",
+        "sha256": "90c672ca925869ec587a17dedecd5e778c9337ca9eb457c4be5976cc3164c211",
+        "bytes": 5313
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/index.js",
+        "sha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c",
+        "bytes": 279815
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/index.pck",
+        "sha256": "f653f56fc8af2ec94e10bf55cd89918631ea3a8e1c1832c18df284f5d8aa750b",
+        "bytes": 71670564
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/index.wasm",
+        "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277",
+        "bytes": 39513091
+      }
+    ]
+  },
+  "browserSmoke": {
+    "browser": "Codex in-app browser",
+    "viewport": [
+      1280,
+      720
+    ],
+    "input": "Actual pointer clicks/drags through CUA, zero keyboard events",
+    "solar": {
+      "url": "http://127.0.0.1:8139/object_motion_20261030/?area=solar&revision=2",
+      "actions": [
+        "Click real room bench",
+        "Drag panel hinge",
+        "Push physical lever",
+        "Wait normal complete30-second run"
+      ],
+      "observedSeconds": 30,
+      "modifiedDistance": 116.3,
+      "baselineDistance": 106.5,
+      "capture": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/browser_solar_complete.png",
+        "sha256": "c21273b741ffc7d16ccab4f1340f986160546d2296c261d3a2b600748de22629",
+        "bytes": 110802
+      }
+    },
+    "signal": {
+      "url": "http://127.0.0.1:8139/object_motion_20261030/?area=team&revision=2",
+      "actions": [
+        "Click real desk monitor",
+        "Drag splitter output plug to right input",
+        "Place pattern2 card in editor",
+        "Observe both screens update",
+        "Place different pattern0 card in editor",
+        "Observe both screens update again"
+      ],
+      "observedBothDistinctPatternsPropagate": true,
+      "standAttachmentVisible": true,
+      "capture": {
+        "path": ".impeccable/review/flc_projection_motion_20261030/browser_signal_complete.png",
+        "sha256": "c1236c6664871ea5c8fd4890d9f6443b8e4c4216458f415b31ce8ce10a212773",
+        "bytes": 91483
+      }
+    },
+    "warningAndErrorLogs": {
+      "path": ".impeccable/review/flc_projection_motion_20261030/browser_logs.json",
+      "sha256": "996688a9ea15d3e96fa54c5da8819df8d2dc714f5c4d79e90dfdabd8c640e043",
+      "bytes": 33
+    },
+    "scope": "Two desktop smoke flows, not complete browser or physical-device release matrix",
+    "previewAliases": [
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/lab/index.html",
+        "backup": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/lab/index.before_object_motion.html",
+        "backupSha256": "61cd8c58354cce8884adcf89ed7d1dc2b9f3d7f7e3b11b729a9aa25e0e41dac3",
+        "preservesQueryAndHash": true
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/motion_puzzles_20261029/index.html",
+        "backup": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/motion_puzzles_20261029/index.before_object_motion.html",
+        "backupSha256": "61cd8c58354cce8884adcf89ed7d1dc2b9f3d7f7e3b11b729a9aa25e0e41dac3",
+        "preservesQueryAndHash": true
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/signal_sync_20261029/index.html",
+        "backup": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/signal_sync_20261029/index.before_object_motion.html",
+        "backupSha256": "61cd8c58354cce8884adcf89ed7d1dc2b9f3d7f7e3b11b729a9aa25e0e41dac3",
+        "preservesQueryAndHash": true
+      },
+      {
+        "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.html",
+        "backup": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_interaction_20261029/index.before_object_motion.html",
+        "backupSha256": "4b558750117bf39511cc1e6ed356e3aa030a6d59afbc41555555dd693c5bcfb1",
+        "preservesQueryAndHash": true
+      }
+    ]
+  },
+  "video": {
+    "file": {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/object_motion_20261030/objects_motion_native.mp4",
+      "sha256": "b62af7c921ede7c30e9a22010cb4a0f5ce0d51dbe20aec7ef89cd754720c72b3",
+      "bytes": 1039312
+    },
+    "metadata": {
+      "path": ".impeccable/review/flc_projection_motion_20261030/video_metadata.json",
+      "sha256": "200f2fb6e1b6f30317b64c87b8216c6df58973707103b0524a58460a56d2caa6",
+      "bytes": 230
+    },
+    "frames": 651,
+    "fps": 30,
+    "seconds": 21.7,
+    "size": [
+      960,
+      540
+    ],
+    "fullDecodePassed": true,
+    "input": "Normal pointer gestures in native MovieWriter; all32 assertions pass",
+    "timing": "Fixed simulation step for authored demonstration; separate47/53 checks use normal realtime",
+    "captureReceipt": {
+      "path": ".impeccable/review/flc_projection_motion_20261030/movie_corrected_frames.json",
+      "sha256": "4485a9b998736218dcbb26b29c66c5559e740ac79ce8fe9db35475bc88a8fd3c",
+      "bytes": 460
+    }
+  },
+  "visualReview": {
+    "firstPass": {
+      "path": ".impeccable/review/flc_projection_motion_20261030/finish_review.md",
+      "sha256": "9f816bd3e4605ab018e3f9083de4f3554726959fac8cf86d664cd2aaa3738f2f",
+      "bytes": 7516
+    },
+    "verdict": {
+      "path": ".impeccable/review/flc_projection_motion_20261030/finish_verdict.md",
+      "sha256": "1d9921f54dd9e9ac634798399dc0cd95d8b6c9e7c22a6426f1e3b0e8b0a386bf",
+      "bytes": 3150
+    },
+    "disposition": "ship",
+    "scope": "Verdict pass scores only F1 monitor support attachment and F2 distinct stable30/60-degree panel states, including mobile/reduced motion; both resolved",
+    "documentation": ".impeccable/review/flc_projection_motion_20261030/documentation.md"
+  },
+  "assets": {
+    "manifest": {
+      "path": "godot_native/campuses/future_learning_center/assets/puzzles/oblique45_generation.json",
+      "sha256": "6db0e9c9ab4e96a5dcf2737376c54dd14513d1de00e2e9789f4ec0c7550e87b3",
+      "bytes": 1379
+    },
+    "prompts": {
+      "path": "godot_native/campuses/future_learning_center/assets/puzzles/oblique45_prompts.json",
+      "sha256": "4c1e11ef3bec87df9119800cec967b3fb593d503aa4f41c5d7b94eb323c8c427",
+      "bytes": 3570
+    },
+    "measuredFrames": {
+      "path": "godot_native/campuses/future_learning_center/assets/puzzles/oblique45_frames.json",
+      "sha256": "559344f92acd824a323a1a5feeea596f3646987cfa9efe2666fb4b6631f26832",
+      "bytes": 727
+    },
+    "generator": "built-in image_gen",
+    "rawOriginalsRetained": true,
+    "runtimePixelsUnchanged": true
+  },
+  "resolvedHarnessIssues": [
+    "First1440x900 movie encoding exceeded the20-second host-time robot wait; reran at private960x540 movie resolution with bounded recording wait",
+    "Signal acknowledgement wait now uses model time duration instead of a90-frame window which was too short at high mobile FPS",
+    "One focused preflight overlapped a documentation write; superseded by the unchanged-input final report named here"
+  ],
+  "limits": [
+    "Four isolated prototypes, not complete25-room runtime or production story/save integration",
+    "No physical-phone, novice-difficulty, strict32-color, full541-check suite, Argon or production release acceptance",
+    "No commit, push, merge or deployment performed"
+  ]
+}

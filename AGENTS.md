@@ -33,6 +33,13 @@
 
 ## Game Development Skill Reference
 
+### Object-first gameplay interaction (user design principle, 2026-10-29)
+
+- Core gameplay and puzzle operations must be performed through visible, manipulable objects in the scene: drag parts, rotate or reconnect components, pull a lever, turn a dial, or move a joystick. Their positions, hit areas, motion and feedback must agree. Do not substitute a row of screen buttons, prominent hotkey prompts, or a full-screen control panel for the object interaction.
+- The default view keeps the scene and its interactive objects legible. Instructions, clue tiers and records appear only when requested or when a specific failed manipulation needs concise recovery feedback. Do not cover the playfield with persistent control explanations.
+- Touch locomotion uses a clearly recognizable analog joystick alongside tap-to-approach. Physical apparatus may use an in-world lever or joystick appropriate to the mechanism. Keyboard equivalents may remain as secondary accessibility paths, without becoming required actions or default on-screen labels.
+- Screen-space buttons are reserved for necessary navigation and secondary settings. Validate complete ordinary pointer and touch paths, including drag cancellation, multiple touches, focus loss, undo/recovery and exit, with no keyboard requirement. Apply this principle to existing work being revised and every future gameplay design.
+
 - For future game-development work, use the user-selected [awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills) toolkit as a reference. Consult its router when the engine or task changes, then read only the relevant engine and discipline skills. Prefer the corresponding installed skill when available.
 - Verify the actual project engine/dependency version before applying examples. Active `godot_native/` work uses the Godot skill family; retained Web work keeps its own pinned Phaser/Three.js baseline. The catalog's example version is not authorization to migrate the project.
 - Pair engine guidance with the relevant asset, animation, camera, level-design, input/UI, physics or performance discipline. Validate the result in the real scene at desktop and mobile sizes; the project's existing art bible, controller/save authority and explicit user choices remain authoritative. Reference/version notes live in `godot_native/docs/GAMEDEV_SKILLS_REFERENCE.md`.

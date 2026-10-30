@@ -36,7 +36,7 @@ for(const facing of ['down','up','side'])for(let i=0;i<8;i++)copy(`assets/rpg/pl
 for(const license of ['ui_assets/fonts/MORNING_NOTE_OFL.txt','ui_assets/fonts/SELECTED_NOTO_LICENSE.txt','ui_assets/fonts/SELECTED_BOUTIQUE_OFL.txt','assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt'])if(fs.existsSync(path.join(native,license)))copy(license);
 const config=`config_version=5
 [application]
-config/name="7:55 · 机电操作台试玩"
+config/name="7:55 · 房间谜题试玩"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="755FLCWorkshopReview"
 run/main_scene="res://main.tscn"

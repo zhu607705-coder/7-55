@@ -1,0 +1,283 @@
+{
+  "schema": "755.flc.signal-sync-review.v1",
+  "recordedAt": "2026-10-29T08:22:38.674787+00:00",
+  "baselineCommit": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
+  "branch": "codex/flc-transcript-level-design-20261029",
+  "testedWorkingTreeNotCommitted": true,
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "sourceSha256": {
+    "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd": "f4d41e52a82630aad337cd615af009a9ca79e4518c2c4a71798271a1be102ecd",
+    "godot_native/campuses/future_learning_center/scripts/signal_sync_view.gd": "bf183f4cf0558310f5bf76001205575090cc037c24c197d6d6bd03d338bbb931",
+    "godot_native/campuses/future_learning_center/scripts/floor_view.gd": "5037aa860e5a242bb0ec6ccfa36d66e19c5ed60027d38401e7b383c5fc0a48a4",
+    "godot_native/campuses/future_learning_center/tests/test_signal_sync.gd": "c3ba78b027696e60a989a4ceb25ee36a764a70f7e06ca17aed8626af55d7e30c",
+    "godot_native/samples/future_learning_center/play.gd": "5221a13d4b1102f2f9f4b7bcb81dcd85c6ce12931b330682fe05c476ac8b3864",
+    "godot_native/samples/future_learning_center/standalone.gd": "0c790d5c4f4921521e593282e0dd5b1f87d2d1042233a07bdf930177d337c81d",
+    "godot_native/samples/future_learning_center/run.mjs": "679fadf15bc6e2e81bd86ed676c865f761ef53c215f58387a39edc37eddc9909",
+    "godot_native/samples/future_learning_center/build_web.mjs": "d6b5cd5f18b39c11ad8eba046b4f76d3c304a74191dbaf0272b3efb04778e800",
+    "godot_native/campuses/future_learning_center/design/room_puzzles.v2.json": "450913018269d2a8f5019d26c8dbaafa23fc0b09b4e60459b29be6699194880b"
+  },
+  "model": {
+    "checks": 15,
+    "failures": 0,
+    "command": "node godot_native/samples/future_learning_center/run.mjs --signal-test --headless"
+  },
+  "desktop": {
+    "checks": 19,
+    "failures": 0,
+    "results": [
+      {
+        "name": "remote activation rejected",
+        "passed": true
+      },
+      {
+        "name": "measured approach is clear",
+        "passed": true
+      },
+      {
+        "name": "tap desk approaches and opens",
+        "passed": true
+      },
+      {
+        "name": "original wiring visibly fails",
+        "passed": true
+      },
+      {
+        "name": "hint has no completion effect",
+        "passed": true
+      },
+      {
+        "name": "hint tiers only advance on request",
+        "passed": true
+      },
+      {
+        "name": "records explain evidence without completing",
+        "passed": true
+      },
+      {
+        "name": "two native port taps connect cable",
+        "passed": true
+      },
+      {
+        "name": "one change still needs verification",
+        "passed": true
+      },
+      {
+        "name": "screen swap preserves port identity",
+        "passed": true
+      },
+      {
+        "name": "second distinct live update succeeds after swap",
+        "passed": true
+      },
+      {
+        "name": "keyboard disconnect targets identity after swap",
+        "passed": true
+      },
+      {
+        "name": "undo restores cable but requires new verification",
+        "passed": true
+      },
+      {
+        "name": "keyboard port connection shares physical cable rule",
+        "passed": true
+      },
+      {
+        "name": "mouse drag follows swapped visible socket",
+        "passed": true
+      },
+      {
+        "name": "exit restores same legal feet",
+        "passed": true
+      },
+      {
+        "name": "keyboard reopen retains connections",
+        "passed": true
+      },
+      {
+        "name": "focus loss cancels unfinished verification",
+        "passed": true
+      },
+      {
+        "name": "room interaction unavailable on other floors",
+        "passed": true
+      }
+    ],
+    "touch": false,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  "simulatedTouch": {
+    "checks": 18,
+    "failures": 0,
+    "results": [
+      {
+        "name": "remote activation rejected",
+        "passed": true
+      },
+      {
+        "name": "measured approach is clear",
+        "passed": true
+      },
+      {
+        "name": "tap desk approaches and opens",
+        "passed": true
+      },
+      {
+        "name": "original wiring visibly fails",
+        "passed": true
+      },
+      {
+        "name": "hint has no completion effect",
+        "passed": true
+      },
+      {
+        "name": "hint tiers only advance on request",
+        "passed": true
+      },
+      {
+        "name": "records explain evidence without completing",
+        "passed": true
+      },
+      {
+        "name": "two native port taps connect cable",
+        "passed": true
+      },
+      {
+        "name": "one change still needs verification",
+        "passed": true
+      },
+      {
+        "name": "screen swap preserves port identity",
+        "passed": true
+      },
+      {
+        "name": "second distinct live update succeeds after swap",
+        "passed": true
+      },
+      {
+        "name": "keyboard disconnect targets identity after swap",
+        "passed": true
+      },
+      {
+        "name": "undo restores cable but requires new verification",
+        "passed": true
+      },
+      {
+        "name": "keyboard port connection shares physical cable rule",
+        "passed": true
+      },
+      {
+        "name": "exit restores same legal feet",
+        "passed": true
+      },
+      {
+        "name": "keyboard reopen retains connections",
+        "passed": true
+      },
+      {
+        "name": "focus loss cancels unfinished verification",
+        "passed": true
+      },
+      {
+        "name": "room interaction unavailable on other floors",
+        "passed": true
+      }
+    ],
+    "touch": true,
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  "floorRegression": {
+    "checks": 1740,
+    "failures": 0,
+    "command": "node godot_native/samples/future_learning_center/run.mjs --test --headless"
+  },
+  "preflight": {
+    "passed": 5,
+    "notRun": 536,
+    "fullAcceptance": false,
+    "note": "Preflight preceded the final font-size adjustment; final sources were then imported, started, exported, and run in desktop, simulated touch and browser."
+  },
+  "webExport": {
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "projectConfigSha256": "1ab9736c20760752e3e3c585a1933c494b1d5596bd0f787623396a80b992edcf",
+    "autoloads": [],
+    "productionSaveAccess": false,
+    "browserAcceptance": false,
+    "stages": [
+      {
+        "label": "import",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "startup",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "web_export",
+        "passed": true,
+        "status": 0
+      }
+    ]
+  },
+  "browserSmoke": {
+    "tool": "cua_repl",
+    "url": "http://127.0.0.1:8139/signal_sync_20261029/?area=team",
+    "observed": [
+      "actual Godot room loaded",
+      "Space opened the local workbench",
+      "H1 through H3 displayed on explicit input",
+      "visible close-clue button hid the clue strip",
+      "clicking two ports changed the wire",
+      "first source update requested a second comparison",
+      "second distinct update showed synchronized success"
+    ],
+    "warningAndErrorLogEntries": 0,
+    "screenshot": ".impeccable/review/flc_signal_20261029/browser_success.jpg",
+    "screenshotSha256": "e3d66d2aa0ca38c26cecc9b8642f4391cb7ce30b06bb540522ce185930c60fac",
+    "fullBrowserAcceptance": false
+  },
+  "artifacts": {
+    ".impeccable/review/flc_signal_20261029/browser_success.jpg": "e3d66d2aa0ca38c26cecc9b8642f4391cb7ce30b06bb540522ce185930c60fac",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_hint.png": "33491fa5604c44aa4f3c3a5e63e2d83a67321e417e1a7405062cc8c72ff90c0c",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_hint_last.png": "7de478c347532903ea3edd8f06962bbc2ab0e30dd0d6490810952760021ededd",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_initial.png": "51c174581aba8399b442dbcfd11d873ce4f1f6e07ced28194e5b63c46dbb6682",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_input.json": "2bffc902708957fc1540fd57c4b4794eb66b0773ec4827b9ae14040245a6213f",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_notes.png": "f322e374e130145baa4a8f892c847b1b226e12f967761248240764ee09d961e3",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_room.png": "4978003e4d854385c502c19cbb87f06e9df01faaf5b1999e8f0d97f3a0ef0a0d",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_success.png": "b5af368c4565cbb18c10742c01d0640d6e864bbb79021fd4885f57484fef2d6d",
+    ".impeccable/review/flc_signal_20261029/desktop/signal_transmitting.png": "8303fe2a81c09f49f60fa109790ddfb492a5dccd98df1aa30c612fb4f180936a",
+    ".impeccable/review/flc_signal_20261029/documentation.md": "d7ec28762a2809909628041fda0940fbf9b757d06aa6de0e884e49972e46a02c",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_hint.png": "4ce4e6a24520f251abbd14e99afc813af86555ca3a1e98ba5ca72df385696e8a",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_hint_last.png": "b895a7bbde34ce9964904afb31f870abad9a0708648bc4b0fa3b3d8954b4357a",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_initial.png": "ee7d385c187927e8383c7e789dea7aed2addf90815439582d968e4533006a386",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_input.json": "2c847893e78c7afc97dc9f0e714717d40a90cbe60903b3084e54e9e0341efa42",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_notes.png": "f15409105f1996453ea87efb16bd5b3adc9bbb57a83ccc8a32439fdc50ba8cfe",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_room.png": "aab45c443fff48381228743e3c41546cb75025d9c7864246e44980ec3353539b",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_success.png": "66509e2547c708770a70324321160e1146d4dbea3e91d70818aaf2c00b2ca5ff",
+    ".impeccable/review/flc_signal_20261029/mobile/signal_transmitting.png": "2a3149944fa349a7b17a9c56118fd36ac8f4a19167f2c103502b6378e2db27ae"
+  },
+  "designCoverage": {
+    "rooms": 25,
+    "checks": 829,
+    "runtimeCoverageClaim": false
+  },
+  "finishReview": {
+    "disposition": "ship",
+    "scope": "resolved mobile typography, clue occlusion, final-hint label and explicit close button"
+  },
+  "argon": {
+    "status": "awaiting_user_identification",
+    "sent": false,
+    "reviewReceived": false
+  },
+  "productionProgression": false,
+  "physicalDeviceAcceptance": false,
+  "deployed": false
+}
