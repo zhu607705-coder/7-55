@@ -51,7 +51,7 @@ const excludedPrefixes = ['addons/RodinBridge/', 'docs/', 'tests/', 'tools/', 'v
 const excludedSuffixes = ['.mp4', '.md', '.log', '.blend', '.blend1', '.py', '.ts', '.mjs'];
 // Historical UI-laboratory faces remain editable source references. Active
 // phone, world and theater text now use the same project pixel family.
-const retiredUiFonts = ['CampusUISans-Regular.otf', 'SelectedSans-Regular.otf', 'SelectedSans-Bold.otf', 'SelectedCoverage-Regular.otf', 'SelectedCoverage-Bold.otf', 'SelectedBoutique-Regular.ttf'];
+const retiredUiFonts = ['CampusUISans-Regular.otf', 'SelectedSans-Bold.otf', 'SelectedCoverage-Bold.otf', 'SelectedBoutique-Regular.ttf'];
 function excluded(name) {
   name = name.replace(/^res:\/\//, '');
   return (name.startsWith('campuses/') && !isFlcRuntimePath(name)) || excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn' || retiredUiFonts.some(file => name === `ui_assets/fonts/${file}` || name === `ui_assets/fonts/${file}.import` || name.startsWith(`.godot/imported/${file}-`));

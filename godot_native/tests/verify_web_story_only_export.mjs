@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { readPack } from '../tools/partition_web_pack.mjs';
-import { campusPayloadIdentity, assertStoryOnlyPackEntries, isFlcRuntimePath } from '../tools/web_story_content_policy.mjs';
+import { campusPayloadIdentity, assertStoryOnlyPackEntries, isFlcRuntimePath, FLC_FONT_DEPENDENCIES } from '../tools/web_story_content_policy.mjs';
 
 const argument = name => process.argv.find(value => value.startsWith(name + '='))?.slice(name.length + 1);
 const directory = argument('--export');
@@ -25,6 +25,7 @@ for (const record of files) {
   const pack = readPack(path.join(directory, record.file));
   assertStoryOnlyPackEntries(pack.entries, identity);
   for (const entry of pack.entries) {
+    assert.ok(!/(?:CampusUISans-Regular\.otf|SelectedSans-Bold\.otf|SelectedCoverage-Bold\.otf|SelectedBoutique-Regular\.ttf)/.test(entry.path), `Unapproved retired font in published pack: ${entry.path}`);
     const owner = identity.owner(entry.path);
     if (!owner || !isFlcRuntimePath(owner)) continue;
     assert.equal(record.family, 'flc_activity', `FLC resource escaped deferred admission: ${entry.path}`);
@@ -44,6 +45,7 @@ function requireFlcRuntime(directory) {
   }
 }
 requireFlcRuntime(path.join(project,'campuses/future_learning_center'));
+for (const font of FLC_FONT_DEPENDENCIES) assert.ok(flcSeen.has(font), `Approved FLC font missing from actual packs: ${font}`);
 let priorCampusEntriesRejected = 0;
 let anonymousPayloadsRejected = 0;
 if (negative) {

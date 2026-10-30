@@ -6,8 +6,14 @@ import crypto from 'node:crypto';
 
 // Only authored runtime inputs of the approved optional activity are shipped.
 // Unknown/new campus roots still fail closed in the actual PCK audit.
+export const FLC_FONT_DEPENDENCIES = Object.freeze([
+  "ui_assets/fonts/SelectedSans-Regular.otf",
+  "ui_assets/fonts/SelectedCoverage-Regular.otf",
+]);
+
 export function isFlcRuntimePath(name) {
   name = name.replace(/^res:\/\//, '').replace(/\.(?:import|remap)$/, '');
+  if (FLC_FONT_DEPENDENCIES.includes(name)) return true;
   return /^campuses\/future_learning_center\/(?:scripts\/.+\.(?:gd|gdc)|scenes\/.+\.(?:tscn|scn|tres|res)|data\/.+\.json|assets\/.+\.(?:png|webp|jpg|jpeg|svg|json|ogg|wav|mp3|ttf|tres|res))$/.test(name)
     && !name.split('/').some(part => part === '..' || part === '.');
 }
@@ -30,11 +36,20 @@ export function campusPayloadIdentity(project) {
     }
   }
   visit(path.join(project, 'campuses'));
+  // These two physical-bench typefaces are explicit optional-activity inputs,
+  // not shared first-paint UI fonts. Track their anonymous payloads as well.
+  for (const logical of FLC_FONT_DEPENDENCIES) {
+    if (!fs.existsSync(path.join(project, logical))) continue;
+    hashes.set(crypto.createHash('md5').update(`res://${logical}`).digest('hex'), logical);
+    const metadata = path.join(project, logical + '.import');
+    if (fs.existsSync(metadata))
+      for (const match of fs.readFileSync(metadata, 'utf8').matchAll(/"res:\/\/(\.godot\/[^"\r\n]+)"/g)) imported.set(match[1], logical);
+  }
   return {
     sourceResources: hashes.size,
     owner(name) {
       name = name.replace(/^res:\/\//, '');
-      if (name.startsWith('campuses/')) return name;
+      if (name.startsWith('campuses/') || FLC_FONT_DEPENDENCIES.includes(name.replace(/\.(?:import|remap)$/, ''))) return name.replace(/\.(?:import|remap)$/, '');
       if (imported.has(name)) return imported.get(name);
       // Godot identifies imported variants and compiled text resources by the
       // MD5 of their complete original res:// path, independent of export ID.
