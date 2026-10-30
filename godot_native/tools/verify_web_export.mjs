@@ -618,7 +618,8 @@ async function flcActivityCase() {
     const loaded=await poll(async()=>{const s=await snapshot();return s?.activity?.kind==='flc'&&!s.content?.blocking?s:null;},'admitted FLC family and actual floor',120000);
     check(loaded.content.readyFamilies.includes('flc_activity'),'FLC lazy family mounted before real floor');
     check(loaded.web===true&&loaded.version==='4.7.1-stable (official)','FLC runs pinned production Web engine');
-    return loaded;
+    await acceptPortraitFallback();
+    return await snapshot();
   }
   async function openFormula(value) {
     check(value.activity.apparatusPoint,'actual formula apparatus has observed root coordinates');

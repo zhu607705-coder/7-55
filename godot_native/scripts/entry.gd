@@ -100,8 +100,10 @@ func _ready() -> void:
 	resized.connect(_layout);card.minimum_size_changed.connect(_layout.call_deferred)
 	_layout.call_deferred();story_button.grab_focus()
 	if OS.has_feature("web"):
-		JavaScriptBridge.eval("""(()=>{let data={entry:true};Object.defineProperty(window,'__GODOT_755__',{configurable:true,value:Object.freeze({snapshot:()=>JSON.parse(JSON.stringify(data))})});window.__FLC_ENTRY_READONLY__={publish:raw=>{data=JSON.parse(raw)}};})()""",true)
+		JavaScriptBridge.eval("""(()=>{let data={};Object.defineProperty(window,'__GODOT_755__',{configurable:true,value:Object.freeze({snapshot:()=>JSON.parse(JSON.stringify(data))})});window.__FLC_ENTRY_READONLY__={publish:raw=>{data=JSON.parse(raw)}};})()""",true)
 		_entry_bridge=JavaScriptBridge.get_interface("__FLC_ENTRY_READONLY__")
+		# Publish readiness and its receipt together; never expose a bare entry flag.
+		_entry_bridge.publish(JSON.stringify(entry_snapshot()))
 		JavaScriptBridge.eval("delete window.__FLC_ENTRY_READONLY__",true)
 
 func entry_snapshot()->Dictionary:

@@ -716,7 +716,7 @@ await test('actual aggregate validator fails closed on incomplete coverage, alte
 await test('FLC focused CI uses ordinary object input and independent persisted reload evidence', () => {
   const source=readFileSync(new URL('../tools/verify_web_export.mjs',import.meta.url),'utf8');
   const body=source.split('async function flcActivityCase() {')[1].split('async function freshCase')[0];
-  for(const required of ["clickControl('OpenFutureLearningCenter','name')", "activity.apparatusPoint", "activity.puzzleRect", "pointer('start',from)", "pointer('end',to)", "clickControl('ReturnFLC','name')", "receipt.acknowledgedDigest===receipt.digest", "primary?.sha256===exited.saveDigest", "fields?.tilt===1", "activity.formulaTilt===30", "Page.reload", "performance.timeOrigin", "readPersistentSaveEntries()"] ) assert.ok(body.includes(required),required);
+  for(const required of ["await acceptPortraitFallback();", "clickControl('OpenFutureLearningCenter','name')", "activity.apparatusPoint", "activity.puzzleRect", "pointer('start',from)", "pointer('end',to)", "clickControl('ReturnFLC','name')", "receipt.acknowledgedDigest===receipt.digest", "primary?.sha256===exited.saveDigest", "fields?.tilt===1", "activity.formulaTilt===30", "Page.reload", "performance.timeOrigin", "readPersistentSaveEntries()"] ) assert.ok(body.includes(required),required);
   assert.doesNotMatch(body,/importSave\(|localStorage\.setItem|Runtime\.callFunctionOn|State\.d|\.set_state\(/);
   assert.match(jobs.browser_flc,/--chrome-arg --use-angle=swiftshader/);
   assert.match(jobs.browser_flc,/--chrome-arg --enable-unsafe-swiftshader/);

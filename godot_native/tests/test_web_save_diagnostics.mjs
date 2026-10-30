@@ -613,4 +613,35 @@ check('performance helper has no script injection, storage write, handler or tim
   assert.equal((helper.match(/await request\('Performance\.getMetrics'/g) || []).length, 2);
   assert(draft.includes('    caseRecord.savePerformance = active.savePerformance || [];'));
 });
+// Exercise the actual Entry bridge bootstrap before any simulated process tick.
+// The native ready-order assertion binds this JS fixture to synchronous publication;
+// neither this fixture nor its receipt constitutes a real browser/storage proof.
+const entrySource = readFileSync(new URL('../scripts/entry.gd', import.meta.url), 'utf8');
+const entryReady = entrySource.slice(entrySource.indexOf('func _ready()'), entrySource.indexOf('func entry_snapshot()'));
+const entryBootstrap = [...entryReady.matchAll(/JavaScriptBridge\.eval\("""([\s\S]*?)""",true\)/g)]
+  .map(match => match[1]).find(code => code.includes('__FLC_ENTRY_READONLY__'));
+assert(entryBootstrap, 'actual Entry bridge bootstrap exists');
+const entryWindow = {};
+vm.runInNewContext(entryBootstrap, { window: entryWindow });
+check('Entry bootstrap cannot advertise ready before receipt publication', () => {
+  assert.notEqual(entryWindow.__GODOT_755__.snapshot().entry, true);
+});
+check('Entry ready synchronously publishes the full native snapshot before dropping its private bridge', () => {
+  const acquire = entryReady.indexOf('_entry_bridge=JavaScriptBridge.get_interface("__FLC_ENTRY_READONLY__")');
+  const publish = entryReady.indexOf('_entry_bridge.publish(JSON.stringify(entry_snapshot()))', acquire);
+  const retire = entryReady.indexOf('JavaScriptBridge.eval("delete window.__FLC_ENTRY_READONLY__",true)', acquire);
+  assert(acquire >= 0 && publish > acquire && retire > publish);
+  assert(!/\bawait\b|call_deferred/.test(entryReady.slice(acquire, retire)));
+});
+check('first published Entry snapshot exposes exact receipt and returns detached readonly copies', () => {
+  const nativeSnapshot = { entry: true, engine: 'Godot', sampleFrame: 42, saveDigest: digest,
+    savePersistence: { pending: false, error: '', digest, acknowledgedDigest: digest }, visibleControls: [] };
+  entryWindow.__FLC_ENTRY_READONLY__.publish(JSON.stringify(nativeSnapshot));
+  const first = entryWindow.__GODOT_755__.snapshot();
+  assert.equal(first.entry, true);
+  assert.equal(first.savePersistence.digest, first.saveDigest);
+  assert.equal(first.savePersistence.acknowledgedDigest, first.saveDigest);
+  first.savePersistence.digest = 'caller mutation';
+  assert.equal(entryWindow.__GODOT_755__.snapshot().savePersistence.digest, digest);
+});
 console.log(`PASS ${checks.length} pure Node checks; no browser, real IDB, or runtime acceptance executed.`);
