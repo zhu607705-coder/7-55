@@ -65,7 +65,12 @@ func run()->void:
  for sibling:String in ["recording","sync","platform","signal_sync"]:
   var view=load("res://campuses/future_learning_center/scripts/puzzles/%s_view.gd"%sibling).new()
   root.add_child(view);view.open()
-  check(view.visuals==null,"unrelated inherited room does not receive optical sprite scene: "+sibling)
+  if sibling in ["recording","sync"]:
+   check(view.visuals!=null and view.visuals.get_script().resource_path=="res://campuses/future_learning_center/scripts/puzzles/recording_scene_visuals.gd","recording family receives its own sprite scene: "+sibling)
+   check(view.visuals!=null and view.visuals.light_paths==null,"recording family does not receive optical light paths: "+sibling)
+   check(view.visuals!=null and not view.visuals.objects.has("Fixture"),"recording family does not receive optical fixture: "+sibling)
+  else:
+   check(view.visuals==null,"unrelated inherited room does not receive optical sprite scene: "+sibling)
   view._cancel_pointer();view.close();view.queue_free()
  await process_frame
  print("FLC_OPTICAL_SCENE_STATES: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)
