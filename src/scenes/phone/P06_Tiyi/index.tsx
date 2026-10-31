@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import tiyiLoadingUrl from "../../../assets/ui/tiyi_loading.png";
 import tiyiMainUrl from "../../../assets/ui/tiyi_main.png";
@@ -104,9 +105,9 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
           <i />
           <i />
         </span>
-        <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>
+        <Button variant="ghost" type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>
           退出
-        </button>
+        </Button>
       </section>
     );
   }
@@ -130,7 +131,7 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
         <RouteAuditPanel phase={finalsPhase} puzzle={finalsPuzzle} router={router} />
       ) : null}
       {movementQuestActive && finalsPhase === "idle" ? (
-        <button
+        <Button variant="ghost" data-layout="content"
           type="button"
           className={`tiyi-act1-exercise-button ${state.actOne.exerciseStarted ? "is-active" : ""}`}
           disabled={state.actOne.exerciseStarted}
@@ -142,7 +143,7 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
               ? "10 分钟跑完 3 km · 点击生成轨迹"
               : "请先在部门黄页确认参加者"}</span>
           ) : null}
-        </button>
+        </Button>
       ) : null}
       {virtualRunOpen ? (
         <ActOneVirtualRun

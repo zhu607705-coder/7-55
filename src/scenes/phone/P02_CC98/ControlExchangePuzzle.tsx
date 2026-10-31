@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { gameStore } from "../../../core/GameState";
 import { selectIdentityReadable } from "../../../core/IdentityAccess";
 import type { SceneRouter } from "../../../core/SceneRouter";
@@ -56,9 +57,9 @@ export function ControlExchangePuzzle({ router, campusCardCents, purchased }: Co
         </div>
       </dl>
       {purchased ? (
-        <button type="button" onClick={returnToDorm}>回寝室试用手柄</button>
+        <Button variant="secondary" type="button" onClick={returnToDorm}>回寝室试用手柄</Button>
       ) : (
-        <button type="button" onClick={purchase}>{actOneContent.cc98ExchangePost.action}</button>
+        <Button variant="primary" type="button" onClick={purchase}>{actOneContent.cc98ExchangePost.action}</Button>
       )}
     </section>
   );

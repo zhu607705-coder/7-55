@@ -108,7 +108,7 @@ func run() -> void:
 	# Desktop restores unchanged authored dimensions after responsive use.
 	var desktop: Control=await open_activity(Vector2i(1440,900))
 	check(not desktop.compact_layout and desktop.size==Vector2(960,540),"desktop retains authored960x540 canvas")
-	check(desktop.pause_button.get_rect()==Rect2(702,14,76,43) and desktop.dash_button.get_rect()==Rect2(793,445,141,68),"desktop authored button geometry preserved")
+	check(desktop.pause_button.get_rect().is_equal_approx(Rect2(702,14,76,40*16.0/14.0)) and desktop.dash_button.get_rect()==Rect2(793,445,141,68),"desktop authored anchors and larger lg minimum key height preserved")
 	check(not shell.phone.visible and not shell.world_frame.visible,"desktop phone/world hidden while defense owns scene")
 	await tap(desktop.exit_button)
 	check(not shell.phone.visible and shell.world_frame.visible,"desktop world exclusively restores after exit")

@@ -293,6 +293,7 @@ func _palette(dark: bool) -> void:
 	painted_dark=dark
 	for label in labels.values(): label.add_theme_color_override("font_color",Color("e8f7ff") if dark or (label==feedback_label and not compact_layout) else Color("241f19"))
 	for button in controls.values():
+		if button.get_node_or_null("TactileMaterialState")!=null:continue
 		for font_state in ["font_color","font_hover_color","font_focus_color","font_pressed_color","font_hover_pressed_color"]: button.add_theme_color_override(font_state,Color("86dcff") if dark else Color("201d19"))
 		for state in ["normal","hover","pressed","focus","disabled"]:
 			var style: StyleBoxFlat=button.get_theme_stylebox(state)

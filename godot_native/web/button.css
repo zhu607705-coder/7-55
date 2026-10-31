@@ -1,0 +1,111 @@
+@property --button-face-top { syntax: "<color>"; inherits: false; initial-value: #fffefa; }
+@property --button-face-bottom { syntax: "<color>"; inherits: false; initial-value: #f3f1eb; }
+/* Material declarations are intentionally scoped and important: retained scene CSS
+   owns positioning/layout, not a second button skin. No global button reset. */
+/* Warm-neutral palette revised after the user's 2026-10-28 visual feedback;
+   retain the original five-layer geometry and interaction timings. */
+/* One material recipe shared by the native Web shell and retained React UI.
+   u = label size / 14. Keep all inset slots before all outer slots. */
+.tactile-button {
+  --button-label-size: 14px;
+  --button-u: calc(var(--button-label-size) / 14);
+  --button-top: #fffefa; --button-bottom: #f3f1eb;
+  --button-hover-top: #fffffc; --button-hover-bottom: #faf9f5;
+  --button-edge: rgba(30,30,27,.14); --button-ink: #393a37;
+  --button-highlight: rgba(255,255,255,1); --button-shade: rgba(0,0,0,.06);
+  --button-contact: rgba(0,0,0,.06); --button-lift: rgba(0,0,0,.093);
+  --button-recess: rgba(0,0,0,.14); --button-paper: rgba(255,255,255,.9);
+  --button-text-shadow: none;
+  --button-focus: #73746d;
+  --button-face-top: var(--button-top); --button-face-bottom: var(--button-bottom);
+  appearance: none; box-sizing: border-box;
+}
+.tactile-button:not([data-layout="content"]) {
+  display: inline-flex;
+  align-items: center; justify-content: center; gap: calc(8 * var(--button-u));
+  height: calc(40 * var(--button-u)) !important; min-height: 0 !important;
+  padding: 0 calc(18 * var(--button-u)) !important;
+  border: var(--button-u) solid var(--button-edge) !important;
+  border-radius: calc(10 * var(--button-u)) !important;
+}
+.tactile-button {
+  font-family: inherit; font-size: var(--button-label-size) !important; font-weight: 600 !important; line-height: 1.2;
+  color: var(--button-ink) !important; text-shadow: var(--button-text-shadow) !important;
+  background: linear-gradient(180deg, var(--button-face-top), var(--button-face-bottom)) !important;
+  box-shadow:
+    inset 0 var(--button-u) 0 var(--button-highlight),
+    inset 0 calc(-1 * var(--button-u)) 0 var(--button-shade),
+    0 var(--button-u) calc(2 * var(--button-u)) var(--button-contact),
+    0 calc(4 * var(--button-u)) calc(10 * var(--button-u)) calc(-3 * var(--button-u)) var(--button-lift) !important;
+  cursor: pointer; vertical-align: middle; text-decoration: none !important;
+  transition: transform 120ms ease, box-shadow 140ms ease, --button-face-top 160ms ease, --button-face-bottom 160ms ease, background-color 160ms ease, color 160ms ease, border-color 160ms ease !important;
+}
+.tactile-button[data-size="lg"] { --button-label-size: 16px; }
+.tactile-button[data-variant="primary"] {
+  --button-top: #454441; --button-bottom: #302f2c;
+  --button-hover-top: #504f4b; --button-hover-bottom: #3b3a36;
+  --button-edge: #191917; --button-ink: #fff;
+  --button-highlight: rgba(255,255,255,.18); --button-shade: rgba(0,0,0,.22);
+  --button-contact: rgba(0,0,0,.18); --button-lift: rgba(0,0,0,.28);
+  --button-recess: rgba(0,0,0,.4); --button-paper: rgba(0,0,0,.18);
+  --button-text-shadow: 0 calc(-1 * var(--button-u)) 0 rgba(0,0,0,.28);
+}
+.tactile-button[data-variant="tertiary"] {
+  --button-top: #eeede8; --button-bottom: #e2e0d9;
+  --button-hover-top: #f5f4ef; --button-hover-bottom: #eae8e1;
+  --button-edge: rgba(30,30,27,.1); --button-highlight: rgba(255,255,255,.85);
+  --button-recess: rgba(0,0,0,.12);
+}
+.tactile-button:not(:disabled):hover {
+  --button-face-top: var(--button-hover-top); --button-face-bottom: var(--button-hover-bottom);
+  box-shadow:
+    inset 0 var(--button-u) 0 var(--button-highlight),
+    inset 0 calc(-1 * var(--button-u)) 0 var(--button-shade),
+    0 var(--button-u) calc(2 * var(--button-u)) var(--button-contact),
+    0 calc(8 * var(--button-u)) calc(16 * var(--button-u)) calc(-5 * var(--button-u)) var(--button-lift) !important;
+}
+.tactile-button:not(:disabled):active {
+  transform: translateY(var(--button-u)) !important;
+  --button-face-top: var(--button-bottom); --button-face-bottom: var(--button-top);
+  box-shadow:
+    inset 0 var(--button-u) calc(2 * var(--button-u)) var(--button-recess),
+    inset 0 0 0 transparent,
+    0 var(--button-u) 0 var(--button-paper),
+    0 var(--button-u) var(--button-u) var(--button-contact) !important;
+}
+.tactile-button[data-variant="ghost"], .tactile-button[data-variant="text"] {
+  --button-edge: transparent; --button-ink: #62645f;
+  background: transparent !important;
+  box-shadow: inset 0 0 0 transparent, inset 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent !important;
+}
+.tactile-button[data-variant="ghost"]:not(:disabled):hover { background: #eeede8 !important; box-shadow: inset 0 0 0 transparent, inset 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent !important; }
+.tactile-button[data-variant="ghost"]:not(:disabled):active {
+  background: #e2e0d9 !important;
+  box-shadow: inset 0 var(--button-u) calc(2 * var(--button-u)) rgba(0,0,0,.14), inset 0 0 0 transparent,
+    0 var(--button-u) 0 rgba(255,255,255,.9), 0 0 0 transparent !important;
+}
+.tactile-button[data-variant="text"] { text-decoration: underline !important; text-decoration-thickness: var(--button-u) !important; text-underline-offset: calc(3 * var(--button-u)) !important; }
+.tactile-button[data-variant="text"]:not(:disabled):hover { background: transparent !important; color: #302f2c !important; }
+.tactile-button[data-variant="text"]:not(:disabled):active { background: transparent !important; }
+.tactile-button[data-variant="text"]:not(:disabled):hover,
+.tactile-button[data-variant="text"]:not(:disabled):active { box-shadow: inset 0 0 0 transparent, inset 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent !important; }
+.tactile-button__icon, .tactile-button__arrow { display: inline-flex; flex: 0 0 auto; width: calc(16 * var(--button-u)); height: calc(16 * var(--button-u)) !important; align-items: center; justify-content: center; }
+.tactile-button__icon > svg { width: 100%; height: 100% !important; }
+.tactile-button__arrow { transition: transform 120ms ease !important; }
+.tactile-button[data-variant="text"]:not(:disabled):hover .tactile-button__arrow { transform: translateX(calc(2 * var(--button-u))) !important; }
+.tactile-button:focus-visible { outline: calc(3 * var(--button-u)) solid var(--button-focus) !important; outline-offset: calc(3 * var(--button-u)) !important; }
+.tactile-button:disabled { opacity: .65; cursor: not-allowed; }
+.tactile-button[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .tactile-button, .tactile-button__arrow { transition: none !important; } }
+@media (forced-colors: active) { .tactile-button { border-color: ButtonText; } .tactile-button:focus-visible { outline-color: Highlight !important; } }
+
+/* Existing list/navigation APIs keep their content geometry, not a forced 40px crop. */
+.tactile-button[data-layout="content"] { border: var(--button-u) solid var(--button-edge) !important; border-radius: calc(10 * var(--button-u)) !important; }
+.tactile-button:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"], .is-selected, .is-active, .is-on) { --button-edge: #73746d; }
+.tactile-button[data-layout="content"]:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"], .is-selected, .is-active, .is-on) { background: #e2e0d9 !important; }
+
+/* Neutral ghost/text ink adapts to authored dark surfaces without raised cards. */
+[data-button-surface="dark"] .tactile-button:is([data-variant="ghost"], [data-variant="text"]) { --button-ink: #eeede8; }
+[data-button-surface="dark"] .tactile-button[data-variant="ghost"]:not(:disabled):is(:hover, :active),
+[data-button-surface="dark"] .tactile-button[data-layout="content"]:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"], .is-selected, .is-active, .is-on) { --button-ink: #393a37; }
+[data-button-surface="dark"] .tactile-button[data-variant="text"]:not(:disabled):hover { color: #fff !important; }

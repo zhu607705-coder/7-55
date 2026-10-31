@@ -8,6 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20shape-rendering%3D%27crispEdges%27%3E%3Crect%20width%3D%2716%27%20height%3D%2716%27%20fill%3D%27%23202B35%27%2F%3E%3Cpath%20d%3D%27M3%201H13V5H11V7H9V9H7V15H5V9H7V7H9V5H11V3H3Z%27%20fill%3D%27%23F4EAD5%27%2F%3E%3C%2Fsvg%3E">
   <title>7:55</title>
   $GODOT_HEAD_INCLUDE
+  <link rel="stylesheet" href="button.css">
   <style>
     /* Font notices ship beside the browser files in boot-fonts/. */
     @font-face { font-family: "755 Morning Note"; src: url("__755_BOOT_FONT_REGULAR__") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
@@ -44,9 +45,7 @@
     #loading progress::-webkit-progress-value { background: #9A514A; }
     #loading progress::-moz-progress-bar { background: #9A514A; }
     #loading .boot-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-    #loading button { min-height: 48px; padding: 10px 16px; border: 1px solid #70503B; border-radius: 0; background: #D8C7A0; color: #44332D; font: 16px/1.5 "755 Morning Note", monospace; cursor: pointer; }
-    #loading #start-game { color: #F4EAD5; background: #9A514A; border-color: #6F483E; }
-    #loading button:focus-visible { outline: 3px solid #9A514A; outline-offset: 3px; }
+    #loading button:focus-visible { outline: calc(3 * var(--button-u)) solid #64748b; outline-offset: calc(3 * var(--button-u)); }
     #loading button:disabled { opacity: .65; cursor: wait; }
     #loading button[hidden], #loading progress[hidden] { display: none; }
     #loading .boot-footer { display: none; }
@@ -151,9 +150,9 @@
             <progress id="loading-progress" aria-label="游戏加载进度"></progress>
             <p id="loading-detail">先准备开场，后续内容会在游玩时后台加载。</p>
             <div class="boot-actions">
-              <button id="start-game" type="button" hidden>进入游戏</button>
-              <button id="retry-game" type="button" hidden>重新加载</button>
-              <button id="boot-motion-toggle" type="button" aria-pressed="false" hidden>暂停动效</button>
+              <button class="tactile-button" data-variant="primary" data-size="lg" id="start-game" type="button" hidden>进入游戏</button>
+              <button class="tactile-button" data-variant="secondary" data-size="lg" id="retry-game" type="button" hidden>重新加载</button>
+              <button class="tactile-button" data-variant="ghost" data-size="lg" id="boot-motion-toggle" type="button" aria-pressed="false" hidden>暂停动效</button>
             </div>
           </div>
           <div class="boot-footer">7:55 · 一场校园叙事解谜游戏</div>

@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
@@ -88,9 +89,9 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
             <div className="interlude-building-plate" aria-hidden="true"><b>{destinationCopyUnlocked ? "A1" : "A?"}</b><i /><i /><i /></div>
             <p>22:45 起，{destinationCopyUnlocked ? "段永平教学楼" : "北教学区一处楼宇"}进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。</p>
             <p>主电梯保留运行，楼层开放情况以现场提示为准。</p>
-            <button type="button" onClick={saveOfficialNotice}>
+            <Button variant="primary" type="button" onClick={saveOfficialNotice}>
               {interlude.officialNoticeSaved ? "通知已保存" : "保存通知"}
-            </button>
+            </Button>
           </article>
           {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
         </main>
@@ -112,7 +113,7 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
           {INTERLUDE_ROUTE_MESSAGES.map((message) => {
             const selected = selectedRouteMessages.includes(message.id);
             return (
-              <button
+              <Button variant="ghost" data-layout="content"
                 key={message.id}
                 type="button"
                 className={`interlude-route-message ${selected ? "is-selected" : ""} ${message.withdrawn ? "is-withdrawn" : ""}`.trim()}
@@ -123,7 +124,7 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
                 <b>{message.author}</b>
                 <span>{message.text}</span>
                 <em>{selected ? "已选" : "选择"}</em>
-              </button>
+              </Button>
             );
           })}
           {interlude.routeScreenshotSaved ? (
@@ -132,14 +133,14 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
               <figcaption>22:42 入口调整截图 · 东侧关闭 / 西侧主入口可通行</figcaption>
             </figure>
           ) : null}
-          <button
+          <Button variant="primary"
             type="button"
             className="interlude-primary-action"
             disabled={!interlude.routeScreenshotSaved && selectedRouteMessages.length !== 2}
             onClick={saveRouteScreenshot}
           >
             {interlude.routeScreenshotSaved ? "截图已保存" : "保存路线截图"}
-          </button>
+          </Button>
           {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
         </main>
       </section>
@@ -154,20 +155,20 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
         <span aria-hidden="true">＋</span>
       </header>
       <main className="interlude-chat-list">
-        <button type="button" onClick={() => setView("official")}>
+        <Button variant="ghost" data-layout="content" type="button" onClick={() => setView("official")}>
           <span className="interlude-chat-avatar is-official" aria-hidden="true">楼</span>
           <span><strong>紫金港楼宇服务</strong><small>有一条未归档的运行通知</small></span>
           <time>22:40</time>
           {interlude.officialNoticeSaved ? <em>已存</em> : null}
-        </button>
-        <button type="button" onClick={() => setView("group")}>
+        </Button>
+        <Button variant="ghost" data-layout="content" type="button" onClick={() => setView("group")}>
           <span className="interlude-chat-avatar is-group" aria-hidden="true">18</span>
           <span><strong>麦斯威夜间自习群</strong><small>有两条消息可组成路线截图</small></span>
           <time>22:42</time>
           {interlude.routeScreenshotSaved ? <em>已存</em> : null}
-        </button>
+        </Button>
       </main>
-      <button type="button" className="interlude-return-recovery" onClick={() => router.goTo("timeline_recovery")}>返回记录恢复</button>
+      <Button variant="text" type="button" className="interlude-return-recovery" onClick={() => router.goTo("timeline_recovery")}>返回记录恢复</Button>
     </section>
   );
 }
@@ -540,9 +541,9 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
           <ul>
             {chapterFourWechatContent.official.details.map((line) => <li key={line}>{line}</li>)}
           </ul>
-          <button type="button" className="wx-evidence-action" onClick={readOfficialNotice}>
+          <Button variant="primary" type="button" className="wx-evidence-action" onClick={readOfficialNotice}>
             {chapterFourWechat.officialNoticeRead ? "已保存通知" : chapterFourWechatContent.official.readAction}
-          </button>
+          </Button>
         </article>
       );
     }
@@ -577,7 +578,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
           <em>已关注</em>
         </header>
 
-        <button
+        <Button variant="ghost" data-layout="content"
           type="button"
           className="wx-official-featured"
           onClick={() => setOfficialArticleId("night-notice")}
@@ -589,7 +590,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
             <em>{chapterFourWechatContent.official.summary}</em>
           </span>
           <b className="wx-official-story-state">{chapterFourWechat.officialNoticeRead ? "已保存" : "主线通知"}</b>
-        </button>
+        </Button>
 
         <section className="wx-official-feed" aria-label={officialAccountMenu === "daily" ? "校园日常" : "往期推文"}>
           <header>
@@ -597,7 +598,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
             <small>{visibleArticles.length} 篇</small>
           </header>
           {visibleArticles.map((article) => (
-            <button
+            <Button variant="ghost" data-layout="content"
               type="button"
               className="wx-official-feed-row"
               key={article.id}
@@ -610,22 +611,22 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                 <em>{article.summary}</em>
               </span>
               <b aria-hidden="true">›</b>
-            </button>
+            </Button>
           ))}
         </section>
 
         <nav className="wx-official-menu" aria-label="公众号自定义菜单">
-          <button type="button" onClick={() => setOfficialArticleId("night-notice")}>夜间通知</button>
-          <button
+          <Button variant="secondary" type="button" onClick={() => setOfficialArticleId("night-notice")}>夜间通知</Button>
+          <Button variant="tertiary"
             type="button"
             className={officialAccountMenu === "daily" ? "is-active" : ""}
             onClick={() => setOfficialAccountMenu("daily")}
-          >校园日常</button>
-          <button
+          >校园日常</Button>
+          <Button variant="tertiary"
             type="button"
             className={officialAccountMenu === "archive" ? "is-active" : ""}
             onClick={() => setOfficialAccountMenu("archive")}
-          >往期推文</button>
+          >往期推文</Button>
         </nav>
       </section>
     );
@@ -660,7 +661,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
             <section className="wx-group-thread" aria-label="麦斯威夜间自习群聊天记录">
               <div className="wx-time-divider">22:47 · {chapterFourWechatContent.group.memberCount}人</div>
               {chapterFourStudyIndexImported ? (
-                <button
+                <Button variant="ghost" data-layout="content"
                   type="button"
                   className="wx-group-file-card"
                   onClick={() => setChapterFourChatView("archive")}
@@ -671,7 +672,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                     <small>{chapterFourCc98Content.maxwellHandoff.afterImport}</small>
                   </span>
                   <em>群文件 ›</em>
-                </button>
+                </Button>
               ) : null}
               {chapterFourWechatContent.group.messages.map((message, index) => (
                 <div className="wx-msg" key={`${message.sender}-${message.text}`}>
@@ -684,9 +685,9 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                 <span className="wx-msg-avatar wx-student-avatar student-1" aria-hidden="true" />
                 <p><b>林昊</b>{chapterFourWechatContent.group.followup}</p>
               </div>
-              <button type="button" className="wx-evidence-action" onClick={saveStudentRoute}>
+              <Button variant="primary" type="button" className="wx-evidence-action" onClick={saveStudentRoute}>
                 {chapterFourWechat.studentRouteSaved ? "路线讨论已保存" : chapterFourWechatContent.group.saveAction}
-              </button>
+              </Button>
             </section>
           ) : null}
           {view === "archive" ? (
@@ -705,7 +706,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
               {chapterFourWechat.elevatorAudioAvailable ? (
                 <article className="wx-evidence-card">
                   <small>现场录音 · 1F</small><strong>▶ {chapterFourWechatContent.archive.elevatorAudio}</strong>
-                  <button type="button" onClick={archiveElevatorAudio}>{chapterFourWechat.elevatorAudioArchived ? "已归档" : "保存录音"}</button>
+                  <Button variant="secondary" type="button" onClick={archiveElevatorAudio}>{chapterFourWechat.elevatorAudioArchived ? "已归档" : "保存录音"}</Button>
                 </article>
               ) : null}
               {chapterFourWechat.studentRouteSaved ? (
@@ -714,7 +715,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
               {chapterFourWechat.wayfindingPhotosAvailable ? (
                 <article className="wx-evidence-card">
                   <small>现场照片 · 3F</small><strong>{chapterFourWechatContent.archive.wayfindingPhotos}</strong>
-                  <button type="button" onClick={archiveWayfindingPhotos}>{chapterFourWechat.wayfindingPhotosArchived ? "已归档" : "保存照片"}</button>
+                  <Button variant="secondary" type="button" onClick={archiveWayfindingPhotos}>{chapterFourWechat.wayfindingPhotosArchived ? "已归档" : "保存照片"}</Button>
                 </article>
               ) : null}
             </section>
@@ -729,9 +730,9 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                     <figure><div className="wx-sign-board is-current">2F →</div><figcaption>当前导视</figcaption></figure>
                     <figure><div className="wx-sign-board is-old">← 2F</div><figcaption>历史残影</figcaption></figure>
                   </div>
-                  <button type="button" className="wx-evidence-action" onClick={compareWayfindingPhotos}>
+                  <Button variant="primary" type="button" className="wx-evidence-action" onClick={compareWayfindingPhotos}>
                     {chapterFourWechat.wayfindingCompared ? "照片已完成对照" : chapterFourWechatContent.friend.compareAction}
-                  </button>
+                  </Button>
                   {chapterFourWechat.wayfindingCompared ? (
                     <div className="wx-msg"><span className="wx-msg-avatar" aria-hidden="true"><i /></span><p>{chapterFourWechatContent.friend.analysis}</p></div>
                   ) : null}
@@ -775,20 +776,20 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
               <small>游戏内更新</small>
               <p>仅模拟扫码、获取和安装。<br />不调用设备权限，不下载真实应用。</p>
               {stage === "official_entry_found" ? (
-                <><button type="button" onClick={() => {
+                <><Button variant="secondary" type="button" onClick={() => {
                   if (!kit.actOne.acquireTiyiUpdate()) kit.flags.toast("需要联网才能获取更新包。");
-                }}>模拟扫码获取更新</button><small>需要网络连接</small></>
+                }}>模拟扫码获取更新</Button><small>需要网络连接</small></>
               ) : stage === "package_ready" ? (
-                <><p>更新包已就绪</p><button type="button" onClick={() => kit.actOne.installTiyiUpdate()}>安装更新</button></>
+                <><p>更新包已就绪</p><Button variant="primary" type="button" onClick={() => kit.actOne.installTiyiUpdate()}>安装更新</Button></>
               ) : (
-                <><p>更新已安装</p><button type="button" onClick={() => router.goTo("phone_home")}>返回桌面，重新进入体艺</button></>
+                <><p>更新已安装</p><Button variant="secondary" type="button" onClick={() => router.goTo("phone_home")}>返回桌面，重新进入体艺</Button></>
               )}
             </article>
           ) : null}
         </main>
         <nav className="tiyi-official-menu" aria-label="公众号服务菜单">
           <span>修读办法</span><span>场馆预约</span>
-          <button type="button" onClick={() => kit.actOne.discoverTiyiUpdate()}>联系我们</button>
+          <Button variant="text" type="button" onClick={() => kit.actOne.discoverTiyiUpdate()}>联系我们</Button>
         </nav>
       </section>
     );
@@ -814,31 +815,31 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
 
           <ul className="wx-rows">
             {tiyiUpdateRequired(state) && !chapterFourWechat.active && !state.qizhenLake.active ? (
-              <li><button type="button" className="wx-row" onClick={() => setTiyiOfficialOpen(true)}>
+              <li><Button variant="ghost" data-layout="content" type="button" className="wx-row" onClick={() => setTiyiOfficialOpen(true)}>
                 <span className="wx-avatar wx-official-avatar" aria-hidden="true">体艺</span>
                 <span className="wx-row-main"><strong>浙大体育与艺术</strong><em>公众号 · 联系我们</em></span>
-              </button></li>
+              </Button></li>
             ) : null}
             {chapterFourWechat.active ? (
               <>
                 <li>
-                  <button type="button" className="wx-row" onClick={() => setChapterFourChatView("group")}>
+                  <Button variant="ghost" data-layout="content" type="button" className="wx-row" onClick={() => setChapterFourChatView("group")}>
                     <span className="wx-avatar wx-group-avatar" aria-hidden="true"><i /><i /><i /><i /></span>
                     <span className="wx-row-main"><strong>{chapterFourWechatContent.group.name}</strong><em>{chapterFourWechat.studentRouteSaved ? "路线讨论已保存" : chapterFourStudyIndexImported ? "学习天地资料已加入群文件" : "等你从 CC98 导入资料索引"}</em></span>
                     <time>22:47</time>
-                  </button>
+                  </Button>
                 </li>
                 <li>
-                  <button type="button" className="wx-row" onClick={openOfficialAccount}>
+                  <Button variant="ghost" data-layout="content" type="button" className="wx-row" onClick={openOfficialAccount}>
                     <span className="wx-avatar wx-official-avatar" aria-hidden="true">后勤</span>
                     <span className="wx-row-main"><strong>{chapterFourWechatContent.official.name}</strong><em>{chapterFourWechatContent.official.articleTitle}</em></span>
                     <time>22:40</time>
-                  </button>
+                  </Button>
                 </li>
               </>
             ) : null}
             <li>
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className="wx-row"
                 onClick={() => chapterFourWechat.active
@@ -851,10 +852,10 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                   <em>{chapterFourWechat.active ? `已保存 ${chapterFourWechat.archiveCount} 项现场资料` : "[图片]"}</em>
                 </span>
                 <time>09:28</time>
-              </button>
+              </Button>
             </li>
             <li>
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className="wx-row"
                 onClick={openFriendConversation}
@@ -893,10 +894,10 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                   </em>
                 </span>
                 <time>07:55</time>
-              </button>
+              </Button>
             </li>
             <li>
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className="wx-row"
                 onClick={() =>
@@ -912,10 +913,10 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                   <em>晚上一起去食堂吃饭呀~</em>
                 </span>
                 <time>07:21</time>
-              </button>
+              </Button>
             </li>
             <li>
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className="wx-row"
                 onClick={() => kit.flags.toast("导师：实验报告仍然不会自己完成。")}
@@ -958,7 +959,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                   </em>
                 </span>
                 <time>07:18</time>
-              </button>
+              </Button>
             </li>
           </ul>
 
@@ -1085,9 +1086,9 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                   </div>
                 ))}
                 {qizhenChatStep === qizhenContent.locationSearch.wechat.length ? (
-                  <button type="button" className="wx-qizhen-save-clue" onClick={collectLakeKeyword} disabled={state.qizhenLake.lakeClueFound}>
+                  <Button variant="primary" type="button" className="wx-qizhen-save-clue" onClick={collectLakeKeyword} disabled={state.qizhenLake.lakeClueFound}>
                     {state.qizhenLake.lakeClueFound ? "已保存地点词：湖面" : "保存地点词：湖面"}
-                  </button>
+                  </Button>
                 ) : null}
               </section>
             ) : null}

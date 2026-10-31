@@ -15,14 +15,17 @@ const files = {
  assets: 'src/scenes/rpg/ChapterFourInsertedPuzzleAssets.ts'
 };
 let hooks = [], hookIndex = 0;
-const react = {useEffect(){},useRef(){return {current:null}},useMemo(fn){return fn()},useId(){return 'source-oracle'},useState(value){const i=hookIndex++; if (!(i in hooks)) hooks[i]=structuredClone(value);return [hooks[i],next=>{hooks[i]=typeof next==='function'?next(hooks[i]):next}];}};
+const react = {forwardRef(render){return props=>render(props,null)},useEffect(){},useRef(){return {current:null}},useMemo(fn){return fn()},useId(){return 'source-oracle'},useState(value){const i=hookIndex++; if (!(i in hooks)) hooks[i]=structuredClone(value);return [hooks[i],next=>{hooks[i]=typeof next==='function'?next(hooks[i]):next}];}};
 const jsx = (type,props,key)=>({type,props:props||{},key});
 function compile(source,name,dependencies={}) {
  const output=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
  const exports={};
- vm.runInNewContext(output,{exports,require(name){if(name==='react')return react;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'fragment'};if(name.endsWith('.png'))return {default:'res://assets/'+name.split('/assets/')[1]};for(const [suffix,obj] of Object.entries(dependencies)) if(name.endsWith(suffix))return obj;throw Error('Unexpected source dependency '+name)},Object,console},{filename:name});
+ vm.runInNewContext(output,{exports,require(name){if(name==='react')return react;if(name.endsWith('/Button'))return button;if(name.endsWith('/web/button.css'))return {};if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'fragment'};if(name.endsWith('.png'))return {default:'res://assets/'+name.split('/assets/')[1]};for(const [suffix,obj] of Object.entries(dependencies)) if(name.endsWith(suffix))return obj;throw Error('Unexpected source dependency '+name)},Object,console},{filename:name});
  return exports;
 }
+// Evaluate the real shared wrapper so source controls retain native button semantics.
+// CSS is the sole presentation-only dependency; callbacks and disabled props are not stubbed.
+const button=compile(fs.readFileSync(path.join(root,'src/components/Button.tsx'),'utf8'),'src/components/Button.tsx');
 const model=compile(fs.readFileSync(path.join(root,files.model),'utf8'),files.model);
 const nativePreview=compile(fs.readFileSync(path.join(root,files.preview),'utf8'),files.preview,{ChapterFourInsertedPuzzleModel:model});
 const assets=compile(fs.readFileSync(path.join(root,files.assets),'utf8'),files.assets);

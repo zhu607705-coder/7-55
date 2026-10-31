@@ -45,7 +45,7 @@ func configure(controller: RefCounted, charge: Callable, cancel_charge: Callable
 	_process(0)
 
 func _target(id: String, rect: Rect2, hint: String) -> Button:
-	var button := Button.new(); button.name = id; button.position = rect.position; button.size = rect.size
+	var button := Button.new(); button.set_meta("tactile_exempt",true); button.name = id; button.position = rect.position; button.size = rect.size
 	button.tooltip_text = hint
 	for style in ["normal", "hover", "pressed", "disabled"]: button.add_theme_stylebox_override(style, StyleBoxEmpty.new())
 	add_child(button)

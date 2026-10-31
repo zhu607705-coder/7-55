@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import {
   useCallback,
   useEffect,
@@ -437,17 +438,17 @@ export function ChapterThreeOpeningOverlay({
                 text={line?.text ?? beat?.caption ?? ""}
               />
             </span>
-            <button
+            <Button variant="secondary"
               ref={advanceButtonRef}
               className={view.phase === "arrival" ? "is-arrival" : ""}
               type="button"
               aria-label={line ? "快进此句" : view.phase === "arrival" ? "回到校园" : "继续演出"}
             >
               {view.phase === "arrival" ? "回到校园" : <span aria-hidden="true">▾</span>}
-            </button>
+            </Button>
           </div>
 
-          <button
+          <Button variant="text"
             ref={skipButtonRef}
             className="chapter-three-opening__skip"
             type="button"
@@ -458,7 +459,7 @@ export function ChapterThreeOpeningOverlay({
             disabled={view.phase === "arrival"}
           >
             跳过演出
-          </button>
+          </Button>
 
           <div className="chapter-three-opening__progress" aria-hidden="true"><i /></div>
         </div>

@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useEffect, useMemo, useState } from "react";
 import type { ChapterFourRealityMode } from "../../core/types";
 import type { ChapterFourActionResult } from "../../modules/ChapterFourTemporalMazeController";
@@ -90,7 +91,7 @@ export function ElevatorTrackSyncGame({
           <span>HISTORY REPLAY / A-LIFT</span>
           <h2 id="elevator-sync-title">主电梯三轨同步</h2>
         </div>
-        <button type="button" className="chapter4-elevator-sync__close" onClick={onClose} aria-label="关闭三轨同步面板">×</button>
+        <Button variant="ghost" type="button" className="chapter4-elevator-sync__close" onClick={onClose} aria-label="关闭三轨同步面板">×</Button>
       </header>
 
       <div className="chapter4-elevator-sync__summary">
@@ -160,15 +161,15 @@ export function ElevatorTrackSyncGame({
 
       <footer>
         {mode === "dark" ? (
-          <button type="button" onClick={onSwitchToLight}>切到浅色操作</button>
+          <Button variant="secondary" type="button" onClick={onSwitchToLight}>切到浅色操作</Button>
         ) : (
-          <button
+          <Button variant="primary"
             type="button"
             className="is-primary"
             onClick={() => setResult(onConfirm(startSeconds))}
           >
             启动历史重放
-          </button>
+          </Button>
         )}
         <small>目标：让一楼开门区间完整覆盖进入窗口</small>
       </footer>

@@ -41,6 +41,9 @@ static func font()->Font:
   var variation:=FontVariation.new();variation.base_font=face;variation.fallbacks=[coverage];_font=variation
  return _font
 static func apply_navigation(button:Button)->void:
+ # Apparatus chrome keeps its authored 20px coverage font and dark workbench
+ # palette; the shared adapter still owns normal floor/phone/menu buttons.
+ button.set_meta("tactile_exempt",true)
  button.add_theme_font_override("font",font());button.add_theme_font_size_override("font_size",20)
  button.focus_mode=Control.FOCUS_ALL
  button.mouse_filter=Control.MOUSE_FILTER_STOP

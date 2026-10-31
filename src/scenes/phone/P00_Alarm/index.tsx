@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState } from "react";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { playSfx, type SfxHandle } from "../../../modules/Sfx";
@@ -86,13 +87,13 @@ export function AlarmScene({ router, events }: SceneComponentProps) {
       </div>
       <div className="alarm-actions">
         {!ringing ? (
-          <button type="button" className="px-btn primary big" onClick={startAlarm}>
+          <Button variant="primary" type="button" className="px-btn primary big" onClick={startAlarm}>
             开始游戏
-          </button>
+          </Button>
         ) : (
-          <button type="button" className="px-btn danger big" onClick={closeAlarm}>
+          <Button variant="secondary" type="button" className="px-btn danger big" onClick={closeAlarm}>
             关闭
-          </button>
+          </Button>
         )}
       </div>
     </section>

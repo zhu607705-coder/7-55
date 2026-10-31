@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import type { GameState } from "../core/types";
 import { formatClockSeconds } from "../core/ClockTime";
 import { kit } from "../modules/GameKit";
@@ -41,7 +42,7 @@ export function StatusBar({ state }: StatusBarProps) {
           </span>
         ) : null}
       </span>
-      <button
+      <Button variant="ghost" data-layout="content"
         type="button"
         className={`sb-right ${batteryTone} ${state.phoneBattery.lowPowerMode ? "is-saving" : ""}`}
         aria-label={`打开控制中心，当前电量 ${batteryPercent}%${state.phoneBattery.lowPowerMode ? "，低电量模式已开启" : ""}`}
@@ -74,7 +75,7 @@ export function StatusBar({ state }: StatusBarProps) {
         <span className="sb-battery" aria-hidden="true">
           <i style={{ width: `${batteryPercent}%` }} />
         </span>
-      </button>
+      </Button>
     </header>
   );
 }

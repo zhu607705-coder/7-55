@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import library022ReflectionUrl from "../../../assets/ui/photo-evidence/library_022_reflection.webp";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
@@ -128,9 +129,9 @@ export function PhotoEvidenceOverlay({
               <span className="photo-camera-reticle" aria-hidden="true"><i /><i /><i /><i /></span>
             </div>
             <p>{available ? "目标已对准，点击快门。" : "还没有在 022 现场确认书包。"}</p>
-            <button type="button" className="photo-shutter-button" disabled={!available || shutterAnimating} aria-label="拍摄 022 书包" onClick={capture}>
+            <Button variant="primary" type="button" className="photo-shutter-button" disabled={!available || shutterAnimating} aria-label="拍摄 022 书包" onClick={capture}>
               <span aria-hidden="true" />
-            </button>
+            </Button>
             {shutterAnimating ? <span className="photo-shutter-flash" aria-hidden="true" /> : null}
           </section>
         ) : (
@@ -202,13 +203,13 @@ export function PhotoEvidenceOverlay({
           <section className={`photo-recognition-result ${reportGenerated ? "is-generated" : ""}`}>
             <strong>{reportGenerated ? "物品识别报告已生成" : "旧相册里还有一张同场景照片"}</strong>
             {!reportGenerated ? <p>找到同一只 022 书包的旧照，核对半包纸出现的时间。</p> : null}
-            <button type="button" disabled={reportGenerated} onClick={(event) => {
+            <Button variant="secondary" type="button" disabled={reportGenerated} onClick={(event) => {
               selectedRollPhotoTriggerRef.current = event.currentTarget;
               setRollFilter("recent");
               setSelectedRollPhotoId(LIBRARY_CLUE_PHOTO_ID);
             }}>
               {reportGenerated ? "已写入报告" : "查看 022 旧照"}
-            </button>
+            </Button>
           </section>
         ) : null}
 
@@ -228,7 +229,7 @@ export function PhotoEvidenceOverlay({
 
         {captured && !shutterAnimating ? <section className="photo-joke-grid" aria-label={rollFilter === "campus_life" ? "校园与日常照片" : "最近照片"}>
           {visibleRollPhotos.map((photo) => (
-            <button
+            <Button variant="ghost" data-layout="content"
               key={photo.id}
               type="button"
               className={selectedRollPhotoId === photo.id ? "is-selected" : ""}
@@ -241,7 +242,7 @@ export function PhotoEvidenceOverlay({
             >
               <img src={photo.imageUrl} alt="" aria-hidden="true" />
               <span>{photo.file.slice(4, 8)}</span>
-            </button>
+            </Button>
           ))}
         </section> : null}
         {captured && !shutterAnimating ? (
@@ -265,9 +266,9 @@ export function PhotoEvidenceOverlay({
           {selectedRollPhoto.storyRole === "library_clue" ? (
             <div className="photo-roll-clue-action">
               <span>{readable ? "旧照与刚拍下的标签内容一致。" : "先把刚拍下的主照片亮度降到 20% 以下。"}</span>
-              <button type="button" disabled={!readable || reportGenerated} onClick={onGenerate}>
+              <Button variant="primary" type="button" disabled={!readable || reportGenerated} onClick={onGenerate}>
                 {reportGenerated ? "已写入物品报告" : "用旧照补全物品报告"}
-              </button>
+              </Button>
             </div>
           ) : null}
         </PhoneActionSheet>

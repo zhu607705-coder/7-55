@@ -1,0 +1,95 @@
+name: Button material acceptance
+on:
+  pull_request:
+    paths:
+      - 'godot_native/campuses/**/scripts/**'
+      - 'godot_native/scripts/ui/**'
+      - 'godot_native/scripts/scenes/**'
+      - 'godot_native/tests/*tactile*'
+      - 'godot_native/tests/capture_ui_redesign.gd'
+      - 'godot_native/web/button.css'
+      - 'godot_native/web/index.html'
+      - 'godot_native/tools/web_button_material.mjs'
+      - 'src/components/**'
+      - 'src/scenes/**'
+      - 'src/styles/**'
+      - 'scripts/verify-button-material*.mjs'
+      - '.github/workflows/button-material.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: button-material-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/verify-button-material.mjs
+      - run: npm install --no-save --package-lock=false playwright@1.58.2
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/verify-button-material-browser.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: button-material-${{ github.sha }}
+          path: artifacts/button-material
+          if-no-files-found: error
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+      - name: Install pinned native renderer
+        run: |
+          curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo "c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip" | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      - name: Synchronize and parse actual assets
+        run: |
+          node godot_native/tools/sync_source.mjs
+          GODOT_TEST_REPORT=import-report.json node godot_native/tools/validate_native.mjs --filter 'Godot asset import and editor parse'
+      - name: Verify native button semantics
+        run: |
+          godot --headless --path godot_native --script res://tests/test_tactile_buttons.gd
+          godot --headless --path godot_native --script res://tests/test_tactile_future_learning_center.gd
+          godot --headless --path godot_native --script res://tests/test_journal_composition.gd
+      - name: Render material board and actual game interfaces
+        shell: bash
+        run: |
+          set -o pipefail
+          export UI_CAPTURE_DIR="$GITHUB_WORKSPACE/artifacts/native-buttons"
+          mkdir -p "$UI_CAPTURE_DIR" /tmp/button-ui-profile/{data,config,cache,state}
+          export XDG_DATA_HOME=/tmp/button-ui-profile/data XDG_CONFIG_HOME=/tmp/button-ui-profile/config
+          export XDG_CACHE_HOME=/tmp/button-ui-profile/cache XDG_STATE_HOME=/tmp/button-ui-profile/state
+          export GODOT_TEST_USER_DATA_DIR="$XDG_DATA_HOME/SevenFiftyFiveNative"
+          mkdir -p "$GODOT_TEST_USER_DATA_DIR"
+          git rev-parse HEAD > "$UI_CAPTURE_DIR/commit.txt"
+          git rev-parse 'HEAD^{tree}' > "$UI_CAPTURE_DIR/tree.txt"
+          timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_tactile_buttons.gd 2>&1 | tee "$UI_CAPTURE_DIR/material.log"
+          timeout 240 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_ui_redesign.gd 2>&1 | tee "$UI_CAPTURE_DIR/game-ui.log"
+          timeout 180 xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' godot --audio-driver Dummy --path godot_native --script res://tests/capture_tactile_boundaries.gd 2>&1 | tee "$UI_CAPTURE_DIR/boundaries.log"
+          test -f "$UI_CAPTURE_DIR/native-tactile-md.png"
+          test -f "$UI_CAPTURE_DIR/native-tactile-lg.png"
+          test -f "$UI_CAPTURE_DIR/captures.json"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script|Screenshot failed:' "$UI_CAPTURE_DIR/"*.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-buttons-${{ github.sha }}
+          path: |
+            artifacts/native-buttons
+            import-report.json
+          if-no-files-found: error

@@ -1,6 +1,10 @@
 extends RefCounted
 ## Runtime-only local puzzle. No save, item, chapter or formal evidence writes.
 const HOLD_SECONDS := 1.4
+const PAPER_TILT_LIMIT := 18.0
+const LAMP_AZIMUTH_LIMIT := 145.0
+const LAMP_ELEVATION_MIN := 8.0
+const LAMP_ELEVATION_MAX := 82.0
 var paper_tilt := Vector2.ZERO
 var lamp_azimuth := 28.0
 var lamp_elevation := 80.0
@@ -23,12 +27,12 @@ func drag(id: int, delta: Vector2) -> void:
 	if not owners.has(id) or suspended or completed or not delta.is_finite(): return
 	match owners[id]:
 		"paper":
-			paper_tilt.x=clampf(paper_tilt.x-delta.y*0.16,-18,18)
-			paper_tilt.y=clampf(paper_tilt.y+delta.x*0.16,-18,18)
+			paper_tilt.x=clampf(paper_tilt.x-delta.y*0.16,-PAPER_TILT_LIMIT,PAPER_TILT_LIMIT)
+			paper_tilt.y=clampf(paper_tilt.y+delta.x*0.16,-PAPER_TILT_LIMIT,PAPER_TILT_LIMIT)
 			if delta.length()>0.25: paper_moved=true; quiet_time=0; stable_time=0
 		"lamp":
-			lamp_azimuth=clampf(lamp_azimuth+delta.x*0.40,-145,145)
-			lamp_elevation=clampf(lamp_elevation-delta.y*0.50,8,82)
+			lamp_azimuth=clampf(lamp_azimuth+delta.x*0.40,-LAMP_AZIMUTH_LIMIT,LAMP_AZIMUTH_LIMIT)
+			lamp_elevation=clampf(lamp_elevation-delta.y*0.50,LAMP_ELEVATION_MIN,LAMP_ELEVATION_MAX)
 			if delta.length()>0.25: lamp_moved=true; quiet_time=0; stable_time=0
 
 func release(id: int) -> void:

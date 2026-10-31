@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useState, type CSSProperties } from "react";
 
 const RUN_TARGET_DISTANCE_KM = 3;
@@ -122,7 +123,7 @@ export function ActOneVirtualRun({ participantName, onClose, onComplete }: ActOn
           <span>VIRTUAL GPS · 紫云田径场</span>
           <strong>{completed ? "课外锻炼已同步" : "10 分钟跑完 3 km"}</strong>
         </div>
-        <button type="button" onClick={onClose} aria-label={completed ? "返回体艺首页" : "退出本次定位"}>×</button>
+        <Button variant="ghost" type="button" onClick={onClose} aria-label={completed ? "返回体艺首页" : "退出本次定位"}>×</Button>
       </header>
 
       <div className="tiyi-run-stat-grid" aria-label="本次锻炼数据">
@@ -208,7 +209,7 @@ export function ActOneVirtualRun({ participantName, onClose, onComplete }: ActOn
           <strong>10:00</strong>
           <b>3.00 KM · 03'20\" / KM</b>
           <p>十个定位点已完成，课外锻炼记录正式生效。</p>
-          <button type="button" onClick={onClose}>返回体艺首页</button>
+          <Button variant="secondary" type="button" onClick={onClose}>返回体艺首页</Button>
         </section>
       ) : null}
     </section>

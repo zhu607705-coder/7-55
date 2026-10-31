@@ -50,7 +50,7 @@ func configure_interaction(step:int,callback:Callable,locks:Array)->Dictionary:
 	elif step==7:_hotspot("commit","合上表冠",func():input_callback.call({"kind":"commit"}))
 	_place_parts();return part_controls
 func _hotspot(id:String,description:String,callback:Callable)->void:
-	var part:=Button.new();part.tooltip_text=description;part.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
+	var part:=Button.new();part.set_meta("tactile_exempt",true);part.tooltip_text=description;part.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
 	part.size=Vector2(44,44);part.custom_minimum_size=part.size
 	part.add_theme_stylebox_override("normal",StyleBoxEmpty.new())
 	for key in ["hover","pressed","focus"]:part.add_theme_stylebox_override(key,Ui.box(Color(0,0,0,0),Color(.91,.8,.53,.8 if key=="focus" else .3),1,10,Vector2.ZERO))

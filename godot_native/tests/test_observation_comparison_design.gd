@@ -14,7 +14,8 @@ func frames() -> void:
 	for i in 4: await process_frame
 func inspect(node: Node, width: float) -> void:
 	if node is Label or node is Button:
-		check(node.get_theme_font("font")==Typography.body_font(),"bundled body font: "+str(node.name))
+		var expected: Font=Typography.display_font() if node.get_meta("typography_role","body")=="display" else Typography.body_font()
+		check(node.get_theme_font("font")==expected,"bundled shared role font: "+str(node.name))
 		check(node.get_theme_font_size("font_size")>=15,"readable authored type")
 		check(node.size.x<=width+.5,"text/control width bounded: "+str(node.name))
 	if node is Button:

@@ -87,7 +87,7 @@ func run() -> void:
 		var group: CanvasGroup=find_named(shell.page_body,"TiyiWholeAppCrash")
 		check(group!=null and group.get_child_count()==1,"crash composites complete app including exit/text")
 		check(is_equal_approx(group.transform.y.y,.92) and group.material.get_shader_parameter("contrast")==3.0,"whole-app source crash transform and filter apply")
-		check(find_named(group,"TiyiLoadingExit").get_theme_font("font")==shell.phone.get_theme_default_font(),"CanvasGroup retains bundled phone font")
+		check(find_named(group,"TiyiLoadingExit").get_theme_font("font")==load("res://scripts/ui/native_typography.gd").display_font(),"CanvasGroup button uses bundled Medium material face")
 		await tick(289); check(state.d.native.page=="tiyi","crash return waits entire620ms")
 		await tick(1); check(state.d.native.page=="phone_home","crash returns at3620ms")
 		check(subtitles.is_empty(),"first crash uses controller feedback without taunt voice")

@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useEffect, useRef, useState } from "react";
 import type {
   ChapterFourMaintenanceCauseId,
@@ -73,7 +74,7 @@ export function ChapterFourMaintenanceDiagnosisGame({
               </>}
             </svg>
             <output className="puzzle-preview__readout" aria-live="polite">当前推测：{CAUSES.find(({ id }) => id === answers[activeSymptom])?.label ?? "尚未选择"} · 提交后核对</output>
-            <button type="button" disabled={pending} onClick={() => setReplay(value => value + 1)}>重看故障现象</button>
+            <Button variant="secondary" type="button" disabled={pending} onClick={() => setReplay(value => value + 1)}>重看故障现象</Button>
           </figure>
         <div className="chapter4-maintenance-diagnosis__observations">
           {SYMPTOMS.map((symptom, index) => (
@@ -99,10 +100,10 @@ export function ChapterFourMaintenanceDiagnosisGame({
         </div>
         {feedback ? <p className="chapter4-maintenance-diagnosis__feedback" role="status">{feedback}</p> : null}
         <footer>
-          <button type="button" className="is-secondary" disabled={pending} onClick={onClose}>返回现场</button>
-          <button type="button" disabled={!complete || pending} onClick={() => onSubmit(answers as ChapterFourMaintenanceDiagnosisAnswers)}>
+          <Button variant="secondary" type="button" className="is-secondary" disabled={pending} onClick={onClose}>返回现场</Button>
+          <Button variant="primary" type="button" disabled={!complete || pending} onClick={() => onSubmit(answers as ChapterFourMaintenanceDiagnosisAnswers)}>
             {pending ? "正在核对…" : "提交诊断"}
-          </button>
+          </Button>
         </footer>
       </section>
     </div>

@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState } from "react";
 import type {
   LibraryEvidenceId,
@@ -214,9 +215,9 @@ export function TopTenRisePuzzle({
                 <span aria-hidden="true">{uploaded ? "✓" : "▣"}</span>
                 {uploadAnimatingId === evidence.id ? <i className="cc98-upload-scan" aria-hidden="true" /> : null}
                 <div><strong>{evidence.label}</strong><small>{evidence.source}</small></div>
-                <button type="button" disabled={!owned || uploaded || phase !== "evidence_gathering"} onClick={() => upload(evidence.id)}>
+                <Button variant="secondary" type="button" disabled={!owned || uploaded || phase !== "evidence_gathering"} onClick={() => upload(evidence.id)}>
                   {uploaded ? "已上传" : owned ? "上传" : "未获得"}
-                </button>
+                </Button>
               </article>
             );
           })}
@@ -245,9 +246,9 @@ export function TopTenRisePuzzle({
           {[0, 1, 2, 3].map((index) => <span key={`${index}-${selectedPostIds[index] ?? "empty"}`}>{selectedPostIds[index] ? BD_DIGIT_BY_POST.get(selectedPostIds[index]) : "·"}</span>)}
         </div>
         <div className="cc98-bd-password-actions">
-          <button type="button" disabled={selectedPostIds.length === 0 || solved} onClick={undoPost}>撤回一位</button>
-          <button type="button" disabled={selectedPostIds.length === 0 || solved} onClick={clearPassword}>清空</button>
-          <button type="button" disabled={!passwordFull || solved} onClick={submitPassword}>{solved ? "已通过" : "提交口令"}</button>
+          <Button variant="secondary" type="button" disabled={selectedPostIds.length === 0 || solved} onClick={undoPost}>撤回一位</Button>
+          <Button variant="secondary" type="button" disabled={selectedPostIds.length === 0 || solved} onClick={clearPassword}>清空</Button>
+          <Button variant="primary" type="button" disabled={!passwordFull || solved} onClick={submitPassword}>{solved ? "已通过" : "提交口令"}</Button>
         </div>
       </section> : null}
 
@@ -260,14 +261,14 @@ export function TopTenRisePuzzle({
               <header><strong>{post.floor} 楼 · {post.author}</strong><span>{selected ? `口令第 ${selectedIndex + 1} 位` : "数字回复"}</span></header>
               <p>{post.text}</p>
               <b className="cc98-bd-post-digit" aria-label={`数字 ${post.digit}`}>{post.digit}</b>
-              <button
+              <Button variant="secondary"
                 type="button"
                 disabled={selected || passwordFull || solved}
                 aria-label={`对 ${post.floor} 楼回复 bd，选入数字 ${post.digit}`}
                 onClick={() => selectPost(post)}
               >
                 {selected ? `第 ${selectedIndex + 1} 位` : "bd 选入"}
-              </button>
+              </Button>
             </article>
           );
         })}

@@ -22,12 +22,18 @@ func run()->void:
 		check(shell.modal_panel.get_theme_stylebox("panel") is StyleBoxEmpty,"single-page text has no fabricated notebook shell")
 		check(resume.size.x<journal.size.x,"resume is a compact primary action, not another full-width strip")
 		check(resume.size.y>=44,"compact action retains touch height")
+		for child: Node in journal.get_children():
+			if child is Button:
+				var face: StyleBox=child.get_theme_stylebox("normal")
+				var caption: float=child.get_theme_font("font").get_string_size(child.text,HORIZONTAL_ALIGNMENT_LEFT,-1,child.get_theme_font_size("font_size")).x
+				check(caption+face.get_margin(SIDE_LEFT)+face.get_margin(SIDE_RIGHT)<=child.size.x+.01,"journal action fits single line: "+child.name)
+				check(journal.get_global_rect().encloses(child.get_global_rect()),"journal action stays inside reading column: "+child.name)
 		check(journal.find_child("JournalObjective",true,false).text==state.objective(),"objective remains controller-owned")
 		check(shell.modal.find_child("NotebookPageIndex",true,false)==null,"single page has no unselected folder tab")
 		var objective:Label=journal.find_child("JournalObjective",true,false)
 		check(objective.get_theme_font_size("font_size")==18,"locked heading size remains 18")
 		check(resume.get_theme_font_size("font_size")==14,"locked button size remains 14")
-		check(resume.get_theme_stylebox("normal") is StyleBoxEmpty,"selected actions do not reintroduce filled strips")
+		check(resume.get_meta("tactile_variant","")=="secondary","journal actions use neutral readable keys")
 		check(JSON.stringify(state.d)==before,"composition changes no earned state or save")
 		check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(shell.modal_panel.get_global_rect()),"single-page layout remains inside viewport")
 		shell._close_modal();await frames()

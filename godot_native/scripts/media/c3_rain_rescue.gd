@@ -133,7 +133,7 @@ func _begin_cinematic() -> void:
 		caption.text="启真湖 · 雨天救援\n正在将落水者拉回码头"
 		video.finished.connect(func(): _request_finish("video"))
 		video.play()
-	skip=Button.new(); skip.text="跳过回放"; skip.focus_mode=Control.FOCUS_NONE; skip.add_theme_font_override("font",font); add_child(skip)
+	skip=Button.new(); skip.set_meta("tactile_keep_layout",true); skip.set_meta("tactile_compensated_type",true); skip.text="跳过回放"; skip.focus_mode=Control.FOCUS_NONE; skip.add_theme_font_override("font",font); add_child(skip)
 	_layout_skip(read_state.call())
 	skip.pressed.connect(func(): _request_finish("skipped"))
 

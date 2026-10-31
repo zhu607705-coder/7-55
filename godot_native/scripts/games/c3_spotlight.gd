@@ -168,6 +168,7 @@ func refresh() -> void:
 	if state.round==1:relay_status.text=("接到另一枚同色问号 · %.1fs"%(state.pairTicks*.05)) if state.primed>=0 else "同色两枚接成一组 · 中央最后点亮"
 	elif state.round==2:relay_status.text="同色成对"
 	for button: Button in [start_button,dash_button]:
+		if button.get_node_or_null("TactileMaterialState")!=null:continue
 		var box: StyleBoxFlat=button.get_theme_stylebox("normal").duplicate(); box.bg_color=COLORS[state.round]
 		for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]: button.add_theme_stylebox_override(mode,box)
 	label.text="标点 %d/%d     灯芯 %s%s     %ds" % [state.collected.size(),act.count,"●".repeat(state.lives),"○".repeat(3-state.lives),ceili((1600-state.tick)/20.0)]

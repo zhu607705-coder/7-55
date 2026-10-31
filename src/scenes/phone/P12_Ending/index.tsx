@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
@@ -220,7 +221,7 @@ export function EndingScene({ state, events }: SceneComponentProps) {
         {view.phase !== "lock" ? <section className="ending-clue-lane" aria-label="字句线索">
           <div className="ending-clue-trail" aria-hidden="true">{stage.fragments.slice(Math.max(0, game.clueIndex - 2), game.clueIndex).join(" ")}</div>
           <p aria-live="polite">{stage.fragments[game.clueIndex]}</p>
-          <button type="button" onClick={reviewClues} disabled={view.phase === "deploy" || game.phase === "hint" || game.phase === "stage_complete"}>回看完整字句</button>
+          <Button variant="secondary" type="button" onClick={reviewClues} disabled={view.phase === "deploy" || game.phase === "hint" || game.phase === "stage_complete"}>回看完整字句</Button>
         </section> : null}
         <div ref={fieldRef} className={`ending-intercept-field is-${view.phase}`} style={{ transform: `translateX(-50%) scale(${stageScale})` }}>
           <i className="ending-field-grid" aria-hidden="true" />
@@ -250,11 +251,11 @@ export function EndingScene({ state, events }: SceneComponentProps) {
             <small>这一瞬间已暂停</small><h2 id="ending-retry-title">字句还在等你</h2><p>{failureHint(game)}</p>
             <p className="ending-retained-words">{game.collected.length ? `已留下：${game.collected.join("、")}。` : ""}这一段的进度会保留。</p>
             {game.stageFailures >= 3 ? <label><input type="checkbox" checked={game.assist} onChange={(e) => { runtimeRef.current.game.assist = e.target.checked; publishRuntime(); }}/> 落点助视</label> : null}
-            <button ref={retryButtonRef} type="button" onClick={retryInterception}>继续这一段</button>
+            <Button variant="secondary" ref={retryButtonRef} type="button" onClick={retryInterception}>继续这一段</Button>
           </section> : null}
           {game.phase === "review" ? <section className="ending-clue-review" role="dialog" aria-modal="true" aria-labelledby="ending-clue-title">
             <h2 id="ending-clue-title">第 {game.stage + 1} 段 · 完整字句</h2>{stage.fragments.map((t) => <p key={t}>{t}</p>)}
-            <small>阅读时文字暂停，不会漏掉目标。</small><button type="button" onClick={reviewClues}>回到这一瞬间</button>
+            <small>阅读时文字暂停，不会漏掉目标。</small><Button variant="secondary" type="button" onClick={reviewClues}>回到这一瞬间</Button>
           </section> : null}
         </div>
         <p className="ending-control-hint">{view.phase === "lock" ? "按住圆圈 1.4 秒完成锁定" : game.collected.length ? `已留下：${game.collected.join("、")}` : game.stageFailures >= 2 ? "拖动窗口标题栏 · A / D 或 ← / →" : "字句会重来，完整线索可随时回看。"}</p>

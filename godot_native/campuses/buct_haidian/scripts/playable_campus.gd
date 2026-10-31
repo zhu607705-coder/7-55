@@ -387,6 +387,7 @@ func _make_pins() -> void:
 	pin_layer=CanvasLayer.new();pin_layer.name="LandmarkPins";pin_layer.layer=5;add_child(pin_layer)
 	for item in data.landmarks:
 		var button:=Button.new();button.text=str(item.name)
+		button.set_meta("tactile_keep_layout",true)
 		button.position=Vector2(item.position[0],item.position[1])+Vector2(8,-25)
 		button.custom_minimum_size=Vector2(92,40)
 		button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",18)
@@ -408,6 +409,8 @@ func label(text: String, p: Vector2, size: int=18) -> Label:
 
 func button(text: String, rect: Rect2, action: Callable) -> Button:
 	var b:=Button.new();b.text=text;b.position=rect.position;b.size=rect.size
+	# These controls share measured map bars; material must not enlarge their hit boxes.
+	b.set_meta("tactile_keep_layout",true)
 	b.add_theme_font_override("font",font);b.add_theme_font_size_override("font_size",17)
 	b.add_theme_color_override("font_color",Color("34574c"));b.add_theme_color_override("font_hover_color",Color("27483d"))
 	b.add_theme_stylebox_override("normal",box(Color("e7e8d9"),8));b.add_theme_stylebox_override("hover",box(Color("d6dfce"),8))

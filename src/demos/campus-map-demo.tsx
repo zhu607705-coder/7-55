@@ -1,3 +1,4 @@
+import { Button } from "../components/Button";
 import {
   useCallback,
   useEffect,
@@ -396,10 +397,10 @@ function CampusMapDemo() {
         </header>
 
         <div className="campus-map-demo__actions" aria-label="演示操作">
-          <button type="button" onClick={() => resetAt("library")}>自由探索</button>
-          <button type="button" onClick={() => resetAt("canteen")}>大食堂剧情</button>
+          <Button variant="secondary" type="button" onClick={() => resetAt("library")}>自由探索</Button>
+          <Button variant="secondary" type="button" onClick={() => resetAt("canteen")}>大食堂剧情</Button>
           {canToggleCanteenMode ? (
-            <button
+            <Button variant="tertiary"
               type="button"
               aria-pressed={state.canteenHunt.mode === "dark"}
               onClick={() => events.emit("rpg_canteen_mode_requested", {
@@ -407,16 +408,16 @@ function CampusMapDemo() {
               })}
             >
               {state.canteenHunt.mode === "dark" ? "切回浅色" : "切到深色"}
-            </button>
+            </Button>
           ) : null}
           {runtimeScene === "campus_bootstrap" ? (
             <>
-              <button type="button" onClick={() => events.emit("rpg_camera_recenter")}>回到角色</button>
-              <button type="button" onClick={() => events.emit("rpg_camera_zoom", { delta: -1 })} aria-label="缩小地图">−</button>
-              <button type="button" onClick={() => events.emit("rpg_camera_zoom", { delta: 1 })} aria-label="放大地图">+</button>
+              <Button variant="secondary" type="button" onClick={() => events.emit("rpg_camera_recenter")}>回到角色</Button>
+              <Button variant="secondary" type="button" onClick={() => events.emit("rpg_camera_zoom", { delta: -1 })} aria-label="缩小地图">−</Button>
+              <Button variant="secondary" type="button" onClick={() => events.emit("rpg_camera_zoom", { delta: 1 })} aria-label="放大地图">+</Button>
             </>
           ) : null}
-          <button type="button" onClick={toggleFullscreen}>全屏</button>
+          <Button variant="secondary" type="button" onClick={toggleFullscreen}>全屏</Button>
         </div>
 
         <div className="campus-map-demo__status" aria-live="polite">
@@ -437,11 +438,11 @@ function CampusMapDemo() {
 
         {touchControls ? (
           <div className="campus-map-demo__touch-controls" aria-label="触控方向与交互">
-            <button type="button" aria-label="向上移动" onPointerDown={(event) => move(event, 0, -1)}>▲</button>
-            <button type="button" aria-label="向左移动" onPointerDown={(event) => move(event, -1, 0)}>◀</button>
-            <button type="button" aria-label="向下移动" onPointerDown={(event) => move(event, 0, 1)}>▼</button>
-            <button type="button" aria-label="向右移动" onPointerDown={(event) => move(event, 1, 0)}>▶</button>
-            <button type="button" className="interact" onClick={() => events.emit("rpg_interact")}>空格</button>
+            <Button variant="secondary" type="button" aria-label="向上移动" onPointerDown={(event) => move(event, 0, -1)}>▲</Button>
+            <Button variant="secondary" type="button" aria-label="向左移动" onPointerDown={(event) => move(event, -1, 0)}>◀</Button>
+            <Button variant="secondary" type="button" aria-label="向下移动" onPointerDown={(event) => move(event, 0, 1)}>▼</Button>
+            <Button variant="secondary" type="button" aria-label="向右移动" onPointerDown={(event) => move(event, 1, 0)}>▶</Button>
+            <Button variant="secondary" type="button" className="interact" onClick={() => events.emit("rpg_interact")}>空格</Button>
           </div>
         ) : null}
       </section>

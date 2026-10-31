@@ -159,7 +159,7 @@ func layout_map_header(page_body: Control,chrome: Control) -> void:
 	var left:=58.0
 	if not chrome.inventory_open and chrome.inventory_handle.is_visible_in_tree():
 		var handle: Rect2=chrome.inventory_handle.get_global_rect()
-		var paint: StyleBoxFlat=chrome.inventory_handle.get_theme_stylebox("normal")
+		var paint: StyleBox=chrome.inventory_handle.get_theme_stylebox("normal")
 		var paint_scale:float=absf(chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
 		var shadow:=handle.grow(paint.shadow_size*paint_scale);shadow.position+=paint.shadow_offset*paint_scale
 		handle=handle.merge(shadow).merge(chrome.inventory_count.get_global_rect())
