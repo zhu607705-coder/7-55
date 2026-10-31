@@ -445,13 +445,13 @@ func _build_ui()->void:
 	var font:Font=load("res://scripts/ui/native_typography.gd").body_font()
 	var shade:=ColorRect.new();shade.color=Color(.035,.055,.085,.9);shade.position=Vector2(0,0);shade.size=Vector2(960,40);shade.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(shade)
 	title_label=Label.new();title_label.position=Vector2(18,8);title_label.add_theme_font_override("font",font);title_label.add_theme_font_size_override("font_size",17);panel.add_child(title_label)
-	time_button=Button.new();time_button.position=Vector2(644,5);time_button.size=Vector2(130,30);time_button.add_theme_font_override("font",font);time_button.pressed.connect(_cycle_time);panel.add_child(time_button)
-	transit_button=Button.new();transit_button.position=Vector2(390,462);transit_button.size=Vector2(180,38);transit_button.add_theme_font_override("font",font);transit_button.pressed.connect(open_transit);panel.add_child(transit_button);transit_button.hide()
+	time_button=Button.new();time_button.set_meta("tactile_keep_layout",true);time_button.set_meta("tactile_variant","secondary");time_button.position=Vector2(644,5);time_button.size=Vector2(130,30);time_button.add_theme_font_override("font",font);time_button.pressed.connect(_cycle_time);panel.add_child(time_button)
+	transit_button=Button.new();transit_button.set_meta("tactile_keep_layout",true);transit_button.set_meta("tactile_variant","secondary");transit_button.position=Vector2(390,462);transit_button.size=Vector2(180,38);transit_button.add_theme_font_override("font",font);transit_button.pressed.connect(open_transit);panel.add_child(transit_button);transit_button.hide()
 	transit_panel=PanelContainer.new();transit_panel.position=Vector2(330,350);transit_panel.size=Vector2(300,85);panel.add_child(transit_panel);transit_panel.hide()
 	var choices:=HBoxContainer.new();transit_panel.add_child(choices)
 	for f:int in Transit.FLOORS:
-		var choice:=Button.new();choice.name=str(f);choice.text="%dF"%f;choice.custom_minimum_size=Vector2(90,70);choice.add_theme_font_override("font",font);choices.add_child(choice);choice.pressed.connect(func()->void:travel_to(f))
-	var button:=Button.new();button.text="楼层总图";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
+		var choice:=Button.new();choice.set_meta("tactile_keep_layout",true);choice.set_meta("tactile_variant","secondary");choice.name=str(f);choice.text="%dF"%f;choice.custom_minimum_size=Vector2(90,70);choice.add_theme_font_override("font",font);choices.add_child(choice);choice.pressed.connect(func()->void:travel_to(f))
+	var button:=Button.new();button.set_meta("tactile_keep_layout",true);button.set_meta("tactile_variant","secondary");button.text="楼层总图";button.position=Vector2(790,5);button.size=Vector2(155,30);button.add_theme_font_override("font",font);button.add_theme_font_size_override("font_size",14);button.pressed.connect(toggle_overview);panel.add_child(button)
 	var footer:=ColorRect.new();footer.color=Color(.035,.055,.085,.86);footer.position=Vector2(0,509);footer.size=Vector2(960,31);footer.mouse_filter=Control.MOUSE_FILTER_IGNORE;panel.add_child(footer)
 	place_label=Label.new();place_label.position=Vector2(18,513);place_label.add_theme_font_override("font",font);place_label.add_theme_font_size_override("font_size",14);panel.add_child(place_label)
 	var touch_enabled:=OS.has_feature("mobile") or OS.get_environment("FLC_TOUCH")=="1"

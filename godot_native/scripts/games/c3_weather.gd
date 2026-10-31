@@ -93,6 +93,8 @@ func _process(delta: float) -> void:
 		started=false
 		finished.emit({"moves":moves,"cloudOffsets":positions.duplicate(),"controlledBands":controlled.duplicate(),"stableMs":stable,"elapsedMs":elapsed})
 func _style_button(button: Button) -> void:
+	button.set_meta("tactile_keep_layout",true)
+	button.set_meta("tactile_compensated_type",true)
 	button.add_theme_font_override("font",FONT)
 	button.add_theme_color_override("font_color",Color("14212a"))
 	button.add_theme_color_override("font_hover_color",Color("14212a"))

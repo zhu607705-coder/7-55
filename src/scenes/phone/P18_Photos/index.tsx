@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState } from "react";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import {
@@ -72,25 +73,25 @@ function InterludeRecoveredAlbum({ state, router }: Pick<SceneComponentProps, "s
           />
         )}
       >
-          <button type="button" className="interlude-album-card" onClick={() => setAlbumView("qizhen")}>
+          <Button variant="ghost" data-layout="content" type="button" className="interlude-album-card" onClick={() => setAlbumView("qizhen")}>
             <span className="interlude-album-cover is-qizhen">
               {journalPhotos[0] ? <QizhenRecipeFrame recipe={journalPhotos[0].recipe} variant="thumb" /> : <i aria-hidden="true" />}
             </span>
             <strong>启真湖划船</strong>
             <small>{journalPhotos.length} 张 · 来自相机</small>
-          </button>
-          <button type="button" className="interlude-album-card" onClick={() => setAlbumView("recovered")}>
+          </Button>
+          <Button variant="ghost" data-layout="content" type="button" className="interlude-album-card" onClick={() => setAlbumView("recovered")}>
             <span className="interlude-album-cover"><img src={paperMiddleUrl} alt="" aria-hidden="true" /></span>
             <strong>恢复的项目</strong>
             <small>7 张 · 帧顺序损坏</small>
-          </button>
-          <button type="button" className="interlude-album-card" onClick={() => setAlbumView("campus_life")}>
+          </Button>
+          <Button variant="ghost" data-layout="content" type="button" className="interlude-album-card" onClick={() => setAlbumView("campus_life")}>
             <span className="interlude-album-cover">
               <img src={CAMPUS_LIFE_PHOTOS[1]?.imageUrl ?? CAMPUS_LIFE_PHOTOS[0]?.imageUrl} alt="" aria-hidden="true" />
             </span>
             <strong>校园与日常</strong>
             <small>{CAMPUS_LIFE_PHOTOS.length} 张 · 普通照片</small>
-          </button>
+          </Button>
           <p className="interlude-album-note">相机照片、恢复帧和普通生活照分开归档。普通照片不会进入时间线或证据判定。</p>
       </PhoneAppScaffold>
     );
@@ -144,7 +145,7 @@ function InterludeRecoveredAlbum({ state, router }: Pick<SceneComponentProps, "s
           <p className="campus-life-album__note">这些照片用于补足手机相册的生活层次，不会触发剧情进度。</p>
           <section className="campus-life-photo-grid" aria-label="校园与日常照片">
             {CAMPUS_LIFE_PHOTOS.map((photo) => (
-              <button
+              <Button variant="ghost" data-layout="content"
                 key={photo.id}
                 type="button"
                 onClick={(event) => {
@@ -154,7 +155,7 @@ function InterludeRecoveredAlbum({ state, router }: Pick<SceneComponentProps, "s
               >
                 <img src={photo.imageUrl} alt="" aria-hidden="true" />
                 <span><strong>{photo.title}</strong><small>{photo.location}</small></span>
-              </button>
+              </Button>
             ))}
           </section>
         </PhoneAppScaffold>
@@ -219,7 +220,7 @@ function InterludeRecoveredAlbum({ state, router }: Pick<SceneComponentProps, "s
       )}
     >
         <section className="recovered-photo-stage">
-          <header><strong>IMG_0755_LIVE · 帧顺序损坏</strong><button type="button" onClick={() => setOrder([])}>重排</button></header>
+          <header><strong>IMG_0755_LIVE · 帧顺序损坏</strong><Button variant="secondary" type="button" onClick={() => setOrder([])}>重排</Button></header>
           <p>选出同一段运动中连续的三帧，再按先后顺序放入。</p>
           <div className="recovered-photo-order">
             {[0, 1, 2].map((slot) => {
@@ -231,7 +232,7 @@ function InterludeRecoveredAlbum({ state, router }: Pick<SceneComponentProps, "s
         </section>
         <section className="recovered-photo-grid">
           {RECOVERED_FRAMES.map((frame) => (
-            <button
+            <Button variant="ghost" data-layout="content"
               key={frame.id}
               type="button"
               disabled={order.includes(frame.id) || order.length >= 3}
@@ -243,7 +244,7 @@ function InterludeRecoveredAlbum({ state, router }: Pick<SceneComponentProps, "s
                 alt={`${frame.label}，恢复照片帧`}
               />
               <span><strong>{frame.label}</strong><small>{frame.time}</small></span>
-            </button>
+            </Button>
           ))}
         </section>
         {state.chapterThreeInterlude.photoSequenceSolved ? (
@@ -255,7 +256,7 @@ function InterludeRecoveredAlbum({ state, router }: Pick<SceneComponentProps, "s
             <span>连续帧已恢复</span>
           </section>
         ) : null}
-        <button type="button" className="interlude-primary-action" disabled={order.length !== 3} onClick={submit}>确认照片顺序</button>
+        <Button variant="primary" type="button" className="interlude-primary-action" disabled={order.length !== 3} onClick={submit}>确认照片顺序</Button>
         {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
     </PhoneAppScaffold>
   );

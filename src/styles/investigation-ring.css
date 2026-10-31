@@ -209,10 +209,6 @@
   outline-offset: 2px;
 }
 
-.investigation-ring__node:active:not(:disabled) {
-  transform: translate(-50%, -50%) translateY(2px);
-}
-
 .investigation-ring__hint {
   align-items: center;
   color: var(--investigation-muted);

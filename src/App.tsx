@@ -1,3 +1,4 @@
+import { Button } from "./components/Button";
 import {
   lazy,
   Suspense,
@@ -417,7 +418,7 @@ export function App() {
         <small>CHAPTER 02</small>
         <h1 id="chapter-two-title">第 2 章</h1>
         <p>找到移动的办法</p>
-        <button type="button" onClick={acknowledgeChapterTwo}>进入第二章</button>
+        <Button variant="primary" size="lg" onClick={acknowledgeChapterTwo}>进入第二章</Button>
       </div>
     </section>
   ) : null;

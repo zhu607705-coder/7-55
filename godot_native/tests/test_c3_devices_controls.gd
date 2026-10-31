@@ -148,7 +148,8 @@ func run() -> void:
 			for id in panel.controls:
 				var expected: Dictionary=fixture.keypad.buttons[keypad_index]
 				var actual: Control=panel.controls[id]
-				check(actual.size==Vector2(expected.width,expected.height) and actual.position+actual.size/2==Vector2(480+expected.x,270+expected.y),"desktop keypad matches executed source button geometry")
+				var expected_position:=Vector2(480+expected.x-expected.width/2,270+expected.y-expected.height/2)
+				check(actual.position==expected_position and actual.size.x==expected.width and is_equal_approx(actual.size.y,maxf(expected.height,40*16.0/14.0)),"desktop keypad keeps source anchor and new lg key height")
 				keypad_index+=1
 		for id in ["0","1","2","3","4"]: await click(panel.controls[id])
 		check(panel.code==fixture.keypad.draft and panel.display.text==fixture.keypad.display,"source four-digit keypad maximum and visible draft")

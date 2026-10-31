@@ -16,7 +16,7 @@ func all_labels(n: Node) -> Array:
 	return out
 func bag_bounds() -> Rect2:
 	var bounds: Rect2=shell.phone_chrome.inventory_handle.get_global_rect()
-	var style: StyleBoxFlat=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
+	var style: StyleBox=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
 	var shadow:=bounds.grow(style.shadow_size*shell.phone.scale.x)
 	shadow.position+=style.shadow_offset*shell.phone.scale.x
 	return bounds.merge(shadow).merge(shell.phone_chrome.inventory_count.get_global_rect())

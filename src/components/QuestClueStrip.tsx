@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { InvestigationRing } from "./InvestigationRing";
@@ -166,7 +167,7 @@ export function QuestTaskBar({
       data-quest-id={quest.id}
       data-layout-zone={variant === "phone" ? "phone-quest" : undefined}
     >
-      <button
+      <Button variant="ghost" data-layout="content"
         type="button"
         className="quest-task-trigger"
         aria-label={`${CHAPTER_LABEL[quest.chapter]}当前任务：${parallelObjective}${chapterFourAria}${showDigitHint ? `。${digitHintAria}` : ""}。点击查看任务提示`}
@@ -185,7 +186,7 @@ export function QuestTaskBar({
           <span>{variant === "phone" ? (open ? "收起任务" : "任务") : quest.objective}</span>
           {showDigitHint ? <em className="quest-task-digit-hint" aria-hidden="true">签到码 {digitHintText}</em> : null}
         </strong>
-      </button>
+      </Button>
 
       {open ? (
         <QuestDrawerLayer variant={variant} portalRoot={portalRoot}>
@@ -201,7 +202,7 @@ export function QuestTaskBar({
                 <small>{CHAPTER_LABEL[quest.chapter]} · {chapterFourPresentation?.stageLabel ?? quest.title}</small>
                 <h2>任务栏</h2>
               </div>
-              <button type="button" aria-label="关闭任务详情" onClick={() => setOpen(false)}>×</button>
+              <Button variant="ghost" type="button" aria-label="关闭任务详情" onClick={() => setOpen(false)}>×</Button>
             </header>
 
             <section className="quest-task-objective">
@@ -317,20 +318,20 @@ export function QuestTaskBar({
                 <p key={`${index}-${hint}`}><b>{index + 1}</b>{hint}</p>
               ))}
               {hintTotal > 0 ? (
-                <button
+                <Button variant="secondary"
                   type="button"
                   disabled={hintCount >= hintTotal}
                   onClick={() => setHintCount((count) => Math.min(hintTotal, count + 1))}
                 >
                   {hintCount >= hintTotal ? "提示已全部展开" : "显示下一条提示"}
-                </button>
+                </Button>
               ) : null}
             </section>
 
             {showNavigation ? (
-              <button type="button" className="quest-task-navigate" onClick={navigateToQuest}>
+              <Button variant="secondary" type="button" className="quest-task-navigate" onClick={navigateToQuest}>
                 {navigationLabel}
-              </button>
+              </Button>
             ) : null}
           </section>
         </QuestDrawerLayer>

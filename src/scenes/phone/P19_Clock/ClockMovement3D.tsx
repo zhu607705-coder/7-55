@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import {
   useCallback,
   useEffect,
@@ -370,7 +371,7 @@ export function ClockMovement3D({ hours, minutes, hourLocked, minuteLocked, onAd
           <small>{strings.targetLabel}</small>
         </div>
         <div className="clock-movement-3d-unit-main">
-          <button
+          <Button variant="secondary"
             type="button"
             className="clock-movement-3d-step"
             disabled={locked}
@@ -378,9 +379,9 @@ export function ClockMovement3D({ hours, minutes, hourLocked, minuteLocked, onAd
             onClick={() => onAdjust(unit, -1)}
           >
             −
-          </button>
+          </Button>
           <strong className="clock-movement-3d-readout">{pad2(value)}</strong>
-          <button
+          <Button variant="secondary"
             type="button"
             className="clock-movement-3d-step"
             disabled={locked}
@@ -388,11 +389,11 @@ export function ClockMovement3D({ hours, minutes, hourLocked, minuteLocked, onAd
             onClick={() => onAdjust(unit, 1)}
           >
             +
-          </button>
+          </Button>
         </div>
-        <button type="button" className="clock-movement-3d-lock" disabled={locked} onClick={() => onLock(unit)}>
+        <Button variant="secondary" type="button" className="clock-movement-3d-lock" disabled={locked} onClick={() => onLock(unit)}>
           {locked ? strings.locked : strings.lock}
-        </button>
+        </Button>
       </section>
     );
   };
@@ -493,14 +494,14 @@ export function ClockMovement3D({ hours, minutes, hourLocked, minuteLocked, onAd
       </div>
 
       <div className="clock-movement-3d-toolbar">
-        <button
+        <Button variant="tertiary"
           type="button"
           className="clock-movement-3d-view-btn"
           aria-pressed={explode <= 0.001}
           onClick={() => setExplode(0)}
         >
           {strings.assemble}
-        </button>
+        </Button>
         <input
           type="range"
           className="clock-movement-3d-explode-range"
@@ -511,17 +512,17 @@ export function ClockMovement3D({ hours, minutes, hourLocked, minuteLocked, onAd
           aria-label={`${strings.assemble} / ${strings.explode}`}
           onChange={(event) => setExplode(Number(event.target.value) / 100)}
         />
-        <button
+        <Button variant="tertiary"
           type="button"
           className="clock-movement-3d-view-btn"
           aria-pressed={explode >= 0.999}
           onClick={() => setExplode(1)}
         >
           {strings.explode}
-        </button>
-        <button type="button" className="clock-movement-3d-view-btn clock-movement-3d-reset" onClick={resetView}>
+        </Button>
+        <Button variant="secondary" type="button" className="clock-movement-3d-view-btn clock-movement-3d-reset" onClick={resetView}>
           {strings.resetView}
-        </button>
+        </Button>
       </div>
 
       <div className="clock-movement-3d-units">

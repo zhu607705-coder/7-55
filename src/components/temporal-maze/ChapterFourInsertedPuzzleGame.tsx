@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CHAPTER_FOUR_INSERTED_PUZZLES,
@@ -122,7 +123,7 @@ export function ChapterFourInsertedPuzzleGame({
             <p>{definition.locationLabel} · {mode === "dark" ? "深色观察" : "浅色操作"}</p>
             <h2 id="chapter4-inserted-puzzle-title">{definition.title}</h2>
           </div>
-          <button ref={closeRef} type="button" disabled={pending} onClick={onClose} aria-label="返回现场">×</button>
+          <Button variant="ghost" ref={closeRef} type="button" disabled={pending} onClick={onClose} aria-label="返回现场">×</Button>
         </header>
 
         <div className="chapter4-inserted-puzzle__body">
@@ -183,11 +184,11 @@ export function ChapterFourInsertedPuzzleGame({
         <footer className="chapter4-inserted-puzzle__footer">
           <span>{observationOnly ? "痕迹已记下，可以关掉再动手试。" : "可以反复调整，核对失败会保留当前摆放。"}</span>
           {completed || observationOnly || operationLocked ? (
-            <button type="button" disabled={pending} onClick={onClose}>返回现场</button>
+            <Button variant="secondary" type="button" disabled={pending} onClick={onClose}>返回现场</Button>
           ) : (
-            <button type="button" disabled={pending || answer === null} onClick={() => answer && onSubmit(answer)}>
+            <Button variant="primary" type="button" disabled={pending || answer === null} onClick={() => answer && onSubmit(answer)}>
               {pending ? "正在核对…" : "提交结果"}
-            </button>
+            </Button>
           )}
         </footer>
       </section>
@@ -264,7 +265,7 @@ function PuzzleControls(props: PuzzleControlsProps) {
         <div className="chapter4-inserted-puzzle__edges" role="group" aria-label="五区连线选择">
           {POWER_EDGE_IDS.map((edgeId) => {
             const selected = props.powerEdges.includes(edgeId);
-            return <button key={edgeId} type="button" aria-pressed={selected} className={selected ? "is-selected" : ""} disabled={props.pending || (!selected && props.powerEdges.length >= 5)} onClick={() => props.setPowerEdges(selected ? props.powerEdges.filter((item) => item !== edgeId) : [...props.powerEdges, edgeId])}>{POWER_EDGE_LABELS[edgeId]}</button>;
+            return <Button variant="tertiary" key={edgeId} type="button" aria-pressed={selected} className={selected ? "is-selected" : ""} disabled={props.pending || (!selected && props.powerEdges.length >= 5)} onClick={() => props.setPowerEdges(selected ? props.powerEdges.filter((item) => item !== edgeId) : [...props.powerEdges, edgeId])}>{POWER_EDGE_LABELS[edgeId]}</Button>;
           })}
           <small>已保留 {props.powerEdges.length} / 5 条</small>
         </div>
@@ -301,8 +302,8 @@ function OrderControls<T extends string>({ order, labels, disabled, onChange }: 
       {order.map((id, index) => (
         <li key={id}>
           <span>{index + 1}</span><strong>{labels[id]}</strong>
-          <button type="button" aria-label={`${labels[id]}上移`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>上移</button>
-          <button type="button" aria-label={`${labels[id]}下移`} disabled={disabled || index === order.length - 1} onClick={() => move(index, 1)}>下移</button>
+          <Button variant="secondary" type="button" aria-label={`${labels[id]}上移`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>上移</Button>
+          <Button variant="secondary" type="button" aria-label={`${labels[id]}下移`} disabled={disabled || index === order.length - 1} onClick={() => move(index, 1)}>下移</Button>
         </li>
       ))}
     </ol>
@@ -331,9 +332,9 @@ function AxisControls<T extends Record<string, number>>({ values, labels, ranges
         return (
           <div key={String(key)} className="chapter4-inserted-puzzle__axis" role="group" aria-label={`${labels[key]}调节`}>
             <span>{labels[key]}</span>
-            <button type="button" aria-label={`${labels[key]}${decrease}${unit}`} disabled={disabled || values[key] <= min} onClick={() => onChange({ ...values, [key]: values[key] - 1 })}>{decrease}<small>{unit}</small></button>
+            <Button variant="secondary" type="button" aria-label={`${labels[key]}${decrease}${unit}`} disabled={disabled || values[key] <= min} onClick={() => onChange({ ...values, [key]: values[key] - 1 })}>{decrease}<small>{unit}</small></Button>
             <output aria-label={`${labels[key]}当前值`}>{display}</output>
-            <button type="button" aria-label={`${labels[key]}${increase}${unit}`} disabled={disabled || values[key] >= max} onClick={() => onChange({ ...values, [key]: values[key] + 1 })}>{increase}<small>{unit}</small></button>
+            <Button variant="secondary" type="button" aria-label={`${labels[key]}${increase}${unit}`} disabled={disabled || values[key] >= max} onClick={() => onChange({ ...values, [key]: values[key] + 1 })}>{increase}<small>{unit}</small></Button>
           </div>
         );
       })}

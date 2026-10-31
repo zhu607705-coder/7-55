@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useMemo, useState } from "react";
 import defaultPostData from "../../../data/cc98.posts.json";
 import postDefaultHistoryData from "../../../data/cc98.post-default-history.json";
@@ -359,7 +360,7 @@ function ChapterFourStudyIndexImport({ imported }: { imported: boolean }) {
         {CHAPTER_FOUR_STUDY_FACTS.map((fact) => {
           const selected = selectedFactIds.includes(fact.id);
           return (
-            <button
+            <Button variant="ghost" data-layout="content"
               key={fact.id}
               type="button"
               className={selected ? "is-selected" : ""}
@@ -369,18 +370,18 @@ function ChapterFourStudyIndexImport({ imported }: { imported: boolean }) {
             >
               <span aria-hidden="true">{selected ? "■" : "□"}</span>
               <span><b>{fact.title}</b><small>{fact.detail}</small></span>
-            </button>
+            </Button>
           );
         })}
       </div>
-      <button
+      <Button variant="primary"
         type="button"
         className="cc98-study-import-action"
         disabled={imported || selectedFactIds.length !== 3}
         onClick={importStudyIndex}
       >
         {imported ? "已导入麦斯威夜间自习群" : chapterFourCc98Content.import.buttonLabel}
-      </button>
+      </Button>
       {feedback ? <p role="status">{feedback}</p> : null}
     </section>
   );
@@ -488,7 +489,7 @@ function InterludeJournalCloseout({
             <span>最后一段发生了点不适合写进划船记录的事。人已上岸，其他细节暂时保留。</span>
           </label>
         </fieldset>
-        <button type="button" className="interlude-primary-action" onClick={closeThread}>发布收尾并保存时间</button>
+        <Button variant="primary" type="button" className="interlude-primary-action" onClick={closeThread}>发布收尾并保存时间</Button>
         {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
       </main>
     </section>
@@ -677,7 +678,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
             : "正在检查 ZJUWLAN"}</p>
           <span className="cc98-network-dots" aria-hidden="true"><i /><i /><i /></span>
         </div>
-        <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>退出</button>
+        <Button variant="ghost" type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>退出</Button>
       </section>
     );
   }
@@ -818,23 +819,23 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
         />
         <h1>热门话题</h1>
         {developerEditingEnabled ? <div className="cc98-tools" aria-label="开发者帖子维护">
-          <button type="button" aria-label="CC98更多菜单" title="更多" onClick={() => setMenuOpen((value) => !value)}>
+          <Button variant="ghost" type="button" aria-label="CC98更多菜单" title="更多" onClick={() => setMenuOpen((value) => !value)}>
             •••
-          </button>
-          <button type="button" aria-label={editing ? "保存帖子" : "编辑帖子"} title={editing ? "保存帖子" : "编辑帖子"} onClick={toggleEditing}>
+          </Button>
+          <Button variant="secondary" type="button" aria-label={editing ? "保存帖子" : "编辑帖子"} title={editing ? "保存帖子" : "编辑帖子"} onClick={toggleEditing}>
             {editing ? "保存" : "编辑"}
-          </button>
+          </Button>
         </div> : <span className="cc98-header-placeholder cc98-locked-icon" aria-hidden="true">•••</span>}
       </header>
 
       {menuOpen ? (
         <div className="cc98-menu" role="menu">
-          <button type="button" role="menuitem" onClick={resetPosts}>
+          <Button variant="ghost" type="button" role="menuitem" onClick={resetPosts}>
             恢复默认帖子
-          </button>
-          <button type="button" role="menuitem" onClick={() => setMenuOpen(false)}>
+          </Button>
+          <Button variant="ghost" type="button" role="menuitem" onClick={() => setMenuOpen(false)}>
             关闭菜单
-          </button>
+          </Button>
         </div>
       ) : null}
 
@@ -854,18 +855,18 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
               value={state.items.occupancyNote ? "022 占座纸条" : ""}
               placeholder="把占座纸条拖到这里"
             />
-            <button type="button" onClick={searchWithOccupancyNote}>搜索</button>
+            <Button variant="secondary" type="button" onClick={searchWithOccupancyNote}>搜索</Button>
           </label>
           <div className="cc98-search-results" aria-label="搜索结果">
             {investigationSearchReady ? (
               INVESTIGATION_SEARCH_RESULTS.map((result) => (
-                <button key={result.id} type="button" className="cc98-search-result" onClick={() => selectInvestigationResult(result)}>
+                <Button variant="ghost" data-layout="content" key={result.id} type="button" className="cc98-search-result" onClick={() => selectInvestigationResult(result)}>
                   <header>
                     <strong className="cc98-search-result-title">{result.title}</strong>
                     <span className="cc98-search-result-floor">{result.floors}</span>
                   </header>
                   <span className="cc98-search-result-body">{result.body}</span>
-                </button>
+                </Button>
               ))
             ) : (
               <p className="cc98-search-empty">拖入纸条或点击搜索后显示候选记录。</p>
@@ -888,7 +889,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
               value={state.items.wetProgram ? "剧院门口 湿纸" : ""}
               placeholder="把湿掉的节目单拖到这里"
             />
-            <button type="button" onClick={searchWithWetProgram}>搜索</button>
+            <Button variant="secondary" type="button" onClick={searchWithWetProgram}>搜索</Button>
           </label>
           <p className="cc98-search-feedback" aria-live="polite">
             {investigationFeedback || "先用实物特征建立目击范围。"}
@@ -913,7 +914,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                 : "";
               return (
                 <article className="cc98-board-card" key={board}>
-                  <button
+                  <Button variant="ghost" data-layout="content"
                     type="button"
                     className="cc98-board-open"
                     aria-label={`进入${board}版面，共${postCount}帖${snapshotLabel}`}
@@ -928,8 +929,8 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                         公开快照 · {snapshot.capturedOn} · 今日 {snapshot.todayPostCount} · 总主题 {snapshot.totalTopicCount}
                       </span>
                     ) : null}
-                  </button>
-                  <button
+                  </Button>
+                  <Button variant="tertiary"
                     type="button"
                     className={`cc98-board-follow ${followed ? "is-followed" : ""}`.trim()}
                     aria-pressed={followed}
@@ -937,7 +938,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                     onClick={() => toggleFollowedBoard(board)}
                   >
                     {followed ? "已关注" : "关注"}
-                  </button>
+                  </Button>
                 </article>
               );
             })}
@@ -959,11 +960,11 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
           {recentPosts.length ? (
             <div className="cc98-recent-posts" aria-label="最近浏览">
               {recentPosts.map((post) => (
-                <button type="button" key={post.id} onClick={() => openPostDetails(post.id)}>
+                <Button variant="ghost" data-layout="content" type="button" key={post.id} onClick={() => openPostDetails(post.id)}>
                   <span>{post.board}</span>
                   <strong>{post.title}</strong>
                   <small>{post.author} · {post.time}</small>
-                </button>
+                </Button>
               ))}
             </div>
           ) : <p className="cc98-empty">还没有浏览记录。打开一篇帖子后会出现在这里。</p>}
@@ -973,7 +974,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
           {selectedBoard || activeNavigationTab === "new" || activeNavigationTab === "followed" ? (
             <header className="cc98-feed-heading">
               {selectedBoard ? (
-                <button type="button" onClick={() => setSelectedBoard(null)}>‹ 全部版面</button>
+                <Button variant="text" type="button" onClick={() => setSelectedBoard(null)}>‹ 全部版面</Button>
               ) : null}
               <div>
                 <strong>{selectedBoard ?? (activeNavigationTab === "new" ? "新帖" : "关注的版面")}</strong>
@@ -1024,7 +1025,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                 <EditableText value={post.time} editing={isEditablePost} className="cc98-time" onCommit={(value) => updatePost(post.id, "time", value)} />
               </div>
               {isEditablePost ? (
-                <button
+                <Button variant="ghost"
                   type="button"
                   className="cc98-edit-body"
                   onClick={(event) => {
@@ -1033,7 +1034,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                   }}
                 >
                   正文
-                </button>
+                </Button>
               ) : null}
             </article>
             );
@@ -1043,7 +1044,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
 
       <nav className="cc98-bottom-nav" aria-label="CC98主导航">
         {BOTTOM_TABS.map((tab) => (
-          <button
+          <Button variant="ghost" data-layout="content"
             type="button"
             key={tab.id}
             className={activeNavigationTab === tab.id ? "is-active" : ""}
@@ -1051,7 +1052,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
             onClick={() => selectBottomTab(tab.id)}
           >
             <i aria-hidden="true">{tab.icon}</i><b>{tab.label}</b>
-          </button>
+          </Button>
         ))}
       </nav>
 
@@ -1102,9 +1103,9 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
           afterRepliesContent={openPostIsQizhen ? (
             <section className="cc98-qizhen-keyword" aria-label="提取目击关键词">
               <strong>目击信息可归纳为一个地点关键词</strong>
-              <button type="button" onClick={collectBridgeKeyword} disabled={state.qizhenLake.bridgeClueFound}>
+              <Button variant="secondary" type="button" onClick={collectBridgeKeyword} disabled={state.qizhenLake.bridgeClueFound}>
                 {state.qizhenLake.bridgeClueFound ? "已取得：桥边" : "记录关键词：桥边"}
-              </button>
+              </Button>
               {state.qizhenLake.bridgeClueFound ? (
                 <p>{qizhenContent.locationSearch.cc98.system}<br />{qizhenContent.locationSearch.cc98.player}</p>
               ) : null}

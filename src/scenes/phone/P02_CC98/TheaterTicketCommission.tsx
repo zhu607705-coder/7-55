@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import type { NetworkMode, TheaterTicketCommissionPhase } from "../../../core/types";
 import theaterContent from "../../../data/chapter3-theater.content.json";
@@ -142,7 +143,7 @@ export function TheaterTicketCommission({
       <p className="cc98-ticket-status" aria-live="polite">{releaseFeedback || status}</p>
 
       {phase === "posted" ? (
-        <button type="button" className="cc98-ticket-primary" onClick={acceptCommission}>{copy.acceptLabel}</button>
+        <Button variant="primary" type="button" className="cc98-ticket-primary" onClick={acceptCommission}>{copy.acceptLabel}</Button>
       ) : null}
 
       {phase === "accepted" ? (
@@ -151,13 +152,13 @@ export function TheaterTicketCommission({
             <span>第一波放票</span>
             <strong>{ticketCodeRead ? "08:32" : "08:32?"}</strong>
           </div>
-          <button
+          <Button variant="primary"
             type="button"
             className="cc98-ticket-primary"
             onClick={attemptTicketRelease}
           >
             {copy.firstWaveLabel}
-          </button>
+          </Button>
         </div>
       ) : null}
 
@@ -167,14 +168,14 @@ export function TheaterTicketCommission({
             <span>{secondWaveSeconds > 0 ? copy.countdownLabel : copy.secondWaveOpenLabel}</span>
             <strong>{secondWaveSeconds > 0 ? secondWaveSeconds : "08:32"}</strong>
           </div>
-          <button
+          <Button variant="primary"
             type="button"
             className="cc98-ticket-primary"
             onClick={attemptTicketRelease}
             disabled={!secondWaveReady}
           >
             {secondWaveSeconds > 0 ? `${secondWaveSeconds} 秒后开放` : copy.secondWaveLabel}
-          </button>
+          </Button>
         </div>
       ) : null}
 

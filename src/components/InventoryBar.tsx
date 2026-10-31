@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { eventBus } from "../core/EventBus";
@@ -503,7 +504,7 @@ export function InventoryBar({ state }: InventoryBarProps) {
         onPointerCancel={onPointerCancel}
       >
         <InventoryAcquisitionFlight item={recentItem} className="inv-acquisition-flight" />
-        <button
+        <Button variant="ghost" data-layout="content"
           type="button"
           className="inv-handle"
           onClick={(e) => {
@@ -520,7 +521,7 @@ export function InventoryBar({ state }: InventoryBarProps) {
           <PixelIcon name="backpack" size={26} />
           <span className="inv-arrow">{open ? "‹" : "›"}</span>
           {!open && owned.length > 0 ? <i className="inv-count">{owned.length}</i> : null}
-        </button>
+        </Button>
 
         {open ? (
           <div className="inv-body">

@@ -1,3 +1,4 @@
+import { Button } from "../components/Button";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -152,7 +153,7 @@ function FinaleEnvironmentDebug() {
 
       <nav className="scene-tabs" aria-label="终章环境场景">
         {scenes.map((entry) => (
-          <button
+          <Button variant="ghost" data-layout="content"
             key={entry.id}
             type="button"
             className={entry.id === sceneId ? "is-active" : ""}
@@ -160,7 +161,7 @@ function FinaleEnvironmentDebug() {
           >
             <strong>{entry.title}</strong>
             <span>{entry.projection === "top_down_orthographic" ? "俯视" : "序幕侧视"}</span>
-          </button>
+          </Button>
         ))}
       </nav>
 

@@ -1,0 +1,88 @@
+name: Phone campus preview GL acceptance
+on:
+  pull_request:
+    paths: ['godot_native/samples/phone_to_campus/**', '.github/workflows/phone-campus-preview.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: phone-campus-preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GODOT_SILENCE_ROOT_WARNING: '1'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Isolate preview user data on the runner
+        run: |
+          for kind in DATA CONFIG CACHE; do
+            path="$RUNNER_TEMP/phone-campus-xdg/${kind,,}"
+            mkdir -p "$path"
+            echo "XDG_${kind}_HOME=$path" >> "$GITHUB_ENV"
+          done
+      - name: Install verified engine and supported GL tools
+        run: |
+          missing=()
+          command -v xvfb-run >/dev/null || missing+=(xvfb)
+          command -v ffmpeg >/dev/null || missing+=(ffmpeg)
+          dpkg-query -W -f='${Status}' libgl1-mesa-dri 2>/dev/null | grep -q 'install ok installed' || missing+=(libgl1-mesa-dri)
+          if [ "${#missing[@]}" -gt 0 ]; then
+            timeout 90 sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=20 update
+            timeout 180 sudo apt-get -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 install "${missing[@]}"
+          fi
+          curl --fail --location --connect-timeout 15 --max-time 90 --retry 1 --retry-max-time 120 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          echo 'c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba  /tmp/godot.zip' | sha256sum --check
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          sudo install /tmp/godot/Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+          mkdir -p phone-campus-evidence "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          git rev-parse HEAD > phone-campus-evidence/source-sha.log
+      - name: Isolated import and behavior tests
+        run: |
+          GODOT_BIN=godot node godot_native/samples/phone_to_campus/run.mjs --test 2>&1 | tee phone-campus-evidence/behavior.log
+      - name: Actual GL screenshots and ordinary mobile-size input
+        run: |
+          timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 1440x1000x24' \
+            godot --path godot_native/samples/phone_to_campus/preview --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://capture.gd -- --output="$GITHUB_WORKSPACE/phone-campus-evidence/stages" 2>&1 | tee phone-campus-evidence/capture.log
+          timeout 120 xvfb-run --auto-servernum --server-args='-screen 0 1440x1000x24' \
+            godot --path godot_native/samples/phone_to_campus/preview --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://test_input.gd -- --require-rendering --output="$GITHUB_WORKSPACE/phone-campus-evidence/input" 2>&1 | tee phone-campus-evidence/input.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' phone-campus-evidence/*.log
+          grep -q 'PHONE_CAMPUS_INPUT.*failures=0.*graphical=true' phone-campus-evidence/input.log
+          grep -q 'PHONE_CAMPUS_INPUT_RENDERER display=X11' phone-campus-evidence/input.log
+      - name: Record actual continuous portrait playback
+        run: |
+          cp -a godot_native/samples/phone_to_campus/preview "$RUNNER_TEMP/phone-campus-movie"
+          # MovieMaker uses project viewport dimensions. Change only the temporary
+          # capture copy, not the sample's source or its actual-resize input test.
+          sed -i -E 's/(viewport_width|window_width_override)=1280/\1=390/; s/(viewport_height|window_height_override)=720/\1=844/' "$RUNNER_TEMP/phone-campus-movie/project.godot"
+          timeout 150 xvfb-run --auto-servernum --server-args='-screen 0 800x1000x24' \
+            godot --path "$RUNNER_TEMP/phone-campus-movie" --rendering-method gl_compatibility --audio-driver Dummy \
+            --resolution 390x844 --fixed-fps 30 --write-movie "$RUNNER_TEMP/phone-campus.avi" \
+            --script res://record.gd 2>&1 | tee phone-campus-evidence/movie.log
+          ! grep -E 'SCRIPT ERROR:|^ERROR:|Parse Error:|TEST FAILED' phone-campus-evidence/movie.log
+          grep -q 'PHONE_CAMPUS_MOVIE failures=0' phone-campus-evidence/movie.log
+          ffmpeg -hide_banner -loglevel error -y -i "$RUNNER_TEMP/phone-campus.avi" -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart -an phone-campus-evidence/phone-campus-portrait.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_type,width,height,r_frame_rate -of json phone-campus-evidence/phone-campus-portrait.mp4 > phone-campus-evidence/video.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('phone-campus-evidence/video.json'))
+          assert len(d['streams'])==1 and d['streams'][0]['codec_type']=='video'
+          assert (d['streams'][0]['width'],d['streams'][0]['height'])==(390,844)
+          assert 11<float(d['format']['duration'])<14
+          PY
+          sha256sum phone-campus-evidence/phone-campus-portrait.mp4 > phone-campus-evidence/SHA256SUMS
+          printf '%s\n' 'Actual Godot GL Compatibility output. Automated ordinary input at mobile dimensions; not a physical phone test. Isolated unintegrated prototype with placeholder toy/campus geometry, not approved final art or real-campus reconstruction.' > phone-campus-evidence/README.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phone-campus-preview-gl-${{ github.event.pull_request.head.sha || github.sha }}
+          path: phone-campus-evidence/
+          retention-days: 7
+          if-no-files-found: error

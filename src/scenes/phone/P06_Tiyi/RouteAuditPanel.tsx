@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState } from "react";
 import type { SceneRouter } from "../../../core/SceneRouter";
 import type {
@@ -235,15 +236,15 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
                 >
                   <span>{control.label}<small>来源 {control.sourceIndex} · {control.sourceHint}</small></span>
                   <div>
-                    <button type="button" aria-label={`${control.label}减一`} disabled={value <= control.min} onClick={() => step(control.field, value - 1)}>−</button>
+                    <Button variant="secondary" type="button" aria-label={`${control.label}减一`} disabled={value <= control.min} onClick={() => step(control.field, value - 1)}>−</Button>
                     <strong key={`${control.field}-${value}`}>{value}<small>{control.unit}</small></strong>
-                    <button type="button" aria-label={`${control.label}加一`} disabled={value >= control.max} onClick={() => step(control.field, value + 1)}>+</button>
+                    <Button variant="secondary" type="button" aria-label={`${control.label}加一`} disabled={value >= control.max} onClick={() => step(control.field, value + 1)}>+</Button>
                   </div>
                 </section>
               );
             })}
           </div>
-          <button type="button" className="tiyi-audit-submit" disabled={!sourceReady || phase !== "evidence_gathering"} onClick={submit}>提交补录</button>
+          <Button variant="primary" type="button" className="tiyi-audit-submit" disabled={!sourceReady || phase !== "evidence_gathering"} onClick={submit}>提交补录</Button>
           {guidance ? <p aria-live="polite">{guidance}</p> : null}
         </>
       ) : (
@@ -256,7 +257,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
             <div><dt>公示编号</dt><dd>{puzzle.auditPublicNoticeFloor}</dd></div>
             <div><dt>证明数量</dt><dd>{puzzle.auditProofCount} 项</dd></div>
           </dl>
-          <button type="button" className="tiyi-audit-return" onClick={() => router.goTo("phone_home")}>返回手机主页</button>
+          <Button variant="text" type="button" className="tiyi-audit-return" onClick={() => router.goTo("phone_home")}>返回手机主页</Button>
         </section>
       )}
     </section>

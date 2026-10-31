@@ -1,3 +1,4 @@
+import { Button } from "../../components/Button";
 import { CHAPTER_FOUR_INSERTED_PUZZLES, isChapterFourInsertedPuzzleId, type ChapterFourInsertedPuzzleAnswer, type ChapterFourInsertedPuzzleId, type ChapterFourInsertedPuzzleTargetId } from "../../modules/ChapterFourInsertedPuzzleModel";
 import { ChapterFourInsertedPuzzleGame } from "../../components/temporal-maze/ChapterFourInsertedPuzzleGame";
 import { ChapterFourMaintenanceDiagnosisGame } from "../../components/temporal-maze/ChapterFourMaintenanceDiagnosisGame";
@@ -2610,8 +2611,8 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
               )}
               {assetLoadReport?.status === "failed" ? (
                 <div className="rpg-asset-load-actions">
-                  <button type="button" onClick={retryRpgAssetLoad}>重试加载</button>
-                  <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
+                  <Button variant="secondary" type="button" onClick={retryRpgAssetLoad}>重试加载</Button>
+                  <Button variant="secondary" type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</Button>
                 </div>
               ) : null}
             </div>
@@ -2715,16 +2716,16 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
 
         {qizhenRainRescueCinematicOpen || photoSessionOpen || chapter4OverlayBlocked || assetLoadBlocked ? null : (
           <div className="rpg-system-actions">
-            <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
-            <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
+            <Button variant="secondary" type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</Button>
+            <Button variant="secondary" type="button" onClick={() => toggleRpgFullscreen()}>全屏</Button>
           </div>
         )}
 
         {runtimeScene === "campus_bootstrap" && !canteenExclusiveActive && !assetLoadBlocked ? (
           <nav className="rpg-camera-actions" aria-label="地图视角">
-            <button type="button" aria-label="定位人物" title="定位人物" onClick={(event) => { events.emit("rpg_camera_recenter"); event.currentTarget.blur(); }}>⌖</button>
-            <button type="button" aria-label="放大地图" title="放大地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: 0.1 }); event.currentTarget.blur(); }}>+</button>
-            <button type="button" aria-label="缩小地图" title="缩小地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: -0.1 }); event.currentTarget.blur(); }}>−</button>
+            <Button variant="secondary" type="button" aria-label="定位人物" title="定位人物" onClick={(event) => { events.emit("rpg_camera_recenter"); event.currentTarget.blur(); }}>⌖</Button>
+            <Button variant="secondary" type="button" aria-label="放大地图" title="放大地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: 0.1 }); event.currentTarget.blur(); }}>+</Button>
+            <Button variant="secondary" type="button" aria-label="缩小地图" title="缩小地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: -0.1 }); event.currentTarget.blur(); }}>−</Button>
           </nav>
         ) : null}
 
@@ -2781,7 +2782,7 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
             <strong>物品栏</strong>
             <div className="rpg-temp-items">
               {state.actOne.inventoryRecovered && state.items.campusCard ? (
-                <button
+                <Button variant="ghost" data-layout="content"
                   type="button"
                   aria-label="查看电子校园卡"
                   title="单击查看校园卡信息，双击查看完整详情"
@@ -2790,10 +2791,10 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
                 >
                   <PixelIcon name="campusCard" size={30} />
                   <span>校园卡</span>
-                </button>
+                </Button>
               ) : null}
               {state.items.gamepad ? (
-                <button
+                <Button variant="ghost" data-layout="content"
                   type="button"
                   className={state.actOne.movementEnabled ? "is-active" : "is-waiting"}
                   aria-label="使用游戏手柄"
@@ -2803,7 +2804,7 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
                 >
                   <PixelIcon name="gamepad" size={30} />
                   <span>手柄</span>
-                </button>
+                </Button>
               ) : null}
             </div>
             {state.items.gamepad ? (
@@ -2850,7 +2851,7 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
           && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
             <nav className="rpg-kayak-controls is-fishing is-unified-fishing" aria-label="启真湖垂钓：左右控线与收竿">
-              {(["left", "hook", "right"] as const).map(action => <button
+              {(["left", "hook", "right"] as const).map(action => <Button variant="ghost" data-layout="content"
                 key={action} type="button" className={`interact fishing-${action}`}
                 aria-label={action === "hook" ? "按住收线，松手放线或起鱼" : action === "left" ? "向左控线" : "向右控线"}
                 disabled={fishingSession.totalNotes === 0}
@@ -2861,11 +2862,11 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
               >
                 <span>{action === "hook" ? "按住收线" : action === "left" ? "◀ 控线" : "控线 ▶"}</span>
                 <small>{action === "hook" ? "松手放线 / 起鱼" : action === "left" ? "A / ←" : "D / →"}</small>
-              </button>)}
+              </Button>)}
             </nav>
           ) : (
             <nav className="rpg-kayak-controls" aria-label="皮划艇划桨手势和交互按钮">
-              <button
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className={`left-paddle is-swipe-${kayakPaddleSwipeState.left ?? "idle"}`}
                 aria-label="左桨，上划前进，下划后退，轻触默认前进"
@@ -2878,8 +2879,8 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
                 <PixelIcon name="willowBranchPaddle" size={34} />
                 <span>左桨</span>
                 <small>{kayakPaddleSwipeState.left === "reverse" ? "↓ 后退" : kayakPaddleSwipeState.left === "forward" ? "↑ 前进" : "↑前进 · ↓后退"}</small>
-              </button>
-              <button
+              </Button>
+              <Button variant="ghost" data-layout="content"
                 type="button"
                 className={`right-paddle is-swipe-${kayakPaddleSwipeState.right ?? "idle"}`}
                 aria-label="右桨，上划前进，下划后退，轻触默认前进"
@@ -2892,8 +2893,8 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
                 <PixelIcon name="warningSignPaddle" size={34} />
                 <span>右桨</span>
                 <small>{kayakPaddleSwipeState.right === "reverse" ? "↓ 后退" : kayakPaddleSwipeState.right === "forward" ? "↑ 前进" : "↑前进 · ↓后退"}</small>
-              </button>
-              <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
+              </Button>
+              <Button variant="primary" type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</Button>
             </nav>
           )
         ) : !photoSessionOpen && !inputBlocked && !assetLoadBlocked && state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
@@ -2902,11 +2903,11 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"
           >
-            <button type="button" aria-label="向上" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, -1)}>↑</button>
-            <button type="button" aria-label="向左" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, -1, 0)}>←</button>
-            <button type="button" aria-label="向下" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, 1)}>↓</button>
-            <button type="button" aria-label="向右" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 1, 0)}>→</button>
-            <button
+            <Button variant="secondary" type="button" aria-label="向上" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, -1)}>↑</Button>
+            <Button variant="secondary" type="button" aria-label="向左" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, -1, 0)}>←</Button>
+            <Button variant="secondary" type="button" aria-label="向下" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, 1)}>↓</Button>
+            <Button variant="secondary" type="button" aria-label="向右" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 1, 0)}>→</Button>
+            <Button variant="primary"
               type="button"
               className="interact"
               aria-label="交互（键盘为空格键）"
@@ -2914,7 +2915,7 @@ const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
               onClick={() => events.emit("rpg_interact")}
             >
               {RPG_CONTROL_HINTS.touchInteraction}
-            </button>
+            </Button>
           </nav>
         ) : null}
 

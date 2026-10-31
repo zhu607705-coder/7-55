@@ -14,7 +14,7 @@ func _ready()->void:
 	shade=ColorRect.new();shade.color=Color(0,0,0,.5);shade.mouse_filter=Control.MOUSE_FILTER_STOP;shade.hide();add_child(shade)
 	paper_scroll=ScrollContainer.new();paper_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;add_child(paper_scroll)
 	paper=Folio.new();paper.puzzle_id=puzzle_id;paper.source=source;paper.visible=false;paper_scroll.add_child(paper)
-	cover=Button.new();cover.text="残签";cover.tooltip_text="拿起 / 放回纸页";cover.focus_mode=Control.FOCUS_ALL
+	cover=Button.new();cover.set_meta("tactile_exempt",true);cover.text="残签";cover.tooltip_text="拿起 / 放回纸页";cover.focus_mode=Control.FOCUS_ALL
 	var style:=StyleBoxFlat.new();style.bg_color=Color("ded2af");style.border_color=Color("8c7352");style.set_border_width_all(2);style.shadow_color=Color("2e3027");style.shadow_size=3;style.shadow_offset=Vector2(3,4)
 	for state:String in ["normal","hover","pressed","focus"]:cover.add_theme_stylebox_override(state,style)
 	cover.add_theme_font_override("font",Type.body_font());cover.add_theme_color_override("font_color",Color("443e30"))
