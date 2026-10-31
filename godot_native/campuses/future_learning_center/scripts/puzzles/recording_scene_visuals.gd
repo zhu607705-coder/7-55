@@ -45,7 +45,7 @@ func _sync_records(view,snap:bool)->void:
    if objects.has(id) and objects[id].get_parent()!=paper_windows[i]:objects[id].reparent(paper_windows[i],false)
   if print_marks.size()<=i:
    var marks:=PrintFeedback.new();marks.model=view.model;marks.font=view.font;marks.row=i;marks.aperture_origin=paper_windows[i].position;paper_windows[i].add_child(marks);print_marks.append(marks)
-  print_marks[i].queue_redraw()
+  print_marks[i].annotations_visible=view.annotations_visible();print_marks[i].queue_redraw()
   # Paper and its event ink share one exact aperture clip. Metal lies above both.
   if objects.has("PaperGuide%d"%i):move_child(objects["PaperGuide%d"%i],get_child_count()-1)
  put("FeedRail","rail_horizontal",Vector2(420,405),Vector2(440,13))

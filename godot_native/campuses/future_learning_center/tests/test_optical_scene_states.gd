@@ -69,6 +69,10 @@ func run()->void:
    check(view.visuals!=null and view.visuals.get_script().resource_path=="res://campuses/future_learning_center/scripts/puzzles/recording_scene_visuals.gd","recording family receives its own sprite scene: "+sibling)
    check(view.visuals!=null and view.visuals.light_paths==null,"recording family does not receive optical light paths: "+sibling)
    check(view.visuals!=null and not view.visuals.objects.has("Fixture"),"recording family does not receive optical fixture: "+sibling)
+  elif sibling=="signal_sync":
+   check(view.visuals!=null and view.visuals.get_script().resource_path=="res://campuses/future_learning_center/scripts/puzzles/cable_scene_visuals.gd","signal room receives its own cable sprite scene")
+   check(view.visuals!=null and view.visuals.light_paths==null,"signal room does not receive optical light paths")
+   check(view.visuals!=null and not view.visuals.objects.has("Fixture"),"signal room does not receive optical fixture")
   else:
    check(view.visuals==null,"unrelated inherited room does not receive optical sprite scene: "+sibling)
   view._cancel_pointer();view.close();view.queue_free()

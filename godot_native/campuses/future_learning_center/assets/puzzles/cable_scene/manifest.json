@@ -1,0 +1,327 @@
+[
+  {
+    "filename": "monitor.png",
+    "sha256": "1678063dd2fef536ef1cd730849c71b47a7f2c70af583c5ba89454af70e20f0a",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      125,
+      287,
+      1003,
+      724
+    ],
+    "box": [
+      145,
+      113
+    ],
+    "pivot": [
+      627,
+      604
+    ]
+  },
+  {
+    "filename": "distribution_housing.png",
+    "sha256": "c972f17bc7389d4ec550d8e48cd518f7cfe593945cfa9b4aaa8c0974c69ef859",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      123,
+      142,
+      1007,
+      967
+    ],
+    "box": [
+      132,
+      130
+    ],
+    "pivot": [
+      626.5,
+      625.5
+    ]
+  },
+  {
+    "filename": "socket_square.png",
+    "sha256": "a1c29d1facc5994ddacddabb6a548be742bf0f8b6bf63d0f68a42e844e888829",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      219,
+      231,
+      816,
+      797
+    ],
+    "box": [
+      20,
+      20
+    ],
+    "pivot": [
+      627,
+      638
+    ]
+  },
+  {
+    "filename": "socket_round.png",
+    "sha256": "4a7f346ddb2730160b9caf611206cb4639bfc0b453b2cabd23961c5a10429444",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      190,
+      173,
+      869,
+      861
+    ],
+    "box": [
+      20,
+      20
+    ],
+    "pivot": [
+      626,
+      600
+    ]
+  },
+  {
+    "filename": "plug_square.png",
+    "sha256": "76c2947597a9145cf19673ace34e59db0c2e4ec880c92b8a4417a7ae8d016928",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      321,
+      309,
+      747,
+      668
+    ],
+    "box": [
+      28,
+      28
+    ],
+    "pivot": [
+      487,
+      771
+    ]
+  },
+  {
+    "filename": "plug_round.png",
+    "sha256": "dc08115e108309ee670120b9ac908ecfdaebc19a6925b97db48bea7c5b18579c",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      240,
+      284,
+      852,
+      715
+    ],
+    "box": [
+      28,
+      28
+    ],
+    "pivot": [
+      448,
+      764
+    ]
+  },
+  {
+    "filename": "cable_strip.png",
+    "sha256": "46add411373f3dd61b3fa0f44dccd91fa5a2a1885031db56770abcf55daefcff",
+    "size": [
+      2172,
+      724
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      0,
+      325,
+      2172,
+      76
+    ],
+    "box": [
+      228.6315789473684,
+      8
+    ],
+    "pivot": [
+      1086,
+      363
+    ]
+  },
+  {
+    "filename": "portable_holder.png",
+    "sha256": "43c22847976ef058cef2d0039d63f1520d04eb4e44f8aeb2f4cc73e4a6954e05",
+    "size": [
+      2172,
+      724
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      75,
+      146,
+      2024,
+      447
+    ],
+    "box": [
+      190,
+      56
+    ],
+    "pivot": [
+      1087,
+      369.5
+    ]
+  },
+  {
+    "filename": "dock.png",
+    "sha256": "d2e72676f421dc3d0c0a45f24293b6057c747f3325de4b06346e455fb4e08301",
+    "size": [
+      2048,
+      768
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      51,
+      144,
+      1940,
+      504
+    ],
+    "box": [
+      128,
+      48
+    ],
+    "pivot": [
+      1021,
+      396
+    ]
+  },
+  {
+    "filename": "pillar_v2.png",
+    "sha256": "b90327813ca785b8a39bb2fe96343848fb9ab5be67bab7ddc361b6e44f9c8746",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      403,
+      27,
+      448,
+      1200
+    ],
+    "box": [
+      37.333333333333336,
+      100
+    ],
+    "pivot": [
+      627,
+      627
+    ]
+  },
+  {
+    "filename": "adapter_ring.png",
+    "sha256": "0ef5f80371435ebfaaeab372c026de22ef9e2eeddb90fac39252c5a08e0449eb",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      113,
+      112,
+      1023,
+      1035
+    ],
+    "box": [
+      56,
+      56
+    ],
+    "pivot": [
+      626,
+      641
+    ]
+  },
+  {
+    "filename": "cable_reel.png",
+    "sha256": "5ae1bc15a7db5a7f395740841d817fa5c68fcba130d72d4f3a12f9ad82c46990",
+    "size": [
+      1352,
+      1163
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      75,
+      98,
+      1264,
+      973
+    ],
+    "box": [
+      58,
+      50
+    ],
+    "pivot": [
+      707.0,
+      584.5
+    ]
+  },
+  {
+    "filename": "route_clip.png",
+    "sha256": "26dc2676b4117cac63768cc6b732f59bbdaee348133ccfa1c4ccaae80b8cb7f0",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      111,
+      325,
+      1032,
+      566
+    ],
+    "box": [
+      34,
+      20
+    ],
+    "pivot": [
+      625,
+      730
+    ]
+  }
+]

@@ -143,7 +143,14 @@ func _release(at:Vector2)->void:
 	action="";_sync_visuals(0);queue_redraw()
 func if_hint()->void:
 	if hint_level==3:hint_level=-1
+# Only the seven delivered raster workbenches opt into annotation-free play.
+# Other prototype subclasses retain their authored presentation.
+func annotations_visible()->bool:
+	var scene:String=get_script().resource_path.get_file()
+	if scene not in ["collab_view.gd","assembly_view.gd","recording_view.gd","sync_view.gd","signal_sync_view.gd"]:return true
+	return hint_level>=0 or show_records
 func text(value:String,at:Vector2,size_value:=16,color:=Color("ddd7c8"))->void:
+	if not annotations_visible():return
 	draw_string(font,at,value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value,color)
 # Compatibility primitive for the existing non-optical subclasses. The two
 # optical rooms never call it; their physical artwork is exclusively PNG sprites.

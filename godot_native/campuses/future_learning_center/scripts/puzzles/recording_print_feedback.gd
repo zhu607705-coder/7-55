@@ -5,6 +5,7 @@ const Sync=preload("res://campuses/future_learning_center/scripts/puzzles/sync_m
 var model
 var font:Font
 var row:=0
+var annotations_visible:=false
 var aperture_origin:=Vector2.ZERO
 func _draw()->void:
  if model==null or font==null:return
@@ -18,4 +19,4 @@ func _draw()->void:
    draw_rect(Rect2(at-Vector2(14,10),Vector2(24,20)),ink);draw_line(at+Vector2(15,-15),at+Vector2(15,15),ink,3)
   else:
    draw_rect(Rect2(at-Vector2(16,10),Vector2(22,20)),ink);draw_line(at+Vector2(8,-19),at+Vector2(8,19),ink,5)
-  draw_string(font,at+Vector2(-6,25),str(int(Sync.CAMERA[j].time+(model.bias() if row==1 else 0))),HORIZONTAL_ALIGNMENT_LEFT,-1,12,ink)
+  if annotations_visible:draw_string(font,at+Vector2(-6,25),str(int(Sync.CAMERA[j].time+(model.bias() if row==1 else 0))),HORIZONTAL_ALIGNMENT_LEFT,-1,12,ink)

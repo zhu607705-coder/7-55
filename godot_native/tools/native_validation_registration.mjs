@@ -41,7 +41,7 @@ export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
   outputs:[],dependencies:[],durationHintMs:['floor','puzzles_integration','projection_placement','2f_placement'].includes(name)?15000:1000,
  })),
  // Generated-object readers are explicit CI stages, not only local puzzle tests.
- ...['schedule_generated_art','schedule_object_sprite','schedule_scene_states','optical_generated_art','optical_scene_states','optical_scaled_host','recording_generated_art','recording_scene_states','recording_scaled_host'].map(name=>({
+ ...['schedule_generated_art','schedule_object_sprite','schedule_scene_states','optical_generated_art','optical_scene_states','optical_scaled_host','recording_generated_art','recording_scene_states','recording_scaled_host','cable_generated_art','cable_scene_states','cable_scaled_host','workbench_annotations'].map(name=>({
   id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
   inputs:[`${flc}/tests/test_${name}.gd`,`${flc}/scripts`,`${flc}/assets/puzzles`,`${flc}/data`,
    'godot_native/scripts/games/future_learning_center'],outputs:[],dependencies:[],durationHintMs:name.endsWith('_scaled_host')?15000:1000,

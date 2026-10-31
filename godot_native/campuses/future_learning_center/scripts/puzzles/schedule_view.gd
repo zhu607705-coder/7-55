@@ -141,7 +141,11 @@ func release_at(at:Vector2)->void:
   if assigned_task>=0:destination=card_visual_point(assigned_task)+Vector2(33,10)
   visuals.settle_tool(self,released_tool,at,destination,assigned_task)
  queue_redraw()
-func _text(value:String,at:Vector2,sz:=16,color:=INK)->void:draw_string(font,at,value,HORIZONTAL_ALIGNMENT_LEFT,-1,sz,color)
+# Object captions and test records are available only on request.
+func annotations_visible()->bool:return paper_open
+func _text(value:String,at:Vector2,sz:=16,color:=INK)->void:
+ if not annotations_visible():return
+ draw_string(font,at,value,HORIZONTAL_ALIGNMENT_LEFT,-1,sz,color)
 func _sprite_rect(region:Rect2,at:Vector2,box:Vector2)->Rect2:
  var factor:float=minf(box.x/region.size.x,box.y/region.size.y)
  var extent:Vector2=region.size*factor
