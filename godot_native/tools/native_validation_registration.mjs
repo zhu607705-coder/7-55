@@ -46,6 +46,18 @@ export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
   inputs:[`${flc}/tests/test_${name}.gd`,`${flc}/scripts`,`${flc}/assets/puzzles`,`${flc}/data`,
    'godot_native/scripts/games/future_learning_center'],outputs:[],dependencies:[],durationHintMs:name.endsWith('_scaled_host')?15000:1000,
  })),
+ // Room layout and NPC readers are release stages as well as local regressions.
+ ...['room_layout_routes','room_npcs'].map(name=>({
+  id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
+  inputs:[`${flc}/tests/test_${name}.gd`,`${flc}/scripts`,`${flc}/data`,`${flc}/assets/room_props`,`${flc}/assets/npcs`,
+   'godot_native/scripts/player_metrics.gd','godot_native/scripts/world_object_picker.gd',
+   'src/assets/rpg/npcs/finale/student_phone_glance_2frame.png','src/assets/rpg/npcs/canteen/canteen_queue_student_01_front.png'],
+  outputs:[],dependencies:[],durationHintMs:15000,
+ })),
+ {id:'flc_room_layout_builder',execution:'node',entry:`${flc}/tests/test_room_layout_builder.mjs`,
+  inputs:[`${flc}/tests/test_room_layout_builder.mjs`,`${flc}/tests/room_layout_baseline.json`,`${flc}/tools/apply_room_layout.mjs`,`${flc}/data`,`${flc}/assets/room_props`,`${flc}/assets/npcs`,
+   'godot_native/tools/web_story_content_policy.mjs','src/assets/rpg/npcs/finale/student_phone_glance_2frame.png','src/assets/rpg/npcs/canteen/canteen_queue_student_01_front.png'],
+  outputs:[],dependencies:[],durationHintMs:1000},
  {id:"flc_web_policy",execution:"node",entry:"godot_native/tools/test_flc_web_policy.mjs",
   inputs:["godot_native/tools/test_flc_web_policy.mjs","godot_native/tools/web_story_content_policy.mjs","godot_native/tools/plan_web_content.mjs","godot_native/scripts/release_content_policy.gd"],outputs:[],dependencies:[],durationHintMs:1000},
  {id:"flc_projection_table_builder",execution:"node",entry:`${flc}/tests/test_projection_table_builder.mjs`,

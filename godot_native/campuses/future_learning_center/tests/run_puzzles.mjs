@@ -22,27 +22,28 @@ function copy(relative){
  if(relative.endsWith('.gd'))for(const [,dep] of fs.readFileSync(source,'utf8').matchAll(/["']res:\/\/([^"'\n]+)["']/g))if(!dep.includes('%')&&(fs.existsSync(path.join(native,dep))||dep.startsWith('assets/rpg/')))copy(dep);
 }
 const campus='campuses/future_learning_center';
-const suites=['electrical','koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor','motion_puzzles','pantry_tray','signal_bench','upper_object_mapping','upper_touch_actions','2f_touch_actions','schedule_generated_art','schedule_object_sprite','schedule_scene_states','optical_generated_art','optical_scene_states','optical_scaled_host','recording_generated_art','recording_scene_states','recording_scaled_host','cable_generated_art','cable_scene_states','cable_scaled_host','workbench_annotations'];
+const suites=['electrical','koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor','room_layout_routes','room_npcs','motion_puzzles','pantry_tray','signal_bench','upper_object_mapping','upper_touch_actions','2f_touch_actions','schedule_generated_art','schedule_object_sprite','schedule_scene_states','optical_generated_art','optical_scene_states','optical_scaled_host','recording_generated_art','recording_scene_states','recording_scaled_host','cable_generated_art','cable_scene_states','cable_scaled_host','workbench_annotations'];
 const entry=suite=>suite==='electrical'?'tests/test_future_learning_center_workbench.gd':`${campus}/tests/test_${suite}.gd`;
 for(const suite of suites)copy(entry(suite));
 for(const name of fs.readdirSync(path.join(native,campus,'scripts/puzzles')))if(name.endsWith('.gd'))copy(`${campus}/scripts/puzzles/${name}`);
 for(const floor of [2,3,4]){
  const relative=`${campus}/data/floor_${floor}.json`;copy(relative);
  const data=JSON.parse(fs.readFileSync(path.join(native,relative),'utf8'));
- for(const row of [...data.modules,...data.objects,...(data.atriums||[]),...(data.atrium?[data.atrium]:[])])for(const key of ['path','source'])if(row[key]?.startsWith('res://'))copy(row[key].slice(6));
+ for(const row of [...data.modules,...data.objects,...(data.npcs||[]),...(data.atriums||[]),...(data.atrium?[data.atrium]:[])])for(const key of ['path','source'])if(row[key]?.startsWith('res://'))copy(row[key].slice(6));
 }
 for(const facing of ['down','up','side'])for(let i=0;i<8;i++)copy(`assets/rpg/player/player_${facing}_${i}.png`);
-fs.writeFileSync(path.join(project,'project.godot'),'config_version=5\n[application]\nconfig/name="FLC isolated puzzle checks"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n');
+fs.writeFileSync(path.join(project,'project.godot'),'config_version=5\n[application]\nconfig/name="FLC isolated puzzle checks"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n[threading]\nworker_pool/max_threads=2\n[editor]\nimport/use_multiple_threads=false\n');
 function run(args){return new Promise((resolve,reject)=>{
  const child=spawn(engine,['--headless','--audio-driver','Dummy','--path',project,...args],{env});let log='';
  for(const stream of [child.stdout,child.stderr])stream.on('data',chunk=>log+=chunk);
  const timeout=setTimeout(()=>child.kill('SIGTERM'),120000);
- child.on('error',reject);child.on('close',code=>{clearTimeout(timeout);if(code!==0||/SCRIPT ERROR:|Parse Error:|(?:^|\n)ERROR:/.test(log))reject(Error(log));else resolve(log)});
+ child.on('error',reject);child.on('close',(code,signal)=>{clearTimeout(timeout);if(code!==0||/SCRIPT ERROR:|Parse Error:|(?:^|\n)ERROR:/.test(log))reject(Error(`FLC test ${args.join(" ")} exited ${code} (${signal||"no signal"}):\n${log}`));else resolve(log)});
 });}
 try{
  await run(['--editor','--import','--quit']);
  // Three workers avoid launching every renderer/import cache simultaneously.
  const pending=[...suites];
- await Promise.all(Array.from({length:3},async()=>{while(pending.length){const suite=pending.shift();const log=await run(['--script',`res://${entry(suite)}`,'--','--with-view']);console.log(log.trim());}}));
+ const workers=Math.max(1,Math.min(3,Number(process.env.FLC_TEST_WORKERS)||3));
+ await Promise.all(Array.from({length:workers},async()=>{while(pending.length){const suite=pending.shift();const log=await run(['--script',`res://${entry(suite)}`,'--','--with-view']);console.log(log.trim());}}));
  console.log('PASS FLC isolated suites; production autoloads absent.');
 }finally{fs.rmSync(root,{recursive:true,force:true});}

@@ -6,6 +6,7 @@ import {buildOtherFloors,core,point} from './build_other_floors.mjs';
 import {applyPhotoDetails} from './apply_photo_details.mjs';
 import {placeWallStorage} from './place_wall_storage.mjs';
 import {placeProjectionTable} from './place_projection_table.mjs';
+import {applyRoomLayout} from './apply_room_layout.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=n=>JSON.parse(fs.readFileSync(path.join(root,'data',n),'utf8'));
 const write=(n,v)=>fs.writeFileSync(path.join(root,'data',n),JSON.stringify(v,null,2)+'\n');
@@ -272,6 +273,7 @@ function furnish(p){
  placeWallStorage(p,props);
  applyPhotoDetails(p,props);
  placeProjectionTable(p,props);
+ applyRoomLayout(p);
  p.objectCounts=Object.fromEntries([...new Set(p.objects.map(o=>o.asset))].map(k=>[k,p.objects.filter(o=>o.asset===k).length]));
  // Keep reachability samples in the same room when a newly placed table occupies
  // the former empty-room centre. These are QA anchors, never story checkpoints.
