@@ -59,8 +59,16 @@ func _run() -> void:
 	shader.code = "shader_type canvas_item; render_mode unshaded, skip_vertex_transform; uniform vec2 source_world_origin; uniform vec2 raw_size; uniform float world_scale; uniform float rgb_lod=0.0; void vertex(){VERTEX=source_world_origin+UV*raw_size*world_scale;} void fragment(){vec4 c=textureLod(TEXTURE,UV,rgb_lod); c.a=textureLod(TEXTURE,UV,0.0).a; if(c.a<0.04){discard;} if(c.a>=0.97){c.a=1.0;} COLOR=c;}"
 	var mat := ShaderMaterial.new();mat.shader=shader;reference.material=mat;world.add_child(reference)
 	isolated.hide();await frame()
+	isolated.update_actor_foot(810,true)
+	mat.set_shader_parameter("source_world_origin",reference.position)
+	mat.set_shader_parameter("raw_size",body.body_texture.get_size())
+	mat.set_shader_parameter("world_scale",body.image_scale)
+	mat.set_shader_parameter("rgb_lod",float(isolated.get_diagnostics().rgb_lod))
 	var implicit_shader := Shader.new()
-	implicit_shader.code = "shader_type canvas_item; render_mode unshaded; void fragment(){vec4 c=texture(TEXTURE,UV);c.a=textureLod(TEXTURE,UV,0.0).a;if(c.a<0.04){discard;}if(c.a>=0.97){c.a=1.0;}COLOR=c;}"
+	# Hold the source-space sampling lattice fixed while varying RGB filtering.
+	# Mixing the engine's transformed sprite with skip_vertex_transform changes
+	# edge interpolation on Mesa, independently of mip selection or body passes.
+	implicit_shader.code = shader.code.replace("vec4 c=textureLod(TEXTURE,UV,rgb_lod);","vec4 c=texture(TEXTURE,UV);")
 	var explicit_shader: Shader = mat.shader
 	mat.shader = implicit_shader;await frame()
 	var implicit_reference: Image = viewport.get_texture().get_image();implicit_reference.convert(Image.FORMAT_RGBA8)
@@ -98,7 +106,7 @@ func _run() -> void:
 		check(comparison.max_channel_delta <= 1, "Whole PNG equals all complementary face passes within1LSB")
 		check(comparison.alpha_support_difference == 0, "No new alpha holes or duplicated edge support")
 		if foot == 810:current.save_png(out.path_join("04-two-face-middle-depth.png"))
-	await diagnose_opaque_composition(viewport,world,isolated,reference,campus.SOURCE,standard_shader,explicit_shader,body)
+	await diagnose_opaque_composition(viewport,world,isolated,reference,campus.SOURCE,explicit_shader,body)
 	await check_stationary_zoom(viewport,camera,isolated,reference,mat)
 	await check_west_surface(viewport, world, isolated, campus.visitor, body.profile)
 	viewport.queue_free();await frame()
@@ -221,10 +229,12 @@ func check_stationary_zoom(vp: SubViewport, camera: Camera2D, isolated: Node2D, 
 	camera.zoom = Vector2.ONE*3.5;await frame()
 	isolated.update_actor_foot(810,false)
 
-func diagnose_opaque_composition(vp: SubViewport, world: Node2D, isolated: Node2D, reference: Sprite2D, source_texture: Texture2D, standard_shader: Shader, canonical_shader: Shader, body: Node2D) -> void:
+func diagnose_opaque_composition(vp: SubViewport, world: Node2D, isolated: Node2D, reference: Sprite2D, source_texture: Texture2D, canonical_shader: Shader, body: Node2D) -> void:
 	vp.transparent_bg = false
 	var mat: ShaderMaterial = reference.material
-	mat.shader = standard_shader
+	# The independent whole-PNG reference and production face passes use the
+	# same canonical quad. Standard-sprite differences stay in the record above.
+	mat.shader = canonical_shader
 	var backdrop := Sprite2D.new();backdrop.centered = false;backdrop.texture = source_texture
 	backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST;backdrop.z_index = -4096
 	world.add_child(backdrop)

@@ -40,7 +40,7 @@ func blend(foreground: Color,background: Color) -> Color:
 	return Color(background.r*(1.0-foreground.a)+foreground.r*foreground.a,background.g*(1.0-foreground.a)+foreground.g*foreground.a,background.b*(1.0-foreground.a)+foreground.b*foreground.a,1)
 func background(control: Control,style_name: String,base: Color) -> Color:
 	var style:=control.get_theme_stylebox(style_name)
-	return blend(style.bg_color,base) if style is StyleBoxFlat else base
+	return blend(style.bg_color,base) if style is StyleBoxFlat or style.get_script()==load("res://scripts/ui/tactile_button_material.gd") else base
 func readable(control: Control,color_name: String,base: Color,minimum: float,context: String) -> void:
 	var ink:=blend(control.get_theme_color(color_name),base)
 	var ratio:=Ui._contrast(ink,base)

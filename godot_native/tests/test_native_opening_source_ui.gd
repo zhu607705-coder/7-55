@@ -31,8 +31,9 @@ func press_without_action(button: Button) -> void:
 	var point:=rect(button).get_center()
 	var move:=InputEventMouseMotion.new(); move.position=point; root.push_input(move)
 	var event:=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.pressed=true; event.position=point; root.push_input(event)
-	check(button.position.is_equal_approx(rest+Vector2(0,3)/(424.0/378.0)),"source active translates whole button exactly3 logical px")
-	check(is_equal_approx(button.get_theme_stylebox("pressed").shadow_offset.y,1.0/(424.0/378.0)),"pressed translation retains1px shadow")
+	button.get_node("TactileMaterialState")._process(.160)
+	check(button.position.is_equal_approx(rest),"press leaves native hit region stable")
+	check(is_equal_approx(button.get_theme_stylebox("pressed").press_amount,1.0),"pressed face translates exactly1u")
 	move=InputEventMouseMotion.new(); move.position=Vector2.ZERO; root.push_input(move)
 	event=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.position=Vector2.ZERO; event.pressed=false; root.push_input(event)
 	check(button.position.is_equal_approx(rest),"canceled release restores source button position")
@@ -52,18 +53,22 @@ func check_alarm_art(dimensions: Vector2i) -> void:
 		root.size=Vector2i(width,dimensions.y); shell.size=Vector2(width,dimensions.y); await frames(2)
 		check(is_equal_approx(clock.logical_font_size,clampf(width*.2,57.2,83.2)),"existing clock responds to viewport resize "+str(width))
 	root.size=dimensions; shell.size=Vector2(dimensions); await frames(2)
-func check_button(name: String,fill: Color,ink: Color) -> Button:
+func check_button(name: String,_fill: Color,_ink: Color) -> Button:
 	var button: Button=find_named(shell.page_body,"OpeningAction_"+name)
 	check(button!=null,"authored opening action exists "+name)
 	if button==null: return null
 	var scale: float=button.get_global_transform_with_canvas().get_scale().x
 	check(button.get_theme_font_size("font_size")==16,"18logical role rounds to16 authored "+name)
 	check(absf(16*424.0/378.0-18)<0.06,"18px role retains source scale "+name)
-	check(button.get_theme_stylebox("normal").bg_color==fill and button.get_theme_color("font_color")==ink,"source normal palette "+name)
-	check(button.get_theme_stylebox("pressed").bg_color==fill,"source pressed palette "+name)
+	var expected: String="secondary" if name=="c1_wake" else "primary"
+	check(button.get_meta("tactile_variant")==expected,"semantic neutral variant "+name)
+	check(button.get_theme_stylebox("pressed")==button.get_theme_stylebox("normal"),"same animated state layer stack "+name)
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 		check(button.has_theme_stylebox_override(mode),"complete local state "+name+" "+mode)
-		check(button.get_theme_stylebox(mode).corner_radius_top_left==4 and not button.get_theme_stylebox(mode).anti_aliasing,"shared low-resolution edge "+mode)
+		if mode=="focus":
+			check(button.get_theme_stylebox(mode).corner_radius_top_left==4,"existing focus convention retained")
+		else:
+			check(button.get_theme_stylebox(mode).corner_radius_top_left==11 and button.get_theme_stylebox(mode).anti_aliasing,"lg material radius proportional to label "+mode)
 	check(rect(button).size.x>=44 and rect(button).size.y>=44,"big button keeps readable pointer target "+name)
 	check(16*scale>=14,"big button readable at tested physical scale "+name)
 	return button

@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useMemo, useState, type ReactNode } from "react";
 import {
   PhoneAppBottomNav,
@@ -348,9 +349,9 @@ export function ZjudingUtilityPanel({
             return (
               <article key={course.id} className={selected ? "is-selected" : ""}>
                 <div><small>{course.time}</small><strong>{course.title}</strong><span>{course.room}</span></div>
-                <button type="button" onClick={() => setSelectedCourseId(selected ? null : course.id)}>
+                <Button variant="secondary" type="button" onClick={() => setSelectedCourseId(selected ? null : course.id)}>
                   {selected ? "收起" : "查看"}
-                </button>
+                </Button>
                 {selected ? <p>{course.note}</p> : null}
               </article>
             );
@@ -370,9 +371,9 @@ export function ZjudingUtilityPanel({
           <article><small>校园网</small><strong>{state.networkMode === "campus_wifi" ? "可用" : "未连接"}</strong><span>浙大钉与 CC98 需要校园网。</span></article>
           <article><small>移动数据</small><strong>{state.networkMode === "cellular" ? "使用中" : "备用"}</strong><span>浙大体艺的网络规则与浙大钉不同。</span></article>
         </section>
-        <button type="button" className="zju-utility-primary" onClick={() => setNetworkDetailVisible((value) => !value)}>
+        <Button variant="secondary" type="button" className="zju-utility-primary" onClick={() => setNetworkDetailVisible((value) => !value)}>
           {networkDetailVisible ? "收起连接说明" : "查看连接说明"}
-        </button>
+        </Button>
         {networkDetailVisible ? (
           <UtilityFeedback>如需切换网络，请返回手机控制中心。本页不会自动修改网络模式。</UtilityFeedback>
         ) : null}
@@ -387,10 +388,10 @@ export function ZjudingUtilityPanel({
           <p>所有条目只读取已开放的本地功能，未提交任何报修工单。</p>
         </section>
         <section className="zju-utility-service-list">
-          <article><div><strong>网络服务</strong><span>{networkLabel}</span></div><button type="button" onClick={() => onOpenApp("network_account")}>查看</button></article>
-          <article><div><strong>图书馆服务</strong><span>{access.library ? "已开放" : "当前阶段未开放"}</span></div>{access.library ? <button type="button" onClick={() => onOpenPage("library")}>进入</button> : <em>未开放</em>}</article>
-          <article><div><strong>校园导航</strong><span>{access.fullCampusMap ? "已开放" : "当前阶段未开放"}</span></div>{access.fullCampusMap ? <button type="button" onClick={onOpenCampusMap}>进入</button> : <em>未开放</em>}</article>
-          <article><div><strong>服务联络</strong><span>{access.departmentDirectory ? "部门黄页可用" : "公共联络表可查看"}</span></div><button type="button" onClick={() => onBottomNavigate("contacts")}>查看</button></article>
+          <article><div><strong>网络服务</strong><span>{networkLabel}</span></div><Button variant="secondary" type="button" onClick={() => onOpenApp("network_account")}>查看</Button></article>
+          <article><div><strong>图书馆服务</strong><span>{access.library ? "已开放" : "当前阶段未开放"}</span></div>{access.library ? <Button variant="secondary" type="button" onClick={() => onOpenPage("library")}>进入</Button> : <em>未开放</em>}</article>
+          <article><div><strong>校园导航</strong><span>{access.fullCampusMap ? "已开放" : "当前阶段未开放"}</span></div>{access.fullCampusMap ? <Button variant="secondary" type="button" onClick={onOpenCampusMap}>进入</Button> : <em>未开放</em>}</article>
+          <article><div><strong>服务联络</strong><span>{access.departmentDirectory ? "部门黄页可用" : "公共联络表可查看"}</span></div><Button variant="secondary" type="button" onClick={() => onBottomNavigate("contacts")}>查看</Button></article>
         </section>
       </>
     );
@@ -407,7 +408,7 @@ export function ZjudingUtilityPanel({
             {acquiredLostFoundItems.map((item) => (
               <article key={item.id}>
                 <div><small>{item.source}</small><strong>{item.label}</strong><span>本机已取得</span></div>
-                <button type="button" onClick={() => onInspectItem(item.id)}>查看</button>
+                <Button variant="secondary" type="button" onClick={() => onInspectItem(item.id)}>查看</Button>
               </article>
             ))}
           </section>
@@ -428,7 +429,7 @@ export function ZjudingUtilityPanel({
           <label><span>访客姓名</span><input value={visitorDraft.visitorName} onChange={(event) => setVisitorDraft((draft) => ({ ...draft, visitorName: event.target.value.slice(0, 24) }))} placeholder="用于本机预览" /></label>
           <label><span>到访日期</span><input value={visitorDraft.visitDate} onChange={(event) => setVisitorDraft((draft) => ({ ...draft, visitDate: event.target.value.slice(0, 24) }))} placeholder="例如：08月24日" /></label>
           <label><span>到访用途</span><select value={visitorDraft.purpose} onChange={(event) => setVisitorDraft((draft) => ({ ...draft, purpose: event.target.value }))}><option>校园参观</option><option>学术交流</option><option>亲友来访</option></select></label>
-          <div className="zju-utility-form-actions"><button type="button" onClick={clearVisitorDraft}>清空</button><button type="button" className="primary" onClick={saveVisitorDraft}>保存预览草稿</button></div>
+          <div className="zju-utility-form-actions"><Button variant="secondary" type="button" onClick={clearVisitorDraft}>清空</Button><Button variant="primary" type="button" className="primary" onClick={saveVisitorDraft}>保存预览草稿</Button></div>
         </section>
         {visitorPreviewVisible ? <section className="zju-utility-preview"><small>未提交·本机预览</small><strong>{visitorDraft.visitorName}</strong><p>{visitorDraft.visitDate}·{visitorDraft.purpose}</p></section> : null}
         {visitorFeedback ? <UtilityFeedback>{visitorFeedback}</UtilityFeedback> : null}
@@ -446,11 +447,11 @@ export function ZjudingUtilityPanel({
           {LANGUAGE_CARDS.map((card) => {
             const selected = selectedLanguageCardId === card.id;
             return (
-              <button key={card.id} type="button" className={selected ? "is-revealed" : ""} aria-pressed={selected} onClick={() => setSelectedLanguageCardId(selected ? null : card.id)}>
+              <Button variant="ghost" data-layout="content" key={card.id} type="button" className={selected ? "is-revealed" : ""} aria-pressed={selected} onClick={() => setSelectedLanguageCardId(selected ? null : card.id)}>
                 <small>{selected ? card.back : "点击查看释义"}</small>
                 <strong>{card.front}</strong>
                 <span>{selected ? card.example : "EN / ZH"}</span>
-              </button>
+              </Button>
             );
           })}
         </section>
@@ -472,7 +473,7 @@ export function ZjudingUtilityPanel({
         <section className="zju-utility-form" aria-label="开发者反馈">
           <label><span>分类</span><select value={feedbackDraft.category} onChange={(event) => setFeedbackDraft((draft) => ({ ...draft, category: event.target.value }))}><option>功能建议</option><option>交互问题</option><option>内容校对</option></select></label>
           <label><span>反馈内容</span><textarea value={feedbackDraft.content} onChange={(event) => setFeedbackDraft((draft) => ({ ...draft, content: event.target.value.slice(0, 500) }))} placeholder="描述问题、复现步骤或建议" /><small>{feedbackDraft.content.length}/500</small></label>
-          <div className="zju-utility-form-actions"><button type="button" onClick={clearFeedbackDraft}>清空</button><button type="button" className="primary" onClick={saveFeedbackDraft}>保存草稿</button></div>
+          <div className="zju-utility-form-actions"><Button variant="secondary" type="button" onClick={clearFeedbackDraft}>清空</Button><Button variant="primary" type="button" className="primary" onClick={saveFeedbackDraft}>保存草稿</Button></div>
         </section>
         {feedbackStatus ? <UtilityFeedback>{feedbackStatus}</UtilityFeedback> : null}
       </>
@@ -498,10 +499,10 @@ export function ZjudingUtilityPanel({
               {ZJUDING_APP_REGISTRY.filter((app) => app.category === category.id && app.id !== "all_apps").map((app) => {
                 const available = isZjudingAppAvailable(app, appAccessContext);
                 return available ? (
-                  <button key={app.id} type="button" onClick={() => onOpenApp(app.id)}>
+                  <Button variant="ghost" data-layout="content" key={app.id} type="button" onClick={() => onOpenApp(app.id)}>
                     <UtilityAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} />
                     <span>{app.label}</span>
-                  </button>
+                  </Button>
                 ) : (
                   <span key={app.id} className="zju-static-app zju-locked-icon-slot" aria-hidden="true">
                     <UtilityAppIcon symbol={app.icon} tone={app.tone} />
@@ -527,7 +528,7 @@ export function ZjudingUtilityPanel({
             <article key={department.id}><span aria-hidden="true">☎</span><div><strong>{department.label}</strong><small>{department.phone}</small></div></article>
           ))}
         </section>
-        {access.departmentDirectory ? <button type="button" className="zju-utility-primary" onClick={() => onOpenPage("directory")}>打开部门黄页</button> : <UtilityFeedback>部门黄页会在剧情恢复校园身份后开放。</UtilityFeedback>}
+        {access.departmentDirectory ? <Button variant="secondary" type="button" className="zju-utility-primary" onClick={() => onOpenPage("directory")}>打开部门黄页</Button> : <UtilityFeedback>部门黄页会在剧情恢复校园身份后开放。</UtilityFeedback>}
       </>
     );
   } else if (panel === "messages") {
@@ -569,10 +570,10 @@ export function ZjudingUtilityPanel({
           <div><small>校园身份</small><strong>{identityReadable ? studentName : "身份未读取"}</strong><p>{identityReadable ? studentId : "取得电子校园卡后显示"}</p></div>
         </section>
         <section className="zju-utility-service-list">
-          <article><div><strong>当前网络</strong><span>{networkLabel}</span></div><button type="button" onClick={() => onOpenApp("network_account")}>详情</button></article>
-          <article><div><strong>电子校园卡</strong><span>{identityReadable ? "已读取" : "未读取"}</span></div>{identityReadable ? <button type="button" onClick={onOpenCampusCard}>查看</button> : <em>未开放</em>}</article>
-          <article><div><strong>图书馆预约</strong><span>{state.ui.librarySeatReserved ? `座位 ${state.ui.librarySelectedSeat ?? "022"}` : "当前无预约"}</span></div>{access.library ? <button type="button" onClick={() => onOpenPage("library")}>查看</button> : <em>未开放</em>}</article>
-          <article><div><strong>开发者反馈</strong><span>GitHub Issues</span></div><button type="button" onClick={() => onOpenApp("feedback_draft")}>查看</button></article>
+          <article><div><strong>当前网络</strong><span>{networkLabel}</span></div><Button variant="secondary" type="button" onClick={() => onOpenApp("network_account")}>详情</Button></article>
+          <article><div><strong>电子校园卡</strong><span>{identityReadable ? "已读取" : "未读取"}</span></div>{identityReadable ? <Button variant="secondary" type="button" onClick={onOpenCampusCard}>查看</Button> : <em>未开放</em>}</article>
+          <article><div><strong>图书馆预约</strong><span>{state.ui.librarySeatReserved ? `座位 ${state.ui.librarySelectedSeat ?? "022"}` : "当前无预约"}</span></div>{access.library ? <Button variant="secondary" type="button" onClick={() => onOpenPage("library")}>查看</Button> : <em>未开放</em>}</article>
+          <article><div><strong>开发者反馈</strong><span>GitHub Issues</span></div><Button variant="secondary" type="button" onClick={() => onOpenApp("feedback_draft")}>查看</Button></article>
         </section>
       </>
     );

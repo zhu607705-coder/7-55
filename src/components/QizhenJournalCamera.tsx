@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { useEffect, useMemo, useRef, useState } from "react";
 import qizhenContent from "../data/chapter3-qizhen-lake.content.json";
 import type {
@@ -178,7 +179,7 @@ function DraftOptionGroup({ label, options, selectedId, onSelect }: DraftOptionG
       <legend>{label}</legend>
       <div className="qizhen-journal-camera-options">
         {options.map((option) => (
-          <button
+          <Button variant="tertiary"
             aria-pressed={option.id === selectedId}
             className={`qizhen-journal-camera-option${
               option.id === selectedId ? " is-selected" : ""
@@ -188,7 +189,7 @@ function DraftOptionGroup({ label, options, selectedId, onSelect }: DraftOptionG
             type="button"
           >
             {option.text}
-          </button>
+          </Button>
         ))}
       </div>
     </fieldset>
@@ -300,13 +301,13 @@ export function QizhenJournalCamera(props: QizhenJournalCameraProps) {
           <small>{spotName}</small>
           <h2>{copy.title}</h2>
         </div>
-        <button
+        <Button variant="ghost"
           className="qizhen-journal-camera-close"
           onClick={onClose}
           type="button"
         >
           {copy.close}
-        </button>
+        </Button>
       </header>
 
       {drafting ? (
@@ -357,21 +358,21 @@ export function QizhenJournalCamera(props: QizhenJournalCameraProps) {
           ) : null}
 
           <footer className="qizhen-journal-camera-actions">
-            <button
+            <Button variant="secondary"
               className="qizhen-journal-camera-retake"
               onClick={onRetake}
               type="button"
             >
               {copy.retake}
-            </button>
-            <button
+            </Button>
+            <Button variant="primary"
               className="qizhen-journal-camera-save"
               disabled={!canSaveDraft}
               onClick={handleSaveDraft}
               type="button"
             >
               {copy.saveDraft}
-            </button>
+            </Button>
           </footer>
         </>
       ) : (
@@ -406,14 +407,14 @@ export function QizhenJournalCamera(props: QizhenJournalCameraProps) {
           <p className="qizhen-journal-camera-hint">{copy.hint}</p>
 
           <footer className="qizhen-journal-camera-shutter-row">
-            <button
+            <Button variant="primary"
               className="qizhen-journal-camera-shutter"
               onClick={handleShutter}
               ref={shutterButtonRef}
               type="button"
             >
               {copy.shutter}
-            </button>
+            </Button>
           </footer>
         </>
       )}

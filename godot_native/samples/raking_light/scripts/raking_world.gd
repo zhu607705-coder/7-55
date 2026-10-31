@@ -1,10 +1,13 @@
 extends Node3D
+const Model = preload("res://scripts/raking_model.gd")
 ## Both current and recorded worlds use independent meshes, materials and lights.
 ## The marks are depressed vertices with finite-difference normals, not ink/shader reveal.
 const ELEVATION := deg_to_rad(50.0)
 const YAW := deg_to_rad(8.0)
 const PAPER_SIZE := Vector2(3.35,2.40)
 const PAPER_CENTER := Vector3(-0.30,0.53,0.30)
+const LAMP_RADIUS := 2.95
+const GRIP_SCREEN_MARGIN := 35.0
 const GROOVE_WIDTH := 0.033
 const GROOVE_DEPTH := 0.018
 const PATH := [Vector2(-0.98,0.65),Vector2(-0.98,-0.45),Vector2(-0.40,-0.87),Vector2(0.22,-0.45),Vector2(0.22,0.65),Vector2(-0.98,0.65),Vector2(-0.39,0.65),Vector2(-0.39,0.16),Vector2(0.83,0.16),Vector2(0.83,-0.30),Vector2(1.14,-0.30)]
@@ -128,6 +131,51 @@ func configure_camera(viewport_size: Vector2, history: bool=false) -> void:
 	if history:
 		camera.size=4.1
 		camera.position=Vector3(0.65,0.80,-0.30)+back*22
+	else:
+		_fit_lamp_envelope(viewport_size,right,up)
+
+func _orbit_projection_range(axis: Vector3) -> Vector2:
+	# Exact extrema of dot(axis, spherical lamp direction) on the allowed
+	# azimuth/elevation rectangle; include stationary angles, not just corners.
+	var az_limit := deg_to_rad(Model.LAMP_AZIMUTH_LIMIT)
+	var horizontal := Vector2(INF,-INF)
+	var peak := atan2(axis.z,axis.x)
+	for az: float in [-az_limit,az_limit,peak,wrapf(peak+PI,-PI,PI)]:
+		if az < -az_limit or az > az_limit: continue
+		var value := axis.x*cos(az)+axis.z*sin(az)
+		horizontal.x=minf(horizontal.x,value); horizontal.y=maxf(horizontal.y,value)
+	var lo := deg_to_rad(Model.LAMP_ELEVATION_MIN)
+	var hi := deg_to_rad(Model.LAMP_ELEVATION_MAX)
+	var result := Vector2(INF,-INF)
+	for h: float in [horizontal.x,horizontal.y]:
+		var elevation_peak := atan2(axis.y,h)
+		for el: float in [lo,hi,elevation_peak,wrapf(elevation_peak+PI,-PI,PI)]:
+			if el<lo or el>hi: continue
+			var value := h*cos(el)+axis.y*sin(el)
+			result.x=minf(result.x,value); result.y=maxf(result.y,value)
+	return result*LAMP_RADIUS
+
+func _fit_lamp_envelope(viewport_size: Vector2, right: Vector3, up: Vector3) -> void:
+	# A static fit for every permitted arrangement, not a camera that follows a
+	# drag. The raised paper can lift the lamp; bound that lift for both axes.
+	var target := Vector3(0,0.45,-0.15)
+	var max_lift := maxf(PAPER_CENTER.y,0.33+(PAPER_SIZE.x+PAPER_SIZE.y)*0.5*sin(deg_to_rad(Model.PAPER_TILT_LIMIT))+0.04)
+	var x_range := _orbit_projection_range(right)+Vector2.ONE*right.dot(PAPER_CENTER-target)
+	var y_range := _orbit_projection_range(up)
+	y_range.x+=up.dot(PAPER_CENTER-target)
+	y_range.y+=up.dot(Vector3(PAPER_CENTER.x,max_lift,PAPER_CENTER.z)-target)
+	var width := maxf(viewport_size.x,1); var height := maxf(viewport_size.y,1)
+	var usable_width := maxf(1,width-2*GRIP_SCREEN_MARGIN)
+	var usable_height := maxf(1,height-2*GRIP_SCREEN_MARGIN)
+	var horizontal_fit := 2*maxf(absf(x_range.x),absf(x_range.y))*height/usable_width
+	var vertical_fit := (y_range.y-y_range.x)*height/usable_height
+	camera.size=maxf(camera.size,maxf(horizontal_fit,vertical_fit))
+	var half_height := camera.size*0.5
+	var world_margin := GRIP_SCREEN_MARGIN*camera.size/height
+	# Retain the original framing whenever it fits. Otherwise use only the
+	# necessary fixed vertical offset; yaw, elevation and physical pose stay put.
+	var offset := clampf(0,y_range.y-half_height+world_margin,y_range.x+half_height-world_margin)
+	camera.position+=up*offset
 
 func update_scene(tilt: Vector2, azimuth: float, elevation: float, progress: float, complete: bool, delta: float=0.0) -> void:
 	paper_pivot.basis=Basis(Vector3.RIGHT,deg_to_rad(tilt.x))*Basis(Vector3.FORWARD,deg_to_rad(tilt.y))
@@ -136,7 +184,7 @@ func update_scene(tilt: Vector2, azimuth: float, elevation: float, progress: flo
 	for x: float in [-PAPER_SIZE.x*0.5,PAPER_SIZE.x*0.5]:
 		for z: float in [-PAPER_SIZE.y*0.5,PAPER_SIZE.y*0.5]: lowest=minf(lowest,(paper_pivot.basis*Vector3(x,-0.04,z)).y)
 	paper_pivot.position.y=maxf(PAPER_CENTER.y,0.33-lowest)
-	var lamp_point := paper_pivot.position+Vector3(cos(az)*cos(el),sin(el),sin(az)*cos(el))*2.95
+	var lamp_point := paper_pivot.position+Vector3(cos(az)*cos(el),sin(el),sin(az)*cos(el))*LAMP_RADIUS
 	lamp_head.position=lamp_point; lamp_head.look_at(paper_pivot.position)
 	lamp_base.position=Vector3(PAPER_CENTER.x+cos(az)*2.60,0.07,PAPER_CENTER.z+sin(az)*2.0)
 	lamp_arm.position=(lamp_point+lamp_base.position)*0.5

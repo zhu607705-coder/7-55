@@ -758,7 +758,7 @@ func _layout_phone_reading_gutters() -> void:
 	var inset:=12 if margin!=null else 18
 	if not phone_chrome.inventory_open and phone_chrome.inventory_handle.is_visible_in_tree() and phone_chrome._reading_inventory_anchor():
 		var handle: Rect2=phone_chrome.inventory_handle.get_global_rect()
-		var paint: StyleBoxFlat=phone_chrome.inventory_handle.get_theme_stylebox("normal")
+		var paint: StyleBox=phone_chrome.inventory_handle.get_theme_stylebox("normal")
 		var paint_scale:float=absf(phone_chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
 		var shadow:=handle.grow(paint.shadow_size*paint_scale)
 		shadow.position+=paint.shadow_offset*paint_scale
@@ -1421,6 +1421,10 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 		var title_space:=Control.new();title_space.size_flags_horizontal=Control.SIZE_EXPAND_FILL;header.add_child(title_space)
 	else: header.add_child(label)
 	var close_button := _button("关闭",_close_modal,Vector2(70,44))
+	close_button.name="NativeModalClose"
+	# Header chrome keeps its compact 70px hit target and original inset.
+	close_button.set_meta("tactile_keep_layout",true)
+	if surface in ["paper","notebook"]: close_button.set_meta("tactile_variant","ghost")
 	close_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
 	if surface.begins_with("selected_"):
@@ -1905,6 +1909,7 @@ func _show_settings() -> void:
 	for action_button in box.get_children():
 		if action_button is Button and action_button != save_progress_button:
 			NativeUi.apply_button(action_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
+			action_button.set_meta("tactile_variant","ghost" if action_button.text.begins_with("当前：") or action_button.text in ["全屏 / 窗口","保存画面截图","重新开始"] or action_button.text.begins_with("DEV") else "tertiary")
 			if action_button.text=="重新开始":
 				action_button.add_theme_color_override("font_color",CampusMaterial.CORAL)
 	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"

@@ -51,7 +51,7 @@ func check_readability(panel: Control) -> void:
 			continue
 		var fg: float=button.get_theme_color("font_hover_color").get_luminance()
 		var bg: float=button.get_theme_stylebox("hover").bg_color.get_luminance()
-		check(absf(fg-bg)>.4,"hover text retains readable contrast")
+		check(absf(fg-bg)>.4,"hover text retains readable contrast: %s fg=%s bg=%s variant=%s"%[button.name,fg,bg,button.get_meta("tactile_variant", "legacy")])
 func close_check(original: Vector2) -> void:
 	check(not is_instance_valid(shell.c3_device_panel),"device dismissed")
 	check(shell.world.player.distance_to(original)<.1,"dismissal never moves or acts through to world")

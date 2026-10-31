@@ -42,7 +42,7 @@ func main_reading_clearance(source:Dictionary)->void:
      var bar:=scroll.get_v_scroll_bar();scroll.scroll_vertical=roundi((bar.max_value-bar.page)*fraction)
     await settle()
     var handle:Rect2=physical_rect(shell.phone_chrome.inventory_handle)
-    var style:StyleBoxFlat=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
+    var style:StyleBox=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
     var scale:float=shell.phone_chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x
     var shadow:=handle.grow(style.shadow_size*scale);shadow.position+=style.shadow_offset*scale
     var occupied:=handle.merge(shadow).merge(physical_rect(shell.phone_chrome.inventory_count))
@@ -88,7 +88,7 @@ func run():
    var same_rect:Rect2=handle
    for i in range(5):chrome._layout_inventory_anchor()
    check(chrome.inventory_handle.get_global_rect()==same_rect,"stable anchor")
-   var style:StyleBoxFlat=chrome.inventory_handle.get_theme_stylebox("normal")
+   var style:StyleBox=chrome.inventory_handle.get_theme_stylebox("normal")
    var margins:Array=[style.expand_margin_left,style.expand_margin_top,style.expand_margin_right,style.expand_margin_bottom]
    chrome._refresh_inventory();await settle();style=chrome.inventory_handle.get_theme_stylebox("normal")
    check(margins==[style.expand_margin_left,style.expand_margin_top,style.expand_margin_right,style.expand_margin_bottom],"refresh never accumulates painted offsets")

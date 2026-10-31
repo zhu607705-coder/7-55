@@ -10,7 +10,7 @@ func run()->void:
   check(launcher.tooltip_text.contains("手机") and launcher.tooltip_text.contains("P"),"existing action and shortcut remain discoverable")
   check(launcher.size==Vector2(44,44),"small 20x30 drawing retains exact 44px touch target")
   check(launcher.get_global_rect().end.is_equal_approx(shell.world_view.get_global_rect().end-Vector2(8,8)),"map phone icon uses the actual playfield's bottom-right corner")
-  check(launcher.get_theme_stylebox("normal") is StyleBoxFlat and launcher.get_theme_stylebox("normal").bg_color==Color("F4EAD5"),"phone uses the same opaque paper icon plate as tools and items")
+  check(launcher.get_meta("tactile_variant","")=="ghost", "phone navigation uses the shared ghost material")
   await click(launcher)
   check(shell.phone.visible and not shell.world_frame.visible,"actual pointer opens existing phone directly")
   var back:Button=shell.phone_world_return

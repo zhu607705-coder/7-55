@@ -1,4 +1,5 @@
 extends RefCounted
+const TactileMaterial=preload("res://scripts/ui/tactile_button_material.gd")
 const PixelEdges=preload("res://scripts/ui/pixel_edges.gd")
 ## Presentation-only shared primitives. Authored app palettes, fonts, sizes and
 ## world art remain local. Source: base.css and ui-motion-typography-standard.md.
@@ -71,7 +72,22 @@ static func button_styles(fill: Color, ink: Color, border: Color, radius: int = 
 		"focus": box(Color.TRANSPARENT,focus_ink,EDGE,radius),
 	}
 
+static func tactile_material(variant: String, unit: float) -> StyleBox:
+	# Existing UI theme is the single material factory for native Buttons.
+	var material := TactileMaterial.new()
+	material.configure(variant,unit)
+	return material
+
+static func tactile_variant(fill: Color) -> String:
+	if fill.a < 0.1: return "ghost"
+	if fill.get_luminance() < 0.3: return "primary"
+	if fill.get_luminance() < 0.8: return "tertiary"
+	return "secondary"
+
 static func apply_button(button: Button, fill: Color = PAPER, ink: Color = INK, border: Color = INK, radius: int = 0, width: int = EDGE, font_size: int = FONT_LABEL, padding: Vector2 = Vector2(12,8), focus: Color = FOCUS) -> void:
+	# Legacy palette arguments remain API-compatible semantic hints. The native
+	# presentation registry adopts the control after its authored layout is built.
+	button.set_meta("tactile_intent","primary" if fill.a>=.1 and ink.get_luminance()>.65 else tactile_variant(fill))
 	button.add_theme_font_size_override("font_size",font_size)
 	for state: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
 		button.add_theme_color_override(state,ink)

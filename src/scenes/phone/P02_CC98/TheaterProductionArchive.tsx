@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useState } from "react";
 import posterUrl from "../../../assets/ui/cc98/theater_755_student_play_poster_v01.png";
 import theaterContent from "../../../data/chapter3-theater.content.json";
@@ -34,7 +35,7 @@ export function TheaterProductionArchive() {
         </div>
       </div>
 
-      <button
+      <Button variant="ghost" data-layout="content"
         type="button"
         className="cc98-theater-archive-toggle"
         aria-expanded={expanded}
@@ -42,7 +43,7 @@ export function TheaterProductionArchive() {
       >
         <span>{expanded ? copy.collapseLabel : copy.expandLabel}</span>
         <i aria-hidden="true">{expanded ? "−" : "+"}</i>
-      </button>
+      </Button>
 
       {expanded ? (
         <div className="cc98-theater-archive-details">

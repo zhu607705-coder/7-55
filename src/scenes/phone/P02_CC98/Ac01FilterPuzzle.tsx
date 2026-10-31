@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useMemo } from "react";
 import forumTreasureUrl from "../../../assets/ui/cc98_forum_treasure.png";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
@@ -100,14 +101,14 @@ export function Ac01FilterPuzzle({ optionalAc01Floors, showBdContent = false }: 
                 </figure>
               ) : null}
               {reply.ac01 ? (
-                <button
+                <Button variant="secondary"
                   type="button"
                   className="cc98-ac01-read"
                   disabled={optionalRead}
                   onClick={() => kit.libraryFinals.inspectOptionalAc01(reply.floor)}
                 >
                   {optionalRead ? "已记下这条水帖" : "读一下（可选）"}
-                </button>
+                </Button>
               ) : null}
             </article>
           );

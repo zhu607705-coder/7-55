@@ -12,7 +12,7 @@ func frames()->void:
 	for unused in 6:await process_frame
 func painted_bag(shell: Control)->Rect2:
 	var bag: Rect2=shell.phone_chrome.inventory_handle.get_global_rect()
-	var paint: StyleBoxFlat=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
+	var paint: StyleBox=shell.phone_chrome.inventory_handle.get_theme_stylebox("normal")
 	var factor:float=absf(shell.phone_chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
 	var shadow:=bag.grow(paint.shadow_size*factor);shadow.position+=paint.shadow_offset*factor
 	return bag.merge(shadow).merge(shell.phone_chrome.inventory_count.get_global_rect())

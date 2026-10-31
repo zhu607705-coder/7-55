@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useCallback, useEffect, useRef } from "react";
 import type { ChapterFourTransitionPresentationPlan } from "../../modules/ChapterFourTransitionPresentation";
 
@@ -54,9 +55,9 @@ export function ChapterFourTransitionOverlay({
       </section>
 
       <nav className="chapter4-transition-overlay__actions" aria-label="时间切换操作">
-        <button type="button" className="is-primary" onClick={finish}>
+        <Button variant="primary" type="button" className="is-primary" onClick={finish}>
           继续行动
-        </button>
+        </Button>
       </nav>
     </div>
   );

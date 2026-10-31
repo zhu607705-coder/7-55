@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ItemId } from "../core/types";
@@ -391,7 +392,7 @@ function ItemInspectDialogBody({
           <i />
           <i />
         </div>
-        <button
+        <Button variant="ghost"
           ref={closeButtonRef}
           type="button"
           className="item-inspect-close"
@@ -399,7 +400,7 @@ function ItemInspectDialogBody({
           onClick={onClose}
         >
           ×
-        </button>
+        </Button>
         <header className="item-inspect-header">
           <span className="item-inspect-badge">{variant === "phone" ? "PHONE" : "RPG"}</span>
           <h2 id={titleId}>{item.name}</h2>

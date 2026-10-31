@@ -111,6 +111,7 @@ func _item_art(entry: Dictionary, extent: float) -> Control:
 func _add_option_art(option: Button, entry: Dictionary) -> void:
 	var icon := _item_art(entry,32)
 	if icon == null: return
+	option.set_meta("tactile_keep_layout",true)
 	for state_name in ["normal","hover","pressed","hover_pressed","disabled"]:
 		var style: StyleBoxFlat = option.get_theme_stylebox(state_name).duplicate()
 		style.content_margin_left = 56

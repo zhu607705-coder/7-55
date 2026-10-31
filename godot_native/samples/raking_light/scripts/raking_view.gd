@@ -2,6 +2,8 @@ extends Control
 const Model = preload("res://scripts/raking_model.gd")
 const World = preload("res://scripts/raking_world.gd")
 const FONT = preload("res://assets/MorningNote-Regular.ttf")
+const KEYBOARD_OWNER := -2
+const KEYBOARD_STEP := 5.0
 var model := Model.new()
 var current_world: Node3D
 var recorded_world: Node3D
@@ -20,6 +22,8 @@ var menu_button: Button
 var menu_open := false
 var last_size := Vector2.ZERO
 var metrics: Dictionary={}
+var keyboard_target := ""
+var keyboard_keys: Dictionary={}
 
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -31,6 +35,7 @@ func _ready() -> void:
 	cancel=_button("暂停",func(): _suspend())
 	resume=_button("继续",func(): model.resume(); _close_menu())
 	menu_button=_button("···",func(): _suspend())
+	menu_button.tooltip_text="Tab / Shift+Tab：选择物件或菜单；方向键：调整；Shift+方向键：细调；Esc：暂停"
 	retry.hide(); cancel.hide(); resume.hide()
 	resized.connect(_layout)
 	_layout()
@@ -90,6 +95,7 @@ func _process(delta: float) -> void:
 	metrics["screen_coverage"]=_visible_groove_ratio()
 	metrics["coverage"]=minf(metrics.world_coverage,metrics.screen_coverage)
 	model.update(delta,metrics)
+	if model.completed: _clear_keyboard()
 
 	queue_redraw()
 
@@ -134,6 +140,8 @@ func _input(event: InputEvent) -> void:
 	# Browsers/OS input bridges may still deliver emulated mouse events even when
 	# Godot's own touch-to-mouse option is disabled. Never give them an owner.
 	if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device==InputEvent.DEVICE_ID_EMULATION: return
+	if event is InputEventKey and _keyboard_input(event):
+		get_viewport().set_input_as_handled(); return
 	if event is InputEventScreenTouch:
 		if event.canceled: _suspend(); return
 		if event.pressed: _down(event.index,event.position)
@@ -144,6 +152,59 @@ func _input(event: InputEvent) -> void:
 		else: _up(-1)
 	elif event is InputEventMouseMotion and pointer_positions.has(-1): _move(-1,event.position)
 	elif event.is_action_pressed("ui_cancel"): _suspend()
+
+func _keyboard_input(event: InputEventKey) -> bool:
+	var code: int=event.physical_keycode if event.physical_keycode else event.keycode
+	var direction := Vector2.ZERO
+	match code:
+		KEY_LEFT: direction=Vector2.LEFT
+		KEY_RIGHT: direction=Vector2.RIGHT
+		KEY_UP: direction=Vector2.UP
+		KEY_DOWN: direction=Vector2.DOWN
+	# Releases always retire our own hold, including after a modifier changed.
+	if not event.pressed:
+		if keyboard_keys.has(code):
+			keyboard_keys.erase(code)
+			if keyboard_keys.is_empty(): model.release(KEYBOARD_OWNER)
+			return true
+		return false
+	if event.ctrl_pressed or event.alt_pressed or event.meta_pressed: return false
+	if code==KEY_TAB:
+		if not event.echo:
+			var targets: Array=["resume","retry"] if menu_open else (["menu"] if model.completed else ["paper","lamp","history","menu"])
+			var index: int=targets.find(keyboard_target)
+			if menu_open:
+				if resume.has_focus(): index=0
+				elif retry.has_focus(): index=1
+			if index<0: index=0 if not event.shift_pressed else targets.size()-1
+			else: index=posmod(index+(-1 if event.shift_pressed else 1),targets.size())
+			_select_keyboard_target(targets[index])
+		return true
+	# A late OS repeat cannot revive a cancelled hold or acquire a newly focused
+	# object/menu action. A rejected key must be freshly pressed before retrying.
+	if direction!=Vector2.ZERO and event.echo and not keyboard_keys.has(code): return true
+	if direction==Vector2.ZERO or keyboard_target not in ["paper","lamp","history"]: return false
+	if model.suspended or model.completed: return true
+	if not model.owners.has(KEYBOARD_OWNER) and not model.start(KEYBOARD_OWNER,keyboard_target): return true
+	if model.owners.get(KEYBOARD_OWNER)!=keyboard_target: return true
+	keyboard_keys[code]=true
+	var step: float=KEYBOARD_STEP*(0.25 if event.shift_pressed else 1.0)
+	var delta: Vector2=direction*step
+	if keyboard_target!="history": delta*=maxf(320,current_rect.size.x)/390.0
+	_drag_owned(KEYBOARD_OWNER,delta)
+	return true
+
+func _clear_keyboard() -> void:
+	keyboard_keys.clear(); model.release(KEYBOARD_OWNER)
+
+func _select_keyboard_target(object: String) -> void:
+	_clear_keyboard(); keyboard_target=object
+	get_viewport().gui_release_focus()
+	match object:
+		"menu": menu_button.grab_focus()
+		"resume": resume.grab_focus()
+		"retry": retry.grab_focus()
+	queue_redraw()
 
 func _down(id: int, point: Vector2) -> void:
 	# Native controls are drawn above the draggable history surface. Keep input
@@ -159,23 +220,31 @@ func _move(id: int, point: Vector2) -> void:
 	if not pointer_positions.has(id) or not model.owners.has(id): return
 	if not Rect2(Vector2.ZERO,size).has_point(point): _suspend(); return
 	var delta: Vector2=point-pointer_positions[id]; pointer_positions[id]=point
+	_drag_owned(id,delta)
+	get_viewport().set_input_as_handled()
+
+func _drag_owned(id: int, delta: Vector2) -> void:
+	if not model.owners.has(id): return
 	if model.owners[id]=="history":
 		history_rect.position+=delta; _clamp_history()
 		history_image.position=history_rect.position
 		history_offset=history_rect.position-Vector2(16,16)
 	else: model.drag(id,delta*390.0/maxf(320,current_rect.size.x))
-	get_viewport().set_input_as_handled()
 
 func _up(id: int) -> void:
 	pointer_positions.erase(id); model.release(id)
 
 func _suspend() -> void:
+	_clear_keyboard()
 	model.suspend(); pointer_positions.clear()
 	if resume:
 		menu_open=true; resume.show(); retry.show(); cancel.hide()
+		if not keyboard_target.is_empty(): _select_keyboard_target("resume")
 
 func _close_menu() -> void:
+	_clear_keyboard()
 	menu_open=false; resume.hide(); retry.hide(); cancel.hide()
+	if not keyboard_target.is_empty(): _select_keyboard_target("paper")
 
 func _notification(what: int) -> void:
 	if what==NOTIFICATION_APPLICATION_FOCUS_OUT or what==NOTIFICATION_WM_WINDOW_FOCUS_OUT or what==NOTIFICATION_APPLICATION_PAUSED: _suspend()
@@ -193,6 +262,11 @@ func _draw() -> void:
 	if not model.completed:
 		draw_arc(paper_hit_point(),23,0,TAU,48,hand,1.5,true)
 		draw_arc(lamp_hit_point(),27,0,TAU,48,hand,1.5,true)
+		if not menu_open:
+			var focus_color := Color("fff0ad")
+			if keyboard_target=="paper": draw_arc(paper_hit_point(),29,0,TAU,48,focus_color,3,true)
+			elif keyboard_target=="lamp": draw_arc(lamp_hit_point(),33,0,TAU,48,focus_color,3,true)
+			elif keyboard_target=="history": draw_rect(history_rect.grow(5),focus_color,false,3)
 	for id: int in pointer_positions:
 		var p: Vector2=pointer_positions[id]
 		draw_arc(p,15,0,TAU,40,Color("eee6cc"),2,true)

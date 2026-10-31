@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { ChapterFourStarLampPlayback } from "./ChapterFourStarLampPlayback";
 import { ChapterFourExteriorQuestions } from "./ChapterFourExteriorQuestions";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -205,7 +206,7 @@ export function ChapterFourStarLampClosure({
               {feedback}
             </p>
           ) : null}
-          <button type="button" onClick={completeOnce}>继续</button>
+          <Button variant="primary" type="button" onClick={completeOnce}>继续</Button>
           <small>按 Space 或 Enter 继续</small>
         </div>
       ) : null}

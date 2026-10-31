@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { useEffect, useRef, useState } from "react";
 import type { GameState } from "../core/types";
 import { kit } from "../modules/GameKit";
@@ -158,13 +159,13 @@ export function ControlCenter({ state }: ControlCenterProps) {
       <section className="cc-panel">
         <header className="cc-header">
           <strong>7月9日 周四</strong>
-          <button type="button" className="cc-close" onClick={close} aria-label="收起">
+          <Button variant="ghost" type="button" className="cc-close" onClick={close} aria-label="收起">
             ×
-          </button>
+          </Button>
         </header>
 
         <div className="cc-quick">
-          <button
+          <Button variant="ghost" data-layout="content"
             type="button"
             className={`cc-card ${state.networkMode === "campus_wifi" ? "is-active" : ""}`}
             onClick={() => setNetwork("campus_wifi")}
@@ -179,8 +180,8 @@ export function ControlCenter({ state }: ControlCenterProps) {
               <strong>ZJUWLAN</strong>
               <em>{state.networkMode === "campus_wifi" ? "已连接" : "未连接"}</em>
             </span>
-          </button>
-          <button
+          </Button>
+          <Button variant="ghost" data-layout="content"
             type="button"
             className={`cc-card ${state.networkMode === "cellular" ? "is-active" : ""}`}
             onClick={() => setNetwork("cellular")}
@@ -196,7 +197,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
               <strong>移动数据</strong>
               <em>{state.networkMode === "cellular" ? "使用中" : "已关闭"}</em>
             </span>
-          </button>
+          </Button>
         </div>
 
         <div className="cc-middle">
@@ -206,9 +207,9 @@ export function ControlCenter({ state }: ControlCenterProps) {
               <strong>{state.ui.musicPlaying ? "正在播放：早八进行曲" : "未在播放"}</strong>
             </div>
             <div className="cc-music-row">
-              <button type="button" className="cc-play" onClick={toggleMusic} aria-label={state.ui.musicPlaying ? "暂停" : "播放音乐"}>
+              <Button variant="secondary" type="button" className="cc-play" onClick={toggleMusic} aria-label={state.ui.musicPlaying ? "暂停" : "播放音乐"}>
                 {state.ui.musicPlaying ? "❚❚" : "▶"}
-              </button>
+              </Button>
               {!state.flags.headphoneFallen ? (
                 <button
                   type="button"
@@ -258,7 +259,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
         </div>
 
         <div className="cc-toggles">
-          <button
+          <Button variant="ghost" data-layout="content"
             type="button"
             className={`cc-toggle ${state.ui.autoRotate ? "is-on" : ""}`}
             onClick={toggleAutoRotate}
@@ -268,25 +269,25 @@ export function ControlCenter({ state }: ControlCenterProps) {
               ⟳
             </i>
             <span>自动旋转</span>
-          </button>
-          <button type="button" className="cc-toggle is-on" onClick={() => kit.flags.toast("振动一直开着。它见证了闹钟的一切。")}>
+          </Button>
+          <Button variant="ghost" data-layout="content" type="button" className="cc-toggle is-on" onClick={() => kit.flags.toast("振动一直开着。它见证了闹钟的一切。")}>
             <i className="cc-toggle-icon" aria-hidden="true">
               ≋
             </i>
             <span>振动</span>
-          </button>
-          <button type="button" className="cc-toggle" onClick={() => kit.flags.toast("飞行模式？你连教室都飞不到。")}>
+          </Button>
+          <Button variant="ghost" data-layout="content" type="button" className="cc-toggle" onClick={() => kit.flags.toast("飞行模式？你连教室都飞不到。")}>
             <i className="cc-toggle-icon" aria-hidden="true">
               ✈
             </i>
             <span>飞行模式</span>
-          </button>
-          <button type="button" className="cc-toggle" onClick={() => kit.flags.toast("勿扰模式无法阻挡早八。")}>
+          </Button>
+          <Button variant="ghost" data-layout="content" type="button" className="cc-toggle" onClick={() => kit.flags.toast("勿扰模式无法阻挡早八。")}>
             <i className="cc-toggle-icon" aria-hidden="true">
               ☾
             </i>
             <span>勿扰</span>
-          </button>
+          </Button>
         </div>
 
         <section
@@ -310,7 +311,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
           >
             <i style={{ width: `${batteryPercent}%` }} />
           </div>
-          <button
+          <Button variant="ghost" data-layout="content"
             type="button"
             className={`cc-low-power ${state.phoneBattery.lowPowerMode ? "is-on" : ""}`}
             onClick={toggleLowPowerMode}
@@ -318,7 +319,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
           >
             <strong>{state.phoneBattery.lowPowerMode ? "关闭低电量模式" : "开启低电量模式"}</strong>
             <span>{state.phoneBattery.lowPowerMode ? "解除亮度上限，可手动调高" : "亮度限至 45%，暂停音乐"}</span>
-          </button>
+          </Button>
           <p className="cc-power-location">
             {state.rpgScene === "theater_interior"
               ? "剧场入口左侧设有充电服务站，需走到设备旁接线。"
@@ -341,14 +342,14 @@ export function ControlCenter({ state }: ControlCenterProps) {
           </header>
           {!resetConfirmOpen ? (
             <div className="cc-save-actions">
-              <button type="button" onClick={saveNow}>立即保存</button>
-              <button type="button" className="is-danger" onClick={() => setResetConfirmOpen(true)}>重置剧情进度</button>
+              <Button variant="secondary" type="button" onClick={saveNow}>立即保存</Button>
+              <Button variant="secondary" type="button" className="is-danger" onClick={() => setResetConfirmOpen(true)}>重置剧情进度</Button>
             </div>
           ) : (
             <div className="cc-reset-confirm" role="alert">
               <p>将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。</p>
-              <button type="button" onClick={() => setResetConfirmOpen(false)}>取消</button>
-              <button type="button" className="is-danger" onClick={resetProgress}>确认重置</button>
+              <Button variant="secondary" type="button" onClick={() => setResetConfirmOpen(false)}>取消</Button>
+              <Button variant="primary" type="button" className="is-danger" onClick={resetProgress}>确认重置</Button>
             </div>
           )}
         </section>

@@ -39,7 +39,7 @@ func check_top_row() -> void:
 	observations.append({"viewport":str(current_size),"tasks":str(tasks.get_global_rect()),"back":str(shell.mobile_back.get_global_rect()),"bag":str(shell.inventory_handle.get_global_rect()),"world":str(shell.world_frame.get_global_rect()),"bag_open":shell.compact_inventory_open})
 func check_theme() -> void:
 	var button:Button=shell.world_tasks
-	check(button.get_theme_stylebox("normal") is StyleBoxFlat and button.get_theme_stylebox("normal").bg_color==Color("F4EAD5"),"journal uses the shared paper icon plate")
+	check(button.get_meta("tactile_variant","")=="ghost","journal navigation uses shared ghost material")
 	var reference:StyleBox=button.get_theme_stylebox("normal")
 	for name in ["hover","pressed","hover_pressed","disabled"]:
 		var style:StyleBox=button.get_theme_stylebox(name)
@@ -49,8 +49,11 @@ func check_theme() -> void:
 	slots.append_array(shell.inventory_buttons.get_children())
 	for slot:Button in slots:
 		for state_name:String in ["normal","hover","pressed","hover_pressed","disabled"]:
-			var plate:StyleBoxFlat=slot.get_theme_stylebox(state_name)
-			check(plate.bg_color==Color("F4EAD5") and plate.corner_radius_top_left==4 and plate.content_margin_left==0,"all tool and item states share one opaque plate and stable content margins")
+			var plate:StyleBox=slot.get_theme_stylebox(state_name)
+			if slot.get_node_or_null("TactileMaterialState")==null:
+				check(plate.bg_color==Color("F4EAD5") and plate.corner_radius_top_left==4 and plate.content_margin_left==0,"inventory objects keep original plate and hit layout")
+			else:
+				check(slot.get_meta("tactile_variant")=="ghost" and plate.content_margin_left==0,"navigation uses shared ghost while keeping hit layout")
 func journal_round_trip(method: String) -> void:
 	var before:=JSON.stringify(state.d);var layout:=presentation();var count:=actions.size()
 	# Hold a real pending floor gesture while a different pointer opens Tasks.

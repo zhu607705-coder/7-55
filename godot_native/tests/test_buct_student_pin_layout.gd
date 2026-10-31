@@ -12,6 +12,8 @@ func run() -> void:
 	for campus in ["buct","buct_haidian","buct_changping"]:
 		var app=load("res://campuses/"+campus+"/scenes/playable.tscn").instantiate();root.add_child(app);await frames(3)
 		app.visitor.set_physics_process(false)
+		for pin:Button in app.pins:
+			expect(pin.get_theme_stylebox("normal").get_script()==load("res://scripts/ui/tactile_button_material.gd"),campus+" bounded pins retain the new tactile material")
 		var problem:=Vector2(752,815) if campus=="buct" else (Vector2(515,1210) if campus=="buct_changping" else Vector2(762,402))
 		app.visitor.position=problem;app.current_path.clear();app.close_info()
 		for size in [Vector2i(1280,800),Vector2i(392,844),Vector2i(667,375)]:

@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
@@ -465,7 +466,7 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
                   key={clip.id}
                   className={`${isPlaying ? "is-playing" : ""} ${isPaused ? "is-paused" : ""} ${isSelected ? "is-selected" : ""}`.trim()}
                 >
-                  <button
+                  <Button variant="tertiary"
                     type="button"
                     className="voice-play-dot"
                     aria-label={`${isPlaying ? "暂停" : isPaused ? "继续播放" : "播放"} ${clip.code}`}
@@ -473,28 +474,28 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
                     onClick={() => auditionClip(clip)}
                   >
                     {isPlaying ? "Ⅱ" : "▶"}
-                  </button>
+                  </Button>
                   <div><strong>{clip.code}</strong><small>{listened ? `${clip.revealZh} · ${clip.time}` : "未试听"}</small></div>
                   {clip.waveform.length > 0 ? (
                     <span className="voice-wave" aria-hidden="true">
                       {clip.waveform.map((height, index) => <i key={index} style={{ height: `${waveformHeight(height)}px` }} />)}
                     </span>
                   ) : null}
-                  <button
+                  <Button variant="tertiary"
                     type="button"
                     className="voice-add-button"
                     aria-pressed={isSelected}
                     onClick={() => toggleSelected(clip.id)}
-                  >{isSelected ? "移出候选" : listened ? "保留这段" : "试听后可选"}</button>
+                  >{isSelected ? "移出候选" : listened ? "保留这段" : "试听后可选"}</Button>
                   {listened && clip.soundEvents?.length ? (
                     <div className="voice-event-chips" aria-label={`${clip.code} 可听事件`}>
                       {clip.soundEvents.map((soundEvent, eventIndex) => (
-                        <button
+                        <Button variant="ghost" data-layout="content"
                           key={`${soundEvent.startMs}-${soundEvent.endMs}-${soundEvent.category}`}
                           type="button"
                           title={`${soundEvent.category} · ${soundEvent.startMs}–${soundEvent.endMs}ms`}
                           onClick={() => replaySoundEvent(clip, soundEvent, eventIndex)}
-                        >{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small></button>
+                        >{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small></Button>
                       ))}
                     </div>
                   ) : null}
@@ -510,7 +511,7 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
               return (
                 <article key={clip.id} className={isPlaying ? "is-playing" : isPaused ? "is-paused" : ""}>
                   <b>{index + 1}</b>
-                  <button
+                  <Button variant="tertiary"
                     type="button"
                     className="voice-play-dot"
                     aria-label={`${isPlaying ? "暂停" : isPaused ? "继续播放" : "播放"} ${clip.code}`}
@@ -518,21 +519,21 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
                     onClick={() => auditionClip(clip)}
                   >
                     {isPlaying ? "Ⅱ" : "▶"}
-                  </button>
+                  </Button>
                   <div><strong>{clip.code}</strong><small>{clip.revealZh}</small></div>
                   <span className="voice-order-controls">
-                    <button type="button" aria-label={`${clip.code} 上移`} disabled={index === 0} onClick={() => moveClip(index, -1)}>↑</button>
-                    <button type="button" aria-label={`${clip.code} 下移`} disabled={index === order.length - 1} onClick={() => moveClip(index, 1)}>↓</button>
+                    <Button variant="secondary" type="button" aria-label={`${clip.code} 上移`} disabled={index === 0} onClick={() => moveClip(index, -1)}>↑</Button>
+                    <Button variant="secondary" type="button" aria-label={`${clip.code} 下移`} disabled={index === order.length - 1} onClick={() => moveClip(index, 1)}>↓</Button>
                   </span>
                   {clip.soundEvents?.length ? (
                     <div className="voice-event-chips" aria-label={`${clip.code} 可听事件`}>
                       {clip.soundEvents.map((soundEvent, eventIndex) => (
-                        <button
+                        <Button variant="ghost" data-layout="content"
                           key={`${soundEvent.startMs}-${soundEvent.endMs}-${soundEvent.category}`}
                           type="button"
                           title={`${soundEvent.category} · ${soundEvent.startMs}–${soundEvent.endMs}ms`}
                           onClick={() => replaySoundEvent(clip, soundEvent, eventIndex)}
-                        >{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small></button>
+                        >{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small></Button>
                       ))}
                     </div>
                   ) : null}
@@ -545,13 +546,13 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
         <div className="voice-actions">
           {stage === "selection" ? (
             <>
-              <button type="button" onClick={() => { setSelected([]); setOrder([]); setFeedback(""); }}>清空选择</button>
-              <button type="button" disabled={selected.length !== 4} onClick={beginOrdering}>进入排序</button>
+              <Button variant="secondary" type="button" onClick={() => { setSelected([]); setOrder([]); setFeedback(""); }}>清空选择</Button>
+              <Button variant="primary" type="button" disabled={selected.length !== 4} onClick={beginOrdering}>进入排序</Button>
             </>
           ) : (
             <>
-              <button type="button" onClick={returnToSelection}>返回重选</button>
-              <button type="button" onClick={submit}>核对录音</button>
+              <Button variant="secondary" type="button" onClick={returnToSelection}>返回重选</Button>
+              <Button variant="primary" type="button" onClick={submit}>核对录音</Button>
             </>
           )}
         </div>

@@ -1,3 +1,4 @@
+import { Button } from "../../components/Button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
 import { GameSubtitleFrame } from "../../components/GameSubtitleFrame";
@@ -680,9 +681,9 @@ export function Chapter4PrologueOverlay({
       </div>
 
       {!cardShown ? (
-        <button type="button" className="chapter4-prologue-skip" onClick={skipToCard}>
+        <Button variant="text" type="button" className="chapter4-prologue-skip" onClick={skipToCard}>
           跳过恢复回放
-        </button>
+        </Button>
       ) : null}
 
       {subtitle ? (
@@ -724,7 +725,7 @@ export function Chapter4PrologueOverlay({
             <p role="status" aria-live="polite">{handoffFeedback}</p>
           ) : null}
           <div className="chapter4-prologue-task-actions">
-            <button
+            <Button variant="primary"
               type="button"
               className="primary"
               onClick={confirm}
@@ -737,13 +738,13 @@ export function Chapter4PrologueOverlay({
                   : handoffStatus === "failed"
                     ? "重试进入第四章"
                     : "收下任务，进入第四章"}
-            </button>
-            <button
+            </Button>
+            <Button variant="secondary"
               type="button"
               className="secondary"
               onClick={restart}
               disabled={handoffStatus === "pending" || handoffStatus === "waiting_ready" || handoffStatus === "ready"}
-            >重播过场</button>
+            >重播过场</Button>
           </div>
         </aside>
       ) : null}

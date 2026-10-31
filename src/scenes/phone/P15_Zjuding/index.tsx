@@ -1,3 +1,4 @@
+import { Button } from "../../../components/Button";
 import { cloneElement, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { GameSubtitleContent } from "../../../components/GameSubtitleFrame";
 import { createPortal } from "react-dom";
@@ -244,9 +245,9 @@ function NativeHeader({ title, onBack, onMore }: { title: string; onBack: () => 
       title={title}
       navigation={{ kind: "back", label: `返回，离开${title}`, onClick: onBack }}
       end={onMore ? (
-        <button type="button" className="zju-native-more" aria-label={`${title}更多菜单`} onClick={onMore}>
+        <Button variant="ghost" type="button" className="zju-native-more" aria-label={`${title}更多菜单`} onClick={onMore}>
           <span aria-hidden="true">•••</span>
-        </button>
+        </Button>
       ) : <span className="zju-native-more zju-locked-control-icon" aria-hidden="true">•••</span>}
     />
   );
@@ -400,21 +401,21 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
         <section className="interlude-network-filters" aria-label="网络记录筛选">
           <fieldset>
             <legend>时间</legend>
-            <button type="button" className={timeFilter === "all" ? "is-selected" : ""} onClick={() => setTimeFilter("all")}>全部</button>
-            <button type="button" className={timeFilter === "missing_475" ? "is-selected" : ""} onClick={() => setTimeFilter("missing_475")}>缺失时段末段</button>
-            <button type="button" className={timeFilter === "last_minute" ? "is-selected" : ""} onClick={() => setTimeFilter("last_minute")}>最后 1 分钟</button>
+            <Button variant="tertiary" type="button" className={timeFilter === "all" ? "is-selected" : ""} onClick={() => setTimeFilter("all")}>全部</Button>
+            <Button variant="tertiary" type="button" className={timeFilter === "missing_475" ? "is-selected" : ""} onClick={() => setTimeFilter("missing_475")}>缺失时段末段</Button>
+            <Button variant="tertiary" type="button" className={timeFilter === "last_minute" ? "is-selected" : ""} onClick={() => setTimeFilter("last_minute")}>最后 1 分钟</Button>
           </fieldset>
           <fieldset>
             <legend>会话</legend>
-            <button type="button" className={sessionFilter === "all" ? "is-selected" : ""} onClick={() => setSessionFilter("all")}>全部</button>
-            <button type="button" className={sessionFilter === "unknown_short" ? "is-selected" : ""} onClick={() => setSessionFilter("unknown_short")}>未知设备 · 短会话</button>
-            <button type="button" className={sessionFilter === "authenticated" ? "is-selected" : ""} onClick={() => setSessionFilter("authenticated")}>已认证设备</button>
+            <Button variant="tertiary" type="button" className={sessionFilter === "all" ? "is-selected" : ""} onClick={() => setSessionFilter("all")}>全部</Button>
+            <Button variant="tertiary" type="button" className={sessionFilter === "unknown_short" ? "is-selected" : ""} onClick={() => setSessionFilter("unknown_short")}>未知设备 · 短会话</Button>
+            <Button variant="tertiary" type="button" className={sessionFilter === "authenticated" ? "is-selected" : ""} onClick={() => setSessionFilter("authenticated")}>已认证设备</Button>
           </fieldset>
           <fieldset>
             <legend>区域</legend>
-            <button type="button" className={areaFilter === "all" ? "is-selected" : ""} onClick={() => setAreaFilter("all")}>全校</button>
-            <button type="button" className={areaFilter === "north_a" ? "is-selected" : ""} onClick={() => setAreaFilter("north_a")}>北教学区 A 区</button>
-            <button type="button" className={areaFilter === "other" ? "is-selected" : ""} onClick={() => setAreaFilter("other")}>其他楼宇</button>
+            <Button variant="tertiary" type="button" className={areaFilter === "all" ? "is-selected" : ""} onClick={() => setAreaFilter("all")}>全校</Button>
+            <Button variant="tertiary" type="button" className={areaFilter === "north_a" ? "is-selected" : ""} onClick={() => setAreaFilter("north_a")}>北教学区 A 区</Button>
+            <Button variant="tertiary" type="button" className={areaFilter === "other" ? "is-selected" : ""} onClick={() => setAreaFilter("other")}>其他楼宇</Button>
           </fieldset>
         </section>
         <section className="interlude-network-results" aria-label="接入记录结果">
@@ -427,14 +428,14 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
                 <div><dt>位置</dt><dd>{record.location}</dd></div>
                 <div><dt>设备</dt><dd>{record.device}</dd></div>
               </dl>
-              <button
+              <Button variant="secondary"
                 type="button"
                 onClick={() => saveNetworkRecord(record.id)}
               >
                 {interlude.networkRecordId === record.id
                   ? "记录已保存"
                   : "保存这条记录"}
-              </button>
+              </Button>
             </article>
           ))}
         </section>
@@ -446,7 +447,7 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
           </section>
         ) : null}
         {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
-        <button type="button" className="interlude-return-recovery" onClick={() => router.goTo("timeline_recovery")}>返回记录恢复</button>
+        <Button variant="text" type="button" className="interlude-return-recovery" onClick={() => router.goTo("timeline_recovery")}>返回记录恢复</Button>
       </main>
     </section>
   );
@@ -1243,9 +1244,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             {stuckHint ? <p className="px-chip stuck-chip">请连接校园网后重新进入</p> : null}
           </div>
         ) : null}
-        <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>
+        <Button variant="ghost" type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>
           退出
-        </button>
+        </Button>
       </section>
     );
   }
@@ -1300,9 +1301,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <span>学号</span>
               <strong>{identityReadable ? actOneContent.studentId : <IdentityBlur compact />}</strong>
             </label>
-            <button type="button" className="primary" onClick={() => goPage("directory")}>
+            <Button variant="primary" type="button" className="primary" onClick={() => goPage("directory")}>
               前往部门黄页
-            </button>
+            </Button>
           </section>
         </main>
       </section>
@@ -1383,9 +1384,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 autoComplete="off"
               />
             </label>
-            <button type="button" className="zju-call-button" onClick={submitDirectoryIdentity}>
+            <Button variant="primary" type="button" className="zju-call-button" onClick={submitDirectoryIdentity}>
               {state.actOne.characterNamed && identityReadable ? `已联络：${actOneContent.studentName}` : "☎ 呼叫"}
-            </button>
+            </Button>
           </section>
         </main>
       </section>
@@ -1409,10 +1410,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         ) : null}
         <PhoneNavButton kind="back" className="app-back px-btn paper" onClick={goBack} label="返回浙大钉" />
         <nav className="zjuding-nav" aria-label="学在浙大导航">
-          <button type="button" className="zjuding-tab is-active" aria-current="page" onClick={() => announce("当前位于学在浙大。") }>
+          <Button variant="ghost" data-layout="content" type="button" className="zjuding-tab is-active" aria-current="page" onClick={() => announce("当前位于学在浙大。") }>
             <i className="tab-ico learn" aria-hidden="true" />
             学在浙大
-          </button>
+          </Button>
           <span className="zjuding-tab zju-locked-control-icon" data-locked-icon="learn-secondary" aria-hidden="true">
             <i className="tab-ico mine" />
           </span>
@@ -1477,7 +1478,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                   {added ? (
                     <em>已接入</em>
                   ) : owned ? (
-                    <button type="button" onClick={() => addQizhenMapClue(clue.id)} aria-label={`导入${clue.source}的地点词${clue.label}`}>导入</button>
+                    <Button variant="secondary" type="button" onClick={() => addQizhenMapClue(clue.id)} aria-label={`导入${clue.source}的地点词${clue.label}`}>导入</Button>
                   ) : (
                     <em>未取得</em>
                   )}
@@ -1489,7 +1490,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <section className="zju-qizhen-confirmation" aria-label="核对地点交点">
                 <div aria-hidden="true"><i /><i /><i /><b /></div>
                 <p>{qizhenContent.locationSearch.map.reason}</p>
-                <button type="button" onClick={confirmQizhenMapLocation}>{qizhenContent.locationSearch.map.confirm}</button>
+                <Button variant="primary" type="button" onClick={confirmQizhenMapLocation}>{qizhenContent.locationSearch.map.confirm}</Button>
               </section>
             ) : null}
           </section>
@@ -1501,7 +1502,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <strong>启真湖</strong>
               <p>{qizhenContent.locationSearch.map.reason}</p>
               <p>{qizhenContent.locationSearch.map.player}<br />{qizhenContent.locationSearch.map.system}</p>
-              <button type="button" onClick={enterQizhenCampusApproach}>前往大地图上的启真湖入口</button>
+              <Button variant="primary" type="button" onClick={enterQizhenCampusApproach}>前往大地图上的启真湖入口</Button>
             </section>
           ) : null}
         </main>
@@ -1531,18 +1532,18 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
 
           <section className="zju-library-services" aria-label="图书馆服务" data-ui-part="service-grid">
             {access.libraryCatalog ? (
-              <button type="button" data-app-id="馆藏检索" onClick={() => goPage("library_catalog")}>
+              <Button variant="ghost" data-layout="content" type="button" data-app-id="馆藏检索" onClick={() => goPage("library_catalog")}>
                 <span aria-hidden="true">⌕</span>馆藏检索
-              </button>
+              </Button>
             ) : (
               <span className="zju-static-app zju-locked-icon-slot" data-locked-app="馆藏检索" aria-hidden="true">
                 <span className="zju-library-service-icon">⌕</span><span className="zju-locked-label">馆藏检索</span>
               </span>
             )}
             {LIBRARY_APPS.slice(1).map((app) => app.label === "座位预约" && app.opensSpaces && access.libraryReservation ? (
-              <button key={app.label} type="button" data-app-id={app.label} onClick={() => goPage("library_spaces")}>
+              <Button variant="ghost" data-layout="content" key={app.label} type="button" data-app-id={app.label} onClick={() => goPage("library_spaces")}>
                 <span aria-hidden="true">{app.icon}</span>{app.label}
-              </button>
+              </Button>
             ) : (
               <span
                 key={app.label}
@@ -1555,9 +1556,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               </span>
             ))}
             {recoveryUnlocked ? (
-              <button type="button" data-app-id="022恢复申请" onClick={openRecoveryPage}>
+              <Button variant="ghost" data-layout="content" type="button" data-app-id="022恢复申请" onClick={openRecoveryPage}>
                 <span aria-hidden="true">PASS</span>022恢复申请
-              </button>
+              </Button>
             ) : (
               <span className="zju-static-app zju-locked-icon-slot" data-locked-app="022恢复申请" aria-hidden="true">
                 <span className="zju-library-service-icon">PASS</span>
@@ -1565,9 +1566,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               </span>
             )}
             {finalsPhase !== "idle" ? (
-              <button type="button" data-app-id="返回现场" onClick={returnToLibrary}>
+              <Button variant="ghost" data-layout="content" type="button" data-app-id="返回现场" onClick={returnToLibrary}>
                 <span aria-hidden="true">↗</span>返回现场
-              </button>
+              </Button>
             ) : (
               <span className="zju-static-app zju-locked-icon-slot" data-locked-app="返回现场" aria-hidden="true">
                 <span className="zju-library-service-icon">↗</span><span className="zju-locked-label">返回现场</span>
@@ -1576,11 +1577,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </section>
 
           {finalsPhase === "top_ten_reached" ? (
-            <button type="button" className="zju-library-recovery-alert" onClick={openRecoveryPage}>
+            <Button variant="ghost" data-layout="content" type="button" className="zju-library-recovery-alert" onClick={openRecoveryPage}>
               <strong>022 座位恢复申请已开放</strong>
               <span>帖子当前排名 01，可提交三项证明。</span>
               <b aria-hidden="true">›</b>
-            </button>
+            </Button>
           ) : null}
 
           {[
@@ -1627,7 +1628,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         />
         <main className="zju-catalog-content">
           <nav className="zju-catalog-databases" aria-label="文献库选择">
-            <button type="button" className="is-active" onClick={() => announce("当前正在使用中文文献库。")}>中文文献库</button>
+            <Button variant="tertiary" type="button" className="is-active" onClick={() => announce("当前正在使用中文文献库。")}>中文文献库</Button>
             <span className="zju-static-xxx">xxx</span>
           </nav>
 
@@ -1643,18 +1644,18 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 aria-label="馆藏检索关键词"
               />
             </label>
-            <button type="button" className="zju-catalog-submit" onClick={submitCatalogSearch}>搜索</button>
+            <Button variant="primary" type="button" className="zju-catalog-submit" onClick={submitCatalogSearch}>搜索</Button>
             </div>
             <div className="zju-catalog-filter-row" aria-label="检索范围">
-              <button type="button" className="zju-catalog-field" onClick={() => announce("当前检索字段固定为书名，高级检索可查看其他条件。")}><small>检索字段</small><strong>书名</strong><span aria-hidden="true">▾</span></button>
-              <button type="button" className="zju-catalog-scope" onClick={() => announce("当前馆藏范围为全部馆藏。")}><small>馆藏范围</small><strong>全部馆藏</strong><span aria-hidden="true">▾</span></button>
+              <Button variant="ghost" data-layout="content" type="button" className="zju-catalog-field" onClick={() => announce("当前检索字段固定为书名，高级检索可查看其他条件。")}><small>检索字段</small><strong>书名</strong><span aria-hidden="true">▾</span></Button>
+              <Button variant="ghost" data-layout="content" type="button" className="zju-catalog-scope" onClick={() => announce("当前馆藏范围为全部馆藏。")}><small>馆藏范围</small><strong>全部馆藏</strong><span aria-hidden="true">▾</span></Button>
             </div>
           </section>
 
           <div className="zju-catalog-tools">
-            <button type="button" onClick={() => setCatalogAdvanced((value) => !value)}>
+            <Button variant="text" type="button" onClick={() => setCatalogAdvanced((value) => !value)}>
               {catalogAdvanced ? "收起高级检索" : "高级检索"}
-            </button>
+            </Button>
             <strong>检索到的书籍数：{visibleCatalogResults.length}</strong>
           </div>
           {catalogAdvanced ? (
@@ -1675,9 +1676,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                   <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
                 ))}
               </dl>
-              <button type="button" onClick={collectReflectionKeyword} disabled={state.qizhenLake.reflectionClueFound}>
+              <Button variant="primary" type="button" onClick={collectReflectionKeyword} disabled={state.qizhenLake.reflectionClueFound}>
                 {state.qizhenLake.reflectionClueFound ? "已取得：倒影" : "记录关键词：倒影"}
-              </button>
+              </Button>
               {state.qizhenLake.reflectionClueFound ? (
                 <p>{qizhenContent.locationSearch.catalog.player}<br />{qizhenContent.locationSearch.catalog.system}</p>
               ) : null}
@@ -1696,7 +1697,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 const wrongSelected = catalogSelectedId === result.id && result.id !== "three-minute-leave-method";
                 return (
                   <article key={result.id} className={`${correctSelected ? "is-correct" : ""} ${wrongSelected ? "is-wrong" : ""}`.trim()}>
-                    <button type="button" aria-label={`选择馆藏${result.title}`} onClick={() => chooseCatalogResult(result)}>
+                    <Button variant="ghost" data-layout="content" type="button" aria-label={`选择馆藏${result.title}`} onClick={() => chooseCatalogResult(result)}>
                       <img src={result.imageUrl} alt={`${result.title}封面`} />
                       <span className="zju-catalog-book-copy">
                         <strong>{result.title}</strong>
@@ -1705,7 +1706,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                         <em><i>{result.year}</i><i>{result.publisher}</i></em>
                         <span>{result.location}</span>
                       </span>
-                    </button>
+                    </Button>
                     {correctSelected ? <p>{result.note}</p> : null}
                   </article>
                 );
@@ -1773,13 +1774,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                     <small>来源：{evidence.source}</small>
                     {uploaded ? <em>材料已锁定到本次申请</em> : owned ? <em>道具栏已识别，可提交校验</em> : null}
                   </div>
-                  <button
+                  <Button variant="secondary"
                     type="button"
                     disabled={!uploaded && (!owned || finalsPhase !== "recovery_application")}
                     onClick={() => uploaded ? setSubmittedDocument(evidence.item) : uploadRecoveryEvidence(evidence.id)}
                   >
                     {uploaded ? "查看" : "提交"}
-                  </button>
+                  </Button>
                 </article>
               );
             })}
@@ -1790,12 +1791,12 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <i className="zju-pass-printer" aria-hidden="true"><b /><b /><b /></i>
               <strong>PASS 已签发</strong>
               <p>凭证只对 RPG 图书馆内的 022 书包生效。</p>
-              <button type="button" onClick={returnToLibrary}>回图书馆处理书包</button>
+              <Button variant="text" type="button" onClick={returnToLibrary}>回图书馆处理书包</Button>
             </section>
           ) : (
-            <button type="button" className="zju-recovery-submit" disabled={submitted.length < 3 || finalsPhase !== "recovery_application"} onClick={generateEvictionPass}>
+            <Button variant="primary" type="button" className="zju-recovery-submit" disabled={submitted.length < 3 || finalsPhase !== "recovery_application"} onClick={generateEvictionPass}>
               生成 022 座位释放 PASS
-            </button>
+            </Button>
           )}
         </main>
       </section>
@@ -1810,21 +1811,21 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         />
         <main className="zju-space-shell">
           <aside className="zju-space-rail" data-ui-part="reservation-rail">
-            <button type="button" aria-label={railCollapsed ? "展开座位预约栏" : "收起座位预约栏"} onClick={() => setRailCollapsed((value) => !value)}>
+            <Button variant="ghost" data-layout="content" type="button" aria-label={railCollapsed ? "展开座位预约栏" : "收起座位预约栏"} onClick={() => setRailCollapsed((value) => !value)}>
               <span aria-hidden="true">{railCollapsed ? "»" : "»"}</span>
               <b>座<br />位<br />预<br />约</b>
-            </button>
+            </Button>
           </aside>
           <section className="zju-space-main">
             <div className="zju-space-tabs" role="tablist" aria-label="空间选择模式">
-              <button type="button" role="tab" aria-selected={spaceMode === "list"} className={spaceMode === "list" ? "is-active" : ""} onClick={() => setSpaceMode("list")}>列表</button>
-              <button type="button" role="tab" aria-selected={spaceMode === "quick"} className={spaceMode === "quick" ? "is-active" : ""} onClick={() => setSpaceMode("quick")}>快速选择</button>
+              <Button variant="tertiary" type="button" role="tab" aria-selected={spaceMode === "list"} className={spaceMode === "list" ? "is-active" : ""} onClick={() => setSpaceMode("list")}>列表</Button>
+              <Button variant="tertiary" type="button" role="tab" aria-selected={spaceMode === "quick"} className={spaceMode === "quick" ? "is-active" : ""} onClick={() => setSpaceMode("quick")}>快速选择</Button>
             </div>
             <div className="zju-space-toolbar">
               <p>显示 <strong>{rooms.length}</strong> 空间</p>
-              <button type="button" aria-label={`选择馆舍，当前${selectedLibrary}`} onClick={() => setOverlay({ kind: "libraries" })}>
+              <Button variant="secondary" type="button" aria-label={`选择馆舍，当前${selectedLibrary}`} onClick={() => setOverlay({ kind: "libraries" })}>
                 {selectedLibrary}<span aria-hidden="true">▼</span>
-              </button>
+              </Button>
             </div>
             {spaceMode === "list" ? (
               <div className="zju-room-list" aria-label="可预约空间列表" data-ui-part="room-list">
@@ -1837,7 +1838,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                     <div className="zju-room-copy">
                       <header><h2>{room.label}</h2><span>{room.floor}</span></header>
                       <p>座位 {room.seats}　空闲 <strong>{room.available}</strong></p>
-                      <button type="button" aria-label={`预约${room.label}`} onClick={() => enterRoom(room.label)}>预约</button>
+                      <Button variant="secondary" type="button" aria-label={`预约${room.label}`} onClick={() => enterRoom(room.label)}>预约</Button>
                     </div>
                   </article>
                 ))}
@@ -1846,10 +1847,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             ) : (
               <div className="zju-room-quick" aria-label="快速选择空间" data-ui-part="quick-room-grid">
                 {rooms.map((room) => (
-                  <button type="button" key={room.label} onClick={() => enterRoom(room.label)}>
+                  <Button variant="ghost" data-layout="content" type="button" key={room.label} onClick={() => enterRoom(room.label)}>
                     <strong>{room.label}</strong>
                     <span>空闲 {room.available}</span>
-                  </button>
+                  </Button>
                 ))}
                 {!rooms.length ? <p className="zju-room-list-end">该馆暂未开放可预约空间</p> : null}
               </div>
@@ -1899,11 +1900,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             <div>
               <h2>{selectedLibrary} · {selectedRoom}</h2>
               <p>
-                <button type="button" onClick={() => { setSeatView("map"); announce("已切换到下方平面图。"); }}>查看平面图 ›</button>
-                <button type="button" onClick={() => announce(`${selectedRoom}：座位 ${seatCount}，当前空闲 ${activeRoom?.available ?? 0}。`) }>查看房间详情 ›</button>
+                <Button variant="text" type="button" onClick={() => { setSeatView("map"); announce("已切换到下方平面图。"); }}>查看平面图 ›</Button>
+                <Button variant="text" type="button" onClick={() => announce(`${selectedRoom}：座位 ${seatCount}，当前空闲 ${activeRoom?.available ?? 0}。`) }>查看房间详情 ›</Button>
               </p>
             </div>
-            <button type="button" className="zju-seat-available" onClick={() => announce(`当前空余 ${activeRoom?.available ?? 0} 个座位。`)}>空余 {activeRoom?.available ?? 0}</button>
+            <Button variant="secondary" type="button" className="zju-seat-available" onClick={() => announce(`当前空余 ${activeRoom?.available ?? 0} 个座位。`)}>空余 {activeRoom?.available ?? 0}</Button>
           </section>
 
           {investigationActive ? (
@@ -1914,30 +1915,30 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 <strong>{investigationStatus}</strong>
                 <p>{finalsPuzzle.backpackEvicted ? "现场已清空，座位等待本人确认。" : "书包仍在现场，手机页面只负责查询与提交材料。"}</p>
               </div>
-              <button type="button" onClick={openCampusMap}>返回现场</button>
+              <Button variant="text" type="button" onClick={openCampusMap}>返回现场</Button>
             </section>
           ) : (
             <section className="zju-seat-booking" aria-label="预约日期与时段" data-ui-part="booking-controls">
-              <button type="button" onClick={() => setOverlay({ kind: "date" })}>
+              <Button variant="ghost" data-layout="content" type="button" onClick={() => setOverlay({ kind: "date" })}>
                 <strong>{selectedDate.split(" · ")[0]}</strong>
                 <span>{selectedDate.split(" · ")[1]}</span>
                 <i aria-hidden="true" />
-              </button>
-              <button type="button" onClick={() => setOverlay({ kind: "time" })}>
+              </Button>
+              <Button variant="ghost" data-layout="content" type="button" onClick={() => setOverlay({ kind: "time" })}>
                 <strong>{selectedTime}</strong>
                 <i aria-hidden="true" />
-              </button>
+              </Button>
             </section>
           )}
 
           <div className="zju-seat-view-tabs" role="tablist" aria-label="座位显示模式">
-            <button type="button" role="tab" aria-selected={seatView === "map"} className={seatView === "map" ? "is-active" : ""} onClick={() => setSeatView("map")}>地图模式</button>
-            <button type="button" role="tab" aria-selected={seatView === "list"} className={seatView === "list" ? "is-active" : ""} onClick={() => setSeatView("list")}>列表模式</button>
+            <Button variant="tertiary" type="button" role="tab" aria-selected={seatView === "map"} className={seatView === "map" ? "is-active" : ""} onClick={() => setSeatView("map")}>地图模式</Button>
+            <Button variant="tertiary" type="button" role="tab" aria-selected={seatView === "list"} className={seatView === "list" ? "is-active" : ""} onClick={() => setSeatView("list")}>列表模式</Button>
           </div>
 
           <div className="zju-seat-toolbar">
             <p>已选：<strong>{state.ui.librarySelectedSeat ?? "-"}</strong><small>筛选：{seatFilter}</small></p>
-            <button type="button" onClick={() => setOverlay({ kind: "filter" })}><span aria-hidden="true">▽≡</span>筛选</button>
+            <Button variant="secondary" type="button" onClick={() => setOverlay({ kind: "filter" })}><span aria-hidden="true">▽≡</span>筛选</Button>
           </div>
 
           {seatView === "map" ? (
@@ -1945,9 +1946,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             {seatSectionCount > 1 ? (
               <nav className="zju-seat-section-nav" aria-label="座位分区">
                 {Array.from({ length: seatSectionCount }, (_, section) => (
-                  <button key={section} type="button" aria-current={seatSection === section ? "true" : undefined} onClick={() => setSeatSection(section)}>
+                  <Button variant="secondary" key={section} type="button" aria-current={seatSection === section ? "true" : undefined} onClick={() => setSeatSection(section)}>
                     {String(section * 32 + 1).padStart(3, "0")}–{String(Math.min(seatCount, (section + 1) * 32)).padStart(3, "0")}
-                  </button>
+                  </Button>
                 ))}
               </nav>
             ) : null}
@@ -1965,9 +1966,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           ) : (
             <section className="zju-seat-list" aria-label="可选座位列表" data-ui-part="seat-list">
               {Array.from({ length: seatCount }, (_, index) => String(index + 1).padStart(3, "0")).map((seat) => (
-                <button key={seat} type="button" className={state.ui.librarySelectedSeat === seat ? "is-selected" : ""} onClick={() => selectSeat(seat)}>
+                <Button variant="tertiary" key={seat} type="button" className={state.ui.librarySelectedSeat === seat ? "is-selected" : ""} onClick={() => selectSeat(seat)}>
                   {seat}
-                </button>
+                </Button>
               ))}
             </section>
           )}
@@ -1977,10 +1978,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           ) : null}
         </main>
         <footer className="zju-seat-actions" data-ui-part="reservation-actions">
-          <button type="button" className="secondary" onClick={goBack}><span aria-hidden="true">↶</span>返回</button>
-          <button type="button" className="primary" onClick={requestReservation}>
+          <Button variant="secondary" type="button" className="secondary" onClick={goBack}><span aria-hidden="true">↶</span>返回</Button>
+          <Button variant="primary" type="button" className="primary" onClick={requestReservation}>
             {state.ui.librarySeatReserved ? "预约成功" : "立即预约"}
-          </button>
+          </Button>
         </footer>
       </section>
     );
@@ -1989,7 +1990,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       <section className="app-screen zju-native-page zju-hub-page" aria-label="浙大钉首页">
         <main className="zju-hub-content">
           <section className="zju-hub-profile" data-ui-part="profile-header">
-            <button
+            <Button variant="ghost" data-layout="content"
               type="button"
               className="zju-hub-avatar"
               aria-label="打开个人菜单"
@@ -2001,14 +2002,14 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               })}
             >
               <span>{identityReadable ? actOneContent.studentName : "用户"}</span><i aria-hidden="true">▣</i>
-            </button>
+            </Button>
             <div className="zju-hub-name">
               <strong>{identityReadable ? actOneContent.studentName : "身份未读取"}</strong><small>浙江大学</small>
             </div>
             {identityReadable ? (
-              <button type="button" className="zju-hub-search-pill" aria-label="打开浙大百事通搜索" onClick={() => setOverlay({ kind: "search" })}>
+              <Button variant="ghost" data-layout="content" type="button" className="zju-hub-search-pill" aria-label="打开浙大百事通搜索" onClick={() => setOverlay({ kind: "search" })}>
                 <span aria-hidden="true">⌕</span><small>百事通</small>
-              </button>
+              </Button>
             ) : (
               <span className="zju-hub-search-pill zju-locked-control-icon" data-locked-icon="hub-search" aria-hidden="true"><span>⌕</span><small>百事通</small></span>
             )}
@@ -2042,7 +2043,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 <span>◎</span><small className="zju-locked-label">身份码</small>
               </span>
               {identityReadable ? (
-                <button type="button" onClick={openCampusCard}><span aria-hidden="true">▣</span>电子校园卡</button>
+                <Button variant="secondary" type="button" onClick={openCampusCard}><span aria-hidden="true">▣</span>电子校园卡</Button>
               ) : (
                 <span className="zju-static-action zju-locked-icon-slot" data-locked-app="电子校园卡" aria-hidden="true">
                   <span>▣</span><small className="zju-locked-label">电子校园卡</small>
@@ -2052,10 +2053,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 <span>◇</span><small className="zju-locked-label">校园钱包</small>
               </span>
               {access.departmentDirectory ? (
-                <button type="button" onClick={() => goPage("directory")}>
+                <Button variant="secondary" type="button" onClick={() => goPage("directory")}>
                   <span aria-hidden="true">☎</span>部门黄页
                   {movementQuestActive && !state.actOne.characterNamed ? <b>任务</b> : null}
-                </button>
+                </Button>
               ) : (
                 <span className="zju-static-action zju-locked-icon-slot" data-locked-app="部门黄页" aria-hidden="true">
                   <span>☎</span><small className="zju-locked-label">部门黄页</small>
@@ -2065,9 +2066,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </section>
 
           {identityReadable ? (
-            <button type="button" className="zju-baishitong-search" aria-label="搜索浙大钉应用与服务" onClick={() => setOverlay({ kind: "search" })}>
+            <Button variant="ghost" data-layout="content" type="button" className="zju-baishitong-search" aria-label="搜索浙大钉应用与服务" onClick={() => setOverlay({ kind: "search" })}>
               <span aria-hidden="true">⌕</span><em>搜索应用与服务</em><i aria-hidden="true" /><strong>搜索</strong>
-            </button>
+            </Button>
           ) : (
             <span className="zju-baishitong-search zju-locked-control-icon" data-locked-icon="campus-search" aria-hidden="true"><span>⌕</span><em>浙大百事通</em><i /><strong>搜索</strong></span>
           )}
@@ -2076,10 +2077,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             {ZJUDING_APP_REGISTRY.map((app) => {
               const enabled = isZjudingAppAvailable(app, appAccessContext);
               return enabled ? (
-                <button key={app.id} type="button" data-app-id={app.id} onClick={() => openApp(app.id)}>
+                <Button variant="ghost" data-layout="content" key={app.id} type="button" data-app-id={app.id} onClick={() => openApp(app.id)}>
                   <PixelAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} />
                   <span>{app.label}</span>
-                </button>
+                </Button>
               ) : (
                 <span
                   key={app.id}
@@ -2184,10 +2185,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               searchResults.map((app) => {
                 const available = isZjudingAppAvailable(app, appAccessContext);
                 return available ? (
-                  <button key={app.id} type="button" onClick={() => openApp(app.id)}>
+                  <Button variant="ghost" data-layout="content" key={app.id} type="button" onClick={() => openApp(app.id)}>
                     <PixelAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} />
                     <span>{app.label}</span>
-                  </button>
+                  </Button>
                 ) : (
                   <span key={app.id} className="zju-search-locked-result" aria-hidden="true">
                     <PixelAppIcon symbol={app.icon} tone={app.tone} />
@@ -2205,13 +2206,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <ActionSheet title={overlay.title} onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions is-plain">
             {overlay.actions.map((action) => (
-              <button
+              <Button variant="secondary"
                 key={action}
                 type="button"
                 onClick={() => handleActionSheetAction(action)}
               >
                 {action}
-              </button>
+              </Button>
             ))}
           </div>
         </ActionSheet>
@@ -2220,7 +2221,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <ActionSheet title="选择馆舍" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["主馆", "基础馆", "农医馆", "紫金港西区馆"].map((library) => (
-              <button
+              <Button variant="secondary"
                 key={library}
                 type="button"
                 onClick={() => {
@@ -2230,7 +2231,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 }}
               >
                 {library}
-              </button>
+              </Button>
             ))}
           </div>
         </ActionSheet>
@@ -2239,9 +2240,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <ActionSheet title="预约日期" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["07月10日 · 今天", "07月11日 · 明天", "07月12日 · 后天"].map((date) => (
-              <button key={date} type="button" onClick={() => { setSelectedDate(date); setOverlay(null); }}>
+              <Button variant="secondary" key={date} type="button" onClick={() => { setSelectedDate(date); setOverlay(null); }}>
                 {date}
-              </button>
+              </Button>
             ))}
           </div>
         </ActionSheet>
@@ -2250,9 +2251,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <ActionSheet title="预约时段" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["08:00 - 12:00", "13:00 - 17:00", "18:00 - 22:00", "00:01 - 23:59"].map((time) => (
-              <button key={time} type="button" onClick={() => { setSelectedTime(time); setOverlay(null); }}>
+              <Button variant="secondary" key={time} type="button" onClick={() => { setSelectedTime(time); setOverlay(null); }}>
                 {time}
-              </button>
+              </Button>
             ))}
           </div>
         </ActionSheet>
@@ -2261,9 +2262,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <ActionSheet title="筛选座位" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["靠窗", "有电源", "安静区", "全部座位"].map((filter) => (
-              <button key={filter} type="button" onClick={() => { setSeatFilter(filter); setOverlay(null); announce(`当前座位筛选已切换为：${filter}。`); }}>
+              <Button variant="secondary" key={filter} type="button" onClick={() => { setSeatFilter(filter); setOverlay(null); announce(`当前座位筛选已切换为：${filter}。`); }}>
                 {filter}
-              </button>
+              </Button>
             ))}
           </div>
         </ActionSheet>
@@ -2276,12 +2277,12 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             {selectedDate}，{selectedTime}
           </p>
           <div className="zju-sheet-actions two-column">
-            <button type="button" onClick={() => setOverlay(null)}>
+            <Button variant="secondary" type="button" onClick={() => setOverlay(null)}>
               再想一下
-            </button>
-            <button type="button" className="primary" onClick={confirmReservation}>
+            </Button>
+            <Button variant="primary" type="button" className="primary" onClick={confirmReservation}>
               确认预约
-            </button>
+            </Button>
           </div>
         </ActionSheet>
       ) : null}

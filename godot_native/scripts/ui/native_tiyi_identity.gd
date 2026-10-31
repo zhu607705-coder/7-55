@@ -130,6 +130,7 @@ func build(b) -> Control:
 	if b.s.actOne.phase=="prologue":
 		if not b.s.flags.tiyiCountTaken:Seven.bind_source(count,plate)
 		var target: Button=b._act(count,"",Rect2(0,0,94,60),"c1_tiyi_digit",null,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
+		target.set_meta("tactile_exempt",true)
 		target.name="TiyiCount47";target.tooltip_text="原记录47次，数字7已记下" if b.s.flags.tiyiCountTaken else "运动打卡次数 47"
 		for mode in ["normal","hover","pressed"]:target.add_theme_stylebox_override(mode,b._style(Color.TRANSPARENT))
 	var unit=_text(b,row,"次",18,MUTED);unit.size_flags_vertical=Control.SIZE_SHRINK_END
@@ -138,6 +139,7 @@ func build(b) -> Control:
 	for id in TITLES:
 		var selected: String=id
 		var button=_button(b,menu,TITLES[id],"TiyiMenu_"+id,func():detail=selected;_refresh(b))
+		button.set_meta("tactile_keep_layout",true);button.set_meta("tactile_variant","ghost")
 		button.alignment=HORIZONTAL_ALIGNMENT_LEFT
 		for mode in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 			var style: StyleBoxFlat=button.get_theme_stylebox(mode).duplicate();style.content_margin_left=54;style.content_margin_right=32;style.set_corner_radius_all(0)

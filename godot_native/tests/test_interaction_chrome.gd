@@ -16,7 +16,7 @@ func run()->void:
 		check(button.get_rect()==before,"styles preserve exact control rectangle")
 		for role:String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 			check(button.has_theme_stylebox_override(role),"explicit complete state "+role)
-			var style:StyleBoxFlat=button.get_theme_stylebox(role)
+			var style:StyleBox=button.get_theme_stylebox(role)
 			check(style.content_margin_left==0 and style.content_margin_top==0,"state does not shift children "+role)
 		check(button.get_theme_stylebox("pressed").bg_color!=button.get_theme_stylebox("hover").bg_color,"pressed distinct from hover")
 		check(button.get_theme_stylebox("disabled").bg_color!=button.get_theme_stylebox("normal").bg_color,"blocked affordance distinct")

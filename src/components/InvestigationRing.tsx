@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import {
   useEffect,
   useId,
@@ -148,7 +149,7 @@ export function InvestigationRing<Id extends string>({
             "--investigation-node-y": `${position.y}%`
           };
           return (
-            <button
+            <Button variant="ghost" data-layout="content"
               key={node.id}
               ref={(element) => { buttonRefs.current[index] = element; }}
               type="button"
@@ -168,7 +169,7 @@ export function InvestigationRing<Id extends string>({
                 {node.detail ? <small>{node.detail}</small> : null}
               </span>
               <em>{node.statusLabel}</em>
-            </button>
+            </Button>
           );
         })}
       </div>

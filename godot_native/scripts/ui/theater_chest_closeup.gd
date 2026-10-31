@@ -103,6 +103,7 @@ func _label(value: String, font_size: int) -> Label:
 
 func _hotspot(id: String, hint: String, action: Callable) -> Button:
 	var button: Button=Button.new() if id in ["lid","bottom","close"] else PartHotspot.new()
+	if id!="close":button.set_meta("tactile_exempt",true)
 	if button is PartHotspot:button.owner_panel=self;button.part_id=id
 	button.name="Chest_"+id;button.tooltip_text=hint
 	Typography.apply_body(button);button.add_theme_font_size_override("font_size",16)

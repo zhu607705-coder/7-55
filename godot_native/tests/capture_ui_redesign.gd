@@ -12,14 +12,19 @@ func frames(count: int = 6) -> void:
 	for unused in count: await process_frame
 func capture(id: String) -> void:
 	await frames()
+	var button_audit: Dictionary={}
+	if root.has_node("TactileButtons"):
+		button_audit=audit_buttons(root)
+		if not button_audit.missing.is_empty():
+			capture_failed=true;push_error("Unstyled actual UI buttons: "+str(button_audit.missing))
 	if validate_only:
-		report.append({"id":id,"fixture":fixture_note,"validation_only":true})
+		report.append({"id":id,"fixture":fixture_note,"validation_only":true,"button_audit":button_audit})
 		return
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	var path := output.path_join(id + ".png")
 	var error := image.save_png(path)
-	report.append({"id":id,"width":image.get_width(),"height":image.get_height(),"error":error,"fixture":fixture_note})
+	report.append({"id":id,"width":image.get_width(),"height":image.get_height(),"error":error,"fixture":fixture_note,"button_audit":button_audit})
 	if error != OK:
 		capture_failed = true
 		push_error("Screenshot failed: " + path)
@@ -71,6 +76,15 @@ func run() -> void:
 			await frames()
 			shell._layout()
 			await capture("%dx%d-%s" % [dimensions.x,dimensions.y,sample[1]])
+		# Explicit DEV fixture of the already-landed physical nine, not an earned reward.
+		state.d=state.initial();state.d.flags.gearFallen=true;state.d.flags.gearNineTaken=false
+		state.d.native.page="phone_home";state.d.native.scene=""
+		shell.mobile_world=false;shell._refresh();await frames();shell._process(2.0);shell._layout();await frames()
+		var nine: Button=shell.find_child("HomeGearNine",true,false)
+		require_fixture(is_instance_valid(nine) and nine.get_node_or_null("TactileMaterialState")==null and nine.get_theme_font_size("font_size")==56,"fallen nine stays a 56px physical pickup")
+		fixture_note="DEV landed-nine fixture; no earned collection or completion"
+		await capture("%dx%d-home-fallen-nine"%[dimensions.x,dimensions.y])
+		fixture_note="DEV fixture; not earned campaign completion"
 		state.begin_checkpoint("c2-dorm-exit")
 		shell._refresh()
 		shell.mobile_world = true
@@ -223,3 +237,26 @@ func capture_interactions(dimensions: Vector2i) -> void:
 			await capture(prefix + "c4-device-locked")
 	shell._close_modal()
 	fixture_note = "DEV fixture; not earned campaign completion"
+
+func audit_buttons(node: Node) -> Dictionary:
+	var audit: Dictionary={"styled":[],"objects_or_surfaces":[],"missing":[]}
+	for child: Node in node.get_children(true):
+		if child is Button and child.is_visible_in_tree():
+			var script: Script=child.get_script()
+			var path: String=script.resource_path if script!=null else ""
+			var exempt: bool=bool(child.get_meta("tactile_exempt",false))
+			for suffix: String in ["phone_drop_button.gd","inventory_item.gd","clock_visual_card.gd"]:
+				if path.ends_with(suffix):exempt=true
+			var identity: String=str(child.get_path())
+			if exempt:audit.objects_or_surfaces.append(identity)
+			elif child.get_node_or_null("TactileMaterialState")!=null:
+				audit.styled.append({"path":identity,"variant":child.get_meta("tactile_variant"),"size":child.get_meta("tactile_size"),"disabled":child.disabled})
+				if child.name=="NativeModalClose":
+					var face: StyleBox=child.get_theme_stylebox("normal")
+					var text_width: float=child.get_theme_font("font").get_string_size(child.text,HORIZONTAL_ALIGNMENT_LEFT,-1,child.get_theme_font_size("font_size")).x
+					if text_width+face.get_margin(SIDE_LEFT)+face.get_margin(SIDE_RIGHT)>child.size.x+.01:
+						capture_failed=true;push_error("Modal close label wraps: "+identity)
+			else:audit.missing.append(identity)
+		var nested: Dictionary=audit_buttons(child)
+		for key: String in audit:audit[key].append_array(nested[key])
+	return audit

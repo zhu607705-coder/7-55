@@ -17,6 +17,19 @@ func request(owner:Node,reduced:bool=false)->Dictionary:
 		if str(module.get_script().resource_path)=="res://scripts/chapters/chapter4.gd":return module.dispatch(owner.d,"c4_lamp_start")
 	return {}
 func drain()->void:await process_frame;await process_frame
+func click_option(view:Control,id:String)->void:
+	# Question changes rebuild Containers; use the settled visible hit rectangle.
+	await drain()
+	var question:Dictionary=view.config.questions[view.question_index]
+	for index in question.options.size():
+		if str(question.options[index].id)!=id:continue
+		var button:Button=view.buttons[index]
+		check(not button.disabled and button.is_visible_in_tree() and Rect2(Vector2.ZERO,Vector2(root.size)).encloses(button.get_global_rect()),"Real lamp choice is visible and reachable before input")
+		for down in [true,false]:
+			var event:=InputEventMouseButton.new();event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down;event.position=button.get_global_rect().get_center()
+			root.push_input(event,true);await drain()
+		return
+	check(false,"Requested authored lamp option exists")
 func run()->void:
 	var owner:=root.get_node("State")
 	for reduced in [false,true]:
@@ -29,21 +42,25 @@ func run()->void:
 		check(activity.uses_activity_layout(),"Finale owns full available activity area")
 		check(view.stars.size()==6320 and view.lamp.size()==5,"All original lamp layers and seeded 3D stars remain")
 		for dimensions in [Vector2(390,844),Vector2(430,860),Vector2(844,390),Vector2(1180,812)]:
+			root.size=Vector2i(dimensions)
 			activity.configure_activity_layout(dimensions,true);await drain()
 			check(activity.scale==Vector2.ONE and activity.size==dimensions and view.size==dimensions,"No whole-panel shrink at "+str(dimensions))
 			check(Rect2(Vector2.ZERO,dimensions).encloses(Rect2(view.panel.position,view.panel.size)),"Question panel is within activity")
 			for button in view.buttons:
 				check(button.size.y>=44 and button.get_theme_font_size("font_size")>=18,"Readable original choice and physical target")
+				check(button.get_theme_stylebox("normal").get_script()==load("res://scripts/ui/tactile_button_material.gd"),"Readable lamp choices retain the new tactile material")
+		if reduced:
+			root.size=Vector2i(390,844);activity.configure_activity_layout(Vector2(root.size),true);await drain()
 		check(view.phase=="entering","First source question enters before becoming interactive")
 		view.choose("purpose","seek_truth");check(view.answers.get("purpose")==null,"Input during entry cannot select answer")
 		var paused_clock:float=view.stage_ms;view.advance(100,false);check(view.stage_ms==paused_clock,"Focus loss freezes source clock")
 		tick(view,120 if reduced else 1150);check(view.phase=="ready","First source entry duration honored")
 		view.choose("person","responsible");check(view.answers.get("person")==null,"Cannot answer different question")
-		view.choose("purpose","seek_truth");view.choose("purpose","serve_public");check(view.answers.purpose=="seek_truth","Double input during dissolve cannot overwrite choice")
+		await click_option(view,"seek_truth");view.choose("purpose","serve_public");check(view.answers.purpose=="seek_truth","Real pointer chooses once; double input during dissolve cannot overwrite choice")
 		tick(view,159 if reduced else 979);check(view.question_index==0,"First dissolve must finish before second question")
 		tick(view,1);check(view.question_index==1 and view.phase=="entering","Second question follows source dissolve")
 		check(not owner.d.chapter4.factIds.has("zhu_two_questions_answered"),"First answer does not persist story completion")
-		tick(view,120 if reduced else 1150);view.choose("person","clear_minded");tick(view,160 if reduced else 980)
+		tick(view,120 if reduced else 1150);await click_option(view,"clear_minded");tick(view,160 if reduced else 980)
 		check(view.stage=="saved" and owner.d.chapter4.factIds.has("zhu_two_questions_answered"),"Both choices validate and save before playback")
 		view.acknowledge();check(not owner.d.chapter4.completed,"No early final acknowledgement")
 		tick(view,239 if reduced else 1099);check(view.stage=="saved","Source saved confirmation is visible for authored duration")

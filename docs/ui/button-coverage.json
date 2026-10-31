@@ -1,0 +1,3065 @@
+[
+  {
+    "id": 0,
+    "file": "src/components/Button.tsx",
+    "line": 16,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "{leadingIcon && <span className=\"tactile-button__icon\" aria-hidden=\"true\">{leadingIcon}</span>}{children}{variant === \"text\" && <s"
+  },
+  {
+    "id": 1,
+    "file": "src/components/ChapterThreeOpeningOverlay.tsx",
+    "line": 440,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{view.phase === \"arrival\" ? \"回到校园\" : <span aria-hidden=\"true\">▾</span>}"
+  },
+  {
+    "id": 2,
+    "file": "src/components/ChapterThreeOpeningOverlay.tsx",
+    "line": 450,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "跳过演出 "
+  },
+  {
+    "id": 3,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 161,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "× "
+  },
+  {
+    "id": 4,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 167,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"cc-bubble cc-wifi-icon\" aria-hidden=\"true\"> <i /> <i /> <i /> </span><span className=\"cc-card-text\"> <strong>ZJUW"
+  },
+  {
+    "id": 5,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 183,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"cc-bubble cc-data-icon\" aria-hidden=\"true\"> <i /> <i /> <i /> <i /> </span><span className=\"cc-card-text\"> <stron"
+  },
+  {
+    "id": 6,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 209,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{state.ui.musicPlaying ? \"❚❚\" : \"▶\"}"
+  },
+  {
+    "id": 7,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 213,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<PixelIcon name=\"headphone\" size={32} />"
+  },
+  {
+    "id": 8,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 261,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<i className=\"cc-toggle-icon rotate\" aria-hidden=\"true\"> ⟳ </i><span>自动旋转</span>"
+  },
+  {
+    "id": 9,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 272,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<i className=\"cc-toggle-icon\" aria-hidden=\"true\"> ≋ </i><span>振动</span>"
+  },
+  {
+    "id": 10,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 278,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<i className=\"cc-toggle-icon\" aria-hidden=\"true\"> ✈ </i><span>飞行模式</span>"
+  },
+  {
+    "id": 11,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 284,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<i className=\"cc-toggle-icon\" aria-hidden=\"true\"> ☾ </i><span>勿扰</span>"
+  },
+  {
+    "id": 12,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 313,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{state.phoneBattery.lowPowerMode ? \"关闭低电量模式\" : \"开启低电量模式\"}</strong><span>{state.phoneBattery.lowPowerMode ? \"解除亮度上限，可手动调高\" "
+  },
+  {
+    "id": 13,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 344,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "立即保存"
+  },
+  {
+    "id": 14,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 345,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "重置剧情进度"
+  },
+  {
+    "id": 15,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 350,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "取消"
+  },
+  {
+    "id": 16,
+    "file": "src/components/ControlCenter.tsx",
+    "line": 351,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "确认重置"
+  },
+  {
+    "id": 17,
+    "file": "src/components/DeveloperChannel.tsx",
+    "line": 180,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "×"
+  },
+  {
+    "id": 18,
+    "file": "src/components/DeveloperChannel.tsx",
+    "line": 184,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{chapter}</strong><span>{count}</span>"
+  },
+  {
+    "id": 19,
+    "file": "src/components/DeveloperChannel.tsx",
+    "line": 201,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<b>{level.id}</b><span>{level.label}</span><i>{level.checkpointIds.length}</i>"
+  },
+  {
+    "id": 20,
+    "file": "src/components/DeveloperChannel.tsx",
+    "line": 209,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<b>ALL</b><span>全部关卡</span><i>{chapterCheckpoints.length}</i>"
+  },
+  {
+    "id": 21,
+    "file": "src/components/DeveloperChannel.tsx",
+    "line": 221,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{item.label}</strong><span>{item.detail}</span>"
+  },
+  {
+    "id": 22,
+    "file": "src/components/DeveloperChannel.tsx",
+    "line": 241,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "恢复进入前存档"
+  },
+  {
+    "id": 23,
+    "file": "src/components/InventoryBar.tsx",
+    "line": 506,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<PixelIcon name=\"backpack\" size={26} /><span className=\"inv-arrow\">{open ? \"‹\" : \"›\"}</span>{!open && owned.length > 0 ? <i classN"
+  },
+  {
+    "id": 24,
+    "file": "src/components/InventoryBar.tsx",
+    "line": 537,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<PixelIcon name={item} size={34} />"
+  },
+  {
+    "id": 25,
+    "file": "src/components/InvestigationRing.tsx",
+    "line": 151,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"investigation-ring__node-state\" aria-hidden=\"true\" /><span className=\"investigation-ring__node-copy\"> <strong>{no"
+  },
+  {
+    "id": 26,
+    "file": "src/components/ItemInspectDialog.tsx",
+    "line": 394,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "× "
+  },
+  {
+    "id": 27,
+    "file": "src/components/PhoneAppUi.tsx",
+    "line": 130,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "{content}"
+  },
+  {
+    "id": 28,
+    "file": "src/components/PhoneAppUi.tsx",
+    "line": 235,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "×"
+  },
+  {
+    "id": 29,
+    "file": "src/components/PhoneAppUi.tsx",
+    "line": 325,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "{content}"
+  },
+  {
+    "id": 30,
+    "file": "src/components/PhoneAppUi.tsx",
+    "line": 351,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{option.label}"
+  },
+  {
+    "id": 31,
+    "file": "src/components/PhoneNavButton.tsx",
+    "line": 26,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"phone-nav-glyph\" aria-hidden=\"true\">{glyph ?? DEFAULT_GLYPHS[kind]}</span>"
+  },
+  {
+    "id": 32,
+    "file": "src/components/QizhenJournalCamera.tsx",
+    "line": 181,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{option.text}"
+  },
+  {
+    "id": 33,
+    "file": "src/components/QizhenJournalCamera.tsx",
+    "line": 303,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "{copy.close}"
+  },
+  {
+    "id": 34,
+    "file": "src/components/QizhenJournalCamera.tsx",
+    "line": 360,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{copy.retake}"
+  },
+  {
+    "id": 35,
+    "file": "src/components/QizhenJournalCamera.tsx",
+    "line": 367,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{copy.saveDraft}"
+  },
+  {
+    "id": 36,
+    "file": "src/components/QizhenJournalCamera.tsx",
+    "line": 409,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{copy.shutter}"
+  },
+  {
+    "id": 37,
+    "file": "src/components/QuestClueStrip.tsx",
+    "line": 169,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "{variant === \"phone\" ? null : <span>{CHAPTER_LABEL[quest.chapter]}</span>}<strong className=\"quest-task-trigger-copy\"> <span>{vari"
+  },
+  {
+    "id": 38,
+    "file": "src/components/QuestClueStrip.tsx",
+    "line": 204,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "×"
+  },
+  {
+    "id": 39,
+    "file": "src/components/QuestClueStrip.tsx",
+    "line": 320,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{hintCount >= hintTotal ? \"提示已全部展开\" : \"显示下一条提示\"}"
+  },
+  {
+    "id": 40,
+    "file": "src/components/QuestClueStrip.tsx",
+    "line": 331,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{navigationLabel}"
+  },
+  {
+    "id": 41,
+    "file": "src/components/RpgClockCrownOverlay.tsx",
+    "line": 85,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span aria-hidden=\"true\">◉</span>"
+  },
+  {
+    "id": 42,
+    "file": "src/components/ScenePlaceholder.tsx",
+    "line": 23,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "Back to desktop "
+  },
+  {
+    "id": 43,
+    "file": "src/components/StatusBar.tsx",
+    "line": 44,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "{network === \"campus_wifi\" ? ( <> <strong>ZJUWLAN</strong> <span className=\"sb-wifi\" aria-hidden=\"true\"> <i /> <i /> <i /> </span>"
+  },
+  {
+    "id": 44,
+    "file": "src/components/temporal-maze/ChapterFourExteriorQuestions.tsx",
+    "line": 185,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{option.label}"
+  },
+  {
+    "id": 45,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 125,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "×"
+  },
+  {
+    "id": 46,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 186,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "返回现场"
+  },
+  {
+    "id": 47,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 188,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{pending ? \"正在核对…\" : \"提交结果\"}"
+  },
+  {
+    "id": 48,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 267,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{POWER_EDGE_LABELS[edgeId]}"
+  },
+  {
+    "id": 49,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 304,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "上移"
+  },
+  {
+    "id": 50,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 305,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "下移"
+  },
+  {
+    "id": 51,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 334,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{decrease}<small>{unit}</small>"
+  },
+  {
+    "id": 52,
+    "file": "src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx",
+    "line": 336,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{increase}<small>{unit}</small>"
+  },
+  {
+    "id": 53,
+    "file": "src/components/temporal-maze/ChapterFourMaintenanceDiagnosisGame.tsx",
+    "line": 76,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "重看故障现象"
+  },
+  {
+    "id": 54,
+    "file": "src/components/temporal-maze/ChapterFourMaintenanceDiagnosisGame.tsx",
+    "line": 102,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "返回现场"
+  },
+  {
+    "id": 55,
+    "file": "src/components/temporal-maze/ChapterFourMaintenanceDiagnosisGame.tsx",
+    "line": 103,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{pending ? \"正在核对…\" : \"提交诊断\"}"
+  },
+  {
+    "id": 56,
+    "file": "src/components/temporal-maze/ChapterFourPowerPanelGame.tsx",
+    "line": 203,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span className=\"chapter4-power-panel__lamp\" aria-hidden=\"true\" /><span>{zone.label}</span><small>{on ? \"亮\" : \"暗\"}</small>"
+  },
+  {
+    "id": 57,
+    "file": "src/components/temporal-maze/ChapterFourPowerPanelGame.tsx",
+    "line": 251,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "重试锁定 "
+  },
+  {
+    "id": 58,
+    "file": "src/components/temporal-maze/ChapterFourPowerPanelGame.tsx",
+    "line": 261,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "关闭箱门 "
+  },
+  {
+    "id": 59,
+    "file": "src/components/temporal-maze/ChapterFourStairPuzzleOverlay.tsx",
+    "line": 64,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "返回三楼"
+  },
+  {
+    "id": 60,
+    "file": "src/components/temporal-maze/ChapterFourStarLampClosure.tsx",
+    "line": 208,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "继续"
+  },
+  {
+    "id": 61,
+    "file": "src/components/temporal-maze/ChapterFourTransitionOverlay.tsx",
+    "line": 57,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "继续行动 "
+  },
+  {
+    "id": 62,
+    "file": "src/components/temporal-maze/ElevatorTrackSyncGame.tsx",
+    "line": 93,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "×"
+  },
+  {
+    "id": 63,
+    "file": "src/components/temporal-maze/ElevatorTrackSyncGame.tsx",
+    "line": 163,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "切到浅色操作"
+  },
+  {
+    "id": 64,
+    "file": "src/components/temporal-maze/ElevatorTrackSyncGame.tsx",
+    "line": 165,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "启动历史重放 "
+  },
+  {
+    "id": 65,
+    "file": "src/components/temporal-maze/WayfindingBoardGame.tsx",
+    "line": 127,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "×"
+  },
+  {
+    "id": 66,
+    "file": "src/components/temporal-maze/WayfindingBoardGame.tsx",
+    "line": 155,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span className=\"chapter4-wayfinding-slot__number\">槽位 {index + 1}</span><strong>{label}</strong><small>{fragment ? \"选择后放入另一槽位\" : \""
+  },
+  {
+    "id": 67,
+    "file": "src/components/temporal-maze/WayfindingBoardGame.tsx",
+    "line": 197,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "取消"
+  },
+  {
+    "id": 68,
+    "file": "src/components/temporal-maze/WayfindingBoardGame.tsx",
+    "line": 199,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "确认当前排列"
+  },
+  {
+    "id": 69,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 399,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "自由探索"
+  },
+  {
+    "id": 70,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 400,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "大食堂剧情"
+  },
+  {
+    "id": 71,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 402,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{state.canteenHunt.mode === \"dark\" ? \"切回浅色\" : \"切到深色\"}"
+  },
+  {
+    "id": 72,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 414,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "回到角色"
+  },
+  {
+    "id": 73,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 415,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "−"
+  },
+  {
+    "id": 74,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 416,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "+"
+  },
+  {
+    "id": 75,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 419,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "全屏"
+  },
+  {
+    "id": 76,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 440,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "▲"
+  },
+  {
+    "id": 77,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 441,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "◀"
+  },
+  {
+    "id": 78,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 442,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "▼"
+  },
+  {
+    "id": 79,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 443,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "▶"
+  },
+  {
+    "id": 80,
+    "file": "src/demos/campus-map-demo.tsx",
+    "line": 444,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "空格"
+  },
+  {
+    "id": 81,
+    "file": "src/scenes/phone/P00_Alarm/index.tsx",
+    "line": 89,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "开始游戏 "
+  },
+  {
+    "id": 82,
+    "file": "src/scenes/phone/P00_Alarm/index.tsx",
+    "line": 93,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "关闭 "
+  },
+  {
+    "id": 83,
+    "file": "src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx",
+    "line": 77,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<svg viewBox=\"0 0 52 78\" aria-hidden=\"true\"><rect x=\"4\" y=\"2\" width=\"44\" height=\"73\" rx=\"5\" fill=\"#48464b\" stroke=\"#29262d\" stroke"
+  },
+  {
+    "id": 84,
+    "file": "src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx",
+    "line": 81,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "×"
+  },
+  {
+    "id": 85,
+    "file": "src/scenes/phone/P01_Desktop/index.tsx",
+    "line": 44,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "……再睡5分钟…… "
+  },
+  {
+    "id": 86,
+    "file": "src/scenes/phone/P01_Desktop/index.tsx",
+    "line": 54,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "进入手机主界面 "
+  },
+  {
+    "id": 87,
+    "file": "src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx",
+    "line": 103,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{optionalRead ? \"已记下这条水帖\" : \"读一下（可选）\"}"
+  },
+  {
+    "id": 88,
+    "file": "src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx",
+    "line": 59,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "回寝室试用手柄"
+  },
+  {
+    "id": 89,
+    "file": "src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx",
+    "line": 61,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{actOneContent.cc98ExchangePost.action}"
+  },
+  {
+    "id": 90,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 281,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{copy.ownerOnly}"
+  },
+  {
+    "id": 91,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 289,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{copy.showAll}"
+  },
+  {
+    "id": 92,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 316,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<QizhenRecipeFrame recipe={reply.photo.recipe} variant=\"thumb\" />"
+  },
+  {
+    "id": 93,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 351,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{publishing ? copy.publishing : copy.publishMain}"
+  },
+  {
+    "id": 94,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 389,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{copy.publishReply}"
+  },
+  {
+    "id": 95,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 404,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "{copy.continueSupplement}"
+  },
+  {
+    "id": 96,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 416,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "{copy.returnToLake}"
+  },
+  {
+    "id": 97,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 443,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "× "
+  },
+  {
+    "id": 98,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 467,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{copy.networkError.openControlCenter}"
+  },
+  {
+    "id": 99,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 474,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "{copy.networkError.returnToLake}"
+  },
+  {
+    "id": 100,
+    "file": "src/scenes/phone/P02_CC98/QizhenJournalThread.tsx",
+    "line": 481,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{copy.networkError.keepEditing}"
+  },
+  {
+    "id": 101,
+    "file": "src/scenes/phone/P02_CC98/TheaterProductionArchive.tsx",
+    "line": 37,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span>{expanded ? copy.collapseLabel : copy.expandLabel}</span><i aria-hidden=\"true\">{expanded ? \"−\" : \"+\"}</i>"
+  },
+  {
+    "id": 102,
+    "file": "src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx",
+    "line": 145,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{copy.acceptLabel}"
+  },
+  {
+    "id": 103,
+    "file": "src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx",
+    "line": 154,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{copy.firstWaveLabel}"
+  },
+  {
+    "id": 104,
+    "file": "src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx",
+    "line": 170,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{secondWaveSeconds > 0 ? `${secondWaveSeconds} 秒后开放` : copy.secondWaveLabel}"
+  },
+  {
+    "id": 105,
+    "file": "src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx",
+    "line": 217,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{uploaded ? \"已上传\" : owned ? \"上传\" : \"未获得\"}"
+  },
+  {
+    "id": 106,
+    "file": "src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx",
+    "line": 248,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "撤回一位"
+  },
+  {
+    "id": 107,
+    "file": "src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx",
+    "line": 249,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "清空"
+  },
+  {
+    "id": 108,
+    "file": "src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx",
+    "line": 250,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{solved ? \"已通过\" : \"提交口令\"}"
+  },
+  {
+    "id": 109,
+    "file": "src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx",
+    "line": 263,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{selected ? `第 ${selectedIndex + 1} 位` : \"bd 选入\"}"
+  },
+  {
+    "id": 110,
+    "file": "src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx",
+    "line": 136,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "{passwordVisible ? \"隐藏\" : \"显示\"}"
+  },
+  {
+    "id": 111,
+    "file": "src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx",
+    "line": 153,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{locked ? `等待 ${formatWaitSeconds(remainingMs)}` : \"登 录\"}"
+  },
+  {
+    "id": 112,
+    "file": "src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx",
+    "line": 171,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span className=\"cc98-mini-card\" aria-hidden=\"true\"><i>ZJU</i><b>07:55</b></span><span> <strong>{login.studentIdDiscovered ? \"校园卡身"
+  },
+  {
+    "id": 113,
+    "file": "src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx",
+    "line": 196,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "{login.revealedHintCount >= CC98_LOGIN_HINTS.length ? \"提示已全部展开\" : `展开提示 ${login.revealedHintCount + 1}`}"
+  },
+  {
+    "id": 114,
+    "file": "src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx",
+    "line": 209,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "退出认证"
+  },
+  {
+    "id": 115,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 362,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">{selected ? \"■\" : \"□\"}</span><span><b>{fact.title}</b><small>{fact.detail}</small></span>"
+  },
+  {
+    "id": 116,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 376,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{imported ? \"已导入麦斯威夜间自习群\" : chapterFourCc98Content.import.buttonLabel}"
+  },
+  {
+    "id": 117,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 491,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "发布收尾并保存时间"
+  },
+  {
+    "id": 118,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 680,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "退出"
+  },
+  {
+    "id": 119,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 821,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "••• "
+  },
+  {
+    "id": 120,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 824,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{editing ? \"保存\" : \"编辑\"}"
+  },
+  {
+    "id": 121,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 832,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "恢复默认帖子 "
+  },
+  {
+    "id": 122,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 835,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "关闭菜单 "
+  },
+  {
+    "id": 123,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 857,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "搜索"
+  },
+  {
+    "id": 124,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 862,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<header> <strong className=\"cc98-search-result-title\">{result.title}</strong> <span className=\"cc98-search-result-floor\">{result.f"
+  },
+  {
+    "id": 125,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 891,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "搜索"
+  },
+  {
+    "id": 126,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 916,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">▦</span><strong>{board}</strong><small>{description}</small><em>{postCount} 帖</em>{snapshot ? ( <span cla"
+  },
+  {
+    "id": 127,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 932,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{followed ? \"已关注\" : \"关注\"}"
+  },
+  {
+    "id": 128,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 962,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span>{post.board}</span><strong>{post.title}</strong><small>{post.author} · {post.time}</small>"
+  },
+  {
+    "id": 129,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 976,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "‹ 全部版面"
+  },
+  {
+    "id": 130,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 1027,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "正文 "
+  },
+  {
+    "id": 131,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 1046,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<i aria-hidden=\"true\">{tab.icon}</i><b>{tab.label}</b>"
+  },
+  {
+    "id": 132,
+    "file": "src/scenes/phone/P02_CC98/index.tsx",
+    "line": 1105,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{state.qizhenLake.bridgeClueFound ? \"已取得：桥边\" : \"记录关键词：桥边\"}"
+  },
+  {
+    "id": 133,
+    "file": "src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx",
+    "line": 125,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "×"
+  },
+  {
+    "id": 134,
+    "file": "src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx",
+    "line": 179,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "{visited ? \"✓\" : index + 1}"
+  },
+  {
+    "id": 135,
+    "file": "src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx",
+    "line": 211,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "返回体艺首页"
+  },
+  {
+    "id": 136,
+    "file": "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx",
+    "line": 238,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "−"
+  },
+  {
+    "id": 137,
+    "file": "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx",
+    "line": 240,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "+"
+  },
+  {
+    "id": 138,
+    "file": "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx",
+    "line": 246,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "提交补录"
+  },
+  {
+    "id": 139,
+    "file": "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx",
+    "line": 259,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "返回手机主页"
+  },
+  {
+    "id": 140,
+    "file": "src/scenes/phone/P06_Tiyi/index.tsx",
+    "line": 107,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "退出 "
+  },
+  {
+    "id": 141,
+    "file": "src/scenes/phone/P06_Tiyi/index.tsx",
+    "line": 119,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "47 "
+  },
+  {
+    "id": 142,
+    "file": "src/scenes/phone/P06_Tiyi/index.tsx",
+    "line": 133,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{state.actOne.exerciseStarted ? \"课外锻炼进行中\" : \"开始虚拟定位\"}</strong>{!state.actOne.exerciseStarted ? ( <span aria-live=\"polite\">"
+  },
+  {
+    "id": 143,
+    "file": "src/scenes/phone/P07_Weather/QizhenWeatherCalibration.tsx",
+    "line": 235,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "<kbd>{key}</kbd><small>{direction === -1 ? \"退\" : \"进\"}</small>"
+  },
+  {
+    "id": 144,
+    "file": "src/scenes/phone/P07_Weather/index.tsx",
+    "line": 142,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "{adjustmentComplete ? ( <i aria-hidden=\"true\" /> ) : ( <span className=\"qizhen-weather-device-slot\" aria-hidden=\"true\"><b>+</b></s"
+  },
+  {
+    "id": 145,
+    "file": "src/scenes/phone/P07_Weather/index.tsx",
+    "line": 168,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<i aria-hidden=\"true\" /><strong>{collected ? \"水滴已收集\" : waterAvailable ? \"接住一滴水\" : \"还没有开始外出打卡\"}</strong><span>{collected ? \"它正在道具栏里"
+  },
+  {
+    "id": 146,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 133,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "打开控制中心切换网络"
+  },
+  {
+    "id": 147,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 134,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span><b>背景音乐</b><small>语音与操作音效保持开启</small></span><em>{state.ui.musicMuted ? \"关闭\" : \"开启\"}</em>"
+  },
+  {
+    "id": 148,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 136,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "↑"
+  },
+  {
+    "id": 149,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 136,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "↓"
+  },
+  {
+    "id": 150,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 136,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "恢复默认顺序"
+  },
+  {
+    "id": 151,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 136,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "核对旧桌面截图"
+  },
+  {
+    "id": 152,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 137,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "恢复"
+  },
+  {
+    "id": 153,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 139,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<time>{record.time}</time><span><b>{record.app}</b><small>{record.action}</small></span><em>{record.drain}</em>"
+  },
+  {
+    "id": 154,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 139,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{settingsProjection.backgroundActivityVerified ? \"记录已归档\" : \"核验所选记录\"}"
+  },
+  {
+    "id": 155,
+    "file": "src/scenes/phone/P08_Settings/index.tsx",
+    "line": 151,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<i aria-hidden=\"true\">{row.icon}</i><span><b>{row.label}</b><small>{row.note}</small></span><em aria-hidden=\"true\">›</em>"
+  },
+  {
+    "id": 156,
+    "file": "src/scenes/phone/P10_Bonsai/index.tsx",
+    "line": 102,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<img className=\"app-bg bonsai-img\" src={bloomed ? bonsaiBloomUrl : bonsaiBudUrl} alt=\"\" aria-hidden=\"true\" />"
+  },
+  {
+    "id": 157,
+    "file": "src/scenes/phone/P10_Bonsai/index.tsx",
+    "line": 116,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "8 "
+  },
+  {
+    "id": 158,
+    "file": "src/scenes/phone/P11_Checkin/index.tsx",
+    "line": 142,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "0"
+  },
+  {
+    "id": 159,
+    "file": "src/scenes/phone/P11_Checkin/index.tsx",
+    "line": 172,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{d}"
+  },
+  {
+    "id": 160,
+    "file": "src/scenes/phone/P11_Checkin/index.tsx",
+    "line": 176,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "⌫ "
+  },
+  {
+    "id": 161,
+    "file": "src/scenes/phone/P11_Checkin/index.tsx",
+    "line": 179,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "0 "
+  },
+  {
+    "id": 162,
+    "file": "src/scenes/phone/P11_Checkin/index.tsx",
+    "line": 182,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "签到 "
+  },
+  {
+    "id": 163,
+    "file": "src/scenes/phone/P12_Ending/index.tsx",
+    "line": 223,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "回看完整字句"
+  },
+  {
+    "id": 164,
+    "file": "src/scenes/phone/P12_Ending/index.tsx",
+    "line": 233,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span aria-hidden=\"true\" /><strong>{Math.round(lockProgress * 100)}%</strong>"
+  },
+  {
+    "id": 165,
+    "file": "src/scenes/phone/P12_Ending/index.tsx",
+    "line": 240,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span className=\"ending-error-title\"><small>LOCATION ERROR</small><i aria-hidden=\"true\">×</i></span><strong>经度与纬度不存在</strong><span"
+  },
+  {
+    "id": 166,
+    "file": "src/scenes/phone/P12_Ending/index.tsx",
+    "line": 253,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "继续这一段"
+  },
+  {
+    "id": 167,
+    "file": "src/scenes/phone/P12_Ending/index.tsx",
+    "line": 257,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "回到这一瞬间"
+  },
+  {
+    "id": 168,
+    "file": "src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx",
+    "line": 131,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "<span aria-hidden=\"true\" />"
+  },
+  {
+    "id": 169,
+    "file": "src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx",
+    "line": 205,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{reportGenerated ? \"已写入报告\" : \"查看 022 旧照\"}"
+  },
+  {
+    "id": 170,
+    "file": "src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx",
+    "line": 231,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<img src={photo.imageUrl} alt=\"\" aria-hidden=\"true\" /><span>{photo.file.slice(4, 8)}</span>"
+  },
+  {
+    "id": 171,
+    "file": "src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx",
+    "line": 268,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{reportGenerated ? \"已写入物品报告\" : \"用旧照补全物品报告\"}"
+  },
+  {
+    "id": 172,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 559,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "{definition.icon}<span className=\"label\">{definition.label}</span>"
+  },
+  {
+    "id": 173,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 600,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "− "
+  },
+  {
+    "id": 174,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 646,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span className=\"tower-top\"> <i className=\"slot\" /> <i className=\"slot\" /> </span><span className=\"tower-body\"> <span className=\"c"
+  },
+  {
+    "id": 175,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 667,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<i className=\"pot-plant\" /><i className=\"pot-flower\" aria-hidden=\"true\" /><i className=\"pot-body\" />"
+  },
+  {
+    "id": 176,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 708,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "完成"
+  },
+  {
+    "id": 177,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 718,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<span className=\"fallen-gear-face\">✱</span><span className=\"fallen-gear-nine\">9</span>"
+  },
+  {
+    "id": 178,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 727,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<div className=\"mini interlude-recovery-mini\" aria-hidden=\"true\"><i /><i /><i /></div><div> <div className=\"note-title\">记录恢复</div>"
+  },
+  {
+    "id": 179,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 744,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<div className=\"mini b-blue\" aria-hidden=\"true\"><b className=\"cc98-text\">98</b></div><div> <div className=\"note-title\">CC98 · 学生剧《"
+  },
+  {
+    "id": 180,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 795,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<div className=\"mini b-blue\" aria-hidden=\"true\"><b className=\"cc98-text\">98</b></div><div><div className=\"note-title\">CC98 · 学习天地<"
+  },
+  {
+    "id": 181,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 806,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<div className=\"mini b-green\" aria-hidden=\"true\"><span className=\"interlude-signal-dot\" /></div><div><div className=\"note-title\">微"
+  },
+  {
+    "id": 182,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 820,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<div className=\"mini b-blue\">{movementQuestActive && state.actOne.exerciseStarted ? <i className=\"push-triangle-mini\" /> : <i clas"
+  },
+  {
+    "id": 183,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 848,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<div className=\"mini mini-rain\"><div className=\"rain-icon mini-rain-icon\"><div className=\"cloud-pixel\" />{campusWeather.condition "
+  },
+  {
+    "id": 184,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 876,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"notice-app-icon interlude-recovery-mini\" aria-hidden=\"true\"><i /><i /><i /></span><span className=\"notice-copy\"><"
+  },
+  {
+    "id": 185,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 882,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"notice-app-icon\"> <span className=\"wechat-icon mini-wechat\"> <i className=\"bubble one\" /> <i className=\"bubble tw"
+  },
+  {
+    "id": 186,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "line": 897,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"notice-app-icon\"> <span className=\"wechat-icon mini-wechat\"> <i className=\"bubble one\" /> <i className=\"bubble tw"
+  },
+  {
+    "id": 187,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 91,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{interlude.officialNoticeSaved ? \"通知已保存\" : \"保存通知\"}"
+  },
+  {
+    "id": 188,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 115,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<b>{message.author}</b><span>{message.text}</span><em>{selected ? \"已选\" : \"选择\"}</em>"
+  },
+  {
+    "id": 189,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 135,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{interlude.routeScreenshotSaved ? \"截图已保存\" : \"保存路线截图\"}"
+  },
+  {
+    "id": 190,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 157,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"interlude-chat-avatar is-official\" aria-hidden=\"true\">楼</span><span><strong>紫金港楼宇服务</strong><small>有一条未归档的运行通知</s"
+  },
+  {
+    "id": 191,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 163,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"interlude-chat-avatar is-group\" aria-hidden=\"true\">18</span><span><strong>麦斯威夜间自习群</strong><small>有两条消息可组成路线截图</s"
+  },
+  {
+    "id": 192,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 170,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "返回记录恢复"
+  },
+  {
+    "id": 193,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 543,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{chapterFourWechat.officialNoticeRead ? \"已保存通知\" : chapterFourWechatContent.official.readAction}"
+  },
+  {
+    "id": 194,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 580,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"wx-official-featured-cover\" aria-hidden=\"true\"><i /><b>1F</b><i /></span><span> <small>夜间通知 · {chapterFourWechatC"
+  },
+  {
+    "id": 195,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 600,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className={`wx-lore-thumb is-${article.coverTone}`} aria-hidden=\"true\"><i /><i /></span><span> <small>{article.section} · {a"
+  },
+  {
+    "id": 196,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 618,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "夜间通知"
+  },
+  {
+    "id": 197,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 619,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "校园日常"
+  },
+  {
+    "id": 198,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 624,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "往期推文"
+  },
+  {
+    "id": 199,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 663,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">档</span><span> <b>学习天地资料索引</b> <small>{chapterFourCc98Content.maxwellHandoff.afterImport}</small> </span>"
+  },
+  {
+    "id": 200,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 687,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{chapterFourWechat.studentRouteSaved ? \"路线讨论已保存\" : chapterFourWechatContent.group.saveAction}"
+  },
+  {
+    "id": 201,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 708,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{chapterFourWechat.elevatorAudioArchived ? \"已归档\" : \"保存录音\"}"
+  },
+  {
+    "id": 202,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 717,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{chapterFourWechat.wayfindingPhotosArchived ? \"已归档\" : \"保存照片\"}"
+  },
+  {
+    "id": 203,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 732,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{chapterFourWechat.wayfindingCompared ? \"照片已完成对照\" : chapterFourWechatContent.friend.compareAction}"
+  },
+  {
+    "id": 204,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 778,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "模拟扫码获取更新"
+  },
+  {
+    "id": 205,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 782,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "安装更新"
+  },
+  {
+    "id": 206,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 784,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "返回桌面，重新进入体艺"
+  },
+  {
+    "id": 207,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 791,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "联系我们"
+  },
+  {
+    "id": 208,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 817,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"wx-avatar wx-official-avatar\" aria-hidden=\"true\">体艺</span><span className=\"wx-row-main\"><strong>浙大体育与艺术</strong><"
+  },
+  {
+    "id": 209,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 825,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"wx-avatar wx-group-avatar\" aria-hidden=\"true\"><i /><i /><i /><i /></span><span className=\"wx-row-main\"><strong>{c"
+  },
+  {
+    "id": 210,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 832,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"wx-avatar wx-official-avatar\" aria-hidden=\"true\">后勤</span><span className=\"wx-row-main\"><strong>{chapterFourWecha"
+  },
+  {
+    "id": 211,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 841,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"wx-avatar file-helper\" aria-hidden=\"true\" /><span className=\"wx-row-main\"> <strong>文件传输助手</strong> <em>{chapterFo"
+  },
+  {
+    "id": 212,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 857,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className={`wx-avatar friend-avatar slash-${slashState}`} role=\"button\" tabIndex={0} aria-label=\"朋友头像\" onClick={clickFriendA"
+  },
+  {
+    "id": 213,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 899,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"wx-avatar roommate-avatar\" aria-hidden=\"true\" /><span className=\"wx-row-main\"> <strong>室友</strong> <em>晚上一起去食堂吃饭呀"
+  },
+  {
+    "id": 214,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 918,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className={`wx-avatar mentor-avatar ${mentorLineFalling ? \"is-line-falling\" : \"\"} ${state.actOne.mentorLineReleased ? \"is-li"
+  },
+  {
+    "id": 215,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "line": 1088,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{state.qizhenLake.lakeClueFound ? \"已保存地点词：湖面\" : \"保存地点词：湖面\"}"
+  },
+  {
+    "id": 216,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 351,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{selected ? \"收起\" : \"查看\"}"
+  },
+  {
+    "id": 217,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 373,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{networkDetailVisible ? \"收起连接说明\" : \"查看连接说明\"}"
+  },
+  {
+    "id": 218,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 390,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "查看"
+  },
+  {
+    "id": 219,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 391,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "进入"
+  },
+  {
+    "id": 220,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 392,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "进入"
+  },
+  {
+    "id": 221,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 393,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "查看"
+  },
+  {
+    "id": 222,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 410,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "查看"
+  },
+  {
+    "id": 223,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 431,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "清空"
+  },
+  {
+    "id": 224,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 431,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "保存预览草稿"
+  },
+  {
+    "id": 225,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 449,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<small>{selected ? card.back : \"点击查看释义\"}</small><strong>{card.front}</strong><span>{selected ? card.example : \"EN / ZH\"}</span>"
+  },
+  {
+    "id": 226,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 475,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "清空"
+  },
+  {
+    "id": 227,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 475,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "保存草稿"
+  },
+  {
+    "id": 228,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 501,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<UtilityAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} /><span>{app.label}</span>"
+  },
+  {
+    "id": 229,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 530,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "打开部门黄页"
+  },
+  {
+    "id": 230,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 572,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "详情"
+  },
+  {
+    "id": 231,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 573,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "查看"
+  },
+  {
+    "id": 232,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 574,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "查看"
+  },
+  {
+    "id": 233,
+    "file": "src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx",
+    "line": 575,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "查看"
+  },
+  {
+    "id": 234,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 247,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">•••</span>"
+  },
+  {
+    "id": 235,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 403,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "全部"
+  },
+  {
+    "id": 236,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 404,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "缺失时段末段"
+  },
+  {
+    "id": 237,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 405,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "最后 1 分钟"
+  },
+  {
+    "id": 238,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 409,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "全部"
+  },
+  {
+    "id": 239,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 410,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "未知设备 · 短会话"
+  },
+  {
+    "id": 240,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 411,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "已认证设备"
+  },
+  {
+    "id": 241,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 415,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "全校"
+  },
+  {
+    "id": 242,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 416,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "北教学区 A 区"
+  },
+  {
+    "id": 243,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 417,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "其他楼宇"
+  },
+  {
+    "id": 244,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 430,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{interlude.networkRecordId === record.id ? \"记录已保存\" : \"保存这条记录\"}"
+  },
+  {
+    "id": 245,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 449,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "返回记录恢复"
+  },
+  {
+    "id": 246,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 487,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<i aria-hidden=\"true\" />"
+  },
+  {
+    "id": 247,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 499,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<i aria-hidden=\"true\" />"
+  },
+  {
+    "id": 248,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1246,
+    "decision": "standard-key",
+    "variant": "ghost",
+    "label": "退出 "
+  },
+  {
+    "id": 249,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1303,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "前往部门黄页 "
+  },
+  {
+    "id": 250,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1386,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{state.actOne.characterNamed && identityReadable ? `已联络：${actOneContent.studentName}` : \"☎ 呼叫\"}"
+  },
+  {
+    "id": 251,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1412,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<i className=\"tab-ico learn\" aria-hidden=\"true\" />学在浙大 "
+  },
+  {
+    "id": 252,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1480,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "导入"
+  },
+  {
+    "id": 253,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1492,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{qizhenContent.locationSearch.map.confirm}"
+  },
+  {
+    "id": 254,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1504,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "前往大地图上的启真湖入口"
+  },
+  {
+    "id": 255,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1534,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">⌕</span>馆藏检索 "
+  },
+  {
+    "id": 256,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1543,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">{app.icon}</span>{app.label}"
+  },
+  {
+    "id": 257,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1558,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">PASS</span>022恢复申请 "
+  },
+  {
+    "id": 258,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1568,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">↗</span>返回现场 "
+  },
+  {
+    "id": 259,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1579,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>022 座位恢复申请已开放</strong><span>帖子当前排名 01，可提交三项证明。</span><b aria-hidden=\"true\">›</b>"
+  },
+  {
+    "id": 260,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1630,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "中文文献库"
+  },
+  {
+    "id": 261,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1646,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "搜索"
+  },
+  {
+    "id": 262,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1649,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<small>检索字段</small><strong>书名</strong><span aria-hidden=\"true\">▾</span>"
+  },
+  {
+    "id": 263,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1650,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<small>馆藏范围</small><strong>全部馆藏</strong><span aria-hidden=\"true\">▾</span>"
+  },
+  {
+    "id": 264,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1655,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "{catalogAdvanced ? \"收起高级检索\" : \"高级检索\"}"
+  },
+  {
+    "id": 265,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1678,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{state.qizhenLake.reflectionClueFound ? \"已取得：倒影\" : \"记录关键词：倒影\"}"
+  },
+  {
+    "id": 266,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1699,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<img src={result.imageUrl} alt={`${result.title}封面`} /><span className=\"zju-catalog-book-copy\"> <strong>{result.title}</strong> <s"
+  },
+  {
+    "id": 267,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1776,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{uploaded ? \"查看\" : \"提交\"}"
+  },
+  {
+    "id": 268,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1793,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "回图书馆处理书包"
+  },
+  {
+    "id": 269,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1796,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "生成 022 座位释放 PASS "
+  },
+  {
+    "id": 270,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1813,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">{railCollapsed ? \"»\" : \"»\"}</span><b>座<br />位<br />预<br />约</b>"
+  },
+  {
+    "id": 271,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1820,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "列表"
+  },
+  {
+    "id": 272,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1821,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "快速选择"
+  },
+  {
+    "id": 273,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1825,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{selectedLibrary}<span aria-hidden=\"true\">▼</span>"
+  },
+  {
+    "id": 274,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1840,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "预约"
+  },
+  {
+    "id": 275,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1849,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{room.label}</strong><span>空闲 {room.available}</span>"
+  },
+  {
+    "id": 276,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1902,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "查看平面图 ›"
+  },
+  {
+    "id": 277,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1903,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "查看房间详情 ›"
+  },
+  {
+    "id": 278,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1906,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "空余 {activeRoom?.available ?? 0}"
+  },
+  {
+    "id": 279,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1917,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "返回现场"
+  },
+  {
+    "id": 280,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1921,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{selectedDate.split(\" · \")[0]}</strong><span>{selectedDate.split(\" · \")[1]}</span><i aria-hidden=\"true\" />"
+  },
+  {
+    "id": 281,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1926,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{selectedTime}</strong><i aria-hidden=\"true\" />"
+  },
+  {
+    "id": 282,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1934,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "地图模式"
+  },
+  {
+    "id": 283,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1935,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "列表模式"
+  },
+  {
+    "id": 284,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1940,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "<span aria-hidden=\"true\">▽≡</span>筛选"
+  },
+  {
+    "id": 285,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1948,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{String(section * 32 + 1).padStart(3, \"0\")}–{String(Math.min(seatCount, (section + 1) * 32)).padStart(3, \"0\")}"
+  },
+  {
+    "id": 286,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1968,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{seat}"
+  },
+  {
+    "id": 287,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1980,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "<span aria-hidden=\"true\">↶</span>返回"
+  },
+  {
+    "id": 288,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1981,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{state.ui.librarySeatReserved ? \"预约成功\" : \"立即预约\"}"
+  },
+  {
+    "id": 289,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 1992,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span>{identityReadable ? actOneContent.studentName : \"用户\"}</span><i aria-hidden=\"true\">▣</i>"
+  },
+  {
+    "id": 290,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2009,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">⌕</span><small>百事通</small>"
+  },
+  {
+    "id": 291,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2023,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "求 "
+  },
+  {
+    "id": 292,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2045,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "<span aria-hidden=\"true\">▣</span>电子校园卡"
+  },
+  {
+    "id": 293,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2055,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "<span aria-hidden=\"true\">☎</span>部门黄页 {movementQuestActive && !state.actOne.characterNamed ? <b>任务</b> : null}"
+  },
+  {
+    "id": 294,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2068,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span aria-hidden=\"true\">⌕</span><em>搜索应用与服务</em><i aria-hidden=\"true\" /><strong>搜索</strong>"
+  },
+  {
+    "id": 295,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2079,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<PixelAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} /><span>{app.label}</span>"
+  },
+  {
+    "id": 296,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2187,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<PixelAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} /><span>{app.label}</span>"
+  },
+  {
+    "id": 297,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2208,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{action}"
+  },
+  {
+    "id": 298,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2223,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{library}"
+  },
+  {
+    "id": 299,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2242,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{date}"
+  },
+  {
+    "id": 300,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2253,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{time}"
+  },
+  {
+    "id": 301,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2264,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{filter}"
+  },
+  {
+    "id": 302,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2279,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "再想一下 "
+  },
+  {
+    "id": 303,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "line": 2282,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "确认预约 "
+  },
+  {
+    "id": 304,
+    "file": "src/scenes/phone/P18_Photos/index.tsx",
+    "line": 75,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"interlude-album-cover is-qizhen\"> {journalPhotos[0] ? <QizhenRecipeFrame recipe={journalPhotos[0].recipe} variant"
+  },
+  {
+    "id": 305,
+    "file": "src/scenes/phone/P18_Photos/index.tsx",
+    "line": 82,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"interlude-album-cover\"><img src={paperMiddleUrl} alt=\"\" aria-hidden=\"true\" /></span><strong>恢复的项目</strong><small>"
+  },
+  {
+    "id": 306,
+    "file": "src/scenes/phone/P18_Photos/index.tsx",
+    "line": 87,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span className=\"interlude-album-cover\"> <img src={CAMPUS_LIFE_PHOTOS[1]?.imageUrl ?? CAMPUS_LIFE_PHOTOS[0]?.imageUrl} alt=\"\" aria"
+  },
+  {
+    "id": 307,
+    "file": "src/scenes/phone/P18_Photos/index.tsx",
+    "line": 147,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<img src={photo.imageUrl} alt=\"\" aria-hidden=\"true\" /><span><strong>{photo.title}</strong><small>{photo.location}</small></span>"
+  },
+  {
+    "id": 308,
+    "file": "src/scenes/phone/P18_Photos/index.tsx",
+    "line": 222,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "重排"
+  },
+  {
+    "id": 309,
+    "file": "src/scenes/phone/P18_Photos/index.tsx",
+    "line": 234,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<img className={frame.mirrored ? \"is-mirrored\" : \"\"} src={frame.imageUrl} alt={`${frame.label}，恢复照片帧`} /><span><strong>{frame.labe"
+  },
+  {
+    "id": 310,
+    "file": "src/scenes/phone/P18_Photos/index.tsx",
+    "line": 258,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "确认照片顺序"
+  },
+  {
+    "id": 311,
+    "file": "src/scenes/phone/P19_Clock/ClockMovement3D.tsx",
+    "line": 373,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "− "
+  },
+  {
+    "id": 312,
+    "file": "src/scenes/phone/P19_Clock/ClockMovement3D.tsx",
+    "line": 383,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "+ "
+  },
+  {
+    "id": 313,
+    "file": "src/scenes/phone/P19_Clock/ClockMovement3D.tsx",
+    "line": 393,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{locked ? strings.locked : strings.lock}"
+  },
+  {
+    "id": 314,
+    "file": "src/scenes/phone/P19_Clock/ClockMovement3D.tsx",
+    "line": 496,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{strings.assemble}"
+  },
+  {
+    "id": 315,
+    "file": "src/scenes/phone/P19_Clock/ClockMovement3D.tsx",
+    "line": 514,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{strings.explode}"
+  },
+  {
+    "id": 316,
+    "file": "src/scenes/phone/P19_Clock/ClockMovement3D.tsx",
+    "line": 522,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{strings.resetView}"
+  },
+  {
+    "id": 317,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 179,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "返回当前任务"
+  },
+  {
+    "id": 318,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 186,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<time>{clue.stamp}</time><strong>{clue.title}</strong><span>{clue.body}</span>"
+  },
+  {
+    "id": 319,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 188,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<small>{option.period}</small><strong>{option.time}</strong><span>{option.title}</span>"
+  },
+  {
+    "id": 320,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 189,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "提交档案与时刻"
+  },
+  {
+    "id": 321,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 205,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "进入漂移核对"
+  },
+  {
+    "id": 322,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 213,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{value > 0 ? `+${value}` : value}"
+  },
+  {
+    "id": 323,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 213,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{corrected ? \"已归零\" : \"应用反向修正\"}"
+  },
+  {
+    "id": 324,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 215,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "生成 08:00:00"
+  },
+  {
+    "id": 325,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 224,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "执行本轮放行 <kbd>SPACE</kbd>"
+  },
+  {
+    "id": 326,
+    "file": "src/scenes/phone/P19_Clock/index.tsx",
+    "line": 227,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "返回手机主页"
+  },
+  {
+    "id": 327,
+    "file": "src/scenes/phone/P20_TimelineRecovery/index.tsx",
+    "line": 129,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "打开恢复工具"
+  },
+  {
+    "id": 328,
+    "file": "src/scenes/phone/P20_TimelineRecovery/index.tsx",
+    "line": 151,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "查看划船帖"
+  },
+  {
+    "id": 329,
+    "file": "src/scenes/phone/P20_TimelineRecovery/index.tsx",
+    "line": 184,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{reason.label}"
+  },
+  {
+    "id": 330,
+    "file": "src/scenes/phone/P20_TimelineRecovery/index.tsx",
+    "line": 228,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{candidate.label}"
+  },
+  {
+    "id": 331,
+    "file": "src/scenes/phone/P20_TimelineRecovery/index.tsx",
+    "line": 240,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "播放恢复回放"
+  },
+  {
+    "id": 332,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 468,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{isPlaying ? \"Ⅱ\" : \"▶\"}"
+  },
+  {
+    "id": 333,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 483,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{isSelected ? \"移出候选\" : listened ? \"保留这段\" : \"试听后可选\"}"
+  },
+  {
+    "id": 334,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 492,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small>"
+  },
+  {
+    "id": 335,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 513,
+    "decision": "standard-key",
+    "variant": "tertiary",
+    "label": "{isPlaying ? \"Ⅱ\" : \"▶\"}"
+  },
+  {
+    "id": 336,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 524,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "↑"
+  },
+  {
+    "id": 337,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 525,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "↓"
+  },
+  {
+    "id": 338,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 530,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small>"
+  },
+  {
+    "id": 339,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 548,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "清空选择"
+  },
+  {
+    "id": 340,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 549,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "进入排序"
+  },
+  {
+    "id": 341,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 553,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "返回重选"
+  },
+  {
+    "id": 342,
+    "file": "src/scenes/phone/P21_VoiceMemos/index.tsx",
+    "line": 554,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "核对录音"
+  },
+  {
+    "id": 343,
+    "file": "src/scenes/rpg/CanteenBikeTransitionOverlay.tsx",
+    "line": 104,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "重新载入"
+  },
+  {
+    "id": 344,
+    "file": "src/scenes/rpg/CanteenChaseOverlay.tsx",
+    "line": 154,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "重新载入"
+  },
+  {
+    "id": 345,
+    "file": "src/scenes/rpg/CanteenChaseOverlay.tsx",
+    "line": 155,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "上车追纸"
+  },
+  {
+    "id": 346,
+    "file": "src/scenes/rpg/CanteenChaseOverlay.tsx",
+    "line": 156,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "再骑一次"
+  },
+  {
+    "id": 347,
+    "file": "src/scenes/rpg/CanteenChaseOverlay.tsx",
+    "line": 158,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "继续追纸"
+  },
+  {
+    "id": 348,
+    "file": "src/scenes/rpg/CanteenChaseOverlay.tsx",
+    "line": 159,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{a === \"left\" ? \"◀\" : a === \"right\" ? \"▶\" : a === \"jump\" ? \"按住跳\" : a === \"bell\" ? \"响铃\" : \"道具\"}"
+  },
+  {
+    "id": 349,
+    "file": "src/scenes/rpg/Chapter4PrologueOverlay.tsx",
+    "line": 683,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "跳过恢复回放 "
+  },
+  {
+    "id": 350,
+    "file": "src/scenes/rpg/Chapter4PrologueOverlay.tsx",
+    "line": 727,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{handoffStatus === \"pending\" ? \"正在提交任务……\" : handoffStatus === \"waiting_ready\" ? \"正在同步教学楼现场……\" : handoffStatus === \"failed\" ? \"重试进入"
+  },
+  {
+    "id": 351,
+    "file": "src/scenes/rpg/Chapter4PrologueOverlay.tsx",
+    "line": 741,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "重播过场"
+  },
+  {
+    "id": 352,
+    "file": "src/scenes/rpg/QizhenRainRescueCinematic.tsx",
+    "line": 84,
+    "decision": "standard-key",
+    "variant": "text",
+    "label": "跳过回放"
+  },
+  {
+    "id": 353,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2613,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "重试加载"
+  },
+  {
+    "id": 354,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2614,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{desktopSplit ? \"聚焦手机\" : \"返回手机主页\"}"
+  },
+  {
+    "id": 355,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2718,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "{desktopSplit ? \"聚焦手机\" : \"返回手机主页\"}"
+  },
+  {
+    "id": 356,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2719,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "全屏"
+  },
+  {
+    "id": 357,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2725,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "⌖"
+  },
+  {
+    "id": 358,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2726,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "+"
+  },
+  {
+    "id": 359,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2727,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "−"
+  },
+  {
+    "id": 360,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2784,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<PixelIcon name=\"campusCard\" size={30} /><span>校园卡</span>"
+  },
+  {
+    "id": 361,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2796,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<PixelIcon name=\"gamepad\" size={30} /><span>手柄</span>"
+  },
+  {
+    "id": 362,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2853,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span>{action === \"hook\" ? \"按住收线\" : action === \"left\" ? \"◀ 控线\" : \"控线 ▶\"}</span><small>{action === \"hook\" ? \"松手放线 / 起鱼\" : action =="
+  },
+  {
+    "id": 363,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2868,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<PixelIcon name=\"willowBranchPaddle\" size={34} /><span>左桨</span><small>{kayakPaddleSwipeState.left === \"reverse\" ? \"↓ 后退\" : kayakP"
+  },
+  {
+    "id": 364,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2882,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<PixelIcon name=\"warningSignPaddle\" size={34} /><span>右桨</span><small>{kayakPaddleSwipeState.right === \"reverse\" ? \"↓ 后退\" : kayakP"
+  },
+  {
+    "id": 365,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2896,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "交互"
+  },
+  {
+    "id": 366,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2905,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "↑"
+  },
+  {
+    "id": 367,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2906,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "←"
+  },
+  {
+    "id": 368,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2907,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "↓"
+  },
+  {
+    "id": 369,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2908,
+    "decision": "standard-key",
+    "variant": "secondary",
+    "label": "→"
+  },
+  {
+    "id": 370,
+    "file": "src/scenes/rpg/RpgGameHost.tsx",
+    "line": 2909,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "{RPG_CONTROL_HINTS.touchInteraction}"
+  },
+  {
+    "id": 371,
+    "file": "src/scenes/rpg/RpgInventoryDock.tsx",
+    "line": 339,
+    "decision": "scene-object",
+    "variant": null,
+    "label": "<PixelIcon name={itemId} size={34} /><span>{ITEM_META[itemId].name}</span>"
+  },
+  {
+    "id": 372,
+    "file": "src/scenes/rpg/RpgInventoryDock.tsx",
+    "line": 365,
+    "decision": "standard-key",
+    "variant": "primary",
+    "label": "组合四件材料 "
+  },
+  {
+    "id": 373,
+    "file": "src/scenes/rpg/RpgRealityModeToggle.tsx",
+    "line": 21,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<span>当前模式</span><strong>{current.label}</strong><small>切换：{next.label}</small>"
+  },
+  {
+    "id": 374,
+    "file": "src/tools/FinaleEnvironmentDebug.tsx",
+    "line": 155,
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "<strong>{entry.title}</strong><span>{entry.projection === \"top_down_orthographic\" ? \"俯视\" : \"序幕侧视\"}</span>"
+  },
+  {
+    "id": 375,
+    "file": "src/components/ControlCenter.tsx",
+    "decision": "scene-object",
+    "variant": null,
+    "label": "Transparent modal dismissal backdrop"
+  },
+  {
+    "id": 376,
+    "file": "src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx",
+    "decision": "scene-object",
+    "variant": null,
+    "label": "Physical charging contact"
+  },
+  {
+    "id": 377,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "decision": "scene-object",
+    "variant": null,
+    "label": "Weather card invisible overlay"
+  },
+  {
+    "id": 378,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "decision": "scene-object",
+    "variant": null,
+    "label": "Collectible water drop"
+  },
+  {
+    "id": 379,
+    "file": "src/scenes/phone/P14_Wechat/index.tsx",
+    "decision": "scene-object",
+    "variant": null,
+    "label": "Voice scene skip overlay"
+  },
+  {
+    "id": 380,
+    "file": "src/scenes/phone/P15_Zjuding/index.tsx",
+    "decision": "scene-object",
+    "variant": null,
+    "label": "Check-in scene hotspot"
+  },
+  {
+    "id": 381,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "Pagination 1"
+  },
+  {
+    "id": 382,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "Pagination 2"
+  },
+  {
+    "id": 383,
+    "file": "src/scenes/phone/P13_PhoneHome/index.tsx",
+    "decision": "content-layout",
+    "variant": "ghost",
+    "label": "Pagination 3"
+  }
+]

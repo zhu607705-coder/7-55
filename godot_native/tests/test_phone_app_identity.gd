@@ -68,7 +68,8 @@ func fixture(kind:String,state:Dictionary,view:Dictionary={},presence_audit:bool
 		if button.name=="TiyiExercise":
 			for mode in ["normal","hover","pressed","hover_pressed","disabled"]:
 				var fill:Color=button.get_theme_stylebox(mode).bg_color
-				check(1.05/(lum(fill)+.05)>=4.5,"Tiyi white label contrast "+mode)
+				var ink: Color=button.get_theme_color("font_disabled_color" if mode=="disabled" else "font_color")
+				check((maxf(lum(ink),lum(fill))+.05)/(minf(lum(ink),lum(fill))+.05)>=4.5,"Tiyi actual neutral label contrast "+mode)
 	var emissions:Array=[];b.action_requested.connect(func(id,value):emissions.append([id,value]))
 	for button in fresh.find_children("*","Button",true,false):
 		if button.name in ["WeatherWaterCard","TiyiCount47","TiyiExercise"] and not button.disabled:button.pressed.emit()
@@ -109,7 +110,9 @@ func check_presence_identity(form:Control):
 	var submit=form.find_child("TiyiPresenceSubmit",true,false)
 	check(submit is Button and submit.text=="提交补录" and not submit.disabled and submit.get_rect().end.y<=Candidate.APP_HEIGHT,"source-ready inline submit is visible and enabled")
 	for mode in ["normal","hover","pressed","hover_pressed","disabled"]:
-		check(1.05/(lum(submit.get_theme_stylebox(mode).bg_color)+.05)>=4.5,"presence submit white label contrast "+mode)
+		var fill: Color=submit.get_theme_stylebox(mode).bg_color
+		var ink: Color=submit.get_theme_color("font_disabled_color" if mode=="disabled" else "font_color")
+		check((maxf(lum(ink),lum(fill))+.05)/(minf(lum(ink),lum(fill))+.05)>=4.5,"presence submit actual neutral label contrast "+mode)
 	for source in [[0,"07:55 基础馆入口 → 08:02 一层书库 022\n填写两次记录的分钟差"],[1,"楼主编辑原文：旧申请统一挂在公示编号 47\n23 是回复楼层；填写原文中的公示编号"],[2,"本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写规则列出的证明类别数量"]]:
 		check(form.find_child("TiyiEvidence_"+str(source[0]),true,false).text==source[1],"source evidence text stays exact: "+str(source[0]))
 func run():

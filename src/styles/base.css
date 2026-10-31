@@ -267,7 +267,7 @@ body [contenteditable]:not([contenteditable="false"]) * {
   margin: 0 0 10px;
 }
 
-.chapter-intro-overlay button {
+.chapter-intro-overlay button:not(.tactile-button) {
   background: #f0d54e;
   border: 4px solid #101820;
   color: #101820;

@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import "../../styles/chapter4-exterior-questions.css";
 import lampDarkUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_dark.png";
@@ -182,7 +183,7 @@ export function ChapterFourExteriorQuestions({
                     {question.options.map((option) => {
                       const selected = selectedAnswer === option.id;
                       return (
-                        <button
+                        <Button variant="tertiary"
                           key={option.id}
                           type="button"
                           className={selected ? "is-selected" : undefined}
@@ -190,7 +191,7 @@ export function ChapterFourExteriorQuestions({
                           onClick={() => selectAnswer(option.id)}
                         >
                           {option.label}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>
